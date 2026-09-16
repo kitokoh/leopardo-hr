@@ -554,6 +554,24 @@ jobs:
             not-required)
               echo "::notice::Aucun déploiement attendu pour ce run (contexte court-circuité : dispatch hors \`main\`, run parent non concluant)."
               ;;
+            pending)
+              # #7559 — budget d'attente épuisé ALORS QUE des workflows requis
+              # tournaient encore : ce n'est pas une indécision (l'information
+              # arrive), et ce n'est pas un succès de déploiement non plus. Le
+              # contrôle de fond reste « Deploy Drift Guard » (toutes les 30 min)
+              # et le rattrapage « Deploy Main Catch-up » / dispatch force_deploy.
+              {
+                echo ""
+                echo "> **Différé, pas indécis (#7559)** : le budget d'attente du gate s'est épuisé"
+                echo "> alors que les workflows requis du SHA \`${sha}\` étaient **encore en cours**."
+                echo "> La cause racine est documentée : budget de polling (30 min) vs timeout du job"
+                echo "> backend de \`tests.yml\` (300 min) — un merge \`api/**\` ne peut pas conclure"
+                echo "> dans le budget. Aucun déploiement n'a été décidé par ce run ;"
+                echo "> \`deploy-drift-guard.yml\` (30 min) échoue si le tier dev dérive, et"
+                echo "> \`deploy-main-catchup.yml\` rejoue le déploiement dès que la suite conclut."
+              } >> "$GITHUB_STEP_SUMMARY"
+              echo "::notice::Deploy différé pour ${sha} — les workflows requis tournaient encore à l'expiration du budget (#7559)."
+              ;;
             stale)
               echo "::notice::SHA ${sha} dépassé par un push plus récent sur \`main\` — non déployé par construction ; le run du SHA plus récent porte le déploiement."
               ;;

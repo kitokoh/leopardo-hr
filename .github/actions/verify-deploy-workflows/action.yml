@@ -109,17 +109,39 @@ runs:
 
           const conclusionIsGreen = (c) => c === 'success' || c === 'skipped';
 
-          // #3545 : mode push = polling borné des runs du SHA (timeout 30
-          // min, intervalle 60 s). Le workflow_run n'existe pas encore ou a
-          // pu être annulé en pending ; on attend que les runs du SHA
-          // terminent vraiment, au lieu de lire la conclusion d'un parent.
+          // #3545 : mode push = polling borné des runs du SHA (intervalle
+          // 60 s). Le workflow_run n'existe pas encore ou a pu être annulé en
+          // pending ; on attend que les runs du SHA terminent vraiment, au lieu
+          // de lire la conclusion d'un parent.
+          //
+          // #7559 — le budget (30 min) est PLUS COURT que le timeout du job
+          // backend de `tests.yml` (300 min) : tout merge `api/**` épuise donc le
+          // budget alors que la suite progresse encore, et le gate rendait
+          // « timeout » — rangé dans les indécisions (#7457) donc ROUGE. Un
+          // budget épuisé alors qu'un run requis est encore `queued`/
+          // `in_progress` n'est pas une indécision : c'est une information qui
+          // arrive. Ce cas rend désormais `pending` (non fatal, `::notice::`) ;
+          // le budget épuisé SANS run requis en cours reste `timeout` (vraie
+          // indécision). Contrôle de fond : `deploy-drift-guard.yml` (30 min) ;
+          // rattrapage : `deploy-main-catchup.yml` / dispatch `force_deploy`.
+          //
+          // `DEPLOY_GATE_BUDGET_MINUTES` permet au test comportemental
+          // (`dev-hub/tools/check-deploy-gate-outcome-test.mjs`) d'épuiser le
+          // budget sans attendre ; la CI ne pose pas cette variable (défaut 30).
           if (EVENT === 'push') {
             core.info(`Push-triggered deploy: polling runs for ${sha} (web_changed=${webChanged}).`);
-            const deadline = Date.now() + 30 * 60 * 1000;
+            const budgetMinutes = Number(process.env.DEPLOY_GATE_BUDGET_MINUTES ?? '30');
+            const deadline = Date.now() + budgetMinutes * 60 * 1000;
             const intervalMs = 60 * 1000;
             let consecutiveEmpty = 0;
+            // Dernier état observé (utilisé si le budget s'épuise) : #7559.
+            let lastPending = [];
+            let lastRelevant = [];
 
-            while (Date.now() < deadline) {
+            // `do/while` : on observe TOUJOURS au moins une fois, sinon un budget
+            // nul (test) sortirait sans aucune information et retomberait dans
+            // « timeout » faute de savoir ce qui tournait.
+            do {
               let runsForSha = [];
               try {
                 runsForSha = await github.paginate(github.rest.actions.listWorkflowRunsForRepo, {
@@ -136,6 +158,8 @@ runs:
 
               const relevant = runsForSha.filter((run) => REQUIRED_WORKFLOWS.includes(run.name));
               const pending = relevant.filter((run) => run.status === 'queued' || run.status === 'in_progress');
+              lastRelevant = relevant;
+              lastPending = pending;
 
               if (relevant.length === 0) {
                 consecutiveEmpty += 1;
@@ -238,9 +262,25 @@ runs:
               core.setOutput('should_deploy', 'false');
               core.setOutput('gate_outcome', gateOutcome);
               return;
+            } while (Date.now() < deadline);
+
+            // #7559 — budget épuisé. Deux cas très différents :
+            if (lastPending.length > 0) {
+              const names = lastPending.map((run) => run.name).join(' / ');
+              core.notice(
+                `Deploy différé (#7559) — budget de ${budgetMinutes} min épuisé alors que ${lastPending.length} workflow(s) requis du SHA ${sha} étaient encore en cours (${names}). `
+                + 'Ce n\'est pas une indécision : la conclusion arrive plus tard que le budget. '
+                + 'Contrôle de fond : « Deploy Drift Guard » (toutes les 30 min) ; rattrapage : « Deploy Main Catch-up » ou dispatch `force_deploy`.',
+              );
+              core.setOutput('tests_conclusion', 'pending');
+              core.setOutput('web_conclusion', webChanged ? 'pending' : 'not-required');
+              core.setOutput('should_deploy', 'false');
+              core.setOutput('gate_outcome', 'pending');
+              return;
             }
 
-            core.warning(`Deploy skipped — timeout 30 min en attente des runs du SHA ${sha}.`);
+            // Aucun run requis n'était en cours : là, le gate n'a pas pu décider.
+            core.warning(`Deploy skipped — timeout ${budgetMinutes} min en attente des runs du SHA ${sha} (aucun run requis en cours : indécision).`);
             core.setOutput('tests_conclusion', 'timeout');
             core.setOutput('web_conclusion', webChanged ? 'timeout' : 'not-required');
             core.setOutput('should_deploy', 'false');
