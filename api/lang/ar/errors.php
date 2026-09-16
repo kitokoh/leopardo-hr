@@ -297,4 +297,10 @@ return [
     'INVALID_HORIZONTAL_TOOL' => 'وحدة غير معروفة أو غير قابلة للتفعيل الذاتي: :module.',
     'MODULE_ACTIVATED' => 'تم تفعيل الوحدة.',
     'MODULE_ALREADY_ACTIVE' => 'هذه الوحدة نشطة بالفعل.',
+    'TENANT_NOT_DEACTIVATED' => 'عطّل المساحة قبل حذفها.',
+    'TENANT_DELETION_MODE_REQUIRED' => 'تحتوي هذه المساحة على بيانات رواتب: اختر صراحة الحذف الكامل أو الاحتفاظ بالرواتب.',
+    'TENANT_DELETION_MODE_INVALID' => 'وضع الحذف غير معروف.',
+    'TENANT_DELETION_CONFIRMATION_MISMATCH' => 'الاسم المُدخل لا يطابق الاسم الدقيق للشركة.',
+    'TENANT_DELETION_BLOCKED' => 'بيانات مرتبطة بهذه المساحة تمنع الحذف الكامل. تم إلغاء العملية.',
+    'TENANT_DELETION_INCOMPLETE' => 'الحذف غير مكتمل: لا تزال هناك سجلات. تم إلغاء العملية.',
 ];

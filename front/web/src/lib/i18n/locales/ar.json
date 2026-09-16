@@ -1514,7 +1514,34 @@
     "managerEmail": "بريد المدير الأساسي *",
     "activateNow": "تفعيل فوراً",
     "activateClientNow": "تفعيل العميل فوراً",
-    "activateClientHint": "وإلا يبقى العميل في الوضع التجريبي."
+    "activateClientHint": "وإلا يبقى العميل في الوضع التجريبي.",
+    "deletion": {
+      "action": "حذف",
+      "title": "حذف هذه المساحة نهائيًا",
+      "subtitle": "هذه العملية لا رجعة فيها.",
+      "inventoryTitle": "ما سيتم حذفه",
+      "inventoryEmployees": "موظفون",
+      "inventoryPayrollRuns": "دورات الرواتب",
+      "inventoryPaySlips": "قسائم الرواتب",
+      "inventoryDocuments": "مستندات",
+      "inventoryAttendance": "سجلات الحضور",
+      "notDeactivated": "يجب تعطيل هذه المساحة أولاً (معلّقة أو منتهية).",
+      "modeLegend": "توجد بيانات رواتب: اختر كيفية المتابعة.",
+      "modePurge": "حذف كل شيء",
+      "modePurgeHint": "الموظفون والرواتب والحضور والمستندات: يتم حذف كل شيء.",
+      "modeAnonymize": "الاحتفاظ بالرواتب ومحو الهويات",
+      "modeAnonymizeHint": "يتم الاحتفاظ بقسائم الرواتب (التزام قانوني) ومحو الهويات.",
+      "confirmHint": "اكتب الاسم الدقيق للشركة للتأكيد",
+      "confirmPlaceholder": "اسم الشركة",
+      "confirmAction": "حذف نهائيًا",
+      "loadFailed": "تعذر تحميل جرد الحذف.",
+      "success": "تم حذف المساحة.",
+      "auditTitle": "أحدث العمليات",
+      "auditEmpty": "لا توجد عمليات مسجلة.",
+      "statusCompleted": "مكتملة",
+      "statusRefused": "مرفوضة",
+      "statusFailed": "فاشلة"
+    }
   },
   "seo": {
     "pricing": {

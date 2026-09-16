@@ -1514,7 +1514,34 @@
     "managerEmail": "Ana yonetici e-postasi *",
     "activateNow": "Hemen etkinlestir",
     "activateClientNow": "Musteriyi hemen etkinlestir",
-    "activateClientHint": "Aksi halde musteri deneme modunda kalir."
+    "activateClientHint": "Aksi halde musteri deneme modunda kalir.",
+    "deletion": {
+      "action": "Sil",
+      "title": "Bu çalışma alanını kalıcı olarak sil",
+      "subtitle": "Bu işlem geri alınamaz.",
+      "inventoryTitle": "Silinecek olanlar",
+      "inventoryEmployees": "çalışan",
+      "inventoryPayrollRuns": "bordro dönemi",
+      "inventoryPaySlips": "bordro pusulası",
+      "inventoryDocuments": "belge",
+      "inventoryAttendance": "devam kaydı",
+      "notDeactivated": "Bu çalışma alanı önce devre dışı bırakılmalıdır (askıya alınmış veya süresi dolmuş).",
+      "modeLegend": "Bordro verisi var: nasıl devam edileceğini seçin.",
+      "modePurge": "Her şeyi sil",
+      "modePurgeHint": "Çalışanlar, bordro, devam kayıtları, belgeler: hepsi silinir.",
+      "modeAnonymize": "Bordroyu koru, kimlikleri sil",
+      "modeAnonymizeHint": "Bordro pusulaları saklanır (yasal yükümlülük); kimlikler silinir.",
+      "confirmHint": "Onaylamak için şirketin tam adını yazın",
+      "confirmPlaceholder": "Şirket adı",
+      "confirmAction": "Kalıcı olarak sil",
+      "loadFailed": "Silme envanteri yüklenemedi.",
+      "success": "Çalışma alanı silindi.",
+      "auditTitle": "Son işlemler",
+      "auditEmpty": "Kayıtlı işlem yok.",
+      "statusCompleted": "Tamamlandı",
+      "statusRefused": "Reddedildi",
+      "statusFailed": "Başarısız"
+    }
   },
   "seo": {
     "pricing": {

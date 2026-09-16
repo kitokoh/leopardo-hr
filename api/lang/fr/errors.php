@@ -298,4 +298,10 @@ return [
     'INVALID_HORIZONTAL_TOOL' => 'Module inconnu ou non activable en autonomie : :module.',
     'MODULE_ACTIVATED' => 'Module activé.',
     'MODULE_ALREADY_ACTIVE' => 'Ce module est déjà actif.',
+    'TENANT_NOT_DEACTIVATED' => 'Désactivez l\'espace avant de le supprimer.',
+    'TENANT_DELETION_MODE_REQUIRED' => 'Cet espace contient des données de paie : choisissez explicitement tout effacer ou conserver la paie.',
+    'TENANT_DELETION_MODE_INVALID' => 'Mode de suppression inconnu.',
+    'TENANT_DELETION_CONFIRMATION_MISMATCH' => 'Le nom saisi ne correspond pas au nom exact de la société.',
+    'TENANT_DELETION_BLOCKED' => 'Des données rattachées à cet espace empêchent une suppression complète. Opération annulée.',
+    'TENANT_DELETION_INCOMPLETE' => 'La purge est incomplète : des lignes subsistent. Opération annulée.',
 ];
