@@ -100,6 +100,10 @@ class PlatformCompanyDeletionController extends Controller
             $mode,
             $actor,
             $this->requestId($request),
+            // #7475 (reliquat) — la justification est validée depuis le début
+            // mais n'était transmise à personne : elle est désormais persistée
+            // sur la piste d'audit (colonne `reason`).
+            isset($validated['reason']) && is_string($validated['reason']) ? $validated['reason'] : null,
         );
 
         return new JsonResponse(['data' => $result], 200);

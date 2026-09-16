@@ -181,11 +181,27 @@ final class TenantDeletionService
         string $mode,
         SuperAdmin $actor,
         ?string $requestId = null,
+        ?string $reason = null,
     ): array {
         $inventory = $this->inventory->for($company);
 
+        // #7475 (reliquat) — un tenant historique en schéma DÉDIÉ
+        // (`tenancy_type = 'schema'`) porte ses données hors de
+        // `shared_tenants` : le balayage ne supprimerait rien et l'opération se
+        // déclarerait « terminée » à tort (silence dangereux, #7535). On refuse
+        // explicitement, et la tentative est auditée.
+        if ((string) $company->tenancy_type === 'schema') {
+            $this->recordAudit($company, $mode, 'refused', $inventory, [], $actor, $requestId, 'TENANT_DELETION_UNSUPPORTED_TENANCY', $reason);
+
+            throw new DomainException(
+                'Dedicated-schema tenants are not supported by the deletion flow yet.',
+                409,
+                'TENANT_DELETION_UNSUPPORTED_TENANCY'
+            );
+        }
+
         if (! $this->inventory->isDeletable($company)) {
-            $this->recordAudit($company, $mode, 'refused', $inventory, [], $actor, $requestId, 'TENANT_NOT_DEACTIVATED');
+            $this->recordAudit($company, $mode, 'refused', $inventory, [], $actor, $requestId, 'TENANT_NOT_DEACTIVATED', $reason);
 
             throw new DomainException(
                 'Tenant must be deactivated before deletion.',
@@ -195,7 +211,7 @@ final class TenantDeletionService
         }
 
         if ($inventory['has_payroll_data'] && ! in_array($mode, [self::MODE_PURGE, self::MODE_ANONYMIZE], true)) {
-            $this->recordAudit($company, $mode, 'refused', $inventory, [], $actor, $requestId, 'TENANT_DELETION_MODE_REQUIRED');
+            $this->recordAudit($company, $mode, 'refused', $inventory, [], $actor, $requestId, 'TENANT_DELETION_MODE_REQUIRED', $reason);
 
             throw new DomainException(
                 'Tenant holds payroll data: an explicit deletion mode is required.',
@@ -229,7 +245,7 @@ final class TenantDeletionService
                 }
             });
         } catch (Throwable $exception) {
-            $this->recordAudit($company, $mode, 'failed', $inventory, $deleted, $actor, $requestId, $exception->getMessage());
+            $this->recordAudit($company, $mode, 'failed', $inventory, $deleted, $actor, $requestId, $exception->getMessage(), $reason);
 
             Log::error('platform.tenant_deletion.failed', [
                 'company_id' => $company->id,
@@ -254,7 +270,7 @@ final class TenantDeletionService
             }
         }
 
-        $auditId = $this->recordAudit($company, $mode, 'completed', $inventory, $deleted, $actor, $requestId, null);
+        $auditId = $this->recordAudit($company, $mode, 'completed', $inventory, $deleted, $actor, $requestId, null, $reason);
 
         return [
             'company_id' => $company->id,
@@ -290,6 +306,7 @@ final class TenantDeletionService
                     'status' => (string) $row->status,
                     'inventory' => json_decode((string) $row->inventory, true) ?: [],
                     'actor_email' => $row->actor_email !== null ? (string) $row->actor_email : null,
+                    'reason' => $row->reason !== null ? (string) $row->reason : null,
                     'failure_reason' => $row->failure_reason !== null ? (string) $row->failure_reason : null,
                     'created_at' => (string) $row->created_at,
                 ];
@@ -323,9 +340,20 @@ final class TenantDeletionService
 
             foreach ($pending as $table) {
                 try {
-                    $count = DB::table(TenantDeletionInventory::qualified($table))
-                        ->where('company_id', $company->id)
-                        ->delete();
+                    // #7475 (reliquat) — SAVEPOINT par table. En PostgreSQL, un
+                    // `DELETE` refusé par une contrainte FK avorte la
+                    // transaction EN COURS (`SQLSTATE 25P02`) : la boucle de
+                    // reprise ci-dessous devenait inopérante (toute instruction
+                    // suivante échouait, jusqu'à l'écriture de l'audit
+                    // d'échec). Un `DB::transaction()` imbriqué émet
+                    // SAVEPOINT / ROLLBACK TO SAVEPOINT : l'échec d'une table
+                    // n'empoisonne plus les suivantes.
+                    $count = DB::transaction(
+                        fn (): int => DB::table(TenantDeletionInventory::qualified($table))
+                            ->where('company_id', $company->id)
+                            ->delete(),
+                        1,
+                    );
 
                     if ($count > 0) {
                         $deleted[$table] = ($deleted[$table] ?? 0) + $count;
@@ -519,6 +547,7 @@ final class TenantDeletionService
         SuperAdmin $actor,
         ?string $requestId,
         ?string $failureReason,
+        ?string $reason = null,
     ): int {
         DB::statement('SET search_path TO public');
 
@@ -530,6 +559,7 @@ final class TenantDeletionService
             'status' => $status,
             'inventory' => json_encode($inventory),
             'deleted_counts' => json_encode($deleted),
+            'reason' => $reason,
             'actor_user_id' => $actor->getAuthIdentifier(),
             'actor_email' => $actor->email,
             'request_id' => $requestId,
