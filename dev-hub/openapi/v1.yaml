@@ -4049,6 +4049,173 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Validation422'
+  /platform/companies/{company}/deletion-inventory:
+    get:
+      tags:
+      - Platform
+      summary: Inventaire chiffre avant suppression d'un tenant
+      description: '#7475 — Compte ce que la suppression detruirait (employes, bulletins, pointages, documents) et indique si l''espace est supprimable ainsi que le mode requis. Une societe n''est supprimable qu''apres desactivation.'
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/CompanyUuid'
+      responses:
+        '200':
+          description: Inventaire du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      company_id:
+                        type: string
+                        format: uuid
+                      company_name:
+                        type: string
+                      status:
+                        type: string
+                      deletable:
+                        type: boolean
+                      blocked_by:
+                        type: array
+                        items:
+                          type: string
+                      has_payroll_data:
+                        type: boolean
+                      required_mode:
+                        type: string
+                        nullable: true
+                      counters:
+                        type: object
+                        additionalProperties:
+                          type: integer
+                      tenant_table_count:
+                        type: integer
+                      platform_rows:
+                        type: object
+                        additionalProperties:
+                          type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /platform/companies/{company}/deletion-audits:
+    get:
+      tags:
+      - Platform
+      summary: Journal des suppressions d'un tenant
+      description: '#7475 — Historique des operations de suppression (completees, refusees, echouees) avec le volume detruit. Ecrit dans une table plateforme qui survit a la purge.'
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/CompanyUuid'
+      responses:
+        '200':
+          description: Historique des operations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        mode:
+                          type: string
+                        status:
+                          type: string
+                        inventory:
+                          type: object
+                          additionalProperties: true
+                        actor_email:
+                          type: string
+                          nullable: true
+                        failure_reason:
+                          type: string
+                          nullable: true
+                        created_at:
+                          type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /platform/companies/{company}:
+    delete:
+      tags:
+      - Platform
+      summary: Supprimer definitivement un tenant desactive
+      description: '#7475 — Parcours en deux temps : la societe doit d''abord etre desactivee (status suspended/expired), alors seulement la purge est possible. La confirmation exige la ressaisie du nom exact de la societe. Un tenant portant des donnees de paie exige un mode explicite : purge (effacement complet) ou anonymize (paie conservee, identites effacees).'
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/CompanyUuid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - confirm_name
+              properties:
+                confirm_name:
+                  type: string
+                  maxLength: 200
+                  description: Nom exact de la societe, ressaisi pour confirmation
+                mode:
+                  type: string
+                  enum:
+                  - purge
+                  - anonymize
+                  description: Obligatoire si le tenant porte des donnees de paie
+                reason:
+                  type: string
+                  maxLength: 500
+      responses:
+        '200':
+          description: Operation realisee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      company_id:
+                        type: string
+                        format: uuid
+                      mode:
+                        type: string
+                      status:
+                        type: string
+                      deleted_counts:
+                        type: object
+                        additionalProperties:
+                          type: integer
+                      audit_id:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Validation422'
   /platform/companies/{company}/country:
     patch:
       tags:

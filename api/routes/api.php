@@ -46,6 +46,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminWebhookContr
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAiMonitoringController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAiSettingsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAnnouncementController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyDeletionController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyRequestController;
@@ -401,6 +402,13 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('/companies/{company}/country', [PlatformCompanyController::class, 'updateCountry']);
         Route::get('/companies/{company}/subscription', [PlatformCompanySubscriptionController::class, 'show']);
         Route::patch('/companies/{company}/subscription', [PlatformCompanySubscriptionController::class, 'update']);
+        // #7475 — suppression sûre d'un tenant : parcours en deux temps
+        // (désactivation d'abord), inventaire chiffré, confirmation par
+        // ressaisie du nom exact, journalisation dans
+        // `public.tenant_deletion_audits` (qui survit à la purge).
+        Route::get('/companies/{company}/deletion-inventory', [PlatformCompanyDeletionController::class, 'inventory']);
+        Route::get('/companies/{company}/deletion-audits', [PlatformCompanyDeletionController::class, 'history']);
+        Route::delete('/companies/{company}', [PlatformCompanyDeletionController::class, 'destroy']);
         Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show']);
         Route::patch('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'update']);
 
