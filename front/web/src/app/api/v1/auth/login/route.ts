@@ -26,7 +26,7 @@ import { resolveBackendBaseUrl } from "@/lib/backend-url";
 import { t as i18nT } from "@/lib/i18n/locale-catalog";
 import { normalizeLocale } from "@/lib/i18n";
 const COOKIE_NAME = "leopardo_token";
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days — matches Sanctum SANCTUM_TOKEN_EXPIRATION default (10080 min)
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 jours — session glissante (#7491), alignée sur SANCTUM_TOKEN_EXPIRATION
 const LOGIN_TIMEOUT_MS = 60_000;
 
 // resolveBackendBaseUrl importé depuis @/lib/backend-url (audit #1701)

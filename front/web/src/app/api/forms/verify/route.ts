@@ -11,7 +11,7 @@ import { areFormsEnabled, formsDisabledResponse, getClientIp } from '../_lib/lea
  * reconnaisse immédiatement la session après la vérification du code.
  */
 const COOKIE_NAME = 'leopardo_token';
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 jours (aligné sur Sanctum)
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 jours — session glissante (#7491), alignée sur SANCTUM_TOKEN_EXPIRATION
 
 const rateLimiter = new RateLimiter(10, 15 * 60 * 1000);
 
