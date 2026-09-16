@@ -191,6 +191,13 @@ class Company extends Model
         // est `showcase` (front `client-features.ts`) ; le feature flag tenant
         // correspondant est `company_showcase` (cf. `mirroredFeatures`).
         'showcase',
+        // BC-19 DEVICE (#7476) — « chaque entrepreneur aura besoin d'avoir des
+        // caméras » (retour propriétaire) : le module Caméras devient un outil
+        // horizontal auto-activable par le client. La surface web
+        // (`client-features.ts`, #7425) et le flag plateforme `cameras`
+        // (`config/feature-flags.php`) existaient déjà : seule l'activation par
+        // le client manquait (elle était réservée à la console plateforme).
+        'cameras',
     ];
 
     /**
@@ -216,6 +223,11 @@ class Company extends Model
         // les deux sources de vérité (`metadata.modules.training` ET
         // `companies.features.training`), comme `showcase`.
         'training' => 'training',
+        // #7476 — le flag plateforme `cameras` existe : l'auto-activation côté
+        // client doit donc écrire LES DEUX sources de vérité
+        // (`metadata.modules.cameras` ET `companies.features.cameras`), comme
+        // `showcase` et `training`. La console plateforme garde le kill switch.
+        'cameras' => 'cameras',
     ];
 
     /**
