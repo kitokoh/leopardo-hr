@@ -53,16 +53,16 @@
         "fr": "52b378ec0b3bf28d732eaa5000fd1129e0c10217089a0d5f0f728e125755a9ee",
         "tr": "fa692598d6104dca5665dcb5a7aca924451c945102911228016ea617790006c9"
       },
-      "updated_at": "2026-09-16T00:33:57.563Z"
+      "updated_at": "2026-09-16T00:53:01.891Z"
     },
     "admin": {
       "checksums": {
-        "ar": "b2c9fc633a04262177bd6d5e40a37ad8ce8aeb50cfc39b8ea15a10728f6771b2",
-        "en": "eec9960e28c4297e088dcf5de52a490060ee408d28b953867484dc0db7538b16",
-        "fr": "a15f239f34151a73032c529ea1caae0ec88a250ae5a17a9b6762592e926e0ce0",
-        "tr": "cec6b654f3ccdd81550a5b4770d238f258631fa85c1196910f463bf48825049c"
+        "ar": "f8ad16ac9d8c4dccc7531733c6e321b08c781ee45e816de09e2a7dd14bfa3351",
+        "en": "81abb72cfb9168e2eec6fe0d200916643d3d50576883cb56f5f34cd718fa1c7b",
+        "fr": "1dbbd7d43bd417bf92e7a96cd61bb509b42e3645fa1829aed29e822ac55051a4",
+        "tr": "552c0b5b79a3eeb569642563fc8a32f943ccecceb197bc539007f711aa27b2a9"
       },
-      "updated_at": "2026-09-16T00:33:57.608Z"
+      "updated_at": "2026-09-16T00:53:01.944Z"
     }
   }
 }
