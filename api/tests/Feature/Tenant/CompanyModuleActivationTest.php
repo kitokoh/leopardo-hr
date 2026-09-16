@@ -103,6 +103,27 @@ class CompanyModuleActivationTest extends TestCase
         $this->assertTrue($persisted['features']['company_showcase'] ?? null);
     }
 
+    public function test_cameras_is_self_activatable_and_mirrors_its_platform_flag(): void
+    {
+        // #7476 — le module Caméras (BC-19 DEVICE) devient un outil horizontal
+        // auto-activable : la surface web et le flag plateforme existaient, seule
+        // l'activation par le client manquait (elle était réservée à la console).
+        $company = $this->company();
+        $this->actingAsRole($company, 'manager', 'principal');
+
+        $this->postJson('/api/v1/company/modules/cameras/activate')
+            ->assertOk()
+            ->assertJsonPath('data.module', 'cameras')
+            ->assertJsonPath('data.activated', true)
+            ->assertJsonPath('data.already_active', false);
+
+        $persisted = $this->persisted($company);
+        $this->assertTrue($persisted['modules']['cameras'] ?? null);
+        // Miroir `cameras` → `cameras` (Company::HORIZONTAL_TOOL_FEATURES) : le
+        // flag plateforme reste un kill switch pour la console.
+        $this->assertTrue($persisted['features']['cameras'] ?? null);
+    }
+
     public function test_unknown_module_is_rejected_fail_closed_without_write(): void
     {
         $company = $this->company();

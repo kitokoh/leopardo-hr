@@ -32,6 +32,11 @@ class FeaturePlanMatrixSeeder extends Seeder
             ['feature_key' => 'api_public', 'free' => [false, null], 'pilot' => [false, null], 'operations' => [false, null], 'enterprise' => [true, null]],
             ['feature_key' => 'multi_site', 'free' => [false, null], 'pilot' => [false, null], 'operations' => [true, null], 'enterprise' => [true, null]],
             ['feature_key' => 'custom_branding', 'free' => [false, null], 'pilot' => [false, null], 'operations' => [false, null], 'enterprise' => [true, null]],
+            // #7476 — Caméras : outil horizontal transverse. Exclu de l'offre gratuite
+            // (matériel + stockage), disponible DÈS le pilote — sinon la promesse
+            // « chaque entrepreneur aura besoin de caméras » est invérifiable en
+            // recette, et un pilote ne peut pas tester ce qu'il ne peut pas activer.
+            ['feature_key' => 'cameras', 'free' => [false, null], 'pilot' => [true, null], 'operations' => [true, null], 'enterprise' => [true, null]],
         ];
 
         $rows = [];

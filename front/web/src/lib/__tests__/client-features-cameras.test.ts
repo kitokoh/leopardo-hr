@@ -17,8 +17,13 @@ import type { StoredAuthUser } from '@/lib/i18n';
  *    verrouillé (`navPills` = `enabled`).
  * 3. Le détail est réservé au responsable du tenant (miroir de
  *    `api.manager:principal,rh`) ; un sous-rôle « sécurité » n'existe pas.
- * 4. Il n'est PAS auto-activable : la vidéosurveillance touche à la vie
- *    privée, seule la plateforme l'active (`SELF_ACTIVATABLE_MODULE_KEYS`).
+ * 4. Il EST auto-activable depuis #7476 (retour propriétaire : « chaque
+ *    entrepreneur aura besoin d'avoir des caméras »). Cette propriété
+ *    **supersède** le point 4 d'origine (#7425), qui réservait l'activation à
+ *    la plateforme au nom de la vie privée : la décision est explicitement
+ *    inversée, pas contournée — le garde-fou de vie privée qui subsiste est le
+ *    **flag plateforme `cameras`**, qui reste un kill switch (la console peut
+ *    toujours refuser, et le module reste verrouillé par rôle, cf. point 3).
  */
 describe('client-features cameras (#7425)', () => {
   const camerasModule = CLIENT_MODULES.find((m) => m.key === 'cameras');
@@ -86,8 +91,10 @@ describe('client-features cameras (#7425)', () => {
     expect(access?.reason).toBe('role_locked');
   });
 
-  it('n’est pas auto-activable par le client (vie privée : activation plateforme)', () => {
-    expect(SELF_ACTIVATABLE_MODULE_KEYS).not.toContain('cameras');
+  it('est auto-activable par le client (#7476 — supersède le point 4 de #7425)', () => {
+    // Décision inversée explicitement : l'activation par le client est demandée
+    // par le propriétaire (#7476) ; le flag plateforme reste le veto.
+    expect(SELF_ACTIVATABLE_MODULE_KEYS).toContain('cameras');
   });
 
   it('ne casse pas l’unicité des clés de navigation (#6450)', () => {

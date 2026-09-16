@@ -107,6 +107,34 @@ Règles structurelles opposables :
 - **Indicateurs :** nombre d'écarts live-vs-dépôt (cible 0 à la fin de chaque audit) ; délai de
   correction d'une dérive (cible < 1 semaine) ; incidents P1 dus à une dérive d'infra (cible 0).
 
+### 6.2 Règle 8 — un correctif de gate/CI se vérifie dans les LOGS DE PRODUCTION
+
+> Issue #7586 (leçon #7559/#7566 → #7579).
+
+Un gate de déploiement qui passe **tous** les tests locaux, la garde structurelle, l'auto-test
+à mutations **et** les 4 checks requis peut quand même rendre `main` rouge : c'est arrivé le
+2026-09-16. Le log du run réel montrait `gate_outcome=tests-null`, un motif **inconnu** du job
+de verdict — cause : le prédicat « runs encore en vol » ne couvrait que `queued`/`in_progress`,
+donc un run au statut **`requested`** n'était pas attendu, le gate lisait `conclusion = null` et
+fabriquait `tests-${null}`.
+
+**Règle** — pour tout correctif de gate/CI :
+
+1. **Relire un run RÉEL de production** après le merge (`/actions/runs/<id>/jobs` et le log du
+   job concerné — ici la ligne `gate_outcome=…`) : le vert local et le vert de la PR ne prouvent
+   que la structure.
+2. **Citer le `run id`** qui prouve le comportement attendu dans la PR (ou l'issue) — sans lui,
+   la vérification n'est pas reproductible par le prochain agent.
+3. **Modéliser l'état qui a échoué** dans les tests : le cas `requested` est devenu un cas du
+   test comportemental (`dev-hub/tools/check-deploy-gate-outcome-test.mjs`), qui échoue sur la
+   version d'avant le correctif. Un correctif de gate sans nouveau cas de test est incomplet.
+4. **Aucun motif `*-null` constructible** : un statut non conclu n'est jamais une conclusion.
+
+Rappels miroir : la règle quotidienne est dans `AGENTS.md` (leçon « un correctif de gate/CI se
+vérifie dans les logs de production ») ; le comportement est verrouillé par les gardes
+`check-deploy-gate-outcome.sh` (+ `--self-test`) et `check-deploy-gate-outcome-test.mjs`,
+exécutées par le workflow `actionlint.yml`.
+
 ## 7. Rôles
 
 | Rôle | Responsabilités |
@@ -127,3 +155,4 @@ Règles structurelles opposables :
 |---|---|---|
 | v0.1 | 2026-09-09 | Création — état live vérifié via API Render/Vercel ; consolidation de la leçon #6831 en surveillance régulière |
 | v1.0 | 2026-09-11 | Ratification — audit de l'état réel du dépôt (registre `REGISTRE_PROTOCOLES.md`) |
+| v1.1 | 2026-09-16 | §6.2 — Règle 8 : un correctif de gate/CI se vérifie dans les logs de production, cite le `run id` et modélise l'état qui a échoué (leçon #7559/#7566 → #7579, issue #7586) |
