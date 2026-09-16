@@ -27,6 +27,20 @@ outputs:
   should_deploy:
     description: "true/false — whether the deploy may proceed."
     value: ${{ steps.gate.outputs.should_deploy }}
+  # Issue #7457 — motif du verdict, consommé par le job « Deploy gate verdict »
+  # de deploy-main.yml. Un `should_deploy=false` n'est pas un résultat : il
+  # recouvre aussi bien une décision légitime (rien à faire, SHA dépassé, tests
+  # rouges — le rouge est déjà porté par le run Tests) qu'une INDÉCISION (aucun
+  # run trouvé, timeout, conclusion illisible). Sans ce motif, les deux se
+  # ressemblaient dans l'UI : « success » avec un job sauté.
+  #
+  # Valeurs : deploy | manual-dispatch | not-required | stale | no-runs |
+  #           timeout | tests-missing | web-missing | missing |
+  #           tests-<conclusion> | web-<conclusion>
+  gate_outcome:
+    description: >-
+      Motif du verdict du gate de déploiement (issue #7457).
+    value: ${{ steps.gate.outputs.gate_outcome }}
 
 runs:
   using: composite
@@ -70,6 +84,7 @@ runs:
             core.setOutput('tests_conclusion', 'manual-dispatch');
             core.setOutput('web_conclusion', 'manual-dispatch');
             core.setOutput('should_deploy', 'true');
+            core.setOutput('gate_outcome', 'manual-dispatch');
             return;
           }
 
@@ -110,6 +125,7 @@ runs:
                   core.setOutput('tests_conclusion', 'no-runs');
                   core.setOutput('web_conclusion', webChanged ? 'no-runs' : 'not-required');
                   core.setOutput('should_deploy', 'false');
+                  core.setOutput('gate_outcome', 'no-runs');
                   return;
                 }
                 core.info(`No relevant runs yet for ${sha} (${consecutiveEmpty}/5 empty polls) — waiting ${intervalMs / 1000}s...`);
@@ -132,19 +148,25 @@ runs:
               // Plus aucun run en attente : l'état est stabilisé.
               let shouldDeploy = true;
               let reason = '';
+              // Issue #7457 — motif exploitable par le job de verdict.
+              let gateOutcome = 'deploy';
               if (!testsRun) {
                 shouldDeploy = false;
+                gateOutcome = 'tests-missing';
                 reason = `aucun run "${TESTS_WORKFLOW}" pour le SHA ${sha}`;
               } else if (!conclusionIsGreen(testsConclusion)) {
                 shouldDeploy = false;
+                gateOutcome = `tests-${testsConclusion}`;
                 reason = `conclusion "${TESTS_WORKFLOW}" = ${testsConclusion} pour le SHA ${sha}`;
               }
               if (shouldDeploy && webChanged) {
                 if (!webRun) {
                   shouldDeploy = false;
+                  gateOutcome = 'web-missing';
                   reason = `web_changed=true mais aucun run "${WEB_WORKFLOW}" pour le SHA ${sha}`;
                 } else if (!conclusionIsGreen(webConclusion)) {
                   shouldDeploy = false;
+                  gateOutcome = `web-${webConclusion}`;
                   reason = `conclusion "${WEB_WORKFLOW}" = ${webConclusion} pour le SHA ${sha}`;
                 }
               }
@@ -168,11 +190,13 @@ runs:
                   core.setOutput('tests_conclusion', testsConclusion ?? 'missing');
                   core.setOutput('web_conclusion', webChanged ? (webConclusion ?? 'missing') : 'not-required');
                   core.setOutput('should_deploy', 'false');
+                  core.setOutput('gate_outcome', 'stale');
                   return;
                 }
                 core.setOutput('tests_conclusion', testsConclusion ?? 'missing');
                 core.setOutput('web_conclusion', webChanged ? (webConclusion ?? 'missing') : 'not-required');
                 core.setOutput('should_deploy', 'true');
+                core.setOutput('gate_outcome', 'deploy');
                 return;
               }
 
@@ -180,6 +204,7 @@ runs:
               core.setOutput('tests_conclusion', testsConclusion ?? 'missing');
               core.setOutput('web_conclusion', webConclusion ?? 'not-required');
               core.setOutput('should_deploy', 'false');
+              core.setOutput('gate_outcome', gateOutcome);
               return;
             }
 
@@ -187,6 +212,7 @@ runs:
             core.setOutput('tests_conclusion', 'timeout');
             core.setOutput('web_conclusion', webChanged ? 'timeout' : 'not-required');
             core.setOutput('should_deploy', 'false');
+            core.setOutput('gate_outcome', 'timeout');
             return;
           }
 
@@ -230,11 +256,19 @@ runs:
             branch: 'main',
           });
           const mainHead = mainBranch.commit.sha;
+          let legacyOutcome = testsConclusion === null
+            ? 'tests-missing'
+            : (conclusionIsGreen(testsConclusion) ? 'deploy' : `tests-${testsConclusion}`);
+          if (webChanged && legacyOutcome === 'deploy' && !conclusionIsGreen(webConclusion)) {
+            legacyOutcome = webConclusion === null ? 'web-missing' : `web-${webConclusion}`;
+          }
           if (mainHead !== sha) {
             core.info(`Stale SHA: ${sha} is not main's tip (${mainHead}) — skipping deploy.`);
             shouldDeploy = false;
+            legacyOutcome = 'stale';
           }
 
           core.setOutput('tests_conclusion', testsConclusion ?? 'missing');
           core.setOutput('web_conclusion', webConclusion ?? 'not-required');
           core.setOutput('should_deploy', shouldDeploy ? 'true' : 'false');
+          core.setOutput('gate_outcome', legacyOutcome);
