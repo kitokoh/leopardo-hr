@@ -2,9 +2,31 @@
 
 ## Statut
 
-Proposée (documentation d'arbitrage — issue #2497, review session 2026-08-15).
+**Acceptée** (2026-09-15 — arbitrage tranché par l'issue #7481 ; documentation d'origine : issue #2497,
+review session 2026-08-15).
 
-**Date** : 2026-08-15
+**Date** : 2026-08-15 · **Acceptée le** : 2026-09-15
+
+### Pourquoi le statut change (#7481)
+
+L'issue #7481 constatait que « toute nouvelle fonctionnalité doit deviner **lequel** utiliser — et il
+n'y a pas de réponse dans le code ». C'était **inexact** : la réponse existait, ici même. Le vrai
+défaut était que cet ADR était resté **« Proposée »** depuis le 2026-08-15 — donc non opposable — et
+que rien n'empêchait un nouveau lot de partir dans l'autre sens.
+
+**État vérifié le 2026-09-15 (code de `main`) :**
+
+| Point de l'ADR | État réel |
+|---|---|
+| Étape 1 — read-path unifié | **non faite** : `NotificationController::index/unread/markRead/markAllRead/destroy` lisent **uniquement** `notifications`. Les notifications écrites par `NotificationDispatcher` (IA, validation des taux) restent **invisibles de l'utilisateur** — c'est le défaut d'origine, toujours ouvert. |
+| Étape 2 — réécriture des émetteurs | **non faite**, et **contredite par un lot récent** : #7427 (alertes caméras) diffuse via `CommunicationService::notifyEmployee()`, c'est-à-dire **le canal historique** que cette étape demande de migrer. |
+| Étape 3 — migration + dépréciation | non faite (pas de garde CI). |
+
+**Conséquence** : la direction reste celle décidée ici (`app_notifications` est la cible), elle devient
+**opposable**, et l'écart de #7427 est **enregistré comme écart** — pas comme un changement de
+direction. Si le propriétaire préfère inverser la cible (`notifications`), ce n'est pas un silence à
+interpréter : il faut **révoquer explicitement cet ADR**, parce que les deux sens ont des conséquences
+incompatibles (mapping des ids, préférences, audit `communication_events`).
 
 ## Contexte
 
