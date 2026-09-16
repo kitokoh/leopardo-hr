@@ -6,8 +6,8 @@ namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
-use App\Modules\Platform\Application\Services\TenantDeletionInventory;
-use App\Modules\Platform\Application\Services\TenantDeletionService;
+use App\Modules\Platform\Infrastructure\Services\TenantDeletionInventory;
+use App\Modules\Platform\Infrastructure\Services\TenantDeletionService;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Platform\Application\Services;
+namespace App\Modules\Platform\Infrastructure\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\DB;
