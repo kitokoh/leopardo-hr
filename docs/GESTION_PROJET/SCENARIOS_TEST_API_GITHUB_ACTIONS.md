@@ -2085,3 +2085,12 @@ pour les actes pédagogiques), `EduApiTest.php` (parcours complet campus → bul
 ### Couverture
 
 `api/tests/Feature/Travel/TravelLoyaltyTest.php` (7 cas : crédit unique par billet, aucun crédit ni compte sans opt-in, gel à l'opt-out avec solde conservé, conversion points → avoir journalisée dans le même journal que les crédits, solde insuffisant → 422, échange d'une récompense, non-capture des routes nommées par le joker) et `TravelLoyaltyApiTest` (4 cas, dont `test_opt_in_required_for_redeem`, rouge sur `main`).
+
+## Addendum 2026-09-16 — abonnement plateforme : le PATCH partiel préserve les champs absents (#7474)
+
+`PATCH /api/v1/platform/companies/{companyId}/subscription` est un **PATCH** : une clé absente du corps **conserve** la valeur existante, un `null` **explicite** efface.
+
+- **Avant** : `plan_id` et `status` étaient `required` et les clés absentes (`subscription_start`, `subscription_end`, `notes`) étaient réécrites à `null` — suspendre une société **effaçait sa date de fin d'essai et ses notes**, sans erreur ni trace.
+- **Après** : `plan_id` / `status` sont `sometimes` (repli sur l'existant) et l'effacement est distingué de l'absence par `$request->has()` (même convention que `PlatformCompanyFeatureController`, cf. #7432).
+- **À vérifier (recette)** : un `PATCH {"status":"suspended"}` **conserve** `subscription_end` et `notes` ; un `PATCH {"subscription_end": null}` les **efface** ; `api/openapi.yaml` ne déclare plus `plan_id`/`status` obligatoires sur cette opération.
+- **Couverture** : `api/tests/Feature/PlatformCompanySubscriptionApiTest.php` (PATCH partiel, effacement sur `null` explicite, `plan_id` inconnu → 422).
