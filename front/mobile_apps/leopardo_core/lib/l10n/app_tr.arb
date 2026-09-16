@@ -3971,5 +3971,11 @@
   "plansFieldMaxemployees": "Dahil çalışan sayısı",
   "plansFieldTrialdays": "Deneme günü",
   "plansFieldFeatures": "Dahil özellikler",
-  "plansFieldIsactive": "Yayınlanan teklif"
+  "plansFieldIsactive": "Yayınlanan teklif",
+  "plansColName": "Teklif",
+  "plansColPricemonthly": "Aylık",
+  "plansColPriceyearly": "Yıllık",
+  "plansColMaxemployees": "Çalışan",
+  "plansColFeatures": "Özellikler",
+  "plansColState": "Durum"
 }

@@ -5197,6 +5197,14 @@
       "trialDays": "Jours d'essai",
       "features": "Features incluses",
       "isActive": "Offre publiée"
+    },
+    "col": {
+      "name": "Offre",
+      "priceMonthly": "Mensuel",
+      "priceYearly": "Annuel",
+      "maxEmployees": "Employés",
+      "features": "Features",
+      "state": "État"
     }
   }
 }

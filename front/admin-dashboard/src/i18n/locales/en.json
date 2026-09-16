@@ -6460,6 +6460,14 @@
       "trialDays": "Trial days",
       "features": "Included features",
       "isActive": "Published plan"
+    },
+    "col": {
+      "name": "Plan",
+      "priceMonthly": "Monthly",
+      "priceYearly": "Yearly",
+      "maxEmployees": "Employees",
+      "features": "Features",
+      "state": "Status"
     }
   }
 }

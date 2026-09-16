@@ -3971,5 +3971,11 @@
   "plansFieldMaxemployees": "Included employees",
   "plansFieldTrialdays": "Trial days",
   "plansFieldFeatures": "Included features",
-  "plansFieldIsactive": "Published plan"
+  "plansFieldIsactive": "Published plan",
+  "plansColName": "Plan",
+  "plansColPricemonthly": "Monthly",
+  "plansColPriceyearly": "Yearly",
+  "plansColMaxemployees": "Employees",
+  "plansColFeatures": "Features",
+  "plansColState": "Status"
 }

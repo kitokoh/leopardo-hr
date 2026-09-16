@@ -3971,5 +3971,11 @@
   "plansFieldMaxemployees": "Employés inclus",
   "plansFieldTrialdays": "Jours d'essai",
   "plansFieldFeatures": "Features incluses",
-  "plansFieldIsactive": "Offre publiée"
+  "plansFieldIsactive": "Offre publiée",
+  "plansColName": "Offre",
+  "plansColPricemonthly": "Mensuel",
+  "plansColPriceyearly": "Annuel",
+  "plansColMaxemployees": "Employés",
+  "plansColFeatures": "Features",
+  "plansColState": "État"
 }

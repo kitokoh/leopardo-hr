@@ -5197,6 +5197,14 @@
       "trialDays": "Deneme günü",
       "features": "Dahil özellikler",
       "isActive": "Yayınlanan teklif"
+    },
+    "col": {
+      "name": "Teklif",
+      "priceMonthly": "Aylık",
+      "priceYearly": "Yıllık",
+      "maxEmployees": "Çalışan",
+      "features": "Özellikler",
+      "state": "Durum"
     }
   }
 }

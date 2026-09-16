@@ -5197,6 +5197,14 @@
       "trialDays": "أيام التجربة",
       "features": "الميزات المضمّنة",
       "isActive": "عرض منشور"
+    },
+    "col": {
+      "name": "العرض",
+      "priceMonthly": "شهري",
+      "priceYearly": "سنوي",
+      "maxEmployees": "الموظفون",
+      "features": "الميزات",
+      "state": "الحالة"
     }
   }
 }

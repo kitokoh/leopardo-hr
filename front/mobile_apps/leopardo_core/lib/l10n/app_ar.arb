@@ -3971,5 +3971,11 @@
   "plansFieldMaxemployees": "عدد الموظفين المشمولين",
   "plansFieldTrialdays": "أيام التجربة",
   "plansFieldFeatures": "الميزات المضمّنة",
-  "plansFieldIsactive": "عرض منشور"
+  "plansFieldIsactive": "عرض منشور",
+  "plansColName": "العرض",
+  "plansColPricemonthly": "شهري",
+  "plansColPriceyearly": "سنوي",
+  "plansColMaxemployees": "الموظفون",
+  "plansColFeatures": "الميزات",
+  "plansColState": "الحالة"
 }

@@ -211,14 +211,18 @@ const FEATURE_KEYS = [
   'schema_isolation',
 ]
 
-const columns = [
-  { key: 'name', label: 'Offre', sortable: true },
-  { key: 'price_monthly', label: 'Mensuel', sortable: true },
-  { key: 'price_yearly', label: 'Annuel', sortable: true },
-  { key: 'max_employees', label: 'Employés', sortable: true },
-  { key: 'features', label: 'Features' },
-  { key: 'is_active', label: 'État', sortable: true },
-]
+/**
+ * Libellés de colonnes RESOLUS par le catalogue i18n (4 locales) et
+ * recalculés au changement de langue : aucun texte utilisateur en dur.
+ */
+const columns = computed(() => [
+  { key: 'name', label: t('plans.col.name'), sortable: true },
+  { key: 'price_monthly', label: t('plans.col.priceMonthly'), sortable: true },
+  { key: 'price_yearly', label: t('plans.col.priceYearly'), sortable: true },
+  { key: 'max_employees', label: t('plans.col.maxEmployees'), sortable: true },
+  { key: 'features', label: t('plans.col.features') },
+  { key: 'is_active', label: t('plans.col.state'), sortable: true },
+])
 
 const localeStore = useLocaleStore()
 const toast = useToast()
