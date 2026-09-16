@@ -303,4 +303,10 @@ return [
     'INVALID_HORIZONTAL_TOOL' => 'Unknown module or not self-activatable: :module.',
     'MODULE_ACTIVATED' => 'Module activated.',
     'MODULE_ALREADY_ACTIVE' => 'This module is already active.',
+    'TENANT_NOT_DEACTIVATED' => 'Deactivate the workspace before deleting it.',
+    'TENANT_DELETION_MODE_REQUIRED' => 'This workspace holds payroll data: explicitly choose full erasure or payroll retention.',
+    'TENANT_DELETION_MODE_INVALID' => 'Unknown deletion mode.',
+    'TENANT_DELETION_CONFIRMATION_MISMATCH' => 'The typed name does not match the exact company name.',
+    'TENANT_DELETION_BLOCKED' => 'Data linked to this workspace prevents a complete deletion. Operation cancelled.',
+    'TENANT_DELETION_INCOMPLETE' => 'Purge is incomplete: rows remain. Operation cancelled.',
 ];
