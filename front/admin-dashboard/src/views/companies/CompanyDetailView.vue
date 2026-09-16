@@ -248,6 +248,131 @@
             </form>
           </section>
 
+          <!-- #7475 — Zone de danger : suppression sûre (deux temps) -->
+          <section id="danger-zone" class="card overflow-hidden border-red-200/60 dark:border-red-900/40">
+            <div class="flex items-center gap-2 border-b border-red-200/50 bg-red-50/50 px-6 py-5 dark:border-red-900/40 dark:bg-red-900/20">
+              <ExclamationTriangleIcon class="h-5 w-5 text-red-600 dark:text-red-400" />
+              <h2 class="text-lg font-bold text-red-700 dark:text-red-300">{{ t('companyDetail.dangerZone', 'Zone de danger') }}</h2>
+            </div>
+            <div class="space-y-3 px-6 py-5">
+              <p class="text-sm text-slate-600 dark:text-slate-400">
+                {{ t('companyDetail.purgeIntro', 'La suppression est definitive : employes, contrats, pointages, documents et lignes plateforme sont detruits. Une societe qui porte de la paie ne part qu apres un choix explicite (destruction ou anonymisation).') }}
+              </p>
+              <p
+                v-if="health?.company?.status !== 'suspended'"
+                id="purge-not-suspended"
+                class="rounded-xl border border-amber-300/60 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-800/50 dark:bg-amber-900/20 dark:text-amber-200"
+              >
+                {{ t('companyDetail.purgeRequiresSuspension', 'Desactivez d abord cet espace (statut suspendu) : la suppression n est proposee qu ensuite.') }}
+              </p>
+              <button
+                id="btn-purge-company"
+                type="button"
+                class="inline-flex items-center gap-2 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-2.5 text-xs font-black uppercase tracking-widest text-red-700 transition-colors hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-50 dark:text-red-300"
+                :disabled="health?.company?.status !== 'suspended'"
+                @click="openPurgeDialog"
+              >
+                <TrashIcon class="h-4 w-4" />
+                {{ t('companyDetail.purgeAction', 'Supprimer definitivement cet espace') }}
+              </button>
+            </div>
+          </section>
+
+          <!-- #7475 — Confirmation forte : inventaire chiffré + nom exact -->
+          <div v-if="purgeDialog.open" id="purge-dialog" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
+            <div class="w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-slate-900">
+              <div class="border-b border-slate-200/60 px-6 py-4 dark:border-slate-800">
+                <h3 class="text-base font-bold text-slate-900 dark:text-white">{{ t('companyDetail.purgeTitle', 'Supprimer definitivement cet espace ?') }}</h3>
+                <p class="text-xs text-slate-500">{{ health?.company?.name }}</p>
+              </div>
+
+              <div class="max-h-[60vh] space-y-4 overflow-y-auto px-6 py-5">
+                <p v-if="purgeDialog.loading" id="purge-loading" class="text-sm text-slate-500">
+                  {{ t('companyDetail.purgeLoading', 'Calcul de l inventaire…') }}
+                </p>
+
+                <p v-else-if="purgeDialog.error" id="purge-error" class="rounded-xl border border-red-300/60 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800/50 dark:bg-red-900/20 dark:text-red-200">
+                  {{ purgeDialog.error }}
+                </p>
+
+                <div v-else-if="purgeDialog.result" id="purge-result" class="space-y-2">
+                  <p class="text-sm font-bold text-emerald-700 dark:text-emerald-300">
+                    {{ t('companyDetail.purgeDone', 'Operation effectuee et journalisee.') }}
+                  </p>
+                  <p class="text-xs text-slate-500">
+                    {{ t('companyDetail.purgeJournal', 'Mode :') }} {{ purgeDialog.result.mode }} · #{{ purgeDialog.result.journal_id }}
+                  </p>
+                </div>
+
+                <template v-else-if="purgeDialog.preview">
+                  <p class="text-sm text-slate-600 dark:text-slate-400">
+                    {{ t('companyDetail.purgeInventoryIntro', 'Seront detruits :') }}
+                  </p>
+                  <ul class="max-h-48 space-y-1 overflow-y-auto rounded-xl border border-slate-200/60 p-3 text-xs dark:border-slate-800">
+                    <li v-for="row in purgeInventoryRows" :key="row.table" class="flex items-center justify-between gap-4">
+                      <span class="font-mono text-slate-500">{{ row.table }}</span>
+                      <span class="font-black text-slate-900 dark:text-white">{{ row.count }}</span>
+                    </li>
+                  </ul>
+                  <p class="text-xs font-bold uppercase tracking-widest text-slate-500">
+                    {{ t('companyDetail.purgeTotal', 'Total') }} : {{ purgeTotals.rows }}
+                  </p>
+
+                  <p v-if="purgeTotals.payroll > 0" id="purge-payroll-warning" class="rounded-xl border border-amber-300/60 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-800/50 dark:bg-amber-900/20 dark:text-amber-200">
+                    {{ t('companyDetail.purgePayrollWarning', 'Donnees de paie detectees : choisissez explicitement entre destruction et anonymisation.') }}
+                  </p>
+
+                  <div v-if="purgeModeRequired" class="space-y-2">
+                    <span class="text-xs font-black uppercase tracking-widest text-slate-500">{{ t('companyDetail.purgeMode', 'Sort des donnees de paie') }}</span>
+                    <label class="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
+                      <input v-model="purgeDialog.mode" type="radio" value="purge" />
+                      {{ t('companyDetail.purgeModePurge', 'Tout detruire (irreversible)') }}
+                    </label>
+                    <label class="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
+                      <input v-model="purgeDialog.mode" type="radio" value="anonymise" />
+                      {{ t('companyDetail.purgeModeAnonymise', 'Conserver la paie et anonymiser les personnes') }}
+                    </label>
+                  </div>
+
+                  <div class="space-y-1.5">
+                    <label class="text-xs font-black uppercase tracking-widest text-slate-500" for="purge-confirm-name">
+                      {{ t('companyDetail.purgeConfirmLabel', 'Ressaisissez le nom exact de l espace') }}
+                    </label>
+                    <input
+                      id="purge-confirm-name"
+                      v-model="purgeDialog.confirmName"
+                      class="form-input"
+                      :placeholder="purgeDialog.preview.required_confirmation"
+                    />
+                  </div>
+
+                  <div class="space-y-1.5">
+                    <label class="text-xs font-black uppercase tracking-widest text-slate-500" for="purge-reason">
+                      {{ t('companyDetail.purgeReason', 'Motif (optionnel)') }}
+                    </label>
+                    <input id="purge-reason" v-model="purgeDialog.reason" class="form-input" />
+                  </div>
+                </template>
+              </div>
+
+              <div class="flex justify-end gap-3 border-t border-slate-200/60 px-6 py-4 dark:border-slate-800">
+                <button type="button" class="rounded-xl border border-slate-300/60 px-4 py-2 text-xs font-black uppercase tracking-widest text-slate-600 dark:border-slate-700 dark:text-slate-300" @click="purgeDialog.result ? goToCompanies() : closePurgeDialog()">
+                  {{ purgeDialog.result ? t('companyDetail.purgeBackToList', 'Retour a la liste') : t('companyDetail.cancel', 'Annuler') }}
+                </button>
+                <button
+                  v-if="!purgeDialog.result"
+                  id="btn-purge-confirm"
+                  type="button"
+                  class="rounded-xl bg-red-600 px-4 py-2 text-xs font-black uppercase tracking-widest text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  :disabled="!canSubmitPurge"
+                  @click="submitPurge"
+                >
+                  {{ purgeDialog.submitting ? t('companyDetail.purgeSubmitting', 'Suppression…') : t('companyDetail.purgeConfirm', 'Supprimer definitivement') }}
+                </button>
+              </div>
+            </div>
+          </div>
+
           <!-- Support Tickets -->
           <section class="card overflow-hidden">
             <div class="border-b border-slate-200/50 bg-slate-50/50 px-6 py-5 dark:border-slate-800/50 dark:bg-slate-800/30 flex items-center justify-between gap-3">
@@ -336,7 +461,7 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import { translate } from '@/i18n'
 import { useLocaleStore } from '@/stores/locale'
@@ -344,6 +469,8 @@ import { Switch } from '@headlessui/vue'
 import {
   ArrowLeftIcon,
   ArrowPathIcon,
+  TrashIcon,
+  ExclamationTriangleIcon,
   ExclamationCircleIcon,
   BanknotesIcon,
   BoltIcon,
@@ -370,6 +497,7 @@ import StatsCard from '@/components/dashboard/StatsCard.vue'
 import { toIntlLocale } from '@/i18n/index.js'
 
 const route = useRoute()
+const router = useRouter()
 const toast = useToast()
 const localeStore = useLocaleStore()
 
@@ -398,6 +526,117 @@ const isFeaturesLoading = ref(false)
 const isSavingFeatures = ref(false)
 const featuresForm = ref({})
 const originalFeatures = ref({})
+
+// #7475 — suppression sûre d'un espace : désactivation préalable, inventaire
+// chiffré, confirmation par ressaisie du nom, choix explicite purge/anonymise.
+const purgeDialog = ref({
+  open: false,
+  loading: false,
+  error: '',
+  preview: null,
+  confirmName: '',
+  mode: '',
+  reason: '',
+  submitting: false,
+  result: null,
+})
+
+const purgeInventoryRows = computed(() => {
+  const resources = purgeDialog.value.preview?.inventory?.resources || {}
+  return Object.entries(resources)
+    .map(([table, count]) => ({ table, count: Number(count) }))
+    .filter((row) => row.count > 0)
+    .sort((a, b) => b.count - a.count)
+})
+
+const purgeTotals = computed(() => {
+  const inventory = purgeDialog.value.preview?.inventory || {}
+  return {
+    rows: Number(inventory.total_rows || 0),
+    payroll: Number(inventory.payroll_rows || 0),
+  }
+})
+
+const purgeModeRequired = computed(() => purgeDialog.value.preview?.mode_required === true)
+
+const canSubmitPurge = computed(() => {
+  if (purgeDialog.value.submitting || purgeDialog.value.result) return false
+  const preview = purgeDialog.value.preview
+  if (!preview) return false
+  const expected = String(preview.required_confirmation || '').trim()
+  if (!expected || purgeDialog.value.confirmName.trim() !== expected) return false
+  if (purgeModeRequired.value && !purgeDialog.value.mode) return false
+  return true
+})
+
+function purgeErrorMessage(error, fallbackKey, fallbackText) {
+  const status = error?.response?.status
+  const code = error?.response?.data?.message
+  if (status === 409) return t('companyDetail.purgeNeedsSuspension', 'Desactivez d abord cet espace avant toute suppression.')
+  if (status === 422 && typeof code === 'string' && code.includes('MODE_REQUIRED')) {
+    return t('companyDetail.purgeModeMissing', 'Choisissez explicitement le sort des donnees de paie.')
+  }
+  if (status === 422 && typeof code === 'string' && code.includes('CONFIRMATION')) {
+    return t('companyDetail.purgeNameMismatch', 'Le nom saisi ne correspond pas au nom exact de l espace.')
+  }
+  return error?.response?.data?.localized_message || t(fallbackKey, fallbackText)
+}
+
+async function openPurgeDialog() {
+  purgeDialog.value = {
+    open: true,
+    loading: true,
+    error: '',
+    preview: null,
+    confirmName: '',
+    mode: '',
+    reason: '',
+    submitting: false,
+    result: null,
+  }
+  try {
+    const response = await api.get(`/platform/companies/${route.params.id}/purge-preview`)
+    purgeDialog.value.preview = response.data?.data || null
+    if (!purgeDialog.value.preview) {
+      throw new Error('PURGE_PREVIEW_EMPTY')
+    }
+  } catch (error) {
+    purgeDialog.value.error = purgeErrorMessage(
+      error,
+      'companyDetail.purgePreviewFailed',
+      'Impossible de calculer l inventaire de cet espace.'
+    )
+  } finally {
+    purgeDialog.value.loading = false
+  }
+}
+
+function closePurgeDialog() {
+  purgeDialog.value.open = false
+}
+
+async function submitPurge() {
+  if (!canSubmitPurge.value) return
+  purgeDialog.value.submitting = true
+  purgeDialog.value.error = ''
+  try {
+    const payload = { confirm_name: purgeDialog.value.confirmName }
+    if (purgeDialog.value.reason) payload.reason = purgeDialog.value.reason
+    if (purgeDialog.value.mode) payload.mode = purgeDialog.value.mode
+    const response = await api.post(`/platform/companies/${route.params.id}/purge`, payload)
+    purgeDialog.value.result = response.data?.data || null
+    toast.success(t('companyDetail.purgeDone', 'Operation effectuee et journalisee.'))
+  } catch (error) {
+    purgeDialog.value.error = purgeErrorMessage(error, 'companyDetail.purgeFailed', 'La suppression a echoue.')
+  } finally {
+    purgeDialog.value.submitting = false
+  }
+}
+
+function goToCompanies() {
+  purgeDialog.value.open = false
+  router.push('/companies')
+}
 
 // PA2-ADM-003: support tickets summary for this company, so an admin
 // looking at a company's file sees its support activity/risk without
