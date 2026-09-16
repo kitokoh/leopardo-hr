@@ -305,7 +305,11 @@ const nextConfig: NextConfig = {
   // Experimental features for performance
   experimental: {
     optimizePackageImports: ["lucide-react"],
-    optimizeCss: true,
+    // #7531 — `optimizeCss` retiré : l'option exige `critters`, qui n'est
+    // déclaré NI dans `package.json` NI dans `package-lock.json` (donc absent
+    // d'un install propre → panne au build). Elle n'a par ailleurs aucun effet
+    // sous App Router (le portail web est entièrement en `app/`), et son
+    // `require('critters')` différé masquait l'erreur réelle derrière un 500.
     scrollRestoration: true,
   },
 };
