@@ -94,14 +94,12 @@ test.describe('Marketing funnel preview', () => {
     // QA onboarding 2026-09-14 : la page /signup n'affiche plus de hero
     // marketing (le formulaire EST l'écran, plus de récit à gauche/droite).
     // L'assertion porte donc sur le tunnel réellement présenté.
-    await expect(page.locator('[data-testid="signup-profile-company"]')).toBeVisible();
-
-    // #7249 — le tunnel s'ouvre sur le choix du PROFIL (entreprise /
-    // indépendant) puis va directement aux coordonnées : l'écran « outils +
-    // métier » a été retiré (parcours raccourci).
-    await page.locator('[data-testid="signup-profile-company"]').click();
-
+    // #7489 — le tunnel s'ouvre DIRECTEMENT sur les coordonnées (e-mail + nom
+    // de l'espace) : le choix du profil (entreprise / indépendant) a été
+    // déplacé dans l'entretien de préparation (#7493), et l'écran « outils +
+    // métier » avait déjà été retiré (#7249).
     const signupForm = page.locator('main form').first();
+    await expect(signupForm.getByLabel(/email professionnel|email/i)).toBeVisible();
     await signupForm.getByLabel(/email professionnel|email/i).fill(email);
     await signupForm.getByLabel(/entreprise|company/i).fill('Leopardo Trial Co');
     // Le tunnel ne demande plus le rôle (le créateur EST le fondateur), ni la
