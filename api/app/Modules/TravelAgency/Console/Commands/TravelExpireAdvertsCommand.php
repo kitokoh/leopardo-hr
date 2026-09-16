@@ -32,7 +32,20 @@ class TravelExpireAdvertsCommand extends Command
         {--company= : Cibler un tenant précis}
         {--limit=1000 : nombre max d\'annonces par passe (défaut 1000)}';
 
-    protected $description = 'Expire les annonces validées dont expires_at est dépassé, puis archive les expirées anciennes (TRAVEL-908/#6111).';
+    /**
+     * PA2-I18N-007 — `$description` est une expression constante : le libellé
+     * traduit ne peut donc pas y être affecté directement. Il est posé dans le
+     * constructeur, ce qui garde la description dans le catalogue
+     * (catalogues api/lang, clé travel.console.*) au lieu d'un littéral accentué.
+     */
+    protected $description = 'travel.console.expire_adverts_description';
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->description = __('travel.console.expire_adverts_description');
+    }
 
     public function handle(TenantManager $tenantManager): int
     {
@@ -42,7 +55,7 @@ class TravelExpireAdvertsCommand extends Command
             ->get();
 
         if ($companies->isEmpty()) {
-            $this->warn('Aucun tenant — rien à expirer.');
+            $this->warn(__('travel.console.expire_adverts_no_tenant'));
 
             return self::SUCCESS;
         }
@@ -75,14 +88,21 @@ class TravelExpireAdvertsCommand extends Command
             });
 
             if ($result['expired'] > 0 || $result['archived'] > 0) {
-                $this->info("Tenant {$company->id} : {$result['expired']} expirée(s), {$result['archived']} archivée(s).");
+                $this->info(__('travel.console.expire_adverts_tenant_summary', [
+                    'company' => $company->id,
+                    'expired' => $result['expired'],
+                    'archived' => $result['archived'],
+                ]));
             }
 
             $expiredTotal += $result['expired'];
             $archivedTotal += $result['archived'];
         }
 
-        $this->info("Total : {$expiredTotal} annonce(s) expirée(s), {$archivedTotal} archivée(s).");
+        $this->info(__('travel.console.expire_adverts_total', [
+            'expired' => $expiredTotal,
+            'archived' => $archivedTotal,
+        ]));
 
         return self::SUCCESS;
     }

@@ -350,7 +350,11 @@ function main() {
     }
 
     const trimmed = content.trim();
-    if (/^(\/\/|#|\*|<!--)/.test(trimmed)) continue;
+    // Commentaires : jamais du texte utilisateur. Le cas JSX `{/* ... */}`
+    // manquait (constaté sur #7562 : un commentaire français du tunnel
+    // d'inscription était lu comme une chaîne à cause de ses apostrophes —
+    // « d'indicateur d'étapes »). Un `/* ... */` d'ouverture est couvert aussi.
+    if (/^(\/\/|#|\*|<!--|\{\/\*|\/\*)/.test(trimmed)) continue;
     if (/^\s*(import|export)\s/.test(content)) continue;
     if (translationCallPattern.test(content)) continue;
     if (devLogLinePattern.test(content) || todoLinePattern.test(content)) continue;

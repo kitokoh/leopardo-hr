@@ -17,4 +17,10 @@ return [
         'article_flagged' => 'Article flagged for moderation',
         'comment_pending' => 'Comment awaiting moderation',
     ],
+    'console' => [
+        'expire_adverts_description' => 'Expires validated adverts past expires_at, then archives old expired ones (TRAVEL-908/#6111).',
+        'expire_adverts_no_tenant' => 'No tenant — nothing to expire.',
+        'expire_adverts_tenant_summary' => 'Tenant :company: :expired expired, :archived archived.',
+        'expire_adverts_total' => 'Total: :expired advert(s) expired, :archived archived.',
+    ],
 ];

@@ -72,6 +72,24 @@ expect_flagged() { # <libellé> — doit apparaître dans le rapport
 # ── Cas 1 : que du code de template → VERT ───────────────────────────────────
 REPO_TECH="$(new_repo technique)"
 mkdir -p "$REPO_TECH/front/admin-dashboard/src/components"
+# Cas 1bis — commentaires JSX/TSX : un commentaire français avec apostrophes
+# n'est pas une chaîne utilisateur (constaté sur #7562 : « d'indicateur
+# d'étapes » lu comme un littéral). Issue #7482 — motif ajouté comme fixture.
+mkdir -p "$REPO_TECH/front/web/src/modules/vitrine/components"
+cat > "$REPO_TECH/front/web/src/modules/vitrine/components/Commentaires.tsx" <<'TSX'
+export function Commentaires() {
+  return (
+    <div>
+      {/* #7489 — plus d'indicateur d'étapes : le tunnel tient en deux écrans. */}
+      {/* NOTE : ceci est un commentaire, pas un libellé affiché. */}
+      <span>{label}</span>
+    </div>
+  )
+}
+TSX
+git -C "$REPO_TECH" add -A
+git -C "$REPO_TECH" commit -q -m "commentaires JSX avec apostrophes (#7482)"
+
 cat > "$REPO_TECH/front/admin-dashboard/src/components/PatternsTechniques.vue" <<'VUE'
 <template>
   <div>
@@ -105,6 +123,7 @@ echo "ok: cas 1 vert (aucune réécriture de code technique exigée)"
 for motif in 'form[key]' 'bg-emerald-500' 'item.x == null' 'options.0.label' 'settings.billing.title'; do
   expect_clean "$motif" "motif technique « $motif »"
 done
+expect_clean "d'indicateur d'étapes" "commentaire JSX français (apostrophes) — cas #7562"
 
 # ── Cas 2 : code technique + vrais textes utilisateur → ROUGE ────────────────
 REPO_TEXT="$(new_repo mixte)"
