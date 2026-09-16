@@ -194,6 +194,25 @@ await check('budget épuisé + run requis in_progress → pending (différé, no
   }
 });
 
+// ── #7559 (suite) : un run `requested`/`waiting` est EN VOL, pas conclu ────
+// Constat de production : run 35085884633, `gate_outcome=tests-null` — le gate
+// avait conclu sur un run dont le statut n'était ni `queued` ni `in_progress`
+// (donc absent du prédicat « en vol »), et sans conclusion. Motif inconnu du
+// job de verdict → rouge. Le prédicat est désormais « tout ce qui n'est pas
+// `completed` ».
+await check('budget épuisé + run requis en `requested` → pending (pas de motif tests-null)', async () => {
+  const { outputs } = await runGate({
+    apiChanged: 'true',
+    webChanged: 'false',
+    runs: [{ name: 'Tests - Leopardo RH', head_sha: 'a'.repeat(40), status: 'requested', conclusion: null }],
+    budgetMinutes: 0,
+  });
+  assertEqual(outputs.gate_outcome, 'pending', 'gate_outcome');
+  if (String(outputs.gate_outcome).endsWith('-null')) {
+    throw new Error('un motif `*-null` ne doit jamais être produit (le job de verdict le refuse)');
+  }
+});
+
 // ── #7559 : budget épuisé SANS run en cours → indécision maintenue ─────────
 await check('budget épuisé sans run requis en cours → timeout (indécision)', async () => {
   const { outputs } = await runGate({ apiChanged: 'true', webChanged: 'false', runs: [], budgetMinutes: 0 });
@@ -214,4 +233,4 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log(`✅ check-deploy-gate-outcome-test : ${passed} verdicts du gate vérifiés (not-required ≠ no-runs, deploy, stale, manual-dispatch, pending ≠ timeout).`);
+console.log(`✅ check-deploy-gate-outcome-test : ${passed} verdicts du gate vérifiés (not-required ≠ no-runs, deploy, stale, manual-dispatch, pending ≠ timeout, aucun motif *-null).`);

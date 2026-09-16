@@ -157,7 +157,15 @@ runs:
               }
 
               const relevant = runsForSha.filter((run) => REQUIRED_WORKFLOWS.includes(run.name));
-              const pending = relevant.filter((run) => run.status === 'queued' || run.status === 'in_progress');
+              // #7559 (suite, mesurée en production) — « en vol » = tout ce qui
+              // n'est pas `completed`. Le prédicat précédent
+              // (`queued`/`in_progress`) laissait passer les états
+              // `requested` / `waiting` / `pending` : le gate concluait alors
+              // sur un run sans `conclusion` et produisait le motif
+              // `tests-null`, que le job de verdict ne connaît pas (donc rouge).
+              // Constat : run 35085884633, `gate_outcome=tests-null`, sur un
+              // merge `api/**` dont la suite était simplement encore en file.
+              const pending = relevant.filter((run) => run.status !== 'completed');
               lastRelevant = relevant;
               lastPending = pending;
 
@@ -196,7 +204,7 @@ runs:
               const webConclusion = webRun ? webRun.conclusion : null;
 
               if (pending.length > 0) {
-                core.info(`Runs still pending/in_progress for ${sha} (${pending.length}) — waiting ${intervalMs / 1000}s...`);
+                core.info(`Runs still in flight for ${sha} (${pending.length} : ${pending.map((run) => `${run.name}=${run.status}`).join(', ')}) — waiting ${intervalMs / 1000}s...`);
                 await new Promise((r) => setTimeout(r, intervalMs));
                 continue;
               }
@@ -212,7 +220,7 @@ runs:
                 reason = `aucun run "${TESTS_WORKFLOW}" pour le SHA ${sha}`;
               } else if (!conclusionIsGreen(testsConclusion)) {
                 shouldDeploy = false;
-                gateOutcome = `tests-${testsConclusion}`;
+                gateOutcome = `tests-${testsConclusion ?? 'missing'}`;
                 reason = `conclusion "${TESTS_WORKFLOW}" = ${testsConclusion} pour le SHA ${sha}`;
               }
               if (shouldDeploy && webChanged) {
@@ -222,7 +230,7 @@ runs:
                   reason = `web_changed=true mais aucun run "${WEB_WORKFLOW}" pour le SHA ${sha}`;
                 } else if (!conclusionIsGreen(webConclusion)) {
                   shouldDeploy = false;
-                  gateOutcome = `web-${webConclusion}`;
+                  gateOutcome = `web-${webConclusion ?? 'missing'}`;
                   reason = `conclusion "${WEB_WORKFLOW}" = ${webConclusion} pour le SHA ${sha}`;
                 }
               }
