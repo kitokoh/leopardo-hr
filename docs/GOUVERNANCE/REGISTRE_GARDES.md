@@ -35,6 +35,7 @@
 | `check-bounded-context-registry.sh` / `-dependencies.sh` | registre BC-XX et dépendances inter-BC | bloque |
 | `check-duplicate-use-imports.sh`, `check-orphan-interfaces.sh`, `check-unrouted-controllers.sh` | dette d'isolation / orphelins | bloque |
 | `check-ai-vendor-boundary.sh` | frontière fournisseurs IA | bloque |
+| `check-phpdoc-single-block.py` (+ auto-test `--self-test`, workflow `architecture-check.yml`) | **docblock désarmé** : en PHP seul le dernier docblock avant une déclaration compte — une annotation portée par un premier docblock suivi d'un second n'est lue par personne (PHPStan l'ignore). Ne bloque que la classe nuisible ; les annotations dupliquées sont rapportées sans bloquer (6 → 0 désarmé, 31 redondants sur le dépôt) — issue #7582 | bloque (désarmé) / rapporte (redondant) |
 
 ## 4. Backend & données (Laravel/PHP)
 

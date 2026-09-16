@@ -438,6 +438,19 @@ jobs:
         # et les événements supprimés du code sans dépréciation actée.
         run: python3 dev-hub/tools/check-event-catalogue.py .
 
+      # #7582 — en PHP, seul le DERNIER docblock avant une déclaration compte :
+      # un premier docblock porteur d'annotations immédiatement suivi d'un second
+      # voit ses annotations IGNORÉES par PHPStan. Constat d'origine
+      # (`EmployeeFactory`, `@extends` désarmé) : ≈20 erreurs du check requis
+      # « PHPStan — Strict » dans les tests, sans aucun effet à l'exécution.
+      # La garde ne bloque que la classe NUISIBLE (annotation lue par personne) ;
+      # les annotations dupliquées sont rapportées sans bloquer (31 sur le dépôt).
+      - name: PHPDoc single-block guard (issue #7582)
+        if: needs.detect-changes.outputs.api_changed == 'true'
+        run: |
+          python3 dev-hub/tools/check-phpdoc-single-block.py --self-test
+          python3 dev-hub/tools/check-phpdoc-single-block.py
+
       - name: Check for orphan (unrouted) controllers
         if: needs.detect-changes.outputs.api_changed == 'true'
         run: dev-hub/tools/check-unrouted-controllers.sh api

@@ -114,13 +114,8 @@ final class PaymentRegistrationService
     /**
      * Liste des paiements (filtres document et/ou statut), du plus récent au
      * plus ancien. Scopée tenant (BelongsToCompany).
-     *
-     * @return Collection<int, AccountingPayment>
-     */
-    /**
      * Issue #6562 — limit optionnel pour borner les listes non paginees.
-     */
-    /**
+     *
      * @return Collection<int, AccountingPayment>
      */
     public function list(?int $documentId = null, ?string $status = null, ?int $limit = null): Collection

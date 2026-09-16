@@ -17,8 +17,6 @@ class SetEmployeeAttendanceMode
 {
     /**
      * @throws GpsConsentMissingException
-     */
-    /**
      * @param  array<string, mixed>  $data
      */
     public function execute(Employee $employee, array $data): EmployeeAttendancePreference

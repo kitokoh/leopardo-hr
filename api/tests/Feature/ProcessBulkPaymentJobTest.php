@@ -339,13 +339,12 @@ class ProcessBulkPaymentJobTest extends TestCase
     }
 
     /**
-     * @return array{0: Company, 1: Employee}
-     */
-    /**
      * #6548 — un worker mort entre le claim Redis et le traitement laisse un
      * claim orphelin : au retry, le slip ne doit NI être compté payé à tort
      * (skip silencieux + run `paid`) NI disparaître — il doit remonter comme
      * échec visible et empêcher le run de passer `paid`.
+     *
+     * @return array{0: Company, 1: Employee}
      */
     public function test_bulk_payment_reports_orphaned_slip_claim_as_failure_and_never_marks_run_paid(): void
     {
