@@ -117,9 +117,12 @@
         <StatusBadge :status="value" :map="exportStatusMap" />
       </template>
       <template #row-actions="{ row }">
-        <a v-if="row.download_url" :href="row.download_url" class="text-sm font-medium text-indigo-600 hover:text-indigo-800">
-          {{ $t('exports.download') }}
-        </a>
+        <RowActionButton
+          v-if="row.download_url"
+          :icon="ArrowDownTrayIcon"
+          :href="row.download_url"
+          :label="$t('exports.download')"
+        />
       </template>
     </DataTable>
   </div>
@@ -129,7 +132,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import {
   UsersIcon, DocumentTextIcon, CurrencyEuroIcon,
-  AcademicCapIcon, TruckIcon, ClipboardDocumentListIcon
+  AcademicCapIcon, TruckIcon, ClipboardDocumentListIcon, ArrowDownTrayIcon
 } from '@heroicons/vue/24/outline'
 import api, { downloadApiFile } from '@/services/api'
 import { useToast } from 'vue-toastification'
@@ -144,6 +147,7 @@ function t(key, fallback = '') {
 }
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
+import RowActionButton from '@/components/common/RowActionButton.vue'
 
 const exportHistory = ref([])
 const historyLoading = ref(false)

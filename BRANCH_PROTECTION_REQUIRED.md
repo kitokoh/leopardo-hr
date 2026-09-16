@@ -1,5 +1,14 @@
 # Branch Protection — main
 
+> **Mise à jour : 2026-09-16 (issue #7480)** — le référentiel machine
+> `dev-hub/tools/branch-protection-canonical.json` listait encore 5 contexts
+> (`Backend Coverage` inclus) alors que la protection réelle en a 4 depuis #7096 :
+> la garde #2011 était donc **rouge en permanence**, et son message de remédiation
+> invitait à rejouer le canonique — c'est-à-dire à annuler #7096. Canonique
+> resynchronisé, et invariant « un check tiers n'est jamais requis » ajouté
+> (garde + self-test). Conduite à tenir sur un check tiers en échec :
+> `docs/ops/CHECKS_TIERS_QUOTA.md`.
+>
 > **Mise à jour : 2026-09-09** — état vérifié via l'API GitHub (audit PM + saturation CI #6928) ;
 > le référentiel machine de la garde #2011 (`dev-hub/tools/branch-protection-canonical.json`) est
 > synchronisé sur cet état. Référence : audit ratio fix/feat (5.24 → cible ≤ 2.5), post-audit 2026-08-26.
@@ -38,6 +47,15 @@ Vérifié via l'API branche protection le **2026-09-09** : 4 contexts requis seu
 > ≥ 65 % backend, ≥ 80 % Payroll via `payroll-ci.yml`). Un agent/PM ne doit donc pas croire que
 > le coverage bloque le merge (il est informatif) ni ignorer qu'il bloque la release (vrai).
 > Le job `flutter-analyze` suit le même régime (fast-path #6928, non requis au merge).
+>
+> **Checks tiers jamais requis (issue #7480).** Les checks posés par une
+> application tierce — `Vercel` / `Vercel Preview Comments` (app 8329),
+> `Cloudflare Pages` / `Workers Builds: gestionemploye`
+> (app 85455), revue de sécurité externe — dépendent d'un **quota ou d'un
+> abonnement**, pas du code. Ils ne doivent **jamais** entrer dans
+> `required_status_checks` : un quota épuisé bloquerait alors une PR saine.
+> L'invariant est vérifié par `dev-hub/tools/check-branch-protection.sh`
+> (clé `third_party_checks_never_required` du canonique) et par son self-test.
 
 ### Sémantique exacte d'un check requis vert (#7269)
 
