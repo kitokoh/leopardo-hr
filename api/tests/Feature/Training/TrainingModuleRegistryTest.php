@@ -85,6 +85,7 @@ class TrainingModuleRegistryTest extends TestCase
 
     public function test_training_is_fail_closed_by_default_and_exposed_in_flag_map(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['features' => ['rh' => true]]);
 
         $this->assertFalse($company->hasFeature('training'));
@@ -97,6 +98,7 @@ class TrainingModuleRegistryTest extends TestCase
 
     public function test_platform_admin_switch_really_persists_training_feature(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['features' => ['rh' => true]]);
         $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',

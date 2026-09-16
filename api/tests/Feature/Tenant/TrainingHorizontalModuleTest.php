@@ -91,7 +91,7 @@ class TrainingHorizontalModuleTest extends TestCase
         self::assertContains('training', Company::HORIZONTAL_TOOLS);
         self::assertSame(
             'training',
-            Company::HORIZONTAL_TOOL_FEATURES['training'] ?? null,
+            Company::HORIZONTAL_TOOL_FEATURES['training'],
             'la Formation est horizontale ET possède un flag plateforme miroir',
         );
 

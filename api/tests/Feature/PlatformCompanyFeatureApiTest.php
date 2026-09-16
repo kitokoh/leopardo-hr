@@ -45,6 +45,7 @@ class PlatformCompanyFeatureApiTest extends TestCase
 
     public function test_super_admin_can_view_and_update_company_feature_flags(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['features' => ['rh' => true]]);
         $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
@@ -85,6 +86,7 @@ class PlatformCompanyFeatureApiTest extends TestCase
      */
     public function test_training_feature_is_persisted_and_exposed(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['features' => ['rh' => true]]);
         $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
@@ -127,6 +129,7 @@ class PlatformCompanyFeatureApiTest extends TestCase
      */
     public function test_omitted_modules_keep_their_current_value(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create([
             'features' => ['rh' => true, 'cameras' => true, 'training' => true],
         ]);
