@@ -3136,6 +3136,54 @@ trait CreatesMvpSchema
             });
         }
 
+
+        // ── BC-19 DEVICE (#7427) — camera_events / camera_alerts ────────────────────
+        // Parité fixture ↔ migrations tenant (garde #5443) : la migration
+        // `2026_09_15_000002_7427_create_camera_event_alert_tables.php` crée ces
+        // deux tables ; sans entrée ici, tout test utilisant CreatesMvpSchema
+        // échoue en « relation ... does not exist » (#5418).
+        if (! Schema::hasTable($this->moduleTable('camera_events'))) {
+            Schema::create($this->moduleTable('camera_events'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('camera_id');
+
+                $table->string('type', 40);           // motion|person|vehicle|line_crossing|tamper
+                $table->string('severity', 12);       // info|warning|high|critical
+                $table->dateTime('detected_at');
+                $table->string('snapshot_path', 255)->nullable();
+                $table->jsonb('metadata')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'camera_id', 'detected_at'], 'camera_events_company_camera_detected_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('camera_alerts'))) {
+            Schema::create($this->moduleTable('camera_alerts'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('camera_id');
+                $table->unsignedBigInteger('camera_event_id')->nullable();
+
+                $table->string('type', 40);
+                $table->string('severity', 12);
+                $table->string('alert_key', 120);
+                $table->jsonb('payload');
+                $table->string('status', 16)->default('open'); // open|acknowledged|resolved
+
+                $table->unsignedInteger('acknowledged_by')->nullable();
+                $table->dateTime('acknowledged_at')->nullable();
+                $table->unsignedInteger('resolved_by')->nullable();
+                $table->dateTime('resolved_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'alert_key'], 'camera_alerts_key_unique');
+                $table->index(['company_id', 'status'], 'camera_alerts_company_status_idx');
+                $table->index('camera_event_id', 'camera_alerts_event_idx');
+            });
+        }
+
     }
 
     private function createVerticalParityTables(): void
