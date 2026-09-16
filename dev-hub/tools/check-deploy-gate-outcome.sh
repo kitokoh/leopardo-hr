@@ -211,6 +211,28 @@ check_filters_parity() {
     fail "${DEPLOY_PATH} : « not-required » est traité après le motif d'indécision — il ne serait jamais atteint."
   fi
 
+  # --- 2bis. #7559 : « pending » = budget épuisé ALORS QUE des runs requis
+  # tournent — ce n'est pas une indécision, mais ce n'est pas un succès muet
+  # non plus : la décision est « différé », le fond restant couvert par
+  # deploy-drift-guard.yml (30 min) et le rattrapage deploy-main-catchup.yml.
+  if ! grep -qE "setOutput\('gate_outcome', 'pending'\)" "${action}"; then
+    fail "${ACTION_PATH} : le cas « budget épuisé alors que des runs requis tournent » ne produit pas gate_outcome=pending — un merge api/** rougit main 30 min plus tard (#7559)."
+  fi
+  if ! grep -qE 'lastPending.length > 0' "${action}"; then
+    fail "${ACTION_PATH} : la distinction « runs requis encore en cours » vs « aucun run » (lastPending) est absente (#7559)."
+  fi
+  if ! grep -qE "DEPLOY_GATE_BUDGET_MINUTES" "${action}"; then
+    fail "${ACTION_PATH} : le budget d'attente n'est plus paramétrable — le test comportemental ne peut plus épuiser le budget (#7559)."
+  fi
+  if ! printf '%s\n' "${verdict_block}" | grep -qE '^            pending\)'; then
+    fail "${DEPLOY_PATH} : le job de verdict ne traite plus « pending » comme une décision (le différé redeviendrait rouge — #7559)."
+  fi
+  local pending_line
+  pending_line="$(printf '%s\n' "${verdict_block}" | grep -nE '^            pending\)' | head -n 1 | cut -d: -f1)"
+  if [[ -n "${pending_line}" && -n "${range_line}" && "${pending_line}" -ge "${range_line}" ]]; then
+    fail "${DEPLOY_PATH} : « pending » est traité après le motif d'indécision — il ne serait jamais atteint (#7559)."
+  fi
+
   # --- 3. parité : le gate n'exige que ce que le workflow peut produire ----
   local api_patterns web_patterns
   api_patterns="$(workflow_push_paths "${tests_wf}")"
@@ -297,6 +319,20 @@ PYSELFTEST
     echo "::error::[deploy-gate --self-test] la régression #7528 (chemin exigé sans workflow possible) n'est pas détectée." >&2
     return 1
   fi
+  cp "${DEPLOY_PATH}" "${tmp}/${DEPLOY_PATH}"
+
+  # --- mutation 4 (#7559) : le différé est retraité en indécision ----------
+  python3 - "${tmp}/${ACTION_PATH}" <<'PYSELFTEST'
+import sys
+p = sys.argv[1]
+s = open(p, encoding='utf-8').read()
+s = s.replace("setOutput('gate_outcome', 'pending')", "setOutput('gate_outcome', 'timeout')", 1)
+open(p, 'w', encoding='utf-8').write(s)
+PYSELFTEST
+  if ( check_filters_parity "${tmp}" ) 2>/dev/null; then
+    echo "::error::[deploy-gate --self-test] la régression #7559 (budget épuisé avec runs en cours retraité en indécision) n'est pas détectée." >&2
+    return 1
+  fi
 
   echo "DEPLOY_GATE_GUARD_SELF_TEST_OK"
 }
@@ -309,7 +345,7 @@ main() {
     echo "::error::[deploy-gate] ${errors} invariant(s) rompu(s) — voir ci-dessus."
     exit 1
   fi
-  echo "✅  Verdict du gate de déploiement cohérent (api_changed, not-required, et le gate n'exige que ce que tests.yml/web-ci.yml peuvent produire)."
+  echo "✅  Verdict du gate de déploiement cohérent (api_changed, not-required, pending ≠ timeout, et le gate n'exige que ce que tests.yml/web-ci.yml peuvent produire)."
 }
 
 if [[ "${1:-}" == "--self-test" ]]; then

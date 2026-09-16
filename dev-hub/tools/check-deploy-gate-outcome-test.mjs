@@ -15,7 +15,14 @@
  *     vrai trou de couverture ne doit pas être masqué) ;
  *   - run requis vert, web inchangé → `deploy` ;
  *   - `api_changed` non fourni (`''`) → comportement strict conservé
- *     (`no-runs`), c'est ce qui laisse `deploy-staging.yml` intact.
+ *     (`no-runs`), c'est ce qui laisse `deploy-staging.yml` intact ;
+ *   - #7559 — budget d'attente épuisé alors qu'un run requis tourne ENCORE
+ *     (`in_progress`) → `pending` (différé, non fatal) et `should_deploy=false` ;
+ *   - #7559 — budget épuisé SANS run requis en cours → `timeout` (indécision
+ *     maintenue : un vrai trou de couverture reste signalé).
+ *
+ * Le budget est épuisé sans attendre 30 min via `DEPLOY_GATE_BUDGET_MINUTES`
+ * (variable lue par l'action, posée uniquement par ce test).
  *
  * Usage : node dev-hub/tools/check-deploy-gate-outcome-test.mjs [chemin/action.yml]
  *         (le chemin est utile pour un A/B : exécuter le test contre la version
@@ -55,7 +62,7 @@ function extractGateScript(yaml) {
 const gateScript = extractGateScript(readFileSync(actionPath, 'utf8'));
 
 /** Exécute le gate avec des dépendances simulées. */
-async function runGate({ apiChanged, webChanged, runs, eventName = 'push', mainHead = 'a'.repeat(40) }) {
+async function runGate({ apiChanged, webChanged, runs, eventName = 'push', mainHead = 'a'.repeat(40), budgetMinutes }) {
   const outputs = {};
   const logs = [];
   const core = {
@@ -76,18 +83,32 @@ async function runGate({ apiChanged, webChanged, runs, eventName = 'push', mainH
   const context = { repo: { owner: 'kitokoh', repo: 'leopardo-hr' } };
 
   const previousEvent = process.env.GITHUB_EVENT_NAME;
+  const previousBudget = process.env.DEPLOY_GATE_BUDGET_MINUTES;
   const realSetTimeout = globalThis.setTimeout;
+  // Horloge simulée : le gate boucle « tant que Date.now() < deadline ». Sans
+  // ça, un `setTimeout` instantané boucle indéfiniment sur l'horloge réelle
+  // (constaté en A/B contre la version d'avant le correctif #7559 : la boucle
+  // ne sortait plus et le test finissait en dépassement de pile). On avance
+  // donc l'horloge du montant demandé à chaque attente — le budget s'épuise
+  // exactement comme en CI, mais en quelques millisecondes.
+  const realDateNow = Date.now;
+  let fakeNow = realDateNow();
   process.env.GITHUB_EVENT_NAME = eventName;
+  if (budgetMinutes !== undefined) process.env.DEPLOY_GATE_BUDGET_MINUTES = String(budgetMinutes);
   // Le gate poll toutes les 60 s : on rend l'attente instantanée.
-  globalThis.setTimeout = (fn) => { fn(); return 0; };
+  globalThis.setTimeout = (fn, ms) => { fakeNow += typeof ms === 'number' ? ms : 0; fn(); return 0; };
+  Date.now = () => fakeNow;
 
   try {
     const factory = new Function('core', 'github', 'context', `return (async () => {\n${gateScript}\n})();`);
     await factory(core, github, context);
   } finally {
     globalThis.setTimeout = realSetTimeout;
+    Date.now = realDateNow;
     if (previousEvent === undefined) delete process.env.GITHUB_EVENT_NAME;
     else process.env.GITHUB_EVENT_NAME = previousEvent;
+    if (previousBudget === undefined) delete process.env.DEPLOY_GATE_BUDGET_MINUTES;
+    else process.env.DEPLOY_GATE_BUDGET_MINUTES = previousBudget;
   }
 
   return { outputs, logs };
@@ -157,6 +178,29 @@ await check('SHA dépassé par un push plus récent → stale', async () => {
   assertEqual(outputs.should_deploy, 'false', 'should_deploy');
 });
 
+// ── #7559 : budget épuisé alors qu'un run requis tourne encore → différé ───
+await check('budget épuisé + run requis in_progress → pending (différé, non fatal)', async () => {
+  const { outputs, logs } = await runGate({
+    apiChanged: 'true',
+    webChanged: 'false',
+    runs: [{ name: 'Tests - Leopardo RH', head_sha: 'a'.repeat(40), status: 'in_progress', conclusion: null }],
+    budgetMinutes: 0,
+  });
+  assertEqual(outputs.gate_outcome, 'pending', 'gate_outcome');
+  assertEqual(outputs.should_deploy, 'false', 'should_deploy');
+  assertEqual(outputs.tests_conclusion, 'pending', 'tests_conclusion');
+  if (!logs.some((line) => line.startsWith('notice:') && line.includes('#7559'))) {
+    throw new Error('le différé doit être annoncé par un ::notice:: explicite (#7559)');
+  }
+});
+
+// ── #7559 : budget épuisé SANS run en cours → indécision maintenue ─────────
+await check('budget épuisé sans run requis en cours → timeout (indécision)', async () => {
+  const { outputs } = await runGate({ apiChanged: 'true', webChanged: 'false', runs: [], budgetMinutes: 0 });
+  assertEqual(outputs.gate_outcome, 'timeout', 'gate_outcome');
+  assertEqual(outputs.should_deploy, 'false', 'should_deploy');
+});
+
 // ── Dispatch manuel → contourné par construction ───────────────────────────
 await check('workflow_dispatch → manual-dispatch, déploiement autorisé', async () => {
   const { outputs } = await runGate({ apiChanged: 'true', webChanged: 'false', runs: [], eventName: 'workflow_dispatch' });
@@ -170,4 +214,4 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log(`✅ check-deploy-gate-outcome-test : ${passed} verdicts du gate vérifiés (not-required ≠ no-runs, deploy, stale, manual-dispatch).`);
+console.log(`✅ check-deploy-gate-outcome-test : ${passed} verdicts du gate vérifiés (not-required ≠ no-runs, deploy, stale, manual-dispatch, pending ≠ timeout).`);
