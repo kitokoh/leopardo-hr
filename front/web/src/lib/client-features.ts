@@ -404,6 +404,11 @@ export const SELF_ACTIVATABLE_MODULE_KEYS: ClientModuleKey[] = [
   'crm',
   'marketing',
   'showcase',
+  // BC-19 DEVICE (#7476) — miroir strict de `Company::HORIZONTAL_TOOLS` : le
+  // module Caméras (déjà dans le catalogue, #7425) devient auto-activable par
+  // le client. La parité des deux listes est verrouillée par
+  // `__tests__/client-features-self-activation.test.ts`.
+  'cameras',
 ];
 
 export function isSelfActivable(module: Pick<ClientModule, 'key'>): boolean {
