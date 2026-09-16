@@ -3,7 +3,7 @@
   "_updated_at": "2026-08-30T15:05:00Z",
   "_locale": "tr",
   "app": {
-    "title": "Leopardo IK"
+    "title": "Leopardo — İşletme Yönetimi Paketi"
   },
   "accountingPortal": {
     "title": "Güvenli belge alanı",
@@ -5465,5 +5465,12 @@
       "features": "Özellikler",
       "state": "Durum"
     }
+  },
+  "seoRoot": {
+    "manifestDescription": "Saha ekipleri için işletme yönetimi paketi: İK ve bordro, yoklama, izin, CRM, muhasebe; web, mobil ve kiosk",
+    "manifestName": "Leopardo — işletme yönetimi paketi (İK & bordro, yoklama, CRM)",
+    "ogImageAlt": "Leopardo — işletme yönetimi paketi: web, mobil ve kiosk için İK ve bordro paneli",
+    "rootDescription": "Leopardo; İK ve bordro, yoklama, izin, CRM, muhasebe ve saha operasyonlarını tek pakette toplar; web, mobil ve kiosk üzerinde.",
+    "rootTitle": "Leopardo — saha ekipleri için işletme yönetimi paketi: bordro, yoklama"
   }
 }

@@ -1,6 +1,6 @@
 {
   "@@locale": "tr",
-  "appTitle": "Leopardo IK",
+  "appTitle": "Leopardo — İşletme Yönetimi Paketi",
   "accountingportalTitle": "Güvenli belge alanı",
   "accountingportalSubtitle": "Erişim, gönderenin paylaştığı belgeyle sınırlıdır",
   "accountingportalNumber": "Belge no.",
@@ -4226,5 +4226,10 @@
   "plansColPriceyearly": "Yıllık",
   "plansColMaxemployees": "Çalışan",
   "plansColFeatures": "Özellikler",
-  "plansColState": "Durum"
+  "plansColState": "Durum",
+  "seorootManifestdescription": "Saha ekipleri için işletme yönetimi paketi: İK ve bordro, yoklama, izin, CRM, muhasebe; web, mobil ve kiosk",
+  "seorootManifestname": "Leopardo — işletme yönetimi paketi (İK & bordro, yoklama, CRM)",
+  "seorootOgimagealt": "Leopardo — işletme yönetimi paketi: web, mobil ve kiosk için İK ve bordro paneli",
+  "seorootRootdescription": "Leopardo; İK ve bordro, yoklama, izin, CRM, muhasebe ve saha operasyonlarını tek pakette toplar; web, mobil ve kiosk üzerinde.",
+  "seorootRoottitle": "Leopardo — saha ekipleri için işletme yönetimi paketi: bordro, yoklama"
 }

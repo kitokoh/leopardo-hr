@@ -4,7 +4,9 @@ Termes autorisés / interdits sur toutes les surfaces (vitrine, README, docs, pi
 
 | Contexte | À dire | À ne PAS dire |
 |---|---|---|
-| Nom produit | Leopardo RH | Leopardo HR (EN marketing ok : "Leopardo RH") |
+| Nom produit | **Leopardo** | « Leopardo RH » dans une phrase de présentation (c'est un identifiant technique, pas un nom d'usage) |
+| Catégorie du produit | **suite métier** (FR) · **business suite** (EN) · **işletme yönetimi paketi** (TR) · **حزمة الأعمال** (AR) | « logiciel RH », « SaaS RH », « HR SaaS », « HR software », « İK yazılımı » |
+| Contenu RH de la suite | « RH & paie » (comme périmètre, dans une phrase qui décrit ce que la suite fait) | présenter l'entreprise comme une société « uniquement RH » |
 | Site marketing | la vitrine | le site web (ambigu) |
 | Espace client | portail client / dashboard | back-office |
 | Super-admin | plateforme / admin plateforme | admin client |
@@ -50,3 +52,5 @@ deux chemins différents — et l'un des deux n'était lu par **aucun** client.
 toutes les 30 s). Une surface morte coûte de la maintenance et trompe les audits
 de sécurité. S'il revient, ce sera un lot produit à part entière : il faudra un
 **client** (reconnexion, backoff, i18n) et pas seulement un contrôleur.
+Garde automatique de non-régression (dette gelée, mesurée) : `dev-hub/tools/check-naming-drift.sh` + `dev-hub/tools/naming-baseline.json` (#7428).
+Décision de positionnement complète : `POSITIONNEMENT_SUITE_METIER.md`.

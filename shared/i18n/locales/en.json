@@ -3,7 +3,7 @@
   "_updated_at": "2026-08-30T15:05:00Z",
   "_locale": "en",
   "app": {
-    "title": "Leopardo HR"
+    "title": "Leopardo — Business Suite"
   },
   "accountingPortal": {
     "title": "Secure document space",
@@ -1688,14 +1688,23 @@
   },
   "companyDetail": {
     "features": {
-      "rh": "Human Resources",
-      "finance": "Finance & Management",
-      "ai": "Artificial Intelligence",
-      "cameras": "Video Surveillance",
-      "tracking": "Fleet Tracking",
-      "planning": "Planning & Team",
-      "training": "Training Center",
-      "cabinet": "Document vault"
+      "rh": "Human resources",
+      "finance": "Finance & management",
+      "ai": "Artificial intelligence",
+      "cameras": "Video surveillance",
+      "tracking": "Fleet tracking",
+      "planning": "Planning & team",
+      "training": "Training centre",
+      "cabinet": "Digital cabinet",
+      "muhasebe": "Accounting (Turkey)",
+      "leo_ai": "Leopardo AI assistant",
+      "crm": "Customer relationship (CRM)",
+      "fuel_station": "Fuel stations",
+      "edumanager": "School management",
+      "restaurant": "Restaurant",
+      "travelagency": "Travel agency",
+      "accounting": "Accounting",
+      "company_showcase": "Showcase website"
     },
     "analyzing": "Analyzing client data...",
     "retry": "Retry",
@@ -1721,25 +1730,6 @@
     "countryCurrency": "Country / Currency",
     "registeredOn": "Registered on",
     "lastActivity": "Last activity",
-    "features": {
-      "rh": "Human resources",
-      "finance": "Finance & management",
-      "ai": "Artificial intelligence",
-      "cameras": "Video surveillance",
-      "tracking": "Fleet tracking",
-      "planning": "Planning & team",
-      "training": "Training centre",
-      "cabinet": "Digital cabinet",
-      "muhasebe": "Accounting (Turkey)",
-      "leo_ai": "Leopardo AI assistant",
-      "crm": "Customer relationship (CRM)",
-      "fuel_station": "Fuel stations",
-      "edumanager": "School management",
-      "restaurant": "Restaurant",
-      "travelagency": "Travel agency",
-      "accounting": "Accounting",
-      "company_showcase": "Showcase website"
-    },
     "tabOverview": "Overview",
     "tabModules": "Modules & verticals",
     "tabBilling": "Subscription & support",
@@ -5475,5 +5465,12 @@
       "features": "Features",
       "state": "Status"
     }
+  },
+  "seoRoot": {
+    "manifestDescription": "The business suite for field-based companies: HR & payroll, attendance, leave, CRM, accounting, on web, mobile and kiosk",
+    "manifestName": "Leopardo — business suite (HR & payroll, attendance, CRM)",
+    "ogImageAlt": "Leopardo — business suite: HR & payroll dashboard for web, mobile and kiosk",
+    "rootDescription": "Leopardo brings HR & payroll, attendance, leave, CRM, accounting and field operations together in one suite, on web, mobile and kiosk.",
+    "rootTitle": "Leopardo — business suite for field teams: payroll, attendance, operations"
   }
 }

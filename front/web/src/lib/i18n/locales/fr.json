@@ -3,7 +3,7 @@
   "_updated_at": "2026-08-30T15:05:00Z",
   "_locale": "fr",
   "app": {
-    "title": "Leopardo RH"
+    "title": "Leopardo — suite métier"
   },
   "accountingPortal": {
     "title": "Espace document sécurisé",
@@ -5465,5 +5465,12 @@
       "features": "Features",
       "state": "État"
     }
+  },
+  "seoRoot": {
+    "manifestDescription": "La suite métier des entreprises de terrain : RH & paie, pointage, absences, CRM, comptabilité, sur web, mobile et kiosque",
+    "manifestName": "Leopardo — suite métier (RH & paie, pointage, CRM)",
+    "ogImageAlt": "Leopardo — suite métier : tableau de bord RH & paie multilingue",
+    "rootDescription": "Leopardo réunit RH & paie, pointage, absences, CRM, comptabilité et opérations terrain dans une seule suite, sur web, mobile et kiosque.",
+    "rootTitle": "Leopardo — suite métier pour équipes terrain : paie, pointage, absences"
   }
 }

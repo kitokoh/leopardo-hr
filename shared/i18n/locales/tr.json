@@ -3,7 +3,7 @@
   "_updated_at": "2026-08-30T15:05:00Z",
   "_locale": "tr",
   "app": {
-    "title": "Leopardo IK"
+    "title": "Leopardo — İşletme Yönetimi Paketi"
   },
   "accountingPortal": {
     "title": "Güvenli belge alanı",
@@ -1688,14 +1688,23 @@
   },
   "companyDetail": {
     "features": {
-      "rh": "İnsan Kaynakları",
-      "finance": "Finans ve Yönetim",
-      "ai": "Yapay Zeka",
-      "cameras": "Video Gözetim",
-      "tracking": "Filo Takibi",
-      "planning": "Planlama ve Ekip",
-      "training": "Eğitim Merkezi",
-      "cabinet": "Belge kasası"
+      "rh": "İnsan kaynakları",
+      "finance": "Finans ve yönetim",
+      "ai": "Yapay zekâ",
+      "cameras": "Video gözetim",
+      "tracking": "Filo takibi",
+      "planning": "Planlama ve ekip",
+      "training": "Eğitim merkezi",
+      "cabinet": "Dijital dolap",
+      "muhasebe": "Muhasebe (Türkiye)",
+      "leo_ai": "Leopardo yapay zekâ asistanı",
+      "crm": "Müşteri ilişkileri (CRM)",
+      "fuel_station": "Akaryakıt istasyonları",
+      "edumanager": "Eğitim kurumu yönetimi",
+      "restaurant": "Restoran",
+      "travelagency": "Seyahat acentesi",
+      "accounting": "Muhasebe",
+      "company_showcase": "Tanıtım sitesi"
     },
     "analyzing": "Musteri verileri analiz ediliyor...",
     "retry": "Tekrar dene",
@@ -1721,25 +1730,6 @@
     "countryCurrency": "Ulke / Para birimi",
     "registeredOn": "Kayit tarihi",
     "lastActivity": "Son aktivite",
-    "features": {
-      "rh": "İnsan kaynakları",
-      "finance": "Finans ve yönetim",
-      "ai": "Yapay zekâ",
-      "cameras": "Video gözetim",
-      "tracking": "Filo takibi",
-      "planning": "Planlama ve ekip",
-      "training": "Eğitim merkezi",
-      "cabinet": "Dijital dolap",
-      "muhasebe": "Muhasebe (Türkiye)",
-      "leo_ai": "Leopardo yapay zekâ asistanı",
-      "crm": "Müşteri ilişkileri (CRM)",
-      "fuel_station": "Akaryakıt istasyonları",
-      "edumanager": "Eğitim kurumu yönetimi",
-      "restaurant": "Restoran",
-      "travelagency": "Seyahat acentesi",
-      "accounting": "Muhasebe",
-      "company_showcase": "Tanıtım sitesi"
-    },
     "tabOverview": "Genel bakış",
     "tabModules": "Modüller ve dikeyler",
     "tabBilling": "Abonelik ve destek",
@@ -5475,5 +5465,12 @@
       "features": "Özellikler",
       "state": "Durum"
     }
+  },
+  "seoRoot": {
+    "manifestDescription": "Saha ekipleri için işletme yönetimi paketi: İK ve bordro, yoklama, izin, CRM, muhasebe; web, mobil ve kiosk",
+    "manifestName": "Leopardo — işletme yönetimi paketi (İK & bordro, yoklama, CRM)",
+    "ogImageAlt": "Leopardo — işletme yönetimi paketi: web, mobil ve kiosk için İK ve bordro paneli",
+    "rootDescription": "Leopardo; İK ve bordro, yoklama, izin, CRM, muhasebe ve saha operasyonlarını tek pakette toplar; web, mobil ve kiosk üzerinde.",
+    "rootTitle": "Leopardo — saha ekipleri için işletme yönetimi paketi: bordro, yoklama"
   }
 }

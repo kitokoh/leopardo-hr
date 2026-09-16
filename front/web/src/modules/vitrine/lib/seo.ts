@@ -694,18 +694,18 @@ export function getPageMetadata(page: string, lang?: string): SEOMetadata {
 export const rootSeoL10n: Record<'fr' | 'en' | 'tr' | 'ar', { keywords: string[]; ogImageAlt: string }> = {
   fr: {
     keywords: ['SaaS RH', 'logiciel RH', 'paie', 'pointage mobile', 'absences', 'kiosque RH', 'multi-tenant', 'RH multilingue'],
-    ogImageAlt: 'Leopardo RH - dashboard RH multilingue',
+    ogImageAlt: String(t('fr', 'seoRoot.ogImageAlt') ?? ''),
   },
   en: {
     keywords: ['HR SaaS', 'HR software', 'payroll', 'mobile time tracking', 'leave management', 'HR kiosk', 'multi-tenant', 'multilingual HR'],
-    ogImageAlt: 'Leopardo RH - HR platform for web, mobile and kiosk',
+    ogImageAlt: String(t('en', 'seoRoot.ogImageAlt') ?? ''),
   },
   tr: {
     keywords: ['İK SaaS', 'İK yazılımı', 'bordro', 'mobil yoklama', 'izin yönetimi', 'İK kiosk', 'çok kiracılı', 'çok dilli İK'],
-    ogImageAlt: 'Leopardo RH - web, mobil ve kiosk için İK platformu',
+    ogImageAlt: String(t('tr', 'seoRoot.ogImageAlt') ?? ''),
   },
   ar: {
     keywords: ['نظام موارد بشرية سحابي', 'برنامج موارد بشرية', 'الرواتب', 'الحضور عبر الجوال', 'إدارة الإجازات', 'كشك الموارد البشرية', 'متعدد المستأجرين', 'موارد بشرية متعددة اللغات'],
-    ogImageAlt: 'Leopardo RH - منصة موارد بشرية للويب والجوال والكشك',
+    ogImageAlt: String(t('ar', 'seoRoot.ogImageAlt') ?? ''),
   },
 };

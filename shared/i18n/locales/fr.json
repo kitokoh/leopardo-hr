@@ -3,7 +3,7 @@
   "_updated_at": "2026-08-30T15:05:00Z",
   "_locale": "fr",
   "app": {
-    "title": "Leopardo RH"
+    "title": "Leopardo — suite métier"
   },
   "accountingPortal": {
     "title": "Espace document sécurisé",
@@ -1695,7 +1695,16 @@
       "tracking": "Suivi de Flotte",
       "planning": "Planning & Équipe",
       "training": "Centre de Formation",
-      "cabinet": "Coffre documentaire"
+      "cabinet": "Placard Numérique",
+      "muhasebe": "Comptabilité (Turquie)",
+      "leo_ai": "Assistant IA Leopardo",
+      "crm": "Relation client (CRM)",
+      "fuel_station": "Stations-service",
+      "edumanager": "Établissement scolaire",
+      "restaurant": "Restauration",
+      "travelagency": "Agence de voyage",
+      "accounting": "Comptabilité",
+      "company_showcase": "Site vitrine"
     },
     "analyzing": "Analyse des données client...",
     "retry": "Réessayer",
@@ -1721,25 +1730,6 @@
     "countryCurrency": "Pays / Devise",
     "registeredOn": "Inscrit le",
     "lastActivity": "Derniere Activite",
-    "features": {
-      "rh": "Ressources Humaines",
-      "finance": "Finance & Gestion",
-      "ai": "Intelligence Artificielle",
-      "cameras": "Surveillance Vidéo",
-      "tracking": "Suivi de Flotte",
-      "planning": "Planning & Équipe",
-      "training": "Centre de Formation",
-      "cabinet": "Placard Numérique",
-      "muhasebe": "Comptabilité (Turquie)",
-      "leo_ai": "Assistant IA Leopardo",
-      "crm": "Relation client (CRM)",
-      "fuel_station": "Stations-service",
-      "edumanager": "Établissement scolaire",
-      "restaurant": "Restauration",
-      "travelagency": "Agence de voyage",
-      "accounting": "Comptabilité",
-      "company_showcase": "Site vitrine"
-    },
     "tabOverview": "Vue d'ensemble",
     "tabModules": "Modules & verticales",
     "tabBilling": "Abonnement & support",
@@ -5475,5 +5465,12 @@
       "features": "Features",
       "state": "État"
     }
+  },
+  "seoRoot": {
+    "manifestDescription": "La suite métier des entreprises de terrain : RH & paie, pointage, absences, CRM, comptabilité, sur web, mobile et kiosque",
+    "manifestName": "Leopardo — suite métier (RH & paie, pointage, CRM)",
+    "ogImageAlt": "Leopardo — suite métier : tableau de bord RH & paie multilingue",
+    "rootDescription": "Leopardo réunit RH & paie, pointage, absences, CRM, comptabilité et opérations terrain dans une seule suite, sur web, mobile et kiosque.",
+    "rootTitle": "Leopardo — suite métier pour équipes terrain : paie, pointage, absences"
   }
 }

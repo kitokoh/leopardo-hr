@@ -2,7 +2,7 @@
   "attendanceCorrectionRequestSnack": "Request for {date} submitted to HR - you will be notified of the decision.",
   "payrollRemainingToReceive": "Remaining to receive",
   "app": {
-    "title": "Leopardo HR"
+    "title": "Leopardo — Business Suite"
   },
   "attendanceLateMinutes": "{minutes} min",
   "settingsBiometricConfirmIdentity": "Confirm your identity",
@@ -6794,5 +6794,12 @@
       "grantedTo": "Access granted to",
       "revocationHint": "The workspace owner can revoke this link at any time."
     }
+  },
+  "seoRoot": {
+    "manifestDescription": "The business suite for field-based companies: HR & payroll, attendance, leave, CRM, accounting, on web, mobile and kiosk",
+    "manifestName": "Leopardo — business suite (HR & payroll, attendance, CRM)",
+    "ogImageAlt": "Leopardo — business suite: HR & payroll dashboard for web, mobile and kiosk",
+    "rootDescription": "Leopardo brings HR & payroll, attendance, leave, CRM, accounting and field operations together in one suite, on web, mobile and kiosk.",
+    "rootTitle": "Leopardo — business suite for field teams: payroll, attendance, operations"
   }
 }

@@ -572,3 +572,43 @@ existant reste le toggle de flag « Surveillance Vidéo » de
 `CompanyDetailView.vue`, inchangé. Les scénarios listés ci-dessus restent
 valides et inchangés. Même situation que la note de conservation de la
 propagation i18n du 2026-09-14 (PR #7350).
+## Scenario — nommage produit dans le back-office : « Leopardo — suite metier » (#7518, issue #7428)
+
+### Perimetre du changement
+
+- Seule la **copie** du back-office change : le titre applicatif `app.title` passe de
+  « Leopardo RH » a « **Leopardo — suite metier** » (en : « Leopardo — Business Suite » ;
+  ar : « ليوباردو — حزمة الأعمال » ; tr : « Leopardo — İşletme Yönetimi Paketi »).
+- Le namespace partage **`seoRoot`** (5 cles : titre / description canoniques de la racine, du
+  manifeste PWA et de l'image OG) arrive dans le dashboard par la **synchronisation** du catalogue
+  partage : `front/admin-dashboard/src/i18n/locales/*.json` sont des fichiers **generes**
+  (`shared/i18n/sync/sync-web.js`, cible 1, union semantique #3853) — jamais edites a la main.
+- **Aucun** changement de composant, de route, d'etat ni de contrat d'API : ni le `vite build`,
+  ni les parcours Playwright existants ne sont touches par ce lot.
+
+### Scenario de recette
+
+1. Charger une vue **connectee** du back-office dans chacune des **4 locales** (fr / en / ar / tr,
+   RTL arabe compris) : le titre applicatif affiche le libelle « suite metier » localise, et
+   **jamais** « logiciel RH » (decision :
+   `docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md`).
+2. Verifier que « **Leopardo RH** » reste le **nom d'une application de la suite** (RH & paie) —
+   libelle d'app / de module — et non la categorie du produit ; les noms d'ecrans metier
+   (Paie, Conges, Portefeuille clients, ...) sont inchanges.
+3. Charger la racine et le manifeste PWA : les phrases canoniques proviennent de `seoRoot`
+   (une phrase canonique vit dans le **catalogue partage**, non dupliquee par cible).
+
+### Verification
+
+- `eslint` + `vite build` verts ; parite i18n **x4** (`check-i18n-catalog-parity.sh`) verte ;
+  synchronisation `I18N_SYNC_WEB_OK` / `I18N_VALIDATION_OK (4 locales)`.
+- Garde de derive du nommage : `dev-hub/tools/check-naming-drift.sh` (baseline
+  `dev-hub/tools/naming-baseline.json`) — « suite metier » autorise, « logiciel RH » proscrit
+  hors baseline de dette gelee.
+
+> Note de conservation (2026-09-16) : ce lot ne modifie **aucun comportement** du back-office. Il
+> est consigne ici parce que le **libelle produit** est une surface visible d'administration (donc
+> une attente de recette) et parce que la garde de gouvernance
+> (`dev-hub/tools/check-governance.ps1`) exige qu'une modification de
+> `front/admin-dashboard/src/**` soit accompagnee de la mise a jour de ce fichier **ou** de
+> `docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS.md`.

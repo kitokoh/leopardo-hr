@@ -2,7 +2,7 @@
 
 return [
     'app' => [
-        'title' => 'Leopardo HR',
+        'title' => 'Leopardo — Business Suite',
     ],
     'welcome' => [
         'brand' => [

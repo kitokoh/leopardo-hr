@@ -502,3 +502,20 @@ restent les gates applicables.
 - **Non traite, hors perimetre de ce lot** : avertissement Next `scroll-behavior: smooth` (attribut
   `data-scroll-behavior` a poser sur `<html>`) et migration i18n `?lang=` -> sous-repertoires `/en/ /tr/ /ar/`.
 >
+## Mise a jour 2026-09-16 — positionnement « suite metier » (PR #7518, issue #7428)
+
+- **Surface web admin** : seul le **libelle produit** change. `app.title` du dashboard passe de
+  « Leopardo RH » a « **Leopardo — suite metier** » (en : « Leopardo — Business Suite » ; ar :
+  « ليوباردو — حزمة الأعمال » ; tr : « Leopardo — İşletme Yönetimi Paketi »), et le namespace
+  partage **`seoRoot`** (5 cles de phrases canoniques : racine, manifeste PWA, image OG) est
+  propage aux cibles du catalogue par `shared/i18n/sync/sync-web.js`.
+  `front/admin-dashboard/src/i18n/locales/*.json` sont des fichiers **generes** (union
+  semantique #3853) : le diff du dashboard est mecanique, aucun composant / route / contrat d'API
+  n'est touche. Scenario de non-regression : charger une vue connectee du back-office dans les
+  **4 locales** et verifier le titre applicatif (« suite metier » localise, jamais
+  « logiciel RH ») ainsi que le fait que « Leopardo RH » reste le nom de l'**application** RH &
+  paie, pas la categorie du produit (cf. `SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md`, section du
+  2026-09-16 ; garde `dev-hub/tools/check-naming-drift.sh`).
+- **Surface API / mobile** : aucun changement de code. `api/lang/*/shared.php` et les ARB mobiles
+  ne bougent que par la **synchronisation** du catalogue partage (cibles generees : `sync-backend`,
+  `sync-mobile`) — voir la note du meme jour dans `SCENARIOS_TEST_MOBILE_FLUTTER.md`.

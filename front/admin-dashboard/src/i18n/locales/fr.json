@@ -2,7 +2,7 @@
   "attendanceCorrectionRequestSnack": "Demande du {date} soumise au RH - vous serez notifié de la décision.",
   "payrollRemainingToReceive": "Reste à recevoir",
   "app": {
-    "title": "Leopardo RH"
+    "title": "Leopardo — suite métier"
   },
   "attendanceLateMinutes": "{minutes} min",
   "settingsBiometricConfirmIdentity": "Confirmez votre identité",
@@ -6800,5 +6800,12 @@
       "grantedTo": "Accès accordé à",
       "revocationHint": "Le responsable de l'espace peut révoquer ce lien à tout moment."
     }
+  },
+  "seoRoot": {
+    "manifestDescription": "La suite métier des entreprises de terrain : RH & paie, pointage, absences, CRM, comptabilité, sur web, mobile et kiosque",
+    "manifestName": "Leopardo — suite métier (RH & paie, pointage, CRM)",
+    "ogImageAlt": "Leopardo — suite métier : tableau de bord RH & paie multilingue",
+    "rootDescription": "Leopardo réunit RH & paie, pointage, absences, CRM, comptabilité et opérations terrain dans une seule suite, sur web, mobile et kiosque.",
+    "rootTitle": "Leopardo — suite métier pour équipes terrain : paie, pointage, absences"
   }
 }
