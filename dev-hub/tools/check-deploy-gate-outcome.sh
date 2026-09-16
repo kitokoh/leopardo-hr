@@ -1,30 +1,37 @@
 #!/usr/bin/env bash
 # ============================================================================
 # check-deploy-gate-outcome.sh — garde du verdict du gate de déploiement
-# (issue #7511, complément de #7457)
+# (issues #7511 et #7528)
 #
 # Pourquoi : `deploy-main.yml` échouait à CHAQUE merge sur `main` qui ne
-# touchait ni `api/**` ni `front/admin-dashboard/**` (constat : merge #7498).
-# Les workflows requis (`tests.yml`, `web-ci.yml`) sont filtrés par
-# `.github/paths-filters.yml` : sur un SHA hors de ces chemins, AUCUN run
-# requis n'existe, le gate ne trouvait rien à lire et se déclarait « indécis »
-# (`no-runs`) — alors que la seule conclusion correcte était « rien à
-# déployer ». `main` restait donc rouge sans qu'aucun code ne soit fautif.
+# touchait pas les chemins des workflows requis (#7511, constat merge #7498),
+# puis à chaque merge ne touchant QUE des fichiers CI (#7528, constat merge
+# `d7e11294`) — dans les deux cas, deux causes racines distinctes :
 #
-# Cette garde fige les trois invariants qui empêchent la régression :
+#  #7511 — le gate ne mesurait pas `api_changed` : sur un SHA hors `api/**` et
+#          `front/admin-dashboard/**`, les workflows requis sont filtrés par
+#          chemin, donc aucun run n'existe — et le gate concluait « indécision »
+#          (`no-runs`, rouge) au lieu de « rien à déployer » (`not-required`).
+#  #7528 — `web_changed` était déduit de la liste `web` de
+#          `.github/paths-filters.yml`, volontairement PLUS LARGE que les
+#          `paths:` de `web-ci.yml` (elle ajoute `deploy-main.yml` et deux docs).
+#          Un merge ne touchant que des fichiers CI affichait donc
+#          `web_changed=true` alors qu'aucun run `Web CI - Leopardo Admin` ne
+#          pouvait exister → même rouge par construction.
+#
+# Cette garde fige les invariants qui empêchent le retour des deux :
 #
 #  1. l'action `verify-deploy-workflows` accepte la mesure `api_changed` et
 #     qualifie l'absence de run requis en `not-required` (décision) quand
-#     `api_changed=false` ET `web_changed=false` — et NON en `no-runs`
-#     (indécision) ;
+#     `api_changed=false` ET `web_changed=false` — et NON en `no-runs` ;
 #  2. `deploy-main.yml` fournit cette mesure AVANT le gate et son job
 #     « Deploy gate verdict » traite `not-required` comme une décision
 #     (return 0), `no-runs` restant une indécision (exit 1) ;
-#  3. les listes de chemins `api` et `web` de `deploy-main.yml`
-#     (`isApiPath` / `isWebPath`) sont la copie EXACTE de celles de
-#     `.github/paths-filters.yml` — une divergence (c'est la cause racine de
-#     #7511) rend le verdict faux : le gate déduit d'un filtre qui n'est pas
-#     celui qui déclenche réellement les workflows.
+#  3. **le gate n'exige que ce que le workflow correspondant peut produire** :
+#     les prédicats `isApiPath` / `isWebPath` de `deploy-main.yml` doivent être
+#     la copie EXACTE des `paths:` de `tests.yml` et `web-ci.yml` — les
+#     workflows dont le gate attend la conclusion. C'est la divergence de ces
+#     listes qui a produit #7511 puis #7528.
 #
 # Usage :
 #   bash dev-hub/tools/check-deploy-gate-outcome.sh            # vérifie le dépôt
@@ -35,7 +42,8 @@ set -euo pipefail
 
 ACTION_PATH=".github/actions/verify-deploy-workflows/action.yml"
 DEPLOY_PATH=".github/workflows/deploy-main.yml"
-FILTERS_PATH=".github/paths-filters.yml"
+TESTS_PATH=".github/workflows/tests.yml"
+WEB_CI_PATH=".github/workflows/web-ci.yml"
 
 errors=0
 
@@ -45,8 +53,6 @@ fail() {
 }
 
 # Extrait le corps d'une fonction fléchée JS `const <name> = (p) => ... ;`
-# dans $1=file, $2=nom de fonction. Le corps va jusqu'au `;` de fin d'expression
-# en début de ligne suivi d'une indentation inférieure ou égale.
 extract_js_arrow_body() {
   local file="$1" fn="$2"
   awk -v fn="${fn}" '
@@ -59,17 +65,108 @@ extract_js_arrow_body() {
   ' "${file}"
 }
 
+# Extrait les `paths:` du bloc `push:` d'un workflow (liste YAML de chaînes).
+workflow_push_paths() {
+  python3 - "$1" <<'PYEXTRACT'
+import re
+import sys
+
+path = sys.argv[1]
+lines = open(path, encoding="utf-8").read().split("\n")
+
+def find_block(start_index, indent):
+    """Indices des lignes du bloc indenté plus profondément que `indent`."""
+    out = []
+    for i in range(start_index, len(lines)):
+        line = lines[i]
+        if not line.strip():
+            continue
+        cur = len(line) - len(line.lstrip())
+        if cur <= indent:
+            break
+        out.append((i, line, cur))
+    return out
+
+# Trouver `on:` (indent 0), puis `push:` (indent > 0), puis `paths:` dedans.
+on_idx = next(i for i, l in enumerate(lines) if re.match(r"^on:\s*$", l))
+push_idx = None
+for i, line, cur in find_block(on_idx + 1, 0):
+    if re.match(r"^\s*push:\s*$", line):
+        push_idx = i
+        push_indent = cur
+        break
+if push_idx is None:
+    sys.exit(0)
+
+for i, line, cur in find_block(push_idx + 1, push_indent):
+    if re.match(r"^\s*paths:\s*$", line):
+        paths_indent = cur
+        for _, item, item_indent in find_block(i + 1, paths_indent):
+            m = re.match(r"^\s*-\s*['\"]?([^'\"]+?)['\"]?\s*$", item)
+            if m:
+                print(m.group(1).strip())
+        break
+PYEXTRACT
+}
+
+# Vérifie que l'ensemble des chemins traités par les prédicats du gate couvre
+# EXACTEMENT les déclencheurs des workflows dont il attend la conclusion
+# (issues #7511 / #7528) :
+#   - l'union (isApiPath ∪ isWebPath) ⊇ paths: de tests.yml ET de web-ci.yml
+#     (le gate ne doit pas laisser passer un SHA qui aurait dû déclencher un
+#     run — défaut #7511) ;
+#   - et ⊆ : aucun chemin traité par le gate ne doit venir d'ailleurs (défaut
+#     #7528 : `deploy-main.yml` + 2 docs hérités d'une liste plus large, sans
+#     run possible).
+check_gate_paths() {
+  local deploy="$1" api_body="$2" web_body="$3"         tests_paths="$4" web_paths="$5"
+
+  local p
+  # Union : chaque déclencheur des deux workflows doit être vu par au moins un
+  # des deux prédicats du gate (sinon un run réel n'est pas exigé, #7511).
+  local any
+  while IFS= read -r p; do
+    [[ -z "${p}" ]] && continue
+    js_covers_path "${api_body}" "${p}" && continue
+    js_covers_path "${web_body}" "${p}" && continue
+    fail "${DEPLOY_PATH} : « ${p} » déclenche un workflow requis mais n'est couvert par aucun prédicat du gate (#7511)."
+  done <<< "$(printf '%s\n%s\n' "${tests_paths}" "${web_paths}")"
+
+  # Sens inverse : un fichier que le gate traite ne doit pas être un chemin que
+  # ni tests.yml ni web-ci.yml ne déclenchent (défaut #7528 : deploy-main.yml et
+  # deux docs hérités de la liste `web`, plus large, de paths-filters.yml).
+  while IFS= read -r p; do
+    [[ -z "${p}" ]] && continue
+    if ! printf '%s\n%s\n' "${tests_paths}" "${web_paths}" | grep -qxF "${p}"; then
+      fail "${DEPLOY_PATH} : le gate traite « ${p} » alors qu'aucun workflow requis ne se déclenche dessus — _changed serait vrai sans run possible (#7528)."
+    fi
+  done <<< "$(printf '%s\n%s\n' \
+      "$(printf '%s\n' "${api_body}" | sed -n "s/.*p === '\\([^']*\\)'.*/\\1/p")" \
+      "$(printf '%s\n' "${web_body}" | sed -n "s/.*p === '\\([^']*\\)'.*/\\1/p")")"
+}
+
+# Le prédicat JS couvre-t-il ce chemin ? (`**` → préfixe, sinon égalité)
+js_covers_path() {
+  local body="$1" pattern="$2"
+  if [[ "${pattern}" == *'/**' ]]; then
+    printf '%s\n' "${body}" | grep -qF "startsWith('${pattern%/**}/')"
+  else
+    printf '%s\n' "${body}" | grep -qF "p === '${pattern}'"
+  fi
+}
+
 check_filters_parity() {
   local root="$1"
   local action="${root}/${ACTION_PATH}"
   local deploy="${root}/${DEPLOY_PATH}"
-  local filters="${root}/${FILTERS_PATH}"
-
+  local tests_wf="${root}/${TESTS_PATH}"
+  local web_wf="${root}/${WEB_CI_PATH}"
   local before=${errors}
 
   [[ -f "${action}" ]] || { fail "action introuvable : ${ACTION_PATH}"; return 1; }
   [[ -f "${deploy}" ]] || { fail "workflow introuvable : ${DEPLOY_PATH}"; return 1; }
-  [[ -f "${filters}" ]] || { fail "filtres introuvables : ${FILTERS_PATH}"; return 1; }
+  [[ -f "${tests_wf}" ]] || { fail "workflow introuvable : ${TESTS_PATH}"; return 1; }
+  [[ -f "${web_wf}" ]] || { fail "workflow introuvable : ${WEB_CI_PATH}"; return 1; }
 
   # --- 1. l'action déclare et consomme api_changed -------------------------
   if ! grep -qE '^  api_changed:' "${action}"; then
@@ -87,7 +184,6 @@ check_filters_parity() {
   if ! grep -qE "setOutput\('gate_outcome', 'not-required'\)" "${action}"; then
     fail "${ACTION_PATH} : le cas sans run requis ne produit pas gate_outcome=not-required."
   fi
-  # Le verdict « indécision » doit survivre pour les cas où l'API a réellement changé.
   if ! grep -qE "setOutput\('gate_outcome', 'no-runs'\)" "${action}"; then
     fail "${ACTION_PATH} : le verdict d'indécision « no-runs » a disparu — un vrai trou de couverture ne serait plus signalé."
   fi
@@ -101,14 +197,13 @@ check_filters_parity() {
   fi
 
   local verdict_block
-  verdict_block="$(awk '/Render the gate verdict/{c=1} c{print} /^  [a-z-]+:$/ && c && NR>1 {}' "${deploy}")"
+  verdict_block="$(awk '/Render the gate verdict/{c=1} c{print}' "${deploy}")"
   if ! printf '%s\n' "${verdict_block}" | grep -qE '^            not-required\)'; then
     fail "${DEPLOY_PATH} : le job de verdict ne traite plus « not-required » comme une décision (le gate vert redeviendrait rouge)."
   fi
   if ! printf '%s\n' "${verdict_block}" | grep -qE 'no-runs\|timeout'; then
     fail "${DEPLOY_PATH} : le job de verdict ne traite plus l'indécision « no-runs/timeout » (régression #7457)."
   fi
-  # `not-required` doit être traité AVANT le motif générique d'échec, et sans exit 1.
   local notreq_line range_line
   notreq_line="$(printf '%s\n' "${verdict_block}" | grep -nE '^            not-required\)' | head -n 1 | cut -d: -f1)"
   range_line="$(printf '%s\n' "${verdict_block}" | grep -nE '^            no-runs\|timeout' | head -n 1 | cut -d: -f1)"
@@ -116,63 +211,25 @@ check_filters_parity() {
     fail "${DEPLOY_PATH} : « not-required » est traité après le motif d'indécision — il ne serait jamais atteint."
   fi
 
-  # --- 3. parité stricte des filtres api/web -------------------------------
+  # --- 3. parité : le gate n'exige que ce que le workflow peut produire ----
   local api_patterns web_patterns
-  api_patterns="$(awk '/^api:[[:space:]]*$/{c=1;next} /^[a-z]+:[[:space:]]*$/{c=0} c' "${filters}" | sed -n "s/^[[:space:]]*-[[:space:]]*'\(.*\)'$/\1/p")"
-  web_patterns="$(awk '/^web:[[:space:]]*$/{c=1;next} /^[a-z]+:[[:space:]]*$/{c=0} c' "${filters}" | sed -n "s/^[[:space:]]*-[[:space:]]*'\(.*\)'$/\1/p")"
+  api_patterns="$(workflow_push_paths "${tests_wf}")"
+  web_patterns="$(workflow_push_paths "${web_wf}")"
 
-  if [[ -z "${api_patterns}" || -z "${web_patterns}" ]]; then
-    fail "${FILTERS_PATH} : listes api/web illisibles (format modifié ?) — la garde ne peut plus comparer."
-    return 1
+  if [[ -z "${api_patterns}" ]]; then
+    fail "${TESTS_PATH} : aucun `paths:` sur `push:` lisible — la garde ne peut plus comparer au filtre api du gate."
+  fi
+  if [[ -z "${web_patterns}" ]]; then
+    fail "${WEB_CI_PATH} : aucun `paths:` sur `push:` lisible — la garde ne peut plus comparer au filtre web du gate."
   fi
 
-  local body_ok=1
-  local body
-  for pair in "api:isApiPath" "web:isWebPath"; do
-    local key="${pair%%:*}" fn="${pair##*:}"
-    body="$(extract_js_arrow_body "${deploy}" "${fn}")"
-    if [[ -z "${body}" ]]; then
-      fail "${DEPLOY_PATH} : fonction ${fn} introuvable — parité des filtres non vérifiable."
-      body_ok=0
-      continue
-    fi
-    local patterns="${api_patterns}"
-    [[ "${key}" == "web" ]] && patterns="${web_patterns}"
-    local pattern
-    while IFS= read -r pattern; do
-      [[ -z "${pattern}" ]] && continue
-      if [[ "${pattern}" == *'/**' ]]; then
-        local prefix="${pattern%/**}"
-        if ! printf '%s\n' "${body}" | grep -qF "startsWith('${prefix}/')"; then
-          fail "${DEPLOY_PATH} : ${fn} ne couvre pas « ${pattern} » (attendu : startsWith('${prefix}/')) — divergence avec ${FILTERS_PATH} (cause racine #7511)."
-        fi
-      else
-        if ! printf '%s\n' "${body}" | grep -qF "p === '${pattern}'"; then
-          fail "${DEPLOY_PATH} : ${fn} ne couvre pas « ${pattern} » (attendu : p === '${pattern}') — divergence avec ${FILTERS_PATH}."
-        fi
-      fi
-    done <<< "${patterns}"
-  done
-
-  # Sens inverse : deploy-main ne doit pas inventer de chemin que les filtres ne
-  # déclarent pas (sinon le verdict s'appuie sur un filtre qui n'existe pas).
-  if [[ ${body_ok} -eq 1 ]]; then
-    for pair in "api:isApiPath" "web:isWebPath"; do
-      local key="${pair%%:*}" fn="${pair##*:}" patterns="${api_patterns}"
-      [[ "${key}" == "web" ]] && patterns="${web_patterns}"
-      body="$(extract_js_arrow_body "${deploy}" "${fn}")"
-      local literal
-      while IFS= read -r literal; do
-        [[ -z "${literal}" ]] && continue
-        case "${literal}" in
-          *.github/workflows/tests.yml|*.github/workflows/phpstan-baseline.yml|*.github/workflows/web-ci.yml|*.github/workflows/deploy-main.yml|docs/GESTION_PROJET/*) ;;
-          *) continue ;;
-        esac
-        if ! printf '%s\n' "${patterns}" | grep -qxF "${literal}"; then
-          fail "${DEPLOY_PATH} : ${fn} déclare « ${literal} », absent de ${FILTERS_PATH} — le verdict s'appuierait sur un filtre inexistant."
-        fi
-      done <<< "$(printf '%s\n' "${body}" | sed -n "s/.*p === '\([^']*\)'.*/\1/p")"
-    done
+  local api_body web_body
+  api_body="$(extract_js_arrow_body "${deploy}" "isApiPath")"
+  web_body="$(extract_js_arrow_body "${deploy}" "isWebPath")"
+  if [[ -z "${api_body}" || -z "${web_body}" ]]; then
+    fail "${DEPLOY_PATH} : prédicats isApiPath/isWebPath introuvables — parité des filtres non vérifiable."
+  else
+    check_gate_paths "${deploy}" "${api_body}" "${web_body}" "${api_patterns}" "${web_patterns}"
   fi
 
   [[ ${errors} -eq ${before} ]] || return 1
@@ -185,39 +242,59 @@ self_test() {
   trap 'rm -rf "${tmp:-}"' EXIT
   mkdir -p "${tmp}/.github/actions/verify-deploy-workflows" "${tmp}/.github/workflows"
 
-  # --- cas sain -----------------------------------------------------------
   cp "${ACTION_PATH}" "${tmp}/${ACTION_PATH}"
   cp "${DEPLOY_PATH}" "${tmp}/${DEPLOY_PATH}"
-  cp "${FILTERS_PATH}" "${tmp}/${FILTERS_PATH}"
+  cp "${TESTS_PATH}" "${tmp}/${TESTS_PATH}"
+  cp "${WEB_CI_PATH}" "${tmp}/${WEB_CI_PATH}"
   if ! ( check_filters_parity "${tmp}" ); then
     echo "::error::[deploy-gate --self-test] un dépôt conforme est refusé — garde trop stricte." >&2
     return 1
   fi
 
   # --- mutation 1 : le cas « rien à déployer » disparaît -------------------
-  python3 - "${tmp}/${ACTION_PATH}" <<'PY'
-import re, sys
+  python3 - "${tmp}/${ACTION_PATH}" <<'PYSELFTEST'
+import sys
 p = sys.argv[1]
 s = open(p, encoding='utf-8').read()
 s = s.replace('if (noRunExpected) {', 'if (false) {', 1)
 open(p, 'w', encoding='utf-8').write(s)
-PY
+PYSELFTEST
   if ( check_filters_parity "${tmp}" ) 2>/dev/null; then
     echo "::error::[deploy-gate --self-test] mutation « noRunExpected neutralisé » non détectée." >&2
     return 1
   fi
   cp "${ACTION_PATH}" "${tmp}/${ACTION_PATH}"
 
-  # --- mutation 2 : divergence de filtre (cause racine #7511) -------------
-  python3 - "${tmp}/${DEPLOY_PATH}" <<'PY'
+  # --- mutation 2 : divergence du filtre api -------------------------------
+  python3 - "${tmp}/${DEPLOY_PATH}" <<'PYSELFTEST'
 import sys
 p = sys.argv[1]
 s = open(p, encoding='utf-8').read()
 s = s.replace("p === '.github/workflows/phpstan-baseline.yml'", "p === '.github/workflows/phpstan-renamed.yml'", 1)
 open(p, 'w', encoding='utf-8').write(s)
-PY
+PYSELFTEST
   if ( check_filters_parity "${tmp}" ) 2>/dev/null; then
     echo "::error::[deploy-gate --self-test] divergence des filtres api non détectée." >&2
+    return 1
+  fi
+  cp "${DEPLOY_PATH}" "${tmp}/${DEPLOY_PATH}"
+
+  # --- mutation 3 (régression #7528) : le gate re-exige deploy-main.yml ----
+  python3 - "${tmp}/${DEPLOY_PATH}" <<'PYSELFTEST'
+import sys
+p = sys.argv[1]
+s = open(p, encoding='utf-8').read()
+s = s.replace("""            const isWebPath = (p) =>
+              p.startsWith('front/admin-dashboard/') ||
+              p === '.github/workflows/web-ci.yml';""",
+"""            const isWebPath = (p) =>
+              p.startsWith('front/admin-dashboard/') ||
+              p === '.github/workflows/web-ci.yml' ||
+              p === '.github/workflows/deploy-main.yml';""", 1)
+open(p, 'w', encoding='utf-8').write(s)
+PYSELFTEST
+  if ( check_filters_parity "${tmp}" ) 2>/dev/null; then
+    echo "::error::[deploy-gate --self-test] la régression #7528 (chemin exigé sans workflow possible) n'est pas détectée." >&2
     return 1
   fi
 
@@ -232,7 +309,7 @@ main() {
     echo "::error::[deploy-gate] ${errors} invariant(s) rompu(s) — voir ci-dessus."
     exit 1
   fi
-  echo "✅  Verdict du gate de déploiement cohérent (api_changed, not-required, parité des filtres)."
+  echo "✅  Verdict du gate de déploiement cohérent (api_changed, not-required, et le gate n'exige que ce que tests.yml/web-ci.yml peuvent produire)."
 }
 
 if [[ "${1:-}" == "--self-test" ]]; then
