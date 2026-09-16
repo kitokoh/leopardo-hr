@@ -1,0 +1,72 @@
+name: Notification Emitter Guard
+
+# Issue #7481 — la notification in-app a UNE source de vérité : la table
+# `notifications`, servie par `GET /api/v1/notifications` et écrite par
+# `NotificationDispatcher`. Le modèle `AppNotification` (table
+# `app_notifications`) est déprécié depuis la PR #7537, et l'ADR-0013 qui
+# prévoyait la bascule inverse est marquée « Remplacée ».
+#
+# Pourquoi une garde : la remise en place d'un émetteur sur `app_notifications`
+# ne casse rien immédiatement — elle recrée simplement deux vérités qui
+# divergent, et c'est exactement le défaut qui a coûté des semaines (une
+# notification publiée par le dispatcher était INVISIBLE dans la boîte de
+# réception de l'utilisateur). Un défaut silencieux a besoin d'une garde, pas
+# d'une revue attentive.
+#
+# La garde est diff-scoped au niveau de la LIGNE : elle ne bloque pas une PR qui
+# touche un fichier important déjà le modèle déprécié (corriger une coquille ne
+# doit pas être refusé) — cf. issue #7482.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "api/app/**"
+      - "api/routes/**"
+      - "dev-hub/tools/check-notification-emitter-diff.sh"
+      - "dev-hub/tools/check-notification-emitter-diff-test.sh"
+      - ".github/workflows/notification-emitter-guard.yml"
+  push:
+    branches: [main]
+    paths:
+      - "api/app/**"
+      - "api/routes/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: notification-emitter-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  notification-emitter-guard:
+    name: ADR-0013 remplacée — pas de nouvel émetteur legacy (issue #7481)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Auto-test de la garde (fixtures)
+        run: bash dev-hub/tools/check-notification-emitter-diff-test.sh
+
+      - name: Pas de nouvel émetteur sur AppNotification (#7481)
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
+          HEAD="${{ github.event.pull_request.head.sha || github.sha }}"
+          if [[ -z "${BASE}" || "${BASE}" == "0000000000000000000000000000000000000000" ]]; then
+            echo "::notice::Pas de base comparables (premier push ou dispatch) — garde sautée explicitement."
+            exit 0
+          fi
+          # Les deux révisions doivent être présentes : un checkout superficiel
+          # ferait passer la garde en silence (faux négatif).
+          git fetch --no-tags --depth=1 origin "${BASE}" || true
+          bash dev-hub/tools/check-notification-emitter-diff.sh "${BASE}" "${HEAD}"
