@@ -2,9 +2,25 @@
 
 ## Statut
 
-Proposée (documentation d'arbitrage — issue #2497, review session 2026-08-15).
+**Remplacée** (2026-09-16) — la décision ci-dessous (**bascule vers `app_notifications`**)
+ne s'applique plus ; elle est conservée pour mémoire et pour l'historique du raisonnement.
 
-**Date** : 2026-08-15
+**Décision en vigueur** : le store canonique est la table **`notifications`**
+(modèle `App\Modules\Notification\Domain\Models\Notification`), servie par
+`GET /api/v1/notifications` et écrite par `NotificationDispatcher` via le port
+`InAppNotifier`. Le modèle `AppNotification` (table `app_notifications`) est
+**déprécié** : plus aucun lecteur ni écrivain de production (PR #7537, issue #7481).
+Le diagnostic de cette ADR (« les notifications du chemin moderne ne sont jamais
+servies ») était **juste** ; l'arbitrage retenu est l'inverse de sa conclusion,
+parce que `notifications` est le seul canal qui porte déjà l'inbox, les
+préférences, les heures calmes et l'audit `communication_events` — basculer vers
+`app_notifications` aurait demandé de reconstruire tout cela.
+
+Garde opposable : `.github/workflows/notification-emitter-guard.yml` +
+`dev-hub/tools/check-notification-emitter-diff.sh` refusent tout **nouvel**
+émetteur de production sur `AppNotification`.
+
+**Date** : 2026-08-15 (proposée) — 2026-09-16 (remplacée)
 
 ## Contexte
 

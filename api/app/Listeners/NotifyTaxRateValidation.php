@@ -25,7 +25,8 @@ use Illuminate\Support\Facades\Mail;
  *
  * - Soumission → email best-effort aux platform_admins (pas de canal in-app
  *   super-admin à ce jour : journalisation structurée en complément).
- * - Approbation/Rejet → notification in-app (AppNotification) + email
+ * - Approbation/Rejet → notification in-app (store canonique `notifications`,
+ *   modèle `Notification` — `AppNotification` est déprécié depuis #7481) + email
  *   best-effort au comptable/principal qui a soumis.
  *
  * Issue #1923 (revue lead) :
