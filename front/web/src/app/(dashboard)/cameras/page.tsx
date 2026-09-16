@@ -1,19 +1,25 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertCircle, Camera as CameraIcon, Loader2, Plus, ShieldCheck, Trash2 } from 'lucide-react';
+import { AlertCircle, Camera as CameraIcon, Copy, Link2, Loader2, Plus, ShieldCheck, Trash2 } from 'lucide-react';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
 import {
+  CAMERA_SHARE_DURATIONS,
+  buildCameraViewerUrl,
   createCamera,
+  createCameraAccessToken,
   deleteCamera,
   isRtspUrl,
   listCameraAccessLogs,
+  listCameraAccessTokens,
   listCameraPermissions,
   listCameras,
+  revokeCameraAccessToken,
   testRtspSource,
   type CameraAccessLog,
+  type CameraAccessToken,
   type CameraPermission,
   type CameraPlanLimit,
   type CameraStream,
@@ -77,7 +83,26 @@ type CopyKey =
   | 'inactive'
   | 'invalidRtsp'
   | 'genericError'
-  | 'close';
+  | 'close'
+  | 'shareCta'
+  | 'shareCreateTitle'
+  | 'shareLabel'
+  | 'shareDuration'
+  | 'shareCreate'
+  | 'shareCreating'
+  | 'shareLinksTitle'
+  | 'shareEmpty'
+  | 'shareCopy'
+  | 'shareCopied'
+  | 'shareRevoke'
+  | 'shareRevoking'
+  | 'shareExpires'
+  | 'shareRevoked'
+  | 'shareLinkHint'
+  | 'shareDuration60'
+  | 'shareDuration1440'
+  | 'shareDuration10080'
+  | 'shareDuration43200';
 
 const COPY_KEYS: CopyKey[] = [
   'title', 'subtitle', 'loading', 'loadError', 'retry', 'planUsed', 'planMax', 'planUnlimited',
@@ -87,6 +112,10 @@ const COPY_KEYS: CopyKey[] = [
   'permissionsTitle', 'permissionsEmpty', 'permissionsView', 'permissionsNoView', 'permissionsManage',
   'logsTitle', 'logsEmpty', 'active', 'inactive',
   'invalidRtsp', 'genericError', 'close',
+  'shareCta', 'shareCreateTitle', 'shareLabel', 'shareDuration', 'shareCreate', 'shareCreating',
+  'shareLinksTitle', 'shareEmpty', 'shareCopy', 'shareCopied', 'shareRevoke', 'shareRevoking',
+  'shareExpires', 'shareRevoked', 'shareLinkHint', 'shareDuration60', 'shareDuration1440',
+  'shareDuration10080', 'shareDuration43200',
 ];
 
 function buildCopy(locale: AppLocale): Record<CopyKey, string> {
@@ -117,6 +146,10 @@ export default function CamerasModulePage() {
   const [permissions, setPermissions] = useState<Record<number, CameraPermission[]>>({});
   const [logs, setLogs] = useState<Record<number, CameraAccessLog[]>>({});
   const [openAccess, setOpenAccess] = useState<number | null>(null);
+  const [shareOpen, setShareOpen] = useState<number | null>(null);
+  const [shareTokens, setShareTokens] = useState<Record<number, CameraAccessToken[]>>({});
+  const [shareForm, setShareForm] = useState<{ label: string; minutes: number }>({ label: '', minutes: 60 });
+  const [copiedId, setCopiedId] = useState<number | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -223,6 +256,163 @@ export default function CamerasModulePage() {
       setBusy(null);
     }
   };
+
+  /**
+   * #7425 (tranche 2) — ouvre le panneau de partage d'une caméra et charge ses
+   * liens existants (l'API ne renvoie le jeton brut qu'à la création : un lien
+   * déjà créé ne peut pas être réaffiché, il doit être régénéré).
+   */
+  const openShare = async (camera: CameraStream) => {
+    if (shareOpen === camera.id) {
+      setShareOpen(null);
+      return;
+    }
+    setShareOpen(camera.id);
+    setCopiedId(null);
+    setBusy(`share-${camera.id}`);
+    try {
+      const tokens = await listCameraAccessTokens(camera.id);
+      setShareTokens((current) => ({ ...current, [camera.id]: tokens }));
+    } catch {
+      setError(c.genericError);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const createShareLink = async (camera: CameraStream) => {
+    setBusy(`share-create-${camera.id}`);
+    try {
+      const created = await createCameraAccessToken(camera.id, {
+        ...(shareForm.label.trim() ? { label: shareForm.label.trim() } : {}),
+        expires_in_minutes: shareForm.minutes,
+      });
+      setShareTokens((current) => ({ ...current, [camera.id]: [created, ...(current[camera.id] ?? [])] }));
+      setShareForm({ label: '', minutes: 60 });
+
+      // Le lien est copiable immédiatement : c'est le seul moment où le jeton
+      // est disponible en clair.
+      const link = created.share_url
+        ?? (created.token ? buildCameraViewerUrl(window.location.origin, created.token) : '');
+      if (link) {
+        await navigator.clipboard?.writeText(link).catch(() => undefined);
+        setCopiedId(created.id);
+      }
+    } catch {
+      setError(c.genericError);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const revokeShareLink = async (camera: CameraStream, tokenId: number) => {
+    setBusy(`share-revoke-${tokenId}`);
+    try {
+      await revokeCameraAccessToken(camera.id, tokenId);
+      setShareTokens((current) => ({
+        ...current,
+        [camera.id]: (current[camera.id] ?? []).map((token) =>
+          token.id === tokenId ? { ...token, is_revoked: true } : token,
+        ),
+      }));
+    } catch {
+      setError(c.genericError);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const durationLabel = (minutes: number): string => {
+    switch (minutes) {
+      case 60: return c.shareDuration60;
+      case 1440: return c.shareDuration1440;
+      case 10080: return c.shareDuration10080;
+      case 43200: return c.shareDuration43200;
+      default: return `${minutes} min`;
+    }
+  };
+
+  const renderShare = (camera: CameraStream) => (
+    <div className="mt-3 space-y-3 rounded-2xl border border-slate-200 bg-slate-50/80 p-4" data-testid={`camera-share-panel-${camera.id}`}>
+      <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">{c.shareCreateTitle}</p>
+
+      <div className="grid gap-3 sm:grid-cols-3">
+        <label className="block">
+          <span className="text-xs font-bold text-slate-600">{c.shareLabel}</span>
+          <input
+            className={inputClass}
+            value={shareForm.label}
+            maxLength={150}
+            onChange={(event) => setShareForm({ ...shareForm, label: event.target.value })}
+            data-testid={`camera-share-label-${camera.id}`}
+          />
+        </label>
+        <label className="block">
+          <span className="text-xs font-bold text-slate-600">{c.shareDuration}</span>
+          <select
+            className={inputClass}
+            value={shareForm.minutes}
+            onChange={(event) => setShareForm({ ...shareForm, minutes: Number(event.target.value) })}
+            data-testid={`camera-share-duration-${camera.id}`}
+          >
+            {CAMERA_SHARE_DURATIONS.map((minutes) => (
+              <option key={minutes} value={minutes}>{durationLabel(minutes)}</option>
+            ))}
+          </select>
+        </label>
+        <div className="flex items-end">
+          <button
+            type="button"
+            disabled={busy !== null}
+            onClick={() => void createShareLink(camera)}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-bold text-emerald-700 transition hover:bg-emerald-100 disabled:opacity-60"
+            data-testid={`camera-share-create-${camera.id}`}
+          >
+            {busy === `share-create-${camera.id}` ? (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <Link2 className="h-4 w-4" aria-hidden="true" />
+            )}
+            {busy === `share-create-${camera.id}` ? c.shareCreating : c.shareCreate}
+          </button>
+        </div>
+      </div>
+
+      <p className="text-[11px] text-slate-500" data-testid="camera-share-hint">{c.shareLinkHint}</p>
+      {copiedId !== null && (shareTokens[camera.id] ?? []).some((token) => token.id === copiedId) ? (
+        <p className="text-xs font-bold text-emerald-700" data-testid="camera-share-copied">{c.shareCopied}</p>
+      ) : null}
+
+      <div>
+        <p className="text-xs font-bold text-slate-700">{c.shareLinksTitle}</p>
+        {(shareTokens[camera.id] ?? []).length === 0 ? (
+          <p className="mt-1 text-xs text-slate-500" data-testid={`camera-share-empty-${camera.id}`}>{c.shareEmpty}</p>
+        ) : (
+          <ul className="mt-1 space-y-1 text-xs text-slate-600">
+            {(shareTokens[camera.id] ?? []).map((token) => (
+              <li key={token.id} className="flex flex-wrap items-center gap-x-3 gap-y-1" data-testid={`camera-share-link-${token.id}`}>
+                <span className="font-bold">{token.label ?? `#${token.id}`}</span>
+                {token.expires_at ? <span>{c.shareExpires} {token.expires_at}</span> : null}
+                {token.is_revoked ? (
+                  <span className="rounded-lg border border-slate-200 bg-slate-100 px-2 py-0.5 font-black uppercase">{c.shareRevoked}</span>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={busy !== null}
+                    onClick={() => void revokeShareLink(camera, token.id)}
+                    className="rounded-lg border border-red-200 px-2 py-0.5 font-bold text-red-600 transition hover:bg-red-50 disabled:opacity-60"
+                    data-testid={`camera-share-revoke-${token.id}`}
+                  >
+                    {busy === `share-revoke-${token.id}` ? c.shareRevoking : c.shareRevoke}
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
 
   const renderAccesses = (camera: CameraStream) => (
     <div className="mt-3 space-y-3 rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
@@ -344,6 +534,15 @@ export default function CamerasModulePage() {
                   <div className="flex flex-wrap items-center gap-2">
                     <button
                       type="button"
+                      onClick={() => void openShare(camera)}
+                      className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
+                      data-testid={`camera-share-${camera.id}`}
+                    >
+                      <Link2 className="h-3.5 w-3.5" aria-hidden="true" />
+                      {shareOpen === camera.id ? c.close : c.shareCta}
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => void openAccesses(camera)}
                       className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
                       data-testid={`camera-accesses-${camera.id}`}
@@ -363,6 +562,7 @@ export default function CamerasModulePage() {
                   </div>
                 </div>
 
+                {shareOpen === camera.id ? renderShare(camera) : null}
                 {openAccess === camera.id ? renderAccesses(camera) : null}
               </li>
             ))}

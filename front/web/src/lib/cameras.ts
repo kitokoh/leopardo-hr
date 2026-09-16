@@ -17,7 +17,7 @@
  * `CameraPermissionController`, `CameraAccessLogController`).
  */
 
-import { apiFetch } from '@/lib/api-client';
+import { apiFetch, resolveApiBaseUrl } from '@/lib/api-client';
 
 /** Charge utile d'une caméra (`CameraService::buildStreamPayload`). */
 export interface CameraStream {
@@ -160,4 +160,137 @@ export const CAMERAS_MODULE_KEY = 'cameras';
 /** URL RTSP : même règle que `StoreCameraRequest` (schéma `rtsp://`). */
 export function isRtspUrl(value: string): boolean {
   return /^rtsp:\/\/[^\s"'<>]+$/i.test(value.trim());
+}
+
+/* ------------------------------------------------------------------------- *
+ * #7425 (tranche 2) — partage à un tiers et viewer sans compte.
+ *
+ * Le jeton d'accès tiers est un **porteur** : qui l'a voit le flux. Deux règles
+ * en découlent, et elles ne sont pas négociables côté client :
+ *
+ *  1. le jeton ne voyage **jamais** dans la chaîne de requête — il est placé
+ *     dans le **fragment** de l'URL (`#t=…`), que le navigateur ne transmet
+ *     pas au serveur : ni journaux du proxy/CDN, ni en-tête `Referer`. C'est la
+ *     règle déjà appliquée par `PublicCameraViewerController` (#4931/#6560,
+ *     qui a supprimé le repli `?t=`) ;
+ *  2. l'API n'accepte le jeton que par l'en-tête **`X-Token`** (contrôleur
+ *     public) : la page le lit dans le fragment et le transporte en en-tête.
+ * ------------------------------------------------------------------------- */
+
+export interface CameraAccessToken {
+  id: number;
+  camera_id: number;
+  label: string | null;
+  granted_to_email: string | null;
+  granted_to_name: string | null;
+  granted_by: number;
+  permissions: Record<string, unknown> | null;
+  expires_at: string | null;
+  last_used_at: string | null;
+  use_count: number;
+  is_revoked: boolean;
+  created_at: string | null;
+  /** Renseigné UNIQUEMENT à la création (le token n'est jamais relu ensuite). */
+  token?: string;
+  /** Lien prêt à partager, construit par l'API (fragment, jamais de query). */
+  share_url?: string;
+}
+
+export interface CreateCameraAccessTokenInput {
+  label?: string;
+  expires_in_minutes: number;
+  granted_to_email?: string;
+  granted_to_name?: string;
+}
+
+/** Payload public du viewer tiers (`GET /view/cam`, en-tête `X-Token`). */
+export interface PublicCameraView {
+  camera: { id: number; name: string; location: string | null };
+  stream_url: string;
+  stream_token: string;
+  expires_at: string | null;
+  permissions: Record<string, unknown> | null;
+  label: string | null;
+}
+
+export type PublicCameraViewResult =
+  | { ok: true; view: PublicCameraView }
+  | { ok: false; reason: 'invalid_token' | 'camera_unavailable' | 'network' };
+
+/** Durées proposées par l'API (`cameras.access_token_durations`). */
+export const CAMERA_SHARE_DURATIONS = [60, 1440, 10080, 43200] as const;
+
+/**
+ * Construit le lien de partage. Le jeton va **dans le fragment** : sans lui, la
+ * page `/view/cam` ne peut rien afficher ; avec lui en query string, le jeton
+ * fuit dans les journaux.
+ */
+export function buildCameraViewerUrl(origin: string, token: string): string {
+  const base = origin.replace(/\/+$/, '');
+  return `${base}/view/cam#t=${token}`;
+}
+
+/** Lit le jeton du fragment d'URL. Refuse explicitement l'ancienne forme `?t=`. */
+export function readCameraTokenFromUrl(href: string): { token: string | null; legacy: boolean } {
+  const url = new URL(href, 'http://localhost');
+  const fromFragment = new URLSearchParams(url.hash.replace(/^#/, '')).get('t')
+    ?? (url.hash.replace(/^#/, '').startsWith('t=') ? url.hash.replace(/^#/, '').slice(2) : '');
+
+  if (fromFragment) {
+    return { token: fromFragment, legacy: false };
+  }
+  // Forme héritée : jeton en clair dans la chaîne de requête. On ne l'utilise
+  // PAS (il est déjà journalisé) et on le dit à l'utilisateur.
+  return { token: null, legacy: url.searchParams.has('t') };
+}
+
+export async function listCameraAccessTokens(cameraId: number): Promise<CameraAccessToken[]> {
+  const response = await apiFetch(`/cameras/${cameraId}/access-tokens`);
+  const payload = await readJson<{ data?: CameraAccessToken[] }>(response);
+  return Array.isArray(payload.data) ? payload.data : [];
+}
+
+export async function createCameraAccessToken(
+  cameraId: number,
+  input: CreateCameraAccessTokenInput,
+): Promise<CameraAccessToken> {
+  const response = await apiFetch(`/cameras/${cameraId}/access-tokens`, {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+  const payload = await readJson<{ data: CameraAccessToken }>(response);
+  return payload.data;
+}
+
+export async function revokeCameraAccessToken(cameraId: number, tokenId: number): Promise<void> {
+  await apiFetch(`/cameras/${cameraId}/access-tokens/${tokenId}`, { method: 'DELETE' });
+}
+
+/**
+ * `GET /view/cam` — endpoint **public** (aucune session) : le jeton part en
+ * en-tête `X-Token`. Appel direct à l'API (pas `apiFetch`) : la page viewer
+ * n'est pas dans le portail client et n'a aucun cookie à envoyer.
+ */
+export async function fetchPublicCameraView(token: string): Promise<PublicCameraViewResult> {
+  const response = await fetch(`${resolveApiBaseUrl()}/view/cam`, {
+    headers: { Accept: 'application/json', 'X-Token': token },
+  });
+
+  if (response.status === 404) {
+    const payload = (await response.json().catch(() => ({}))) as { error?: string };
+    return {
+      ok: false,
+      reason: payload.error === 'CAMERA_NOT_FOUND' ? 'camera_unavailable' : 'invalid_token',
+    };
+  }
+  if (!response.ok) {
+    return { ok: false, reason: 'network' };
+  }
+
+  const payload = (await response.json()) as { data?: PublicCameraView };
+  if (!payload.data) {
+    return { ok: false, reason: 'network' };
+  }
+
+  return { ok: true, view: payload.data };
 }

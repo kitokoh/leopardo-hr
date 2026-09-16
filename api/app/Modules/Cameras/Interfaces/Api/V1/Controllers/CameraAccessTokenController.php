@@ -73,8 +73,15 @@ class CameraAccessTokenController extends Controller
     private function present(CameraAccessToken $token, bool $includeToken): array
     {
         $publicUrl = config('cameras.public_view_url');
+
+        // #7425 — le lien de partage place le jeton dans le FRAGMENT (`#t=`),
+        // jamais dans la chaîne de requête : un jeton en query string est
+        // journalisé par les proxys/CDN et transmis dans l'en-tête `Referer`
+        // (c'est la fuite fermée par #4931/#6560, qui a fait supprimer le repli
+        // `?t=` du viewer). Le lien généré ici doit donc être consommable par
+        // `PublicCameraViewerController`, qui n'accepte que l'en-tête X-Token.
         $shareUrl = is_string($publicUrl) && $publicUrl !== '' && $includeToken
-            ? rtrim($publicUrl, '/').'?t='.$token->token
+            ? rtrim($publicUrl, '/').'#t='.$token->token
             : null;
 
         return array_filter([

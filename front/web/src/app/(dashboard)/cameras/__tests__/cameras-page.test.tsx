@@ -3,8 +3,11 @@ import userEvent from '@testing-library/user-event';
 import CamerasModulePage from '../page';
 import {
   createCamera,
+  createCameraAccessToken,
   deleteCamera,
+  listCameraAccessTokens,
   listCameras,
+  revokeCameraAccessToken,
   testRtspSource,
 } from '@/lib/cameras';
 
@@ -28,6 +31,11 @@ jest.mock('@/lib/i18n', () => {
 jest.mock('@/lib/cameras', () => ({
   __esModule: true,
   CAMERAS_MODULE_KEY: 'cameras',
+  CAMERA_SHARE_DURATIONS: [60, 1440, 10080, 43200],
+  buildCameraViewerUrl: (origin: string, token: string) => `${origin}/view/cam#t=${token}`,
+  createCameraAccessToken: jest.fn(),
+  listCameraAccessTokens: jest.fn().mockResolvedValue([]),
+  revokeCameraAccessToken: jest.fn(),
   isRtspUrl: (value: string) => /^rtsp:\/\/[^\s"'<>]+$/i.test(value.trim()),
   listCameras: jest.fn(),
   createCamera: jest.fn(),
@@ -41,6 +49,9 @@ const mockedList = listCameras as jest.MockedFunction<typeof listCameras>;
 const mockedCreate = createCamera as jest.MockedFunction<typeof createCamera>;
 const mockedDelete = deleteCamera as jest.MockedFunction<typeof deleteCamera>;
 const mockedTest = testRtspSource as jest.MockedFunction<typeof testRtspSource>;
+const mockedCreateToken = createCameraAccessToken as jest.MockedFunction<typeof createCameraAccessToken>;
+const mockedListTokens = listCameraAccessTokens as jest.MockedFunction<typeof listCameraAccessTokens>;
+const mockedRevokeToken = revokeCameraAccessToken as jest.MockedFunction<typeof revokeCameraAccessToken>;
 
 const camera = {
   id: 7,
@@ -180,5 +191,55 @@ describe('page /cameras — module Caméras (#7476, #7425)', () => {
     });
     // La caméra n'a pas été retirée de la liste : l'état affiché reste vrai.
     expect(screen.getByTestId('camera-row-7')).toBeInTheDocument();
+  });
+
+  it('crée un lien de partage et le copie (le jeton n’est disponible qu’à la création)', async () => {
+    const writeText = jest.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, { clipboard: { writeText } });
+    mockedCreateToken.mockResolvedValueOnce({
+      id: 42, camera_id: 7, label: 'Assureur', granted_to_email: null, granted_to_name: null,
+      granted_by: 1, permissions: null, expires_at: '2026-09-17T10:00:00Z', last_used_at: null,
+      use_count: 0, is_revoked: false, created_at: '2026-09-16T10:00:00Z',
+      token: 'jeton-partage', share_url: 'https://app.test/view/cam#t=jeton-partage',
+    });
+
+    render(<CamerasModulePage />);
+    await waitFor(() => expect(screen.getByTestId('camera-share-7')).toBeInTheDocument());
+
+    await userEvent.click(screen.getByTestId('camera-share-7'));
+    await waitFor(() => expect(screen.getByTestId('camera-share-panel-7')).toBeInTheDocument());
+
+    await userEvent.type(screen.getByTestId('camera-share-label-7'), 'Assureur');
+    await userEvent.click(screen.getByTestId('camera-share-create-7'));
+
+    await waitFor(() => expect(screen.getByTestId('camera-share-link-42')).toBeInTheDocument());
+    expect(mockedCreateToken).toHaveBeenCalledWith(7, { label: 'Assureur', expires_in_minutes: 60 });
+    // Le lien copié porte le jeton dans le fragment, jamais en query string.
+    expect(writeText).toHaveBeenCalledWith('https://app.test/view/cam#t=jeton-partage');
+    expect(screen.getByTestId('camera-share-copied')).toBeInTheDocument();
+    // L'indication de sécurité est affichée (pourquoi le fragment).
+    expect(screen.getByTestId('camera-share-hint').textContent).toMatch(/#/);
+  });
+
+  it('révoque un lien de partage et le marque comme révoqué', async () => {
+    mockedListTokens.mockResolvedValueOnce([{
+      id: 9, camera_id: 7, label: 'Audit', granted_to_email: null, granted_to_name: null,
+      granted_by: 1, permissions: null, expires_at: '2026-09-17T10:00:00Z', last_used_at: null,
+      use_count: 2, is_revoked: false, created_at: '2026-09-16T10:00:00Z',
+    }]);
+    mockedRevokeToken.mockResolvedValueOnce(undefined);
+
+    render(<CamerasModulePage />);
+    await waitFor(() => expect(screen.getByTestId('camera-share-7')).toBeInTheDocument());
+
+    await userEvent.click(screen.getByTestId('camera-share-7'));
+    await waitFor(() => expect(screen.getByTestId('camera-share-revoke-9')).toBeInTheDocument());
+
+    await userEvent.click(screen.getByTestId('camera-share-revoke-9'));
+
+    await waitFor(() => expect(mockedRevokeToken).toHaveBeenCalledWith(7, 9));
+    await waitFor(() => {
+      expect(screen.queryByTestId('camera-share-revoke-9')).not.toBeInTheDocument();
+    });
   });
 });
