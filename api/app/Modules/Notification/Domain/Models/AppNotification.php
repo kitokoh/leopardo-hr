@@ -10,6 +10,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
+ * DÉPRÉCIÉ (#7481) — n'écrivez plus ici.
+ *
+ * Le store de notification in-app est **`notifications`** (`Notification`),
+ * celui que sert `GET /notifications` (web, mobile, assistant) et qui porte
+ * les préférences par employé, les heures calmes, les quotas et l'audit
+ * (`CommunicationEvent`), écrit par `CommunicationService`.
+ *
+ * Cette table reste en place (aucune migration destructive) mais **plus aucun
+ * code applicatif n'y écrit ni n'y lit** : `NotificationDispatcher`,
+ * `SendNotification`, `MarkNotificationsRead` et l'assistant utilisent
+ * désormais le store canonique. Une double écriture rendrait de nouveau une
+ * notification invisible à la boîte de réception de l'utilisateur.
+ *
  * In-app notification entity.
  *
  * @property int $id

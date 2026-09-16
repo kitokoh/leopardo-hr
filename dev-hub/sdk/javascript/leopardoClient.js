@@ -3235,16 +3235,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/notifications/read-all", options);
     },
 
-    /** Émettre un token SSE temporaire pour le flux temps réel */
-    postNotificationsSseToken(options = {}) {
-      return request("POST", "/notifications/sse-token", options);
-    },
-
-    /** Flux SSE temps réel des notifications (employee/manager) */
-    getNotificationsStream(options = {}) {
-      return request("GET", "/notifications/stream", options);
-    },
-
     /** Notifications non lues de l'employe */
     getNotificationsUnread(options = {}) {
       return request("GET", "/notifications/unread", options);

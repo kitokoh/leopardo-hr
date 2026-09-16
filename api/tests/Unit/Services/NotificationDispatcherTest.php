@@ -6,8 +6,8 @@ namespace Tests\Unit\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Notification\Domain\Models\AppNotification;
 use App\Modules\Notification\Domain\Models\DeviceToken;
+use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Notification\Infrastructure\Services\NotificationDispatcher;
 use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
 use Illuminate\Http\Client\Request;
@@ -63,16 +63,20 @@ class NotificationDispatcherTest extends TestCase
             '/leaves/42',
         );
 
-        $this->assertInstanceOf(AppNotification::class, $notification);
-        $this->assertSame($employee->id, $notification->user_id);
+        $this->assertInstanceOf(Notification::class, $notification);
+        $this->assertSame($employee->id, $notification->employee_id);
         $this->assertSame('leave_approved', $notification->type);
-        $this->assertFalse($notification->read);
+        $this->assertFalse($notification->is_read);
 
-        $this->assertDatabaseHas('app_notifications', [
-            'user_id' => $employee->id,
+        $this->assertDatabaseHas('notifications', [
+            'employee_id' => $employee->id,
             'type' => 'leave_approved',
             'title' => 'Congé approuvé',
         ]);
+
+        // #7481 — l'`action_url` n'a pas de colonne dédiée dans le store
+        // canonique : elle doit survivre dans `data`.
+        $this->assertSame('/leaves/42', $notification->data['action_url'] ?? null);
     }
 
     public function test_dispatch_sends_push_to_active_device_token(): void
@@ -107,7 +111,7 @@ class NotificationDispatcherTest extends TestCase
 
         $notification = $dispatcher->dispatch($employee->id, 'test_type', 'Titre', 'Corps');
 
-        $this->assertInstanceOf(AppNotification::class, $notification);
+        $this->assertInstanceOf(Notification::class, $notification);
         Http::assertNothingSent();
     }
 
@@ -139,9 +143,9 @@ class NotificationDispatcherTest extends TestCase
 
             // La notification in-app est créée malgré l'échec push (fail-open).
             $notification = $dispatcher->dispatch($employee->id, 'test_type', 'Titre', 'Corps');
-            $this->assertInstanceOf(AppNotification::class, $notification);
+            $this->assertInstanceOf(Notification::class, $notification);
 
-            $this->assertDatabaseHas('app_notifications', ['user_id' => $employee->id]);
+            $this->assertDatabaseHas('notifications', ['employee_id' => $employee->id]);
 
             $trace = file_get_contents($logPath) ?: '';
             $this->assertStringContainsString('notification.push-skipped', $trace);
@@ -155,8 +159,9 @@ class NotificationDispatcherTest extends TestCase
     {
         $employee = $this->makeEmployee();
 
-        // Simule la dette #2398 : table absente → échec de création in-app.
-        Schema::drop('app_notifications');
+        // Simule la dette #2398 (table absente) sur le store CANONIQUE (#7481 :
+        // le dispatcher écrit dans `notifications`, celui que lit l'API).
+        Schema::drop('notifications');
 
         // Channel `structured` pointé vers un fichier temporaire : on vérifie
         // la trace d'erreur réelle écrite (observabilité, pas de mock).
@@ -177,7 +182,7 @@ class NotificationDispatcherTest extends TestCase
                 $this->fail('L’échec de création doit être relancé (contrat best-effort de l’appelant).');
             } catch (\Throwable $exception) {
                 // Attendu : le dispatcher journalise (structured) puis relance.
-                $this->assertStringContainsString('app_notifications', $exception->getMessage());
+                $this->assertStringContainsString('notifications', $exception->getMessage());
             } finally {
                 DB::rollBack();
             }

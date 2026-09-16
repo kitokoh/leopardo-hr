@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Notification\Application\Actions;
 
-use App\Modules\Notification\Domain\Models\AppNotification;
+use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Notification\Infrastructure\Services\NotificationDispatcher;
 
 class SendNotification
@@ -20,7 +20,7 @@ class SendNotification
         ?string $body = null,
         array $data = [],
         ?string $actionUrl = null,
-    ): AppNotification {
+    ): Notification {
         return $this->dispatcher->dispatch($userId, $type, $title, $body, $data, $actionUrl);
     }
 }

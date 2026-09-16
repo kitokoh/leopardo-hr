@@ -11,7 +11,7 @@ use App\AI\Exceptions\ToolPermissionDeniedException;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\HR\Domain\Models\Department;
-use App\Modules\Notification\Domain\Models\AppNotification;
+use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Payroll\Domain\Models\Payroll;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
@@ -647,22 +647,25 @@ class IntentEngine
         $limit = min($this->intArgument($args, 'limit', 10), 50);
         $onlyUnread = filter_var($this->stringArgument($args, 'unread_only', 'false'), FILTER_VALIDATE_BOOLEAN);
 
-        $query = AppNotification::where('user_id', $userId);
+        // #7481 — l'assistant lit le MÊME store que `GET /notifications`
+        // (`notifications`), sinon il annonçait des notifications que la boîte
+        // de réception de l'utilisateur n'affichait pas — et inversement.
+        $query = Notification::where('employee_id', $userId);
 
         if ($onlyUnread) {
-            $query->where('read', false);
+            $query->where('is_read', false);
         }
 
         $notifications = $query->orderByDesc('created_at')
             ->limit($limit)
-            ->get(['id', 'type', 'title', 'body', 'read', 'created_at']);
+            ->get(['id', 'type', 'title', 'body', 'is_read', 'created_at']);
 
-        $mapped = $notifications->map(function (AppNotification $notification) {
+        $mapped = $notifications->map(function (Notification $notification) {
             return [
                 'id' => $notification->id,
                 'title' => $notification->title,
                 'body' => $notification->body,
-                'read' => (bool) $notification->read,
+                'read' => (bool) $notification->is_read,
                 'created_at' => $notification->created_at?->toIso8601String(),
             ];
         });
