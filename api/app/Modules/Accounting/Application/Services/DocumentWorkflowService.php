@@ -374,9 +374,6 @@ class DocumentWorkflowService
     }
 
     /**
-     * @param  list<DocumentStatus>  $allowed
-     */
-    /**
      * Règles métier des transitions génériques (fusion #6572) : un statut
      * payé/partiellement payé exige le paiement correspondant, un avoir doit
      * être lié à sa facture source, un bordereau doit porter sa date de
