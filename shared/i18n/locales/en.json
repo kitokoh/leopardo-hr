@@ -1514,7 +1514,34 @@
     "managerEmail": "Primary manager email *",
     "activateNow": "Activate immediately",
     "activateClientNow": "Activate the client immediately",
-    "activateClientHint": "Otherwise the client stays on trial."
+    "activateClientHint": "Otherwise the client stays on trial.",
+    "deletion": {
+      "action": "Delete",
+      "title": "Permanently delete this workspace",
+      "subtitle": "This operation is irreversible.",
+      "inventoryTitle": "What will be destroyed",
+      "inventoryEmployees": "employees",
+      "inventoryPayrollRuns": "payroll runs",
+      "inventoryPaySlips": "payslips",
+      "inventoryDocuments": "documents",
+      "inventoryAttendance": "attendance records",
+      "notDeactivated": "This workspace must be deactivated first (suspended or expired).",
+      "modeLegend": "Payroll data exists: choose how to proceed.",
+      "modePurge": "Erase everything",
+      "modePurgeHint": "Employees, payroll, attendance, documents: everything is deleted.",
+      "modeAnonymize": "Keep payroll, erase identities",
+      "modeAnonymizeHint": "Payslips are retained (legal obligation); identities are erased.",
+      "confirmHint": "Type the exact company name to confirm",
+      "confirmPlaceholder": "Company name",
+      "confirmAction": "Delete permanently",
+      "loadFailed": "Could not load the deletion inventory.",
+      "success": "Workspace deleted.",
+      "auditTitle": "Recent operations",
+      "auditEmpty": "No operation recorded.",
+      "statusCompleted": "Completed",
+      "statusRefused": "Refused",
+      "statusFailed": "Failed"
+    }
   },
   "seo": {
     "pricing": {
