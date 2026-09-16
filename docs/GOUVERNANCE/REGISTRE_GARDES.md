@@ -74,6 +74,7 @@
 | `check-i18n-catalog-parity.sh`, `check-hardcoded-accented-messages.sh` | parité catalogues, messages hardcodés | bloque |
 | `check-accounting-i18n.py`, `check-payroll-i18n.py`, `check-governance-mojibake-test.ps1` | i18n par module | bloque |
 | `check-json-catalogs-parse.sh` (+ `--self-test`, branchée dans `actionlint.yml`) | **tous** les JSON/ARB suivis se parsent (#7583) : comble le trou des ~190 fichiers hors chemins i18n, qu'aucune garde ne lisait | bloque |
+| `check-double-docblock.py` (`--base` pour l'A/B, `--audit` pour l'inventaire, `--strict` pour tout bloquer ; branchée dans `actionlint.yml`) | aucune NOUVELLE annotation PHPDoc désarmée par un docblock double (#7582) — en PHP seule la DERNIÈRE docblock compte, l'annotation de la première était ignorée | bloque (nouveau) |
 
 ## 8. Infra, déploiement & URLs
 

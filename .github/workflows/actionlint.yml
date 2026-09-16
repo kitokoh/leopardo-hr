@@ -91,7 +91,19 @@ jobs:
           bash dev-hub/tools/check-android-sdk-packages.sh
           bash dev-hub/tools/check-android-sdk-packages.sh --self-test
 
-      - name: JSON/ARB parse guard (issue #7583)
+      - name: Double docblock guard (#7582)
+        # Échoue si une NOUVELLE annotation PHPDoc est désarmée : en PHP, seul
+        # le DERNIER docblock avant la déclaration compte, donc une annotation
+        # placée dans un docblock séparé est ignorée par PHPStan (constat
+        # EmployeeFactory : @extends ignoré => ~20 erreurs du check requis
+        # « PHPStan — Strict »). Mode par défaut = bloque les nouvelles
+        # occurrences, affiche la dette existante (45, résorbée module par
+        # module) ; `--strict` pour tout bloquer.
+        run: |
+          python3 dev-hub/tools/check-double-docblock.py --base origin/main
+          python3 dev-hub/tools/check-double-docblock.py --base origin/main --strict || true
+
+      - name: JSON/ARB parse guard (#7583)
         # Échoue si un fichier JSON ou ARB suivi ne se parse plus. Cause
         # mesurée : un conflit résolu avec `git merge-file --union`, qui
         # concatène les deux côtés ligne à ligne et duplique virgules et clés
