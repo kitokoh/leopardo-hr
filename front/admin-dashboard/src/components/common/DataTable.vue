@@ -7,8 +7,8 @@
           <input
             v-model="searchQuery"
             type="search"
-            :placeholder="searchPlaceholder"
-            :aria-label="searchPlaceholder"
+            :placeholder="searchPlaceholder || $t('common.search', 'Rechercher…')"
+            :aria-label="searchPlaceholder || $t('common.search', 'Rechercher…')"
             class="w-full sm:w-64 rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 pl-10 pr-4 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-brand-500 focus:ring-brand-500 transition-all duration-200"
           />
         </div>
@@ -56,7 +56,14 @@
                 </template>
               </div>
             </th>
-            <th v-if="$slots['row-actions']" class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <!-- #7434 : en-tête internationalisé — il était écrit en clair
+                 (« Actions »), donc anglais dans TOUTES les 19 vues qui
+                 utilisent DataTable, quelle que soit la locale. -->
+            <th
+              v-if="$slots['row-actions']"
+              scope="col"
+              class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+            >
               {{ $t('common.actions', 'Actions') }}
             </th>
           </tr>
@@ -99,7 +106,9 @@ const props = defineProps({
   rows: { type: Array, default: () => [] },
   loading: { type: Boolean, default: false },
   error: { type: String, default: '' },
-  searchPlaceholder: { type: String, default: 'Rechercher...' },
+  // #7434 : défaut i18n calculé dans le template (`$t`), plus de français
+  // en dur dans les props par défaut.
+  searchPlaceholder: { type: String, default: '' },
   searchKeys: { type: Array, default: () => [] },
   exportable: { type: Boolean, default: false },
   emptyMessage: { type: String, default: '' },

@@ -61,21 +61,20 @@
                 <!-- BUG #1896 : SPA super-admin → les lignes visibles sont les fériés
                      NATIONAUX (company_id null), précisément ceux que ce dashboard doit
                      gérer. Le RBAC API (authorizeWrite) garde les écritures scopeées. -->
-                <div class="flex justify-end gap-2">
-                  <RowActionButton
-                    :icon="PencilSquareIcon"
-                    :label="$t('holidays.edit')"
-                    :disabled="saving"
-                    @click="openEdit(h)"
-                  />
-                  <RowActionButton
-                    :icon="TrashIcon"
-                    tone="danger"
-                    :label="$t('holidays.delete')"
-                    :disabled="saving"
-                    @click="askRemoveHoliday(h)"
-                  />
-                </div>
+                <RowActionButton
+                  :icon="PencilSquareIcon"
+                  tone="primary"
+                  :label="t('holidays.edit')"
+                  :disabled="saving"
+                  @click="openEdit(h)"
+                />
+                <RowActionButton
+                  :icon="TrashIcon"
+                  tone="danger"
+                  :label="t('holidays.delete')"
+                  :disabled="saving"
+                  @click="askRemoveHoliday(h)"
+                />
               </td>
             </tr>
             <tr v-if="!loading && holidays.length === 0">
@@ -250,13 +249,13 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import RowActionButton from '@/components/common/RowActionButton.vue'
-import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import { useSupportedCountries } from '@/composables/useSupportedCountries'
+import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import RowActionButton from '@/components/common/RowActionButton.vue'
 const supportedCountries = useSupportedCountries()
 
 const toast = useToast()

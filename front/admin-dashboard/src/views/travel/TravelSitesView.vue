@@ -50,13 +50,13 @@
         </template>
         <template #row-actions="{ row }">
           <div class="flex justify-end gap-2">
-                        <RowActionButton
+            <RowActionButton
               :icon="PencilSquareIcon"
               tone="primary"
               :label="t('travel.common.edit', 'Modifier')"
               @click="openEdit(row)"
             />
-                        <RowActionButton
+            <RowActionButton
               :icon="TrashIcon"
               tone="danger"
               :label="t('travel.common.delete', 'Supprimer')"
@@ -92,18 +92,17 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-
-import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import DataTable from '@/components/common/DataTable.vue'
-import RowActionButton from '@/components/common/RowActionButton.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import TravelGate from '@/components/travel/TravelGate.vue'
 import { createTravel, deleteTravel, listTravel, updateTravel, travelList, listTouristSites } from '@/services/travel'
+import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import RowActionButton from '@/components/common/RowActionButton.vue'
 
 const localeStore = useLocaleStore()
 const toast = useToast()

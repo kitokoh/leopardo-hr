@@ -124,22 +124,20 @@
           <!-- Actions -->
           <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
             <div class="flex items-center justify-end space-x-2">
-              <button
+              <!-- #7434 : convention unique d'action de ligne (icône + title +
+                   aria-label), portée par RowActionButton. -->
+              <RowActionButton
+                :icon="EyeIcon"
+                tone="brand"
+                :label="t('users.table.viewDetails', 'Voir les détails')"
                 @click="$emit('view', user)"
-                class="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/30 transition-all duration-200"
-                :title="t('users.table.viewDetails', 'Voir les détails')"
-                :aria-label="t('users.table.viewDetails', 'Voir les détails')"
-              >
-                <EyeIcon class="h-4 w-4" />
-              </button>
-              <button
+              />
+              <RowActionButton
+                :icon="TrashIcon"
+                tone="danger"
+                :label="t('common.delete', 'Supprimer')"
                 @click="$emit('delete', user)"
-                class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 transition-all duration-200"
-                :title="t('common.delete', 'Supprimer')"
-                :aria-label="t('common.delete', 'Supprimer')"
-              >
-                <TrashIcon class="h-4 w-4" />
-              </button>
+              />
             </div>
           </td>
         </tr>
@@ -159,6 +157,7 @@ import {
 } from '@heroicons/vue/24/outline'
 import { useLocaleStore } from '@/stores/locale'
 import { toIntlLocale, translate } from '@/i18n/index.js'
+import RowActionButton from '@/components/common/RowActionButton.vue'
 
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
@@ -184,13 +183,15 @@ defineEmits(['select', 'select-all', 'view', 'delete'])
 const sortBy = ref('name')
 const sortOrder = ref('asc')
 
-// Table columns (donnees reelles : pas de role/segment/lastLogin cote API)
-const columns = [
-  { key: 'name', label: 'Utilisateur', sortable: true },
-  { key: 'status', label: 'Statut', sortable: true },
-  { key: 'company', label: 'Entreprise', sortable: true },
-  { key: 'created_at', label: 'Inscription', sortable: true }
-]
+// Table columns (donnees reelles : pas de role/segment/lastLogin cote API).
+// #7434 : libellés i18n (ils étaient écrits en dur en français — un
+// changement de locale laissait les en-têtes français).
+const columns = computed(() => [
+  { key: 'name', label: t('users.table.name', 'Utilisateur'), sortable: true },
+  { key: 'status', label: t('users.table.status', 'Statut'), sortable: true },
+  { key: 'company', label: t('users.table.company', 'Entreprise'), sortable: true },
+  { key: 'created_at', label: t('users.table.createdAt', 'Inscription'), sortable: true }
+])
 
 const isAllSelected = computed(() => {
   return props.users.length > 0 && props.selectedUsers.length === props.users.length
@@ -257,11 +258,12 @@ function getStatusColor(status) {
 }
 
 function getStatusLabel(status) {
+  // #7434 : statuts i18n (le libellé suit la locale de l'écran).
   const labels = {
-    active: 'Actif',
-    inactive: 'Inactif',
-    suspended: 'Suspendu',
-    pending: 'Attente'
+    active: t('users.status.active', 'Actif'),
+    inactive: t('users.status.inactive', 'Inactif'),
+    suspended: t('users.status.suspended', 'Suspendu'),
+    pending: t('users.status.pending', 'Attente')
   }
   return labels[status] || status
 }

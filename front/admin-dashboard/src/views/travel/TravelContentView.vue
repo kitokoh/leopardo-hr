@@ -53,12 +53,18 @@
                 <td class="px-4 py-3"><StatusBadge :value="quiz.status" /></td>
                 <td class="px-4 py-3 text-sm text-slate-500 dark:text-slate-400">{{ quiz.ends_at ? new Date(quiz.ends_at).toLocaleDateString() : '—' }}</td>
                 <td class="px-4 py-3 text-right">
-                  <button type="button" class="btn-secondary mr-2" @click="openQuizQuestions(quiz)">
-                    {{ t('travel.quiz.questions', 'Questions') }}
-                  </button>
-                  <button type="button" class="btn-secondary" @click="openQuizResults(quiz)">
-                    {{ t('travel.quiz.results', 'Résultats') }}
-                  </button>
+                  <RowActionButton
+                    :icon="ListBulletIcon"
+                    tone="primary"
+                    :label="t('travel.quiz.questions', 'Questions')"
+                    @click="openQuizQuestions(quiz)"
+                  />
+                  <RowActionButton
+                    :icon="ChartBarIcon"
+                    tone="primary"
+                    :label="t('travel.quiz.results', 'Résultats')"
+                    @click="openQuizResults(quiz)"
+                  />
                 </td>
               </tr>
               <tr v-if="quizzes.length === 0">
@@ -101,10 +107,17 @@
             :rows="advertTabRows()"
             :search-keys="advertTabSearchKeys()"
           >
-            <template #actions="{ row }">
-              <button v-if="advertTabCanDelete()" type="button" class="btn-secondary" @click="removeRow(advertTab, row)">
-                {{ t('travel.common.delete', 'Supprimer') }}
-              </button>
+            <!-- #7433 : `#actions` est le slot de BARRE D'ACTIONS (sans ligne) —
+                 les boutons de ligne doivent utiliser `#row-actions`, sinon
+                 `row` est indéfini et la suppression ne cible rien. -->
+            <template #row-actions="{ row }">
+              <RowActionButton
+                v-if="advertTabCanDelete()"
+                :icon="TrashIcon"
+                tone="danger"
+                :label="t('travel.common.delete', 'Supprimer')"
+                @click="removeRow(advertTab, row)"
+              />
             </template>
           </DataTable>
         </div>
@@ -143,18 +156,34 @@
                   <td class="px-4 py-3 text-sm text-slate-500">{{ (ad.price_minor / 100).toFixed(2) }} {{ ad.currency }}</td>
                   <td class="px-4 py-3 text-sm text-slate-500">{{ ad.expires_at ? new Date(ad.expires_at).toLocaleDateString() : '—' }}</td>
                   <td class="px-4 py-3 text-right">
-                    <button v-if="ad.status === 'submitted' || ad.status === 'draft'" type="button" class="btn-secondary mr-2" @click="advertAction(ad, 'pay')">
-                      {{ t('travel.adverts.pay', 'Payer') }}
-                    </button>
-                    <button v-if="ad.status === 'paid'" type="button" class="btn-secondary mr-2" @click="advertAction(ad, 'validate')">
-                      {{ t('travel.adverts.validate', 'Valider') }}
-                    </button>
-                    <button v-if="ad.status === 'paid'" type="button" class="btn-secondary mr-2" @click="openAdvertReject(ad)">
-                      {{ t('travel.adverts.reject', 'Rejeter') }}
-                    </button>
-                    <button v-if="ad.status === 'validated' || ad.status === 'expired'" type="button" class="btn-secondary" @click="advertAction(ad, 'renew')">
-                      {{ t('travel.adverts.renew', 'Renouveler') }}
-                    </button>
+                    <RowActionButton
+                      v-if="ad.status === 'submitted' || ad.status === 'draft'"
+                      :icon="BanknotesIcon"
+                      tone="primary"
+                      :label="t('travel.adverts.pay', 'Payer')"
+                      @click="advertAction(ad, 'pay')"
+                    />
+                    <RowActionButton
+                      v-if="ad.status === 'paid'"
+                      :icon="CheckIcon"
+                      tone="success"
+                      :label="t('travel.adverts.validate', 'Valider')"
+                      @click="advertAction(ad, 'validate')"
+                    />
+                    <RowActionButton
+                      v-if="ad.status === 'paid'"
+                      :icon="XMarkIcon"
+                      tone="danger"
+                      :label="t('travel.adverts.reject', 'Rejeter')"
+                      @click="openAdvertReject(ad)"
+                    />
+                    <RowActionButton
+                      v-if="ad.status === 'validated' || ad.status === 'expired'"
+                      :icon="ArrowPathIcon"
+                      tone="warning"
+                      :label="t('travel.adverts.renew', 'Renouveler')"
+                      @click="advertAction(ad, 'renew')"
+                    />
                   </td>
                 </tr>
                 <tr v-if="adverts.length === 0">
@@ -195,7 +224,12 @@
                   </label>
                 </td>
                 <td class="px-4 py-3 text-right">
-                  <button type="button" class="btn-secondary" @click="openContactNotify(c)">{{ t('travel.contacts.notify', 'Notifier') }}</button>
+                  <RowActionButton
+                    :icon="PaperAirplaneIcon"
+                    tone="primary"
+                    :label="t('travel.contacts.notify', 'Notifier')"
+                    @click="openContactNotify(c)"
+                  />
                 </td>
               </tr>
               <tr v-if="contacts.length === 0">
@@ -275,9 +309,19 @@
           :rows="lists.sites"
           :search-keys="entityConfigs.sites.searchKeys"
         >
-          <template #actions="{ row }">
-            <button type="button" class="btn-secondary" @click="openEdit('sites', row)">{{ t('travel.common.edit', 'Modifier') }}</button>
-            <button type="button" class="btn-secondary ml-2" @click="removeRow('sites', row)">{{ t('travel.common.delete', 'Supprimer') }}</button>
+          <template #row-actions="{ row }">
+            <RowActionButton
+              :icon="PencilSquareIcon"
+              tone="primary"
+              :label="t('travel.common.edit', 'Modifier')"
+              @click="openEdit('sites', row)"
+            />
+            <RowActionButton
+              :icon="TrashIcon"
+              tone="danger"
+              :label="t('travel.common.delete', 'Supprimer')"
+              @click="removeRow('sites', row)"
+            />
           </template>
         </DataTable>
       </section>
@@ -399,6 +443,8 @@ import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { listTravel, createTravel, updateTravel, deleteTravel, travelList, travelItem } from '@/services/travel'
 import api from '@/services/api'
 import { travelAction } from '@/services/travel'
+import { ArrowPathIcon, BanknotesIcon, ChartBarIcon, CheckIcon, ListBulletIcon, PaperAirplaneIcon, PencilSquareIcon, TrashIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+import RowActionButton from '@/components/common/RowActionButton.vue'
 
 const localeStore = useLocaleStore()
 const travelStore = useTravelStore()

@@ -2675,7 +2675,8 @@
     "reload": "Reload",
     "dismiss": "Dismiss",
     "actions": "Actions",
-    "edit": "Edit"
+    "edit": "Edit",
+    "search": "Search…"
   },
   "settingsProfileUpdated": "Profile updated.",
   "attendanceHoursWorkedLabel": "Hours worked",
@@ -4884,7 +4885,17 @@
       "loading": "Loading users...",
       "empty": "No user",
       "emptyHint": "No user matches the search criteria.",
-      "viewDetails": "View details"
+      "viewDetails": "View details",
+      "company": "Company",
+      "createdAt": "Registered",
+      "name": "User",
+      "status": "Status"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "pending": "Pending",
+      "suspended": "Suspended"
     }
   },
   "settingsBiometryEnrollment": "Biometric enrollment",

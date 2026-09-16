@@ -52,11 +52,13 @@
             <div class="flex justify-end gap-2">
               <RowActionButton
                 :icon="PhotoIcon"
+                tone="neutral"
                 :label="t('travel.catalog.images', 'Images')"
                 @click="openRentalImages(row)"
               />
               <RowActionButton
                 :icon="PencilSquareIcon"
+                tone="primary"
                 :label="t('travel.common.edit', 'Modifier')"
                 @click="openRentalEdit(row)"
               />
@@ -156,6 +158,7 @@
               />
               <RowActionButton
                 :icon="PencilSquareIcon"
+                tone="primary"
                 :label="t('travel.common.edit', 'Modifier')"
                 @click="openHotelEdit(row)"
               />

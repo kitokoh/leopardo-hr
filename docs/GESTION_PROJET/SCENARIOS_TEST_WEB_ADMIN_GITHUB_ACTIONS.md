@@ -322,8 +322,10 @@ menu. »
   mêmes confirmations (`ConfirmDialog`) pour les actions destructives.
 - **Couleurs conservées** : les tons (danger/succès/avertissement) restent
   distincts à l'écran — la sémantique ne doit pas se perdre avec le libellé.
-- **Garde CI** : `python3 dev-hub/tools/check-admin-row-actions.py . --strict`
-  doit sortir 0 (rapport non bloquant par défaut dans `web-ci.yml`).
+- **Garde CI** : `python3 dev-hub/tools/check-admin-action-labels.py` doit sortir 0
+  (**bloquant** dans `web-ci.yml`, job `web-lint`) — la garde #7434 unique, autotestée par
+  `dev-hub/tools/check-admin-action-labels-test.sh` (registre `docs/GOUVERNANCE/REGISTRE_GARDES.md`).
+  La garde de branche `check-admin-row-actions.py` de #7461 est **supprimée** : redondante.
 
 ## Artefacts obligatoires
 
