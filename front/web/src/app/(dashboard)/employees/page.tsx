@@ -7,6 +7,7 @@ import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
+import { parseTeamRoleOption, teamRoleLabel, teamRoleOptions, teamRolesT } from '@/lib/i18n/team-roles';
 
 type EmployeeRecord = {
   id: number;
@@ -14,6 +15,7 @@ type EmployeeRecord = {
   last_name?: string;
   email?: string;
   role?: string;
+  manager_role?: string;
   status?: string;
   matricule?: string;
 };
@@ -74,6 +76,8 @@ export default function EmployeesPage() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [department, setDepartment] = useState('');
+  // #7555 : le rôle n'est plus figé à « employé » (cf. `payload.role` ci-dessous).
+  const [roleOption, setRoleOption] = useState('employee');
   const [isCreatingEmployee, setIsCreatingEmployee] = useState(false);
   const [employeeError, setEmployeeError] = useState<string | null>(null);
   const [employeeAdded, setEmployeeAdded] = useState(false);
@@ -172,11 +176,18 @@ export default function EmployeesPage() {
   const handleCreateEmployee = async (event: React.FormEvent) => {
     event.preventDefault();
 
+    // #7555 : l'API accepte `role: manager` + `manager_role`
+    // (`StoreEmployeeRequest`), et exige un `manager_role` pour un manager
+    // (`EMPLOYEE_MANAGER_ROLE_REQUIRED`). `principal` n'est jamais proposé
+    // (création réservée au super admin côté API).
+    const parsedRole = parseTeamRoleOption(roleOption);
+
     const payload = {
       first_name: firstName.trim(),
       last_name: lastName.trim(),
       email: email.trim(),
-      role: 'employee',
+      role: parsedRole.role,
+      ...(parsedRole.manager_role ? { manager_role: parsedRole.manager_role } : {}),
       // Le backend exige SOIT un mot de passe, SOIT une invitation
       // (`StoreEmployeeRequest::withValidator` → EMPLOYEE_PASSWORD_OR_INVITATION_REQUIRED).
       // On envoie l'invitation : c'est le parcours normal (le collaborateur
@@ -203,6 +214,7 @@ export default function EmployeesPage() {
       setLastName('');
       setEmail('');
       setDepartment('');
+      setRoleOption('employee');
       setEmployeeAdded(true);
       setShowAddForm(false);
       await loadEmployees();
@@ -383,6 +395,24 @@ export default function EmployeesPage() {
               </datalist>
             </label>
 
+            {/* #7555 — choix du rôle à l'invitation (mêmes options que
+                `/settings/team`) : « employé » ou un type de manager. */}
+            <label className="text-sm font-medium text-slate-700 md:col-span-2">
+              {teamRolesT(locale, 'fieldRole')}
+              <select
+                value={roleOption}
+                onChange={(event) => setRoleOption(event.target.value)}
+                data-testid="employees-role-select"
+                className={`mt-1 ${inputClassName}`}
+              >
+                {teamRoleOptions(locale).map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
             {employeeError ? <p className="text-sm text-red-600 md:col-span-2">{employeeError}</p> : null}
 
             <div className="flex gap-3 md:col-span-2">
@@ -434,7 +464,7 @@ export default function EmployeesPage() {
                       {employee.matricule ?? 'Sans matricule'}
                     </span>
                     <span className="rounded-full bg-rh-light px-3 py-1 text-rh-dark">
-                      {employee.role ?? 'employee'}
+                      {teamRoleLabel(locale, employee.role, employee.manager_role)}
                     </span>
                     <span className="rounded-full bg-slate-900 px-3 py-1 text-white">
                       {employee.status ?? 'active'}

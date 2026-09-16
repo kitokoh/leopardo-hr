@@ -27,24 +27,28 @@
     "fr": {
       "checksum": "ea1f70519f686f8064ba6ef69f7b103d097d41c6aa4650ef5e2106a9a9183f0f",
       "checksum": "660d9253b8f3d977be0a108d380632fb1f5cdf5f49bdb2a81458979117b8ffc4",
+      "checksum": "f0427aa54ac26108ac09c0cfa88ea7423a2e241c94161ee335bbbd8d64f76b3b",
       "version": "1.0.0",
       "updated_at": "2026-08-30T15:05:00Z"
     },
     "ar": {
       "checksum": "51f703dc8a28c0bb041283e915dee9b80599fb4163ace2156adc81f5aa042057",
       "checksum": "451e01784997ec3391e2228ce2ebed9dbb1aa5fe171dc9f15d5f1e9141aca9bc",
+      "checksum": "5655a6495074ef383ff820a659863db9d98804f14519ab4072271bc698bc4118",
       "version": "1.0.0",
       "updated_at": "2026-08-30T15:05:00Z"
     },
     "tr": {
       "checksum": "975c01161f3027580c5a2357f6c7e37b10defa7de4b12e26df10586fd399e698",
       "checksum": "a9789df13bc37f522df0d634db74ebfe96aef4df348a9fe88abc6a87bbd61291",
+      "checksum": "5756c75994f66fe2246a96019a7a80dfd421fb3f6316709b9abce848a81e490b",
       "version": "1.0.0",
       "updated_at": "2026-08-30T15:05:00Z"
     },
     "en": {
       "checksum": "7a62a93e71ed777d555afb26d5dc04789f50bd38a6d6afbc278a59bbb4bb2d9a",
       "checksum": "c538445e79fbe1a9bb288fa0c30dfe256cb222a360fffdf200a586cfbd9a5cec",
+      "checksum": "d48563a44684ed1a840f2f607706e3daa245b02d09f3ba3c257df3367565c24e",
       "version": "1.0.0",
       "updated_at": "2026-08-30T15:05:00Z"
     }
@@ -88,6 +92,21 @@
         "tr": "0a837d6bd167910e0ec85fc113ee96122e3aa7042093eebd57bfd12b61b85af6"
       },
       "updated_at": "2026-09-16T07:01:53.496Z"
+        "ar": "5655a6495074ef383ff820a659863db9d98804f14519ab4072271bc698bc4118",
+        "en": "d48563a44684ed1a840f2f607706e3daa245b02d09f3ba3c257df3367565c24e",
+        "fr": "f0427aa54ac26108ac09c0cfa88ea7423a2e241c94161ee335bbbd8d64f76b3b",
+        "tr": "5756c75994f66fe2246a96019a7a80dfd421fb3f6316709b9abce848a81e490b"
+      },
+      "updated_at": "2026-09-16T07:03:27.439Z"
+    },
+    "admin": {
+      "checksums": {
+        "ar": "7d8620465253ea2c5a1350fe53de907771ac0422a1b3b2730c5d3044267c7cc9",
+        "en": "254946360d154827076a15a94603395f0064bfb3c93d7919b74aff91a1782d63",
+        "fr": "d5d0c87838e858216a25c09943ab8de0769f585123e3d3f74167e4f8ab99f7fa",
+        "tr": "37c68036f983d0669c55a50b8996b6a44c861efa94b62fc1ee75d6b40c181320"
+      },
+      "updated_at": "2026-09-16T07:03:27.483Z"
     }
   }
 }
