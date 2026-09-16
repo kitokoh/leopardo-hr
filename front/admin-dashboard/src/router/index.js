@@ -145,6 +145,19 @@ const routes = [
           icon: 'CogIcon'
         }
       },
+      {
+        // #7557 — équipe plateforme : comptes internes et rôles délégués.
+        // Réservé à `team.manage` (porté par le seul rôle `super_admin`) :
+        // l'entrée de menu est filtrée sur cette permission, l'API répond 403
+        // PLATFORM_PERMISSION_REQUIRED à un compte non habilité.
+        path: '/team',
+        name: 'platform-team',
+        component: () => import('@/views/team/PlatformTeamView.vue'),
+        meta: {
+          title: 'navigation.team',
+          icon: 'UsersIcon'
+        }
+      },
 
       {
         path: '/settings/payroll/social-contributions',
