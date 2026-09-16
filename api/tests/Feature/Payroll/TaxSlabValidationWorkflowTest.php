@@ -11,7 +11,7 @@ use App\Events\TaxRateApproved;
 use App\Events\TaxRateRejected;
 use App\Events\TaxRateSubmitted;
 use App\Listeners\NotifyTaxRateValidation;
-use App\Modules\Notification\Domain\Models\AppNotification;
+use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
 use App\Modules\Payroll\Domain\Models\TaxRateChangeLog;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
@@ -316,7 +316,6 @@ class TaxSlabValidationWorkflowTest extends TestCase
         ]);
         $createdSuperAdmin->forceFill(['password_hash' => bcrypt('secret123')])->save();
 
-
         Sanctum::actingAs($this->manager);
 
         $created = $this->postJson('/api/v1/tax-slabs', [
@@ -341,8 +340,10 @@ class TaxSlabValidationWorkflowTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.status', TaxSlab::STATUS_ACTIVE);
 
-        $notification = AppNotification::query()
-            ->where('user_id', $this->manager->id)
+        // #7481 — le listener publie dans le store canonique (`notifications`),
+        // celui que lit `GET /notifications`.
+        $notification = Notification::query()
+            ->where('employee_id', $this->manager->id)
             ->where('type', 'tax_rate_validation')
             ->first();
 

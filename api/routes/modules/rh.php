@@ -29,8 +29,6 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\SiteController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\AnnouncementController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\ConversationController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationController;
-use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationStreamController;
-use App\Modules\Notification\Interfaces\Api\V1\Controllers\SseTokenController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\EndOfContractController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\EstimationController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\LedgerController;
@@ -201,8 +199,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->whereNumber('notification');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->whereNumber('notification');
-    Route::get('/notifications/stream', [NotificationStreamController::class, 'stream']);
-    Route::post('/notifications/sse-token', [SseTokenController::class, 'issue']);
+    // #7481 — le flux SSE (`/notifications/stream` + `/notifications/sse-token`)
+    // est RETIRÉ : aucun client ne le consommait (`0 EventSource` dans
+    // `front/web` et `front/mobile_apps`, le mobile polle toutes les 30 s), et
+    // une surface morte coûte de la maintenance et trompe les audits de
+    // sécurité. La boîte de réception est servie par `GET /notifications`
+    // (mêmes données, store canonique). Le temps réel est un lot produit à
+    // part entière s'il revient : il faudra un client, pas seulement un
+    // contrôleur.
 
     // ── Module 5 (complement) — Conversations employé/manager (PA2-COMM-002) ──
     Route::get('/conversations', [ConversationController::class, 'index']);
