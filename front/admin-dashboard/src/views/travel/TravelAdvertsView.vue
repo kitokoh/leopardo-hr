@@ -55,7 +55,6 @@
             <div class="flex justify-end gap-2">
               <RowActionButton
                 :icon="PencilSquareIcon"
-                tone="primary"
                 :label="t('travel.common.edit', 'Modifier')"
                 @click="openCatalogEdit(row)"
               />
@@ -110,24 +109,28 @@
           <template #row-actions="{ row }">
             <div class="flex justify-end gap-2">
               <RowActionButton
+                v-if="row.status === 'draft' || row.status === 'pending_payment'"
                 :icon="BanknotesIcon"
-                tone="primary"
+                tone="success"
                 :label="t('travel.adverts.pay', 'Payer')"
                 @click="payAdvertRow(row)"
               />
               <RowActionButton
+                v-if="row.status === 'paid'"
                 :icon="CheckIcon"
-                tone="success"
+                tone="primary"
                 :label="t('travel.adverts.validate', 'Valider')"
                 @click="openAdvertValidate(row)"
               />
               <RowActionButton
+                v-if="row.status === 'expired'"
                 :icon="ArrowPathIcon"
                 tone="warning"
                 :label="t('travel.adverts.renew', 'Renouveler')"
                 @click="renewAdvertRow(row)"
               />
               <RowActionButton
+                v-if="row.status === 'draft' || row.status === 'rejected'"
                 :icon="TrashIcon"
                 tone="danger"
                 :label="t('travel.common.delete', 'Supprimer')"
@@ -191,11 +194,11 @@ import { useLocaleStore } from '@/stores/locale.js'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import RowActionButton from '@/components/common/RowActionButton.vue'
 import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import TravelGate from '@/components/travel/TravelGate.vue'
+import { PencilSquareIcon, TrashIcon, BanknotesIcon, CheckIcon, ArrowPathIcon } from '@heroicons/vue/24/outline'
 import { createTravel, deleteTravel, listTravel, payAdvert, renewAdvert, validateAdvert, listAdvertCatalog, createAdvertCatalog, updateAdvertCatalog, deleteAdvertCatalog, travelList } from '@/services/travel'
-import { ArrowPathIcon, BanknotesIcon, CheckIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
-import RowActionButton from '@/components/common/RowActionButton.vue'
 
 const localeStore = useLocaleStore()
 const toast = useToast()

@@ -116,13 +116,13 @@
             <StatusBadge :status="value" :map="rentalBookingStatusMap" />
           </template>
           <template #row-actions="{ row }">
-            <button
+                        <RowActionButton
               v-if="isActiveBookingStatus(row.status)"
-              class="text-sm font-medium text-amber-600 hover:text-amber-800 dark:text-amber-400"
+              :icon="XMarkIcon"
+              tone="warning"
+              :label="t('travel.bookings.cancel', 'Annuler')"
               @click="openRentalCancel(row)"
-            >
-              {{ t('travel.bookings.cancel', 'Annuler') }}
-            </button>
+            />
           </template>
         </DataTable>
       </template>
@@ -151,9 +151,11 @@
           </template>
           <template #row-actions="{ row }">
             <div class="flex justify-end gap-2">
-              <button class="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400" @click="openHotelRooms(row)">
-                {{ t('travel.catalog.rooms', 'Chambres') }}
-              </button>
+              <RowActionButton
+                :icon="Squares2X2Icon"
+                :label="t('travel.catalog.rooms', 'Chambres')"
+                @click="openHotelRooms(row)"
+              />
               <RowActionButton
                 :icon="PencilSquareIcon"
                 tone="primary"
@@ -277,9 +279,16 @@ import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { PencilSquareIcon, PhotoIcon, PlusIcon, TrashIcon, XMarkIcon } from '@heroicons/vue/24/outline'
-import { listTravel, createTravel, updateTravel, deleteTravel, travelAction, createTravelSub, deleteTravelSub, travelList, formatMinor } from '@/services/travel'
 import RowActionButton from '@/components/common/RowActionButton.vue'
+import {
+  PlusIcon,
+  XMarkIcon,
+  PhotoIcon,
+  PencilSquareIcon,
+  TrashIcon,
+  Squares2X2Icon,
+} from '@heroicons/vue/24/outline'
+import { listTravel, createTravel, updateTravel, deleteTravel, travelAction, createTravelSub, deleteTravelSub, travelList, formatMinor } from '@/services/travel'
 
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
