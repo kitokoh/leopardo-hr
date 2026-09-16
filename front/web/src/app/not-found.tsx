@@ -1,4 +1,27 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { normalizeLocale } from '@/lib/i18n';
+import { t } from '@/lib/i18n/locale-catalog';
+
+/**
+ * La 404 reprenait le titre de la page d'accueil (« Leopardo RH - SaaS RH
+ * multilingue… ») : vérifié sur le HTML servi le 2026-09-16. Un onglet qui
+ * annonce l'accueil quand la page n'existe pas, et une 404 indexable.
+ *
+ * Le libellé vient du catalogue i18n existant (`showcase.notFoundTitle`, ×4 (libellé accentué dans les 4 langues)), pas
+ * d'un littéral : la garde PA2-I18N-014 a raison de refuser une chaîne en dur
+ * dans du texte visible.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const headerList = await headers();
+  const locale = normalizeLocale(headerList.get('x-vitrine-lang') ?? '');
+
+  return {
+    title: t(locale, 'showcase.notFoundTitle'),
+    robots: { index: false, follow: true },
+  };
+}
 
 /**
  * 404 global de l'application.
@@ -28,6 +51,12 @@ export default function NotFound() {
             className="inline-flex items-center rounded-xl bg-brand-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
           >
             Retour à l&apos;accueil
+          </Link>
+          <Link
+            href="/pricing"
+            className="inline-flex items-center rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-900"
+          >
+            Voir les tarifs
           </Link>
           <Link
             href="/contact"
