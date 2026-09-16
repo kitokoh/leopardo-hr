@@ -25,7 +25,7 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_currency_rates', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_currency_rates', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_currency_rates', 'from_currency')) {
                     $table->char('from_currency', 3)->nullable();
@@ -37,7 +37,7 @@ return new class extends Migration
                     $table->unsignedBigInteger('rate_minor')->nullable();
                 }
                 if (! schemaHasColumn('travel_currency_rates', 'valid_from')) {
-                    $table->date('valid_from')->nullable();
+                    $table->date('valid_from');
                 }
                 if (! schemaHasColumn('travel_currency_rates', 'valid_to')) {
                     $table->date('valid_to')->nullable();

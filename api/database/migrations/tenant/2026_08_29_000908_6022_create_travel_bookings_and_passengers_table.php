@@ -24,25 +24,25 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_bookings', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_bookings', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_bookings', 'reference')) {
-                    $table->string('reference', 40)->nullable();
+                    $table->string('reference', 40);
                 }
                 if (! schemaHasColumn('travel_bookings', 'trip_id')) {
-                    $table->unsignedBigInteger('trip_id')->nullable();
+                    $table->unsignedBigInteger('trip_id');
                 }
                 if (! schemaHasColumn('travel_bookings', 'status')) {
                     $table->string('status', 20)->default('pending');
                 }
                 if (! schemaHasColumn('travel_bookings', 'passenger_count')) {
-                    $table->unsignedInteger('passenger_count')->nullable();
+                    $table->unsignedInteger('passenger_count');
                 }
                 if (! schemaHasColumn('travel_bookings', 'total_amount_minor')) {
-                    $table->unsignedInteger('total_amount_minor')->nullable();
+                    $table->unsignedInteger('total_amount_minor');
                 }
                 if (! schemaHasColumn('travel_bookings', 'currency')) {
-                    $table->char('currency', 3)->nullable();
+                    $table->char('currency', 3);
                 }
                 if (! schemaHasColumn('travel_bookings', 'booking_source')) {
                     $table->string('booking_source', 20)->default('office');
@@ -60,7 +60,7 @@ return new class extends Migration
                     $table->timestamp('expires_at')->nullable();
                 }
                 if (! schemaHasColumn('travel_bookings', 'idempotency_key')) {
-                    $table->string('idempotency_key', 255)->nullable();
+                    $table->string('idempotency_key', 255);
                 }
                 if (! schemaHasColumn('travel_bookings', 'version')) {
                     $table->unsignedInteger('version')->default(1);
@@ -76,13 +76,13 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_passengers', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_passengers', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_passengers', 'booking_id')) {
-                    $table->unsignedBigInteger('booking_id')->nullable();
+                    $table->unsignedBigInteger('booking_id');
                 }
                 if (! schemaHasColumn('travel_passengers', 'full_name')) {
-                    $table->string('full_name', 160)->nullable();
+                    $table->string('full_name', 160);
                 }
                 if (! schemaHasColumn('travel_passengers', 'birth_date')) {
                     $table->date('birth_date')->nullable();
@@ -100,13 +100,13 @@ return new class extends Migration
                     $table->string('age_category', 20)->default('adult');
                 }
                 if (! schemaHasColumn('travel_passengers', 'class_id')) {
-                    $table->unsignedBigInteger('class_id')->nullable();
+                    $table->unsignedBigInteger('class_id');
                 }
                 if (! schemaHasColumn('travel_passengers', 'seat_number')) {
                     $table->unsignedInteger('seat_number')->nullable();
                 }
                 if (! schemaHasColumn('travel_passengers', 'unit_price_minor')) {
-                    $table->unsignedInteger('unit_price_minor')->nullable();
+                    $table->unsignedInteger('unit_price_minor');
                 }
                 if (! schemaHasColumn('travel_passengers', 'created_at')) {
                     $table->timestamps();

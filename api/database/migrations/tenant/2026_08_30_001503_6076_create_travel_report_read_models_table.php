@@ -25,10 +25,10 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_daily_sales', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_daily_sales', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_daily_sales', 'sale_date')) {
-                    $table->date('sale_date')->nullable();
+                    $table->date('sale_date');
                 }
                 if (! schemaHasColumn('travel_daily_sales', 'source')) {
                     $table->string('source', 20)->nullable();
@@ -59,16 +59,16 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_trip_occupancy', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_trip_occupancy', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_trip_occupancy', 'trip_id')) {
-                    $table->unsignedBigInteger('trip_id')->nullable();
+                    $table->unsignedBigInteger('trip_id');
                 }
                 if (! schemaHasColumn('travel_trip_occupancy', 'departure_date')) {
-                    $table->date('departure_date')->nullable();
+                    $table->date('departure_date');
                 }
                 if (! schemaHasColumn('travel_trip_occupancy', 'total_seats')) {
-                    $table->unsignedInteger('total_seats')->nullable();
+                    $table->unsignedInteger('total_seats');
                 }
                 if (! schemaHasColumn('travel_trip_occupancy', 'sold_seats')) {
                     $table->unsignedInteger('sold_seats')->nullable();

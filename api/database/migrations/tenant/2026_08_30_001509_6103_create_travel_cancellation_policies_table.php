@@ -24,7 +24,7 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_cancellation_policies', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_cancellation_policies', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_cancellation_policies', 'trip_id')) {
                     $table->unsignedBigInteger('trip_id')->nullable();
