@@ -30,7 +30,7 @@ use Tests\TestCase;
  *  6. aucune alerte sans événement.
  *
  * Le test passe par le vrai schéma tenant (RefreshTenantDatabase) : la
- * migration `2026_09_15_000002_7427_*` est donc exercée, pas contournée.
+ * migration `2026_09_15_000007_7427_*` est donc exercée, pas contournée.
  */
 class CameraAlertTest extends TestCase
 {
