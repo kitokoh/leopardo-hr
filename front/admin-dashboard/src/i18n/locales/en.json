@@ -4987,11 +4987,11 @@
     "home": "Back to home"
   },
   "navigation": {
-      "fuelStationOperations": "Fuel station operations",
-      "systemHealth": "Platform health",
-      "healthStatus": "Status",
-      "onlineUsers": "Users online",
-      "alerts": "Alerts",
+    "fuelStationOperations": "Fuel station operations",
+    "systemHealth": "Platform health",
+    "healthStatus": "Status",
+    "onlineUsers": "Users online",
+    "alerts": "Alerts",
     "groups": {
       "pilotage": "Steering",
       "entreprise": "Client companies",

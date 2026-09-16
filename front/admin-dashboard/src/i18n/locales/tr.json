@@ -4993,11 +4993,11 @@
     "home": "Ana sayfaya dön"
   },
   "navigation": {
-      "fuelStationOperations": "Akaryakıt istasyonu işlemleri",
-      "systemHealth": "Platform sağlığı",
-      "healthStatus": "Durum",
-      "onlineUsers": "Çevrimiçi kullanıcılar",
-      "alerts": "Uyarılar",
+    "fuelStationOperations": "Akaryakıt istasyonu işlemleri",
+    "systemHealth": "Platform sağlığı",
+    "healthStatus": "Durum",
+    "onlineUsers": "Çevrimiçi kullanıcılar",
+    "alerts": "Uyarılar",
     "groups": {
       "pilotage": "Yönetim",
       "entreprise": "Müşteri şirketler",

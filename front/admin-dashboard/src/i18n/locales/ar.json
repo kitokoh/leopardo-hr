@@ -4987,11 +4987,11 @@
     "home": "العودة إلى الرئيسية"
   },
   "navigation": {
-      "fuelStationOperations": "عمليات محطات الوقود",
-      "systemHealth": "سلامة المنصة",
-      "healthStatus": "الحالة",
-      "onlineUsers": "المستخدمون المتصلون",
-      "alerts": "التنبيهات",
+    "fuelStationOperations": "عمليات محطات الوقود",
+    "systemHealth": "سلامة المنصة",
+    "healthStatus": "الحالة",
+    "onlineUsers": "المستخدمون المتصلون",
+    "alerts": "التنبيهات",
     "groups": {
       "pilotage": "القيادة",
       "entreprise": "شركات العملاء",

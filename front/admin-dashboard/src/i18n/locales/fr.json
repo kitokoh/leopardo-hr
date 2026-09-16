@@ -4993,11 +4993,11 @@
     "home": "Retour à l'accueil"
   },
   "navigation": {
-      "fuelStationOperations": "Opérations stations-service",
-      "systemHealth": "Santé de la plateforme",
-      "healthStatus": "Statut",
-      "onlineUsers": "Utilisateurs en ligne",
-      "alerts": "Alertes",
+    "fuelStationOperations": "Opérations stations-service",
+    "systemHealth": "Santé de la plateforme",
+    "healthStatus": "Statut",
+    "onlineUsers": "Utilisateurs en ligne",
+    "alerts": "Alertes",
     "groups": {
       "pilotage": "Pilotage",
       "entreprise": "Entreprises clientes",
