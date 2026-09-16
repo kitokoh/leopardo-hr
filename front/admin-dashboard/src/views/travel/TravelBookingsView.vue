@@ -76,37 +76,38 @@
         </template>
         <template #row-actions="{ row }">
           <div class="flex flex-wrap justify-end gap-2">
-            <button class="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400" @click="openDetail(row)">
-              {{ t('travel.bookings.detail', 'Détail') }}
-            </button>
-            <button
+                        <RowActionButton
+              :icon="EyeIcon"
+              :label="t('travel.bookings.detail', 'Détail')"
+              @click="openDetail(row)"
+            />
+                        <RowActionButton
               v-if="row.status === 'pending'"
-              class="text-sm font-medium text-emerald-600 hover:text-emerald-800 dark:text-emerald-400"
+              :icon="CheckIcon"
+              tone="success"
+              :label="t('travel.bookings.confirm', 'Confirmer')"
               @click="confirmBooking(row)"
-            >
-              {{ t('travel.bookings.confirm', 'Confirmer') }}
-            </button>
-            <button
+            />
+                        <RowActionButton
               v-if="isActiveBookingStatus(row.status)"
-              class="text-sm font-medium text-amber-600 hover:text-amber-800 dark:text-amber-400"
+              :icon="XMarkIcon"
+              tone="warning"
+              :label="t('travel.bookings.cancel', 'Annuler')"
               @click="openCancel(row)"
-            >
-              {{ t('travel.bookings.cancel', 'Annuler') }}
-            </button>
-            <button
+            />
+                        <RowActionButton
               v-if="row.status === 'confirmed'"
-              class="text-sm font-medium text-purple-600 hover:text-purple-800 dark:text-purple-400"
+              :icon="ArrowUturnLeftIcon"
+              :label="t('travel.bookings.refund', 'Rembourser')"
               @click="openRefund(row)"
-            >
-              {{ t('travel.bookings.refund', 'Rembourser') }}
-            </button>
-            <button
+            />
+                        <RowActionButton
               v-if="row.status === 'confirmed'"
-              class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
+              :icon="TicketIcon"
+              tone="primary"
+              :label="t('travel.bookings.issueTickets', 'Émettre billet')"
               @click="issueTickets(row)"
-            >
-              {{ t('travel.bookings.issueTickets', 'Émettre billet') }}
-            </button>
+            />
           </div>
         </template>
       </DataTable>
@@ -228,9 +229,16 @@ import { useTravelStore } from '@/stores/travel'
 import TravelGate from '@/components/travel/TravelGate.vue'
 import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import DataTable from '@/components/common/DataTable.vue'
+import RowActionButton from '@/components/common/RowActionButton.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { XMarkIcon } from '@heroicons/vue/24/outline'
+import {
+  XMarkIcon,
+  ArrowUturnLeftIcon,
+  CheckIcon,
+  EyeIcon,
+  TicketIcon,
+} from '@heroicons/vue/24/outline'
 import { listTravel, getTravel, travelAction, travelList, travelItem, formatMinor } from '@/services/travel'
 
 const localeStore = useLocaleStore()
