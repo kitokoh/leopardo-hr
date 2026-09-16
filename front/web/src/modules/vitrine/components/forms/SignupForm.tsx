@@ -42,6 +42,7 @@ import { Card } from '@/modules/vitrine/components/common/Card';
 import { signupFormSchema, SignupFormData } from '@/modules/vitrine/lib/validation';
 import { submitSignupForm, submitVerifyForm, fetchTrialStatus, submitTrialPassword, createFormReducer, initialFormState, getLeadSource } from '@/modules/vitrine/lib/forms';
 import { useAnalyticsForm } from '@/modules/vitrine/hooks/useAnalytics';
+import { trackFunnelStep, FUNNEL_EVENTS } from '@/modules/vitrine/lib/funnel';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
 import { fetchSupportedCountries, type SupportedCountryOption } from '@/modules/vitrine/data/supported-countries';
@@ -218,6 +219,18 @@ export function SignupForm({
   const [pollNonce, setPollNonce] = useState(0);
   const [isTracking, setIsTracking] = useState(false);
 
+  // #7542 — jalons du funnel. Les gardes sont des refs : elles survivent au
+  // re-render (donc pas de doublon quand le formulaire se rafraîchit) mais pas à
+  // un remontage (donc un nouveau parcours ré-émet bien ses étapes).
+  const funnelViewRef = useRef(false);
+  const funnelProvisionedRef = useRef(false);
+
+  useEffect(() => {
+    if (funnelViewRef.current) return;
+    funnelViewRef.current = true;
+    trackFunnelStep(FUNNEL_EVENTS.signupView, { page });
+  }, [page]);
+
   const persistTrialToken = (token: string | null | undefined) => {
     if (!token) return;
     setTrialToken(token);
@@ -313,6 +326,12 @@ export function SignupForm({
           setTrialLoginUrl(res.data.login_url || '');
           setPasswordSet(res.data.password_set === true);
           setAccessSent(res.data.access_sent === true);
+          // #7542 — jalon terminal du tunnel : l'espace est réellement prêt.
+          // Garde anti-doublon : le polling peut repasser par `ready`.
+          if (!funnelProvisionedRef.current) {
+            funnelProvisionedRef.current = true;
+            trackFunnelStep(FUNNEL_EVENTS.spaceProvisioned, { page });
+          }
           if (intervalId) clearInterval(intervalId);
           return;
         }
@@ -336,7 +355,7 @@ export function SignupForm({
       cancelled = true;
       if (intervalId) clearInterval(intervalId);
     };
-  }, [currentStep, trialToken, pollNonce]);
+  }, [currentStep, trialToken, pollNonce, page]);
 
   const handleSetPassword = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -412,6 +431,10 @@ export function SignupForm({
           employees: data.employees,
         });
 
+        // #7542 — jalon « formulaire soumis ». On n'émet QUE des clés et l'attribution :
+        // aucune valeur de formulaire ne part dans les événements.
+        trackFunnelStep(FUNNEL_EVENTS.signupEmailSubmitted, { page });
+
         setPendingEmail(data.email);
         dispatch({ type: 'RESET' });
 
@@ -451,6 +474,9 @@ export function SignupForm({
           );
           setCurrentStep('pending');
         } else {
+          // #7542 — le code vient d'être envoyé : c'est l'écran où le funnel perd
+          // le plus de prospects, il doit être mesuré distinctement.
+          trackFunnelStep(FUNNEL_EVENTS.signupOtpSent, { page });
           setCurrentStep('otp');
         }
       } else if (response.error === 'COUNTRY_REQUIRED') {
@@ -530,6 +556,8 @@ export function SignupForm({
       const response = await submitVerifyForm(pendingEmail, code);
 
       if (response.success) {
+        // #7542 — jalon « code vérifié ».
+        trackFunnelStep(FUNNEL_EVENTS.signupOtpVerified, { page });
         setProvisionedData(response.data);
         reset();
         onSuccess?.({} as SignupFormData);
