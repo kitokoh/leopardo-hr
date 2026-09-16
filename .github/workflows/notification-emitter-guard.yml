@@ -1,0 +1,70 @@
+name: Notification Emitter Guard (ADR-0013)
+
+# Issue #7481 — l'ADR 0013 tranche la coexistence des deux stores de
+# notifications in-app : le canal CIBLE est `app_notifications` (écrit par
+# `NotificationDispatcher`, exposé via le contrat Core `InAppNotifier`), la
+# table historique `notifications` sort progressivement.
+#
+# Sans garde, cette décision restait déclarative : le lot le plus récent
+# (#7427, alertes caméras) a diffusé via `CommunicationService`, c'est-à-dire
+# le canal historique — c'est-à-dire l'inverse de la direction décidée.
+#
+# La garde est DIFF-SCOPED au niveau de la ligne (comme `check-i18n-diff.js`) :
+# seule une NOUVELLE ligne d'import du modèle historique fait échouer la PR.
+# La dette existante ne bloque jamais une PR qui ne l'aggrave pas.
+#
+# Le périmètre `paths` est volontairement limité : la garde ne s'exécute que si
+# du code PHP d'API, le script ou l'ADR changent — pas sur une PR de docs.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'api/app/**'
+      - 'api/routes/**'
+      - 'dev-hub/tools/check-notification-emitter-diff.sh'
+      - 'docs/architecture/adr/0013-notifications-read-path-unification.md'
+  push:
+    branches: [main]
+    paths:
+      - 'api/app/**'
+      - 'api/routes/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: notification-emitter-guard-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    timeout-minutes: 10
+    name: ADR-0013 — pas de nouvel émetteur legacy (issue #7481)
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.base.ref == 'main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # fetch-depth: 0 — la garde compare deux révisions (base et head).
+          fetch-depth: 0
+          lfs: false
+
+      - name: Self-test de la garde
+        run: bash dev-hub/tools/check-notification-emitter-diff-test.sh
+
+      - name: Garde des émetteurs de notification
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            bash dev-hub/tools/check-notification-emitter-diff.sh \
+              "${{ github.event.pull_request.base.sha }}" \
+              "${{ github.event.pull_request.head.sha }}"
+          else
+            bash dev-hub/tools/check-notification-emitter-diff.sh \
+              "${{ github.event.before }}" "${{ github.sha }}"
+          fi
