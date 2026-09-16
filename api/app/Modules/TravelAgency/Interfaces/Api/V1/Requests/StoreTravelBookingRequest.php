@@ -43,6 +43,11 @@ class StoreTravelBookingRequest extends FormRequest
             'contact_email' => ['nullable', 'email', 'max:255'],
             'contact_phone' => ['nullable', 'string', 'max:40'],
             'notify_consent' => ['nullable', 'boolean'],
+            // #7445 — `CreateBookingAction` porte `billing_deferred` (facturation
+            // différée, réservation corporate) mais la requête ne le validait pas :
+            // le champ était donc systématiquement ignoré, même quand la surface
+            // l'envoyait.
+            'billing_deferred' => ['nullable', 'boolean'],
             'passengers' => ['required', 'array', 'min:1', 'max:20'],
             'passengers.*.full_name' => ['required', 'string', 'max:160'],
             'passengers.*.birth_date' => ['nullable', 'date'],

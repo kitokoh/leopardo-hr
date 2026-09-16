@@ -1010,7 +1010,26 @@
     "teamActive": "فريق نشط",
     "updateSubscription": "تحديث الاشتراك",
     "updating": "جارٍ التحديث...",
-    "viewAllTickets": "عرض كل التذاكر"
+    "viewAllTickets": "عرض كل التذاكر",
+    "features": {
+      "rh": "الموارد البشرية",
+      "finance": "المالية والإدارة",
+      "ai": "الذكاء الاصطناعي",
+      "cameras": "المراقبة بالفيديو",
+      "tracking": "تتبع الأسطول",
+      "planning": "التخطيط والفريق",
+      "training": "مركز التدريب",
+      "cabinet": "الخزانة الرقمية",
+      "muhasebe": "المحاسبة (تركيا)",
+      "leo_ai": "مساعد ليوباردو الذكي",
+      "crm": "إدارة العملاء (CRM)",
+      "fuel_station": "محطات الوقود",
+      "edumanager": "إدارة المؤسسة التعليمية",
+      "restaurant": "المطاعم",
+      "travelagency": "وكالة سفر",
+      "accounting": "المحاسبة",
+      "company_showcase": "موقع تعريفي"
+    }
   },
   "attendanceCorrectionRequestHint": "سيُرسل الطلب إلى الموارد البشرية للمراجعة.",
   "salaryAdvanceError": "فشل: {error}",
@@ -1366,6 +1385,19 @@
       "high": "مخاطر عالية",
       "medium": "مخاطر متوسطة",
       "low": "مخاطر منخفضة"
+    },
+    "features": {
+      "biometric": "القياسات الحيوية",
+      "tasks": "المهام",
+      "advanced_reports": "تقارير متقدمة",
+      "excel_export": "تصدير Excel",
+      "bank_export": "تصدير بنكي",
+      "billing_auto": "فوترة تلقائية",
+      "multi_managers": "مديرون متعددون",
+      "photo_attendance": "الحضور بالصورة",
+      "api_public": "واجهة برمجية عامة",
+      "evaluations": "التقييمات",
+      "schema_isolation": "عزل البيانات"
     }
   },
   "settingsCabinetPublic": "عامة",
@@ -2641,7 +2673,10 @@
     "cancel": "إلغاء",
     "noResults": "لا توجد نتائج.",
     "reload": "إعادة التحميل",
-    "dismiss": "إغلاق"
+    "dismiss": "إغلاق",
+    "actions": "إجراءات",
+    "edit": "تعديل",
+    "search": "بحث…"
   },
   "settingsProfileUpdated": "تم تحديث الملف الشخصي.",
   "attendanceHoursWorkedLabel": "ساعات العمل",
@@ -2842,7 +2877,9 @@
       "medium": "متوسطة",
       "high": "عالية",
       "critical": "حرجة"
-    }
+    },
+    "viewEquipment": "المعدات",
+    "advanceIncident": "تقديم"
   },
   "adminPalette": {
     "appLoading": "جارٍ تحميل لوحة الإدارة…",
@@ -3160,7 +3197,30 @@
     "statsActive": "العملاء النشطون",
     "statsFollowed": "العملاء المتتبعون",
     "statsGlobalMrr": "الإيرادات الشهرية المتكررة",
-    "statsRiskAlert": "تنبيه المخاطر"
+    "statsRiskAlert": "تنبيه المخاطر",
+    "searchLabel": "بحث",
+    "searchPlaceholder": "الاسم أو البريد الإلكتروني أو البلد أو المدينة…",
+    "statusLabel": "الحالة",
+    "statusAll": "الكل",
+    "statusActive": "نشط",
+    "statusTrial": "تجريبي",
+    "statusSuspended": "موقوف",
+    "statusExpired": "منتهي",
+    "empty": "لا توجد أي شركة في المحفظة حالياً.",
+    "emptySearch": "لا توجد شركة مطابقة لهذا البحث.",
+    "resetFilters": "إعادة تعيين البحث",
+    "previousPage": "السابق",
+    "nextPage": "التالي",
+    "pageOf": "الصفحة :current من :total",
+    "totalCount": ":count شركة",
+    "suspend": "إيقاف",
+    "activate": "تفعيل",
+    "suspendConfirmTitle": "هل تريد إيقاف هذه الشركة؟",
+    "suspendConfirmBody": "ستفقد الشركة :name الوصول إلى مساحتها حتى إعادة تفعيلها.",
+    "suspended": "تم إيقاف الشركة.",
+    "activated": "تم تفعيل الشركة.",
+    "statusError": "فشل تحديث الحالة.",
+    "statusPlanMissing": "لا توجد خطة مرتبطة بهذه الشركة: افتح صفحتها لتعريف واحدة."
   },
   "attendanceOvertimeHint": "بدء جلسة ساعات إضافية",
   "companyrequestsApprovedToast": "تمت الموافقة على الطلب",
@@ -3837,6 +3897,8 @@
     "unassigned": "غير معين",
     "searchVehicle": "ابحث عن مركبة...",
     "searchAlert": "ابحث عن تنبيه...",
+    "locate": "تحديد الموقع",
+    "detail": "التفاصيل",
     "title": "الأسطول والمركبات",
     "subtitle": "مركبات الخدمة: الحالة والموقع والمسارات",
     "loadError": "تعذر تحميل الأسطول",
@@ -4821,7 +4883,9 @@
       "deactivate": "تعطيل",
       "suspend": "تعليق",
       "export": "تصدير",
-      "cancel": "إلغاء"
+      "cancel": "إلغاء",
+      "deactivateConfirmTitle": "تعطيل المستخدمين المحددين؟",
+      "deactivateConfirmBody": "ستؤدي هذه العملية إلى تعطيل :count مستخدمًا محددًا. لن يتمكنوا من تسجيل الدخول حتى يُعاد تنشيط حساباتهم."
     },
     "toast": {
       "loadError": "خطأ في تحميل المستخدمين",
@@ -4879,7 +4943,17 @@
       "loading": "جارٍ تحميل المستخدمين...",
       "empty": "لا يوجد مستخدم",
       "emptyHint": "لا يوجد مستخدم يطابق معايير البحث.",
-      "viewDetails": "عرض التفاصيل"
+      "viewDetails": "عرض التفاصيل",
+      "company": "الشركة",
+      "createdAt": "التسجيل",
+      "name": "المستخدم",
+      "status": "الحالة"
+    },
+    "status": {
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "pending": "قيد الانتظار",
+      "suspended": "موقوف"
     }
   },
   "settingsBiometryEnrollment": "تسجيل البيانات الحيوية",
@@ -5595,7 +5669,8 @@
       "tabRentalBookings": "حجوزات الإيجار",
       "tabRentals": "مركبات للإيجار",
       "title": "العنوان",
-      "hotelRoomsTitle": "غرف الفندق"
+      "hotelRoomsTitle": "غرف الفندق",
+      "confirmDeleteImage": "حذف هذه الصورة؟ ستُزال من معرض المركبة."
     },
     "cities": {
       "country": "الدول",
@@ -5639,7 +5714,8 @@
       "selectPlaceholder": "— اختر —",
       "status": "الحالة",
       "tenantRequiredTitle": "سياق العميل مطلوب",
-      "yes": "نعم"
+      "yes": "نعم",
+      "actionError": "فشلت العملية. حاول مرة أخرى."
     },
     "countries": {
       "name": "الاسم",
@@ -6405,7 +6481,9 @@
     "sectionProducts": "المنتجات",
     "sectionContact": "اتصال",
     "sectionFooter": "التذييل",
-    "notFoundTitle": "الصفحة غير موجودة"
+    "notFoundTitle": "الصفحة غير موجودة",
+    "delete_section_title": "حذف هذا القسم؟",
+    "delete_section_body": "سيُحذف القسم ومحتواه نهائيًا."
   },
   "trial": {
     "trialBadge": "تجريبي",
@@ -6452,7 +6530,8 @@
     "overridden": "مخصّص",
     "preview": "معاينة",
     "previewFailed": "المعاينة غير متاحة",
-    "loadFailed": "تعذّر التحميل"
+    "loadFailed": "تعذّر التحميل",
+    "emptyList": "لا يوجد قالب بريد إلكتروني متاح."
   },
   "aiAssistant": {
     "title": "مساعد الذكاء الاصطناعي",
@@ -6499,6 +6578,8 @@
     "awaitingConfirmation": "بانتظار التأكيد",
     "failures": "الإخفاقات",
     "recentErrors": "الأخطاء الأخيرة",
-    "loadError": "تعذّر تحميل الإعدادات."
+    "loadError": "تعذّر تحميل الإعدادات.",
+    "healthUnavailable": "حالة المساعد غير متاحة — فشل التحميل. أعد تحميل الصفحة للمحاولة مرة أخرى.",
+    "monitoringUnavailable": "المتابعة غير متاحة — فشل تحميل الإحصاءات. لا تُعرض أي أرقام بدلًا من صفر مضلّل."
   }
 }

@@ -141,7 +141,9 @@
       "US": "Amerika Birleşik Devletleri"
     },
     "required": "Gerekli",
-    "dismiss": "Kapat"
+    "dismiss": "Kapat",
+    "actions": "İşlemler",
+    "edit": "Düzenle"
   },
   "modules": {
     "attendance": "Puantaj",
@@ -1680,7 +1682,26 @@
     "slug": "Slug",
     "countryCurrency": "Ulke / Para birimi",
     "registeredOn": "Kayit tarihi",
-    "lastActivity": "Son aktivite"
+    "lastActivity": "Son aktivite",
+    "features": {
+      "rh": "İnsan kaynakları",
+      "finance": "Finans ve yönetim",
+      "ai": "Yapay zekâ",
+      "cameras": "Video gözetim",
+      "tracking": "Filo takibi",
+      "planning": "Planlama ve ekip",
+      "training": "Eğitim merkezi",
+      "cabinet": "Dijital dolap",
+      "muhasebe": "Muhasebe (Türkiye)",
+      "leo_ai": "Leopardo yapay zekâ asistanı",
+      "crm": "Müşteri ilişkileri (CRM)",
+      "fuel_station": "Akaryakıt istasyonları",
+      "edumanager": "Eğitim kurumu yönetimi",
+      "restaurant": "Restoran",
+      "travelagency": "Seyahat acentesi",
+      "accounting": "Muhasebe",
+      "company_showcase": "Tanıtım sitesi"
+    }
   },
   "reports": {
     "attendance_title": "Yoklama Özeti",
@@ -5013,7 +5034,9 @@
       "medium": "Orta",
       "high": "Yüksek",
       "critical": "Kritik"
-    }
+    },
+    "viewEquipment": "Ekipman",
+    "advanceIncident": "İlerlet"
   },
   "trial": {
     "trialBadge": "Deneme",
@@ -5148,6 +5171,23 @@
     "distance": "Mesafe",
     "purpose": "Amaç",
     "notFound": "Araç bulunamadı",
-    "loading": "Yükleniyor…"
+    "loading": "Yükleniyor…",
+    "locate": "Konumlandır",
+    "detail": "Ayrıntı"
+  },
+  "subscriptions": {
+    "features": {
+      "biometric": "Biyometri",
+      "tasks": "Görevler",
+      "advanced_reports": "Gelişmiş raporlar",
+      "excel_export": "Excel dışa aktarma",
+      "bank_export": "Banka dışa aktarma",
+      "billing_auto": "Otomatik faturalama",
+      "multi_managers": "Çoklu yönetici",
+      "photo_attendance": "Fotoğraflı devam",
+      "api_public": "Herkese açık API",
+      "evaluations": "Değerlendirmeler",
+      "schema_isolation": "Veri izolasyonu"
+    }
   }
 }

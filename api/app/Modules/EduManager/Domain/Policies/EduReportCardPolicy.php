@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\EduManager\Domain\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\EduManager\Domain\Access\EduAccess;
 use App\Modules\EduManager\Domain\Models\EduGuardian;
 use App\Modules\EduManager\Domain\Models\EduReportCard;
 use App\Modules\EduManager\Domain\Models\EduStudentGuardian;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * Issue #5824 (EDU-008) — Policy des bulletins de période.
@@ -36,6 +36,21 @@ class EduReportCardPolicy
     public const MANAGER_ROLES = ['principal', 'rh', 'manager'];
 
     public function viewAny(Employee $actor): bool
+    {
+        return $this->isManager($actor);
+    }
+
+    /**
+     * `POST /edu-manager/report-cards/generate` autorise l'ability `create`
+     * (EduReportCardController::generate). Sans cette méthode, le Gate Laravel
+     * refuse TOUTE génération de bulletin (403 FORBIDDEN) — y compris pour la
+     * direction : la fonction « bulletins » était inatteignable en production
+     * (constaté le 2026-09-14, parcours pilote EduManager).
+     *
+     * Même périmètre que `viewAny`/`validate` : un manager du tenant
+     * (direction / RH / propriétaire) génère les bulletins de ses élèves.
+     */
+    public function create(Employee $actor): bool
     {
         return $this->isManager($actor);
     }
@@ -109,25 +124,6 @@ class EduReportCardPolicy
     }
 
     /**
-     * Enseignant : lien EduTeacher → employee_id (fallback sûr : modèle non
-     * livré → refus, jamais de fuite).
-     */
-    private function isTeacher(Employee $actor): bool
-    {
-        /** @var class-string<Model> $teacherModel */
-        $teacherModel = 'App\Modules\EduManager\Domain\Models\EduTeacher';
-
-        if (! class_exists($teacherModel)) {
-            return false;
-        }
-
-        return $teacherModel::query()
-            ->where('employee_id', $actor->id)
-            ->where('company_id', $actor->company_id)
-            ->exists();
-    }
-
-    /**
      * Best-effort : l'enseignant n'est autorisé que sur SES classes.
      *
      * Le lien enseignant → classe est porté par edu_timetable_slots (EDU-006,
@@ -137,40 +133,6 @@ class EduReportCardPolicy
      */
     private function teachesClass(Employee $actor, int $classId): bool
     {
-        if ($classId <= 0 || ! $this->isTeacher($actor)) {
-            return false;
-        }
-
-        /** @var class-string<Model> $teacherModel */
-        $teacherModel = 'App\Modules\EduManager\Domain\Models\EduTeacher';
-
-        $teacher = $teacherModel::query()
-            ->where('employee_id', $actor->id)
-            ->where('company_id', $actor->company_id)
-            ->first();
-
-        if (! $teacher instanceof Model) {
-            return false;
-        }
-
-        /** @var class-string<Model> $slotModel */
-        $slotModel = 'App\Modules\EduManager\Domain\Models\EduTimetableSlot';
-
-        if (class_exists($slotModel)) {
-            return $slotModel::query()
-                ->where('class_id', $classId)
-                ->where('teacher_id', (int) $teacher->getKey())
-                ->where('company_id', $actor->company_id)
-                ->exists();
-        }
-
-        if (method_exists($teacher, 'classes')) {
-            /** @var \Illuminate\Database\Eloquent\Builder $classesQuery */
-            $classesQuery = $teacher->{'classes'}();
-
-            return $classesQuery->whereKey($classId)->exists();
-        }
-
-        return false;
+        return EduAccess::teachesClass($actor, $classId);
     }
 }

@@ -30,6 +30,13 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $published_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int|null $class_id
+ * @property string|null $period_label
+ * @property Carbon|null $period_start
+ * @property Carbon|null $period_end
+ * @property string|null $average_score
+ * @property array<string, mixed>|null $data
+ * @property int|null $created_by
  *
  * @mixin Builder<static>
  */
@@ -70,8 +77,20 @@ class EduReportCard extends Model
         'company_id',
         'student_id',
         'academic_year_id',
+        'class_id',
         'period',
+        // Génération v2 (#5824) : période libellée + bornes + agrégats. Ces
+        // colonnes existent en base mais étaient absentes du modèle → le
+        // service de bulletins écrivait des cartes sans classe (`class_id`
+        // NULL, donc plus aucune policy enseignant), sans moyenne et sans
+        // snapshot (`data`), d'où les échecs de `EduReportCardTest`.
+        'period_label',
+        'period_start',
+        'period_end',
+        'average_score',
+        'data',
         'status',
+        'created_by',
         'generated_at',
         'validated_at',
         'validated_by',
@@ -82,6 +101,11 @@ class EduReportCard extends Model
         'student_id' => 'integer',
         'academic_year_id' => 'integer',
         'period' => 'string',
+        'class_id' => 'integer',
+        'period_start' => 'date',
+        'period_end' => 'date',
+        'average_score' => 'decimal:2',
+        'data' => 'array',
         'status' => 'string',
         'generated_at' => 'datetime',
         'validated_at' => 'datetime',

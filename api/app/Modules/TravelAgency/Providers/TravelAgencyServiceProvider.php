@@ -5,16 +5,19 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Providers;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Solutions\SolutionCatalogue;
+use App\Events\SolutionActivated;
+use App\Modules\TravelAgency\Application\Actions\ActivateTravelAgencyAction;
 use App\Modules\TravelAgency\Console\Commands\TravelExpireAdvertsCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelOutboxDispatchCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelWebhookDispatchCommand;
-use App\Modules\TravelAgency\Domain\Contracts\SolutionManifest;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\CashPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PvitPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
 use App\Modules\TravelAgency\Policies\TravelReportPolicy;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,8 +29,13 @@ use Illuminate\Support\ServiceProvider;
  * l'architecture DDD multi-tenant Leopardo HR.
  *
  * `register()` enregistre les ports & adapters du module (contrats →
- * implémentations) ; les Policies métier seront enregistrées dans `boot()`
- * au fil des lots API (épic 3xx).
+ * implémentations) ; les Policies métier sont enregistrées dans `boot()` au
+ * fil des lots API (épic 3xx).
+ *
+ * `register()` enregistre aussi le manifest de la verticale dans le
+ * `SolutionCatalogue` (clé d'allowlist `travelagency`) — condition sine qua
+ * non pour que la verticale soit demandable au signup self-service et
+ * activable par le provisioning (#7220-bis).
  *
  * L'activation par tenant passe par le feature flag `travelagency`
  * (companies.features) — voir EnsureTravelAgencyModuleMiddleware (TRAVEL-102)
@@ -37,7 +45,23 @@ class TravelAgencyServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(SolutionManifest::class, TravelAgencyManifest::class);
+        // #7220-bis (audit 2026-09-14) — enregistrement du manifest au
+        // catalogue de solutions, pattern partagé Restaurant/FuelStation
+        // (singleton avec garde `bound()` + `resolving()` : le catalogue est
+        // un service partagé entre modules, ne jamais le ré-écraser).
+        //
+        // Sans cet enregistrement, l'allowlist du catalogue ne connaît pas
+        // `travelagency` : le signup self-service renvoyait 422
+        // `INVALID_SOLUTION` et `leopardo:solution:activate travelagency`
+        // levait `SolutionNotFoundException` — la verticale restait
+        // inactivable pour un client agence de voyage.
+        if (! $this->app->bound(SolutionCatalogue::class)) {
+            $this->app->singleton(SolutionCatalogue::class, static fn (): SolutionCatalogue => new SolutionCatalogue);
+        }
+
+        $this->app->resolving(SolutionCatalogue::class, function (SolutionCatalogue $catalogue): void {
+            $catalogue->register(TravelAgencyManifest::CODE, static fn (): TravelAgencyManifest => new TravelAgencyManifest);
+        });
 
         // Passerelles de paiement (TRAVEL-405..407) — registre par code.
         $this->app->singleton(PaymentGatewayRegistry::class, function (): PaymentGatewayRegistry {
@@ -73,6 +97,30 @@ class TravelAgencyServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Audit 2026-09-14 — amorçage de la verticale à l'ACTIVATION.
+        //
+        // `SolutionActivator` ne posait que le feature flag : un tenant agence
+        // de voyage onboardé par le signup self-service (`solutions:
+        // ["travelagency"]`) recevait le flag, l'UI et les routes… mais un
+        // référentiel géographique VIDE (0 pays / 0 ville). Or `travel_routes`
+        // exige une ville d'origine et une ville d'arrivée : la verticale
+        // était donc inexploitable sans intervention manuelle d'un opérateur
+        // (`leopardo:travel:activate`).
+        //
+        // Le module écoute donc `SolutionActivated` et installe ses données
+        // d'amorçage — même pattern d'isolation que Accounting sur
+        // `CompanyCreated`. `ActivateTravelAgencyAction` est idempotent
+        // (flag + `insertOrIgnore` sur le référentiel), donc rejouable sans
+        // risque ; il est aussi le point d'entrée des commandes OPS, ce qui
+        // garantit un seul chemin d'amorçage.
+        Event::listen(SolutionActivated::class, static function (SolutionActivated $event): void {
+            if ($event->solution !== TravelAgencyManifest::CODE) {
+                return;
+            }
+
+            app(ActivateTravelAgencyAction::class)->execute($event->company);
+        });
+
         // Permission `travel.reports` (rapports d'exploitation internes) — le
         // câblage Gate::define manquait (perdu dans les merges de la
         // consolidation) : `cannot('travel.reports')` retournait 403 pour

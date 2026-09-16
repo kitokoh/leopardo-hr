@@ -47,7 +47,12 @@ final class EduMarketingService
         }
 
         return $query
+            // Tri STABLE : `applied_at` est à la seconde, plusieurs dossiers
+            // saisis dans la même seconde partageaient la même clé et l'ordre
+            // retourné était celui, non déterministe, du plan d'exécution
+            // (l'API exposait alors le prospect le plus ANCIEN en tête).
             ->orderByDesc('applied_at')
+            ->orderByDesc('id')
             ->get(['id', 'admission_number', 'crm_contact_id', 'applicant_first_name', 'applicant_last_name', 'applied_at', 'status'])
             ->map(fn (EduAdmission $admission): array => [
                 'admission_id' => (int) $admission->getAttribute('id'),

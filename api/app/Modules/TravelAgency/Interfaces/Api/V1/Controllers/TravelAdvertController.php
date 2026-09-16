@@ -26,13 +26,6 @@ use Illuminate\Http\Request;
  */
 class TravelAdvertController extends Controller
 {
-    /**
-     * Rôles autorisés à la vue « gestion » des annonces (toutes, quel que
-     * soit le statut) — aligné sur `TravelAdvertPolicy::moderate()`
-     * (TRAVEL-907/908) et sur `GET /adverts/manage` (TRAVEL-914/#6422).
-     */
-    private const MANAGE_ROLES = ['principal', 'rh', 'manager'];
-
     public function __construct(
         private readonly SubmitTravelAdvertAction $submit,
         private readonly PayTravelAdvertAction $pay,
@@ -55,13 +48,15 @@ class TravelAdvertController extends Controller
 
         $query = TravelAdvert::query()->where('company_id', $actor->company_id);
 
-        // #7420 : `$actor->can('moderate', TravelAdvert::class)` passait la
-        // CLASSE au résolveur de policy, qui appelait alors
-        // `TravelAdvertPolicy::moderate(Employee)` avec un seul argument →
-        // ArgumentCountError (500 sur GET /travel/adverts). Le mode gestion est
-        // une capacité de COLLECTION, pas d'instance : même condition que la
-        // policy et que `manageIndex()`, la constante étant partagée.
-        $manage = $actor->hasManagerRole(...self::MANAGE_ROLES);
+        // #7418 — `$actor->can('moderate', TravelAdvert::class)` passait la
+        // CLASSE au résolveur de policy : Laravel retire le nom de classe des
+        // arguments (`Gate::callPolicyMethod`) et appelle donc
+        // `TravelAdvertPolicy::moderate(Employee)` avec un seul argument, alors
+        // que la policy en attend deux → ArgumentCountError → 500 sur
+        // `GET /travel/adverts`, pour tout le monde. Le mode gestion est une
+        // capacité de COLLECTION (aucune instance à contrôler) : on applique la
+        // même condition que la policy/moderation, comme `manageIndex()` plus bas.
+        $manage = $actor->hasManagerRole('principal', 'rh', 'manager');
 
         if (! $manage) {
             $adverts = $query->get()->filter(fn (TravelAdvert $a) => $a->isVisible())->values();
@@ -97,7 +92,7 @@ class TravelAdvertController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if (! $actor->hasManagerRole(...self::MANAGE_ROLES)) {
+        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
             abort(403);
         }
 
@@ -231,30 +226,26 @@ class TravelAdvertController extends Controller
     }
 
     /**
-     * Suppression d'une annonce (#7420).
+     * TRAVEL-907/908 (#6110/#6111) — Suppression d'une annonce.
      *
-     * La route `DELETE /adverts/{travelAdvert}` existait mais pointait vers
-     * `destroyAdvert`, méthode inexistante — alors que
-     * `TravelAdvertPolicy::delete()` existait déjà (l'opération était prévue).
-     * Convention du module : 404 si l'annonce appartient à un autre tenant (on
-     * ne révèle pas son existence), 403 si le rôle est insuffisant.
+     * Réservée aux rôles opérationnels du tenant (`TravelAdvertPolicy::delete`,
+     * alignée sur `create`/`pay`). Une annonce d'un autre tenant est
+     * indiscernable d'une annonce inexistante (404) — même contrat que
+     * `show`/`pay`/`renew`. Réponse 204 sans corps, alignée sur les autres
+     * `destroy()` de la verticale (ex. `TravelAdvertTypeController`).
      */
-    public function destroy(Request $request, TravelAdvert $travelAdvert): JsonResponse
+    public function destroyAdvert(Request $request, TravelAdvert $travelAdvert): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->company_id !== $travelAdvert->company_id) {
-            abort(404);
-        }
-
         if ($actor->cannot('delete', $travelAdvert)) {
-            abort(403);
+            abort(404);
         }
 
         $travelAdvert->delete();
 
-        return new JsonResponse(null, 204);
+        return response()->json(null, 204);
     }
 
     public function renew(Request $request, TravelAdvert $travelAdvert): JsonResponse

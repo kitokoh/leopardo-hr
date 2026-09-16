@@ -13,21 +13,23 @@ jest.mock('@/lib/api-client', () => ({
 
 const mockedApiFetch = apiFetch as jest.MockedFunction<typeof apiFetch>;
 
+// Charge utile RÉELLE de la surface publique (#7395) :
+// GET /public/travel/shop/bookings/{reference}?code=…
 const bookingPayload = {
   data: {
     reference: 'GV-2026-0001',
     status: 'confirmed',
-    booking_source: 'online',
-    total_amount_minor: 24000,
-    currency: 'XAF',
+    payment_status: 'confirmed',
     passenger_count: 2,
-    trip: { id: 1, code: 'DLA-YDE-001', departure_date: '2026-09-07', departure_time: '08:00' },
-    ticket_numbers: ['TK-001', 'TK-002'],
-    ticket_ids: [11, 12],
+    trip: { code: 'DLA-YDE-001', departure_date: '2026-09-07', departure_time: '08:00' },
+    tickets: [
+      { id: 11, ticket_number: 'TK-001', status: 'issued' },
+      { id: 12, ticket_number: 'TK-002', status: 'issued' },
+    ],
   },
 };
 
-describe('TravelPortalPage (TRAVEL-702)', () => {
+describe('TravelPortalPage (TRAVEL-702 / #7395)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     // Le portail lit la locale via `useVitrineLocale()` : sans préférence
@@ -41,7 +43,7 @@ describe('TravelPortalPage (TRAVEL-702)', () => {
     expect(screen.getByPlaceholderText(/GV-2026-0001/)).toBeInTheDocument();
   });
 
-  it('suit une réservation par référence + code', async () => {
+  it('suit la réservation sur l’endpoint PUBLIC (référence + code)', async () => {
     mockedApiFetch.mockResolvedValueOnce({
       json: async () => bookingPayload,
     } as Response);
@@ -55,12 +57,42 @@ describe('TravelPortalPage (TRAVEL-702)', () => {
       expect(screen.getByText('GV-2026-0001')).toBeInTheDocument();
     });
     expect(screen.getByText(/DLA-YDE-001/)).toBeInTheDocument();
+
+    // La surface staff (`/travel/shop/bookings/…`) ne doit PLUS être appelée :
+    // elle répond 401 à un passager (aucun compte).
     expect(mockedApiFetch).toHaveBeenCalledWith(
-      '/travel/shop/bookings/GV-2026-0001?code=ABCD1234',
+      '/public/travel/shop/bookings/GV-2026-0001?code=ABCD1234',
     );
   });
 
-  it('annule la réservation avec motif', async () => {
+  it('télécharge l’e-billet via l’endpoint PUBLIC (code requis)', async () => {
+    const openSpy = jest.spyOn(window, 'open').mockImplementation(() => null);
+    mockedApiFetch
+      .mockResolvedValueOnce({ json: async () => bookingPayload } as Response)
+      .mockResolvedValueOnce({
+        json: async () => ({ data: { ticket_number: 'TK-001', pdf_url: 'https://cdn.example/ticket.pdf' } }),
+      } as Response);
+
+    render(<TravelPortalPage />);
+    await userEvent.type(screen.getByPlaceholderText(/GV-2026-0001/), 'GV-2026-0001');
+    await userEvent.type(screen.getByPlaceholderText(/votre e-billet|e-ticket|تذكرتك|biletinizdeki/), 'ABCD1234');
+    await userEvent.click(screen.getByRole('button', { name: /Suivre|Track|تتبع|takip/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('TK-001')).toBeInTheDocument();
+    });
+
+    await userEvent.click(screen.getAllByRole('button', { name: /Télécharger|Download/i })[0]);
+
+    await waitFor(() => {
+      expect(mockedApiFetch).toHaveBeenCalledWith('/public/travel/tickets/11/pdf?code=ABCD1234');
+    });
+    expect(openSpy).toHaveBeenCalledWith('https://cdn.example/ticket.pdf', '_blank', 'noopener,noreferrer');
+
+    openSpy.mockRestore();
+  });
+
+  it('annule la réservation sur l’endpoint PUBLIC (code + motif)', async () => {
     mockedApiFetch
       .mockResolvedValueOnce({ json: async () => bookingPayload } as Response)
       .mockResolvedValueOnce({
@@ -83,7 +115,7 @@ describe('TravelPortalPage (TRAVEL-702)', () => {
 
     await waitFor(() => {
       expect(mockedApiFetch).toHaveBeenCalledWith(
-        '/travel/shop/bookings/GV-2026-0001/cancel',
+        '/public/travel/shop/bookings/GV-2026-0001/cancel',
         expect.objectContaining({ method: 'POST' }),
       );
     });

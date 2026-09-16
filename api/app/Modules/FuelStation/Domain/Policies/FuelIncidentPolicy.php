@@ -54,29 +54,44 @@ class FuelIncidentPolicy
         return $actor->isManager() && $incident->company_id === (string) $actor->company_id;
     }
 
+    /**
+     * Issue #7398 — dépôt d'une pièce jointe contrôlée sur un incident :
+     * acte de gestion (mêmes règles que l'assignation).
+     */
+    public function attach(Employee $actor, FuelIncident $incident): bool
+    {
+        return $this->assign($actor, $incident);
+    }
+
+    /**
+     * Issue #7398 — transition de workflow d'un incident : la cible est
+     * validée par le service (`FuelIncident::TRANSITIONS`), les droits par
+     * ici (dépôt/prise en charge/clôture = gestion).
+     */
+    public function transition(Employee $actor, FuelIncident $incident): bool
+    {
+        return $this->assign($actor, $incident);
+    }
+
     public function report(Employee $actor): bool
     {
         return true;
     }
-
 
     public function createTask(Employee $actor): bool
     {
         return $actor->isManager();
     }
 
-
     public function viewAnyTask(Employee $actor): bool
     {
         return $actor->isManager();
     }
 
-
     public function viewTask(Employee $actor, FuelMaintenanceTask $task): bool
     {
         return $actor->isManager() || $task->assigned_to === $actor->id;
     }
-
 
     public function transitionTask(Employee $actor, FuelMaintenanceTask $task): bool
     {

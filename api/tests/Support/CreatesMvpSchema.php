@@ -2293,6 +2293,29 @@ trait CreatesMvpSchema
             });
         }
 
+        // #7401 — historique GPS de la flotte (migration
+        // 2026_09_14_000004_7401_create_vehicle_positions_table).
+        if (! Schema::hasTable($this->moduleTable('vehicle_positions'))) {
+            Schema::create($this->moduleTable('vehicle_positions'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('vehicle_id');
+                $table->uuid('company_id')->nullable();
+                $table->unsignedInteger('device_id')->nullable();
+                $table->unsignedBigInteger('traccar_position_id')->nullable();
+                $table->decimal('latitude', 10, 7)->nullable();
+                $table->decimal('longitude', 10, 7)->nullable();
+                $table->decimal('speed_kmh', 6, 2)->nullable();
+                $table->timestampTz('recorded_at');
+                $table->timestampTz('created_at')->useCurrent();
+                $table->unique(
+                    ['company_id', 'traccar_position_id'],
+                    'vehicle_positions_company_traccar_position_unique',
+                );
+                $table->index(['vehicle_id', 'recorded_at'], 'vehicle_positions_vehicle_recorded_index');
+                $table->index('company_id', 'vehicle_positions_company_index');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('vehicle_alerts'))) {
             Schema::create($this->moduleTable('vehicle_alerts'), function (Blueprint $table): void {
                 $table->id();
@@ -3820,16 +3843,6 @@ trait CreatesMvpSchema
 
         if (! Schema::hasTable($this->moduleTable('travel_loyalty_rewards'))) {
             Schema::create($this->moduleTable('travel_loyalty_rewards'), function (Blueprint $table): void {
-                $table->bigIncrements('id');
-                $table->uuid('company_id')->index();
-                $table->timestamps();
-
-                $table->index(['company_id', 'id']);
-            });
-        }
-
-        if (! Schema::hasTable($this->moduleTable('travel_loyalty_transactions'))) {
-            Schema::create($this->moduleTable('travel_loyalty_transactions'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->index();
                 $table->timestamps();

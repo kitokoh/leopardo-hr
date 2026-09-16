@@ -66,8 +66,23 @@ final class EduCourseSlotService
         abort_if($classConflict, 422, 'EDU_COURSE_SLOT_CLASS_CONFLICT');
 
         if ($teacherId !== null) {
+            // Un créneau IDENTIQUE (même classe, même matière, mêmes bornes)
+            // est un REJEU, pas un conflit : l'enseignant ne peut pas être en
+            // conflit avec lui-même. Seul un chevauchement sur une autre
+            // classe ou une autre matière en est un.
             $teacherConflict = $overlap(EduCourseSlot::query())
                 ->where('teacher_id', $teacherId)
+                // Seul un créneau STRICTEMENT identique (mêmes classe,
+                // matière ET bornes) est un rejeu — donc pas un conflit. Un
+                // chevauchement, même sur la même classe/matière, reste un
+                // conflit d'emploi du temps (verrouillé par
+                // `EduApiTest::test_full_flow_from_campus_to_report_card`).
+                ->where(function (Builder $query) use ($classId, $subjectId, $start, $end): void {
+                    $query->where('class_id', '!=', $classId)
+                        ->orWhere('subject_id', '!=', $subjectId)
+                        ->orWhere('start_time', '!=', $start)
+                        ->orWhere('end_time', '!=', $end);
+                })
                 ->exists();
 
             abort_if($teacherConflict, 422, 'EDU_COURSE_SLOT_TEACHER_CONFLICT');

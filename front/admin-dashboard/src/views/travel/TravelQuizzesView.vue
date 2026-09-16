@@ -54,15 +54,24 @@
           </template>
           <template #row-actions="{ row }">
             <div class="flex justify-end gap-2">
-              <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400" @click="openQuiz(row)">
-                {{ t('travel.quiz.manage', 'Gérer') }}
-              </button>
-              <button class="text-sm font-medium text-slate-600 hover:text-slate-800 dark:text-slate-400" @click="openEdit(row)">
-                {{ t('travel.common.edit', 'Modifier') }}
-              </button>
-              <button class="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400" @click="askDelete(row)">
-                {{ t('travel.common.delete', 'Supprimer') }}
-              </button>
+              <RowActionButton
+                :icon="Cog6ToothIcon"
+                tone="primary"
+                :label="t('travel.quiz.manage', 'Gérer')"
+                @click="openQuiz(row)"
+              />
+              <RowActionButton
+                :icon="PencilSquareIcon"
+                tone="primary"
+                :label="t('travel.common.edit', 'Modifier')"
+                @click="openEdit(row)"
+              />
+              <RowActionButton
+                :icon="TrashIcon"
+                tone="danger"
+                :label="t('travel.common.delete', 'Supprimer')"
+                @click="askDelete(row)"
+              />
             </div>
           </template>
         </DataTable>
@@ -97,12 +106,18 @@
           </template>
           <template #row-actions="{ row }">
             <div class="flex justify-end gap-2">
-              <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400" @click="openQuestionEdit(row)">
-                {{ t('travel.common.edit', 'Modifier') }}
-              </button>
-              <button class="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400" @click="askQuestionDelete(row)">
-                {{ t('travel.common.delete', 'Supprimer') }}
-              </button>
+              <RowActionButton
+                :icon="PencilSquareIcon"
+                tone="primary"
+                :label="t('travel.common.edit', 'Modifier')"
+                @click="openQuestionEdit(row)"
+              />
+              <RowActionButton
+                :icon="TrashIcon"
+                tone="danger"
+                :label="t('travel.common.delete', 'Supprimer')"
+                @click="askQuestionDelete(row)"
+              />
             </div>
           </template>
         </DataTable>
@@ -147,21 +162,36 @@
         @save="saveQuestion"
         @close="closeQuestionModal"
       />
+
+      <!-- Confirmation de suppression (#7433) -->
+      <ConfirmDialog
+        :open="deleteOpen"
+        :title="t('travel.common.confirmDeleteTitle', 'Supprimer cet élément ?')"
+        :message="deleteMessage"
+        :confirm-label="t('travel.common.delete', 'Supprimer')"
+        @confirm="confirmDelete"
+        @cancel="closeDelete"
+      />
     </template>
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { useToast } from 'vue-toastification'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import TravelGate from '@/components/travel/TravelGate.vue'
 import { createTravel, deleteTravel, getTravel, listTravel, updateTravel, travelItem, travelList, createQuizQuestion, updateQuizQuestion, deleteQuizQuestion, quizParticipations } from '@/services/travel'
+import { Cog6ToothIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import RowActionButton from '@/components/common/RowActionButton.vue'
 
 const localeStore = useLocaleStore()
+const toast = useToast()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 const gateMode = ref('')
@@ -177,6 +207,32 @@ const questionsError = ref('')
 const participations = ref([])
 const participationsLoading = ref(false)
 const participationsError = ref('')
+
+// Confirmation de suppression (#7433) : dialogues natifs du navigateur remplacés
+const deleteOpen = ref(false)
+const deleteAction = ref(null)
+const deleteMessage = ref('')
+
+function deleteConfirmBody(label) {
+  return t('travel.common.confirmDeleteBody', 'Cette action est irréversible. Voulez-vous vraiment supprimer « {name} » ?').replace('{name}', label)
+}
+
+function closeDelete() {
+  deleteOpen.value = false
+  deleteAction.value = null
+}
+
+async function confirmDelete() {
+  if (!deleteAction.value) return
+  try {
+    await deleteAction.value()
+  } catch (err) {
+    toast.error(err?.response?.data?.message || err?.message || t('travel.common.actionError', "L'action a échoué. Réessayez."))
+  } finally {
+    deleteOpen.value = false
+    deleteAction.value = null
+  }
+}
 
 const statuses = [
   { value: 'all', label: t('travel.quiz.statusAll', 'Tous') },
@@ -316,14 +372,10 @@ async function saveQuiz(values) {
   }
 }
 
-async function askDelete(row) {
-  if (!window.confirm(t('travel.common.confirmDelete', 'Supprimer ce quiz ?'))) return
-  try {
-    await deleteTravel('quizzes', row.id)
-    await loadQuizzes()
-  } catch (err) {
-    window.alert(err?.response?.data?.message || String(err))
-  }
+function askDelete(row) {
+  deleteAction.value = () => deleteTravel('quizzes', row.id).then(loadQuizzes)
+  deleteMessage.value = deleteConfirmBody(row.title || String(row.id))
+  deleteOpen.value = true
 }
 
 const questionFormFields = computed(() => [
@@ -391,15 +443,12 @@ async function saveQuestion(values) {
   }
 }
 
-async function askQuestionDelete(row) {
+function askQuestionDelete(row) {
   if (!selectedQuiz.value) return
-  if (!window.confirm(t('travel.common.confirmDelete', 'Supprimer cette question ?'))) return
-  try {
-    await deleteQuizQuestion(selectedQuiz.value.id, row.id)
-    await loadQuestions()
-  } catch (err) {
-    window.alert(err?.response?.data?.message || String(err))
-  }
+  const quizId = selectedQuiz.value.id
+  deleteAction.value = () => deleteQuizQuestion(quizId, row.id).then(loadQuestions)
+  deleteMessage.value = deleteConfirmBody(String(row.question || row.id).slice(0, 80))
+  deleteOpen.value = true
 }
 
 function init() {

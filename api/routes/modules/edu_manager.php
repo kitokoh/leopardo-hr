@@ -16,6 +16,7 @@ declare(strict_types=1);
  */
 
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAcademicYearController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAccountingEntryController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAdmissionCampaignController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAdmissionController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAssessmentController;
@@ -25,7 +26,10 @@ use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduClassController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduClassEnrollmentController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduCourseSlotController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduDashboardController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduFeeChargeController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduFeeController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduFeeTypeController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduGuardianController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduGuardianPortalController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduImportExportController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduMarketingController;
@@ -39,6 +43,24 @@ use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduSubjectController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduTeacherInterfaceController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduTeacherWorkspaceController;
 use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Portail parents — route PUBLIQUE (lien expirable à usage unique)
+|--------------------------------------------------------------------------
+| Le parent détenteur du lien n'a AUCUNE session : cette route ne peut pas
+| vivre dans le groupe authentifié (401 sinon, quel que soit le lien). Même
+| modèle que `/onboarding/invitation/{token}` : throttle strict, token à
+| usage unique, société résolue depuis le lien (jamais depuis la requête).
+*/
+Route::middleware(['throttle:20,1'])->group(function (): void {
+    Route::post('/edu-manager/guardian-portal/access-links/{token}/consume', [EduGuardianPortalController::class, 'consume']);
+
+    // Portail parents en lecture : le token EST la credential (aucune
+    // session). Même garde de débit que la consommation — un token volé ne
+    // peut pas être énuméré à grande vitesse (EDU-013 #5829).
+    Route::get('/edu-manager/portal/{token}', [EduGuardianPortalController::class, 'portal']);
+});
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
     // EDU-002/EDU-010 — campus (direction).
@@ -149,6 +171,19 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
     // EDU-016 (#5832) — frais scolaires (direction ; contrat Accounting read model).
     Route::get('/edu-manager/fees', [EduFeeController::class, 'index']);
+    // EDU-016 (#5832) — catalogue des types de frais (préalable à toute
+    // facturation scolaire) : modèle + requête existaient, routes absentes.
+    Route::get('/edu-manager/fee-types', [EduFeeTypeController::class, 'index']);
+    Route::post('/edu-manager/fee-types', [EduFeeTypeController::class, 'store']);
+
+    // EDU-016 (#5832) — facturation détaillée au guichet + rapprochement
+    // comptable. Service, modèles, requêtes et tables existaient : aucune
+    // route ne les servait (404 sur les 5 scénarios de `EduFeeTest`).
+    Route::post('/edu-manager/fee-charges', [EduFeeChargeController::class, 'store']);
+    Route::post('/edu-manager/fee-charges/{charge}/payments', [EduFeeChargeController::class, 'payment'])->whereNumber('charge');
+    Route::post('/edu-manager/fee-charges/{charge}/waive', [EduFeeChargeController::class, 'waive'])->whereNumber('charge');
+    Route::get('/edu-manager/fee-accounting-entries', [EduAccountingEntryController::class, 'index']);
+
     Route::post('/edu-manager/fees', [EduFeeController::class, 'store']);
     Route::get('/edu-manager/fees/{fee}', [EduFeeController::class, 'show'])->whereNumber('fee');
     Route::post('/edu-manager/fees/{fee}/pay', [EduFeeController::class, 'pay'])->whereNumber('fee');
@@ -170,4 +205,23 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/edu-manager/guardians/me/students/{student}/report-cards', [EduGuardianPortalController::class, 'reportCards'])->whereNumber('student');
     Route::post('/edu-manager/guardians/access-links', [EduGuardianPortalController::class, 'issueLink']);
     Route::post('/edu-manager/guardians/access-links/redeem', [EduGuardianPortalController::class, 'redeem']);
+    // Formes par CHEMIN attendues par la vitrine livrée
+    // (`guardian-portal/page.tsx`) : l'émission par `{guardian}` et la
+    // CONSOMMATION du lien expirable. Sans elles, l'écran du portail parents
+    // répondait 404 en toutes circonstances.
+    Route::post('/edu-manager/guardians/{guardian}/access-links', [EduGuardianPortalController::class, 'issueLinkForGuardian'])->whereNumber('guardian');
+    // Forme canonique attendue par le portail (EDU-013 #5829) : émission du
+    // lien du portail parents, servie par `EduGuardianPortalService`.
+    Route::post('/edu-manager/guardians/{guardian}/portal-link', [EduGuardianPortalController::class, 'issuePortalLink'])->whereNumber('guardian');
+
+    // EDU-002/EDU-013 — gestion des RESPONSABLES LÉGAUX (parents / tuteurs).
+    // Sans ces routes, `guardians/access-links` (qui exige un `guardian_id`
+    // existant) et le portail parents étaient inatteignables : aucune surface
+    // ne permettait de créer un responsable légal ni de le rattacher à un
+    // élève (constat 2026-09-14, parcours client « propriétaire d'école »).
+    // Déclarées APRÈS `guardians/me*` pour ne pas capturer ces chemins.
+    Route::get('/edu-manager/guardians', [EduGuardianController::class, 'index']);
+    Route::post('/edu-manager/guardians', [EduGuardianController::class, 'store']);
+    Route::post('/edu-manager/students/{student}/guardians', [EduGuardianController::class, 'link'])->whereNumber('student');
+    Route::delete('/edu-manager/students/{student}/guardians/{guardian}', [EduGuardianController::class, 'unlink'])->whereNumber('student')->whereNumber('guardian');
 });

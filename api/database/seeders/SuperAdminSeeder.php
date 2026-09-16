@@ -21,7 +21,20 @@ class SuperAdminSeeder extends Seeder
 
         $email = env('SUPER_ADMIN_EMAIL', 'admin@leopardo-rh.com');
         $passwordFromEnv = env('SUPER_ADMIN_PASSWORD');
-        $password = $passwordFromEnv ?: ('CHANGER_EN_PROD_'.bin2hex(random_bytes(8)));
+
+        // #7402 — en mode démo, le mot de passe seedé DOIT être celui que
+        // `GET /api/v1/demo-users` annonce (`config('demo.password')`, défaut
+        // `password123`). Sans cela, `/demo-users` publiait un identifiant qui
+        // ne correspondait à rien et l'accès « rapide » de l'admin échouait
+        // systématiquement. Hors mode démo : mot de passe aléatoire, inchangé.
+        // Lecture par `config()` (et non `env()`) pour rester cohérent avec
+        // `DemoCompanyOnceSeeder` et rester testable.
+        $demoMode = (bool) config('app.demo_mode_enabled', false);
+        $demoPassword = config('demo.password', 'password123');
+        $password = $passwordFromEnv
+            ?: ($demoMode && is_string($demoPassword)
+                ? $demoPassword
+                : 'CHANGER_EN_PROD_'.bin2hex(random_bytes(8)));
         $forceReset = filter_var(env('FORCE_SUPER_ADMIN_PASSWORD_RESET', false), FILTER_VALIDATE_BOOLEAN);
 
         $existing = DB::table('super_admins')->where('email', $email)->first();
@@ -54,6 +67,10 @@ class SuperAdminSeeder extends Seeder
         ]);
 
         $this->command->info("✅ Super Admin créé : {$email}");
+
+        if ($demoMode) {
+            $this->command->warn('   ⚠️  Mode démo : mot de passe = config(demo.password) — identique à /api/v1/demo-users.');
+        }
 
         if (app()->environment('local', 'development')) {
             $this->command->warn("   🔑 Mot de passe temporaire : {$password}");

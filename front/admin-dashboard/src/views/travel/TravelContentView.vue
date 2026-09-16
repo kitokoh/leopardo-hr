@@ -53,12 +53,18 @@
                 <td class="px-4 py-3"><StatusBadge :value="quiz.status" /></td>
                 <td class="px-4 py-3 text-sm text-slate-500 dark:text-slate-400">{{ quiz.ends_at ? new Date(quiz.ends_at).toLocaleDateString() : '—' }}</td>
                 <td class="px-4 py-3 text-right">
-                  <button type="button" class="btn-secondary mr-2" @click="openQuizQuestions(quiz)">
-                    {{ t('travel.quiz.questions', 'Questions') }}
-                  </button>
-                  <button type="button" class="btn-secondary" @click="openQuizResults(quiz)">
-                    {{ t('travel.quiz.results', 'Résultats') }}
-                  </button>
+                  <RowActionButton
+                    :icon="ListBulletIcon"
+                    tone="primary"
+                    :label="t('travel.quiz.questions', 'Questions')"
+                    @click="openQuizQuestions(quiz)"
+                  />
+                  <RowActionButton
+                    :icon="ChartBarIcon"
+                    tone="primary"
+                    :label="t('travel.quiz.results', 'Résultats')"
+                    @click="openQuizResults(quiz)"
+                  />
                 </td>
               </tr>
               <tr v-if="quizzes.length === 0">
@@ -101,10 +107,17 @@
             :rows="advertTabRows()"
             :search-keys="advertTabSearchKeys()"
           >
-            <template #actions="{ row }">
-              <button v-if="advertTabCanDelete()" type="button" class="btn-secondary" @click="removeRow(advertTab, row)">
-                {{ t('travel.common.delete', 'Supprimer') }}
-              </button>
+            <!-- #7433 : `#actions` est le slot de BARRE D'ACTIONS (sans ligne) —
+                 les boutons de ligne doivent utiliser `#row-actions`, sinon
+                 `row` est indéfini et la suppression ne cible rien. -->
+            <template #row-actions="{ row }">
+              <RowActionButton
+                v-if="advertTabCanDelete()"
+                :icon="TrashIcon"
+                tone="danger"
+                :label="t('travel.common.delete', 'Supprimer')"
+                @click="removeRow(advertTab, row)"
+              />
             </template>
           </DataTable>
         </div>
@@ -143,18 +156,34 @@
                   <td class="px-4 py-3 text-sm text-slate-500">{{ (ad.price_minor / 100).toFixed(2) }} {{ ad.currency }}</td>
                   <td class="px-4 py-3 text-sm text-slate-500">{{ ad.expires_at ? new Date(ad.expires_at).toLocaleDateString() : '—' }}</td>
                   <td class="px-4 py-3 text-right">
-                    <button v-if="ad.status === 'submitted' || ad.status === 'draft'" type="button" class="btn-secondary mr-2" @click="advertAction(ad, 'pay')">
-                      {{ t('travel.adverts.pay', 'Payer') }}
-                    </button>
-                    <button v-if="ad.status === 'paid'" type="button" class="btn-secondary mr-2" @click="advertAction(ad, 'validate')">
-                      {{ t('travel.adverts.validate', 'Valider') }}
-                    </button>
-                    <button v-if="ad.status === 'paid'" type="button" class="btn-secondary mr-2" @click="openAdvertReject(ad)">
-                      {{ t('travel.adverts.reject', 'Rejeter') }}
-                    </button>
-                    <button v-if="ad.status === 'validated' || ad.status === 'expired'" type="button" class="btn-secondary" @click="advertAction(ad, 'renew')">
-                      {{ t('travel.adverts.renew', 'Renouveler') }}
-                    </button>
+                    <RowActionButton
+                      v-if="ad.status === 'submitted' || ad.status === 'draft'"
+                      :icon="BanknotesIcon"
+                      tone="primary"
+                      :label="t('travel.adverts.pay', 'Payer')"
+                      @click="advertAction(ad, 'pay')"
+                    />
+                    <RowActionButton
+                      v-if="ad.status === 'paid'"
+                      :icon="CheckIcon"
+                      tone="success"
+                      :label="t('travel.adverts.validate', 'Valider')"
+                      @click="advertAction(ad, 'validate')"
+                    />
+                    <RowActionButton
+                      v-if="ad.status === 'paid'"
+                      :icon="XMarkIcon"
+                      tone="danger"
+                      :label="t('travel.adverts.reject', 'Rejeter')"
+                      @click="openAdvertReject(ad)"
+                    />
+                    <RowActionButton
+                      v-if="ad.status === 'validated' || ad.status === 'expired'"
+                      :icon="ArrowPathIcon"
+                      tone="warning"
+                      :label="t('travel.adverts.renew', 'Renouveler')"
+                      @click="advertAction(ad, 'renew')"
+                    />
                   </td>
                 </tr>
                 <tr v-if="adverts.length === 0">
@@ -190,12 +219,17 @@
                 <td class="px-4 py-3 text-sm text-slate-500">{{ c.email }}</td>
                 <td class="px-4 py-3 text-sm">
                   <label v-for="ch in consentChannels" :key="ch.key" class="mr-3 inline-flex cursor-pointer items-center gap-1">
-                    <input type="checkbox" class="h-4 w-4 rounded" :checked="contactConsentGiven(c, ch)" @change="toggleConsent(c, ch.key, $event.target.checked)" />
+                    <input type="checkbox" class="h-4 w-4 rounded" :checked="contactConsentGiven(c, ch)" @change="toggleConsent(c, ch.key, $event)" />
                     <span class="text-xs text-slate-500 dark:text-slate-400">{{ ch.label }}</span>
                   </label>
                 </td>
                 <td class="px-4 py-3 text-right">
-                  <button type="button" class="btn-secondary" @click="openContactNotify(c)">{{ t('travel.contacts.notify', 'Notifier') }}</button>
+                  <RowActionButton
+                    :icon="PaperAirplaneIcon"
+                    tone="primary"
+                    :label="t('travel.contacts.notify', 'Notifier')"
+                    @click="openContactNotify(c)"
+                  />
                 </td>
               </tr>
               <tr v-if="contacts.length === 0">
@@ -275,9 +309,19 @@
           :rows="lists.sites"
           :search-keys="entityConfigs.sites.searchKeys"
         >
-          <template #actions="{ row }">
-            <button type="button" class="btn-secondary" @click="openEdit('sites', row)">{{ t('travel.common.edit', 'Modifier') }}</button>
-            <button type="button" class="btn-secondary ml-2" @click="removeRow('sites', row)">{{ t('travel.common.delete', 'Supprimer') }}</button>
+          <template #row-actions="{ row }">
+            <RowActionButton
+              :icon="PencilSquareIcon"
+              tone="primary"
+              :label="t('travel.common.edit', 'Modifier')"
+              @click="openEdit('sites', row)"
+            />
+            <RowActionButton
+              :icon="TrashIcon"
+              tone="danger"
+              :label="t('travel.common.delete', 'Supprimer')"
+              @click="removeRow('sites', row)"
+            />
           </template>
         </DataTable>
       </section>
@@ -372,11 +416,22 @@
       @save="saveReject"
       @cancel="closeReject"
     />
+
+    <!-- Confirmation de suppression (#7433) -->
+    <ConfirmDialog
+      :open="deleteOpen"
+      :title="t('travel.common.confirmDeleteTitle', 'Supprimer cet élément ?')"
+      :message="deleteMessage"
+      :confirm-label="t('travel.common.delete', 'Supprimer')"
+      @confirm="confirmRemoveRow"
+      @cancel="closeDelete"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
+import { useToast } from 'vue-toastification'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import { useTravelStore } from '@/stores/travel'
@@ -384,13 +439,22 @@ import TravelGate from '@/components/travel/TravelGate.vue'
 import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { listTravel, createTravel, updateTravel, deleteTravel, travelList, travelItem } from '@/services/travel'
 import api from '@/services/api'
 import { travelAction } from '@/services/travel'
+import { ArrowPathIcon, BanknotesIcon, ChartBarIcon, CheckIcon, ListBulletIcon, PaperAirplaneIcon, PencilSquareIcon, TrashIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+import RowActionButton from '@/components/common/RowActionButton.vue'
 
 const localeStore = useLocaleStore()
 const travelStore = useTravelStore()
+const toast = useToast()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
+
+// Message d'erreur d'action (#7433) : celui de l'API s'il existe, sinon un message générique.
+function apiErrorMessage(error) {
+  return error?.response?.data?.message || error?.message || t('travel.common.actionError', "L'action a échoué. Réessayez.")
+}
 
 const activeTab = ref('quiz')
 const advertTab = ref('types')
@@ -435,6 +499,17 @@ const modalOpen = ref(false)
 const modalTitle = ref('')
 const modalFields = ref([])
 const editing = ref(null)
+
+// Confirmation de suppression (#7433) — plus de DELETE au premier clic.
+const deleteOpen = ref(false)
+const deleteTarget = ref(null)
+const deleteMessage = computed(() => {
+  const target = deleteTarget.value
+  if (!target) return ''
+  const cfg = entityConfigs[target.key]
+  const label = target.row[cfg.labelField] ?? target.row.id
+  return t('travel.common.confirmDeleteBody', 'Cette action est irréversible. Voulez-vous vraiment supprimer « {name} » ?').replace('{name}', String(label))
+})
 
 async function loadQuizzes() {
   try {
@@ -690,18 +765,33 @@ async function saveRow(payload) {
     } else {
       await loadList(key)
     }
-  } catch {
-    modalOpen.value = false
+  } catch (error) {
+    // #7433 — la modale reste ouverte et la saisie est conservée ; l'erreur est dite.
+    toast.error(apiErrorMessage(error))
   }
 }
 
-async function removeRow(key, row) {
-  const cfg = entityConfigs[key]
+function removeRow(key, row) {
+  deleteTarget.value = { key, row }
+  deleteOpen.value = true
+}
+
+function closeDelete() {
+  deleteOpen.value = false
+  deleteTarget.value = null
+}
+
+async function confirmRemoveRow() {
+  const target = deleteTarget.value
+  if (!target) return
+  deleteOpen.value = false
+  deleteTarget.value = null
   try {
-    await deleteTravel(cfg.resource, row.id)
-    await loadList(key)
-  } catch {
-    // best-effort
+    await deleteTravel(entityConfigs[target.key].resource, target.row.id)
+    await loadList(target.key)
+  } catch (error) {
+    // #7433 — l'échec de suppression doit être visible, pas avalé.
+    toast.error(apiErrorMessage(error))
   }
 }
 
@@ -727,8 +817,9 @@ async function advertAction(ad, action) {
   try {
     await travelAction('adverts', ad.id, action)
     await loadAdverts()
-  } catch {
-    // best-effort
+  } catch (error) {
+    // #7433 — action facturée : un échec silencieux est inacceptable.
+    toast.error(apiErrorMessage(error))
   }
 }
 
@@ -776,12 +867,16 @@ async function loadContacts() {
   }
 }
 
-async function toggleConsent(contact, channel, given) {
+async function toggleConsent(contact, channel, event) {
+  const given = Boolean(event?.target?.checked)
   try {
     await travelAction('contacts', contact.id, 'consent', { [`${channel}_consent`]: given })
     contact[`${channel}_consent_given`] = given
-  } catch {
-    // best-effort
+  } catch (error) {
+    // #7433 — l'échec est dit ET la case revient à l'état réel (jamais un
+    // consentement affiché comme enregistré alors qu'il ne l'est pas).
+    if (event?.target) event.target.checked = Boolean(contact[`${channel}_consent_given`])
+    toast.error(apiErrorMessage(error))
   }
 }
 

@@ -6,7 +6,9 @@ namespace App\Console\Commands;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\TravelAgency\Application\Actions\ActivateTravelAgencyAction;
+use App\Modules\TravelAgency\Domain\Exceptions\TravelActivationFailedException;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 /**
  * leopardo:travel:activate — Active la verticale TravelAgency pour un tenant.
@@ -43,19 +45,64 @@ final class TravelActivateCommand extends Command
             return self::FAILURE;
         }
 
-        $this->activateAction->execute($company);
+        // #7393 — la commande ne peut annoncer « activée » que si le flag a
+        // réellement été persisté (vérifié par l'Action, relecture en base).
+        // Sans cette garde, un échec d'écriture silencieux laissait la
+        // verticale inaccessible (403 FEATURE_NOT_ENABLED) malgré le succès.
+        try {
+            $this->activateAction->execute($company);
+        } catch (TravelActivationFailedException $e) {
+            $this->error($e->getMessage());
+
+            return self::FAILURE;
+        }
+
+        // #7393 : la commande annonçait « activée » sans qu'aucune écriture
+        // n'ait eu lieu. On relit désormais l'état réel depuis la base avant
+        // d'affirmer quoi que ce soit — un échec silencieux coûte des heures
+        // de diagnostic (403 FEATURE_NOT_ENABLED sur toute la verticale).
+        $persisted = Company::query()
+            ->whereKey($company->getKey())
+            ->first();
+
+        if ($persisted === null || ! $persisted->hasFeature('travelagency')) {
+            $this->error(
+                "Échec : le flag « travelagency » n'a pas été persisté pour {$company->id} "
+                .'(companies.features.travelagency est resté absent).'
+            );
+
+            return self::FAILURE;
+        }
 
         $this->info("Verticale TravelAgency activée pour « {$company->name} » ({$company->id}).");
 
         return self::SUCCESS;
     }
 
+    /**
+     * Résout le tenant par UUID **ou** par slug.
+     *
+     * Correctif audit 2026-09-14 : l'ancien test `str_contains($identifier, '-')`
+     * prenait tout slug pour un UUID (tous les slugs contiennent un tiret) et
+     * provoquait `SQLSTATE[22P02] invalid input syntax for type uuid` — la
+     * commande, documentée « ID (UUID) ou slug », était inutilisable avec un
+     * slug. Pattern aligné sur `SeedAccountingDemoCommand::resolveCompany()`
+     * (`Str::isUuid` + repli slug).
+     */
     private function resolveCompany(string $identifier): ?Company
     {
-        if (str_contains($identifier, '-')) {
-            return Company::query()->where('id', $identifier)->first();
+        if (Str::isUuid($identifier)) {
+            /** @var Company|null $byId */
+            $byId = Company::query()->where('id', $identifier)->first();
+
+            if ($byId instanceof Company) {
+                return $byId;
+            }
         }
 
-        return Company::query()->where('slug', $identifier)->first();
+        /** @var Company|null $bySlug */
+        $bySlug = Company::query()->where('slug', $identifier)->first();
+
+        return $bySlug;
     }
 }

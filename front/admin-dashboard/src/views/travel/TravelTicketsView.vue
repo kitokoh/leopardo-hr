@@ -60,21 +60,20 @@
         </template>
         <template #row-actions="{ row }">
           <div class="flex justify-end gap-2">
-            <button
+            <RowActionButton
               v-if="row.status === 'issued'"
-              class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
+              :icon="ArrowDownTrayIcon"
+              :label="t('travel.tickets.download', 'PDF')"
               :disabled="pdfBusyId === row.ticket_id"
               @click="downloadPdf(row)"
-            >
-              {{ pdfBusyId === row.ticket_id ? '…' : t('travel.tickets.download', 'PDF') }}
-            </button>
-            <button
+            />
+                        <RowActionButton
               v-if="row.status === 'issued'"
-              class="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400"
+              :icon="TicketIcon"
+              tone="danger"
+              :label="t('travel.tickets.revoke', 'Révoquer')"
               @click="askRevoke(row)"
-            >
-              {{ t('travel.tickets.revoke', 'Révoquer') }}
-            </button>
+            />
           </div>
         </template>
       </DataTable>
@@ -93,11 +92,14 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+
+import { TicketIcon, ArrowDownTrayIcon } from '@heroicons/vue/24/outline'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import { useTravelStore } from '@/stores/travel'
 import TravelGate from '@/components/travel/TravelGate.vue'
 import DataTable from '@/components/common/DataTable.vue'
+import RowActionButton from '@/components/common/RowActionButton.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { listTravel, getTravel, travelAction, travelGetAction, travelList, travelItem } from '@/services/travel'

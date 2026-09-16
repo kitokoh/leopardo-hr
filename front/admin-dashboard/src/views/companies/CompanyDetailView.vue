@@ -357,7 +357,13 @@ import {
   AcademicCapIcon,
   GlobeAltIcon,
   DevicePhoneMobileIcon,
-  LifebuoyIcon
+  LifebuoyIcon,
+  CalculatorIcon,
+  UserGroupIcon,
+  BookOpenIcon,
+  BuildingStorefrontIcon,
+  PaperAirplaneIcon,
+  ChartBarIcon,
 } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
@@ -585,6 +591,19 @@ function formatFeatureName(key) {
     planning: 'companyDetail.features.planning',
     training: 'companyDetail.features.training',
     cabinet: 'companyDetail.features.cabinet',
+    // #7434 (critère 3) — les 12 clés de `Company::KNOWN_MODULES` doivent être
+    // nommées : l'API renvoie TOUT le registre, et les clés non mappées
+    // s'affichaient en clé brute majuscule (`TRAVELAGENCY`, `FUEL_STATION`…)
+    // avec une icône générique. Le mapping suit le registre serveur.
+    muhasebe: 'companyDetail.features.muhasebe',
+    leo_ai: 'companyDetail.features.leo_ai',
+    crm: 'companyDetail.features.crm',
+    fuel_station: 'companyDetail.features.fuel_station',
+    edumanager: 'companyDetail.features.edumanager',
+    restaurant: 'companyDetail.features.restaurant',
+    travelagency: 'companyDetail.features.travelagency',
+    accounting: 'companyDetail.features.accounting',
+    company_showcase: 'companyDetail.features.company_showcase',
     biometric: 'subscriptions.features.biometric',
     tasks: 'subscriptions.features.tasks',
     advanced_reports: 'subscriptions.features.advanced_reports',
@@ -606,6 +625,15 @@ function formatFeatureName(key) {
     planning: 'Planning & Equipe',
     training: 'Centre de Formation',
     cabinet: 'Placard Numérique',
+    muhasebe: 'Comptabilité (Turquie)',
+    leo_ai: 'Assistant IA Leopardo',
+    crm: 'Relation client (CRM)',
+    fuel_station: 'Stations-service',
+    edumanager: 'Établissement scolaire',
+    restaurant: 'Restauration',
+    travelagency: 'Agence de voyage',
+    accounting: 'Comptabilité',
+    company_showcase: 'Site vitrine',
     biometric: 'Biométrie',
     tasks: 'Tâches',
     advanced_reports: 'Rapports avancés',
@@ -653,6 +681,18 @@ function getFeatureIcon(key) {
     planning: ClipboardDocumentCheckIcon,
     training: AcademicCapIcon,
     cabinet: DevicePhoneMobileIcon,
+    // #7434 — une icône par clé du registre serveur (`Company::KNOWN_MODULES`),
+    // pour ne plus retomber sur l'étoile générique ni donner deux icônes
+    // différentes au même module.
+    muhasebe: CalculatorIcon,
+    leo_ai: SparklesIcon,
+    crm: UserGroupIcon,
+    fuel_station: BoltIcon,
+    edumanager: BookOpenIcon,
+    restaurant: BuildingStorefrontIcon,
+    travelagency: PaperAirplaneIcon,
+    accounting: ChartBarIcon,
+    company_showcase: GlobeAltIcon,
   }
   return icons[key] || SparklesIcon
 }

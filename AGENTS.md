@@ -133,6 +133,27 @@ Un prefixe deja pris = renumero ter (ex. `000006` -> `000007`) en gardant
 l'ordre chronologique (la migration la plus ancienne conserve son prefixe).
 Le commit precedent `fix/1962-*` est l'exemple canonique.
 
+## Garde « une table, une migration » (#7452 / tranche #7455)
+
+Deux migrations qui font `Schema::create('<table>')` sont **une seule et même
+déclaration** : la première exécutée gagne (`if (! schemaTableExists())`) et les
+suivantes sont ignorées **silencieusement**. Quand leurs colonnes divergent, tout
+le code écrit contre la dernière génération casse en `column "x" does not exist`
+— souvent masqué par une cascade `25P02` (223 échecs de `tests/Feature/Travel`).
+
+- **Ne jamais** créer une table par un second `Schema::create` : pour rattraper
+  une colonne, une migration `Schema::table` **idempotente** (`schemaHasColumn`).
+- Vérifier localement avant push :
+  ```bash
+  python3 dev-hub/tools/check-duplicate-schema-create.py --base origin/main
+  ```
+  (garde CI `.github/workflows/migration-duplication-guard.yml`). L'inventaire de
+  la dette (68 tables dupliquées, 36 divergentes) et les colonnes réellement
+  absentes du schéma : `docs/audits/MIGRATIONS_DUPLIQUEES_TENANT.md`
+  (`--audit` régénère le document).
+- La résorption se fait **module par module** (#7452, #7417, #7410) : un
+  `--strict` peut être activé sur un module déjà assaini.
+
 ## Garde post-merge `Closes #` (issue #2512)
 
 Une PR qui **mentionne** une issue (`#1234`) sans mot-clé `Closes #` (ou
@@ -337,6 +358,32 @@ pour les résoudre au checkout.
 - **Mergeability GitHub stale sur gros diffs** : une PR peut afficher « merge conflicts » / « not mergeable » alors que `git merge` local est propre (constaté #6983, #6998, #7003, #6955 — diffs énormes ou CHANGELOG) → **fusionner `origin/main` dans la branche et pousser** force le recalcul. Après CHAQUE merge dans main, toute PR ouverte touchant le haut de `CHANGELOG.md` devient `dirty` — la réaligner avant de merger.
 - **Garde « Check unique issue claim per PR » cassée** (`dev-hub/tools/check-issue-claim-unique.sh`) : `gh: Resource not accessible by integration (HTTP 403)` puis `AttributeError: 'str' object has no attribute 'get'` — échoue sur TOUTES les PRs. Non bloquante pour le merge (les 4 checks requis sont PHPStan Strict, Module Structure Validator, Frontend ESLint+TS, actionlint) mais rend « PR Issue Guard » rouge : à corriger dans l'outillage (permissions GITHUB_TOKEN + parsing).
 - **Protection main en `strict`** : 4 checks requis + branche à jour exigée → après chaque merge dans main, les PRs `behind` doivent être mises à jour (update-branch API parfois 404 → fusion locale + push) puis repassent un cycle CI complet. Un « merge sweep » périodique (merge auto des PRs clean + 4 checks verts + inactives ≥ 5 min) évite les heures d'attente.
+
+### 2026-09-15 - Dérive dev Render : un déploiement « vert » ne déploie pas (#7304)
+
+- `deploy-main.yml` peut sortir **`success` sans déployer** : le job
+  `Deploy API + Web to Render` est *skipped* quand le run `Tests - Leopardo RH`
+  du SHA est absent (`Tests=missing` — runs `synchronize` non créés sous charge,
+  leçon #3545). Mesuré le 2026-09-14 : **12 runs successifs, 0 déploiement**, dev
+  figé sur `fe2ab9f` à ~60 merges derrière `main` → recettes menées sur du code
+  périmé (faux bugs) et worker de queue de l'image ancienne donc absent.
+- **Pré-vol obligatoire avant toute recette** :
+  `dev-hub/tools/check-deploy-drift.sh --url "$DEV_API_BASE_URL" --expect origin/main`
+  (garde CI `deploy-drift-guard.yml`, toutes les 30 min). Un environnement dont
+  `/health.version` ≠ SHA de `main` n'est pas un environnement de recette —
+  runbook `docs/ops/RENDER_DEV_ALIGNMENT.md`.
+- **Ne pas activer `autoDeploy`** sur le service dev Render
+  (`gestionemployerbackend`, `srv-d7dro8u7r5hc73a395pg`) : décision #6700 —
+  un auto-deploy rebâtit à chaque push `main` (docs/web-only compris) et
+  consomme les build hours. Le déploiement passe par `deploy-main.yml`, dont le
+  gate peut **sauter** (`Tests=missing`, suivi par #7457) : d'où le pré-vol de
+  recette ci-dessus + un redéploiement manuel à la demande. Contrainte API : un
+  `POST /deploys` Render déploie le **HEAD de la branche**, jamais un SHA
+  arbitraire.
+- Le dev est en **mono-conteneur** : le worker de queue vit dans le conteneur web
+  (`api/docker-entrypoint.sh`, respawn loop #7041). Une queue qui s'accumule est
+  un symptôme d'**image périmée**, pas d'un « worker manquant » — le compte dev
+  Render refuse toute création de service payant (`new paid services not allowed`).
 
 ### 2026-05-14 - Integration branche Devin Plan 14
 

@@ -30,8 +30,12 @@ use Illuminate\Support\Carbon;
  *
  * Recherche publique tenant (trajets publiés uniquement, places restantes
  * dérivées de l'inventaire), détail + disponibilité, réservation en ligne
- * (source `online`, expiration 15 min), suivi par référence + code de
- * validation du billet.
+ * (source `online`, expiration 15 min), suivi STAFF par référence.
+ *
+ * #7395 — le suivi (`track`) est réservé au staff authentifié : le paramètre
+ * `code` y était ignoré (faux contrôle d'accès) et est désormais refusé. Le
+ * parcours PASSAGER (référence + code de validation, sans compte) vit sur
+ * `TravelPublicShopController` (`/public/travel/shop/bookings/{reference}`).
  */
 class TravelShopController extends Controller
 {
@@ -281,6 +285,17 @@ class TravelShopController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+
+        // #7395 — surface STAFF : l'autorisation réelle est « employé
+        // authentifié + réservation du même tenant » (404 sinon). Le `code` de
+        // validation n'y est PAS un contrôle d'accès : il était ignoré en
+        // silence, ce qui laissait croire au portail passager qu'il vérifiait
+        // quelque chose. Il est donc désormais refusé explicitement, et le
+        // parcours passager passe par `/public/travel/shop/bookings/{reference}`
+        // (référence + code = secret partagé du billet).
+        if ($request->query('code') !== null) {
+            abort(422, 'TRAVEL_SHOP_CODE_NOT_SUPPORTED');
+        }
 
         $booking = TravelBooking::query()
             ->where('reference', $reference)

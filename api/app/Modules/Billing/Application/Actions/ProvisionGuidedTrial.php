@@ -9,6 +9,7 @@ use App\Core\Solutions\SolutionActivator;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Events\CompanyCreated;
+use App\Modules\Billing\Application\Services\HorizontalToolSelection;
 use App\Support\CountryDefaults;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -20,6 +21,7 @@ class ProvisionGuidedTrial
     public function __construct(
         private readonly TenantManager $tenantManager,
         private readonly SolutionActivator $solutionActivator,
+        private readonly HorizontalToolSelection $toolSelection,
     ) {}
 
     /**
@@ -94,7 +96,7 @@ class ProvisionGuidedTrial
         // historiques) ⇒ AUCUNE sélection écrite : les tenants existants et
         // les inscriptions sans choix gardent le comportement d'avant.
         $companyType = $companyType === Company::TYPE_SOLO ? Company::TYPE_SOLO : Company::TYPE_COMPANY;
-        $moduleSelection = $this->resolveModuleSelection($modules, $companyType);
+        $moduleSelection = $this->toolSelection->resolve($modules, $companyType);
 
         $countryDefaults = CountryDefaults::find($country);
         if ($countryDefaults === null) {
@@ -142,7 +144,7 @@ class ProvisionGuidedTrial
                 // flags plateforme (registre `config/feature-flags.php`) sont
                 // miroirées dans `features` pour être résolues par
                 // `FeatureFlag::for()` (donc visibles dans /auth/me).
-                'features' => $this->mirroredFeatures($moduleSelection),
+                'features' => $this->toolSelection->mirroredFeatures($moduleSelection),
             ]);
 
             if (DB::getDriverName() === 'pgsql') {
@@ -206,79 +208,6 @@ class ProvisionGuidedTrial
                 'manager' => $manager,
             ];
         });
-    }
-
-    /**
-     * #7235 — Sélection explicite des outils horizontaux, normalisée :
-     * toutes les clés de `Company::HORIZONTAL_TOOLS` sont présentes, avec
-     * `true` pour les outils choisis et `false` pour les autres. Un profil
-     * `solo` voit en plus les outils d'ÉQUIPE forcés à `false` — la règle est
-     * posée côté serveur, elle ne dépend pas du client.
-     *
-     * @param  list<string>  $modules
-     * @return array<string, bool>|null null quand aucune sélection n'a été fournie
-     */
-    private function resolveModuleSelection(array $modules, string $companyType): ?array
-    {
-        if ($modules === []) {
-            return null;
-        }
-
-        $requested = [];
-
-        foreach ($modules as $module) {
-            $key = strtolower(trim((string) $module));
-
-            if ($key !== '' && in_array($key, Company::HORIZONTAL_TOOLS, true)) {
-                $requested[$key] = true;
-            }
-        }
-
-        $selection = [];
-
-        foreach (Company::HORIZONTAL_TOOLS as $tool) {
-            $selection[$tool] = isset($requested[$tool]);
-        }
-
-        if ($companyType === Company::TYPE_SOLO) {
-            foreach (Company::TEAM_TOOLS as $tool) {
-                $selection[$tool] = false;
-            }
-        }
-
-        return $selection;
-    }
-
-    /**
-     * #7235 — Miroir des outils choisis vers `features` pour les clés qui
-     * existent réellement dans le registre des feature flags
-     * (`config/feature-flags.php`). Les autres clés (employees, attendance…)
-     * ne sont PAS des flags plateforme : elles vivent dans
-     * `metadata.modules`, que le client web consomme directement.
-     *
-     * @param  array<string, bool>|null  $selection
-     * @return array<string, bool>
-     */
-    private function mirroredFeatures(?array $selection): array
-    {
-        if ($selection === null) {
-            return [];
-        }
-
-        // #7235 / BC-27 #6862 / #7322 — clé de sélection (`metadata.modules`,
-        // catalogue client) => clé de feature flag plateforme. La correspondance
-        // vit dans `Company::HORIZONTAL_TOOL_FEATURES` (source unique, partagée
-        // avec l'auto-activation côté tenant) : aucun import cross-BC.
-        $platformFlags = Company::HORIZONTAL_TOOL_FEATURES;
-        $features = [];
-
-        foreach ($platformFlags as $selectionKey => $featureKey) {
-            if (array_key_exists($selectionKey, $selection)) {
-                $features[$featureKey] = $selection[$selectionKey];
-            }
-        }
-
-        return $features;
     }
 
     private function resolveTrialPlanId(): int

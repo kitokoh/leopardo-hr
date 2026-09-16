@@ -1,0 +1,71 @@
+# ============================================================
+# Leopardo — chaîne vidéo (MediaMTX), nœud Edge
+# ============================================================
+# Versionné ici (issue #7424) : le contrat API du module Caméras référençait
+# déjà MediaMTX (endpoint interne `GET /api/v1/internal/camera-token/verify`,
+# secret partagé, `stream_base_url`) alors qu'AUCUN fichier de configuration
+# n'existait dans le dépôt. Le flux pointait vers un hôte inexistant.
+#
+# Topologie retenue : **nœud Edge** (voir docs/architecture/adr/0021). Un flux
+# RTSP ne doit pas traverser l'Internet public depuis le site du client ; le
+# nœud Edge est déjà le composant installé chez lui (edge/), et il peut joindre
+# les caméras sur le réseau local.
+#
+# ⚠️ DEUX VALEURS À REMPLACER à l'installation (voir README.md) :
+#   - CAMERAS_VERIFY_URL : URL de l'endpoint de vérification de jeton
+#   - CAMERAS_MEDIAMTX_SECRET : secret partagé (jamais dans ce fichier)
+# ============================================================
+
+logLevel: info
+logDestinations: [stdout]
+
+# ── API de contrôle — écoute LOCALE uniquement ──────────────
+# Utilisée par l'agent Edge pour enregistrer une caméra à chaud
+# (POST /v3/config/paths/add/cam_<id>). Jamais exposée au réseau.
+api: yes
+apiAddress: 127.0.0.1:9997
+
+# ── Lecture : WebRTC (navigateur) + HLS (repli) ─────────────
+webrtc: yes
+webrtcAddress: :8889
+# Les caméras et le nœud Edge partagent le réseau du client : on annonce
+# l'adresse locale du nœud pour que les navigateurs du site la joignent.
+webrtcAdditionalHosts: []
+
+hls: yes
+hlsAddress: :8888
+hlsVariant: lowLatency
+hlsSegmentDuration: 1s
+
+# RTSP n'est PAS exposé en lecture : il ne sert qu'à l'ingestion depuis les
+# caméras, sur le réseau local. Le client ne consomme que WebRTC/HLS, derrière
+# un jeton signé par Leopardo.
+rtsp: no
+
+# ── Authentification : déléguée à l'API Leopardo ────────────
+# MediaMTX interroge Leopardo à chaque lecture. Leopardo répond selon le
+# `stream_token` (JWT HS256) présenté, les permissions caméra et le journal
+# d'accès — une seule source de vérité, pas de doublon de règles.
+authMethod: http
+authHTTPAddress: https://REMPLACER_API_HOST/api/v1/internal/camera-token/verify
+# L'endpoint de contrôle et les métriques ne passent pas par l'auth HTTP
+# (sinon l'agent Edge ne pourrait plus enregistrer une caméra).
+authHTTPExclude:
+  - action: api
+  - action: metrics
+  - action: pprof
+
+# ── Chemins ─────────────────────────────────────────────────
+# Aucun chemin statique : chaque caméra du tenant est enregistrée à chaud par
+# l'agent Edge, à partir de la liste des caméras (nom `cam_<id>`). Le motif
+# ci-dessous porte la politique d'enregistrement de TOUS les chemins caméra.
+paths:
+  "~^cam_[0-9]+$":
+    # `source` est posé par l'agent Edge au moment de l'enregistrement du
+    # chemin (URL RTSP déchiffrée côté Leopardo — elle n'est jamais écrite ici).
+    record: yes
+    recordPath: /var/leopardo/cameras/%path/%Y-%m-%d_%H-%M-%S-%f
+    recordFormat: fmp4
+    recordSegmentDuration: 1h
+    # Rétention : 7 jours par défaut, décidée avec le client (voir README).
+    recordDeleteAfter: 168h

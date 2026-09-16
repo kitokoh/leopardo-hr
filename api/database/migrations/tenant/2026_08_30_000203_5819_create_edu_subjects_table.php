@@ -59,6 +59,13 @@ return new class extends Migration
 
     public function down(): void
     {
+        // Tables dépendantes créées par d'AUTRES migrations du même module
+        // (elles référencent cette table par FK composite) : PostgreSQL
+        // refuse de dropper un parent encore référencé (2BP01). Leur
+        // `down()` n'étant pas dans le lot canonique rejoué par les tests
+        // d'inventaire, on les supprime ici — gardé, et recréé par leurs
+        // propres migrations (le cycle de test est transactionnel).
+        Schema::dropIfExists('edu_course_slots');
         Schema::dropIfExists('edu_subjects');
     }
 };

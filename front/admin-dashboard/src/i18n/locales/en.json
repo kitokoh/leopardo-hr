@@ -1010,7 +1010,26 @@
     "teamActive": "Active Team",
     "updateSubscription": "Update subscription",
     "updating": "Updating...",
-    "viewAllTickets": "View all tickets"
+    "viewAllTickets": "View all tickets",
+    "features": {
+      "rh": "Human resources",
+      "finance": "Finance & management",
+      "ai": "Artificial intelligence",
+      "cameras": "Video surveillance",
+      "tracking": "Fleet tracking",
+      "planning": "Planning & team",
+      "training": "Training centre",
+      "cabinet": "Digital cabinet",
+      "muhasebe": "Accounting (Turkey)",
+      "leo_ai": "Leopardo AI assistant",
+      "crm": "Customer relationship (CRM)",
+      "fuel_station": "Fuel stations",
+      "edumanager": "School management",
+      "restaurant": "Restaurant",
+      "travelagency": "Travel agency",
+      "accounting": "Accounting",
+      "company_showcase": "Showcase website"
+    }
   },
   "attendanceCorrectionRequestHint": "The request will be sent to HR for validation.",
   "salaryAdvanceError": "Failed: {error}",
@@ -1366,6 +1385,19 @@
       "high": "High risk",
       "medium": "Medium risk",
       "low": "Low risk"
+    },
+    "features": {
+      "biometric": "Biometrics",
+      "tasks": "Tasks",
+      "advanced_reports": "Advanced reports",
+      "excel_export": "Excel export",
+      "bank_export": "Bank export",
+      "billing_auto": "Automatic billing",
+      "multi_managers": "Multiple managers",
+      "photo_attendance": "Photo attendance",
+      "api_public": "Public API",
+      "evaluations": "Evaluations",
+      "schema_isolation": "Data isolation"
     }
   },
   "settingsCabinetPublic": "Public",
@@ -2641,7 +2673,10 @@
     "cancel": "Cancel",
     "noResults": "No results found.",
     "reload": "Reload",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "actions": "Actions",
+    "edit": "Edit",
+    "search": "Search…"
   },
   "settingsProfileUpdated": "Profile updated.",
   "attendanceHoursWorkedLabel": "Hours worked",
@@ -2842,7 +2877,9 @@
       "medium": "Medium",
       "high": "High",
       "critical": "Critical"
-    }
+    },
+    "viewEquipment": "Equipment",
+    "advanceIncident": "Advance"
   },
   "adminPalette": {
     "appLoading": "Loading the administration…",
@@ -3160,7 +3197,30 @@
     "statsActive": "Active Clients",
     "statsFollowed": "Followed Clients",
     "statsGlobalMrr": "Global MRR",
-    "statsRiskAlert": "Risk Alert"
+    "statsRiskAlert": "Risk Alert",
+    "searchLabel": "Search",
+    "searchPlaceholder": "Name, email, country or city…",
+    "statusLabel": "Status",
+    "statusAll": "All",
+    "statusActive": "Active",
+    "statusTrial": "Trial",
+    "statusSuspended": "Suspended",
+    "statusExpired": "Expired",
+    "empty": "No company in the portfolio yet.",
+    "emptySearch": "No company matches this search.",
+    "resetFilters": "Reset search",
+    "previousPage": "Previous",
+    "nextPage": "Next",
+    "pageOf": "Page :current of :total",
+    "totalCount": ":count companies",
+    "suspend": "Suspend",
+    "activate": "Activate",
+    "suspendConfirmTitle": "Suspend this company?",
+    "suspendConfirmBody": "Company :name will lose access to its workspace until it is reactivated.",
+    "suspended": "Company suspended.",
+    "activated": "Company activated.",
+    "statusError": "Failed to update the status.",
+    "statusPlanMissing": "No plan is attached to this company: open its page to define one."
   },
   "attendanceOvertimeHint": "Start an overtime session",
   "companyrequestsApprovedToast": "Request approved",
@@ -3837,6 +3897,8 @@
     "unassigned": "Not assigned",
     "searchVehicle": "Search a vehicle...",
     "searchAlert": "Search an alert...",
+    "locate": "Locate",
+    "detail": "Details",
     "title": "Fleet & vehicles",
     "subtitle": "Your service vehicles: status, position and trips",
     "loadError": "Unable to load the fleet",
@@ -4821,7 +4883,9 @@
       "deactivate": "Deactivate",
       "suspend": "Suspend",
       "export": "Export",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "deactivateConfirmTitle": "Deactivate the selected users?",
+      "deactivateConfirmBody": "This will deactivate :count selected user(s). They will not be able to sign in until their account is reactivated."
     },
     "toast": {
       "loadError": "Failed to load users",
@@ -4879,7 +4943,17 @@
       "loading": "Loading users...",
       "empty": "No user",
       "emptyHint": "No user matches the search criteria.",
-      "viewDetails": "View details"
+      "viewDetails": "View details",
+      "company": "Company",
+      "createdAt": "Registered",
+      "name": "User",
+      "status": "Status"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "pending": "Pending",
+      "suspended": "Suspended"
     }
   },
   "settingsBiometryEnrollment": "Biometric enrollment",
@@ -5049,7 +5123,8 @@
       "city": "City",
       "carrier": "Carrier",
       "saving": "Saving…",
-      "selectPlaceholder": "— Select —"
+      "selectPlaceholder": "— Select —",
+      "actionError": "The action failed. Please try again."
     },
     "home": {
       "title": "Travel Agency",
@@ -5246,7 +5321,8 @@
       "availableFrom": "Available from",
       "availableUntil": "Available until",
       "owner": "Owner",
-      "description": "Description"
+      "description": "Description",
+      "confirmDeleteImage": "Delete this image? It will be removed from the vehicle gallery."
     },
     "countries": {
       "name": "Name",
@@ -6272,7 +6348,9 @@
     "sectionProducts": "Products",
     "sectionContact": "Contact",
     "sectionFooter": "Footer",
-    "notFoundTitle": "Page not found"
+    "notFoundTitle": "Page not found",
+    "delete_section_title": "Delete this section?",
+    "delete_section_body": "The section and its content will be permanently deleted."
   },
   "trial": {
     "trialBadge": "Trial",
@@ -6319,7 +6397,8 @@
     "overridden": "customised",
     "preview": "Preview",
     "previewFailed": "Preview unavailable",
-    "loadFailed": "Could not load"
+    "loadFailed": "Could not load",
+    "emptyList": "No email template available."
   },
   "aiAssistant": {
     "title": "AI Assistant",
@@ -6366,6 +6445,8 @@
     "awaitingConfirmation": "Awaiting confirmation",
     "failures": "Failures",
     "recentErrors": "Recent errors",
-    "loadError": "Could not load the settings."
+    "loadError": "Could not load the settings.",
+    "healthUnavailable": "Assistant state unavailable — loading failed. Reload the page to try again.",
+    "monitoringUnavailable": "Monitoring unavailable — statistics failed to load. No figures are shown instead of a misleading zero."
   }
 }

@@ -2,9 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Database\Seeders\DemoCompanyOnceSeeder;
+use Database\Seeders\SuperAdminSeeder;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -75,6 +76,52 @@ class DemoUserControllerTest extends TestCase
         $this->getJson('/api/v1/demo-users')
             ->assertOk()
             ->assertJsonPath('data.companies.0.users.0.email', 'ahmed.benali@techcorp-algerie.dz');
+    }
+
+    public function test_demo_users_personas_can_actually_log_into_the_platform(): void
+    {
+        // #7402 — garde de fumée demandée par l'issue : la persona
+        // `admin-platform` annoncée par /demo-users doit RÉELLEMENT pouvoir se
+        // connecter. Auparavant SuperAdminSeeder posait un mot de passe aléatoire
+        // pendant que /demo-users publiait `config('demo.password')` : le bouton
+        // « sélectionnez un profil pour vous connecter immédiatement » échouait
+        // alors systématiquement (« Invalid email or password »).
+        config(['app.demo_mode_enabled' => true]);
+        config(['demo.password' => 'password123']);
+
+        DB::table('public.super_admins')->where('email', 'admin@leopardo-rh.com')->delete();
+
+        $this->seed(SuperAdminSeeder::class);
+
+        // 1) ce que /demo-users annonce
+        $this->getJson('/api/v1/demo-users')
+            ->assertOk()
+            ->assertJsonPath('data.super_admin.surface', 'admin-platform')
+            ->assertJsonPath('data.super_admin.password', 'password123');
+
+        // 2) ce qui authentifie vraiment
+        $this->postJson('/api/v1/platform/auth/login', [
+            'email' => 'admin@leopardo-rh.com',
+            'password' => 'password123',
+        ])->assertOk()->assertJsonPath('data.role', 'super_admin');
+    }
+
+    public function test_demo_password_does_not_authenticate_outside_demo_mode(): void
+    {
+        // #7402 (volet sécurité) — l'alignement sur le mot de passe démo ne doit
+        // jamais fuir hors mode démo : le mot de passe reste aléatoire et
+        // `password123` ne doit authentifier personne.
+        config(['app.demo_mode_enabled' => false]);
+        config(['demo.password' => 'password123']);
+
+        DB::table('public.super_admins')->where('email', 'admin@leopardo-rh.com')->delete();
+
+        $this->seed(SuperAdminSeeder::class);
+
+        $this->postJson('/api/v1/platform/auth/login', [
+            'email' => 'admin@leopardo-rh.com',
+            'password' => 'password123',
+        ])->assertUnauthorized();
     }
 
     public function test_demo_once_seeder_keeps_public_super_admin_credentials_usable(): void
@@ -286,4 +333,3 @@ class DemoUserControllerTest extends TestCase
         ]);
     }
 }
-

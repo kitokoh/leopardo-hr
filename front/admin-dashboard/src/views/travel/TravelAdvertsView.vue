@@ -53,12 +53,17 @@
         >
           <template #row-actions="{ row }">
             <div class="flex justify-end gap-2">
-              <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400" @click="openCatalogEdit(row)">
-                {{ t('travel.common.edit', 'Modifier') }}
-              </button>
-              <button class="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400" @click="askCatalogDelete(row)">
-                {{ t('travel.common.delete', 'Supprimer') }}
-              </button>
+              <RowActionButton
+                :icon="PencilSquareIcon"
+                :label="t('travel.common.edit', 'Modifier')"
+                @click="openCatalogEdit(row)"
+              />
+              <RowActionButton
+                :icon="TrashIcon"
+                tone="danger"
+                :label="t('travel.common.delete', 'Supprimer')"
+                @click="askCatalogDelete(row)"
+              />
             </div>
           </template>
         </DataTable>
@@ -103,34 +108,34 @@
           </template>
           <template #row-actions="{ row }">
             <div class="flex justify-end gap-2">
-              <button
+              <RowActionButton
                 v-if="row.status === 'draft' || row.status === 'pending_payment'"
-                class="text-sm font-medium text-emerald-600 hover:text-emerald-800 dark:text-emerald-400"
+                :icon="BanknotesIcon"
+                tone="success"
+                :label="t('travel.adverts.pay', 'Payer')"
                 @click="payAdvertRow(row)"
-              >
-                {{ t('travel.adverts.pay', 'Payer') }}
-              </button>
-              <button
+              />
+              <RowActionButton
                 v-if="row.status === 'paid'"
-                class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
+                :icon="CheckIcon"
+                tone="primary"
+                :label="t('travel.adverts.validate', 'Valider')"
                 @click="openAdvertValidate(row)"
-              >
-                {{ t('travel.adverts.validate', 'Valider') }}
-              </button>
-              <button
+              />
+              <RowActionButton
                 v-if="row.status === 'expired'"
-                class="text-sm font-medium text-amber-600 hover:text-amber-800 dark:text-amber-400"
+                :icon="ArrowPathIcon"
+                tone="warning"
+                :label="t('travel.adverts.renew', 'Renouveler')"
                 @click="renewAdvertRow(row)"
-              >
-                {{ t('travel.adverts.renew', 'Renouveler') }}
-              </button>
-              <button
+              />
+              <RowActionButton
                 v-if="row.status === 'draft' || row.status === 'rejected'"
-                class="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400"
+                :icon="TrashIcon"
+                tone="danger"
+                :label="t('travel.common.delete', 'Supprimer')"
                 @click="askAdvertDelete(row)"
-              >
-                {{ t('travel.common.delete', 'Supprimer') }}
-              </button>
+              />
             </div>
           </template>
         </DataTable>
@@ -167,21 +172,36 @@
         @save="submitValidate"
         @close="closeValidateModal"
       />
+
+      <!-- Confirmation de suppression (#7433) -->
+      <ConfirmDialog
+        :open="deleteOpen"
+        :title="t('travel.common.confirmDeleteTitle', 'Supprimer cet élément ?')"
+        :message="deleteMessage"
+        :confirm-label="t('travel.common.delete', 'Supprimer')"
+        @confirm="confirmDelete"
+        @cancel="closeDelete"
+      />
     </template>
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { useToast } from 'vue-toastification'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import RowActionButton from '@/components/common/RowActionButton.vue'
 import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import TravelGate from '@/components/travel/TravelGate.vue'
+import { PencilSquareIcon, TrashIcon, BanknotesIcon, CheckIcon, ArrowPathIcon } from '@heroicons/vue/24/outline'
 import { createTravel, deleteTravel, listTravel, payAdvert, renewAdvert, validateAdvert, listAdvertCatalog, createAdvertCatalog, updateAdvertCatalog, deleteAdvertCatalog, travelList } from '@/services/travel'
 
 const localeStore = useLocaleStore()
+const toast = useToast()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 const gateMode = ref('')
@@ -218,6 +238,32 @@ function setStatusFilter(value) {
 }
 
 // ── Catalogue (types / positions / tarifs) ────────────────────────────────
+
+// Confirmation de suppression (#7433) : dialogues natifs du navigateur remplacés
+const deleteOpen = ref(false)
+const deleteAction = ref(null)
+const deleteMessage = ref('')
+
+function apiErrorMessage(err) {
+  return err?.response?.data?.message || err?.message || t('travel.common.actionError', "L'action a échoué. Réessayez.")
+}
+
+function closeDelete() {
+  deleteOpen.value = false
+  deleteAction.value = null
+}
+
+async function confirmDelete() {
+  if (!deleteAction.value) return
+  try {
+    await deleteAction.value()
+  } catch (err) {
+    toast.error(apiErrorMessage(err))
+  } finally {
+    deleteOpen.value = false
+    deleteAction.value = null
+  }
+}
 
 const catalogResource = computed(() => ({
   types: 'advert-types',
@@ -316,14 +362,11 @@ async function saveCatalog(values) {
   }
 }
 
-async function askCatalogDelete(row) {
-  if (!window.confirm(t('travel.common.confirmDelete', 'Supprimer cet élément ?'))) return
-  try {
-    await deleteAdvertCatalog(catalogResource.value, row.id)
-    await loadCatalog()
-  } catch (err) {
-    window.alert(err?.response?.data?.message || String(err))
-  }
+function askCatalogDelete(row) {
+  const label = row.name || row.code || String(row.id)
+  deleteAction.value = () => deleteAdvertCatalog(catalogResource.value, row.id).then(loadCatalog)
+  deleteMessage.value = t('travel.common.confirmDeleteBody', 'Cette action est irréversible. Voulez-vous vraiment supprimer « {name} » ?').replace('{name}', label)
+  deleteOpen.value = true
 }
 
 // ── Annonces (cycle de vie) ───────────────────────────────────────────────
@@ -403,7 +446,7 @@ async function payAdvertRow(row) {
     await payAdvert(row.id, { provider: 'cash' })
     await loadAdverts()
   } catch (err) {
-    window.alert(err?.response?.data?.message || String(err))
+    toast.error(apiErrorMessage(err))
   }
 }
 
@@ -432,18 +475,14 @@ async function renewAdvertRow(row) {
     await renewAdvert(row.id, { provider: 'cash' })
     await loadAdverts()
   } catch (err) {
-    window.alert(err?.response?.data?.message || String(err))
+    toast.error(apiErrorMessage(err))
   }
 }
 
-async function askAdvertDelete(row) {
-  if (!window.confirm(t('travel.common.confirmDelete', 'Supprimer cette annonce ?'))) return
-  try {
-    await deleteTravel('adverts', row.id)
-    await loadAdverts()
-  } catch (err) {
-    window.alert(err?.response?.data?.message || String(err))
-  }
+function askAdvertDelete(row) {
+  deleteAction.value = () => deleteTravel('adverts', row.id).then(loadAdverts)
+  deleteMessage.value = t('travel.common.confirmDeleteBody', 'Cette action est irréversible. Voulez-vous vraiment supprimer « {name} » ?').replace('{name}', row.title || String(row.id))
+  deleteOpen.value = true
 }
 
 function init() {

@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\TravelAgency\Application\Actions\CancelBookingAction;
 use App\Modules\TravelAgency\Application\Actions\CreateBookingAction;
 use App\Modules\TravelAgency\Domain\Enums\BookingSource;
 use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;
@@ -20,6 +21,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelTicketPdfGenerator;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelTicketPdfStorage;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelShopBookingRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelBookingRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelBookingResource;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelTripResource;
@@ -36,6 +38,11 @@ use Illuminate\Support\Str;
  * le scope BelongsToCompany s'applique → aucune donnée cross-tenant
  * (critère d'acceptation). Rate limiting renforcé (`throttle:shop-public`)
  * + hook anti-bot (CAPTCHA configurable).
+ *
+ * #7395 — l'ESPACE VOYAGEUR (portail passager) consomme cette surface :
+ * `track`, `cancel` et `ticketPdf` acceptent la RÉFÉRENCE + le CODE DE
+ * VALIDATION du billet comme secret partagé, sans jeton boutique (que seul
+ * le tenant possède). Aucune donnée n'est servie avant vérification du code.
  */
 class TravelPublicShopController extends Controller
 {
@@ -100,8 +107,12 @@ class TravelPublicShopController extends Controller
     }
 
     /**
-     * Suivi public par référence + code de validation (jamais de données
-     * sensibles : statut, trajet, passagers anonymisés).
+     * Suivi par référence + code de validation (jamais de données
+     * sensibles : statut, trajet, passagers anonymisés, identifiants de
+     * billets nécessaires au téléchargement de l'e-billet).
+     *
+     * #7395 : accessible SANS jeton boutique (référence + code = secret
+     * partagé du billet) — c'est l'endpoint du portail passager.
      */
     public function track(Request $request, string $reference): JsonResponse
     {
@@ -113,7 +124,7 @@ class TravelPublicShopController extends Controller
 
         $booking = TravelBooking::query()
             ->where('reference', $reference)
-            ->with('trip')
+            ->with(['trip', 'tickets'])
             ->first();
 
         if (! $booking instanceof TravelBooking) {
@@ -122,28 +133,86 @@ class TravelPublicShopController extends Controller
 
         // Le code de validation d'AU MOINS un billet doit correspondre
         // (hash — le code en clair n'est jamais exposé).
-        $ticket = TravelTicket::query()
-            ->where('booking_id', $booking->id)
-            ->get()
-            ->first(fn (TravelTicket $t): bool => $t->validationCodeMatches($code));
+        $ticket = $booking->tickets->first(
+            fn (TravelTicket $t): bool => $t->validationCodeMatches($code)
+        );
 
         if (! $ticket instanceof TravelTicket) {
             abort(404, 'Code de validation invalide.');
         }
 
+        return response()->json(['data' => $this->publicPayload($booking)]);
+    }
+
+    /**
+     * #7395 — Annulation en ligne depuis l'espace voyageur (sans compte).
+     *
+     * Même contrat métier que l'annulation guichet (`CancelBookingAction` :
+     * statut annulable, départ futur, sièges libérés, motif conservé), mais
+     * sans acteur employé : la preuve de possession est le code de validation
+     * d'un billet de la réservation, et le motif reste obligatoire (audit).
+     */
+    public function cancel(CancelTravelShopBookingRequest $request, string $reference): JsonResponse
+    {
+        $booking = TravelBooking::query()
+            ->where('reference', $reference)
+            ->with(['trip', 'tickets'])
+            ->first();
+
+        if (! $booking instanceof TravelBooking) {
+            abort(404);
+        }
+
+        // Preuve de possession : le code fourni doit matcher un billet.
+        $owned = $booking->tickets->contains(
+            fn (TravelTicket $ticket): bool => $ticket->validationCodeMatches((string) $request->input('code'))
+        );
+
+        abort_if(! $owned, 422, 'TRAVEL_BOOKING_CODE_INVALID');
+
+        // Annulation bornée : départ dans le futur uniquement.
+        $departure = $booking->trip?->departure_date;
+        abort_if($departure !== null && ! $departure->isFuture(), 422, 'TRAVEL_BOOKING_DEPARTURE_PAST');
+
+        $cancelled = app(CancelBookingAction::class)->execute(
+            $booking,
+            null,
+            (string) $request->input('reason')
+        );
+
         return response()->json([
-            'data' => [
-                'reference' => $booking->reference,
-                'status' => $booking->status->value,
-                'payment_status' => $booking->payment_status->value,
-                'trip' => $booking->trip ? [
-                    'code' => $booking->trip->code,
-                    'departure_date' => $booking->trip->departure_date->toDateString(),
-                    'departure_time' => $booking->trip->departure_time,
-                ] : null,
-                'passenger_count' => $booking->passenger_count,
-            ],
+            'data' => $this->publicPayload($cancelled->load(['trip', 'tickets'])),
         ]);
+    }
+
+    /**
+     * Charge utile publique d'une réservation — minimale et sans PII.
+     *
+     * #7395 : les billets sont exposés par leur identifiant OPÉRATIONNEL
+     * (id + numéro imprimé sur l'e-billet) car le téléchargement du PDF
+     * (`/public/travel/tickets/{ticket}/pdf`) exige, lui, le code de
+     * validation : ces identifiants ne donnent accès à rien sans le code.
+     *
+     * @return array<string, mixed>
+     */
+    private function publicPayload(TravelBooking $booking): array
+    {
+        return [
+            'reference' => $booking->reference,
+            'status' => $booking->status->value,
+            'payment_status' => $booking->payment_status->value,
+            'trip' => $booking->trip ? [
+                'code' => $booking->trip->code,
+                'departure_date' => $booking->trip->departure_date->toDateString(),
+                'departure_time' => $booking->trip->departure_time,
+            ] : null,
+            'passenger_count' => $booking->passenger_count,
+            'tickets' => $booking->tickets->map(fn (TravelTicket $ticket): array => [
+                'id' => $ticket->id,
+                'ticket_number' => $ticket->ticket_number,
+                'status' => $ticket->status->value,
+            ])->values()->all(),
+        ];
     }
 
     // ── Paiement public & e-billet (TRAVEL-1002/#6115) ──────────────────────

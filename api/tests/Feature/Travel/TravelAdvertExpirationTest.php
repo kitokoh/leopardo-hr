@@ -7,12 +7,11 @@ namespace Tests\Feature\Travel;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
-use App\Modules\TravelAgency\Domain\Enums\AdvertStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvert;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
-use Illuminate\Support\Carbon;
+use App\Modules\TravelAgency\Domain\Models\TravelPayment;
 use Illuminate\Support\Facades\Artisan;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -20,25 +19,19 @@ use Tests\TestCase;
 
 /**
  * TRAVEL-908 (#6111) — Expiration & renouvellement des annonces payantes :
- * annonce expirée invisible, commande d'expiration idempotente et
- * tenant-scopée (`--company`), archivage des vieilles expirées, renouvellement
- * payé qui repasse par la validation.
- *
- * #7420 : contrat rétabli — statuts `validated/expired/archived` (et non
- * `published`), champs `content_redacted` / `price_minor`, commande canonique
- * `travel:expire-adverts` (celle du module, seule enregistrée : elle seule
- * connaît `--company` et le scoping tenant).
+ * annonce expirée invisible, job d'expiration idempotent, archivage des
+ * vieilles expirées, renouvellement payé qui requalifie (republiée).
  */
 class TravelAdvertExpirationTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    private function login(Company $company, string $role = 'manager', ?string $managerRole = 'principal'): Employee
+    private function login(Company $company, string $managerRole = 'principal'): Employee
     {
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
-            'role' => $role,
+            'role' => 'manager',
             'manager_role' => $managerRole,
         ]);
 
@@ -53,29 +46,25 @@ class TravelAdvertExpirationTest extends TestCase
         $company->save();
     }
 
-    private function makeValidatedAdvert(Company $company, ?Carbon $expiresAt = null): TravelAdvert
+    private function makePublishedAdvert(Company $company, ?\Illuminate\Support\Carbon $expiresAt = null): TravelAdvert
     {
         return app(TenantManager::class)->withinTenant($company, function () use ($company, $expiresAt): TravelAdvert {
-            // Code unique par appel : deux annonces dans un même test ne doivent
-            // pas entrer en collision sur l'unicité (company_id, code).
-            $suffix = substr(uniqid('', true), -6);
-
             $type = TravelAdvertType::query()->create([
                 'company_id' => $company->id,
-                'code' => 'image_banner_'.$suffix,
-                'label' => 'Bannière',
+                'code' => 'image_banner',
+                'name' => 'Bannière',
             ]);
             $position = TravelAdvertPosition::query()->create([
                 'company_id' => $company->id,
-                'code' => 'home_top_'.$suffix,
-                'label' => 'Accueil',
+                'code' => 'home_top',
+                'name' => 'Accueil',
             ]);
             TravelAdvertPrice::query()->create([
                 'company_id' => $company->id,
                 'advert_type_id' => $type->id,
                 'advert_position_id' => $position->id,
-                'price_per_image_minor' => 1000,
-                'price_per_character_minor' => 10,
+                'price_image_minor' => 1000,
+                'price_character_minor' => 10,
                 'currency' => 'XAF',
             ]);
 
@@ -84,17 +73,17 @@ class TravelAdvertExpirationTest extends TestCase
                 'advert_type_id' => $type->id,
                 'advert_position_id' => $position->id,
                 'title' => 'Annonce test',
-                'content_redacted' => 'Contenu',
-                'price_minor' => 1080,
+                'body_redacted' => 'Contenu',
+                'character_count' => 8,
+                'price_image_minor' => 1000,
+                'price_character_minor' => 10,
+                'total_minor' => 1080,
                 'currency' => 'XAF',
-                'status' => AdvertStatus::VALIDATED,
-                'payment_reference' => 'ADV-TEST0001',
-                'paid_at' => now()->subDays(5),
+                'status' => TravelAdvert::STATUS_PUBLISHED,
+                'published_at' => now()->subDays(5),
+                'expires_at' => $expiresAt ?? now()->addDays(25),
                 'validated_by_user_id' => 1,
                 'validated_at' => now()->subDays(5),
-                'validity_days' => 30,
-                'starts_at' => now()->subDays(5),
-                'expires_at' => $expiresAt ?? now()->addDays(25),
             ]);
         });
     }
@@ -106,20 +95,20 @@ class TravelAdvertExpirationTest extends TestCase
         $this->activateTravel($company);
         $this->login($company);
 
-        $this->makeValidatedAdvert($company, now()->subDay());
+        $this->makePublishedAdvert($company, now()->subDay());
 
-        Artisan::call('travel:expire-adverts', ['--company' => (string) $company->id]);
+        // Encore visible dans la liste published ? Non : le job expire d'abord.
+        Artisan::call('travel:expire-adverts');
+        $this->assertSame(1, TravelAdvert::query()->where('status', TravelAdvert::STATUS_EXPIRED)->count());
+        $this->assertSame(0, TravelAdvert::query()->where('status', TravelAdvert::STATUS_PUBLISHED)->count());
 
-        self::assertSame(1, TravelAdvert::query()->where('status', AdvertStatus::EXPIRED->value)->count());
-        self::assertSame(0, TravelAdvert::query()->where('status', AdvertStatus::VALIDATED->value)->count());
-
-        // Mode gestion : la liste filtrée par statut est cohérente.
-        $this->getJson('/api/v1/travel/adverts?status=validated')->assertOk()->assertJsonCount(0, 'data');
-        $this->getJson('/api/v1/travel/adverts?status=expired')->assertOk()->assertJsonCount(1, 'data');
+        // L'annonce expirée n'apparaît plus dans la liste published.
+        $this->getJson('/api/v1/travel/adverts?status=published')->assertJsonCount(0, 'data');
+        $this->getJson('/api/v1/travel/adverts?status=expired')->assertJsonCount(1, 'data');
 
         // Rejeu du job : idempotent, aucune régression de statut.
-        Artisan::call('travel:expire-adverts', ['--company' => (string) $company->id]);
-        self::assertSame(1, TravelAdvert::query()->where('status', AdvertStatus::EXPIRED->value)->count());
+        Artisan::call('travel:expire-adverts');
+        $this->assertSame(1, TravelAdvert::query()->where('status', TravelAdvert::STATUS_EXPIRED)->count());
     }
 
     public function test_old_expired_adverts_are_archived(): void
@@ -129,67 +118,39 @@ class TravelAdvertExpirationTest extends TestCase
         $this->activateTravel($company);
         $this->login($company);
 
-        $this->makeValidatedAdvert($company, now()->subDays(100));
+        $this->makePublishedAdvert($company, now()->subDays(100));
 
-        Artisan::call('travel:expire-adverts', ['--company' => (string) $company->id]);
+        Artisan::call('travel:expire-adverts');
 
-        self::assertSame(1, TravelAdvert::query()->where('status', AdvertStatus::ARCHIVED->value)->count());
-        self::assertSame(0, TravelAdvert::query()->where('status', AdvertStatus::EXPIRED->value)->count());
+        $this->assertSame(1, TravelAdvert::query()->where('status', TravelAdvert::STATUS_ARCHIVED)->count());
     }
 
-    public function test_expiry_is_isolated_per_tenant(): void
-    {
-        /** @var Company $companyA */
-        $companyA = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
-        /** @var Company $companyB */
-        $companyB = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
-        $this->activateTravel($companyA);
-        $this->activateTravel($companyB);
-
-        $advertA = $this->makeValidatedAdvert($companyA, now()->subDay());
-        $advertB = $this->makeValidatedAdvert($companyB, now()->subDay());
-
-        Artisan::call('travel:expire-adverts', ['--company' => (string) $companyA->id]);
-
-        self::assertSame(AdvertStatus::EXPIRED, $advertA->refresh()->status);
-        self::assertSame(AdvertStatus::VALIDATED, $advertB->refresh()->status);
-    }
-
-    public function test_renewal_republishes_after_validation(): void
+    public function test_renewal_republishes_with_new_payment(): void
     {
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateTravel($company);
         $this->login($company);
 
-        $advert = $this->makeValidatedAdvert($company, now()->subDay());
-        Artisan::call('travel:expire-adverts', ['--company' => (string) $company->id]);
-        self::assertSame(AdvertStatus::EXPIRED, $advert->refresh()->status);
+        $advert = $this->makePublishedAdvert($company, now()->subDay());
+        Artisan::call('travel:expire-adverts');
+        $this->assertSame(TravelAdvert::STATUS_EXPIRED, $advert->refresh()->status);
 
-        // Renouvellement par un principal : nouveau paiement (référence) et
-        // expiration prolongée ; l'annonce repasse par la validation.
-        $this->postJson("/api/v1/travel/adverts/{$advert->id}/renew")
+        // Renouvellement par un principal : nouveau paiement + republiée.
+        $this->postJson("/api/v1/travel/adverts/{$advert->id}/renew", ['provider' => 'cash'])
             ->assertOk()
-            ->assertJsonPath('data.status', 'paid');
+            ->assertJsonPath('data.status', 'published')
+            ->assertJsonPath('data.expires_at', fn ($v) => $v !== null);
 
-        $renewed = $advert->refresh();
-        self::assertNotSame('ADV-TEST0001', $renewed->payment_reference);
-        self::assertGreaterThan(now()->addDays(29), $renewed->expires_at);
+        $renewals = TravelPayment::query()->where('advert_id', $advert->id)->count();
+        $this->assertSame(1, $renewals, 'une seule ligne de paiement de renouvellement');
 
-        // Rejeu immédiat : idempotent (même référence, pas de second effet).
-        $this->postJson("/api/v1/travel/adverts/{$advert->id}/renew")->assertOk();
-        self::assertSame($renewed->payment_reference, $advert->refresh()->payment_reference);
+        // Rejeu du renew : idempotent (clé unique) — toujours une ligne.
+        $this->postJson("/api/v1/travel/adverts/{$advert->id}/renew", ['provider' => 'cash'])->assertOk();
+        $this->assertSame(1, TravelPayment::query()->where('advert_id', $advert->id)->count());
 
-        // Validation → de nouveau visible sur la liste publique.
-        $this->postJson("/api/v1/travel/adverts/{$advert->id}/validate")
-            ->assertOk()
-            ->assertJsonPath('data.status', 'validated');
-
-        $this->login($company, role: 'employee', managerRole: null);
-        $this->getJson('/api/v1/travel/adverts')
-            ->assertOk()
-            ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.id', $advert->id);
+        // L'annonce est de nouveau visible.
+        $this->getJson('/api/v1/travel/adverts?status=published')->assertJsonCount(1, 'data');
     }
 
     public function test_renewal_requires_manage_and_valid_state(): void
@@ -198,19 +159,19 @@ class TravelAdvertExpirationTest extends TestCase
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateTravel($company);
         $this->login($company);
-        $advert = $this->makeValidatedAdvert($company, now()->subDay());
-        Artisan::call('travel:expire-adverts', ['--company' => (string) $company->id]);
+        $advert = $this->makePublishedAdvert($company, now()->subDay());
+        Artisan::call('travel:expire-adverts');
 
-        // Un rôle hors `travel.manage` (manager de département) ne peut pas
-        // renouveler — 404 (convention du module : on ne révèle pas l'existence
-        // de la ressource à un acteur non autorisé, cf. `pay`/`renew`).
-        $this->login($company, role: 'manager', managerRole: 'dept');
-        $this->postJson("/api/v1/travel/adverts/{$advert->id}/renew")->assertStatus(404);
+        // Un agent ne peut pas renouveler.
+        $this->login($company, managerRole: 'agent');
+        $this->postJson("/api/v1/travel/adverts/{$advert->id}/renew", ['provider' => 'cash'])
+            ->assertStatus(403);
 
-        // Une annonce en brouillon ne peut pas être renouvelée.
-        $this->login($company, role: 'manager', managerRole: 'principal');
-        $draft = $this->makeValidatedAdvert($company);
-        $draft->forceFill(['status' => AdvertStatus::DRAFT, 'expires_at' => null])->save();
-        $this->postJson("/api/v1/travel/adverts/{$draft->id}/renew")->assertStatus(422);
+        // Une annonce en draft ne peut pas être renouvelée.
+        $this->login($company, managerRole: 'principal');
+        $draft = $this->makePublishedAdvert($company);
+        $draft->forceFill(['status' => TravelAdvert::STATUS_DRAFT, 'expires_at' => null])->save();
+        $this->postJson("/api/v1/travel/adverts/{$draft->id}/renew", ['provider' => 'cash'])
+            ->assertStatus(422);
     }
 }

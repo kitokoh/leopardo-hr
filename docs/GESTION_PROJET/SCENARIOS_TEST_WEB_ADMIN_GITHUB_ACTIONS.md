@@ -250,6 +250,83 @@ Spécification : `docs/specifications/ISSUE_7339_PLATFORM_COMPANIES_HEALTH_PAGIN
 Limite connue (suivie hors de ce lot) : au-delà de 50 sociétés, les lignes de l'annuaire
 (chargé sur 100) situées après la page 1 restent sans score (« — »).
 
+### 17. Actions destructives confirmées et échecs visibles (#7433)
+
+Audit d'ergonomie destructrice de la console admin : cinq actions partaient au
+premier clic (sans confirmation) et plusieurs échecs d'API étaient avalés sans
+message (l'écran restait « normal »). Aucune action destructive ne doit plus
+partir sans confirmation, et aucun échec ne doit rester silencieux.
+
+Confirmations (composant existant `ConfirmDialog`, aucun `window.confirm`) :
+
+- **Agence de voyage › Contenu** : « Supprimer » sur un référentiel (types,
+  positions, tarifs) et sur un site touristique ouvre la confirmation en nommant
+  l'élément ; l'erreur de suppression est remontée en toast (message de l'API).
+- **Agence de voyage › Contenu › Contacts** : la bascule d'un consentement
+  (email/SMS/WhatsApp) qui échoue affiche un toast **et remet la case à l'état
+  réel** — jamais un consentement affiché comme enregistré.
+- **Agence de voyage › Contenu** : les actions du cycle de vie des annonces
+  (payer, valider, renouveler) affichent l'échec en toast.
+- **Agence de voyage › Contenu** : enregistrer un formulaire qui échoue **laisse
+  la modale ouverte et la saisie intacte**, avec l'erreur de l'API en toast.
+- **Agence de voyage › Catalogue** : la croix de suppression d'une image de
+  véhicule passe par la confirmation (elle supprimait au premier clic).
+- **Agence de voyage › Annonces / Quiz / Sites** : plus aucun dialogue natif du
+  navigateur (les 12 appels `confirm`/`alert` des trois écrans sont remplacés par
+  `ConfirmDialog` + toast), y compris l'échec du paiement/renouvellement d'annonce.
+- **Vitrine** (`/showcase`) : la suppression d'une section est confirmée.
+- **Utilisateurs** : l'action groupée « Désactiver » demande confirmation **en
+  annonçant le nombre de comptes concernés** (`:count`) ; « Activer » et
+  « Exporter » restent immédiats (non destructifs).
+
+Véracité des états (jamais un état faux affiché comme réel) :
+
+- **Paramètres › Assistant IA** : si `GET /admin/platform/ai/health` échoue,
+  l'en-tête affiche « état de l'assistant indisponible » — **jamais
+  « assistant désactivé »** ; si `GET .../monitoring` échoue, l'onglet Suivi
+  affiche « suivi indisponible » — **jamais « 0 requête »** (le zéro trompeur
+  reste réservé à une réponse API réelle valant zéro).
+- **Paramètres › E-mails** : une liste vide affiche un état vide explicite
+  (« aucun modèle d'e-mail disponible »), distinct du bandeau « chargement
+  impossible ».
+
+À vérifier (recette) :
+
+- Les 4 locales (fr/en/ar/tr) rendent les nouveaux libellés, y compris en RTL.
+- `eslint .` et `vite build` restent verts ; `grep -rn "window.confirm\|window.alert" src` est vide.
+- Les nouveaux libellés passent par le catalogue (`check-i18n-diff.js` vert).
+
+### 18. Actions de ligne — une seule convention, icône accessible, en-tête traduit (#7434)
+
+La console mélangeait deux conventions d'action de ligne (icônes dans la table
+des utilisateurs, boutons texte « Modifier »/« Supprimer » dans une vingtaine
+d'autres vues) et écrivait l'en-tête de colonne « Actions » en clair — donc en
+français même en locale `en`/`ar`/`tr`.
+
+Règle (propriétaire, 2026-09-14) : « si tout est icône, pourquoi lui reste-t-il
+son texte ? Les seules choses qui peuvent rester icône **et** texte, c'est le
+menu. »
+
+À vérifier en recette :
+
+- **Partout où une table porte des actions de ligne** (Annonces, Catalogue et
+  hôtels, Réseau, Réservations, Quiz, Référentiel, Sites, Contacts, Billets,
+  Fériés, Cotisations, Webhooks, Fuel, Flotte, Exports, Utilisateurs) :
+  l'action est une **icône seule**, jamais un bouton texte.
+- **Nom accessible** : chaque icône-action porte un `title` ET un `aria-label`
+  (composant `RowActionButton.vue`) — une icône seule sans nom est invisible au
+  lecteur d'écran.
+- **En-tête de colonne** « Actions » traduit dans les 4 locales (fr/en/ar/tr),
+  y compris en RTL.
+- **Aucun changement de comportement** : mêmes actions, mêmes états `disabled`,
+  mêmes confirmations (`ConfirmDialog`) pour les actions destructives.
+- **Couleurs conservées** : les tons (danger/succès/avertissement) restent
+  distincts à l'écran — la sémantique ne doit pas se perdre avec le libellé.
+- **Garde CI** : `python3 dev-hub/tools/check-admin-action-labels.py` doit sortir 0
+  (**bloquant** dans `web-ci.yml`, job `web-lint`) — la garde #7434 unique, autotestée par
+  `dev-hub/tools/check-admin-action-labels-test.sh` (registre `docs/GOUVERNANCE/REGISTRE_GARDES.md`).
+  La garde de branche `check-admin-row-actions.py` de #7461 est **supprimée** : redondante.
+
 ## Artefacts obligatoires
 
 - rapport HTML Playwright
@@ -316,3 +393,82 @@ mécaniquement à tous les targets du catalogue. Aucun écran de l'admin
 plateforme ne consomme ces clés ; les scénarios listés ci-dessus restent valides
 et inchangés. Même situation que la note mobile du 2026-09-13 (PR #7333).
 >
+
+## Note de conservation — acces demo (#7402, 2026-09-14)
+
+Le panneau « ACCES DEMO — CHOISIR UN PROFIL » de `/login` change de **contenu**, pas de parcours.
+
+- Le panneau ne rend plus que les personas de **sa** surface (`surface === 'admin-platform'`). Les personas
+  `web-manager` / `kiosk-supervisor` / `mobile-employee` appartiennent aux surfaces web client, kiosque et mobile :
+  elles n'apparaissaient ici que pour echouer, puisque `POST /platform/auth/login` ne connait que `super_admins`.
+- Le scenario « un clic sur une persona connecte reellement » devient donc **verifiable** : c'est une garde de fumee
+  ajoutee cote API (`DemoUserControllerTest::test_demo_users_personas_can_actually_log_into_the_platform`), qui.
+  verifie que le mot de passe annonce par `/demo-users` authentifie le super admin seede.
+- Aucun autre scenario de cette matrice n'est modifie : navigation, guards, vues critiques et garde-fous a11y
+  restent inchanges.
+
+> Les personas des autres surfaces restent visibles depuis **leur** application (web client / kiosque / mobile) ;
+> leur suppression ici est un correctif, pas une perte de fonctionnalite.
+
+## Scenario — Liste des entreprises : recherche, filtre, pagination et actions rapides (#7431)
+
+Ecran `front/admin-dashboard/src/views/companies/CompaniesView.vue` (route `/companies`).
+Le contrat d'API est **inchange** : `GET /platform/companies` accepte deja `search`, `status`,
+`per_page` et pagine via `page` (`PlatformCompanyController::index`). Ce qui change, c'est que la
+vue **lit enfin `meta`** et n'est plus limitee a une page demandee en dur (`per_page=100`), donc
+plus de troncature silencieuse au-dela de 100 societes.
+
+### Recherche (nom / e-mail / pays / ville)
+
+- La saisie part au **serveur** avec un **debounce de 300 ms** (parametre `search`) : ce sont les
+  champs filtres par l'API, pas un filtrage en memoire de la page courante.
+- Une recherche **repart page 1** et conserve le filtre de statut en cours.
+- Aucun resultat => **etat vide explicite** « Aucune societe ne correspond a cette recherche » +
+  bouton de reinitialisation (jamais un tableau blanc).
+
+### Filtre de statut
+
+- `Tous` / `Actif` / `Essai` / `Suspendu` / `Expire` => parametre `status`, filtre **cote serveur**.
+- Changer de filtre repart page 1 ; la recherche en cours est conservee.
+
+### Pagination serveur (plus de troncature muette)
+
+- La vue demande une page explicite (`page` + `per_page=25`) et lit `meta` (`current_page`,
+  `last_page`, `per_page`, `total`).
+- Des que `meta.last_page > 1` : navigation **Precedent / Suivant** + « **Page X sur Y** » + total
+  visibles ; `Precedent` desactive en page 1, `Suivant` desactive en derniere page.
+- Un portefeuille de plus de 100 societes n'est plus tronque : la derniere page est atteignable.
+- Page hors bornes (filtre restrictif) => retour sur la **derniere page existante**, pas de tableau vide.
+- Les scores du portefeuille (#7302) ne sont **pas rejoues** a chaque frappe / changement de page :
+  ils restent un chargement de fond, reaffiches sur la page courante.
+- Arbitrage assume : le tri par score de sante (`sortedItems`) s'applique desormais a la **page
+  courante** (l'API ne trie pas par score — elle ordonne par `created_at`) ; le tri global du
+  portefeuille n'est plus possible des lors que la pagination est serveur.
+
+### Actions rapides de ligne (sans ouvrir la fiche)
+
+- « **Suspendre** » (statuts `active` / `trial`) : **confirmation obligatoire** (dialogue in-app
+  `ConfirmDialog`) ; **annuler n'ecrit rien** (aucun appel API).
+- « **Activer** » (statuts `suspended` / `expired`) : action directe, sans confirmation.
+- Les deux passent par `RowActionButton` (icone seule + infobulle + nom accessible, convention #7434).
+- **Preservation de l'abonnement** : l'action relit `GET /platform/companies/{id}/subscription`
+  puis renvoie **tout l'etat** (`plan_id`, `status`, `subscription_start`, `subscription_end`,
+  `notes`). A verifier apres une suspension : la **date de fin d'essai** et les **notes** sont
+  intactes (le `PATCH` ecrit `null` pour tout champ non envoye).
+- Un echec affiche un **toast d'erreur** (jamais d'echec silencieux) et la liste reste utilisable.
+
+### Hors perimetre (assume et documente)
+
+- La **suppression de tenant** n'est pas livree : aucune route `DELETE /platform/companies/{id}`
+  n'existe, et la purge des donnees d'un tenant (schema, invitations, journal d'audit) est un
+  parcours en deux temps a part entiere. Elle reste a traiter separement.
+
+### Verification
+
+- `e2e/companies-list-quick-actions.spec.js` : recherche / filtre / pagination cote serveur,
+  confirmation de suspension, annulation sans ecriture, preservation de
+  `subscription_end` + `notes`, activation directe.
+- `e2e/companies-progressive-portfolio.spec.js` : la liste reste utilisable avant la fin du
+  scoring du portefeuille (contrat de pagination mis a jour).
+- `eslint` et `vite build` (avec `VITE_API_URL`) restent verts ; les **4 locales** (fr/en/ar/tr)
+  doivent rendre l'ecran, RTL arabe compris.

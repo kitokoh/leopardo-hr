@@ -92,9 +92,17 @@ return [
         // token) on every call to POST /api/v1/marketing/leads. Reuses the
         // same value as `MARKETING_LEAD_WEBHOOK_TOKEN`, already documented
         // in docs/validation/LAUNCH_OBSERVABILITY_DASHBOARD.md for the
-        // CRM/email forward webhooks. Left empty in local/test environments,
-        // in which case the check is skipped.
+        // CRM/email forward webhooks. En local/test la valeur est vide.
+        //
+        // #7301 : quand la valeur est vide, l'endpoint ne peut pas
+        // authentifier l'appelant — il PERSISTE quand même le lead (ne jamais
+        // perdre un lead d'acquisition) et émet une alerte. Dès que la valeur
+        // est renseignée, la vérification est fail-closed (#3888).
         'secret' => env('MARKETING_LEAD_WEBHOOK_TOKEN'),
+        // #7301 - Relais d'alerte best-effort (Slack/CRM/mail) utilisé quand
+        // l'ingestion tourne sans secret ou quand la persistance échoue.
+        // Même variable que le volet vitrine (`MARKETING_ALERT_WEBHOOK_URL`).
+        'alert_url' => env('MARKETING_ALERT_WEBHOOK_URL'),
     ],
 
     'mail_bounce_webhook' => [
@@ -119,7 +127,6 @@ return [
         // production (MAIL_BOUNCE_WEBHOOK_SECRET).
         'secret' => env('MAIL_BOUNCE_WEBHOOK_SECRET', ''),
     ],
-
 
     'mobile_app_links' => [
         // #4180 : liens réels des apps sur l'App Store, par rôle, chargés depuis

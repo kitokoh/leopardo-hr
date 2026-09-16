@@ -169,11 +169,21 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/rental-bookings/{travelRentalBooking}', [TravelRentalBookingController::class, 'show']);
         Route::post('/rental-bookings/{travelRentalBooking}/cancel', [TravelRentalBookingController::class, 'cancel']);
 
-        // Fidélité voyageur (TRAVEL-811/#6101).
-        Route::get('/loyalty/{contact}', [TravelLoyaltyController::class, 'balance']);
+        // Fidélité voyageur (TRAVEL-811/#6101) — #7445 : une SEULE déclaration.
+        // Les routes nommées passent avant le joker `/loyalty/{contact}`, et le
+        // joker exclut les segments réservés : sans cela « account », « entries »,
+        // « rewards » ou « redeem » étaient capturés comme identifiant de contact
+        // (et le paramètre était typé `int`, d'où un 500).
         Route::post('/loyalty/opt-in', [TravelLoyaltyController::class, 'optIn']);
         Route::post('/loyalty/opt-out', [TravelLoyaltyController::class, 'optOut']);
-        Route::post('/loyalty/{contact}/redeem', [TravelLoyaltyController::class, 'redeem']);
+        Route::get('/loyalty/account', [TravelLoyaltyController::class, 'account']);
+        Route::get('/loyalty/entries', [TravelLoyaltyController::class, 'entries']);
+        Route::get('/loyalty/rewards', [TravelLoyaltyController::class, 'rewards']);
+        Route::post('/loyalty/rewards', [TravelLoyaltyController::class, 'storeReward']);
+        Route::post('/loyalty/redeem', [TravelLoyaltyController::class, 'redeemReward']);
+        Route::post('/loyalty/{contact}/redeem', [TravelLoyaltyController::class, 'redeemPoints']);
+        Route::get('/loyalty/{contact}', [TravelLoyaltyController::class, 'balance'])
+            ->where('contact', '^(?!opt-in$|opt-out$|account$|entries$|rewards$|redeem$).+$');
 
         // Politiques d'annulation configurables (TRAVEL-813/#6103).
         Route::get('/cancellation-policies', [TravelCancellationPolicyController::class, 'index']);
@@ -287,22 +297,22 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/advert-prices', [TravelAdvertPriceController::class, 'store']);
         Route::put('/advert-prices/{travelAdvertPrice}', [TravelAdvertPriceController::class, 'update']);
         Route::delete('/advert-prices/{travelAdvertPrice}', [TravelAdvertPriceController::class, 'destroy']);
-        // Annonces payantes (#7420) — noms de méthodes alignés sur
-        // TravelAdvertController. Ce bloc appelait `indexAdverts` /
-        // `storeAdvert` / `showAdvert` / `payAdvert` / `renewAdvert` /
-        // `destroyAdvert` : des méthodes qui n'ont jamais existé sur le
-        // contrôleur (500 `Call to undefined method` sur tout l'écran
-        // annonces). `/adverts/manage` est déclaré AVANT
-        // `/adverts/{travelAdvert}` pour ne pas être absorbé par le binding de
-        // route (sinon « manage » est lu comme un id d'annonce).
+        // Annonces payantes (TRAVEL-907/908, #6110/#6111) — issue #7398 : une
+        // seule déclaration par couple (verbe, URI) ; les alias périmés
+        // (`indexAdverts`, `storeAdvert`, `showAdvert`, `payAdvert`,
+        // `renewAdvert`, `validateAd`, `indexManage`) pointaient vers des
+        // méthodes inexistantes. `/adverts/manage` est déclaré AVANT
+        // `/adverts/{travelAdvert}` pour ne pas être capturé comme identifiant
+        // d'annonce (404 sur l'écran de modération).
+        Route::get('/adverts/manage', [TravelAdvertController::class, 'manageIndex']);
         Route::get('/adverts', [TravelAdvertController::class, 'index']);
         Route::post('/adverts', [TravelAdvertController::class, 'store']);
-        Route::get('/adverts/manage', [TravelAdvertController::class, 'manageIndex']);
         Route::get('/adverts/{travelAdvert}', [TravelAdvertController::class, 'show']);
         Route::post('/adverts/{travelAdvert}/pay', [TravelAdvertController::class, 'pay']);
         Route::post('/adverts/{travelAdvert}/validate', [TravelAdvertController::class, 'validateAdvert']);
+        Route::post('/adverts/{travelAdvert}/reject', [TravelAdvertController::class, 'reject']);
         Route::post('/adverts/{travelAdvert}/renew', [TravelAdvertController::class, 'renew']);
-        Route::delete('/adverts/{travelAdvert}', [TravelAdvertController::class, 'destroy']);
+        Route::delete('/adverts/{travelAdvert}', [TravelAdvertController::class, 'destroyAdvert']);
         Route::get('/articles', [TravelArticleController::class, 'index']);
         Route::post('/articles', [TravelArticleController::class, 'store']);
         Route::get('/articles/{travelArticle}', [TravelArticleController::class, 'show']);
@@ -328,11 +338,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/webhook-subscriptions', [TravelWebhookSubscriptionController::class, 'store']);
         Route::delete('/webhook-subscriptions/{subscription}', [TravelWebhookSubscriptionController::class, 'destroy']);
         Route::get('/cancellation-policies/{travelCancellationPolicy}', [TravelCancellationPolicyController::class, 'show']);
-        Route::get('/loyalty/account', [TravelLoyaltyController::class, 'account']);
-        Route::get('/loyalty/entries', [TravelLoyaltyController::class, 'entries']);
-        Route::post('/loyalty/redeem', [TravelLoyaltyController::class, 'redeem']);
-        Route::get('/loyalty/rewards', [TravelLoyaltyController::class, 'rewards']);
-        Route::post('/loyalty/rewards', [TravelLoyaltyController::class, 'storeReward']);
+        // #7445 — ce second bloc redéclarait les routes de fidélité, dont
+        // `/loyalty/redeem` vers une méthode exigeant un paramètre de route
+        // absent : la dernière déclaration gagnant chez Laravel, l'échange de
+        // points répondait 500. Déclaration canonique unique dans le bloc
+        // « réseau & contenu ».
         Route::post('/mobile/sync', [TravelMobileSyncController::class, 'sync']);
         Route::get('/public-shop-token', [TravelPublicShopController::class, 'token']);
         Route::post('/public-shop-token/rotate', [TravelPublicShopController::class, 'rotateToken']);
@@ -384,17 +394,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::delete('/quiz-questions/{question}', [TravelQuizController::class, 'destroyQuestion']);
         Route::post('/quizzes/{quiz}/participate', [TravelQuizController::class, 'participate']);
         Route::get('/quizzes/{quiz}/results', [TravelQuizController::class, 'results']);
-        // Annonces (#7420) — définies UNE SEULE FOIS plus haut (bloc « réseau &
-        // contenu ») avec les vrais noms de méthodes. Ce second bloc en
-        // redéfinissait quatre avec des noms inexistants (`indexManage`,
-        // `validateAd`) ou en doublon (`{advert}/pay`, `{advert}/renew`) ; le
-        // doublon le plus vicieux masquait `validateAdvert` (implémentée) par
-        // `validateAd` (inexistante). Seul `reject` reste ici.
         Route::get('/tourist-sites/search', [TravelTouristSiteController::class, 'search']);
         Route::put('/tourist-sites/{site}', [TravelTouristSiteController::class, 'update']);
         Route::delete('/tourist-sites/{site}', [TravelTouristSiteController::class, 'destroy']);
         Route::get('/quizzes/{travelQuiz}/results', [TravelQuizController::class, 'results']);
-        Route::post('/adverts/{travelAdvert}/reject', [TravelAdvertController::class, 'reject']);
         Route::get('/contacts', [TravelCustomerContactController::class, 'index']);
         Route::post('/contacts/{travelCustomerContact}/notify', [TravelCustomerContactController::class, 'notify']);
     });

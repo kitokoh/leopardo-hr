@@ -1,12 +1,11 @@
 # SCENARIOS DE TEST API POUR GITHUB ACTIONS    
 
-Note 2026-09-14 (BC-24 TRAVEL, issue #7420) : la surface « annonces payantes » est reparee et son contrat est tranche —
-- Contrat de liste (decision explicite, jusqu'ici contredit par deux tests) : `GET /api/v1/travel/adverts` renvoie la **vitrine publique** (annonces `isVisible()` = validee ET payee ET non expiree) pour tout acteur, et bascule en **mode gestion** (toutes les annonces du tenant, filtre `?status=`) pour les roles gestion (`principal`, `rh`, `manager`) — comportement documente depuis TRAVEL-911 (#6416). La liste de moderation dediee reste `GET /api/v1/travel/adverts/manage` (TRAVEL-914/#6422, 403 hors roles gestion).
-- Routes : une seule definition par URI, noms de methodes reels du controleur (`index`, `store`, `show`, `pay`, `validateAdvert`, `reject`, `renew`, `destroy`, `manageIndex`) ; `/adverts/manage` declare avant `/adverts/{travelAdvert}` (sinon « manage » est lu comme un id). `DELETE /adverts/{travelAdvert}` est servie par `destroy()` (policy `delete`), 204.
-- Ecriture des referentiels (`POST/PUT/DELETE /travel/advert-types|advert-positions|advert-prices`) : 403 hors role gestion ; `price` : devise optionnelle (omise → devise du tenant, sinon 422 si differente) et unicite (type, position) validee applicativement → 422 (au lieu de 500 sur contrainte SQL).
-- Expiration : commande canonique `travel:expire-adverts` (module, tenant-scopee) avec `--company=<uuid>` et `--limit` : `validated` dont `expires_at` est depasse → `expired`, puis `expired` de plus de 90 jours → `archived` ; idempotente et isolee par tenant. Le doublon racine `App\Console\Commands\TravelExpireAdvertsCommand` (sans option, non tenant-aware) est supprime.
-- Rejet : `POST /api/v1/travel/adverts/{id}/reject` avec `reason` (obligatoire, 422 sinon) → statut `rejected`, annonce invisible. Renouvellement : `POST /adverts/{id}/renew` → `paid` + expiration prolongee, puis re-validation ; RBAC hors `principal/rh/manager` → 404 (l'existence n'est pas revelee).
-- Couverture : `api/tests/Feature/Travel/TravelAdvertApiTest.php` (cycle de vie + contrat de liste public/gestion + `/adverts/manage` + isolation), `TravelAdvertLifecycleTest.php`, `TravelAdvertExpirationTest.php` (expiration, archivage, isolation tenant de la commande, renouvellement), `TravelAdvertCatalogTest.php`, `TravelAdvertPriceTest.php`, `TravelAdvertReferenceApiTest.php` — **48 tests verts** (`vendor/bin/phpunit --filter TravelAdvert`).
+Note 2026-09-14 (issue #7301, BC-11 CRM) : `POST /api/v1/marketing/leads` (vitrine, server-to-server, public, `throttle:webhooks-inbound`) ne perd plus de lead quand le webhook marketing n'est pas configuré —
+- Secret configuré (`services.marketing_lead_webhook.secret` ← `MARKETING_LEAD_WEBHOOK_TOKEN`) : contrat **inchangé et fail-closed** (#3888) — `Authorization: Bearer <secret>` ou `X-Marketing-Lead-Token` requis ; secret invalide ou absent → **400** `Invalid signature`, **aucune** ligne `marketing_leads`.
+- Secret ABSENT (prérequis de déploiement non satisfait — constat production #7301) : le payload est **PERSISTÉ** (`201` avec `data.id`/`data.external_id`/`data.status` — le lead est retrouvable par son id, critère d'acceptation #7301) au lieu du **503** `MARKETING_WEBHOOK_NOT_CONFIGURED` qui faisait perdre tous les leads d'acquisition ; une **alerte** critique est émise (`marketing.lead.ingest_unauthenticated` : log `critical` + POST best-effort vers `MARKETING_ALERT_WEBHOOK_URL` quand la variable est configurée, jamais bloquant pour la réponse).
+- Échec de persistance (exception) → alerte `marketing.lead.persist_failed` (et non plus une simple ligne `Log::error`) + réponse **500** `processing_error` : la perte d'un lead est toujours visible.
+- Bornes d'entrée inchangées et toujours vérifiées : payload > 1 MiB → **413**, JSON invalide → **400**, horodatage `X-Webhook-Timestamp` hors fenêtre → **400**, type de lead inconnu → **422**, redelivrance identique → rejeu idempotent (aucun doublon d'`external_id`).
+- Couverture : `api/tests/Feature/Marketing/MarketingLeadControllerTest.php` — `test_it_persists_the_lead_when_the_shared_secret_is_not_configured` (non-régression #7301 : 201 + ligne en base), `test_it_alerts_when_the_shared_secret_is_not_configured` (log `critical`), `test_it_relays_the_alert_to_the_configured_webhook` (relais `MARKETING_ALERT_WEBHOOK_URL`), `test_it_does_not_alert_when_the_secret_is_configured` (aucune alerte parasite), `test_it_rejects_an_invalid_shared_secret` (400 sans écriture).
 
 Note 2026-09-10 (BC-27 SHOWCASE V-MEDIA, issue #6872, PR #7178) : nouvelle surface API medias de vitrine —
 - Privee (gestion tenant : auth sanctum + `module.showcase` fail-closed + RBAC `api.manager:principal,rh`) : `GET /api/v1/showcase/media` (liste des medias du perimetre, filtre `kind` logo|section + `section_id`), `POST /api/v1/showcase/media` (upload multipart, 201) et `DELETE /api/v1/showcase/media/{id}` (204). Le DTO prive `ShowcaseMediaResource` est une allowlist : ni `disk`, ni `path`, ni `company_id` (test de non-fuite dedie).
@@ -1912,3 +1911,177 @@ sans hôte (« URI must include a scheme and host »). Les trois `base_url` (Gro
 Anthropic) passent en `env(...) ?: 'défaut'`. Un `orderBy` sur une requête d'agrégation
 (`max(created_at)`) faisait échouer Postgres en `SQLSTATE 42803` — soit un **500** sur
 l'écran de santé.
+## Addendum 2026-09-14 — Espace voyageur : code de contrôle délivré et surface publique (#7394, #7395)
+
+Deux bugs de recette BC-24 TRAVEL rendaient le parcours passager inutilisable. **(1) Le code
+de contrôle n'était délivré à personne** : `IssueTicketsAction` le générait puis n'en
+persistait que le SHA-256 ; la réponse d'émission ne portait que `ticket_number`, et le PDF
+imprimait ce même numéro sous l'étiquette « Code de contrôle » — le passager saisissait donc
+un code que l'API refusait (**404**). Le code est désormais une **dérivation canonique** du
+billet (HMAC-SHA256 + `APP_KEY`, `XXXX-XXXX-XXXX`), **délivré une seule fois** par
+`POST /api/v1/travel/bookings/{booking}/issue-ticket` (clé `validation_code` sur chaque
+billet) et imprimé sur l'e-billet ; la saisie tolère minuscules et absence de tirets ; un
+rejeu d'émission ne redélivre rien. **(2) Le portail passager appelait la surface STAFF**
+(`/travel/shop/bookings/{ref}`, `/travel/tickets/{id}/pdf`, `POST /travel/shop/bookings/{ref}/cancel`)
+→ **401** pour un passager, et `code` y était ignoré en silence (faux contrôle d'accès).
+
+Surface PUBLIQUE de l'espace voyageur (aucun compte, aucun jeton boutique du tenant) :
+
+- `GET /api/v1/public/travel/shop/bookings/{reference}?code=` → suivi (statut, trajet,
+  `passenger_count`, billets `{id, ticket_number, status}`) ; **422** sans code, **404** si le
+  code ne correspond à aucun billet de la réservation.
+- `GET /api/v1/public/travel/tickets/{ticket}/pdf?code=` → URL signée du PDF ; **403** si le
+  code est faux, **410** si le billet est révoqué.
+- `POST /api/v1/public/travel/shop/bookings/{reference}/cancel` (`{code, reason}`) → annulation
+  en ligne, sièges libérés, motif conservé (audit) ; **422** `TRAVEL_BOOKING_CODE_INVALID` /
+  `TRAVEL_BOOKING_DEPARTURE_PAST` / `VALIDATION_ERROR`, **404** si la référence est inconnue.
+
+Règles d'accès : le tenant est résolu **par la ressource** (référence ou billet) quand aucune
+route n'est bornée (recherche, réservation, paiement → jeton `X-Travel-Shop-Token` toujours
+exigé, **401** sinon) ; une référence ambiguë ou inconnue est un **404** (fail-closed) ; la
+preuve de possession (code du billet) est vérifiée **avant** toute donnée. Le suivi staff
+`GET /api/v1/travel/shop/bookings/{reference}` reste réservé aux employés authentifiés et
+**refuse désormais le paramètre `code`** (422 `TRAVEL_SHOP_CODE_NOT_SUPPORTED`) au lieu de
+l'ignorer. Côté front, `front/web/src/app/(dashboard)/travel/portal/page.tsx` consomme
+exclusivement ces endpoints publics.
+
+Couverture : `api/tests/Feature/Travel/TravelTicketValidationCodeDeliveryTest.php` (délivrance
+unique, hash seul en base, routes de lecture muettes, suivi public 200/404, PDF réel) et
+`api/tests/Feature/Travel/TravelPublicShopPassengerPortalTest.php` (suivi, PDF, annulation sans
+jeton boutique ; 401/404/422 ; cross-tenant ; suivi staff qui refuse `code`), plus le golden
+journey GJ-TRAVEL-01 requalifié.
+
+## Addendum 2026-09-14 — 27 routes appelaient une méthode de contrôleur inexistante (#7398)
+
+`Route::getRoutes()` listait **27 routes** dont l'action pointait vers une méthode **non définie**
+(`500 Call to undefined method`) et rien ne le voyait. L'audit route → méthode (1728 routes) est
+désormais à **broken=0**.
+
+BC-24 TRAVEL — `api/routes/modules/travelagency.php` (8 routes)
+- Alias périmés réalignés sur les méthodes réellement définies : `indexAdverts→index`,
+  `storeAdvert→store`, `showAdvert→show`, `payAdvert→pay`, `renewAdvert→renew`,
+  `indexManage→manageIndex`, `validateAd→validateAdvert`.
+- `destroyAdvert` **implémentée** (`DELETE /travel/adverts/{travelAdvert}`) : policy `delete`,
+  annonce d'un autre tenant ⇒ **404** (comme `show`/`pay`/`renew`), succès ⇒ **204**.
+- Les **deux blocs d'annonces** qui déclaraient les mêmes URI avec des méthodes divergentes sont
+  fusionnés : une seule déclaration par couple (verbe, URI). `/adverts/manage` est déclaré **avant**
+  `/adverts/{travelAdvert}` — sinon « manage » est capturé comme identifiant d'annonce (404 de
+  l'écran de modération).
+
+BC-15 FUEL — `api/routes/modules/fuel_station.php` (19 routes)
+- `FuelReportController` : `dailyVolumes`/`sales`/`stock`/`variances`/`shifts` délèguent au rapport
+  typé `show()` ; `createExport` (pending + job), `exports`, `download` (409/410).
+- `FuelStockController` : `deliveries` et `verifyDelivery` implémentées (isolation tenant, acte
+  tracé) ; `movements`/`storeAdjustment` = alias canoniques de `index`/`store`.
+- `FuelIncidentController` : `transition` (graphe de transitions du modèle, **422** si illégal) et
+  `attach` (allowlist MIME/taille **avant** écriture).
+- Divers : `FuelImportController@show`, `FuelStationController@sitesIndex`, `FuelProductController@show`.
+
+Garde ajoutée : `api/tests/Feature/RouteControllerMethodContractTest.php` parcourt `Route::getRoutes()`,
+résout l'action (`uses`) et **échoue si la classe existe mais la méthode est absente**. Elle
+**échoue sur `main`** (27 routes listées) et passe après correctif — c'est la garde qui manquait pour
+que 27 routes cassées passent inaperçues.
+
+Scénarios verrouillés par `api/tests/Feature/Travel/TravelAdvertDestroyTest.php` : suppression d'une
+annonce de son tenant ⇒ **204** ; annonce d'un autre tenant ⇒ **404** ; `/adverts/manage` n'est pas
+capturé par `/adverts/{travelAdvert}`.
+
+Réserve documentée : les suites `TravelAdvert*` citées par l'issue portent des défauts **préexistants**
+(closures sans `use ($company)`, contrat d'une autre génération d'API, `$fillable` `label` vs colonne
+`name` sur `TravelAdvertType`/`TravelAdvertPosition`, `principal()` typé `string` appelé avec `null`) ;
+même constat côté Fuel (`fuel_stock_movements` inexistante, désyncs de schéma). Ensembles en échec
+**identiques avant/après** — aucune régression introduite par cet audit.
+
+## Addendum 2026-09-14 — verticale EDU : portail parents, responsables légaux et tarifs scolaires (#7409, #7408)
+
+Recette **tenant propriétaire d'école** (base fraîche v4.24.0). Le module EDU était
+inatteignable dès la première action de mise en route ; ce lot raccorde trois surfaces
+développées séparément et jamais reliées.
+
+### Scénarios verrouillés par `api/tests/Feature/EduManager/EduGuardianCrudTest.php`
+
+| Scénario | Attendu |
+|---|---|
+| `POST /edu-manager/guardians` (direction) | **201**, `data.id` > 0, `contact_reference` relu en clair (cast `encrypted`) |
+| `POST /edu-manager/students/{student}/guardians` | **201**, `data.can_view_grades` = true |
+| Ré-appel du même rattachement | **201** (idempotent, UNIQUE `company_id, student_id, guardian_id`) |
+| `POST /edu-manager/guardians/access-links` sur un responsable fraîchement créé | **201** (chaînage qui était impossible) |
+| `GET|POST /edu-manager/guardians` par un employé lambda | **403** |
+| Rattachement avec un `guardian_id` d'un autre tenant | **422** (jamais inséré) |
+| Rattachement sur un élève d'un autre tenant | **404** (isolation fail-closed) |
+
+### Scénarios vérifiés manuellement (API réelle, ANONYME pour le portail)
+
+| Scénario | Attendu |
+|---|---|
+| `POST /edu-manager/guardians/{guardian}/access-links` | **201**, token affiché une seule fois, `expires_at` |
+| `POST /edu-manager/guardian-portal/access-links/{token}/consume` (sans session) | **200**, `data.guardian` + `data.children[]` (présence + bulletins publiés si `can_view_grades`) |
+| Réutilisation du même lien | **410** (expiré ou déjà utilisé — indistinguables côté client) |
+| Jeton inconnu | **404** |
+| `GET|POST /edu-manager/fee-types` (direction) | **200** / **201** ; code dupliqué dans le tenant → **422** |
+| `GET|POST /edu-manager/fee-types` par un employé lambda | **403** |
+| `GET /edu-manager/fee-types` sans authentification | **401** |
+
+### Scénarios de mise en route (base fraîche, bout en bout)
+
+campus → année scolaire → matières → classe → élèves → inscriptions → évaluation → notes →
+**bulletin généré (201) → validé → publié** → frais de scolarité. Avant ce lot, les trois
+premiers `POST` répondaient **500** (`SQLSTATE 42703`, colonnes absentes) et
+`report-cards/generate` répondait **403** (ability `create` absente de la policy).
+
+Contrat OpenAPI : les 8 routes ajoutées sont documentées dans `api/openapi.yaml`
+(tag `EduManager`) et le miroir + SDK sont régénérés —
+`python3 dev-hub/tools/check-openapi-route-coverage.py --strict-staleness` → 0 nouvelle route
+non couverte.
+
+
+### Addendum 2026-09-14 (BC-16 EDU) — facturation détaillée, portail parents, RBAC enseignant
+
+Surface ajoutée à `/edu-manager` (2ᵉ passe du parcours « client propriétaire d'école ») :
+
+- `POST /edu-manager/fee-charges` — facturation d'un frais à un élève (idempotente sur
+  `external_id`), écriture de **2 lignes comptables équilibrées** (411 Clients / 706
+  Prestations) + événement d'outbox `edu.fee.charge.created.v1` ;
+- `POST /edu-manager/fee-charges/{charge}/payments` — encaissement (partiel → soldé),
+  rejeu idempotent, refus du **surdébit** (`EDU_FEE_OVERPAYMENT`, 422) et de toute
+  écriture sur une charge **terminale** (`EDU_FEE_TERMINAL`, 422), lignes 512/531 / 411 ;
+- `POST /edu-manager/fee-charges/{charge}/waive` — abandon du solde restant (654 / 411) ;
+- `GET /edu-manager/fee-accounting-entries` — vue de rapprochement paginée (`meta.total`),
+  bornée au tenant ;
+- `POST /edu-manager/guardians/{guardian}/portal-link` — émission d'un lien de portail
+  parents (direction uniquement, 404 cross-tenant) ;
+- `GET /edu-manager/portal/{token}` — **route publique** (le token est la credential) :
+  résumé borné aux enfants liés, journalisé dans `edu_portal_access_logs`, 404 si le lien
+  est expiré, révoqué ou inconnu.
+
+Scénarios CI correspondants (verts) : `api/tests/Feature/EduManager/EduFeeTest.php`
+(catalogue, idempotence, écritures équilibrées, transitions et refus, rapprochement,
+isolation), `EduGuardianPortalTest.php` (émission admin-only, résumé, expiration et
+révocation, isolation), `EduRbacPolicyTest.php` / `EduRbacMatrixTest.php` (périmètre
+enseignant : référent de classe, affectation, séance ; titulaire ≠ enseignant de séance
+pour les actes pédagogiques), `EduApiTest.php` (parcours complet campus → bulletin),
+`EduClassEnrollmentTest.php`, `EduAdmissionCampaignTest.php`, `EduAttendanceTest.php`,
+`EduManagerMigrationsTest.php` (inventaire et cycle up/down des migrations canoniques).
+État de la suite au 2026-09-14 : `tests/Feature/EduManager/` **280 tests, 0 échec**.
+
+## Addendum 2026-09-15 — fidélité voyageur : une seule implémentation, sur le schéma réel (#7445)
+
+`POST /api/v1/travel/loyalty/opt-in` répondait **500** en production. Deux causes cumulées : deux migrations créaient `travel_loyalty_accounts` avec des colonnes divergentes (la plus ancienne gagne → le schéma réel ne porte que `contact_identifier`, `contact_id` n'a jamais existé), et deux implémentations concurrentes coexistaient (`TravelLoyaltyService` sur `travel_loyalty_entries`, `LoyaltyPointsService` sur `travel_loyalty_transactions` — table qu'aucune migration ne crée). Arbitrage retenu : **la clé de contact est `contact_identifier`** (option B de l'issue) ; `LoyaltyPointsService`, le modèle `TravelLoyaltyTransaction`, sa factory et la migration perdante sont supprimés.
+
+### Contrat unifié
+
+- `POST /api/v1/travel/loyalty/opt-in` et `/opt-out` : corps `{contact_identifier}` (string ≤ 255) — plus `{contact_id}`. Réponse `data: {contact_identifier, opted_in, points_balance}`. Sans opt-in, **aucun compte n'est créé** (RGPD).
+- `GET /api/v1/travel/loyalty/{contact}` : solde d'un contact (`contact` = email/téléphone normalisé, string). `data: {contact_identifier, points_balance, opted_in}`.
+- `GET /api/v1/travel/loyalty/account?contact_identifier=…` : `data: {contact_identifier, opt_in, points_balance}`.
+- `GET /api/v1/travel/loyalty/entries?contact_identifier=…` : journal des points (`travel_loyalty_entries`).
+- `POST /api/v1/travel/loyalty/{contact}/redeem` : `{points, booking_id?, reason?}` → `data: {discount_minor, points_burned, points_balance}` (1 point = 10 unités mineures ; `REDEEM_RATE`). Solde insuffisant ou compte inactif → **422**.
+- `POST /api/v1/travel/loyalty/redeem` : `{contact_identifier, reward_id, booking_id}` (catalogue de récompenses) → `data: {id, type, points, booking_id, points_balance}` ; rejeu sur la même réservation → **422**.
+
+### 500 de bord supprimés
+
+- Les routes de fidélité étaient déclarées **deux fois** dans le fichier de routes (Laravel ne garde que la dernière) et `/loyalty/{contact}`, déclarée avant les routes nommées, capturait `account`, `entries`, `rewards` et `redeem` comme identifiants de contact (paramètre typé `int`) : `GET /travel/loyalty/account` et `POST /travel/loyalty/redeem` répondaient 500. Les routes nommées passent désormais avant le joker, qui exclut les segments réservés.
+- `TravelBookingController::store()` validait `contact_email`, `contact_phone`, `notify_consent` et `billing_deferred` sans en transmettre **aucun** à `CreateBookingAction` : la réservation était enregistrée avec `contact_email = null` (aucune notification, et pour la fidélité aucune clé de contact). `billing_deferred` n'était pas validé.
+
+### Couverture
+
+`api/tests/Feature/Travel/TravelLoyaltyTest.php` (7 cas : crédit unique par billet, aucun crédit ni compte sans opt-in, gel à l'opt-out avec solde conservé, conversion points → avoir journalisée dans le même journal que les crédits, solde insuffisant → 422, échange d'une récompense, non-capture des routes nommées par le joker) et `TravelLoyaltyApiTest` (4 cas, dont `test_opt_in_required_for_redeem`, rouge sur `main`).
