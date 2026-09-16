@@ -1,0 +1,74 @@
+name: Horizontal Tools Parity
+
+# Issue #7476 — le catalogue des outils horizontaux est décrit à TROIS endroits
+# qui doivent rester d'accord :
+#   - `Company::HORIZONTAL_TOOLS` (API, allowlist fail-closed → 422 si absente) ;
+#   - `SELF_ACTIVATABLE_MODULE_KEYS` (web, ce que le panneau « Modules & plan »
+#     propose au client) ;
+#   - `CLIENT_MODULES` **avec un `href`** (sans cible de navigation, le bouton
+#     d'activation n'est jamais rendu — `layout.tsx` filtre sur `module.href`).
+#
+# Le défaut réel : `cameras` existait comme feature flag plateforme mais dans
+# aucune des trois listes → la vidéosurveillance n'était activable que par la
+# console plateforme, sans que rien ne le signale. Cette garde le rend impossible.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "api/app/Core/Tenant/Domain/Models/Company.php"
+      - "api/config/feature-flags.php"
+      - "front/web/src/lib/client-features.ts"
+      - "dev-hub/tools/check-horizontal-tools-parity.mjs"
+      - ".github/workflows/horizontal-tools-parity.yml"
+  push:
+    branches: [main]
+    paths:
+      - "api/app/Core/Tenant/Domain/Models/Company.php"
+      - "front/web/src/lib/client-features.ts"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: horizontal-tools-parity-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    name: Catalogue des outils horizontaux (#7476)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 1
+          lfs: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Auto-test de la garde (détection + faux positif)
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          node dev-hub/tools/check-horizontal-tools-parity.mjs --self-test
+
+      - name: Vérifier la parité API ↔ web
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          node dev-hub/tools/check-horizontal-tools-parity.mjs
+
+      - name: Rappel du contrat
+        if: failure()
+        shell: bash
+        run: |
+          echo "::notice::Ajouter la clé aux TROIS endroits (Company::HORIZONTAL_TOOLS, SELF_ACTIVATABLE_MODULE_KEYS, CLIENT_MODULES avec href) et, si un flag plateforme existe, à HORIZONTAL_TOOL_FEATURES — cf. #7476."
