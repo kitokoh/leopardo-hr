@@ -69,5 +69,18 @@ run_case "n'accuse pas un fichier existant dont l'import n'est pas ajoute" 0 \
 +    // nouveau commentaire (les lignes de contexte ne comptent pas)
 +    \$x = 1;"
 
-if [[ "$fail" == "0" ]]; then echo "Auto-test de la garde ADR-0013 : OK (6 cas)."; exit 0; fi
+# ── La garde doit être INCONCLUANTE, pas rassurante ──
+# Un faux négatif est le pire échec d'une garde : elle rassure à tort. Une
+# révision introuvable doit donner rc=2, jamais rc=0.
+check_rc2() {
+  local name="$1" b="$2" h="$3"
+  rc=0; bash "$GUARD" "$b" "$h" >/dev/null 2>&1; rc=$?
+  if [[ "$rc" == "2" ]]; then echo "  ✓ $name"
+  else echo "  ✗ $name (attendu rc=2, obtenu rc=$rc)"; fail=1; fi
+}
+check_rc2 "refuse de conclure si la révision de base est introuvable" "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef" "HEAD"
+check_rc2 "refuse de conclure si la révision de tête est introuvable" "HEAD" "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+check_rc2 "refuse de conclure sans argument" "" ""
+
+if [[ "$fail" == "0" ]]; then echo "Auto-test de la garde ADR-0013 : OK (9 cas)."; exit 0; fi
 echo "Auto-test de la garde ADR-0013 : ÉCHEC." >&2; exit 1

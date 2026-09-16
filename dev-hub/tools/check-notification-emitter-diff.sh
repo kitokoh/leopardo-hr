@@ -26,15 +26,34 @@ BASE_SHA="${1:-}"
 HEAD_SHA="${2:-}"
 
 if [[ -n "${GUARD_DIFF_FILE:-}" ]]; then
+  # Mode auto-test : la garde analyse un diff fourni, sans git.
   diff_text="$(cat "$GUARD_DIFF_FILE")"
 else
   if [[ -z "$BASE_SHA" || -z "$HEAD_SHA" ]]; then
     echo "usage: $0 <base_sha> <head_sha>" >&2
     exit 2
   fi
-  diff_text="$(git diff --no-color "$BASE_SHA" "$HEAD_SHA" -- '*.php' || true)"
+  # Les deux révisions DOIVENT être résolubles. Sans ce contrôle, `git diff`
+  # échoue, la substitution vide le diff, et la garde **passe en silence** —
+  # le pire mode d'échec pour une garde : un faux négatif qui rassure.
+  # (Constaté pour de vrai dans un clone superficiel, où une révision de base
+  # non récupérée donnait un « ✓ » mensonger.)
+  for rev in "$BASE_SHA" "$HEAD_SHA"; do
+    if ! git rev-parse --verify --quiet "${rev}^{commit}" >/dev/null; then
+      echo "::error::ADR-0013 : révision introuvable « ${rev} » — la garde ne peut pas comparer."
+      echo "::error::Récupérer la révision (git fetch --depth=1 origin <sha>) avant de relancer."
+      exit 2
+    fi
+  done
+  # `|| true` a été RETIRÉ : une erreur git doit faire échouer la garde, pas
+  # l'ignorer. On distingue « pas de diff » (0 fichier) d'« échec de git ».
+  if ! diff_text="$(git diff --no-color "$BASE_SHA" "$HEAD_SHA" -- '*.php')"; then
+    echo "::error::ADR-0013 : \`git diff\` a échoué entre ${BASE_SHA} et ${HEAD_SHA} — garde non concluante."
+    exit 2
+  fi
 fi
-[[ -z "$diff_text" ]] && { echo "✓ ADR-0013 : aucun diff PHP à analyser."; exit 0; }
+
+[[ -z "$diff_text" ]] && { echo "✓ ADR-0013 : aucun diff PHP à analyser (0 ligne)."; exit 0; }
 
 # Chemin des fichiers dont une nouvelle ligne d'import est un vrai émetteur.
 # ERE (=~) : `+` quantifie, et `\\` matche UN antislash littéral (un `use` PHP

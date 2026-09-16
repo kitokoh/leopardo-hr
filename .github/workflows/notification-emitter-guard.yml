@@ -48,23 +48,33 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.base.ref == 'main'
     steps:
+      # `fetch-depth: 1` et non `0` : la garde n'a besoin que de DEUX arbres
+      # (base et head), pas de l'historique. Un clone complet à chaque PR
+      # touchant `api/app/**` coûterait cher pour rien — et la CI de ce dépôt
+      # est déjà en famine de runners.
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          # fetch-depth: 0 — la garde compare deux révisions (base et head).
-          fetch-depth: 0
+          fetch-depth: 1
           lfs: false
 
       - name: Self-test de la garde
         run: bash dev-hub/tools/check-notification-emitter-diff-test.sh
 
-      - name: Garde des émetteurs de notification
+      # Récupère explicitement la révision de base en profondeur 1 : les deux
+      # arbres comparés suffisent à `git diff`, quelle que soit leur distance
+      # dans l'historique.
+      - name: Récupérer la révision de base
+        env:
+          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            bash dev-hub/tools/check-notification-emitter-diff.sh \
-              "${{ github.event.pull_request.base.sha }}" \
-              "${{ github.event.pull_request.head.sha }}"
-          else
-            bash dev-hub/tools/check-notification-emitter-diff.sh \
-              "${{ github.event.before }}" "${{ github.sha }}"
-          fi
+          echo "BASE=$BASE_SHA HEAD=$HEAD_SHA"
+          git fetch --depth=1 --no-tags origin "$BASE_SHA"
+          git fetch --depth=1 --no-tags origin "$HEAD_SHA"
+
+      - name: Garde des émetteurs de notification
+        env:
+          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: bash dev-hub/tools/check-notification-emitter-diff.sh "$BASE_SHA" "$HEAD_SHA"
