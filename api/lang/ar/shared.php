@@ -113,6 +113,8 @@ return [
         ],
         'required' => 'مطلوب',
         'dismiss' => 'إغلاق',
+        'actions' => 'إجراءات',
+        'edit' => 'تعديل',
     ],
     'modules' => [
         'attendance' => 'الحضور',

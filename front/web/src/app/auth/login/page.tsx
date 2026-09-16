@@ -24,6 +24,7 @@ import {
   applyDocumentLocale,
   getCopy,
   getPreferredLocale,
+  getStoredUser,
   normalizeLocale,
   storeAuthSession,
   storePreferredLocale,
@@ -161,6 +162,58 @@ function LoginInner() {
     setMounted(true);
   }, []);
 
+  /**
+   * #7473 — Un utilisateur DÉJÀ connecté ne doit pas pouvoir se reconnecter
+   * depuis le même navigateur (empiler une seconde session). L'écran de
+   * connexion était servi sans condition, y compris avec un cookie de session
+   * valide.
+   *
+   * La redirection est conditionnée à une confirmation SERVEUR (`GET /auth/me`)
+   * et non à la seule présence d'une session locale : un `localStorage` périmé
+   * ne doit pas renvoyer l'utilisateur vers un tableau de bord qui le
+   * rejetterait aussitôt. En cas de 401, `apiFetch` purge la session et
+   * recharge cet écran — la garde ne se rejoue alors plus (plus d'utilisateur
+   * stocké), donc **aucune boucle de redirection**.
+   *
+   * ⚠️ Volontairement PAS dans `src/proxy.ts` : #7350 documente que
+   * `/auth/login` doit rester non gardé au niveau proxy (« boucle dès que le
+   * cookie est périmé », cf. #3522).
+   */
+  useEffect(() => {
+    if (!mounted || getStoredUser() === null) {
+      return;
+    }
+
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const response = await apiFetch('/auth/me');
+        if (cancelled || !response.ok) {
+          return;
+        }
+
+        const payload = await response.json() as { data?: StoredAuthUser };
+        const current = payload.data;
+        if (!current) {
+          return;
+        }
+
+        // Session confirmée : on réaligne la session locale sur la réponse
+        // serveur (identité incluse) avant de quitter l'écran de connexion.
+        storeAuthSession(null, current);
+        applyDocumentLocale(normalizeLocale(current.language), current.is_rtl);
+        goToPostLoginTarget(resolvePostLoginTarget(current), router);
+      } catch {
+        // Session non confirmée (API injoignable) : on laisse le formulaire.
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [mounted, router]);
+
   useEffect(() => {
     applyDocumentLocale(locale);
   }, [locale]);
@@ -269,23 +322,33 @@ function LoginInner() {
       // renvoyé au navigateur et ne doit pas être stocké en localStorage.
       void loginPayload;
 
-      // Issue #7479 — à partir d'ici la connexion a RÉUSSI (le cookie httpOnly est
-      // posé). Un échec sur /auth/me (500/503 intermittent du pooler Postgres) ne
-      // doit donc pas être présenté comme un échec d'identifiants : on bascule sur
-      // un état « session créée, profil indisponible » + bouton Réessayer.
-      let meResponse;
+      // Issue #7479 — le POST /auth/login a RÉUSSI : la session est créée et le
+      // cookie httpOnly est posé. Un échec de `/auth/me` juste après (observé en
+      // production : login 200 puis /auth/me 500, de façon intermittente) est un
+      // incident de SERVICE, pas un échec d'identifiants — le présenter comme tel
+      // était un blocage d'accès trompeur.
+      //
+      // Deux mesures, cumulées volontairement : (1) dire la vérité au client
+      // (message + mesure dédiés, #7513) et (2) lui donner une REPRISE. Sans la
+      // reprise, l'utilisateur reste sur l'écran de connexion avec une session
+      // valide, et une reconnexion est refusée dès qu'une session est active
+      // (#7485) : le parcours deviendrait un cul-de-sac.
+      let mePayload: { data?: StoredAuthUser };
       try {
-        meResponse = await apiFetch('/auth/me');
-      } catch (meError) {
-        trackClientEvent('login_session_unavailable', {
+        const meResponse = await apiFetch('/auth/me');
+        mePayload = await meResponse.json() as { data?: StoredAuthUser };
+      } catch (profileErr) {
+        const status = profileErr instanceof ApiError ? profileErr.status : null;
+        const code = profileErr instanceof ApiError ? (profileErr.code ?? null) : 'network';
+        setError(labels.login.errors.serviceUnavailable);
+        trackClientEvent('login_profile_unavailable', {
           duration_ms: Math.round(performance.now() - startedAt),
-          status: meError instanceof ApiError ? meError.status : null,
-          code: meError instanceof ApiError ? (meError.code ?? null) : 'unknown',
+          status,
+          code,
         });
         setSessionUnavailable(true);
         return;
       }
-      const mePayload = await meResponse.json() as { data?: StoredAuthUser };
       const user = mePayload.data;
 
       if (!user) {
@@ -333,7 +396,7 @@ function LoginInner() {
       setRetryAttempt(0);
       setSubmitting(false);
     }
-  }, [labels.login.errors.generic, labels.login.errors.missingUser, locale, router]);
+  }, [labels.login.errors.generic, labels.login.errors.missingUser, labels.login.errors.serviceUnavailable, locale, router]);
 
   /**
    * Issue #7479 — reprise après un /auth/me indisponible : on recharge le PROFIL

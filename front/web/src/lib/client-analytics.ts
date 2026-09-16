@@ -7,6 +7,10 @@ export type ClientAnalyticsEventName =
   // distinguer d'un `login_failed` (identifiants), sinon les tableaux de bord
   // d'acquisition comptent des échecs d'authentification qui n'en sont pas.
   | 'login_session_unavailable'
+  // Issue #7479 — le login a réussi mais le profil n'a pas pu être chargé
+  // (incident de service, pas un échec d'identifiants). Événement distinct pour
+  // que la mesure ne compte pas ces cas comme des échecs de connexion.
+  | 'login_profile_unavailable'
   | 'dashboard_loaded'
   | 'feature_blocked'
   | 'demo_user_selected'
@@ -61,17 +65,28 @@ function persistEvent(payload: ClientAnalyticsPayload): void {
     properties: payload.properties,
   });
 
-  void fetch('/api/v1/client-events', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    body,
-    keepalive: body.length < 60000,
-  }).catch(() => {
-    // Analytics must never block the client experience.
-  });
+  // Issue #7479 — « analytics must never block the client experience » ne tenait
+  // que pour un échec ASYNCHRONE : `fetch` absent (environnement de test, moteur
+  // restreint, extension agressive) lève une ReferenceError SYNCHRONE que le
+  // `.catch()` ne rattrape pas. L'appel remontait alors jusqu'au `catch` du
+  // formulaire de connexion et remplaçait le message utilisateur par
+  // « fetch is not defined » — un incident de mesure présenté comme un échec de
+  // connexion. La mesure est désormais réellement best-effort.
+  try {
+    void fetch('/api/v1/client-events', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body,
+      keepalive: body.length < 60000,
+    }).catch(() => {
+      // Analytics must never block the client experience.
+    });
+  } catch {
+    // Idem : aucun canal de mesure ne doit interrompre le parcours utilisateur.
+  }
 }
 
 export function trackClientEvent(

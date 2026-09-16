@@ -17,6 +17,10 @@ on:
       - 'api/lang/**'
       - 'api/resources/views/pdf/**'
       - 'api/resources/views/emails/**'
+      # La garde elle-même : un changement d'heuristique doit re-déclencher le
+      # workflow, sinon le correctif n'est jamais vérifié (issue #7482).
+      - 'dev-hub/tools/check-i18n-diff.js'
+      - 'dev-hub/tools/check-i18n-diff-test.sh'
       - '.github/workflows/i18n-enterprise.yml'
   push:
     branches:
@@ -36,6 +40,8 @@ on:
       - 'api/lang/**'
       - 'api/resources/views/pdf/**'
       - 'api/resources/views/emails/**'
+      - 'dev-hub/tools/check-i18n-diff.js'
+      - 'dev-hub/tools/check-i18n-diff-test.sh'
       - '.github/workflows/i18n-enterprise.yml'
 
 permissions:
@@ -111,6 +117,11 @@ jobs:
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: '20'
+
+      - name: Self-test the guard heuristics (issue #7482)
+        # Le self-test tourne AVANT la garde : si une heuristique dérive, on veut
+        # le savoir par un cas de test nommé, pas par une PR bloquée à tort.
+        run: bash dev-hub/tools/check-i18n-diff-test.sh
 
       - name: Check diff for new hardcoded user-visible strings
         run: node dev-hub/tools/check-i18n-diff.js "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}"
