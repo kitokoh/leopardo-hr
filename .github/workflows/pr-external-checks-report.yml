@@ -1,0 +1,71 @@
+name: PR External Checks Report
+
+# Issue #7480 — « les checks de déploiement tiers rougissent les PR en
+# permanence ». Un rouge permanent n'informe plus : il faut distinguer
+# explicitement
+#   - un échec de check **requis** (bloque le merge),
+#   - un échec **externe** connu (quota Vercel `api-deployments-free-per-day`,
+#     `Workers Builds: gestionemploye` hors périmètre, revue Strix expirée),
+#   - un échec d'un **autre check du dépôt** (à lire dans le log — son résumé
+#     peut être vide, cf. #7466 : `Governance Gates` rouge sans explication
+#     visible dans le résumé du check).
+#
+# Le rapport est publié (ou actualisé) en **un seul commentaire** par PR, marqué
+# `<!-- external-checks-report -->`. Il est rafraîchi quand une PR bouge ET
+# quand les grands workflows terminent, pour que l'état affiché soit celui
+# d'après les checks — pas celui du moment de l'ouverture.
+#
+# Conduite à tenir : `docs/ops/EXTERNAL_CHECKS_TRIAGE.md`.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_run:
+    # Rafraîchit le rapport quand les checks du dépôt terminent (un run
+    # `pull_request` seul afficherait « N checks en cours »).
+    workflows:
+      - "Architecture Quality"
+      - "Tests - Leopardo RH"
+      - "Web CI - Leopardo Admin"
+      - "Web CI - Leopardo Vitrine"
+    types: [completed]
+
+permissions:
+  contents: read
+  checks: read
+  pull-requests: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: pr-external-checks-${{ github.event.pull_request.number || github.event.workflow_run.head_sha }}
+  cancel-in-progress: true
+
+jobs:
+  report:
+    name: Rapport d'état des checks (#7480)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.repository == 'kitokoh/leopardo-hr'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 1
+          lfs: false
+
+      - name: Publier / actualiser le rapport
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -Eeuo pipefail
+          # PR (événement pull_request) ou SHA (événement workflow_run) — le
+          # script résout le SHA en PR.
+          target="${{ github.event.pull_request.number || github.event.workflow_run.head_sha }}"
+          if [[ -z "${target}" ]]; then
+            echo "::notice::aucune cible (ni PR ni SHA) — rien à rapporter."
+            exit 0
+          fi
+          bash dev-hub/tools/report-external-checks.sh "${target}" --comment
