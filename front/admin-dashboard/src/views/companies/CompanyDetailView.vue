@@ -244,11 +244,7 @@
                 </div>
               </template>
 
-              <!-- #7429 — LE MÉTIER DE CETTE ENTREPRISE : ses verticales
-                   activées, avec leur surface admin. Plus aucune verticale
-                   n'est proposée à la racine du menu (elle s'ouvrirait sans
-                   contexte d'entreprise) : c'est ICI qu'on y accède, et le lien
-                   porte le contexte (`?company=<id>`). -->
+              <!-- #7429 : verticales de cette entreprise (cf. VERTICAL_SURFACES) -->
               <h3 class="mb-3 mt-8 text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
                 {{ t('companyDetail.verticals', 'Verticales & outils de cette entreprise') }}
               </h3>
