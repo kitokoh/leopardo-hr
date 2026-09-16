@@ -199,6 +199,17 @@ jobs:
     timeout-minutes: 45
     name: PHPStan — Modules Architecture
     runs-on: ubuntu-latest
+    # Issue #7541 (option 2) — cette analyse porte sur `api/app/Modules`, donc sur du
+    # code qu'une PR sans fichier `api/` ne peut PAS modifier : sans cette garde,
+    # chaque PR docs/web/mobile consommait un slot de runner ET un `composer install`
+    # complet pour analyser un arbre identique à celui de `main` (déjà analysé).
+    # Le check « PHPStan — Modules Architecture » n'est PAS un context requis au merge
+    # (les 4 requis sont phpstan-strict, module-structure-check, frontend-lint,
+    # actionlint — vérifié dans `dev-hub/tools/branch-protection-canonical.json`) :
+    # un skip est donc sans effet sur la mergeabilité, et l'invariant #7269 (un check
+    # requis doit rendre un verdict explicite) n'est pas concerné.
+    needs: detect-changes
+    if: needs.detect-changes.outputs.api_changed == 'true'
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7

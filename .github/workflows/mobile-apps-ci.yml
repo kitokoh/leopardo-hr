@@ -4,14 +4,41 @@ on:
   workflow_dispatch:
   pull_request:
     branches: [main]
-    # PAS de filtre paths au niveau workflow : le job `mobile-apps-guard`
-    # (validations structurelles) reste inconditionnel, et dorny/paths-filter
-    # (job `changes`) est la source de vérité pour les jobs lourds. Depuis
-    # 2026-09-08 (#6928) la matrice `flutter-analyze` est gatée par
-    # `changes.outputs.mobile` — les checks Analyze/Split guard ne font PAS
-    # partie des contexts requis de la protection main (vérifié via l'API
-    # branche protection) : un skip de PR docs/backend-only est sans effet
-    # sur la mergeabilité, et libère la file pour les checks requis.
+    # Issue #7541 (option 3) — le filtre `paths` existait en `push` mais PAS en
+    # `pull_request` : la seule asymétrie du dépôt. Chaque PR docs/web/backend
+    # enfilait donc quand même les jobs de ce workflow (dont `mobile-apps-guard`,
+    # inconditionnel). Les `paths` ci-dessous sont le miroir EXACT de ceux de
+    # `push` — ils contiennent tout ce qui peut modifier la chaîne mobile :
+    # `front/mobile_apps/**`, les validateurs `dev-hub/tools/validate-mobile-*.ps1`,
+    # les outils de garde, l'action composite partagée
+    # `.github/actions/setup-flutter-android` (leçon #7519, qui a cassé la chaîne
+    # sans qu'aucune PR ne le voie) et **le fichier de workflow lui-même** — sans
+    # quoi ses propres jobs d'auto-validation (`validate-mobile-plan29.ps1` asserte
+    # le contenu de son propre workflow) ne se re-déclencheraient plus.
+    # La couverture structurelle est donc préservée à l'identique : ce qui change
+    # est qu'une PR qui ne touche AUCUN de ces chemins n'occupe plus de runners
+    # pour des jobs d'analyse (dorny/paths-filter continue par ailleurs de gater
+    # les jobs lourds, cf. #6928).
+    paths:
+      - 'front/mobile_apps/**'
+      - 'dev-hub/tools/validate-mobile-apps-split.ps1'
+      - 'dev-hub/tools/validate-mobile-release-readiness.ps1'
+      - 'dev-hub/tools/validate-mobile-runtime-smoke.ps1'
+      - 'dev-hub/tools/validate-mobile-location-readiness.ps1'
+      - 'dev-hub/tools/validate-mobile-tenant-branding.ps1'
+      - 'dev-hub/tools/validate-mobile-notification-production-proof.ps1'
+      - 'dev-hub/tools/validate-mobile-workflow-contracts.ps1'
+      - 'dev-hub/tools/validate-mobile-plan28.ps1'
+      - 'dev-hub/tools/validate-mobile-plan29.ps1'
+      - 'dev-hub/tools/validate-mobile-color-tokens.ps1'
+      - 'dev-hub/tools/check-mobile-number-locale.sh'
+      - 'dev-hub/tools/check-mobile-l10n-sync.sh'
+      - 'dev-hub/tools/check-mobile-manifest-routes.sh'
+      - 'dev-hub/tools/mobile-workflow-contracts.json'
+      - 'api/app/Modules/HR/Infrastructure/Services/MobileExperienceService.php'
+      - '.github/workflows/mobile-apps-ci.yml'
+      - '.github/actions/setup-flutter-android/action.yml'
+      - 'dev-hub/tools/check-android-sdk-packages.sh'
   push:
     branches: [main]
     paths:
