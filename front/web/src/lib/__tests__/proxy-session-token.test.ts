@@ -55,9 +55,17 @@ describe('proxy — gate de session zone dashboard (#6726, migré de middleware 
     }
   });
 
-  it('ne bloque pas la vitrine (hors zone dashboard)', () => {
-    const res = proxy(request('/', '990|1FVyYnVzSbMu8F1OCOtk'));
+  it('ne bloque pas la vitrine hors zone dashboard — sauf l’accueil avec session (#7492)', () => {
+    // Pages vitrine hors accueil : servies normalement avec une session.
+    const res = proxy(request('/pricing', '990|1FVyYnVzSbMu8F1OCOtk'));
     expect(res.status).toBe(200);
     expect(res.headers.get('x-vitrine-lang')).toBeTruthy();
+
+    // #7492 — demande propriétaire : une session active qui arrive sur `/`
+    // est renvoyée vers son espace (comportement voulu, verrouillé aussi dans
+    // proxy-responsibilities.test.ts).
+    const home = proxy(request('/', '990|1FVyYnVzSbMu8F1OCOtk'));
+    expect(home.status).toBe(307);
+    expect(home.headers.get('location')).toContain('/dashboard');
   });
 });

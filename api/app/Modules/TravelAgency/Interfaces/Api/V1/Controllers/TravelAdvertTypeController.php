@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\Concerns\AuthorizesAdvertCatalogWrite;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelAdvertTypeRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelAdvertTypeRequest;
 use Illuminate\Http\JsonResponse;
@@ -17,6 +18,8 @@ use Illuminate\Http\Request;
  */
 class TravelAdvertTypeController extends Controller
 {
+    use AuthorizesAdvertCatalogWrite;
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -35,6 +38,8 @@ class TravelAdvertTypeController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+
+        $this->authorizeAdvertCatalogWrite($actor);
 
         $type = TravelAdvertType::query()->create([
             'company_id' => $actor->company_id,
@@ -74,6 +79,8 @@ class TravelAdvertTypeController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+
+        $this->authorizeAdvertCatalogWrite($actor);
 
         if ($actor->company_id !== $travelAdvertType->company_id) {
             abort(404);

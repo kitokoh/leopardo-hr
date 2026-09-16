@@ -77,6 +77,14 @@ export default function DashboardLayout({
   const labels = useMemo(() => getCopy(locale), [locale]);
   const modules = useMemo(() => getClientModuleAccess(user), [user]);
   const currentModule = useMemo(() => getModuleAccessForPath(pathname, user), [pathname, user]);
+  // #7483 — le titre de la barre reflète la page courante : même résolution
+  // que les pastilles de navigation (catalogue ROUTE_TO_MODULE → clé i18n
+  // `dashboard.modules`), au lieu d'être figé sur `dashboard.heading`
+  // (« Tableau de bord » partout). Repli sur le titre générique pour les
+  // routes hors catalogue (ex. /settings/account).
+  const pageTitle = currentModule
+    ? labels.dashboard.modules[currentModule.key] ?? currentModule.label
+    : labels.dashboard.heading;
 
   useEffect(() => {
     setStoredUser(getStoredUser());
@@ -455,7 +463,7 @@ export default function DashboardLayout({
                 <span className="text-xs font-black text-white">LRH</span>
               </div>
               <div className="min-w-0">
-                <h2 className="truncate text-base font-black uppercase tracking-tight text-slate-950">{labels.dashboard.heading}</h2>
+                <h2 className="truncate text-base font-black uppercase tracking-tight text-slate-950">{pageTitle}</h2>
                 <p className="truncate text-[11px] font-semibold text-slate-500">{user?.company?.name ?? ''}</p>
               </div>
             </div>

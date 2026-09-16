@@ -48,6 +48,8 @@ type LandingCopy = {
     sections: Array<{ id: string; label: string }>
     login: string
     trial: string
+    /** #7492 — CTA unique quand une session est active (remplace login+trial). */
+    mySpace: string
     themeLabel: string
     menuLabel: string
     localeLabel: string
@@ -192,6 +194,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       ],
       login: 'Connexion',
       trial: 'Creer un compte',
+      mySpace: 'Mon espace',
       themeLabel: 'Changer le theme',
       menuLabel: 'Menu',
       localeLabel: 'Langue',
@@ -356,6 +359,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       ],
       login: 'Sign in',
       trial: 'Sign up',
+      mySpace: 'My space',
       themeLabel: 'Toggle theme',
       menuLabel: 'Menu',
       localeLabel: 'Language',
@@ -520,6 +524,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       ],
       login: 'Giris yap',
       trial: 'Ucretsiz dene',
+      mySpace: 'Hesabim',
       themeLabel: 'Temayi degistir',
       menuLabel: 'Menu',
       localeLabel: 'Dil',
@@ -684,6 +689,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       ],
       login: 'تسجيل الدخول',
       trial: 'تجربة مجانية',
+      mySpace: 'مساحتي',
       themeLabel: 'تبديل السمة',
       menuLabel: 'القائمة',
       localeLabel: 'اللغة',

@@ -20,8 +20,18 @@ use Tests\TestCase;
 /**
  * TRAVEL-907/908 (#6110/#6111) — Cycle de vie des annonces.
  *
- * Prix calculé serveur ; visible uniquement payée+validée+non expirée ;
- * expiration et renouvellement (nouveau paiement).
+ * Prix calculé serveur ; vitrine publique = annonces VISIBLES uniquement
+ * (payée + validée + non expirée) ; les rôles gestion voient en plus toutes
+ * les annonces du tenant sur `GET /travel/adverts` (mode gestion, TRAVEL-911)
+ * et sur `GET /travel/adverts/manage` (TRAVEL-914/#6422) ; expiration par
+ * commande et renouvellement (nouveau paiement).
+ *
+ * #7420 — décision de contrat : `/adverts` conserve son mode gestion pour les
+ * rôles gestion (comportement documenté depuis TRAVEL-911), `/adverts/manage`
+ * restant la surface de modération dédiée (TRAVEL-914). Les tests de visibilité
+ * ci-dessous exercent donc la vitrine publique avec un acteur NON gestion —
+ * auparavant ils interrogeaient le mode gestion avec un manager et attendaient
+ * l'inverse du contrat.
  */
 class TravelAdvertApiTest extends TestCase
 {
@@ -50,6 +60,24 @@ class TravelAdvertApiTest extends TestCase
             'company_id' => $this->company->id,
             'role' => 'manager',
             'manager_role' => 'principal',
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        return $employee;
+    }
+
+    /**
+     * Acteur NON gestion (employé simple) : c'est la vitrine publique des
+     * annonces qui est évaluée avec ce profil.
+     */
+    private function actingEmployee(): Employee
+    {
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'employee',
+            'manager_role' => null,
         ]);
 
         Sanctum::actingAs($employee);
@@ -114,25 +142,9 @@ class TravelAdvertApiTest extends TestCase
         ])->assertStatus(422);
     }
 
-    /**
-     * #7420 — La propriété « une annonce n'est visible qu'une fois PAYÉE **et**
-     * VALIDÉE » est une propriété de **visibilité publique**. Elle ne peut pas
-     * s'observer avec un manager : `TravelAdvertController::index()` bascule en
-     * **mode gestion** pour un acteur `principal`/`rh`/`manager`
-     * (TRAVEL-911/#6416, docblock de `index()`), et un manager y voit donc
-     * légitimement toutes les annonces, quel que soit leur statut.
-     *
-     * Le test utilisait `actingManager()` pour les DEUX rôles à la fois —
-     * acteur qui pilote le cycle de vie ET lecteur de la liste — d'où la
-     * contradiction avec `test_index_manage_mode_lists_all_statuses_for_manager`
-     * (#7420) : les deux ne pouvaient pas passer ensemble. Les mutations
-     * (créer/payer/valider) restent le fait du manager (ce sont des actes
-     * opérationnels) ; la LECTURE est faite par un acteur non-manager, seul
-     * point de vue où `index()` applique réellement `isVisible()`.
-     */
     public function test_advert_visible_only_after_payment_and_validation(): void
     {
-        $manager = $this->actingManager();
+        $this->actingManager();
         ['type' => $type, 'position' => $position] = $this->seedPricing();
 
         $created = $this->postJson('/api/v1/travel/adverts', [
@@ -143,55 +155,23 @@ class TravelAdvertApiTest extends TestCase
         ])->assertStatus(201)->json('data');
 
         $id = $created['id'];
-        $viewer = $this->nonManagerViewer();
 
-        // Soumise → invisible.
-        $this->assertPublicListingHides($viewer, $id);
+        // La vitrine publique (acteur non gestion) n'expose rien avant paiement
+        // ET validation (#7420 : le manager, lui, voit toutes les annonces).
+        $this->actingEmployee();
+        $this->getJson('/api/v1/travel/adverts')->assertOk()->assertJsonMissing(['id' => $id]);
 
-        // Payée mais pas validée → invisible.
-        Sanctum::actingAs($manager);
+        // Payée mais pas validée → toujours invisible.
+        $this->actingManager();
         $this->postJson("/api/v1/travel/adverts/{$id}/pay")->assertOk();
-        $this->assertPublicListingHides($viewer, $id);
+        $this->actingEmployee();
+        $this->getJson('/api/v1/travel/adverts')->assertOk()->assertJsonMissing(['id' => $id]);
 
         // Validée → visible.
-        Sanctum::actingAs($manager);
+        $this->actingManager();
         $this->postJson("/api/v1/travel/adverts/{$id}/validate")->assertOk();
-        $this->assertPublicListingShows($viewer, $id);
-    }
-
-    /**
-     * Acteur NON-manager du tenant courant (#7420).
-     *
-     * `role` doit appartenir à `employees_role_check` — la contrainte ne connaît
-     * que `manager`/`employee`/`ordinary` : le `'agent'` utilisé ici auparavant
-     * violait la contrainte et faisait échouer le test en amont de toute
-     * assertion (`SQLSTATE[23514]`, masqué en cascade `25P02`). Un `employee`
-     * suffit à sortir du mode gestion d'`index()`.
-     */
-    private function nonManagerViewer(): Employee
-    {
-        /** @var Employee $viewer */
-        $viewer = Employee::factory()->create([
-            'company_id' => $this->company->id,
-            'role' => 'employee',
-            'manager_role' => null,
-        ]);
-
-        return $viewer;
-    }
-
-    /** La liste publique (`index()` hors mode gestion) ne contient pas l'annonce. */
-    private function assertPublicListingHides(Employee $viewer, int $advertId): void
-    {
-        Sanctum::actingAs($viewer);
-        $this->getJson('/api/v1/travel/adverts')->assertOk()->assertJsonMissing(['id' => $advertId]);
-    }
-
-    /** La liste publique (`index()` hors mode gestion) contient l'annonce. */
-    private function assertPublicListingShows(Employee $viewer, int $advertId): void
-    {
-        Sanctum::actingAs($viewer);
-        $this->getJson('/api/v1/travel/adverts')->assertOk()->assertJsonFragment(['id' => $advertId]);
+        $this->actingEmployee();
+        $this->getJson('/api/v1/travel/adverts')->assertOk()->assertJsonFragment(['id' => $id]);
     }
 
     public function test_validate_requires_paid_state(): void
@@ -221,12 +201,19 @@ class TravelAdvertApiTest extends TestCase
             'content' => 'Contenu',
         ])->assertStatus(201)->json('data.id');
 
+        // Le motif est obligatoire.
+        $this->postJson("/api/v1/travel/adverts/{$id}/reject")->assertStatus(422);
+
         $this->postJson("/api/v1/travel/adverts/{$id}/reject", ['reason' => 'Contenu non conforme'])
             ->assertStatus(200);
 
         $advert = TravelAdvert::query()->findOrFail($id);
         self::assertSame(AdvertStatus::REJECTED, $advert->status);
         self::assertSame('Contenu non conforme', $advert->rejected_reason);
+
+        // Une annonce rejetée reste invisible sur la vitrine publique.
+        $this->actingEmployee();
+        $this->getJson('/api/v1/travel/adverts')->assertOk()->assertJsonMissing(['id' => $id]);
     }
 
     public function test_expired_advert_becomes_invisible(): void
@@ -254,6 +241,8 @@ class TravelAdvertApiTest extends TestCase
 
         $advert = TravelAdvert::query()->findOrFail($id);
         self::assertSame(AdvertStatus::EXPIRED, $advert->status);
+
+        $this->actingEmployee();
         $this->getJson('/api/v1/travel/adverts')->assertOk()->assertJsonMissing(['id' => $id]);
     }
 
@@ -275,6 +264,9 @@ class TravelAdvertApiTest extends TestCase
 
         $firstExpiry = TravelAdvert::query()->findOrFail($id)->expires_at;
 
+        // Le renouvellement a lieu plus tard (temps contrôlé) : l'expiration est
+        // strictement prolongée.
+        $this->travel(1)->hours();
         $this->postJson("/api/v1/travel/adverts/{$id}/renew")->assertOk();
 
         $advert = TravelAdvert::query()->findOrFail($id);
@@ -294,7 +286,7 @@ class TravelAdvertApiTest extends TestCase
             'content' => 'Contenu',
         ])->assertStatus(201)->json('data.id');
 
-        $this->postJson("/api/v1/travel/adverts/{$id}/renew")->assertStatus(422); // draft non renouvelable
+        $this->postJson("/api/v1/travel/adverts/{$id}/renew")->assertStatus(422); // soumise, non renouvelable
 
         $this->postJson("/api/v1/travel/adverts/{$id}/pay")->assertOk();
         $this->postJson("/api/v1/travel/adverts/{$id}/pay")->assertOk(); // rejeu → idempotent
@@ -316,6 +308,94 @@ class TravelAdvertApiTest extends TestCase
                 'status' => AdvertStatus::VALIDATED->value,
                 'paid_at' => now(),
                 'expires_at' => now()->addDays(5),
+            ]);
+        });
+
+        $this->actingManager();
+
+        $this->getJson('/api/v1/travel/adverts')
+            ->assertOk()
+            ->assertJsonMissing(['title' => 'Annonce tenant B']);
+    }
+
+    /* ── TRAVEL-911 (#6416) — mode gestion embarqué dans GET /adverts ── */
+
+    public function test_index_manage_mode_lists_all_statuses_for_manager(): void
+    {
+        $this->actingManager();
+        $this->tenants->withinTenant($this->company, function (): void {
+            TravelAdvert::factory()->create([
+                'title' => 'Annonce draft',
+                'status' => AdvertStatus::DRAFT->value,
+            ]);
+            TravelAdvert::factory()->create([
+                'title' => 'Annonce validée',
+                'status' => AdvertStatus::VALIDATED->value,
+                'paid_at' => now(),
+                'expires_at' => now()->addDays(5),
+            ]);
+        });
+
+        $this->getJson('/api/v1/travel/adverts')
+            ->assertOk()
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('data.0.status', 'validated')
+            ->assertJsonPath('data.1.status', 'draft');
+    }
+
+    public function test_index_manage_mode_filters_by_status(): void
+    {
+        $this->actingManager();
+        $this->tenants->withinTenant($this->company, function (): void {
+            TravelAdvert::factory()->create([
+                'title' => 'Annonce draft',
+                'status' => AdvertStatus::DRAFT->value,
+            ]);
+            TravelAdvert::factory()->create([
+                'title' => 'Annonce soumise',
+                'status' => AdvertStatus::SUBMITTED->value,
+            ]);
+        });
+
+        $this->getJson('/api/v1/travel/adverts?status=draft')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.title', 'Annonce draft');
+    }
+
+    public function test_index_public_mode_hides_non_visible_for_employee(): void
+    {
+        $this->actingEmployee();
+
+        $this->tenants->withinTenant($this->company, function (): void {
+            TravelAdvert::factory()->create([
+                'title' => 'Annonce draft cachée',
+                'status' => AdvertStatus::DRAFT->value,
+            ]);
+            TravelAdvert::factory()->create([
+                'title' => 'Annonce visible',
+                'status' => AdvertStatus::VALIDATED->value,
+                'paid_at' => now(),
+                'expires_at' => now()->addDays(5),
+            ]);
+        });
+
+        // Le mode gestion est réservé aux rôles gestion : le filtre `status` est
+        // ignoré et seules les annonces visibles sont renvoyées.
+        $this->getJson('/api/v1/travel/adverts?status=draft')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.title', 'Annonce visible');
+    }
+
+    public function test_index_manage_mode_is_isolated_per_tenant(): void
+    {
+        /** @var Company $companyB */
+        $companyB = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $this->tenants->withinTenant($companyB, function (): void {
+            TravelAdvert::factory()->create([
+                'title' => 'Annonce tenant B',
+                'status' => AdvertStatus::DRAFT->value,
             ]);
         });
 
@@ -373,13 +453,7 @@ class TravelAdvertApiTest extends TestCase
 
     public function test_manage_index_requires_manager_role(): void
     {
-        /** @var Employee $agent */
-        $agent = Employee::factory()->create([
-            'company_id' => $this->company->id,
-            'role' => 'employee',
-            'manager_role' => null,
-        ]);
-        Sanctum::actingAs($agent);
+        $this->actingEmployee();
 
         $this->getJson('/api/v1/travel/adverts/manage')->assertStatus(403);
     }
@@ -398,245 +472,6 @@ class TravelAdvertApiTest extends TestCase
         $this->actingManager();
 
         $this->getJson('/api/v1/travel/adverts/manage')
-            ->assertOk()
-            ->assertJsonMissing(['title' => 'Annonce tenant B']);
-    }
-
-    private function principal(Company $company): Employee
-    {
-        /** @var Employee $employee */
-        $employee = Employee::factory()->create([
-            'company_id' => $company->id,
-            'role' => 'manager',
-            'manager_role' => 'principal',
-        ]);
-
-        Sanctum::actingAs($employee);
-
-        return $employee;
-    }
-
-    private function activateTravel(Company $company): void
-    {
-        $company->setFeature('travelagency', true);
-        $company->save();
-    }
-
-    private function referentials(Company $company): array
-    {
-        return app(TenantManager::class)->withinTenant($company, function () use ($company): array {
-            $type = TravelAdvertType::query()->create([
-                'company_id' => $company->id,
-                'code' => 'BANNER',
-                'label' => 'Bannière',
-            ]);
-            $position = TravelAdvertPosition::query()->create([
-                'company_id' => $company->id,
-                'code' => 'HOME_TOP',
-                'label' => 'Accueil haut',
-            ]);
-            TravelAdvertPrice::query()->create([
-                'company_id' => $company->id,
-                'advert_type_id' => $type->id,
-                'advert_position_id' => $position->id,
-                'price_per_image_minor' => 5000,
-                'price_per_character_minor' => 10,
-                'currency' => 'XAF',
-            ]);
-
-            return ['type' => $type->id, 'position' => $position->id];
-        });
-    }
-
-    public function test_advert_is_visible_only_when_paid_and_validated(): void
-    {
-        /** @var Company $company */
-        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
-        $this->activateTravel($company);
-        $this->principal($company);
-
-        ['type' => $typeId, 'position' => $positionId] = $this->referentials($company);
-
-        // Soumission : prix calculé SERVEUR (5000 + 10 × 60 caractères = 5600).
-        $advert = $this->postJson('/api/v1/travel/community/adverts', [
-            'type_id' => $typeId,
-            'position_id' => $positionId,
-            'title' => 'Promotion week-end',
-            'body' => str_repeat('a', 60),
-            'image_path' => 'assets/ads/promo.png',
-        ])->assertStatus(201)->json('data');
-
-        $this->assertSame(5600, $advert['price_minor']);
-        $this->assertSame('submitted', $advert['status']);
-
-        // Non visible avant paiement + validation.
-        $this->getJson('/api/v1/travel/community/adverts')
-            ->assertOk()
-            ->assertJsonCount(0, 'data');
-
-        // Payée mais pas validée → toujours invisible.
-        $this->postJson("/api/v1/travel/community/adverts/{$advert['id']}/pay")->assertOk();
-        $this->getJson('/api/v1/travel/community/adverts')->assertJsonCount(0, 'data');
-
-        // Validée → visible.
-        $this->postJson("/api/v1/travel/community/adverts/{$advert['id']}/validate", ['valid_days' => 30])
-            ->assertOk()
-            ->assertJsonPath('data.status', 'published');
-
-        $this->getJson('/api/v1/travel/community/adverts')
-            ->assertOk()
-            ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.title', 'Promotion week-end');
-    }
-
-    public function test_prices_are_in_minor_units_and_tenant_currency(): void
-    {
-        /** @var Company $company */
-        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
-        $this->activateTravel($company);
-        $this->principal($company);
-
-        $this->postJson('/api/v1/travel/community/advert-types', ['code' => 'T1', 'name' => 'Type 1'])
-            ->assertStatus(201);
-        $this->postJson('/api/v1/travel/community/advert-positions', ['code' => 'P1', 'name' => 'Pos 1'])
-            ->assertStatus(201);
-
-        $typeId = TravelAdvertType::query()->value('id');
-        $positionId = TravelAdvertPosition::query()->value('id');
-
-        $this->postJson('/api/v1/travel/community/advert-prices', [
-            'type_id' => $typeId,
-            'position_id' => $positionId,
-            'price_per_image_minor' => 2500,
-            'price_per_character_minor' => 5,
-        ])->assertStatus(201)
-            ->assertJsonPath('data.currency', 'XAF')
-            ->assertJsonPath('data.price_per_image_minor', 2500);
-    }
-
-    public function test_advert_expires_and_can_be_renewed(): void
-    {
-        /** @var Company $company */
-        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
-        $this->activateTravel($company);
-        $this->principal($company);
-
-        ['type' => $typeId, 'position' => $positionId] = $this->referentials($company);
-
-        $advert = $this->postJson('/api/v1/travel/community/adverts', [
-            'type_id' => $typeId,
-            'position_id' => $positionId,
-            'title' => 'Annonce courte',
-            'body' => str_repeat('b', 30),
-        ])->assertStatus(201)->json('data');
-
-        $this->postJson("/api/v1/travel/community/adverts/{$advert['id']}/pay")->assertOk();
-
-        // Valide 1 jour, puis on force l'expiration par le passé.
-        $this->postJson("/api/v1/travel/community/adverts/{$advert['id']}/validate", ['valid_days' => 1])
-            ->assertOk();
-
-        app(TenantManager::class)->withinTenant($company, function () use ($advert): void {
-            TravelAdvert::query()->whereKey($advert['id'])->update(['valid_until' => now()->subDay()]);
-        });
-
-        Artisan::call('leopardo:travel:expire-adverts');
-
-        $this->assertSame('expired', TravelAdvert::query()->findOrFail($advert['id'])->status);
-        $this->getJson('/api/v1/travel/community/adverts')->assertJsonCount(0, 'data');
-
-        // Renouvellement (nouveau paiement) → republiée.
-        $this->postJson("/api/v1/travel/community/adverts/{$advert['id']}/renew", ['valid_days' => 7])
-            ->assertOk()
-            ->assertJsonPath('data.status', 'published');
-    }
-
-    public function test_index_manage_mode_lists_all_statuses_for_manager(): void
-    {
-        $this->actingManager();
-        $this->tenants->withinTenant($this->company, function (): void {
-            TravelAdvert::factory()->create([
-                'title' => 'Annonce draft',
-                'status' => AdvertStatus::DRAFT->value,
-            ]);
-            TravelAdvert::factory()->create([
-                'title' => 'Annonce validée',
-                'status' => AdvertStatus::VALIDATED->value,
-                'paid_at' => now(),
-                'expires_at' => now()->addDays(5),
-            ]);
-        });
-
-        $this->getJson('/api/v1/travel/adverts')
-            ->assertOk()
-            ->assertJsonCount(2, 'data')
-            ->assertJsonPath('data.0.status', 'validated')
-            ->assertJsonPath('data.1.status', 'draft');
-    }
-
-    public function test_index_manage_mode_filters_by_status(): void
-    {
-        $this->actingManager();
-        $this->tenants->withinTenant($this->company, function (): void {
-            TravelAdvert::factory()->create([
-                'title' => 'Annonce draft',
-                'status' => AdvertStatus::DRAFT->value,
-            ]);
-            TravelAdvert::factory()->create([
-                'title' => 'Annonce soumise',
-                'status' => AdvertStatus::SUBMITTED->value,
-            ]);
-        });
-
-        $this->getJson('/api/v1/travel/adverts?status=draft')
-            ->assertOk()
-            ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.title', 'Annonce draft');
-    }
-
-    public function test_index_public_mode_hides_non_visible_for_agent(): void
-    {
-        /** @var Employee $agent */
-        $agent = Employee::factory()->create([
-            'company_id' => $this->company->id,
-            'role' => 'employee',
-            'manager_role' => null,
-        ]);
-        Sanctum::actingAs($agent);
-
-        $this->tenants->withinTenant($this->company, function (): void {
-            TravelAdvert::factory()->create([
-                'title' => 'Annonce draft cachée',
-                'status' => AdvertStatus::DRAFT->value,
-            ]);
-            TravelAdvert::factory()->create([
-                'title' => 'Annonce visible',
-                'status' => AdvertStatus::VALIDATED->value,
-                'paid_at' => now(),
-                'expires_at' => now()->addDays(5),
-            ]);
-        });
-
-        $this->getJson('/api/v1/travel/adverts')
-            ->assertOk()
-            ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.title', 'Annonce visible');
-    }
-
-    public function test_index_manage_mode_is_isolated_per_tenant(): void
-    {
-        /** @var Company $companyB */
-        $companyB = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
-        $this->tenants->withinTenant($companyB, function (): void {
-            TravelAdvert::factory()->create([
-                'title' => 'Annonce tenant B',
-                'status' => AdvertStatus::DRAFT->value,
-            ]);
-        });
-
-        $this->actingManager();
-
-        $this->getJson('/api/v1/travel/adverts')
             ->assertOk()
             ->assertJsonMissing(['title' => 'Annonce tenant B']);
     }

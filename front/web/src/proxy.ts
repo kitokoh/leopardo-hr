@@ -53,6 +53,11 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/social-marketing',
   '/restaurant',
   '/showcase',
+  // BC-19 (#7425) — mur de caméras + détail : même gate cosmétique de session
+  // que le reste de la zone dashboard (la garde réelle reste l'API).
+  '/cameras',
+  // #7400 — flotte & véhicules de service (module horizontal).
+  '/fleet',
 ];
 
 export function proxy(request: NextRequest) {
@@ -101,8 +106,8 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Audit 2026-09-13 — un navigateur DÉJÀ connecté ne peut pas créer un second
-  // espace : `/signup` le renvoie sur son tableau de bord.
+  // Audit 2026-09-13 — un navigateur DÉJÀ connecté ne doit pas pouvoir
+  // créer un second espace : `/signup` le renvoie sur son tableau de bord.
   //
   // C'est un filtre COSMÉTIQUE : la garde de fond est côté API
   // (`409 SESSION_ALREADY_ACTIVE`, `SelfServiceTrialController::signup()`), car
@@ -112,6 +117,17 @@ export function proxy(request: NextRequest) {
   // authentifié hors de la page de connexion crée une boucle dès que le cookie
   // est périmé, le proxy ne pouvant pas valider la session (cf. #3522).
   if (pathname === '/signup' && isValidToken) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
+  // #7492 — session active : la page d'accueil vitrine renvoie vers l'espace
+  // (demande propriétaire : « s'il y a une session active, même s'il veut
+  // aller vers la page vitrine, ça le renvoie directement vers son espace »).
+  // Cookie de forme valide requis : si le token est PÉRIMÉ, le dashboard
+  // appellera l'API, recevra 401 et renverra vers /auth/login — pas de
+  // boucle, `/auth/login` n'étant pas gardé par ce proxy (vérification de la
+  // session côté client sur la page de connexion).
+  if (pathname === '/' && isValidToken) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
@@ -150,6 +166,8 @@ export const config = {
     '/social-marketing/:path*',
     '/restaurant/:path*', // BC-25 portail client (split /restaurant → /restaurateur)
     '/showcase/:path*', // BC-27 site vitrine tenant (management) — gate session
+    '/cameras/:path*', // BC-19 mur de caméras + détail (#7425) — gate session
+    '/fleet/:path*', // #7400 flotte & véhicules de service (module horizontal)
     // Vitrine landing — ?lang= → en-tête x-vitrine-lang (issue #4004).
     // Routes statiques (exactes) + préfixes dynamiques (source
     // VITRINE_LANG_PREFIXES, garde protected-prefixes.test.ts).
