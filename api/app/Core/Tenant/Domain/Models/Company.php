@@ -304,11 +304,19 @@ class Company extends Model
 
         $features = $this->features ?? [];
 
-        if ($key === 'rh') {
-            return (bool) ($features['rh'] ?? true);
-        }
+        // #7400 — le défaut d'un module est déclaré UNE SEULE FOIS, dans le
+        // registre (`config/feature-flags.php`), qui est la source de vérité
+        // revendiquée par son propre docblock. L'ancien `if ($key === 'rh')`
+        // recodait ce défaut en dur : tout flag déclaré `default => true` dans
+        // le registre était donc silencieusement remis à `false` dès que la
+        // company portait une carte `features`, et le registre mentait.
+        //
+        // Sans effet observable aujourd'hui : `rh` est le seul flag en
+        // `default => true`, et le cas particulier lui rendait déjà `true`.
+        // C'est le piège posé au prochain flag activé par défaut qui est retiré.
+        $default = (bool) config("feature-flags.flags.{$key}.default", false);
 
-        return (bool) ($features[$key] ?? false);
+        return (bool) ($features[$key] ?? $default);
     }
 
     /**
