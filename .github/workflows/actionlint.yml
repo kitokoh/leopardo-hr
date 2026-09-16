@@ -66,3 +66,11 @@ jobs:
         # Échoue si une entrée `paths:` d'un workflow ne matche aucun fichier
         # réel — sinon le workflow ne se déclenche plus jamais (silencieux).
         run: bash dev-hub/tools/check-workflow-paths.sh
+
+      - name: Android SDK packages guard (issue #7519)
+        # Échoue si l'action de setup mobile redemande un paquet qui n'existe
+        # plus dans cmdline-tools 20.0 (`tools`) : `sdkmanager` sort en 1 et
+        # toute la chaîne mobile s'arrête avant compilation (main rouge).
+        run: |
+          bash dev-hub/tools/check-android-sdk-packages.sh
+          bash dev-hub/tools/check-android-sdk-packages.sh --self-test
