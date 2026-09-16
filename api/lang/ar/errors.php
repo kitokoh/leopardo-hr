@@ -307,4 +307,10 @@ return [
     'TENANT_DELETION_CONFIRMATION_MISMATCH' => 'الاسم المُدخل لا يطابق الاسم الدقيق للشركة.',
     'TENANT_DELETION_BLOCKED' => 'بيانات مرتبطة بهذه المساحة تمنع الحذف الكامل. تم إلغاء العملية.',
     'TENANT_DELETION_INCOMPLETE' => 'الحذف غير مكتمل: لا تزال هناك سجلات. تم إلغاء العملية.',
+
+    // #7553 — rôles internes plateforme (délégation par le super admin).
+    'PLATFORM_ACCOUNT_REQUIRED' => 'مطلوب حساب منصة لهذا الإجراء.',
+    'PLATFORM_PERMISSION_REQUIRED' => 'دورك في المنصة لا يسمح بهذا الإجراء (الأذونات المطلوبة: :permissions).',
+    'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'لا يمكنك تغيير دورك في المنصة.',
+    'LAST_SUPER_ADMIN_REQUIRED' => 'تم رفض الإجراء: يجب أن يبقى مسؤول أعلى نشط واحد على الأقل.',
 ];

@@ -62,6 +62,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMetricsOverviewCo
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformNotificationObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSolutionSurveyStatsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformTeamController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUserController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUsersController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\QueueObservabilityController;
@@ -403,11 +404,12 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/plans/{plan}/duplicate', [PlatformPlanAdminController::class, 'duplicate'])->whereNumber('plan');
         Route::post('/plans/{plan}/archive', [PlatformPlanAdminController::class, 'archive'])->whereNumber('plan');
         Route::delete('/plans/{plan}', [PlatformPlanAdminController::class, 'destroy'])->whereNumber('plan');
+        Route::get('/plans', PlatformPlanController::class)->middleware('platform.permission:plans.view');
         Route::get('/country-defaults', PlatformCountryDefaultsController::class);
-        Route::get('/companies', [PlatformCompanyController::class, 'index']);
-        Route::post('/companies', [PlatformCompanyController::class, 'store']);
-        Route::get('/companies/health', [PlatformCompanyHealthController::class, 'index']);
-        Route::get('/companies/{company}/health', PlatformCompanyHealthController::class);
+        Route::get('/companies', [PlatformCompanyController::class, 'index'])->middleware('platform.permission:companies.view');
+        Route::post('/companies', [PlatformCompanyController::class, 'store'])->middleware('platform.permission:companies.provision');
+        Route::get('/companies/health', [PlatformCompanyHealthController::class, 'index'])->middleware('platform.permission:companies.view');
+        Route::get('/companies/{company}/health', PlatformCompanyHealthController::class)->middleware('platform.permission:companies.view');
         // MULTI-PAYS (#1952) : réparation/choix du pays d'un tenant legacy
         // (refusé si données de paie — invariant 9).
         Route::patch('/companies/{company}/country', [PlatformCompanyController::class, 'updateCountry']);
@@ -422,69 +424,85 @@ Route::prefix('v1')->group(function (): void {
         Route::delete('/companies/{company}', [PlatformCompanyDeletionController::class, 'destroy']);
         Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show']);
         Route::patch('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'update']);
+        Route::patch('/companies/{company}/country', [PlatformCompanyController::class, 'updateCountry'])->middleware('platform.permission:companies.manage');
+        Route::get('/companies/{company}/subscription', [PlatformCompanySubscriptionController::class, 'show'])->middleware('platform.permission:billing.view');
+        Route::patch('/companies/{company}/subscription', [PlatformCompanySubscriptionController::class, 'update'])->middleware('platform.permission:billing.manage');
+        Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show'])->middleware('platform.permission:companies.view');
+        Route::patch('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'update'])->middleware('platform.permission:companies.manage');
 
         // MAT-010 (#5868) — Feature kill switches : stopper un module pour
         // toute la plateforme (fail-closed, sans suppression de données).
         // Bascules idempotentes + audit (feature_kill_switches + canal audit).
-        Route::get('/feature-kill-switches', [PlatformFeatureKillSwitchController::class, 'index']);
-        Route::post('/feature-kill-switches', [PlatformFeatureKillSwitchController::class, 'activate']);
+        Route::get('/feature-kill-switches', [PlatformFeatureKillSwitchController::class, 'index'])->middleware('platform.permission:killswitch.manage');
+        Route::post('/feature-kill-switches', [PlatformFeatureKillSwitchController::class, 'activate'])->middleware('platform.permission:killswitch.manage');
         Route::delete('/feature-kill-switches/{key}', [PlatformFeatureKillSwitchController::class, 'deactivate'])
-            ->where('key', '[A-Za-z0-9_.-]+');
-        Route::get('/metrics/overview', PlatformMetricsOverviewController::class);
+            ->where('key', '[A-Za-z0-9_.-]+')->middleware('platform.permission:killswitch.manage');
+        Route::get('/metrics/overview', PlatformMetricsOverviewController::class)->middleware('platform.permission:metrics.view');
 
         // PA2-QA-006 — Redis/jobs observability (queue depth, failed jobs,
         // scheduled task last-run) for the super-admin "System" screen.
-        Route::get('/observability/queues', QueueObservabilityController::class);
+        Route::get('/observability/queues', QueueObservabilityController::class)->middleware('platform.permission:observability.view');
 
         // PA2-ADM-005 — Cross-tenant notification failure rate (24h) +
         // curated runbook links for the super-admin "System" screen.
-        Route::get('/observability/notifications', PlatformNotificationObservabilityController::class);
+        Route::get('/observability/notifications', PlatformNotificationObservabilityController::class)->middleware('platform.permission:observability.view');
 
-        Route::get('/company-requests', [PlatformCompanyRequestController::class, 'index']);
-        Route::get('/company-requests/{id}', [PlatformCompanyRequestController::class, 'show'])->whereNumber('id');
-        Route::patch('/company-requests/{id}', [PlatformCompanyRequestController::class, 'updateStatus'])->whereNumber('id');
+        Route::get('/company-requests', [PlatformCompanyRequestController::class, 'index'])->middleware('platform.permission:companies.view');
+        Route::get('/company-requests/{id}', [PlatformCompanyRequestController::class, 'show'])->whereNumber('id')->middleware('platform.permission:companies.view');
+        Route::patch('/company-requests/{id}', [PlatformCompanyRequestController::class, 'updateStatus'])->whereNumber('id')->middleware('platform.permission:companies.provision');
 
-        Route::get('/crm/pipeline', PlatformCrmPipelineController::class);
+        Route::get('/crm/pipeline', PlatformCrmPipelineController::class)->middleware('platform.permission:crm.view');
 
         // PA2-COMM-012 — Pilot client support center: super-admin triage of
         // tenant-opened support tickets (status, priority, assignment, reply).
-        Route::get('/support-tickets', [PlatformSupportTicketController::class, 'index']);
-        Route::get('/support-tickets/{supportTicket}', [PlatformSupportTicketController::class, 'show'])->whereNumber('supportTicket');
-        Route::post('/support-tickets/{supportTicket}/reply', [PlatformSupportTicketController::class, 'reply'])->whereNumber('supportTicket');
-        Route::patch('/support-tickets/{supportTicket}/triage', [PlatformSupportTicketController::class, 'triage'])->whereNumber('supportTicket');
+        Route::get('/support-tickets', [PlatformSupportTicketController::class, 'index'])->middleware('platform.permission:support.manage');
+        Route::get('/support-tickets/{supportTicket}', [PlatformSupportTicketController::class, 'show'])->whereNumber('supportTicket')->middleware('platform.permission:support.manage');
+        Route::post('/support-tickets/{supportTicket}/reply', [PlatformSupportTicketController::class, 'reply'])->whereNumber('supportTicket')->middleware('platform.permission:support.manage');
+        Route::patch('/support-tickets/{supportTicket}/triage', [PlatformSupportTicketController::class, 'triage'])->whereNumber('supportTicket')->middleware('platform.permission:support.manage');
 
         // PA2-COMM-005 — Platform-wide announcements (maintenance, feature,
         // incident, action required) broadcast by super-admin to all or a
         // selected subset of companies.
-        Route::get('/announcements', [PlatformAnnouncementController::class, 'index']);
-        Route::post('/announcements', [PlatformAnnouncementController::class, 'store']);
-        Route::get('/announcements/{announcement}', [PlatformAnnouncementController::class, 'show']);
-        Route::delete('/announcements/{announcement}', [PlatformAnnouncementController::class, 'destroy']);
+        Route::get('/announcements', [PlatformAnnouncementController::class, 'index'])->middleware('platform.permission:announcements.manage');
+        Route::post('/announcements', [PlatformAnnouncementController::class, 'store'])->middleware('platform.permission:announcements.manage');
+        Route::get('/announcements/{announcement}', [PlatformAnnouncementController::class, 'show'])->middleware('platform.permission:announcements.manage');
+        Route::delete('/announcements/{announcement}', [PlatformAnnouncementController::class, 'destroy'])->middleware('platform.permission:announcements.manage');
 
         // QA wave 2026-08-14 — T004 (#2229) : CRUD utilisateurs plateforme.
-        Route::get('/users', [PlatformUserController::class, 'index']);
-        Route::post('/users', [PlatformUserController::class, 'store']);
-        Route::get('/users/{user}', [PlatformUserController::class, 'show'])->whereNumber('user');
-        Route::patch('/users/{user}', [PlatformUserController::class, 'update'])->whereNumber('user');
-        Route::delete('/users/{user}', [PlatformUserController::class, 'destroy'])->whereNumber('user');
-        Route::post('/users/{user}/activate', [PlatformUserController::class, 'activate'])->whereNumber('user');
-        Route::post('/users/{user}/deactivate', [PlatformUserController::class, 'deactivate'])->whereNumber('user');
-        Route::post('/users/{user}/suspend', [PlatformUserController::class, 'suspend'])->whereNumber('user');
+        Route::get('/users', [PlatformUserController::class, 'index'])->middleware('platform.permission:users.view');
+        Route::post('/users', [PlatformUserController::class, 'store'])->middleware('platform.permission:users.manage');
+        Route::get('/users/{user}', [PlatformUserController::class, 'show'])->whereNumber('user')->middleware('platform.permission:users.view');
+        Route::patch('/users/{user}', [PlatformUserController::class, 'update'])->whereNumber('user')->middleware('platform.permission:users.manage');
+        Route::delete('/users/{user}', [PlatformUserController::class, 'destroy'])->whereNumber('user')->middleware('platform.permission:users.manage');
+        Route::post('/users/{user}/activate', [PlatformUserController::class, 'activate'])->whereNumber('user')->middleware('platform.permission:users.manage');
+        Route::post('/users/{user}/deactivate', [PlatformUserController::class, 'deactivate'])->whereNumber('user')->middleware('platform.permission:users.manage');
+        Route::post('/users/{user}/suspend', [PlatformUserController::class, 'suspend'])->whereNumber('user')->middleware('platform.permission:users.manage');
+
+        // #7553 — Équipe interne de la plateforme : le super admin délègue
+        // (support, finance, ops, marketing) au lieu de partager le compte
+        // omniscient. `team.manage` n'est porté que par le rôle `super_admin`.
+        Route::prefix('team')->middleware('platform.permission:team.manage')->group(function (): void {
+            Route::get('/', [PlatformTeamController::class, 'index']);
+            Route::post('/', [PlatformTeamController::class, 'store']);
+            Route::patch('/{superAdmin}/role', [PlatformTeamController::class, 'updateRole'])->whereNumber('superAdmin');
+            Route::post('/{superAdmin}/activate', [PlatformTeamController::class, 'activate'])->whereNumber('superAdmin');
+            Route::post('/{superAdmin}/deactivate', [PlatformTeamController::class, 'deactivate'])->whereNumber('superAdmin');
+        });
 
         // PA2-ADM-006 — Secure super-admin impersonation ("log in as this
         // employee"): mandatory reason, hard time limit, fully audited.
-        Route::get('/impersonations', [PlatformImpersonationController::class, 'index']);
-        Route::post('/impersonations', [PlatformImpersonationController::class, 'store']);
-        Route::delete('/impersonations/{session}', [PlatformImpersonationController::class, 'destroy'])->whereNumber('session');
+        Route::get('/impersonations', [PlatformImpersonationController::class, 'index'])->middleware('platform.permission:impersonate');
+        Route::post('/impersonations', [PlatformImpersonationController::class, 'store'])->middleware('platform.permission:impersonate');
+        Route::delete('/impersonations/{session}', [PlatformImpersonationController::class, 'destroy'])->whereNumber('session')->middleware('platform.permission:impersonate');
 
         // Edge node management (super-admin).
         // Uses EdgeNodeController against the canonical UUID edge_nodes
         // schema (see issue #1291) — the legacy bigint-schema EdgeController
         // equivalents were removed because that schema is never created.
         Route::prefix('edge/nodes')->group(function (): void {
-            Route::get('/', [EdgeNodeController::class, 'listAllNodes']);
-            Route::post('/{nodeId}/sync', [EdgeNodeController::class, 'forceSync']);
-            Route::delete('/{nodeId}', [EdgeNodeController::class, 'revokeNode']);
+            Route::get('/', [EdgeNodeController::class, 'listAllNodes'])->middleware('platform.permission:edge.manage');
+            Route::post('/{nodeId}/sync', [EdgeNodeController::class, 'forceSync'])->middleware('platform.permission:edge.manage');
+            Route::delete('/{nodeId}', [EdgeNodeController::class, 'revokeNode'])->middleware('platform.permission:edge.manage');
         });
     });
     // Admin cockpit (super-admin) — contrat SPA front/admin-dashboard.
@@ -494,15 +512,15 @@ Route::prefix('v1')->group(function (): void {
         // Issue #2624 : impersonation super-admin aussi sous /admin (le SPA
         // admin-dashboard consomme /admin/*) — réutilise le contrôleur
         // platform existant (PA2-ADM-006).
-        Route::get('/impersonations', [PlatformImpersonationController::class, 'index']);
-        Route::post('/impersonations', [PlatformImpersonationController::class, 'store']);
-        Route::delete('/impersonations/{session}', [PlatformImpersonationController::class, 'destroy'])->whereNumber('session');
+        Route::get('/impersonations', [PlatformImpersonationController::class, 'index'])->middleware('platform.permission:impersonate');
+        Route::post('/impersonations', [PlatformImpersonationController::class, 'store'])->middleware('platform.permission:impersonate');
+        Route::delete('/impersonations/{session}', [PlatformImpersonationController::class, 'destroy'])->whereNumber('session')->middleware('platform.permission:impersonate');
 
-        Route::get('/dashboard/stats', [PlatformAdminDashboardController::class, 'stats']);
-        Route::get('/dashboard/activities', [PlatformAdminDashboardController::class, 'activities']);
-        Route::get('/dashboard/alerts', [PlatformAdminDashboardController::class, 'alerts']);
+        Route::get('/dashboard/stats', [PlatformAdminDashboardController::class, 'stats'])->middleware('platform.permission:metrics.view');
+        Route::get('/dashboard/activities', [PlatformAdminDashboardController::class, 'activities'])->middleware('platform.permission:metrics.view');
+        Route::get('/dashboard/alerts', [PlatformAdminDashboardController::class, 'alerts'])->middleware('platform.permission:metrics.view');
         Route::post('/dashboard/alerts/{alertKey}/dismiss', [PlatformAdminDashboardController::class, 'dismissAlert'])
-            ->where('alertKey', '[A-Za-z0-9\-_]+');
+            ->where('alertKey', '[A-Za-z0-9\-_]+')->middleware('platform.permission:metrics.view');
 
         // Edge nodes : réutilisation du contrôleur EdgeSync existant
         // (listAllNodes / forceSync / revokeNode) — alias des routes

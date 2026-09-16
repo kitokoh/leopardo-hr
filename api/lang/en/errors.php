@@ -314,4 +314,10 @@ return [
     'TENANT_DELETION_CONFIRMATION_MISMATCH' => 'The typed name does not match the exact company name.',
     'TENANT_DELETION_BLOCKED' => 'Data linked to this workspace prevents a complete deletion. Operation cancelled.',
     'TENANT_DELETION_INCOMPLETE' => 'Purge is incomplete: rows remain. Operation cancelled.',
+
+    // #7553 — rôles internes plateforme (délégation par le super admin).
+    'PLATFORM_ACCOUNT_REQUIRED' => 'A platform account is required for this action.',
+    'PLATFORM_PERMISSION_REQUIRED' => 'Your platform role does not allow this action (required permissions: :permissions).',
+    'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'You cannot change your own platform role.',
+    'LAST_SUPER_ADMIN_REQUIRED' => 'Action denied: at least one active super administrator must remain.',
 ];

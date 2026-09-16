@@ -308,4 +308,10 @@ return [
     'TENANT_DELETION_CONFIRMATION_MISMATCH' => 'Le nom saisi ne correspond pas au nom exact de la société.',
     'TENANT_DELETION_BLOCKED' => 'Des données rattachées à cet espace empêchent une suppression complète. Opération annulée.',
     'TENANT_DELETION_INCOMPLETE' => 'La purge est incomplète : des lignes subsistent. Opération annulée.',
+
+    // #7553 — rôles internes plateforme (délégation par le super admin).
+    'PLATFORM_ACCOUNT_REQUIRED' => 'Un compte plateforme est requis pour cette action.',
+    'PLATFORM_PERMISSION_REQUIRED' => 'Votre rôle plateforme ne permet pas cette action (permissions requises : :permissions).',
+    'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'Impossible de modifier votre propre rôle plateforme.',
+    'LAST_SUPER_ADMIN_REQUIRED' => 'Action refusée : il doit rester au moins un super administrateur actif.',
 ];

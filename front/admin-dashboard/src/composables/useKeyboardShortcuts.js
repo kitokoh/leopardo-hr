@@ -1,10 +1,17 @@
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
+import { useAuthStore } from '@/stores/auth'
+// #7554 — les raccourcis de navigation sont dérivés de la source de vérité
+// unique de navigation (plus de liste de chemins recopiée ici).
+import { navShortcuts } from '@/navigation/navigation.js'
+
+const NAV_SHORTCUTS = navShortcuts()
 
 export function useKeyboardShortcuts() {
   const router = useRouter()
   const themeStore = useThemeStore()
+  const authStore = useAuthStore()
 
   function handleKeydown(e) {
     // Ignore if user is typing in an input/textarea/select
@@ -27,25 +34,19 @@ export function useKeyboardShortcuts() {
       return
     }
 
-    // Alt + key shortcuts for navigation
+    // Alt + key shortcuts for navigation (#7554 : table dérivée de
+    // `src/navigation/navigation.js`, donc plus de chemins en dur ici).
     if (e.altKey) {
-      switch (e.key) {
-        case 'h':
-          e.preventDefault()
-          router.push('/')
-          break
-        case 'u':
-          e.preventDefault()
-          router.push('/users')
-          break
-        case 'c':
-          e.preventDefault()
-          router.push('/companies')
-          break
-        case 's':
-          e.preventDefault()
-          router.push('/subscriptions')
-          break
+      const target = NAV_SHORTCUTS.find(
+        (shortcut) => shortcut.key.toLowerCase() === e.key.toLowerCase()
+      )
+      if (target) {
+        e.preventDefault()
+        // Un raccourci ne doit pas ouvrir un écran que le compte courant n'a
+        // pas le droit de consulter (même filtre que le menu et la palette).
+        if (authStore.hasPermission(target.permission)) {
+          router.push(target.path)
+        }
       }
       return
     }
@@ -71,15 +72,12 @@ export function useKeyboardShortcuts() {
   }
 }
 
-// #3275 : liste unique des raccourcis — partagée entre le composable
-// (implémentation) et KeyboardShortcutsModal (affichage). Plus de drift
-// entre deux listes codées en dur.
-export const KEYBOARD_SHORTCUTS = [
-  { keys: 'Ctrl+D', description: 'Basculer mode sombre' },
-  { keys: 'Ctrl+K', description: 'Rechercher' },
-  { keys: 'Alt+H', description: 'Tableau de bord' },
-  { keys: 'Alt+U', description: 'Utilisateurs' },
-  { keys: 'Alt+C', description: 'Entreprises' },
-  { keys: 'Alt+S', description: 'Abonnements' },
-  { keys: '?', description: 'Aide raccourcis' },
-]
+// #3275/#7554 : raccourcis de navigation dérivés de la source de vérité
+// (`navShortcuts()`) — le libellé affichable se compose en `shortcut.label`,
+// la description reste une clé de catalogue (`titleKey`) traduite à
+// l'affichage, plus une liste parallèle de textes français.
+export const KEYBOARD_SHORTCUTS = NAV_SHORTCUTS.map((shortcut) => ({
+  keys: shortcut.label,
+  titleKey: shortcut.titleKey,
+  path: shortcut.path,
+}))

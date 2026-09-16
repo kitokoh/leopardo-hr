@@ -3855,6 +3855,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PATCH", "/platform/support-tickets/{supportTicket}/triage", options);
     },
 
+    /** Lister l'equipe interne de la plateforme (issue #7553) */
+    getPlatformTeam(options = {}) {
+      return request("GET", "/platform/team", options);
+    },
+
+    /** Creer un collaborateur interne de la plateforme */
+    postPlatformTeam(options = {}) {
+      return request("POST", "/platform/team", options);
+    },
+
+    /** Reactiver un collaborateur interne de la plateforme */
+    postPlatformTeamBySuperAdminActivate(options = {}) {
+      return request("POST", "/platform/team/{superAdmin}/activate", options);
+    },
+
+    /** Desactiver un collaborateur interne de la plateforme */
+    postPlatformTeamBySuperAdminDeactivate(options = {}) {
+      return request("POST", "/platform/team/{superAdmin}/deactivate", options);
+    },
+
+    /** Changer le role plateforme d'un collaborateur interne */
+    patchPlatformTeamBySuperAdminRole(options = {}) {
+      return request("PATCH", "/platform/team/{superAdmin}/role", options);
+    },
+
     /** Lister les utilisateurs plateforme (super-admins) */
     getPlatformUsers(options = {}) {
       return request("GET", "/platform/users", options);

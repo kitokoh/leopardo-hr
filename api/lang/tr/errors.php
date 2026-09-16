@@ -307,4 +307,10 @@ return [
     'TENANT_DELETION_CONFIRMATION_MISMATCH' => 'Girilen ad, şirketin tam adıyla eşleşmiyor.',
     'TENANT_DELETION_BLOCKED' => 'Bu çalışma alanına bağlı veriler tam silmeyi engelliyor. İşlem iptal edildi.',
     'TENANT_DELETION_INCOMPLETE' => 'Temizleme eksik: kayıtlar kaldı. İşlem iptal edildi.',
+
+    // #7553 — rôles internes plateforme (délégation par le super admin).
+    'PLATFORM_ACCOUNT_REQUIRED' => 'Bu işlem için bir platform hesabı gerekir.',
+    'PLATFORM_PERMISSION_REQUIRED' => 'Platform rolünüz bu işleme izin vermiyor (gerekli izinler: :permissions).',
+    'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'Kendi platform rolünüzü değiştiremezsiniz.',
+    'LAST_SUPER_ADMIN_REQUIRED' => 'İşlem reddedildi: en az bir etkin üst yönetici kalmalıdır.',
 ];

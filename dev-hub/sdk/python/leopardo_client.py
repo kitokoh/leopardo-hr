@@ -3104,6 +3104,26 @@ class LeopardoClient:
         """Trier un ticket (statut, priorite, assignation)"""
         return self.request("PATCH", "/platform/support-tickets/{supportTicket}/triage", **kwargs)
 
+    def get_platform_team(self, **kwargs):
+        """Lister l'equipe interne de la plateforme (issue #7553)"""
+        return self.request("GET", "/platform/team", **kwargs)
+
+    def post_platform_team(self, **kwargs):
+        """Creer un collaborateur interne de la plateforme"""
+        return self.request("POST", "/platform/team", **kwargs)
+
+    def post_platform_team_by_superadmin_activate(self, **kwargs):
+        """Reactiver un collaborateur interne de la plateforme"""
+        return self.request("POST", "/platform/team/{superAdmin}/activate", **kwargs)
+
+    def post_platform_team_by_superadmin_deactivate(self, **kwargs):
+        """Desactiver un collaborateur interne de la plateforme"""
+        return self.request("POST", "/platform/team/{superAdmin}/deactivate", **kwargs)
+
+    def patch_platform_team_by_superadmin_role(self, **kwargs):
+        """Changer le role plateforme d'un collaborateur interne"""
+        return self.request("PATCH", "/platform/team/{superAdmin}/role", **kwargs)
+
     def get_platform_users(self, **kwargs):
         """Lister les utilisateurs plateforme (super-admins)"""
         return self.request("GET", "/platform/users", **kwargs)
