@@ -51,15 +51,22 @@
       </template>
       <template #row-actions="{ row }">
         <div class="flex justify-end gap-2">
-          <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800" @click="testWebhook(row.id)">
-            {{ $t('webhooks.test') }}
-          </button>
-          <button class="text-sm font-medium text-gray-600 hover:text-gray-800" @click="editWebhook(row)">
-            {{ $t('webhooks.edit') }}
-          </button>
-          <button class="text-sm font-medium text-red-600 hover:text-red-800" @click="deleteWebhook(row.id)">
-            {{ $t('webhooks.delete') }}
-          </button>
+          <RowActionButton
+            :icon="PlayIcon"
+            :label="$t('webhooks.test')"
+            @click="testWebhook(row.id)"
+          />
+          <RowActionButton
+            :icon="PencilSquareIcon"
+            :label="$t('webhooks.edit')"
+            @click="editWebhook(row)"
+          />
+          <RowActionButton
+            :icon="TrashIcon"
+            tone="danger"
+            :label="$t('webhooks.delete')"
+            @click="deleteWebhook(row.id)"
+          />
         </div>
       </template>
     </DataTable>
@@ -129,13 +136,13 @@
 <script setup>
 const toast = useToast()
 import { ref, computed, onMounted } from 'vue'
-import { PlusIcon } from '@heroicons/vue/24/outline'
+import { PlusIcon, PlayIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
 import DataTable from '@/components/common/DataTable.vue'
+import RowActionButton from '@/components/common/RowActionButton.vue'
 import { useLocaleStore } from '@/stores/locale'
 import { translate, toIntlLocale } from '@/i18n/index.js'
-
 const localeStore = useLocaleStore()
 
 function t(key, fallback = '') {
