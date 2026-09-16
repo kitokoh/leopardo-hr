@@ -16,8 +16,9 @@ use Illuminate\Support\Carbon;
 class SetEmployeeAttendanceMode
 {
     /**
-     * @throws GpsConsentMissingException
      * @param  array<string, mixed>  $data
+     *
+     * @throws GpsConsentMissingException
      */
     public function execute(Employee $employee, array $data): EmployeeAttendancePreference
     {
@@ -25,7 +26,7 @@ class SetEmployeeAttendanceMode
 
         // Si l'employé veut le GPS auto, le consentement est obligatoire
         if ($preferredMode === 'gps_auto' && empty($data['gps_consent_given'])) {
-            throw new GpsConsentMissingException();
+            throw new GpsConsentMissingException;
         }
 
         /** @var EmployeeAttendancePreference $pref */
