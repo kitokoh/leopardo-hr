@@ -209,6 +209,18 @@
                     :disabled="updatingStatusId === item.company.id"
                     @click="activateCompany(item)"
                   />
+                  <!-- #7475 — suppression d'un tenant : reservee a un espace
+                       deja desactive, et jamais un simple clic (inventaire +
+                       ressaisie du nom exact dans le dialogue). -->
+                  <RowActionButton
+                    v-if="canDelete(item)"
+                    :icon="TrashIcon"
+                    :label="t('companies.deletion.action')"
+                    :test-id="`companies-delete-${item.company.id}`"
+                    tone="danger"
+                    :disabled="updatingStatusId === item.company.id"
+                    @click="askDelete(item)"
+                  />
                 </div>
               </td>
             </tr>
@@ -384,6 +396,15 @@
       @confirm="confirmSuspend"
       @cancel="closeSuspendDialog"
     />
+
+    <!-- #7475 — parcours de suppression en deux temps (inventaire chiffre,
+         choix du mode si paie, confirmation par ressaisie du nom). -->
+    <DeleteCompanyDialog
+      :open="deleteOpen"
+      :company="deleteTarget?.company || null"
+      @close="closeDeleteDialog"
+      @deleted="onCompanyDeleted"
+    />
   </div>
 </template>
 
@@ -400,11 +421,13 @@ import {
   MagnifyingGlassIcon,
   PauseCircleIcon,
   PlayCircleIcon,
+  TrashIcon,
   BuildingOffice2Icon
 } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import DeleteCompanyDialog from '@/views/companies/DeleteCompanyDialog.vue'
 import RowActionButton from '@/components/common/RowActionButton.vue'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale'
@@ -446,6 +469,9 @@ const totalItems = ref(0)
 // #7431 — confirmation de suspension (action reversible mais a impact client).
 const suspendOpen = ref(false)
 const suspendTarget = ref(null)
+// #7475 — suppression de tenant (parcours en deux temps).
+const deleteOpen = ref(false)
+const deleteTarget = ref(null)
 // Identifiant de la societe dont le statut est en cours de mise a jour.
 const updatingStatusId = ref(null)
 let searchTimer = null
@@ -720,6 +746,29 @@ function canSuspend(item) {
 function canActivate(item) {
   const status = item?.company?.status
   return status === 'suspended' || status === 'expired'
+}
+
+/**
+ * #7475 — un tenant n'est supprimable qu'apres desactivation (critere 1) :
+ * l'action n'est donc proposee que sur un espace suspendu ou expire.
+ */
+function canDelete(item) {
+  const status = item?.company?.status
+  return status === 'suspended' || status === 'expired'
+}
+
+function askDelete(item) {
+  deleteTarget.value = item
+  deleteOpen.value = true
+}
+
+function closeDeleteDialog() {
+  deleteOpen.value = false
+  deleteTarget.value = null
+}
+
+function onCompanyDeleted() {
+  fetchPortfolio(true)
 }
 
 const suspendTargetName = computed(() => suspendTarget.value?.company?.name || '')

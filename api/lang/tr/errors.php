@@ -296,4 +296,10 @@ return [
     'INVALID_HORIZONTAL_TOOL' => 'Bilinmeyen veya kendi kendine etkinleştirilemeyen modül: :module.',
     'MODULE_ACTIVATED' => 'Modül etkinleştirildi.',
     'MODULE_ALREADY_ACTIVE' => 'Bu modül zaten etkin.',
+    'TENANT_NOT_DEACTIVATED' => 'Silmeden önce çalışma alanını devre dışı bırakın.',
+    'TENANT_DELETION_MODE_REQUIRED' => 'Bu çalışma alanında bordro verisi var: tamamen silme veya bordroyu koruma seçimini açıkça yapın.',
+    'TENANT_DELETION_MODE_INVALID' => 'Bilinmeyen silme modu.',
+    'TENANT_DELETION_CONFIRMATION_MISMATCH' => 'Girilen ad, şirketin tam adıyla eşleşmiyor.',
+    'TENANT_DELETION_BLOCKED' => 'Bu çalışma alanına bağlı veriler tam silmeyi engelliyor. İşlem iptal edildi.',
+    'TENANT_DELETION_INCOMPLETE' => 'Temizleme eksik: kayıtlar kaldı. İşlem iptal edildi.',
 ];
