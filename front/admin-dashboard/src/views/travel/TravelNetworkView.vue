@@ -54,15 +54,23 @@
           </template>
           <template #row-actions="{ row }">
             <div class="flex justify-end gap-2">
-              <button class="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400" @click="openRouteStops(row)">
-                {{ t('travel.network.stops', 'Étapes') }}
-              </button>
-              <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400" @click="openRouteEdit(row)">
-                {{ t('travel.common.edit', 'Modifier') }}
-              </button>
-              <button class="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400" @click="askDeleteRoute(row)">
-                {{ t('travel.common.delete', 'Supprimer') }}
-              </button>
+                          <RowActionButton
+              :icon="MapPinIcon"
+              :label="t('travel.network.stops', 'Étapes')"
+              @click="openRouteStops(row)"
+            />
+                          <RowActionButton
+              :icon="PencilSquareIcon"
+              tone="primary"
+              :label="t('travel.common.edit', 'Modifier')"
+              @click="openRouteEdit(row)"
+            />
+                          <RowActionButton
+              :icon="TrashIcon"
+              tone="danger"
+              :label="t('travel.common.delete', 'Supprimer')"
+              @click="askDeleteRoute(row)"
+            />
             </div>
           </template>
         </DataTable>
@@ -96,12 +104,18 @@
             </template>
             <template #row-actions="{ row }">
               <div class="flex justify-end gap-2">
-                <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400" @click="openStopEdit(row)">
-                  {{ t('travel.common.edit', 'Modifier') }}
-                </button>
-                <button class="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400" @click="askDeleteStop(row)">
-                  {{ t('travel.common.delete', 'Supprimer') }}
-                </button>
+                            <RowActionButton
+              :icon="PencilSquareIcon"
+              tone="primary"
+              :label="t('travel.common.edit', 'Modifier')"
+              @click="openStopEdit(row)"
+            />
+                            <RowActionButton
+              :icon="TrashIcon"
+              tone="danger"
+              :label="t('travel.common.delete', 'Supprimer')"
+              @click="askDeleteStop(row)"
+            />
               </div>
             </template>
           </DataTable>
@@ -146,29 +160,37 @@
           </template>
           <template #row-actions="{ row }">
             <div class="flex justify-end gap-2">
-              <button class="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400" @click="openTripPrices(row)">
-                {{ t('travel.network.prices', 'Tarifs') }}
-              </button>
-              <button
-                v-if="canPublish(row.status)"
-                class="text-sm font-medium text-emerald-600 hover:text-emerald-800 dark:text-emerald-400"
-                @click="publishTrip(row)"
-              >
-                {{ t('travel.network.publish', 'Publier') }}
-              </button>
-              <button
-                v-if="row.status !== 'cancelled'"
-                class="text-sm font-medium text-amber-600 hover:text-amber-800 dark:text-amber-400"
-                @click="openTripCancel(row)"
-              >
-                {{ t('travel.network.cancelTrip', 'Annuler le trajet') }}
-              </button>
-              <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400" @click="openTripEdit(row)">
-                {{ t('travel.common.edit', 'Modifier') }}
-              </button>
-              <button class="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400" @click="askDeleteTrip(row)">
-                {{ t('travel.common.delete', 'Supprimer') }}
-              </button>
+                          <RowActionButton
+              :icon="CurrencyEuroIcon"
+              :label="t('travel.network.prices', 'Tarifs')"
+              @click="openTripPrices(row)"
+            />
+                          <RowActionButton
+              v-if="canPublish(row.status)"
+              :icon="CheckIcon"
+              tone="success"
+              :label="t('travel.network.publish', 'Publier')"
+              @click="publishTrip(row)"
+            />
+                          <RowActionButton
+              v-if="row.status !== 'cancelled'"
+              :icon="XMarkIcon"
+              tone="warning"
+              :label="t('travel.network.cancelTrip', 'Annuler le trajet')"
+              @click="openTripCancel(row)"
+            />
+                          <RowActionButton
+              :icon="PencilSquareIcon"
+              tone="primary"
+              :label="t('travel.common.edit', 'Modifier')"
+              @click="openTripEdit(row)"
+            />
+                          <RowActionButton
+              :icon="TrashIcon"
+              tone="danger"
+              :label="t('travel.common.delete', 'Supprimer')"
+              @click="askDeleteTrip(row)"
+            />
             </div>
           </template>
         </DataTable>
@@ -205,12 +227,18 @@
             </template>
             <template #row-actions="{ row }">
               <div class="flex justify-end gap-2">
-                <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400" @click="openPriceEdit(row)">
-                  {{ t('travel.common.edit', 'Modifier') }}
-                </button>
-                <button class="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400" @click="askDeletePrice(row)">
-                  {{ t('travel.common.delete', 'Supprimer') }}
-                </button>
+                            <RowActionButton
+              :icon="PencilSquareIcon"
+              tone="primary"
+              :label="t('travel.common.edit', 'Modifier')"
+              @click="openPriceEdit(row)"
+            />
+                            <RowActionButton
+              :icon="TrashIcon"
+              tone="danger"
+              :label="t('travel.common.delete', 'Supprimer')"
+              @click="askDeletePrice(row)"
+            />
               </div>
             </template>
           </DataTable>
@@ -293,9 +321,18 @@ import { useTravelStore } from '@/stores/travel'
 import TravelGate from '@/components/travel/TravelGate.vue'
 import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import DataTable from '@/components/common/DataTable.vue'
+import RowActionButton from '@/components/common/RowActionButton.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { PlusIcon } from '@heroicons/vue/24/outline'
+import {
+  PlusIcon,
+  CheckIcon,
+  CurrencyEuroIcon,
+  MapPinIcon,
+  PencilSquareIcon,
+  TrashIcon,
+  XMarkIcon,
+} from '@heroicons/vue/24/outline'
 import { listTravel, createTravel, updateTravel, deleteTravel, travelAction, createTravelSub, listTravelSub, updateTravelSub, deleteTravelSub, travelList, formatMinor } from '@/services/travel'
 
 const localeStore = useLocaleStore()
