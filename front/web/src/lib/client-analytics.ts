@@ -3,6 +3,10 @@
 export type ClientAnalyticsEventName =
   | 'login_success'
   | 'login_failed'
+  // Issue #7479 — session créée mais profil indisponible (/auth/me 5xx) : à
+  // distinguer d'un `login_failed` (identifiants), sinon les tableaux de bord
+  // d'acquisition comptent des échecs d'authentification qui n'en sont pas.
+  | 'login_session_unavailable'
   // Issue #7479 — le login a réussi mais le profil n'a pas pu être chargé
   // (incident de service, pas un échec d'identifiants). Événement distinct pour
   // que la mesure ne compte pas ces cas comme des échecs de connexion.
