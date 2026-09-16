@@ -3690,9 +3690,24 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/platform/companies", options);
     },
 
+    /** Supprimer definitivement un tenant desactive */
+    deletePlatformCompaniesByCompany(options = {}) {
+      return request("DELETE", "/platform/companies/{company}", options);
+    },
+
     /** Reformer/choisir le pays legal d'un tenant (invariant 9) */
     patchPlatformCompaniesByCompanyCountry(options = {}) {
       return request("PATCH", "/platform/companies/{company}/country", options);
+    },
+
+    /** Journal des suppressions d'un tenant */
+    getPlatformCompaniesByCompanyDeletionAudits(options = {}) {
+      return request("GET", "/platform/companies/{company}/deletion-audits", options);
+    },
+
+    /** Inventaire chiffre avant suppression d'un tenant */
+    getPlatformCompaniesByCompanyDeletionInventory(options = {}) {
+      return request("GET", "/platform/companies/{company}/deletion-inventory", options);
     },
 
     /** Lire les feature flags d'une societe */

@@ -2972,9 +2972,21 @@ class LeopardoClient:
         """Creer une societe shared"""
         return self.request("POST", "/platform/companies", **kwargs)
 
+    def delete_platform_companies_by_company(self, **kwargs):
+        """Supprimer definitivement un tenant desactive"""
+        return self.request("DELETE", "/platform/companies/{company}", **kwargs)
+
     def patch_platform_companies_by_company_country(self, **kwargs):
         """Reformer/choisir le pays legal d'un tenant (invariant 9)"""
         return self.request("PATCH", "/platform/companies/{company}/country", **kwargs)
+
+    def get_platform_companies_by_company_deletion_audits(self, **kwargs):
+        """Journal des suppressions d'un tenant"""
+        return self.request("GET", "/platform/companies/{company}/deletion-audits", **kwargs)
+
+    def get_platform_companies_by_company_deletion_inventory(self, **kwargs):
+        """Inventaire chiffre avant suppression d'un tenant"""
+        return self.request("GET", "/platform/companies/{company}/deletion-inventory", **kwargs)
 
     def get_platform_companies_by_company_features(self, **kwargs):
         """Lire les feature flags d'une societe"""
