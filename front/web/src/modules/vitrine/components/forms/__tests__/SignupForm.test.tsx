@@ -116,15 +116,13 @@ async function fillField(label: RegExp, value: string): Promise<void> {
 
 
 /**
- * #7249 — le tunnel s'ouvre sur le choix du PROFIL (entreprise / indépendant)
- * depuis #7235, mais ces tests unitaires portent sur le FORMULAIRE : on
- * traverse donc l'écran de profil comme le ferait un utilisateur. L'écran de
- * profil lui-même est couvert par les e2e.
+ * #7489 — le tunnel s'ouvre directement sur le FORMULAIRE (e-mail + nom de
+ * l'espace) : le choix du profil (entreprise / indépendant) a été déplacé dans
+ * l'entretien de préparation (#7493), il n'y a donc plus d'écran à traverser
+ * avant les coordonnées.
  */
 function renderAtFormStep() {
-  const result = render(<SignupForm />);
-  fireEvent.click(screen.getByTestId('signup-profile-company'));
-  return result;
+  return render(<SignupForm />);
 }
 
 const mockedSubmitSignupForm = submitSignupForm as jest.Mock;
@@ -344,7 +342,7 @@ describe('SignupForm Component', () => {
       await waitFor(() => {
         expect(screen.getByText(/votre espace est prêt/i)).toBeInTheDocument();
       });
-      expect(screen.queryByTestId('signup-profile-company')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /créer mon espace/i })).not.toBeInTheDocument();
     });
 
     it('affiche un écran d\'échec actionnable et permet de repartir du formulaire', async () => {
@@ -363,7 +361,7 @@ describe('SignupForm Component', () => {
 
       fireEvent.click(screen.getByRole('button', { name: /retour/i }));
 
-      expect(screen.getByTestId('signup-profile-company')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /créer mon espace/i })).toBeInTheDocument();
       expect(sessionStorage.getItem('lp_trial_provisioning_token')).toBeNull();
     });
 
