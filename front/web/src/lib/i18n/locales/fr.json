@@ -1514,7 +1514,34 @@
     "managerEmail": "Email Manager Principal *",
     "activateNow": "Activer immediatement",
     "activateClientNow": "Activer le client immediatement",
-    "activateClientHint": "Sinon le client reste en essai (trial)."
+    "activateClientHint": "Sinon le client reste en essai (trial).",
+    "deletion": {
+      "action": "Supprimer",
+      "title": "Supprimer définitivement cet espace",
+      "subtitle": "Cette opération est irréversible.",
+      "inventoryTitle": "Ce qui sera détruit",
+      "inventoryEmployees": "employés",
+      "inventoryPayrollRuns": "cycles de paie",
+      "inventoryPaySlips": "bulletins de paie",
+      "inventoryDocuments": "documents",
+      "inventoryAttendance": "pointages",
+      "notDeactivated": "Cet espace doit d'abord être désactivé (suspendu ou expiré).",
+      "modeLegend": "Des données de paie existent : choisissez la conduite à tenir.",
+      "modePurge": "Tout effacer",
+      "modePurgeHint": "Employés, paie, pointages, documents : tout est supprimé.",
+      "modeAnonymize": "Conserver la paie, effacer les identités",
+      "modeAnonymizeHint": "Les bulletins sont conservés (obligation légale) ; les identités sont effacées.",
+      "confirmHint": "Saisissez le nom exact de l'entreprise pour confirmer",
+      "confirmPlaceholder": "Nom de l'entreprise",
+      "confirmAction": "Supprimer définitivement",
+      "loadFailed": "Impossible de charger l'inventaire de suppression.",
+      "success": "Espace supprimé.",
+      "auditTitle": "Dernières opérations",
+      "auditEmpty": "Aucune opération enregistrée.",
+      "statusCompleted": "Terminée",
+      "statusRefused": "Refusée",
+      "statusFailed": "Échouée"
+    }
   },
   "seo": {
     "pricing": {
