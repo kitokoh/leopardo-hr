@@ -220,3 +220,41 @@ describe('Barre du haut — règle icône seule (#7422)', () => {
     }
   });
 });
+
+describe('Barre du haut — refermeture des panneaux (#7584)', () => {
+  /**
+   * Le défaut : `closeHeaderPanels(); setX((value) => !value)`. Le helper remet
+   * CE panneau à `false`, puis l'updater fonctionnel relit cet état et le
+   * repasse à `true` — le panneau se rouvrait donc à chaque clic et ne pouvait
+   * jamais être refermé par son propre déclencheur.
+   *
+   * L'assertion porte sur le **démontage** du panneau (ils sont rendus
+   * conditionnellement, `{open ? <div/> : null}`), pas seulement sur
+   * `aria-expanded` : c'est le contrat que l'issue demande de tenir.
+   */
+  it.each([
+    ['notifications', 'dashboard-notifications-toggle', 'dashboard-notifications-panel'],
+    ['Modules & plan', 'dashboard-plan-toggle', 'dashboard-plan-panel'],
+  ])('le panneau « %s » se referme au second clic', async (_nom, toggleId, panelId) => {
+    await renderDashboard();
+
+    expect(screen.queryByTestId(panelId)).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByTestId(toggleId));
+    expect(await screen.findByTestId(panelId)).toBeInTheDocument();
+
+    await userEvent.click(screen.getByTestId(toggleId));
+    await waitFor(() => expect(screen.queryByTestId(panelId)).not.toBeInTheDocument());
+  });
+
+  it('ouvrir un panneau referme le précédent (#7556, non régressé)', async () => {
+    await renderDashboard();
+
+    await userEvent.click(screen.getByTestId('dashboard-notifications-toggle'));
+    expect(await screen.findByTestId('dashboard-notifications-panel')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByTestId('dashboard-plan-toggle'));
+    await waitFor(() => expect(screen.queryByTestId('dashboard-notifications-panel')).not.toBeInTheDocument());
+    expect(screen.getByTestId('dashboard-plan-panel')).toBeInTheDocument();
+  });
+});
