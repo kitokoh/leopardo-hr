@@ -6591,6 +6591,9 @@
     "testFailed": "Kaynağa erişilemedi.",
     "testOk": "Kaynak erişilebilir.",
     "testing": "Test ediliyor…",
-    "title": "Kameralar"
+    "title": "Kameralar",
+    "permissionsManage": "yönetebilir",
+    "permissionsNoView": "göremez",
+    "permissionsView": "görebilir"
   }
 }

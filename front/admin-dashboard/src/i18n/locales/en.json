@@ -6452,6 +6452,9 @@
     "testFailed": "Source unreachable.",
     "testOk": "Source reachable.",
     "testing": "Testing…",
-    "title": "Cameras"
+    "title": "Cameras",
+    "permissionsManage": "can manage",
+    "permissionsNoView": "cannot view",
+    "permissionsView": "can view"
   }
 }

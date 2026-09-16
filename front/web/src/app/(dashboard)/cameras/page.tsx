@@ -68,6 +68,9 @@ type CopyKey =
   | 'accessesTitle'
   | 'permissionsTitle'
   | 'permissionsEmpty'
+  | 'permissionsView'
+  | 'permissionsNoView'
+  | 'permissionsManage'
   | 'logsTitle'
   | 'logsEmpty'
   | 'active'
@@ -81,7 +84,8 @@ const COPY_KEYS: CopyKey[] = [
   'edgeTitle', 'edgeBody', 'listTitle', 'empty', 'addTitle', 'addCta', 'adding', 'fieldName',
   'fieldRtsp', 'fieldRtspHint', 'fieldLocation', 'testCta', 'testing', 'testOk', 'testFailed',
   'deleteCta', 'deleting', 'confirmDelete', 'cancel', 'accessesCta', 'accessesTitle',
-  'permissionsTitle', 'permissionsEmpty', 'logsTitle', 'logsEmpty', 'active', 'inactive',
+  'permissionsTitle', 'permissionsEmpty', 'permissionsView', 'permissionsNoView', 'permissionsManage',
+  'logsTitle', 'logsEmpty', 'active', 'inactive',
   'invalidRtsp', 'genericError', 'close',
 ];
 
@@ -231,10 +235,11 @@ export default function CamerasModulePage() {
         ) : (
           <ul className="mt-1 space-y-1 text-xs text-slate-600">
             {(permissions[camera.id] ?? []).map((permission) => (
-              <li key={permission.id}>
-                #{permission.employee_id} — {permission.can_view ? 'view' : 'no-view'}
-                {permission.can_manage ? ' / manage' : ''}
-                {permission.expires_at ? ` / ${permission.expires_at}` : ''}
+              <li key={permission.id} className="flex flex-wrap items-center gap-x-2">
+                <span>#{permission.employee_id}</span>
+                <span>{permission.can_view ? c.permissionsView : c.permissionsNoView}</span>
+                {permission.can_manage ? <span>{c.permissionsManage}</span> : null}
+                {permission.expires_at ? <span>{permission.expires_at}</span> : null}
               </li>
             ))}
           </ul>

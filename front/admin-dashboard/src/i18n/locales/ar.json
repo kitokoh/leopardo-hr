@@ -6585,6 +6585,9 @@
     "testFailed": "المصدر غير متاح.",
     "testOk": "المصدر متاح.",
     "testing": "جارٍ الاختبار…",
-    "title": "الكاميرات"
+    "title": "الكاميرات",
+    "permissionsManage": "يمكنه الإدارة",
+    "permissionsNoView": "لا يمكنه العرض",
+    "permissionsView": "يمكنه العرض"
   }
 }

@@ -6458,6 +6458,9 @@
     "testFailed": "Source injoignable.",
     "testOk": "Source joignable.",
     "testing": "Test en cours…",
-    "title": "Caméras"
+    "title": "Caméras",
+    "permissionsManage": "peut administrer",
+    "permissionsNoView": "ne voit pas",
+    "permissionsView": "peut voir"
   }
 }

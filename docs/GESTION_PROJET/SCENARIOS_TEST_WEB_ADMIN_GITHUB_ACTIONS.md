@@ -472,3 +472,16 @@ plus de troncature silencieuse au-dela de 100 societes.
   scoring du portefeuille (contrat de pagination mis a jour).
 - `eslint` et `vite build` (avec `VITE_API_URL`) restent verts ; les **4 locales** (fr/en/ar/tr)
   doivent rendre l'ecran, RTL arabe compris.
+
+### Catalogue i18n de l'admin : namespace `cameras` reçu par propagation (#7476)
+
+- Le catalogue de la console admin (`front/admin-dashboard/src/i18n/locales/*.json`) est
+  **généré** depuis la source partagée (`shared/i18n/locales/*.json`) par
+  `shared/i18n/sync/sync-web.js` : l'ajout du namespace `cameras` (module client, issue
+  #7476) y apparaît donc **sans qu'une surface admin l'utilise encore**.
+- Aucun écran admin n'est modifié par ce changement : le seul affichage existant du module
+  reste le **toggle plateforme** `Surveillance Vidéo` de la fiche entreprise
+  (`CompanyDetailView.vue`), qui lit le feature flag `cameras` — inchangé.
+- Vérification : `node shared/i18n/validators/validate.js` → `I18N_VALIDATION_OK (4 locales)` ;
+  l'écran entreprises (`CompaniesView.vue`) reste rendu dans les 4 locales, RTL arabe compris
+  (`e2e/companies-list-quick-actions.spec.js`, `e2e/companies-progressive-portfolio.spec.js`).
