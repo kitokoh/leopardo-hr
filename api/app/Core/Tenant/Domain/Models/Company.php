@@ -133,6 +133,25 @@ class Company extends Model
         // l'admin plateforme (`PlatformCompanyFeatureController::update`)
         // reconstruise et expose la clé, au même titre que `accounting`/#7235.
         'company_showcase',
+        // #7432 — Formation : outil HORIZONTAL (toute entreprise forme, quel que
+        // soit son secteur). Il était déjà dans `HORIZONTAL_TOOLS` et dans le
+        // sous-menu RH de la barre client, mais ABSENT de ce registre : comme
+        // pour `travelagency` (#7220) et `accounting` (#7235), l'interrupteur
+        // « Centre de Formation » de la fiche entreprise était donc reconstruit
+        // à partir de ce même registre… sans la clé — le switch admin
+        // s'affichait et **jetait silencieusement** la valeur envoyée.
+        // L'entrée manquante rend l'interrupteur réellement agissant.
+        'training',
+        // BC-24 TRAVEL / #7400 — module HORIZONTAL « Flotte & suivi des
+        // véhicules » (outil transverse : toute PME de terrain a des
+        // véhicules). Il doit figurer ici pour que l'admin plateforme
+        // (`PlatformCompanyFeatureController::update`) reconstruise et expose
+        // la clé, sans quoi le module ne serait ni activable ni mesurable.
+        // Fail-closed conservé (défaut false) ; le gate serveur `module.fleet`
+        // reste à trancher (voir #7400) — les routes Fleet sont aujourd'hui
+        // sous `api.manager` et la surface client est ouverte par capacité
+        // (`can_view_fleet`).
+        'fleet',
     ];
 
     /**
@@ -191,6 +210,12 @@ class Company extends Model
         'accounting' => 'accounting',
         'crm' => 'crm',
         'showcase' => 'company_showcase',
+        // #7432 — la Formation est horizontale ET possède un flag plateforme
+        // du même nom (`config/feature-flags.php`) : l'auto-activation par le
+        // client (`POST /company/modules/training/activate`) doit donc écrire
+        // les deux sources de vérité (`metadata.modules.training` ET
+        // `companies.features.training`), comme `showcase`.
+        'training' => 'training',
     ];
 
     /**
@@ -241,6 +266,37 @@ class Company extends Model
         'payroll',
         'training',
     ];
+
+    /**
+     * #7423 — PLANCHER D'ACCÈS garanti : le socle RH qu'un indépendant
+     * (`solo`) garde **quel que soit son profil et sa sélection**.
+     *
+     * Demande du propriétaire (2026-09-14) : « j'aimerais qu'il ait quand même
+     * accès au minimum […] au moins accès au module RH ». Un solo n'a pas
+     * d'équipe à piloter, mais il travaille : il se pointe, pose ses congés et
+     * reçoit ses bulletins. `TEAM_TOOLS` (pilotage d'ÉQUIPE) reste donc
+     * désactivé pour lui — mais le sous-ensemble ci-dessous est forcé à `true`,
+     * y compris si la sélection d'inscription ne le coche pas (le plancher est
+     * un MINIMUM, pas un défaut).
+     *
+     * Source de vérité : cette constante est appliquée côté serveur
+     * (`HorizontalToolSelection::resolve`, `CompanyModuleController::activate`)
+     * — un client ne se garde pas lui-même ; `front/web/src/lib/client-features.ts`
+     * ne fait que la refléter pour l'affichage.
+     */
+    public const SOLO_FLOOR_TOOLS = [
+        'attendance',
+        'absences',
+        'payroll',
+    ];
+
+    /**
+     * #7423 — un outil d'équipe est-il au plancher garanti du profil `solo` ?
+     */
+    public static function isSoloFloorTool(string $key): bool
+    {
+        return in_array(strtolower(trim($key)), self::SOLO_FLOOR_TOOLS, true);
+    }
 
     /**
      * #7235 — Profil d'activité du tenant (`company` par défaut, fail-safe :
@@ -304,11 +360,19 @@ class Company extends Model
 
         $features = $this->features ?? [];
 
-        if ($key === 'rh') {
-            return (bool) ($features['rh'] ?? true);
-        }
+        // #7400 — le défaut d'un module est déclaré UNE SEULE FOIS, dans le
+        // registre (`config/feature-flags.php`), qui est la source de vérité
+        // revendiquée par son propre docblock. L'ancien `if ($key === 'rh')`
+        // recodait ce défaut en dur : tout flag déclaré `default => true` dans
+        // le registre était donc silencieusement remis à `false` dès que la
+        // company portait une carte `features`, et le registre mentait.
+        //
+        // Sans effet observable aujourd'hui : `rh` est le seul flag en
+        // `default => true`, et le cas particulier lui rendait déjà `true`.
+        // C'est le piège posé au prochain flag activé par défaut qui est retiré.
+        $default = (bool) config("feature-flags.flags.{$key}.default", false);
 
-        return (bool) ($features[$key] ?? false);
+        return (bool) ($features[$key] ?? $default);
     }
 
     /**

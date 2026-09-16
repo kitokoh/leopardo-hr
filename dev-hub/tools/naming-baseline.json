@@ -1,0 +1,7 @@
+{
+  "_comment": "#7428 — occurrences restantes de catégories interdites (SaaS RH / HR SaaS / HR software…), mesurées par fichier. Toutes sont des MOTS-CLÉS SEO ou des usages descriptifs conservés volontairement (critère 4 : ne pas perdre le trafic) — voir POSITIONNEMENT_SUITE_METIER.md §6. Ce nombre ne peut que DÉCROÎTRE : toute hausse = dérive de nommage. Régénérer avec dev-hub/tools/check-naming-drift.sh --update-baseline.",
+  "front/web/src/modules/vitrine/data/case-studies.ts": 2,
+  "front/web/src/modules/vitrine/lib/case-studies.ts": 2,
+  "front/web/src/modules/vitrine/lib/seo.ts": 19,
+  "front/web/src/modules/vitrine/lib/vitrine-locale.ts": 1
+}

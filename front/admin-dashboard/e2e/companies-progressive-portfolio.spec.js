@@ -100,6 +100,8 @@ test('la liste des clients est utilisable avant la fin du scoring du portefeuill
 
   // (b) APRÈS le scoring : les scores remplacent les placeholders.
   await expect(page.getByText('72%')).toBeVisible({ timeout: 15000 })
-  await expect(page.getByText('Pilot')).toBeVisible({ timeout: 15000 })
+  // #7554 : le titre de section « Pilotage » du menu latéral contient
+  // « Pilot » — le sélecteur est ancré pour ne viser que le libellé du plan.
+  await expect(page.getByText('Pilot', { exact: true })).toBeVisible({ timeout: 15000 })
   await expect(page.getByText(/Calcul des scores en cours/i)).toBeHidden({ timeout: 15000 })
 })

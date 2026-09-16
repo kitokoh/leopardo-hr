@@ -27,6 +27,10 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
   const token = ref(storage.getToken())
   const isLoading = ref(false)
+  // #7553/#7557 — permissions effectives du compte plateforme (contrat
+  // `permissions[]` de `/platform/auth/me`). Elles pilotent le filtrage des
+  // écrans (menu latéral, palette) ; la garde API reste la source de vérité.
+  const permissions = ref([])
 
   /** Traduit une clé i18n dans la locale courante (#4712). */
   function t(key, fallback = '') {
@@ -42,6 +46,47 @@ export const useAuthStore = defineStore('auth', () => {
   const userRole = computed(() => user.value?.role || null)
   const userName = computed(() => user.value?.name || '')
   const userEmail = computed(() => user.value?.email || '')
+
+  /**
+   * Rôle interne plateforme (#7553). `user.role` reste `'super_admin'` pour
+   * tous les comptes plateforme (rétrocompatibilité) : c'est ce champ qui
+   * porte la délégation (`super_admin`, `admin`, `support`, `finance`, `ops`,
+   * `marketing`). `null` quand l'API ne l'expose pas (session héritée).
+   */
+  const platformRole = computed(() => user.value?.platform_role || null)
+
+  /**
+   * `super_admin` porte TOUTES les permissions (matrice #7553). Sans
+   * `platform_role` exposé (réponse d'API antérieure au déploiement), seul
+   * `role === 'super_admin'` est disponible — même sémantique permissive.
+   */
+  const isSuperAdmin = computed(() => {
+    if (platformRole.value) {
+      return platformRole.value === 'super_admin'
+    }
+
+    return user.value?.role === 'super_admin'
+  })
+
+  /**
+   * Permission effective du compte courant. Une entrée sans permission
+   * (`null`) reste visible ; les autres exigent la permission correspondante.
+   */
+  function hasPermission(permission) {
+    if (!permission) return true
+    if (isSuperAdmin.value) return true
+
+    return permissions.value.includes(permission)
+  }
+
+  /**
+   * Applique l'identité plateforme renvoyée par `/platform/auth/login` et
+   * `/platform/auth/me` (id, name, email, role, platform_role, permissions…).
+   */
+  function applyPlatformIdentity(payload) {
+    user.value = payload || null
+    permissions.value = Array.isArray(payload?.permissions) ? [...payload.permissions] : []
+  }
 
   async function login(credentials) {
     isLoading.value = true
@@ -71,25 +116,17 @@ export const useAuthStore = defineStore('auth', () => {
         }
       }
 
-      // Défense en profondeur (demande propriétaire 2026-09-10) : l'admin
-      // plateforme est réservé au super-admin de la plateforme, PAS aux
-      // utilisateurs d'un tenant. Le backend sépare déjà les tables
-      // (`super_admins` en schéma public vs `employees` du tenant) et
-      // `/platform/auth/me` renvoie toujours `role: 'super_admin'` — mais on
-      // refuse ici toute session qui n'aurait pas ce rôle, pour qu'une
-      // évolution d'API ne puisse pas ouvrir l'admin à un tenant.
-      if (userData?.role !== 'super_admin') {
-        clearSession()
-
-        return {
-          success: false,
-          requiresTwoFactor: false,
-          message: t('auth.platform_admin_only', 'Accès réservé aux administrateurs de la plateforme.'),
-        }
-      }
-
+      // #7553/#7557 — l'admin plateforme peut désormais déléguer une partie de
+      // son périmètre (support, finance, ops, marketing) : le compte reste un
+      // compte PLATEFORME (table `super_admins`, garde `super_admin_api`),
+      // mais `role` n'est plus le seul signal. `role` reste `'super_admin'`
+      // pour la rétrocompatibilité, `platform_role` porte le rôle interne et
+      // `permissions` le périmètre effectif : on accepte donc tout compte
+      // renvoyé par l'API plateforme (un compte tenant n'y a pas accès) et on
+      // filtre les écrans sur `hasPermission`. La destruction de session sur
+      // 401/403/410 reste inchangée (checkAuth, #4515).
       token.value = authToken
-      user.value = userData
+      applyPlatformIdentity(userData)
       storage.setToken(authToken)
       api.defaults.headers.common.Authorization = `Bearer ${authToken}`
 
@@ -123,6 +160,7 @@ export const useAuthStore = defineStore('auth', () => {
   function clearSession() {
     token.value = null
     user.value = null
+    permissions.value = []
     storage.removeToken()
     delete api.defaults.headers.common.Authorization
   }
@@ -149,15 +187,11 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await api.get(`${PLATFORM_AUTH_BASE}/me`)
       const me = response.data?.data || null
 
-      // Même garde qu'à la connexion : une session sans rôle super-admin est
-      // détruite plutôt que de laisser entrer dans l'admin plateforme.
-      if (me && me.role !== 'super_admin') {
-        await logout()
-
-        return false
-      }
-
-      user.value = me
+      // #7553/#7557 — plus de garde `role !== 'super_admin'` : le contrat
+      // `/platform/auth/me` ne renvoie QUE des comptes plateforme et porte
+      // désormais `platform_role` + `permissions`. Le filtrage des écrans se
+      // fait sur `hasPermission`, l'API reste autoritaire (403).
+      applyPlatformIdentity(me)
 
       return !!user.value
     } catch (error) {
@@ -180,7 +214,8 @@ export const useAuthStore = defineStore('auth', () => {
   async function updateProfile(payload) {
     try {
       const response = await api.patch(`${PLATFORM_AUTH_BASE}/profile`, payload)
-      user.value = response.data?.data || user.value
+      // Le profil renvoyé porte aussi role/platform_role/permissions (#7553).
+      applyPlatformIdentity(response.data?.data || user.value)
 
       return { success: true, data: response.data?.data }
     } catch (error) {
@@ -262,6 +297,10 @@ export const useAuthStore = defineStore('auth', () => {
     userRole,
     userName,
     userEmail,
+    platformRole,
+    permissions,
+    isSuperAdmin,
+    hasPermission,
     login,
     logout,
     clearSession,

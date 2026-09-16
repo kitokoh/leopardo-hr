@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Notification\Application\Actions;
 
-use App\Modules\Notification\Domain\Models\AppNotification;
+use App\Modules\Notification\Domain\Models\Notification;
 
 class MarkNotificationsRead
 {
@@ -15,16 +15,19 @@ class MarkNotificationsRead
      */
     public function execute(int $userId, ?array $ids = null): int
     {
-        $query = AppNotification::query()
-            ->where('user_id', $userId)
-            ->where('read', false);
+        // #7481 — store canonique (`employee_id`/`is_read`), celui que lit
+        // `GET /notifications` : marquer comme lues des lignes d'une AUTRE
+        // table laissait la boîte de réception éternellement non lue.
+        $query = Notification::query()
+            ->where('employee_id', $userId)
+            ->where('is_read', false);
 
         if ($ids !== null) {
             $query->whereIn('id', $ids);
         }
 
         return $query->update([
-            'read' => true,
+            'is_read' => true,
             'read_at' => now(),
         ]);
     }

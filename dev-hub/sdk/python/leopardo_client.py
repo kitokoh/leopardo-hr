@@ -1196,6 +1196,22 @@ class LeopardoClient:
         """Regenerer un stream token client"""
         return self.request("GET", "/cameras/{camera}/stream-token", **kwargs)
 
+    def get_cameras_alerts(self, **kwargs):
+        """Alertes camera (module Surveillance, #7427)"""
+        return self.request("GET", "/cameras/alerts", **kwargs)
+
+    def post_cameras_alerts_by_alert_acknowledge(self, **kwargs):
+        """Acquitter une alerte camera (#7427)"""
+        return self.request("POST", "/cameras/alerts/{alert}/acknowledge", **kwargs)
+
+    def post_cameras_alerts_by_alert_resolve(self, **kwargs):
+        """Cloturer une alerte camera (#7427)"""
+        return self.request("POST", "/cameras/alerts/{alert}/resolve", **kwargs)
+
+    def get_cameras_events(self, **kwargs):
+        """Journal des evenements camera (module Surveillance, #7427)"""
+        return self.request("GET", "/cameras/events", **kwargs)
+
     def post_cameras_test_rtsp(self, **kwargs):
         """Tester une URL RTSP"""
         return self.request("POST", "/cameras/test-rtsp", **kwargs)
@@ -2276,6 +2292,10 @@ class LeopardoClient:
         """Traductions pour une locale"""
         return self.request("GET", "/i18n/catalog/{locale}", **kwargs)
 
+    def post_internal_camera_events(self, **kwargs):
+        """Ingestion d''un evenement detecte (MediaMTX, #7427)"""
+        return self.request("POST", "/internal/camera-events", **kwargs)
+
     def get_internal_camera_token_verify(self, **kwargs):
         """Verification interne MediaMTX"""
         return self.request("GET", "/internal/camera-token/verify", **kwargs)
@@ -2607,14 +2627,6 @@ class LeopardoClient:
     def post_notifications_read_all(self, **kwargs):
         """Marquer toutes les notifications comme lues"""
         return self.request("POST", "/notifications/read-all", **kwargs)
-
-    def post_notifications_sse_token(self, **kwargs):
-        """Émettre un token SSE temporaire pour le flux temps réel"""
-        return self.request("POST", "/notifications/sse-token", **kwargs)
-
-    def get_notifications_stream(self, **kwargs):
-        """Flux SSE temps réel des notifications (employee/manager)"""
-        return self.request("GET", "/notifications/stream", **kwargs)
 
     def get_notifications_unread(self, **kwargs):
         """Notifications non lues de l'employe"""
@@ -3096,6 +3108,26 @@ class LeopardoClient:
         """Lister le catalogue des plans SaaS"""
         return self.request("GET", "/platform/plans", **kwargs)
 
+    def post_platform_plans(self, **kwargs):
+        """Creer une offre tarifaire (parametrage plateforme, #7430)"""
+        return self.request("POST", "/platform/plans", **kwargs)
+
+    def delete_platform_plans_by_plan(self, **kwargs):
+        """Supprimer une offre non utilisee (409 si des clients y sont rattaches)"""
+        return self.request("DELETE", "/platform/plans/{plan}", **kwargs)
+
+    def patch_platform_plans_by_plan(self, **kwargs):
+        """Modifier une offre tarifaire (prix, limite, features, publication)"""
+        return self.request("PATCH", "/platform/plans/{plan}", **kwargs)
+
+    def post_platform_plans_by_plan_archive(self, **kwargs):
+        """Archiver une offre (elle n'est plus proposee dans le tunnel)"""
+        return self.request("POST", "/platform/plans/{plan}/archive", **kwargs)
+
+    def post_platform_plans_by_plan_duplicate(self, **kwargs):
+        """Dupliquer une offre (la copie nait archivee)"""
+        return self.request("POST", "/platform/plans/{plan}/duplicate", **kwargs)
+
     def get_platform_support_tickets(self, **kwargs):
         """Lister tous les tickets de support (super-admin, cross-tenant)"""
         return self.request("GET", "/platform/support-tickets", **kwargs)
@@ -3111,6 +3143,26 @@ class LeopardoClient:
     def patch_platform_support_tickets_by_supportticket_triage(self, **kwargs):
         """Trier un ticket (statut, priorite, assignation)"""
         return self.request("PATCH", "/platform/support-tickets/{supportTicket}/triage", **kwargs)
+
+    def get_platform_team(self, **kwargs):
+        """Lister l'equipe interne de la plateforme (issue #7553)"""
+        return self.request("GET", "/platform/team", **kwargs)
+
+    def post_platform_team(self, **kwargs):
+        """Creer un collaborateur interne de la plateforme"""
+        return self.request("POST", "/platform/team", **kwargs)
+
+    def post_platform_team_by_superadmin_activate(self, **kwargs):
+        """Reactiver un collaborateur interne de la plateforme"""
+        return self.request("POST", "/platform/team/{superAdmin}/activate", **kwargs)
+
+    def post_platform_team_by_superadmin_deactivate(self, **kwargs):
+        """Desactiver un collaborateur interne de la plateforme"""
+        return self.request("POST", "/platform/team/{superAdmin}/deactivate", **kwargs)
+
+    def patch_platform_team_by_superadmin_role(self, **kwargs):
+        """Changer le role plateforme d'un collaborateur interne"""
+        return self.request("PATCH", "/platform/team/{superAdmin}/role", **kwargs)
 
     def get_platform_users(self, **kwargs):
         """Lister les utilisateurs plateforme (super-admins)"""

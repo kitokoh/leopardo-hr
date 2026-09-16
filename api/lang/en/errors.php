@@ -300,6 +300,11 @@ return [
     'ONBOARDING_STEP_NOT_DONE' => 'This step cannot be marked complete: no matching action has been recorded yet.',
     'COMPANY_CONTEXT_REQUIRED' => 'A company context is required.',
     // #7322 — Client self-activation of a horizontal module.
+    'SOLO_TEAM_TOOL_NOT_AVAILABLE' => 'Team tool outside an independent (solo) profile scope: :module.',
+    'PLAN_NOT_FOUND' => 'Plan not found.',
+    'PLAN_NAME_TAKEN' => 'A plan is already named “:name”.',
+    'PLAN_NOTHING_TO_UPDATE' => 'No plan field to update.',
+    'PLAN_IN_USE' => 'Plan used by :count customer(s) — archive it instead of deleting it.',
     'INVALID_HORIZONTAL_TOOL' => 'Unknown module or not self-activatable: :module.',
     'MODULE_ACTIVATED' => 'Module activated.',
     'MODULE_ALREADY_ACTIVE' => 'This module is already active.',
@@ -309,4 +314,10 @@ return [
     'TENANT_DELETION_CONFIRMATION_MISMATCH' => 'The typed name does not match the exact company name.',
     'TENANT_DELETION_BLOCKED' => 'Data linked to this workspace prevents a complete deletion. Operation cancelled.',
     'TENANT_DELETION_INCOMPLETE' => 'Purge is incomplete: rows remain. Operation cancelled.',
+
+    // #7553 — rôles internes plateforme (délégation par le super admin).
+    'PLATFORM_ACCOUNT_REQUIRED' => 'A platform account is required for this action.',
+    'PLATFORM_PERMISSION_REQUIRED' => 'Your platform role does not allow this action (required permissions: :permissions).',
+    'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'You cannot change your own platform role.',
+    'LAST_SUPER_ADMIN_REQUIRED' => 'Action denied: at least one active super administrator must remain.',
 ];

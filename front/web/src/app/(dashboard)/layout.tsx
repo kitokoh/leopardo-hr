@@ -1,14 +1,15 @@
 ﻿'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Bell, ChevronDown, Globe, KeyRound, LayoutGrid, LockKeyhole, LogOut, Menu, Plus, ShieldCheck, Sparkles, UserCircle, X } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
+import { teamRolesT } from '@/lib/i18n/team-roles';
 import { trackClientEvent } from '@/lib/client-analytics';
 import { getClientModuleAccess, getModuleAccessForPath, getSidebarSections, isSelfActivable, mergeActivationSurface, sessionModuleSignature, type ClientModuleAccess, type ClientModuleKey } from '@/lib/client-features';
-import { buildDashboardNav, isHrEntryActive, toNavModules } from '@/lib/dashboard-nav';
+import { buildDashboardNav, isHrEntryActive, toNavModules, type DashboardNavEntry } from '@/lib/dashboard-nav';
 import {
   applyDocumentLocale,
   clearAuthSession,
@@ -39,6 +40,131 @@ const MD_BREAKPOINT_MEDIA_QUERY = `(min-width: ${768}px)`;
  * entre onglets, tout en rattrapant une activation faite côté plateforme.
  */
 const SESSION_REFRESH_MIN_INTERVAL_MS = 60_000;
+
+/**
+ * #7556 — Verrou de défilement partagé par les surfaces superposées (tiroir,
+ * panneaux de la barre). Compté plutôt que posé à `hidden` en aveugle : deux
+ * surfaces ouvertes en même temps ne doivent pas se rendre la main l'une à
+ * l'autre un `overflow` intermédiaire (le dernier fermé restitue la valeur
+ * d'origine du document).
+ */
+let overlayScrollLocks = 0;
+let overflowBeforeFirstLock = '';
+
+function lockDocumentScroll(): () => void {
+  if (overlayScrollLocks === 0) {
+    overflowBeforeFirstLock = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+  }
+  overlayScrollLocks += 1;
+  let released = false;
+
+  return () => {
+    if (released) {
+      return;
+    }
+    released = true;
+    overlayScrollLocks = Math.max(0, overlayScrollLocks - 1);
+    if (overlayScrollLocks === 0) {
+      document.body.style.overflow = overflowBeforeFirstLock;
+    }
+  };
+}
+
+/**
+ * #7556 — tout panneau déroulant (tiroir de navigation, notifications,
+ * modules, compte, sous-menu RH) se referme par Échap et verrouille le
+ * défilement du document tant qu'il est ouvert.
+ *
+ * `onClose` est lu via une ref : l'effet ne se réabonne pas à chaque rendu.
+ */
+function usePanelDismiss(open: boolean, onClose: () => void): void {
+  const closeRef = useRef(onClose);
+
+  useEffect(() => {
+    closeRef.current = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeRef.current();
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    const unlock = lockDocumentScroll();
+
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      unlock();
+    };
+  }, [open]);
+}
+
+/** Classes de la liste de modules du shell (partagées tiroir / panneau `md`). */
+const MODULES_NAV_PANEL = 'absolute end-0 top-12 z-30 max-h-[70vh] w-64 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-xl';
+
+/** Classes d'un lien de module (état actif / repos). */
+function modulesNavLinkClass(active: boolean): string {
+  return [
+    'flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-[12px] font-bold transition',
+    active ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
+  ].join(' ');
+}
+
+/**
+ * #7556 — liste de modules du shell (liens directs + sous-menu RH replié),
+ * rendue à l'identique dans le tiroir mobile et dans le panneau `md`–`lg`.
+ */
+function DashboardModuleLinks({
+  entries,
+  pathname,
+  labels,
+  onNavigate,
+}: {
+  entries: DashboardNavEntry[];
+  pathname: string;
+  labels: CopyTree;
+  onNavigate: () => void;
+}) {
+  return (
+    <>
+      {entries.map((entry) => (
+        entry.kind === 'link' ? (
+          <Link
+            key={entry.module.key}
+            href={entry.module.href}
+            onClick={onNavigate}
+            className={modulesNavLinkClass(pathname === entry.module.href)}
+          >
+            {labels.dashboard.modules[entry.module.key] ?? entry.module.label}
+          </Link>
+        ) : (
+          <div key={`menu-${entry.id}`} className="mt-1 border-t border-slate-100 pt-1">
+            <p className="px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-500">
+              {labels.dashboard.hrMenu}
+            </p>
+            {entry.modules.map((module) => (
+              <Link
+                key={module.key}
+                href={module.href}
+                onClick={onNavigate}
+                className={`ps-6 ${modulesNavLinkClass(pathname === module.href)}`}
+              >
+                {labels.dashboard.modules[module.key] ?? module.label}
+              </Link>
+            ))}
+          </div>
+        )
+      ))}
+    </>
+  );
+}
 
 export default function DashboardLayout({
   children,
@@ -77,6 +203,14 @@ export default function DashboardLayout({
   const labels = useMemo(() => getCopy(locale), [locale]);
   const modules = useMemo(() => getClientModuleAccess(user), [user]);
   const currentModule = useMemo(() => getModuleAccessForPath(pathname, user), [pathname, user]);
+  // #7483 — le titre de la barre reflète la page courante : même résolution
+  // que les pastilles de navigation (catalogue ROUTE_TO_MODULE → clé i18n
+  // `dashboard.modules`), au lieu d'être figé sur `dashboard.heading`
+  // (« Tableau de bord » partout). Repli sur le titre générique pour les
+  // routes hors catalogue (ex. /settings/account).
+  const pageTitle = currentModule
+    ? labels.dashboard.modules[currentModule.key] ?? currentModule.label
+    : labels.dashboard.heading;
 
   useEffect(() => {
     setStoredUser(getStoredUser());
@@ -99,6 +233,19 @@ export default function DashboardLayout({
   const handleLogout = () => {
     router.push('/auth/logout');
   };
+
+  /**
+   * #7556 — un seul panneau déroulant ouvert à la fois dans la barre : ouvrir
+   * un panneau referme les autres (et donc leur voile).
+   */
+  const closeHeaderPanels = useCallback(() => {
+    setNotificationsOpen(false);
+    setModulesOpen(false);
+    setMobileModulesOpen(false);
+    setUserMenuOpen(false);
+    setHrMenuOpen(false);
+  }, []);
+  const headerPanelOpen = notificationsOpen || modulesOpen || mobileModulesOpen || userMenuOpen || hrMenuOpen;
 
   useEffect(() => {
     let cancelled = false;
@@ -181,34 +328,21 @@ export default function DashboardLayout({
     return () => query.removeEventListener('change', update);
   }, []);
 
-  // Ferme le tiroir à chaque navigation.
+  // Ferme le tiroir et les panneaux de la barre à chaque navigation.
   useEffect(() => {
     setMobileNavOpen(false);
-    setHrMenuOpen(false);
-    setMobileModulesOpen(false);
-  }, [pathname]);
+    closeHeaderPanels();
+  }, [closeHeaderPanels, pathname]);
 
   // Échap ferme le tiroir ; le scroll du document est verrouillé tant qu'il est ouvert.
-  useEffect(() => {
-    if (!mobileNavOpen) {
-      return;
-    }
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setMobileNavOpen(false);
-      }
-    };
-
-    window.addEventListener('keydown', onKeyDown);
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      window.removeEventListener('keydown', onKeyDown);
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [mobileNavOpen]);
+  usePanelDismiss(mobileNavOpen, () => setMobileNavOpen(false));
+  // #7556 — mêmes garanties pour les panneaux de la barre (notifications,
+  // modules, plan, compte, sous-menu RH).
+  usePanelDismiss(notificationsOpen, () => setNotificationsOpen(false));
+  usePanelDismiss(modulesOpen, () => setModulesOpen(false));
+  usePanelDismiss(mobileModulesOpen, () => setMobileModulesOpen(false));
+  usePanelDismiss(userMenuOpen, () => setUserMenuOpen(false));
+  usePanelDismiss(hrMenuOpen, () => setHrMenuOpen(false));
 
   const [showWizard, setShowWizard] = useState(false);
   // #R8 — onboarding non complété mais wizard fermé → bouton "Reprendre".
@@ -366,11 +500,6 @@ export default function DashboardLayout({
   // #7328 — le bandeau « Entreprise » (2e ligne) est supprimé : le menu vit
   // dans la barre h-16 et les modules RH sont repliés dans un sous-menu.
   const navEntries = buildDashboardNav(toNavModules(navPills));
-  const modulesNavPanel = 'absolute end-0 top-12 z-30 w-64 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl';
-  const modulesNavLink = (active: boolean) => [
-    'flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-[12px] font-bold transition',
-    active ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
-  ].join(' ');
 
   return (
     <div className="flex min-h-screen bg-transparent">
@@ -394,7 +523,9 @@ export default function DashboardLayout({
         <aside
           data-testid="business-rail"
           id="dashboard-sidebar"
-          aria-label={labels.dashboard.businessSection}
+          role={isDesktop ? undefined : 'dialog'}
+          aria-modal={!isDesktop && mobileNavOpen ? true : undefined}
+          aria-label={isDesktop ? labels.dashboard.businessSection : labels.dashboard.navMenu}
           inert={!isDesktop && !mobileNavOpen}
           className={`fixed inset-y-0 start-0 z-50 flex w-64 max-w-[85vw] shrink-0 flex-col overflow-y-auto border-e border-slate-200/50 bg-white text-slate-900 shadow-2xl transition-transform duration-300 md:relative md:z-10 md:w-64 md:translate-x-0 md:overflow-visible md:bg-white/80 md:shadow-none md:backdrop-blur-xl ${
             mobileNavOpen ? 'translate-x-0' : '-translate-x-full rtl:translate-x-full'
@@ -427,18 +558,90 @@ export default function DashboardLayout({
           ))}
         </nav>
 
+        {/* #7556 — sous `md`, le tiroir est le point d'entrée UNIQUE de
+            navigation : il porte aussi les modules entreprise/horizontaux
+            (masqués par `lg:flex` sous 1024 px) et les liens
+            compte/paramètres, auparavant accessibles seulement par l'avatar. */}
+        <div className="md:hidden">
+          {navEntries.length > 0 ? (
+            <section className="border-t border-slate-200/50 px-3 py-3" aria-label={labels.dashboard.sectionEnterprise}>
+              <p className="px-1 pb-1 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                {labels.dashboard.sectionEnterprise}
+              </p>
+              <DashboardModuleLinks
+                entries={navEntries}
+                pathname={pathname}
+                labels={labels}
+                onNavigate={() => setMobileNavOpen(false)}
+              />
+            </section>
+          ) : null}
+          <section
+            className="border-t border-slate-200/50 px-3 py-3"
+            aria-label={labels.dashboard.accountSection}
+            data-testid="dashboard-drawer-account"
+          >
+            <p className="px-1 pb-1 text-[10px] font-black uppercase tracking-widest text-slate-500">
+              {labels.dashboard.accountSection}
+            </p>
+            <Link href="/settings/account" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+              <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
+              {labels.dashboard.userMenuAccount}
+            </Link>
+            {/* #7555 — gestion des collaborateurs et attribution des rôles. */}
+            <Link href="/settings/team" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+              <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
+              {teamRolesT(locale, 'menuLabel')}
+            </Link>
+            <Link href="/settings/account#password" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+              <KeyRound className="h-4 w-4 text-slate-400" aria-hidden="true" />
+              {labels.dashboard.userMenuPassword}
+            </Link>
+            <Link href="/settings/security/2fa" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+              <ShieldCheck className="h-4 w-4 text-slate-400" aria-hidden="true" />
+              {labels.dashboard.userMenuSecurity}
+            </Link>
+            <Link href="/settings/notifications" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+              <Bell className="h-4 w-4 text-slate-400" aria-hidden="true" />
+              {i18nT(locale, 'shell.notifications')}
+            </Link>
+            <button
+              type="button"
+              onClick={handleLogout}
+              data-testid="dashboard-drawer-logout"
+              className="mt-1 flex w-full items-center gap-3 rounded-lg border-t border-slate-100 px-3 py-2 text-[12px] font-bold text-red-600 transition hover:bg-red-50"
+            >
+              <LogOut className="h-4 w-4" aria-hidden="true" />
+              {labels.dashboard.logout}
+            </button>
+          </section>
+        </div>
+
         </aside>
       ) : null}
 
       <div className="relative z-10 flex min-w-0 flex-1 flex-col">
+        {/* #7556 — voile des panneaux de la barre (notifications, modules, plan,
+            compte, sous-menu RH) : il capte le clic extérieur. Placé DANS la
+            colonne (au-dessus du contenu, sous la barre `z-40` et ses panneaux)
+            car cette colonne est elle-même un contexte d'empilement `z-10` —
+            un voile posé à la racine recouvrirait la barre et ses panneaux. */}
+        {headerPanelOpen ? (
+          <div
+            className="fixed inset-0 z-30"
+            aria-hidden="true"
+            data-testid="dashboard-panel-backdrop"
+            onClick={closeHeaderPanels}
+          />
+        ) : null}
         <header className="sticky top-0 z-40 border-b border-slate-200/50 bg-white/80 backdrop-blur-md">
           <div className="flex h-16 items-center justify-between gap-4 px-4 md:px-8">
             <div className="flex min-w-0 items-center gap-3">
               {business.length > 0 ? (
                 <button
                   type="button"
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700 md:hidden"
-                  aria-label={labels.dashboard.businessSection}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 md:hidden"
+                  aria-label={labels.dashboard.navMenu}
                   aria-expanded={mobileNavOpen}
                   aria-controls="dashboard-sidebar"
                   data-testid="dashboard-nav-toggle"
@@ -455,7 +658,7 @@ export default function DashboardLayout({
                 <span className="text-xs font-black text-white">LRH</span>
               </div>
               <div className="min-w-0">
-                <h2 className="truncate text-base font-black uppercase tracking-tight text-slate-950">{labels.dashboard.heading}</h2>
+                <h2 className="truncate text-base font-black uppercase tracking-tight text-slate-950">{pageTitle}</h2>
                 <p className="truncate text-[11px] font-semibold text-slate-500">{user?.company?.name ?? ''}</p>
               </div>
             </div>
@@ -481,7 +684,15 @@ export default function DashboardLayout({
                       data-testid={`dashboard-${entry.id}-menu`}
                       aria-expanded={hrMenuOpen}
                       aria-haspopup="true"
-                      onClick={() => setHrMenuOpen((value) => !value)}
+                      aria-controls="dashboard-hr-menu-panel"
+                      onClick={() => {
+                        // Même correction que le menu de compte : fermer les
+                        // autres panneaux puis basculer CELUI-CI sur une cible
+                        // calculée avant (sinon il restait ouvert).
+                        const next = !hrMenuOpen;
+                        closeHeaderPanels();
+                        setHrMenuOpen(next);
+                      }}
                       className={[
                         'group inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[11px] font-black uppercase tracking-tight transition-all',
                         isHrEntryActive(entry, pathname)
@@ -496,13 +707,17 @@ export default function DashboardLayout({
                       />
                     </button>
                     {hrMenuOpen ? (
-                      <div className="absolute start-0 top-10 z-30 w-56 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
+                      <div
+                        id="dashboard-hr-menu-panel"
+                        data-testid="dashboard-hr-menu-panel"
+                        className="absolute start-0 top-10 z-30 max-h-[70vh] w-56 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-xl"
+                      >
                         {entry.modules.map((module) => (
                           <Link
                             key={module.key}
                             href={module.href}
                             onClick={() => setHrMenuOpen(false)}
-                            className={modulesNavLink(pathname === module.href)}
+                            className={modulesNavLinkClass(pathname === module.href)}
                           >
                             {labels.dashboard.modules[module.key] ?? module.label}
                           </Link>
@@ -515,49 +730,34 @@ export default function DashboardLayout({
             </nav>
           ) : null}
           <div className="flex items-center gap-2 md:gap-4">
-            {/* #7328 — sous `lg`, le menu vit dans un panneau (la barre reste sur une ligne). */}
+            {/* #7328 — sous `lg`, le menu vit dans un panneau (la barre reste sur une ligne).
+                #7556 — ce panneau n'est nécessaire qu'entre `md` et `lg` (768–1024 px)
+                où la nav horizontale `dashboard-horizontal-nav` est encore masquée ;
+                sous `md`, c'est le tiroir (`dashboard-nav-toggle`) qui porte les
+                modules. Un tenant SANS verticale n'a pas de tiroir : le panneau
+                reste alors le seul accès aux modules sous `md`. */}
             {navEntries.length > 0 ? (
-              <div className="relative lg:hidden">
+              <div className={`relative lg:hidden ${business.length > 0 ? 'hidden md:block' : ''}`}>
                 <button
                   type="button"
                   data-testid="dashboard-modules-nav-toggle"
                   aria-expanded={mobileModulesOpen}
+                  aria-haspopup="true"
+                  aria-controls="dashboard-modules-panel"
                   aria-label={labels.dashboard.sectionEnterprise}
-                  onClick={() => setMobileModulesOpen((value) => !value)}
-                  className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700"
+                  onClick={() => { closeHeaderPanels(); setMobileModulesOpen((value) => !value); }}
+                  className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
                 >
                   <Menu className="h-4 w-4" aria-hidden="true" />
                 </button>
                 {mobileModulesOpen ? (
-                  <div className={modulesNavPanel}>
-                    {navEntries.map((entry) => (
-                      entry.kind === 'link' ? (
-                        <Link
-                          key={entry.module.key}
-                          href={entry.module.href}
-                          onClick={() => setMobileModulesOpen(false)}
-                          className={modulesNavLink(pathname === entry.module.href)}
-                        >
-                          {labels.dashboard.modules[entry.module.key] ?? entry.module.label}
-                        </Link>
-                      ) : (
-                        <div key={`menu-mobile-${entry.id}`} className="mt-1 border-t border-slate-100 pt-1">
-                          <p className="px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                            {labels.dashboard.hrMenu}
-                          </p>
-                          {entry.modules.map((module) => (
-                            <Link
-                              key={module.key}
-                              href={module.href}
-                              onClick={() => setMobileModulesOpen(false)}
-                              className={`ps-6 ${modulesNavLink(pathname === module.href)}`}
-                            >
-                              {labels.dashboard.modules[module.key] ?? module.label}
-                            </Link>
-                          ))}
-                        </div>
-                      )
-                    ))}
+                  <div id="dashboard-modules-panel" data-testid="dashboard-modules-panel" className={MODULES_NAV_PANEL}>
+                    <DashboardModuleLinks
+                      entries={navEntries}
+                      pathname={pathname}
+                      labels={labels}
+                      onNavigate={() => setMobileModulesOpen(false)}
+                    />
                   </div>
                 ) : null}
               </div>
@@ -567,9 +767,12 @@ export default function DashboardLayout({
             <div className="relative">
               <button
                 type="button"
-                onClick={() => setModulesOpen((value) => !value)}
+                onClick={() => { closeHeaderPanels(); setModulesOpen((value) => !value); }}
                 aria-expanded={modulesOpen}
-                className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700"
+                aria-haspopup="true"
+                aria-controls="dashboard-plan-panel"
+                data-testid="dashboard-plan-toggle"
+                className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
               >
                 <LayoutGrid className="h-4 w-4" aria-hidden="true" />
                 {/* #7422 — icône seule : le libellé visible coûtait ~90 px à la
@@ -577,7 +780,11 @@ export default function DashboardLayout({
                 <span className="sr-only">{labels.dashboard.sectionModules}</span>
               </button>
               {modulesOpen ? (
-                <div className="absolute right-0 top-12 z-30 w-80 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl">
+                <div
+                  id="dashboard-plan-panel"
+                  data-testid="dashboard-plan-panel"
+                  className="absolute right-0 top-12 z-30 max-h-[70vh] w-80 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-xl"
+                >
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{labels.dashboard.sectionEnterprise}</p>
                   <div className="mt-2 space-y-1">
                     {platformModules.length > 0 ? platformModules.map((module) => (
@@ -653,10 +860,13 @@ export default function DashboardLayout({
             <div className="relative">
               <button
                 type="button"
-                className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700"
-                aria-label="Notifications"
+                className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+                aria-label={i18nT(locale, 'shell.notifications')}
                 aria-expanded={notificationsOpen}
-                onClick={() => setNotificationsOpen((value) => !value)}
+                aria-haspopup="true"
+                aria-controls="dashboard-notifications-panel"
+                data-testid="dashboard-notifications-toggle"
+                onClick={() => { closeHeaderPanels(); setNotificationsOpen((value) => !value); }}
               >
                 <Bell className="h-5 w-5" aria-hidden="true" />
                 {unreadCount > 0 ? (
@@ -666,9 +876,13 @@ export default function DashboardLayout({
                 ) : null}
               </button>
               {notificationsOpen ? (
-                <div className="absolute right-0 top-12 z-20 w-80 rounded-lg border border-slate-200 bg-white p-3 shadow-xl">
+                <div
+                  id="dashboard-notifications-panel"
+                  data-testid="dashboard-notifications-panel"
+                  className="absolute right-0 top-12 z-30 max-h-[70vh] w-80 overflow-y-auto rounded-lg border border-slate-200 bg-white p-3 shadow-xl"
+                >
                   <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                    <p className="text-sm font-bold text-slate-900">Notifications</p>
+                    <p className="text-sm font-bold text-slate-900">{i18nT(locale, 'shell.notifications')}</p>
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-semibold text-slate-500">{unreadCount} non lue(s)</span>
                       {unreadCount > 0 ? (
@@ -677,7 +891,7 @@ export default function DashboardLayout({
                           className="text-xs font-semibold text-emerald-700 transition hover:text-emerald-800"
                           onClick={() => void markAllNotificationsRead()}
                         >
-                          Tout marquer lu
+                          {i18nT(locale, 'notifMarkAllAsRead')}
                         </button>
                       ) : null}
                     </div>
@@ -717,21 +931,33 @@ export default function DashboardLayout({
             <div className="relative">
               <button
                 type="button"
-                onClick={() => setUserMenuOpen((value) => !value)}
+                onClick={() => {
+                  // #7556 : `closeHeaderPanels()` remet CE panneau à false puis
+                  // l'updater `!value` le rouvrait aussitôt (les deux mises à jour
+                  // sont traitées dans le même lot) — le menu ne se refermait
+                  // jamais au clic sur l'avatar. On calcule la cible AVANT de
+                  // fermer les autres panneaux (régression vue par
+                  // layout-header-menu.test.tsx « le menu du compte est refermable »).
+                  const next = !userMenuOpen;
+                  closeHeaderPanels();
+                  setUserMenuOpen(next);
+                }}
                 aria-expanded={userMenuOpen}
                 aria-haspopup="menu"
+                aria-controls="dashboard-user-menu"
                 aria-label={labels.dashboard.userMenuAccount}
                 title={getDisplayName(user)}
                 data-testid="user-menu-toggle"
-                className="group flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-gradient-to-br from-slate-100 to-slate-200 text-[11px] font-black text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700"
+                className="group flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-gradient-to-br from-slate-100 to-slate-200 text-[11px] font-black text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
               >
                 {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
               </button>
               {userMenuOpen ? (
                 <div
                   role="menu"
+                  id="dashboard-user-menu"
                   data-testid="user-menu"
-                  className="absolute right-0 top-11 z-30 w-64 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
+                  className="absolute right-0 top-11 z-30 max-h-[70vh] w-64 overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-xl"
                 >
                   <div className="border-b border-slate-100 px-4 py-3">
                     <p className="truncate text-sm font-black text-slate-900">{getDisplayName(user)}</p>
@@ -746,6 +972,11 @@ export default function DashboardLayout({
                     >
                       <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
                       {labels.dashboard.userMenuAccount}
+                    </Link>
+                    {/* #7555 — gestion des collaborateurs et attribution des rôles. */}
+                    <Link href="/settings/team" role="menuitem" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
+                      <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
+                      {teamRolesT(locale, 'menuLabel')}
                     </Link>
                     <Link
                       href="/settings/account#password"

@@ -1,4 +1,5 @@
 import { getLocaleDirection, normalizeLocale, type AppLocale } from '@/lib/i18n'
+import { t } from '@/lib/i18n/locale-catalog'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,8 +12,8 @@ const COPY: Record<
   }
 > = {
   fr: {
-    name: 'Leopardo RH - Gestion RH complète',
-    description: 'Plateforme SaaS RH multilingue pour pointage, paie, absences, onboarding, mobile et kiosque',
+    name: String(t('fr', 'seoRoot.manifestName') ?? ''),
+    description: String(t('fr', 'seoRoot.manifestDescription') ?? ''),
     shortcuts: [
       { name: 'Essai gratuit', short_name: 'Essai', description: 'Commencer un essai gratuit de 14 jours', url: '/signup?source=pwa_shortcut' },
       { name: 'Demander une démo', short_name: 'Démo', description: 'Demander une démonstration personnalisée', url: '/demo?source=pwa_shortcut' },
@@ -21,8 +22,8 @@ const COPY: Record<
     ],
   },
   en: {
-    name: 'Leopardo HR - Complete HR management',
-    description: 'Multilingual HR SaaS platform for time tracking, payroll, leave, onboarding, mobile and kiosk',
+    name: String(t('en', 'seoRoot.manifestName') ?? ''),
+    description: String(t('en', 'seoRoot.manifestDescription') ?? ''),
     shortcuts: [
       { name: 'Free trial', short_name: 'Trial', description: 'Start a free 14-day trial', url: '/signup?source=pwa_shortcut' },
       { name: 'Request a demo', short_name: 'Demo', description: 'Request a personalized demonstration', url: '/demo?source=pwa_shortcut' },
@@ -31,8 +32,8 @@ const COPY: Record<
     ],
   },
   tr: {
-    name: 'Leopardo İK - Eksiksiz İK yönetimi',
-    description: 'Puantaj, bordro, izin, işe alım, mobil ve kiosk için çok dilli İK SaaS platformu',
+    name: String(t('tr', 'seoRoot.manifestName') ?? ''),
+    description: String(t('tr', 'seoRoot.manifestDescription') ?? ''),
     shortcuts: [
       { name: 'Ücretsiz deneme', short_name: 'Deneme', description: '14 günlük ücretsiz denemeyi başlatın', url: '/signup?source=pwa_shortcut' },
       { name: 'Demo isteyin', short_name: 'Demo', description: 'Kişiselleştirilmiş bir demo isteyin', url: '/demo?source=pwa_shortcut' },
@@ -41,8 +42,8 @@ const COPY: Record<
     ],
   },
   ar: {
-    name: 'ليوباردو للموارد البشرية - إدارة موارد بشرية متكاملة',
-    description: 'منصة SaaS متعددة اللغات للحضور والرواتب والإجازات والتهيئة وتطبيقات الجوال والكشك',
+    name: String(t('ar', 'seoRoot.manifestName') ?? ''),
+    description: String(t('ar', 'seoRoot.manifestDescription') ?? ''),
     shortcuts: [
       { name: 'تجربة مجانية', short_name: 'تجربة', description: 'ابدأ تجربة مجانية لمدة 14 يومًا', url: '/signup?source=pwa_shortcut' },
       { name: 'طلب عرض توضيحي', short_name: 'عرض', description: 'اطلب عرضًا توضيحيًا مخصصًا', url: '/demo?source=pwa_shortcut' },

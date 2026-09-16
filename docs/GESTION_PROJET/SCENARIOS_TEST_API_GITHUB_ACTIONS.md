@@ -1,5 +1,13 @@
 # SCENARIOS DE TEST API POUR GITHUB ACTIONS    
 
+Note 2026-09-15 (issue #7432, BC-04 HR) : la Formation devient un module HORIZONTAL de bout en bout —
+- `PATCH /api/v1/platform/companies/{id}/features` : `training` est désormais un module **connu** (`Company::KNOWN_MODULES`) et enregistré (`config/feature-flags.php`) — le switch admin PERSISTE réellement (`features.training` allumé/éteint) et `GET …/features` le reflète ; tout `features.training` envoyé n'est plus jeté silencieusement.
+- **Contrat modifié (les deux boucles de mise à jour, contrôleur API + jumeau Blade)** : une clé ABSENTE du payload **préserve la valeur effective du tenant** (`FeatureFlag::for($company)`) au lieu d'être forcée à `false` — `rh` reste toujours `true`. Le formulaire Blade transmet donc un `0` explicite (champ caché) pour chaque module non verrouillé, afin de continuer à distinguer « décoché » de « non mentionné » (`test_update_disables_a_module_explicitly_sent_as_zero`).
+- `GET /api/v1/auth/me` (contexte tenant) expose `features.training` ; `POST /api/v1/company/modules/training/activate` (auto-activation client, #7322) écrit les **deux** sources de vérité : `metadata.modules.training` ET `companies.features.training` (miroir `HORIZONTAL_TOOL_FEATURES`).
+- Matrice offre × formation : **arbitrage acté sur la branche par un commit concurrent** — `training` reste réservé au plan `enterprise` (`FeaturePlanMatrixSeeder` inchangé, verrouillé par `TrainingModuleRegistryTest::test_plan_matrix_arbitration_keeps_training_enterprise_only`). La consigne de ce lot (horizontale ⇒ disponible sur les 4 plans, seeder + migration de rattrapage) n'a **pas** été imposée pour ne pas écraser une décision de tarification déjà testée par un autre agent : elle est fournie hors commit dans `tasks/leopardo-batch/7432-artifacts/` et attend l'arbitrage du coordinateur.
+- Décision « solo » (#7423) : la Formation reste un outil d'ÉQUIPE (`Company::TEAM_TOOLS`) — un tenant solo ne l'obtient pas (`HorizontalToolSelection::resolve()`).
+- Couverture : `api/tests/Feature/Tenant/TrainingHorizontalModuleTest.php` (6 cas), `api/tests/Feature/PlatformCompanyFeatureApiTest.php` (`test_training_feature_is_persisted_and_exposed`, `test_omitted_modules_keep_their_current_value`), `api/tests/Feature/PlatformCompanyEditTest.php` (jumeau Blade), `api/tests/Feature/Training/TrainingModuleRegistryTest.php` (registre + arbitrage de plan, commit concurrent).
+
 Note 2026-09-14 (issue #7301, BC-11 CRM) : `POST /api/v1/marketing/leads` (vitrine, server-to-server, public, `throttle:webhooks-inbound`) ne perd plus de lead quand le webhook marketing n'est pas configuré —
 - Secret configuré (`services.marketing_lead_webhook.secret` ← `MARKETING_LEAD_WEBHOOK_TOKEN`) : contrat **inchangé et fail-closed** (#3888) — `Authorization: Bearer <secret>` ou `X-Marketing-Lead-Token` requis ; secret invalide ou absent → **400** `Invalid signature`, **aucune** ligne `marketing_leads`.
 - Secret ABSENT (prérequis de déploiement non satisfait — constat production #7301) : le payload est **PERSISTÉ** (`201` avec `data.id`/`data.external_id`/`data.status` — le lead est retrouvable par son id, critère d'acceptation #7301) au lieu du **503** `MARKETING_WEBHOOK_NOT_CONFIGURED` qui faisait perdre tous les leads d'acquisition ; une **alerte** critique est émise (`marketing.lead.ingest_unauthenticated` : log `critical` + POST best-effort vers `MARKETING_ALERT_WEBHOOK_URL` quand la variable est configurée, jamais bloquant pour la réponse).
@@ -28,6 +36,28 @@ Note 2026-09-01 (issue #6662, PR #6663) : nouvelle surface publique « solutions
 Public sans auth (pre-qualification vitrine), throttle 10/min. Couverture : `api/tests/Feature/Solutions/SolutionSurveyEndpointTest.php` (8 tests) + `api/tests/Unit/Core/Solutions/SolutionSurveyEngineTest.php` (4 tests).
 
   
+## Paramétrage des offres tarifaires (#7430)
+
+Les offres ne sont plus seedées : elles se **pilotent** par l'API plateforme
+(super-admin), et chaque écriture est auditée.
+
+| Cas | Attendu |
+|---|---|
+| `POST /platform/plans` (nom, prix, limite, essai, features) | 201, ligne créée, `audit_logs` `plan.created` |
+| nom déjà pris | 422 (`name`), aucune écriture |
+| prix négatif / essai > 365 j | 422 sur le champ concerné |
+| `PATCH /platform/plans/{plan}` partiel | 200, seuls les champs envoyés changent, `plan.updated` avec avant/après |
+| `PATCH` avec un nom déjà pris | 422, aucune écriture |
+| `POST …/duplicate` | 201, copie nommée « … (copie) », **`is_active = false`** |
+| `POST …/archive` | 200, `is_active = false`, la ligne existe toujours |
+| `DELETE …/{plan}` **utilisée** (société rattachée ou abonnement sur le code) | **409**, aucune suppression, message orientant vers l'archivage |
+| `DELETE …/{plan}` libre | 200, ligne supprimée, `plan.deleted` |
+| route appelée par un employé tenant | 401/404 (jamais d'alias tenant — `RouteOwnerGuardTest`) |
+
+Contrat OpenAPI : les 5 routes et les schémas `PlatformPlanWrite` /
+`PlatformPlanResponse` sont déclarés dans `api/openapi.yaml` (garde
+`Route → OpenAPI coverage`).
+
 ## Objectif   
 
 Note 2026-08-26 (issue #5588, lot durcissements) : la surface API kiosque et recrutement public a change —
@@ -2085,3 +2115,85 @@ pour les actes pédagogiques), `EduApiTest.php` (parcours complet campus → bul
 ### Couverture
 
 `api/tests/Feature/Travel/TravelLoyaltyTest.php` (7 cas : crédit unique par billet, aucun crédit ni compte sans opt-in, gel à l'opt-out avec solde conservé, conversion points → avoir journalisée dans le même journal que les crédits, solde insuffisant → 422, échange d'une récompense, non-capture des routes nommées par le joker) et `TravelLoyaltyApiTest` (4 cas, dont `test_opt_in_required_for_redeem`, rouge sur `main`).
+
+## Addendum 2026-09-16 — notifications : une seule source de vérité, le flux SSE mort retiré (#7481)
+
+La boîte de réception in-app avait **deux magasins** et un flux temps réel que
+personne ne consommait. La règle est désormais tranchée et opposable : **un seul
+magasin canonique** (`AppNotification`), servi par **`GET /api/v1/notifications`**.
+
+### Surface retirée
+
+- **`GET /api/v1/notifications/stream`** (SSE) et **`POST /api/v1/notifications/sse-token`**
+  sont **supprimés** : contrôleurs `NotificationStreamController` et
+  `SseTokenController` retirés, routes retirées de `api/routes/modules/rh.php`
+  (le commentaire de la route porte la justification et la marche à suivre si le
+  temps réel revient : il faudra un **client**, pas seulement un contrôleur).
+- Preuve de non-usage : **0 `EventSource`** dans `front/web` et
+  `front/mobile_apps` ; le mobile polle l'API toutes les 30 s. Une surface morte
+  coûte de la maintenance et trompe les audits de sécurité.
+- Contrat de remplacement : `GET /notifications` rend **les mêmes données**,
+  depuis le magasin canonique — aucun client n'a besoin de changer de donnée,
+  seulement de transport.
+
+### Contrat unifié
+
+- `NotificationDispatcher` écrit dans le **store canonique** ; `MarkNotificationsRead`
+  et l'assistant IA **lisent le même store** (plus de dérive entre les deux).
+- `POST /notifications/read-all`, `PATCH /notifications/{notification}/read`
+  (`whereNumber`) et `DELETE /notifications/{notification}` sont inchangés.
+- `api/openapi.yaml` et son miroir `dev-hub/openapi/v1.yaml` sont régénérés
+  (**2 chemins retirés**, 24 lignes par spec) ainsi que le SDK
+  (`dev-hub/sdk/MANIFEST.json`, client JavaScript, client Python) — la garde
+  « Route → OpenAPI coverage » ne rapporte **aucun drift**.
+
+### Couverture
+
+`api/tests/Feature/Notification/NotificationSingleStoreTest.php` (3 cas : le
+dispatcher crée la notification dans le store canonique ; la notification
+dispatchée est **visible dans l'inbox API** puis marquable lue ; l'assistant lit
+le **même** store que l'inbox), `api/tests/Unit/Services/NotificationDispatcherTest.php`
+(mis à jour sur le contrat du store unique),
+`api/tests/Feature/Notification/AppNotificationMigrationTest.php` (index et
+déduplication de la table canonique).
+
+## Addendum 2026-09-15 — caméras intelligentes : un événement détecté produit une alerte dédoublonnée (#7427)
+
+La chaîne vidéo (#7424) savait ouvrir un flux mais **rien ne remontait au
+manager** : aucun modèle d'événement, aucune alerte, donc aucun push possible.
+Surface livrée (toutes les routes sont documentées dans `api/openapi.yaml`) :
+
+- `POST /api/v1/internal/camera-events` — **route interne machine-à-machine**
+  (secret partagé MediaMTX, `Authorization: Bearer <CAMERAS_MEDIAMTX_SECRET>`,
+  même secret que `/internal/camera-token/verify`) : persiste l'événement
+  détecté puis crée l'alerte **dédupliquée** (`alert_key` =
+  `camera-alert:{camera_id}:{type}:{bucket}` sur une fenêtre de regroupement de
+  5 min) et notifie les managers. Réponses : **201** (`event_id`, `alert_id`,
+  `alert_created`, `notified`), **401** (secret absent/invalide), **404**
+  (`CAMERA_NOT_FOUND`, caméra inconnue ou inactive), **422** (payload invalide).
+- `GET /api/v1/cameras/events` — journal des événements du tenant (manager),
+  filtres `camera_id`, `type`, `severity`, `from`, `to`, `per_page` ; expose
+  `has_snapshot` (booléen) et **jamais** le chemin de stockage.
+- `GET /api/v1/cameras/alerts` — alertes du tenant (manager), filtres `status`,
+  `severity`, `camera_id`.
+- `POST /api/v1/cameras/alerts/{alert}/acknowledge` et
+  `POST /api/v1/cameras/alerts/{alert}/resolve` — cycle de vie
+  (`open → acknowledged → resolved`), idempotents ; cross-tenant = **404**.
+
+Scénarios CI correspondants (verts) : `api/tests/Feature/Cameras/CameraAlertTest.php`
+(11 cas) — rafale de 10 ingestions ⇒ **1** alerte et **1** notification
+(dédoublonnage), deux fenêtres distinctes ⇒ 2 alertes, **alerte de sécurité non
+supprimée par les heures calmes** (chaîne complète `DispatchCommunicationJob` →
+`CommunicationService`, catégorie `security`, aucun `Quiet hours active.`),
+acquittement puis résolution avec état relu en base et via l'API, alerte d'un
+autre tenant invisible (404), employé non manager refusé (403), **aucune alerte
+sans événement**, sévérité propagée + défaut documenté par type, ingestion
+refusée sans secret MediaMTX (401) ou pour caméra inconnue/inactive (404),
+`has_snapshot` sans fuite du chemin.
+
+Exécution locale (base dédiée de l'issue, sinon `RefreshTenantDatabase` saute la
+migration quand `leopardo_test` est déjà migré) :
+`cd api && DB_DATABASE=leopardo_test_7427 php8.4 vendor/bin/pest tests/Feature/Cameras`.
+
+Rétention et accès (RGPD, critère 5) :
+`docs/GESTION_PROJET/CAMERAS_ALERTES_RETENTION_RGPD.md`.

@@ -126,7 +126,6 @@ class BillingIsolationTest extends TestCase
     public function test_plain_employee_cannot_manage_billing(): void
     {
         $company = Company::factory()->create();
-        assert($company instanceof Company);
         /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 

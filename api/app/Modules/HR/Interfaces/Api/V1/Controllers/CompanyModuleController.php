@@ -57,6 +57,22 @@ class CompanyModuleController extends Controller
 
         $company = $this->freshCompany();
 
+        // #7423 — PLANCHER D'ACCÈS : un profil `solo` ne peut pas s'activer un
+        // outil de pilotage d'ÉQUIPE (employees, contrats, formation) : ces
+        // outils sont sans objet pour un indépendant et le plancher serveur les
+        // ferme (`Company::SOLO_FLOOR_TOOLS` porte le socle autorisé). Sans
+        // cette garde, `metadata.modules` et `features` divergeraient de l'UI,
+        // qui reverrouille ces clés à l'affichage.
+        if (
+            $company->isSolo()
+            && in_array($key, Company::TEAM_TOOLS, true)
+            && ! Company::isSoloFloorTool($key)
+        ) {
+            throw ValidationException::withMessages([
+                'module' => [__('errors.SOLO_TEAM_TOOL_NOT_AVAILABLE', ['module' => $key])],
+            ]);
+        }
+
         // Idempotent : `activateHorizontalTool` retourne false si déjà actif.
         $activated = $company->activateHorizontalTool($key);
 

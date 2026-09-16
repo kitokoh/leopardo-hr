@@ -38,6 +38,29 @@
     </div>
 
     <template v-else-if="health">
+      <!-- #7429 — la fiche entreprise devient ONGLETÉE : elle atteignait ~330
+           lignes en flux unique, sans lien profond possible. Les onglets
+           donnent aussi sa place au pilotage du MÉTIER de l'entreprise
+           (verticales activées), qui n'existait nulle part. -->
+      <div class="flex flex-wrap gap-2 rounded-2xl border border-slate-200/60 bg-white/60 p-2 dark:border-slate-800/60 dark:bg-slate-900/40" role="tablist">
+        <button
+          v-for="tab in TABS"
+          :key="tab.key"
+          type="button"
+          role="tab"
+          :aria-selected="activeTab === tab.key"
+          class="rounded-xl px-4 py-2 text-sm font-semibold transition-colors"
+          :class="
+            activeTab === tab.key
+              ? 'bg-brand-600 text-white shadow-glass-sm'
+              : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+          "
+          @click="activeTab = tab.key"
+        >
+          {{ t(tab.labelKey) }}
+        </button>
+      </div>
+
       <!-- Top Stats -->
       <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 animate-slide-up">
         <StatsCard :title="t('companyDetail.scoreHealth', 'Score Santé')" :value="health.adoption.health_score" unit="/100" icon="HeartIcon" :color="scoreColor" />
@@ -50,7 +73,7 @@
         <!-- Main Content -->
         <div class="space-y-8 lg:col-span-8">
           <!-- Terrain Adoption -->
-          <section class="card">
+          <section v-show="activeTab === 'overview'" class="card">
             <div class="border-b border-slate-200/50 px-6 py-5 dark:border-slate-800/50">
               <div class="flex items-center justify-between">
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ t('companyDetail.fieldAdoption') }}</h2>
@@ -123,7 +146,7 @@
           </section>
 
           <!-- Module Features Configuration -->
-          <section class="card overflow-hidden">
+          <section v-show="activeTab === 'modules'" class="card overflow-hidden">
             <div class="border-b border-slate-200/50 bg-slate-50/50 px-6 py-5 dark:border-slate-800/50 dark:bg-slate-800/30">
               <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ t('companyDetail.modulesConfig') }}</h2>
               <p class="mt-1 text-sm font-medium text-slate-500">{{ t('companyDetail.modulesConfigHint', 'Activez ou désactivez les fonctionnalités spécifiques pour ce client.') }}</p>
@@ -133,9 +156,16 @@
               <div v-if="isFeaturesLoading" class="flex h-32 items-center justify-center">
                 <div class="h-8 w-8 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
               </div>
-              <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <!-- #7430 — DOTALION DE L'ENTREPRISE : ce que CE client a le droit
+                   d'utiliser. Les kill switches plateforme sont séparés
+                   ci-dessous : les mélanger sur le même écran laissait croire
+                   qu'une capacité globale (IA cloud) est un cadeau au client. -->
+              <h3 class="mb-3 text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
+                {{ t('companyDetail.tenantFeatures', "Dotation de l'entreprise") }}
+              </h3>
+              <div v-if="!isFeaturesLoading" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div
-                  v-for="(enabled, key) in featuresForm"
+                  v-for="([key, enabled]) in tenantFeatureEntries"
                   :key="key"
                   class="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/50 p-4 transition-all hover:glass-card hover:shadow-sm dark:border-slate-800 dark:bg-slate-900/30 dark:hover:bg-slate-900/50"
                 >
@@ -168,6 +198,82 @@
                 </div>
               </div>
 
+              <!-- #7430 — CAPACITÉS PLATEFORME (kill switches) : elles ne se
+                   donnent pas à un client, elles s'ouvrent ou se coupent pour
+                   tous. Même endpoint PATCH, mais lecture et libellé distincts
+                   (l'issue demande explicitement de ne plus les confondre). -->
+              <template v-if="platformCapabilityEntries.length > 0">
+                <h3 class="mb-3 mt-8 text-xs font-black uppercase tracking-widest text-amber-600 dark:text-amber-400">
+                  {{ t('companyDetail.platformCapabilities', 'Capacités plateforme (kill switches)') }}
+                </h3>
+                <p class="mb-3 text-xs text-slate-500 dark:text-slate-400">
+                  {{ t('companyDetail.platformCapabilitiesHint', "Ces interrupteurs ne concernent pas la dotation du client : ils ouvrent ou coupent une capacité pour toute la plateforme.") }}
+                </p>
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div
+                    v-for="([key, enabled]) in platformCapabilityEntries"
+                    :key="key"
+                    class="flex items-center justify-between rounded-2xl border border-amber-100 bg-amber-50/40 p-4 dark:border-amber-900/30 dark:bg-amber-950/10"
+                  >
+                    <div class="flex items-center gap-3">
+                      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                        <component :is="getFeatureIcon(key)" class="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p class="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wide">{{ formatFeatureName(key) }}</p>
+                        <p class="text-[10px] font-bold text-slate-500 uppercase">{{ enabled ? t('companyDetail.moduleActive', 'Module Actif') : t('companyDetail.moduleDisabled', 'Module Désactivé') }}</p>
+                      </div>
+                    </div>
+                    <Switch
+                      v-model="featuresForm[key]"
+                      :disabled="isSavingFeatures"
+                      :class="[
+                        enabled ? 'bg-amber-600' : 'bg-slate-200 dark:bg-slate-700',
+                        'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:focus:ring-offset-slate-950'
+                      ]"
+                    >
+                      <span
+                        aria-hidden="true"
+                        :class="[
+                          enabled ? 'translate-x-5' : 'translate-x-0',
+                          'pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out'
+                        ]"
+                      />
+                    </Switch>
+                  </div>
+                </div>
+              </template>
+
+              <!-- #7429 : verticales de cette entreprise (cf. VERTICAL_SURFACES) -->
+              <h3 class="mb-3 mt-8 text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
+                {{ t('companyDetail.verticals', 'Verticales & outils de cette entreprise') }}
+              </h3>
+              <div class="space-y-2">
+                <div
+                  v-for="vertical in activeVerticals"
+                  :key="vertical.key"
+                  class="flex items-center justify-between rounded-2xl border border-slate-100 bg-white/60 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/40"
+                >
+                  <span class="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                    {{ formatFeatureName(vertical.key) }}
+                  </span>
+                  <router-link
+                    v-if="vertical.path"
+                    :to="{ path: vertical.path, query: { company: route.params.id } }"
+                    class="inline-flex items-center gap-1.5 text-sm font-bold text-brand-600 hover:text-brand-700 dark:text-brand-400"
+                  >
+                    {{ t('companyDetail.openVertical', 'Ouvrir') }}
+                    <ArrowTopRightOnSquareIcon class="h-4 w-4" />
+                  </router-link>
+                  <span v-else class="text-xs font-medium text-slate-400">
+                    {{ t('companyDetail.noVerticalSurface', 'Aucune surface admin dédiée') }}
+                  </span>
+                </div>
+                <p v-if="activeVerticals.length === 0" class="text-sm text-slate-500 dark:text-slate-400">
+                  {{ t('companyDetail.noVertical', "Aucune verticale activée pour cette entreprise.") }}
+                </p>
+              </div>
+
               <div class="mt-8 flex justify-end">
                 <button
                   class="btn-primary"
@@ -186,7 +292,7 @@
         <!-- Sidebar Actions -->
         <aside class="space-y-8 lg:col-span-4">
           <!-- Subscription -->
-          <section class="card">
+          <section v-show="activeTab === 'billing'" class="card">
             <div class="border-b border-slate-200/50 bg-slate-50/50 px-6 py-5 dark:border-slate-800/50 dark:bg-slate-800/30">
               <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <CreditCardIcon class="h-5 w-5 text-purple-500" />
@@ -249,7 +355,7 @@
           </section>
 
           <!-- Support Tickets -->
-          <section class="card overflow-hidden">
+          <section v-show="activeTab === 'billing'" class="card overflow-hidden">
             <div class="border-b border-slate-200/50 bg-slate-50/50 px-6 py-5 dark:border-slate-800/50 dark:bg-slate-800/30 flex items-center justify-between gap-3">
               <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <LifebuoyIcon class="h-5 w-5 text-amber-500" />
@@ -298,7 +404,7 @@
           </section>
 
           <!-- System Info -->
-          <section class="card bg-slate-900 text-white border-none shadow-premium overflow-hidden relative">
+          <section v-show="activeTab === 'system'" class="card bg-slate-900 text-white border-none shadow-premium overflow-hidden relative">
             <div class="absolute -top-12 -right-12 h-40 w-40 rounded-full bg-brand-500/10 blur-3xl"></div>
             <div class="p-6 relative z-10">
               <h2 class="text-lg font-bold">{{ t('companyDetail.technicalIdentity') }}</h2>
@@ -364,6 +470,7 @@ import {
   BuildingStorefrontIcon,
   PaperAirplaneIcon,
   ChartBarIcon,
+  ArrowTopRightOnSquareIcon,
 } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
@@ -397,6 +504,61 @@ const subscriptionForm = ref({
 const isFeaturesLoading = ref(false)
 const isSavingFeatures = ref(false)
 const featuresForm = ref({})
+
+/**
+ * #7429 — la fiche entreprise est ONGLETÉE (elle atteignait ~330 lignes en flux
+ * unique, sans lien profond). L'onglet « Modules & verticales » est celui qui
+ * porte le pilotage du MÉTIER du client.
+ */
+// Libellés résolus par le catalogue (les clés existent dans les 4 locales) :
+// aucun texte utilisateur en dur dans le tableau.
+const TABS = [
+  { key: 'overview', labelKey: 'companyDetail.tabOverview' },
+  { key: 'modules', labelKey: 'companyDetail.tabModules' },
+  { key: 'billing', labelKey: 'companyDetail.tabBilling' },
+  { key: 'system', labelKey: 'companyDetail.tabSystem' },
+]
+const activeTab = ref('overview')
+
+/**
+ * #7430 — CAPACITÉS PLATEFORME (kill switches) vs DOTALION DE L'ENTREPRISE.
+ *
+ * Ces clés ouvrent ou coupent une capacité pour TOUTE la plateforme : les
+ * présenter comme les autres interrupteurs de la fiche laissait croire qu'une
+ * capacité globale est un « cadeau » fait au client. Elles sont donc listées à
+ * part, avec un libellé explicite (critère 4 de l'issue).
+ */
+const PLATFORM_CAPABILITY_KEYS = ['ai_cloud_allowed', 'leo_ai']
+const tenantFeatureEntries = computed(() =>
+  Object.entries(featuresForm.value).filter(([key]) => !PLATFORM_CAPABILITY_KEYS.includes(key))
+)
+const platformCapabilityEntries = computed(() =>
+  Object.entries(featuresForm.value).filter(([key]) => PLATFORM_CAPABILITY_KEYS.includes(key))
+)
+
+/**
+ * #7429 — verticales d'une entreprise et leur SURFACE admin.
+ *
+ * Plus aucune verticale n'est proposée à la racine du menu (on pouvait ouvrir
+ * « Stations-service » sans savoir de quelle entreprise on parlait) : elles
+ * s'ouvrent depuis la fiche de l'entreprise, avec le contexte dans l'URL.
+ * Les clés sans surface admin sont listées avec un `path: null` — l'absence
+ * est DOCUMENTÉE à l'écran plutôt que silencieuse (critère 3 de l'issue).
+ */
+const VERTICAL_SURFACES = [
+  { key: 'travelagency', path: '/travel' },
+  { key: 'fuel_station', path: '/fuel-station' },
+  { key: 'training', path: '/training' },
+  { key: 'tracking', path: '/fleet' },
+  { key: 'restaurant', path: null },
+  { key: 'edumanager', path: null },
+  // `cameras` : la surface web client est livrée par #7425 (Web client), pas
+  // par la console d'admin — aucune surface admin n'est prévue ici.
+  { key: 'cameras', path: null },
+]
+const activeVerticals = computed(() =>
+  VERTICAL_SURFACES.filter((vertical) => featuresForm.value[vertical.key] === true)
+)
 const originalFeatures = ref({})
 
 // PA2-ADM-003: support tickets summary for this company, so an admin

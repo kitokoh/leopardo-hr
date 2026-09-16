@@ -58,7 +58,7 @@ class TravelQuizApiTest extends TestCase
     private function makeQuizWithQuestions(): TravelQuiz
     {
         return $this->tenants->withinTenant($this->company, function (): TravelQuiz {
-            $quiz = TravelQuiz::factory()->create(['status' => QuizStatus::ACTIVE->value]);
+            $quiz = TravelQuiz::factory()->create(['status' => QuizStatus::PUBLISHED->value]);
 
             TravelQuizQuestion::factory()->create([
                 'quiz_id' => $quiz->id,
@@ -241,7 +241,7 @@ class TravelQuizApiTest extends TestCase
         /** @var Employee $agent */
         $agent = Employee::factory()->create([
             'company_id' => $this->company->id,
-            'role' => 'agent',
+            'role' => 'employee',
             'manager_role' => null,
         ]);
         Sanctum::actingAs($agent);
@@ -294,7 +294,7 @@ class TravelQuizApiTest extends TestCase
         /** @var Employee $agent */
         $agent = Employee::factory()->create([
             'company_id' => $this->company->id,
-            'role' => 'agent',
+            'role' => 'employee',
             'manager_role' => null,
         ]);
         Sanctum::actingAs($agent);

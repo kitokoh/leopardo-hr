@@ -88,6 +88,10 @@ export type CopyTree = {
       googleNoAccount: string;
       googleNoAccountCta: string;
       googleUnavailable: string;
+      // Issue #7479 — session créée mais profil indisponible (500/503 intermittent).
+      sessionUnavailable: string;
+      sessionUnavailableHint: string;
+      retrySession: string;
     };
   };
   dashboard: {
@@ -130,13 +134,19 @@ export type CopyTree = {
     businessSection: string;
     /** #7328 — libellé du menu RH (regroupe les modules RH en sous-menus) */
     hrMenu: string;
+    /** #7556 — nom accessible du point d'entrée de navigation (tiroir mobile) */
+    navMenu: string;
+    /** #7556 — titre de la section « Compte » du tiroir mobile */
+    accountSection: string;
     /** #7225 — libellés de navigation localisés (le libellé du module est data, pas une string FR) */
     modules: {
       dashboard: string; employees: string; attendance: string; attendance_geo: string;
       absences: string; contracts: string; payroll: string; training: string;
       reports: string; partner: string; billing: string; integrations: string;
       marketing: string; accounting: string; crm: string; restaurant: string;
-      restaurant_kitchen: string; edu_manager: string; travel: string; fuel: string; showcase: string;
+      restaurant_kitchen: string; edu_manager: string; travel: string; fuel: string; fleet: string; showcase: string;
+      /** BC-19 (#7425) — mur de caméras (libellé localisé du menu) */
+      cameras: string;
     };
     /** #7225 — « Entreprise » (bandeau horizontal transverse) */
     sectionEnterprise: string;
@@ -722,6 +732,10 @@ const copy: Record<AppLocale, CopyTree> = {
         googleNoAccount: 'Aucun compte Leopardo RH n’est associé à cet email Google. Demandez une invitation à votre administrateur.',
         googleNoAccountCta: 'Démarrer un essai sans invitation',
         googleUnavailable: 'La connexion Google n’est pas encore disponible. Utilisez votre email et votre mot de passe.',
+        // Issue #7479 : ne jamais parler d'identifiants quand la session a été créée.
+        sessionUnavailable: 'Votre session a bien été créée, mais votre espace n’a pas pu être chargé.',
+        sessionUnavailableHint: 'Le service est momentanément indisponible — vos identifiants ne sont pas en cause. Réessayez dans quelques secondes.',
+        retrySession: 'Charger mon espace',
       },
     },
     dashboard: {
@@ -760,6 +774,8 @@ const copy: Record<AppLocale, CopyTree> = {
       resumeOnboarding: '▶ Reprendre la configuration',
       businessSection: 'Mon métier',
       hrMenu: 'RH',
+      navMenu: 'Menu',
+      accountSection: 'Compte',
       modules: {
         dashboard: 'Tableau de bord',
         employees: 'Employés',
@@ -781,7 +797,9 @@ const copy: Record<AppLocale, CopyTree> = {
         edu_manager: 'Scolarité',
         travel: 'Agence de voyage',
         fuel: 'Station-service',
+        fleet: 'Flotte',
         showcase: 'Site vitrine',
+        cameras: 'Caméras',
       },
       sectionEnterprise: 'Entreprise',
       sectionModules: 'Modules & plan',
@@ -1396,6 +1414,10 @@ const copy: Record<AppLocale, CopyTree> = {
         googleNoAccount: 'لا يوجد حساب Leopardo RH مرتبط ببريد Google هذا. اطلب دعوة من المسؤول.',
         googleNoAccountCta: 'ابدأ تجربة دون دعوة',
         googleUnavailable: 'تسجيل الدخول عبر Google غير متاح بعد. استخدم بريدك وكلمة المرور.',
+        // Issue #7479.
+        sessionUnavailable: 'تم إنشاء جلستك، لكن تعذّر تحميل مساحتك.',
+        sessionUnavailableHint: 'الخدمة غير متاحة مؤقتًا — بيانات الدخول ليست هي السبب. أعد المحاولة بعد ثوانٍ.',
+        retrySession: 'تحميل مساحتي',
       },
     },
     dashboard: {
@@ -1434,6 +1456,8 @@ const copy: Record<AppLocale, CopyTree> = {
       resumeOnboarding: '▶ استئناف الإعداد',
       businessSection: 'قطاع عملك',
       hrMenu: 'الموارد البشرية',
+      navMenu: 'القائمة',
+      accountSection: 'الحساب',
       modules: {
         dashboard: 'لوحة القيادة',
         employees: 'الموظفون',
@@ -1455,7 +1479,9 @@ const copy: Record<AppLocale, CopyTree> = {
         edu_manager: 'الإدارة المدرسية',
         travel: 'وكالة سفر',
         fuel: 'محطة وقود',
+        fleet: 'الأسطول',
         showcase: 'موقع التعريف',
+        cameras: 'الكاميرات',
       },
       sectionEnterprise: 'الشركة',
       sectionModules: 'الوحدات والخطة',
@@ -2066,6 +2092,10 @@ const copy: Record<AppLocale, CopyTree> = {
         googleNoAccount: 'Bu Google e-postasiyla iliskili Leopardo RH hesabi yok. Yoneticinizden davet isteyin.',
         googleNoAccountCta: 'Davet olmadan deneme başlat',
         googleUnavailable: 'Google ile giris henuz kullanilamiyor. E-posta ve sifrenizle giris yapin.',
+        // Issue #7479.
+        sessionUnavailable: 'Oturumunuz olusturuldu, ancak calisma alaniniz yuklenemedi.',
+        sessionUnavailableHint: 'Hizmet gecici olarak kullanilamiyor — giris bilgilerinizde sorun yok. Birkac saniye sonra tekrar deneyin.',
+        retrySession: 'Calisma alanimi yukle',
       },
     },
     dashboard: {
@@ -2104,6 +2134,8 @@ const copy: Record<AppLocale, CopyTree> = {
       resumeOnboarding: '▶ Yapılandırmaya devam et',
       businessSection: 'İş kolunuz',
       hrMenu: 'İK',
+      navMenu: 'Menü',
+      accountSection: 'Hesap',
       modules: {
         dashboard: 'Panel',
         employees: 'Çalışanlar',
@@ -2125,7 +2157,9 @@ const copy: Record<AppLocale, CopyTree> = {
         edu_manager: 'Okul yönetimi',
         travel: 'Seyahat acentesi',
         fuel: 'Akaryakıt istasyonu',
+        fleet: 'Filo',
         showcase: 'Tanıtım sitesi',
+        cameras: 'Kameralar',
       },
       sectionEnterprise: 'Şirket',
       sectionModules: 'Modüller ve plan',
@@ -2736,6 +2770,10 @@ const copy: Record<AppLocale, CopyTree> = {
         googleNoAccount: 'No Leopardo RH account is linked to this Google email. Ask your administrator for an invitation.',
         googleNoAccountCta: 'Start a trial without an invitation',
         googleUnavailable: 'Google sign-in is not available yet. Use your email and password instead.',
+        // Issue #7479.
+        sessionUnavailable: 'Your session was created, but your workspace could not be loaded.',
+        sessionUnavailableHint: 'The service is temporarily unavailable — your credentials are not the issue. Try again in a few seconds.',
+        retrySession: 'Load my workspace',
       },
     },
     dashboard: {
@@ -2774,6 +2812,8 @@ const copy: Record<AppLocale, CopyTree> = {
       resumeOnboarding: '▶ Resume setup',
       businessSection: 'Your business',
       hrMenu: 'HR',
+      navMenu: 'Menu',
+      accountSection: 'Account',
       modules: {
         dashboard: 'Dashboard',
         employees: 'Employees',
@@ -2795,7 +2835,9 @@ const copy: Record<AppLocale, CopyTree> = {
         edu_manager: 'School management',
         travel: 'Travel agency',
         fuel: 'Fuel station',
+        fleet: 'Fleet',
         showcase: 'Showcase site',
+        cameras: 'Cameras',
       },
       sectionEnterprise: 'Company',
       sectionModules: 'Modules & plan',

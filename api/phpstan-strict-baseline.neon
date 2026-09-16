@@ -8162,18 +8162,6 @@ parameters:
 			path: tests/Feature/PlatformAuthTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/PlatformCompanyFeatureApiTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:hasFeature\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Feature/PlatformCompanyFeatureApiTest.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$created_at\.$#'
 			identifier: property.notFound
 			count: 1

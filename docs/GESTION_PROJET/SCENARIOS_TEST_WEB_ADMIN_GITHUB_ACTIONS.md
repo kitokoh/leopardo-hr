@@ -327,6 +327,93 @@ menu. »
   `dev-hub/tools/check-admin-action-labels-test.sh` (registre `docs/GOUVERNANCE/REGISTRE_GARDES.md`).
   La garde de branche `check-admin-row-actions.py` de #7461 est **supprimée** : redondante.
 
+### 19. Fiche Entreprise — les libellés de modules sont localisés et la Formation est un vrai switch (#7432)
+
+`CompanyDetailView.vue` affichait les features connues via
+`t('companyDetail.features.<clé>', '<libellé français en dur>')` — or **aucune**
+des 4 locales ne portait l'objet `companyDetail.features.*` : tous les libellés
+venaient donc du repli codé en dur dans le composant (`Centre de Formation`,
+`Ressources Humaines`…), non traduisibles. Les 8 clés réellement référencées
+(`rh`, `finance`, `ai`, `cameras`, `tracking`, `planning`, `training`, `cabinet`)
+sont désormais dans la source de vérité `shared/i18n/locales/{fr,en,ar,tr}.json`
+puis propagées à `front/admin-dashboard/src/i18n/locales/` par
+`node shared/i18n/sync/sync-web.js`.
+
+Côté back-office, l'interrupteur « Formation » de la fiche entreprise était un
+**switch fantôme** : `training` était absent de `Company::KNOWN_MODULES`, donc
+`PATCH /platform/companies/{id}/features` reconstruisait `features` sans la clé
+et jetait silencieusement toute bascule. Le module est maintenant connu et
+enregistré (`config/feature-flags.php`).
+
+À vérifier (recette) :
+
+- Fiche Entreprise › « Modules » : « Centre de Formation » s'affiche depuis le
+  catalogue dans les 4 locales (fr/en/ar/tr, RTL compris) — plus de repli en dur.
+- Basculer la Formation ON/OFF puis **recharger** : l'état revient conforme (la
+  bascule persiste réellement, `GET /platform/companies/{id}/features`).
+- Un module laissé « non mentionné » par un client d'API n'est plus éteint par
+  surprise (les deux boucles de mise à jour préservent la valeur effective) ;
+  depuis le formulaire Blade, un module décoché est bien désactivé (champ caché
+  `features[x]=0`).
+- `npx eslint src --max-warnings 0` et `npx vite build` restent verts ;
+  `check-i18n-diff.js` vert (aucun libellé français en dur sur les lignes ajoutées).
+### 19. Paramétrage des offres & métier rattaché à l'entreprise (#7429, #7430)
+
+Deux retours du propriétaire, traités ensemble parce qu'ils touchent la même
+navigation admin :
+
+- « les verticales sont liées à **company**, puisque company représente notre
+  terrain » — on pouvait ouvrir « Stations-service » sans savoir de quelle
+  entreprise on parlait ;
+- « tout ce qui relève du paramétrage doit aller » sous Paramètres, et « la
+  partie souscription où on est censé être capable de paramétrer nos offres »
+  n'était pas paramétrable du tout (table `plans` alimentée par un seeder,
+  lecture seule dans l'admin).
+
+**A — Aucune verticale à la racine (#7429)**
+
+- La barre latérale ne propose plus Formations / Flotte / Agence de voyage /
+  Stations-service comme entrées globales.
+- Ouvrir une entreprise (Portefeuille clients → une entreprise) donne accès à
+  l'onglet **« Modules & verticales »**, qui liste les verticales **activées**
+  de CE client avec un lien portant le contexte (`?company=<id>`).
+- Une verticale sans surface admin (Restauration, Établissement scolaire,
+  Caméras) affiche explicitement « aucune surface admin dédiée » — absence
+  documentée, jamais un écran vide.
+- Les routes `/travel`, `/fleet`, `/fuel-station`, `/training` restent
+  déclarées (les écrans et les e2e existants les utilisent) mais ne sont plus
+  des entrées de navigation globales.
+- Écrans de paramétrage paie (`/settings/payroll/*`) et sondages solutions
+  (`/solutions/survey-stats`) : plus aucune route accessible uniquement par
+  URL — ils sont rangés dans le menu.
+
+**B — Groupe Paramètres (#7430)**
+
+- Un groupe « Paramètres » regroupe : Offres & tarifs, Abonnements, Assistant
+  IA, Modèles d'e-mails, Webhooks, OAuth marketing, paramétrage comptable et
+  paramétrage paie. La racine garde l'usage (Chat IA) et la supervision.
+- Fiche entreprise → onglet « Modules & verticales » : la **dotation de
+  l'entreprise** et les **capacités plateforme (kill switches)** sont deux
+  blocs distincts, avec libellé et couleur propres — on ne confond plus un
+  interrupteur global avec un droit accordé au client.
+
+**C — Offres & tarifs : CRUD réel**
+
+- « Nouvelle offre » ouvre un formulaire (nom, prix mensuel/annuel, employés
+  inclus, jours d'essai, matrice offre × features, publication).
+- Une offre se **modifie** (dont son nom, tant qu'il reste unique), se
+  **duplique** (la copie naît **archivée** : elle n'apparaît pas dans le tunnel
+  de souscription), s'**archive**.
+- **Supprimer une offre utilisée par un client est refusé** : l'API répond 409
+  et le message affiché oriente vers l'archivage. Aucune suppression sèche.
+- Chaque écriture est auditée (`AuditLog`, société nulle : décision plateforme).
+
+À vérifier en recette :
+
+- Les 4 locales (fr/en/ar/tr) rendent les libellés, y compris en RTL.
+- `eslint .` et `vite build` verts ; garde `check-admin-action-labels.py` verte.
+- Les actions de ligne de l'écran Offres restent des icônes avec nom accessible.
+
 ## Artefacts obligatoires
 
 - rapport HTML Playwright
@@ -472,3 +559,56 @@ plus de troncature silencieuse au-dela de 100 societes.
   scoring du portefeuille (contrat de pagination mis a jour).
 - `eslint` et `vite build` (avec `VITE_API_URL`) restent verts ; les **4 locales** (fr/en/ar/tr)
   doivent rendre l'ecran, RTL arabe compris.
+
+## Note de conservation — propagation i18n du module Caméras (#7425, 2026-09-15)
+
+**Aucun scénario de l'admin plateforme n'est modifié.** Le diff touche
+`front/admin-dashboard/src/i18n/locales/{fr,en,tr,ar}.json` uniquement parce que
+ces fichiers sont **générés** par `shared/i18n/sync/sync-web.js` : le nouveau
+bloc `cameras.*` (mur de caméras, détail, permissions, jetons tiers, viewer
+public) est propagé mécaniquement du catalogue partagé vers tous ses targets.
+Aucun écran de l'admin plateforme ne consomme ces clés — le seul affichage
+existant reste le toggle de flag « Surveillance Vidéo » de
+`CompanyDetailView.vue`, inchangé. Les scénarios listés ci-dessus restent
+valides et inchangés. Même situation que la note de conservation de la
+propagation i18n du 2026-09-14 (PR #7350).
+## Scenario — nommage produit dans le back-office : « Leopardo — suite metier » (#7518, issue #7428)
+
+### Perimetre du changement
+
+- Seule la **copie** du back-office change : le titre applicatif `app.title` passe de
+  « Leopardo RH » a « **Leopardo — suite metier** » (en : « Leopardo — Business Suite » ;
+  ar : « ليوباردو — حزمة الأعمال » ; tr : « Leopardo — İşletme Yönetimi Paketi »).
+- Le namespace partage **`seoRoot`** (5 cles : titre / description canoniques de la racine, du
+  manifeste PWA et de l'image OG) arrive dans le dashboard par la **synchronisation** du catalogue
+  partage : `front/admin-dashboard/src/i18n/locales/*.json` sont des fichiers **generes**
+  (`shared/i18n/sync/sync-web.js`, cible 1, union semantique #3853) — jamais edites a la main.
+- **Aucun** changement de composant, de route, d'etat ni de contrat d'API : ni le `vite build`,
+  ni les parcours Playwright existants ne sont touches par ce lot.
+
+### Scenario de recette
+
+1. Charger une vue **connectee** du back-office dans chacune des **4 locales** (fr / en / ar / tr,
+   RTL arabe compris) : le titre applicatif affiche le libelle « suite metier » localise, et
+   **jamais** « logiciel RH » (decision :
+   `docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md`).
+2. Verifier que « **Leopardo RH** » reste le **nom d'une application de la suite** (RH & paie) —
+   libelle d'app / de module — et non la categorie du produit ; les noms d'ecrans metier
+   (Paie, Conges, Portefeuille clients, ...) sont inchanges.
+3. Charger la racine et le manifeste PWA : les phrases canoniques proviennent de `seoRoot`
+   (une phrase canonique vit dans le **catalogue partage**, non dupliquee par cible).
+
+### Verification
+
+- `eslint` + `vite build` verts ; parite i18n **x4** (`check-i18n-catalog-parity.sh`) verte ;
+  synchronisation `I18N_SYNC_WEB_OK` / `I18N_VALIDATION_OK (4 locales)`.
+- Garde de derive du nommage : `dev-hub/tools/check-naming-drift.sh` (baseline
+  `dev-hub/tools/naming-baseline.json`) — « suite metier » autorise, « logiciel RH » proscrit
+  hors baseline de dette gelee.
+
+> Note de conservation (2026-09-16) : ce lot ne modifie **aucun comportement** du back-office. Il
+> est consigne ici parce que le **libelle produit** est une surface visible d'administration (donc
+> une attente de recette) et parce que la garde de gouvernance
+> (`dev-hub/tools/check-governance.ps1`) exige qu'une modification de
+> `front/admin-dashboard/src/**` soit accompagnee de la mise a jour de ce fichier **ou** de
+> `docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS.md`.

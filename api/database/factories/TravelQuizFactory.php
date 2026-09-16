@@ -23,7 +23,7 @@ class TravelQuizFactory extends Factory
             'starts_at' => now()->subDay(),
             'ends_at' => now()->addDays(7),
             'max_participations_per_contact' => 1,
-            'status' => QuizStatus::ACTIVE->value,
+            'status' => QuizStatus::PUBLISHED->value,
         ];
     }
 }

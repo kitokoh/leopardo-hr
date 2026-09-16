@@ -196,8 +196,12 @@ describe('Barre du haut — menu de navigation (#7422, sous-menu #7328)', () => 
     await userEvent.click(hrMenu);
 
     await waitFor(() => expect(hrMenu).toHaveAttribute('aria-expanded', 'true'));
-    expect(screen.getByRole('link', { name: 'Employés' })).toHaveAttribute('href', '/employees');
-    expect(screen.getByRole('link', { name: 'Absences' })).toHaveAttribute('href', '/absences');
+    // Le tiroir mobile (#7556) rend la MÊME liste de modules que la barre : on
+    // scope donc l'assertion à la nav de la barre, sinon le lien est trouvé
+    // deux fois (le tiroir est monté hors écran, pas absent du DOM).
+    const headerNav = screen.getByTestId('dashboard-horizontal-nav');
+    expect(within(headerNav).getByRole('link', { name: 'Employés' })).toHaveAttribute('href', '/employees');
+    expect(within(headerNav).getByRole('link', { name: 'Absences' })).toHaveAttribute('href', '/absences');
   });
 });
 

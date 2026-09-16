@@ -3,6 +3,7 @@ import { render, screen, waitFor, fireEvent, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 import { SignupForm } from '../SignupForm';
 import { submitSignupForm, fetchTrialStatus } from '@/modules/vitrine/lib/forms';
+import { trackFunnelStep, FUNNEL_EVENTS } from '@/modules/vitrine/lib/funnel';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // framer-motion neutralisé (test déterministe, issue constat QA 2026-08-15) :
@@ -80,6 +81,19 @@ jest.mock('@/modules/vitrine/lib/forms', () => ({
   },
 }));
 
+// #7542 — l'émission des jalons est testée dans funnel.test.ts ; ici on vérifie
+// qu'elle est bien BRANCHÉE sur les transitions réelles du tunnel.
+jest.mock('@/modules/vitrine/lib/funnel', () => ({
+  trackFunnelStep: jest.fn(),
+  FUNNEL_EVENTS: {
+    signupView: 'signup_view',
+    signupEmailSubmitted: 'signup_email_submitted',
+    signupOtpSent: 'signup_otp_sent',
+    signupOtpVerified: 'signup_otp_verified',
+    spaceProvisioned: 'space_provisioned',
+  },
+}));
+
 // On ne remplace QUE la fonction reseau : le mock precedent ecrasait tout le
 // module, donc `SUPPORTED_COUNTRIES_FALLBACK` devenait `undefined` pour ses
 // consommateurs (#7307 — `vitrine-numbers` derive le nombre de pays de paie de
@@ -116,18 +130,17 @@ async function fillField(label: RegExp, value: string): Promise<void> {
 
 
 /**
- * #7249 — le tunnel s'ouvre sur le choix du PROFIL (entreprise / indépendant)
- * depuis #7235, mais ces tests unitaires portent sur le FORMULAIRE : on
- * traverse donc l'écran de profil comme le ferait un utilisateur. L'écran de
- * profil lui-même est couvert par les e2e.
+ * #7489 — le tunnel s'ouvre directement sur le FORMULAIRE (e-mail + nom de
+ * l'espace) : le choix du profil (entreprise / indépendant) a été déplacé dans
+ * l'entretien de préparation (#7493), il n'y a donc plus d'écran à traverser
+ * avant les coordonnées.
  */
 function renderAtFormStep() {
-  const result = render(<SignupForm />);
-  fireEvent.click(screen.getByTestId('signup-profile-company'));
-  return result;
+  return render(<SignupForm />);
 }
 
 const mockedSubmitSignupForm = submitSignupForm as jest.Mock;
+const mockedTrackFunnelStep = trackFunnelStep as jest.Mock;
 
 // The component is localized via useVitrineLocale(); the test environment
 // defaults to navigator.language (en-US). Pin the locale to French so the
@@ -144,6 +157,9 @@ describe('SignupForm Component', () => {
   // les tests suivants (qui attendent l'écran de profil).
   beforeEach(() => {
     sessionStorage.clear();
+    // #7542 — les jalons du funnel sont comptés par test : sans ce nettoyage,
+    // les appels des tests précédents feraient échouer les assertions d'ordre.
+    mockedTrackFunnelStep.mockClear();
   });
 
   describe('Rendering', () => {
@@ -344,7 +360,7 @@ describe('SignupForm Component', () => {
       await waitFor(() => {
         expect(screen.getByText(/votre espace est prêt/i)).toBeInTheDocument();
       });
-      expect(screen.queryByTestId('signup-profile-company')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /créer mon espace/i })).not.toBeInTheDocument();
     });
 
     it('affiche un écran d\'échec actionnable et permet de repartir du formulaire', async () => {
@@ -363,7 +379,7 @@ describe('SignupForm Component', () => {
 
       fireEvent.click(screen.getByRole('button', { name: /retour/i }));
 
-      expect(screen.getByTestId('signup-profile-company')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /créer mon espace/i })).toBeInTheDocument();
       expect(sessionStorage.getItem('lp_trial_provisioning_token')).toBeNull();
     });
 
@@ -547,6 +563,40 @@ describe('SignupForm Component', () => {
       const submitButton = screen.getByRole('button', { name: /créer mon espace/i });
       
       expect(submitButton).not.toHaveAttribute('disabled');
+    });
+
+    // #7542 — critère 1 : chaque jalon émis une seule fois, sur la transition réelle.
+    it('émet les jalons du funnel sur les transitions réelles du tunnel (#7542)', async () => {
+      mockedSubmitSignupForm.mockResolvedValue({
+        success: true,
+        provisioned: true,
+        message: 'Code de vérification envoyé.',
+        data: {},
+      });
+      renderAtFormStep();
+
+      // Ouverture de /signup → un seul jalon de vue, malgré les re-renders.
+      expect(mockedTrackFunnelStep).toHaveBeenCalledTimes(1);
+      expect(mockedTrackFunnelStep).toHaveBeenCalledWith(FUNNEL_EVENTS.signupView, {
+        page: '/signup',
+      });
+
+      await fillField(/email/i, 'test@example.com');
+      await fillField(/entreprise/i, 'Acme Corp');
+      fireEvent.click(screen.getByRole('checkbox'));
+      submitForm();
+
+      await waitFor(() => {
+        expect(screen.getByText(/vérifiez votre email/i)).toBeInTheDocument();
+      });
+
+      const emitted = mockedTrackFunnelStep.mock.calls.map(([event]) => event);
+      // La soumission puis l'écran du code — dans cet ordre, et sans doublon.
+      expect(emitted).toEqual([
+        FUNNEL_EVENTS.signupView,
+        FUNNEL_EVENTS.signupEmailSubmitted,
+        FUNNEL_EVENTS.signupOtpSent,
+      ]);
     });
   });
 });

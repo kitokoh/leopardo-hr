@@ -71,6 +71,91 @@ class PlatformCompanySubscriptionApiTest extends TestCase
         $this->assertSame('Upgrade Operations apres adoption pointage.', $company->notes);
     }
 
+    public function test_partial_subscription_update_preserves_unsent_fields(): void
+    {
+        DB::table('plans')->insert([
+            ['id' => 1, 'name' => 'Pilot', 'price_monthly' => 29, 'price_yearly' => 290, 'max_employees' => 30, 'trial_days' => 14, 'is_active' => true],
+            ['id' => 2, 'name' => 'Operations', 'price_monthly' => 99, 'price_yearly' => 948, 'max_employees' => 250, 'trial_days' => 14, 'is_active' => true],
+        ]);
+
+        $company = Company::factory()->create([
+            'plan_id' => 1,
+            'status' => 'trial',
+            'subscription_start' => '2026-05-01',
+            'subscription_end' => '2026-05-15',
+            'notes' => 'Renouvellement a confirmer avec le client.',
+        ]);
+
+        Sanctum::actingAs($this->superAdmin(), ['*'], 'super_admin_api');
+
+        // #7474 — un PATCH partiel (plan + statut seuls) ne doit pas effacer
+        // les dates ni les notes existantes.
+        $response = $this->patchJson("/api/v1/platform/companies/{$company->id}/subscription", [
+            'plan_id' => 2,
+            'status' => 'active',
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('data.status', 'active')
+            ->assertJsonPath('data.plan.name', 'Operations')
+            ->assertJsonPath('data.subscription_start', '2026-05-01')
+            ->assertJsonPath('data.subscription_end', '2026-05-15')
+            ->assertJsonPath('data.notes', 'Renouvellement a confirmer avec le client.');
+
+        $company->refresh();
+        $this->assertSame(2, $company->plan_id);
+        $this->assertSame('active', $company->status);
+        $this->assertSame('2026-05-01', $company->subscription_start);
+        $this->assertSame('2026-05-15', $company->subscription_end);
+        $this->assertSame('Renouvellement a confirmer avec le client.', $company->notes);
+    }
+
+    public function test_subscription_update_clears_fields_only_on_explicit_null(): void
+    {
+        DB::table('plans')->insert([
+            'id' => 1,
+            'name' => 'Pilot',
+            'price_monthly' => 29,
+            'price_yearly' => 290,
+            'max_employees' => 30,
+            'trial_days' => 14,
+            'is_active' => true,
+        ]);
+
+        $company = Company::factory()->create([
+            'plan_id' => 1,
+            'status' => 'active',
+            'subscription_start' => '2026-05-01',
+            'subscription_end' => '2026-05-15',
+            'notes' => 'Note a effacer.',
+        ]);
+
+        Sanctum::actingAs($this->superAdmin(), ['*'], 'super_admin_api');
+
+        // `null` explicite = effacement ; les clés absentes (plan_id, status,
+        // subscription_start) conservent leur valeur.
+        $response = $this->patchJson("/api/v1/platform/companies/{$company->id}/subscription", [
+            'subscription_end' => null,
+            'notes' => null,
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('data.status', 'active')
+            ->assertJsonPath('data.plan.name', 'Pilot')
+            ->assertJsonPath('data.subscription_start', '2026-05-01')
+            ->assertJsonPath('data.subscription_end', null)
+            ->assertJsonPath('data.notes', null);
+
+        $company->refresh();
+        $this->assertSame(1, $company->plan_id);
+        $this->assertSame('active', $company->status);
+        $this->assertSame('2026-05-01', $company->subscription_start);
+        $this->assertNull($company->subscription_end);
+        $this->assertNull($company->notes);
+    }
+
     public function test_subscription_update_rejects_invalid_status_and_dates(): void
     {
         DB::table('plans')->insert([

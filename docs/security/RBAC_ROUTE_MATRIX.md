@@ -9,6 +9,12 @@ This matrix maps the current API route surfaces to the roles allowed by the rout
 | Key | Role / guard | Scope |
 |---|---|---|
 | SA | `auth:super_admin_api` | Global platform administration only. |
+| SA-SUPER | platform account with `platform_role=super_admin` | Full platform administration **including team delegation** (`team.manage`, issue #7553). Unchanged default for all pre-existing accounts. |
+| SA-ADMIN | platform account with `platform_role=admin` | Full platform administration **except** `team.manage` — cannot distribute internal roles. |
+| SA-SUPPORT | platform account with `platform_role=support` | Support tickets, tenant user accounts, scoped impersonation, observability/metrics. |
+| SA-FINANCE | platform account with `platform_role=finance` | Companies (read), subscriptions, billing, plans, metrics. |
+| SA-OPS | platform account with `platform_role=ops` | Observability, metrics, kill switches, edge nodes, companies (read). |
+| SA-MARKETING | platform account with `platform_role=marketing` | CRM pipeline, platform announcements, showcase, companies (read). |
 | P | tenant manager with `manager_role=principal` | Full tenant administration, subject to company status and tenant middleware. |
 | RH | tenant manager with `manager_role=rh` | HR lifecycle, employees, absences, documents, privacy operations. |
 | DEPT | tenant manager with `manager_role=dept` | Department-scoped reads and approvals where controller policy allows it. |
@@ -27,7 +33,7 @@ This matrix maps the current API route surfaces to the roles allowed by the rout
 | Public onboarding | `/api/v1/onboarding/invitation/*` | `throttle:10,1` | PUBLIC | Token-bound onboarding only. |
 | Tenant authenticated base | `/api/v1/auth/me`, profile, privacy, features, company requests, onboarding checklist, `/api/v1/auth/refresh-token` | `throttle:api`, `auth:sanctum`, `tenant` | P, RH, DEPT, FIN, SUP, EMP | `tenant` must resolve company and reject suspended/archived contexts before controller access. Token refresh rotates Sanctum token preserving abilities. |
 | Launch readiness | `/api/v1/launch-readiness` | `throttle:api`, `auth:sanctum`, `tenant`, controller RBAC | P, RH | Go-live cockpit tenant. Employees and non-RH managers stay forbidden. |
-| Platform administration | `/api/v1/platform/*` except login | `auth:super_admin_api`, `throttle:platform-sensitive` | SA | Includes companies, plans, health, subscriptions, feature flags, company requests, metrics overview, platform-wide announcements (PA2-COMM-005). |
+| Platform administration | `/api/v1/platform/*` except login | `auth:super_admin_api`, `throttle:platform-sensitive`, `platform.permission:<perm>` on sensitive families (#7553) | SA-SUPER, SA-ADMIN, SA-SUPPORT, SA-FINANCE, SA-OPS, SA-MARKETING | Includes companies, plans, health, subscriptions, feature flags, company requests, metrics overview, platform-wide announcements (PA2-COMM-005). Since #7553 each family is gated by an explicit permission: provisioning/companies (`companies.*`), subscriptions & plans (`billing.*`/`plans.view`), tenant user accounts (`users.*`), impersonation (`impersonate`), kill switches (`killswitch.manage`), observability/metrics (`observability.view`/`metrics.view`), support (`support.manage`), announcements (`announcements.manage`), CRM (`crm.view`), edge nodes (`edge.manage`), internal team (`team.manage`). Matrix: `docs/security/PLATFORM_INTERNAL_ROLES.md`; tests: `PlatformTeamApiTest`. |
 | AI gateway | `/api/v1/ai/chat`, `/voice/*`, `/agent/*` | `auth:sanctum`, `tenant`, `AIFeatureCheck`, `AITenantInjector`, `AIRateLimiter`, `throttle:ai-sensitive` | P, RH, DEPT, FIN, SUP, EMP with AI feature | Voice and agent routes remain experimental and rate-limited. |
 | AI analytics | `/api/v1/ai/analytics/*` | AI base middleware + `EnsureAIAnalyticsAccess` | P, RH | Security test should keep non-principal/non-RH managers and employees out. |
 | Payment webhooks | `/api/v1/webhooks/stripe`, `/webhooks/chargily` | none route auth, controller signature validation | PUBLIC providers | Covered by webhook signature tests; unknown payloads must stay idempotent. |

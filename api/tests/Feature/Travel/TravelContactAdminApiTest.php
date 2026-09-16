@@ -57,7 +57,7 @@ class TravelContactAdminApiTest extends TestCase
         /** @var Employee $agent */
         $agent = Employee::factory()->create([
             'company_id' => $this->company->id,
-            'role' => 'agent',
+            'role' => 'employee',
             'manager_role' => null,
         ]);
         Sanctum::actingAs($agent);
@@ -147,7 +147,7 @@ class TravelContactAdminApiTest extends TestCase
         /** @var Employee $agent */
         $agent = Employee::factory()->create([
             'company_id' => $this->company->id,
-            'role' => 'agent',
+            'role' => 'employee',
             'manager_role' => null,
         ]);
         Sanctum::actingAs($agent);

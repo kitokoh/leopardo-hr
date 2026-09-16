@@ -294,6 +294,11 @@ return [
     'ONBOARDING_STEP_NOT_DONE' => 'Cette étape ne peut pas être marquée terminée : aucune action correspondante constatée.',
     'COMPANY_CONTEXT_REQUIRED' => 'Un contexte d\'entreprise est requis.',
     // #7322 — Auto-activation d'un module horizontal par le client.
+    'SOLO_TEAM_TOOL_NOT_AVAILABLE' => 'Outil d\'équipe hors du socle d\'un profil indépendant : :module.',
+    'PLAN_NOT_FOUND' => 'Offre introuvable.',
+    'PLAN_NAME_TAKEN' => 'Une offre porte déjà le nom « :name ».',
+    'PLAN_NOTHING_TO_UPDATE' => 'Aucun champ d\'offre à mettre à jour.',
+    'PLAN_IN_USE' => 'Offre utilisée par :count client(s) — archivez-la au lieu de la supprimer.',
     'INVALID_HORIZONTAL_TOOL' => 'Module inconnu ou non activable en autonomie : :module.',
     'MODULE_ACTIVATED' => 'Module activé.',
     'MODULE_ALREADY_ACTIVE' => 'Ce module est déjà actif.',
@@ -303,4 +308,10 @@ return [
     'TENANT_DELETION_CONFIRMATION_MISMATCH' => 'Le nom saisi ne correspond pas au nom exact de la société.',
     'TENANT_DELETION_BLOCKED' => 'Des données rattachées à cet espace empêchent une suppression complète. Opération annulée.',
     'TENANT_DELETION_INCOMPLETE' => 'La purge est incomplète : des lignes subsistent. Opération annulée.',
+
+    // #7553 — rôles internes plateforme (délégation par le super admin).
+    'PLATFORM_ACCOUNT_REQUIRED' => 'Un compte plateforme est requis pour cette action.',
+    'PLATFORM_PERMISSION_REQUIRED' => 'Votre rôle plateforme ne permet pas cette action (permissions requises : :permissions).',
+    'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'Impossible de modifier votre propre rôle plateforme.',
+    'LAST_SUPER_ADMIN_REQUIRED' => 'Action refusée : il doit rester au moins un super administrateur actif.',
 ];

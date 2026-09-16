@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
-/** @extends Factory<Company> */
 /**
  * CompanyFactory — Génère des entreprises de test
  *
@@ -18,6 +17,8 @@ use Illuminate\Support\Str;
  *   Company::factory()->enterprise()->create()           → Enterprise, schema isolé
  *   Company::factory()->trial()->create()                → Nouveau client Trial
  *   Company::factory()->suspended()->create()            → Compte suspendu
+ *
+ * @extends Factory<Company>
  */
 class CompanyFactory extends Factory
 {

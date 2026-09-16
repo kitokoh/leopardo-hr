@@ -293,6 +293,11 @@ return [
     'ONBOARDING_STEP_NOT_DONE' => 'Bu adım tamamlandı olarak işaretlenemez: ilgili bir işlem kaydedilmedi.',
     'COMPANY_CONTEXT_REQUIRED' => 'Bir şirket bağlamı gerekli.',
     // #7322 — Kullanıcının yatay modülü kendi kendine etkinleştirmesi.
+    'SOLO_TEAM_TOOL_NOT_AVAILABLE' => 'Bağımsız (solo) profil kapsamı dışındaki ekip aracı: :module.',
+    'PLAN_NOT_FOUND' => 'Teklif bulunamadı.',
+    'PLAN_NAME_TAKEN' => 'Bu ada sahip bir teklif zaten var: :name.',
+    'PLAN_NOTHING_TO_UPDATE' => 'Güncellenecek teklif alanı yok.',
+    'PLAN_IN_USE' => 'Teklif :count müşteri tarafından kullanılıyor — silmek yerine arşivleyin.',
     'INVALID_HORIZONTAL_TOOL' => 'Bilinmeyen veya kendi kendine etkinleştirilemeyen modül: :module.',
     'MODULE_ACTIVATED' => 'Modül etkinleştirildi.',
     'MODULE_ALREADY_ACTIVE' => 'Bu modül zaten etkin.',
@@ -302,4 +307,10 @@ return [
     'TENANT_DELETION_CONFIRMATION_MISMATCH' => 'Girilen ad, şirketin tam adıyla eşleşmiyor.',
     'TENANT_DELETION_BLOCKED' => 'Bu çalışma alanına bağlı veriler tam silmeyi engelliyor. İşlem iptal edildi.',
     'TENANT_DELETION_INCOMPLETE' => 'Temizleme eksik: kayıtlar kaldı. İşlem iptal edildi.',
+
+    // #7553 — rôles internes plateforme (délégation par le super admin).
+    'PLATFORM_ACCOUNT_REQUIRED' => 'Bu işlem için bir platform hesabı gerekir.',
+    'PLATFORM_PERMISSION_REQUIRED' => 'Platform rolünüz bu işleme izin vermiyor (gerekli izinler: :permissions).',
+    'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'Kendi platform rolünüzü değiştiremezsiniz.',
+    'LAST_SUPER_ADMIN_REQUIRED' => 'İşlem reddedildi: en az bir etkin üst yönetici kalmalıdır.',
 ];

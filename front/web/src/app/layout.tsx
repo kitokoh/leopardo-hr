@@ -41,27 +41,18 @@ function ogLocale(locale: AppLocale): string {
 }
 
 // #4300 : metadata racine localisées selon la locale SSR (?lang= / Accept-Language).
+// Issue #7428 : les phrases canoniques vivent désormais dans le catalogue
+// partagé (`seoRoot.*`, propagé aux 4 locales par `shared/i18n/sync`) — une
+// seule source de vérité pour la vitrine, le manifeste PWA et les aperçus
+// sociaux, au lieu de copies littérales par surface.
+const rootCopy = (locale: AppLocale, key: 'rootTitle' | 'rootDescription'): string =>
+  String(t(locale, `seoRoot.${key}`) ?? '');
+
 const ROOT_METADATA: Record<AppLocale, { title: string; description: string }> = {
-  fr: {
-    title: 'Leopardo RH - SaaS RH multilingue pour equipes terrain',
-    description:
-      'Leopardo RH centralise pointage, paie, absences, onboarding, notifications et operations terrain sur web, mobile et kiosque.',
-  },
-  en: {
-    title: 'Leopardo RH - Multilingual HR SaaS for field teams',
-    description:
-      'Leopardo RH centralizes attendance, payroll, leave, onboarding, notifications and field operations across web, mobile and kiosk.',
-  },
-  tr: {
-    title: 'Leopardo RH - Saha ekipleri icin cok dilli IK SaaS',
-    description:
-      'Leopardo RH; yoklama, maaş, izin, onboarding, bildirim ve saha operasyonlarını web, mobil ve kiosk üzerinden merkezileştirir.',
-  },
-  ar: {
-    title: 'Leopardo RH - نظام موارد بشرية سحابي متعدد اللغات للفرق الميدانية',
-    description:
-      'يجمع Leopardo RH الحضور والرواتب والإجازات والتأهيل والإشعارات والعمليات الميدانية عبر الويب والجوال وجهاز الحضور.',
-  },
+  fr: { title: rootCopy('fr', 'rootTitle'), description: rootCopy('fr', 'rootDescription') },
+  en: { title: rootCopy('en', 'rootTitle'), description: rootCopy('en', 'rootDescription') },
+  tr: { title: rootCopy('tr', 'rootTitle'), description: rootCopy('tr', 'rootDescription') },
+  ar: { title: rootCopy('ar', 'rootTitle'), description: rootCopy('ar', 'rootDescription') },
 };
 
 
@@ -72,9 +63,8 @@ export async function generateMetadata(): Promise<Metadata> {
   // #4405 : title/description localisés (en/tr/ar) — avant : FR en dur pour
   // toutes les locales (catalogue pageMetadataI18n jamais appliqué à /).
   const landingMeta = pageMetadataI18n[ssrLocale as 'en' | 'tr' | 'ar']?.landing;
-  const title = landingMeta?.title ?? "Leopardo RH - SaaS RH multilingue pour equipes terrain";
-  const description = landingMeta?.description
-    ?? "Leopardo RH centralise pointage, paie, absences, onboarding, notifications et operations terrain sur web, mobile et kiosque.";
+  const title = landingMeta?.title ?? rootCopy(ssrLocale, 'rootTitle');
+  const description = landingMeta?.description ?? rootCopy(ssrLocale, 'rootDescription');
   // #4707 : keywords + alt de l'image sociale localisés (avant : FR pour
   // toutes les locales — la meta keywords et l'alt OG étaient les derniers
   // résidus FR de la metadata racine). Données dans seo.ts (hors surface de
@@ -89,12 +79,12 @@ export async function generateMetadata(): Promise<Metadata> {
       // de la page pour éviter doublon + mix FR/autre.
       template: `%s | ${
         ssrLocale === 'en'
-          ? 'Leopardo HR'
+          ? 'Leopardo'
           : ssrLocale === 'tr'
             ? 'Leopardo İK'
             : ssrLocale === 'ar'
               ? 'ليوباردو'
-              : 'Leopardo RH'
+              : 'Leopardo'
       }`,
     },
     description,
@@ -114,7 +104,7 @@ export async function generateMetadata(): Promise<Metadata> {
       locale: ogLocale(ssrLocale),
       // #AI-SEO : og:site_name suit la locale (avant : FR en dur sur toutes
       // les langues, alors que le titre et la description étaient localisés).
-      siteName: BRAND_NAME_BY_LOCALE[ssrLocale] ?? 'Leopardo RH',
+      siteName: BRAND_NAME_BY_LOCALE[ssrLocale] ?? 'Leopardo',
       title,
       description,
       url: siteUrl,
@@ -140,7 +130,7 @@ export async function generateMetadata(): Promise<Metadata> {
     appleWebApp: {
       capable: true,
       statusBarStyle: "black-translucent",
-      title: "Leopardo RH",
+      title: "Leopardo",
     },
     formatDetection: {
       telephone: false,

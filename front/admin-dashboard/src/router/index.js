@@ -145,6 +145,19 @@ const routes = [
           icon: 'CogIcon'
         }
       },
+      {
+        // #7557 — équipe plateforme : comptes internes et rôles délégués.
+        // Réservé à `team.manage` (porté par le seul rôle `super_admin`) :
+        // l'entrée de menu est filtrée sur cette permission, l'API répond 403
+        // PLATFORM_PERMISSION_REQUIRED à un compte non habilité.
+        path: '/team',
+        name: 'platform-team',
+        component: () => import('@/views/team/PlatformTeamView.vue'),
+        meta: {
+          title: 'navigation.team',
+          icon: 'UsersIcon'
+        }
+      },
 
       {
         path: '/settings/payroll/social-contributions',
@@ -410,6 +423,18 @@ const routes = [
         meta: {
           title: 'navigation.emailTemplates',
           icon: 'EnvelopeIcon'
+        }
+      },
+      {
+        // #7430 — « Offres & tarifs » : le paramétrage des offres passe par
+        // l'UI (CRUD réel), plus par un déploiement. Même groupe « Paramètres »
+        // que les autres écrans de paramétrage (Sidebar).
+        path: '/settings/plans',
+        name: 'settings-plans',
+        component: () => import('@/views/settings/PlansView.vue'),
+        meta: {
+          title: 'plans.nav',
+          icon: 'TagIcon'
         }
       },
       {

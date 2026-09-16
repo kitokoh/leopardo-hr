@@ -36,22 +36,44 @@ return new class extends Migration
             });
         }
 
-        if (! schemaTableExists('travel_quotes')) {
-            Schema::create('travel_quotes', function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('corporate_account_id');
-                $table->unsignedBigInteger('trip_id');
-                $table->unsignedBigInteger('class_id');
-                $table->unsignedInteger('passengers_count');
-                $table->unsignedBigInteger('total_amount_minor');
-                $table->char('currency', 3);
-                $table->string('status', 20)->default('draft'); // draft|accepted|cancelled|expired
-                $table->timestamp('expires_at')->nullable();
-                $table->unsignedBigInteger('created_by_user_id')->nullable();
-                $table->timestamps();
-
-                $table->index(['company_id', 'corporate_account_id'], 'travel_quotes_company_account_idx');
+        if (schemaTableExists('travel_quotes')) {
+            // Issue #7452 — la table est créée par 2026_08_30_000006_6094_create_travel_quotes_table.php ; cette
+            // génération ne rattrape que les colonnes qui lui manquent.
+            Schema::table('travel_quotes', function (Blueprint $table): void {
+                if (! schemaHasColumn('travel_quotes', 'company_id')) {
+                    $table->uuid('company_id')->index();
+                }
+                if (! schemaHasColumn('travel_quotes', 'corporate_account_id')) {
+                    $table->unsignedBigInteger('corporate_account_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_quotes', 'trip_id')) {
+                    $table->unsignedBigInteger('trip_id');
+                }
+                if (! schemaHasColumn('travel_quotes', 'class_id')) {
+                    $table->unsignedBigInteger('class_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_quotes', 'passengers_count')) {
+                    $table->unsignedInteger('passengers_count')->nullable();
+                }
+                if (! schemaHasColumn('travel_quotes', 'total_amount_minor')) {
+                    $table->unsignedBigInteger('total_amount_minor');
+                }
+                if (! schemaHasColumn('travel_quotes', 'currency')) {
+                    $table->char('currency', 3);
+                }
+                if (! schemaHasColumn('travel_quotes', 'status')) {
+                    $table->string('status', 20)->default('draft');
+                }
+                if (! schemaHasColumn('travel_quotes', 'expires_at')) {
+                    // draft|accepted|cancelled|expired
+                    $table->timestamp('expires_at')->nullable();
+                }
+                if (! schemaHasColumn('travel_quotes', 'created_by_user_id')) {
+                    $table->unsignedBigInteger('created_by_user_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_quotes', 'created_at')) {
+                    $table->timestamps();
+                }
             });
         }
 
@@ -70,7 +92,61 @@ return new class extends Migration
             $table->dropColumn(['corporate_account_id', 'quote_id', 'billing_deferred']);
         });
 
-        Schema::dropIfExists('travel_quotes');
+        if (schemaHasColumn('travel_quotes', 'company_id')) {
+            Schema::table('travel_quotes', function (Blueprint $table): void {
+                $table->dropColumn('company_id');
+            });
+        }
+        if (schemaHasColumn('travel_quotes', 'corporate_account_id')) {
+            Schema::table('travel_quotes', function (Blueprint $table): void {
+                $table->dropColumn('corporate_account_id');
+            });
+        }
+        if (schemaHasColumn('travel_quotes', 'trip_id')) {
+            Schema::table('travel_quotes', function (Blueprint $table): void {
+                $table->dropColumn('trip_id');
+            });
+        }
+        if (schemaHasColumn('travel_quotes', 'class_id')) {
+            Schema::table('travel_quotes', function (Blueprint $table): void {
+                $table->dropColumn('class_id');
+            });
+        }
+        if (schemaHasColumn('travel_quotes', 'passengers_count')) {
+            Schema::table('travel_quotes', function (Blueprint $table): void {
+                $table->dropColumn('passengers_count');
+            });
+        }
+        if (schemaHasColumn('travel_quotes', 'total_amount_minor')) {
+            Schema::table('travel_quotes', function (Blueprint $table): void {
+                $table->dropColumn('total_amount_minor');
+            });
+        }
+        if (schemaHasColumn('travel_quotes', 'currency')) {
+            Schema::table('travel_quotes', function (Blueprint $table): void {
+                $table->dropColumn('currency');
+            });
+        }
+        if (schemaHasColumn('travel_quotes', 'status')) {
+            Schema::table('travel_quotes', function (Blueprint $table): void {
+                $table->dropColumn('status');
+            });
+        }
+        if (schemaHasColumn('travel_quotes', 'expires_at')) {
+            Schema::table('travel_quotes', function (Blueprint $table): void {
+                $table->dropColumn('expires_at');
+            });
+        }
+        if (schemaHasColumn('travel_quotes', 'created_by_user_id')) {
+            Schema::table('travel_quotes', function (Blueprint $table): void {
+                $table->dropColumn('created_by_user_id');
+            });
+        }
+        if (schemaHasColumn('travel_quotes', 'created_at')) {
+            Schema::table('travel_quotes', function (Blueprint $table): void {
+                $table->dropColumn('created_at');
+            });
+        }
         Schema::dropIfExists('travel_corporate_accounts');
     }
 };

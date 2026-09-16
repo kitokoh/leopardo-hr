@@ -1,0 +1,83 @@
+name: Content Naming Guard
+
+# Issue #7428 — « au vu du fait que notre solution propose des outils horizontaux
+# et verticaux, qualifier cette solution de RH revient un peu à la minimiser ».
+#
+# La décision est prise (Leopardo = **suite métier**, `docs/REFERENTIEL_PRODUIT/
+# POSITIONNEMENT_SUITE_METIER.md`) et elle s'applique par étapes : les copies
+# publiques (vitrine/SEO), les e-mails transactionnels et les libellés de stores
+# ne peuvent pas être réécrits d'un coup sans relecture du fondateur.
+#
+# Cette garde ne prétend pas résorber la dette : elle l'empêche de **grossir**.
+# `dev-hub/tools/naming-baseline.json` mesure les occurrences de catégories
+# interdites (« logiciel RH », « SaaS RH », « HR SaaS »…) par fichier ; toute
+# occurrence SUPPLÉMENTAIRE échoue, toute baisse est signalée comme un progrès.
+# Elle vérifie aussi que la règle reste écrite dans `MESSAGE.md` (une décision
+# effacée est un bug de gouvernance).
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "README.md"
+      - "front/web/src/app/layout.tsx"
+      - "front/web/src/app/manifest/route.ts"
+      - "front/web/src/lib/i18n.ts"
+      - "front/web/src/lib/i18n/locales/**"
+      - "front/web/src/modules/vitrine/**"
+      - "front/admin-dashboard/index.html"
+      - "front/admin-dashboard/src/i18n/locales/**"
+      - "site/gh-pages/index.html"
+      - "api/lang/**"
+      - "docs/REFERENTIEL_PRODUIT/MESSAGE.md"
+      - "docs/REFERENTIEL_PRODUIT/TERMES.md"
+      - "docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md"
+      - "dev-hub/tools/check-naming-drift.sh"
+      - "dev-hub/tools/naming-baseline.json"
+      - ".github/workflows/content-naming-guard.yml"
+  push:
+    branches: [main]
+    paths:
+      - "front/web/src/modules/vitrine/**"
+      - "api/lang/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: content-naming-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    name: Nommage produit — suite métier (#7428)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 1
+          lfs: false
+
+      - name: Auto-test de la garde (détections et faux positifs)
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bash dev-hub/tools/check-naming-drift.sh --self-test
+
+      - name: Vérifier la dérive de nommage
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bash dev-hub/tools/check-naming-drift.sh
+
+      - name: Rappel du traitement de la dette
+        if: failure()
+        shell: bash
+        run: |
+          echo "::notice::Catégorie interdite dans une copie publique — règle et plan par étapes : docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md (issue #7428)."

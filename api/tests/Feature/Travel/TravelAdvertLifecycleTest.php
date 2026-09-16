@@ -52,12 +52,12 @@ class TravelAdvertLifecycleTest extends TestCase
             $type = TravelAdvertType::query()->create([
                 'company_id' => $company->id,
                 'code' => 'image_banner',
-                'name' => 'Bannière',
+                'label' => 'Bannière',
             ]);
             $position = TravelAdvertPosition::query()->create([
                 'company_id' => $company->id,
                 'code' => 'home_top',
-                'name' => 'Accueil haut',
+                'label' => 'Accueil haut',
             ]);
             TravelAdvertPrice::query()->create([
                 'company_id' => $company->id,
@@ -117,12 +117,12 @@ class TravelAdvertLifecycleTest extends TestCase
         $foreignType = app(TenantManager::class)->withinTenant($other, fn () => TravelAdvertType::query()->create([
             'company_id' => $other->id,
             'code' => 'foreign',
-            'name' => 'Étranger',
+            'label' => 'Étranger',
         ]));
         $position = app(TenantManager::class)->withinTenant($company, fn () => TravelAdvertPosition::query()->create([
             'company_id' => $company->id,
             'code' => 'home_top',
-            'name' => 'Accueil',
+            'label' => 'Accueil',
         ]));
 
         // Type d'un autre tenant → 422.
@@ -137,7 +137,7 @@ class TravelAdvertLifecycleTest extends TestCase
         $localType = app(TenantManager::class)->withinTenant($company, fn () => TravelAdvertType::query()->create([
             'company_id' => $company->id,
             'code' => 'no_price',
-            'name' => 'Sans tarif',
+            'label' => 'Sans tarif',
         ]));
         $this->postJson('/api/v1/travel/adverts', [
             'advert_type_id' => $localType->id,

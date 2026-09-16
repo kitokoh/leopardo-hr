@@ -293,6 +293,11 @@ return [
     'ONBOARDING_STEP_NOT_DONE' => 'لا يمكن تعليم هذه الخطوة كمكتملة: لم يتم تسجيل أي إجراء مطابق.',
     'COMPANY_CONTEXT_REQUIRED' => 'سياق الشركة مطلوب.',
     // #7322 — التفعيل الذاتي لوحدة أفقية من قبل العميل.
+    'SOLO_TEAM_TOOL_NOT_AVAILABLE' => 'أداة فريق خارج نطاق حساب المستقل: :module.',
+    'PLAN_NOT_FOUND' => 'العرض غير موجود.',
+    'PLAN_NAME_TAKEN' => 'يوجد عرض بهذا الاسم بالفعل: :name.',
+    'PLAN_NOTHING_TO_UPDATE' => 'لا يوجد أي حقل تحديث في العرض.',
+    'PLAN_IN_USE' => 'العرض مستخدم من طرف :count عميل — قم بأرشفته بدل حذفه.',
     'INVALID_HORIZONTAL_TOOL' => 'وحدة غير معروفة أو غير قابلة للتفعيل الذاتي: :module.',
     'MODULE_ACTIVATED' => 'تم تفعيل الوحدة.',
     'MODULE_ALREADY_ACTIVE' => 'هذه الوحدة نشطة بالفعل.',
@@ -302,4 +307,10 @@ return [
     'TENANT_DELETION_CONFIRMATION_MISMATCH' => 'الاسم المُدخل لا يطابق الاسم الدقيق للشركة.',
     'TENANT_DELETION_BLOCKED' => 'بيانات مرتبطة بهذه المساحة تمنع الحذف الكامل. تم إلغاء العملية.',
     'TENANT_DELETION_INCOMPLETE' => 'الحذف غير مكتمل: لا تزال هناك سجلات. تم إلغاء العملية.',
+
+    // #7553 — rôles internes plateforme (délégation par le super admin).
+    'PLATFORM_ACCOUNT_REQUIRED' => 'مطلوب حساب منصة لهذا الإجراء.',
+    'PLATFORM_PERMISSION_REQUIRED' => 'دورك في المنصة لا يسمح بهذا الإجراء (الأذونات المطلوبة: :permissions).',
+    'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'لا يمكنك تغيير دورك في المنصة.',
+    'LAST_SUPER_ADMIN_REQUIRED' => 'تم رفض الإجراء: يجب أن يبقى مسؤول أعلى نشط واحد على الأقل.',
 ];

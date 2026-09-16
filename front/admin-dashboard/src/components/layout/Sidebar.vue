@@ -52,6 +52,18 @@
             />
           </button>
 
+          <!-- #7554 — la sonde asynchrone du flag `travelagency` ne doit plus
+               décaler le menu : la place de l'entrée est RÉSERVÉE pendant la
+               sonde (squelette inerte, hors arbre d'accessibilité) au lieu
+               d'une entrée injectée après coup. -->
+          <div
+            v-else-if="item.state === 'pending'"
+            v-show="isGroupOpen(item.group)"
+            class="mx-3 my-1 h-10 animate-pulse rounded-xl bg-slate-100/70 dark:bg-slate-800/40"
+            aria-hidden="true"
+            :data-nav-pending="item.name"
+          ></div>
+
           <router-link
             v-else
             v-show="!item.group || isGroupOpen(item.group)"
@@ -90,11 +102,11 @@
       <div class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
         <div class="px-3">
           <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-            Système
+            {{ t('navigation.systemHealth') }}
           </h3>
           <div class="mt-3 space-y-2">
             <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-600 dark:text-gray-400">Statut</span>
+              <span class="text-sm text-gray-600 dark:text-gray-400">{{ t('navigation.healthStatus') }}</span>
               <div class="flex items-center">
                 <div
                   :class="[
@@ -108,12 +120,12 @@
             </div>
 
             <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-600 dark:text-gray-400">Utilisateurs en ligne</span>
+              <span class="text-sm text-gray-600 dark:text-gray-400">{{ t('navigation.onlineUsers') }}</span>
               <span class="text-xs font-medium text-gray-900 dark:text-gray-200">{{ onlineUsersCount }}</span>
             </div>
 
             <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-600 dark:text-gray-400">Alertes</span>
+              <span class="text-sm text-gray-600 dark:text-gray-400">{{ t('navigation.alerts') }}</span>
               <span
                 :class="[
                   'text-xs font-medium',
@@ -128,34 +140,6 @@
       </div>
     </nav>
 
-    <!-- User info -->
-    <div class="absolute bottom-0 w-full border-t border-slate-200/50 dark:border-slate-800/50 p-4 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
-      <div class="flex items-center">
-        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 shadow-sm">
-          <span class="text-sm font-bold text-slate-700 dark:text-slate-300">
-            {{ userInitials }}
-          </span>
-        </div>
-        <router-link to="/settings" class="ml-3 flex-1 overflow-hidden min-w-0 hover:opacity-80 transition-opacity" title="Mon compte">
-          <p class="text-sm font-semibold text-slate-900 dark:text-white truncate">{{ authStore.userName }}</p>
-          <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ authStore.userRole }}</p>
-        </router-link>
-        <router-link
-          to="/settings"
-          class="ml-2 p-2 rounded-xl text-slate-400 hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-all duration-200"
-          title="Mon compte"
-        >
-          <CogIcon class="h-5 w-5" />
-        </router-link>
-        <router-link
-          to="/logout"
-          class="ml-2 p-2 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
-          title="Déconnexion"
-        >
-          <ArrowRightOnRectangleIcon class="h-5 w-5" />
-        </router-link>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -164,30 +148,16 @@ import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
+import { ChevronDownIcon } from '@heroicons/vue/24/outline'
+// #7557/#7554 — la navigation n'est plus décrite dans ce composant : elle vient
+// de la source de vérité unique `src/navigation/navigation.js`.
 import {
-  EnvelopeIcon,
-  HomeIcon,
-  ChartBarIcon,
-  GlobeAltIcon,
-  UsersIcon,
-  BuildingOfficeIcon,
-  ChevronDownIcon,
-  CreditCardIcon,
-  ChatBubbleLeftRightIcon,
-  CogIcon,
-  ArrowRightOnRectangleIcon,
-  AcademicCapIcon,
-  TruckIcon,
-  SparklesIcon,
-  BoltIcon,
-  LinkIcon,
-  ArrowDownTrayIcon,
-  FunnelIcon,
-  LifebuoyIcon,
-  ServerIcon,
-  ArrowTrendingUpIcon,
-  MegaphoneIcon
-} from '@heroicons/vue/24/outline'
+  NAV_GROUPS,
+  NAV_ENTRIES,
+  NAV_STATE_HIDDEN,
+  LEGACY_GROUP_IDS,
+  navEntryState,
+} from '@/navigation/navigation.js'
 import { useAuthStore } from '@/stores/auth'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useRealtimeStore } from '@/stores/realtime'
@@ -223,18 +193,16 @@ const travelStore = useTravelStore()
 const route = useRoute()
 
 /**
- * #7329 — Les écrans des modules d'une entreprise cliente (formations, flotte,
- * stations-service, agence de voyage) n'étaient que des entrées de PREMIER
- * niveau dans ce menu, alors qu'ils ne s'adressent pas à la plateforme mais au
- * périmètre d'une entreprise cliente. Ils sont désormais regroupés sous une
- * section « Modules des entreprises clientes », rattachée à l'entrée
- * « Entreprises ».
+ * #7329/#7554 — les écrans des modules d'une entreprise cliente (formations,
+ * flotte, stations-service, agence de voyage) ne sont pas des entrées de la
+ * plateforme : ils vivent dans la section « Modules des entreprises
+ * clientes » (groupe `modules-clients` de `src/navigation/navigation.js`).
  *
- * La section est repliable mais OUVERTE par défaut : les entrées restent
- * atteignables en un clic (et visibles dans l'arbre d'accessibilité, ce dont
- * dépendent les specs e2e travel-navigation / sidebar-unique-entries).
+ * Toutes les sections sont repliables et OUVERTES par défaut : une section
+ * repliée par défaut masquerait des écrans existants (régression
+ * d'accessibilité et de discoverabilité, cf. specs e2e sidebar-unique-entries
+ * / travel-navigation qui exigent ces entrées visibles au chargement).
  */
-const CLIENT_MODULES_GROUP = 'clientModules'
 const OPEN_GROUPS_KEY = 'admin.nav.openGroups'
 
 function readOpenGroups() {
@@ -242,15 +210,22 @@ function readOpenGroups() {
     const raw = window.localStorage.getItem(OPEN_GROUPS_KEY)
     if (!raw) return null
     const parsed = JSON.parse(raw)
-    return parsed && typeof parsed === 'object' ? parsed : null
+    if (!parsed || typeof parsed !== 'object') return null
+    // Le groupe des modules clients s'appelait `clientModules` avant #7554 :
+    // on relit l'ancienne clé pour ne pas rouvrir une section que
+    // l'utilisateur avait repliée.
+    const normalized = {}
+    for (const [key, value] of Object.entries(parsed)) {
+      normalized[LEGACY_GROUP_IDS[key] || key] = value
+    }
+    return normalized
   } catch {
     return null
   }
 }
 
-// Défaut = ouvert : une section repliée par défaut masquerait des écrans
-// existants (régression d'accessibilité et de discoverabilité).
-const openGroups = ref({ [CLIENT_MODULES_GROUP]: true, ...(readOpenGroups() || {}) })
+// Défaut = ouvert (voir commentaire ci-dessus).
+const openGroups = ref({ ...(readOpenGroups() || {}) })
 
 function isGroupOpen(group) {
   if (!group) return true
@@ -272,8 +247,10 @@ function toggleGroup(group) {
  * flag `travelagency` est ACTIF pour le contexte courant (sondé via le contrat
  * réel GET /travel/ping : 200 = actif, 403 FEATURE_NOT_ENABLED = absent,
  * 401 = hors contexte tenant). Tant que la sonde n'a pas répondu (isReady
- * false) l'entrée reste masquée — elle apparaît uniquement sur 200, et les
- * écrans /travel gèrent eux-mêmes les états explicites (TravelGate).
+ * false) la place de l'entrée est RÉSERVÉE (état `pending`, squelette inerte)
+ * — elle n'apparaît comme lien que sur 200 (#7554 : plus d'injection après
+ * coup, donc plus de décalage du menu), et les écrans /travel gèrent eux-mêmes
+ * les états explicites (TravelGate).
  */
 let lastProbedUserEmail = null
 watch(
@@ -295,201 +272,57 @@ watch(
 )
 
 /**
- * Comptabilité — RBAC backend (api.manager:comptable,principal) : le menu
- * Paramétrage comptable n'est proposé qu'aux managers comptable/principal.
- * Le backend reste la source de vérité (403 sinon) ; ce filtre évite juste
- * d'afficher une entrée inutile aux autres rôles.
+ * #7557/#7554 — la liste de navigation vit dans la source de vérité unique
+ * `src/navigation/navigation.js` (consommée aussi par la palette de commandes
+ * et les raccourcis clavier). Ce composant ne fait plus que :
+ *   1. filtrer chaque entrée sur la permission plateforme du compte courant
+ *      (`hasPermission`, contrat `/platform/auth/me` #7553) ;
+ *   2. intercaler les titres de section repliables (groupes) ;
+ *   3. résoudre les entrées dont la disponibilité est sondée (flag travel) en
+ *      états `shown` / `pending` (place réservée) / `hidden`.
+ *
+ * Les écrans du périmètre comptable : leur condition historique
+ * (`user.role === 'manager'`) ne pouvait plus jamais être vraie pour une
+ * session plateforme — elle est retirée ici et les écrans seront rattachés à
+ * une permission plateforme par #7554 (aucun changement de rendu : la
+ * condition était morte).
  */
-const canAccessAccounting = computed(() => {
-  const user = authStore.user
-  if (!user) return false
-  const managerRole = user.manager_role
-  return user.role === 'manager' && (managerRole === 'comptable' || managerRole === 'principal')
-})
+const navigation = computed(() => {
+  const capabilities = {
+    hasPermission: (permission) => authStore.hasPermission(permission),
+    travelFlagReady: travelStore.isReady,
+    travelFlagActive: travelStore.flagActive,
+  }
 
-// Navigation items
-const navigation = computed(() => [
-  {
-    name: 'dashboard',
-    title: t('navigation.dashboard', 'Tableau de bord'),
-    path: '/',
-    icon: HomeIcon
-  },
-  {
-    name: 'analytics',
-    title: t('navigation.analytics', 'Analytics'),
-    path: '/analytics',
-    icon: ChartBarIcon
-  },
-  {
-    name: 'globe',
-    title: t('navigation.globe', 'Globe Temps Réel'),
-    path: '/globe',
-    icon: GlobeAltIcon
-  },
-  {
-    name: 'users',
-    title: t('navigation.users', 'Utilisateurs'),
-    path: '/users',
-    icon: UsersIcon
-  },
-  {
-    name: 'companies',
-    title: t('navigation.companies', 'Entreprises'),
-    path: '/companies',
-    icon: BuildingOfficeIcon
-  },
-  // #7329 — section des modules d'entreprise cliente : ces écrans ne
-  // s'adressent pas à la plateforme mais au périmètre d'un client.
-  {
-    type: 'section',
-    name: 'section-client-modules',
-    group: CLIENT_MODULES_GROUP,
-    title: t('navigation.clientModules', 'Modules des entreprises clientes')
-  },
-  {
-    name: 'training',
-    title: t('navigation.training', 'Formations'),
-    path: '/training',
-    icon: AcademicCapIcon,
-    group: CLIENT_MODULES_GROUP
-  },
-  {
-    name: 'fleet',
-    title: t('navigation.fleet', 'Flotte véhicules'),
-    path: '/fleet',
-    icon: TruckIcon,
-    group: CLIENT_MODULES_GROUP
-  },
-  // TRAVEL-601 (#6078) : entrée conditionnée par le flag travelagency réel
-  // (GET /travel/ping → 200). Masquée tant que la sonde n'a pas répondu, si
-  // le flag est inactif (403) ou hors contexte tenant (401).
-  ...(travelStore.isReady && travelStore.flagActive
-    ? [
-        {
-          name: 'travel',
-          title: t('navigation.travelAgency', 'Agence de voyage'),
-          path: '/travel',
-          icon: GlobeAltIcon,
-          group: CLIENT_MODULES_GROUP
-        }
-      ]
-    : []),
-  {
-    name: 'fuelStation',
-    title: t('navigation.fuelStation', 'Stations-service'),
-    path: '/fuel-station',
-    icon: BoltIcon,
-    group: CLIENT_MODULES_GROUP
-  },
-  {
-    name: 'subscriptions',
-    title: t('navigation.subscriptions', 'Abonnements'),
-    path: '/subscriptions',
-    icon: CreditCardIcon
-  },
-  {
-    name: 'chat',
-    title: t('navigation.chat', 'Chat IA'),
-    path: '/chat',
-    icon: SparklesIcon
-  },
-  {
-    name: 'showcase',
-    title: t('navigation.showcase', 'Site vitrine'),
-    path: '/showcase',
-    icon: GlobeAltIcon
-  },
-  {
-    name: 'webhooks',
-    title: t('navigation.webhooks', 'Webhooks'),
-    path: '/webhooks',
-    icon: LinkIcon
-  },
-  {
-    name: 'marketing-oauth',
-    title: t('marketing.oauth.nav_title'),
-    path: '/marketing/oauth',
-    icon: MegaphoneIcon
-  },
-  {
-    name: 'settings-email-templates',
-    title: t('navigation.emailTemplates'),
-    path: '/settings/emails',
-    icon: EnvelopeIcon
-  },
-  {
-    name: 'settings-ai-assistant',
-    title: t('navigation.aiAssistant'),
-    path: '/settings/ai',
-    icon: SparklesIcon
-  },
-  {
-    name: 'exports',
-    title: t('navigation.exports', 'Exports & Rapports'),
-    path: '/exports',
-    icon: ArrowDownTrayIcon
-  },
-  ...(canAccessAccounting.value
-    ? [
-        {
-          name: 'accounting-activation',
-          title: t('navigation.accountingActivation', 'Comptabilité — Démarrer'),
-          path: '/accounting/activation',
-          icon: SparklesIcon
-        },
-        {
-          name: 'accounting-dashboard',
-          title: t('navigation.accountingDashboard', 'Comptabilité — Tableau de bord'),
-          path: '/accounting/dashboard',
-          icon: ChartBarIcon
-        },
-        {
-          name: 'accounting-settings',
-          title: t('navigation.accountingSettings', 'Comptabilité — Paramétrage'),
-          path: '/accounting/settings',
-          icon: CogIcon
-        }
-      ]
-    : []),
-  {
-    name: 'support',
-    title: t('navigation.support', 'Support'),
-    path: '/support',
-    icon: ChatBubbleLeftRightIcon,
-    badge: dashboardStore.stats.supportTickets
-  },
-  {
-    name: 'support-tickets',
-    title: t('navigation.supportTickets', 'Centre support client'),
-    path: '/support-tickets',
-    icon: LifebuoyIcon
-  },
-  {
-    name: 'crm-pipeline',
-    title: t('navigation.crm', 'Pipeline CRM'),
-    path: '/crm/pipeline',
-    icon: FunnelIcon
-  },
-  {
-    name: 'growth',
-    title: t('navigation.growth', 'Administration Growth'),
-    path: '/growth',
-    icon: ArrowTrendingUpIcon
-  },
-  {
-    name: 'edge',
-    title: t('navigation.edge', 'Edge Nodes'),
-    path: '/edge',
-    icon: ServerIcon
-  },
-  {
-    name: 'system',
-    title: t('navigation.system', 'Système'),
-    path: '/system',
-    icon: CogIcon
-  },
-])
+  const items = []
+
+  for (const group of NAV_GROUPS) {
+    const entries = NAV_ENTRIES.filter((entry) => {
+      if (entry.group !== group.id) return false
+      return navEntryState(entry, capabilities) !== NAV_STATE_HIDDEN
+    })
+
+    if (entries.length === 0) continue
+
+    items.push({
+      type: 'section',
+      name: `section-${group.id}`,
+      group: group.id,
+      title: t(group.titleKey)
+    })
+
+    for (const entry of entries) {
+      items.push({
+        ...entry,
+        title: t(entry.titleKey),
+        state: navEntryState(entry, capabilities),
+        badge: entry.badgeKey === 'supportTickets' ? dashboardStore.stats.supportTickets : 0
+      })
+    }
+  }
+
+  return items
+})
 
 /**
  * #7329 — la section contenant l'écran courant est toujours dépliée : sinon le
@@ -508,16 +341,6 @@ watch(
 )
 
 // Computed properties
-const userInitials = computed(() => {
-  const name = authStore.userName
-  return name
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
-})
-
 const healthStatus = computed(() => dashboardStore.healthStatus)
 const onlineUsersCount = computed(() => realtimeStore.onlineUsers.length)
 const criticalAlertsCount = computed(() => dashboardStore.criticalAlerts.length)
