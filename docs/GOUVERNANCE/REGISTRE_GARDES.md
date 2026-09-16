@@ -66,6 +66,7 @@
 | `check-design-token-sync.sh` (+ workflow `design-token-sync.yml`) | COULEURS.md ↔ AppColors ↔ Tailwind (L.07) | bloque |
 | `check-web-design-tokens.sh` (+ workflow `web-design-tokens.yml`) | hex hors palette web/admin (allowlist documentée), classes legacy (V1 : avertissement) | bloque (hex) / rapporte (legacy) |
 | `public-promises-guard.yml` + `check-public-promises.sh` | sur-promesses vitrine (termes à risque) | bloque/rapporte |
+| `check-next-css-optimizer.py` (étape de `web-marketing-ci.yml`) | une config Next n'active pas `optimizeCss` sans pouvoir l'exécuter (Pages Router + `critters` déclaré) — #7531 | bloque |
 
 ## 7. i18n & contenu
 

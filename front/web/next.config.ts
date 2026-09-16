@@ -305,7 +305,30 @@ const nextConfig: NextConfig = {
   // Experimental features for performance
   experimental: {
     optimizePackageImports: ["lucide-react"],
-    optimizeCss: true,
+    // #7531 — `optimizeCss` DÉSACTIVÉ : dans ce dépôt il n'optimise rien et il
+    // transformait toute erreur en « Cannot find module 'critters' ».
+    //
+    // Ce que dit le code de Next 16.3.4 (vérifié dans `node_modules`) :
+    // `critters` n'est requis QUE par le chemin **Pages Router**
+    // (`server/render.js` → `server/post-process.js`, et `pages/_document.js`).
+    // Or `front/web` est **App Router uniquement** (aucun `pages/`) : aucune
+    // occurrence de `optimizeCss` ni de `critters` dans
+    // `node_modules/next/dist/server/app-render/**`. L'expérience ne peut donc
+    // pas inliner de CSS critique ici.
+    //
+    // En revanche, activée, elle faisait passer `renderOpts.optimizeCss = true`
+    // au document d'erreur intégré (Pages) : le `require('critters')` échouait
+    // — `critters` n'est déclaré nulle part, ni dans `package.json` ni dans
+    // `package-lock.json` — et **masquait l'erreur d'origine** derrière un 500
+    // modulaire (constat #7531, avec la pile `route-modules/pages/builtin/_error`).
+    // Le paquet `critters` est de surcroît déprécié (maintenance reprise sous
+    // `beasties`), ce qui rend d'autant moins souhaitable de le déclarer.
+    //
+    // Alternative écartée : `npm i -D critters` « pour faire plaisir à la
+    // config » — payer une dépendance dépréciée pour une expérience sans effet.
+    // Garde : `dev-hub/tools/check-next-css-optimizer.py` (CI vitrine) empêche
+    // de rallumer `optimizeCss` sans Pages Router et sans `critters` déclaré.
+    optimizeCss: false,
     scrollRestoration: true,
   },
 };

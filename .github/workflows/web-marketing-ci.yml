@@ -60,6 +60,14 @@ jobs:
         working-directory: front/web
         run: npm run check:mojibake
 
+      # #7531 — la config Next ne doit pas activer `optimizeCss` sans pouvoir
+      # l'exécuter (Pages Router + dépendance `critters` déclarée). L'auto-test
+      # A/B vérifie que la garde détecte bien l'état défectueux.
+      - name: Check Next CSS optimizer config (#7531)
+        run: |
+          python3 dev-hub/tools/check-next-css-optimizer.py --self-test
+          python3 dev-hub/tools/check-next-css-optimizer.py .
+
   web-marketing-build:
     timeout-minutes: 30
     name: Web Marketing Build
