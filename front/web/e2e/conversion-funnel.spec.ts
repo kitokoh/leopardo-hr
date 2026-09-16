@@ -25,10 +25,9 @@ test.describe('Conversion Funnel E2E Tests', () => {
 
       // Step 2: User clicks signup CTA
       await signupCTA.click();
-      // #7238 — un compte est créé POUR une offre : le CTA mène à la page
-      // tarifs (le middleware redirige /signup sans offre), puis au tunnel.
-      await page.waitForURL('**/pricing');
-      await page.goto('/signup?plan=pilot');
+      // #7488 — fin du choix de plan à l'inscription (décision #7487) : le CTA
+      // mène DIRECTEMENT au tunnel, sans passer par la page tarifs.
+      await page.waitForURL('**/signup');
 
       // Step 3: User sees the guided-trial form (email only — no password)
       const emailInput = page.locator('input[type="email"]').first();
@@ -215,8 +214,7 @@ test.describe('Conversion Funnel E2E Tests', () => {
       const signupCTA = signupCta(page);
       await expect(signupCTA).toBeVisible();
       await signupCTA.click();
-      await page.waitForURL('**/pricing'); // #7238 — le CTA passe par la page tarifs
-      await page.goto('/signup?plan=pilot');
+      await page.waitForURL('**/signup'); // #7488 — le CTA mène directement au tunnel
 
       // Le formulaire est email-only : envoyer une adresse invalide doit
       // afficher une erreur de validation cote client.

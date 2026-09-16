@@ -430,14 +430,12 @@ export function Navbar({ isDark, onToggleDark }: Props) {
             </Link>
 
             {/*
-             * QA onboarding 2026-09-14 — `prefetch={false}` : un compte se cree
-             * POUR une offre, et le proxy redirige /signup sans `plan=` vers
-             * /pricing#plans. Prefetcher cette URL ne prepare donc rien d'utile ;
-             * pire, sur la page /signup elle-meme (dont l'URL porte `?plan=`)
-             * Next re-emettait ce prefetch en boucle — ~560 requetes
-             * `GET /signup?_rsc=…` en 6 s mesurees en build de production, ce qui
-             * empechait `networkidle` de se stabiliser (echec E2E
-             * `marketing-funnel`).
+             * QA onboarding 2026-09-14 — `prefetch={false}` : historiquement le
+             * proxy redirigeait /signup sans `plan=` vers /pricing#plans et le
+             * prefetch bouclait (~560 requêtes `GET /signup?_rsc=…` en 6 s,
+             * échec E2E `marketing-funnel`). Depuis #7488 la page est servie
+             * directement ; le prefetch reste désactivé par prudence (page très
+             * liée, coût faible, bénéfice nul mesuré).
              */}
             <Link
               href="/signup"

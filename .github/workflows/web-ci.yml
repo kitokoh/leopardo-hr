@@ -59,6 +59,16 @@ jobs:
         working-directory: front/admin-dashboard
         run: npm run lint
 
+      # Issue #7434 : convention unique d'action de ligne (RowActionButton) +
+      # libellés d'action internationalisés dans les tableaux.
+      # (Les étapes de la garde #7433 et le harnais Vitest vivent sur la branche
+      # `bc/bc01-admin-web-plateforme` : non repris ici, cf. PR.)
+      - name: Admin action-labels guard (issue #7434)
+        run: python3 dev-hub/tools/check-admin-action-labels.py
+
+      - name: Admin action-labels guard self-test (issue #7434)
+        run: bash dev-hub/tools/check-admin-action-labels-test.sh
+
   web-build:
     timeout-minutes: 30
     name: Web Build
