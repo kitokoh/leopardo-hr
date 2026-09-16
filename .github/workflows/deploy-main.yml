@@ -167,23 +167,38 @@ jobs:
               p === '.github/workflows/deploy-main.yml' ||
               p === 'docs/GESTION_PROJET/SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md' ||
               p === 'docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS.md';
+            // Issue #7511 — parité STRICTE avec le filtre `api` de
+            // .github/paths-filters.yml (celui qui décide si `tests.yml` est
+            // déclenché). Sans cette mesure, le gate ne pouvait pas distinguer
+            // « aucun run parce que rien d'API n'a changé » (décision : rien à
+            // déployer) de « aucun run alors que l'API a changé » (indécision
+            // réelle) et échouait dans les deux cas.
+            const isApiPath = (p) =>
+              p.startsWith('api/') ||
+              p === '.github/workflows/tests.yml' ||
+              p === '.github/workflows/phpstan-baseline.yml';
             try {
               const { data: commit } = await github.rest.repos.getCommit({ owner, repo, ref: sha });
               const parent = commit.parents[0]?.sha;
               let webChanged = true; // conservateur : parent inconnu => web requise
+              let apiChanged = true; // conservateur : parent inconnu => API requise
               if (parent) {
                 const { data: cmp } = await github.rest.repos.compareCommitsWithBasehead({
                   owner,
                   repo,
                   basehead: `${parent}...${sha}`,
                 });
-                webChanged = (cmp.files ?? []).some((f) => isWebPath(f.filename));
+                const files = cmp.files ?? [];
+                webChanged = files.some((f) => isWebPath(f.filename));
+                apiChanged = files.some((f) => isApiPath(f.filename));
               }
               core.setOutput('web_changed', webChanged ? 'true' : 'false');
+              core.setOutput('api_changed', apiChanged ? 'true' : 'false');
               core.setOutput('parent_sha', parent ?? '');
             } catch (err) {
-              core.warning(`resolve changes via API failed: ${err.message} — web_changed conservateur (true).`);
+              core.warning(`resolve changes via API failed: ${err.message} — web_changed/api_changed conservateurs (true).`);
               core.setOutput('web_changed', 'true');
+              core.setOutput('api_changed', 'true');
               core.setOutput('parent_sha', '');
             }
 
@@ -200,6 +215,9 @@ jobs:
           sha: ${{ steps.context.outputs.sha }}
           required_workflows: '["Tests - Leopardo RH","Web CI - Leopardo Admin"]'
           web_changed: ${{ steps.changes_api.outputs.web_changed == 'true' }}
+          # Issue #7511 — mesuré AVANT la gate pour que « aucun run requis »
+          # puisse être qualifié (rien à déployer) au lieu d'échouer en bloc.
+          api_changed: ${{ steps.changes_api.outputs.api_changed == 'true' }}
       - name: Finalize deployment decision
         if: steps.context.outputs.should_deploy == 'pending-validation'
         id: decision
