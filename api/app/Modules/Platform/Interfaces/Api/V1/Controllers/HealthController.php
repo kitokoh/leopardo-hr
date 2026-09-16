@@ -6,6 +6,7 @@ namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Notification\Infrastructure\Services\ProductionDeliveryGuard;
+use App\Modules\Platform\Infrastructure\Services\QueueObservabilityService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
@@ -357,7 +358,9 @@ class HealthController extends Controller
     }
 
     /**
-     * @return array{ok: bool, driver?: string, size?: int, queues?: array<string, int>}
+     * @return array{ok: bool, driver?: string, size?: int, queues?: array<string, int>,
+     *     pending?: array<string, int>, scheduled?: array<string, int>, reserved?: array<string, int>,
+     *     pending_total?: int, scheduled_total?: int, failed_jobs?: int|null}
      */
     private function checkQueue(): array
     {
@@ -371,8 +374,31 @@ class HealthController extends Controller
             $connection = app('queue')->connection();
             $queues = [];
 
-            foreach (['default', 'documents', 'pdf', 'payroll', 'notifications', 'webhooks'] as $queue) {
+            foreach (QueueObservabilityService::QUEUES as $queue) {
                 $queues[$queue] = (int) $connection->size($queue);
+            }
+
+            // #7540 — `size` et `queues` comptent **toutes** les lignes de la
+            // queue, `available_at` inclus : un job planifié à +7 jours y pèse
+            // autant qu'un job bloqué depuis 7 jours. C'est ce qui a fait
+            // ouvrir #7540 (« la file `notifications` ne se draine pas ») alors
+            // que les 23 jobs en cause étaient le planning du drip d'essai
+            // (`SendTrialDripEmailJob`, +1/+3/+7 jours). On publie donc en plus
+            // — et sans toucher au contrat `size`/`queues` lu par la garde de
+            // dérive et les tableaux de bord — ce qui est éligible maintenant,
+            // planifié, et réservé. Sur un driver non `database`, la
+            // ventilation n'est pas mesurable : les trois cartes restent vides
+            // plutôt que d'afficher un 0 trompeur.
+            $breakdown = QueueObservabilityService::queueBreakdown(QueueObservabilityService::QUEUES);
+
+            $pending = [];
+            $scheduled = [];
+            $reserved = [];
+
+            foreach ($breakdown ?? [] as $queue => $row) {
+                $pending[(string) $queue] = $row['pending'];
+                $scheduled[(string) $queue] = $row['scheduled'];
+                $reserved[(string) $queue] = $row['reserved'];
             }
 
             return [
@@ -380,6 +406,11 @@ class HealthController extends Controller
                 'driver' => $driver,
                 'size' => array_sum($queues),
                 'queues' => $queues,
+                'pending' => $pending,
+                'scheduled' => $scheduled,
+                'reserved' => $reserved,
+                'pending_total' => array_sum($pending),
+                'scheduled_total' => array_sum($scheduled),
                 'failed_jobs' => $this->failedJobsCount(),
             ];
         } catch (Throwable) {
