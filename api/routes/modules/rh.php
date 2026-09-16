@@ -29,8 +29,6 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\SiteController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\AnnouncementController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\ConversationController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationController;
-use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationStreamController;
-use App\Modules\Notification\Interfaces\Api\V1\Controllers\SseTokenController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\EndOfContractController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\EstimationController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\LedgerController;
@@ -201,8 +199,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->whereNumber('notification');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->whereNumber('notification');
-    Route::get('/notifications/stream', [NotificationStreamController::class, 'stream']);
-    Route::post('/notifications/sse-token', [SseTokenController::class, 'issue']);
+    // Issue #7481 — le SSE (`/notifications/stream` + `/notifications/sse-token`)
+    // a été RETIRÉ : il n'avait AUCUN client (0 `EventSource` dans front/web et
+    // front/mobile_apps ; le mobile fait du polling à 30 s). Une surface morte
+    // coûte de la maintenance et trompe les audits de sécurité. Le read-path
+    // public reste `GET /notifications`, et la règle de lecture est portée par
+    // ADR-0013 (canal cible `app_notifications`).
 
     // ── Module 5 (complement) — Conversations employé/manager (PA2-COMM-002) ──
     Route::get('/conversations', [ConversationController::class, 'index']);
