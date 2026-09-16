@@ -17,4 +17,10 @@ return [
         'article_flagged' => 'Article flagged for moderation',
         'comment_pending' => 'Comment awaiting moderation',
     ],
+    'console' => [
+        'expire_adverts_description' => 'ينهي الإعلانات المنشورة بعد انتهاء صلاحيتها ثم يؤرشف المنتهية القديمة (TRAVEL-908/#6111).',
+        'expire_adverts_no_tenant' => 'لا يوجد مستأجر — لا شيء لإنهائه.',
+        'expire_adverts_tenant_summary' => 'المستأجر :company: :expired منتهية، :archived مؤرشفة.',
+        'expire_adverts_total' => 'الإجمالي: :expired إعلانًا منتهيًا، :archived مؤرشفة.',
+    ],
 ];

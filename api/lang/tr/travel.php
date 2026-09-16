@@ -17,4 +17,10 @@ return [
         'article_flagged' => 'Article flagged for moderation',
         'comment_pending' => 'Comment awaiting moderation',
     ],
+    'console' => [
+        'expire_adverts_description' => 'Süresi geçen onaylı ilanları sona erdirir, eski süresi geçenleri arşivler (TRAVEL-908/#6111).',
+        'expire_adverts_no_tenant' => 'Kiracı yok — sona erdirilecek bir şey yok.',
+        'expire_adverts_tenant_summary' => 'Kiracı :company: :expired süresi geçti, :archived arşivlendi.',
+        'expire_adverts_total' => 'Toplam: :expired ilan süresi geçti, :archived arşivlendi.',
+    ],
 ];
