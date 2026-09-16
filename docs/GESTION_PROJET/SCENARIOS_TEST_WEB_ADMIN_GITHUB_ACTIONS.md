@@ -472,3 +472,16 @@ plus de troncature silencieuse au-dela de 100 societes.
   scoring du portefeuille (contrat de pagination mis a jour).
 - `eslint` et `vite build` (avec `VITE_API_URL`) restent verts ; les **4 locales** (fr/en/ar/tr)
   doivent rendre l'ecran, RTL arabe compris.
+
+### 19. Échecs d'API : un seul toast, et la saisie reste (#7478, #7484)
+
+Deux défauts d'ergonomie d'échec dans la console admin, qui se cumulaient sur les modales de la verticale voyage :
+
+- **Un `422` affichait deux toasts identiques** (#7478) : `services/api.js` n'honorait `_skipToast` que sur la branche « par défaut » du gestionnaire d'erreur — une vue qui désactivait explicitement le toast en affichait donc un **second** par le chemin `422`. Le drapeau est désormais honoré **sur tous les chemins d'erreur**.
+- **« Rejeter » / « Notifier » perdaient la saisie en cas d'échec** (#7484) : `TravelContentView.vue` fermait la modale et vidait le champ même quand l'API refusait, obligeant à tout retaper. La saisie est conservée et la modale reste ouverte.
+
+À vérifier (recette) :
+
+- Provoquer un `422` sur une action dont la vue passe `_skipToast` : **un seul** toast, jamais deux.
+- Échouer un « Rejeter » (motif invalide) et un « Notifier » : le texte saisi est **toujours là**, la modale reste ouverte, l'erreur de l'API est affichée.
+- `eslint` / `vite build` restent verts ; les 4 locales (fr/en/ar/tr) rendent les écrans.
