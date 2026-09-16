@@ -141,7 +141,9 @@
       "US": "Amerika Birleşik Devletleri"
     },
     "required": "Gerekli",
-    "dismiss": "Kapat"
+    "dismiss": "Kapat",
+    "actions": "İşlemler",
+    "edit": "Düzenle"
   },
   "modules": {
     "attendance": "Puantaj",
@@ -5032,7 +5034,9 @@
       "medium": "Orta",
       "high": "Yüksek",
       "critical": "Kritik"
-    }
+    },
+    "viewEquipment": "Ekipman",
+    "advanceIncident": "İlerlet"
   },
   "trial": {
     "trialBadge": "Deneme",
@@ -5296,7 +5300,9 @@
     "distance": "Mesafe",
     "purpose": "Amaç",
     "notFound": "Araç bulunamadı",
-    "loading": "Yükleniyor…"
+    "loading": "Yükleniyor…",
+    "locate": "Konumlandır",
+    "detail": "Ayrıntı"
   },
   "subscriptions": {
     "features": {

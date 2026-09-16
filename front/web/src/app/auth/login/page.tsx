@@ -316,8 +316,27 @@ function LoginInner() {
       // renvoyé au navigateur et ne doit pas être stocké en localStorage.
       void loginPayload;
 
-      const meResponse = await apiFetch('/auth/me');
-      const mePayload = await meResponse.json() as { data?: StoredAuthUser };
+      // Issue #7479 — le POST /auth/login a RÉUSSI : la session est créée et le
+      // cookie httpOnly est posé. Un échec de `/auth/me` juste après (observé en
+      // production : login 200 puis /auth/me 500, de façon intermittente) est un
+      // incident de SERVICE, pas un échec d'identifiants. Le presenter comme tel
+      // était un blocage d'accès trompeur : l'utilisateur relisait ses
+      // identifiants alors qu'ils étaient valides.
+      let mePayload: { data?: StoredAuthUser };
+      try {
+        const meResponse = await apiFetch('/auth/me');
+        mePayload = await meResponse.json() as { data?: StoredAuthUser };
+      } catch (profileErr) {
+        const status = profileErr instanceof ApiError ? profileErr.status : null;
+        const code = profileErr instanceof ApiError ? (profileErr.code ?? null) : 'network';
+        setError(labels.login.errors.serviceUnavailable);
+        trackClientEvent('login_profile_unavailable', {
+          duration_ms: Math.round(performance.now() - startedAt),
+          status,
+          code,
+        });
+        return;
+      }
       const user = mePayload.data;
 
       if (!user) {
@@ -365,7 +384,7 @@ function LoginInner() {
       setRetryAttempt(0);
       setSubmitting(false);
     }
-  }, [labels.login.errors.generic, labels.login.errors.missingUser, locale, router]);
+  }, [labels.login.errors.generic, labels.login.errors.missingUser, labels.login.errors.serviceUnavailable, locale, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

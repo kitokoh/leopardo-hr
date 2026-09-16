@@ -141,7 +141,9 @@
       "US": "États-Unis"
     },
     "required": "Requis",
-    "dismiss": "Fermer"
+    "dismiss": "Fermer",
+    "actions": "Actions",
+    "edit": "Modifier"
   },
   "modules": {
     "attendance": "Pointage",
@@ -5032,7 +5034,9 @@
       "medium": "Moyenne",
       "high": "Élevée",
       "critical": "Critique"
-    }
+    },
+    "viewEquipment": "Équipements",
+    "advanceIncident": "Faire avancer"
   },
   "trial": {
     "trialBadge": "Essai",
@@ -5296,7 +5300,9 @@
     "distance": "Distance",
     "purpose": "Motif",
     "notFound": "Véhicule introuvable",
-    "loading": "Chargement…"
+    "loading": "Chargement…",
+    "locate": "Localiser",
+    "detail": "Détail"
   },
   "subscriptions": {
     "features": {

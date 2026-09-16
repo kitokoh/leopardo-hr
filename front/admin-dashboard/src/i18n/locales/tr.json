@@ -2883,7 +2883,9 @@
       "medium": "Orta",
       "high": "Yüksek",
       "critical": "Kritik"
-    }
+    },
+    "viewEquipment": "Ekipman",
+    "advanceIncident": "İlerlet"
   },
   "adminPalette": {
     "appLoading": "Yönetim yükleniyor…",
@@ -3935,7 +3937,9 @@
     "distance": "Mesafe",
     "purpose": "Amaç",
     "notFound": "Araç bulunamadı",
-    "loading": "Yükleniyor…"
+    "loading": "Yükleniyor…",
+    "locate": "Konumlandır",
+    "detail": "Ayrıntı"
   },
   "salaryAdvanceRequest": "Talep Et",
   "smartAttendanceTodayTitle": "Bugün — {date}",

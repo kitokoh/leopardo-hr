@@ -2877,7 +2877,9 @@
       "medium": "Medium",
       "high": "High",
       "critical": "Critical"
-    }
+    },
+    "viewEquipment": "Equipment",
+    "advanceIncident": "Advance"
   },
   "adminPalette": {
     "appLoading": "Loading the administration…",
@@ -3929,7 +3931,9 @@
     "distance": "Distance",
     "purpose": "Purpose",
     "notFound": "Vehicle not found",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "locate": "Locate",
+    "detail": "Details"
   },
   "salaryAdvanceRequest": "Request",
   "smartAttendanceTodayTitle": "Today — {date}",

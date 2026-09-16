@@ -141,7 +141,9 @@
       "US": "الولايات المتحدة"
     },
     "required": "مطلوب",
-    "dismiss": "إغلاق"
+    "dismiss": "إغلاق",
+    "actions": "إجراءات",
+    "edit": "تعديل"
   },
   "modules": {
     "attendance": "الحضور",
@@ -5032,7 +5034,9 @@
       "medium": "متوسطة",
       "high": "عالية",
       "critical": "حرجة"
-    }
+    },
+    "viewEquipment": "المعدات",
+    "advanceIncident": "تقديم"
   },
   "trial": {
     "trialBadge": "تجريبي",
@@ -5296,7 +5300,9 @@
     "distance": "المسافة",
     "purpose": "الغرض",
     "notFound": "المركبة غير موجودة",
-    "loading": "جار التحميل…"
+    "loading": "جار التحميل…",
+    "locate": "تحديد الموقع",
+    "detail": "التفاصيل"
   },
   "subscriptions": {
     "features": {

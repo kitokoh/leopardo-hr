@@ -2877,7 +2877,9 @@
       "medium": "متوسطة",
       "high": "عالية",
       "critical": "حرجة"
-    }
+    },
+    "viewEquipment": "المعدات",
+    "advanceIncident": "تقديم"
   },
   "adminPalette": {
     "appLoading": "جارٍ تحميل لوحة الإدارة…",
@@ -3929,7 +3931,9 @@
     "distance": "المسافة",
     "purpose": "الغرض",
     "notFound": "المركبة غير موجودة",
-    "loading": "جار التحميل…"
+    "loading": "جار التحميل…",
+    "locate": "تحديد الموقع",
+    "detail": "التفاصيل"
   },
   "salaryAdvanceRequest": "طلب",
   "smartAttendanceTodayTitle": "اليوم — {date}",

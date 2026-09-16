@@ -141,7 +141,9 @@
       "US": "United States"
     },
     "required": "Required",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "actions": "Actions",
+    "edit": "Edit"
   },
   "modules": {
     "attendance": "Attendance",
@@ -5032,7 +5034,9 @@
       "medium": "Medium",
       "high": "High",
       "critical": "Critical"
-    }
+    },
+    "viewEquipment": "Equipment",
+    "advanceIncident": "Advance"
   },
   "trial": {
     "trialBadge": "Trial",
@@ -5296,7 +5300,9 @@
     "distance": "Distance",
     "purpose": "Purpose",
     "notFound": "Vehicle not found",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "locate": "Locate",
+    "detail": "Details"
   },
   "subscriptions": {
     "features": {

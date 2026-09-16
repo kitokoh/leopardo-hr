@@ -307,15 +307,12 @@ venaient donc du repli codé en dur dans le composant (`Centre de Formation`,
 sont désormais dans la source de vérité `shared/i18n/locales/{fr,en,ar,tr}.json`
 puis propagées à `front/admin-dashboard/src/i18n/locales/` par
 `node shared/i18n/sync/sync-web.js`.
-
 Côté back-office, l'interrupteur « Formation » de la fiche entreprise était un
 **switch fantôme** : `training` était absent de `Company::KNOWN_MODULES`, donc
 `PATCH /platform/companies/{id}/features` reconstruisait `features` sans la clé
 et jetait silencieusement toute bascule. Le module est maintenant connu et
 enregistré (`config/feature-flags.php`).
-
 À vérifier (recette) :
-
 - Fiche Entreprise › « Modules » : « Centre de Formation » s'affiche depuis le
   catalogue dans les 4 locales (fr/en/ar/tr, RTL compris) — plus de repli en dur.
 - Basculer la Formation ON/OFF puis **recharger** : l'état revient conforme (la
@@ -326,6 +323,32 @@ enregistré (`config/feature-flags.php`).
   `features[x]=0`).
 - `npx eslint src --max-warnings 0` et `npx vite build` restent verts ;
   `check-i18n-diff.js` vert (aucun libellé français en dur sur les lignes ajoutées).
+### 19. Actions de ligne — une seule convention, icône accessible, en-tête traduit (#7434)
+La console mélangeait deux conventions d'action de ligne (icônes dans la table
+des utilisateurs, boutons texte « Modifier »/« Supprimer » dans une vingtaine
+d'autres vues) et écrivait l'en-tête de colonne « Actions » en clair — donc en
+français même en locale `en`/`ar`/`tr`.
+Règle (propriétaire, 2026-09-14) : « si tout est icône, pourquoi lui reste-t-il
+son texte ? Les seules choses qui peuvent rester icône **et** texte, c'est le
+menu. »
+À vérifier en recette :
+- **Partout où une table porte des actions de ligne** (Annonces, Catalogue et
+  hôtels, Réseau, Réservations, Quiz, Référentiel, Sites, Contacts, Billets,
+  Fériés, Cotisations, Webhooks, Fuel, Flotte, Exports, Utilisateurs) :
+  l'action est une **icône seule**, jamais un bouton texte.
+- **Nom accessible** : chaque icône-action porte un `title` ET un `aria-label`
+  (composant `RowActionButton.vue`) — une icône seule sans nom est invisible au
+  lecteur d'écran.
+- **En-tête de colonne** « Actions » traduit dans les 4 locales (fr/en/ar/tr),
+  y compris en RTL.
+- **Aucun changement de comportement** : mêmes actions, mêmes états `disabled`,
+  mêmes confirmations (`ConfirmDialog`) pour les actions destructives.
+- **Couleurs conservées** : les tons (danger/succès/avertissement) restent
+  distincts à l'écran — la sémantique ne doit pas se perdre avec le libellé.
+- **Garde CI** : `python3 dev-hub/tools/check-admin-action-labels.py` doit sortir 0
+  (**bloquant** dans `web-ci.yml`, job `web-lint`) — la garde #7434 unique, autotestée par
+  `dev-hub/tools/check-admin-action-labels-test.sh` (registre `docs/GOUVERNANCE/REGISTRE_GARDES.md`).
+  La garde de branche `check-admin-row-actions.py` de #7461 est **supprimée** : redondante.
 
 ## Artefacts obligatoires
 

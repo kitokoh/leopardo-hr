@@ -76,3 +76,17 @@ jobs:
         run: |
           bash dev-hub/tools/check-deploy-gate-outcome.sh
           bash dev-hub/tools/check-deploy-gate-outcome.sh --self-test
+
+      - name: Deploy gate verdict — behavioural test (issue #7511)
+        # La garde ci-dessus vérifie la STRUCTURE ; ce test exécute le script du
+        # gate avec un `core`/`github` simulés et assert les SORTIES réelles
+        # (`not-required` quand rien d'api/web n'a changé, `no-runs` dès que
+        # l'API a changé, `deploy`, `stale`, `manual-dispatch`).
+        run: node dev-hub/tools/check-deploy-gate-outcome-test.mjs
+      - name: Android SDK packages guard (issue #7519)
+        # Échoue si l'action de setup mobile redemande un paquet qui n'existe
+        # plus dans cmdline-tools 20.0 (`tools`) : `sdkmanager` sort en 1 et
+        # toute la chaîne mobile s'arrête avant compilation (main rouge).
+        run: |
+          bash dev-hub/tools/check-android-sdk-packages.sh
+          bash dev-hub/tools/check-android-sdk-packages.sh --self-test

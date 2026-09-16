@@ -2883,7 +2883,9 @@
       "medium": "Moyenne",
       "high": "Élevée",
       "critical": "Critique"
-    }
+    },
+    "viewEquipment": "Équipements",
+    "advanceIncident": "Faire avancer"
   },
   "adminPalette": {
     "appLoading": "Chargement de l'administration…",
@@ -3935,7 +3937,9 @@
     "distance": "Distance",
     "purpose": "Motif",
     "notFound": "Véhicule introuvable",
-    "loading": "Chargement…"
+    "loading": "Chargement…",
+    "locate": "Localiser",
+    "detail": "Détail"
   },
   "salaryAdvanceRequest": "Demander",
   "smartAttendanceTodayTitle": "Aujourd'hui — {date}",
