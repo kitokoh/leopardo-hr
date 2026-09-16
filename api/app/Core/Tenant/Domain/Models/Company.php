@@ -242,9 +242,13 @@ class Company extends Model
         // donc la capacité par défaut documentée dans `config/cameras.php`
         // (« Business = 4 »), SAUF si une valeur existe déjà — la console
         // plateforme peut la relever, y compris à `null` (= illimité).
+        // ⚠️ Écriture DIRECTE dans `features` : `setFeature()` n'accepte qu'un
+        // booléen (`bool $enabled`) et `features.max_cameras` porte un ENTIER
+        // (ou `null` = illimité), que `CameraService::maxCameras()` lit tel quel.
         $features = is_array($this->features ?? null) ? $this->features : [];
         if ($key === 'cameras' && ! array_key_exists('max_cameras', $features)) {
-            $this->setFeature('max_cameras', (int) config('cameras.activation_default_max', 4));
+            $features['max_cameras'] = (int) config('cameras.activation_default_max', 4);
+            $this->features = $features;
         }
 
         return ! $alreadyActive;
