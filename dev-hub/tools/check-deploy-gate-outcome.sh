@@ -224,6 +224,16 @@ check_filters_parity() {
   if ! grep -qE "DEPLOY_GATE_BUDGET_MINUTES" "${action}"; then
     fail "${ACTION_PATH} : le budget d'attente n'est plus paramétrable — le test comportemental ne peut plus épuiser le budget (#7559)."
   fi
+  # #7559 (suite) — « en vol » doit couvrir TOUT ce qui n'est pas `completed`
+  # (`requested`, `waiting`, `pending`, `queued`, `in_progress`). Le prédicat
+  # restreint produisait un motif `tests-null` refusé par le job de verdict
+  # (constat de production : run 35085884633).
+  if ! grep -qE "run.status !== 'completed'" "${action}"; then
+    fail "${ACTION_PATH} : le prédicat « runs en vol » ne couvre plus tous les statuts non terminés — un run \`requested\` ferait conclure le gate sur un run sans conclusion (motif \`tests-null\`, #7559)."
+  fi
+  if grep -qE "gateOutcome = \`tests-\$\{testsConclusion\}\`" "${action}"; then
+    fail "${ACTION_PATH} : un motif \`tests-${conclusion}\` peut être produit avec une conclusion nulle — le job de verdict refuse tout motif inconnu (#7559)."
+  fi
   if ! printf '%s\n' "${verdict_block}" | grep -qE '^            pending\)'; then
     fail "${DEPLOY_PATH} : le job de verdict ne traite plus « pending » comme une décision (le différé redeviendrait rouge — #7559)."
   fi
@@ -331,6 +341,20 @@ open(p, 'w', encoding='utf-8').write(s)
 PYSELFTEST
   if ( check_filters_parity "${tmp}" ) 2>/dev/null; then
     echo "::error::[deploy-gate --self-test] la régression #7559 (budget épuisé avec runs en cours retraité en indécision) n'est pas détectée." >&2
+    return 1
+  fi
+  cp "${ACTION_PATH}" "${tmp}/${ACTION_PATH}"
+
+  # --- mutation 5 (#7559, suite) : le prédicat « en vol » redevient étroit ---
+  python3 - "${tmp}/${ACTION_PATH}" <<'PYSELFTEST'
+import sys
+p = sys.argv[1]
+s = open(p, encoding='utf-8').read()
+s = s.replace("run.status !== 'completed'", "run.status === 'queued' || run.status === 'in_progress'", 1)
+open(p, 'w', encoding='utf-8').write(s)
+PYSELFTEST
+  if ( check_filters_parity "${tmp}" ) 2>/dev/null; then
+    echo "::error::[deploy-gate --self-test] la régression #7559 (statuts `requested`/`waiting` retirés du prédicat « en vol ») n'est pas détectée." >&2
     return 1
   fi
 
