@@ -300,6 +300,10 @@ return [
     'ONBOARDING_STEP_NOT_DONE' => 'This step cannot be marked complete: no matching action has been recorded yet.',
     'COMPANY_CONTEXT_REQUIRED' => 'A company context is required.',
     // #7322 — Client self-activation of a horizontal module.
+    'PLAN_NOT_FOUND' => 'Plan not found.',
+    'PLAN_NAME_TAKEN' => 'A plan is already named “:name”.',
+    'PLAN_NOTHING_TO_UPDATE' => 'No plan field to update.',
+    'PLAN_IN_USE' => 'Plan used by :count customer(s) — archive it instead of deleting it.',
     'INVALID_HORIZONTAL_TOOL' => 'Unknown module or not self-activatable: :module.',
     'MODULE_ACTIVATED' => 'Module activated.',
     'MODULE_ALREADY_ACTIVE' => 'This module is already active.',

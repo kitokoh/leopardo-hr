@@ -293,6 +293,10 @@ return [
     'ONBOARDING_STEP_NOT_DONE' => 'Bu adım tamamlandı olarak işaretlenemez: ilgili bir işlem kaydedilmedi.',
     'COMPANY_CONTEXT_REQUIRED' => 'Bir şirket bağlamı gerekli.',
     // #7322 — Kullanıcının yatay modülü kendi kendine etkinleştirmesi.
+    'PLAN_NOT_FOUND' => 'Teklif bulunamadı.',
+    'PLAN_NAME_TAKEN' => 'Bu ada sahip bir teklif zaten var: :name.',
+    'PLAN_NOTHING_TO_UPDATE' => 'Güncellenecek teklif alanı yok.',
+    'PLAN_IN_USE' => 'Teklif :count müşteri tarafından kullanılıyor — silmek yerine arşivleyin.',
     'INVALID_HORIZONTAL_TOOL' => 'Bilinmeyen veya kendi kendine etkinleştirilemeyen modül: :module.',
     'MODULE_ACTIVATED' => 'Modül etkinleştirildi.',
     'MODULE_ALREADY_ACTIVE' => 'Bu modül zaten etkin.',
