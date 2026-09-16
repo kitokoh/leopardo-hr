@@ -6,7 +6,6 @@ use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 
-/** @extends Factory<Employee> */
 /**
  * EmployeeFactory — Génère des employés de test (schéma tenant actif)
  *
@@ -19,6 +18,13 @@ use Illuminate\Support\Facades\Hash;
  *
  * NOTE : La factory opère sur le schéma actif (SET search_path par TenantMiddleware)
  * Les tests doivent switcher le schéma AVANT d'utiliser la factory.
+ *
+ * En PHP, seul le DERNIER docblock avant la déclaration compte : `@extends` doit
+ * donc vivre ICI. Séparé dans son propre docblock, il était ignoré et
+ * `Employee::factory()->create()` était typé `Illuminate\Database\Eloquent\Model`
+ * — d'où la dérive des messages de la baseline PHPStan (#7499).
+ *
+ * @extends Factory<Employee>
  */
 class EmployeeFactory extends Factory
 {

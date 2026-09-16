@@ -32,6 +32,21 @@ use Illuminate\Validation\ValidationException;
  *
  * Réservé au super-admin : le groupe de routes porte `auth:super_admin_api`
  * (jamais exposé à l'espace tenant, garde MAT-003/#5861).
+ *
+ * `@phpstan-type PlanRow` décrit la ligne `plans` telle que la rend le Query
+ * Builder (`DB::table()` rend un `stdClass` non typé : sans cette forme,
+ * PHPStan strict signale chaque `$plan->prix` comme une propriété inconnue).
+ *
+ * @phpstan-type PlanRow object{
+ *     id: int|string,
+ *     name: string,
+ *     price_monthly: int|float|string|null,
+ *     price_yearly: int|float|string|null,
+ *     max_employees: int|string|null,
+ *     features: string|null,
+ *     trial_days: int|string,
+ *     is_active: bool|int|string
+ * }
  */
 class PlatformPlanAdminController extends Controller
 {
@@ -239,12 +254,17 @@ class PlatformPlanAdminController extends Controller
         return $candidate;
     }
 
+    /** @phpstan-return PlanRow */
     private function findOrFail(int $id): object
     {
         $plan = DB::table('plans')->where('id', $id)->first();
 
         abort_if($plan === null, 404, __('errors.PLAN_NOT_FOUND'));
 
+        // Le Query Builder rend un `stdClass` : la forme `PlanRow` est affirmée
+        // ici (colonnes de `plans`, cf. migration d'origine) pour que les accès
+        // `$plan->prix` soient typés côté PHPStan strict.
+        /** @var PlanRow $plan */
         return $plan;
     }
 
@@ -289,6 +309,8 @@ class PlatformPlanAdminController extends Controller
     }
 
     /**
+     * @phpstan-param PlanRow $plan
+     *
      * @return array<string, mixed>
      */
     private function present(object $plan): array

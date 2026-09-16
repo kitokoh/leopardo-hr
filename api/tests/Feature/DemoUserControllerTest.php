@@ -185,7 +185,7 @@ class DemoUserControllerTest extends TestCase
             ]);
 
         $employeeId = DB::table('shared_tenants.employees')->insertGetId([
-            'company_id' => $companies['techcorp-algerie']->id,
+            'company_id' => $companies['techcorp-algerie']?->id,
             'first_name' => 'Readiness',
             'last_name' => 'Demo',
             'email' => 'readiness.demo@techcorp-algerie.dz',
@@ -206,16 +206,16 @@ class DemoUserControllerTest extends TestCase
 
         $this->assertGreaterThan(0, (float) $salaryBase);
         $this->assertTrue(DB::table('shared_tenants.attendance_kiosks')
-            ->where('company_id', $companies['techcorp-algerie']->id)
+            ->where('company_id', $companies['techcorp-algerie']?->id)
             ->where('status', 'active')
             ->exists());
         $this->assertTrue(DB::table('shared_tenants.client_events')
-            ->where('company_id', $companies['techcorp-algerie']->id)
+            ->where('company_id', $companies['techcorp-algerie']?->id)
             ->where('event_name', 'launch_readiness_backfilled')
             ->exists());
 
         $metadata = DB::table('public.companies')
-            ->where('id', $companies['techcorp-algerie']->id)
+            ->where('id', $companies['techcorp-algerie']?->id)
             ->value('metadata');
         $metadata = is_string($metadata) ? json_decode($metadata, true) : $metadata;
 
@@ -248,7 +248,7 @@ class DemoUserControllerTest extends TestCase
                 ]);
 
             $employeeId = DB::table('shared_tenants.employees')->insertGetId([
-                'company_id' => $companies['techcorp-algerie']->id,
+                'company_id' => $companies['techcorp-algerie']?->id,
                 'first_name' => 'Disabled',
                 'last_name' => 'Backfill',
                 'email' => 'disabled.backfill@techcorp-algerie.dz',
@@ -267,11 +267,11 @@ class DemoUserControllerTest extends TestCase
                 ->where('id', $employeeId)
                 ->value('salary_base'));
             $this->assertTrue(DB::table('shared_tenants.attendance_kiosks')
-                ->where('company_id', $companies['techcorp-algerie']->id)
+                ->where('company_id', $companies['techcorp-algerie']?->id)
                 ->where('status', 'active')
                 ->exists());
             $this->assertTrue(DB::table('shared_tenants.client_events')
-                ->where('company_id', $companies['techcorp-algerie']->id)
+                ->where('company_id', $companies['techcorp-algerie']?->id)
                 ->where('event_name', 'launch_readiness_backfilled')
                 ->exists());
         } finally {

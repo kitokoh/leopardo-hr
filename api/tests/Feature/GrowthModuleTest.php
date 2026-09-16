@@ -64,7 +64,7 @@ class GrowthModuleTest extends TestCase
         $result = $this->partnerService->attributeCompanyToPartner($company, $code);
 
         $this->assertTrue($result);
-        $this->assertEquals($partner->id, $company->fresh()->referrer_partner_id);
+        $this->assertEquals($partner->id, $company->fresh()?->referrer_partner_id);
     }
 
     public function test_prevents_self_referral()
@@ -85,7 +85,7 @@ class GrowthModuleTest extends TestCase
         $result = $this->partnerService->attributeCompanyToPartner($company, $code);
 
         $this->assertFalse($result);
-        $this->assertNull($company->fresh()->referrer_partner_id);
+        $this->assertNull($company->fresh()?->referrer_partner_id);
     }
 
     public function test_records_commission_on_payment()
@@ -203,7 +203,7 @@ class GrowthModuleTest extends TestCase
 
         $this->partnerService->reassignCompanyPartner($company, $partner2->id, $admin->id, 'Commercial transfer');
 
-        $this->assertEquals($partner2->id, $company->fresh()->referrer_partner_id);
+        $this->assertEquals($partner2->id, $company->fresh()?->referrer_partner_id);
         $this->assertDatabaseHas('partner_audit_logs', [
             'admin_id' => $admin->id,
             'auditable_type' => Company::class,
@@ -331,7 +331,7 @@ class GrowthModuleTest extends TestCase
 
         event(new CompanyCreated($company));
 
-        $this->assertNull($company->fresh()->referrer_partner_id);
+        $this->assertNull($company->fresh()?->referrer_partner_id);
     }
 
     public function test_manual_referral_code_takes_precedence_over_cookie()
@@ -351,7 +351,7 @@ class GrowthModuleTest extends TestCase
         event(new CompanyCreated($company));
 
         // Should still be partner 1
-        $this->assertEquals($partner1->id, $company->fresh()->referrer_partner_id);
+        $this->assertEquals($partner1->id, $company->fresh()?->referrer_partner_id);
     }
 
     public function test_commission_calculation_on_ht_base()

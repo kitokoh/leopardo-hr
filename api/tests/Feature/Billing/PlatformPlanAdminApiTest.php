@@ -129,9 +129,10 @@ class PlatformPlanAdminApiTest extends TestCase
             ->assertJsonPath('data.max_employees', null)
             ->assertJsonPath('data.features.accounting', true);
 
-        $row = DB::table('plans')->where('id', $id)->first();
-        $this->assertSame('39.00', (string) $row->price_monthly);
-        $this->assertNull($row->max_employees);
+        // `->value()` plutôt que `->first()` : une colonne ciblée, jamais un
+        // `stdClass|null` dont PHPStan strict refuse l'accès aux propriétés.
+        $this->assertSame('39.00', (string) DB::table('plans')->where('id', $id)->value('price_monthly'));
+        $this->assertNull(DB::table('plans')->where('id', $id)->value('max_employees'));
 
         $this->assertDatabaseHas('audit_logs', [
             'action' => 'plan.updated',
