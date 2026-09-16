@@ -2,7 +2,7 @@
   "attendanceCorrectionRequestSnack": "Demande du {date} soumise au RH - vous serez notifié de la décision.",
   "payrollRemainingToReceive": "Reste à recevoir",
   "app": {
-    "title": "Leopardo RH"
+    "title": "Leopardo — suite métier"
   },
   "attendanceLateMinutes": "{minutes} min",
   "settingsBiometricConfirmIdentity": "Confirmez votre identité",

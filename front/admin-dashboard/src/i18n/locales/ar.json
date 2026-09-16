@@ -2,7 +2,7 @@
   "attendanceCorrectionRequestSnack": "تم إرسال طلب {date} إلى الموارد البشرية - سيتم إشعارك بالقرار.",
   "payrollRemainingToReceive": "المتبقي استلامه",
   "app": {
-    "title": "ليوباردو للموارد البشرية"
+    "title": "ليوباردو — حزمة الأعمال"
   },
   "attendanceLateMinutes": "{minutes} دقيقة",
   "settingsBiometricConfirmIdentity": "أكّد هويتك",

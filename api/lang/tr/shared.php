@@ -2,7 +2,7 @@
 
 return [
     'app' => [
-        'title' => 'Leopardo IK',
+        'title' => 'Leopardo — İşletme Yönetimi Paketi',
     ],
     'welcome' => [
         'brand' => [

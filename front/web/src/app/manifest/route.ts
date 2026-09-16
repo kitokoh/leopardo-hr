@@ -11,8 +11,8 @@ const COPY: Record<
   }
 > = {
   fr: {
-    name: 'Leopardo RH - Gestion RH complète',
-    description: 'Plateforme SaaS RH multilingue pour pointage, paie, absences, onboarding, mobile et kiosque',
+    name: 'Leopardo — suite métier (RH & paie, pointage, CRM)',
+    description: 'La suite métier des entreprises de terrain : RH & paie, pointage, absences, CRM, comptabilité, sur web, mobile et kiosque',
     shortcuts: [
       { name: 'Essai gratuit', short_name: 'Essai', description: 'Commencer un essai gratuit de 14 jours', url: '/signup?source=pwa_shortcut' },
       { name: 'Demander une démo', short_name: 'Démo', description: 'Demander une démonstration personnalisée', url: '/demo?source=pwa_shortcut' },
@@ -21,8 +21,8 @@ const COPY: Record<
     ],
   },
   en: {
-    name: 'Leopardo HR - Complete HR management',
-    description: 'Multilingual HR SaaS platform for time tracking, payroll, leave, onboarding, mobile and kiosk',
+    name: 'Leopardo — business suite (HR & payroll, attendance, CRM)',
+    description: 'The business suite for field-based companies: HR & payroll, attendance, leave, CRM, accounting, on web, mobile and kiosk',
     shortcuts: [
       { name: 'Free trial', short_name: 'Trial', description: 'Start a free 14-day trial', url: '/signup?source=pwa_shortcut' },
       { name: 'Request a demo', short_name: 'Demo', description: 'Request a personalized demonstration', url: '/demo?source=pwa_shortcut' },
@@ -31,8 +31,8 @@ const COPY: Record<
     ],
   },
   tr: {
-    name: 'Leopardo İK - Eksiksiz İK yönetimi',
-    description: 'Puantaj, bordro, izin, işe alım, mobil ve kiosk için çok dilli İK SaaS platformu',
+    name: 'Leopardo — işletme yönetimi paketi (İK & bordro, yoklama, CRM)',
+    description: 'Saha ekipleri için işletme yönetimi paketi: İK ve bordro, yoklama, izin, CRM, muhasebe; web, mobil ve kiosk',
     shortcuts: [
       { name: 'Ücretsiz deneme', short_name: 'Deneme', description: '14 günlük ücretsiz denemeyi başlatın', url: '/signup?source=pwa_shortcut' },
       { name: 'Demo isteyin', short_name: 'Demo', description: 'Kişiselleştirilmiş bir demo isteyin', url: '/demo?source=pwa_shortcut' },
@@ -41,8 +41,8 @@ const COPY: Record<
     ],
   },
   ar: {
-    name: 'ليوباردو للموارد البشرية - إدارة موارد بشرية متكاملة',
-    description: 'منصة SaaS متعددة اللغات للحضور والرواتب والإجازات والتهيئة وتطبيقات الجوال والكشك',
+    name: 'ليوباردو — حزمة الأعمال (الموارد البشرية والرواتب، الحضور، إدارة العملاء)',
+    description: 'حزمة الأعمال للشركات الميدانية: الموارد البشرية والرواتب، الحضور، الإجازات، إدارة العملاء والمحاسبة؛ عبر الويب والجوال وأجهزة الحضور',
     shortcuts: [
       { name: 'تجربة مجانية', short_name: 'تجربة', description: 'ابدأ تجربة مجانية لمدة 14 يومًا', url: '/signup?source=pwa_shortcut' },
       { name: 'طلب عرض توضيحي', short_name: 'عرض', description: 'اطلب عرضًا توضيحيًا مخصصًا', url: '/demo?source=pwa_shortcut' },
