@@ -273,6 +273,8 @@ un APP_VERSION sur un tier qui n'en porte pas. Rattrapage : `deploy-main-catchup
 
 ## Regles obligatoires
 
+- **Drain de crise (#7562, 2026-09-16)** — quand plusieurs agents ont livré le **même sujet** sur des branches concurrentes, qu'aucune PR n'est mergeable (protection `strict` : chaque merge invalide les autres) et que la file CI est le facteur limitant : appliquer **`docs/GOUVERNANCE/PROTOCOLE_LOTS_MULTI_AGENTS.md` §6** (une PR de lot, un sujet = une implémentation canonique, pilotage de la file, outillage local, critères de sortie). **Ce n'est pas un mode de travail** : les 4 checks requis gardent leur rôle, aucune PR ne se merge avec un check requis rouge, et le drain suivant se fait PR par PR. Un drain se termine quand il ne reste QUE `main`, propre et verte — jamais « presque ».
+
 - **Protocole branches CRM (#5746)** : pour toute issue du programme CRM (#5705→#5731, #5735→#5746), suivre `docs/GOUVERNANCE/CRM_BRANCH_PROTOCOL.md` — une issue = une branche = une PR ; marker branch immédiat après claim ; base `main` à jour ; migrations avec réf issue dans le nom ; jamais d'auto-merge d'une PR rouge ; arrêt si `main` rouge. Le garde `dev-hub/tools/check-crm-branch-protocol.sh` (workflow `crm-branch-protocol.yml`) signale doublons de branches, PRs sans `Closes #N` et PRs trop grosses.
 
 - **Lecon 2026-08-16 (#4164)** : le garde `validate-mobile-workflow-contracts.ps1`
@@ -392,6 +394,17 @@ pour les résoudre au checkout.
 > deplacee vers `docs/ops/STRATEGIE_CI_RAPIDE.md` (issue #6698 — desengorgement d'AGENTS.md).
 
 ## Pieges connus
+
+### 2026-09-16 — Drain de crise : les pièges qui coûtent une journée (#7562)
+
+- **`git merge-file --union` casse les JSON/ARB** (13 à 17 fichiers invalides, synchronisateurs en échec) → merge **profond** puis régénération par `shared/i18n/sync/*.js` + `validators/validate.js` ; `versions.json` doit être **valide avant** de relancer les syncs. `--union` reste bon pour les fichiers texte additifs.
+- **Les annotations PHPDoc peuvent être désarmées** : en PHP, seul le **dernier** docblock avant la déclaration compte. Un `/** @extends Factory<Employee> */` isolé au-dessus d'un second docblock était ignoré → `Employee::factory()->create()` typé `Model` → ≈20 erreurs PHPStan strict dans les tests.
+- **Un handler qui ferme puis bascule le même état ne ferme rien** : `closePanels(); setOpen(v => !v)` rouvre dans le même lot → calculer la cible **avant** : `const next = !open; closePanels(); setOpen(next)`.
+- **`Core → Modules` est interdit** : pour un enum partagé, déplacer l'enum **vers `Core`** ; ne jamais élargir l'allowlist d'isolation (#5584).
+- **Un rouge non requis n'est pas forcément le vôtre** : le mesurer sur `main` (worktree détaché) avant de corriger — `event-catalogue`, `route-owner-guard` et `application-layer-placement` sont rouges **sur main** depuis des semaines.
+- **GitHub peut ne créer AUCUN run** pour un push (constaté 2 fois de suite) : `commit --allow-empty "ci: nudge"`, sinon merger `origin/main` et pousser ; ne jamais merger en supposant la CI.
+- **Mergeability « dirty » stale** sur gros diffs → `git merge origin/main` **dans la branche** + push (jamais de force-push).
+- **Un correctif de gate/CI se vérifie dans les LOGS DE PRODUCTION** : #7559 passait tous les tests locaux et échouait sur un run réel (`gate_outcome=tests-null`, statut `requested` non modélisé). Corriger, puis relire un run réel.
 
 ### 2026-09-08 - Merge lane, garde PA2-OPS-008, pureté des couches Application, mergeability GitHub
 
