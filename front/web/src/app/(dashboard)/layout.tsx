@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Bell, ChevronDown, Globe, KeyRound, LayoutGrid, LockKeyhole, LogOut, Menu, Plus, ShieldCheck, Sparkles, UserCircle, X } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
+import { teamRolesT } from '@/lib/i18n/team-roles';
 import { trackClientEvent } from '@/lib/client-analytics';
 import { getClientModuleAccess, getModuleAccessForPath, getSidebarSections, isSelfActivable, mergeActivationSurface, sessionModuleSignature, type ClientModuleAccess, type ClientModuleKey } from '@/lib/client-features';
 import { buildDashboardNav, isHrEntryActive, toNavModules } from '@/lib/dashboard-nav';
@@ -746,6 +747,11 @@ export default function DashboardLayout({
                     >
                       <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
                       {labels.dashboard.userMenuAccount}
+                    </Link>
+                    {/* #7555 — gestion des collaborateurs et attribution des rôles. */}
+                    <Link href="/settings/team" role="menuitem" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
+                      <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
+                      {teamRolesT(locale, 'menuLabel')}
                     </Link>
                     <Link
                       href="/settings/account#password"
