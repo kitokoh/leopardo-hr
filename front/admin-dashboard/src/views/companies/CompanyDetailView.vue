@@ -57,7 +57,7 @@
           "
           @click="activeTab = tab.key"
         >
-          {{ t(tab.labelKey, tab.fallback) }}
+          {{ t(tab.labelKey) }}
         </button>
       </div>
 
@@ -514,11 +514,13 @@ const featuresForm = ref({})
  * unique, sans lien profond). L'onglet « Modules & verticales » est celui qui
  * porte le pilotage du MÉTIER du client.
  */
+// Libellés résolus par le catalogue (les clés existent dans les 4 locales) :
+// aucun texte utilisateur en dur dans le tableau.
 const TABS = [
-  { key: 'overview', labelKey: 'companyDetail.tabOverview', fallback: "Vue d'ensemble" },
-  { key: 'modules', labelKey: 'companyDetail.tabModules', fallback: 'Modules & verticales' },
-  { key: 'billing', labelKey: 'companyDetail.tabBilling', fallback: 'Abonnement & support' },
-  { key: 'system', labelKey: 'companyDetail.tabSystem', fallback: 'Système' },
+  { key: 'overview', labelKey: 'companyDetail.tabOverview' },
+  { key: 'modules', labelKey: 'companyDetail.tabModules' },
+  { key: 'billing', labelKey: 'companyDetail.tabBilling' },
+  { key: 'system', labelKey: 'companyDetail.tabSystem' },
 ]
 const activeTab = ref('overview')
 
