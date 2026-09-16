@@ -220,3 +220,56 @@ describe('Barre du haut — règle icône seule (#7422)', () => {
     }
   });
 });
+
+describe('Barre du haut — les panneaux se referment vraiment (#7584)', () => {
+  // Régression mesurée : `closeHeaderPanels(); setX((value) => !value)` laissait
+  // le panneau OUVERT. Les deux mises à jour tombent dans le **même lot** :
+  // `closeHeaderPanels()` remet CE panneau à `false`, puis l'updater fonctionnel
+  // relit cet état et le repasse à `true`. La correction calcule la cible
+  // AVANT de fermer : `const next = !open; closeHeaderPanels(); setOpen(next)`.
+  //
+  // On attend donc le **démontage** du panneau, pas `aria-expanded` : celui-ci
+  // restait vrai et décrivait le symptôme, pas la cause (#7584).
+
+  it('le panneau des notifications se referme au second clic', async () => {
+    await renderDashboard();
+
+    const toggle = await screen.findByTestId('dashboard-notifications-toggle');
+    await userEvent.click(toggle);
+    expect(await screen.findByTestId('dashboard-notifications-panel')).toBeInTheDocument();
+
+    await userEvent.click(toggle);
+    await waitFor(() =>
+      expect(screen.queryByTestId('dashboard-notifications-panel')).not.toBeInTheDocument(),
+    );
+  });
+
+  it('le panneau « Modules & plan » se referme au second clic', async () => {
+    await renderDashboard();
+
+    const toggle = await screen.findByTestId('dashboard-plan-toggle');
+    await userEvent.click(toggle);
+    expect(await screen.findByTestId('dashboard-plan-panel')).toBeInTheDocument();
+
+    await userEvent.click(toggle);
+    await waitFor(() =>
+      expect(screen.queryByTestId('dashboard-plan-panel')).not.toBeInTheDocument(),
+    );
+  });
+
+  it('ouvrir un panneau referme les autres — jamais deux ouverts', async () => {
+    await renderDashboard();
+
+    const notifications = await screen.findByTestId('dashboard-notifications-toggle');
+    const plan = await screen.findByTestId('dashboard-plan-toggle');
+
+    await userEvent.click(notifications);
+    expect(await screen.findByTestId('dashboard-notifications-panel')).toBeInTheDocument();
+
+    await userEvent.click(plan);
+    expect(await screen.findByTestId('dashboard-plan-panel')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByTestId('dashboard-notifications-panel')).not.toBeInTheDocument(),
+    );
+  });
+});
