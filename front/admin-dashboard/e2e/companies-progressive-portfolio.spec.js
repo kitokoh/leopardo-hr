@@ -41,8 +41,9 @@ test('la liste des clients est utilisable avant la fin du scoring du portefeuill
   await page.route(withQuery('platform/metrics/overview'), (route) => route.fulfill(json({ data: {} })))
 
   // 1) Annuaire : réponse immédiate, 2 sociétés. On capture l'URL pour
-  // verrouiller `per_page=100` : l'endpoint est paginé (20 par défaut) et sans
-  // ce paramètre la vue afficherait moins de sociétés que l'ancien `health`.
+  // verrouiller la pagination SERVEUR (#7431) : la vue demande une page
+  // explicite (`page` + `per_page`) au lieu d'un `per_page=100` muet qui
+  // tronquait le portefeuille au-delà de 100 sociétés.
   let directoryUrl = ''
   await page.route(withQuery('platform/companies'), (route) => {
     directoryUrl = route.request().url()
@@ -51,6 +52,7 @@ test('la liste des clients est utilisable avant la fin du scoring du portefeuill
         { id: 'c1', name: 'Alpha SARL', status: 'active', country: 'DZ', currency: 'DZD' },
         { id: 'c2', name: 'Beta SARL', status: 'trial', country: 'MA', currency: 'MAD' },
       ],
+      meta: { current_page: 1, last_page: 1, per_page: 25, total: 2 },
     }))
   })
 
@@ -93,7 +95,8 @@ test('la liste des clients est utilisable avant la fin du scoring du portefeuill
   await expect(page.getByText('Beta SARL')).toBeVisible({ timeout: 3000 })
   expect(healthResolved, 'la liste ne doit pas attendre le scoring').toBe(false)
   await expect(page.getByText(/Calcul des scores en cours/i)).toBeVisible({ timeout: 3000 })
-  expect(directoryUrl, 'l’annuaire doit demander tout le portefeuille').toContain('per_page=100')
+  expect(directoryUrl, 'l’annuaire interroge une page explicite (pagination serveur)').toContain('per_page=25')
+  expect(directoryUrl, 'la première page est demandée').toContain('page=1')
 
   // (b) APRÈS le scoring : les scores remplacent les placeholders.
   await expect(page.getByText('72%')).toBeVisible({ timeout: 15000 })
