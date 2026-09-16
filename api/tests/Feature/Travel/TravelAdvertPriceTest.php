@@ -6,17 +6,22 @@ namespace Tests\Feature\Travel;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
-use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
 use App\Core\Tenant\TenantManager;
+use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
+use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;
+use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
  * TRAVEL-906 (#6109) — Grille tarifaire des annonces : minor units, devise
- * du tenant, références du même tenant, unicité (type, position, devise),
- * bornes non négatives.
+ * du tenant, références du même tenant, unicité (type, position), bornes
+ * strictement positives.
+ *
+ * #7420 : contrat rétabli (`price_per_image_minor` / `price_per_character_minor`,
+ * pas `price_image_minor`) et devise rendue optionnelle côté API — omise, elle
+ * prend celle du tenant, fournie, elle doit être cohérente avec elle.
  */
 class TravelAdvertPriceTest extends TestCase
 {
@@ -47,7 +52,7 @@ class TravelAdvertPriceTest extends TestCase
         return app(TenantManager::class)->withinTenant($company, fn (): TravelAdvertType => TravelAdvertType::query()->create([
             'company_id' => $company->id,
             'code' => $code,
-            'name' => 'Bannière',
+            'label' => 'Bannière',
         ]));
     }
 
@@ -56,7 +61,7 @@ class TravelAdvertPriceTest extends TestCase
         return app(TenantManager::class)->withinTenant($company, fn (): TravelAdvertPosition => TravelAdvertPosition::query()->create([
             'company_id' => $company->id,
             'code' => $code,
-            'name' => 'Accueil haut',
+            'label' => 'Accueil haut',
         ]));
     }
 
@@ -69,33 +74,48 @@ class TravelAdvertPriceTest extends TestCase
         $type = $this->makeType($company);
         $position = $this->makePosition($company);
 
-        $created = $this->postJson('/api/v1/travel/advert-prices', [
-            'advert_type_id' => $type->id,
-            'advert_position_id' => $position->id,
-            'price_image_minor' => 50000,
-            'price_character_minor' => 25,
-        ])->assertStatus(201)
-            ->assertJsonPath('data.currency', 'XAF')
-            ->assertJsonPath('data.price_image_minor', 50000);
-
-        $priceId = (int) $created->json('data.id');
-
-        // Doublon (type, position, devise) → 422.
+        // Devise omise → celle du tenant (XAF).
         $this->postJson('/api/v1/travel/advert-prices', [
             'advert_type_id' => $type->id,
             'advert_position_id' => $position->id,
+            'price_per_image_minor' => 50000,
+            'price_per_character_minor' => 25,
+        ])->assertStatus(201);
+
+        $price = TravelAdvertPrice::query()->where('advert_type_id', $type->id)->firstOrFail();
+        self::assertSame(50000, $price->price_per_image_minor);
+        self::assertSame(25, $price->price_per_character_minor);
+        self::assertSame('XAF', $price->currency);
+
+        // Doublon (type, position) → 422 (et non 500 : contrainte unique du
+        // schéma validée applicativement).
+        $this->postJson('/api/v1/travel/advert-prices', [
+            'advert_type_id' => $type->id,
+            'advert_position_id' => $position->id,
+            'price_per_image_minor' => 1000,
+            'price_per_character_minor' => 10,
         ])->assertStatus(422);
 
         // Mise à jour des montants.
-        $this->putJson("/api/v1/travel/advert-prices/{$priceId}", ['price_character_minor' => 30])
-            ->assertOk()
-            ->assertJsonPath('data.price_character_minor', 30);
+        $this->putJson("/api/v1/travel/advert-prices/{$price->id}", [
+            'advert_type_id' => $type->id,
+            'advert_position_id' => $position->id,
+            'price_per_image_minor' => 50000,
+            'price_per_character_minor' => 30,
+        ])->assertOk();
 
-        // Montants négatifs refusés.
-        $this->putJson("/api/v1/travel/advert-prices/{$priceId}", ['price_image_minor' => -1])
-            ->assertStatus(422);
+        $price->refresh();
+        self::assertSame(30, $price->price_per_character_minor);
 
-        $this->deleteJson("/api/v1/travel/advert-prices/{$priceId}")->assertStatus(204);
+        // Montants nuls ou négatifs refusés.
+        $this->putJson("/api/v1/travel/advert-prices/{$price->id}", [
+            'advert_type_id' => $type->id,
+            'advert_position_id' => $position->id,
+            'price_per_image_minor' => -1,
+            'price_per_character_minor' => 30,
+        ])->assertStatus(422);
+
+        $this->deleteJson("/api/v1/travel/advert-prices/{$price->id}")->assertStatus(204);
     }
 
     public function test_price_requires_same_tenant_references_and_currency(): void
@@ -114,6 +134,8 @@ class TravelAdvertPriceTest extends TestCase
         $this->postJson('/api/v1/travel/advert-prices', [
             'advert_type_id' => $foreignType->id,
             'advert_position_id' => $position->id,
+            'price_per_image_minor' => 5000,
+            'price_per_character_minor' => 100,
         ])->assertStatus(422);
 
         // Devise différente du tenant → 422.
@@ -121,8 +143,34 @@ class TravelAdvertPriceTest extends TestCase
         $this->postJson('/api/v1/travel/advert-prices', [
             'advert_type_id' => $type->id,
             'advert_position_id' => $position->id,
+            'price_per_image_minor' => 5000,
+            'price_per_character_minor' => 100,
             'currency' => 'DZD',
         ])->assertStatus(422);
+    }
+
+    public function test_price_write_requires_operational_role(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $this->activateTravel($company);
+        $type = $this->makeType($company);
+        $position = $this->makePosition($company);
+
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'manager_role' => null,
+        ]);
+        Sanctum::actingAs($employee);
+
+        $this->postJson('/api/v1/travel/advert-prices', [
+            'advert_type_id' => $type->id,
+            'advert_position_id' => $position->id,
+            'price_per_image_minor' => 5000,
+            'price_per_character_minor' => 100,
+        ])->assertStatus(403);
     }
 
     public function test_price_list_is_isolated_per_tenant(): void
@@ -141,7 +189,8 @@ class TravelAdvertPriceTest extends TestCase
         $this->postJson('/api/v1/travel/advert-prices', [
             'advert_type_id' => $typeA->id,
             'advert_position_id' => $posA->id,
-            'price_image_minor' => 100,
+            'price_per_image_minor' => 100,
+            'price_per_character_minor' => 10,
         ])->assertStatus(201);
 
         // Le tenant B ne voit rien.
