@@ -100,6 +100,12 @@
 |---|---|---|
 | `check-admin-action-labels.py` (+ auto-test `-test.sh`, workflow `web-ci.yml`) | libellés d'action en dur dans les templates (en-tête « Actions », « Modifier »/« Supprimer »/« Edit »/« Delete ») et actions de ligne sans nom accessible — convention unique `RowActionButton` (issue #7434) | bloque |
 
+## 9ter. Front web (vitrine & espace client)
+
+| Garde | Vérifie | Bloque / rapporte |
+|---|---|---|
+| `front/web/scripts/check-next-config-deps.mjs` (+ auto-test `--self-test`, étape du check requis « Frontend — ESLint + TypeScript » dans `architecture-check.yml`) | alignement **configuration Next ↔ dépendances déclarées** : chaque expérience activée dans `next.config.ts` qui déclenche un `require()` de Next doit être déclarée dans la **bonne section** de `package.json`, présente au `package-lock.json` (donc installée par `npm ci`) et résolvable — issue #7531 (`optimizeCss` ⇒ `critters`, requis **au rendu**, sinon 500 sur toute page) | bloque |
+
 ## 10. Sécurité
 
 Secret scanning (TruffleHog), CodeQL, `owasp-zap.yml`, `secret-history-scan.yml`,

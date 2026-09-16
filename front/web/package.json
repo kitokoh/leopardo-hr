@@ -9,6 +9,7 @@
     "lint": "eslint src --max-warnings 0",
     "lint:e2e": "eslint e2e --max-warnings 0",
     "check:mojibake": "node scripts/check-mojibake.mjs",
+    "check:next-config-deps": "node scripts/check-next-config-deps.mjs",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -18,6 +19,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
+    "critters": "^0.0.25",
     "framer-motion": "^13.2.0",
     "gsap": "^3.15.0",
     "lucide-react": "^1.41.0",

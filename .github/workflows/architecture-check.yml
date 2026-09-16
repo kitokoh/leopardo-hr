@@ -592,6 +592,23 @@ jobs:
         working-directory: front/web
         run: npm ci
 
+      # Garde « configuration Next ⇒ dépendance déclarée » (issue #7531) :
+      # `experimental.optimizeCss: true` fait faire à Next un `require('critters')`
+      # AU RENDU (`next/dist/server/post-process.js`, appelé par `server/render.js`),
+      # et `critters` n'était déclaré nulle part — après un `npm ci` propre, toute
+      # page répondait 500 « Cannot find module 'critters' ». Le défaut ne tenait
+      # qu'à un `node_modules` non reproductible, donc aucune étape ci-dessus ne
+      # pouvait le voir. Cette garde exige que chaque expérience activée soit
+      # déclarée (dans la bonne section), présente au lockfile et résolvable —
+      # son auto-test (`--self-test`) prouve qu'elle sait échouer.
+      - name: Next config ↔ dependencies guard (issue #7531)
+        if: needs.detect-changes.outputs.web_changed == 'true'
+        working-directory: front/web
+        run: |
+          set -euo pipefail
+          node scripts/check-next-config-deps.mjs --self-test
+          node scripts/check-next-config-deps.mjs
+
       - name: TypeScript check
         if: needs.detect-changes.outputs.web_changed == 'true'
         working-directory: front/web

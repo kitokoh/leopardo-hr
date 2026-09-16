@@ -305,6 +305,12 @@ const nextConfig: NextConfig = {
   // Experimental features for performance
   experimental: {
     optimizePackageImports: ["lucide-react"],
+    // `optimizeCss` fait faire à Next un `require('critters')` au RENDU
+    // (`next/dist/server/post-process.js`, appelé par `server/render.js`) :
+    // sans ce paquet, toute page répond 500 « Cannot find module 'critters' ».
+    // Il est donc déclaré dans `dependencies` (et non devDependencies) pour
+    // survivre à un install de production (`npm ci --omit=dev`) — voir #7531
+    // et la garde `npm run check:next-config-deps`.
     optimizeCss: true,
     scrollRestoration: true,
   },
