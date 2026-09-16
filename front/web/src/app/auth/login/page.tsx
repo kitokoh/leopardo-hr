@@ -544,7 +544,12 @@ function LoginInner() {
               )}
               {sessionUnavailable ? (
                 <div
-                  role="alert"
+                  // `role="status"` (et non `alert`) : c'est un ÉTAT avec une
+                  // action de reprise, pas une annonce d'erreur — et l'alerte
+                  // d'erreur de connexion (#7513) doit rester la seule de la
+                  // page pour être annoncée une seule fois.
+                  role="status"
+                  aria-live="polite"
                   data-testid="session-unavailable"
                   className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
                 >
