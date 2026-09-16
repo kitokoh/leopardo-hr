@@ -82,11 +82,37 @@ php artisan test --filter=PayrollControllerTest
 
 # Static analysis
 ./vendor/bin/phpstan analyse --memory-limit=512M
+# Exactement le check requis en CI (bloquant) :
+./vendor/bin/phpstan analyse --configuration=phpstan-strict.neon --memory-limit=1G --no-progress
 
 # Code style
 ./vendor/bin/pint --test
 ./vendor/bin/pint  # fix
 ```
+
+### Session sans PHP ni composer (agent, conteneur nu) — issue #7585
+
+Une session qui n'a ni PHP ni composer (seulement `node`/`python3`/`git`) peut
+reconstituer l'outillage **sans root**, en quelques minutes, et rejouer le check
+requis **sans consommer un seul runner** :
+
+```bash
+bash dev-hub/tools/bootstrap-local-php.sh            # installe (idempotent)
+bash dev-hub/tools/bootstrap-local-php.sh --check    # l'installation répond-elle ?
+bash dev-hub/tools/bootstrap-local-php.sh --verify   # joue la commande exacte du CI
+```
+
+Le script télécharge les `.deb` de PHP 8.4 depuis le PPA `ondrej` (la version
+**réellement servie**, lue dans l'index du dépôt), les extrait par `dpkg -x`
+dans `$HOME/.cache/leopardo/php84` (surchargeable par `PHP84_PREFIX`), écrit un
+`php.ini` minimal et installe `api/vendor` via `composer.phar`.
+
+Deux pièges que le script traite et qu'il faut connaître pour toute recette
+manuelle : le `conf.d` **du système** doit être neutralisé (`PHP_INI_SCAN_DIR=`
+vide), sinon PHP tente de charger des extensions absentes du préfixe ; et
+`extension_dir` doit pointer le dossier d'API (`20240924/`), **pas** `8.4/` qui
+ne contient que des `php.ini-*`. L'extension **`tokenizer`** est obligatoire
+(php-parser / PHPStan) — son absence produit `Class "PhpToken" not found`.
 
 > **Pourquoi `leopardo:migrate` et pas `artisan migrate` ?**
 > Leopardo RH utilise un modele multi-tenant hybride a deux schemas PostgreSQL : `public`
