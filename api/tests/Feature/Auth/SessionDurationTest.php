@@ -33,7 +33,6 @@ class SessionDurationTest extends TestCase
         $this->setUpMvpSchema();
 
         $company = Company::factory()->create();
-        assert($company instanceof Company);
         $this->company = $company;
 
         $manager = Employee::factory()->create([
@@ -41,7 +40,6 @@ class SessionDurationTest extends TestCase
             'role' => 'manager',
             'manager_role' => 'principal',
         ]);
-        assert($manager instanceof Employee);
         $this->manager = $manager;
     }
 

@@ -49,7 +49,6 @@ class AiGoldenJourneyTest extends TestCase
         [$company, $manager] = $this->aiFixture();
         $type = $this->seedAbsenceType($company->id);
         $employee = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
-        assert($employee instanceof Employee);
         $this->registerWriteTool('create_absence');
         $this->app->forgetInstance(ToolRegistry::class);
 
@@ -154,9 +153,7 @@ class AiGoldenJourneyTest extends TestCase
     private function aiFixture(): array
     {
         $company = Company::factory()->create();
-        assert($company instanceof Company);
         $employee = Employee::factory()->manager()->create(['company_id' => $company->id]);
-        assert($employee instanceof Employee);
 
         return [$company, $employee];
     }
