@@ -56,7 +56,18 @@ return new class extends Migration
             $table->id();
             $table->uuid('company_id')->index();
             $table->unsignedInteger('user_id')->nullable()->index();
-            $table->string('action', 30);
+            $table->string('action', 100);
+
+            // Colonnes heritees de la generation `payrolls` (qui gagnait en ordre
+            // d'execution) : conservees pour qu'une installation fraiche ait
+            // exactement le meme schema que la base migree.
+            $table->unsignedInteger('employee_id')->nullable();
+            $table->foreign('employee_id')->references('id')->on('employees')->nullOnDelete();
+            $table->string('target_type', 50)->nullable();
+            $table->unsignedBigInteger('target_id')->nullable();
+            $table->jsonb('changes')->nullable();
+            $table->string('ip', 45)->nullable();
+            $table->index(['target_type', 'target_id']);
             $table->string('auditable_type', 100);
             $table->unsignedBigInteger('auditable_id');
             $table->jsonb('old_values')->nullable();

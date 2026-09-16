@@ -20,6 +20,10 @@ Ce que la garde vérifie :
        - une divergence de colonnes sur une table déjà dupliquée.
      La dette existante est **affichée** (compteurs) sans bloquer : elle se
      résorbe par les issues #7452 / #7417, pas par une garde qui crie au loup.
+  Une table est identifiee par **(schema, nom)** : `edge/` et `tenant/` sont
+   deux bases distinctes, une meme table declaree dans les deux n'est pas un
+   doublon.
+
   2. **Mode `--strict`** : toute duplication divergente échoue (utilisé par le
      workflow `workflow_dispatch` pour suivre la résorption, jamais sur PR tant
      que la dette n'est pas résorbée).
@@ -53,6 +57,29 @@ CREATE_RE = re.compile(r"Schema::create\(\s*'([^']+)'\s*,")
 COLUMN_RE = re.compile(r"\$table->([A-Za-z_]+)\(\s*'([^']+)'")
 
 
+def schema_of(path: str) -> str:
+    """Schema cible deduit du dossier de la migration (`tenant`, `edge`, ...).
+
+    Les migrations ne sont pas appliquees dans la meme base selon leur dossier :
+    `database/migrations/tenant/` cree les tables du schema locataire,
+    `database/migrations/edge/` celles de la base SQLite du noeud Edge. Deux
+    `Schema::create('edge_nodes')`, l'un dans `edge/` et l'autre dans `tenant/`,
+    ne se recouvrent donc **pas** : ce ne sont pas des doublons. Sans cette
+    distinction, l'inventaire signalait 4 faux positifs (edge_nodes,
+    edge_licenses, sync_logs, sync_queue).
+    """
+    parts = pathlib.PurePosixPath(path).parts
+    if "migrations" in parts:
+        index = parts.index("migrations")
+        if index + 1 < len(parts) - 1:
+            return parts[index + 1]
+    return "."
+
+
+def qualified(schema: str, table: str) -> str:
+    return f"{table} [{schema}]" if schema != "." else table
+
+
 def schema_creates(source: str) -> list[tuple[str, list[str]]]:
     """Retourne [(table, [colonnes])] pour chaque Schema::create du fichier."""
     out: list[tuple[str, list[str]]] = []
@@ -82,7 +109,8 @@ def inventory_from_worktree() -> dict[str, list[tuple[str, tuple[str, ...]]]]:
         if not path.is_file():
             continue
         for table, columns in schema_creates(path.read_text(encoding="utf-8", errors="replace")):
-            inv[table].append((str(path.relative_to(ROOT)), tuple(sorted(set(columns)))))
+            rel = str(path.relative_to(ROOT))
+            inv[qualified(schema_of(rel), table)].append((rel, tuple(sorted(set(columns)))))
     return dict(inv)
 
 
@@ -107,11 +135,11 @@ def inventory_from_ref(ref: str) -> dict[str, list[tuple[str, tuple[str, ...]]]]
                 ["git", "show", f"{ref}:{path}"], cwd=ROOT, capture_output=True, text=True,
             ).stdout
             for table, columns in schema_creates(src):
-                inv[table].append((path, tuple(sorted(set(columns)))))
+                inv[qualified(schema_of(path), table)].append((path, tuple(sorted(set(columns)))))
         return dict(inv)
     for path, blob in zip(listing, blobs):
         for table, columns in schema_creates(blob):
-            inv[table].append((path, tuple(sorted(set(columns)))))
+            inv[qualified(schema_of(path), table)].append((path, tuple(sorted(set(columns)))))
     return dict(inv)
 
 
