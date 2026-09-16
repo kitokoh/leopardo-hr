@@ -1016,7 +1016,26 @@
     "teamActive": "Équipe Active",
     "updateSubscription": "Mettre à jour l'abonnement",
     "updating": "Mise à jour...",
-    "viewAllTickets": "Voir tous les tickets"
+    "viewAllTickets": "Voir tous les tickets",
+    "features": {
+      "rh": "Ressources Humaines",
+      "finance": "Finance & Gestion",
+      "ai": "Intelligence Artificielle",
+      "cameras": "Surveillance Vidéo",
+      "tracking": "Suivi de Flotte",
+      "planning": "Planning & Équipe",
+      "training": "Centre de Formation",
+      "cabinet": "Placard Numérique",
+      "muhasebe": "Comptabilité (Turquie)",
+      "leo_ai": "Assistant IA Leopardo",
+      "crm": "Relation client (CRM)",
+      "fuel_station": "Stations-service",
+      "edumanager": "Établissement scolaire",
+      "restaurant": "Restauration",
+      "travelagency": "Agence de voyage",
+      "accounting": "Comptabilité",
+      "company_showcase": "Site vitrine"
+    }
   },
   "attendanceCorrectionRequestHint": "La demande sera transmise au RH pour validation.",
   "salaryAdvanceError": "Échec : {error}",
@@ -1372,6 +1391,19 @@
       "high": "Risque élevé",
       "medium": "Risque moyen",
       "low": "Risque faible"
+    },
+    "features": {
+      "biometric": "Biométrie",
+      "tasks": "Tâches",
+      "advanced_reports": "Rapports avancés",
+      "excel_export": "Export Excel",
+      "bank_export": "Export bancaire",
+      "billing_auto": "Facturation automatique",
+      "multi_managers": "Multi-gérants",
+      "photo_attendance": "Pointage photo",
+      "api_public": "API publique",
+      "evaluations": "Évaluations",
+      "schema_isolation": "Isolation des données"
     }
   },
   "settingsCabinetPublic": "Publics",
@@ -2851,7 +2883,9 @@
       "medium": "Moyenne",
       "high": "Élevée",
       "critical": "Critique"
-    }
+    },
+    "viewEquipment": "Équipements",
+    "advanceIncident": "Faire avancer"
   },
   "adminPalette": {
     "appLoading": "Chargement de l'administration…",
@@ -3169,7 +3203,30 @@
     "statsActive": "Clients Actifs",
     "statsFollowed": "Clients Suivis",
     "statsGlobalMrr": "MRR Global",
-    "statsRiskAlert": "Alerte Risque"
+    "statsRiskAlert": "Alerte Risque",
+    "searchLabel": "Rechercher",
+    "searchPlaceholder": "Nom, e-mail, pays ou ville…",
+    "statusLabel": "Statut",
+    "statusAll": "Tous",
+    "statusActive": "Actif",
+    "statusTrial": "Essai",
+    "statusSuspended": "Suspendu",
+    "statusExpired": "Expiré",
+    "empty": "Aucune société dans le portefeuille pour le moment.",
+    "emptySearch": "Aucune société ne correspond à cette recherche.",
+    "resetFilters": "Réinitialiser la recherche",
+    "previousPage": "Précédent",
+    "nextPage": "Suivant",
+    "pageOf": "Page :current sur :total",
+    "totalCount": ":count sociétés",
+    "suspend": "Suspendre",
+    "activate": "Activer",
+    "suspendConfirmTitle": "Suspendre cette société ?",
+    "suspendConfirmBody": "La société :name perdra l’accès à son espace tant qu’elle n’est pas réactivée.",
+    "suspended": "Société suspendue.",
+    "activated": "Société activée.",
+    "statusError": "Échec de la mise à jour du statut.",
+    "statusPlanMissing": "Aucun plan associé à cette société : ouvrez sa fiche pour en définir un."
   },
   "attendanceOvertimeHint": "Démarrer une session d'heures supp",
   "companyrequestsApprovedToast": "Demande approuvée",
@@ -3845,7 +3902,9 @@
     "severityCritical": "Critique",
     "unassigned": "Non assigné",
     "searchVehicle": "Rechercher un véhicule...",
-    "searchAlert": "Rechercher une alerte..."
+    "searchAlert": "Rechercher une alerte...",
+    "locate": "Localiser",
+    "detail": "Détail"
   },
   "salaryAdvanceRequest": "Demander",
   "smartAttendanceTodayTitle": "Aujourd'hui — {date}",

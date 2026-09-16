@@ -79,6 +79,9 @@ export type CopyTree = {
       generic: string;
       missingToken: string;
       missingUser: string;
+      // Issue #7479 — un POST /auth/login réussi suivi d'un GET /auth/me en
+      // échec n'est PAS un échec d'identifiants : c'est un incident de service.
+      serviceUnavailable: string;
       google: string;
       googleNetwork: string;
       googleAuthFailed: string;
@@ -711,6 +714,7 @@ const copy: Record<AppLocale, CopyTree> = {
         generic: 'Une erreur est survenue.',
         missingToken: 'Le jeton de connexion est absent de la réponse API.',
         missingUser: 'Le profil utilisateur est absent de la réponse API.',
+        serviceUnavailable: 'Votre connexion a réussi, mais votre espace n’a pas pu être chargé : le service est momentanément indisponible. Réessayez dans quelques instants — ne ressaisissez pas vos identifiants.',
         // Issue #5173 — erreurs Google propagées par le callback vitrine
         // (`/auth/login?error=...`). Afficher un message clair au lieu d'un
         // formulaire muet après un échec OAuth.
@@ -1388,6 +1392,7 @@ const copy: Record<AppLocale, CopyTree> = {
         generic: 'حدث خطأ.',
         missingToken: 'رمز تسجيل الدخول غير موجود في رد ال API.',
         missingUser: 'ملف المستخدم غير موجود في رد ال API.',
+        serviceUnavailable: 'نجح تسجيل دخولك، لكن تعذر تحميل مساحتك: الخدمة غير متاحة مؤقتا. أعد المحاولة بعد قليل — لا تعد إدخال بياناتك.',
         google: 'فشل تسجيل الدخول عبر Google. حاول مرة أخرى.',
         googleNetwork: 'تعذر الوصول إلى Google. تحقق من اتصالك وحاول مرة أخرى.',
         googleAuthFailed: 'رفض Google تسجيل الدخول. حاول مرة أخرى.',
@@ -2058,6 +2063,7 @@ const copy: Record<AppLocale, CopyTree> = {
         generic: 'Bir hata olustu.',
         missingToken: 'API yanitinda giris tokeni yok.',
         missingUser: 'API yanitinda kullanici profili yok.',
+        serviceUnavailable: 'Girisiniz basarili oldu ancak calisma alaniniz yuklenemedi: hizmet gecici olarak kullanilamiyor. Birazdan tekrar deneyin — kimlik bilgilerinizi yeniden girmeyin.',
         google: 'Google ile giris basarisiz oldu. Lutfen tekrar deneyin.',
         googleNetwork: 'Google ile baglanti kurulamadi. Baglantinizi kontrol edip tekrar deneyin.',
         googleAuthFailed: 'Google girisini reddetti. Lutfen tekrar deneyin.',
@@ -2728,6 +2734,7 @@ const copy: Record<AppLocale, CopyTree> = {
         generic: 'Something went wrong.',
         missingToken: 'The login token is missing from the API response.',
         missingUser: 'The authenticated user profile is missing from the API response.',
+        serviceUnavailable: 'Your sign-in succeeded, but your workspace could not be loaded: the service is temporarily unavailable. Try again in a moment — do not re-enter your credentials.',
         google: 'Google sign-in failed. Please try again.',
         googleNetwork: 'Could not reach Google. Check your connection and try again.',
         googleAuthFailed: 'Google refused the sign-in. Please try again.',

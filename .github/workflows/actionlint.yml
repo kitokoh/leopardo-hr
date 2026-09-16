@@ -66,3 +66,27 @@ jobs:
         # Échoue si une entrée `paths:` d'un workflow ne matche aucun fichier
         # réel — sinon le workflow ne se déclenche plus jamais (silencieux).
         run: bash dev-hub/tools/check-workflow-paths.sh
+
+      - name: Deploy gate verdict guard (issue #7511)
+        # Échoue si le gate de déploiement redevient incapable de distinguer
+        # « rien à déployer » (SHA hors api/** et front/admin-dashboard/**,
+        # aucun run requis) d'une vraie indécision — et si les filtres
+        # api/web de deploy-main.yml divergent de .github/paths-filters.yml.
+        # Constat #7511 : main était rouge après chaque merge hors API.
+        run: |
+          bash dev-hub/tools/check-deploy-gate-outcome.sh
+          bash dev-hub/tools/check-deploy-gate-outcome.sh --self-test
+
+      - name: Deploy gate verdict — behavioural test (issue #7511)
+        # La garde ci-dessus vérifie la STRUCTURE ; ce test exécute le script du
+        # gate avec un `core`/`github` simulés et assert les SORTIES réelles
+        # (`not-required` quand rien d'api/web n'a changé, `no-runs` dès que
+        # l'API a changé, `deploy`, `stale`, `manual-dispatch`).
+        run: node dev-hub/tools/check-deploy-gate-outcome-test.mjs
+      - name: Android SDK packages guard (issue #7519)
+        # Échoue si l'action de setup mobile redemande un paquet qui n'existe
+        # plus dans cmdline-tools 20.0 (`tools`) : `sdkmanager` sort en 1 et
+        # toute la chaîne mobile s'arrête avant compilation (main rouge).
+        run: |
+          bash dev-hub/tools/check-android-sdk-packages.sh
+          bash dev-hub/tools/check-android-sdk-packages.sh --self-test

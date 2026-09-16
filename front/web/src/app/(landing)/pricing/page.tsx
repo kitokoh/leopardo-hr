@@ -379,14 +379,13 @@ function getFeatureValue(feature: ComparisonFeature, planName: string): boolean 
 // Retour fondateur 2026-09-13 : arriver ici en cliquant « Créer un compte »
 // doit montrer LES OFFRES, pas un récit marketing de 60 vh qui les repousse
 // sous la ligne de flottaison (« il me met en dessous de ces textes »).
-// `#plans` (posé par la redirection /signup → /pricing#plans) active donc une
-// vue resserrée : titre court + cartes d'offres, sans hero, sans tableau
-// comparatif, sans FAQ ni bandeau final.
+// `#plans` active donc une vue resserrée : titre court + cartes d'offres, sans
+// hero, sans tableau comparatif, sans FAQ ni bandeau final.
 //
-// Le marqueur est un FRAGMENT et non une query : un prefetch Next de `/signup`
-// suit la redirection du middleware, et une cible porteuse d'une query laissait
-// ce prefetch en suspens (voir le commentaire du middleware) — `networkidle`
-// n'était alors jamais atteint.
+// Historique : `#plans` était posé par la redirection /signup → /pricing#plans
+// (#7238), abrogée par #7488 — le CTA « Créer un compte » mène désormais
+// DIRECTEMENT à /signup. La vue resserrée reste utile pour les liens
+// d'ancrage vers les offres (campagnes, FAQ).
 //
 // Le paramètre est lu côté client (`window.location`) et non via
 // `useSearchParams`, qui imposerait une frontière <Suspense> sur cette page

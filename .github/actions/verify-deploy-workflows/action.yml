@@ -16,6 +16,19 @@ inputs:
     description: Whether the web app changed on this SHA ("true"/"false").
     required: false
     default: 'false'
+  # Issue #7511 — un push sur `main` qui ne touche NI `api/**` NI
+  # `front/admin-dashboard/**` ne déclenche AUCUN des workflows requis
+  # (`tests.yml` et `web-ci.yml` sont filtrés par `.github/paths-filters.yml`) :
+  # le gate ne trouvait alors aucun run pour le SHA et concluait « indécision »
+  # (`no-runs`) → le job « Deploy gate verdict » échouait et `main` était rouge
+  # après chaque merge hors API. Ce n'est pourtant pas une indécision : c'est
+  # la décision « rien à déployer ». L'appelant passe donc ce qu'il a mesuré
+  # (`true`/`false`) ; `''` (défaut) = non renseigné → comportement historique
+  # strict (indécision) conservé pour les appelants qui ne le fournissent pas.
+  api_changed:
+    description: Whether the API changed on this SHA ("true"/"false"/"" = inconnu).
+    required: false
+    default: ''
 
 outputs:
   tests_conclusion:
@@ -27,6 +40,20 @@ outputs:
   should_deploy:
     description: "true/false — whether the deploy may proceed."
     value: ${{ steps.gate.outputs.should_deploy }}
+  # Issue #7457 — motif du verdict, consommé par le job « Deploy gate verdict »
+  # de deploy-main.yml. Un `should_deploy=false` n'est pas un résultat : il
+  # recouvre aussi bien une décision légitime (rien à faire, SHA dépassé, tests
+  # rouges — le rouge est déjà porté par le run Tests) qu'une INDÉCISION (aucun
+  # run trouvé, timeout, conclusion illisible). Sans ce motif, les deux se
+  # ressemblaient dans l'UI : « success » avec un job sauté.
+  #
+  # Valeurs : deploy | manual-dispatch | not-required | stale | no-runs |
+  #           timeout | tests-missing | web-missing | missing |
+  #           tests-<conclusion> | web-<conclusion>
+  gate_outcome:
+    description: >-
+      Motif du verdict du gate de déploiement (issue #7457).
+    value: ${{ steps.gate.outputs.gate_outcome }}
 
 runs:
   using: composite
@@ -49,6 +76,7 @@ runs:
         INPUT_SHA: ${{ inputs.sha }}
         INPUT_REQUIRED_WORKFLOWS: ${{ inputs.required_workflows }}
         INPUT_WEB_CHANGED: ${{ inputs.web_changed }}
+        INPUT_API_CHANGED: ${{ inputs.api_changed }}
       with:
         script: |
           const EVENT = process.env.GITHUB_EVENT_NAME;
@@ -59,6 +87,11 @@ runs:
           }
           const sha = shaRaw;
           const webChanged = core.getInput('web_changed') === 'true';
+          // Issue #7511 — `''` = l'appelant n'a pas mesuré api_changed : on
+          // garde alors le verdict strict (indécision si aucun run).
+          const apiChangedRaw = core.getInput('api_changed');
+          const apiChanged = apiChangedRaw === '' ? null : apiChangedRaw === 'true';
+          const noRunExpected = apiChanged === false && !webChanged;
           const REQUIRED_WORKFLOWS = JSON.parse(core.getInput('required_workflows'));
           const { owner, repo } = context.repo;
 
@@ -70,6 +103,7 @@ runs:
             core.setOutput('tests_conclusion', 'manual-dispatch');
             core.setOutput('web_conclusion', 'manual-dispatch');
             core.setOutput('should_deploy', 'true');
+            core.setOutput('gate_outcome', 'manual-dispatch');
             return;
           }
 
@@ -106,10 +140,24 @@ runs:
               if (relevant.length === 0) {
                 consecutiveEmpty += 1;
                 if (consecutiveEmpty >= 5) {
+                  // Issue #7511 — rien n'a changé côté `api/**` ni
+                  // `front/admin-dashboard/**` (filtres de chemins) : l'absence
+                  // de run requis n'est pas une indécision mais la décision
+                  // « aucun déploiement attendu ». Sans ce cas, `main` devenait
+                  // rouge après chaque merge hors API (constat : merge #7498).
+                  if (noRunExpected) {
+                    core.notice(`Aucun workflow requis pour le SHA ${sha} : ni api/ ni web n'ont changé — rien à déployer (#7511).`);
+                    core.setOutput('tests_conclusion', 'not-required');
+                    core.setOutput('web_conclusion', 'not-required');
+                    core.setOutput('should_deploy', 'false');
+                    core.setOutput('gate_outcome', 'not-required');
+                    return;
+                  }
                   core.warning(`Deploy skipped — aucun run "${REQUIRED_WORKFLOWS.join('" / ')}" pour le SHA ${sha} (chemin non couvert ou runs non créés).`);
                   core.setOutput('tests_conclusion', 'no-runs');
                   core.setOutput('web_conclusion', webChanged ? 'no-runs' : 'not-required');
                   core.setOutput('should_deploy', 'false');
+                  core.setOutput('gate_outcome', 'no-runs');
                   return;
                 }
                 core.info(`No relevant runs yet for ${sha} (${consecutiveEmpty}/5 empty polls) — waiting ${intervalMs / 1000}s...`);
@@ -132,19 +180,25 @@ runs:
               // Plus aucun run en attente : l'état est stabilisé.
               let shouldDeploy = true;
               let reason = '';
+              // Issue #7457 — motif exploitable par le job de verdict.
+              let gateOutcome = 'deploy';
               if (!testsRun) {
                 shouldDeploy = false;
+                gateOutcome = 'tests-missing';
                 reason = `aucun run "${TESTS_WORKFLOW}" pour le SHA ${sha}`;
               } else if (!conclusionIsGreen(testsConclusion)) {
                 shouldDeploy = false;
+                gateOutcome = `tests-${testsConclusion}`;
                 reason = `conclusion "${TESTS_WORKFLOW}" = ${testsConclusion} pour le SHA ${sha}`;
               }
               if (shouldDeploy && webChanged) {
                 if (!webRun) {
                   shouldDeploy = false;
+                  gateOutcome = 'web-missing';
                   reason = `web_changed=true mais aucun run "${WEB_WORKFLOW}" pour le SHA ${sha}`;
                 } else if (!conclusionIsGreen(webConclusion)) {
                   shouldDeploy = false;
+                  gateOutcome = `web-${webConclusion}`;
                   reason = `conclusion "${WEB_WORKFLOW}" = ${webConclusion} pour le SHA ${sha}`;
                 }
               }
@@ -168,11 +222,13 @@ runs:
                   core.setOutput('tests_conclusion', testsConclusion ?? 'missing');
                   core.setOutput('web_conclusion', webChanged ? (webConclusion ?? 'missing') : 'not-required');
                   core.setOutput('should_deploy', 'false');
+                  core.setOutput('gate_outcome', 'stale');
                   return;
                 }
                 core.setOutput('tests_conclusion', testsConclusion ?? 'missing');
                 core.setOutput('web_conclusion', webChanged ? (webConclusion ?? 'missing') : 'not-required');
                 core.setOutput('should_deploy', 'true');
+                core.setOutput('gate_outcome', 'deploy');
                 return;
               }
 
@@ -180,6 +236,7 @@ runs:
               core.setOutput('tests_conclusion', testsConclusion ?? 'missing');
               core.setOutput('web_conclusion', webConclusion ?? 'not-required');
               core.setOutput('should_deploy', 'false');
+              core.setOutput('gate_outcome', gateOutcome);
               return;
             }
 
@@ -187,6 +244,7 @@ runs:
             core.setOutput('tests_conclusion', 'timeout');
             core.setOutput('web_conclusion', webChanged ? 'timeout' : 'not-required');
             core.setOutput('should_deploy', 'false');
+            core.setOutput('gate_outcome', 'timeout');
             return;
           }
 
@@ -230,11 +288,19 @@ runs:
             branch: 'main',
           });
           const mainHead = mainBranch.commit.sha;
+          let legacyOutcome = testsConclusion === null
+            ? 'tests-missing'
+            : (conclusionIsGreen(testsConclusion) ? 'deploy' : `tests-${testsConclusion}`);
+          if (webChanged && legacyOutcome === 'deploy' && !conclusionIsGreen(webConclusion)) {
+            legacyOutcome = webConclusion === null ? 'web-missing' : `web-${webConclusion}`;
+          }
           if (mainHead !== sha) {
             core.info(`Stale SHA: ${sha} is not main's tip (${mainHead}) — skipping deploy.`);
             shouldDeploy = false;
+            legacyOutcome = 'stale';
           }
 
           core.setOutput('tests_conclusion', testsConclusion ?? 'missing');
           core.setOutput('web_conclusion', webConclusion ?? 'not-required');
           core.setOutput('should_deploy', shouldDeploy ? 'true' : 'false');
+          core.setOutput('gate_outcome', legacyOutcome);
