@@ -2197,3 +2197,12 @@ migration quand `leopardo_test` est déjà migré) :
 
 Rétention et accès (RGPD, critère 5) :
 `docs/GESTION_PROJET/CAMERAS_ALERTES_RETENTION_RGPD.md`.
+
+## Addendum 2026-09-16 — piste d'audit des suppressions de tenant : lecture plateforme (#7576)
+
+`GET /api/v1/platform/tenant-deletion-audits?company_id=&slug=&limit=` — permission `companies.view`.
+
+- **Avant** : la preuve d'une suppression était écrite dans `public.tenant_deletion_audits` mais le seul lecteur (`GET /platform/companies/{company}/deletion-audits`) était scopé à une entreprise **vivante** — il répondait `404` après une purge réussie. L'audit était donc en base et invisible pour l'opérateur.
+- **Après** : lecture plateforme non scopée, filtrable par `company_id` (uuid) et `slug` (tous deux conservés dans la ligne d'audit), bornée par `limit` (1-100, défaut 20). Chaque entrée rend `company_name`/`company_slug` (y compris pour un espace disparu), `mode`, `status`, `reason`, `actor_email`, `inventory` et `deleted_counts`.
+- **À vérifier (recette)** : purger un espace de test puis `GET /api/v1/platform/tenant-deletion-audits?company_id=<id>` → la ligne apparaît avec le nom de l'espace disparu ; `?slug=<slug>` filtre ; `?limit=0` → `422` ; un slug inconnu → liste vide.
+- **Couverture** : `api/tests/Feature/PlatformCompanyDeletionApiTest.php` — lecture d'une entrée **après** disparition (ligne insérée pour un `company_id` sans entreprise), filtres `company_id`/`slug`, `limit` borné, et absence de fuite (aucune autre ligne ne remonte).
