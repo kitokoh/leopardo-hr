@@ -683,6 +683,152 @@ paths:
           description: Manager role required
         '404':
           description: Employe introuvable (isolation tenant)
+  /employees/{employee}/resource-assignments:
+    get:
+      tags:
+      - HR
+      summary: 'Accès ressource d''un collaborateur (épique #7597, tranche R1)'
+      description: 'Ressources explicitement données à un collaborateur (restaurant, véhicule, caméra, site) avec son niveau d''accès (view < operate < manage). Réservé au manager principal du tenant ; isolé par tenant.'
+      parameters:
+      - name: employee
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Accès ressource du collaborateur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        resource_type:
+                          type: string
+                        resource_id:
+                          type: integer
+                        access_level:
+                          type: string
+                          enum:
+                          - view
+                          - operate
+                          - manage
+                        resource_label:
+                          type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Manager principal du tenant requis
+    put:
+      tags:
+      - HR
+      summary: 'Remplacer les accès ressource d''un collaborateur'
+      description: 'Remplace le jeu COMPLET des accès : ce qui n''est pas envoyé est retiré, c''est la révocation. Un type de ressource inconnu est refusé (fail-closed) et une ressource d''une autre entreprise n''est jamais assignable. Chaque création, changement de niveau et suppression est audité (audit_logs).'
+      parameters:
+      - name: employee
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - assignments
+              properties:
+                assignments:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - resource_type
+                    - resource_id
+                    - access_level
+                    properties:
+                      resource_type:
+                        type: string
+                      resource_id:
+                        type: integer
+                      access_level:
+                        type: string
+                        enum:
+                        - view
+                        - operate
+                        - manage
+      responses:
+        '200':
+          description: Nouveau jeu d''accès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        resource_type:
+                          type: string
+                        resource_id:
+                          type: integer
+                        access_level:
+                          type: string
+                          enum:
+                          - view
+                          - operate
+                          - manage
+                        resource_label:
+                          type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Manager principal du tenant requis
+        '422':
+          description: Type de ressource inconnu, niveau invalide, ou ressource inexistante dans cette entreprise (RESOURCE_TYPE_UNKNOWN / RESOURCE_NOT_FOUND)
+  /resources/{type}:
+    get:
+      tags:
+      - HR
+      summary: 'Catalogue des ressources assignables d''un type'
+      description: 'Sélecteur du responsable : ressources du type demandé (restaurant_branch, vehicle, camera, site), filtrées par ce que l''acteur a le droit de voir. Un type non déclaré est refusé (404, RESOURCE_TYPE_UNKNOWN) — aucun type n''est ouvert par défaut.'
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Ressources du type, visibles par l'acteur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        label:
+                          type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Manager principal du tenant requis
+        '404':
+          description: Type de ressource inconnu (RESOURCE_TYPE_UNKNOWN)
   /employees/{employee}/end-of-contract:
     get:
       tags:

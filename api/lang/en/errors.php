@@ -320,4 +320,11 @@ return [
     'PLATFORM_PERMISSION_REQUIRED' => 'Your platform role does not allow this action (required permissions: :permissions).',
     'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'You cannot change your own platform role.',
     'LAST_SUPER_ADMIN_REQUIRED' => 'Action denied: at least one active super administrator must remain.',
+
+    // Issue #7598 (R1 de l'epique #7597) - acces aux ressources par tenant.
+    'RESOURCE_ACCESS_DENIED' => 'You do not have access to this resource.',
+    'RESOURCE_TYPE_UNKNOWN' => 'Unknown resource type.',
+    'RESOURCE_NOT_FOUND' => 'Resource not found in this company.',
+    'RESOURCE_ASSIGNMENTS_REQUIRED' => 'The assignments list is required (it may be empty to revoke everything).',
+    'RESOURCE_ACCESS_LEVEL_INVALID' => 'Invalid access level (view, operate or manage).',
 ];
