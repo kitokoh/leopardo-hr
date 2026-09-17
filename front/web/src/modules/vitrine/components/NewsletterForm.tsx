@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { useVitrineLocale } from '../lib/vitrine-locale'
+import { antispamFields } from '@/modules/vitrine/lib/antispam-client';
+import { HoneypotField } from '@/modules/vitrine/components/common/HoneypotField';
 
 export function NewsletterForm() {
   const { copy } = useVitrineLocale()
@@ -20,7 +22,7 @@ export function NewsletterForm() {
       const res = await fetch('/api/forms/newsletter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, page: window.location.pathname, timestamp: new Date().toISOString() }),
+        body: JSON.stringify({ ...antispamFields(), email, page: window.location.pathname, timestamp: new Date().toISOString() }),
       })
       const data = await res.json()
       if (res.ok) {
@@ -45,6 +47,7 @@ export function NewsletterForm() {
         <p className="text-sm text-emerald-700 dark:text-emerald-400 font-medium">{message}</p>
       ) : (
         <form onSubmit={handleSubmit} className="flex gap-2">
+          <HoneypotField />
           <input
             type="email"
             value={email}

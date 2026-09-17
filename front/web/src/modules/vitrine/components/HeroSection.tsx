@@ -5,6 +5,7 @@ import { AlertCircle, CheckCircle, Mail } from 'lucide-react'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import type { AppLocale } from '@/lib/i18n'
+import { antispamFields } from '@/modules/vitrine/lib/antispam-client';
 
 type QuickTrialCopy = {
   placeholder: string
@@ -50,6 +51,7 @@ export function QuickTrialEmailForm({ locale, copy }: { locale: AppLocale; copy:
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          ...antispamFields(),
           email: normalizedEmail,
           company: deriveCompanyFromEmail(normalizedEmail),
           role: 'operations',
