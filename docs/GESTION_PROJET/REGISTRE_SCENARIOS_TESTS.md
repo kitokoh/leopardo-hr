@@ -31,6 +31,19 @@
 > `test_portfolio_query_count_does_not_grow_with_company_count` — dont le comptage de
 > requêtes, faussé par un `DB::listen()` jamais retiré, est réparé).
 
+> **MAJ 2026-09-17 — #7609, seau de throttle dédié pour `/trial/verify`.**
+> `api/routes/api.php` sort `/trial/verify` **et** `/trial/set-password` du seau partagé
+> `throttle:5,15` et les place derrière un limiteur nommé **`throttle:trial-verify`**
+> (10 requêtes / 15 min, clé `email|IP`, déclaré dans
+> `api/app/Providers/AppServiceProvider.php`). Motif mesuré : avec le seau partagé, la
+> 5e vérification recevait le `429 TOO_MANY_REQUESTS` du **throttle** *avant* d'atteindre le
+> **verrou applicatif** (5 échecs → `otp_locked_until`, réponse `OTP_TOO_MANY_ATTEMPTS`) —
+> le verrou était donc inatteignable côté utilisateur, et un compte verrouillé ne pouvait
+> plus définir son mot de passe. `POST /trial/signup` **conserve** sa garde anti-spam
+> `throttle:5,15` (verrouillée par un test). La clé par e-mail évite qu'un poste derrière un
+> NAT étrangle tous les inscrits. Surface **API** uniquement : aucun parcours web admin ni
+> mobile modifié. Non-régression : `api/tests/Feature/SelfServiceTrialTest.php`.
+
 > **MAJ 2026-09-13 — #7302, cause racine de la lenteur du portefeuille clients.** Le lot
 > « le portefeuille ne recalcule plus la santé société par société » supprime le N+1 de
 > `GET /platform/companies/health` (674 requêtes → 12 pour 45 sociétés) et met le résultat en
