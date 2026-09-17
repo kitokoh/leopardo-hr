@@ -24,6 +24,7 @@ import {
 } from '@/lib/i18n';
 import { TrialBanner } from '@/components/TrialBanner';
 import { OnboardingWizard } from '@/modules/onboarding/components/OnboardingWizard';
+import { WelcomeScreen, shouldShowFirstLoginWelcome, type WelcomeScreenAction } from '@/modules/onboarding/components/WelcomeScreen';
 
 /**
  * Breakpoint Tailwind `md` (768 px) — valeur technique, pas une chaîne
@@ -354,6 +355,45 @@ export default function DashboardLayout({
       setShowWizard(true);
     }
   }, [user]);
+
+  // #7604 (tranche du critère 2 de #7490) — écran de bienvenue de première
+  // connexion. Il passe AVANT l'assistant d'accueil : l'utilisateur doit
+  // d'abord comprendre ce qui vient de se passer (code validé, identifiants
+  // par e-mail) avant de configurer quoi que ce soit. Non bloquant : les deux
+  // issues de l'écran l'acquittent côté serveur.
+  const welcomePending = shouldShowFirstLoginWelcome(user);
+
+  const acknowledgeWelcome = useCallback(
+    (seenAt: string, action: WelcomeScreenAction) => {
+      const current = userRef.current;
+      if (!current) {
+        return;
+      }
+
+      // Mise à jour OPTIMISTE de la seule clé concernée : la source de vérité
+      // reste le serveur (`/auth/me`), et `mergeActivationSurface` ne touche
+      // pas à `metadata` — la clé optimiste n'est donc pas écrasée par le
+      // rafraîchissement silencieux (#7245).
+      const updated = {
+        ...current,
+        company: current.company
+          ? {
+              ...current.company,
+              metadata: { ...(current.company.metadata ?? {}), welcome_seen_at: seenAt },
+            }
+          : current.company,
+      };
+
+      storeAuthSession(null, updated);
+      setUserOverride(updated);
+
+      // CTA principal : l'assistant d'accueil enchaîne derrière l'écran.
+      if (action === 'start_setup') {
+        setShowWizard(true);
+      }
+    },
+    [],
+  );
 
   // ── Rafraîchissement silencieux de la session (#7245) ────────────────────
   // Les features du tenant et les capacités du manager sont figées dans
@@ -1086,7 +1126,12 @@ export default function DashboardLayout({
             children
           )}
         </main>
-        {showWizard && user && <OnboardingWizard user={user} onComplete={() => setShowWizard(false)} />}
+        {welcomePending && user && (
+          <WelcomeScreen locale={locale} onAcknowledged={acknowledgeWelcome} />
+        )}
+        {showWizard && user && !welcomePending && (
+          <OnboardingWizard user={user} onComplete={() => setShowWizard(false)} />
+        )}
       </div>
     </div>
   );

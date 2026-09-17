@@ -6801,5 +6801,11 @@
     "ogImageAlt": "Leopardo — business suite: HR & payroll dashboard for web, mobile and kiosk",
     "rootDescription": "Leopardo brings HR & payroll, attendance, leave, CRM, accounting and field operations together in one suite, on web, mobile and kiosk.",
     "rootTitle": "Leopardo — business suite for field teams: payroll, attendance, operations"
+  },
+  "firstLoginWelcome": {
+    "title": "Your workspace is ready 🎉",
+    "body": "An email has been sent to you with a link to set your password — it will be used for your future sign-ins.",
+    "ctaStart": "Start setting up",
+    "ctaLater": "Later"
   }
 }

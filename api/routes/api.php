@@ -26,6 +26,7 @@ use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookCon
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
+use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\WelcomeScreenController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\IslamicCalendarController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PayrollAuditController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PayrollSimulationController;
@@ -333,6 +334,15 @@ Route::prefix('v1')->group(function (): void {
         // mobile est GET /onboarding-setup/checklist + PATCH …/{stepKey}/
         // complete|skip. Cet endpoint est conservé pour les clients existants.
         Route::get('/onboarding/checklist', OnboardingChecklistController::class);
+
+        // #7604 (tranche du critère 2 de #7490) — écran de bienvenue de
+        // première connexion : l'acquittement est persisté côté SERVEUR
+        // (`public.companies.metadata.welcome_seen_at`), jamais en
+        // `localStorage` — l'écran ne se réaffiche donc pas sur un autre
+        // appareil. RBAC responsable (principal/rh) appliqué dans le
+        // contrôleur ; la lecture de l'état se fait par `/auth/me`
+        // (`company.metadata`), il n'y a pas de route de lecture à ajouter.
+        Route::post('/onboarding/welcome-ack', WelcomeScreenController::class);
     });
 
     // APV L.08 — Modules Leopardo, chaque module a son propre route group.
