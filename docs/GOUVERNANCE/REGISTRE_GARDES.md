@@ -14,6 +14,7 @@
 | `issue-governance-guard.yml` (`check-issues-*`) | issues fermées sans merge / laissées ouvertes par des PR mergées | rapporte |
 | `check-no-claim-marker.sh` | pas de claim marker orphelin | rapporte |
 | `check-pr-runs-missing.sh` | PR sans runs CI | rapporte |
+| `check-pr-subset-of-lot.sh` (+ `--self-test`) | avant de fermer une PR « couvert par le lot #N » : tout fichier et toute ligne ajoutée de la PR existent dans le lot (#7581) | manuel (outil de preuve), appelé à la clôture |
 
 ## 2. Branches & merge
 
@@ -73,6 +74,8 @@
 |---|---|---|
 | `check-i18n-catalog-parity.sh`, `check-hardcoded-accented-messages.sh` | parité catalogues, messages hardcodés | bloque |
 | `check-accounting-i18n.py`, `check-payroll-i18n.py`, `check-governance-mojibake-test.ps1` | i18n par module | bloque |
+| `check-json-catalogs-parse.sh` (+ `--self-test`, branchée dans `actionlint.yml`) | **tous** les JSON/ARB suivis se parsent (#7583) : comble le trou des ~190 fichiers hors chemins i18n, qu'aucune garde ne lisait | bloque |
+| `check-double-docblock.py` (`--base` pour l'A/B, `--audit` pour l'inventaire, `--strict` pour tout bloquer ; branchée dans `actionlint.yml`) | aucune NOUVELLE annotation PHPDoc désarmée par un docblock double (#7582) — en PHP seule la DERNIÈRE docblock compte, l'annotation de la première était ignorée | bloque (nouveau) |
 
 ## 8. Infra, déploiement & URLs
 
