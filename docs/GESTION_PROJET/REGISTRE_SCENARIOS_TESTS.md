@@ -31,6 +31,16 @@
 > `test_portfolio_query_count_does_not_grow_with_company_count` — dont le comptage de
 > requêtes, faussé par un `DB::listen()` jamais retiré, est réparé).
 
+> **MAJ 2026-09-17 — #7593, vitrine : consentement cookies, Consent Mode et mentions
+> d'information.** Surface **web client (vitrine)** uniquement : bandeau de consentement
+> (`ConsentBanner`/`ConsentProvider`/`ConsentScripts`), bouton de réglage persistant, notice
+> `FormDataNotice` sous les formulaires publics, pages légales et sitemap — scénarios
+> `front/web/e2e/consent.spec.ts` et `front/web/e2e/legal-pages.spec.ts`. Surfaces **web
+> admin** et **mobile** : aucun écran ni parcours modifié — seules les **valeurs traduites**
+> des catalogues (`front/admin-dashboard/src/i18n/locales/*.json`, ARB `leopardo_core`) sont
+> propagées depuis le catalogue partagé (`shared/i18n`, clés `consent.*`/`legal.*`), la garde
+> de gouvernance exigeant néanmoins cette entrée (détection par chemin).
+
 > **MAJ 2026-09-17 — #7609, seau de throttle dédié pour `/trial/verify`.**
 > `api/routes/api.php` sort `/trial/verify` **et** `/trial/set-password` du seau partagé
 > `throttle:5,15` et les place derrière un limiteur nommé **`throttle:trial-verify`**
