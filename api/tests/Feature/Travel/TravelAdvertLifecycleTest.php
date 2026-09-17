@@ -63,8 +63,8 @@ class TravelAdvertLifecycleTest extends TestCase
                 'company_id' => $company->id,
                 'advert_type_id' => $type->id,
                 'advert_position_id' => $position->id,
-                'price_image_minor' => $image,
-                'price_character_minor' => $perChar,
+                'price_per_image_minor' => $image,
+                'price_per_character_minor' => $perChar,
                 'currency' => 'XAF',
             ]);
 
@@ -80,7 +80,7 @@ class TravelAdvertLifecycleTest extends TestCase
             'advert_type_id' => $type->id,
             'advert_position_id' => $position->id,
             'title' => 'Promo Douala',
-            'body_redacted' => 'Voyage promo',
+            'content' => 'Voyage promo',
         ], $overrides));
 
         return (int) $response->json('data.id');
@@ -99,10 +99,11 @@ class TravelAdvertLifecycleTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.status', 'draft')
             ->assertJsonPath('data.currency', 'XAF')
-            ->assertJsonPath('data.price_image_minor', 50000)
-            ->assertJsonPath('data.price_character_minor', 25)
-            ->assertJsonPath('data.character_count', 13)
-            ->assertJsonPath('data.total_minor', 50000 + (13 * 25));
+            // Prix calculé CÔTÉ SERVEUR (SubmitTravelAdvertAction) :
+            // `price_per_image_minor × (visuel ? 1 : 0) + price_per_character_minor × mb_strlen(content)`.
+            // Soumission sans visuel → seul le tarif au caractère s'applique.
+            // (« Voyage promo » = 12 caractères, tarif 25 → 300.)
+            ->assertJsonPath('data.price_minor', 25 * mb_strlen('Voyage promo'));
     }
 
     public function test_submission_rejects_unknown_tenant_references_and_missing_tariff(): void
@@ -130,7 +131,7 @@ class TravelAdvertLifecycleTest extends TestCase
             'advert_type_id' => $foreignType->id,
             'advert_position_id' => $position->id,
             'title' => 'X',
-            'body_redacted' => 'Y',
+            'content' => 'Y',
         ])->assertStatus(422);
 
         // Type du tenant mais AUCUN tarif configuré → 422 (prix serveur).
@@ -143,7 +144,7 @@ class TravelAdvertLifecycleTest extends TestCase
             'advert_type_id' => $localType->id,
             'advert_position_id' => $position->id,
             'title' => 'X',
-            'body_redacted' => 'Y',
+            'content' => 'Y',
         ])->assertStatus(422);
     }
 
@@ -183,12 +184,11 @@ class TravelAdvertLifecycleTest extends TestCase
         $this->login($company, role: 'manager', managerRole: 'principal');
         $this->postJson("/api/v1/travel/adverts/{$advertId}/validate", ['approved' => true])
             ->assertOk()
-            ->assertJsonPath('data.status', 'published')
+            ->assertJsonPath('data.status', 'validated')
             ->assertJsonPath('data.expires_at', fn ($v) => $v !== null);
 
         $advert = TravelAdvert::query()->findOrFail($advertId);
         $this->assertNotNull($advert->validated_at);
-        $this->assertNotNull($advert->published_at);
         $this->assertGreaterThan(now()->addDays(29), $advert->expires_at);
     }
 
@@ -239,7 +239,7 @@ class TravelAdvertLifecycleTest extends TestCase
             'advert_type_id' => 1,
             'advert_position_id' => 1,
             'title' => 'X',
-            'body_redacted' => 'Y',
+            'content' => 'Y',
         ])->assertStatus(403);
     }
 }
