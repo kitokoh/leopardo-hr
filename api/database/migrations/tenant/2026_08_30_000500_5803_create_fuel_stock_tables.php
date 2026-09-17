@@ -102,14 +102,12 @@ return new class extends Migration
         ) !== null;
     }
 
-
     private function constraintExists(string $name): bool
     {
         $row = DB::selectOne('SELECT 1 FROM pg_constraint WHERE conname = ?', [$name]);
 
         return $row !== null;
     }
-
 
     private function addChecks(): void
     {
