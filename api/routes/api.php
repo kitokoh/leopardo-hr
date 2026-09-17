@@ -162,8 +162,18 @@ Route::prefix('v1')->group(function (): void {
     });
 
     // Self-service trial provisioning (public, throttle strict)
+    // #7609 — l'inscription garde sa garde anti-spam 5/15 min.
     Route::middleware(['throttle:5,15'])->group(function (): void {
         Route::post('/trial/signup', [SelfServiceTrialController::class, 'signup']);
+    });
+
+    // #7609 — /trial/verify a son PROPRE seau : avec le seau partagé, la 5e
+    // vérification recevait le 429 du throttle (`TOO_MANY_REQUESTS`) AVANT le
+    // verrou applicatif (5 échecs → `otp_locked_until`), qui devenait donc
+    // inatteignable côté utilisateur — mesuré avant correctif. Depuis le
+    // contrôleur, un compte verrouillé doit AUSSI pouvoir définir son mot de
+    // passe : `set-password` suit le même seau dédié.
+    Route::middleware(['throttle:trial-verify'])->group(function (): void {
         Route::post('/trial/verify', [SelfServiceTrialController::class, 'verify']);
         // Onboarding sans mailer : le prospect définit lui-même son mot de passe
         // avec le provisioning_token qu'il détient déjà (voir setPassword()).
