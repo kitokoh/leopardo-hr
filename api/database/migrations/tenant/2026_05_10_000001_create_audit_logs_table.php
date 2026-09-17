@@ -54,11 +54,29 @@ return new class extends Migration
 
         Schema::create('audit_logs', function (Blueprint $table) {
             $table->id();
-            $table->uuid('company_id')->index();
+            // Nullable comme dans la generation `payrolls` : un audit plateforme
+            // peut ne porter aucune entreprise (meme definition que la base migree,
+            // ou la colonne a ete creee nullable).
+            $table->uuid('company_id')->nullable()->index();
             $table->unsignedInteger('user_id')->nullable()->index();
-            $table->string('action', 30);
-            $table->string('auditable_type', 100);
-            $table->unsignedBigInteger('auditable_id');
+            $table->string('action', 100);
+
+            // Colonnes heritees de la generation `payrolls` (qui gagnait en ordre
+            // d'execution) : conservees pour qu'une installation fraiche ait
+            // exactement le meme schema que la base migree.
+            $table->unsignedInteger('employee_id')->nullable();
+            $table->foreign('employee_id')->references('id')->on('employees')->nullOnDelete();
+            $table->string('target_type', 50)->nullable();
+            $table->unsignedBigInteger('target_id')->nullable();
+            $table->jsonb('changes')->nullable();
+            $table->string('ip', 45)->nullable();
+            $table->index(['target_type', 'target_id']);
+            // Nullable : `AuditLog::record()` les renseigne a null sans sujet
+            // (et la migration de reconciliation 2026_05_12 ne les recree pas
+            // puisqu'elles existent — les laisser NOT NULL casserait toute
+            // ecriture d'audit sur une installation fraiche : 23502).
+            $table->string('auditable_type', 100)->nullable();
+            $table->unsignedBigInteger('auditable_id')->nullable();
             $table->jsonb('old_values')->nullable();
             $table->jsonb('new_values')->nullable();
             $table->string('ip_address', 45)->nullable();

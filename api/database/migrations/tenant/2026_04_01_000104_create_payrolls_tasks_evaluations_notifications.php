@@ -151,22 +151,6 @@ return new class extends Migration
             "COMMENT ON TABLE company_settings IS 'Clés valides documentées dans docs/dossierdeConception/18_schemas_sql/07_SCHEMA_SQL_COMPLET.sql section PARAMÈTRES COMPANY_SETTINGS PAR DÉFAUT. Toute nouvelle clé doit être ajoutée à TenantService.getDefaultSettings() ET documentée ici. Ne jamais insérer une clé non documentée.'"
         );
 
-        Schema::create('audit_logs', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->uuid('company_id')->nullable()->index();
-            $table->unsignedInteger('employee_id')->nullable();
-            $table->foreign('employee_id')->references('id')->on('employees')->nullOnDelete();
-            $table->string('action', 100);
-            $table->string('target_type', 50);
-            $table->unsignedBigInteger('target_id');
-            $table->jsonb('changes')->nullable();
-            $table->string('ip', 45)->nullable();
-            $table->timestampTz('created_at')->useCurrent();
-
-            $table->index(['target_type', 'target_id']);
-            $table->index('action');
-            $table->index('created_at');
-        });
 
         Schema::create('notifications', function (Blueprint $table) {
             $table->increments('id');

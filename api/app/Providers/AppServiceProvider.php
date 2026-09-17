@@ -331,6 +331,24 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by('trial-status:'.$token.'|'.$request->ip());
         });
 
+        // Issue #7609 — le verrou applicatif de `/trial/verify` (5 échecs →
+        // `otp_locked_until`, réponse `OTP_TOO_MANY_ATTEMPTS`) était MASQUÉ par
+        // le throttle : `/trial/signup`, `/trial/verify` et
+        // `/trial/set-password` partageaient `throttle:5,15`, et la 5e
+        // vérification recevait le 429 du THROTTLE (`TOO_MANY_REQUESTS`) au
+        // lieu du message de verrou — mesuré : 4 échecs visibles puis
+        // `TOO_MANY_REQUESTS`, jamais le verrou. Seau DÉDIÉ clé par e-mail + IP
+        // (10/15 min) : le verrou applicatif redevient le comportement
+        // observable, la garde anti-spam de l'inscription reste intacte
+        // (`throttle:5,15` conservé sur `/trial/signup`, verrouillé par un
+        // test), et la clé par e-mail évite qu'un poste derrière un NAT
+        // étrangle tous les inscrits.
+        RateLimiter::for('trial-verify', function (Request $request) {
+            $email = strtolower(trim((string) $request->input('email', '')));
+
+            return Limit::perMinutes(15, 10)->by('trial-verify:'.$email.'|'.$request->ip());
+        });
+
         // Issue #4217 (audit 360° 2026-08-16) — GET /supported-countries devient
         // public (registre multi-pays canonique #1867, aucune PII) : bucket
         // dédié 60/min par IP pour la vitrine/onboarding/mobile pré-login.

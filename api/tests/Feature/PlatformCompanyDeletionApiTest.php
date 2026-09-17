@@ -11,6 +11,7 @@ use App\Modules\Platform\Infrastructure\Services\TenantDeletionInventory;
 use App\Modules\Platform\Infrastructure\Services\TenantDeletionService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -166,6 +167,72 @@ class PlatformCompanyDeletionApiTest extends TestCase
 
         $this->getJson("/api/v1/platform/companies/{$company->id}/deletion-audits")
             ->assertNotFound();
+
+        // #7576 — …mais la preuve reste lisible par la console plateforme, qui
+        // n'a pas besoin d'une entreprise vivante pour l'interroger.
+        $this->getJson("/api/v1/platform/tenant-deletion-audits?company_id={$company->id}")
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.company_id', (string) $company->id)
+            ->assertJsonPath('data.0.company_name', $company->name)
+            ->assertJsonPath('data.0.mode', TenantDeletionService::MODE_PURGE)
+            ->assertJsonPath('data.0.status', 'completed')
+            ->assertJsonPath('data.0.actor_email', $actor->email)
+            ->assertJsonPath('data.0.reason', 'Doublon de test');
+    }
+
+    public function test_platform_audit_trail_filters_by_slug_and_limit(): void
+    {
+        // #7576 — la piste est filtrable (entreprise, slug) et bornée, et elle
+        // reste lisible alors que l'entreprise n'existe PLUS : c'est tout le
+        // sujet de l'issue. Le test insère la ligne directement, pour ne pas
+        // dépendre du parcours de suppression (couvert par les tests ci-dessus).
+        $disparue = (string) Str::uuid();
+
+        DB::statement('SET search_path TO public');
+        DB::table('public.tenant_deletion_audits')->insert([
+            'company_id' => $disparue,
+            'company_name' => 'Espace disparu',
+            'company_slug' => 'espace-disparu',
+            'mode' => TenantDeletionService::MODE_PURGE,
+            'status' => 'completed',
+            'inventory' => json_encode(['employees' => 12, 'has_payroll_data' => true]),
+            'deleted_counts' => json_encode(['employees' => 12]),
+            'actor_email' => 'ops@leopardo.local',
+            'reason' => 'Doublon de test',
+            'created_at' => now(),
+        ]);
+        DB::statement('SET search_path TO shared_tenants,public');
+
+        Sanctum::actingAs($this->superAdmin(), ['*'], 'super_admin_api');
+
+        // Aucune entreprise ne porte cet identifiant : la preuve est pourtant lisible.
+        $this->assertDatabaseMissing('companies', ['id' => $disparue]);
+
+        $this->getJson('/api/v1/platform/tenant-deletion-audits?slug=espace-disparu')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.company_slug', 'espace-disparu')
+            ->assertJsonPath('data.0.company_name', 'Espace disparu')
+            ->assertJsonPath('data.0.status', 'completed')
+            ->assertJsonPath('data.0.reason', 'Doublon de test')
+            ->assertJsonPath('data.0.inventory.employees', 12);
+
+        $this->getJson("/api/v1/platform/tenant-deletion-audits?company_id={$disparue}")
+            ->assertOk()
+            ->assertJsonCount(1, 'data');
+
+        // Filtre vide : rien d'autre ne fuit (la ligne inseree est la seule).
+        $this->getJson('/api/v1/platform/tenant-deletion-audits?slug=slug-qui-nexiste-pas')
+            ->assertOk()
+            ->assertJsonCount(0, 'data');
+
+        $this->getJson('/api/v1/platform/tenant-deletion-audits?limit=0')
+            ->assertStatus(422);
+
+        $this->getJson('/api/v1/platform/tenant-deletion-audits?limit=1')
+            ->assertOk()
+            ->assertJsonCount(1, 'data');
     }
 
     public function test_dedicated_schema_tenant_is_refused_instead_of_deleting_nothing(): void
