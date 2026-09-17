@@ -146,14 +146,10 @@ final class JournalPostingService
      * Écritures du journal pour une période (YYYY-MM), ordonnées par date puis source.
      *
      * @return Collection<int, AccountingJournalEntry>
-     */
-    /**
+     *
      * Issue #6562 — limit optionnel pour borner les reponses volumineuses
      * (journal comptable entier = lenteur/DoS). L'export CSV appelle sans
      * limit (flux complet voulu).
-     */
-    /**
-     * @return Collection<int, AccountingJournalEntry>
      */
     public function entriesForPeriod(string $period, ?int $limit = null): Collection
     {

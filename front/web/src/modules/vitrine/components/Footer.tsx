@@ -49,10 +49,12 @@ export function getFooterHref(sectionIndex: number, linkIndex: number): string |
     '2-2': '/download#mobile-apps',
     '2-3': '/download#mobile-apps',
     '2-4': '/download#mobile-apps',
+    // Le lien « Mentions légales » pointait vers /terms (la page CGU) : un lien
+    // qui ment sur sa destination. Tant qu'une vraie page de mentions légales
+    // n'existe pas (elle exige les données éditeur/hébergeur), la colonne ne
+    // liste que ce qui existe, et la confidentialité porte explicitement le RGPD.
     '3-0': '/privacy',
     '3-1': '/terms',
-    '3-2': '/terms',
-    '3-3': '/privacy',
   }
 
   return routes[key] ?? null

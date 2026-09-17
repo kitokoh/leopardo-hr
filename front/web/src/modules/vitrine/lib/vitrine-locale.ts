@@ -318,7 +318,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { title: 'Produit', links: ['Fonctionnalités', 'Tarifs', 'Intégrations', 'API', 'Changelog', 'Leopardo for Windows', 'À propos', 'Vidéos'] },
         { title: 'Ressources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Communauté'] },
         { title: 'Applications mobiles', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
-        { title: 'Legal', links: ['Confidentialité', 'CGU', 'Mentions légales', 'RGPD'] },
+        { title: 'Legal', links: ['Confidentialité (RGPD)', 'CGU'] },
       ],
       rights: 'Tous droits reserves.',
       newsletter: {
@@ -483,7 +483,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { title: 'Product', links: ['Features', 'Pricing', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows', 'About', 'Videos'] },
         { title: 'Resources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Community'] },
         { title: 'Mobile Apps', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
-        { title: 'Legal', links: ['Privacy', 'Terms', 'Legal notice', 'GDPR'] },
+        { title: 'Legal', links: ['Privacy (GDPR)', 'Terms'] },
       ],
       rights: 'All rights reserved.',
       newsletter: {
@@ -648,7 +648,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { title: 'Urun', links: ['Ozellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Degisiklikler', 'Windows icin Leopardo', 'Hakkında', 'Videolar'] },
         { title: 'Kaynaklar', links: ['Dokumantasyon', 'Rehberler', 'Blog', 'Iletisim', 'Topluluk'] },
         { title: 'Mobil Uygulamalar', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
-        { title: 'Yasal', links: ['Gizlilik', 'Kullanim Kosullari', 'Yasal Bildirim', 'KVKK/GDPR'] },
+        { title: 'Yasal', links: ['Gizlilik (KVKK/GDPR)', 'Kullanim Kosullari'] },
       ],
       rights: 'Tum haklari saklidir.',
       newsletter: {
@@ -813,7 +813,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { title: 'المنتج', links: ['الميزات', 'الاسعار', 'التكاملات', 'API', 'سجل التغييرات', 'ليوباردو لويندوز', 'من نحن', 'فيديوهات'] },
         { title: 'الموارد', links: ['التوثيق', 'أدلة', 'المدونة', 'اتصل بنا', 'المجتمع'] },
         { title: 'تطبيقات الجوال', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
-        { title: 'قانوني', links: ['الخصوصية', 'الشروط', 'الاشعارات القانونية', 'GDPR'] },
+        { title: 'قانوني', links: ['الخصوصية (GDPR)', 'الشروط'] },
       ],
       rights: 'جميع الحقوق محفوظة.',
       newsletter: {

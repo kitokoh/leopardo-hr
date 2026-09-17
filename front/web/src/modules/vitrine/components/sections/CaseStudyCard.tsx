@@ -3,7 +3,9 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
-import Image from 'next/image';
+import Image from 'next/image'
+
+import { localImageProps } from '@/modules/vitrine/lib/image-props';
 
 export interface CaseStudyCardProps {
   title: string;
@@ -48,6 +50,8 @@ export function CaseStudyCard({
                 src={image}
                 alt={title}
                 fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                {...localImageProps(image)}
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
             ) : null}

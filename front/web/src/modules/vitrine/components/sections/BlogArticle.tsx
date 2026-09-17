@@ -5,7 +5,9 @@ import { motion } from 'framer-motion';
 import { Calendar, User, Clock, ArrowRight } from 'lucide-react';
 import { SocialShare } from '@/components/SocialShare';
 import { SITE_URL } from '@/lib/site-url';
-import Image from 'next/image';
+import Image from 'next/image'
+
+import { localImageProps } from '@/modules/vitrine/lib/image-props';
 import Link from 'next/link';
 import { BlogPost } from '@/modules/vitrine/data/blog';
 
@@ -51,10 +53,15 @@ export function BlogArticle({
       .split('\n')
       .map((line, index) => {
         if (line.startsWith('# ')) {
+          // Un titre de niveau 1 dans le corps de l'article produisait un
+          // SECOND <h1> sur la page (le premier étant le titre de l'article) :
+          // la hiérarchie de titres devenait ambiguë pour les lecteurs d'écran
+          // comme pour les moteurs. Le titre d'article reste le seul <h1>,
+          // les intertitres sont des <h2>.
           return (
-            <h1 key={index} className="text-4xl font-black text-slate-900 dark:text-white mt-8 mb-4">
+            <h2 key={index} className="text-4xl font-black text-slate-900 dark:text-white mt-8 mb-4">
               {line.replace(/^# /, '')}
-            </h1>
+            </h2>
           );
         }
         if (line.startsWith('## ')) {
@@ -111,6 +118,8 @@ export function BlogArticle({
           src={post.image}
           alt={post.title}
           fill
+          sizes="100vw"
+          {...localImageProps(post.image)}
           className="object-cover"
           priority
         />
@@ -208,6 +217,8 @@ export function BlogArticle({
                     src={post.author.avatar}
                     alt={post.author.name}
                     fill
+                    sizes="64px"
+                    {...localImageProps(post.author.avatar)}
                     className="object-cover"
                   />
                 </div>
@@ -281,6 +292,8 @@ export function BlogArticle({
                           src={relatedPost.image}
                           alt={relatedPost.title}
                           fill
+                          sizes="(min-width: 1024px) 33vw, 100vw"
+                          {...localImageProps(relatedPost.image)}
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       </div>

@@ -90,3 +90,53 @@ jobs:
         run: |
           bash dev-hub/tools/check-android-sdk-packages.sh
           bash dev-hub/tools/check-android-sdk-packages.sh --self-test
+
+      - name: Double docblock guard (#7582)
+        # Échoue si une NOUVELLE annotation PHPDoc est désarmée : en PHP, seul
+        # le DERNIER docblock avant la déclaration compte, donc une annotation
+        # placée dans un docblock séparé est ignorée par PHPStan (constat
+        # EmployeeFactory : @extends ignoré => ~20 erreurs du check requis
+        # « PHPStan — Strict »). Mode par défaut = bloque les nouvelles
+        # occurrences, affiche la dette existante (45, résorbée module par
+        # module) ; `--strict` pour tout bloquer.
+        # La garde compare l'arbre courant à une BASE. `origin/main` n'existe PAS
+        # dans un checkout par défaut (`fetch-depth: 1`, ref = SHA du merge) : la
+        # garde sortait en 2 (« ref de comparaison introuvable »), ce qui rendait
+        # le check REQUIS « actionlint (+ shellcheck) » rouge pour toute PR — et
+        # bloquait le lot #7590 sans qu'aucun défaut de code ne soit en cause.
+        # On résout donc la base depuis l'événement, comme ailleurs dans le dépôt
+        # (architecture-check.yml : `base.sha || before`), avec repli sur HEAD~1
+        # puis récupération explicite du SHA de base (absent d'un clone
+        # superficiel). `--base` accepte un committish : le SHA convient.
+        env:
+          GH_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before || '' }}
+        run: |
+          set -euo pipefail
+          base="${GH_BASE_SHA:-}"
+          if [[ -z "${base}" || "${base}" == "0000000000000000000000000000000000000000" ]]; then
+            base="$(git rev-parse --verify --quiet 'HEAD~1' || git rev-parse HEAD)"
+          fi
+          if ! git cat-file -e "${base}^{commit}" 2>/dev/null; then
+            git fetch --no-tags --quiet origin "${base}" 2>/dev/null || true
+          fi
+          if ! git cat-file -e "${base}^{commit}" 2>/dev/null; then
+            echo "::error::base « ${base} » introuvable : la garde #7582 ne peut pas comparer (fetch superficiel ?)."
+            exit 1
+          fi
+          python3 dev-hub/tools/check-double-docblock.py --base "${base}"
+          python3 dev-hub/tools/check-double-docblock.py --base "${base}" --strict || true
+
+      - name: JSON/ARB parse guard (#7583)
+        # Échoue si un fichier JSON ou ARB suivi ne se parse plus. Cause
+        # mesurée : un conflit résolu avec `git merge-file --union`, qui
+        # concatène les deux côtés ligne à ligne et duplique virgules et clés
+        # (13 à 17 catalogues cassés lors du drain #7562, synchronisateurs
+        # plantés au démarrage). Les catalogues i18n « connus » sont déjà
+        # couverts par validators/validate.js et la garde de parité — mais
+        # ceux-là sont filtrés par `paths:` et ne couvrent PAS les ~190 autres
+        # JSON suivis (configs, contrats dev-hub, budgets). Cette garde les
+        # couvre tous, en quelques dizaines de millisecondes, dans un check
+        # déjà requis et exécuté à chaque PR (donc sans run supplémentaire).
+        run: |
+          bash dev-hub/tools/check-json-catalogs-parse.sh
+          bash dev-hub/tools/check-json-catalogs-parse.sh --self-test

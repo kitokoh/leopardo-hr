@@ -89,8 +89,11 @@ html {
 
 /* Custom Components for Modern Glass aesthetic */
 @layer components {
+  /* Contraste WCAG AA : `emerald-500` (#10b981) avec texte blanc = 2,54:1,
+     très en dessous des 4,5:1 exigés pour du texte normal (et même des 3:1
+     pour du grand texte). `emerald-700` (#047857) = 5,48:1. */
   .btn-primary {
-    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl shadow-md text-white bg-emerald-500 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl shadow-md text-white bg-emerald-700 hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-600 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {

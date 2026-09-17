@@ -9,6 +9,39 @@ Guide pour les nouveaux contributeurs. Pour les regles agent/CI, voir `AGENTS.md
 - **PHP** >= 8.4.1 + Composer >= 2.6 (pour le backend Laravel — le lock Composer contient des composants Symfony 8.x qui exigent PHP 8.4.1+, cf. issue #3819)
 - **Flutter** >= 3.22 (pour l'application mobile)
 
+### Session d'agent sans root (image sans PHP) — issue #7585
+
+L'image d'agent ne porte ni PHP ni composer. Sans eux, les checks requis
+`PHPStan — Strict` et les gardes PHP ne peuvent pas être rejoués localement :
+chaque itération coûte un cycle CI de 10 à 20 min. Un script les reconstitue,
+**sans root** et sans rien installer dans `/` :
+
+```bash
+# 1. installer (idempotent — relancer ne re-télécharge rien)
+bash dev-hub/tools/bootstrap-local-php.sh
+
+# 2. activer dans la session courante
+source "${XDG_CACHE_HOME:-$HOME/.cache}/leopardo/php/env.sh"
+
+# 3. rejouer la commande EXACTE du check requis
+cd api && composer install --no-interaction --prefer-dist --optimize-autoloader
+cd api && vendor/bin/phpstan analyse --configuration=phpstan-strict.neon --memory-limit=1G --no-progress
+```
+
+Diagnostic à tout moment : `bash dev-hub/tools/bootstrap-local-php.sh --check`.
+
+Deux points valent d'être connus avant de déboguer ce script :
+
+- **`PHPRC` est indispensable.** Composer relance PHP pour ses scripts
+  (`@php artisan package:discover`) via `PHP_BINARY`, **sans propager le `-c`**
+  qui l'a lancé. Sans `PHPRC`, l'enfant démarre sans `php.ini` : ni `tokenizer`
+  ni `mbstring`, et l'échec est trompeur (`Call to undefined function
+  NunoMaduro\Collision\token_get_all()`, enveloppé dans Whoops). Le `env.sh`
+  généré pose donc `PHPRC`, et les shims `php`/`composer` le posent eux-mêmes.
+- **`zip` peut manquer** (`libzip.so.4` absent du système) — ce n'est pas
+  bloquant : `api/composer.json` n'exige aucune `ext-*`, et composer retombe sur
+  la commande `unzip`. Le script écarte l'extension et le dit.
+
 ## Quick Start (Docker)
 
 ```bash

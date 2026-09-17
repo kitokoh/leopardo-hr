@@ -129,9 +129,6 @@ abstract class AbstractCountryRules implements CountryRulesInterface
      * Issue #1814 — injecte un barème temporaire pour la simulation d'impact
      * (endpoint /payroll/simulate). Ne touche pas à la base de données.
      *
-     * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>  $slabs
-     */
-    /**
      * Issue #1815 — active/désactive l'application des plafonds de cotisation
      * (mode simulation « avec/sans plafond »). N'affecte que cette instance.
      */

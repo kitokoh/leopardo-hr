@@ -745,7 +745,15 @@ export default function DashboardLayout({
                   aria-haspopup="true"
                   aria-controls="dashboard-modules-panel"
                   aria-label={labels.dashboard.sectionEnterprise}
-                  onClick={() => { closeHeaderPanels(); setMobileModulesOpen((value) => !value); }}
+                  onClick={() => {
+                    // #7584 — calculer la cible AVANT de fermer les autres panneaux :
+                    // closeHeaderPanels() remet CE panneau à false, donc l'updater
+                    // fonctionnel relisait `false` et le rouvrait aussitôt — le
+                    // panneau ne se fermait jamais par son propre déclencheur.
+                    const next = !mobileModulesOpen;
+                    closeHeaderPanels();
+                    setMobileModulesOpen(next);
+                  }}
                   className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
                 >
                   <Menu className="h-4 w-4" aria-hidden="true" />
@@ -767,7 +775,13 @@ export default function DashboardLayout({
             <div className="relative">
               <button
                 type="button"
-                onClick={() => { closeHeaderPanels(); setModulesOpen((value) => !value); }}
+                onClick={() => {
+                  // #7584 — même correction que le menu de compte et le sous-menu RH
+                  // (#7556) : cible calculée avant la fermeture des autres panneaux.
+                  const next = !modulesOpen;
+                  closeHeaderPanels();
+                  setModulesOpen(next);
+                }}
                 aria-expanded={modulesOpen}
                 aria-haspopup="true"
                 aria-controls="dashboard-plan-panel"
@@ -866,7 +880,14 @@ export default function DashboardLayout({
                 aria-haspopup="true"
                 aria-controls="dashboard-notifications-panel"
                 data-testid="dashboard-notifications-toggle"
-                onClick={() => { closeHeaderPanels(); setNotificationsOpen((value) => !value); }}
+                onClick={() => {
+                  // #7584 — même correction : la cloche ne pouvait jamais refermer
+                  // le panneau de notifications (closeHeaderPanels() le remettait
+                  // à false, puis l'updater le relisait et le rouvrait).
+                  const next = !notificationsOpen;
+                  closeHeaderPanels();
+                  setNotificationsOpen(next);
+                }}
               >
                 <Bell className="h-5 w-5" aria-hidden="true" />
                 {unreadCount > 0 ? (
