@@ -1,4 +1,6 @@
 
+import { trackingAllowed } from "@/modules/vitrine/lib/consent";
+
 const safeLog = (..._args: unknown[]) => {};
 /**
  * Analytics and Conversion Tracking
@@ -532,11 +534,45 @@ export class AnalyticsManager {
 }
 
 /**
+ * Client inerte : toutes les méthodes sont sans effet.
+ *
+ * Deuxième barrière du consentement (#7593), après le non-chargement des
+ * scripts (`ConsentScripts`) : un `window.gtag` présent malgré tout (extension
+ * de navigateur, autre script du site) ne doit pas suffire à déclencher un
+ * envoi sans autorisation. Renvoyé tant que la mesure d'audience n'est pas
+ * accordée.
+ */
+class InertAnalytics extends AnalyticsManager {
+  override isEnabled(): boolean {
+    return false;
+  }
+  override trackPageView(): void {}
+  override trackConversion(): void {}
+  override trackSignup(): void {}
+  override trackDemoRequest(): void {}
+  override trackContact(): void {}
+  override trackNewsletterSignup(): void {}
+  override trackCTAClick(): void {}
+  override trackFormSubmission(): void {}
+  override trackScrollDepth(): void {}
+  override trackTimeOnPage(): void {}
+  override trackEvent(): void {}
+  override setUserProperties(): void {}
+  override identifyUser(): void {}
+}
+
+/**
  * Singleton instance
  */
 let analyticsInstance: AnalyticsManager | null = null;
+let inertInstance: InertAnalytics | null = null;
 
 export function getAnalytics(): AnalyticsManager {
+  // #7593 : sans consentement explicite à la mesure d'audience, aucun envoi.
+  if (!trackingAllowed()) {
+    if (!inertInstance) inertInstance = new InertAnalytics();
+    return inertInstance;
+  }
   if (!analyticsInstance) {
     analyticsInstance = new AnalyticsManager();
   }

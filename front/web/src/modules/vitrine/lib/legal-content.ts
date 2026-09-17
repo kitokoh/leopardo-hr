@@ -1,6 +1,17 @@
 import type { AppLocale } from '@/lib/i18n'
 
-export type LegalPageKind = 'privacy' | 'terms'
+/**
+ * Pages légales de la vitrine (#7593).
+ *
+ * ⚠️ À COMPLÉTER PAR LE PROPRIÉTAIRE avant mise en production, dans la section
+ * « Identifiants légaux » des mentions légales : dénomination sociale exacte,
+ * adresse du siège, numéro d'immatriculation, identifiant fiscal, et le nom de
+ * l'hébergeur. Ces valeurs ne sont pas dans le dépôt et **n'ont pas été
+ * inventées** : en attendant, la page indique comment les obtenir. Le reste
+ * (rôles, bases légales, durées, sous-traitants, transferts, droits, cookies,
+ * autorité de contrôle) est rédigé dans les 4 langues.
+ */
+export type LegalPageKind = 'privacy' | 'terms' | 'legal'
 
 type LegalSection = {
   title: string
@@ -61,6 +72,56 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
             'Les clients restent responsables de la configuration de leurs utilisateurs, de leurs politiques internes et de la vérification des obligations locales.',
           ],
         },
+        {
+          title: 'Responsable de traitement',
+          body: [
+            'Leopardo RH édite et héberge la plateforme. Pour les données de vos salariés (pointage, absences, paie, documents RH), votre entreprise est responsable de traitement et Leopardo RH agit comme sous-traitant, sur vos instructions.',
+            'Pour les données de la vitrine et de la relation commerciale, Leopardo RH est responsable de traitement.',
+          ],
+        },
+        {
+          title: 'Base légale',
+          body: [
+            'Chaque traitement repose sur une base identifiée : exécution du contrat (fourniture du service), obligation légale (conservation des documents de paie et sociaux), intérêt légitime (sécurité, prévention de la fraude, support), ou consentement (mesure d\'audience, personnalisation marketing, données biométriques).',
+          ],
+        },
+        {
+          title: 'Durées de conservation',
+          body: [
+            'Compte et données de production : pendant la relation contractuelle, puis 12 mois. Journaux techniques : 12 mois. Documents de paie et sociaux : durées légales applicables. Mesure d\'audience : 14 mois maximum. Choix de consentement : 6 mois, puis re-sollicitation.',
+          ],
+        },
+        {
+          title: 'Destinataires et sous-traitants',
+          body: [
+            'Accès interne limité aux équipes support, sécurité et ingénierie, selon le besoin d\'en connaître.',
+            'Sous-traitants : hébergement (infrastructure située dans l\'Union européenne), supervision des erreurs applicatives, et mesure d\'audience (Google Analytics 4, Mixpanel) uniquement après votre accord explicite. La liste à jour est communiquée sur demande.',
+          ],
+        },
+        {
+          title: 'Transferts hors Union européenne',
+          body: [
+            'L\'hébergement des données de production est situé dans l\'Union européenne. Certains prestataires peuvent traiter des données hors UE : ces transferts sont encadrés par des garanties appropriées (clauses contractuelles types). La mesure d\'audience, susceptible d\'impliquer un tel transfert, est désactivée par défaut.',
+          ],
+        },
+        {
+          title: 'Cookies et mesure d’audience',
+          body: [
+            'Les cookies nécessaires (session, langue, sécurité) sont toujours actifs. La mesure d\'audience et la personnalisation marketing ne sont activées qu\'après votre accord, et ce choix se modifie à tout moment via « Gérer mes cookies », en pied de page. Votre choix est conservé 6 mois.',
+          ],
+        },
+        {
+          title: 'Exercice des droits et réclamation',
+          body: [
+            'Vous pouvez exercer vos droits (accès, rectification, effacement, limitation, opposition, portabilité) en écrivant à privacy@leopardo-rh.com ; nous répondons dans un délai d\'un mois. Vous pouvez également saisir l\'autorité de protection des données compétente : en Algérie, l\'ANPDP ; dans l\'Union européenne, l\'autorité de votre pays de résidence.',
+          ],
+        },
+        {
+          title: 'Violations de données',
+          body: [
+            'En cas de violation susceptible d\'engendrer un risque élevé pour vos droits, nous informons les clients concernés et, lorsque la réglementation l\'exige, l\'autorité compétente, dans les délais prévus.',
+          ],
+        },
       ],
       contact: {
         title: 'Contact confidentialité',
@@ -112,7 +173,54 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         email: 'support@leopardo-rh.com',
       },
     },
-  },
+      legal: {
+      eyebrow: 'Informations légales',
+      title: 'Mentions légales',
+      intro:
+        'Informations relatives à l\'éditeur du site, à son hébergement et à la propriété de ses contenus.',
+      updatedAt: 'Dernière mise à jour : 16 septembre 2026',
+      backLabel: 'Retour à l’accueil',
+      languageLabel: 'Langue du document',
+      sections: [
+        {
+          title: 'Éditeur du site',
+          body: [
+            'Le site vitrine et la plateforme Leopardo RH sont édités par Leopardo RH (Alger, Algérie).',
+            'Contact : contact@leopardo-rh.com.',
+          ],
+        },
+        {
+          title: 'Identifiants légaux',
+          body: [
+            'Les identifiants de l\'éditeur (dénomination, siège social, immatriculation, identifiant fiscal) et le nom de l\'hébergeur sont communiqués sur simple demande à contact@leopardo-rh.com, en attendant leur publication sur cette page.',
+          ],
+        },
+        {
+          title: 'Hébergement',
+          body: [
+            'L\'infrastructure d\'hébergement est située dans l\'Union européenne ; les données de production ne sont pas hébergées hors de l\'Union européenne.',
+          ],
+        },
+        {
+          title: 'Propriété intellectuelle',
+          body: [
+            'La marque, le code, les interfaces et les contenus du site sont protégés. Toute reproduction ou réutilisation sans autorisation écrite préalable est interdite.',
+          ],
+        },
+        {
+          title: 'Données personnelles',
+          body: [
+            'Le traitement des données personnelles est décrit dans la politique de confidentialité : finalités, bases légales, durées de conservation, destinataires et exercice de vos droits.',
+          ],
+        },
+      ],
+      contact: {
+        title: 'Contact',
+        body: 'Pour toute question relative à ces mentions, écrivez-nous.',
+        email: 'contact@leopardo-rh.com',
+      },
+    },
+},
   en: {
     privacy: {
       eyebrow: 'HR data compliance',
@@ -149,6 +257,56 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
           body: [
             'Leopardo RH applies tenant isolation, role-based access control, sensitive data access logging and least-privilege principles.',
             'Customers remain responsible for user configuration, internal policies and local legal obligations.',
+          ],
+        },
+        {
+          title: 'Data controller',
+          body: [
+            'Leopardo RH publishes and hosts the platform. For your employees\' data (attendance, leave, payroll, HR documents), your company is the data controller and Leopardo RH acts as a processor, on your instructions.',
+            'For website and commercial relationship data, Leopardo RH is the data controller.',
+          ],
+        },
+        {
+          title: 'Legal basis',
+          body: [
+            'Each processing activity relies on an identified basis: performance of the contract (service delivery), legal obligation (retention of payroll and social documents), legitimate interest (security, fraud prevention, support), or consent (analytics, marketing personalisation, biometric data).',
+          ],
+        },
+        {
+          title: 'Retention periods',
+          body: [
+            'Account and production data: for the duration of the contract, then 12 months. Technical logs: 12 months. Payroll and social documents: applicable statutory periods. Analytics: 14 months maximum. Consent choice: 6 months, then asked again.',
+          ],
+        },
+        {
+          title: 'Recipients and processors',
+          body: [
+            'Internal access is limited to support, security and engineering teams on a need-to-know basis.',
+            'Processors: hosting (infrastructure located in the European Union), application error monitoring, and analytics (Google Analytics 4, Mixpanel) only after your explicit consent. The up-to-date list is available on request.',
+          ],
+        },
+        {
+          title: 'Transfers outside the European Union',
+          body: [
+            'Production data is hosted in the European Union. Some providers may process data outside the EU: such transfers are covered by appropriate safeguards (standard contractual clauses). Analytics, which may involve such a transfer, is off by default.',
+          ],
+        },
+        {
+          title: 'Cookies and analytics',
+          body: [
+            'Necessary cookies (session, language, security) are always active. Analytics and marketing personalisation are enabled only after your consent, and you can change that choice at any time via “Manage my cookies” in the footer. Your choice is stored for 6 months.',
+          ],
+        },
+        {
+          title: 'Exercising your rights and complaints',
+          body: [
+            'You can exercise your rights (access, rectification, erasure, restriction, objection, portability) by writing to privacy@leopardo-rh.com; we reply within one month. You may also contact the competent data protection authority: in Algeria, the ANPDP; in the European Union, the authority of your country of residence.',
+          ],
+        },
+        {
+          title: 'Data breaches',
+          body: [
+            'If a breach is likely to result in a high risk to your rights, we inform the affected customers and, where required by law, the competent authority, within the applicable timeframes.',
           ],
         },
       ],
@@ -202,7 +360,54 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         email: 'support@leopardo-rh.com',
       },
     },
-  },
+      legal: {
+      eyebrow: 'Legal information',
+      title: 'Legal notice',
+      intro:
+        'Information about the publisher of this site, its hosting and the ownership of its content.',
+      updatedAt: 'Last updated: 16 September 2026',
+      backLabel: 'Back to home',
+      languageLabel: 'Document language',
+      sections: [
+        {
+          title: 'Site publisher',
+          body: [
+            'The Leopardo RH website and platform are published by Leopardo RH (Algiers, Algeria).',
+            'Contact: contact@leopardo-rh.com.',
+          ],
+        },
+        {
+          title: 'Legal identifiers',
+          body: [
+            'The publisher\'s identifiers (company name, registered office, registration number, tax identifier) and the name of the host are provided on request at contact@leopardo-rh.com, pending publication on this page.',
+          ],
+        },
+        {
+          title: 'Hosting',
+          body: [
+            'The hosting infrastructure is located in the European Union; production data is not hosted outside the European Union.',
+          ],
+        },
+        {
+          title: 'Intellectual property',
+          body: [
+            'The brand, code, interfaces and content of this site are protected. Any reproduction or reuse without prior written permission is prohibited.',
+          ],
+        },
+        {
+          title: 'Personal data',
+          body: [
+            'How personal data is processed is described in the privacy policy: purposes, legal bases, retention periods, recipients and how to exercise your rights.',
+          ],
+        },
+      ],
+      contact: {
+        title: 'Contact',
+        body: 'For any question about this legal notice, write to us.',
+        email: 'contact@leopardo-rh.com',
+      },
+    },
+},
   tr: {
     privacy: {
       eyebrow: 'IK veri uyumu',
@@ -239,6 +444,56 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
           body: [
             'Leopardo RH tenant izolasyonu, rol tabanli erisim kontrolu, hassas veri erisim gunlugu ve en az ayricalik ilkelerini uygular.',
             'Musteriler kullanici yapilandirmasi, ic politikalar ve yerel hukuki yukumluluklerden sorumludur.',
+          ],
+        },
+        {
+          title: 'Veri sorumlusu',
+          body: [
+            'Leopardo RH platformu yayınlar ve barındırır. Çalışanlarınızın verileri (yoklama, izin, bordro, İK belgeleri) için veri sorumlusu şirketinizdir; Leopardo RH talimatlarınız doğrultusunda veri işleyen olarak hareket eder.',
+            'Site ve ticari ilişki verileri için veri sorumlusu Leopardo RH\'tir.',
+          ],
+        },
+        {
+          title: 'Hukuki dayanak',
+          body: [
+            'Her işleme belirli bir dayanağa oturur: sözleşmenin ifası (hizmetin sunulması), yasal yükümlülük (bordro ve sosyal belgelerin saklanması), meşru menfaat (güvenlik, dolandırıcılık önleme, destek) veya açık rıza (ölçümleme, pazarlama kişiselleştirme, biyometrik veriler).',
+          ],
+        },
+        {
+          title: 'Saklama süreleri',
+          body: [
+            'Hesap ve üretim verileri: sözleşme süresince, ardından 12 ay. Teknik kayıtlar: 12 ay. Bordro ve sosyal belgeler: ilgili yasal süreler. Ölçümleme: en fazla 14 ay. Çerez tercihi: 6 ay, sonra yeniden sorulur.',
+          ],
+        },
+        {
+          title: 'Alıcılar ve alt işleyenler',
+          body: [
+            'Dahili erişim, bilmesi gerekenler ilkesiyle destek, güvenlik ve mühendislik ekipleriyle sınırlıdır.',
+            'Alt işleyenler: barındırma (Avrupa Birliği\'nde bulunan altyapı), uygulama hata izleme ve yalnızca açık onayınızdan sonra ölçümleme (Google Analytics 4, Mixpanel). Güncel liste talep üzerine paylaşılır.',
+          ],
+        },
+        {
+          title: 'Avrupa Birliği dışına aktarımlar',
+          body: [
+            'Üretim verileri Avrupa Birliği\'nde barındırılır. Bazı sağlayıcılar verileri AB dışında işleyebilir; bu aktarımlar uygun güvencelerle (standart sözleşme maddeleri) çerçevelenir. Aktarım içerebilen ölçümleme varsayılan olarak kapalıdır.',
+          ],
+        },
+        {
+          title: 'Çerezler ve ölçümleme',
+          body: [
+            'Gerekli çerezler (oturum, dil, güvenlik) her zaman açıktır. Ölçümleme ve pazarlama kişiselleştirme yalnızca onayınızdan sonra etkinleşir; tercihinizi sayfa altındaki “Çerezleri yönet” üzerinden istediğiniz zaman değiştirebilirsiniz. Tercih 6 ay saklanır.',
+          ],
+        },
+        {
+          title: 'Hakların kullanılması ve şikâyet',
+          body: [
+            'Haklarınızı (erişim, düzeltme, silme, kısıtlama, itiraz, taşınabilirlik) privacy@leopardo-rh.com adresine yazarak kullanabilirsiniz; bir ay içinde yanıt veririz. Yetkili veri koruma kurumuna da başvurabilirsiniz: Cezayir\'de ANPDP; Avrupa Birliği\'nde ikamet ettiğiniz ülkenin kurumu.',
+          ],
+        },
+        {
+          title: 'Veri ihlalleri',
+          body: [
+            'Haklarınız açısından yüksek risk doğurabilecek bir ihlal durumunda, etkilenen müşterileri ve mevzuatın gerektirdiği hâllerde yetkili kurumu öngörülen süreler içinde bilgilendiririz.',
           ],
         },
       ],
@@ -292,7 +547,54 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         email: 'support@leopardo-rh.com',
       },
     },
-  },
+      legal: {
+      eyebrow: 'Yasal bilgiler',
+      title: 'Yasal bildirim',
+      intro:
+        'Bu sitenin yayıncısı, barındırılması ve içeriklerinin mülkiyeti hakkında bilgiler.',
+      updatedAt: 'Son güncelleme: 16 Eylül 2026',
+      backLabel: 'Ana sayfaya dön',
+      languageLabel: 'Belge dili',
+      sections: [
+        {
+          title: 'Site yayıncısı',
+          body: [
+            'Leopardo RH web sitesi ve platformu Leopardo RH (Cezayir, Cezayir) tarafından yayımlanır.',
+            'İletişim: contact@leopardo-rh.com.',
+          ],
+        },
+        {
+          title: 'Yasal kimlik bilgileri',
+          body: [
+            'Yayıncının kimlik bilgileri (unvan, merkez adresi, sicil numarası, vergi numarası) ve barındırıcının adı, bu sayfada yayımlanana kadar contact@leopardo-rh.com adresinden talep üzerine iletilir.',
+          ],
+        },
+        {
+          title: 'Barındırma',
+          body: [
+            'Barındırma altyapısı Avrupa Birliği\'nde bulunur; üretim verileri AB dışında barındırılmaz.',
+          ],
+        },
+        {
+          title: 'Fikri mülkiyet',
+          body: [
+            'Marka, kod, arayüzler ve site içerikleri korunmaktadır. Önceden yazılı izin olmaksızın çoğaltma veya yeniden kullanım yasaktır.',
+          ],
+        },
+        {
+          title: 'Kişisel veriler',
+          body: [
+            'Kişisel verilerin işlenmesi gizlilik politikasında açıklanır: amaçlar, hukuki dayanaklar, saklama süreleri, alıcılar ve haklarınızı kullanma yolları.',
+          ],
+        },
+      ],
+      contact: {
+        title: 'İletişim',
+        body: 'Bu bildirimle ilgili her soru için bize yazın.',
+        email: 'contact@leopardo-rh.com',
+      },
+    },
+},
   ar: {
     privacy: {
       eyebrow: 'الامتثال وبيانات الموارد البشرية',
@@ -329,6 +631,56 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
           body: [
             'تطبق Leopardo RH عزل المستأجرين والتحكم في الوصول حسب الأدوار وتسجيل الوصول إلى البيانات الحساسة ومبدأ أقل صلاحية.',
             'يبقى العملاء مسؤولين عن إعداد المستخدمين والسياسات الداخلية والتحقق من الالتزامات القانونية المحلية.',
+          ],
+        },
+        {
+          title: 'المسؤول عن المعالجة',
+          body: [
+            'تنشر Leopardo RH المنصة وتستضيفها. بالنسبة لبيانات موظفيكم (الحضور والإجازات والرواتب ووثائق الموارد البشرية)، فإن شركتكم هي المسؤولة عن المعالجة، وتعمل Leopardo RH كمُعالج بناءً على تعليماتكم.',
+            'أما بيانات الموقع والعلاقة التجارية فالمسؤولة عن معالجتها هي Leopardo RH.',
+          ],
+        },
+        {
+          title: 'الأساس القانوني',
+          body: [
+            'تستند كل معالجة إلى أساس محدد: تنفيذ العقد (تقديم الخدمة)، أو التزام قانوني (حفظ وثائق الرواتب والوثائق الاجتماعية)، أو مصلحة مشروعة (الأمان ومنع الاحتيال والدعم)، أو الموافقة (قياس الزيارات والتخصيص التسويقي والبيانات البيومترية).',
+          ],
+        },
+        {
+          title: 'مدد الحفظ',
+          body: [
+            'بيانات الحساب والإنتاج: طوال مدة العقد ثم 12 شهراً. السجلات التقنية: 12 شهراً. وثائق الرواتب والوثائق الاجتماعية: المدد القانونية المعمول بها. قياس الزيارات: 14 شهراً كحد أقصى. اختيار الموافقة: 6 أشهر ثم يُعاد السؤال.',
+          ],
+        },
+        {
+          title: 'الجهات المتلقية والمُعالجون الفرعيون',
+          body: [
+            'الوصول الداخلي مقصور على فرق الدعم والأمان والهندسة وفق مبدأ الحاجة إلى المعرفة.',
+            'المُعالجون الفرعيون: الاستضافة (بنية تحتية داخل الاتحاد الأوروبي)، ومراقبة أخطاء التطبيق، وقياس الزيارات (Google Analytics 4 وMixpanel) بعد موافقتكم الصريحة فقط. القائمة المحدّثة متاحة عند الطلب.',
+          ],
+        },
+        {
+          title: 'النقل خارج الاتحاد الأوروبي',
+          body: [
+            'تُستضاف بيانات الإنتاج داخل الاتحاد الأوروبي. وقد يعالج بعض المزوّدين بيانات خارج الاتحاد؛ وتُؤطَّر هذه عمليات النقل بضمانات مناسبة (الشروط التعاقدية القياسية). وقياس الزيارات، الذي قد يتضمن مثل هذا النقل، معطّل افتراضياً.',
+          ],
+        },
+        {
+          title: 'ملفات تعريف الارتباط والقياس',
+          body: [
+            'الملفات الضرورية (الجلسة واللغة والأمان) مفعّلة دائماً. أما قياس الزيارات والتخصيص التسويقي فلا يُفعّلان إلا بموافقتكم، ويمكنكم تغيير اختياركم في أي وقت عبر «إدارة ملفات تعريف الارتباط» أسفل الصفحة. يُحفظ الاختيار ستة أشهر.',
+          ],
+        },
+        {
+          title: 'ممارسة الحقوق والشكاوى',
+          body: [
+            'يمكنكم ممارسة حقوقكم (الوصول والتصحيح والمحو والتقييد والاعتراض والنقل) بمراسلة privacy@leopardo-rh.com، ونرد خلال شهر واحد. كما يمكنكم اللجوء إلى هيئة حماية البيانات المختصة: في الجزائر السلطة الوطنية لحماية المعطيات الشخصية (ANPDP)، وفي الاتحاد الأوروبي هيئة بلد إقامتكم.',
+          ],
+        },
+        {
+          title: 'انتهاكات البيانات',
+          body: [
+            'في حال وقوع انتهاك قد يُلحق خطراً مرتفعاً بحقوقكم، نُبلغ العملاء المعنيين والهيئة المختصة عند اقتضاء القانون ذلك، خلال المدد المقررة.',
           ],
         },
       ],
@@ -382,7 +734,54 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         email: 'support@leopardo-rh.com',
       },
     },
-  },
+      legal: {
+      eyebrow: 'معلومات قانونية',
+      title: 'الإشعارات القانونية',
+      intro:
+        'معلومات عن ناشر الموقع والاستضافة وملكية المحتوى.',
+      updatedAt: 'آخر تحديث: 16 سبتمبر 2026',
+      backLabel: 'العودة إلى الرئيسية',
+      languageLabel: 'لغة المستند',
+      sections: [
+        {
+          title: 'ناشر الموقع',
+          body: [
+            'يُنشر موقع ومنصة Leopardo RH بواسطة Leopardo RH (الجزائر العاصمة، الجزائر).',
+            'التواصل: contact@leopardo-rh.com.',
+          ],
+        },
+        {
+          title: 'المعرّفات القانونية',
+          body: [
+            'تُقدَّم معرّفات الناشر (الاسم القانوني والعنوان ورقم التسجيل والمعرّف الضريبي) واسم المستضيف عند الطلب عبر contact@leopardo-rh.com، إلى حين نشرها في هذه الصفحة.',
+          ],
+        },
+        {
+          title: 'الاستضافة',
+          body: [
+            'تقع بنية الاستضافة داخل الاتحاد الأوروبي، ولا تُستضاف بيانات الإنتاج خارجه.',
+          ],
+        },
+        {
+          title: 'الملكية الفكرية',
+          body: [
+            'العلامة والشيفرة والواجهات ومحتويات الموقع محمية. ويُمنع أي نسخ أو إعادة استخدام دون إذن كتابي مسبق.',
+          ],
+        },
+        {
+          title: 'البيانات الشخصية',
+          body: [
+            'تُوضّح سياسة الخصوصية كيفية معالجة البيانات الشخصية: الأغراض والأسس القانونية ومدد الحفظ والجهات المتلقية وسبل ممارسة حقوقكم.',
+          ],
+        },
+      ],
+      contact: {
+        title: 'التواصل',
+        body: 'لأي سؤال حول هذا الإشعار، راسلونا.',
+        email: 'contact@leopardo-rh.com',
+      },
+    },
+},
 }
 
 export function getLegalPageCopy(locale: AppLocale, page: LegalPageKind): LegalPageCopy {

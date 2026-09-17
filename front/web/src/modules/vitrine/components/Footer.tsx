@@ -13,6 +13,7 @@ const SOCIAL_LINKS = [
   // Ne réintroduire une entrée LinkedIn qu'avec une page d'entreprise réelle.
   { label: 'Gh', href: 'https://github.com/kitokoh/leopardo-hr', title: 'GitHub' },
 ]
+import { CookieSettingsButton } from '@/modules/vitrine/components/CookieSettingsButton';
 import { NewsletterForm } from './NewsletterForm'
 import { getEnvConfig } from '../lib/env'
 import { withLocaleHref } from '../lib/locale-href'
@@ -55,6 +56,9 @@ export function getFooterHref(sectionIndex: number, linkIndex: number): string |
     // liste que ce qui existe, et la confidentialité porte explicitement le RGPD.
     '3-0': '/privacy',
     '3-1': '/terms',
+    // La page existe désormais : le lien pointe vers les mentions légales
+    // (et non plus vers les CGU, cf. correctif du lot vitrine).
+    '3-2': '/mentions-legales',
   }
 
   return routes[key] ?? null
@@ -119,6 +123,13 @@ export function Footer() {
                     </li>
                   )
                 })}
+                {/* #7593 — retirer son consentement doit être aussi simple que
+                    de le donner : ce contrôle est présent sur toutes les pages. */}
+                {index === copy.footer.sections.length - 1 && (
+                  <li>
+                    <CookieSettingsButton className="text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors text-left" />
+                  </li>
+                )}
               </ul>
             </div>
           ))}

@@ -1587,6 +1587,28 @@
     "unavailableBody": "Yapay zekâ sohbeti süper yönetici konsolunda etkin değil. Bu asistana erişmek için desteklenen bir şirket çalışma alanı kullanın.",
     "unavailableTitle": "Yapay zekâ asistanı platform düzeyinde kullanılamıyor"
   },
+  "consent": {
+    "title": "Çerezler ve ölçümleme",
+    "body": "Sitenin çalışması için gerekli çerezleri ve — onayınızla — ölçümleme çerezlerini kullanıyoruz. Kabul edebilir, reddedebilir veya amaca göre seçebilirsiniz. Reddetmek gezinmenizi bozmaz.",
+    "acceptAll": "Tümünü kabul et",
+    "refuseAll": "Tümünü reddet",
+    "customize": "Özelleştir",
+    "save": "Seçimlerimi kaydet",
+    "necessary": "Gerekli çerezler",
+    "necessaryDesc": "Oturum, dil, güvenlik, görünüm tercihleri. Zorunludur: kapatılamaz.",
+    "analytics": "Ölçümleme",
+    "analyticsDesc": "Hangi sayfaların işe yaradığını anlamak için toplu istatistikler. Hiçbir veri satılmaz.",
+    "marketing": "Pazarlama kişiselleştirme",
+    "marketingDesc": "Tekliflerimizi tekrar etmemek için ilginizi hatırlar. Varsayılan olarak kapalıdır.",
+    "privacyLink": "Gizlilik politikası",
+    "manage": "Çerezleri yönet",
+    "alwaysOn": "Her zaman açık",
+    "close": "Kapat",
+    "settingsTitle": "Çerez tercihleriniz",
+    "formNoticeContact": "Bilgileriniz yalnızca talebinizi yanıtlamak için kullanılır. Hukuki dayanak: dilediğiniz zaman geri çekebileceğiniz onayınız.",
+    "formNoticeDemo": "Bilgileriniz yalnızca talep edilen demoyu düzenlemek için kullanılır (amaç: sizinle iletişime geçmek). Hukuki dayanak: onayınız.",
+    "formNoticeNewsletter": "Adresiniz yalnızca İK ipuçlarımızı göndermek için kullanılır (amaç: bilgilendirme). Tek tıkla çıkış."
+  },
   "navigation": {
     "analytics": "Analitik",
     "audit": "Denetim Günlüğü",
