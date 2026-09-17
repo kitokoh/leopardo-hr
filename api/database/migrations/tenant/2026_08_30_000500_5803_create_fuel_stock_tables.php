@@ -72,30 +72,6 @@ return new class extends Migration
         }
 
         if (! schemaTableExists('fuel_reconciliation_runs')) {
-            Schema::create('fuel_reconciliation_runs', function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('station_id')->index();
-                $table->date('run_date');
-
-                // pending | running | completed | failed
-                $table->string('status', 20)->default('pending');
-                $table->jsonb('summary')->nullable();
-                $table->timestampTz('started_at')->nullable();
-                $table->timestampTz('finished_at')->nullable();
-                $table->string('last_error', 500)->nullable();
-                $table->unsignedInteger('created_by')->nullable();
-                $table->timestampTz('created_at')->useCurrent();
-                $table->timestampTz('updated_at')->useCurrent();
-
-                // Rejouable : un seul run par (station, date).
-                $table->unique(['company_id', 'station_id', 'run_date'], 'fuel_reconciliation_runs_unique');
-
-                $table->foreign(['station_id', 'company_id'], 'fuel_reconciliation_runs_station_company_fk')
-                    ->references(['id', 'company_id'])
-                    ->on('fuel_stations')
-                    ->cascadeOnDelete();
-            });
 
             DB::statement("COMMENT ON TABLE fuel_reconciliation_runs IS 'Passe de rapprochement stock d une station par date (rejouable, écart rapporté jamais ajusté) — FUEL-009 (#5803).'");
         }

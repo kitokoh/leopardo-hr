@@ -430,6 +430,9 @@ Route::prefix('v1')->group(function (): void {
         // `public.tenant_deletion_audits` (qui survit à la purge).
         Route::get('/companies/{company}/deletion-inventory', [PlatformCompanyDeletionController::class, 'inventory']);
         Route::get('/companies/{company}/deletion-audits', [PlatformCompanyDeletionController::class, 'history']);
+        // #7576 — la piste d'audit survit à la purge : lecture plateforme, non
+        // scopée à une entreprise vivante (sinon la preuve est inexploitable).
+        Route::get('/tenant-deletion-audits', [PlatformCompanyDeletionController::class, 'auditTrail'])->middleware('platform.permission:companies.view');
         Route::delete('/companies/{company}', [PlatformCompanyDeletionController::class, 'destroy']);
         Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show']);
         Route::patch('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'update']);

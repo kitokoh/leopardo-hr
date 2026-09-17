@@ -4273,6 +4273,89 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+  /platform/tenant-deletion-audits:
+    get:
+      tags:
+      - Platform
+      summary: Piste d'audit des suppressions de tenant (lecture plateforme)
+      description: '#7576 — La preuve d''une suppression survit a la purge, mais la seule lecture existante etait scopee a une entreprise vivante : apres une purge reussie, l''operateur ne pouvait plus repondre a « qui a supprime cet espace, quand, pourquoi, et avec quel volume ». Cette lecture plateforme n''est pas scopee a une entreprise existante. Elle ne rend que des compteurs, des identites plateforme et la justification (aucune donnee locataire).'
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company_id
+        in: query
+        required: false
+        description: Identifiant de l'entreprise supprimee (la ligne d'audit le conserve).
+        schema:
+          type: string
+          format: uuid
+      - name: slug
+        in: query
+        required: false
+        description: Slug de l'entreprise supprimee (conserve dans la ligne d'audit).
+        schema:
+          type: string
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Piste d'audit des suppressions de tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        company_id:
+                          type: string
+                          format: uuid
+                        company_name:
+                          type: string
+                        company_slug:
+                          type: string
+                          nullable: true
+                        mode:
+                          type: string
+                        status:
+                          type: string
+                        inventory:
+                          type: object
+                          additionalProperties: true
+                        deleted_counts:
+                          type: object
+                          additionalProperties: true
+                        actor_user_id:
+                          type: integer
+                          nullable: true
+                        actor_email:
+                          type: string
+                          nullable: true
+                        reason:
+                          type: string
+                          nullable: true
+                        failure_reason:
+                          type: string
+                          nullable: true
+                        request_id:
+                          type: string
+                          nullable: true
+                        created_at:
+                          type: string
+        '422':
+          $ref: '#/components/responses/Error422'
+
   /platform/companies/{company}:
     delete:
       tags:
