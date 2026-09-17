@@ -162,7 +162,7 @@ class PlatformMarketingLeadsReadApiTest extends TestCase
 
         // Le lead de contact est le plus recent (created_at = now() des deux
         // inserts) : on le retrouve par son email plutot que par sa position.
-        $data = collect($response->json('data'));
+        $data = collect((array) $response->json('data'));
         $contact = $data->firstWhere('email', 'fatima@example.dz');
 
         $this->assertNotNull($contact, 'Le lead de contact doit etre present.');
@@ -265,7 +265,7 @@ class PlatformMarketingLeadsReadApiTest extends TestCase
 
         $response = $this->getJson(self::ENDPOINT.'?from=2026-09-17&to=2026-09-17')->assertOk();
 
-        $emails = collect($response->json('data'))->pluck('email')->all();
+        $emails = collect((array) $response->json('data'))->pluck('email')->all();
         $this->assertContains('jour17@example.dz', $emails);
         $this->assertNotContains('jour19@example.dz', $emails);
         $this->assertSame(1, $response->json('meta.total'));
@@ -279,7 +279,7 @@ class PlatformMarketingLeadsReadApiTest extends TestCase
 
         $response = $this->getJson(self::ENDPOINT.'?from=2026-09-17')->assertOk();
 
-        $emails = collect($response->json('data'))->pluck('email')->all();
+        $emails = collect((array) $response->json('data'))->pluck('email')->all();
         $this->assertContains('jour@example.dz', $emails);
         $this->assertNotContains('veille@example.dz', $emails);
     }

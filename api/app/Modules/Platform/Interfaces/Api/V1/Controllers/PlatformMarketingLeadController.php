@@ -124,7 +124,7 @@ final class PlatformMarketingLeadController extends Controller
 
         return new JsonResponse([
             'data' => $leads->getCollection()
-                ->map(fn (object $lead): array => $this->present($lead))
+                ->map(fn (\stdClass $lead): array => $this->present($lead))
                 ->all(),
             'meta' => [
                 'current_page' => $leads->currentPage(),
@@ -170,7 +170,7 @@ final class PlatformMarketingLeadController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function present(object $lead): array
+    private function present(\stdClass $lead): array
     {
         return [
             'id' => (int) $lead->id,

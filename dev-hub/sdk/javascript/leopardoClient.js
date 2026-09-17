@@ -535,6 +535,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/admin/islamic-calendar/confirm-year/{year}", options);
     },
 
+    /** Liste des leads d'acquisition de la vitrine (miroir super-admin) */
+    getAdminMarketingLeads(options = {}) {
+      return request("GET", "/admin/marketing/leads", options);
+    },
+
     /** Lister les enregistrements d''audit des calculs de paie (platform_admin, cross-tenant) — issue #1874 */
     listPayrollAuditsAdmin(options = {}) {
       return request("GET", "/admin/payroll/audit", options);
@@ -3838,6 +3843,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Terminer une session d'impersonation */
     deletePlatformImpersonationsBySession(options = {}) {
       return request("DELETE", "/platform/impersonations/{session}", options);
+    },
+
+    /** Liste des leads d'acquisition de la vitrine (lecture plateforme) */
+    getPlatformMarketingLeads(options = {}) {
+      return request("GET", "/platform/marketing/leads", options);
     },
 
     /** Agregats business du cockpit super-admin */
