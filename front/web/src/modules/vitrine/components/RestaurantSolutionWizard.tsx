@@ -45,6 +45,7 @@ import {
   type SurveyAnswerValue,
   type VitrineLocale,
 } from '@/modules/vitrine/lib/solution-survey';
+import { antispamFields } from '@/modules/vitrine/lib/antispam-client';
 
 type Step = 'intro' | 'questions' | 'suggestions' | 'download';
 
@@ -81,6 +82,7 @@ export function RestaurantSolutionWizard() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          ...antispamFields(),
           email: leadEmail.trim(),
           consent: leadConsent,
           locale,

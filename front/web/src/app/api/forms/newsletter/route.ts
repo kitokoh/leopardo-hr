@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { areFormsEnabled, captureMarketingLead, formsDisabledResponse, getClientIp } from '../_lib/lead-capture';
+import { evaluateSpam, forbiddenOriginResponse, readSpamSignals, spamResponse } from '../_lib/antispam';
 import { RateLimiter, sanitizeEmail } from '@/modules/vitrine/lib/validation';
 
 const rateLimiter = new RateLimiter(10, 15 * 60 * 1000);
@@ -32,7 +33,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const validatedData = newsletterSchema.parse(await request.json());
+    // #7594 — barrières anti-bot AVANT toute validation et toute persistance.
+    // Une seule lecture du corps : les signaux sont lus sur le BRUT, car les
+    // schémas zod ne déclarent ni le honeypot ni l'horodatage de rendu (zod
+    // supprime les clés inconnues). Rejet silencieux : même réponse qu'un
+    // succès, mais rien n'est persisté.
+    const rawBody: unknown = await request.json();
+    const verdict = evaluateSpam(readSpamSignals(rawBody), request);
+    if (verdict.spam) {
+      return verdict.reason === 'bad-origin' ? forbiddenOriginResponse() : spamResponse();
+    }
+
+    const validatedData = newsletterSchema.parse(rawBody);
     const email = sanitizeEmail(validatedData.email);
     const lead = await captureMarketingLead(request, {
       type: 'newsletter',
