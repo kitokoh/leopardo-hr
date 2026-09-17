@@ -174,6 +174,31 @@ class SelfServiceTrialTest extends TestCase
             ]);
     }
 
+    /**
+     * #7609 — la garde anti-spam de `/trial/signup` (5 inscriptions / 15 min) doit
+     * rester INTACTE : c'est la raison pour laquelle `/trial/verify` a reçu son
+     * propre seau, pas une raison de relâcher l'inscription.
+     */
+    public function test_signup_keeps_its_anti_spam_throttle(): void
+    {
+        Mail::fake();
+
+        for ($i = 1; $i <= 5; $i++) {
+            $this->postJson('/api/v1/trial/signup', [
+                'email' => "spam{$i}@example.com",
+                'company' => "Spam Corp {$i}",
+                'country' => 'DZ',
+            ])->assertStatus(200);
+        }
+
+        // 6e inscription dans la fenêtre → throttlée (seau 5,15 conservé).
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'spam6@example.com',
+            'company' => 'Spam Corp 6',
+            'country' => 'DZ',
+        ])->assertStatus(429);
+    }
+
     public function test_verify_locks_email_after_five_failed_attempts(): void
     {
         Mail::fake();
@@ -184,21 +209,36 @@ class SelfServiceTrialTest extends TestCase
             'country' => 'DZ',
         ])->assertStatus(200);
 
-        // 5 échecs → compteur max atteint
-        for ($i = 1; $i <= 5; $i++) {
+        // #7609 — le compteur d'échecs par EMAIL (`otp_attempts`,
+        // `VerifyTrialSignup`) est incrémenté AVANT la réponse : le verrou de
+        // 15 minutes est posé **sur le 5e mauvais code**, qui reçoit donc déjà
+        // le 429 — le contrat réel est 4 × `400` puis verrouillage, pas 5 ×
+        // `400`. Le code d'erreur est `OTP_TOO_MANY_ATTEMPTS` (le test
+        // attendait `TOO_MANY_ATTEMPTS`, une chaîne qui n'existe plus dans
+        // l'API : il échouait donc sur l'assertion de statut avant même
+        // d'atteindre celle-ci).
+        for ($i = 1; $i <= 4; $i++) {
             $this->postJson('/api/v1/trial/verify', [
                 'email' => 'lockme@example.com',
                 'code' => '000000',
-            ])->assertStatus(400);
+            ])->assertStatus(400)->assertJsonPath('error', 'INVALID_OR_EXPIRED_CODE');
         }
 
-        // 6e tentative → verrouillé (429), quel que soit le code
+        // 5e échec → verrouillé (429), et le verrou persiste ensuite.
         $this->postJson('/api/v1/trial/verify', [
             'email' => 'lockme@example.com',
             'code' => '000000',
         ])
             ->assertStatus(429)
-            ->assertJsonPath('error', 'TOO_MANY_ATTEMPTS');
+            ->assertJsonPath('error', 'OTP_TOO_MANY_ATTEMPTS');
+
+        // 6e tentative → toujours verrouillé, quel que soit le code.
+        $this->postJson('/api/v1/trial/verify', [
+            'email' => 'lockme@example.com',
+            'code' => '000000',
+        ])
+            ->assertStatus(429)
+            ->assertJsonPath('error', 'OTP_TOO_MANY_ATTEMPTS');
     }
 
     public function test_signup_does_not_enumerate_existing_manager_email()
@@ -562,8 +602,22 @@ class SelfServiceTrialTest extends TestCase
         $this->assertTrue($modules['reports']);
         $this->assertFalse($modules['marketing'], 'Outil NON coché => explicitement false (la sélection fait autorité).');
 
-        // 3. Outils d'ÉQUIPE forcés à false pour un indépendant (règle serveur #7235).
+        // 3. Outils d'ÉQUIPE forcés à false pour un indépendant (règle serveur
+        //    #7235) — SAUF le PLANCHER d'accès #7423, livré depuis : « un solo
+        //    n'a pas d'équipe à piloter, mais il travaille — il se pointe, pose
+        //    ses congés et reçoit ses bulletins ». Ce test affirmait le contraire
+        //    de la décision produit livrée (`attendance` forcé à `false`) et
+        //    échouait donc sur `main` (issue #7609).
         foreach (Company::TEAM_TOOLS as $teamTool) {
+            if (Company::isSoloFloorTool($teamTool)) {
+                $this->assertTrue(
+                    $modules[$teamTool],
+                    "Le plancher d'accès #7423 doit être garanti à un profil solo ({$teamTool})."
+                );
+
+                continue;
+            }
+
             $this->assertFalse(
                 $modules[$teamTool],
                 "L'outil d'équipe {$teamTool} doit être désactivé pour un profil solo."
