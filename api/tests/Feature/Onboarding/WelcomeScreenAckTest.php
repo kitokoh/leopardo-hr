@@ -98,7 +98,7 @@ class WelcomeScreenAckTest extends TestCase
 
         $this->assertSame(
             $seenAt,
-            $this->persistedMetadata($company)['welcome_seen_at'] ?? null,
+            $this->persistedMetadata($company)['welcome_seen_at'],
             'La date d’origine ne doit JAMAIS être réécrite.'
         );
     }
