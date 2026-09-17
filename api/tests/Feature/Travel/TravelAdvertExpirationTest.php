@@ -64,27 +64,32 @@ class TravelAdvertExpirationTest extends TestCase
                 'company_id' => $company->id,
                 'advert_type_id' => $type->id,
                 'advert_position_id' => $position->id,
-                'price_image_minor' => 1000,
-                'price_character_minor' => 10,
+                'price_per_image_minor' => 1000,
+                'price_per_character_minor' => 10,
                 'currency' => 'XAF',
             ]);
 
+            // Colonnes RÉELLES de `travel_adverts`, telles que les écrit le code
+            // de production (`SubmitTravelAdvertAction`). La fixture utilisait
+            // `body_redacted`, `character_count`, `price_image_minor` et
+            // `total_minor`, qui n'existent dans aucune migration, et
+            // `published_at`, qui n'est pas une colonne — et elle omettait
+            // `price_minor`, `NOT NULL` sans défaut. L'INSERT ne pouvait donc
+            // pas aboutir, quelle que soit la migration appliquée.
             return TravelAdvert::query()->create([
                 'company_id' => $company->id,
                 'advert_type_id' => $type->id,
                 'advert_position_id' => $position->id,
                 'title' => 'Annonce test',
-                'body_redacted' => 'Contenu',
-                'character_count' => 8,
-                'price_image_minor' => 1000,
-                'price_character_minor' => 10,
-                'total_minor' => 1080,
+                'content_redacted' => 'Contenu',
+                'price_minor' => 1080,
                 'currency' => 'XAF',
                 'status' => AdvertStatus::VALIDATED,
-                'published_at' => now()->subDays(5),
+                'validity_days' => 30,
                 'expires_at' => $expiresAt ?? now()->addDays(25),
                 'validated_by_user_id' => 1,
                 'validated_at' => now()->subDays(5),
+                'created_by_user_id' => 1,
             ]);
         });
     }
