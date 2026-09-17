@@ -6808,10 +6808,34 @@
     "rootDescription": "Leopardo réunit RH & paie, pointage, absences, CRM, comptabilité et opérations terrain dans une seule suite, sur web, mobile et kiosque.",
     "rootTitle": "Leopardo — suite métier pour équipes terrain : paie, pointage, absences"
   },
+<<<<<<< HEAD
   "firstLoginWelcome": {
     "title": "Votre espace est prêt 🎉",
     "body": "Un e-mail vous a été envoyé avec un lien pour définir votre mot de passe : il servira à vos prochaines connexions.",
     "ctaStart": "Démarrer la mise en route",
     "ctaLater": "Plus tard"
+=======
+  "consent": {
+    "title": "Cookies et mesure d'audience",
+    "body": "Nous utilisons des cookies nécessaires au fonctionnement du site, et — avec votre accord — des cookies de mesure d'audience. Vous pouvez accepter, refuser, ou choisir par finalité. Refuser ne dégrade pas votre navigation.",
+    "acceptAll": "Tout accepter",
+    "refuseAll": "Tout refuser",
+    "customize": "Personnaliser",
+    "save": "Enregistrer mes choix",
+    "necessary": "Cookies nécessaires",
+    "necessaryDesc": "Session, langue, sécurité, préférences d'affichage. Indispensables : ils ne peuvent pas être désactivés.",
+    "analytics": "Mesure d'audience",
+    "analyticsDesc": "Statistiques agrégées sur les pages consultées, pour savoir ce qui est utile. Aucune donnée n'est revendue.",
+    "marketing": "Personnalisation marketing",
+    "marketingDesc": "Permet de mémoriser votre intérêt pour nos offres afin de ne pas les répéter. Désactivé par défaut.",
+    "privacyLink": "Politique de confidentialité",
+    "manage": "Gérer mes cookies",
+    "alwaysOn": "Toujours actifs",
+    "close": "Fermer",
+    "settingsTitle": "Vos préférences de cookies",
+    "formNoticeContact": "Vos informations servent uniquement à répondre à votre demande. Base légale : votre consentement, que vous pouvez retirer à tout moment.",
+    "formNoticeDemo": "Vos informations servent uniquement à organiser la démonstration demandée (finalité : vous recontacter). Base légale : votre consentement.",
+    "formNoticeNewsletter": "Votre adresse sert uniquement à vous envoyer nos conseils RH (finalité : information). Désinscription en un clic."
+>>>>>>> origin/main
   }
 }

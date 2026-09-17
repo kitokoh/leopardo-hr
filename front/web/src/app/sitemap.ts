@@ -76,6 +76,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/restaurateur', 'monthly', 0.6),
     page('/privacy', 'yearly', 0.4, false),
     page('/terms', 'yearly', 0.4, false),
+    // #7593 — mentions légales (page FR, comme privacy/terms).
+    page('/mentions-legales', 'yearly', 0.3, false),
     page('/guides/rh-startup', 'monthly', 0.7),
     page('/guides/checklist-paie', 'monthly', 0.7),
     page('/guides/planning-employes', 'monthly', 0.7),
