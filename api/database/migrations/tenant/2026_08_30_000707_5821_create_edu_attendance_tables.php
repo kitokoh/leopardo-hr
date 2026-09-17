@@ -19,6 +19,9 @@ use Illuminate\Support\Facades\Schema;
  * `edu_attendance_corrections` : journal de corrections VERSIONNÉ (jamais
  * d'UPDATE silencieux) — chaque correction enregistre l'ancien et le
  * nouveau statut, le motif, l'auteur et l'horodatage.
+ * ⚠️ Depuis #7571, cette table est déclarée UNIQUEMENT par
+ * `..._000402_5821_create_edu_attendance_corrections_table` (la 1ʳᵉ
+ * déclaration gagnait déjà) ; voir `down()` ci-dessous.
  *
  * FK composites anti cross-tenant vers edu_classes / edu_students.
  * company_id uuid NON nullable, index tenant-first, gardes schemaTableExists,
@@ -71,33 +74,15 @@ return new class extends Migration
             }
         }
 
-        if (! schemaTableExists('edu_attendance_corrections')) {
-            Schema::create('edu_attendance_corrections', function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id');
-                $table->unsignedBigInteger('attendance_id')->index();
-                $table->string('previous_status', 20);
-                $table->string('new_status', 20);
-                $table->string('reason', 500)->nullable();
-                $table->unsignedInteger('corrected_by')->nullable();
-                $table->timestamps();
-
-                $table->index(
-                    ['company_id', 'attendance_id', 'created_at'],
-                    'edu_attendance_corrections_company_attendance_idx'
-                );
-
-                $table->foreign(['attendance_id', 'company_id'], 'edu_attendance_corrections_attendance_company_fk')
-                    ->references(['id', 'company_id'])
-                    ->on('edu_attendances')
-                    ->cascadeOnDelete();
-            });
-        }
+        // `edu_attendance_corrections` est déclarée ici en 2ᵉ génération, mais la
+        // table est créée par `..._000402_5821_create_edu_attendance_corrections_table`
+        // (déclarée plus tôt, donc gagnante : cette garde était toujours fausse).
+        // La déclaration a été retirée — cf. #7571, arbitrage « un fichier
+        // canonique par table ». Ne pas la réintroduire ici.
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('edu_attendance_corrections');
         Schema::dropIfExists('edu_attendances');
     }
 };

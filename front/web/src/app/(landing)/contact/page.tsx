@@ -8,6 +8,8 @@ import { motion } from 'framer-motion';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import { FormDataNotice } from '@/modules/vitrine/components/FormDataNotice';
+import { antispamFields } from '@/modules/vitrine/lib/antispam-client';
+import { HoneypotField } from '@/modules/vitrine/components/common/HoneypotField';
 
 // #4327 : libellés des sujets localisés ×4 locales (valeurs stables côté
 // formulaire = libellé localisé, l'API les traite en texte libre).
@@ -180,7 +182,7 @@ function ContactPageInner() {
       const res = await fetch('/api/forms/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, timestamp: new Date().toISOString() }),
+        body: JSON.stringify({ ...antispamFields(), ...form, timestamp: new Date().toISOString() }),
       });
       if (!res.ok) throw new Error(copy.form.errorSend);
       setIsSubmitted(true);
@@ -253,6 +255,7 @@ function ContactPageInner() {
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-6">
+                    <HoneypotField />
                     <div className="grid sm:grid-cols-2 gap-6">
                       <div>
                         <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">

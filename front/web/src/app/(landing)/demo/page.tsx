@@ -17,6 +17,8 @@ import { PAYROLL_RULE_ENGINES_COUNT } from '@/modules/vitrine/data/vitrine-numbe
 import { motion } from 'framer-motion';
 import { Calendar, Building2, Users, CheckCircle } from 'lucide-react';
 import { FormDataNotice } from '@/modules/vitrine/components/FormDataNotice';
+import { antispamFields } from '@/modules/vitrine/lib/antispam-client';
+import { HoneypotField } from '@/modules/vitrine/components/common/HoneypotField';
 
 const employeeOptions = ['1-10', '11-50', '51-200', '201-500', '500+'] as const;
 
@@ -266,6 +268,7 @@ export default function DemoPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          ...antispamFields(),
           ...formData,
           locale,
           page: '/demo',
@@ -371,6 +374,7 @@ export default function DemoPage() {
                   onSubmit={handleSubmit}
                   className="p-8 rounded-2xl bg-transparent dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800"
                 >
+                  <HoneypotField />
                   <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
                     {copy.formTitle}
                   </h3>

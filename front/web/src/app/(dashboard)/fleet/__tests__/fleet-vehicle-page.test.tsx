@@ -49,8 +49,12 @@ const vehicle = {
   },
 };
 
+// #7526 — valeurs relevées sur la réponse RÉELLE de `GET /vehicles/1/position` :
+// le payload Traccar est relayé tel quel et `speed` y est en **nœuds**.
+// Une fixture en km/h (l'ancien `speed: 42.5`) faisait passer le test alors que
+// la page affichait une vitesse 1,852 fois trop faible.
 const position = {
-  data: { latitude: 4.0511, longitude: 9.7679, speed: 42.5, fixTime: '2026-09-14T09:30:00+00:00' },
+  data: { latitude: 4.0511, longitude: 9.7679, speed: 22.68, fixTime: '2026-09-14T09:30:00+00:00' },
 };
 
 const trips = {
@@ -61,10 +65,14 @@ const trips = {
       driver_id: 7,
       start_time: '2026-09-14T06:00:00+00:00',
       end_time: '2026-09-14T07:15:00+00:00',
-      start_location: 'Douala — Marché Central',
-      end_location: 'Yaoundé — Gare routière',
-      distance_km: 243.4,
-      purpose: 'Navette clients',
+      // Clés copiées de `VehicleTripResource` (réponse réelle), et non des
+      // noms attendus par la page : c'est ce décalage qui rendait le test vert
+      // alors que les itinéraires s'affichaient vides.
+      start_address: 'Yaoundé, Centre, Cameroun',
+      end_address: 'Douala, Wouri, Littoral, Cameroun',
+      distance_km: '250.00',
+      duration_minutes: 135,
+      max_speed_kmh: '76.86',
     },
   ],
 };
@@ -94,17 +102,17 @@ describe('Fiche véhicule — flotte agence (#7400)', () => {
 
     // Position (dernier relevé du traceur).
     expect(screen.getByText('4.05110, 9.76790')).toBeInTheDocument();
-    expect(screen.getByText('42.5 km/h')).toBeInTheDocument();
+    // 22,68 nœuds → 42 km/h (conversion nœuds → km/h).
+    expect(screen.getByText('42 km/h')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Ouvrir dans OpenStreetMap' })).toHaveAttribute(
       'href',
       expect.stringContaining('mlat=4.0511'),
     );
 
     // Itinéraires.
-    expect(screen.getByText('Douala — Marché Central')).toBeInTheDocument();
-    expect(screen.getByText('Yaoundé — Gare routière')).toBeInTheDocument();
-    expect(screen.getByText('243.4 km')).toBeInTheDocument();
-    expect(screen.getByText('Navette clients')).toBeInTheDocument();
+    expect(screen.getByText('Yaoundé, Centre, Cameroun')).toBeInTheDocument();
+    expect(screen.getByText('Douala, Wouri, Littoral, Cameroun')).toBeInTheDocument();
+    expect(screen.getByText('250 km')).toBeInTheDocument();
 
     expect(mockedApiFetch).toHaveBeenCalledWith('/vehicles/12');
     expect(mockedApiFetch).toHaveBeenCalledWith('/vehicles/12/position');
