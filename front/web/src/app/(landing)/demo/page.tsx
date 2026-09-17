@@ -16,6 +16,7 @@ import type { AppLocale } from '@/lib/i18n';
 import { PAYROLL_RULE_ENGINES_COUNT } from '@/modules/vitrine/data/vitrine-numbers';
 import { motion } from 'framer-motion';
 import { Calendar, Building2, Users, CheckCircle } from 'lucide-react';
+import { FormDataNotice } from '@/modules/vitrine/components/FormDataNotice';
 import { antispamFields } from '@/modules/vitrine/lib/antispam-client';
 import { HoneypotField } from '@/modules/vitrine/components/common/HoneypotField';
 
@@ -490,6 +491,8 @@ export default function DemoPage() {
                         className={inputClass}
                       />
                     </div>
+
+                    <FormDataNotice purpose="demo" />
 
                     <button
                       type="submit"

@@ -8,6 +8,9 @@ import "./globals.css";
 import { LocaleSync } from "@/components/locale-sync";
 import { PWAProvider } from "@/components/PWAProvider";
 import { DarkModeProvider } from "@/components/DarkModeProvider";
+import { ConsentProvider } from "@/modules/vitrine/components/ConsentProvider";
+import { ConsentBanner } from "@/modules/vitrine/components/ConsentBanner";
+import { ConsentScripts } from "@/modules/vitrine/components/ConsentScripts";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/JsonLd";
 
 import { inter } from '@/lib/fonts';
@@ -206,42 +209,23 @@ export default async function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="icon" type="image/svg+xml" href="/icon.svg" />
 
-        {gaId && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-              strategy="afterInteractive"
-            />
-            <Script
-              id="google-analytics"
-              strategy="afterInteractive"
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${gaId}', {
-                    page_path: window.location.pathname,
-                    anonymize_ip: true,
-                  });
-                `,
-              }}
-            />
-          </>
-        )}
-
-        {mixpanelToken && (
-          <Script
-            id="mixpanel"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{
-              __html: `
-                (function(f,b){if(!b.__SV){var e,g,i,h;window.mixpanel=b;b._i=[];b.init=function(e,f,c){function g(a,d){var b=d.split(".");2==b.length&&(a=a[b[0]],d=b[1]);a[d]=function(){a.push([d].concat(Array.prototype.slice.call(arguments,0)))}}var a=b;"undefined"!=typeof c?a=b[c]=[]:c="mixpanel";a.people=a.people||[];a.toString=function(a){var d="mixpanel";"mixpanel"!=c&&(d+="."+c);a||(d+=" (stub)");return d};a.people.toString=function(){return a.toString(1)};i="disable time_event track track_pageview track_links track_forms track_with_groups add_group set_group remove_group unset_group increment append union track_revenue alias set_once union get_distinct_id get_user_id get_user_properties get_group_properties identify alias reset register register_once unregister opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_tracking_cookie clear_opt_out_tracking_cookie".split(" ");for(h=0;h<i.length;h++)g(a,i[h]);b._i.push([e,f,c])};b.__SV=1.2;e=f.createElement("script");e.type="text/javascript";e.async=!0;e.src="undefined"!=typeof MIXPANEL_CUSTOM_LIB_URL?MIXPANEL_CUSTOM_LIB_URL:"file:"===f.location.protocol&&"//cdn4.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\\/\\//)?"https://cdn4.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn4.mxpnl.com/libs/mixpanel-2-latest.min.js";f=f.getElementsByTagName("script")[0];f.parentNode.insertBefore(e,f)}})(document,window.mixpanel||[]);
-                mixpanel.init('${mixpanelToken}', {track_pageview: false});
-              `,
-            }}
-          />
-        )}
+        {/* #7593 — Consent Mode v2 : le défaut est « refusé » et il est posé
+            AVANT tout script de mesure. Les traceurs ne sont injectés qu'après
+            un choix explicite (voir ConsentScripts). */}
+        <Script id="consent-mode-default" strategy="beforeInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            window.gtag = gtag;
+            gtag('consent', 'default', {
+              ad_storage: 'denied',
+              ad_user_data: 'denied',
+              ad_personalization: 'denied',
+              analytics_storage: 'denied',
+              wait_for_update: 500,
+            });
+          `}
+        </Script>
       </head>
       <body className="font-sans antialiased">
         <a
@@ -254,9 +238,12 @@ export default async function RootLayout({
         {/* #AI-SEO : nœud WebSite racine (identité du site pour les moteurs
             de réponse et l'ancrage des alias de marque). */}
         <WebSiteJsonLd locale={ssrLang} />
+        <ConsentProvider>
         <DarkModeProvider>
           <PWAProvider>
             <LocaleSync />
+            {/* Traceurs conditionnés au consentement (#7593) */}
+            <ConsentScripts gaId={gaId} mixpanelToken={mixpanelToken} />
             <main id="main-content" className="flex min-h-screen flex-col">
               <LocaleSsrProvider lang={ssrLang}>
                 {children}
@@ -264,6 +251,8 @@ export default async function RootLayout({
             </main>
           </PWAProvider>
         </DarkModeProvider>
+        <ConsentBanner />
+        </ConsentProvider>
       </body>
     </html>
   );

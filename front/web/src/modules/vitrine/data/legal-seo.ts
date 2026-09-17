@@ -18,7 +18,7 @@ export type LegalSeo = {
   description: string;
 };
 
-export const legalPageSeo: Record<'terms' | 'privacy', LegalSeo> = {
+export const legalPageSeo: Record<'terms' | 'privacy' | 'legal', LegalSeo> = {
   terms: {
     title: "Conditions générales d'utilisation",
     description:
@@ -28,5 +28,12 @@ export const legalPageSeo: Record<'terms' | 'privacy', LegalSeo> = {
     title: 'Politique de confidentialité',
     description:
       'Politique de confidentialité multilingue de Leopardo RH : données RH, conformité, droits des utilisateurs et sécurité.',
+  },
+  // #7593 — mentions légales : le pied de page y renvoie depuis la correction du
+  // lot vitrine (#7592), la page devait exister.
+  legal: {
+    title: 'Mentions légales',
+    description:
+      "Mentions légales de Leopardo RH : éditeur du site, hébergement, propriété intellectuelle et renvoi vers la politique de confidentialité.",
   },
 };

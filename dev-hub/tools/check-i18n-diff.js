@@ -82,6 +82,18 @@ const ignorePathFragments = [
   // que vitrine-locale.ts) ; RestaurantSolutionWizard.tsx contient le COPY
   // localisé ×4 de l'UI du wizard (pattern des pages vitrine existantes).
   '/vitrine/lib/solution-survey.ts', '/vitrine/components/RestaurantSolutionWizard.tsx',
+  // Chargement des traceurs (consentement, #7593) : ce fichier ne rend AUCUN
+  // texte — il injecte les scripts de mesure, dont le bootstrap tiers de
+  // Mixpanel (« (stub) », liste des méthodes de l'API, URL du CDN) et celui de
+  // Google. Ce sont des extraits du fournisseur, déjà présents dans le dépôt
+  // (ils vivaient dans layout.tsx, non signalés car non ajoutés par un diff).
+  '/vitrine/components/ConsentScripts.tsx',
+  // Pages légales (#7593) : legal-content.ts est le catalogue de contenu ×4 du
+  // droit applicable (politique de confidentialité, CGU, mentions légales) —
+  // exactement le même cas que vitrine-locale.ts ci-dessus : ce fichier EST le
+  // mécanisme de localisation, pas des chaînes hors catalogue. La complétude des
+  // 4 langues reste couverte par validate-and-sync.
+  '/vitrine/lib/legal-content.ts',
 ];
 
 // Lines that already route text through a translation mechanism — never
