@@ -3164,6 +3164,10 @@ class LeopardoClient:
         """Changer le role plateforme d'un collaborateur interne"""
         return self.request("PATCH", "/platform/team/{superAdmin}/role", **kwargs)
 
+    def get_platform_tenant_deletion_audits(self, **kwargs):
+        """Piste d'audit des suppressions de tenant (lecture plateforme)"""
+        return self.request("GET", "/platform/tenant-deletion-audits", **kwargs)
+
     def get_platform_users(self, **kwargs):
         """Lister les utilisateurs plateforme (super-admins)"""
         return self.request("GET", "/platform/users", **kwargs)

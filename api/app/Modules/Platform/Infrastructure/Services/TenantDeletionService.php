@@ -320,6 +320,68 @@ final class TenantDeletionService
     }
 
     /**
+     * #7576 — Piste d'audit **plateforme** : la même preuve que {@see history()},
+     * mais non scopée à une entreprise vivante.
+     *
+     * `history()` a besoin d'une société existante pour être appelée (la route
+     * passe par `PlatformCompanyLookup::findOrFail`), or une suppression réussie
+     * la fait disparaître : l'opérateur qui doit répondre à « qui a supprimé cet
+     * espace, quand, pourquoi, et avec quel volume » n'avait plus aucun lecteur.
+     * La ligne d'audit, elle, survit dans `public.tenant_deletion_audits` et
+     * porte le nom et le slug de l'espace disparu.
+     *
+     * Aucune donnée locataire n'est exposée : la ligne ne contient que des
+     * compteurs, des identités plateforme (`actor_email`) et la justification.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function platformHistory(?string $companyId = null, ?string $slug = null, int $limit = 20): array
+    {
+        DB::statement('SET search_path TO public');
+
+        $query = DB::table('public.tenant_deletion_audits')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->limit($limit);
+
+        if ($companyId !== null && $companyId !== '') {
+            $query->where('company_id', $companyId);
+        }
+
+        if ($slug !== null && $slug !== '') {
+            $query->where('company_slug', $slug);
+        }
+
+        /** @var list<array<string, mixed>> $rows */
+        $rows = $query->get()
+            ->map(static function (object $row): array {
+                /** @var array<string, mixed> $decoded */
+                $decoded = [
+                    'id' => (int) $row->id,
+                    'company_id' => (string) $row->company_id,
+                    'company_name' => (string) $row->company_name,
+                    'company_slug' => $row->company_slug !== null ? (string) $row->company_slug : null,
+                    'mode' => (string) $row->mode,
+                    'status' => (string) $row->status,
+                    'inventory' => json_decode((string) $row->inventory, true) ?: [],
+                    'deleted_counts' => json_decode((string) $row->deleted_counts, true) ?: [],
+                    'actor_user_id' => $row->actor_user_id !== null ? (int) $row->actor_user_id : null,
+                    'actor_email' => $row->actor_email !== null ? (string) $row->actor_email : null,
+                    'reason' => $row->reason !== null ? (string) $row->reason : null,
+                    'failure_reason' => $row->failure_reason !== null ? (string) $row->failure_reason : null,
+                    'request_id' => $row->request_id !== null ? (string) $row->request_id : null,
+                    'created_at' => (string) $row->created_at,
+                ];
+
+                return $decoded;
+            })
+            ->values()
+            ->all();
+
+        return $rows;
+    }
+
+    /**
      * Supprime les lignes du tenant dans le schéma `shared_tenants`.
      *
      * En mode `anonymize`, les tables de conservation paie sont exclues du
