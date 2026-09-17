@@ -13,6 +13,7 @@ import { getAboutContent } from '@/modules/vitrine/data/about';
 import { motion } from 'framer-motion';
 import { Users, Heart, Shield, Zap, ArrowRight, Info } from 'lucide-react';
 import Image from 'next/image';
+import { localImageProps } from '@/modules/vitrine/lib/image-props';
 
 const valueIcons = [Zap, Heart, Users, Shield];
 
@@ -146,7 +147,14 @@ export default function AboutPage() {
                 <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 group-hover:opacity-10 blur-xl transition-opacity duration-500" />
                 <div className="relative bg-white dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden transition-all duration-300 group-hover:border-emerald-200/50 dark:group-hover:border-emerald-800/50 group-hover:shadow-xl">
                   <div className="relative w-full h-48 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-900">
-                    <Image src={member.image} alt={member.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <Image
+                      src={member.image}
+                      alt={member.name}
+                      fill
+                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                      {...localImageProps(member.image)}
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
                   </div>
                   <div className="p-6">
                     <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{member.name}</h3>

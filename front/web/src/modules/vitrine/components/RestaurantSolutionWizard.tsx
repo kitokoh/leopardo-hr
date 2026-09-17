@@ -45,6 +45,7 @@ import {
   type SurveyAnswerValue,
   type VitrineLocale,
 } from '@/modules/vitrine/lib/solution-survey';
+import { antispamFields } from '@/modules/vitrine/lib/antispam-client';
 
 type Step = 'intro' | 'questions' | 'suggestions' | 'download';
 
@@ -81,6 +82,7 @@ export function RestaurantSolutionWizard() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          ...antispamFields(),
           email: leadEmail.trim(),
           consent: leadConsent,
           locale,
@@ -210,7 +212,7 @@ export function RestaurantSolutionWizard() {
             <div className="mx-auto mb-6 w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center">
               <Store className="w-8 h-8 text-emerald-700 dark:text-emerald-400" />
             </div>
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">{c.title}</h2>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">{c.title}</h1>
             <p className="text-slate-600 dark:text-slate-300 max-w-xl mx-auto mb-8">{c.subtitle}</p>
             <button
               type="button"
