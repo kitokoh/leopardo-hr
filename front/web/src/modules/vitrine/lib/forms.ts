@@ -1,3 +1,4 @@
+import { antispamFields } from './antispam-client';
 import {
   SignupFormData,
   DemoFormData,
@@ -111,6 +112,7 @@ export async function submitSignupForm(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        ...antispamFields(),
         // #7238 — le choix explicite de l'utilisateur prime sur les paramètres
         // d'URL (`?plan=free` ne doit pas écraser une offre choisie ensuite).
         ...getSearchMetadata(),
@@ -311,6 +313,7 @@ export async function submitDemoForm(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        ...antispamFields(),
         ...sanitizedData,
         ...getSearchMetadata(),
         locale: getBrowserLocale(),
@@ -370,6 +373,7 @@ export async function submitContactForm(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        ...antispamFields(),
         ...sanitizedData,
         ...getSearchMetadata(),
         locale: getBrowserLocale(),
@@ -425,6 +429,7 @@ export async function submitNewsletterForm(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        ...antispamFields(),
         ...sanitizedData,
         ...getSearchMetadata(),
         locale: getBrowserLocale(),

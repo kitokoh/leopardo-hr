@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
+import { antispamFields } from '@/modules/vitrine/lib/antispam-client';
 
 interface NewsletterFormProps {
   locale?: string;
@@ -36,6 +37,7 @@ export function NewsletterForm({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          ...antispamFields(),
           email,
           locale,
           page: typeof window !== 'undefined' ? window.location.pathname : '/blog',
