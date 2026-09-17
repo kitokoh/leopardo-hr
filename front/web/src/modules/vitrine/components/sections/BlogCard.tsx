@@ -3,7 +3,9 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Calendar, User } from 'lucide-react';
-import Image from 'next/image';
+import Image from 'next/image'
+
+import { localImageProps } from '@/modules/vitrine/lib/image-props';
 
 export interface BlogCardProps {
   slug: string;
@@ -65,6 +67,8 @@ export function BlogCard({
               src={image}
               alt={title}
               fill
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              {...localImageProps(image)}
               className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
             {/* Category badge */}
@@ -109,6 +113,8 @@ export function BlogCard({
                     src={author.avatar}
                     alt={author.name}
                     fill
+                    sizes="32px"
+                    {...localImageProps(author.avatar)}
                     className="object-cover"
                   />
                 </div>

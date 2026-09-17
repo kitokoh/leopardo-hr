@@ -183,6 +183,11 @@ const structuralAttributes = new Set([
   ':height', ':cols', ':rows', ':colspan', ':rowspan', ':span', ':min',
   ':max', ':step', ':precision', ':minlength', ':maxlength', ':autocomplete',
   ':autofocus', ':pattern', ':mask', ':offset', ':gap', ':align', ':justify',
+  // Formes STATIQUES de la même famille : les dimensions d'image ne portent
+  // jamais de texte utilisateur. Constat mesuré (audit vitrine, 2026-09-16) :
+  // `<Image … sizes="(min-width: 1024px) 33vw, 100vw" />` était signalé comme
+  // « nouvelle chaîne en dur » et poussait à réécrire un appel correct.
+  'sizes', 'width', 'height', 'srcset', 'loading', 'decoding', 'fetchpriority',
 ]);
 
 // Noms d'attribut : `:class`, `@click`, `v-model`, `#default`, `aria-label`…
