@@ -3,11 +3,15 @@ import type { StoredAuthUser } from '@/lib/i18n';
 
 /**
  * #7235 — Le menu s'adapte au PROFIL déclaré à l'inscription.
+ * #7423 — …et un profil `solo` conserve un PLANCHER D'ACCÈS RH.
  *
  * Contrat :
- * 1. profil `solo` (indépendant) → aucun outil d'équipe (employés, pointage,
- *    congés, contrats, paie, formations) : ni dans le menu, ni activable par
- *    les replis historiques ;
+ * 1. profil `solo` (indépendant) → aucun outil d'ÉQUIPE (employés, contrats,
+ *    formations, pointage géolocalisé) : ni dans le menu, ni activable par les
+ *    replis historiques ; MAIS le socle RH INDIVIDUEL est garanti — se
+ *    pointer, poser ses congés, lire ses bulletins — y compris quand la
+ *    sélection d'inscription les refuse (c'est le cas normal : un solo ne
+ *    coche aucun outil d'équipe). Cf. `SOLO_FLOOR_MODULE_KEYS` / #7423 ;
  * 2. profil `company` avec sélection explicite (`company.modules`) → seuls les
  *    outils cochés sont actifs. C'est le point clé : le repli `rh` de
  *    `featureKeys` rendait pointage/employés disponibles pour TOUT LE MONDE ;
@@ -25,13 +29,35 @@ describe('client-features — profil d’inscription (#7235)', () => {
     features: { rh: true, finance: false, cameras: false, accounting: false },
   };
 
-  it('un indépendant ne voit aucun outil d’équipe', () => {
+  it('un indépendant garde le socle RH individuel (#7423) et perd les outils d’équipe', () => {
     const solo: StoredAuthUser = {
       ...legacyUser,
-      company: { type: 'solo', modules: { accounting: true, reports: true } },
+      // Sélection volontairement INCOMPLÈTE — et explicitement `false` sur le
+      // socle RH : c'est exactement ce que le provisioning écrivait avant
+      // #7423, et ce que le plancher doit rattraper.
+      company: {
+        type: 'solo',
+        modules: {
+          accounting: true,
+          reports: true,
+          attendance: false,
+          absences: false,
+          payroll: false,
+        },
+      },
     };
 
-    for (const key of ['employees', 'attendance', 'attendance_geo', 'absences', 'contracts', 'payroll', 'training']) {
+    // #7423 — Plancher d'accès : ces clés restent OUVERTES pour un solo, même
+    // quand la sélection les refuse. Le plancher est évalué AVANT l'autorité de
+    // la sélection (#7235), sinon un solo perdrait précisément ce qu'il garde.
+    for (const key of ['attendance', 'absences', 'payroll']) {
+      const entry = stateOf(solo, key);
+      expect(entry?.state).toBe('available');
+      expect(entry?.enabled).toBe(true);
+    }
+
+    // Outils d'ÉQUIPE : toujours coupés pour un indépendant.
+    for (const key of ['employees', 'attendance_geo', 'contracts', 'training']) {
       // `entry` et non `module` : la règle Next `no-assign-module-variable`
       // interdit d'affecter une variable de ce nom (lint CI).
       const entry = stateOf(solo, key);
@@ -39,7 +65,7 @@ describe('client-features — profil d’inscription (#7235)', () => {
       expect(entry?.enabled).toBe(false);
     }
 
-    // …mais il garde bien ce qu’il a choisi, et le socle.
+    // …il garde bien ce qu’il a choisi, et le socle.
     expect(stateOf(solo, 'dashboard')?.enabled).toBe(true);
     expect(stateOf(solo, 'accounting')?.state).toBe('available');
   });

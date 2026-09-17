@@ -562,11 +562,21 @@ class SelfServiceTrialTest extends TestCase
         $this->assertTrue($modules['reports']);
         $this->assertFalse($modules['marketing'], 'Outil NON coché => explicitement false (la sélection fait autorité).');
 
-        // 3. Outils d'ÉQUIPE forcés à false pour un indépendant (règle serveur #7235).
+        // 3. #7423 — Outils d'ÉQUIPE forcés à false pour un indépendant (règle
+        //    serveur #7235), SAUF le plancher d'accès : le socle RH individuel
+        //    (pointage, absences, paie) est explicitement ACTIVÉ. Le tester sur
+        //    la donnée PERSISTÉE (`metadata.modules`) et non sur
+        //    `moduleSelection()` : c'est le provisioning qui est vérifié ici,
+        //    donc ce que le tenant possède réellement.
         foreach (Company::TEAM_TOOLS as $teamTool) {
-            $this->assertFalse(
+            $isFloor = in_array($teamTool, Company::SOLO_FLOOR_TOOLS, true);
+
+            $this->assertSame(
+                $isFloor,
                 $modules[$teamTool],
-                "L'outil d'équipe {$teamTool} doit être désactivé pour un profil solo."
+                $isFloor
+                    ? "Le socle RH « {$teamTool} » doit être ACTIVÉ au provisioning d'un solo (#7423)."
+                    : "L'outil d'équipe « {$teamTool} » doit être désactivé pour un profil solo."
             );
         }
 

@@ -243,6 +243,36 @@ class Company extends Model
     ];
 
     /**
+     * #7423 — PLANCHER D'ACCÈS garanti à tout profil `solo` (décision produit
+     * du 2026-07-16, cf. issue #7423).
+     *
+     * Un indépendant n'a pas d'équipe, mais **il travaille** : il doit pouvoir
+     * SE pointer, poser SES congés et lire SES bulletins. Le filtrage #7235
+     * coupait la totalité des clés RH — y compris celles qui n'ont rien à voir
+     * avec le pilotage d'équipe — et un solo se retrouvait avec un socle RH
+     * vide.
+     *
+     * Ce plancher est donc la part de `TEAM_TOOLS` qui reste ouverte au solo ;
+     * le reste (`employees`, `contracts`, `training`) relève bien du pilotage
+     * d'ÉQUIPE et demeure coupé. `attendance_geo` (pointage géolocalisé
+     * d'équipe) reste également coupé — il ne figure pas dans `TEAM_TOOLS`.
+     *
+     * Il est appliqué à DEUX endroits, et c'est volontaire :
+     *  - `moduleSelection()` le garantit à la LECTURE (→ `/auth/me`
+     *    `company.modules`), donc un tenant solo DÉJÀ provisionné en bénéficie
+     *    sans re-provisioning ;
+     *  - `HorizontalToolSelection` l'écrit au provisioning, pour que la donnée
+     *    persistée ne mente jamais sur ce que le tenant possède réellement.
+     *
+     * @var array<int, string>
+     */
+    public const SOLO_FLOOR_TOOLS = [
+        'attendance',
+        'absences',
+        'payroll',
+    ];
+
+    /**
      * #7235 — Profil d'activité du tenant (`company` par défaut, fail-safe :
      * une valeur inconnue retombe sur le profil complet, jamais sur le profil
      * réduit).
@@ -271,15 +301,25 @@ class Company extends Model
     {
         $modules = $this->metadata['modules'] ?? null;
 
-        if (! is_array($modules)) {
-            return null;
-        }
-
         $selection = [];
 
-        foreach ($modules as $key => $enabled) {
-            if (is_string($key) && is_bool($enabled)) {
-                $selection[$key] = $enabled;
+        if (is_array($modules)) {
+            foreach ($modules as $key => $enabled) {
+                if (is_string($key) && is_bool($enabled)) {
+                    $selection[$key] = $enabled;
+                }
+            }
+        }
+
+        // #7423 — Plancher d'accès : un profil `solo` possède TOUJOURS le socle
+        // RH individuel (se pointer, poser ses congés, lire ses bulletins),
+        // quelle que soit la sélection faite à l'inscription — et sans
+        // re-provisioning pour les tenants solo déjà existants. Appliqué ici,
+        // à la lecture, parce que c'est la source de vérité consommée par
+        // `/auth/me` (`company.modules`) : un client ne se garde pas lui-même.
+        if ($this->isSolo()) {
+            foreach (self::SOLO_FLOOR_TOOLS as $tool) {
+                $selection[$tool] = true;
             }
         }
 

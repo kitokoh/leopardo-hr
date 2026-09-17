@@ -74,14 +74,76 @@ class TrialCompanyProfileTest extends TestCase
         $this->assertTrue($selection['reports']);
         $this->assertFalse($selection['marketing']);
 
-        // Aucun outil d'équipe pour un indépendant.
+        // #7423 — PLANCHER D’ACCÈS. Les outils d'ÉQUIPE restent coupés pour un
+        // indépendant, mais le socle RH INDIVIDUEL est désormais GARANTI : se
+        // pointer, poser ses congés, lire ses bulletins (`SOLO_FLOOR_TOOLS`).
+        // Avant #7423, la totalité des clés RH était coupée et un solo se
+        // retrouvait sans aucun outil RH.
         foreach (Company::TEAM_TOOLS as $tool) {
-            $this->assertFalse($selection[$tool], "L'outil {$tool} doit être désactivé pour un profil solo.");
+            $isFloor = in_array($tool, Company::SOLO_FLOOR_TOOLS, true);
+
+            $this->assertSame(
+                $isFloor,
+                $selection[$tool],
+                $isFloor
+                    ? "Le socle RH « {$tool} » doit rester OUVERT pour un profil solo (#7423)."
+                    : "L'outil d'équipe « {$tool} » doit être désactivé pour un profil solo.",
+            );
         }
 
         // Miroir vers le registre des feature flags plateforme.
         $this->assertTrue($company->hasFeature('accounting'));
         $this->assertFalse($company->hasFeature('crm'));
+    }
+
+    /**
+     * #7423 — Le plancher est appliqué à la LECTURE de `moduleSelection()`, donc
+     * un tenant solo **déjà provisionné** en bénéficie — sans re-provisioning.
+     *
+     * C'est le point qui compte : la génération précédente du provisioning
+     * écrivait `false` pour TOUS les outils d'équipe d'un solo (y compris
+     * `attendance`, `absences`, `payroll`). Corriger seulement le provisioning
+     * n'aurait servi qu'aux nouveaux tenants ; les tenants existants seraient
+     * restés avec un socle RH vide pour toujours.
+     */
+    public function test_solo_floor_is_guaranteed_at_read_time_for_existing_tenants(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create([
+            'country' => 'DZ',
+            'currency' => 'DZD',
+            'metadata' => [
+                'company_type' => Company::TYPE_SOLO,
+                'modules' => [
+                    'employees' => false,
+                    'attendance' => false,
+                    'absences' => false,
+                    'payroll' => false,
+                    'contracts' => false,
+                    'training' => false,
+                    'accounting' => true,
+                ],
+            ],
+        ]);
+
+        $this->assertTrue($company->isSolo());
+
+        $selection = $company->moduleSelection();
+        $this->assertIsArray($selection);
+
+        // Le plancher est garanti, malgré le `false` persisté.
+        foreach (Company::SOLO_FLOOR_TOOLS as $tool) {
+            $this->assertTrue(
+                $selection[$tool] ?? false,
+                "Le socle RH « {$tool} » doit être garanti à la lecture (#7423).",
+            );
+        }
+
+        // Les outils d'ÉQUIPE restent coupés, et la sélection réelle est intacte.
+        $this->assertFalse($selection['employees']);
+        $this->assertFalse($selection['contracts']);
+        $this->assertFalse($selection['training']);
+        $this->assertTrue($selection['accounting']);
     }
 
     public function test_company_profile_keeps_selected_tools_and_persists_vertical(): void

@@ -42,17 +42,35 @@ export type ClientModuleScope = 'core' | 'business';
  * #7235 — Outils d'ÉQUIPE : sans objet pour un profil `solo` (indépendant).
  * La règle est aussi posée côté serveur (`Company::TEAM_TOOLS`, appliquée au
  * provisioning) ; on la rejoue ici pour qu'une session ancienne ou un payload
- * partiel ne fasse jamais réapparaître pointage/employés chez un indépendant.
+ * partiel ne fasse jamais réapparaître la gestion d'employés chez un
+ * indépendant.
+ *
+ * #7423 — `attendance`, `absences` et `payroll` ont été RETIRÉS de cette
+ * liste : ce ne sont pas des outils d'équipe mais le socle RH INDIVIDUEL (se
+ * pointer, poser ses congés, lire ses bulletins), désormais garanti par
+ * `SOLO_FLOOR_MODULE_KEYS`. `attendance_geo` reste coupé (pointage
+ * géolocalisé d'équipe).
  */
 const SOLO_HIDDEN_MODULE_KEYS: ClientModuleKey[] = [
   'employees',
-  'attendance',
   'attendance_geo',
-  'absences',
   'contracts',
-  'payroll',
   'training',
 ];
+
+/**
+ * #7423 — PLANCHER D'ACCÈS d'un profil `solo` (décision produit, issue #7423).
+ *
+ * Miroir client de `Company::SOLO_FLOOR_TOOLS`. Un indépendant n'a pas
+ * d'équipe, mais il travaille : il garde de quoi se pointer, poser ses congés
+ * et lire ses bulletins, **quel que soit son profil et sa sélection**.
+ *
+ * Le plancher est évalué AVANT l'autorité de la sélection d'inscription
+ * (#7235) : une sélection incomplète — c'est-à-dire le cas normal d'un solo
+ * qui n'a coché aucun outil d'équipe — verrouillait sinon exactement ce
+ * qu'il est censé conserver.
+ */
+const SOLO_FLOOR_MODULE_KEYS: ClientModuleKey[] = ['attendance', 'absences', 'payroll'];
 
 export type ClientModule = {
   key: ClientModuleKey;
@@ -468,10 +486,17 @@ function resolveModuleState(module: ClientModule, user?: StoredAuthUser | null):
   if (module.key === 'dashboard') {
     return 'available';
   }
-  // #7235 — un profil Indépendant ne voit ni pointage ni gestion d'employés,
-  // quelle que soit la donnée de gate par ailleurs.
+  // #7235 — un profil Indépendant ne voit ni pointage d'équipe ni gestion
+  // d'employés, quelle que soit la donnée de gate par ailleurs.
   if (user.company?.type === 'solo' && SOLO_HIDDEN_MODULE_KEYS.includes(module.key)) {
     return 'locked';
+  }
+  // #7423 — Plancher d'accès d'un solo : le socle RH INDIVIDUEL est garanti,
+  // et il est évalué ICI — donc AVANT l'autorité de la sélection d'inscription
+  // (#7235) qui, sinon, verrouille précisément les clés qu'un solo n'a pas
+  // cochées (le cas normal : il ne coche pas d'outil d'équipe).
+  if (user.company?.type === 'solo' && SOLO_FLOOR_MODULE_KEYS.includes(module.key)) {
+    return 'available';
   }
   const capabilityState = stateFromValue(valueFor(module.capabilityKeys, user.capabilities));
   if (capabilityState) {

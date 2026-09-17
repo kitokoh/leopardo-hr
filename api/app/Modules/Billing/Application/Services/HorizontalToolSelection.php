@@ -54,8 +54,13 @@ final class HorizontalToolSelection
         }
 
         if ($companyType === Company::TYPE_SOLO) {
+            // #7423 — Le profil solo ne coupe QUE les outils d'ÉQUIPE. Le
+            // plancher (`SOLO_FLOOR_TOOLS` : pointage, absences, paie) est
+            // explicitement ACTIVÉ, pas seulement non coupé : la donnée
+            // persistée doit refléter ce que le tenant possède réellement, et
+            // non un « false » que le client devrait rattraper.
             foreach (Company::TEAM_TOOLS as $tool) {
-                $selection[$tool] = false;
+                $selection[$tool] = in_array($tool, Company::SOLO_FLOOR_TOOLS, true);
             }
         }
 
