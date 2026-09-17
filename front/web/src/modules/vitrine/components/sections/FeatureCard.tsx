@@ -2,7 +2,9 @@
 
 import { motion } from 'framer-motion';
 import { CheckCircle2 } from 'lucide-react';
-import Image from 'next/image';
+import Image from 'next/image'
+
+import { localImageProps } from '@/modules/vitrine/lib/image-props';
 
 export interface FeatureCardProps {
   icon: React.ReactNode;
@@ -85,6 +87,8 @@ export function FeatureCard({
               src={image}
               alt={title}
               fill
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              {...localImageProps(image)}
               className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
           </div>

@@ -103,6 +103,8 @@ cat > "$REPO_TECH/front/admin-dashboard/src/components/PatternsTechniques.vue" <
     <MyRow :key="`row-${row.id}`" :to="{ name: 'companies' }" />
     <Btn :disabled="row.disabled || loading" @click="openDialog(row)" />
     <template #default="{ row }"><span>{{ row.name }}</span></template>
+    <!-- Dimensions d'image (Next.js) : jamais du texte utilisateur. -->
+    <Image src="/blog/startup-rh.svg" alt={title} fill sizes="(min-width: 1024px) 33vw, 100vw" width={640} height={360} />
   </div>
 </template>
 <script setup lang="ts">
@@ -120,10 +122,11 @@ if [[ "$GUARD_STATUS" -ne 0 ]]; then
   fail "cas 1 : un diff sans chaîne utilisateur est refusé (code $GUARD_STATUS) — critère 1 de #7482"
 fi
 echo "ok: cas 1 vert (aucune réécriture de code technique exigée)"
-for motif in 'form[key]' 'bg-emerald-500' 'item.x == null' 'options.0.label' 'settings.billing.title'; do
+for motif in 'form[key]' 'bg-emerald-500' 'item.x == null' 'options.0.label' 'settings.billing.title' '(min-width: 1024px) 33vw, 100vw'; do
   expect_clean "$motif" "motif technique « $motif »"
 done
 expect_clean "d'indicateur d'étapes" "commentaire JSX français (apostrophes) — cas #7562"
+expect_clean "sizes=\"" "attribut de dimension d'image (Image sizes) — audit vitrine 2026-09-16"
 
 # ── Cas 2 : code technique + vrais textes utilisateur → ROUGE ────────────────
 REPO_TEXT="$(new_repo mixte)"

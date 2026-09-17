@@ -2,7 +2,9 @@
 
 import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
-import Image from 'next/image';
+import Image from 'next/image'
+
+import { localImageProps } from '@/modules/vitrine/lib/image-props';
 import { TESTIMONIALS_ARE_DEMO } from '@/modules/vitrine/data/testimonials';
 import {
   useVitrineLocale,
@@ -102,6 +104,7 @@ export function TestimonialCard({
                 alt={author}
                 fill
                 sizes="48px"
+                {...localImageProps(avatar)}
                 className="object-cover"
               />
             </div>
