@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useVitrineLocale } from '../lib/vitrine-locale'
+import { FormDataNotice } from './FormDataNotice'
 
 export function NewsletterForm() {
   const { copy } = useVitrineLocale()
@@ -54,6 +55,10 @@ export function NewsletterForm() {
             required
             className="flex-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
           />
+          {/* #7593 — finalité et base légale au moment de la collecte. */}
+          <div className="basis-full">
+            <FormDataNotice purpose="newsletter" />
+          </div>
           <button
             type="submit"
             disabled={status === 'loading'}

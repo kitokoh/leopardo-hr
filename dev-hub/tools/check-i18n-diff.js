@@ -88,6 +88,12 @@ const ignorePathFragments = [
   // Google. Ce sont des extraits du fournisseur, déjà présents dans le dépôt
   // (ils vivaient dans layout.tsx, non signalés car non ajoutés par un diff).
   '/vitrine/components/ConsentScripts.tsx',
+  // Pages légales (#7593) : legal-content.ts est le catalogue de contenu ×4 du
+  // droit applicable (politique de confidentialité, CGU, mentions légales) —
+  // exactement le même cas que vitrine-locale.ts ci-dessus : ce fichier EST le
+  // mécanisme de localisation, pas des chaînes hors catalogue. La complétude des
+  // 4 langues reste couverte par validate-and-sync.
+  '/vitrine/lib/legal-content.ts',
 ];
 
 // Lines that already route text through a translation mechanism — never

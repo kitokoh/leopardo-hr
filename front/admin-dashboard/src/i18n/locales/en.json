@@ -6819,6 +6819,9 @@
     "manage": "Manage my cookies",
     "alwaysOn": "Always on",
     "close": "Close",
-    "settingsTitle": "Your cookie preferences"
+    "settingsTitle": "Your cookie preferences",
+    "formNoticeContact": "Your details are used only to answer your request. Legal basis: your consent, which you can withdraw at any time.",
+    "formNoticeDemo": "Your details are used only to arrange the requested demo (purpose: getting back to you). Legal basis: your consent.",
+    "formNoticeNewsletter": "Your address is used only to send you our HR tips (purpose: information). One-click unsubscribe."
   }
 }

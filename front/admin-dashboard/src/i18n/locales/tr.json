@@ -6958,6 +6958,9 @@
     "manage": "Çerezleri yönet",
     "alwaysOn": "Her zaman açık",
     "close": "Kapat",
-    "settingsTitle": "Çerez tercihleriniz"
+    "settingsTitle": "Çerez tercihleriniz",
+    "formNoticeContact": "Bilgileriniz yalnızca talebinizi yanıtlamak için kullanılır. Hukuki dayanak: dilediğiniz zaman geri çekebileceğiniz onayınız.",
+    "formNoticeDemo": "Bilgileriniz yalnızca talep edilen demoyu düzenlemek için kullanılır (amaç: sizinle iletişime geçmek). Hukuki dayanak: onayınız.",
+    "formNoticeNewsletter": "Adresiniz yalnızca İK ipuçlarımızı göndermek için kullanılır (amaç: bilgilendirme). Tek tıkla çıkış."
   }
 }

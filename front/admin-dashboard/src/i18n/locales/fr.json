@@ -6825,6 +6825,9 @@
     "manage": "Gérer mes cookies",
     "alwaysOn": "Toujours actifs",
     "close": "Fermer",
-    "settingsTitle": "Vos préférences de cookies"
+    "settingsTitle": "Vos préférences de cookies",
+    "formNoticeContact": "Vos informations servent uniquement à répondre à votre demande. Base légale : votre consentement, que vous pouvez retirer à tout moment.",
+    "formNoticeDemo": "Vos informations servent uniquement à organiser la démonstration demandée (finalité : vous recontacter). Base légale : votre consentement.",
+    "formNoticeNewsletter": "Votre adresse sert uniquement à vous envoyer nos conseils RH (finalité : information). Désinscription en un clic."
   }
 }

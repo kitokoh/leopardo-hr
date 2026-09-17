@@ -7,6 +7,7 @@ import { Navbar, HeroSection, Footer, useScrollReveal } from '@/modules/vitrine'
 import { motion } from 'framer-motion';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle, AlertCircle } from 'lucide-react';
+import { FormDataNotice } from '@/modules/vitrine/components/FormDataNotice';
 
 // #4327 : libellés des sujets localisés ×4 locales (valeurs stables côté
 // formulaire = libellé localisé, l'API les traite en texte libre).
@@ -312,6 +313,8 @@ function ContactPageInner() {
                         <AlertCircle className="w-4 h-4" />{error}
                       </div>
                     )}
+
+                    <FormDataNotice purpose="contact" />
 
                     <button
                       type="submit"

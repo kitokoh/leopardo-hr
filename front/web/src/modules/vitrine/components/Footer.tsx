@@ -56,6 +56,9 @@ export function getFooterHref(sectionIndex: number, linkIndex: number): string |
     // liste que ce qui existe, et la confidentialité porte explicitement le RGPD.
     '3-0': '/privacy',
     '3-1': '/terms',
+    // La page existe désormais : le lien pointe vers les mentions légales
+    // (et non plus vers les CGU, cf. correctif du lot vitrine).
+    '3-2': '/mentions-legales',
   }
 
   return routes[key] ?? null

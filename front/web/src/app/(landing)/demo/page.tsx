@@ -16,6 +16,7 @@ import type { AppLocale } from '@/lib/i18n';
 import { PAYROLL_RULE_ENGINES_COUNT } from '@/modules/vitrine/data/vitrine-numbers';
 import { motion } from 'framer-motion';
 import { Calendar, Building2, Users, CheckCircle } from 'lucide-react';
+import { FormDataNotice } from '@/modules/vitrine/components/FormDataNotice';
 
 const employeeOptions = ['1-10', '11-50', '51-200', '201-500', '500+'] as const;
 
@@ -486,6 +487,8 @@ export default function DemoPage() {
                         className={inputClass}
                       />
                     </div>
+
+                    <FormDataNotice purpose="demo" />
 
                     <button
                       type="submit"
