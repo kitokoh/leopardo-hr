@@ -20,12 +20,18 @@ Ce que la garde vérifie :
        - une divergence de colonnes sur une table déjà dupliquée.
      La dette existante est **affichée** (compteurs) sans bloquer : elle se
      résorbe par les issues #7452 / #7417, pas par une garde qui crie au loup.
+  Une table est identifiee par **(schema, nom)** : `edge/` et `tenant/` sont
+   deux bases distinctes, une meme table declaree dans les deux n'est pas un
+   doublon.
+
   2. **Mode `--strict`** : toute duplication divergente échoue (utilisé par le
      workflow `workflow_dispatch` pour suivre la résorption, jamais sur PR tant
      que la dette n'est pas résorbée).
   3. **Mode `--audit`** : imprime l'inventaire complet (tables, migrations,
-     colonnes absentes du schéma réel) — sert à régénérer le document
-     `docs/audits/MIGRATIONS_DUPLIQUEES_TENANT.md`.
+     colonnes absentes du schéma réel).
+     **Mode `--write`** : écrit cet inventaire dans
+     `docs/audits/MIGRATIONS_DUPLIQUEES_TENANT.md` (artefact GÉNÉRÉ — une
+     régénération manuelle finit toujours par mentir).
   4. `--fail-on-duplicate` : échoue dès qu'une table est déclarée deux fois, même
      sans divergence (option « zéro tolérance » pour un module déjà assaini).
 
@@ -33,6 +39,7 @@ Usage :
     python3 dev-hub/tools/check-duplicate-schema-create.py                # mode PR
     python3 dev-hub/tools/check-duplicate-schema-create.py --base HEAD~1
     python3 dev-hub/tools/check-duplicate-schema-create.py --audit
+    python3 dev-hub/tools/check-duplicate-schema-create.py --write   # régénère le doc
     python3 dev-hub/tools/check-duplicate-schema-create.py --strict
     python3 dev-hub/tools/check-duplicate-schema-create.py --base ""      # ignore la base
 
@@ -49,8 +56,32 @@ from collections import defaultdict
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 MIGRATION_GLOB = "api/database/migrations/**/*.php"
+AUDIT_DOC = ROOT / "docs" / "audits" / "MIGRATIONS_DUPLIQUEES_TENANT.md"
 CREATE_RE = re.compile(r"Schema::create\(\s*'([^']+)'\s*,")
 COLUMN_RE = re.compile(r"\$table->([A-Za-z_]+)\(\s*'([^']+)'")
+
+
+def schema_of(path: str) -> str:
+    """Schema cible deduit du dossier de la migration (`tenant`, `edge`, ...).
+
+    Les migrations ne sont pas appliquees dans la meme base selon leur dossier :
+    `database/migrations/tenant/` cree les tables du schema locataire,
+    `database/migrations/edge/` celles de la base SQLite du noeud Edge. Deux
+    `Schema::create('edge_nodes')`, l'un dans `edge/` et l'autre dans `tenant/`,
+    ne se recouvrent donc **pas** : ce ne sont pas des doublons. Sans cette
+    distinction, l'inventaire signalait 4 faux positifs (edge_nodes,
+    edge_licenses, sync_logs, sync_queue).
+    """
+    parts = pathlib.PurePosixPath(path).parts
+    if "migrations" in parts:
+        index = parts.index("migrations")
+        if index + 1 < len(parts) - 1:
+            return parts[index + 1]
+    return "."
+
+
+def qualified(schema: str, table: str) -> str:
+    return f"{table} [{schema}]" if schema != "." else table
 
 
 def schema_creates(source: str) -> list[tuple[str, list[str]]]:
@@ -82,7 +113,8 @@ def inventory_from_worktree() -> dict[str, list[tuple[str, tuple[str, ...]]]]:
         if not path.is_file():
             continue
         for table, columns in schema_creates(path.read_text(encoding="utf-8", errors="replace")):
-            inv[table].append((str(path.relative_to(ROOT)), tuple(sorted(set(columns)))))
+            rel = str(path.relative_to(ROOT))
+            inv[qualified(schema_of(rel), table)].append((rel, tuple(sorted(set(columns)))))
     return dict(inv)
 
 
@@ -107,11 +139,11 @@ def inventory_from_ref(ref: str) -> dict[str, list[tuple[str, tuple[str, ...]]]]
                 ["git", "show", f"{ref}:{path}"], cwd=ROOT, capture_output=True, text=True,
             ).stdout
             for table, columns in schema_creates(src):
-                inv[table].append((path, tuple(sorted(set(columns)))))
+                inv[qualified(schema_of(path), table)].append((path, tuple(sorted(set(columns)))))
         return dict(inv)
     for path, blob in zip(listing, blobs):
         for table, columns in schema_creates(blob):
-            inv[table].append((path, tuple(sorted(set(columns)))))
+            inv[qualified(schema_of(path), table)].append((path, tuple(sorted(set(columns)))))
     return dict(inv)
 
 
@@ -127,20 +159,41 @@ def describe(entries: list[tuple[str, tuple[str, ...]]]) -> str:
     return ", ".join(f"{path} [{'|'.join(cols)}]" for path, cols in entries)
 
 
-def audit(dups, divs) -> None:
-    print(f"# Inventaire des tables déclarées plusieurs fois — {len(dups)} tables dupliquées, "
-          f"{len(divs)} divergentes\n")
+def audit(dups, divs, out: pathlib.Path | None = None) -> None:
+    lines = [
+        f"# Inventaire des tables déclarées plusieurs fois — {len(dups)} tables dupliquées, "
+        f"{len(divs)} divergentes",
+        "",
+    ]
+    if not dups:
+        lines += [
+            "**Dette résorbée** : plus aucune table n'est déclarée par plusieurs migrations",
+            "du schéma. La garde reste opposable en mode par défaut (toute duplication",
+            "introduite par une PR échoue) et `--strict` / `--fail-on-duplicate` sont",
+            "atteignables.",
+            "",
+            "⚠️ Fichier GÉNÉRÉ — ne pas l'éditer à la main. Régénérer avec",
+            "`python3 dev-hub/tools/check-duplicate-schema-create.py --write`.",
+            "",
+        ]
     for table in sorted(dups):
         entries = dups[table]
         state = "DIVERGENTE" if table in divs else "identique"
-        print(f"## `{table}` — {len(entries)}× ({state})")
+        lines.append(f"## `{table}` — {len(entries)}× ({state})")
         winning = set(entries[0][1])
         for path, cols in entries:
-            print(f"  - {path} [{'|'.join(cols)}]")
+            lines.append(f"  - {path} [{'|'.join(cols)}]")
         lost = sorted({c for _, cols in entries for c in cols} - winning)
         if lost:
-            print(f"  ⚠️ colonnes absentes du schéma réel (1ʳᵉ migration gagnante) : {', '.join(lost)}")
-        print()
+            lines.append(f"  ⚠️ colonnes absentes du schéma réel (1ʳᵉ migration gagnante) : {', '.join(lost)}")
+        lines.append("")
+
+    text = "\n".join(lines) + "\n"
+    if out is None:
+        print(text, end="")
+        return
+    out.write_text(text, encoding="utf-8")
+    print(f"écrit: {out.relative_to(ROOT)} — {len(dups)} dupliquée(s), {len(divs)} divergente(s)")
 
 
 def main() -> int:
@@ -148,6 +201,8 @@ def main() -> int:
     parser.add_argument("--base", default="origin/main",
                         help="ref de comparaison pour la détection de régression (vide = pas de comparaison)")
     parser.add_argument("--audit", action="store_true", help="imprimer l'inventaire complet et sortir 0")
+    parser.add_argument("--write", action="store_true",
+                        help="régénérer docs/audits/MIGRATIONS_DUPLIQUEES_TENANT.md (artefact généré) et sortir 0")
     parser.add_argument("--strict", action="store_true", help="échouer sur toute duplication divergente")
     parser.add_argument("--fail-on-duplicate", action="store_true",
                         help="échouer sur toute table déclarée deux fois, même sans divergence")
@@ -160,8 +215,8 @@ def main() -> int:
 
     head_dups, head_divs = duplicates(head), divergent(head)
 
-    if args.audit:
-        audit(head_dups, head_divs)
+    if args.audit or args.write:
+        audit(head_dups, head_divs, AUDIT_DOC if args.write else None)
         return 0
 
     print(f"=== Garde « une table, une migration » (issue #7452) — {len(head)} tables, "

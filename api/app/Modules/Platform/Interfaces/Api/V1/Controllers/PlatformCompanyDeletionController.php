@@ -55,6 +55,35 @@ class PlatformCompanyDeletionController extends Controller
         ]);
     }
 
+    /**
+     * #7576 — Lecture plateforme de la piste d'audit, après la disparition de
+     * l'entreprise : `GET /platform/tenant-deletion-audits`.
+     *
+     * `history()` ci-dessus est scopée à une entreprise vivante, donc
+     * inexploitable pour la seule question qui compte après une purge —
+     * « qui a supprimé cet espace, quand, pourquoi, et avec quel volume ».
+     */
+    public function auditTrail(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'company_id' => ['nullable', 'uuid'],
+            'slug' => ['nullable', 'string', 'max:120'],
+            'limit' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ]);
+
+        $companyId = $validated['company_id'] ?? null;
+        $slug = $validated['slug'] ?? null;
+        $limit = $validated['limit'] ?? 20;
+
+        return new JsonResponse([
+            'data' => $this->deletionService->platformHistory(
+                is_string($companyId) && $companyId !== '' ? $companyId : null,
+                is_string($slug) && $slug !== '' ? $slug : null,
+                is_int($limit) ? $limit : (int) (is_numeric($limit) ? $limit : 20),
+            ),
+        ]);
+    }
+
     public function destroy(Request $request, string $companyId): JsonResponse
     {
         $company = PlatformCompanyLookup::findOrFail($companyId);

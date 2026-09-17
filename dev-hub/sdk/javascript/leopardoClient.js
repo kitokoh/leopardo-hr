@@ -3940,6 +3940,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PATCH", "/platform/team/{superAdmin}/role", options);
     },
 
+    /** Piste d'audit des suppressions de tenant (lecture plateforme) */
+    getPlatformTenantDeletionAudits(options = {}) {
+      return request("GET", "/platform/tenant-deletion-audits", options);
+    },
+
     /** Lister les utilisateurs plateforme (super-admins) */
     getPlatformUsers(options = {}) {
       return request("GET", "/platform/users", options);

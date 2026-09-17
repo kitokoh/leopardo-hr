@@ -54,14 +54,30 @@ type Trip = {
   id: number;
   start_time?: string | null;
   end_time?: string | null;
-  start_location?: string | null;
-  end_location?: string | null;
+  // #7526 — noms RÉELS du contrat `VehicleTripResource` : l'API émet
+  // `start_address` / `end_address`. Les anciens `start_location` /
+  // `end_location` n'existent pas dans la réponse : les deux colonnes de
+  // l'itinéraire affichaient donc « — » pour TOUS les trajets.
+  start_address?: string | null;
+  end_address?: string | null;
   distance_km?: number | string | null;
-  purpose?: string | null;
 };
 
 // Constante technique (attributs de lien externe) — hors catalogue i18n.
 const EXTERNAL_LINK_REL = ['noopener', 'noreferrer'].join(' ');
+
+/**
+ * #7526 — `GET /vehicles/{id}/position` relaie la charge utile Traccar BRUTE
+ * (`VehicleController::position()` ne convertit rien) : `speed` y est exprimé
+ * en **nœuds**. L'afficher tel quel sous l'étiquette « km/h » annonçait une
+ * vitesse 1,852 fois trop faible (22,68 nœuds valent ~42 km/h).
+ * Même facteur que `FleetTrackingSyncService::KNOTS_TO_KMH` (source serveur).
+ */
+const KNOTS_TO_KMH = 1.852;
+
+function knotsToKmh(speed: number | string): number {
+  return Math.round(Number(speed) * KNOTS_TO_KMH * 100) / 100;
+}
 
 const STATUS_LABEL_KEY: Record<string, string> = {
   active: 'fleet.statusActive',
@@ -248,7 +264,7 @@ export default function FleetVehiclePage() {
                 <div className="flex justify-between gap-3">
                   <dt>{t(locale, 'fleet.speed')}</dt>
                   <dd className="font-semibold text-slate-800">
-                    {position?.speed != null ? `${Number(position.speed)} km/h` : '—'}
+                    {position?.speed != null ? `${knotsToKmh(position.speed)} km/h` : '—'}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-3">
@@ -290,7 +306,6 @@ export default function FleetVehiclePage() {
                     <th className="border-b border-slate-200 px-3 py-2">{t(locale, 'fleet.startLocation')}</th>
                     <th className="border-b border-slate-200 px-3 py-2">{t(locale, 'fleet.endLocation')}</th>
                     <th className="border-b border-slate-200 px-3 py-2">{t(locale, 'fleet.distance')}</th>
-                    <th className="border-b border-slate-200 px-3 py-2">{t(locale, 'fleet.purpose')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -303,15 +318,14 @@ export default function FleetVehiclePage() {
                         </span>
                       </td>
                       <td className="border-b border-slate-100 px-3 py-2">
-                        {trip.start_location ?? '—'}
+                        {trip.start_address ?? '—'}
                       </td>
                       <td className="border-b border-slate-100 px-3 py-2">
-                        {trip.end_location ?? '—'}
+                        {trip.end_address ?? '—'}
                       </td>
                       <td className="border-b border-slate-100 px-3 py-2">
                         {trip.distance_km != null ? `${Number(trip.distance_km)} km` : '—'}
                       </td>
-                      <td className="border-b border-slate-100 px-3 py-2">{trip.purpose ?? '—'}</td>
                     </tr>
                   ))}
                 </tbody>

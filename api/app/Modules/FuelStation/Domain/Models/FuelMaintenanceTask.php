@@ -31,6 +31,9 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $completed_at
  * @property int|null $completed_by
  * @property string|null $completion_notes
+ * @property string|null $description_redacted
+ * @property int|null $created_by
+ * @property string|null $external_id
  *
  * @mixin Builder<static>
  */
