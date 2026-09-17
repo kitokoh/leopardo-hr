@@ -1587,6 +1587,25 @@
     "unavailableBody": "The AI chat is not enabled for the super-admin console. Use a supported company workspace to access this assistant.",
     "unavailableTitle": "AI assistant unavailable at platform level"
   },
+  "consent": {
+    "title": "Cookies and analytics",
+    "body": "We use cookies that are necessary for the site to work, and — with your consent — analytics cookies. You can accept, refuse, or choose per purpose. Refusing does not degrade your browsing experience.",
+    "acceptAll": "Accept all",
+    "refuseAll": "Refuse all",
+    "customize": "Customise",
+    "save": "Save my choices",
+    "necessary": "Necessary cookies",
+    "necessaryDesc": "Session, language, security, display preferences. Required: they cannot be disabled.",
+    "analytics": "Analytics",
+    "analyticsDesc": "Aggregated statistics on the pages you visit, to know what is useful. No data is resold.",
+    "marketing": "Marketing personalisation",
+    "marketingDesc": "Remembers your interest in our offers so we do not repeat them. Off by default.",
+    "privacyLink": "Privacy policy",
+    "manage": "Manage my cookies",
+    "alwaysOn": "Always on",
+    "close": "Close",
+    "settingsTitle": "Your cookie preferences"
+  },
   "navigation": {
     "analytics": "Analytics",
     "audit": "Audit Log",

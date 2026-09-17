@@ -6940,5 +6940,24 @@
     "ogImageAlt": "Leopardo — işletme yönetimi paketi: web, mobil ve kiosk için İK ve bordro paneli",
     "rootDescription": "Leopardo; İK ve bordro, yoklama, izin, CRM, muhasebe ve saha operasyonlarını tek pakette toplar; web, mobil ve kiosk üzerinde.",
     "rootTitle": "Leopardo — saha ekipleri için işletme yönetimi paketi: bordro, yoklama"
+  },
+  "consent": {
+    "title": "Çerezler ve ölçümleme",
+    "body": "Sitenin çalışması için gerekli çerezleri ve — onayınızla — ölçümleme çerezlerini kullanıyoruz. Kabul edebilir, reddedebilir veya amaca göre seçebilirsiniz. Reddetmek gezinmenizi bozmaz.",
+    "acceptAll": "Tümünü kabul et",
+    "refuseAll": "Tümünü reddet",
+    "customize": "Özelleştir",
+    "save": "Seçimlerimi kaydet",
+    "necessary": "Gerekli çerezler",
+    "necessaryDesc": "Oturum, dil, güvenlik, görünüm tercihleri. Zorunludur: kapatılamaz.",
+    "analytics": "Ölçümleme",
+    "analyticsDesc": "Hangi sayfaların işe yaradığını anlamak için toplu istatistikler. Hiçbir veri satılmaz.",
+    "marketing": "Pazarlama kişiselleştirme",
+    "marketingDesc": "Tekliflerimizi tekrar etmemek için ilginizi hatırlar. Varsayılan olarak kapalıdır.",
+    "privacyLink": "Gizlilik politikası",
+    "manage": "Çerezleri yönet",
+    "alwaysOn": "Her zaman açık",
+    "close": "Kapat",
+    "settingsTitle": "Çerez tercihleriniz"
   }
 }

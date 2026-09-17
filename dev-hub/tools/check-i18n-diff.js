@@ -82,6 +82,12 @@ const ignorePathFragments = [
   // que vitrine-locale.ts) ; RestaurantSolutionWizard.tsx contient le COPY
   // localisé ×4 de l'UI du wizard (pattern des pages vitrine existantes).
   '/vitrine/lib/solution-survey.ts', '/vitrine/components/RestaurantSolutionWizard.tsx',
+  // Chargement des traceurs (consentement, #7593) : ce fichier ne rend AUCUN
+  // texte — il injecte les scripts de mesure, dont le bootstrap tiers de
+  // Mixpanel (« (stub) », liste des méthodes de l'API, URL du CDN) et celui de
+  // Google. Ce sont des extraits du fournisseur, déjà présents dans le dépôt
+  // (ils vivaient dans layout.tsx, non signalés car non ajoutés par un diff).
+  '/vitrine/components/ConsentScripts.tsx',
 ];
 
 // Lines that already route text through a translation mechanism — never
