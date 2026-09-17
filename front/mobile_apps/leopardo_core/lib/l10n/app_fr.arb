@@ -4231,5 +4231,9 @@
   "seorootManifestname": "Leopardo — suite métier (RH & paie, pointage, CRM)",
   "seorootOgimagealt": "Leopardo — suite métier : tableau de bord RH & paie multilingue",
   "seorootRootdescription": "Leopardo réunit RH & paie, pointage, absences, CRM, comptabilité et opérations terrain dans une seule suite, sur web, mobile et kiosque.",
-  "seorootRoottitle": "Leopardo — suite métier pour équipes terrain : paie, pointage, absences"
+  "seorootRoottitle": "Leopardo — suite métier pour équipes terrain : paie, pointage, absences",
+  "firstloginwelcomeTitle": "Votre espace est prêt 🎉",
+  "firstloginwelcomeBody": "Un e-mail vous a été envoyé avec un lien pour définir votre mot de passe : il servira à vos prochaines connexions.",
+  "firstloginwelcomeCtastart": "Démarrer la mise en route",
+  "firstloginwelcomeCtalater": "Plus tard"
 }

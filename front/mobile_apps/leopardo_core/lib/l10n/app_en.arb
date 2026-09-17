@@ -4231,5 +4231,9 @@
   "seorootManifestname": "Leopardo — business suite (HR & payroll, attendance, CRM)",
   "seorootOgimagealt": "Leopardo — business suite: HR & payroll dashboard for web, mobile and kiosk",
   "seorootRootdescription": "Leopardo brings HR & payroll, attendance, leave, CRM, accounting and field operations together in one suite, on web, mobile and kiosk.",
-  "seorootRoottitle": "Leopardo — business suite for field teams: payroll, attendance, operations"
+  "seorootRoottitle": "Leopardo — business suite for field teams: payroll, attendance, operations",
+  "firstloginwelcomeTitle": "Your workspace is ready 🎉",
+  "firstloginwelcomeBody": "An email has been sent to you with a link to set your password — it will be used for your future sign-ins.",
+  "firstloginwelcomeCtastart": "Start setting up",
+  "firstloginwelcomeCtalater": "Later"
 }
