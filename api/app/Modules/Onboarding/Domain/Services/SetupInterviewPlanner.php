@@ -76,7 +76,7 @@ final class SetupInterviewPlanner
      * Filtre les réponses reçues sur l'allowlist (fail-closed) : question
      * inconnue rejetée, valeur inconnue rejetée, `null` = sautée.
      *
-     * @param  array<string, mixed>  $raw
+     * @param  array<array-key, mixed>  $raw
      * @return array{answers: array<string, mixed>, rejected: list<string>}
      */
     public function sanitize(array $raw): array
@@ -180,11 +180,11 @@ final class SetupInterviewPlanner
             ));
         }
 
-        // Ceinture et bretelles : ne sortent que des clés de l'allowlist.
-        $tools = array_values(array_filter(
-            array_unique($tools),
-            static fn (string $tool): bool => in_array($tool, Company::HORIZONTAL_TOOLS, true)
-        ));
+        // Ceinture et bretelles : ne sortent que des clés de l'allowlist
+        // (intersection avec `Company::HORIZONTAL_TOOLS` — no-op tant que les
+        // sources ci-dessus restent des sous-ensembles de l'allowlist, mais
+        // garde runtime si une future clé en sortait).
+        $tools = array_values(array_intersect(array_unique($tools), Company::HORIZONTAL_TOOLS));
 
         return [
             'solutions' => array_values(array_unique($solutions)),

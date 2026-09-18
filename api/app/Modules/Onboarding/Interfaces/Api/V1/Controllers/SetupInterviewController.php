@@ -72,7 +72,7 @@ class SetupInterviewController extends Controller
         if ($sanitized['rejected'] !== []) {
             throw ValidationException::withMessages([
                 'answers' => array_map(
-                    static fn (string $question): string => "Réponse invalide : {$question}",
+                    static fn (string $question): string => __('onboarding.interview_invalid_answer', ['question' => $question]),
                     $sanitized['rejected']
                 ),
             ]);

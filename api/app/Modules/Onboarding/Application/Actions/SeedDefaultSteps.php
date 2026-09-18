@@ -82,14 +82,14 @@ final class SeedDefaultSteps
                     // chaque étape est insérée avec step_key/title NULL.
                     OnboardingStep::create([
                         'company_id' => $companyId,
-                        'step_key'   => $step['key'],
-                        'title'      => $step['title'],
-                        'order'      => $step['order'],
-                        'required'   => $step['required'],
-                        'status'     => 'pending',
+                        'step_key' => $step['key'],
+                        'title' => $step['title'],
+                        'order' => $step['order'],
+                        'required' => $step['required'],
+                        'status' => 'pending',
                         // #R10 backend — stockage de l'estimation de durée pour
                         // le frontend et les intégrations OpenAPI.
-                        'metadata'   => ['estimated_minutes' => $step['estimated_minutes']],
+                        'metadata' => ['estimated_minutes' => $step['estimated_minutes']],
                     ]);
                 }
             }
@@ -169,36 +169,38 @@ final class SeedDefaultSteps
         $fieldPresence = in_array($premises, ['single', 'multiple'], true);
         $showcase = $tool('showcase') || $company->hasFeature('company_showcase');
 
+        // Titres sourcés du catalogue api/lang/*/onboarding.php (garde i18n
+        // PA2-I18N-007 / #5432 : aucun message français en dur dans les Actions).
         $steps = [
-            ['key' => 'company_info', 'title' => 'Renseigner les informations entreprise', 'required' => true, 'estimated_minutes' => 3],
+            ['key' => 'company_info', 'title' => __('onboarding.step_company_info'), 'required' => true, 'estimated_minutes' => 3],
         ];
 
         if ($team && $tool('employees')) {
-            $steps[] = ['key' => 'first_employee', 'title' => 'Ajouter votre premier employé', 'required' => true, 'estimated_minutes' => 6];
+            $steps[] = ['key' => 'first_employee', 'title' => __('onboarding.step_first_employee'), 'required' => true, 'estimated_minutes' => 6];
         }
 
         if ($team && ($answers['scheduled_hours'] ?? null) === 'yes' && $tool('attendance')) {
-            $steps[] = ['key' => 'configure_schedules', 'title' => 'Configurer vos horaires', 'required' => true, 'estimated_minutes' => 3];
+            $steps[] = ['key' => 'configure_schedules', 'title' => __('onboarding.step_configure_schedules'), 'required' => true, 'estimated_minutes' => 3];
         }
 
         if ($team && $tool('attendance')) {
-            $steps[] = ['key' => 'first_attendance', 'title' => 'Effectuer le premier pointage', 'required' => true, 'estimated_minutes' => 3];
+            $steps[] = ['key' => 'first_attendance', 'title' => __('onboarding.step_first_attendance'), 'required' => true, 'estimated_minutes' => 3];
         }
 
         if ($tool('payroll')) {
-            $steps[] = ['key' => 'configure_payroll', 'title' => 'Configurer la paie', 'required' => false, 'estimated_minutes' => 4];
+            $steps[] = ['key' => 'configure_payroll', 'title' => __('onboarding.step_configure_payroll'), 'required' => false, 'estimated_minutes' => 4];
         }
 
         // Présence terrain uniquement : un tenant sans lieu physique (équipes
         // mobiles, pas de local) ne voit JAMAIS kiosque ni géofence.
         if ($team && $tool('attendance') && $fieldPresence) {
-            $steps[] = ['key' => 'install_kiosk', 'title' => 'Installer un kiosque', 'required' => false, 'estimated_minutes' => 5];
-            $steps[] = ['key' => 'activate_geofence', 'title' => 'Activer le géofence', 'required' => false, 'estimated_minutes' => 2];
+            $steps[] = ['key' => 'install_kiosk', 'title' => __('onboarding.step_install_kiosk'), 'required' => false, 'estimated_minutes' => 5];
+            $steps[] = ['key' => 'activate_geofence', 'title' => __('onboarding.step_activate_geofence'), 'required' => false, 'estimated_minutes' => 2];
         }
 
         if ($showcase) {
-            $steps[] = ['key' => 'customize_showcase', 'title' => 'Personnaliser votre site vitrine', 'required' => true, 'estimated_minutes' => 5];
-            $steps[] = ['key' => 'publish_showcase', 'title' => 'Publier votre site vitrine', 'required' => false, 'estimated_minutes' => 2];
+            $steps[] = ['key' => 'customize_showcase', 'title' => __('onboarding.step_customize_showcase'), 'required' => true, 'estimated_minutes' => 5];
+            $steps[] = ['key' => 'publish_showcase', 'title' => __('onboarding.step_publish_showcase'), 'required' => false, 'estimated_minutes' => 2];
         }
 
         $ordered = [];

@@ -124,7 +124,7 @@ class SetupInterviewControllerTest extends TestCase
     public function test_complete_activates_restaurant_and_team_tools(): void
     {
         $company = $this->company();
-        $actor = $this->actingAsRole($company, 'manager', 'principal');
+        $this->actingAsRole($company, 'manager', 'principal');
 
         $this->patchJson('/api/v1/setup-interview/answers', [
             'answers' => [
@@ -151,7 +151,6 @@ class SetupInterviewControllerTest extends TestCase
         $this->assertTrue((bool) ($persisted['metadata']['modules']['employees'] ?? false));
         $this->assertTrue((bool) ($persisted['metadata']['modules']['attendance'] ?? false));
         $this->assertSame('completed', $persisted['metadata']['setup_interview']['status'] ?? null);
-        $this->assertNotNull($actor->id);
     }
 
     public function test_replaying_complete_is_a_no_op(): void

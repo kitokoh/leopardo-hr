@@ -57,10 +57,14 @@ class SetupInterviewSeedingTest extends TestCase
     {
         (new SeedDefaultSteps)->execute((string) $company->id);
 
-        return OnboardingStep::where('company_id', $company->id)
+        $keys = OnboardingStep::where('company_id', $company->id)
             ->orderBy('order')
             ->pluck('step_key')
             ->all();
+
+        // `pluck()` renvoie array<mixed> pour PHPStan strict : on ne garde
+        // que les chaines pour honorer le contrat list<string>.
+        return array_values(array_filter($keys, static fn ($key): bool => is_string($key)));
     }
 
     public function test_profil_restaurateur_avec_employes(): void

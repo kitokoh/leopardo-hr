@@ -95,7 +95,7 @@ final class CompleteSetupInterview
 
             try {
                 $result = $this->activator->activateWithDependencies($source, $code, $actorId);
-                if (in_array($result['status'] ?? null, ['activated', 'already_active'], true)) {
+                if (in_array($result['status'], ['activated', 'already_active'], true)) {
                     $solutions[] = $code;
                 } else {
                     $failed[] = $code;
