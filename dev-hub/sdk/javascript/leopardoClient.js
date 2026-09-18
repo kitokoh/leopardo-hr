@@ -500,6 +500,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/admin/fleet/alerts", options);
     },
 
+    /** Conversions du funnel d'acquisition par etape, jour et source */
+    getAdminFunnelStats(options = {}) {
+      return request("GET", "/admin/funnel/stats", options);
+    },
+
     /** Rapports RH cross-tenant (super-admin) */
     getAdminHrReports(options = {}) {
       return request("GET", "/admin/hr-reports", options);
@@ -2773,6 +2778,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Enregistrer un releve de compteur (cumulatif, idempotent) */
     postFuelStationStationsByStationPumpsByPumpMetersByMeterReadings(options = {}) {
       return request("POST", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", options);
+    },
+
+    /** Ingerer un evenement d'etape du funnel d'acquisition (vitrine) */
+    postFunnelEvents(options = {}) {
+      return request("POST", "/funnel/events", options);
     },
 
     /** Candidature partenaire */

@@ -2206,3 +2206,29 @@ Rétention et accès (RGPD, critère 5) :
 - **Après** : lecture plateforme non scopée, filtrable par `company_id` (uuid) et `slug` (tous deux conservés dans la ligne d'audit), bornée par `limit` (1-100, défaut 20). Chaque entrée rend `company_name`/`company_slug` (y compris pour un espace disparu), `mode`, `status`, `reason`, `actor_email`, `inventory` et `deleted_counts`.
 - **À vérifier (recette)** : purger un espace de test puis `GET /api/v1/platform/tenant-deletion-audits?company_id=<id>` → la ligne apparaît avec le nom de l'espace disparu ; `?slug=<slug>` filtre ; `?limit=0` → `422` ; un slug inconnu → liste vide.
 - **Couverture** : `api/tests/Feature/PlatformCompanyDeletionApiTest.php` — lecture d'une entrée **après** disparition (ligne insérée pour un `company_id` sans entreprise), filtres `company_id`/`slug`, `limit` borné, et absence de fuite (aucune autre ligne ne remonte).
+
+## Addendum 2026-09-18 — tracking first-party du funnel d'acquisition et agrégats admin (#7496, epic #7486)
+
+Deux nouvelles routes (module Marketing / module Platform), contrat OpenAPI +2 paths, miroir dev-hub + SDK régénérés.
+
+`POST /api/v1/funnel/events` — publique server-to-server (`throttle:webhooks-inbound`), appelée par la route Next `/api/forms/funnel-event` de la vitrine (jamais par le navigateur ; consentement mesure d'audience requis côté client, double barrière #7593).
+
+| Cas | Attendu |
+|---|---|
+| secret partagé `MARKETING_LEAD_WEBHOOK_TOKEN` configuré + jeton valide | 202, ligne `acquisition_funnel_events` créée |
+| secret configuré + jeton absent/invalide | **400** fail-closed, aucune écriture |
+| secret ABSENT (prérequis de déploiement non satisfait) | événement accepté et persisté (même arbitrage que `POST /marketing/leads`, #7301) |
+| `event` hors de la liste FERMÉE (`FUNNEL_EVENTS`) | 422, aucune écriture |
+| `context` avec clés hors liste blanche / PII (e-mail, valeur de formulaire, réponse d'entretien) | filtré — jamais persisté (critère 4 de #7496) |
+
+`GET /api/v1/admin/funnel/stats` — plateforme, permission `platform.permission:metrics.view`.
+
+| Cas | Attendu |
+|---|---|
+| appel autorisé | agrégats : taux de passage par étape (comptés en **parcours distincts** — un renvoi de code ne gonfle pas l'étape), conversion visite → espace prêt par **jour** et par **source** (attribution captée au premier écran) |
+| ratio OTP vérifiés/envoyés du jour < 50 % avec ≥ 5 envois | drapeau d'alerte livraison OTP dans la réponse (bannière côté admin) |
+| sans permission `metrics.view` | 403 |
+
+Couverture : `api/tests/Feature/Marketing/AcquisitionFunnelEventControllerTest.php` et
+`api/tests/Feature/Platform/PlatformAcquisitionFunnelStatsTest.php` (7 cas : secret fail-closed,
+accepté sans secret à la #7301, liste fermée, filtrage PII, agrégats, alerte OTP déclenchée/muette).

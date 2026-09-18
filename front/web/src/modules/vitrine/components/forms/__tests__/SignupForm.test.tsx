@@ -36,6 +36,8 @@ jest.mock('framer-motion', () => {
 
   return {
     AnimatePresence: ({ children }: any) => createElement(Fragment, null, children),
+    // #7495 — MotionConfig (prefers-reduced-motion) : transparent en test.
+    MotionConfig: ({ children }: any) => createElement(Fragment, null, children),
     motion: new Proxy(
       {},
       {
@@ -420,9 +422,9 @@ describe('SignupForm Component', () => {
         submitForm();
 
         // Le flux guidé n'envoie aucun OTP : on doit arriver sur le suivi du
-        // provisioning (poll immédiat → « Préparation de votre espace ») sans
+        // provisioning (poll immédiat → « Nous préparons votre espace » (copy #7495)) sans
         // jamais voir l'écran « Verify your email ».
-        expect(await screen.findByText(/préparation de votre espace/i)).toBeInTheDocument();
+        expect(await screen.findByText(/nous préparons votre espace/i)).toBeInTheDocument();
         expect(screen.queryByText(/vérifiez votre email/i)).not.toBeInTheDocument();
         expect(fetchTrialStatus).toHaveBeenCalled();
       } finally {
@@ -466,7 +468,7 @@ describe('SignupForm Component', () => {
         fireEvent.click(screen.getByRole('button', { name: /suivre l'état de mon espace/i }));
 
         // premier poll immédiat : pending → spinner
-        expect(await screen.findByText(/préparation de votre espace/i)).toBeInTheDocument();
+        expect(await screen.findByText(/nous préparons votre espace/i)).toBeInTheDocument();
 
         // second poll après 5 s : ready → lien d'accès
         await act(async () => {
@@ -527,6 +529,76 @@ describe('SignupForm Component', () => {
       } finally {
         jest.useRealTimers();
       }
+    });
+  });
+
+  describe('Renvoi du code OTP (#7495)', () => {
+    beforeEach(() => {
+      mockedSubmitSignupForm.mockReset();
+      sessionStorage.clear();
+    });
+
+    // Les describes suivants lisent mock.calls[0] sans reset préalable :
+    // on nettoie derrière nous pour ne pas polluer leur historique d'appels.
+    afterEach(() => {
+      mockedSubmitSignupForm.mockReset();
+    });
+
+    it('renvoie le code en 1 clic depuis l’écran OTP (rejoue la soumission d’origine)', async () => {
+      mockedSubmitSignupForm.mockResolvedValue({
+        success: true,
+        provisioned: true,
+        message: 'Code de vérification envoyé.',
+        data: {},
+      });
+
+      renderAtFormStep();
+      await fillField(/email/i, 'resend@example.com');
+      await fillField(/entreprise/i, 'Acme Corp');
+      fireEvent.click(screen.getByRole('checkbox'));
+      submitForm();
+
+      await waitFor(() => {
+        expect(screen.getByText(/vérifiez votre email/i)).toBeInTheDocument();
+      });
+      expect(mockedSubmitSignupForm).toHaveBeenCalledTimes(1);
+
+      const resendButton = screen.getByRole('button', { name: /renvoyer le code/i });
+      fireEvent.click(resendButton);
+
+      await waitFor(() => {
+        expect(mockedSubmitSignupForm).toHaveBeenCalledTimes(2);
+      });
+      // Confirmation honnête + délai anti-spam : le bouton se désactive.
+      expect(await screen.findByText(/nouveau code envoyé/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /renvoyer le code/i })).toBeDisabled();
+    });
+
+    it('affiche une erreur honnête quand le renvoi échoue', async () => {
+      mockedSubmitSignupForm
+        .mockResolvedValueOnce({
+          success: true,
+          provisioned: true,
+          message: 'Code de vérification envoyé.',
+          data: {},
+        })
+        .mockResolvedValueOnce({ success: false, message: 'boom' });
+
+      renderAtFormStep();
+      await fillField(/email/i, 'resend-fail@example.com');
+      await fillField(/entreprise/i, 'Acme Corp');
+      fireEvent.click(screen.getByRole('checkbox'));
+      submitForm();
+
+      await waitFor(() => {
+        expect(screen.getByText(/vérifiez votre email/i)).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /renvoyer le code/i }));
+
+      expect(await screen.findByText(/le renvoi n'a pas abouti/i)).toBeInTheDocument();
+      // Pas de faux délai : l'échec laisse le bouton réutilisable.
+      expect(screen.getByRole('button', { name: /renvoyer le code/i })).toBeEnabled();
     });
   });
 

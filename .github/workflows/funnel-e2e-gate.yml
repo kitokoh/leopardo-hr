@@ -1,0 +1,93 @@
+name: Funnel E2E Gate (issue #7496)
+
+# #7496 — suite e2e BLOQUANTE du tunnel d'acquisition : elle s'exécute sur
+# toute PR touchant les fichiers du tunnel (SignupForm, proxy.ts,
+# OnboardingWizard, tracking funnel, route beacon) et vérifie en local mocké
+# que le parcours signup émet ses jalons de tracking (corrélation +
+# attribution, zéro PII, consentement respecté) et que le parcours de
+# conversion vitrine → /signup reste fonctionnel.
+#
+# Le parcours COMPLET contre la vraie API (OTP réel, provisioning, entretien)
+# reste couvert par e2e/funnel.spec.ts via e2e-staging.yml : il exige des
+# secrets staging et le throttle 5 signups/15 min — inexécutable sur chaque
+# PR sans 429er la suite (voir playwright.staging-funnel.config.ts).
+#
+# NOTE branch protection : pour rendre ce check réellement bloquant, ajouter
+# « Funnel E2E — tunnel d'acquisition (local mocké) » aux required status
+# checks de main (BRANCH_PROTECTION_REQUIRED.md).
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/funnel-e2e-gate.yml'
+      - 'front/web/src/proxy.ts'
+      - 'front/web/src/modules/vitrine/components/forms/SignupForm.tsx'
+      - 'front/web/src/modules/vitrine/components/forms/**'
+      - 'front/web/src/modules/vitrine/lib/funnel.ts'
+      - 'front/web/src/modules/vitrine/lib/forms.ts'
+      - 'front/web/src/modules/onboarding/**'
+      - 'front/web/src/app/api/forms/signup/**'
+      - 'front/web/src/app/api/forms/funnel-event/**'
+      - 'front/web/src/app/(landing)/signup/**'
+      - 'front/web/e2e/funnel-tracking.spec.ts'
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+# #5629 (saturation CI) : un push annule le run PR précédent de la même branche.
+concurrency:
+  group: funnel-e2e-gate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  funnel-e2e:
+    timeout-minutes: 30
+    name: Funnel E2E — tunnel d'acquisition (local mocké)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: 'front/web/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: front/web
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        working-directory: front/web
+        run: npx playwright install --with-deps chromium
+
+      - name: Run funnel tracking e2e (mocked, no live backend)
+        working-directory: front/web
+        env:
+          NEXT_PUBLIC_API_URL: ${{ vars.DEV_API_BASE_URL }}
+          # #4600/#3452 : le build production échoue sans URL de marque réelle.
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          PLAYWRIGHT_WEB_SERVER_COMMAND: npm run build && npm run start
+        # conversion-funnel.spec.ts est volontairement HORS gate : 2 de ses
+        # cas dépendent du backend réel (soumission non mockée) et échouent
+        # déjà sur main sans backend chaud — un gate bloquant doit être
+        # hermétique (le parcours réel reste couvert par e2e-staging.yml).
+        run: npx playwright test e2e/funnel-tracking.spec.ts --project=chromium --workers=1
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: funnel-e2e-gate-report
+          path: front/web/playwright-report
+          if-no-files-found: ignore

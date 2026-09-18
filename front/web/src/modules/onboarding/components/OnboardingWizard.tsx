@@ -22,6 +22,7 @@ import {
 import QRCode from 'qrcode';
 import { apiFetch } from '@/lib/api-client';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { trackFunnelStep, FUNNEL_EVENTS } from '@/modules/vitrine/lib/funnel';
 import Link from 'next/link';
 import { getCopy, normalizeLocale, storeAuthSession, type StoredAuthUser } from '@/lib/i18n';
 
@@ -130,6 +131,19 @@ export function OnboardingWizard({
   const qrCanvasRef = useRef<HTMLCanvasElement | null>(null);
   // #R7 — guard : l'auto-complétion ne tourne qu'une seule fois par session.
   const autoCompletedRef = useRef(false);
+
+  // #7496 — étapes post-inscription du funnel : l'assistant d'accueil EST
+  // l'incarnation actuelle de l'entretien de préparation (#7493). Gardes par
+  // refs : un jalon = une émission par montage, jamais de doublon au re-render.
+  const funnelWelcomeRef = useRef(false);
+  const funnelStartedRef = useRef(false);
+  const funnelCompletedRef = useRef(false);
+
+  useEffect(() => {
+    if (funnelWelcomeRef.current) return;
+    funnelWelcomeRef.current = true;
+    trackFunnelStep(FUNNEL_EVENTS.welcomeSeen);
+  }, []);
 
   const loadChecklist = useCallback(async () => {
     setError(null);
@@ -249,6 +263,20 @@ export function OnboardingWizard({
   );
   const currentStep = pendingSteps[0] ?? null;
   const done = steps !== null && pendingSteps.length === 0;
+
+  // #7496 — jalons : début (première checklist avec étapes restantes) et fin
+  // (plus aucune étape en attente) de la préparation de l'espace.
+  useEffect(() => {
+    if (steps === null) return;
+    if (!funnelStartedRef.current && pendingSteps.length > 0) {
+      funnelStartedRef.current = true;
+      trackFunnelStep(FUNNEL_EVENTS.interviewStarted, { question_index: steps.length });
+    }
+    if (!funnelCompletedRef.current && funnelStartedRef.current && pendingSteps.length === 0) {
+      funnelCompletedRef.current = true;
+      trackFunnelStep(FUNNEL_EVENTS.interviewCompleted);
+    }
+  }, [steps, pendingSteps]);
   const progress = useMemo(() => {
     if (!steps || steps.length === 0) return 0;
     const completed = steps.filter((s) => s.status !== 'pending').length;
@@ -280,6 +308,14 @@ export function OnboardingWizard({
         method: 'PATCH',
       });
       applyStepResult(step.step_key, status);
+      // #7496 — chaque étape traitée est mesurée : clé d'étape et rang
+      // uniquement, jamais la donnée saisie (critère 4 de l'issue).
+      trackFunnelStep(
+        status === 'completed'
+          ? FUNNEL_EVENTS.interviewQuestionAnswered
+          : FUNNEL_EVENTS.interviewSkipped,
+        { step_key: step.step_key, question_index: step.order },
+      );
     } catch (e) {
       console.error(e);
       setError(e instanceof Error ? e.message : onboarding.errorGeneric);
@@ -308,6 +344,8 @@ export function OnboardingWizard({
   };
 
   const handleDismiss = () => {
+    // #7496 — fermeture sans terminer : signal de friction à mesurer.
+    if (!done) trackFunnelStep(FUNNEL_EVENTS.interviewDismissed);
     setIsOpen(false);
     onComplete();
   };
@@ -321,6 +359,7 @@ export function OnboardingWizard({
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
+        if (!done) trackFunnelStep(FUNNEL_EVENTS.interviewDismissed);
         setIsOpen(false);
         onComplete();
       }
@@ -328,7 +367,7 @@ export function OnboardingWizard({
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [isOpen, onComplete]);
+  }, [isOpen, onComplete, done]);
 
   /**
    * Audit onboarding 2026-09-14 — étapes « required » dont la validation est
