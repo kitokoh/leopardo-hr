@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
@@ -10,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
  * #7490 — code de connexion à usage unique (OTP) pour les comptes qui n'ont
  * jamais défini de mot de passe. Même canal e-mail que la vérification
  * d'inscription (TrialVerificationMail) : registre de templates + catalogue
- * `api/lang/*/emails.php`, ×4 locales.
+ * `api/lang/{locale}/emails.php`, ×4 locales.
  *
  * Aucun secret durable dans cet e-mail : le code expire en 10 minutes et est
  * consommé au premier usage.
