@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
+use App\Modules\RestaurantManager\Policies\Concerns\ChecksRestaurantBranchAccess;
 
 /**
  * RESTO-402 (#6189) — Policy des commandes restaurant.
@@ -18,6 +19,8 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
  */
 class RestaurantOrderPolicy
 {
+    use ChecksRestaurantBranchAccess;
+
     public function viewAny(Employee $actor): bool
     {
         return true;
@@ -25,17 +28,18 @@ class RestaurantOrderPolicy
 
     public function view(Employee $actor, RestaurantOrder $order): bool
     {
-        return $order->company_id === $actor->company_id;
+        return $order->company_id === $actor->company_id
+            && $this->canViewBranchResource($actor, $order->branch_id);
     }
 
-    public function create(Employee $actor): bool
+    public function create(Employee $actor, int|string|null $branchId = null): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager', 'server');
+        return $this->canOperateBranchResource($actor, $branchId);
     }
 
     public function update(Employee $actor, RestaurantOrder $order): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager', 'server')
-            && $order->company_id === $actor->company_id;
+        return $order->company_id === $actor->company_id
+            && $this->canOperateBranchResource($actor, $order->branch_id);
     }
 }

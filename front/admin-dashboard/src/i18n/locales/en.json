@@ -494,7 +494,28 @@
     "empty_departments": "No department yet.",
     "create_department_error": "Unable to create the department.",
     "create_employee_error": "Unable to add the collaborator.",
-    "open_team": "Open the Team page"
+    "open_team": "Open the Team page",
+    "resourceAccess": {
+      "button": "Access & resources",
+      "title": "Access & resources",
+      "subtitle": "Grant this collaborator access to your resources (restaurant branches, sites, vehicles, cameras), level by level.",
+      "loading": "Loading access…",
+      "loadError": "Unable to load this collaborator's access.",
+      "saveError": "Unable to save access.",
+      "saved": "Access saved.",
+      "empty": "No resource of this type to assign.",
+      "save": "Save access",
+      "levelNone": "None",
+      "levelView": "View",
+      "levelOperate": "Operate",
+      "levelManage": "Manage",
+      "types": {
+        "restaurant_branch": "Restaurant branches",
+        "site": "Sites",
+        "vehicle": "Vehicles",
+        "camera": "Cameras"
+      }
+    }
   },
   "smartAttendanceGpsAuto": "Automatic GPS",
   "smartAttendanceNoGpsSessions": "No GPS session for now.",

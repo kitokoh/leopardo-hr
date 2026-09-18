@@ -33,7 +33,7 @@ class RestaurantPosSessionController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('create', RestaurantPosSession::class)) {
+        if ($actor->cannot('create', [RestaurantPosSession::class, $request->validated()['branch_id'] ?? null])) {
             abort(403);
         }
 
@@ -80,6 +80,12 @@ class RestaurantPosSessionController extends Controller
 
         if ($actor->company_id !== $restaurantPosSession->company_id) {
             abort(404);
+        }
+
+        // #7599 — lecture ressource-scopée : un employé sans assignation ne
+        // lit plus les données métier dès que le scoping est actif.
+        if ($actor->cannot('view', $restaurantPosSession)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
         }
 
         return (new RestaurantPosSessionResource($restaurantPosSession))->response();

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\RestaurantManager\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\EmployeeResourceAssignment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -87,9 +88,23 @@ final class RestaurantReportExportService
 
     /**
      * Prouve la permission `restaurant.reports` pour la fermeture de la policy.
+     *
+     * #7599 — les rapports sont un geste de gestion : comportement historique
+     * (`principal`/`rh` — les autres valeurs listées ici étaient mortes, hors
+     * enum `manager_role`) tant qu'aucune assignation `restaurant_branch`
+     * n'existe, puis niveau `manage` sur au moins une succursale assignée.
      */
     public static function authorize(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager', 'server', 'kitchen', 'rider');
+        if (! $actor->isResourceTypeScoped('restaurant_branch')) {
+            return $actor->hasManagerRole('principal', 'rh');
+        }
+
+        $manageable = $actor->accessibleResourceIds(
+            'restaurant_branch',
+            EmployeeResourceAssignment::LEVEL_MANAGE
+        );
+
+        return $manageable === null || $manageable !== [];
     }
 }

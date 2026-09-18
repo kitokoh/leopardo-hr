@@ -8,7 +8,10 @@ use App\Modules\HR\Interfaces\Api\V1\Requests\StoreEmployeeRequest;
 
 final readonly class CreateEmployeeDTO
 {
-    /** @param array<string, mixed> $extra_data */
+    /**
+     * @param  array<string, mixed>  $extra_data
+     * @param  list<array{resource_type: string, resource_id: int, access_level: string}>  $resource_assignments
+     */
     public function __construct(
         public string $first_name,
         public string $last_name,
@@ -50,6 +53,9 @@ final readonly class CreateEmployeeDTO
         public ?string $photo_path = null,
         public ?string $zkteco_id = null,
         public array $extra_data = [],
+        // #7601 (R4 de l'épique #7597) — invitation pré-assignée : rôle +
+        // ressources + niveaux en un geste ; créées à l'ACTIVATION.
+        public array $resource_assignments = [],
     ) {}
 
     public static function fromRequest(StoreEmployeeRequest $request): self
@@ -101,6 +107,7 @@ final readonly class CreateEmployeeDTO
             'photo_path' => $this->photo_path,
             'zkteco_id' => $this->zkteco_id,
             'extra_data' => $this->extra_data,
+            'resource_assignments' => $this->resource_assignments,
         ];
     }
 }

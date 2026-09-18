@@ -27,7 +27,7 @@ class TravelPaymentPolicy
 
     public function update(Employee $actor, TravelPayment $payment): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager')
+        return $actor->hasManagerRole('principal', 'rh')
             && $payment->company_id === $actor->company_id;
     }
 }

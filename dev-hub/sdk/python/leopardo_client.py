@@ -3468,9 +3468,17 @@ class LeopardoClient:
         """Taux de rotation (turnover) sur N mois"""
         return self.request("GET", "/reports/turnover", **kwargs)
 
+    def get_resource_access_audit(self, **kwargs):
+        """Rapport d''audit des accès ressource (R4 #7601)"""
+        return self.request("GET", "/resource-access/audit", **kwargs)
+
     def get_resources_by_type(self, **kwargs):
         """Catalogue des ressources assignables d''un type"""
         return self.request("GET", "/resources/{type}", **kwargs)
+
+    def get_resources_by_type_by_resourceid_access(self, **kwargs):
+        """Qui a accès à cette ressource ? (vue inverse, R4 #7601)"""
+        return self.request("GET", "/resources/{type}/{resourceId}/access", **kwargs)
 
     def get_salary_advances(self, **kwargs):
         """Lister les avances sur salaire"""

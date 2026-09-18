@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProductIngredient;
+use App\Modules\RestaurantManager\Policies\Concerns\ChecksRestaurantBranchAccess;
 
 /**
  * RESTO-302 (#6183) — Policy des liens recette produit/ingrédient.
@@ -17,6 +18,8 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantProductIngredient;
  */
 class RestaurantProductIngredientPolicy
 {
+    use ChecksRestaurantBranchAccess;
+
     public function viewAny(Employee $actor): bool
     {
         return true;
@@ -26,17 +29,20 @@ class RestaurantProductIngredientPolicy
     {
         $product = $link->product;
 
-        return $product !== null && $product->company_id === $actor->company_id;
+        return $product !== null
+            && $product->company_id === $actor->company_id
+            && $this->canViewBranchResource($actor, $product->branch_id);
     }
 
-    public function create(Employee $actor): bool
+    public function create(Employee $actor, int|string|null $branchId = null): bool
     {
-        return $actor->hasManagerRole('principal', 'rh');
+        return $this->canManageBranchResource($actor, $branchId);
     }
 
     public function update(Employee $actor, RestaurantProductIngredient $link): bool
     {
-        return $this->create($actor) && $link->company_id === $actor->company_id;
+        return $link->company_id === $actor->company_id
+            && $this->canManageBranchResource($actor, $link->product?->branch_id);
     }
 
     public function delete(Employee $actor, RestaurantProductIngredient $link): bool

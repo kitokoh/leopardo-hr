@@ -77,6 +77,12 @@ class RestaurantDeliveryController extends Controller
             abort(404);
         }
 
+        // #7599 — lecture ressource-scopée : un employé sans assignation ne
+        // lit plus les données métier dès que le scoping est actif.
+        if ($actor->cannot('view', $restaurantDelivery)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
+        }
+
         return (new RestaurantDeliveryResource($restaurantDelivery))->response();
     }
 

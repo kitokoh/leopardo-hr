@@ -27,6 +27,6 @@ class TravelRoundTripPolicy
 
     public function create(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager');
+        return $actor->hasManagerRole('principal', 'rh');
     }
 }

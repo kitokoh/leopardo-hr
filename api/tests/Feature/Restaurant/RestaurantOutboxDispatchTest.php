@@ -6,12 +6,12 @@ namespace Tests\Feature\Restaurant;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantOutboxConsumer;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxConsumerRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
-use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use Mockery;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -38,7 +38,7 @@ class RestaurantOutboxDispatchTest extends TestCase
         Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'manager',
-            'manager_role' => 'kitchen',
+            'manager_role' => 'principal',
         ]);
 
         // CommunicationService mocké : le test porte sur le dispatcher, pas

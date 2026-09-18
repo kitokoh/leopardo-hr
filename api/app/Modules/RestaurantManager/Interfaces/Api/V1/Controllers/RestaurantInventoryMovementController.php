@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Domain\Enums\StockMovementReason;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement;
 use App\Modules\RestaurantManager\Infrastructure\Services\StockMovementService;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\Concerns\ScopesRestaurantBranchListings;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantInventoryMovementRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantInventoryMovementResource;
 use Illuminate\Http\JsonResponse;
@@ -25,6 +26,8 @@ use Illuminate\Http\Request;
  */
 class RestaurantInventoryMovementController extends Controller
 {
+    use ScopesRestaurantBranchListings;
+
     public function __construct(private readonly StockMovementService $movements) {}
 
     public function index(Request $request): JsonResponse
@@ -38,7 +41,7 @@ class RestaurantInventoryMovementController extends Controller
 
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
-        $movements = RestaurantInventoryMovement::query()
+        $movements = $this->scopeToAccessibleBranches($actor, RestaurantInventoryMovement::query())
             ->with(['ingredient', 'branch'])
             ->when($request->has('branch_id'), fn ($query) => $query->where('branch_id', (int) $request->query('branch_id')))
             ->when($request->has('reason_code'), fn ($query) => $query->where('reason_code', (string) $request->query('reason_code')))
@@ -69,7 +72,7 @@ class RestaurantInventoryMovementController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('create', RestaurantInventoryMovement::class)) {
+        if ($actor->cannot('create', [RestaurantInventoryMovement::class, $request->validated()['branch_id'] ?? null])) {
             abort(403);
         }
 

@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\RestaurantManager\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantLoyaltyCustomer;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantLoyaltyProgram;
+use App\Modules\RestaurantManager\Policies\Concerns\ChecksRestaurantBranchAccess;
 
 /**
  * RESTO-606 (#6211) — Policies du programme de fidélité.
@@ -15,6 +14,8 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantLoyaltyProgram;
  */
 class RestaurantLoyaltyPolicy
 {
+    use ChecksRestaurantBranchAccess;
+
     public function viewAny(Employee $actor): bool
     {
         return true;
@@ -25,13 +26,14 @@ class RestaurantLoyaltyPolicy
         return $model->company_id === $actor->company_id;
     }
 
-    public function create(Employee $actor): bool
+    public function create(Employee $actor, int|string|null $branchId = null): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager');
+        return $this->canOperateBranchResource($actor, $branchId);
     }
 
     public function update(Employee $actor, $model): bool
     {
-        return $this->create($actor) && $model->company_id === $actor->company_id;
+        return $model->company_id === $actor->company_id
+            && $this->canOperateBranchResource($actor, null);
     }
 }

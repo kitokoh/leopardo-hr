@@ -34,7 +34,7 @@ class RestaurantPaymentController extends Controller
             abort(404);
         }
 
-        if ($actor->cannot('create', RestaurantOrderPayment::class)) {
+        if ($actor->cannot('create', [RestaurantOrderPayment::class, $restaurantOrder->branch_id])) {
             abort(403);
         }
 

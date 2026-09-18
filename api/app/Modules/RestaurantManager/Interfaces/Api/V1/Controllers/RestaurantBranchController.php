@@ -7,6 +7,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\Concerns\ScopesRestaurantBranchListings;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantBranchRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\UpdateRestaurantBranchRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantBranchResource;
@@ -22,6 +23,8 @@ use Illuminate\Http\Request;
  */
 class RestaurantBranchController extends Controller
 {
+    use ScopesRestaurantBranchListings;
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -33,7 +36,7 @@ class RestaurantBranchController extends Controller
 
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
-        $branches = RestaurantBranch::query()
+        $branches = $this->scopeToAccessibleBranches($actor, RestaurantBranch::query(), 'id')
             ->orderBy('name')
             ->paginate($perPage);
 
@@ -61,6 +64,12 @@ class RestaurantBranchController extends Controller
 
         if ($actor->company_id !== $restaurantBranch->company_id) {
             abort(404);
+        }
+
+        // #7599 — lecture ressource-scopée : un employé sans assignation ne
+        // lit plus les données métier dès que le scoping est actif.
+        if ($actor->cannot('view', $restaurantBranch)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
         }
 
         return (new RestaurantBranchResource($restaurantBranch))->response();

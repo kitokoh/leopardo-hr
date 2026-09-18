@@ -249,7 +249,7 @@ class RestaurantPublicShopTest extends TestCase
         $employee = Employee::factory()->create([
             'company_id' => $tenant['company']->id,
             'role' => 'manager',
-            'manager_role' => 'manager',
+            'manager_role' => 'principal',
         ]);
         Sanctum::actingAs($employee);
 

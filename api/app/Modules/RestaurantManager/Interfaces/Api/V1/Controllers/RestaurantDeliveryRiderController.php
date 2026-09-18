@@ -7,6 +7,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryRider;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\Concerns\ScopesRestaurantBranchListings;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantDeliveryRiderRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\UpdateRestaurantDeliveryRiderRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantDeliveryRiderResource;
@@ -23,6 +24,8 @@ use Illuminate\Http\Request;
  */
 class RestaurantDeliveryRiderController extends Controller
 {
+    use ScopesRestaurantBranchListings;
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -34,7 +37,7 @@ class RestaurantDeliveryRiderController extends Controller
 
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
-        $riders = RestaurantDeliveryRider::query()
+        $riders = $this->scopeToAccessibleBranches($actor, RestaurantDeliveryRider::query())
             ->when($request->query('branch_id'), fn ($q, $v) => $q->where('branch_id', (int) $v))
             ->when($request->query('is_active') !== null, fn ($q) => $q->where('is_active', $request->query('is_active') === 'true'))
             ->orderBy('name')
@@ -48,7 +51,7 @@ class RestaurantDeliveryRiderController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('create', RestaurantDeliveryRider::class)) {
+        if ($actor->cannot('create', [RestaurantDeliveryRider::class, $request->validated()['branch_id'] ?? null])) {
             abort(403);
         }
 
@@ -64,6 +67,12 @@ class RestaurantDeliveryRiderController extends Controller
 
         if ($actor->company_id !== $restaurantDeliveryRider->company_id) {
             abort(404);
+        }
+
+        // #7599 — lecture ressource-scopée : un employé sans assignation ne
+        // lit plus les données métier dès que le scoping est actif.
+        if ($actor->cannot('view', $restaurantDeliveryRider)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
         }
 
         return (new RestaurantDeliveryRiderResource($restaurantDeliveryRider))->response();

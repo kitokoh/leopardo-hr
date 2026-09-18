@@ -14,6 +14,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantSupplier;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
+use Tests\Support\AssignsResourceAccess;
 use Tests\TestCase;
 
 /**
@@ -28,6 +29,7 @@ use Tests\TestCase;
  */
 class RestaurantMenuSupplierCrudTest extends TestCase
 {
+    use AssignsResourceAccess;
     use RefreshTenantDatabase;
 
     private function principal(Company $company): Employee
@@ -46,17 +48,15 @@ class RestaurantMenuSupplierCrudTest extends TestCase
 
     private function floorManager(Company $company): Employee
     {
-        // `manager_role = 'manager'` n'est pas encore stockable en base
-        // (CHECK `employees_manager_role_check` limité à principal/rh/dept/
-        // comptable/superviseur/marketing — cf. RestaurantRbacMatrixTest) :
-        // l'acteur est construit en mémoire (forceFill, aucune requête),
-        // le middleware tenant résout la compagnie via la relation `company`.
+        // #7599 (R2 de l'épique #7597) — le « manager de salle » n'est plus un
+        // manager_role (valeur morte hors enum) : c'est un employé ordinaire
+        // qui reçoit une assignation `manage` sur SA succursale
+        // (employee_resource_assignments). L'acteur est donc persisté pour
+        // porter l'assignation.
         /** @var Employee $employee */
-        $employee = new Employee;
-        $employee->forceFill([
+        $employee = Employee::factory()->create([
             'company_id' => $company->id,
-            'role' => 'manager',
-            'manager_role' => 'manager',
+            'role' => 'employee',
         ]);
 
         Sanctum::actingAs($employee);
@@ -184,16 +184,22 @@ class RestaurantMenuSupplierCrudTest extends TestCase
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateRestaurant($company);
-        $this->floorManager($company);
+        $floorManager = $this->floorManager($company);
 
         $ids = app(TenantManager::class)->withinTenant($company, function () use ($company): array {
+            $branch = RestaurantBranch::factory()->create(['company_id' => $company->id]);
+            $menu = RestaurantMenu::factory()->create(['company_id' => $company->id, 'branch_id' => $branch->id]);
+
             return [
-                'menu' => RestaurantMenu::factory()->create(['company_id' => $company->id])->id,
+                'menu' => $menu->id,
+                'menu_branch' => (int) $branch->id,
                 'product' => RestaurantProduct::factory()->create(['company_id' => $company->id])->id,
             ];
         });
 
-        /** @var array{menu: int, product: int} $ids */
+        /** @var array{menu: int, menu_branch: int, product: int} $ids */
+        $this->assignResourceAccess($floorManager, 'restaurant_branch', $ids['menu_branch'], 'manage');
+
         $this->postJson("/api/v1/restaurant/menus/{$ids['menu']}/items", [
             'product_id' => $ids['product'],
             'position' => 1,
@@ -286,11 +292,12 @@ class RestaurantMenuSupplierCrudTest extends TestCase
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateRestaurant($company);
-        $this->floorManager($company);
+        $floorManager = $this->floorManager($company);
 
         $branchId = app(TenantManager::class)->withinTenant($company, function () use ($company): int {
             return RestaurantBranch::factory()->create(['company_id' => $company->id])->id;
         });
+        $this->assignResourceAccess($floorManager, 'restaurant_branch', $branchId, 'manage');
 
         $this->postJson('/api/v1/restaurant/hours', [
             'branch_id' => $branchId,

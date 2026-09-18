@@ -26,7 +26,7 @@ class TravelCommentPolicy
 
     public function create(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager', 'agent', 'checkin');
+        return $actor->hasManagerRole('principal', 'rh');
     }
 
     public function update(Employee $actor, TravelComment $comment): bool
@@ -37,6 +37,6 @@ class TravelCommentPolicy
     public function moderate(Employee $actor, TravelComment $comment): bool
     {
         return $comment->company_id === $actor->company_id
-            && $actor->hasManagerRole('principal', 'rh', 'manager');
+            && $actor->hasManagerRole('principal', 'rh');
     }
 }

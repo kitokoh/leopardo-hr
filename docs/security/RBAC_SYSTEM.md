@@ -64,10 +64,60 @@ Au-delà des checks record-par-record des Policies, les listings utilisent `isTe
 - `App\Modules\Attendance\Interfaces\Api\V1\Controllers\AttendanceController` (consultation pointages équipe)
 - `App\Modules\Attendance\Infrastructure\Services\AttendanceMonthlyReportService` / `AttendanceAnomalyService` (rapports mensuels/anomalies — prennent l'`Employee` agissant plutôt qu'un `departmentId` brut, pour appliquer le même scope `dept`/`superviseur`)
 
+## 🗂 Couche « accès aux ressources » (épique #7597 — R1 #7598, R2 #7599, R3 #7600)
+
+Au même titre que la portée personnes (`dept`/`superviseur`), les **ressources
+nommées** d'un tenant (succursales restaurant, bureaux/gares TravelAgency,
+véhicules, stations-service, campus, sites, caméras) sont un objet
+d'autorisation à part entière : le responsable donne à un collaborateur
+« CE restaurant, à CE niveau », via la table tenant
+`employee_resource_assignments` (`resource_type`, `resource_id`,
+`access_level` ∈ `view` < `operate` < `manage`).
+
+- **Registre des types** : `api/config/resource_types.php` (`camera`,
+  `edu_campus`, `fuel_station`, `restaurant_branch`, `site`, `travel_office`,
+  `travel_station`, `vehicle`). Un type absent du registre est refusé
+  (`RESOURCE_TYPE_UNKNOWN`, fail-closed).
+- **Helpers** : `Employee::hasResourceAccess(type, id, min)`,
+  `Employee::accessibleResourceIds(type, min)` (`null` = aucune restriction,
+  `[]` = scoping actif et accès à rien — les listings doivent distinguer les
+  deux), `Employee::isResourceTypeScoped(type)`.
+- **Règle de progressivité (fail-closed à l'activation)** : tant qu'AUCUNE
+  assignation d'un type n'existe dans l'entreprise, le comportement
+  historique est conservé ; dès la première assignation, le type est
+  **fail-closed** pour les non-assignés. `principal` passe toujours ; `rh`
+  conserve la **lecture** seule.
+- **Niveaux** : lecture = `view` ; gestes opérationnels (commandes, POS,
+  service, vente guichet) = `operate` ; gestion (menus, prix, stocks,
+  rapports, COGS, référentiels, configuration) = `manage`. Les ressources
+  company-wide (fournisseurs, unités, taux de taxe…) restent au `principal`
+  en écriture dès que le scoping est actif.
+- **Traits policy** : `App\Modules\RestaurantManager\Policies\Concerns\ChecksRestaurantBranchAccess`
+  (pilote R2) et le générique `App\Core\Auth\Domain\Policies\Concerns\ChecksResourceScopedAccess`
+  (R3 — utilisé par `VehiclePolicy`, `FuelStationPolicy`, `EduCampusPolicy`,
+  `TravelOfficePolicy`, `TravelStationPolicy` ; `CameraPolicy` combine
+  l'assignation avec son système `CameraPermission` existant, de façon
+  additive).
+- **API** : `GET/PUT /v1/employees/{id}/resource-assignments` (PUT =
+  remplacement complet, ce qui rend la révocation possible en un geste) et
+  `GET /v1/resources/{type}` (catalogue assignable).
+- **Valeurs mortes interdites** : `hasManagerRole()` n'accepte que les
+  valeurs assignables de `manager_role` (`principal`, `rh`, `dept`,
+  `comptable`, `superviseur`, `marketing`). Les anciens motifs
+  `'manager'`/`'server'`/`'kitchen'`/`'rider'`/`'agent'`/`'checkin'`
+  (conditions toujours fausses) sont remplacés par l'assignation — garde CI
+  `dev-hub/tools/check-manager-role-enum.sh` (workflow
+  `resource-rbac-guards.yml`), qui vérifie aussi que tout contrôleur d'une
+  verticale surveillée appelle une policy
+  (`check-vertical-controller-policies.sh`).
+
 ## 🧪 Tests de régression RBAC (PA2-SEC-004)
 
 - `api/tests/Feature/Security/DepartmentScopedRbacTest.php` — scope `manager_role = dept`.
 - `api/tests/Feature/Security/SupervisorScopedRbacTest.php` — scope `manager_role = superviseur` (miroir du précédent).
+- `api/tests/Feature/Security/ResourceScopedRbacTest.php` — socle « accès aux ressources » (#7598).
+- `api/tests/Feature/Security/ResourceScopedVerticalPoliciesTest.php` — généralisation Fleet/Travel (#7600).
+- `api/tests/Feature/Restaurant/RestaurantResourceScopedRbacTest.php` — pilote Restaurant au niveau HTTP (#7599).
 - `api/tests/Feature/Security/AdminMiddlewareRbacTest.php` — middleware admin/manager.
 - `api/tests/Feature/EmployeesRbacTest.php` — RBAC employé générique.
 
