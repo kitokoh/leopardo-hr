@@ -1,4 +1,4 @@
-# AGENTS.md - Guide de travail Leopardo RH
+# AGENTS.md - Guide de travail Leopardo
 
 Derniere mise a jour : 2026-09-05 (audit PM architecture — liste des apps mobiles alignée sur le dépôt)
 
@@ -145,14 +145,15 @@ le code écrit contre la dernière génération casse en `column "x" does not ex
   une colonne, une migration `Schema::table` **idempotente** (`schemaHasColumn`).
 - Vérifier localement avant push :
   ```bash
-  python3 dev-hub/tools/check-duplicate-schema-create.py --base origin/main
+  python3 dev-hub/tools/check-duplicate-schema-create.py --base origin/main --strict --fail-on-duplicate
   ```
-  (garde CI `.github/workflows/migration-duplication-guard.yml`). L'inventaire de
-  la dette (68 tables dupliquées, 36 divergentes) et les colonnes réellement
-  absentes du schéma : `docs/audits/MIGRATIONS_DUPLIQUEES_TENANT.md`
-  (`--audit` régénère le document).
-- La résorption se fait **module par module** (#7452, #7417, #7410) : un
-  `--strict` peut être activé sur un module déjà assaini.
+  (garde CI `.github/workflows/migration-duplication-guard.yml`). **Depuis l'audit de
+  clôture #7452 (2026-09-18), la dette est SOLDÉE à l'échelle du dépôt (0 table
+  dupliquée, 0 divergente — tranches Travel #7467 et EDU #7571) et la garde tourne
+  en zéro tolérance par défaut** : toute PR qui redéclare une table existante est
+  rouge, même sans divergence de colonnes. L'inventaire historique reste dans
+  `docs/audits/MIGRATIONS_DUPLIQUEES_TENANT.md` (`--write` régénère le document).
+- La résorption s'est faite **module par module** (#7452, #7417, #7410) — terminée.
 - **Tranche Travel (2026-09-15)** : la consolidation forward-only (ajout des
   colonnes attendues par le code + `DROP NOT NULL` sur les colonnes « zombies »
   que le code ne renseigne jamais, jamais de second `Schema::create`) est dans
@@ -325,7 +326,7 @@ un APP_VERSION sur un tier qui n'en porte pas. Rattrapage : `deploy-main-catchup
 - **CHANGELOG.md (issue #2417)** : toute PR ajoute son entree sous `## [Unreleased]` avec la categorie adaptee (`### Added` / `### Changed` / `### Fixed` / `### Removed`) — Keep a Changelog. Les sections versionnees (`## [x.y.z] - date`) sont creees a la release ; l'historique integral vit dans `CHANGELOG_ARCHIVE.md`.
 - Chaque connaissance utile pour les prochains agents doit etre ajoutee ici.
 
-## 🗺️ Cartographie de l'Ecosysteme Leopardo RH (A respecter strictement)
+## 🗺️ Cartographie de l'Ecosysteme Leopardo (A respecter strictement)
 
 Le projet est une **Suite d'Applications** (1 App = 1 Metier). Voici les roles definis "noir sur blanc" :
 
@@ -354,7 +355,7 @@ Toute feature hors du périmètre autorisé de `docs/GOUVERNANCE/FREEZE_SCOPE_60
 
 **ATTENTION AGENTS** : Les anciens dossiers `docs/PLAN_ACTION/` et `docs/PLAN_ACTION2/` sont **obsoletes et archives**. Il est **strictement interdit** de lire ces dossiers pour chercher du travail ou d'y creer de nouveaux fichiers Markdown de planification.
 
-La gestion du projet Leopardo RH se fait desormais **exclusivement via GitHub Issues et GitHub Projects**.
+La gestion du projet Leopardo se fait desormais **exclusivement via GitHub Issues et GitHub Projects**.
 
 ### Regles de selection d'une tache (GitHub Issues)
 

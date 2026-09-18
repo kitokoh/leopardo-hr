@@ -1,5 +1,7 @@
 import { test as base, expect, type Page, type Route } from '@playwright/test';
 
+import { CONSENT_COOKIE_NAME, E2E_CONSENT_STATE } from '../session-helpers';
+
 export const SESSION_COOKIE_NAME = 'leopardo_token';
 export const E2E_SESSION_TOKEN = 'e2e-mocked-session-token';
 
@@ -67,7 +69,12 @@ export const managerUser: AuthenticatedUser = {
     language: 'fr',
     timezone: 'Africa/Algiers',
     currency: 'DZD',
-    metadata: { onboarding_completed: true },
+    // #7618 — une session E2E mockée modélise un utilisateur DÉJÀ accueilli :
+    // sans `welcome_seen_at`, la modale de bienvenue (#7604, `z-[80]`,
+    // aria-modal) recouvre le dashboard et intercepte tous les clics
+    // (timeouts Playwright sur `dashboard-nav-toggle`). Un spec qui veut
+    // tester l'écran de bienvenue surcharge explicitement avec `''`.
+    metadata: { onboarding_completed: true, welcome_seen_at: '2026-09-01T08:00:00+00:00' },
   },
 };
 
@@ -197,6 +204,16 @@ export async function installAuthenticatedSession(
       value: token,
       url: baseURL,
       httpOnly: true,
+      sameSite: 'Lax',
+    },
+    {
+      // #7618 — comme `welcome_seen_at` : une session mockée modélise un
+      // visiteur qui a déjà répondu à la bannière cookies (#7593, `z-[90]`,
+      // fixed bottom), sinon elle intercepte les clics du bas de page.
+      // Lu par `document.cookie` ⇒ PAS httpOnly.
+      name: CONSENT_COOKIE_NAME,
+      value: encodeURIComponent(E2E_CONSENT_STATE),
+      url: baseURL,
       sameSite: 'Lax',
     },
   ]);
