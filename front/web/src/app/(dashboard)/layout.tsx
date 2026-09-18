@@ -400,12 +400,17 @@ export default function DashboardLayout({
       storeAuthSession(null, updated);
       setUserOverride(updated);
 
-      // CTA principal : l'entretien de préparation enchaîne derrière l'écran.
-      if (action === 'start_setup') {
-        setShowInterview(true);
+      // CTA principal (#7490) : « Définir mon mot de passe maintenant » — le
+      // flux provisioning_token existant (page publique /auth/set-password,
+      // token déjà détenu par le navigateur ou lien e-mail). L'écran est déjà
+      // acquitté : au retour dans l'espace, il ne se réaffiche pas. (Le CTA
+      // « start_setup » de main n'existe plus : l'entretien de préparation
+      // #7493 s'ouvre via `shouldShowSetupInterview` après l'écran.)
+      if (action === 'set_password') {
+        router.push('/auth/set-password');
       }
     },
-    [],
+    [router],
   );
 
   // #7493 — fermeture de l'entretien de préparation : mise à jour OPTIMISTE

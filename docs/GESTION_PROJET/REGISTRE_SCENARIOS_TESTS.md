@@ -2,6 +2,23 @@
 > Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
 > Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
 
+> **MAJ 2026-09-18 — #7490, première connexion sans mot de passe en clair (epic #7486).**
+> L'e-mail de bienvenue self-service ne contient plus aucun secret : lien magique de
+> définition de mot de passe (`/auth/set-password?token=…`, `provisioning_token` à usage
+> unique, **TTL 72 h** — `POST /trial/set-password` répond `410 TRIAL_PASSWORD_LINK_EXPIRED`
+> au-delà) et **connexion par code** pour les comptes sans mot de passe : nouveaux endpoints
+> publics `POST /auth/login-code/request|verify` (réponse générique anti-énumération, code
+> 6 chiffres haché en cache 10 min, consommé au premier usage, verrou après 5 échecs,
+> canal refermé dès qu'un mot de passe existe, 2FA refusée — `403
+> LOGIN_CODE_PASSWORD_REQUIRED`). Contrat documenté dans `api/openapi.yaml` (+2 paths,
+> +410 sur set-password, miroir/SDK régénérés). Scénarios API couverts par
+> `api/tests/Feature/FirstLoginPasswordlessTest.php` (8 cas Feature : lien magique sans
+> secret rendu, 410 après 72 h / 200 avant, envoi du code éligible, réponse générique pour
+> un e-mail inconnu, session ouverte + usage unique, verrou 5 échecs, canal refermé après
+> définition du mot de passe). Surfaces mobile touchées par **propagation i18n uniquement**
+> (`sync-mobile.js`, clés `setPassword.*`/`loginCode.*` ×4) : aucun écran ni parcours
+> mobile modifié. Surface web : page publique `/auth/set-password` + mode « code » sur
+> `/auth/login` (Jest 125 suites / 1030 tests verts).
 > **MAJ 2026-09-18 — lot tunnel d'acquisition #7495/#7496 (epic #7486) : pass copy/a11y ×4
 > locales et tracking first-party par étape.** Surface **API** : `POST /api/v1/funnel/events`
 > (ingestion server-to-server des jalons du funnel, secret partagé `MARKETING_LEAD_WEBHOOK_TOKEN`,
@@ -60,6 +77,21 @@
 > `test_portfolio_defaults_and_legacy_limit_param_stay_compatible`,
 > `test_portfolio_query_count_does_not_grow_with_company_count` — dont le comptage de
 > requêtes, faussé par un `DB::listen()` jamais retiré, est réparé).
+
+> **MAJ 2026-09-18 — tranche #7490 (PR #7629), connexion de première fois sans mot de passe
+> (code à usage unique) + définition du mot de passe.** Surface **API** (module Auth) :
+> `POST /auth/login-code/request` (réponse générique anti-énumération, e-mail
+> `LoginCodeMail` ×4 locales, code OTP 6 chiffres, TTL 10 min) et
+> `POST /auth/login-code/verify` (verrou applicatif à 5 échecs, code consommé au premier
+> usage, même bucket auth-sensitive email+IP que `/auth/login`). Surface **web client** :
+> écran de connexion « code reçu par e-mail » (`/auth/login`), page `/auth/set-password`
+> (`SetPasswordForm.tsx`) et CTA « Définir mon mot de passe maintenant » de l'écran de
+> bienvenue (`WelcomeScreen.tsx`, action `set_password`). Surfaces **web admin** et
+> **mobile** : aucun parcours modifié — propagation des seules valeurs traduites depuis
+> `shared/i18n` (clés `setPassword.*`, `loginCode.*`). Non-régression :
+> `api/tests/Feature/FirstLoginPasswordlessTest.php`,
+> `front/web/src/app/api/v1/auth/__tests__/login-code-verify.route.test.ts`,
+> `front/web/src/app/auth/set-password/__tests__/SetPasswordForm.test.tsx`.
 
 > **MAJ 2026-09-17 — tranche #7490 (lot #7604), écran de bienvenue de première connexion,
 > affiché une seule fois (persisté serveur).** Surface **API** (module Onboarding) :

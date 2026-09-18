@@ -1802,8 +1802,126 @@ paths:
                     example: TRIAL_PASSWORD_ALREADY_SET
                   localized_message:
                     type: string
+        '410':
+          description: Lien de definition expire (TTL 72 h depuis le provisioning, issue #7490)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: TRIAL_PASSWORD_LINK_EXPIRED
+                  localized_message:
+                    type: string
         '422':
           description: Validation echouee (mot de passe trop faible ou confirmation absente)
+  /auth/login-code/request:
+    post:
+      tags:
+      - Auth
+      summary: Demander un code de connexion a usage unique (compte sans mot de passe)
+      description: "Issue #7490 — comptes self-service qui n'ont jamais defini de mot de passe (trial_provisionings.password_set_at NULL). Reponse TOUJOURS generique (anti-enumeration) ; le code (6 chiffres, TTL 10 min, usage unique) part par e-mail dans la locale du tenant. Bucket `auth-sensitive`."
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Reponse generique (aucune fuite d'existence de compte)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  localized_message:
+                    type: string
+        '422':
+          description: Email absent ou invalide
+  /auth/login-code/verify:
+    post:
+      tags:
+      - Auth
+      summary: Verifier le code de connexion et ouvrir une session
+      description: "Issue #7490 — meme contrat de reponse que POST /auth/login (EmployeeResource + token Sanctum). Code a usage unique, verrou apres 5 echecs, canal refuse aux comptes 2FA (LOGIN_CODE_PASSWORD_REQUIRED)."
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - code
+              properties:
+                email:
+                  type: string
+                  format: email
+                code:
+                  type: string
+                  minLength: 6
+                  maxLength: 6
+      responses:
+        '200':
+          description: Session ouverte (employe + token Sanctum)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                  token:
+                    type: string
+                  token_type:
+                    type: string
+                    example: Bearer
+                  token_expires_at:
+                    type: string
+                    nullable: true
+        '400':
+          description: Code invalide, expire ou deja consomme
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: LOGIN_CODE_INVALID
+                  localized_message:
+                    type: string
+        '403':
+          description: Compte 2FA ou politique MFA — le canal code est refuse
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: LOGIN_CODE_PASSWORD_REQUIRED
+        '429':
+          description: Verrou apres 5 echecs — demander un nouveau code
   /user/register:
     post:
       tags:

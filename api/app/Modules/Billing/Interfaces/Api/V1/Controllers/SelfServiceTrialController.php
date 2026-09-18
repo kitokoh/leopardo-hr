@@ -609,6 +609,20 @@ class SelfServiceTrialController extends Controller
             ], 409);
         }
 
+        // #7490 : le lien magique de l'e-mail de bienvenue porte ce token — il
+        // doit expirer. TTL 72 h depuis le provisioning ; passé ce délai,
+        // l'utilisateur passe par « Recevoir un code de connexion » puis
+        // définit son mot de passe depuis l'espace.
+        $provisionedAtRaw = $row->provisioned_at ?? null;
+        if (is_scalar($provisionedAtRaw) && (string) $provisionedAtRaw !== ''
+            && Carbon::parse((string) $provisionedAtRaw)->addHours(72)->isPast()) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'TRIAL_PASSWORD_LINK_EXPIRED',
+                'localized_message' => __('billing.trial_password_link_expired'),
+            ], 410);
+        }
+
         $manager = $this->findTrialManager((string) $row->email, (string) $row->company_id);
 
         if ($manager === null) {

@@ -135,16 +135,18 @@ return [
 
     'email_trial_welcome_subject' => 'مساحة عملك جاهزة — :company',
     'email_trial_welcome_heading' => 'مرحبا :name 👋',
-    'email_trial_welcome_intro' => 'تم إنشاء مساحة عمل :company بنجاح. إليك بيانات الاتصال الخاصة بك:',
-    'email_trial_welcome_email_label' => 'البريد الإلكتروني',
-    'email_trial_welcome_password_label' => 'كلمة المرور',
+    'email_trial_welcome_intro' => 'تم إنشاء مساحة عمل :company بنجاح.',
+    'email_trial_welcome_email_label' => 'البريد الإلكتروني لتسجيل الدخول',
+    'email_trial_welcome_set_pw_text' => 'لتسجيلات الدخول القادمة، عيّن كلمة المرور الخاصة بك بالنقر على الرابط أدناه.',
+    'email_trial_welcome_set_pw_button' => 'تعيين كلمة المرور',
+    'email_trial_welcome_set_pw_validity' => 'هذا الرابط للاستخدام مرة واحدة وصالح لمدة 72 ساعة. بعد ذلك، استخدم « استلام رمز تسجيل الدخول » في صفحة تسجيل الدخول.',
+    'email_trial_welcome_set_pw_fallback' => 'لتسجيلات الدخول القادمة، عيّن كلمة المرور من مساحة عملك، أو اطلب رمز تسجيل دخول من صفحة تسجيل الدخول.',
     'email_trial_welcome_trial_badge' => 'تجربة مجانية :days يوم',
-    'email_trial_welcome_change_pw' => '⚠️ غيّر كلمة المرور فور تسجيل الدخول الأول من قائمة الحساب.',
     'email_trial_welcome_next_steps' => 'الخطوات التالية',
-    'email_trial_welcome_step1' => 'سجّل الدخول بالبيانات أعلاه',
+    'email_trial_welcome_step1' => 'عيّن كلمة المرور عبر الرابط أعلاه',
     'email_trial_welcome_step2' => 'أضف أول موظفيك',
     'email_trial_welcome_step3' => 'جرّب تسجيل الحضور',
-    'email_trial_welcome_button' => 'تسجيل الدخول',
+    'email_trial_welcome_button' => 'الدخول إلى مساحتي',
 
     'email_subscription_confirmed_subject' => 'تم تأكيد الاشتراك — :company',
     'email_subscription_confirmed_thanks' => 'شكرا لاشتراكك!',
@@ -187,5 +189,10 @@ return [
     'trial_verification_greeting' => 'مرحباً :name،',
     'trial_verification_intro' => 'يرجى استخدام رمز التحقق أدناه لإكمال إنشاء مساحة العمل الخاصة بك:',
     'trial_verification_validity' => 'هذا الرمز صالح لمدة 30 دقيقة. إذا لم تطلب ذلك، يمكنك تجاهل هذه الرسالة.',
+
+    'login_code_subject' => 'رمز تسجيل الدخول الخاص بك في Leopardo RH',
+    'login_code_greeting' => 'مرحبًا،',
+    'login_code_intro' => 'إليك رمز تسجيل الدخول الخاص بك للاستخدام مرة واحدة. أدخله في صفحة تسجيل الدخول للوصول إلى مساحتك:',
+    'login_code_validity' => 'هذا الرمز صالح لمدة 10 دقائق وللاستخدام مرة واحدة. إذا لم تطلب ذلك، يمكنك تجاهل هذه الرسالة.',
 
 ];

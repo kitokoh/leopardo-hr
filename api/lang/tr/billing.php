@@ -6,6 +6,7 @@ return [
     'trial_status_failed' => 'Deneme çalışma alanınız oluşturulamadı. Lütfen tekrar deneyin veya bize ulaşın.',
     'trial_password_not_ready' => 'Deneme alanınız henüz hazır değil. Lütfen biraz bekleyip tekrar deneyin.',
     'trial_password_already_set' => 'Bu alan için zaten bir parola belirlenmiş. Normal girişi veya parola sıfırlamayı kullanın.',
+    'trial_password_link_expired' => 'Bu parola belirleme bağlantısının süresi doldu (72 saat). Giriş sayfasından bir giriş kodu isteyin, ardından parolanızı alanınızdan belirleyin.',
     'trial_password_manager_missing' => 'Deneme yöneticisi hesabı bulunamadı. Lütfen destek ile iletişime geçin.',
     'trial_password_set' => 'Parola kaydedildi. Artık giriş yapabilirsiniz.',
 ];

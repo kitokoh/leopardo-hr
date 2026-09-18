@@ -6861,7 +6861,7 @@
   "firstLoginWelcome": {
     "title": "Votre espace est prêt 🎉",
     "body": "Un e-mail vous a été envoyé avec un lien pour définir votre mot de passe : il servira à vos prochaines connexions.",
-    "ctaStart": "Démarrer la mise en route",
+    "ctaStart": "Définir mon mot de passe maintenant",
     "ctaLater": "Plus tard"
   },
   "funnelStats": {
@@ -7021,5 +7021,45 @@
         "desc": "Rendez votre site visible en un clic."
       }
     }
+  },
+  "setPassword": {
+    "title": "Définissez votre mot de passe",
+    "subtitle": "Il servira à vos prochaines connexions. Ce lien est à usage unique et valable 72 heures.",
+    "passwordLabel": "Nouveau mot de passe",
+    "confirmLabel": "Confirmez le mot de passe",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
+    "submit": "Définir mon mot de passe",
+    "submitting": "Enregistrement…",
+    "success": "Mot de passe enregistré. Vous pouvez maintenant vous connecter.",
+    "successCta": "Aller à la connexion",
+    "missingToken": "Lien incomplet ou expiré. Ouvrez le lien reçu par e-mail, ou demandez un code de connexion depuis la page de connexion.",
+    "errorInvalidToken": "Ce lien est invalide. Ouvrez le lien reçu par e-mail.",
+    "errorExpired": "Ce lien a expiré (72 h). Demandez un code de connexion depuis la page de connexion.",
+    "errorAlreadySet": "Un mot de passe a déjà été défini pour cet espace. Utilisez la connexion classique ou la réinitialisation.",
+    "errorNotReady": "Votre espace n'est pas encore prêt. Réessayez dans quelques instants.",
+    "errorWeakPassword": "Mot de passe trop faible : 12 caractères minimum, avec au moins un chiffre.",
+    "errorMismatch": "Les deux mots de passe ne correspondent pas.",
+    "errorGeneric": "Impossible d'enregistrer le mot de passe. Réessayez dans quelques instants.",
+    "backToLogin": "Retour à la connexion"
+  },
+  "loginCode": {
+    "linkLabel": "Recevoir un code de connexion",
+    "title": "Connexion par code",
+    "hint": "Pas encore de mot de passe ? Recevez un code à usage unique par e-mail.",
+    "emailLabel": "Votre e-mail",
+    "emailPlaceholder": "manager@entreprise.com",
+    "sendCta": "Envoyer le code",
+    "sending": "Envoi…",
+    "sentInfo": "Si un compte éligible existe pour cet e-mail, un code vient d'être envoyé. Il est valable 10 minutes.",
+    "codeLabel": "Code reçu par e-mail",
+    "verifyCta": "Se connecter",
+    "verifying": "Vérification…",
+    "resend": "Renvoyer un code",
+    "backToPassword": "Se connecter avec un mot de passe",
+    "errorInvalid": "Code invalide ou expiré. Demandez un nouveau code.",
+    "errorTooMany": "Trop de tentatives. Demandez un nouveau code.",
+    "errorPasswordRequired": "Ce compte requiert une connexion par mot de passe.",
+    "errorGeneric": "Impossible de vous connecter. Réessayez dans quelques instants."
   }
 }

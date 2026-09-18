@@ -6855,7 +6855,7 @@
   "firstLoginWelcome": {
     "title": "Your workspace is ready 🎉",
     "body": "An email has been sent to you with a link to set your password — it will be used for your future sign-ins.",
-    "ctaStart": "Start setting up",
+    "ctaStart": "Set my password now",
     "ctaLater": "Later"
   },
   "funnelStats": {
@@ -7015,5 +7015,45 @@
         "desc": "Make your site visible in one click."
       }
     }
+  },
+  "setPassword": {
+    "title": "Set your password",
+    "subtitle": "You will use it for your next logins. This link is single-use and valid for 72 hours.",
+    "passwordLabel": "New password",
+    "confirmLabel": "Confirm password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "submit": "Set my password",
+    "submitting": "Saving…",
+    "success": "Password saved. You can now log in.",
+    "successCta": "Go to login",
+    "missingToken": "Incomplete or expired link. Open the link you received by email, or request a login code from the login page.",
+    "errorInvalidToken": "This link is invalid. Open the link you received by email.",
+    "errorExpired": "This link has expired (72 h). Request a login code from the login page.",
+    "errorAlreadySet": "A password has already been set for this workspace. Use the regular sign-in or the password reset.",
+    "errorNotReady": "Your workspace is not ready yet. Try again in a few moments.",
+    "errorWeakPassword": "Password too weak: at least 12 characters, including a number.",
+    "errorMismatch": "The two passwords do not match.",
+    "errorGeneric": "Could not save the password. Try again in a few moments.",
+    "backToLogin": "Back to login"
+  },
+  "loginCode": {
+    "linkLabel": "Receive a login code",
+    "title": "Log in with a code",
+    "hint": "No password yet? Receive a single-use code by email.",
+    "emailLabel": "Your email",
+    "emailPlaceholder": "manager@company.com",
+    "sendCta": "Send the code",
+    "sending": "Sending…",
+    "sentInfo": "If an eligible account exists for this email, a code was just sent. It is valid for 10 minutes.",
+    "codeLabel": "Code received by email",
+    "verifyCta": "Log in",
+    "verifying": "Verifying…",
+    "resend": "Resend a code",
+    "backToPassword": "Log in with a password",
+    "errorInvalid": "Invalid or expired code. Request a new code.",
+    "errorTooMany": "Too many attempts. Request a new code.",
+    "errorPasswordRequired": "This account requires a password sign-in.",
+    "errorGeneric": "Could not log you in. Try again in a few moments."
   }
 }
