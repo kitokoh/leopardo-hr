@@ -44,6 +44,22 @@
 > `api/tests/Feature/Onboarding/WelcomeScreenAckTest.php` et
 > `front/web/src/modules/onboarding/components/__tests__/WelcomeScreen.test.tsx`.
 
+> **MAJ 2026-09-17 — #7598 (R1 de l'épique #7597), socle « accès aux ressources »
+> ressource-scopé.** Nouvelle table tenant `employee_resource_assignments`
+> (`company_id` uuid indexé sans FK cross-tenant, `resource_type` clé du registre
+> `api/config/resource_types.php`, `access_level` `view` < `operate` < `manage`, unicité
+> `employee_id`+`resource_type`+`resource_id`). Helpers sur `Employee` :
+> `hasResourceAccess()` / `accessibleResourceIds()` — règle de progressivité : tant qu'un type
+> n'est pas assigné dans l'entreprise, comportement historique (même `company_id` + rôle) ;
+> dès la première assignation, scoping actif et **fail-closed** pour les non-assignés du type
+> (`principal` : tout ; `rh` : lecture seule). Surface **API** (module RH) :
+> `GET|PUT /employees/{employee}/resource-assignments` (le `PUT` remplace le jeu complet —
+> révocation en un geste ; réservé au principal via `EmployeePolicy`) et
+> `GET /resources/{type}` (catalogue assignable, fail-closed sur type inconnu). Messages
+> d'erreur ×4 langues (`api/lang/{fr,en,ar,tr}/errors.php`). Aucune surface web admin ni
+> mobile modifiée dans cette tranche (écrans R2+). Non-régression :
+> `api/tests/Feature/Security/ResourceScopedRbacTest.php`.
+
 > **MAJ 2026-09-17 — #7593, vitrine : consentement cookies, Consent Mode et mentions
 > d'information.** Surface **web client (vitrine)** uniquement : bandeau de consentement
 > (`ConsentBanner`/`ConsentProvider`/`ConsentScripts`), bouton de réglage persistant, notice

@@ -313,4 +313,11 @@ return [
     'PLATFORM_PERMISSION_REQUIRED' => 'دورك في المنصة لا يسمح بهذا الإجراء (الأذونات المطلوبة: :permissions).',
     'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'لا يمكنك تغيير دورك في المنصة.',
     'LAST_SUPER_ADMIN_REQUIRED' => 'تم رفض الإجراء: يجب أن يبقى مسؤول أعلى نشط واحد على الأقل.',
+
+    // Issue #7598 (R1 de l'epique #7597) - acces aux ressources par tenant.
+    'RESOURCE_ACCESS_DENIED' => 'لا تملك صلاحية الوصول إلى هذا المورد.',
+    'RESOURCE_TYPE_UNKNOWN' => 'نوع المورد غير معروف.',
+    'RESOURCE_NOT_FOUND' => 'المورد غير موجود في هذه الشركة.',
+    'RESOURCE_ASSIGNMENTS_REQUIRED' => 'قائمة الصلاحيات مطلوبة (يمكن أن تكون فارغة لإلغاء الكل).',
+    'RESOURCE_ACCESS_LEVEL_INVALID' => 'مستوى الوصول غير صالح (view أو operate أو manage).',
 ];

@@ -89,4 +89,34 @@ class EmployeePolicy
     {
         return $actor->hasManagerRole('principal', 'rh');
     }
+
+    /**
+     * Issue #7598 (R1 de l'épique #7597) — qui pose les accès RESSOURCE d'un
+     * collaborateur (« Moussa → restaurant Almadies, niveau manage ») ?
+     *
+     * Le principal du tenant uniquement : le responsable donne **ses**
+     * ressources à **ses** collaborateurs, par un geste explicite et audité.
+     * Les autres rôles gardent leurs pouvoirs actuels ; l'élargissement (par
+     * exemple un gérant qui ré-assigne dans son périmètre) relève de R4.
+     *
+     * Fail-closed cross-tenant : jamais sur un employé d'une autre société,
+     * même si les identifiants coïncident (#3232).
+     */
+    public function manageResourceAssignments(Employee $actor, Employee $employee): bool
+    {
+        if ($employee->company_id !== $actor->company_id) {
+            return false;
+        }
+
+        return $actor->isPrincipal();
+    }
+
+    /**
+     * Même règle pour la LECTURE : les accès ressource d'un collaborateur sont
+     * une donnée de gouvernance, pas une donnée d'équipe.
+     */
+    public function viewResourceAssignments(Employee $actor, Employee $employee): bool
+    {
+        return $this->manageResourceAssignments($actor, $employee);
+    }
 }
