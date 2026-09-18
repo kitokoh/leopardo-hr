@@ -103,7 +103,7 @@ class LoginCodeController extends Controller
         $email = strtolower(trim((string) $validated['email']));
         $key = $this->cacheKey($email);
 
-        /** @var array{hash: string, attempts: int}|null $entry */
+        /** @var array{hash?: string, attempts?: int}|null $entry */
         $entry = Cache::get($key);
 
         if (! is_array($entry) || ! isset($entry['hash'])) {
