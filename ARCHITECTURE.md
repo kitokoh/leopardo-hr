@@ -34,7 +34,7 @@ leopardo-hr/
 ├── examples/               # Exemples d'usage du SDK
 ├── assets/              # Visuels marketing/README en archive (Git LFS — voir assets/README.md)
 ├── site/                   # (statique GitHub Pages versionné dans main — site/gh-pages, cf. pages-deploy.yml)
-└── .github/workflows/      # 54 pipelines CI/CD (vérifié 2026-09-05 — cartographie dans .github/workflows/README.md)
+└── .github/workflows/      # 69 pipelines CI/CD (vérifié 2026-09-18 — cartographie dans .github/workflows/README.md)
 ```
 
 > Cet arbre doit rester synchronisé avec la structure réelle du repo. En cas de doute, vérifier avec `find . -maxdepth 2 -not -path '*/node_modules/*'`.
@@ -63,16 +63,6 @@ Modules/<Name>/
 
 
 Modules actifs (27, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `Catalog`, `CRM`, `Delivery`, `EdgeSync`, `EduManager`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `Restaurant`, `RestaurantManager`, `Showcase`, `TravelAgency` (ordre alphabétique, vérifié `ls api/app/Modules`) + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`, qui contient aussi `AI`, `Http`, `Notifications`, `Privacy`, `Seed`, `Solutions`).
-
-
-
-
-
-
-
-
-
-
 
 > Décompte vérifié via `ls api/app/Modules | wc -l`. Voir `docs/ARCHITECTURE_STATUS.md` pour l'état couche-par-couche (Domain/Application/Infrastructure/Interfaces/Providers/Tests) de chaque module.
 
