@@ -1,6 +1,7 @@
 'use client';
 
 import { getAnalytics } from './analytics';
+import { trackingAllowed } from './consent';
 
 /**
  * #7542 — tranche 1 de #7496 : plan de tracking du tunnel d'inscription.
@@ -32,13 +33,23 @@ import { getAnalytics } from './analytics';
  * `trackFunnelStep` ne peut pas lever.
  */
 
-/** Noms d'événements — alignés sur le plan de #7496, pour la partie observable client. */
+/** Noms d'événements — plan de tracking complet de #7496 (partie observable client). */
 export const FUNNEL_EVENTS = {
   signupView: 'signup_view',
   signupEmailSubmitted: 'signup_email_submitted',
   signupOtpSent: 'signup_otp_sent',
   signupOtpVerified: 'signup_otp_verified',
   spaceProvisioned: 'space_provisioned',
+  // #7496 — étapes post-inscription : bienvenue puis préparation de l'espace
+  // (l'assistant d'accueil actuel ; l'entretien conversationnel #7493 reprendra
+  // les MÊMES noms d'événements — le plan de tracking est stable).
+  welcomeSeen: 'welcome_seen',
+  interviewStarted: 'interview_started',
+  interviewQuestionAnswered: 'interview_question_answered',
+  interviewSkipped: 'interview_skipped',
+  interviewCompleted: 'interview_completed',
+  interviewDismissed: 'interview_dismissed',
+  firstModuleOpened: 'first_module_opened',
 } as const;
 
 export type FunnelEventName = (typeof FUNNEL_EVENTS)[keyof typeof FUNNEL_EVENTS];
@@ -150,6 +161,43 @@ export function getFunnelAttribution(): Record<string, string> {
 }
 
 /**
+ * #7496 — beacon first-party : en plus de GA/Mixpanel (transport tiers,
+ * absent dès qu'un bloqueur est actif), chaque étape est envoyée à la route
+ * Next `/api/forms/funnel-event` qui la relaie côté serveur vers l'API
+ * plateforme (table `acquisition_funnel_events`). C'est cette collecte qui
+ * alimente le dashboard admin des conversions par étape.
+ *
+ * Mêmes règles que le reste du module : consentement requis (deux barrières,
+ * #7593), aucune PII (jamais d'e-mail ici — seuls des clés, compteurs et
+ * l'attribution), et jamais bloquant pour le parcours.
+ */
+function sendFunnelBeacon(
+  event: FunnelEventName,
+  props: Record<string, unknown>,
+): void {
+  try {
+    if (typeof window === 'undefined' || typeof fetch !== 'function') return;
+    const body = JSON.stringify({
+      event,
+      correlation_id: getFunnelCorrelationId(),
+      occurred_at: new Date().toISOString(),
+      attribution: getFunnelAttribution(),
+      context: props,
+    });
+    void fetch('/api/forms/funnel-event', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body,
+      // keepalive : l'événement part même si la page navigue juste après
+      // (ex. redirection /dashboard après la vérification du code).
+      keepalive: true,
+    }).catch(() => undefined);
+  } catch {
+    // Mesure best-effort : jamais bloquante (précédent #7479).
+  }
+}
+
+/**
  * Émet une étape du funnel. Ne lève jamais : une panne de mesure ne doit pas
  * priver le prospect de son espace.
  */
@@ -158,11 +206,17 @@ export function trackFunnelStep(
   props: Record<string, unknown> = {},
 ): void {
   try {
+    // #7593 — aucun envoi (tiers OU first-party) sans consentement explicite
+    // à la mesure d'audience : le correlation_id est un identifiant
+    // pseudonyme, il relève du même régime que GA/Mixpanel.
+    if (!trackingAllowed()) return;
+
     getAnalytics().trackEvent(event, {
       correlation_id: getFunnelCorrelationId(),
       ...getFunnelAttribution(),
       ...props,
     });
+    sendFunnelBeacon(event, props);
   } catch {
     // Mesure best-effort : jamais bloquante (précédent #7479).
   }

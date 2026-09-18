@@ -12,6 +12,14 @@ jest.mock('../analytics', () => ({
   getAnalytics: jest.fn(),
 }));
 
+// #7496 — le module respecte le consentement (#7593) : les tests d'émission
+// tournent avec la mesure d'audience accordée ; un cas dédié couvre le refus.
+jest.mock('../consent', () => ({
+  trackingAllowed: jest.fn(() => true),
+}));
+
+const mockedTrackingAllowed = require('../consent').trackingAllowed as jest.Mock;
+
 const mockedGetAnalytics = getAnalytics as jest.Mock;
 
 function goto(url: string): void {
@@ -26,6 +34,9 @@ describe('funnel — #7542 (tranche 1 de #7496)', () => {
     goto('/signup');
     trackEvent = jest.fn();
     mockedGetAnalytics.mockReturnValue({ trackEvent });
+    mockedTrackingAllowed.mockReturnValue(true);
+    // #7496 — beacon first-party : transport isolé.
+    global.fetch = jest.fn().mockResolvedValue({ ok: true }) as unknown as typeof fetch;
   });
 
   describe('correlation id', () => {
@@ -97,14 +108,56 @@ describe('funnel — #7542 (tranche 1 de #7496)', () => {
       expect(serialized).not.toMatch(/password|passwd|otp_code|secret|token/i);
     });
 
-    it('couvre les 5 jalons du tunnel d’inscription', () => {
+    it('couvre le plan de tracking complet de #7496', () => {
       expect(Object.values(FUNNEL_EVENTS)).toEqual([
         'signup_view',
         'signup_email_submitted',
         'signup_otp_sent',
         'signup_otp_verified',
         'space_provisioned',
+        'welcome_seen',
+        'interview_started',
+        'interview_question_answered',
+        'interview_skipped',
+        'interview_completed',
+        'interview_dismissed',
+        'first_module_opened',
       ]);
+    });
+
+    it('envoie aussi un beacon first-party vers /api/forms/funnel-event (#7496)', () => {
+      goto('/signup?source=campagne_a');
+      trackFunnelStep(FUNNEL_EVENTS.signupView, { page: '/signup' });
+
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+      const [url, init] = (global.fetch as jest.Mock).mock.calls[0];
+      expect(url).toBe('/api/forms/funnel-event');
+      const body = JSON.parse((init as RequestInit).body as string);
+      expect(body).toMatchObject({
+        event: 'signup_view',
+        attribution: { source: 'campagne_a' },
+        context: { page: '/signup' },
+      });
+      expect(typeof body.correlation_id).toBe('string');
+      // Critère 4 de #7496 : aucune PII dans le beacon.
+      expect(JSON.stringify(body)).not.toMatch(/@|password|otp_code/i);
+    });
+
+    it('n’émet RIEN sans consentement à la mesure d’audience (#7593)', () => {
+      mockedTrackingAllowed.mockReturnValue(false);
+      trackFunnelStep(FUNNEL_EVENTS.signupView);
+
+      expect(trackEvent).not.toHaveBeenCalled();
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+
+    it('le beacon ne casse jamais le parcours quand fetch lève', () => {
+      (global.fetch as jest.Mock).mockImplementation(() => {
+        throw new Error('réseau coupé');
+      });
+
+      expect(() => trackFunnelStep(FUNNEL_EVENTS.signupView)).not.toThrow();
+      expect(trackEvent).toHaveBeenCalled();
     });
 
     it('ne casse jamais le parcours quand la mesure échoue', () => {

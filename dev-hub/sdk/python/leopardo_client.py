@@ -420,6 +420,10 @@ class LeopardoClient:
         """Alertes flotte cross-tenant (super-admin)"""
         return self.request("GET", "/admin/fleet/alerts", **kwargs)
 
+    def get_admin_funnel_stats(self, **kwargs):
+        """Conversions du funnel d'acquisition par etape, jour et source"""
+        return self.request("GET", "/admin/funnel/stats", **kwargs)
+
     def get_admin_hr_reports(self, **kwargs):
         """Rapports RH cross-tenant (super-admin)"""
         return self.request("GET", "/admin/hr-reports", **kwargs)
@@ -2231,6 +2235,10 @@ class LeopardoClient:
     def post_fuel_station_stations_by_station_pumps_by_pump_meters_by_meter_readings(self, **kwargs):
         """Enregistrer un releve de compteur (cumulatif, idempotent)"""
         return self.request("POST", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", **kwargs)
+
+    def post_funnel_events(self, **kwargs):
+        """Ingerer un evenement d'etape du funnel d'acquisition (vitrine)"""
+        return self.request("POST", "/funnel/events", **kwargs)
 
     def post_growth_partner_apply(self, **kwargs):
         """Candidature partenaire"""
