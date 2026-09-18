@@ -2829,6 +2829,123 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /setup-interview:
+    get:
+      tags:
+      - Onboarding
+      summary: "\xC9tat de l'entretien de pr\xE9paration conversationnel (#7493)"
+      description: |
+        Retourne l'état de l'entretien de préparation du tenant courant
+        (statut, réponses brouillon, questions allowlistées, activations).
+        Persisté côté serveur (`companies.metadata.setup_interview`) pour
+        reprendre le parcours sur un autre appareil. RBAC principal/rh.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: État courant de l'entretien
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetupInterviewState'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /setup-interview/answers:
+    patch:
+      tags:
+      - Onboarding
+      summary: Enregistrer un brouillon de réponses de l'entretien (#7493)
+      description: |
+        Enregistrement incrémental (rejouable) des réponses. Allowlist
+        fail-closed : question ou valeur inconnue refusée (422, aucune
+        écriture). `null` marque une question explicitement sautée. Sans effet
+        sur un entretien déjà complété.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - answers
+              properties:
+                answers:
+                  type: object
+                  description: Réponses partielles (clés allowlistées).
+      responses:
+        '200':
+          description: Brouillon fusionné et persisté
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetupInterviewState'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /setup-interview/complete:
+    post:
+      tags:
+      - Onboarding
+      summary: Clôturer l'entretien et activer les modules (#7493)
+      description: |
+        Traduit les réponses en activations réelles (verticales via
+        SolutionActivator, outils horizontaux allowlistés) puis marque
+        l'entretien `completed`. Idempotent : rejouer `complete` est un no-op
+        qui renvoie le récapitulatif d'origine. Un échec d'activation n'est
+        pas bloquant (traçé dans `activated.failed`).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Récapitulatif des activations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      already_completed:
+                        type: boolean
+                      completed_at:
+                        type: string
+                      activated:
+                        $ref: '#/components/schemas/SetupInterviewActivated'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /setup-interview/dismiss:
+    post:
+      tags:
+      - Onboarding
+      summary: Reporter l'entretien de préparation (« Terminer plus tard », #7493)
+      description: |
+        Marque l'entretien `dismissed` (relance douce depuis le dashboard,
+        jamais bloquante). Idempotent ; sans effet sur un entretien complété.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: État courant de l'entretien
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetupInterviewState'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /company-integration-requests:
     get:
       tags:
@@ -38534,3 +38651,40 @@ components:
           type: boolean
         correlation_id:
           type: string
+    SetupInterviewActivated:
+      type: object
+      description: "Activations issues de l'entretien de préparation (#7493)."
+      properties:
+        solutions:
+          type: array
+          items: {type: string}
+        tools:
+          type: array
+          items: {type: string}
+        failed:
+          type: array
+          items: {type: string}
+    SetupInterviewState:
+      type: object
+      description: "État de l'entretien de préparation conversationnel (#7493)."
+      properties:
+        data:
+          type: object
+          properties:
+            status:
+              type: string
+              enum: [not_started, in_progress, completed, dismissed]
+            answers:
+              type: object
+              description: Réponses brouillon (clés allowlistées côté serveur).
+            questions:
+              type: object
+              description: Allowlist des questions et réponses possibles.
+            completed_at:
+              type: string
+              nullable: true
+            dismissed_at:
+              type: string
+              nullable: true
+            activated:
+              $ref: '#/components/schemas/SetupInterviewActivated'
