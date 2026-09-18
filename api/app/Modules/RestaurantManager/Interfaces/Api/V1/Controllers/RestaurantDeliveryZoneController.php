@@ -7,6 +7,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryZone;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\Concerns\ScopesRestaurantBranchListings;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantDeliveryZoneRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\UpdateRestaurantDeliveryZoneRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantDeliveryZoneResource;
@@ -22,6 +23,8 @@ use Illuminate\Http\Request;
  */
 class RestaurantDeliveryZoneController extends Controller
 {
+    use ScopesRestaurantBranchListings;
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -33,7 +36,7 @@ class RestaurantDeliveryZoneController extends Controller
 
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
-        $zones = RestaurantDeliveryZone::query()
+        $zones = $this->scopeToAccessibleBranches($actor, RestaurantDeliveryZone::query())
             ->when($request->query('branch_id'), fn ($q, $v) => $q->where('branch_id', (int) $v))
             ->orderBy('name')
             ->paginate($perPage);
@@ -46,7 +49,7 @@ class RestaurantDeliveryZoneController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('create', RestaurantDeliveryZone::class)) {
+        if ($actor->cannot('create', [RestaurantDeliveryZone::class, $request->validated()['branch_id'] ?? null])) {
             abort(403);
         }
 
@@ -62,6 +65,12 @@ class RestaurantDeliveryZoneController extends Controller
 
         if ($actor->company_id !== $restaurantDeliveryZone->company_id) {
             abort(404);
+        }
+
+        // #7599 — lecture ressource-scopée : un employé sans assignation ne
+        // lit plus les données métier dès que le scoping est actif.
+        if ($actor->cannot('view', $restaurantDeliveryZone)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
         }
 
         return (new RestaurantDeliveryZoneResource($restaurantDeliveryZone))->response();

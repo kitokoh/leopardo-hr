@@ -11,6 +11,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
+use Tests\Support\AssignsResourceAccess;
 use Tests\TestCase;
 
 /**
@@ -22,15 +23,18 @@ use Tests\TestCase;
  */
 class RestaurantReportExportTest extends TestCase
 {
+    use AssignsResourceAccess;
     use RefreshTenantDatabase;
 
     private function manager(Company $company): Employee
     {
+        // #7599 — les rapports exigent le niveau `manage` sur au moins une
+        // succursale (la valeur 'manager' de manager_role est morte côté
+        // policies) ; l'assignation est posée par les tests sur la branche.
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
-            'role' => 'manager',
-            'manager_role' => 'manager',
+            'role' => 'employee',
         ]);
 
         Sanctum::actingAs($employee);
@@ -53,10 +57,11 @@ class RestaurantReportExportTest extends TestCase
         Storage::fake('local');
 
         $company = $this->company();
-        $this->manager($company);
+        $manager = $this->manager($company);
 
         /** @var RestaurantBranch $branch */
         $branch = RestaurantBranch::factory()->create(['company_id' => $company->id]);
+        $this->assignResourceAccess($manager, 'restaurant_branch', $branch->id, 'manage');
 
         RestaurantOrder::factory()->create([
             'company_id' => $company->id,

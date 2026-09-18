@@ -116,6 +116,26 @@
 > mobile modifiée dans cette tranche (écrans R2+). Non-régression :
 > `api/tests/Feature/Security/ResourceScopedRbacTest.php`.
 
+> **MAJ 2026-09-18 — #7599/#7600/#7601 (R2-R4 de l'épique #7597), RBAC ressource-scopé
+> généralisé.** Surface **API** : les 31 policies RestaurantManager passent sur
+> `hasResourceAccess('restaurant_branch', …)` (conditions mortes `'manager'`/`'server'`
+> supprimées, listings bornés par `accessibleResourceIds`, COGS/cuisine/mobile scopés) —
+> scénarios `api/tests/Feature/Restaurant/RestaurantResourceScopedRbacTest.php` (gérant
+> refusé sur l'autre branche, serveur borné à sa branche, non-assigné fail-closed,
+> comportement inchangé avant la première assignation) et suites Restaurant réalignées
+> (personas = assignations via `tests/Support/AssignsResourceAccess`). Généralisation aux
+> verticales (trait Core `ChecksResourceScopedAccess` — Vehicle/FuelStation/EduCampus/
+> TravelOffice/TravelStation/Camera) : `api/tests/Feature/Security/
+> ResourceScopedVerticalPoliciesTest.php`. Cycle de vie (invitation pré-assignée créée à
+> l'activation, vue inverse `GET /resources/{type}/{id}/access`, révocation en cascade au
+> départ avec audit conservé, rapport `GET /resource-access/audit` + export CSV) :
+> `api/tests/Feature/Security/ResourceAccessLifecycleTest.php`. Surface **web client** :
+> panneau « Accès & ressources » par collaborateur dans `employees` (matrice ressources ×
+> niveaux, i18n ×4) — couvert par les checks front (tsc/eslint/jest) ; sélecteur de branche
+> du dashboard restaurant borné côté serveur. Gardes CI :
+> `dev-hub/tools/check-vertical-controller-policies.sh` et
+> `dev-hub/tools/check-manager-role-enum.sh` (workflow `resource-rbac-guards.yml`).
+
 > **MAJ 2026-09-17 — #7593, vitrine : consentement cookies, Consent Mode et mentions
 > d'information.** Surface **web client (vitrine)** uniquement : bandeau de consentement
 > (`ConsentBanner`/`ConsentProvider`/`ConsentScripts`), bouton de réglage persistant, notice

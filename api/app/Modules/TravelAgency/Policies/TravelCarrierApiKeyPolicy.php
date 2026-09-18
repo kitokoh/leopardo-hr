@@ -17,12 +17,12 @@ class TravelCarrierApiKeyPolicy
 {
     public function viewAny(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager');
+        return $actor->hasManagerRole('principal', 'rh');
     }
 
     public function create(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager');
+        return $actor->hasManagerRole('principal', 'rh');
     }
 
     public function delete(Employee $actor, TravelCarrierApiKey $apiKey): bool

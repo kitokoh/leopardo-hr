@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderPayment;
+use App\Modules\RestaurantManager\Policies\Concerns\ChecksRestaurantBranchAccess;
 
 /**
  * RESTO-407 (#6194) — Policy des paiements de commande.
@@ -16,6 +17,8 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderPayment;
  */
 class RestaurantOrderPaymentPolicy
 {
+    use ChecksRestaurantBranchAccess;
+
     public function viewAny(Employee $actor): bool
     {
         return true;
@@ -23,11 +26,12 @@ class RestaurantOrderPaymentPolicy
 
     public function view(Employee $actor, RestaurantOrderPayment $payment): bool
     {
-        return $payment->company_id === $actor->company_id;
+        return $payment->company_id === $actor->company_id
+            && $this->canViewBranchResource($actor, $payment->order?->branch_id);
     }
 
-    public function create(Employee $actor): bool
+    public function create(Employee $actor, int|string|null $branchId = null): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager', 'server');
+        return $this->canOperateBranchResource($actor, $branchId);
     }
 }

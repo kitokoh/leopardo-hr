@@ -13,7 +13,6 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelArticleReque
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelArticleResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 /**
  * TRAVEL-901 (#6104) — Articles & catégories (CRUD, statuts, modération).
@@ -205,7 +204,6 @@ class TravelArticleController extends Controller
         return new JsonResponse(['data' => $category], 201);
     }
 
-
     public function updateCategory(Request $request, TravelArticleCategory $category): JsonResponse
     {
         /** @var Employee $actor */
@@ -225,7 +223,6 @@ class TravelArticleController extends Controller
 
         return response()->json(['data' => $category->refresh()]);
     }
-
 
     public function destroyCategory(Request $request, TravelArticleCategory $category): JsonResponse
     {
@@ -282,10 +279,9 @@ class TravelArticleController extends Controller
         ];
     }
 
-
     private function denyUnlessManager(Employee $actor): void
     {
-        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
+        if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
         }
     }

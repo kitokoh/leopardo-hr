@@ -33,7 +33,7 @@ class RestaurantRefundController extends Controller
             abort(404);
         }
 
-        if ($actor->cannot('create', RestaurantRefund::class)) {
+        if ($actor->cannot('create', [RestaurantRefund::class, $restaurantOrder->branch_id])) {
             abort(403);
         }
 

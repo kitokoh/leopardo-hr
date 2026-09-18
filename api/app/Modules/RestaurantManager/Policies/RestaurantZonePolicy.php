@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantZone;
+use App\Modules\RestaurantManager\Policies\Concerns\ChecksRestaurantBranchAccess;
 
 /**
  * RESTO-301 (#6182) — Policy des zones du plan de salle RestaurantManager.
@@ -18,6 +19,8 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantZone;
  */
 class RestaurantZonePolicy
 {
+    use ChecksRestaurantBranchAccess;
+
     public function viewAny(Employee $actor): bool
     {
         return true;
@@ -25,17 +28,19 @@ class RestaurantZonePolicy
 
     public function view(Employee $actor, RestaurantZone $zone): bool
     {
-        return $zone->company_id === $actor->company_id;
+        return $zone->company_id === $actor->company_id
+            && $this->canViewBranchResource($actor, $zone->branch_id);
     }
 
-    public function create(Employee $actor): bool
+    public function create(Employee $actor, int|string|null $branchId = null): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager');
+        return $this->canManageBranchResource($actor, $branchId);
     }
 
     public function update(Employee $actor, RestaurantZone $zone): bool
     {
-        return $this->create($actor) && $zone->company_id === $actor->company_id;
+        return $zone->company_id === $actor->company_id
+            && $this->canManageBranchResource($actor, $zone->branch_id);
     }
 
     public function delete(Employee $actor, RestaurantZone $zone): bool

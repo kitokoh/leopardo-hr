@@ -63,6 +63,14 @@ class DepartureService
             // Révocation des tokens Sanctum (comme archive).
             $employee->tokens()->delete();
 
+            // #7601 (R4 de l'épique #7597) — révocation en cascade des accès
+            // ressource au départ : les assignations sont supprimées une à une
+            // (et non par requête) pour que chaque révocation laisse sa ligne
+            // d'audit (trait Auditable) — l'audit reste lisible après le départ.
+            foreach ($employee->resourceAssignments()->get() as $assignment) {
+                $assignment->delete();
+            }
+
             if ($employee->company_id !== null) {
                 $this->tenantCache->invalidateEmployees($employee->company_id);
             }

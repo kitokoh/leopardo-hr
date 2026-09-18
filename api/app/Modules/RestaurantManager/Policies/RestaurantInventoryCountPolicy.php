@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryCount;
+use App\Modules\RestaurantManager\Policies\Concerns\ChecksRestaurantBranchAccess;
 
 /**
  * RESTO-504 (#6203) — Policy des inventaires physiques.
@@ -16,6 +17,8 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryCount;
  */
 class RestaurantInventoryCountPolicy
 {
+    use ChecksRestaurantBranchAccess;
+
     public function viewAny(Employee $actor): bool
     {
         return true;
@@ -23,17 +26,19 @@ class RestaurantInventoryCountPolicy
 
     public function view(Employee $actor, RestaurantInventoryCount $count): bool
     {
-        return $count->company_id === $actor->company_id;
+        return $count->company_id === $actor->company_id
+            && $this->canViewBranchResource($actor, $count->branch_id);
     }
 
-    public function create(Employee $actor): bool
+    public function create(Employee $actor, int|string|null $branchId = null): bool
     {
-        return $actor->hasManagerRole('principal', 'rh');
+        return $this->canManageBranchResource($actor, $branchId);
     }
 
     public function update(Employee $actor, RestaurantInventoryCount $count): bool
     {
-        return $this->create($actor) && $count->company_id === $actor->company_id;
+        return $count->company_id === $actor->company_id
+            && $this->canManageBranchResource($actor, $count->branch_id);
     }
 
     public function approve(Employee $actor, RestaurantInventoryCount $count): bool

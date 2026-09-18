@@ -26,7 +26,7 @@ class TravelCancellationPolicyPolicy
 
     public function create(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager');
+        return $actor->hasManagerRole('principal', 'rh');
     }
 
     public function update(Employee $actor, TravelCancellationPolicy $policy): bool

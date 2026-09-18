@@ -6,6 +6,8 @@ namespace App\Modules\HR\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\EmployeeResourceAssignment;
+use App\Core\Tenant\Infrastructure\Services\ResourceTypeRegistry;
 use App\Core\Tenant\TenantManager;
 use App\Mail\UserInvitationMail;
 use App\Modules\HR\Domain\Models\UserInvitation;
@@ -16,13 +18,24 @@ use Illuminate\Support\Str;
 
 class UserInvitationService
 {
-    public function __construct(private readonly TenantManager $tenantManager) {}
+    public function __construct(
+        private readonly TenantManager $tenantManager,
+        private readonly ResourceTypeRegistry $resourceTypes,
+    ) {}
 
+    /**
+     * @param  list<array{resource_type: string, resource_id: int, access_level: string}>  $resourceAssignments
+     *                                                                                                           #7601 (R4 de l'épique #7597) — invitation pré-assignée : les accès
+     *                                                                                                           ressource voyagent dans l'invitation et sont créés à l'ACTIVATION
+     *                                                                                                           (l'employé n'a de session qu'à ce moment-là ; s'il n'active jamais,
+     *                                                                                                           aucun accès n'existe).
+     */
     public function createAndSend(
         Company $company,
         Employee $employee,
         string $invitedByType,
         string $invitedByEmail,
+        array $resourceAssignments = [],
     ): string {
         $plainToken = Str::random(64);
 
@@ -39,7 +52,7 @@ class UserInvitationService
             ->first();
 
         if ($invitation === null) {
-            $invitation = new UserInvitation();
+            $invitation = new UserInvitation;
             $invitation->company_id = $company->id;
             $invitation->employee_id = $employee->id;
         }
@@ -54,9 +67,24 @@ class UserInvitationService
         $invitation->expires_at = now()->addDays(7);
         $invitation->accepted_at = null;
         $invitation->last_sent_at = now();
-        $invitation->metadata = [
+        $metadata = [
             'employee_name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
         ];
+
+        // Une ressource inexistante (ou d'un autre tenant) n'est jamais
+        // pré-assignable : refus explicite, comme le PUT R1.
+        if ($resourceAssignments !== []) {
+            foreach ($resourceAssignments as $entry) {
+                abort_unless(
+                    $this->resourceTypes->exists($entry['resource_type'], $entry['resource_id'], $company->id),
+                    422,
+                    __('errors.RESOURCE_NOT_FOUND'),
+                );
+            }
+            $metadata['resource_assignments'] = $resourceAssignments;
+        }
+
+        $invitation->metadata = $metadata;
         $invitation->save();
 
         // Issue #1776 : un transport mail absent ou invalide (MAIL_MAILER non
@@ -114,6 +142,11 @@ class UserInvitationService
                 $employee->email_verified_at = $acceptedAt;
                 $employee->invitation_accepted_at = $acceptedAt;
                 $employee->save();
+
+                // #7601 — les accès pré-assignés à l'invitation prennent effet
+                // à l'activation. Une ressource disparue entre-temps est
+                // ignorée (elle n'existe plus, il n'y a rien à donner).
+                $this->applyPreAssignedResources($invitation->metadata, $employee);
             } finally {
                 $this->tenantManager->resetToPrevious();
             }
@@ -123,5 +156,59 @@ class UserInvitationService
 
             return $employee;
         });
+    }
+
+    /**
+     * Crée les assignations de ressources portées par l'invitation (R4).
+     *
+     * @param  array<string, mixed>|null  $metadata
+     */
+    private function applyPreAssignedResources(?array $metadata, Employee $employee): void
+    {
+        $entries = $metadata['resource_assignments'] ?? null;
+        if (! is_array($entries) || $entries === [] || $employee->company_id === null) {
+            return;
+        }
+
+        foreach ($entries as $entry) {
+            if (! is_array($entry)) {
+                continue;
+            }
+
+            $type = isset($entry['resource_type']) ? (string) $entry['resource_type'] : '';
+            $resourceId = isset($entry['resource_id']) ? (int) $entry['resource_id'] : 0;
+            $level = isset($entry['access_level']) ? (string) $entry['access_level'] : '';
+
+            if ($type === '' || $resourceId <= 0 || EmployeeResourceAssignment::levelRank($level) < 0) {
+                continue;
+            }
+
+            if (! $this->resourceTypes->exists($type, $resourceId, $employee->company_id)) {
+                continue;
+            }
+
+            $existing = $employee->resourceAssignments()
+                ->where('resource_type', $type)
+                ->where('resource_id', $resourceId)
+                ->first();
+
+            if ($existing !== null) {
+                if ($existing->access_level !== $level) {
+                    $existing->access_level = $level;
+                    $existing->save();
+                }
+
+                continue;
+            }
+
+            $assignment = new EmployeeResourceAssignment([
+                'employee_id' => $employee->id,
+                'resource_type' => $type,
+                'resource_id' => $resourceId,
+                'access_level' => $level,
+            ]);
+            $assignment->company_id = $employee->company_id;
+            $assignment->save();
+        }
     }
 }

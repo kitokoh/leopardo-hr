@@ -25,14 +25,13 @@ class TravelTouristSitePolicy
 
     public function create(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager', 'agent');
+        return $actor->hasManagerRole('principal', 'rh');
     }
 
     public function update(Employee $actor, TravelTouristSite $site): bool
     {
         return $this->create($actor) && $site->company_id === $actor->company_id;
     }
-
 
     public function delete(Employee $actor, TravelTouristSite $site): bool
     {

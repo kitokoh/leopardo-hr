@@ -23,8 +23,7 @@ class RestaurantStockAlertController extends Controller
 {
     public function __construct(
         private readonly RestaurantStockAlertService $alerts,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -35,9 +34,27 @@ class RestaurantStockAlertController extends Controller
             abort(403);
         }
 
-        $branchId = $request->query('branch_id') !== null ? (int) $request->query('branch_id') : null;
+        $branchParam = $request->query('branch_id');
+        $branchId = is_numeric($branchParam) ? (int) $branchParam : null;
+
+        // #7599 — les alertes de stock sont bornées aux succursales accessibles.
+        $accessible = $actor->accessibleResourceIds('restaurant_branch');
+        if ($accessible !== null) {
+            if ($branchId !== null && ! in_array($branchId, $accessible, true)) {
+                abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
+            }
+            if ($branchId === null && $accessible === []) {
+                return RestaurantStockLevelResource::collection(collect())->response();
+            }
+        }
 
         $levels = $this->alerts->belowThreshold($actor->company_id, $branchId);
+
+        if ($accessible !== null && $branchId === null) {
+            $levels = $levels->filter(
+                fn (RestaurantStockLevel $level): bool => in_array((int) $level->branch_id, $accessible, true)
+            )->values();
+        }
 
         return RestaurantStockLevelResource::collection($levels)->response();
     }

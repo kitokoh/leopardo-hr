@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Domain\Policies\Concerns\ChecksResourceScopedAccess;
 use App\Modules\TravelAgency\Domain\Models\TravelOffice;
 
 /**
@@ -16,6 +17,8 @@ use App\Modules\TravelAgency\Domain\Models\TravelOffice;
  */
 class TravelOfficePolicy
 {
+    use ChecksResourceScopedAccess;
+
     public function viewAny(Employee $actor): bool
     {
         return true;
@@ -23,17 +26,20 @@ class TravelOfficePolicy
 
     public function view(Employee $actor, TravelOffice $office): bool
     {
-        return $office->company_id === $actor->company_id;
+        return $office->company_id === $actor->company_id
+            && $this->canViewScopedResource($actor, 'travel_office', $office->id);
     }
 
     public function create(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager');
+        // #7600 — ouvrir un bureau est un acte company-wide.
+        return $this->canManageScopedResource($actor, 'travel_office', null, $actor->hasManagerRole('principal', 'rh'));
     }
 
     public function update(Employee $actor, TravelOffice $office): bool
     {
-        return $this->create($actor) && $office->company_id === $actor->company_id;
+        return $office->company_id === $actor->company_id
+            && $this->canManageScopedResource($actor, 'travel_office', $office->id, $actor->hasManagerRole('principal', 'rh'));
     }
 
     public function delete(Employee $actor, TravelOffice $office): bool

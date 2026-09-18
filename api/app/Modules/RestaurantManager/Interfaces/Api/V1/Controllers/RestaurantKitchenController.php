@@ -11,6 +11,7 @@ use App\Modules\RestaurantManager\Domain\Enums\OrderStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantKitchenOrderResource;
+use App\Modules\RestaurantManager\Policies\Concerns\ChecksRestaurantBranchAccess;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -26,16 +27,14 @@ use Illuminate\Http\Request;
  */
 class RestaurantKitchenController extends Controller
 {
+    use ChecksRestaurantBranchAccess;
+
     public function __construct(private readonly TransitionOrderAction $transitionAction) {}
 
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
-
-        if (! $this->isKitchenRole($actor)) {
-            abort(403);
-        }
 
         $branchId = $request->query('branch_id');
 
@@ -49,6 +48,11 @@ class RestaurantKitchenController extends Controller
 
         if (! $branch instanceof RestaurantBranch) {
             abort(404);
+        }
+
+        // #7599 — la file cuisine est un geste opérationnel de LA succursale.
+        if (! $this->canOperateBranchResource($actor, $branch->id)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
         }
 
         $orders = RestaurantOrder::query()
@@ -67,12 +71,12 @@ class RestaurantKitchenController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if (! $this->isKitchenRole($actor)) {
-            abort(403);
-        }
-
         if ($actor->company_id !== $restaurantOrder->company_id) {
             abort(404);
+        }
+
+        if (! $this->canOperateBranchResource($actor, $restaurantOrder->branch_id)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
         }
 
         $order = $this->transitionAction->transition($actor, $restaurantOrder, OrderStatus::IN_PREPARATION);
@@ -85,21 +89,16 @@ class RestaurantKitchenController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if (! $this->isKitchenRole($actor)) {
-            abort(403);
-        }
-
         if ($actor->company_id !== $restaurantOrder->company_id) {
             abort(404);
+        }
+
+        if (! $this->canOperateBranchResource($actor, $restaurantOrder->branch_id)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
         }
 
         $order = $this->transitionAction->transition($actor, $restaurantOrder, OrderStatus::READY);
 
         return (new RestaurantKitchenOrderResource($order->load('items.product')))->response();
-    }
-
-    private function isKitchenRole(Employee $actor): bool
-    {
-        return $actor->hasManagerRole('principal', 'rh', 'manager', 'kitchen');
     }
 }

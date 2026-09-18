@@ -27,7 +27,7 @@ class TravelTicketPolicy
 
     public function checkIn(Employee $actor, TravelTicket $ticket): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager')
+        return $actor->hasManagerRole('principal', 'rh')
             && $ticket->company_id === $actor->company_id;
     }
 }

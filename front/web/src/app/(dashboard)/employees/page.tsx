@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useSyncExternalStore } from 'react';
-import { Plus, X } from 'lucide-react';
+import { Plus, ShieldCheck, X } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
+import { ResourceAccessPanel } from './resource-access-panel';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
@@ -81,6 +82,9 @@ export default function EmployeesPage() {
   const [isCreatingEmployee, setIsCreatingEmployee] = useState(false);
   const [employeeError, setEmployeeError] = useState<string | null>(null);
   const [employeeAdded, setEmployeeAdded] = useState(false);
+
+  // #7599 — panneau « Accès & ressources » ouvert pour un collaborateur.
+  const [accessPanelEmployeeId, setAccessPanelEmployeeId] = useState<number | null>(null);
 
   const loadEmployees = useCallback(async () => {
     const response = await apiFetch('/employees?per_page=12', { _cacheBust: true });
@@ -451,25 +455,40 @@ export default function EmployeesPage() {
                 `Employe #${employee.id}`;
 
               return (
-                <div
-                  key={employee.id}
-                  className="flex flex-col gap-3 px-6 py-5 md:flex-row md:items-center md:justify-between"
-                >
-                  <div>
-                    <p className="text-sm font-bold text-slate-950">{fullName}</p>
-                    <p className="text-xs text-slate-500">{employee.email ?? 'Email indisponible'}</p>
+                <div key={employee.id} className="flex flex-col gap-3 px-6 py-5">
+                  <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <p className="text-sm font-bold text-slate-950">{fullName}</p>
+                      <p className="text-xs text-slate-500">{employee.email ?? 'Email indisponible'}</p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-wider">
+                      <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">
+                        {employee.matricule ?? 'Sans matricule'}
+                      </span>
+                      <span className="rounded-full bg-rh-light px-3 py-1 text-rh-dark">
+                        {teamRoleLabel(locale, employee.role, employee.manager_role)}
+                      </span>
+                      <span className="rounded-full bg-slate-900 px-3 py-1 text-white">
+                        {employee.status ?? 'active'}
+                      </span>
+                      <button
+                        type="button"
+                        data-testid={`resource-access-toggle-${employee.id}`}
+                        onClick={() =>
+                          setAccessPanelEmployeeId((current) =>
+                            current === employee.id ? null : employee.id,
+                          )
+                        }
+                        className="inline-flex items-center gap-1 rounded-full border border-app-border px-3 py-1 text-slate-600 transition hover:bg-slate-100"
+                      >
+                        <ShieldCheck className="h-3.5 w-3.5" />
+                        {i18nT(locale, 'employees.resourceAccess.button')}
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-2 text-[11px] font-bold uppercase tracking-wider">
-                    <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">
-                      {employee.matricule ?? 'Sans matricule'}
-                    </span>
-                    <span className="rounded-full bg-rh-light px-3 py-1 text-rh-dark">
-                      {teamRoleLabel(locale, employee.role, employee.manager_role)}
-                    </span>
-                    <span className="rounded-full bg-slate-900 px-3 py-1 text-white">
-                      {employee.status ?? 'active'}
-                    </span>
-                  </div>
+                  {accessPanelEmployeeId === employee.id ? (
+                    <ResourceAccessPanel employeeId={employee.id} locale={locale} />
+                  ) : null}
                 </div>
               );
             })
