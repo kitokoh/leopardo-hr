@@ -1,4 +1,4 @@
-# Support — Leopardo RH
+# Support — Leopardo
 
 Besoin d'aide ? Voici les bons canaux, du plus rapide au plus structuré.
 
@@ -12,11 +12,11 @@ Besoin d'aide ? Voici les bons canaux, du plus rapide au plus structuré.
 
 - **Discussions GitHub** (si activé) pour les questions ouvertes et les idées.
 - Template [feature.yml](.github/ISSUE_TEMPLATE/feature.yml) pour une demande structurée.
-- Roadmap publique : [ROADMAP.md](docs/REFERENTIEL_PRODUIT/ROADMAP.md) · état opérationnel réel : [PILOTAGE.md](PILOTAGE.md).
+- Roadmap publique : [ROADMAP.md](docs/REFERENTIEL_PRODUIT/ROADMAP.md) · suivi opérationnel : [GitHub Issues](https://github.com/kitokoh/leopardo-hr/issues) (l'ancien [PILOTAGE.md](docs/archive/PILOTAGE.md) est archivé, #6698).
 
 ## 📚 Documentation
 
-- **Index complet** : [docs/README.md](docs/README.md) (518 fichiers : architecture, sécurité, specs, déploiement, GTM).
+- **Index complet** : [docs/README.md](docs/README.md) (plus de 1000 fichiers au 2026-09-18 : architecture, sécurité, specs, déploiement, GTM).
 - **Architecture** : [ARCHITECTURE.md](ARCHITECTURE.md) · [docs/architecture/](docs/architecture/)
 - **API** : [docs/api/API_REFERENCE.md](docs/api/API_REFERENCE.md) · spec OpenAPI : [api/openapi.yaml](api/openapi.yaml) · collection [Postman](postman/)
 - **Mobile** : [docs/mobile/README.md](docs/mobile/README.md) · **Kiosk** : [docs/kiosk/README.md](docs/kiosk/README.md)
