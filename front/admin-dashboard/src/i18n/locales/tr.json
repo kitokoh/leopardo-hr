@@ -6986,7 +6986,9 @@
     "errorWeakPassword": "Şifre çok zayıf: en az 12 karakter ve en az bir rakam.",
     "errorMismatch": "İki şifre eşleşmiyor.",
     "errorGeneric": "Şifre kaydedilemedi. Birkaç dakika sonra tekrar deneyin.",
-    "backToLogin": "Girişe dön"
+    "backToLogin": "Girişe dön",
+    "showPassword": "Şifreyi göster",
+    "hidePassword": "Şifreyi gizle"
   },
   "loginCode": {
     "linkLabel": "Giriş kodu al",
@@ -7004,6 +7006,7 @@
     "errorInvalid": "Kod geçersiz veya süresi dolmuş. Yeni bir kod isteyin.",
     "errorTooMany": "Çok fazla deneme. Yeni bir kod isteyin.",
     "errorPasswordRequired": "Bu hesap parola ile giriş gerektirir.",
-    "errorGeneric": "Giriş yapılamadı. Birkaç dakika sonra tekrar deneyin."
+    "errorGeneric": "Giriş yapılamadı. Birkaç dakika sonra tekrar deneyin.",
+    "emailPlaceholder": "yonetici@sirket.com"
   }
 }

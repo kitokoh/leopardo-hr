@@ -6847,7 +6847,9 @@
     "errorWeakPassword": "Password too weak: at least 12 characters, including a number.",
     "errorMismatch": "The two passwords do not match.",
     "errorGeneric": "Could not save the password. Try again in a few moments.",
-    "backToLogin": "Back to login"
+    "backToLogin": "Back to login",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "loginCode": {
     "linkLabel": "Receive a login code",
@@ -6865,6 +6867,7 @@
     "errorInvalid": "Invalid or expired code. Request a new code.",
     "errorTooMany": "Too many attempts. Request a new code.",
     "errorPasswordRequired": "This account requires a password sign-in.",
-    "errorGeneric": "Could not log you in. Try again in a few moments."
+    "errorGeneric": "Could not log you in. Try again in a few moments.",
+    "emailPlaceholder": "manager@company.com"
   }
 }

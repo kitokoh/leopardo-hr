@@ -651,7 +651,7 @@ function LoginInner() {
                     required
                     disabled={codeEmailSent}
                     className="block h-12 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-transparent/50 dark:bg-slate-800/50 px-4 text-slate-950 dark:text-white shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 font-bold text-sm disabled:opacity-60"
-                    placeholder="manager@company.com"
+                    placeholder={i18nT(locale, 'loginCode.emailPlaceholder')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />

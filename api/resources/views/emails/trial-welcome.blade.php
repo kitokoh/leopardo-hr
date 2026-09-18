@@ -3,8 +3,8 @@
 
     #7490 : cet e-mail ne contient PLUS AUCUN secret en clair. Le mot de passe
     temporaire est remplacé par un lien magique de DÉFINITION de mot de passe
-    (provisioning_token à usage unique, TTL 72 h côté serveur). L'e-mail
-    rappelle l'adresse de connexion et pointe vers l'espace.
+    (provisioning_token à usage unique, TTL 72 h côté serveur). L’e-mail
+    rappelle l’adresse de connexion et pointe vers l’espace.
 --}}
 
 @extends('emails.layouts.base')

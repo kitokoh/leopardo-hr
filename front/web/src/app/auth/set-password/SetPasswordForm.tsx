@@ -185,7 +185,7 @@ export function SetPasswordForm({ tokenFromUrl }: { tokenFromUrl: string }) {
                       type="button"
                       onClick={() => setShowPassword((v) => !v)}
                       className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600"
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      aria-label={showPassword ? t('setPassword.hidePassword') : t('setPassword.showPassword')}
                     >
                       {showPassword ? (
                         <EyeOff className="h-4 w-4" aria-hidden="true" />
