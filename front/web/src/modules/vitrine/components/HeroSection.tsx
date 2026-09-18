@@ -109,6 +109,8 @@ export function QuickTrialEmailForm({ locale, copy }: { locale: AppLocale; copy:
             required
             autoComplete="email"
             placeholder={copy.placeholder}
+            aria-invalid={status === 'error' ? true : undefined}
+            aria-describedby={message ? 'hero-email-message' : undefined}
             className="w-full bg-transparent text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-400 dark:text-white"
           />
         </label>
@@ -125,6 +127,9 @@ export function QuickTrialEmailForm({ locale, copy }: { locale: AppLocale; copy:
 
       {message && (
         <div
+          id="hero-email-message"
+          role={status === 'error' ? 'alert' : 'status'}
+          aria-live="polite"
           className={`mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold ${
             status === 'success'
               ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
