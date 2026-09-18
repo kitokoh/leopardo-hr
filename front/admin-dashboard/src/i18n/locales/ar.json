@@ -5125,7 +5125,8 @@
       "parametres": "الإعدادات",
       "systeme": "النظام"
     },
-    "team": "فريق المنصة"
+    "team": "فريق المنصة",
+    "acquisitionFunnel": "قمع الاكتساب"
   },
   "companydetailCoreModuleAlwaysActive": "الوحدة الأساسية نشطة دائمًا",
   "smartAttendanceSessionsTitle": "جلسات الحضور الذكي",
@@ -6968,5 +6969,29 @@
     "body": "أُرسل إليك بريد إلكتروني يحتوي على رابط لتعيين كلمة المرور، وسيُستخدم في تسجيلات دخولك المقبلة.",
     "ctaStart": "ابدأ الإعداد",
     "ctaLater": "لاحقًا"
+  },
+  "funnelStats": {
+    "title": "قمع الاكتساب",
+    "subtitle": "تحويلات مسار التسجيل حسب الخطوة واليوم والمصدر (#7496).",
+    "refresh": "تحديث",
+    "retry": "إعادة المحاولة",
+    "loading": "جارٍ التحميل…",
+    "empty": "لا توجد أحداث في هذه الفترة.",
+    "daysUnit": "يومًا",
+    "otpAlert": "تنبيه تسليم الرموز: نسبة الرموز المتحقق منها إلى المرسلة اليوم أقل من الحد — قد يكون خادم البريد معطلاً.",
+    "metricJourneys": "المسارات (زيارات /signup)",
+    "metricProvisioned": "مساحات جاهزة",
+    "metricConversionRate": "التحويل زيارة ← مساحة جاهزة",
+    "stepsTitle": "معدلات العبور حسب الخطوة",
+    "stepsHint": "المسارات المميزة التي بلغت كل خطوة؛ ٪ = العبور من الخطوة السابقة.",
+    "byDayTitle": "التحويل حسب اليوم",
+    "byDayHint": "زيارات /signup والمساحات الجاهزة يومًا بيوم.",
+    "bySourceTitle": "التحويل حسب المصدر",
+    "bySourceHint": "الإسناد الملتقط في أول شاشة من المسار (source / utm).",
+    "dateColumn": "التاريخ",
+    "viewsColumn": "الزيارات",
+    "provisionedColumn": "جاهزة",
+    "conversionColumn": "التحويل",
+    "sourceColumn": "المصدر"
   }
 }

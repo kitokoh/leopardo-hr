@@ -5131,7 +5131,8 @@
       "parametres": "Ayarlar",
       "systeme": "Sistem"
     },
-    "team": "Platform ekibi"
+    "team": "Platform ekibi",
+    "acquisitionFunnel": "Edinim hunisi"
   },
   "companydetailCoreModuleAlwaysActive": "Çekirdek modül her zaman aktif",
   "smartAttendanceSessionsTitle": "Akıllı yoklama oturumları",
@@ -6974,5 +6975,29 @@
     "body": "Şifrenizi belirlemeniz için bir bağlantı içeren e-posta gönderildi; sonraki girişlerinizde kullanılacaktır.",
     "ctaStart": "Kuruluma başla",
     "ctaLater": "Daha sonra"
+  },
+  "funnelStats": {
+    "title": "Edinim hunisi",
+    "subtitle": "Kayıt hunisinin adım, gün ve kaynağa göre dönüşümleri (#7496).",
+    "refresh": "Yenile",
+    "retry": "Tekrar dene",
+    "loading": "Yükleniyor…",
+    "empty": "Bu dönemde etkinlik yok.",
+    "daysUnit": "gün",
+    "otpAlert": "Kod teslim uyarısı: bugünkü doğrulanan/gönderilen oranı eşiğin altında — posta sunucusu arızalı olabilir.",
+    "metricJourneys": "Yolculuklar (/signup görüntülemeleri)",
+    "metricProvisioned": "Hazır çalışma alanları",
+    "metricConversionRate": "Ziyaret → alan hazır dönüşümü",
+    "stepsTitle": "Adım adım geçiş oranları",
+    "stepsHint": "Her adıma ulaşan ayrık yolculuklar; % = önceki adımdan geçiş.",
+    "byDayTitle": "Güne göre dönüşüm",
+    "byDayHint": "/signup görüntülemeleri ve hazır alanlar, gün gün.",
+    "bySourceTitle": "Kaynağa göre dönüşüm",
+    "bySourceHint": "Huninin ilk ekranında yakalanan atıf (source / utm).",
+    "dateColumn": "Tarih",
+    "viewsColumn": "Görüntüleme",
+    "provisionedColumn": "Hazır",
+    "conversionColumn": "Dönüşüm",
+    "sourceColumn": "Kaynak"
   }
 }

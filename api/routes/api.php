@@ -21,6 +21,7 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBankingController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBrandingController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyModuleController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\PrivacyController;
+use App\Modules\Marketing\Interfaces\Api\V1\Controllers\AcquisitionFunnelEventController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingLeadController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
@@ -62,6 +63,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMarketingLeadCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMarketingOAuthConfigController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMetricsOverviewController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformNotificationObservabilityController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAcquisitionFunnelController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSolutionSurveyStatsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformTeamController;
@@ -191,6 +193,11 @@ Route::prefix('v1')->group(function (): void {
     // Protected by a shared secret (see services.marketing_lead_webhook),
     // not Sanctum, since the caller has no tenant yet.
     Route::middleware(['throttle:webhooks-inbound'])->post('/marketing/leads', [MarketingLeadController::class, 'store']);
+
+    // #7496 — événements d'étape du funnel d'acquisition (vitrine, server-to-
+    // server via la route Next /api/forms/funnel-event, même secret partagé
+    // que /marketing/leads). Aucune PII : liste fermée d'étapes + corrélation.
+    Route::middleware(['throttle:webhooks-inbound'])->post('/funnel/events', [AcquisitionFunnelEventController::class, 'store']);
 
     // Stripe/Chargily webhooks (public, verified by provider signature inside
     // the controller). PA2-API-005: dedicated 'webhooks-inbound' throttle since
@@ -566,6 +573,10 @@ Route::prefix('v1')->group(function (): void {
         // du wizard vitrine, agrégées depuis marketing_leads type solution_survey).
         Route::get('/solutions/survey-stats', [PlatformSolutionSurveyStatsController::class, 'index']);
         Route::get('/marketing/leads', [PlatformMarketingLeadController::class, 'index'])->middleware('platform.permission:crm.view');
+
+        // #7496 — conversions du funnel d'acquisition par étape/jour/source
+        // (dashboard admin CRM commercial, données acquisition_funnel_events).
+        Route::get('/funnel/stats', [PlatformAcquisitionFunnelController::class, 'index'])->middleware('platform.permission:metrics.view');
 
         Route::get('/fleet/alerts', [PlatformAdminFleetAlertController::class, 'index']);
 

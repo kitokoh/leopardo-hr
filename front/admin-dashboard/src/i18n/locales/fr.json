@@ -5131,7 +5131,8 @@
       "parametres": "Paramètres",
       "systeme": "Système"
     },
-    "team": "Équipe plateforme"
+    "team": "Équipe plateforme",
+    "acquisitionFunnel": "Funnel d'acquisition"
   },
   "companydetailCoreModuleAlwaysActive": "Module cœur toujours actif",
   "smartAttendanceSessionsTitle": "Sessions Smart Attendance",
@@ -6841,5 +6842,29 @@
     "body": "Un e-mail vous a été envoyé avec un lien pour définir votre mot de passe : il servira à vos prochaines connexions.",
     "ctaStart": "Démarrer la mise en route",
     "ctaLater": "Plus tard"
+  },
+  "funnelStats": {
+    "title": "Funnel d'acquisition",
+    "subtitle": "Conversions du tunnel d'inscription par étape, par jour et par source (#7496).",
+    "refresh": "Actualiser",
+    "retry": "Réessayer",
+    "loading": "Chargement…",
+    "empty": "Aucun événement sur la période.",
+    "daysUnit": "jours",
+    "otpAlert": "Alerte livraison des codes : le taux de codes vérifiés / envoyés du jour est sous le seuil — le mailer est peut-être en échec.",
+    "metricJourneys": "Parcours (visites /signup)",
+    "metricProvisioned": "Espaces prêts",
+    "metricConversionRate": "Conversion visite → espace prêt",
+    "stepsTitle": "Taux de passage par étape",
+    "stepsHint": "Parcours distincts ayant atteint chaque étape ; % = passage depuis l'étape précédente.",
+    "byDayTitle": "Conversion par jour",
+    "byDayHint": "Visites /signup et espaces prêts, jour par jour.",
+    "bySourceTitle": "Conversion par source",
+    "bySourceHint": "Attribution captée au premier écran du tunnel (source / utm).",
+    "dateColumn": "Date",
+    "viewsColumn": "Visites",
+    "provisionedColumn": "Espaces prêts",
+    "conversionColumn": "Conversion",
+    "sourceColumn": "Source"
   }
 }

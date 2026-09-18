@@ -5125,7 +5125,8 @@
       "parametres": "Settings",
       "systeme": "System"
     },
-    "team": "Platform team"
+    "team": "Platform team",
+    "acquisitionFunnel": "Acquisition funnel"
   },
   "companydetailCoreModuleAlwaysActive": "Core module always active",
   "smartAttendanceSessionsTitle": "Smart Attendance sessions",
@@ -6835,5 +6836,29 @@
     "body": "An email has been sent to you with a link to set your password — it will be used for your future sign-ins.",
     "ctaStart": "Start setting up",
     "ctaLater": "Later"
+  },
+  "funnelStats": {
+    "title": "Acquisition funnel",
+    "subtitle": "Signup funnel conversions by step, day and source (#7496).",
+    "refresh": "Refresh",
+    "retry": "Retry",
+    "loading": "Loading…",
+    "empty": "No events for this period.",
+    "daysUnit": "days",
+    "otpAlert": "Code delivery alert: today's verified/sent ratio is below the threshold — the mailer may be failing.",
+    "metricJourneys": "Journeys (/signup views)",
+    "metricProvisioned": "Workspaces ready",
+    "metricConversionRate": "Visit → workspace conversion",
+    "stepsTitle": "Step-by-step pass rates",
+    "stepsHint": "Distinct journeys reaching each step; % = pass rate from the previous step.",
+    "byDayTitle": "Conversion by day",
+    "byDayHint": "/signup views and workspaces ready, day by day.",
+    "bySourceTitle": "Conversion by source",
+    "bySourceHint": "Attribution captured on the first funnel screen (source / utm).",
+    "dateColumn": "Date",
+    "viewsColumn": "Views",
+    "provisionedColumn": "Ready",
+    "conversionColumn": "Conversion",
+    "sourceColumn": "Source"
   }
 }
