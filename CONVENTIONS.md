@@ -54,7 +54,7 @@ leopardo-hr/
 
 ```
 app/
-├── Modules/<Nom>/              # Monolithe modulaire DDD (25 modules actifs)
+├── Modules/<Nom>/              # Monolithe modulaire DDD (27 modules actifs)
 │   ├── Application/            # Actions, DTOs, Queries (orchestration)
 │   ├── Domain/                 # Models, Contracts, Exceptions (règles métier)
 │   ├── Infrastructure/         # Services, Repositories (implémentation)
@@ -67,7 +67,7 @@ app/
     └── Resources/Api/V1/       # JsonResource centralisées (dérogation PA2-ARCH-010)
 ```
 
-Modules actifs (25, ordre alphabétique) : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `CRM`, `Delivery`, `EdgeSync`, `EduManager`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `Restaurant`, `RestaurantManager`, `TravelAgency` — état couche-par-couche dans `docs/ARCHITECTURE_STATUS.md`.
+Modules actifs (27, ordre alphabétique) : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `Catalog`, `CRM`, `Delivery`, `EdgeSync`, `EduManager`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `Restaurant`, `RestaurantManager`, `Showcase`, `TravelAgency` — état couche-par-couche dans `docs/ARCHITECTURE_STATUS.md`.
 > `app/Http/Controllers/Api/V1/`, `app/Models/` et `app/Services/` ont été **supprimés** (PR #824, phase 2, #1728) — tout nouveau code va dans `Modules/<Nom>/` (`App\Modules\<Nom>\*`).
 
 ### 2.4 Multi-tenant
@@ -184,7 +184,7 @@ Règle de migration : ne jamais changer un verbe sans vérifier les clients (app
 - Tester : CRUD, workflow (status transitions), RBAC (roles autorises/refuses), isolation tenant
 - Repertoire : `tests/Feature/` et `tests/Unit/`
 - Commande : `php artisan test`
-- **Coverage gate** : seuil bloquant 65 % (mesuré 71,11 % au 17/08/2026, ratchet depuis 60 % le 10/08)
+- **Coverage gate** : seuil 65 % (couverture backend mesurée 71,11 % au 2026-08-17 — chiffre daté, à re-mesurer via `coverage-gate.yml`). Depuis le fast-path anti-saturation #6928 (2026-09-08/09), le check `Backend Coverage` n'est **plus requis au merge** (informatif sur PR) mais reste **exigé à la release** (`release.yml`) — voir `BRANCH_PROTECTION_REQUIRED.md`
 
 #### Règle PendingCommand — `run()` explicite (#1596)
 

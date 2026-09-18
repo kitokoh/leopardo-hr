@@ -1,8 +1,12 @@
-# Positionnement et messaging - Leopardo HR
+# Positionnement et messaging - Leopardo
+
+> ⚠️ **Catégorie 'Company OS' remplacée par 'suite métier' (#7428, 2026-09-16) — référence :
+> `docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md`.** Le pitch canonique et les
+> promesses autorisées/interdites sont dans `docs/REFERENTIEL_PRODUIT/MESSAGE.md`.
 
 ## Categorie
 
-**Mobile-First Company OS** pour PME terrain.
+**Suite métier** (business suite) pour PME terrain — RH & paie, pointage, absences, CRM, comptabilité et opérations, sur web, mobile et bornes.
 
 Alternative courte:
 
@@ -72,11 +76,11 @@ Leopardo est:
 
 ## Pitch 15 secondes
 
-Leopardo HR est un Company OS mobile-first pour PME terrain. Il remplace Excel, WhatsApp et les processus disperses par une app mobile pour employes, managers et administrateurs: presence, absences, paie, documents, notifications et pilotage.
+Leopardo est la suite métier des entreprises de terrain. Il remplace Excel, WhatsApp et les processus disperses par des apps mobiles pour employes, managers et administrateurs: presence, absences, paie, documents, notifications et pilotage.
 
 ## Pitch 60 secondes
 
-Les PME terrain ont souvent un probleme simple: elles ne savent pas vraiment, en temps reel, qui travaille, ou, sur quelle tache, avec quel impact sur la paie et les operations. Leopardo HR centralise ces donnees dans un Company OS mobile-first. Les employes pointent, demandent leurs absences et consultent leurs documents. Les managers valident, pilotent les equipes et suivent les anomalies. La plateforme admin gere les clients, plans et modules. Le tout est API-first, multi-tenant, documente et pret pour une mise en marche progressive.
+Les PME terrain ont souvent un probleme simple: elles ne savent pas vraiment, en temps reel, qui travaille, ou, sur quelle tache, avec quel impact sur la paie et les operations. Leopardo, la suite métier des entreprises de terrain, centralise ces donnees. Les employes pointent, demandent leurs absences et consultent leurs documents. Les managers valident, pilotent les equipes et suivent les anomalies. La plateforme admin gere les clients, plans et modules. Le tout est API-first, multi-tenant, documente et pret pour une mise en marche progressive.
 
 ## Objections et reponses
 
@@ -92,7 +96,7 @@ Les PME terrain ont souvent un probleme simple: elles ne savent pas vraiment, en
 ## Slogan candidates
 
 1. Votre entreprise, enfin visible depuis le terrain.
-2. Le Company OS mobile des PME qui bougent.
+2. La suite métier mobile des PME qui bougent.
 3. Presence, paie, equipes: tout votre terrain dans la poche.
 4. Moins d'Excel. Plus de controle. Depuis le mobile.
 5. Le cockpit RH et operations pour PME terrain.

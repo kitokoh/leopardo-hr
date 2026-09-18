@@ -5,7 +5,7 @@
 
 ## Vision
 
-Leopardo HR est un **Mobile-First Company OS** pour PME terrain. Le produit relie employes, managers/RH et administrateurs plateforme autour des operations quotidiennes:
+Leopardo est la **suite métier** des entreprises de terrain — RH & paie, pointage, absences, CRM, comptabilité et opérations, sur web, mobile et bornes (catégorie : décision #7428, cf. `docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md`). Le produit relie employes, managers/RH et administrateurs plateforme autour des operations quotidiennes:
 
 - presence et pointage;
 - horaires, sites, taches;

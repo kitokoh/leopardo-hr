@@ -1,5 +1,7 @@
 # 📋 PLAN 60 JOURS — Leopardo RH
 
+> ⚠️ **Statuts figés au 2026-08-20 (J2). Suivi opérationnel courant : GitHub Issues.**
+
 **Version** : 0.1 · **Date** : 2026-08-20 (J2) · **Validité** : J1-J60 (19/08 → 17/10/2026)
 **Statut** : consolidé par l'agent PM depuis les issues #5144→#5160 et `docs/GOUVERNANCE/FREEZE_SCOPE_60J.md` — à valider par le fondateur (les écarts se signalent par une issue `[FREEZE-EXCEPTION]`, jamais par un agent seul).
 
@@ -36,7 +38,7 @@ Tout ce qui n'est pas listé dans `docs/GOUVERNANCE/FREEZE_SCOPE_60J.md` est **r
 
 | Gate | Date | Condition de passage |
 |---|---|---|
-| **J16** | 2026-09-03 | **CI verte** (43 workflows, zéro rouge toléré — condition d'entrée Phase 2) ; kiosque punch-methods opérationnel (#5119) |
+| **J16** | 2026-09-03 | **CI verte** (69 workflows au 2026-09-18 ; 43 à la rédaction du plan — zéro rouge toléré, condition d'entrée Phase 2) ; kiosque punch-methods opérationnel (#5119) |
 | **J32** | 2026-09-19 | Issues non-dependabot **≤ 10** ; ratio fix/feat **≤ 2,5** ; **2 pilotes signés** |
 | **J46** | 2026-10-03 | **Rétro pilotes** publiée (#5157) + snapshot KPI daté (#5158) |
 | **J60** | 2026-10-17 | **Bilan 60 j** (#5159) + handoff opérationnel (#5160) → **décision A/B/C** |
@@ -47,7 +49,7 @@ Tout ce qui n'est pas listé dans `docs/GOUVERNANCE/FREEZE_SCOPE_60J.md` est **r
 | Issue | Sujet | Statut 2026-08-20 |
 |---|---|---|
 | #5144 | QA pass prod (fixes #4947→#4955 en live) | ✅ clos (rapport `docs/qa/QA_PROD_2026-08-19.md`) |
-| #5145 | CI fail-closed « 5 jours verts » — inventaire 43 workflows | ✅ clos (inventaire `docs/qa/INVENTAIRE_CI_2026-08-19.md` ; **15 rouges restants à traiter**) |
+| #5145 | CI fail-closed « 5 jours verts » — inventaire des workflows (43 à l'époque ; 69 au 2026-09-18) | ✅ clos (inventaire `docs/qa/INVENTAIRE_CI_2026-08-19.md` ; **15 rouges restants à traiter**) |
 | #5146 | E2E funnel prospect Playwright (spec livrée, `.specify/features/e2e-funnel-prospect/`) | 🟡 ouvert — implémentation en cours |
 | #5147 | Freeze scope 60 jours | ✅ clos (`docs/GOUVERNANCE/FREEZE_SCOPE_60J.md`) |
 

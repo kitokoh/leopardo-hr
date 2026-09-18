@@ -1,3 +1,9 @@
+> 🗄️ **DOCUMENT ARCHIVÉ (2026-09-18) — valeur historique uniquement.**
+> Analyse datée de **juin 2025**, fondée sur la catégorie périmée « Mobile-First Company OS »
+> et sur des chiffres et affirmations marché non datés/non sourcés. Ne pas réutiliser pour du
+> messaging ou des décisions. Références à jour : `docs/REFERENTIEL_PRODUIT/MESSAGE.md`,
+> `POSITIONNEMENT_SUITE_METIER.md` (#7428, 2026-09-16) et `METRIQUES_VITRINE.md`.
+
 # 🐆 LEOPARDO HR — ANALYSE STRATÉGIQUE COMPLÈTE
 
 ## Mission : Transformer Leopardo HR en Business Rentable
