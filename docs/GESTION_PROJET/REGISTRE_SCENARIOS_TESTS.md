@@ -2,6 +2,24 @@
 > Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
 > Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
 
+> **MAJ 2026-09-18 — #7490, première connexion sans mot de passe en clair (epic #7486).**
+> L'e-mail de bienvenue self-service ne contient plus aucun secret : lien magique de
+> définition de mot de passe (`/auth/set-password?token=…`, `provisioning_token` à usage
+> unique, **TTL 72 h** — `POST /trial/set-password` répond `410 TRIAL_PASSWORD_LINK_EXPIRED`
+> au-delà) et **connexion par code** pour les comptes sans mot de passe : nouveaux endpoints
+> publics `POST /auth/login-code/request|verify` (réponse générique anti-énumération, code
+> 6 chiffres haché en cache 10 min, consommé au premier usage, verrou après 5 échecs,
+> canal refermé dès qu'un mot de passe existe, 2FA refusée — `403
+> LOGIN_CODE_PASSWORD_REQUIRED`). Contrat documenté dans `api/openapi.yaml` (+2 paths,
+> +410 sur set-password, miroir/SDK régénérés). Scénarios API couverts par
+> `api/tests/Feature/FirstLoginPasswordlessTest.php` (8 cas Feature : lien magique sans
+> secret rendu, 410 après 72 h / 200 avant, envoi du code éligible, réponse générique pour
+> un e-mail inconnu, session ouverte + usage unique, verrou 5 échecs, canal refermé après
+> définition du mot de passe). Surfaces mobile touchées par **propagation i18n uniquement**
+> (`sync-mobile.js`, clés `setPassword.*`/`loginCode.*` ×4) : aucun écran ni parcours
+> mobile modifié. Surface web : page publique `/auth/set-password` + mode « code » sur
+> `/auth/login` (Jest 125 suites / 1030 tests verts).
+
 > **MAJ 2026-09-18 — #7594, vitrine : validation zod localisée ×4 et a11y des formulaires
 > publics — surface mobile touchée par propagation i18n uniquement.** Le lot branche les
 > schémas zod (`contactFormSchema`/`demoFormSchema`/`newsletterFormSchema`) côté client avec
