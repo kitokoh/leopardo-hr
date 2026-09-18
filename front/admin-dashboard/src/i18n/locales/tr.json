@@ -494,7 +494,28 @@
     "empty_departments": "Henüz departman yok.",
     "create_department_error": "Departman oluşturulamadı.",
     "create_employee_error": "İşbirlikçi eklenemedi.",
-    "open_team": "Ekip sayfasını aç"
+    "open_team": "Ekip sayfasını aç",
+    "resourceAccess": {
+      "button": "Erişim ve kaynaklar",
+      "title": "Erişim ve kaynaklar",
+      "subtitle": "Bu çalışana kaynaklarınıza (restoran şubeleri, sahalar, araçlar, kameralar) seviye seviye erişim verin.",
+      "loading": "Erişimler yükleniyor…",
+      "loadError": "Bu çalışanın erişimleri yüklenemedi.",
+      "saveError": "Erişimler kaydedilemedi.",
+      "saved": "Erişimler kaydedildi.",
+      "empty": "Atanacak bu türde kaynak yok.",
+      "save": "Erişimleri kaydet",
+      "levelNone": "Yok",
+      "levelView": "Görüntüleme",
+      "levelOperate": "İşletme",
+      "levelManage": "Yönetim",
+      "types": {
+        "restaurant_branch": "Restoran şubeleri",
+        "site": "Sahalar",
+        "vehicle": "Araçlar",
+        "camera": "Kameralar"
+      }
+    }
   },
   "smartAttendanceGpsAuto": "Otomatik GPS",
   "smartAttendanceNoGpsSessions": "Şu anda GPS oturumu yok.",

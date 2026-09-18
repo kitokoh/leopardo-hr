@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantDelivery;
+use App\Modules\RestaurantManager\Policies\Concerns\ChecksRestaurantBranchAccess;
 
 /**
  * RESTO-605 (#6210) — Policy des livraisons.
@@ -15,6 +16,8 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantDelivery;
  */
 class RestaurantDeliveryPolicy
 {
+    use ChecksRestaurantBranchAccess;
+
     public function viewAny(Employee $actor): bool
     {
         return true;
@@ -22,22 +25,24 @@ class RestaurantDeliveryPolicy
 
     public function view(Employee $actor, RestaurantDelivery $delivery): bool
     {
-        return $delivery->company_id === $actor->company_id;
+        return $delivery->company_id === $actor->company_id
+            && $this->canViewBranchResource($actor, $delivery->order?->branch_id);
     }
 
-    public function create(Employee $actor): bool
+    public function create(Employee $actor, int|string|null $branchId = null): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager');
+        return $this->canOperateBranchResource($actor, $branchId);
     }
 
     public function update(Employee $actor, RestaurantDelivery $delivery): bool
     {
-        return $this->create($actor) && $delivery->company_id === $actor->company_id;
+        return $delivery->company_id === $actor->company_id
+            && $this->canOperateBranchResource($actor, $delivery->order?->branch_id);
     }
-
 
     public function transition(Employee $actor, RestaurantDelivery $delivery): bool
     {
-        return $this->create($actor) && $delivery->company_id === $actor->company_id;
+        return $delivery->company_id === $actor->company_id
+            && $this->canOperateBranchResource($actor, $delivery->order?->branch_id);
     }
 }

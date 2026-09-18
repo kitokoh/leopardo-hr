@@ -26,7 +26,7 @@ class TravelQuizPolicy
 
     public function create(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager');
+        return $actor->hasManagerRole('principal', 'rh');
     }
 
     public function update(Employee $actor, TravelQuiz $quiz): bool
@@ -45,7 +45,6 @@ class TravelQuizPolicy
     {
         return $this->update($actor, $quiz);
     }
-
 
     public function delete(Employee $actor, TravelQuiz $quiz): bool
     {

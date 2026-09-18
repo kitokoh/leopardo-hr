@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\RestaurantManager\Infrastructure\Services\Mobile;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\EmployeeResourceAssignment;
 use App\Modules\RestaurantManager\Application\Actions\AddOrderItemAction;
 use App\Modules\RestaurantManager\Application\Actions\CreateOrderAction;
 use App\Modules\RestaurantManager\Application\Actions\PayOrderAction;
@@ -72,8 +73,15 @@ final class RestaurantMobileSyncService
      */
     private function syncOrderCreate(Employee $actor, array $payload, string $key): array
     {
+        $branchId = isset($payload['branch_id']) ? (int) $payload['branch_id'] : 0;
+
+        // #7599 — une opération offline ne contourne pas le scoping succursale.
+        if (! $actor->hasResourceAccess('restaurant_branch', $branchId, EmployeeResourceAssignment::LEVEL_OPERATE)) {
+            return ['type' => 'order.create', 'status' => 'error', 'error' => __('errors.RESOURCE_ACCESS_DENIED')];
+        }
+
         $data = [
-            'branch_id' => isset($payload['branch_id']) ? (int) $payload['branch_id'] : 0,
+            'branch_id' => $branchId,
             'order_type' => isset($payload['order_type']) ? (string) $payload['order_type'] : 'takeaway',
             'source' => OrderSource::POS->value,
             'idempotency_key' => $key,
@@ -103,6 +111,10 @@ final class RestaurantMobileSyncService
             return ['type' => 'order.add_item', 'status' => 'error', 'error' => 'commande introuvable'];
         }
 
+        if (! $actor->hasResourceAccess('restaurant_branch', (int) $order->branch_id, EmployeeResourceAssignment::LEVEL_OPERATE)) {
+            return ['type' => 'order.add_item', 'status' => 'error', 'error' => __('errors.RESOURCE_ACCESS_DENIED')];
+        }
+
         $this->addItem->add($actor, $order, [
             'product_id' => isset($payload['product_id']) ? (int) $payload['product_id'] : 0,
             'quantity' => $payload['quantity'] ?? 1,
@@ -123,6 +135,10 @@ final class RestaurantMobileSyncService
 
         if (! $order instanceof RestaurantOrder || $order->company_id !== $actor->company_id) {
             return ['type' => 'order.pay', 'status' => 'error', 'error' => 'commande introuvable'];
+        }
+
+        if (! $actor->hasResourceAccess('restaurant_branch', (int) $order->branch_id, EmployeeResourceAssignment::LEVEL_OPERATE)) {
+            return ['type' => 'order.pay', 'status' => 'error', 'error' => __('errors.RESOURCE_ACCESS_DENIED')];
         }
 
         $payment = $this->payOrder->pay($actor, $order, [

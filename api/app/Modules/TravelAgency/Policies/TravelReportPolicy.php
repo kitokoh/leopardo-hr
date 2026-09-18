@@ -18,20 +18,18 @@ final class TravelReportPolicy
 {
     public static function authorize(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager', 'agent', 'checkin');
+        return $actor->hasManagerRole('principal', 'rh');
     }
 
     public function viewAny(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager');
+        return $actor->hasManagerRole('principal', 'rh');
     }
-
 
     public function view(Employee $actor, TravelReportExport $export): bool
     {
         return $this->viewAny($actor) && $export->company_id === $actor->company_id;
     }
-
 
     public function export(Employee $actor): bool
     {

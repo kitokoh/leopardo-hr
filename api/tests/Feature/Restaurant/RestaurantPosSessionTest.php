@@ -13,6 +13,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantPosSession;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
+use Tests\Support\AssignsResourceAccess;
 use Tests\TestCase;
 
 /**
@@ -25,6 +26,7 @@ use Tests\TestCase;
  */
 class RestaurantPosSessionTest extends TestCase
 {
+    use AssignsResourceAccess;
     use RefreshTenantDatabase;
 
     private function principal(Company $company): Employee
@@ -90,8 +92,11 @@ class RestaurantPosSessionTest extends TestCase
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateRestaurant($company);
-        $this->server($company);
+        $server = $this->server($company);
         $branch = $this->makeBranch($company);
+        // #7599 — le serveur agit par assignation `operate` sur SA succursale
+        // (la valeur 'server' de manager_role est morte côté policies).
+        $this->assignResourceAccess($server, 'restaurant_branch', $branch->id, 'operate');
 
         $this->postJson('/api/v1/restaurant/pos-sessions', [
             'branch_id' => $branch->id,
@@ -107,8 +112,11 @@ class RestaurantPosSessionTest extends TestCase
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateRestaurant($company);
-        $this->server($company);
+        $server = $this->server($company);
         $branch = $this->makeBranch($company);
+        // #7599 — le serveur agit par assignation `operate` sur SA succursale
+        // (la valeur 'server' de manager_role est morte côté policies).
+        $this->assignResourceAccess($server, 'restaurant_branch', $branch->id, 'operate');
 
         $this->postJson('/api/v1/restaurant/pos-sessions', [
             'branch_id' => $branch->id,
@@ -140,8 +148,11 @@ class RestaurantPosSessionTest extends TestCase
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateRestaurant($company);
-        $this->server($company);
+        $server = $this->server($company);
         $branch = $this->makeBranch($company);
+        // #7599 — le serveur agit par assignation `operate` sur SA succursale
+        // (la valeur 'server' de manager_role est morte côté policies).
+        $this->assignResourceAccess($server, 'restaurant_branch', $branch->id, 'operate');
 
         $sessionId = $this->postJson('/api/v1/restaurant/pos-sessions', [
             'branch_id' => $branch->id,
@@ -176,8 +187,11 @@ class RestaurantPosSessionTest extends TestCase
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateRestaurant($company);
-        $this->server($company);
+        $server = $this->server($company);
         $branch = $this->makeBranch($company);
+        // #7599 — le serveur agit par assignation `operate` sur SA succursale
+        // (la valeur 'server' de manager_role est morte côté policies).
+        $this->assignResourceAccess($server, 'restaurant_branch', $branch->id, 'operate');
 
         $sessionId = $this->postJson('/api/v1/restaurant/pos-sessions', [
             'branch_id' => $branch->id,
@@ -224,8 +238,11 @@ class RestaurantPosSessionTest extends TestCase
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateRestaurant($company);
-        $this->server($company);
+        $server = $this->server($company);
         $branch = $this->makeBranch($company);
+        // #7599 — le serveur agit par assignation `operate` sur SA succursale
+        // (la valeur 'server' de manager_role est morte côté policies).
+        $this->assignResourceAccess($server, 'restaurant_branch', $branch->id, 'operate');
 
         $sessionId = $this->postJson('/api/v1/restaurant/pos-sessions', [
             'branch_id' => $branch->id,

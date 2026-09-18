@@ -1835,7 +1835,28 @@
     "empty_departments": "Aucun département pour le moment.",
     "create_department_error": "Impossible de créer le département.",
     "create_employee_error": "Impossible d'ajouter le collaborateur.",
-    "open_team": "Ouvrir la page Équipe"
+    "open_team": "Ouvrir la page Équipe",
+    "resourceAccess": {
+      "button": "Accès & ressources",
+      "title": "Accès & ressources",
+      "subtitle": "Donnez à ce collaborateur l'accès à vos ressources (succursales, sites, véhicules, caméras), niveau par niveau.",
+      "loading": "Chargement des accès…",
+      "loadError": "Impossible de charger les accès de ce collaborateur.",
+      "saveError": "Impossible d'enregistrer les accès.",
+      "saved": "Accès enregistrés.",
+      "empty": "Aucune ressource de ce type à assigner.",
+      "save": "Enregistrer les accès",
+      "levelNone": "Aucun",
+      "levelView": "Lecture",
+      "levelOperate": "Opérer",
+      "levelManage": "Gérer",
+      "types": {
+        "restaurant_branch": "Succursales restaurant",
+        "site": "Sites",
+        "vehicle": "Véhicules",
+        "camera": "Caméras"
+      }
+    }
   },
   "user_auth": {
     "company_request": {

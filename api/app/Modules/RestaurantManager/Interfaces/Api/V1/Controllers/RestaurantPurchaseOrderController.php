@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Application\Actions\PurchaseOrderAction;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPurchaseOrder;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\Concerns\ScopesRestaurantBranchListings;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantPurchaseOrderRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\UpdateRestaurantPurchaseOrderRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantPurchaseOrderResource;
@@ -25,6 +26,8 @@ use Illuminate\Http\Request;
  */
 class RestaurantPurchaseOrderController extends Controller
 {
+    use ScopesRestaurantBranchListings;
+
     public function __construct(private readonly PurchaseOrderAction $poAction) {}
 
     public function index(Request $request): JsonResponse
@@ -38,7 +41,7 @@ class RestaurantPurchaseOrderController extends Controller
 
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
-        $orders = RestaurantPurchaseOrder::query()
+        $orders = $this->scopeToAccessibleBranches($actor, RestaurantPurchaseOrder::query())
             ->with(['supplier', 'items'])
             ->when($request->has('branch_id'), fn ($query) => $query->where('branch_id', (int) $request->query('branch_id')))
             ->when($request->has('status'), fn ($query) => $query->where('status', (string) $request->query('status')))
@@ -53,7 +56,7 @@ class RestaurantPurchaseOrderController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('create', RestaurantPurchaseOrder::class)) {
+        if ($actor->cannot('create', [RestaurantPurchaseOrder::class, $request->validated()['branch_id'] ?? null])) {
             abort(403);
         }
 
@@ -69,6 +72,12 @@ class RestaurantPurchaseOrderController extends Controller
 
         if ($actor->company_id !== $restaurantPurchaseOrder->company_id) {
             abort(404);
+        }
+
+        // #7599 — lecture ressource-scopée : un employé sans assignation ne
+        // lit plus les données métier dès que le scoping est actif.
+        if ($actor->cannot('view', $restaurantPurchaseOrder)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
         }
 
         $restaurantPurchaseOrder->load(['supplier', 'items']);

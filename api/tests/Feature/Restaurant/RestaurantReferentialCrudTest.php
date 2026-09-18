@@ -11,6 +11,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantZone;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
+use Tests\Support\AssignsResourceAccess;
 use Tests\TestCase;
 
 /**
@@ -24,6 +25,7 @@ use Tests\TestCase;
  */
 class RestaurantReferentialCrudTest extends TestCase
 {
+    use AssignsResourceAccess;
     use RefreshTenantDatabase;
 
     private function principal(Company $company): Employee
@@ -170,11 +172,13 @@ class RestaurantReferentialCrudTest extends TestCase
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateRestaurant($company);
 
+        // #7599 — le « manager de salle » est un employé ordinaire porteur
+        // d'une assignation `manage` sur SA succursale (la valeur 'manager'
+        // de manager_role est morte côté policies).
         /** @var Employee $manager */
         $manager = Employee::factory()->create([
             'company_id' => $company->id,
-            'role' => 'manager',
-            'manager_role' => 'manager',
+            'role' => 'employee',
         ]);
 
         Sanctum::actingAs($manager);
@@ -182,6 +186,7 @@ class RestaurantReferentialCrudTest extends TestCase
         $branchId = app(TenantManager::class)->withinTenant($company, function () use ($company): int {
             return RestaurantBranch::factory()->create(['company_id' => $company->id])->id;
         });
+        $this->assignResourceAccess($manager, 'restaurant_branch', $branchId, 'manage');
 
         $this->postJson('/api/v1/restaurant/zones', [
             'name' => 'Zone Terrasse',

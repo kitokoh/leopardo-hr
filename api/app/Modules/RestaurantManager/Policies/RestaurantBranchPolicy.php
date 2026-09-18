@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
+use App\Modules\RestaurantManager\Policies\Concerns\ChecksRestaurantBranchAccess;
 
 /**
  * RESTO-301 (#6182) — Policy des succursales RestaurantManager.
@@ -19,6 +20,8 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
  */
 class RestaurantBranchPolicy
 {
+    use ChecksRestaurantBranchAccess;
+
     public function viewAny(Employee $actor): bool
     {
         return true;
@@ -26,7 +29,8 @@ class RestaurantBranchPolicy
 
     public function view(Employee $actor, RestaurantBranch $branch): bool
     {
-        return $branch->company_id === $actor->company_id;
+        return $branch->company_id === $actor->company_id
+            && $this->canViewBranchResource($actor, $branch->id);
     }
 
     public function create(Employee $actor): bool
@@ -36,7 +40,8 @@ class RestaurantBranchPolicy
 
     public function update(Employee $actor, RestaurantBranch $branch): bool
     {
-        return $this->create($actor) && $branch->company_id === $actor->company_id;
+        return $branch->company_id === $actor->company_id
+            && $this->canManageBranchResource($actor, $branch->id);
     }
 
     public function delete(Employee $actor, RestaurantBranch $branch): bool

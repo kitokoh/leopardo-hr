@@ -62,6 +62,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     // Catalogue des ressources assignables (le sélecteur du responsable) :
     // filtré par ce que l'acteur voit du type, fail-closed sur un type inconnu.
     Route::get('/resources/{type}', [ResourceCatalogController::class, 'index']);
+
+    // Issue #7601 (R4 de l'épique #7597) — vue inverse « qui a accès à CETTE
+    // ressource ? » et rapport d'audit des accès (JSON, ou export CSV avec
+    // `?format=csv`). Réservés au principal du tenant.
+    Route::get('/resources/{type}/{resourceId}/access', [ResourceCatalogController::class, 'access'])->whereNumber('resourceId');
+    Route::get('/resource-access/audit', [ResourceCatalogController::class, 'audit']);
     Route::patch('/employees/{employee}', [EmployeeController::class, 'update'])->whereNumber('employee')->middleware('tenant.country');
     Route::post('/employees/{employee}/archive', [EmployeeController::class, 'archive'])->whereNumber('employee');
 

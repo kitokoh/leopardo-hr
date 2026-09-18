@@ -12,8 +12,8 @@ use App\Http\Resources\Api\V1\AttendanceTodayResource;
 use App\Modules\Attendance\Application\DTOs\CheckInDTO;
 use App\Modules\Attendance\Domain\Models\AttendanceCorrectionRequest;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceAnomalyService;
-use App\Modules\Attendance\Infrastructure\Services\AttendanceMonthlyReportService;
 use App\Modules\Attendance\Infrastructure\Services\AttendancePeriodClosureService;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceRegularityService;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceReportService;
@@ -26,7 +26,6 @@ use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceTodayRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\CheckInRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\CheckOutRequest;
 use App\Modules\Planning\Infrastructure\Services\EstimationService;
-use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -745,7 +744,7 @@ class AttendanceController extends Controller
 
         $this->ensureCorrectionBelongsToActorCompany($correction, $actor);
 
-        if ($actor->id !== $correction->employee_id && ! $actor->hasManagerRole('principal', 'rh', 'manager')) {
+        if ($actor->id !== $correction->employee_id && ! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
         }
 

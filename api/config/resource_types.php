@@ -27,6 +27,17 @@ return [
         'label_column' => 'name',
         'scope_company' => true,
     ],
+    // #7600 (R3) — généralisation aux autres verticales.
+    'edu_campus' => [
+        'model' => App\Modules\EduManager\Domain\Models\EduCampus::class,
+        'label_column' => 'name',
+        'scope_company' => true,
+    ],
+    'fuel_station' => [
+        'model' => App\Modules\FuelStation\Domain\Models\FuelStation::class,
+        'label_column' => 'name',
+        'scope_company' => true,
+    ],
     'restaurant_branch' => [
         'model' => App\Modules\RestaurantManager\Domain\Models\RestaurantBranch::class,
         'label_column' => 'name',
@@ -34,6 +45,16 @@ return [
     ],
     'site' => [
         'model' => App\Core\Tenant\Domain\Models\Site::class,
+        'label_column' => 'name',
+        'scope_company' => true,
+    ],
+    'travel_office' => [
+        'model' => App\Modules\TravelAgency\Domain\Models\TravelOffice::class,
+        'label_column' => 'name',
+        'scope_company' => true,
+    ],
+    'travel_station' => [
+        'model' => App\Modules\TravelAgency\Domain\Models\TravelStation::class,
         'label_column' => 'name',
         'scope_company' => true,
     ],

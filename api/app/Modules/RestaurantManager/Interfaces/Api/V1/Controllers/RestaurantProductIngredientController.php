@@ -51,7 +51,7 @@ class RestaurantProductIngredientController extends Controller
             abort(404);
         }
 
-        if ($actor->cannot('create', RestaurantProductIngredient::class)) {
+        if ($actor->cannot('create', [RestaurantProductIngredient::class, $restaurantProduct->branch_id])) {
             abort(403);
         }
 

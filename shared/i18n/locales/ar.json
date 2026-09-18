@@ -1835,7 +1835,28 @@
     "empty_departments": "لا يوجد قسم بعد.",
     "create_department_error": "تعذر إنشاء القسم.",
     "create_employee_error": "تعذر إضافة المتعاون.",
-    "open_team": "افتح صفحة الفريق"
+    "open_team": "افتح صفحة الفريق",
+    "resourceAccess": {
+      "button": "الوصول والموارد",
+      "title": "الوصول والموارد",
+      "subtitle": "امنح هذا المتعاون الوصول إلى مواردك (فروع المطاعم، المواقع، المركبات، الكاميرات)، مستوى بمستوى.",
+      "loading": "جارٍ تحميل الصلاحيات…",
+      "loadError": "تعذر تحميل صلاحيات هذا المتعاون.",
+      "saveError": "تعذر حفظ الصلاحيات.",
+      "saved": "تم حفظ الصلاحيات.",
+      "empty": "لا يوجد مورد من هذا النوع لإسناده.",
+      "save": "حفظ الصلاحيات",
+      "levelNone": "لا شيء",
+      "levelView": "قراءة",
+      "levelOperate": "تشغيل",
+      "levelManage": "إدارة",
+      "types": {
+        "restaurant_branch": "فروع المطعم",
+        "site": "المواقع",
+        "vehicle": "المركبات",
+        "camera": "الكاميرات"
+      }
+    }
   },
   "user_auth": {
     "company_request": {

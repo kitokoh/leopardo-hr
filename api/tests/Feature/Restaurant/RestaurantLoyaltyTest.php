@@ -10,10 +10,10 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantLoyaltyCustomer;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantLoyaltyProgram;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 
 /**
  * RESTO-606 (#6211) — Programme fidélité (points, récompenses, opt-in).
@@ -117,21 +117,19 @@ class RestaurantLoyaltyTest extends TestCase
         });
     }
 
-
     private function manager(Company $company): Employee
     {
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'manager',
-            'manager_role' => 'manager',
+            'manager_role' => 'principal',
         ]);
 
         Sanctum::actingAs($employee);
 
         return $employee;
     }
-
 
     private function ordinaryEmployee(Company $company): Employee
     {
@@ -146,7 +144,6 @@ class RestaurantLoyaltyTest extends TestCase
         return $employee;
     }
 
-
     private function company(): Company
     {
         /** @var Company $company */
@@ -156,7 +153,6 @@ class RestaurantLoyaltyTest extends TestCase
 
         return $company;
     }
-
 
     public function test_principal_can_create_and_list_program(): void
     {
@@ -175,7 +171,6 @@ class RestaurantLoyaltyTest extends TestCase
             ->assertJsonCount(1, 'data');
     }
 
-
     public function test_only_one_active_program(): void
     {
         $company = $this->company();
@@ -191,7 +186,6 @@ class RestaurantLoyaltyTest extends TestCase
         );
     }
 
-
     public function test_ordinary_employee_cannot_configure_program(): void
     {
         $company = $this->company();
@@ -200,7 +194,6 @@ class RestaurantLoyaltyTest extends TestCase
         $this->postJson('/api/v1/restaurant/loyalty-programs', ['points_per_amount_minor' => 100])
             ->assertStatus(403);
     }
-
 
     public function test_opt_in_creates_customer_account(): void
     {
@@ -212,7 +205,6 @@ class RestaurantLoyaltyTest extends TestCase
         ])->assertStatus(201)
             ->assertJsonFragment(['customer_contact_id' => 4242, 'points' => 0]);
     }
-
 
     public function test_points_credited_once_per_paid_order_via_outbox(): void
     {
@@ -260,7 +252,6 @@ class RestaurantLoyaltyTest extends TestCase
         $customer->refresh();
         $this->assertSame(25, $customer->points, 'Les points ne sont crédités qu\'une seule fois par commande payée.');
     }
-
 
     public function test_no_credit_without_opt_in(): void
     {

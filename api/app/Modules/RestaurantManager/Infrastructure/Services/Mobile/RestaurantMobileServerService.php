@@ -45,7 +45,10 @@ final class RestaurantMobileServerService
             OrderStatus::SERVED->value,
         ];
 
+        $branchIds = $actor->accessibleResourceIds('restaurant_branch');
+
         return RestaurantOrder::query()
+            ->when($branchIds !== null, fn ($query) => $query->whereIn('branch_id', $branchIds ?? []))
             ->whereIn('status', $statuses)
             ->withCount('items')
             ->with(['table'])
@@ -72,7 +75,10 @@ final class RestaurantMobileServerService
      */
     public function openTables(Employee $actor): array
     {
+        $branchIds = $actor->accessibleResourceIds('restaurant_branch');
+
         $sessions = RestaurantTableSession::query()
+            ->when($branchIds !== null, fn ($query) => $query->whereIn('branch_id', $branchIds ?? []))
             ->with(['table.zone'])
             ->where('status', 'open')
             ->orderBy('opened_at')
@@ -127,7 +133,7 @@ final class RestaurantMobileServerService
             abort(404);
         }
 
-        if ($actor->cannot('create', RestaurantOrderPayment::class)) {
+        if ($actor->cannot('create', [RestaurantOrderPayment::class, $order->branch_id])) {
             abort(403);
         }
 

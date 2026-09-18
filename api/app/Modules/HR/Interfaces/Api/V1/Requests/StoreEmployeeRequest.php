@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Requests;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\EmployeeResourceAssignment;
+use App\Core\Tenant\Infrastructure\Services\ResourceTypeRegistry;
 use App\Rules\GlobalEmailUnique;
 use App\Rules\ValidIban;
 use Illuminate\Foundation\Http\FormRequest;
@@ -53,6 +56,18 @@ class StoreEmployeeRequest extends FormRequest
             'hourly_rate' => ['nullable', 'numeric', 'min:0'],
             'role' => ['nullable', 'in:employee,manager'],
             'manager_role' => ['nullable', 'in:principal,rh,dept,comptable,superviseur,marketing'],
+            // #7601 (R4 de l'épique #7597) — invitation pré-assignée : les
+            // accès ressource sont posés dans le même geste que l'invitation
+            // et créés à l'ACTIVATION. Réservé au principal (même règle que
+            // EmployeePolicy::manageResourceAssignments) : pour tout autre
+            // acteur le champ est refusé, jamais ignoré (fail-closed).
+            'resource_assignments' => [
+                $this->user() instanceof Employee && $this->user()->isPrincipal() ? 'sometimes' : 'prohibited',
+                'array',
+            ],
+            'resource_assignments.*.resource_type' => ['required', 'string', Rule::in(app(ResourceTypeRegistry::class)->keys())],
+            'resource_assignments.*.resource_id' => ['required', 'integer', 'min:1'],
+            'resource_assignments.*.access_level' => ['required', 'string', Rule::in(EmployeeResourceAssignment::ACCESS_LEVELS)],
             'phone' => ['nullable', 'string', 'max:30'],
             'personal_email' => ['nullable', 'email', 'max:150'],
             'iban' => ['nullable', 'string', 'max:34', new ValidIban],

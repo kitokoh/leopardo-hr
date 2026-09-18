@@ -7,6 +7,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTable;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\Concerns\ScopesRestaurantBranchListings;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantTableRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\UpdateRestaurantTableRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantTableResource;
@@ -22,6 +23,8 @@ use Illuminate\Http\Request;
  */
 class RestaurantTableController extends Controller
 {
+    use ScopesRestaurantBranchListings;
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -33,7 +36,7 @@ class RestaurantTableController extends Controller
 
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
-        $tables = RestaurantTable::query()
+        $tables = $this->scopeToAccessibleBranches($actor, RestaurantTable::query())
             ->orderBy('label')
             ->paginate($perPage);
 
@@ -45,7 +48,7 @@ class RestaurantTableController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('create', RestaurantTable::class)) {
+        if ($actor->cannot('create', [RestaurantTable::class, $request->validated()['branch_id'] ?? null])) {
             abort(403);
         }
 
@@ -61,6 +64,12 @@ class RestaurantTableController extends Controller
 
         if ($actor->company_id !== $restaurantTable->company_id) {
             abort(404);
+        }
+
+        // #7599 — lecture ressource-scopée : un employé sans assignation ne
+        // lit plus les données métier dès que le scoping est actif.
+        if ($actor->cannot('view', $restaurantTable)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
         }
 
         return (new RestaurantTableResource($restaurantTable))->response();

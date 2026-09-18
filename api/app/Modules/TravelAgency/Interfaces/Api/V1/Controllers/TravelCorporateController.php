@@ -163,7 +163,7 @@ class TravelCorporateController extends Controller
 
     private function denyUnlessManager(Employee $actor): void
     {
-        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
+        if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
         }
     }

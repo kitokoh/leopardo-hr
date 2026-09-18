@@ -26,6 +26,7 @@ use App\Modules\RestaurantManager\Policies\RestaurantZonePolicy;
 use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Tests\RefreshTenantDatabase;
+use Tests\Support\AssignsResourceAccess;
 use Tests\TestCase;
 
 /**
@@ -45,6 +46,7 @@ use Tests\TestCase;
  */
 class RestaurantRbacMatrixTest extends TestCase
 {
+    use AssignsResourceAccess;
     use RefreshTenantDatabase;
 
     /**
@@ -180,42 +182,60 @@ class RestaurantRbacMatrixTest extends TestCase
     }
 
     /**
-     * Le manager de salle (role 'manager', manager_role 'manager') pilote la
-     * salle : create autorisé sur les zones, menus, tables et horaires
-     * (restaurant.manager), refusé sur la configuration (restaurant.manage :
-     * branches, catégories, produits, fournisseurs).
-     *
-     * Note : `manager_role = 'manager'` n'est pas encore stockable en base
-     * (CHECK `employees_manager_role_check` limité à principal/rh/dept/
-     * comptable/superviseur/marketing) — l'acteur est donc construit en
-     * mémoire (forceFill, aucune requête), ce qui teste la décision de
-     * policy sans dépendre du schéma. À réconcilier avec le schéma RBAC
-     * (migration d'extension du CHECK) lors du raccord BC-25.
+     * #7599 (R2 de l'épique #7597) — le « manager de salle » n'est plus un
+     * manager_role : `'manager'` était une valeur MORTE (hors enum assignable
+     * de `manager_role`) — la condition `hasManagerRole(..., 'manager')` ne
+     * passait jamais en production. Le pilotage d'une succursale s'exprime
+     * désormais par une assignation `manage` sur CETTE succursale
+     * (`employee_resource_assignments`) : le gérant gère SA succursale
+     * (zones, tables, horaires, menus — avec le `branch_id` transmis à la
+     * policy), pas le référentiel company-wide (fournisseurs) ni l'autre
+     * succursale.
      */
-    public function test_floor_manager_can_create_salle_resources_only(): void
+    public function test_branch_manager_manages_only_his_assigned_branch(): void
     {
         /** @var Company $company */
         $company = Company::factory()->create();
 
-        /** @var Employee $floorManager */
-        $floorManager = new Employee;
-        $floorManager->forceFill([
+        /** @var Employee $branchManager */
+        $branchManager = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+
+        /** @var RestaurantBranch $assignedBranch */
+        $assignedBranch = RestaurantBranch::factory()->create(['company_id' => $company->id]);
+        /** @var RestaurantBranch $otherBranch */
+        $otherBranch = RestaurantBranch::factory()->create(['company_id' => $company->id]);
+
+        $this->assignResourceAccess($branchManager, 'restaurant_branch', $assignedBranch->id, 'manage');
+
+        // Pilotage de SA succursale : zones, menus, tables et horaires.
+        $this->assertTrue((new RestaurantZonePolicy)->create($branchManager, $assignedBranch->id));
+        $this->assertTrue((new RestaurantMenuPolicy)->create($branchManager, $assignedBranch->id));
+        $this->assertTrue((new RestaurantTablePolicy)->create($branchManager, $assignedBranch->id));
+        $this->assertTrue((new RestaurantHourPolicy)->create($branchManager, $assignedBranch->id));
+
+        // L'AUTRE succursale : refusé (403 côté HTTP — RESOURCE_ACCESS_DENIED).
+        $this->assertFalse((new RestaurantZonePolicy)->create($branchManager, $otherBranch->id));
+        $this->assertFalse((new RestaurantTablePolicy)->create($branchManager, $otherBranch->id));
+
+        // Configuration company-wide : réservée au principal dès que le
+        // scoping est actif (fournisseurs), et création de succursale
+        // réservée à principal/rh.
+        $this->assertFalse((new RestaurantBranchPolicy)->create($branchManager));
+        $this->assertFalse((new RestaurantSupplierPolicy)->create($branchManager));
+
+        // La valeur morte 'manager' seule (sans assignation) ne donne RIEN.
+        /** @var Employee $deadRoleManager */
+        $deadRoleManager = new Employee;
+        $deadRoleManager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
             'manager_role' => 'manager',
         ]);
-
-        // Pilotage de la salle : zones, menus, tables et horaires.
-        $this->assertTrue((new RestaurantZonePolicy)->create($floorManager));
-        $this->assertTrue((new RestaurantMenuPolicy)->create($floorManager));
-        $this->assertTrue((new RestaurantTablePolicy)->create($floorManager));
-        $this->assertTrue((new RestaurantHourPolicy)->create($floorManager));
-
-        // Configuration du référentiel : réservée au gérant (principal/rh).
-        $this->assertFalse((new RestaurantBranchPolicy)->create($floorManager));
-        $this->assertFalse((new RestaurantCategoryPolicy)->create($floorManager));
-        $this->assertFalse((new RestaurantProductPolicy)->create($floorManager));
-        $this->assertFalse((new RestaurantSupplierPolicy)->create($floorManager));
+        $this->assertFalse((new RestaurantZonePolicy)->create($deadRoleManager, $assignedBranch->id));
+        $this->assertFalse((new RestaurantSupplierPolicy)->create($deadRoleManager));
     }
 
     /**

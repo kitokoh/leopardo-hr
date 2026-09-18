@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Application\Actions\CreateOrderAction;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\Concerns\ScopesRestaurantBranchListings;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantOrderRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantOrderResource;
 use Illuminate\Http\JsonResponse;
@@ -21,6 +22,8 @@ use Illuminate\Http\Request;
  */
 class RestaurantOrderController extends Controller
 {
+    use ScopesRestaurantBranchListings;
+
     public function __construct(private readonly CreateOrderAction $createOrderAction) {}
 
     public function index(Request $request): JsonResponse
@@ -34,7 +37,7 @@ class RestaurantOrderController extends Controller
 
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
-        $orders = RestaurantOrder::query()
+        $orders = $this->scopeToAccessibleBranches($actor, RestaurantOrder::query())
             ->with(['items', 'payments'])
             ->where('company_id', $actor->company_id)
             ->when($request->has('branch_id'), fn ($query) => $query->where('branch_id', (int) $request->query('branch_id')))
@@ -50,7 +53,7 @@ class RestaurantOrderController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('create', RestaurantOrder::class)) {
+        if ($actor->cannot('create', [RestaurantOrder::class, $request->validated()['branch_id'] ?? null])) {
             abort(403);
         }
 
@@ -68,6 +71,12 @@ class RestaurantOrderController extends Controller
 
         if ($actor->company_id !== $restaurantOrder->company_id) {
             abort(404);
+        }
+
+        // #7599 — lecture ressource-scopée : un employé sans assignation ne
+        // lit plus les données métier dès que le scoping est actif.
+        if ($actor->cannot('view', $restaurantOrder)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
         }
 
         $restaurantOrder->load(['items', 'payments']);
