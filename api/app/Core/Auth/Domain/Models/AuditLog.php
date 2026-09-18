@@ -20,8 +20,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $request_id
  * @property string|null $auditable_type
  * @property int|null $auditable_id
- * @property array<mixed> $old_values
- * @property array<mixed> $new_values
+ * @property array<mixed>|null $old_values
+ * @property array<mixed>|null $new_values
  * @property string|null $ip_address
  * @property string|null $user_agent
  * @property array<mixed> $metadata

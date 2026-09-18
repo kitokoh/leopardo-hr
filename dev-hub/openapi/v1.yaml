@@ -829,6 +829,122 @@ paths:
           description: Manager principal du tenant requis
         '404':
           description: Type de ressource inconnu (RESOURCE_TYPE_UNKNOWN)
+  /resources/{type}/{resourceId}/access:
+    get:
+      tags:
+      - HR
+      summary: 'Qui a accès à cette ressource ? (vue inverse, R4 #7601)'
+      description: 'Vue inverse des assignations : une ressource (succursale, véhicule, caméra...) et la liste des collaborateurs qui y ont accès, avec leur niveau, qui a donné l''accès et quand. Réservée au manager principal du tenant.'
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: resourceId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Collaborateurs ayant accès à la ressource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        employee_id:
+                          type: integer
+                        employee_name:
+                          type: string
+                        access_level:
+                          type: string
+                          enum: [view, operate, manage]
+                        granted_by:
+                          type: integer
+                          nullable: true
+                        granted_by_name:
+                          type: string
+                          nullable: true
+                        granted_at:
+                          type: string
+                          nullable: true
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Manager principal du tenant requis (RESOURCE_ACCESS_DENIED)
+        '404':
+          description: Type inconnu (RESOURCE_TYPE_UNKNOWN) ou ressource introuvable dans le tenant (RESOURCE_NOT_FOUND)
+  /resource-access/audit:
+    get:
+      tags:
+      - HR
+      summary: 'Rapport d''audit des accès ressource (R4 #7601)'
+      description: 'Qui avait accès à quoi, quand, donné (ou retiré) par qui — lu depuis audit_logs (chaque pose/modification/révocation d''assignation y écrit une ligne, y compris la révocation en cascade au départ d''un collaborateur). `?format=csv` produit l''export téléchargeable. Réservé au manager principal du tenant.'
+      parameters:
+      - name: format
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [csv]
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 200
+      responses:
+        '200':
+          description: Journal des accès (JSON, ou CSV si format=csv)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        at:
+                          type: string
+                          nullable: true
+                        action:
+                          type: string
+                        actor_id:
+                          type: integer
+                          nullable: true
+                        employee_id:
+                          type: integer
+                          nullable: true
+                        resource_type:
+                          type: string
+                          nullable: true
+                        resource_id:
+                          type: integer
+                          nullable: true
+                        access_level:
+                          type: string
+                          nullable: true
+                        previous_level:
+                          type: string
+                          nullable: true
+            text/csv:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Manager principal du tenant requis (RESOURCE_ACCESS_DENIED)
   /employees/{employee}/end-of-contract:
     get:
       tags:

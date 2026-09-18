@@ -4310,9 +4310,19 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/reports/turnover", options);
     },
 
+    /** Rapport d''audit des accès ressource (R4 #7601) */
+    getResourceAccessAudit(options = {}) {
+      return request("GET", "/resource-access/audit", options);
+    },
+
     /** Catalogue des ressources assignables d''un type */
     getResourcesByType(options = {}) {
       return request("GET", "/resources/{type}", options);
+    },
+
+    /** Qui a accès à cette ressource ? (vue inverse, R4 #7601) */
+    getResourcesByTypeByResourceIdAccess(options = {}) {
+      return request("GET", "/resources/{type}/{resourceId}/access", options);
     },
 
     /** Lister les avances sur salaire */

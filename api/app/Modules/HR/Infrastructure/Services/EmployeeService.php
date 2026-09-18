@@ -29,6 +29,8 @@ class EmployeeService
         /** @var array<string, mixed> $payload */
         $payload = $dto->toArray();
         $sendInvitation = (bool) Arr::pull($payload, 'send_invitation', false);
+        /** @var list<array{resource_type: string, resource_id: int, access_level: string}> $resourceAssignments */
+        $resourceAssignments = (array) Arr::pull($payload, 'resource_assignments', []);
         $providedPassword = Arr::pull($payload, 'password');
         $providedPassword = is_string($providedPassword) && $providedPassword !== '' ? $providedPassword : null;
 
@@ -101,6 +103,7 @@ class EmployeeService
                     employee: $employee,
                     invitedByType: 'manager',
                     invitedByEmail: $actor->email,
+                    resourceAssignments: $resourceAssignments,
                 );
             }
         }
