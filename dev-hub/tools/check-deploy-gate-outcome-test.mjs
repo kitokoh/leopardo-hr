@@ -24,6 +24,16 @@
  * Le budget est épuisé sans attendre 30 min via `DEPLOY_GATE_BUDGET_MINUTES`
  * (variable lue par l'action, posée uniquement par ce test).
  *
+ * Périmètre (#7577) : ce test couvre le VERDICT du gate. Les invariants
+ * STRUCTURELS — parité stricte `push:` ↔ `pull_request:` des workflows
+ * requis, couverture des préfixes `startsWith`, interdiction d'élargir un
+ * prédicat (dont `isApiPath` → `front/admin-dashboard/**`, régression connue
+ * de #7533 : redéploiement Render sur merge front-only) — sont vérifiés par
+ * `check-deploy-gate-outcome.sh` et ses mutations d'auto-test. Rappel :
+ * `.github/paths-filters.yml` est la source de dorny/paths-filter dans
+ * `tests.yml` (detect-changes), PAS des prédicats du gate — sa liste `web`
+ * est volontairement plus large que les `paths:` de `web-ci.yml` (#7528).
+ *
  * Usage : node dev-hub/tools/check-deploy-gate-outcome-test.mjs [chemin/action.yml]
  *         (le chemin est utile pour un A/B : exécuter le test contre la version
  *         d'avant le correctif et vérifier qu'il ÉCHOUE — sans quoi le test ne

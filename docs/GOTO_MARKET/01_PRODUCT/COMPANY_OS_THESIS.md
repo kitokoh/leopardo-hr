@@ -1,5 +1,13 @@
 # Company OS Thesis
 
+> ⚠️ **DOCUMENT OBSOLÈTE — valeur historique uniquement.**
+> La thèse « Mobile-First Company OS » a été remplacée par le positionnement **suite métier /
+> business suite** (décision #7428, 2026-09-16). Ne pas réutiliser ce contenu pour du messaging.
+> Référence à jour : `docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md` et
+> `docs/REFERENTIEL_PRODUIT/MESSAGE.md` (pitch canonique, promesses interdites).
+> Le corps du document ci-dessous est conservé tel quel pour l'historique de la réflexion
+> (les affirmations marché, comparaisons et « signaux » qu'il contient ne sont ni sourcés ni valides).
+
 ## Notre Thèse Fondamentale
 
 **Leopardo HR n'est PAS :**
