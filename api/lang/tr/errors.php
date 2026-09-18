@@ -313,4 +313,11 @@ return [
     'PLATFORM_PERMISSION_REQUIRED' => 'Platform rolünüz bu işleme izin vermiyor (gerekli izinler: :permissions).',
     'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'Kendi platform rolünüzü değiştiremezsiniz.',
     'LAST_SUPER_ADMIN_REQUIRED' => 'İşlem reddedildi: en az bir etkin üst yönetici kalmalıdır.',
+
+    // Issue #7598 (R1 de l'epique #7597) - acces aux ressources par tenant.
+    'RESOURCE_ACCESS_DENIED' => 'Bu kaynağa erişiminiz yok.',
+    'RESOURCE_TYPE_UNKNOWN' => 'Bilinmeyen kaynak türü.',
+    'RESOURCE_NOT_FOUND' => 'Kaynak bu şirkette bulunamadı.',
+    'RESOURCE_ASSIGNMENTS_REQUIRED' => 'Yetki listesi gereklidir (hepsini kaldırmak için boş olabilir).',
+    'RESOURCE_ACCESS_LEVEL_INVALID' => 'Geçersiz erişim düzeyi (view, operate veya manage).',
 ];

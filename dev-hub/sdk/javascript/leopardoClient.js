@@ -2385,6 +2385,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/employees/{employee}/receipt", options);
     },
 
+    /** Accès ressource d''un collaborateur (épique #7597, tranche R1) */
+    getEmployeesByEmployeeResourceAssignments(options = {}) {
+      return request("GET", "/employees/{employee}/resource-assignments", options);
+    },
+
+    /** Remplacer les accès ressource d''un collaborateur */
+    putEmployeesByEmployeeResourceAssignments(options = {}) {
+      return request("PUT", "/employees/{employee}/resource-assignments", options);
+    },
+
     /** Importer des employes par CSV */
     postEmployeesImport(options = {}) {
       return request("POST", "/employees/import", options);
@@ -4293,6 +4303,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Taux de rotation (turnover) sur N mois */
     getReportsTurnover(options = {}) {
       return request("GET", "/reports/turnover", options);
+    },
+
+    /** Catalogue des ressources assignables d''un type */
+    getResourcesByType(options = {}) {
+      return request("GET", "/resources/{type}", options);
     },
 
     /** Lister les avances sur salaire */
