@@ -34,7 +34,7 @@ class FirstLoginPasswordlessTest extends TestCase
      * Inscription + vérification OTP : provisionne un tenant self-service
      * complet et rend la ligne trial_provisionings `ready`.
      *
-     * @return object{id: int|string, provisioning_token: string}
+     * @return \stdClass&object{id: int|string, provisioning_token: string}
      */
     private function provisionTrialAccount(string $email = 'founder@newtech.dz'): \stdClass
     {
