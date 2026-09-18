@@ -2,6 +2,25 @@
 > Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
 > Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
 
+> **MAJ 2026-09-18 — lot tunnel d'acquisition #7495/#7496 (epic #7486) : pass copy/a11y ×4
+> locales et tracking first-party par étape.** Surface **API** : `POST /api/v1/funnel/events`
+> (ingestion server-to-server des jalons du funnel, secret partagé `MARKETING_LEAD_WEBHOOK_TOKEN`,
+> liste fermée d'événements, contexte en liste blanche, **aucune PII**) et
+> `GET /api/v1/admin/funnel/stats` (`platform.permission:metrics.view` — taux de passage par
+> étape en parcours distincts, conversion visite → espace prêt par jour/source, alerte livraison
+> OTP) — détail dans `SCENARIOS_TEST_API_GITHUB_ACTIONS.md`, addendum 2026-09-18. Surface **web
+> vitrine** (#7495) : reformulation des écrans du tunnel ×4 locales (`shared/i18n`, propagée par
+> les 3 synchronisations), renvoi de code OTP en 1 clic (anti-spam 30 s, annonces `aria-live`),
+> focus géré à chaque transition, `prefers-reduced-motion` respecté ; e2e bloquants
+> `front/web/e2e/funnel-tracking.spec.ts` exécutés par `.github/workflows/funnel-e2e-gate.yml`.
+> Surface **web admin** : nouvelle vue `/crm/acquisition-funnel` (admin-dashboard, nav + palette,
+> clés `funnelStats.*`). Surface **mobile** : aucune — seules les valeurs traduites des catalogues
+> ARB sont propagées depuis le catalogue partagé (détection par chemin). Non-régression :
+> `api/tests/Feature/Marketing/AcquisitionFunnelEventControllerTest.php`,
+> `api/tests/Feature/Platform/PlatformAcquisitionFunnelStatsTest.php`, Jest web (renvoi OTP,
+> jalons funnel), Playwright `funnel-tracking.spec.ts` (ordre des jalons, corrélation stable,
+> attribution conservée, zéro PII, zéro beacon sans consentement).
+
 > **MAJ 2026-09-18 — #7594, vitrine : validation zod localisée ×4 et a11y des formulaires
 > publics — surface mobile touchée par propagation i18n uniquement.** Le lot branche les
 > schémas zod (`contactFormSchema`/`demoFormSchema`/`newsletterFormSchema`) côté client avec
