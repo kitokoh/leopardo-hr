@@ -67,7 +67,12 @@ export const managerUser: AuthenticatedUser = {
     language: 'fr',
     timezone: 'Africa/Algiers',
     currency: 'DZD',
-    metadata: { onboarding_completed: true },
+    // #7618 — une session E2E mockée modélise un utilisateur DÉJÀ accueilli :
+    // sans `welcome_seen_at`, la modale de bienvenue (#7604, `z-[80]`,
+    // aria-modal) recouvre le dashboard et intercepte tous les clics
+    // (timeouts Playwright sur `dashboard-nav-toggle`). Un spec qui veut
+    // tester l'écran de bienvenue surcharge explicitement avec `''`.
+    metadata: { onboarding_completed: true, welcome_seen_at: '2026-09-01T08:00:00+00:00' },
   },
 };
 
