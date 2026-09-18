@@ -151,7 +151,6 @@ return new class extends Migration
             "COMMENT ON TABLE company_settings IS 'Clés valides documentées dans docs/dossierdeConception/18_schemas_sql/07_SCHEMA_SQL_COMPLET.sql section PARAMÈTRES COMPANY_SETTINGS PAR DÉFAUT. Toute nouvelle clé doit être ajoutée à TenantService.getDefaultSettings() ET documentée ici. Ne jamais insérer une clé non documentée.'"
         );
 
-
         Schema::create('notifications', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
