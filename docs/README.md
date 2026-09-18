@@ -116,7 +116,7 @@ Index de la documentation technique et stratégique du projet.
 | Doc | Contenu |
 |---|---|
 | [`REFERENTIEL_PRODUIT/`](REFERENTIEL_PRODUIT/) | Référentiel produit |
-| [`../PILOTAGE.md`](../PILOTAGE.md) | ⚠️ Archivé (#6698) — la gestion de projet vit dans GitHub Issues/Projects |
+| [`archive/PILOTAGE.md`](archive/PILOTAGE.md) | ⚠️ Archivé (#6698, déplacé vers `docs/archive/` le 2026-09-18) — la gestion de projet vit dans GitHub Issues/Projects |
 | [`GESTION_PROJET/`](GESTION_PROJET/) | Runbooks, audits d'écarts, supports d'exécution, réponse au cahier des charges |
 | [`GOUVERNANCE/`](GOUVERNANCE/) | Protocoles de gouvernance historique (branches BC/CRM, freeze 60 j) |
 | [`pilotes/`](pilotes/) | Carnets de pilotes clients (douleurs, suivis hebdo) et rétros |
@@ -131,7 +131,7 @@ Index de la documentation technique et stratégique du projet.
 | Doc | Contenu |
 |---|---|
 | [`GOTO_MARKET/`](GOTO_MARKET/) | Stratégie go-to-market (source de vérité business) |
-| [`GOTO_MARKET/LEOPARDO_STRATEGIC_ANALYSIS.md`](GOTO_MARKET/LEOPARDO_STRATEGIC_ANALYSIS.md) | Analyse stratégique |
+| [`archive/LEOPARDO_STRATEGIC_ANALYSIS.md`](archive/LEOPARDO_STRATEGIC_ANALYSIS.md) | Analyse stratégique (archivée — juin 2025, catégorie périmée, valeur historique) |
 | [`GTM/`](GTM/) | Outils opérationnels de prospection (templates, cas clients, good first issues) |
 | [`STRATEGIE_COMMERCIALE/`](STRATEGIE_COMMERCIALE/) | Plans d'action commerciaux, modèles CRM |
 | [`commercial/`](commercial/) | Benchmarks concurrents, dossiers techniques appels d'offres |
@@ -191,8 +191,7 @@ Index de la documentation technique et stratégique du projet.
 | [`client/`](client/) | Documentation espace client / portail |
 | [`design/`](design/) | Point d'entrée design (sources canoniques) + assets de conception |
 | [`contributing/`](contributing/) | Guides de contribution complémentaires |
-| [`notes/`](notes/) | Notes techniques et archives ponctuelles |
-| [`notes/`](notes/) | Notes et archives de contexte (non-source-de-vérité) |
+| [`notes/`](notes/) | Notes techniques et archives de contexte (non-source-de-vérité) |
 
 > ⚠️ Les dossiers `PROMPTS_EXECUTION/` et `PLAN_ACTION*/`/`archive/PLAN_ACTION*/` sont des archives de référence.
 > Ne pas les modifier. **Depuis le 2026-07-26, la gestion de projet active se fait exclusivement

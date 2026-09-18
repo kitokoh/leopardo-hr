@@ -1,16 +1,23 @@
-# 🚀 Leopardo HR — Mobile-First Company OS
+# 🚀 Leopardo — Suite métier pour entreprises de terrain
+
+> ⚠️ **Rappel obligatoire** : tout contenu GTM (pitchs, fiches, assets, posts) doit respecter
+> `docs/REFERENTIEL_PRODUIT/MESSAGE.md` (pitch canonique, promesses interdites) et
+> `docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md` (aucun chiffre sans date de mesure).
+> Catégorie : **suite métier / business suite** (décision #7428, 2026-09-16 —
+> `docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md`). Jamais « logiciel RH »,
+> « HR SaaS » ni « Mobile-First Company OS » comme catégorie.
 
 ## Système de Pilotage de Lancement Produit
 
-**Version :** 1.0
-**Dernière mise à jour :** Juillet 2026
-**Statut :** Prêt pour lancement commercial
+**Version :** 1.1
+**Dernière mise à jour :** 2026-09-18
+**Statut :** dossier de travail GTM — aucun statut « prêt pour lancement commercial » n'est sourcé à ce jour (voir `GOTO_MARKET_AUDIT.md` et `PILOTAGE.md`)
 
 ---
 
 ## 📖 Comment utiliser ce dossier
 
-Ce dossier est la **source de vérité business** de Leopardo HR. Il est conçu pour être utilisé par :
+Ce dossier est la **source de vérité business** de Leopardo. Il est conçu pour être utilisé par :
 
 | Rôle | Section prioritaire | Temps de lecture |
 |------|---------------------|------------------|
@@ -47,11 +54,11 @@ docs/GOTO_MARKET/
 
 Permettre à **n'importe quelle partie prenante** de comprendre en moins de 30 minutes :
 
-1. **Ce qu'est Leopardo HR** — Mobile-First Company OS
+1. **Ce qu'est Leopardo** — la suite métier des entreprises de terrain (RH & paie, pointage, absences, CRM, comptabilité et opérations, sur web, mobile et bornes)
 2. **Pourquoi il existe** — Résoudre la fracture numérique des PME et équipes terrain
 3. **À qui il s'adresse** — PME de 5-250 employés, industries terrain
 4. **Comment il gagne de l'argent** — SaaS B2B avec modèle freemium + enterprise
-5. **Pourquoi il peut gagner** — Différenciation mobile-first, architecture scalable, go-to-market agressif
+5. **Pourquoi il peut gagner** — Différenciation mobile-first, architecture scalable, go-to-market discipliné (hypothèses à valider terrain)
 
 ---
 
@@ -63,7 +70,7 @@ Permettre à **n'importe quelle partie prenante** de comprendre en moins de 30 m
 | Vision produit | [`01_PRODUCT/PRODUCT_VISION.md`](01_PRODUCT/PRODUCT_VISION.md) |
 | Positionnement | [`01_PRODUCT/POSITIONING.md`](01_PRODUCT/POSITIONING.md) |
 | Fonctionnalités cœur | [`01_PRODUCT/CORE_FEATURES.md`](01_PRODUCT/CORE_FEATURES.md) |
-| Thèse "Company OS" | [`01_PRODUCT/COMPANY_OS_THESIS.md`](01_PRODUCT/COMPANY_OS_THESIS.md) |
+| Thèse de catégorie (historique « Company OS » → suite métier) | [`01_PRODUCT/COMPANY_OS_THESIS.md`](01_PRODUCT/COMPANY_OS_THESIS.md) |
 | Audit go-to-market | [`GOTO_MARKET_AUDIT.md`](GOTO_MARKET_AUDIT.md) |
 | Specs assets marketing (landing, brochure, pitch deck, vidéos) | [`ASSETS_PRODUCTION/`](ASSETS_PRODUCTION/) |
 
@@ -73,7 +80,7 @@ Permettre à **n'importe quelle partie prenante** de comprendre en moins de 30 m
 
 **Règle simple :** Chaque document doit répondre à une question :
 
-> Est-ce que cela aide une PME à comprendre, tester ou acheter Leopardo HR plus vite ?
+> Est-ce que cela aide une PME à comprendre, tester ou acheter Leopardo plus vite ?
 
 Si la réponse est **non**, ce document n'a pas sa place ici.
 
@@ -114,6 +121,6 @@ Ce dossier est **vivant**. Toute modification doit :
 
 ---
 
-> **Leopardo HR** — *Mobile-First Company OS pour les PME et équipes terrain*
+> **Leopardo** — *la suite métier des entreprises de terrain, pour les PME et équipes multi-sites*
 >
 > 🌍 Afrique • Europe • Turquie • Moyen-Orient
