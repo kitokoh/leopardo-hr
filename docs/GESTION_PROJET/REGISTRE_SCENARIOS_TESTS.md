@@ -31,6 +31,70 @@
 > `test_portfolio_query_count_does_not_grow_with_company_count` — dont le comptage de
 > requêtes, faussé par un `DB::listen()` jamais retiré, est réparé).
 
+> **MAJ 2026-09-17 — tranche #7490 (lot #7604), écran de bienvenue de première connexion,
+> affiché une seule fois (persisté serveur).** Surface **API** (module Onboarding) :
+> `POST /onboarding/welcome-ack` — acquittement idempotent, la date d'origine
+> (`metadata.welcome_seen_at`, `public.companies`) n'est **jamais** réécrite au second appel
+> (`already_acknowledged: true`). Surface **web client** : `WelcomeScreen.tsx` monté dans le
+> layout dashboard, affiché uniquement tant que l'acquittement n'est pas persisté côté serveur
+> (un rechargement ou un autre poste ne le re-montre pas). Surfaces **web admin** et **mobile** :
+> aucun écran ni parcours modifié — seules les **valeurs traduites** des catalogues
+> (`front/admin-dashboard/src/i18n/locales/*.json`, ARB `leopardo_core`) sont propagées depuis le
+> catalogue partagé (`shared/i18n`, clés `onboarding.welcome.*`). Non-régression :
+> `api/tests/Feature/Onboarding/WelcomeScreenAckTest.php` et
+> `front/web/src/modules/onboarding/components/__tests__/WelcomeScreen.test.tsx`.
+
+> **MAJ 2026-09-17 — tranche #7595, les leads vitrine deviennent lisibles par l'admin.**
+> Nouvelle lecture **API** (module Platform) : `GET /platform/marketing/leads` et son miroir
+> super-admin `GET /admin/marketing/leads` — la table globale `marketing_leads` recevait les
+> 5 formulaires publics de la vitrine sans qu'aucune route ne la relise. Paginée (25/p., max
+> 100), filtres `type`/`status`/`source`/`search`/`from`/`to` (le `to` sans heure inclut la
+> journée entière), tri du plus récent au plus ancien, `meta.status_counts` volontairement
+> **global** (compteurs d'onglets). Réservée à la permission plateforme `crm.view` ; la réponse
+> expose `payload` et `ip` (arbitrage documenté dans le contrôleur — seule relecture de données
+> personnelles prospect). Lecture par `DB::table` sans import du module Marketing (garde #5584).
+> Spec OpenAPI + SDK miroir régénérés. Aucune surface web/mobile dans cette tranche (écran admin
+> à venir). Non-régression : `api/tests/Feature/PlatformMarketingLeadsReadApiTest.php`.
+
+> **MAJ 2026-09-17 — #7598 (R1 de l'épique #7597), socle « accès aux ressources »
+> ressource-scopé.** Nouvelle table tenant `employee_resource_assignments`
+> (`company_id` uuid indexé sans FK cross-tenant, `resource_type` clé du registre
+> `api/config/resource_types.php`, `access_level` `view` < `operate` < `manage`, unicité
+> `employee_id`+`resource_type`+`resource_id`). Helpers sur `Employee` :
+> `hasResourceAccess()` / `accessibleResourceIds()` — règle de progressivité : tant qu'un type
+> n'est pas assigné dans l'entreprise, comportement historique (même `company_id` + rôle) ;
+> dès la première assignation, scoping actif et **fail-closed** pour les non-assignés du type
+> (`principal` : tout ; `rh` : lecture seule). Surface **API** (module RH) :
+> `GET|PUT /employees/{employee}/resource-assignments` (le `PUT` remplace le jeu complet —
+> révocation en un geste ; réservé au principal via `EmployeePolicy`) et
+> `GET /resources/{type}` (catalogue assignable, fail-closed sur type inconnu). Messages
+> d'erreur ×4 langues (`api/lang/{fr,en,ar,tr}/errors.php`). Aucune surface web admin ni
+> mobile modifiée dans cette tranche (écrans R2+). Non-régression :
+> `api/tests/Feature/Security/ResourceScopedRbacTest.php`.
+
+> **MAJ 2026-09-17 — #7593, vitrine : consentement cookies, Consent Mode et mentions
+> d'information.** Surface **web client (vitrine)** uniquement : bandeau de consentement
+> (`ConsentBanner`/`ConsentProvider`/`ConsentScripts`), bouton de réglage persistant, notice
+> `FormDataNotice` sous les formulaires publics, pages légales et sitemap — scénarios
+> `front/web/e2e/consent.spec.ts` et `front/web/e2e/legal-pages.spec.ts`. Surfaces **web
+> admin** et **mobile** : aucun écran ni parcours modifié — seules les **valeurs traduites**
+> des catalogues (`front/admin-dashboard/src/i18n/locales/*.json`, ARB `leopardo_core`) sont
+> propagées depuis le catalogue partagé (`shared/i18n`, clés `consent.*`/`legal.*`), la garde
+> de gouvernance exigeant néanmoins cette entrée (détection par chemin).
+
+> **MAJ 2026-09-17 — #7609, seau de throttle dédié pour `/trial/verify`.**
+> `api/routes/api.php` sort `/trial/verify` **et** `/trial/set-password` du seau partagé
+> `throttle:5,15` et les place derrière un limiteur nommé **`throttle:trial-verify`**
+> (10 requêtes / 15 min, clé `email|IP`, déclaré dans
+> `api/app/Providers/AppServiceProvider.php`). Motif mesuré : avec le seau partagé, la
+> 5e vérification recevait le `429 TOO_MANY_REQUESTS` du **throttle** *avant* d'atteindre le
+> **verrou applicatif** (5 échecs → `otp_locked_until`, réponse `OTP_TOO_MANY_ATTEMPTS`) —
+> le verrou était donc inatteignable côté utilisateur, et un compte verrouillé ne pouvait
+> plus définir son mot de passe. `POST /trial/signup` **conserve** sa garde anti-spam
+> `throttle:5,15` (verrouillée par un test). La clé par e-mail évite qu'un poste derrière un
+> NAT étrangle tous les inscrits. Surface **API** uniquement : aucun parcours web admin ni
+> mobile modifié. Non-régression : `api/tests/Feature/SelfServiceTrialTest.php`.
+
 > **MAJ 2026-09-13 — #7302, cause racine de la lenteur du portefeuille clients.** Le lot
 > « le portefeuille ne recalcule plus la santé société par société » supprime le N+1 de
 > `GET /platform/companies/health` (674 requêtes → 12 pour 45 sociétés) et met le résultat en

@@ -60,11 +60,11 @@ class EduAcademicYearTest extends TestCase
         '2026_08_30_000301_5820_create_edu_admissions_table',
         '2026_08_30_000401_5821_create_edu_attendance_records_table',
         '2026_08_30_000402_5821_create_edu_attendance_corrections_table',
-        '2026_08_30_000601_5823_create_edu_assessments_table',
-        '2026_08_30_000602_5823_create_edu_grades_table',
-        '2026_08_30_000603_5823_create_edu_grade_versions_table',
+        // #7571 — déclarations canoniques : `000409` crée les trois tables
+        // d'évaluation, `000410` les bulletins (2ᵉ génération supprimée).
+        '2026_08_30_000409_5823_create_edu_assessment_tables',
         '2026_08_30_001516_5822_create_edu_timetable_slots_table',
-        '2026_08_30_001520_5824_create_edu_report_cards_table',
+        '2026_08_30_000410_5824_create_edu_report_card_tables',
     ];
 
     private Company $company;

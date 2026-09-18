@@ -448,6 +448,10 @@ class LeopardoClient:
         """Confirmer toutes les dates islamiques d'une année (super-admin)"""
         return self.request("POST", "/admin/islamic-calendar/confirm-year/{year}", **kwargs)
 
+    def get_admin_marketing_leads(self, **kwargs):
+        """Liste des leads d'acquisition de la vitrine (miroir super-admin)"""
+        return self.request("GET", "/admin/marketing/leads", **kwargs)
+
     def listpayrollauditsadmin(self, **kwargs):
         """Lister les enregistrements d''audit des calculs de paie (platform_admin, cross-tenant) — issue #1874"""
         return self.request("GET", "/admin/payroll/audit", **kwargs)
@@ -1924,6 +1928,14 @@ class LeopardoClient:
         """Telecharger le PDF d'estimation"""
         return self.request("GET", "/employees/{employee}/receipt", **kwargs)
 
+    def get_employees_by_employee_resource_assignments(self, **kwargs):
+        """Accès ressource d''un collaborateur (épique #7597, tranche R1)"""
+        return self.request("GET", "/employees/{employee}/resource-assignments", **kwargs)
+
+    def put_employees_by_employee_resource_assignments(self, **kwargs):
+        """Remplacer les accès ressource d''un collaborateur"""
+        return self.request("PUT", "/employees/{employee}/resource-assignments", **kwargs)
+
     def post_employees_import(self, **kwargs):
         """Importer des employes par CSV"""
         return self.request("POST", "/employees/import", **kwargs)
@@ -2668,6 +2680,10 @@ class LeopardoClient:
         """Activer une invitation (définir le mot de passe)"""
         return self.request("POST", "/onboarding/invitation/{token}/activate", **kwargs)
 
+    def post_onboarding_welcome_ack(self, **kwargs):
+        """Acquitter l'écran de bienvenue de première connexion (#7604)"""
+        return self.request("POST", "/onboarding/welcome-ack", **kwargs)
+
     def get_org_chart(self, **kwargs):
         """Organigramme complet"""
         return self.request("GET", "/org-chart", **kwargs)
@@ -3092,6 +3108,10 @@ class LeopardoClient:
         """Terminer une session d'impersonation"""
         return self.request("DELETE", "/platform/impersonations/{session}", **kwargs)
 
+    def get_platform_marketing_leads(self, **kwargs):
+        """Liste des leads d'acquisition de la vitrine (lecture plateforme)"""
+        return self.request("GET", "/platform/marketing/leads", **kwargs)
+
     def get_platform_metrics_overview(self, **kwargs):
         """Agregats business du cockpit super-admin"""
         return self.request("GET", "/platform/metrics/overview", **kwargs)
@@ -3447,6 +3467,10 @@ class LeopardoClient:
     def get_reports_turnover(self, **kwargs):
         """Taux de rotation (turnover) sur N mois"""
         return self.request("GET", "/reports/turnover", **kwargs)
+
+    def get_resources_by_type(self, **kwargs):
+        """Catalogue des ressources assignables d''un type"""
+        return self.request("GET", "/resources/{type}", **kwargs)
 
     def get_salary_advances(self, **kwargs):
         """Lister les avances sur salaire"""

@@ -117,18 +117,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                     const SizedBox(width: 14),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          context.l10n.appTitle,
-                          style: AppTypography.title.copyWith(color: text),
-                        ),
-                        Text(
-                          l10n.authManagerLoginSubtitle,
-                          style: AppTypography.caption.copyWith(color: muted),
-                        ),
-                      ],
+                    // #7620 — sans Expanded, la Column prend sa largeur naturelle
+                    // et déborde dès qu'un libellé s'allonge (appTitle #7428).
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            context.l10n.appTitle,
+                            style: AppTypography.title.copyWith(color: text),
+                          ),
+                          Text(
+                            l10n.authManagerLoginSubtitle,
+                            style: AppTypography.caption.copyWith(color: muted),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

@@ -672,6 +672,152 @@ paths:
           description: Manager role required
         '404':
           description: Employe introuvable (isolation tenant)
+  /employees/{employee}/resource-assignments:
+    get:
+      tags:
+      - HR
+      summary: 'Accès ressource d''un collaborateur (épique #7597, tranche R1)'
+      description: 'Ressources explicitement données à un collaborateur (restaurant, véhicule, caméra, site) avec son niveau d''accès (view < operate < manage). Réservé au manager principal du tenant ; isolé par tenant.'
+      parameters:
+      - name: employee
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Accès ressource du collaborateur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        resource_type:
+                          type: string
+                        resource_id:
+                          type: integer
+                        access_level:
+                          type: string
+                          enum:
+                          - view
+                          - operate
+                          - manage
+                        resource_label:
+                          type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Manager principal du tenant requis
+    put:
+      tags:
+      - HR
+      summary: 'Remplacer les accès ressource d''un collaborateur'
+      description: 'Remplace le jeu COMPLET des accès : ce qui n''est pas envoyé est retiré, c''est la révocation. Un type de ressource inconnu est refusé (fail-closed) et une ressource d''une autre entreprise n''est jamais assignable. Chaque création, changement de niveau et suppression est audité (audit_logs).'
+      parameters:
+      - name: employee
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - assignments
+              properties:
+                assignments:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - resource_type
+                    - resource_id
+                    - access_level
+                    properties:
+                      resource_type:
+                        type: string
+                      resource_id:
+                        type: integer
+                      access_level:
+                        type: string
+                        enum:
+                        - view
+                        - operate
+                        - manage
+      responses:
+        '200':
+          description: Nouveau jeu d''accès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        resource_type:
+                          type: string
+                        resource_id:
+                          type: integer
+                        access_level:
+                          type: string
+                          enum:
+                          - view
+                          - operate
+                          - manage
+                        resource_label:
+                          type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Manager principal du tenant requis
+        '422':
+          description: Type de ressource inconnu, niveau invalide, ou ressource inexistante dans cette entreprise (RESOURCE_TYPE_UNKNOWN / RESOURCE_NOT_FOUND)
+  /resources/{type}:
+    get:
+      tags:
+      - HR
+      summary: 'Catalogue des ressources assignables d''un type'
+      description: 'Sélecteur du responsable : ressources du type demandé (restaurant_branch, vehicle, camera, site), filtrées par ce que l''acteur a le droit de voir. Un type non déclaré est refusé (404, RESOURCE_TYPE_UNKNOWN) — aucun type n''est ouvert par défaut.'
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Ressources du type, visibles par l'acteur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        label:
+                          type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Manager principal du tenant requis
+        '404':
+          description: Type de ressource inconnu (RESOURCE_TYPE_UNKNOWN)
   /employees/{employee}/end-of-contract:
     get:
       tags:
@@ -2640,6 +2786,38 @@ paths:
           description: Progression de l'onboarding
         '401':
           $ref: '#/components/responses/Error401'
+  /onboarding/welcome-ack:
+    post:
+      tags:
+      - Onboarding
+      summary: Acquitter l'écran de bienvenue de première connexion (#7604)
+      description: |
+        Marque l'écran de bienvenue de première connexion comme vu pour le
+        tenant courant (persisté côté serveur, `companies.metadata.welcome_seen_at`).
+        Idempotent : la date d'acquittement n'est jamais réécrite. L'état lu par
+        l'interface vient de `/auth/me` (`company.metadata`).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Acquittement enregistré (ou déjà enregistré)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      welcome_seen_at:
+                        type: string
+                        description: Date ISO 8601 de l'acquittement (jamais réécrite).
+                      already_acknowledged:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /company-integration-requests:
     get:
       tags:
@@ -24329,6 +24507,296 @@ paths:
           $ref: '#/components/responses/Error404'
         '409':
           description: Session déjà committed/cancelled
+  /platform/marketing/leads:
+    get:
+      tags:
+      - Platform
+      summary: Liste des leads d'acquisition de la vitrine (lecture plateforme)
+      description: 'Tranche #7595 — les leads vitrine (5 formulaires publics, POST /marketing/leads) etaient ecrits et jamais relus : aucune route GET n''existait, un commercial ne pouvait pas rappeler une demande de demo sans passer par la base. Lecture seule, paginee, reservee a la permission plateforme `crm.view`. La reponse expose le lead entier, y compris `payload` (corps du formulaire) et `ip` (tracabilite anti-spam) — arbitrage documente dans le controleur.'
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: type
+        in: query
+        required: false
+        description: Filtre par type de lead.
+        schema:
+          type: string
+          enum: [signup, demo_request, newsletter, contact, solution_survey]
+      - name: status
+        in: query
+        required: false
+        description: Filtre par statut de qualification.
+        schema:
+          type: string
+          enum: [new, contacted, qualified, converted, rejected]
+      - name: source
+        in: query
+        required: false
+        schema:
+          type: string
+          maxLength: 120
+      - name: search
+        in: query
+        required: false
+        description: Recherche sur email, external_id, page ou campagne.
+        schema:
+          type: string
+          maxLength: 100
+      - name: from
+        in: query
+        required: false
+        description: Borne basse (date incluse, debut de journee).
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        description: Borne haute (journee entiere incluse si aucune heure n'est fournie).
+        schema:
+          type: string
+          format: date
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 25
+      responses:
+        '200':
+          description: Leads vitrine pagines, du plus recent au plus ancien
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        external_id:
+                          type: string
+                          nullable: true
+                        type:
+                          type: string
+                        email:
+                          type: string
+                          nullable: true
+                        locale:
+                          type: string
+                          nullable: true
+                        country:
+                          type: string
+                          nullable: true
+                        page:
+                          type: string
+                          nullable: true
+                        source:
+                          type: string
+                          nullable: true
+                        campaign:
+                          type: string
+                          nullable: true
+                        referrer:
+                          type: string
+                          nullable: true
+                        ip:
+                          type: string
+                          nullable: true
+                        status:
+                          type: string
+                        note:
+                          type: string
+                          nullable: true
+                        converted_company_id:
+                          type: string
+                          nullable: true
+                        crm_forwarded:
+                          type: boolean
+                        email_forwarded:
+                          type: boolean
+                        payload:
+                          type: object
+                          additionalProperties: true
+                          nullable: true
+                        captured_at:
+                          type: string
+                          format: date-time
+                          nullable: true
+                        created_at:
+                          type: string
+                          format: date-time
+                          nullable: true
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      last_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+                      status_counts:
+                        type: object
+                        additionalProperties:
+                          type: integer
+        '422':
+          description: Parametre de filtre invalide
+        '403':
+          description: Permission plateforme `crm.view` absente
+  /admin/marketing/leads:
+    get:
+      tags:
+      - Admin
+      summary: Liste des leads d'acquisition de la vitrine (miroir super-admin)
+      description: 'Tranche #7595 — les leads vitrine (5 formulaires publics, POST /marketing/leads) etaient ecrits et jamais relus : aucune route GET n''existait, un commercial ne pouvait pas rappeler une demande de demo sans passer par la base. Lecture seule, paginee, reservee a la permission plateforme `crm.view`. La reponse expose le lead entier, y compris `payload` (corps du formulaire) et `ip` (tracabilite anti-spam) — arbitrage documente dans le controleur.'
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: type
+        in: query
+        required: false
+        description: Filtre par type de lead.
+        schema:
+          type: string
+          enum: [signup, demo_request, newsletter, contact, solution_survey]
+      - name: status
+        in: query
+        required: false
+        description: Filtre par statut de qualification.
+        schema:
+          type: string
+          enum: [new, contacted, qualified, converted, rejected]
+      - name: source
+        in: query
+        required: false
+        schema:
+          type: string
+          maxLength: 120
+      - name: search
+        in: query
+        required: false
+        description: Recherche sur email, external_id, page ou campagne.
+        schema:
+          type: string
+          maxLength: 100
+      - name: from
+        in: query
+        required: false
+        description: Borne basse (date incluse, debut de journee).
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        description: Borne haute (journee entiere incluse si aucune heure n'est fournie).
+        schema:
+          type: string
+          format: date
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 25
+      responses:
+        '200':
+          description: Leads vitrine pagines, du plus recent au plus ancien
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        external_id:
+                          type: string
+                          nullable: true
+                        type:
+                          type: string
+                        email:
+                          type: string
+                          nullable: true
+                        locale:
+                          type: string
+                          nullable: true
+                        country:
+                          type: string
+                          nullable: true
+                        page:
+                          type: string
+                          nullable: true
+                        source:
+                          type: string
+                          nullable: true
+                        campaign:
+                          type: string
+                          nullable: true
+                        referrer:
+                          type: string
+                          nullable: true
+                        ip:
+                          type: string
+                          nullable: true
+                        status:
+                          type: string
+                        note:
+                          type: string
+                          nullable: true
+                        converted_company_id:
+                          type: string
+                          nullable: true
+                        crm_forwarded:
+                          type: boolean
+                        email_forwarded:
+                          type: boolean
+                        payload:
+                          type: object
+                          additionalProperties: true
+                          nullable: true
+                        captured_at:
+                          type: string
+                          format: date-time
+                          nullable: true
+                        created_at:
+                          type: string
+                          format: date-time
+                          nullable: true
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      last_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+                      status_counts:
+                        type: object
+                        additionalProperties:
+                          type: integer
+        '422':
+          description: Parametre de filtre invalide
+        '403':
+          description: Permission plateforme `crm.view` absente
   /marketing/leads:
     post:
       tags:

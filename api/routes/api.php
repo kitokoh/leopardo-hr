@@ -26,6 +26,7 @@ use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookCon
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
+use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\WelcomeScreenController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\IslamicCalendarController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PayrollAuditController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PayrollSimulationController;
@@ -57,6 +58,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformEmailTemplateCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformFeatureKillSwitchController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformHrReportController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformImpersonationController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMarketingLeadController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMarketingOAuthConfigController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMetricsOverviewController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformNotificationObservabilityController;
@@ -161,8 +163,18 @@ Route::prefix('v1')->group(function (): void {
     });
 
     // Self-service trial provisioning (public, throttle strict)
+    // #7609 — l'inscription garde sa garde anti-spam 5/15 min.
     Route::middleware(['throttle:5,15'])->group(function (): void {
         Route::post('/trial/signup', [SelfServiceTrialController::class, 'signup']);
+    });
+
+    // #7609 — /trial/verify a son PROPRE seau : avec le seau partagé, la 5e
+    // vérification recevait le 429 du throttle (`TOO_MANY_REQUESTS`) AVANT le
+    // verrou applicatif (5 échecs → `otp_locked_until`), qui devenait donc
+    // inatteignable côté utilisateur — mesuré avant correctif. Depuis le
+    // contrôleur, un compte verrouillé doit AUSSI pouvoir définir son mot de
+    // passe : `set-password` suit le même seau dédié.
+    Route::middleware(['throttle:trial-verify'])->group(function (): void {
         Route::post('/trial/verify', [SelfServiceTrialController::class, 'verify']);
         // Onboarding sans mailer : le prospect définit lui-même son mot de passe
         // avec le provisioning_token qu'il détient déjà (voir setPassword()).
@@ -333,6 +345,15 @@ Route::prefix('v1')->group(function (): void {
         // mobile est GET /onboarding-setup/checklist + PATCH …/{stepKey}/
         // complete|skip. Cet endpoint est conservé pour les clients existants.
         Route::get('/onboarding/checklist', OnboardingChecklistController::class);
+
+        // #7604 (tranche du critère 2 de #7490) — écran de bienvenue de
+        // première connexion : l'acquittement est persisté côté SERVEUR
+        // (`public.companies.metadata.welcome_seen_at`), jamais en
+        // `localStorage` — l'écran ne se réaffiche donc pas sur un autre
+        // appareil. RBAC responsable (principal/rh) appliqué dans le
+        // contrôleur ; la lecture de l'état se fait par `/auth/me`
+        // (`company.metadata`), il n'y a pas de route de lecture à ajouter.
+        Route::post('/onboarding/welcome-ack', WelcomeScreenController::class);
     });
 
     // APV L.08 — Modules Leopardo, chaque module a son propre route group.
@@ -455,6 +476,11 @@ Route::prefix('v1')->group(function (): void {
 
         Route::get('/crm/pipeline', PlatformCrmPipelineController::class)->middleware('platform.permission:crm.view');
 
+        // Tranche #7595 — les leads d'acquisition de la vitrine etaient ecrits
+        // (POST /marketing/leads) et JAMAIS relus : aucune route GET n'existait.
+        // Lecture seule, meme garde que le pipeline CRM.
+        Route::get('/marketing/leads', [PlatformMarketingLeadController::class, 'index'])->middleware('platform.permission:crm.view');
+
         // PA2-COMM-012 — Pilot client support center: super-admin triage of
         // tenant-opened support tickets (status, priority, assignment, reply).
         Route::get('/support-tickets', [PlatformSupportTicketController::class, 'index'])->middleware('platform.permission:support.manage');
@@ -539,6 +565,7 @@ Route::prefix('v1')->group(function (): void {
         // BC-25 #6694 — pilotage des surveys de solutions (stats de conversion
         // du wizard vitrine, agrégées depuis marketing_leads type solution_survey).
         Route::get('/solutions/survey-stats', [PlatformSolutionSurveyStatsController::class, 'index']);
+        Route::get('/marketing/leads', [PlatformMarketingLeadController::class, 'index'])->middleware('platform.permission:crm.view');
 
         Route::get('/fleet/alerts', [PlatformAdminFleetAlertController::class, 'index']);
 

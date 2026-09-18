@@ -314,4 +314,11 @@ return [
     'PLATFORM_PERMISSION_REQUIRED' => 'Votre rôle plateforme ne permet pas cette action (permissions requises : :permissions).',
     'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'Impossible de modifier votre propre rôle plateforme.',
     'LAST_SUPER_ADMIN_REQUIRED' => 'Action refusée : il doit rester au moins un super administrateur actif.',
+
+    // Issue #7598 (R1 de l'epique #7597) - acces aux ressources par tenant.
+    'RESOURCE_ACCESS_DENIED' => 'Vous n\'avez pas accès à cette ressource.',
+    'RESOURCE_TYPE_UNKNOWN' => 'Type de ressource inconnu.',
+    'RESOURCE_NOT_FOUND' => 'Ressource introuvable dans cette entreprise.',
+    'RESOURCE_ASSIGNMENTS_REQUIRED' => 'La liste des accès est requise (elle peut être vide pour tout retirer).',
+    'RESOURCE_ACCESS_LEVEL_INVALID' => 'Niveau d\'accès invalide (view, operate ou manage).',
 ];

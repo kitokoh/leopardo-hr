@@ -1372,6 +1372,28 @@ trait CreatesMvpSchema
             $this->setPostgresSearchPath('shared_tenants,public');
         }
 
+        // Issue #7598 (R1) — accès ressource-scopés posés par le responsable du
+        // tenant. Miroir de la migration 2026_09_17_000001_7598 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('employee_resource_assignments'))) {
+            Schema::create($this->moduleTable('employee_resource_assignments'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id');
+                $table->string('resource_type', 40);
+                $table->unsignedInteger('resource_id');
+                $table->enum('access_level', ['view', 'operate', 'manage'])->default('view');
+                $table->unsignedInteger('created_by')->nullable();
+                $table->timestamps();
+
+                $table->unique(
+                    ['employee_id', 'resource_type', 'resource_id'],
+                    'employee_resource_assignments_unique'
+                );
+                $table->index(['company_id', 'resource_type', 'resource_id'], 'employee_resource_assignments_resource_idx');
+                $table->index(['company_id', 'employee_id', 'resource_type'], 'employee_resource_assignments_employee_idx');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('catalog_inquiries'))) {
             Schema::create($this->moduleTable('catalog_inquiries'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
