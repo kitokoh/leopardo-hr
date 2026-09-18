@@ -128,7 +128,9 @@ async function submitCredentials() {
   const passwordInput = document.querySelector('#password') as HTMLInputElement;
   await userEventApi.type(emailInput, 'amina@exemple.com');
   await userEventApi.type(passwordInput, 'MotDePasse!2026');
-  await userEventApi.click(screen.getByRole('button', { name: /connexion|se connecter|sign in/i }));
+  // #7490 : ancré en début de libellé — « Recevoir un code de connexion »
+  // (toggle OTP) contient aussi « connexion » et rendait la requête ambiguë.
+  await userEventApi.click(screen.getByRole('button', { name: /^(connexion|se connecter|sign in)/i }));
 }
 
 describe('#7479 — login réussi puis /auth/me indisponible', () => {

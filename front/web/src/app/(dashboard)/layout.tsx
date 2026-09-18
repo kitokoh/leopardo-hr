@@ -387,12 +387,15 @@ export default function DashboardLayout({
       storeAuthSession(null, updated);
       setUserOverride(updated);
 
-      // CTA principal : l'assistant d'accueil enchaîne derrière l'écran.
-      if (action === 'start_setup') {
-        setShowWizard(true);
+      // CTA principal (#7490) : « Définir mon mot de passe maintenant » — le
+      // flux provisioning_token existant (page publique /auth/set-password,
+      // token déjà détenu par le navigateur ou lien e-mail). L'écran est déjà
+      // acquitté : au retour dans l'espace, il ne se réaffiche pas.
+      if (action === 'set_password') {
+        router.push('/auth/set-password');
       }
     },
-    [],
+    [router],
   );
 
   // ── Rafraîchissement silencieux de la session (#7245) ────────────────────

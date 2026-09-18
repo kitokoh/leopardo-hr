@@ -2,6 +2,7 @@
 
 use App\AI\Interfaces\Api\V1\Controllers\VoiceController;
 use App\Core\Auth\Interfaces\Api\V1\Controllers\AuthController;
+use App\Core\Auth\Interfaces\Api\V1\Controllers\LoginCodeController;
 use App\Core\Auth\Interfaces\Api\V1\Controllers\PasswordResetController;
 use App\Core\Auth\Interfaces\Api\V1\Controllers\PlatformAuthController;
 use App\Core\Auth\Interfaces\Api\V1\Controllers\TwoFactorAuthController;
@@ -113,6 +114,12 @@ Route::prefix('v1')->group(function (): void {
         // Issue #2626 : réinitialisation de mot de passe (usage unique, 60 min).
         Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgot']);
         Route::post('/auth/reset-password', [PasswordResetController::class, 'reset']);
+        // #7490 : connexion par code à usage unique pour les comptes SANS mot
+        // de passe défini (self-service). Réponse générique côté demande
+        // (anti-énumération), verrou applicatif à 5 échecs côté verify — le
+        // bucket auth-sensitive (email+IP) suit la même politique que /auth/login.
+        Route::post('/auth/login-code/request', [LoginCodeController::class, 'request']);
+        Route::post('/auth/login-code/verify', [LoginCodeController::class, 'verify']);
         Route::post('/auth/google/token', [AuthController::class, 'handleGoogleToken']);
 
         // QA onboarding 2026-09-14 — le flux Google a besoin d'une SESSION.

@@ -24,4 +24,8 @@ return [
     'twofa_not_setup' => 'Onceki adimda setup2fa cagirarak bir secret olusturun.',
     'twofa_code_invalid_value' => 'Saglanan 2FA kodu gecersiz.',
     'password_incorrect' => 'Hatali sifre.',
+    'login_code_sent' => 'Bu e-posta için uygun bir hesap varsa bir giriş kodu gönderildi.',
+    'login_code_invalid' => 'Giriş kodu geçersiz veya süresi dolmuş. Yeni bir kod isteyin.',
+    'login_code_too_many_attempts' => 'Çok fazla deneme. Yeni bir giriş kodu isteyin.',
+    'login_code_password_required' => 'Bu hesap parola ile giriş gerektirir.',
 ];

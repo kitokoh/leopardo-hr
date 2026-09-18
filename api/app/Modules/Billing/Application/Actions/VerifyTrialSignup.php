@@ -370,9 +370,34 @@ class VerifyTrialSignup
             'source' => $payload['source'] ?? 'self_service_trial',
         ]);
 
+        // #7490 : l'e-mail de bienvenue ne contient plus AUCUN secret en
+        // clair — il porte un lien magique de définition de mot de passe
+        // (provisioning_token à usage unique, TTL 72 h côté endpoint).
+        $setPasswordUrl = null;
+
+        try {
+            $provisioningRow = DB::table('trial_provisionings')
+                ->where('email', $email)
+                ->where('status', 'ready')
+                ->orderByDesc('id')
+                ->first();
+
+            $provisioningToken = $provisioningRow->provisioning_token ?? null;
+
+            if (is_string($provisioningToken) && strlen($provisioningToken) === 64) {
+                $setPasswordUrl = rtrim((string) config('app.frontend_url', config('app.url')), '/')
+                    .'/auth/set-password?token='.$provisioningToken;
+            }
+        } catch (\Throwable $e) {
+            Log::warning('trial.self_service.set_password_link_unavailable', [
+                'email' => $email,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
         try {
             Mail::to($email)->send(
-                new TrialWelcomeMail($result['company'], $result['manager'], $tempPassword)
+                new TrialWelcomeMail($result['company'], $result['manager'], $setPasswordUrl)
             );
         } catch (\Throwable $e) {
             Log::error('SelfServiceTrial: Failed to send welcome email', [

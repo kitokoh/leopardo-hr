@@ -135,16 +135,18 @@ return [
 
     'email_trial_welcome_subject' => 'Çalışma alanınız hazır — :company',
     'email_trial_welcome_heading' => 'Merhaba :name 👋',
-    'email_trial_welcome_intro' => ':company çalışma alanınız başarıyla oluşturuldu. İşte giriş bilgileriniz:',
-    'email_trial_welcome_email_label' => 'E-posta',
-    'email_trial_welcome_password_label' => 'Şifre',
+    'email_trial_welcome_intro' => ':company çalışma alanınız başarıyla oluşturuldu.',
+    'email_trial_welcome_email_label' => 'Giriş e-postası',
+    'email_trial_welcome_set_pw_text' => 'Sonraki girişleriniz için aşağıdaki bağlantıya tıklayarak şifrenizi belirleyin.',
+    'email_trial_welcome_set_pw_button' => 'Şifremi belirle',
+    'email_trial_welcome_set_pw_validity' => 'Bu bağlantı tek kullanımlıktır ve 72 saat geçerlidir. Süre dolduktan sonra giriş sayfasındaki "Giriş kodu al" seçeneğini kullanın.',
+    'email_trial_welcome_set_pw_fallback' => 'Sonraki girişleriniz için şifrenizi çalışma alanınızdan belirleyin veya giriş sayfasından bir giriş kodu isteyin.',
     'email_trial_welcome_trial_badge' => ':days gün ücretsiz deneme',
-    'email_trial_welcome_change_pw' => '⚠️ İlk girişten sonra şifrenizi Hesap menüsünden değiştirin.',
     'email_trial_welcome_next_steps' => 'Sonraki adımlar',
-    'email_trial_welcome_step1' => 'Yukarıdaki bilgilerle giriş yapın',
+    'email_trial_welcome_step1' => 'Yukarıdaki bağlantı ile şifrenizi belirleyin',
     'email_trial_welcome_step2' => 'İlk çalışanlarınızı ekleyin',
     'email_trial_welcome_step3' => 'İlk yoklama girişini deneyin',
-    'email_trial_welcome_button' => 'Giriş yap',
+    'email_trial_welcome_button' => 'Alanıma eriş',
 
     'email_subscription_confirmed_subject' => 'Abonelik onaylandı — :company',
     'email_subscription_confirmed_thanks' => 'Abone olduğunuz için teşekkürler!',
@@ -187,5 +189,10 @@ return [
     'trial_verification_greeting' => 'Merhaba :name,',
     'trial_verification_intro' => 'Çalışma alanınızın oluşturulmasını tamamlamak için lütfen aşağıdaki doğrulama kodunu kullanın:',
     'trial_verification_validity' => 'Bu kod 30 dakika geçerlidir. Bunu talep etmediyseniz, bu e-postayı güvenle yok sayabilirsiniz.',
+
+    'login_code_subject' => 'Leopardo RH giriş kodunuz',
+    'login_code_greeting' => 'Merhaba,',
+    'login_code_intro' => 'İşte tek kullanımlık giriş kodunuz. Alanınıza erişmek için giriş sayfasında bu kodu girin:',
+    'login_code_validity' => 'Bu kod 10 dakika geçerlidir ve tek kullanımlıktır. Bunu talep etmediyseniz, bu e-postayı güvenle yok sayabilirsiniz.',
 
 ];

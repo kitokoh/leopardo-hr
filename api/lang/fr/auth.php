@@ -24,4 +24,8 @@ return [
     'twofa_not_setup' => 'Veuillez d\'abord appeler setup2fa pour générer un secret.',
     'twofa_code_invalid_value' => 'Le code 2FA fourni est invalide.',
     'password_incorrect' => 'Mot de passe incorrect.',
+    'login_code_sent' => 'Si un compte éligible existe pour cet email, un code de connexion a été envoyé.',
+    'login_code_invalid' => 'Code de connexion invalide ou expiré. Demandez un nouveau code.',
+    'login_code_too_many_attempts' => 'Trop de tentatives. Demandez un nouveau code de connexion.',
+    'login_code_password_required' => 'Ce compte requiert une connexion par mot de passe.',
 ];

@@ -17,10 +17,16 @@ class TrialWelcomeMail extends Mailable
 
     public readonly int $trialDays;
 
+    /**
+     * #7490 : plus aucun secret en clair dans cet e-mail. Le mot de passe
+     * temporaire (anti-pattern sécurité) est remplacé par un lien magique de
+     * DÉFINITION de mot de passe porté par le `provisioning_token` (usage
+     * unique, TTL 72 h côté serveur — voir SelfServiceTrialController).
+     */
     public function __construct(
         public readonly Company $company,
         public readonly Employee $manager,
-        public readonly string $tempPassword,
+        public readonly ?string $setPasswordUrl = null,
     ) {
         $this->trialDays = $this->resolveTrialDays();
 
@@ -45,12 +51,11 @@ class TrialWelcomeMail extends Mailable
             ->view('emails.trial-welcome', [
                 'company' => $this->company,
                 'manager' => $this->manager,
-                'tempPassword' => $this->tempPassword,
+                'setPasswordUrl' => $this->setPasswordUrl,
                 'locale' => $locale,
                 'trialDays' => $this->trialDays,
-                // L'email contient les identifiants temporaires : le CTA doit
-                // pointer sur l'UI produit (page de connexion), jamais sur
-                // l'API — même convention que TrialDripMail.
+                // Le CTA pointe sur l'UI produit (page de connexion), jamais
+                // sur l'API — même convention que TrialDripMail.
                 'appUrl' => rtrim((string) config('app.frontend_url', config('app.url')), '/'),
                 'tpl' => app(\App\Core\Mail\EmailTemplateResolver::class)->resolve('trial_welcome', $locale, [
                     ':company' => $this->company->name,

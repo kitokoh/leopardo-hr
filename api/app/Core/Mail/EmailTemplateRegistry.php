@@ -45,6 +45,13 @@ final class EmailTemplateRegistry
             'cta_label' => null,
             'variables' => [':name', ':brand'],
         ],
+        'login_code' => [
+            'subject' => 'emails.login_code_subject',
+            'heading' => 'emails.login_code_subject',
+            'body' => ['emails.login_code_intro'],
+            'cta_label' => null,
+            'variables' => [':brand'],
+        ],
         'trial_welcome' => [
             'subject' => 'emails.email_trial_welcome_subject',
             'heading' => 'emails.email_trial_welcome_subject',

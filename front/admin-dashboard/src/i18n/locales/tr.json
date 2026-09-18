@@ -6966,7 +6966,44 @@
   "firstLoginWelcome": {
     "title": "Alanınız hazır 🎉",
     "body": "Şifrenizi belirlemeniz için bir bağlantı içeren e-posta gönderildi; sonraki girişlerinizde kullanılacaktır.",
-    "ctaStart": "Kuruluma başla",
+    "ctaStart": "Şifremi şimdi belirle",
     "ctaLater": "Daha sonra"
+  },
+  "setPassword": {
+    "title": "Şifrenizi belirleyin",
+    "subtitle": "Sonraki girişlerinizde kullanacaksınız. Bu bağlantı tek kullanımlıktır ve 72 saat geçerlidir.",
+    "passwordLabel": "Yeni şifre",
+    "confirmLabel": "Şifreyi onaylayın",
+    "submit": "Şifremi belirle",
+    "submitting": "Kaydediliyor…",
+    "success": "Şifre kaydedildi. Artık giriş yapabilirsiniz.",
+    "successCta": "Girişe git",
+    "missingToken": "Bağlantı eksik veya süresi dolmuş. E-postayla aldığınız bağlantıyı açın veya giriş sayfasından bir giriş kodu isteyin.",
+    "errorInvalidToken": "Bu bağlantı geçersiz. E-postayla aldığınız bağlantıyı açın.",
+    "errorExpired": "Bu bağlantının süresi doldu (72 saat). Giriş sayfasından bir giriş kodu isteyin.",
+    "errorAlreadySet": "Bu alan için zaten bir parola belirlenmiş. Normal girişi veya parola sıfırlamayı kullanın.",
+    "errorNotReady": "Alanınız henüz hazır değil. Birkaç dakika sonra tekrar deneyin.",
+    "errorWeakPassword": "Şifre çok zayıf: en az 12 karakter ve en az bir rakam.",
+    "errorMismatch": "İki şifre eşleşmiyor.",
+    "errorGeneric": "Şifre kaydedilemedi. Birkaç dakika sonra tekrar deneyin.",
+    "backToLogin": "Girişe dön"
+  },
+  "loginCode": {
+    "linkLabel": "Giriş kodu al",
+    "title": "Kodla giriş",
+    "hint": "Henüz şifreniz yok mu? E-postayla tek kullanımlık bir kod alın.",
+    "emailLabel": "E-postanız",
+    "sendCta": "Kodu gönder",
+    "sending": "Gönderiliyor…",
+    "sentInfo": "Bu e-posta için uygun bir hesap varsa az önce bir kod gönderildi. 10 dakika geçerlidir.",
+    "codeLabel": "E-postayla alınan kod",
+    "verifyCta": "Giriş yap",
+    "verifying": "Doğrulanıyor…",
+    "resend": "Yeni kod gönder",
+    "backToPassword": "Şifre ile giriş yap",
+    "errorInvalid": "Kod geçersiz veya süresi dolmuş. Yeni bir kod isteyin.",
+    "errorTooMany": "Çok fazla deneme. Yeni bir kod isteyin.",
+    "errorPasswordRequired": "Bu hesap parola ile giriş gerektirir.",
+    "errorGeneric": "Giriş yapılamadı. Birkaç dakika sonra tekrar deneyin."
   }
 }

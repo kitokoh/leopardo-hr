@@ -149,6 +149,10 @@ function LoginInner() {
   const [localeOverride, setLocaleOverride] = useState<AppLocale | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // #7490 — connexion par code à usage unique (comptes sans mot de passe défini).
+  const [loginMode, setLoginMode] = useState<'password' | 'code'>('password');
+  const [codeEmailSent, setCodeEmailSent] = useState(false);
+  const [loginCode, setLoginCode] = useState('');
   const [showDemoModal, setShowDemoModal] = useState(false);
   const [demoCompanies, setDemoCompanies] = useState<DemoCompany[]>([]);
   // Vrai uniquement si l'API ne répond pas (5xx/réseau) — PAS si elle répond
@@ -427,6 +431,93 @@ function LoginInner() {
     await performLogin(email, password);
   };
 
+  /**
+   * #7490 — « Recevoir un code de connexion » : filet de sécurité pour les
+   * comptes qui n'ont JAMAIS défini de mot de passe (onboarding self-service).
+   * La demande répond toujours génériquement (anti-énumération) ; la
+   * vérification passe par le route handler dédié qui pose le cookie httpOnly
+   * exactement comme /auth/login, puis on charge le profil via /auth/me.
+   */
+  const requestLoginCode = useCallback(async () => {
+    setSubmitting(true);
+    setError(null);
+    setUrlError(null);
+    try {
+      await apiFetch('/auth/login-code/request', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      });
+      setCodeEmailSent(true);
+      trackClientEvent('login_code_requested', {
+        email_domain: email.split('@')[1] ?? null,
+      });
+    } catch (err) {
+      // La réponse serveur est générique : une erreur ici est un incident
+      // réseau/service, jamais une fuite d'existence de compte.
+      setError(err instanceof ApiError ? err.message : i18nT(locale, 'loginCode.errorGeneric'));
+    } finally {
+      setSubmitting(false);
+    }
+  }, [email, locale]);
+
+  const verifyLoginCode = useCallback(async () => {
+    setSubmitting(true);
+    setError(null);
+    const startedAt = performance.now();
+    try {
+      await apiFetch('/auth/login-code/verify', {
+        method: 'POST',
+        body: JSON.stringify({ email, code: loginCode }),
+      });
+
+      // Session créée (cookie httpOnly posé par le route handler) : même
+      // épilogue que performLogin — profil, session locale, redirection.
+      const meResponse = await apiFetch('/auth/me');
+      const mePayload = await meResponse.json() as { data?: StoredAuthUser };
+      const user = mePayload.data;
+      if (!user) {
+        throw new Error(labels.login.errors.missingUser);
+      }
+      storeAuthSession(null, user);
+      applyDocumentLocale(normalizeLocale(user.language), user.is_rtl);
+      const target = resolvePostLoginTarget(user);
+      trackClientEvent('login_code_success', {
+        duration_ms: Math.round(performance.now() - startedAt),
+        role: user.role,
+        target,
+      });
+      goToPostLoginTarget(target, router);
+    } catch (err) {
+      const code = err instanceof ApiError ? (err.code ?? null) : null;
+      if (code === 'LOGIN_CODE_INVALID') {
+        setError(i18nT(locale, 'loginCode.errorInvalid'));
+      } else if (code === 'LOGIN_CODE_TOO_MANY_ATTEMPTS') {
+        setError(i18nT(locale, 'loginCode.errorTooMany'));
+      } else if (code === 'LOGIN_CODE_PASSWORD_REQUIRED') {
+        setError(i18nT(locale, 'loginCode.errorPasswordRequired'));
+      } else if (err instanceof ApiError) {
+        setError(err.message);
+      } else {
+        setError(i18nT(locale, 'loginCode.errorGeneric'));
+      }
+      trackClientEvent('login_code_failed', {
+        duration_ms: Math.round(performance.now() - startedAt),
+        code,
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  }, [email, loginCode, labels.login.errors.missingUser, locale, router]);
+
+  const handleCodeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!codeEmailSent) {
+      await requestLoginCode();
+    } else {
+      await verifyLoginCode();
+    }
+  };
+
   const selectDemoUser = useCallback((demoEmail: string, demoPassword: string, role?: string | null, country?: string | null) => {
     setEmail(demoEmail);
     setPassword(demoPassword);
@@ -533,6 +624,96 @@ function LoginInner() {
               <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{labels.login.subtitle}</p>
             </div>
 
+            {loginMode === 'code' ? (
+              <form className="mt-8 space-y-6" onSubmit={handleCodeSubmit} data-testid="login-code-form">
+                <div className="space-y-1">
+                  <h3 className="text-lg font-black text-slate-950 dark:text-white">
+                    {i18nT(locale, 'loginCode.title')}
+                  </h3>
+                  <p className="text-sm text-slate-500">{i18nT(locale, 'loginCode.hint')}</p>
+                </div>
+
+                {error ? (
+                  <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800">
+                    {error}
+                  </div>
+                ) : null}
+
+                <div className="space-y-4">
+                  <label htmlFor="login-code-email" className="block text-sm font-semibold text-slate-800">
+                    {i18nT(locale, 'loginCode.emailLabel')}
+                  </label>
+                  <input
+                    id="login-code-email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    disabled={codeEmailSent}
+                    className="block h-12 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-transparent/50 dark:bg-slate-800/50 px-4 text-slate-950 dark:text-white shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 font-bold text-sm disabled:opacity-60"
+                    placeholder="manager@company.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+
+                {codeEmailSent ? (
+                  <>
+                    <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                      {i18nT(locale, 'loginCode.sentInfo')}
+                    </p>
+                    <div className="space-y-4">
+                      <label htmlFor="login-code" className="block text-sm font-semibold text-slate-800">
+                        {i18nT(locale, 'loginCode.codeLabel')}
+                      </label>
+                      <input
+                        id="login-code"
+                        name="code"
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="one-time-code"
+                        pattern="[0-9]{6}"
+                        maxLength={6}
+                        required
+                        className="block h-12 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-transparent/50 dark:bg-slate-800/50 px-4 text-center text-lg font-black tracking-[0.4em] text-slate-950 dark:text-white shadow-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                        value={loginCode}
+                        onChange={(e) => setLoginCode(e.target.value.replace(/[^0-9]/g, ''))}
+                      />
+                    </div>
+                  </>
+                ) : null}
+
+                <Button
+                  type="submit"
+                  loading={submitting}
+                  fullWidth
+                  className="h-12 rounded-2xl bg-emerald-600 px-4 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-brand-500/20 hover:bg-emerald-500 focus:ring-emerald-500 focus:ring-offset-2"
+                >
+                  {codeEmailSent
+                    ? (submitting ? i18nT(locale, 'loginCode.verifying') : i18nT(locale, 'loginCode.verifyCta'))
+                    : (submitting ? i18nT(locale, 'loginCode.sending') : i18nT(locale, 'loginCode.sendCta'))}
+                </Button>
+
+                <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
+                  {codeEmailSent ? (
+                    <button
+                      type="button"
+                      onClick={() => { setCodeEmailSent(false); setLoginCode(''); setError(null); }}
+                      className="font-semibold text-teal-700 transition hover:text-teal-900"
+                    >
+                      {i18nT(locale, 'loginCode.resend')}
+                    </button>
+                  ) : <span />}
+                  <button
+                    type="button"
+                    onClick={() => { setLoginMode('password'); setCodeEmailSent(false); setLoginCode(''); setError(null); }}
+                    className="font-semibold text-slate-600 transition hover:text-slate-900"
+                  >
+                    {i18nT(locale, 'loginCode.backToPassword')}
+                  </button>
+                </div>
+              </form>
+            ) : (
             <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
               {registered && (
                 <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 flex items-center gap-2">
@@ -645,6 +826,18 @@ function LoginInner() {
                 </Link>
               </div>
 
+              {/* #7490 — comptes sans mot de passe défini : connexion par code. */}
+              <p className="text-center">
+                <button
+                  type="button"
+                  data-testid="login-code-toggle"
+                  onClick={() => { setLoginMode('code'); setError(null); setUrlError(null); }}
+                  className="text-sm font-semibold text-teal-700 underline-offset-4 transition hover:text-teal-900 hover:underline"
+                >
+                  {i18nT(locale, 'loginCode.linkLabel')}
+                </button>
+              </p>
+
               <Button
                 type="submit"
                 loading={submitting}
@@ -723,6 +916,7 @@ function LoginInner() {
                 </Link>
               </p>
             </form>
+            )}
 
             {showDemoModal ? (
               <div

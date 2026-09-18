@@ -135,16 +135,18 @@ return [
 
     'email_trial_welcome_subject' => 'Your workspace is ready — :company',
     'email_trial_welcome_heading' => 'Hello :name 👋',
-    'email_trial_welcome_intro' => 'Your :company workspace has been created. Here are your login credentials:',
-    'email_trial_welcome_email_label' => 'Email',
-    'email_trial_welcome_password_label' => 'Password',
+    'email_trial_welcome_intro' => 'Your :company workspace has been created successfully.',
+    'email_trial_welcome_email_label' => 'Login email',
+    'email_trial_welcome_set_pw_text' => 'For your next logins, set your password by clicking the link below.',
+    'email_trial_welcome_set_pw_button' => 'Set my password',
+    'email_trial_welcome_set_pw_validity' => 'This link is single-use and valid for 72 hours. After that, use "Receive a login code" on the login page.',
+    'email_trial_welcome_set_pw_fallback' => 'For your next logins, set your password from your workspace, or request a login code on the login page.',
     'email_trial_welcome_trial_badge' => ':days-day free trial',
-    'email_trial_welcome_change_pw' => '⚠️ Please change your password after your first login from the Account menu.',
     'email_trial_welcome_next_steps' => 'Next steps',
-    'email_trial_welcome_step1' => 'Log in with the credentials above',
+    'email_trial_welcome_step1' => 'Set your password using the link above',
     'email_trial_welcome_step2' => 'Add your first employees',
     'email_trial_welcome_step3' => 'Try your first attendance check-in',
-    'email_trial_welcome_button' => 'Log in',
+    'email_trial_welcome_button' => 'Open my workspace',
 
     'email_subscription_confirmed_subject' => 'Subscription confirmed — :company',
     'email_subscription_confirmed_thanks' => 'Thank you for subscribing!',
@@ -187,5 +189,10 @@ return [
     'trial_verification_greeting' => 'Hello :name,',
     'trial_verification_intro' => 'Please use the verification code below to complete the creation of your workspace:',
     'trial_verification_validity' => 'This code is valid for 30 minutes. If you did not request this, you can safely ignore this email.',
+
+    'login_code_subject' => 'Your Leopardo HR login code',
+    'login_code_greeting' => 'Hello,',
+    'login_code_intro' => 'Here is your single-use login code. Enter it on the login page to access your workspace:',
+    'login_code_validity' => 'This code is valid for 10 minutes and single-use. If you did not request this, you can safely ignore this email.',
 
 ];

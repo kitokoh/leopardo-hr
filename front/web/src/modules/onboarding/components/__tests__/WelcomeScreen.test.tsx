@@ -90,15 +90,15 @@ describe('WelcomeScreen', () => {
     ).toBeInTheDocument();
   });
 
-  it('acquitte via POST et remonte la date SERVEUR (CTA principal → assistant)', async () => {
+  it('acquitte via POST et remonte la date SERVEUR (CTA principal → définir le mot de passe)', async () => {
     mockedApiFetch.mockResolvedValue(acknowledgeResponse());
     const onAcknowledged = jest.fn();
 
     render(<WelcomeScreen locale="fr" onAcknowledged={onAcknowledged} />);
-    await userEvent.click(screen.getByRole('button', { name: 'Démarrer la mise en route' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Définir mon mot de passe maintenant' }));
 
     await waitFor(() =>
-      expect(onAcknowledged).toHaveBeenCalledWith('2026-09-16T12:00:00+00:00', 'start_setup'),
+      expect(onAcknowledged).toHaveBeenCalledWith('2026-09-16T12:00:00+00:00', 'set_password'),
     );
     expect(mockedApiFetch).toHaveBeenCalledTimes(1);
     expect(mockedApiFetch).toHaveBeenCalledWith('/onboarding/welcome-ack', { method: 'POST' });
@@ -137,7 +137,7 @@ describe('WelcomeScreen', () => {
 
     render(<WelcomeScreen locale="fr" onAcknowledged={onAcknowledged} />);
 
-    const start = screen.getByRole('button', { name: 'Démarrer la mise en route' });
+    const start = screen.getByRole('button', { name: 'Définir mon mot de passe maintenant' });
     await userEvent.click(start);
     await userEvent.click(start);
 
