@@ -6951,5 +6951,23 @@
         "desc": "Rendez votre site visible en un clic."
       }
     }
+  },
+  "forms": {
+    "validation": {
+      "nameTooShort": "Le nom doit contenir au moins 2 caractères",
+      "nameTooLong": "Le nom est trop long",
+      "emailInvalid": "Email invalide",
+      "emailTooShort": "Email trop court",
+      "emailTooLong": "Email trop long",
+      "companyTooShort": "Le nom de l'entreprise doit contenir au moins 2 caractères",
+      "companyTooLong": "Le nom de l'entreprise est trop long",
+      "subjectTooShort": "Le sujet est trop court",
+      "subjectTooLong": "Le sujet est trop long",
+      "messageTooShort": "Le message doit contenir au moins 10 caractères",
+      "messageTooLong": "Le message est trop long",
+      "phoneInvalid": "Numéro de téléphone invalide",
+      "employeesInvalid": "Sélectionnez une plage d'employés",
+      "dateFuture": "La date doit être dans le futur"
+    }
   }
 }

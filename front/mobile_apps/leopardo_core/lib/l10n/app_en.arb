@@ -4333,5 +4333,19 @@
   "nextstepsStepsCustomizeShowcaseTitle": "Customize your showcase website",
   "nextstepsStepsCustomizeShowcaseDesc": "Pick your colors, texts and images.",
   "nextstepsStepsPublishShowcaseTitle": "Publish your showcase website",
-  "nextstepsStepsPublishShowcaseDesc": "Make your site visible in one click."
+  "nextstepsStepsPublishShowcaseDesc": "Make your site visible in one click.",
+  "formsValidationNametooshort": "Name must be at least 2 characters",
+  "formsValidationNametoolong": "Name is too long",
+  "formsValidationEmailinvalid": "Invalid email",
+  "formsValidationEmailtooshort": "Email too short",
+  "formsValidationEmailtoolong": "Email too long",
+  "formsValidationCompanytooshort": "Company name must be at least 2 characters",
+  "formsValidationCompanytoolong": "Company name is too long",
+  "formsValidationSubjecttooshort": "Subject is too short",
+  "formsValidationSubjecttoolong": "Subject is too long",
+  "formsValidationMessagetooshort": "Message must be at least 10 characters",
+  "formsValidationMessagetoolong": "Message is too long",
+  "formsValidationPhoneinvalid": "Invalid phone number",
+  "formsValidationEmployeesinvalid": "Select an employee range",
+  "formsValidationDatefuture": "Date must be in the future"
 }

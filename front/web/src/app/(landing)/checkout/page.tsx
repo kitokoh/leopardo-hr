@@ -26,6 +26,8 @@ import { Navbar, Footer } from '@/modules/vitrine';
 import { getCurrentLocale, useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { FREE_GUIDED_TRIAL_HREF, getCheckoutCopy, type CheckoutPlanKey } from '@/modules/vitrine/data/checkout';
 import { getApiBaseUrl } from '@/lib/backend-url';
+// #7594 — validation carte côté client (Luhn, expiration, cohérence CVC).
+import { luhnCheck, isCardExpiryValid, isCardCvcValid } from '@/modules/vitrine/lib/validation';
 
 /* ─────────────────────────────────────────────
    PLAN CONFIG
@@ -487,81 +489,94 @@ function StepAccount({
         {/* Name */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label htmlFor="checkout-firstName" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               {copy.account.firstName} <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
+                id="checkout-firstName"
                 type="text"
                 value={data.firstName}
                 onChange={(e) => onChange({ firstName: e.target.value })}
                 placeholder={copy.account.placeholders.firstName}
+                aria-invalid={errors.firstName ? true : undefined}
+                aria-describedby={errors.firstName ? 'checkout-firstName-error' : undefined}
                 className={`${inputBase} pl-10 ${errors.firstName ? inputErr : inputOk}`}
               />
             </div>
-            {errors.firstName && <p className="mt-1 text-xs text-red-500">{errors.firstName}</p>}
+            {errors.firstName && <p id="checkout-firstName-error" aria-live="polite" className="mt-1 text-xs text-red-500">{errors.firstName}</p>}
           </div>
           <div>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label htmlFor="checkout-lastName" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               {copy.account.lastName} <span className="text-red-500">*</span>
             </label>
             <input
+              id="checkout-lastName"
               type="text"
               value={data.lastName}
               onChange={(e) => onChange({ lastName: e.target.value })}
               placeholder={copy.account.placeholders.lastName}
+              aria-invalid={errors.lastName ? true : undefined}
+              aria-describedby={errors.lastName ? 'checkout-lastName-error' : undefined}
               className={`${inputBase} ${errors.lastName ? inputErr : inputOk}`}
             />
-            {errors.lastName && <p className="mt-1 text-xs text-red-500">{errors.lastName}</p>}
+            {errors.lastName && <p id="checkout-lastName-error" aria-live="polite" className="mt-1 text-xs text-red-500">{errors.lastName}</p>}
           </div>
         </div>
 
         {/* Email */}
         <div>
-          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+          <label htmlFor="checkout-email" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
             {copy.account.email} <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
+              id="checkout-email"
               type="email"
               value={data.email}
               onChange={(e) => onChange({ email: e.target.value })}
               placeholder={copy.account.placeholders.email}
+              aria-invalid={errors.email ? true : undefined}
+              aria-describedby={errors.email ? 'checkout-email-error' : undefined}
               className={`${inputBase} pl-10 ${errors.email ? inputErr : inputOk}`}
             />
           </div>
-          {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
+          {errors.email && <p id="checkout-email-error" aria-live="polite" className="mt-1 text-xs text-red-500">{errors.email}</p>}
         </div>
 
         {/* Company */}
         <div>
-          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+          <label htmlFor="checkout-company" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
             {copy.account.company} <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
+              id="checkout-company"
               type="text"
               value={data.company}
               onChange={(e) => onChange({ company: e.target.value })}
               placeholder={copy.account.placeholders.company}
+              aria-invalid={errors.company ? true : undefined}
+              aria-describedby={errors.company ? 'checkout-company-error' : undefined}
               className={`${inputBase} pl-10 ${errors.company ? inputErr : inputOk}`}
             />
           </div>
-          {errors.company && <p className="mt-1 text-xs text-red-500">{errors.company}</p>}
+          {errors.company && <p id="checkout-company-error" aria-live="polite" className="mt-1 text-xs text-red-500">{errors.company}</p>}
         </div>
 
         {/* Phone + Employees */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label htmlFor="checkout-phone" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               {copy.account.phone}
             </label>
             <div className="relative">
               <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
+                id="checkout-phone"
                 type="tel"
                 value={data.phone}
                 onChange={(e) => onChange({ phone: e.target.value })}
@@ -571,11 +586,12 @@ function StepAccount({
             </div>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label htmlFor="checkout-employees" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               <Users className="inline w-3.5 h-3.5 mr-1" />
               {copy.account.employees}
             </label>
             <select
+              id="checkout-employees"
               value={data.employees}
               onChange={(e) => onChange({ employees: e.target.value })}
               className={`${inputBase} ${inputOk}`}
@@ -630,6 +646,8 @@ function StepPayment({
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  // #7594 — erreurs de champ carte (Luhn / expiration / CVC), localisées.
+  const [cardErrors, setCardErrors] = useState<{ cardNumber?: string; expiry?: string; cvc?: string; cardName?: string }>({});
   const [checkoutUnavailable, setCheckoutUnavailable] = useState(false);
   const [sandboxFilled, setSandboxFilled] = useState(false);
 
@@ -661,6 +679,17 @@ function StepPayment({
       setError(copy.payment.errors.fillAll);
       return;
     }
+
+    // #7594 — la validation était « non vide » seulement : n'importe quelle
+    // suite de chiffres partait au serveur. Luhn + expiration MM/AA non
+    // passée + CVC cohérent avec le réseau (4 chiffres Amex, 3 sinon).
+    const nextCardErrors: typeof cardErrors = {};
+    if (!luhnCheck(cardNumber)) nextCardErrors.cardNumber = copy.payment.errors.cardNumber;
+    if (!isCardExpiryValid(expiry)) nextCardErrors.expiry = copy.payment.errors.expiry;
+    if (!isCardCvcValid(cvc, cardNumber)) nextCardErrors.cvc = copy.payment.errors.cvc;
+    if (!cardName.trim()) nextCardErrors.cardName = copy.payment.errors.cardName;
+    setCardErrors(nextCardErrors);
+    if (Object.keys(nextCardErrors).length > 0) return;
 
     setLoading(true);
     setError('');
@@ -764,17 +793,20 @@ function StepPayment({
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Card number */}
         <div>
-          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+          <label htmlFor="checkout-cardNumber" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
             {copy.payment.cardLabel}
           </label>
           <div className="relative">
             <CreditCard className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
+              id="checkout-cardNumber"
               type="text"
               value={cardNumber}
               onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
               placeholder={CHECKOUT_SANDBOX ? '4242 4242 4242 4242' : '1234 5678 9012 3456'}
               maxLength={19}
+              aria-invalid={cardErrors.cardNumber ? true : undefined}
+              aria-describedby={cardErrors.cardNumber ? 'checkout-cardNumber-error' : undefined}
               className={`${inputBase} pl-10 font-mono ${isSandboxCard ? 'border-amber-400 ring-amber-500/10' : ''}`}
             />
             {isSandboxCard && (
@@ -783,53 +815,66 @@ function StepPayment({
               </span>
             )}
           </div>
+          {cardErrors.cardNumber && <p id="checkout-cardNumber-error" aria-live="polite" className="mt-1 text-xs text-red-500">{cardErrors.cardNumber}</p>}
         </div>
 
         {/* Expiry + CVC */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label htmlFor="checkout-expiry" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               {copy.payment.expiryLabel}
             </label>
             <input
+              id="checkout-expiry"
               type="text"
               value={expiry}
               onChange={(e) => setExpiry(formatExpiry(e.target.value))}
               placeholder="MM/AA"
               maxLength={5}
+              aria-invalid={cardErrors.expiry ? true : undefined}
+              aria-describedby={cardErrors.expiry ? 'checkout-expiry-error' : undefined}
               className={`${inputBase} font-mono`}
             />
+            {cardErrors.expiry && <p id="checkout-expiry-error" aria-live="polite" className="mt-1 text-xs text-red-500">{cardErrors.expiry}</p>}
           </div>
           <div>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label htmlFor="checkout-cvc" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               {copy.payment.cvcLabel}
             </label>
             <div className="relative">
               <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
+                id="checkout-cvc"
                 type="text"
                 value={cvc}
                 onChange={(e) => setCvc(e.target.value.replace(/\D/g, '').slice(0, 4))}
                 placeholder="123"
                 maxLength={4}
+                aria-invalid={cardErrors.cvc ? true : undefined}
+                aria-describedby={cardErrors.cvc ? 'checkout-cvc-error' : undefined}
                 className={`${inputBase} pl-10 font-mono`}
               />
             </div>
+            {cardErrors.cvc && <p id="checkout-cvc-error" aria-live="polite" className="mt-1 text-xs text-red-500">{cardErrors.cvc}</p>}
           </div>
         </div>
 
         {/* Card name */}
         <div>
-          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+          <label htmlFor="checkout-cardName" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
             {copy.payment.cardNameLabel}
           </label>
           <input
+            id="checkout-cardName"
             type="text"
             value={cardName}
             onChange={(e) => setCardName(e.target.value)}
             placeholder={copy.payment.cardNamePlaceholder}
+            aria-invalid={cardErrors.cardName ? true : undefined}
+            aria-describedby={cardErrors.cardName ? 'checkout-cardName-error' : undefined}
             className={inputBase}
           />
+          {cardErrors.cardName && <p id="checkout-cardName-error" aria-live="polite" className="mt-1 text-xs text-red-500">{cardErrors.cardName}</p>}
         </div>
 
         {/* Error */}
@@ -837,6 +882,8 @@ function StepPayment({
           <motion.p
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
+            role="alert"
+            aria-live="assertive"
             className="text-sm text-red-600 dark:text-red-400 font-medium bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/50 rounded-xl px-4 py-3"
           >
             {error}

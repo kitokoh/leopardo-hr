@@ -4333,5 +4333,19 @@
   "nextstepsStepsCustomizeShowcaseTitle": "تخصيص موقعك التعريفي",
   "nextstepsStepsCustomizeShowcaseDesc": "اختر ألوانك ونصوصك وصورك.",
   "nextstepsStepsPublishShowcaseTitle": "نشر موقعك التعريفي",
-  "nextstepsStepsPublishShowcaseDesc": "اجعل موقعك مرئيًا بنقرة واحدة."
+  "nextstepsStepsPublishShowcaseDesc": "اجعل موقعك مرئيًا بنقرة واحدة.",
+  "formsValidationNametooshort": "يجب أن يتكون الاسم من حرفين على الأقل",
+  "formsValidationNametoolong": "الاسم طويل جداً",
+  "formsValidationEmailinvalid": "البريد الإلكتروني غير صالح",
+  "formsValidationEmailtooshort": "البريد الإلكتروني قصير جداً",
+  "formsValidationEmailtoolong": "البريد الإلكتروني طويل جداً",
+  "formsValidationCompanytooshort": "يجب أن يتكون اسم الشركة من حرفين على الأقل",
+  "formsValidationCompanytoolong": "اسم الشركة طويل جداً",
+  "formsValidationSubjecttooshort": "الموضوع قصير جداً",
+  "formsValidationSubjecttoolong": "الموضوع طويل جداً",
+  "formsValidationMessagetooshort": "يجب أن تتكون الرسالة من 10 أحرف على الأقل",
+  "formsValidationMessagetoolong": "الرسالة طويلة جداً",
+  "formsValidationPhoneinvalid": "رقم الهاتف غير صالح",
+  "formsValidationEmployeesinvalid": "اختر نطاق عدد الموظفين",
+  "formsValidationDatefuture": "يجب أن يكون التاريخ في المستقبل"
 }

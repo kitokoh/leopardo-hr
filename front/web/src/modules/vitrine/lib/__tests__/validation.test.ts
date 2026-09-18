@@ -10,7 +10,12 @@ import {
   validatePhoneNumber,
   sanitizeInput,
   RateLimiter,
+  luhnCheck,
+  isCardExpiryValid,
+  isCardCvcValid,
 } from '../validation';
+import { t } from '@/lib/i18n/locale-catalog';
+import type { AppLocale } from '@/lib/i18n';
 
 describe('Form Validation Schemas', () => {
   describe('signupFormSchema', () => {
@@ -136,7 +141,7 @@ describe('Form Validation Schemas', () => {
         company: 'Acme Corp',
         phone: '+33612345678',
       };
-      expect(() => demoFormSchema.parse(data)).not.toThrow();
+      expect(() => demoFormSchema('fr').parse(data)).not.toThrow();
     });
 
     it('should reject invalid email', () => {
@@ -146,7 +151,7 @@ describe('Form Validation Schemas', () => {
         company: 'Acme Corp',
         phone: '+33612345678',
       };
-      expect(() => demoFormSchema.parse(data)).toThrow();
+      expect(() => demoFormSchema('fr').parse(data)).toThrow();
     });
 
     it('should reject empty name', () => {
@@ -156,7 +161,7 @@ describe('Form Validation Schemas', () => {
         company: 'Acme Corp',
         phone: '+33612345678',
       };
-      expect(() => demoFormSchema.parse(data)).toThrow();
+      expect(() => demoFormSchema('fr').parse(data)).toThrow();
     });
 
     it('should reject short name', () => {
@@ -166,7 +171,7 @@ describe('Form Validation Schemas', () => {
         company: 'Acme Corp',
         phone: '+33612345678',
       };
-      expect(() => demoFormSchema.parse(data)).toThrow();
+      expect(() => demoFormSchema('fr').parse(data)).toThrow();
     });
 
     it('should accept optional phone', () => {
@@ -175,8 +180,38 @@ describe('Form Validation Schemas', () => {
         email: 'john@example.com',
         company: 'Acme Corp',
       };
-      expect(() => demoFormSchema.parse(data)).not.toThrow();
+      expect(() => demoFormSchema('fr').parse(data)).not.toThrow();
     });
+
+    it('accepte le message optionnel du formulaire /demo (#7594)', () => {
+      const data = {
+        name: 'John Doe',
+        email: 'john@example.com',
+        company: 'Acme Corp',
+        message: 'Nous voulons une demo pour 80 employes.',
+      };
+      const parsed = demoFormSchema('fr').parse(data);
+      expect(parsed.message).toBe(data.message);
+    });
+
+    // #7594 — les messages viennent du catalogue partagé (forms.validation.*),
+    // dans la langue du SITE, pas du navigateur.
+    it.each(['fr', 'en', 'tr', 'ar'] as AppLocale[])(
+      'produit des messages localisés en %s',
+      (locale) => {
+        const result = demoFormSchema(locale).safeParse({
+          name: 'J',
+          email: 'john@example.com',
+          company: 'Acme Corp',
+        });
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          const expected = t(locale, 'forms.validation.nameTooShort');
+          expect(expected).not.toBe('');
+          expect(result.error.issues[0].message).toBe(expected);
+        }
+      },
+    );
   });
 
   describe('contactFormSchema', () => {
@@ -187,7 +222,7 @@ describe('Form Validation Schemas', () => {
         subject: 'Question about pricing',
         message: 'I have a question about your pricing plans and would like more information.',
       };
-      expect(() => contactFormSchema.parse(data)).not.toThrow();
+      expect(() => contactFormSchema('fr').parse(data)).not.toThrow();
     });
 
     it('should reject empty name', () => {
@@ -197,7 +232,7 @@ describe('Form Validation Schemas', () => {
         subject: 'Question',
         message: 'This is a message with enough characters',
       };
-      expect(() => contactFormSchema.parse(data)).toThrow();
+      expect(() => contactFormSchema('fr').parse(data)).toThrow();
     });
 
     it('should reject invalid email', () => {
@@ -207,7 +242,7 @@ describe('Form Validation Schemas', () => {
         subject: 'Question',
         message: 'This is a message with enough characters',
       };
-      expect(() => contactFormSchema.parse(data)).toThrow();
+      expect(() => contactFormSchema('fr').parse(data)).toThrow();
     });
 
     it('should reject short message', () => {
@@ -217,7 +252,7 @@ describe('Form Validation Schemas', () => {
         subject: 'Question',
         message: 'Hi',
       };
-      expect(() => contactFormSchema.parse(data)).toThrow();
+      expect(() => contactFormSchema('fr').parse(data)).toThrow();
     });
 
     it('should accept long message', () => {
@@ -227,8 +262,39 @@ describe('Form Validation Schemas', () => {
         subject: 'Question about pricing',
         message: 'I have a detailed question about your pricing plans and would like to know more about the enterprise options.',
       };
-      expect(() => contactFormSchema.parse(data)).not.toThrow();
+      expect(() => contactFormSchema('fr').parse(data)).not.toThrow();
     });
+
+    // #7594 — le formulaire collecte `company` : le schéma client doit le
+    // conserver (zod supprime les clés inconnues — la valeur était perdue).
+    it('conserve le champ company (#7594)', () => {
+      const parsed = contactFormSchema('fr').parse({
+        name: 'Jane Doe',
+        email: 'jane@example.com',
+        company: 'Acme Corp',
+        subject: 'Question about pricing',
+        message: 'I have a question about your pricing plans and would like more information.',
+      });
+      expect(parsed.company).toBe('Acme Corp');
+    });
+
+    it.each(['fr', 'en', 'tr', 'ar'] as AppLocale[])(
+      'produit des messages localisés en %s',
+      (locale) => {
+        const result = contactFormSchema(locale).safeParse({
+          name: 'Jane Doe',
+          email: 'invalid',
+          subject: 'Question about pricing',
+          message: 'This is a message with enough characters',
+        });
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          const expected = t(locale, 'forms.validation.emailInvalid');
+          expect(expected).not.toBe('');
+          expect(result.error.issues[0].message).toBe(expected);
+        }
+      },
+    );
   });
 
   describe('newsletterFormSchema', () => {
@@ -236,21 +302,21 @@ describe('Form Validation Schemas', () => {
       const data = {
         email: 'subscriber@example.com',
       };
-      expect(() => newsletterFormSchema.parse(data)).not.toThrow();
+      expect(() => newsletterFormSchema('fr').parse(data)).not.toThrow();
     });
 
     it('should reject invalid email', () => {
       const data = {
         email: 'invalid-email',
       };
-      expect(() => newsletterFormSchema.parse(data)).toThrow();
+      expect(() => newsletterFormSchema('fr').parse(data)).toThrow();
     });
 
     it('should reject empty email', () => {
       const data = {
         email: '',
       };
-      expect(() => newsletterFormSchema.parse(data)).toThrow();
+      expect(() => newsletterFormSchema('fr').parse(data)).toThrow();
     });
 
     it('should accept various valid emails', () => {
@@ -262,7 +328,80 @@ describe('Form Validation Schemas', () => {
 
       validEmails.forEach(email => {
         const data = { email };
-        expect(() => newsletterFormSchema.parse(data)).not.toThrow();
+        expect(() => newsletterFormSchema('fr').parse(data)).not.toThrow();
+      });
+    });
+
+    it.each(['fr', 'en', 'tr', 'ar'] as AppLocale[])(
+      'produit des messages localisés en %s',
+      (locale) => {
+        const result = newsletterFormSchema(locale).safeParse({ email: 'nope' });
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          const expected = t(locale, 'forms.validation.emailInvalid');
+          expect(expected).not.toBe('');
+          expect(result.error.issues[0].message).toBe(expected);
+        }
+      },
+    );
+  });
+
+  // #7594 — validation carte du checkout (Luhn + expiration + CVC).
+  describe('Card validation helpers (checkout, #7594)', () => {
+    describe('luhnCheck', () => {
+      it('accepte des numéros valides (Luhn)', () => {
+        expect(luhnCheck('4242 4242 4242 4242')).toBe(true);
+        expect(luhnCheck('5555555555554444')).toBe(true);
+        expect(luhnCheck('378282246310005')).toBe(true); // Amex
+      });
+
+      it('refuse un numéro à la somme de Luhn invalide', () => {
+        expect(luhnCheck('4242 4242 4242 4241')).toBe(false);
+        expect(luhnCheck('1234 5678 9012 3456')).toBe(false);
+      });
+
+      it('refuse les formats non numériques ou trop courts', () => {
+        expect(luhnCheck('')).toBe(false);
+        expect(luhnCheck('4242')).toBe(false);
+        expect(luhnCheck('abcd efgh ijkl mnop')).toBe(false);
+      });
+    });
+
+    describe('isCardExpiryValid', () => {
+      const now = new Date(2026, 8, 18); // 18 septembre 2026
+
+      it('accepte une expiration future et le mois courant', () => {
+        expect(isCardExpiryValid('12/29', now)).toBe(true);
+        expect(isCardExpiryValid('09/26', now)).toBe(true); // fin du mois courant
+      });
+
+      it('refuse une carte expirée', () => {
+        expect(isCardExpiryValid('08/26', now)).toBe(false);
+        expect(isCardExpiryValid('12/25', now)).toBe(false);
+      });
+
+      it('refuse les formats invalides', () => {
+        expect(isCardExpiryValid('13/29', now)).toBe(false);
+        expect(isCardExpiryValid('00/29', now)).toBe(false);
+        expect(isCardExpiryValid('1229', now)).toBe(false);
+        expect(isCardExpiryValid('', now)).toBe(false);
+      });
+    });
+
+    describe('isCardCvcValid (cohérence réseau)', () => {
+      it('exige 3 chiffres hors Amex', () => {
+        expect(isCardCvcValid('123', '4242424242424242')).toBe(true);
+        expect(isCardCvcValid('1234', '4242424242424242')).toBe(false);
+        expect(isCardCvcValid('12', '4242424242424242')).toBe(false);
+      });
+
+      it('exige 4 chiffres pour Amex (IIN 34/37)', () => {
+        expect(isCardCvcValid('1234', '378282246310005')).toBe(true);
+        expect(isCardCvcValid('123', '378282246310005')).toBe(false);
+      });
+
+      it('refuse les CVC non numériques', () => {
+        expect(isCardCvcValid('12a', '4242424242424242')).toBe(false);
       });
     });
   });
