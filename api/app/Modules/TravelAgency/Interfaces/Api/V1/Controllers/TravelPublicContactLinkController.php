@@ -23,7 +23,7 @@ class TravelPublicContactLinkController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
+        if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
         }
 

@@ -28,19 +28,19 @@ class TravelAdvertPolicy
 
     public function create(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager', 'agent');
+        return $actor->hasManagerRole('principal', 'rh');
     }
 
     public function pay(Employee $actor, TravelAdvert $advert): bool
     {
         return $advert->company_id === $actor->company_id
-            && $actor->hasManagerRole('principal', 'rh', 'manager', 'agent');
+            && $actor->hasManagerRole('principal', 'rh');
     }
 
     public function moderate(Employee $actor, TravelAdvert $advert): bool
     {
         return $advert->company_id === $actor->company_id
-            && $actor->hasManagerRole('principal', 'rh', 'manager');
+            && $actor->hasManagerRole('principal', 'rh');
     }
 
     public function renew(Employee $actor, TravelAdvert $advert): bool
@@ -48,12 +48,10 @@ class TravelAdvertPolicy
         return $this->pay($actor, $advert);
     }
 
-
     public function update(Employee $actor, Model $resource): bool
     {
         return $this->create($actor) && $this->belongsToTenant($resource, $actor);
     }
-
 
     public function delete(Employee $actor, Model $resource): bool
     {
@@ -64,7 +62,6 @@ class TravelAdvertPolicy
     {
         return $actor->hasManagerRole('principal', 'rh') && $this->belongsToTenant($resource, $actor);
     }
-
 
     private function belongsToTenant(Model $resource, Employee $actor): bool
     {

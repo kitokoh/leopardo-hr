@@ -56,7 +56,7 @@ class TravelAdvertController extends Controller
         // `GET /travel/adverts`, pour tout le monde. Le mode gestion est une
         // capacité de COLLECTION (aucune instance à contrôler) : on applique la
         // même condition que la policy/moderation, comme `manageIndex()` plus bas.
-        $manage = $actor->hasManagerRole('principal', 'rh', 'manager');
+        $manage = $actor->hasManagerRole('principal', 'rh');
 
         if (! $manage) {
             $adverts = $query->get()->filter(fn (TravelAdvert $a) => $a->isVisible())->values();
@@ -92,7 +92,7 @@ class TravelAdvertController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
+        if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
         }
 

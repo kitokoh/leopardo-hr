@@ -28,7 +28,7 @@ class TravelRoutePolicy
 
     public function create(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager');
+        return $actor->hasManagerRole('principal', 'rh');
     }
 
     public function update(Employee $actor, TravelRoute $route): bool

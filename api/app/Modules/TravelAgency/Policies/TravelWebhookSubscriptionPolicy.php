@@ -25,18 +25,18 @@ class TravelWebhookSubscriptionPolicy
 
     public function create(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager');
+        return $actor->hasManagerRole('principal', 'rh');
     }
 
     public function update(Employee $actor, TravelWebhookSubscription $subscription): bool
     {
         return $subscription->company_id === $actor->company_id
-            && $actor->hasManagerRole('principal', 'rh', 'manager');
+            && $actor->hasManagerRole('principal', 'rh');
     }
 
     public function delete(Employee $actor, TravelWebhookSubscription $subscription): bool
     {
         return $subscription->company_id === $actor->company_id
-            && $actor->hasManagerRole('principal', 'rh', 'manager');
+            && $actor->hasManagerRole('principal', 'rh');
     }
 }

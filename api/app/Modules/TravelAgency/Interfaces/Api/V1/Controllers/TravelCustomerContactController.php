@@ -9,10 +9,10 @@ use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Application\Actions\TravelManualNotificationAction;
 use App\Modules\TravelAgency\Domain\Models\TravelCustomerContact;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\NotifyTravelContactRequest;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelContactConsentChannelRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelContactConsentRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelContactConsentChannelRequest;
 
 /**
  * TRAVEL-910 (#6113) — Notifications manuelles (legacy gv-back) via les
@@ -34,7 +34,7 @@ class TravelCustomerContactController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
+        if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
         }
 
@@ -78,7 +78,7 @@ class TravelCustomerContactController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
+        if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
         }
 
@@ -126,7 +126,7 @@ class TravelCustomerContactController extends Controller
             abort(404);
         }
 
-        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
+        if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
         }
 
@@ -149,7 +149,7 @@ class TravelCustomerContactController extends Controller
             abort(404);
         }
 
-        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
+        if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
         }
 
