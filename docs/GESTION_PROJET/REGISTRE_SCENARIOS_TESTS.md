@@ -42,6 +42,21 @@
 > `test_portfolio_query_count_does_not_grow_with_company_count` — dont le comptage de
 > requêtes, faussé par un `DB::listen()` jamais retiré, est réparé).
 
+> **MAJ 2026-09-18 — tranche #7490 (PR #7629), connexion de première fois sans mot de passe
+> (code à usage unique) + définition du mot de passe.** Surface **API** (module Auth) :
+> `POST /auth/login-code/request` (réponse générique anti-énumération, e-mail
+> `LoginCodeMail` ×4 locales, code OTP 6 chiffres, TTL 10 min) et
+> `POST /auth/login-code/verify` (verrou applicatif à 5 échecs, code consommé au premier
+> usage, même bucket auth-sensitive email+IP que `/auth/login`). Surface **web client** :
+> écran de connexion « code reçu par e-mail » (`/auth/login`), page `/auth/set-password`
+> (`SetPasswordForm.tsx`) et CTA « Définir mon mot de passe maintenant » de l'écran de
+> bienvenue (`WelcomeScreen.tsx`, action `set_password`). Surfaces **web admin** et
+> **mobile** : aucun parcours modifié — propagation des seules valeurs traduites depuis
+> `shared/i18n` (clés `setPassword.*`, `loginCode.*`). Non-régression :
+> `api/tests/Feature/FirstLoginPasswordlessTest.php`,
+> `front/web/src/app/api/v1/auth/__tests__/login-code-verify.route.test.ts`,
+> `front/web/src/app/auth/set-password/__tests__/SetPasswordForm.test.tsx`.
+
 > **MAJ 2026-09-17 — tranche #7490 (lot #7604), écran de bienvenue de première connexion,
 > affiché une seule fois (persisté serveur).** Surface **API** (module Onboarding) :
 > `POST /onboarding/welcome-ack` — acquittement idempotent, la date d'origine
