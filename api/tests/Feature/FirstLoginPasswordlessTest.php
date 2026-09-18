@@ -33,6 +33,8 @@ class FirstLoginPasswordlessTest extends TestCase
     /**
      * Inscription + vérification OTP : provisionne un tenant self-service
      * complet et rend la ligne trial_provisionings `ready`.
+     *
+     * @return object{id: int|string, provisioning_token: string}
      */
     private function provisionTrialAccount(string $email = 'founder@newtech.dz'): \stdClass
     {
@@ -54,6 +56,7 @@ class FirstLoginPasswordlessTest extends TestCase
             'code' => $otp,
         ])->assertStatus(201);
 
+        /** @var object{id: int|string, provisioning_token: string}|null $row */
         $row = DB::table('trial_provisionings')
             ->where('email', $email)
             ->where('status', 'ready')

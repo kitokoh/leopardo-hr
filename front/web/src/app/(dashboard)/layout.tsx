@@ -23,7 +23,10 @@ import {
   type StoredAuthUser,
 } from '@/lib/i18n';
 import { TrialBanner } from '@/components/TrialBanner';
-import { OnboardingWizard } from '@/modules/onboarding/components/OnboardingWizard';
+// #7494 — la modale OnboardingWizard n'est plus le point d'entrée de la mise
+// en route : l'entretien (#7493) puis la carte « Prochaines étapes » du
+// dashboard la remplacent.
+import { SetupInterview, shouldShowSetupInterview, type SetupInterviewCloseReason } from '@/modules/onboarding/components/SetupInterview';
 import { WelcomeScreen, shouldShowFirstLoginWelcome, type WelcomeScreenAction } from '@/modules/onboarding/components/WelcomeScreen';
 
 /**
@@ -345,14 +348,24 @@ export default function DashboardLayout({
   usePanelDismiss(userMenuOpen, () => setUserMenuOpen(false));
   usePanelDismiss(hrMenuOpen, () => setHrMenuOpen(false));
 
-  const [showWizard, setShowWizard] = useState(false);
-  // #R8 — onboarding non complété mais wizard fermé → bouton "Reprendre".
+  const [showInterview, setShowInterview] = useState(false);
+  // #7493 — relance douce : tant que l'entretien n'est pas complété (report
+  // compris) et que l'onboarding n'est pas terminé, la pastille de la barre
+  // « Terminer la configuration de mon espace » permet de le reprendre.
+  const interviewMetadata = user?.company?.metadata as
+    | { onboarding_completed?: boolean; setup_interview?: { status?: string } }
+    | undefined;
   const onboardingPending =
-    user?.role === 'manager' && user.company?.metadata?.onboarding_completed !== true;
+    user?.role === 'manager' &&
+    interviewMetadata?.onboarding_completed !== true &&
+    interviewMetadata?.setup_interview?.status !== 'completed';
 
   useEffect(() => {
-    if (user && user.role === 'manager' && user.company?.metadata?.onboarding_completed !== true) {
-      setShowWizard(true);
+    // #7493 — première connexion : l'entretien de préparation s'affiche en
+    // pleine page (après l'écran de bienvenue #7490). Un entretien reporté
+    // (`dismissed`) ne se rouvre pas tout seul : relance douce uniquement.
+    if (user && shouldShowSetupInterview(user)) {
+      setShowInterview(true);
     }
   }, [user]);
 
@@ -390,7 +403,9 @@ export default function DashboardLayout({
       // CTA principal (#7490) : « Définir mon mot de passe maintenant » — le
       // flux provisioning_token existant (page publique /auth/set-password,
       // token déjà détenu par le navigateur ou lien e-mail). L'écran est déjà
-      // acquitté : au retour dans l'espace, il ne se réaffiche pas.
+      // acquitté : au retour dans l'espace, il ne se réaffiche pas. (Le CTA
+      // « start_setup » de main n'existe plus : l'entretien de préparation
+      // #7493 s'ouvre via `shouldShowSetupInterview` après l'écran.)
       if (action === 'set_password') {
         router.push('/auth/set-password');
       }
@@ -398,6 +413,52 @@ export default function DashboardLayout({
     [router],
   );
 
+  // #7493 — fermeture de l'entretien de préparation : mise à jour OPTIMISTE
+  // du statut (la source de vérité reste le serveur, `/auth/me`), puis — à la
+  // complétion — rechargement de la surface d'activation pour que la
+  // navigation reflète les modules activés SANS rechargement (#7245/#7322).
+  const handleInterviewClose = useCallback(
+    (reason: SetupInterviewCloseReason) => {
+      setShowInterview(false);
+
+      const current = userRef.current;
+      if (current?.company && (reason === 'completed' || reason === 'dismissed')) {
+        const metadata = (current.company.metadata ?? {}) as Record<string, unknown>;
+        const interview = (metadata.setup_interview ?? {}) as Record<string, unknown>;
+        const updated = {
+          ...current,
+          company: {
+            ...current.company,
+            metadata: {
+              ...metadata,
+              setup_interview: { ...interview, status: reason },
+            },
+          },
+        };
+        storeAuthSession(null, updated);
+        setUserOverride(updated);
+      }
+
+      if (reason === 'completed') {
+        void (async () => {
+          try {
+            const me = await apiFetch('/auth/me');
+            if (!me.ok) return;
+            const payload = (await me.json()) as { data?: StoredAuthUser };
+            const latest = userRef.current;
+            if (payload.data && latest) {
+              const refreshed = mergeActivationSurface(latest, payload.data);
+              storeAuthSession(null, refreshed);
+              setUserOverride(refreshed);
+            }
+          } catch {
+            // Non bloquant : la navigation se resynchronisera au prochain focus.
+          }
+        })();
+      }
+    },
+    [],
+  );
   // ── Rafraîchissement silencieux de la session (#7245) ────────────────────
   // Les features du tenant et les capacités du manager sont figées dans
   // `auth_user` au moment du login : quand la plateforme activait ensuite un
@@ -1079,10 +1140,10 @@ export default function DashboardLayout({
             {/* #7238 (retour PM) — l'essai et la reprise de configuration sont
                 des pastilles de la barre du haut, plus des lignes pleine largeur. */}
             <div className="flex items-center gap-2">
-              {onboardingPending && !showWizard ? (
+              {onboardingPending && !showInterview ? (
                 <button
                   type="button"
-                  onClick={() => setShowWizard(true)}
+                  onClick={() => setShowInterview(true)}
                   className="hidden items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700 transition hover:bg-emerald-100 md:inline-flex"
                 >
                   {labels.dashboard.resumeOnboarding}
@@ -1132,8 +1193,10 @@ export default function DashboardLayout({
         {welcomePending && user && (
           <WelcomeScreen locale={locale} onAcknowledged={acknowledgeWelcome} />
         )}
-        {showWizard && user && !welcomePending && (
-          <OnboardingWizard user={user} onComplete={() => setShowWizard(false)} />
+        {/* #7493 — l'entretien de préparation remplace la modale à 10 étapes
+            (#7494) : pleine page, une question à la fois, jamais bloquant. */}
+        {showInterview && user && !welcomePending && (
+          <SetupInterview locale={locale} onClose={handleInterviewClose} />
         )}
       </div>
     </div>

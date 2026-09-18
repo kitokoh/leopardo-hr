@@ -60,6 +60,21 @@
 > `test_portfolio_query_count_does_not_grow_with_company_count` — dont le comptage de
 > requêtes, faussé par un `DB::listen()` jamais retiré, est réparé).
 
+> **MAJ 2026-09-18 — tranche #7490 (PR #7629), connexion de première fois sans mot de passe
+> (code à usage unique) + définition du mot de passe.** Surface **API** (module Auth) :
+> `POST /auth/login-code/request` (réponse générique anti-énumération, e-mail
+> `LoginCodeMail` ×4 locales, code OTP 6 chiffres, TTL 10 min) et
+> `POST /auth/login-code/verify` (verrou applicatif à 5 échecs, code consommé au premier
+> usage, même bucket auth-sensitive email+IP que `/auth/login`). Surface **web client** :
+> écran de connexion « code reçu par e-mail » (`/auth/login`), page `/auth/set-password`
+> (`SetPasswordForm.tsx`) et CTA « Définir mon mot de passe maintenant » de l'écran de
+> bienvenue (`WelcomeScreen.tsx`, action `set_password`). Surfaces **web admin** et
+> **mobile** : aucun parcours modifié — propagation des seules valeurs traduites depuis
+> `shared/i18n` (clés `setPassword.*`, `loginCode.*`). Non-régression :
+> `api/tests/Feature/FirstLoginPasswordlessTest.php`,
+> `front/web/src/app/api/v1/auth/__tests__/login-code-verify.route.test.ts`,
+> `front/web/src/app/auth/set-password/__tests__/SetPasswordForm.test.tsx`.
+
 > **MAJ 2026-09-17 — tranche #7490 (lot #7604), écran de bienvenue de première connexion,
 > affiché une seule fois (persisté serveur).** Surface **API** (module Onboarding) :
 > `POST /onboarding/welcome-ack` — acquittement idempotent, la date d'origine
@@ -612,3 +627,24 @@ restent les gates applicables.
 - **Surface API / mobile** : aucun changement de code. `api/lang/*/shared.php` et les ARB mobiles
   ne bougent que par la **synchronisation** du catalogue partage (cibles generees : `sync-backend`,
   `sync-mobile`) — voir la note du meme jour dans `SCENARIOS_TEST_MOBILE_FLUTTER.md`.
+
+## Mise a jour 2026-09-18 — entretien conversationnel + checklist personnalisee (PR #7630, issues #7493/#7494)
+
+- **Surface API** : nouvel entretien de preparation tenant-scoped (`GET /api/v1/setup-interview`,
+  `PATCH /api/v1/setup-interview/answers`, `POST /api/v1/setup-interview/complete`) porte par
+  `SetupInterviewController` + `SetupInterviewPlanner` (mapping reponses -> plan `{solutions, tools}`,
+  fail-closed sur allowlist, plancher solo #7423). A la completion, `SeedDefaultSteps` genere la
+  checklist d'onboarding **personnalisee** a partir des reponses et des modules actifs (jamais de
+  kiosque/geofence sans presence terrain ; etapes deja completees/sautees toujours conservees ;
+  tenants sans entretien : 10 etapes par defaut inchangees). Les titres d'etapes et le message
+  d'erreur de validation passent par le catalogue `api/lang/*/onboarding.php` (garde i18n
+  PA2-I18N-007 / #5432). Scenarios automatises :
+  `api/tests/Feature/Onboarding/SetupInterviewControllerTest.php` (contrat, idempotence du
+  complete, rejet 422 des reponses hors allowlist sans ecriture) et
+  `api/tests/Feature/Onboarding/SetupInterviewSeedingTest.php` (profils restaurateur/solo vitrine,
+  convergence des etapes `pending` apres entretien).
+- **Surface web** : nouveau parcours `setupInterview` (catalogue `shared/i18n/locales/*.json`,
+  synchronise vers `front/web` et `front/admin-dashboard` par `sync-web.js`) — questions
+  passables une a une, recapitulatif d'activation, reprise ulterieure.
+- **Surface mobile** : cles ARB synchronisees par `sync-mobile.js` (cibles generees), aucun
+  contrat modifie.
