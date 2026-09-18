@@ -5110,6 +5110,11 @@
       "reportsDesc": "Ventes, occupation, recettes, annulations et exports CSV.",
       "portal": "Portail voyageur",
       "portalDesc": "Recherche de trajets et réservation côté client."
+    },
+    "ageCategory": {
+      "infant": "Bébé",
+      "child": "Enfant",
+      "adult": "Adulte"
     }
   },
   "travelPortal": {

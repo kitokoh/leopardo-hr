@@ -5110,6 +5110,11 @@
       "reportsDesc": "Satışlar, doluluk, gelirler, iptaller ve CSV dışa aktarımları.",
       "portal": "Yolcu portalı",
       "portalDesc": "Müşteriye yönelik sefer arama ve rezervasyon."
+    },
+    "ageCategory": {
+      "infant": "Bebek",
+      "child": "Çocuk",
+      "adult": "Yetişkin"
     }
   },
   "travelPortal": {

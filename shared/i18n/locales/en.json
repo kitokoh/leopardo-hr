@@ -5110,6 +5110,11 @@
       "reportsDesc": "Sales, occupancy, revenue, cancellations and CSV exports.",
       "portal": "Traveller portal",
       "portalDesc": "Customer-facing trip search and booking."
+    },
+    "ageCategory": {
+      "infant": "Infant",
+      "child": "Child",
+      "adult": "Adult"
     }
   },
   "travelPortal": {
