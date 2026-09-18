@@ -4922,7 +4922,16 @@
       "cancellations": "İptaller",
       "exportCsv": "CSV dışa aktar",
       "empty": "Dönem için veri yok.",
-      "exportError": "Dışa aktarma başarısız."
+      "exportError": "Dışa aktarma başarısız.",
+      "subtitle": "Dönem bazında satışlar, doluluk, gelirler ve iptaller; eşzamansız CSV dışa aktarımı.",
+      "bySource": "Kanala göre",
+      "byStatus": "Duruma göre",
+      "seatsSold": "Satılan koltuk",
+      "occupancyRate": "Doluluk oranı",
+      "confirmedAmount": "Tahsil edilen",
+      "refundedAmount": "İade edilen",
+      "exportPending": "Dışa aktarım sürüyor…",
+      "download": "CSV indir"
     },
     "rentals": {
       "vehicles": "Kiralık araçlar",

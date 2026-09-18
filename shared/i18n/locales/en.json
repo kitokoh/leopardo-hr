@@ -4922,7 +4922,16 @@
       "cancellations": "Cancellations",
       "exportCsv": "Export CSV",
       "empty": "No data for the period.",
-      "exportError": "Export failed."
+      "exportError": "Export failed.",
+      "subtitle": "Sales, occupancy, revenue and cancellations over a period, with async CSV export.",
+      "bySource": "By channel",
+      "byStatus": "By status",
+      "seatsSold": "Seats sold",
+      "occupancyRate": "Occupancy rate",
+      "confirmedAmount": "Collected",
+      "refundedAmount": "Refunded",
+      "exportPending": "Export in progress…",
+      "download": "Download CSV"
     },
     "rentals": {
       "vehicles": "Rental vehicles",

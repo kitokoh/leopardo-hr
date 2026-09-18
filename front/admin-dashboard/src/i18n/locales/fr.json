@@ -5388,7 +5388,7 @@
     },
     "reports": {
       "title": "Rapports",
-      "subtitle": "Ventes, occupation, recettes, annulations et exports CSV.",
+      "subtitle": "Ventes, occupation, recettes et annulations sur période, export CSV asynchrone.",
       "from": "Du",
       "to": "Au",
       "apply": "Appliquer",
@@ -5414,7 +5414,7 @@
       "cancellationsRate": "Taux",
       "cancellationsTotal": "Réservations finales",
       "byReason": "Par motif",
-      "bySource": "Par source",
+      "bySource": "Par canal",
       "count": "Nombre",
       "tabsLabel": "Rapports",
       "sales": "Ventes",
@@ -5423,7 +5423,14 @@
       "cancellations": "Annulations",
       "exportCsv": "Exporter CSV",
       "empty": "Aucune donnée sur la période.",
-      "exportError": "Export impossible."
+      "exportError": "Export impossible.",
+      "byStatus": "Par statut",
+      "seatsSold": "Places vendues",
+      "occupancyRate": "Taux d'occupation",
+      "confirmedAmount": "Encaissé",
+      "refundedAmount": "Remboursé",
+      "exportPending": "Export en cours…",
+      "download": "Télécharger le CSV"
     },
     "catalog": {
       "title": "Intitulé",

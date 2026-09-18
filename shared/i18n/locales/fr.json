@@ -4922,7 +4922,16 @@
       "cancellations": "Annulations",
       "exportCsv": "Exporter CSV",
       "empty": "Aucune donnée sur la période.",
-      "exportError": "Export impossible."
+      "exportError": "Export impossible.",
+      "subtitle": "Ventes, occupation, recettes et annulations sur période, export CSV asynchrone.",
+      "bySource": "Par canal",
+      "byStatus": "Par statut",
+      "seatsSold": "Places vendues",
+      "occupancyRate": "Taux d'occupation",
+      "confirmedAmount": "Encaissé",
+      "refundedAmount": "Remboursé",
+      "exportPending": "Export en cours…",
+      "download": "Télécharger le CSV"
     },
     "rentals": {
       "vehicles": "Véhicules de location",

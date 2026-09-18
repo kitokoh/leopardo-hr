@@ -4922,7 +4922,16 @@
       "cancellations": "الإلغاءات",
       "exportCsv": "تصدير CSV",
       "empty": "لا بيانات للفترة.",
-      "exportError": "فشل التصدير."
+      "exportError": "فشل التصدير.",
+      "subtitle": "المبيعات والإشغال والإيرادات والإلغاءات خلال فترة، مع تصدير CSV غير متزامن.",
+      "bySource": "حسب القناة",
+      "byStatus": "حسب الحالة",
+      "seatsSold": "المقاعد المباعة",
+      "occupancyRate": "معدل الإشغال",
+      "confirmedAmount": "المحصَّل",
+      "refundedAmount": "المستردّ",
+      "exportPending": "جارٍ التصدير…",
+      "download": "تنزيل CSV"
     },
     "rentals": {
       "vehicles": "مركبات الإيجار",

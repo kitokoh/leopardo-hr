@@ -4,10 +4,10 @@ import { type Page } from '@playwright/test';
 /**
  * TRAVEL-1008 (#6121) — E2E Playwright admin TravelAgency.
  *
- * Dé-skippé avec le lot espace gérant (#7633..#7636) : hub /travel,
- * référentiel réseau /travel/network, voyages /travel/trips et
- * réservations/billetterie /travel/bookings sont livrés dans front/web.
- * Seul /travel/reports (#7637, A5) reste en `test.skip` documenté.
+ * Dé-skippé avec le lot espace gérant (#7633..#7637) : hub /travel,
+ * référentiel réseau /travel/network, voyages /travel/trips,
+ * réservations/billetterie /travel/bookings et rapports /travel/reports
+ * sont livrés dans front/web.
  *
  * Stratégie : mocks API (page.route) — aucun backend requis, déterministe en
  * CI (même pattern que restaurant-navigation.spec.ts). Les contrats mockés
@@ -259,14 +259,88 @@ test.describe('TravelAgency admin (TRAVEL-1008)', () => {
     await expect(page.getByRole('button', { name: 'Rembourser', exact: true })).toBeVisible();
   });
 
-  test('reports screen shows the four reports', async ({ page }) => {
-    // A5 (#7637) — /travel/reports n'est pas encore livré dans front/web :
-    // activer ce parcours quand la page atterrit (ventes, occupation,
-    // recettes, annulations + export CSV asynchrone).
-    test.skip(true, 'UI /travel/reports non livrée — arrive avec A5 (#7637)');
+  test('reports screen shows the four reports and async export', async ({ page }) => {
     await installTravelApiFallback(page);
+    // Contrats TravelReportService::{sales,occupancy} (from/to requis).
+    await page.route('**/api/v1/travel/reports/sales**', (route) =>
+      route.fulfill(
+        json({
+          data: {
+            bookings_count: 18,
+            passengers_count: 42,
+            revenue_minor: 630000,
+            by_source: { office: 12, online: 6 },
+            by_status: { confirmed: 15, pending: 3 },
+          },
+        }),
+      ),
+    );
+    await page.route('**/api/v1/travel/reports/occupancy**', (route) =>
+      route.fulfill(
+        json({
+          data: {
+            trips_count: 1,
+            by_trip: [
+              {
+                trip_id: 7,
+                code: 'DLA-YDE-001',
+                route_id: 3,
+                departure_date: '2026-09-18',
+                seats_sold: 41,
+                total_seats: 50,
+                occupancy_rate: 0.82,
+              },
+            ],
+          },
+        }),
+      ),
+    );
+    // Export asynchrone : POST → asset pending (202), 1er polling → generated
+    // + URL signée (TravelExportAssetResource).
+    await page.route('**/api/v1/travel/reports/export', (route) =>
+      route.fulfill({
+        status: 202,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: { id: 55, report_type: 'sales', status: 'pending', error: null },
+        }),
+      }),
+    );
+    await page.route('**/api/v1/travel/reports/export/55', (route) =>
+      route.fulfill(
+        json({
+          data: {
+            id: 55,
+            report_type: 'sales',
+            status: 'generated',
+            error: null,
+            signed_url: 'https://exports.example.test/travel/sales.csv?signature=abc',
+          },
+        }),
+      ),
+    );
     await installAuthenticatedSession(page, { user: travelUser });
     await page.goto('/travel/reports');
-    await expect(page.getByText(/Ventes/i)).toBeVisible();
+
+    // Les 4 onglets de rapport sont présents.
+    await expect(page.getByRole('button', { name: 'Ventes' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Occupation' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Recettes' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Annulations' })).toBeVisible();
+
+    // Ventes (onglet par défaut) : KPIs + ventilation par canal.
+    await expect(page.getByText('630', { exact: false }).first()).toBeVisible();
+    await expect(page.getByText('Par canal')).toBeVisible();
+
+    // Export CSV asynchrone : pending → generated → lien de téléchargement.
+    await page.getByRole('button', { name: 'Exporter CSV' }).click();
+    await expect(page.getByRole('link', { name: 'Télécharger le CSV' })).toBeVisible({
+      timeout: 10_000,
+    });
+
+    // Occupation : table par trajet avec taux.
+    await page.getByRole('button', { name: 'Occupation' }).click();
+    await expect(page.getByText('DLA-YDE-001')).toBeVisible();
+    await expect(page.getByText('82%')).toBeVisible();
   });
 });

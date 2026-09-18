@@ -5382,7 +5382,7 @@
     },
     "reports": {
       "title": "Reports",
-      "subtitle": "Sales, occupancy, revenue, cancellations and CSV exports.",
+      "subtitle": "Sales, occupancy, revenue and cancellations over a period, with async CSV export.",
       "from": "From",
       "to": "To",
       "apply": "Apply",
@@ -5408,7 +5408,7 @@
       "cancellationsRate": "Rate",
       "cancellationsTotal": "Final bookings",
       "byReason": "By reason",
-      "bySource": "By source",
+      "bySource": "By channel",
       "count": "Count",
       "tabsLabel": "Reports",
       "sales": "Sales",
@@ -5417,7 +5417,14 @@
       "cancellations": "Cancellations",
       "exportCsv": "Export CSV",
       "empty": "No data for the period.",
-      "exportError": "Export failed."
+      "exportError": "Export failed.",
+      "byStatus": "By status",
+      "seatsSold": "Seats sold",
+      "occupancyRate": "Occupancy rate",
+      "confirmedAmount": "Collected",
+      "refundedAmount": "Refunded",
+      "exportPending": "Export in progress…",
+      "download": "Download CSV"
     },
     "catalog": {
       "title": "Title",
