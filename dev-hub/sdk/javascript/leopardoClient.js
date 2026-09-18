@@ -3325,6 +3325,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/onboarding/invitation/{token}/activate", options);
     },
 
+    /** Acquitter l'écran de bienvenue de première connexion (#7604) */
+    postOnboardingWelcomeAck(options = {}) {
+      return request("POST", "/onboarding/welcome-ack", options);
+    },
+
     /** Organigramme complet */
     getOrgChart(options = {}) {
       return request("GET", "/org-chart", options);

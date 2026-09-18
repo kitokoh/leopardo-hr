@@ -2680,6 +2680,10 @@ class LeopardoClient:
         """Activer une invitation (définir le mot de passe)"""
         return self.request("POST", "/onboarding/invitation/{token}/activate", **kwargs)
 
+    def post_onboarding_welcome_ack(self, **kwargs):
+        """Acquitter l'écran de bienvenue de première connexion (#7604)"""
+        return self.request("POST", "/onboarding/welcome-ack", **kwargs)
+
     def get_org_chart(self, **kwargs):
         """Organigramme complet"""
         return self.request("GET", "/org-chart", **kwargs)

@@ -6962,5 +6962,11 @@
     "formNoticeContact": "Bilgileriniz yalnızca talebinizi yanıtlamak için kullanılır. Hukuki dayanak: dilediğiniz zaman geri çekebileceğiniz onayınız.",
     "formNoticeDemo": "Bilgileriniz yalnızca talep edilen demoyu düzenlemek için kullanılır (amaç: sizinle iletişime geçmek). Hukuki dayanak: onayınız.",
     "formNoticeNewsletter": "Adresiniz yalnızca İK ipuçlarımızı göndermek için kullanılır (amaç: bilgilendirme). Tek tıkla çıkış."
+  },
+  "firstLoginWelcome": {
+    "title": "Alanınız hazır 🎉",
+    "body": "Şifrenizi belirlemeniz için bir bağlantı içeren e-posta gönderildi; sonraki girişlerinizde kullanılacaktır.",
+    "ctaStart": "Kuruluma başla",
+    "ctaLater": "Daha sonra"
   }
 }

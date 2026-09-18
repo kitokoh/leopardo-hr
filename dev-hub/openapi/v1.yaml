@@ -2797,6 +2797,38 @@ paths:
           description: Progression de l'onboarding
         '401':
           $ref: '#/components/responses/Error401'
+  /onboarding/welcome-ack:
+    post:
+      tags:
+      - Onboarding
+      summary: Acquitter l'écran de bienvenue de première connexion (#7604)
+      description: |
+        Marque l'écran de bienvenue de première connexion comme vu pour le
+        tenant courant (persisté côté serveur, `companies.metadata.welcome_seen_at`).
+        Idempotent : la date d'acquittement n'est jamais réécrite. L'état lu par
+        l'interface vient de `/auth/me` (`company.metadata`).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Acquittement enregistré (ou déjà enregistré)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      welcome_seen_at:
+                        type: string
+                        description: Date ISO 8601 de l'acquittement (jamais réécrite).
+                      already_acknowledged:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /company-integration-requests:
     get:
       tags:

@@ -4251,5 +4251,9 @@
   "seorootManifestname": "Leopardo — işletme yönetimi paketi (İK & bordro, yoklama, CRM)",
   "seorootOgimagealt": "Leopardo — işletme yönetimi paketi: web, mobil ve kiosk için İK ve bordro paneli",
   "seorootRootdescription": "Leopardo; İK ve bordro, yoklama, izin, CRM, muhasebe ve saha operasyonlarını tek pakette toplar; web, mobil ve kiosk üzerinde.",
-  "seorootRoottitle": "Leopardo — saha ekipleri için işletme yönetimi paketi: bordro, yoklama"
+  "seorootRoottitle": "Leopardo — saha ekipleri için işletme yönetimi paketi: bordro, yoklama",
+  "firstloginwelcomeTitle": "Alanınız hazır 🎉",
+  "firstloginwelcomeBody": "Şifrenizi belirlemeniz için bir bağlantı içeren e-posta gönderildi; sonraki girişlerinizde kullanılacaktır.",
+  "firstloginwelcomeCtastart": "Kuruluma başla",
+  "firstloginwelcomeCtalater": "Daha sonra"
 }

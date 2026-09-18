@@ -5494,5 +5494,11 @@
     "ogImageAlt": "Leopardo — işletme yönetimi paketi: web, mobil ve kiosk için İK ve bordro paneli",
     "rootDescription": "Leopardo; İK ve bordro, yoklama, izin, CRM, muhasebe ve saha operasyonlarını tek pakette toplar; web, mobil ve kiosk üzerinde.",
     "rootTitle": "Leopardo — saha ekipleri için işletme yönetimi paketi: bordro, yoklama"
+  },
+  "firstLoginWelcome": {
+    "title": "Alanınız hazır 🎉",
+    "body": "Şifrenizi belirlemeniz için bir bağlantı içeren e-posta gönderildi; sonraki girişlerinizde kullanılacaktır.",
+    "ctaStart": "Kuruluma başla",
+    "ctaLater": "Daha sonra"
   }
 }

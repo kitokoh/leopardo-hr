@@ -31,6 +31,19 @@
 > `test_portfolio_query_count_does_not_grow_with_company_count` — dont le comptage de
 > requêtes, faussé par un `DB::listen()` jamais retiré, est réparé).
 
+> **MAJ 2026-09-17 — tranche #7490 (lot #7604), écran de bienvenue de première connexion,
+> affiché une seule fois (persisté serveur).** Surface **API** (module Onboarding) :
+> `POST /onboarding/welcome-ack` — acquittement idempotent, la date d'origine
+> (`metadata.welcome_seen_at`, `public.companies`) n'est **jamais** réécrite au second appel
+> (`already_acknowledged: true`). Surface **web client** : `WelcomeScreen.tsx` monté dans le
+> layout dashboard, affiché uniquement tant que l'acquittement n'est pas persisté côté serveur
+> (un rechargement ou un autre poste ne le re-montre pas). Surfaces **web admin** et **mobile** :
+> aucun écran ni parcours modifié — seules les **valeurs traduites** des catalogues
+> (`front/admin-dashboard/src/i18n/locales/*.json`, ARB `leopardo_core`) sont propagées depuis le
+> catalogue partagé (`shared/i18n`, clés `onboarding.welcome.*`). Non-régression :
+> `api/tests/Feature/Onboarding/WelcomeScreenAckTest.php` et
+> `front/web/src/modules/onboarding/components/__tests__/WelcomeScreen.test.tsx`.
+
 > **MAJ 2026-09-17 — tranche #7595, les leads vitrine deviennent lisibles par l'admin.**
 > Nouvelle lecture **API** (module Platform) : `GET /platform/marketing/leads` et son miroir
 > super-admin `GET /admin/marketing/leads` — la table globale `marketing_leads` recevait les
