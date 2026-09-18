@@ -34,7 +34,7 @@ class FirstLoginPasswordlessTest extends TestCase
      * Inscription + vérification OTP : provisionne un tenant self-service
      * complet et rend la ligne trial_provisionings `ready`.
      */
-    private function provisionTrialAccount(string $email = 'founder@newtech.dz'): object
+    private function provisionTrialAccount(string $email = 'founder@newtech.dz'): \stdClass
     {
         $this->postJson('/api/v1/trial/signup', [
             'email' => $email,
@@ -60,7 +60,7 @@ class FirstLoginPasswordlessTest extends TestCase
             ->orderByDesc('id')
             ->first();
 
-        $this->assertNotNull($row);
+        $this->assertInstanceOf(\stdClass::class, $row);
 
         return $row;
     }
