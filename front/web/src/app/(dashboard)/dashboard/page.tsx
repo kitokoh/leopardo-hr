@@ -28,6 +28,7 @@ import { getDisplayName, getPreferredLocale, getStoredUser, toIntlLocale, type A
 import { getClientModuleAccess, getSidebarSections } from '@/lib/client-features';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { LeaveBalanceCard } from './_components/LeaveBalanceCard';
+import { NextStepsCard } from '@/modules/onboarding/components/NextStepsCard';
 
 const emptySubscribe = () => () => {};
 
@@ -378,6 +379,9 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 p-6">
+      {/* #7494 — carte discrète « Prochaines étapes » : remplace la modale
+          d'onboarding à 10 étapes (checklist seedée par profil, #7493). */}
+      {role === 'manager' ? <NextStepsCard locale={locale} /> : null}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
