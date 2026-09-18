@@ -1924,6 +1924,14 @@ class LeopardoClient:
         """Telecharger le PDF d'estimation"""
         return self.request("GET", "/employees/{employee}/receipt", **kwargs)
 
+    def get_employees_by_employee_resource_assignments(self, **kwargs):
+        """Accès ressource d''un collaborateur (épique #7597, tranche R1)"""
+        return self.request("GET", "/employees/{employee}/resource-assignments", **kwargs)
+
+    def put_employees_by_employee_resource_assignments(self, **kwargs):
+        """Remplacer les accès ressource d''un collaborateur"""
+        return self.request("PUT", "/employees/{employee}/resource-assignments", **kwargs)
+
     def post_employees_import(self, **kwargs):
         """Importer des employes par CSV"""
         return self.request("POST", "/employees/import", **kwargs)
@@ -3447,6 +3455,10 @@ class LeopardoClient:
     def get_reports_turnover(self, **kwargs):
         """Taux de rotation (turnover) sur N mois"""
         return self.request("GET", "/reports/turnover", **kwargs)
+
+    def get_resources_by_type(self, **kwargs):
+        """Catalogue des ressources assignables d''un type"""
+        return self.request("GET", "/resources/{type}", **kwargs)
 
     def get_salary_advances(self, **kwargs):
         """Lister les avances sur salaire"""

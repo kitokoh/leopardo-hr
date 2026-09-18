@@ -10,6 +10,7 @@ declare(strict_types=1);
  */
 
 // ── Modules migrés ─────────────────────────────────────────────────────────────
+use App\Core\Tenant\Interfaces\Api\V1\Controllers\ResourceCatalogController;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\AttendanceController;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\BiometricEnrollmentController;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\KioskController;
@@ -20,6 +21,7 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartureController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartureNoticeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeImportController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeResourceAssignmentController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EvaluationController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\InvitationController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\MeController;
@@ -49,6 +51,17 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::post('/employees', [EmployeeController::class, 'store'])->middleware(['api.manager', 'tenant.country']);
     Route::get('/employees/{employee}', [EmployeeController::class, 'show'])->whereNumber('employee');
     Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->whereNumber('employee')->middleware('tenant.country');
+
+    // Issue #7598 (R1 de l'épique #7597) — accès RESSOURCE d'un collaborateur :
+    // « Moussa → restaurant Almadies (manage), Plateau (view) ». `PUT` remplace
+    // le jeu complet (seule forme qui rende la révocation possible en un geste) ;
+    // réservé au principal du tenant par la policy `EmployeePolicy`.
+    Route::get('/employees/{employee}/resource-assignments', [EmployeeResourceAssignmentController::class, 'index'])->whereNumber('employee');
+    Route::put('/employees/{employee}/resource-assignments', [EmployeeResourceAssignmentController::class, 'update'])->whereNumber('employee');
+
+    // Catalogue des ressources assignables (le sélecteur du responsable) :
+    // filtré par ce que l'acteur voit du type, fail-closed sur un type inconnu.
+    Route::get('/resources/{type}', [ResourceCatalogController::class, 'index']);
     Route::patch('/employees/{employee}', [EmployeeController::class, 'update'])->whereNumber('employee')->middleware('tenant.country');
     Route::post('/employees/{employee}/archive', [EmployeeController::class, 'archive'])->whereNumber('employee');
 

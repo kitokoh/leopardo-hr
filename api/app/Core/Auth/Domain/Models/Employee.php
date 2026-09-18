@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core\Auth\Domain\Models;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\EmployeeResourceAssignment;
 use App\Core\Tenant\Domain\Models\Site;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use App\Modules\Cabinet\Domain\Models\CabinetDocument;
@@ -490,6 +491,119 @@ class Employee extends Authenticatable implements HasApiTokensContract
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class, 'department_id');
+    }
+
+    /**
+     * Issue #7598 (R1 de l'épique #7597) — accès ressource-scopés posés par le
+     * responsable du tenant (« Moussa → restaurant Almadies, niveau manage »).
+     *
+     * @return HasMany<EmployeeResourceAssignment, $this>
+     */
+    public function resourceAssignments(): HasMany
+    {
+        return $this->hasMany(EmployeeResourceAssignment::class, 'employee_id');
+    }
+
+    /**
+     * Le collaborateur peut-il agir sur CETTE ressource au niveau `$min` ?
+     *
+     * Règles (issue #7598) :
+     *  - `principal` : tout, sans assignation ;
+     *  - `rh` : lecture (`view`) seule, sans assignation ;
+     *  - assigné : niveau ≥ `$min` ;
+     *  - non assigné : refusé **si et seulement si** ce type de ressource est
+     *    déjà assigné dans l'entreprise. C'est la règle de progressivité :
+     *    avant la première assignation, le comportement historique (même
+     *    `company_id` + rôle) est conservé ; dès qu'une assignation existe, le
+     *    scoping est actif et fail-closed pour les non-assignés du type.
+     */
+    public function hasResourceAccess(
+        string $resourceType,
+        int $resourceId,
+        string $min = EmployeeResourceAssignment::LEVEL_VIEW,
+    ): bool {
+        // Exigence inconnue → refus (fail-closed), jamais un « view » implicite.
+        if (EmployeeResourceAssignment::levelRank($min) < 0) {
+            return false;
+        }
+
+        if ($this->isPrincipal()) {
+            return true;
+        }
+
+        if ($this->isHr() && $min === EmployeeResourceAssignment::LEVEL_VIEW) {
+            return true;
+        }
+
+        $level = $this->resourceAssignmentLevel($resourceType, $resourceId);
+        if ($level !== null) {
+            return EmployeeResourceAssignment::satisfies($level, $min);
+        }
+
+        return ! $this->isResourceTypeScoped($resourceType);
+    }
+
+    /** Niveau assigné à ce collaborateur pour cette ressource, ou null. */
+    public function resourceAssignmentLevel(string $resourceType, int $resourceId): ?string
+    {
+        $assignment = $this->resourceAssignments()
+            ->where('resource_type', $resourceType)
+            ->where('resource_id', $resourceId)
+            ->first();
+
+        return $assignment?->access_level;
+    }
+
+    /**
+     * Ce type de ressource est-il déjà assigné dans l'entreprise ? Si oui, le
+     * scoping est actif : les non-assignés du type sont refusés (fail-closed).
+     */
+    public function isResourceTypeScoped(string $resourceType): bool
+    {
+        return EmployeeResourceAssignment::query()
+            ->where('company_id', $this->company_id)
+            ->where('resource_type', $resourceType)
+            ->exists();
+    }
+
+    /**
+     * Identifiants des ressources de ce type accessibles au niveau `$min`.
+     *
+     * `null` signifie « aucune restriction » (principal, ou lecture `rh`, ou
+     * type pas encore assigné → comportement historique) : c'est différent
+     * d'une liste VIDE, qui veut dire « scoping actif, accès à rien ». Les
+     * appelants (listings, policies R2+) doivent donc distinguer les deux.
+     *
+     * @return list<int>|null
+     */
+    public function accessibleResourceIds(
+        string $resourceType,
+        string $min = EmployeeResourceAssignment::LEVEL_VIEW,
+    ): ?array {
+        if (EmployeeResourceAssignment::levelRank($min) < 0) {
+            return [];
+        }
+
+        if ($this->isPrincipal()) {
+            return null;
+        }
+
+        if ($this->isHr() && $min === EmployeeResourceAssignment::LEVEL_VIEW) {
+            return null;
+        }
+
+        if (! $this->isResourceTypeScoped($resourceType)) {
+            return null;
+        }
+
+        $allowed = [];
+        foreach ($this->resourceAssignments()->where('resource_type', $resourceType)->get() as $assignment) {
+            if (EmployeeResourceAssignment::satisfies($assignment->access_level, $min)) {
+                $allowed[] = (int) $assignment->resource_id;
+            }
+        }
+
+        return $allowed;
     }
 
     /** @return BelongsTo<Position, $this> */
