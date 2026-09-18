@@ -58,6 +58,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformEmailTemplateCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformFeatureKillSwitchController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformHrReportController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformImpersonationController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMarketingLeadController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMarketingOAuthConfigController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMetricsOverviewController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformNotificationObservabilityController;
@@ -475,6 +476,11 @@ Route::prefix('v1')->group(function (): void {
 
         Route::get('/crm/pipeline', PlatformCrmPipelineController::class)->middleware('platform.permission:crm.view');
 
+        // Tranche #7595 — les leads d'acquisition de la vitrine etaient ecrits
+        // (POST /marketing/leads) et JAMAIS relus : aucune route GET n'existait.
+        // Lecture seule, meme garde que le pipeline CRM.
+        Route::get('/marketing/leads', [PlatformMarketingLeadController::class, 'index'])->middleware('platform.permission:crm.view');
+
         // PA2-COMM-012 — Pilot client support center: super-admin triage of
         // tenant-opened support tickets (status, priority, assignment, reply).
         Route::get('/support-tickets', [PlatformSupportTicketController::class, 'index'])->middleware('platform.permission:support.manage');
@@ -559,6 +565,7 @@ Route::prefix('v1')->group(function (): void {
         // BC-25 #6694 — pilotage des surveys de solutions (stats de conversion
         // du wizard vitrine, agrégées depuis marketing_leads type solution_survey).
         Route::get('/solutions/survey-stats', [PlatformSolutionSurveyStatsController::class, 'index']);
+        Route::get('/marketing/leads', [PlatformMarketingLeadController::class, 'index'])->middleware('platform.permission:crm.view');
 
         Route::get('/fleet/alerts', [PlatformAdminFleetAlertController::class, 'index']);
 
