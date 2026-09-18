@@ -139,10 +139,16 @@ class ResourceCatalogController extends Controller
 
         $rows = [];
         foreach ($logs as $log) {
+            // `old_values`/`new_values` sont nullables en base : lecture par
+            // getAttribute() (mixed) + narrowing — le docblock du modèle est
+            // volontairement laissé tel quel (des dizaines de tests existants
+            // en dépendent).
+            $oldRaw = $log->getAttribute('old_values');
+            $newRaw = $log->getAttribute('new_values');
             /** @var array<string, mixed> $old */
-            $old = $log->old_values ?? [];
+            $old = is_array($oldRaw) ? $oldRaw : [];
             /** @var array<string, mixed> $new */
-            $new = $log->new_values ?? [];
+            $new = is_array($newRaw) ? $newRaw : [];
             $snapshot = $new + $old;
 
             $rows[] = [

@@ -113,10 +113,10 @@ class ResourceAccessLifecycleTest extends TestCase
             ->pluck('access_level', 'resource_id')
             ->all();
 
-        $this->assertSame(['manage', 'view'], array_values(array_map(
+        $this->assertSame(['manage', 'view'], array_map(
             static fn (int $id): string => (string) $levels[$id],
             [$cameraA, $cameraB],
-        )));
+        ));
     }
 
     public function test_departure_revokes_assignments_in_cascade_and_keeps_audit(): void

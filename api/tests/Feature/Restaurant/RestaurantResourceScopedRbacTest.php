@@ -99,8 +99,7 @@ class RestaurantResourceScopedRbacTest extends TestCase
         ])->assertStatus(403);
 
         // Et l'autre succursale n'apparaît pas dans SON listing.
-        $ids = collect($this->getJson('/api/v1/restaurant/branches?per_page=100')->assertStatus(200)->json('data'))
-            ->pluck('id')->all();
+        $ids = array_column((array) $this->getJson('/api/v1/restaurant/branches?per_page=100')->assertStatus(200)->json('data'), 'id');
         $this->assertContains($mine->id, $ids);
         $this->assertNotContains($other->id, $ids);
     }
@@ -132,8 +131,7 @@ class RestaurantResourceScopedRbacTest extends TestCase
         $this->getJson("/api/v1/restaurant/orders/{$foreignOrder->id}")->assertStatus(403);
 
         // Et absente du listing.
-        $ids = collect($this->getJson('/api/v1/restaurant/orders?per_page=100')->assertStatus(200)->json('data'))
-            ->pluck('id')->all();
+        $ids = array_column((array) $this->getJson('/api/v1/restaurant/orders?per_page=100')->assertStatus(200)->json('data'), 'id');
         $this->assertNotContains($foreignOrder->id, $ids);
 
         // `operate` ne donne pas la gestion : le serveur ne crée pas de zone.
