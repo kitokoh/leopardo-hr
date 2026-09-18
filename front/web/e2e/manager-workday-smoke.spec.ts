@@ -62,6 +62,20 @@ async function mockManagerSession(page: Page) {
     });
   });
 
+  // #7494 : la carte « Prochaines étapes » du dashboard lit
+  // /onboarding-setup/checklist — même règle que #3027 : un 401 réel
+  // déconnecte la session mockée (apiFetch → clearAuthSession → /auth/login).
+  // Tenant prêt (go_live_ready) : la carte reste muette, le smoke est inchangé.
+  await page.route('**/api/v1/onboarding-setup/checklist', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: { completed_steps: 0, total_steps: 0, go_live_ready: true, steps: [] },
+      }),
+    });
+  });
+
   await page.route('**/api/v1/client-events', async (route) => {
     await route.fulfill({
       status: 202,

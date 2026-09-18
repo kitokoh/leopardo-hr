@@ -3608,6 +3608,22 @@ class LeopardoClient:
         """Affecter un horaire/regle entreprise a des employes"""
         return self.request("POST", "/schedules/{schedule}/assign-employees", **kwargs)
 
+    def get_setup_interview(self, **kwargs):
+        """\xC9tat de l'entretien de pr\xE9paration conversationnel (#7493)"""
+        return self.request("GET", "/setup-interview", **kwargs)
+
+    def patch_setup_interview_answers(self, **kwargs):
+        """Enregistrer un brouillon de réponses de l'entretien (#7493)"""
+        return self.request("PATCH", "/setup-interview/answers", **kwargs)
+
+    def post_setup_interview_complete(self, **kwargs):
+        """Clôturer l'entretien et activer les modules (#7493)"""
+        return self.request("POST", "/setup-interview/complete", **kwargs)
+
+    def post_setup_interview_dismiss(self, **kwargs):
+        """Reporter l'entretien de préparation (« Terminer plus tard », #7493)"""
+        return self.request("POST", "/setup-interview/dismiss", **kwargs)
+
     def get_showcase(self, **kwargs):
         """Vitrine du tenant courant (gestion)"""
         return self.request("GET", "/showcase", **kwargs)

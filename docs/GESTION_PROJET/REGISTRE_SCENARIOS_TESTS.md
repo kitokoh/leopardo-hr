@@ -613,3 +613,24 @@ restent les gates applicables.
 - **Surface API / mobile** : aucun changement de code. `api/lang/*/shared.php` et les ARB mobiles
   ne bougent que par la **synchronisation** du catalogue partage (cibles generees : `sync-backend`,
   `sync-mobile`) — voir la note du meme jour dans `SCENARIOS_TEST_MOBILE_FLUTTER.md`.
+
+## Mise a jour 2026-09-18 — entretien conversationnel + checklist personnalisee (PR #7630, issues #7493/#7494)
+
+- **Surface API** : nouvel entretien de preparation tenant-scoped (`GET /api/v1/setup-interview`,
+  `PATCH /api/v1/setup-interview/answers`, `POST /api/v1/setup-interview/complete`) porte par
+  `SetupInterviewController` + `SetupInterviewPlanner` (mapping reponses -> plan `{solutions, tools}`,
+  fail-closed sur allowlist, plancher solo #7423). A la completion, `SeedDefaultSteps` genere la
+  checklist d'onboarding **personnalisee** a partir des reponses et des modules actifs (jamais de
+  kiosque/geofence sans presence terrain ; etapes deja completees/sautees toujours conservees ;
+  tenants sans entretien : 10 etapes par defaut inchangees). Les titres d'etapes et le message
+  d'erreur de validation passent par le catalogue `api/lang/*/onboarding.php` (garde i18n
+  PA2-I18N-007 / #5432). Scenarios automatises :
+  `api/tests/Feature/Onboarding/SetupInterviewControllerTest.php` (contrat, idempotence du
+  complete, rejet 422 des reponses hors allowlist sans ecriture) et
+  `api/tests/Feature/Onboarding/SetupInterviewSeedingTest.php` (profils restaurateur/solo vitrine,
+  convergence des etapes `pending` apres entretien).
+- **Surface web** : nouveau parcours `setupInterview` (catalogue `shared/i18n/locales/*.json`,
+  synchronise vers `front/web` et `front/admin-dashboard` par `sync-web.js`) — questions
+  passables une a une, recapitulatif d'activation, reprise ulterieure.
+- **Surface mobile** : cles ARB synchronisees par `sync-mobile.js` (cibles generees), aucun
+  contrat modifie.

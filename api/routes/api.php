@@ -27,6 +27,7 @@ use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookCon
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
+use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\SetupInterviewController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\WelcomeScreenController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\IslamicCalendarController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PayrollAuditController;
@@ -361,6 +362,18 @@ Route::prefix('v1')->group(function (): void {
         // contrôleur ; la lecture de l'état se fait par `/auth/me`
         // (`company.metadata`), il n'y a pas de route de lecture à ajouter.
         Route::post('/onboarding/welcome-ack', WelcomeScreenController::class);
+
+        // #7493 — entretien de préparation conversationnel (première
+        // connexion, après l'écran de bienvenue #7490) : une question à la
+        // fois, zappable, reprenable. Brouillon SERVEUR
+        // (`public.companies.metadata.setup_interview`, exposé par `/auth/me`) ;
+        // la clôture active les modules selon les réponses (allowlist
+        // fail-closed, `SolutionActivator` idempotent). RBAC principal/rh
+        // appliqué dans le contrôleur.
+        Route::get('/setup-interview', [SetupInterviewController::class, 'show']);
+        Route::patch('/setup-interview/answers', [SetupInterviewController::class, 'saveAnswers']);
+        Route::post('/setup-interview/complete', [SetupInterviewController::class, 'complete']);
+        Route::post('/setup-interview/dismiss', [SetupInterviewController::class, 'dismiss']);
     });
 
     // APV L.08 — Modules Leopardo, chaque module a son propre route group.
