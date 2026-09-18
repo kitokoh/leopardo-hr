@@ -31,6 +31,18 @@
 > `test_portfolio_query_count_does_not_grow_with_company_count` — dont le comptage de
 > requêtes, faussé par un `DB::listen()` jamais retiré, est réparé).
 
+> **MAJ 2026-09-17 — tranche #7595, les leads vitrine deviennent lisibles par l'admin.**
+> Nouvelle lecture **API** (module Platform) : `GET /platform/marketing/leads` et son miroir
+> super-admin `GET /admin/marketing/leads` — la table globale `marketing_leads` recevait les
+> 5 formulaires publics de la vitrine sans qu'aucune route ne la relise. Paginée (25/p., max
+> 100), filtres `type`/`status`/`source`/`search`/`from`/`to` (le `to` sans heure inclut la
+> journée entière), tri du plus récent au plus ancien, `meta.status_counts` volontairement
+> **global** (compteurs d'onglets). Réservée à la permission plateforme `crm.view` ; la réponse
+> expose `payload` et `ip` (arbitrage documenté dans le contrôleur — seule relecture de données
+> personnelles prospect). Lecture par `DB::table` sans import du module Marketing (garde #5584).
+> Spec OpenAPI + SDK miroir régénérés. Aucune surface web/mobile dans cette tranche (écran admin
+> à venir). Non-régression : `api/tests/Feature/PlatformMarketingLeadsReadApiTest.php`.
+
 > **MAJ 2026-09-17 — #7598 (R1 de l'épique #7597), socle « accès aux ressources »
 > ressource-scopé.** Nouvelle table tenant `employee_resource_assignments`
 > (`company_id` uuid indexé sans FK cross-tenant, `resource_type` clé du registre

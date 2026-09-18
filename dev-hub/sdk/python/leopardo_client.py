@@ -448,6 +448,10 @@ class LeopardoClient:
         """Confirmer toutes les dates islamiques d'une année (super-admin)"""
         return self.request("POST", "/admin/islamic-calendar/confirm-year/{year}", **kwargs)
 
+    def get_admin_marketing_leads(self, **kwargs):
+        """Liste des leads d'acquisition de la vitrine (miroir super-admin)"""
+        return self.request("GET", "/admin/marketing/leads", **kwargs)
+
     def listpayrollauditsadmin(self, **kwargs):
         """Lister les enregistrements d''audit des calculs de paie (platform_admin, cross-tenant) — issue #1874"""
         return self.request("GET", "/admin/payroll/audit", **kwargs)
@@ -3099,6 +3103,10 @@ class LeopardoClient:
     def delete_platform_impersonations_by_session(self, **kwargs):
         """Terminer une session d'impersonation"""
         return self.request("DELETE", "/platform/impersonations/{session}", **kwargs)
+
+    def get_platform_marketing_leads(self, **kwargs):
+        """Liste des leads d'acquisition de la vitrine (lecture plateforme)"""
+        return self.request("GET", "/platform/marketing/leads", **kwargs)
 
     def get_platform_metrics_overview(self, **kwargs):
         """Agregats business du cockpit super-admin"""
