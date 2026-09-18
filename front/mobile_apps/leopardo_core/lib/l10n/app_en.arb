@@ -4255,5 +4255,19 @@
   "firstloginwelcomeTitle": "Your workspace is ready 🎉",
   "firstloginwelcomeBody": "An email has been sent to you with a link to set your password — it will be used for your future sign-ins.",
   "firstloginwelcomeCtastart": "Start setting up",
-  "firstloginwelcomeCtalater": "Later"
+  "firstloginwelcomeCtalater": "Later",
+  "formsValidationNametooshort": "Name must be at least 2 characters",
+  "formsValidationNametoolong": "Name is too long",
+  "formsValidationEmailinvalid": "Invalid email",
+  "formsValidationEmailtooshort": "Email too short",
+  "formsValidationEmailtoolong": "Email too long",
+  "formsValidationCompanytooshort": "Company name must be at least 2 characters",
+  "formsValidationCompanytoolong": "Company name is too long",
+  "formsValidationSubjecttooshort": "Subject is too short",
+  "formsValidationSubjecttoolong": "Subject is too long",
+  "formsValidationMessagetooshort": "Message must be at least 10 characters",
+  "formsValidationMessagetoolong": "Message is too long",
+  "formsValidationPhoneinvalid": "Invalid phone number",
+  "formsValidationEmployeesinvalid": "Select an employee range",
+  "formsValidationDatefuture": "Date must be in the future"
 }
