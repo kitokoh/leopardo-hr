@@ -74,22 +74,26 @@ class WelcomeScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Leopardo RH',
-                          style: AppTypography.title.copyWith(color: text),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          'Espace Manager',
-                          style: AppTypography.caption.copyWith(
-                            color: AppColors.rh,
-                            fontWeight: FontWeight.w600,
+                    // #7620 — même motif fragile que LoginScreen : la Column de
+                    // textes doit être contrainte pour absorber les libellés longs.
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Leopardo RH',
+                            style: AppTypography.title.copyWith(color: text),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 3),
+                          Text(
+                            'Espace Manager',
+                            style: AppTypography.caption.copyWith(
+                              color: AppColors.rh,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
