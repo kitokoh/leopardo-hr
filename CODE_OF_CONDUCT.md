@@ -45,7 +45,10 @@ an individual is officially representing the community in public spaces.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the project team at **contact@leopardo.app**.
+reported to the maintainer team via GitHub: open a private report addressed to
+the maintainer [@kitokoh](https://github.com/kitokoh) (for example through a
+confidential issue or GitHub's private reporting tools). Do not use e-mail
+addresses on `leopardo.app` or `leopardo-rh.com` — they are not monitored.
 
 All complaints will be reviewed and investigated promptly and fairly.
 

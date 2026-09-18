@@ -1,4 +1,4 @@
-# AGENTS.md - Guide de travail Leopardo RH
+# AGENTS.md - Guide de travail Leopardo
 
 Derniere mise a jour : 2026-09-05 (audit PM architecture — liste des apps mobiles alignée sur le dépôt)
 
@@ -325,7 +325,7 @@ un APP_VERSION sur un tier qui n'en porte pas. Rattrapage : `deploy-main-catchup
 - **CHANGELOG.md (issue #2417)** : toute PR ajoute son entree sous `## [Unreleased]` avec la categorie adaptee (`### Added` / `### Changed` / `### Fixed` / `### Removed`) — Keep a Changelog. Les sections versionnees (`## [x.y.z] - date`) sont creees a la release ; l'historique integral vit dans `CHANGELOG_ARCHIVE.md`.
 - Chaque connaissance utile pour les prochains agents doit etre ajoutee ici.
 
-## 🗺️ Cartographie de l'Ecosysteme Leopardo RH (A respecter strictement)
+## 🗺️ Cartographie de l'Ecosysteme Leopardo (A respecter strictement)
 
 Le projet est une **Suite d'Applications** (1 App = 1 Metier). Voici les roles definis "noir sur blanc" :
 
@@ -354,7 +354,7 @@ Toute feature hors du périmètre autorisé de `docs/GOUVERNANCE/FREEZE_SCOPE_60
 
 **ATTENTION AGENTS** : Les anciens dossiers `docs/PLAN_ACTION/` et `docs/PLAN_ACTION2/` sont **obsoletes et archives**. Il est **strictement interdit** de lire ces dossiers pour chercher du travail ou d'y creer de nouveaux fichiers Markdown de planification.
 
-La gestion du projet Leopardo RH se fait desormais **exclusivement via GitHub Issues et GitHub Projects**.
+La gestion du projet Leopardo se fait desormais **exclusivement via GitHub Issues et GitHub Projects**.
 
 ### Regles de selection d'une tache (GitHub Issues)
 
