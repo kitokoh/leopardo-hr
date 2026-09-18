@@ -37,7 +37,7 @@ if (-not $changed) {
 }
 
 $requiredFiles = @(
-    "PILOTAGE.md",
+    "docs/archive/PILOTAGE.md",
     ".github/PULL_REQUEST_TEMPLATE.md",
     ".github/BRANCH_PROTECTION_REQUIRED.md",
     ".github/workflows/phpstan-baseline.yml",
@@ -90,7 +90,7 @@ Assert-NotContains ".github/BRANCH_PROTECTION_REQUIRED.md" 'CodeQL \(Backend\)' 
 Assert-Contains ".github/BRANCH_PROTECTION_REQUIRED.md" 'Backend Quality \(Pint \+ PHP Syntax \+ PHPStan/Larastan\)' 'Branch protection doc must reference the PHPStan/Larastan quality gate.'
 Pass "Branch protection guidance matches the active checks."
 
-$criticalPattern = '^(api/|mobile/|docs/dossierdeConception/|docs/GESTION_PROJET/|docs/REFERENTIEL_PRODUIT/|docs/notes/archive/|PILOTAGE\.md|\.github/|tools/check-governance\.ps1)'
+$criticalPattern = '^(api/|mobile/|docs/dossierdeConception/|docs/GESTION_PROJET/|docs/REFERENTIEL_PRODUIT/|docs/notes/archive/|\.github/|tools/check-governance\.ps1)'
 $requiresChangelog = $false
 foreach ($line in $changed) {
     if ($line -match $criticalPattern) {
