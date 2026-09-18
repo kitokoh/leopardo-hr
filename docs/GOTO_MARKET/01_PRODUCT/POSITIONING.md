@@ -1,27 +1,36 @@
 # Positioning
 
+> **Référence obligatoire** : catégorie et pitch canonique dans
+> `docs/REFERENTIEL_PRODUIT/MESSAGE.md` et `POSITIONNEMENT_SUITE_METIER.md` (#7428, 2026-09-16).
+> Leopardo est une **suite métier**, pas un « logiciel RH » ni un « Company OS ».
+> Les affirmations marché de ce document sont des **hypothèses de travail** à valider terrain,
+> pas des faits sourcés.
+
 ## Pourquoi ce produit existe ?
 
-Les PME et les entreprises avec des équipes terrain sont **la colonne vertébrale de l'économie mondiale** (70% de l'emploi en Afrique, 60% en Europe), mais elles sont totalement négligées par les éditeurs de logiciels RH.
+Les PME et les entreprises avec des équipes terrain constituent une part majeure de l'emploi
+dans nos marchés cibles (hypothèse de travail — à sourcer avant toute publication externe),
+mais notre lecture du marché est qu'elles sont mal servies par les éditeurs de logiciels de gestion.
 
-**Le constat est sans appel :**
+**Notre hypothèse de positionnement :**
 
-| Segment | Solutions Disponibles | Problème |
+| Segment | Solutions disponibles | Problème |
 |---------|----------------------|----------|
 | Grandes Entreprises | SAP, Workday, Oracle | Trop cher, trop complexe |
-| TPE / Artisans | Excel, WhatsApp, Papier | Fragmenté, non conforme, error-prone |
-| **PME (5-250 employés)** | ❌ **AUCUNE SOLUTION ADAPTÉE** | **Notre cible** |
+| TPE / Artisans | Excel, WhatsApp, Papier | Fragmenté, difficile à contrôler, error-prone |
+| **PME (5-250 employés)** | Offre perçue comme inadaptée à leurs contraintes terrain (hypothèse à valider par entretiens clients) | **Notre cible** |
 
-Leopardo HR existe pour combler ce vide : offrir aux PME une solution **professionnelle, abordable et 100% mobile** qui respecte leurs contraintes réelles.
+Leopardo existe pour servir ce segment : offrir aux PME une suite métier **professionnelle,
+abordable et mobile-first** qui respecte leurs contraintes réelles.
 
 ---
 
 ## Pourquoi maintenant ?
 
-### 1. La convergence technologique
+### 1. La convergence technologique (hypothèses de contexte, à sourcer avant usage externe)
 
-- 📱 **Pénétration smartphone > 80%** dans la plupart des marchés cibles (Afrique, Moyen-Orient, Asie du Sud-Est)
-- 🌐 **4G/5G généralisée** même dans les zones rurales
+- 📱 **Pénétration smartphone élevée** dans la plupart des marchés cibles (Afrique, Moyen-Orient, Asie du Sud-Est)
+- 🌐 **Couverture 4G/5G en progression**, y compris hors des grandes villes
 - 💰 **Mobile money mature** (M-Pesa, Orange Money, Wave, etc.)
 - 🔐 **Technologies cloud accessibles** (Laravel, Flutter, PostgreSQL, Redis)
 
@@ -57,8 +66,8 @@ Leopardo HR existe pour combler ce vide : offrir aux PME une solution **professi
    - Accessible uniquement au bureau (pas sur le terrain)
 
 ✅ Mobile First :
-   - Smartphone déjà possédé par 95% des utilisateurs
-   - Données mobiles abordables (forfaits < 5€/mois)
+   - Smartphone déjà possédé par la grande majorité des utilisateurs cibles (hypothèse à valider par segment)
+   - Données mobiles abordables
    - Interface intuitive (comme WhatsApp)
    - Accessible partout : chantier, usine, ferme, restaurant
 ```
@@ -99,25 +108,27 @@ Leopardo HR existe pour combler ce vide : offrir aux PME une solution **professi
 
 ## Pourquoi les équipes terrain ?
 
-### Un segment massivement sous-équipé
+### Un segment que nous croyons massivement sous-équipé
 
-Les équipes terrain représentent **40% de la main-d'œuvre mondiale** dans les secteurs critiques :
+Hypothèse de travail : les équipes terrain représentent une part importante de la main-d'œuvre
+dans les secteurs critiques (les pourcentages ci-dessous sont des ordres de grandeur internes,
+**non sourcés** — à remplacer par des données citées avant toute publication) :
 
-| Secteur | % de workforce terrain | Problèmes spécifiques |
+| Secteur | Part terrain estimée (interne, non sourcée) | Problèmes spécifiques |
 |---------|------------------------|----------------------|
-| **Sécurité** | 95% | Horaires variables, multi-sites, conformité légale |
-| **Construction** | 90% | Pointage par chantier, EPI, accidents du travail |
-| **Logistique** | 85% | Suivi de flotte, livraisons, temps de pause |
-| **Agriculture** | 95% | Saisonnalité, travailleurs temporaires, paiement à la tâche |
-| **Restauration** | 80% | Plannings complexes, turnover élevé, pourboires |
-| **Retail** | 70% | Multi-magasins, inventaires, promotions |
+| **Sécurité** | Très élevée | Horaires variables, multi-sites, obligations légales |
+| **Construction** | Très élevée | Pointage par chantier, EPI, accidents du travail |
+| **Logistique** | Élevée | Suivi de flotte, livraisons, temps de pause |
+| **Agriculture** | Très élevée | Saisonnalité, travailleurs temporaires, paiement à la tâche |
+| **Restauration** | Élevée | Plannings complexes, turnover élevé, pourboires |
+| **Retail** | Élevée | Multi-magasins, inventaires, promotions |
 
 ### Pourquoi ils ont besoin de Leopardo
 
 | Besoin | Solution Leopardo |
 |--------|-------------------|
 | **Pointage fiable** | Biométrie + géolocalisation + photo horodatée |
-| **Paie sans erreur** | Calcul automatique heures supp, primes, absences |
+| **Préparation de paie fiabilisée** | Calcul des heures supp, primes, absences — règles paie multi-pays en pilote, export paie |
 | **Communication rapide** | Notifications push, annonces ciblées |
 | **Documents accessibles** | Fiches de paie, contrats, attestations dans l'app |
 | **Autonomie** | Kiosque employé : demandes de congés, modifications |
@@ -127,6 +138,7 @@ Les équipes terrain représentent **40% de la main-d'œuvre mondiale** dans les
 
 ## Notre Promesse
 
-> **"Votre entreprise entière dans votre poche. Zéro papier. Zéro complexité. 100% contrôle."**
+> **« Votre entreprise entière dans votre poche. Zéro papier. Zéro complexité. 100% contrôle. »**
 
-Leopardo HR n'est pas un compromis. C'est **la meilleure façon** de gérer une PME avec des équipes terrain, point final.
+Leopardo n'est pas un compromis. C'est notre conviction : **la meilleure façon** de gérer une PME
+avec des équipes terrain — une conviction à démontrer client par client, pas un fait de marché.
