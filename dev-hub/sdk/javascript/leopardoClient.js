@@ -4485,6 +4485,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/schedules/{schedule}/assign-employees", options);
     },
 
+    /** \xC9tat de l'entretien de pr\xE9paration conversationnel (#7493) */
+    getSetupInterview(options = {}) {
+      return request("GET", "/setup-interview", options);
+    },
+
+    /** Enregistrer un brouillon de réponses de l'entretien (#7493) */
+    patchSetupInterviewAnswers(options = {}) {
+      return request("PATCH", "/setup-interview/answers", options);
+    },
+
+    /** Clôturer l'entretien et activer les modules (#7493) */
+    postSetupInterviewComplete(options = {}) {
+      return request("POST", "/setup-interview/complete", options);
+    },
+
+    /** Reporter l'entretien de préparation (« Terminer plus tard », #7493) */
+    postSetupInterviewDismiss(options = {}) {
+      return request("POST", "/setup-interview/dismiss", options);
+    },
+
     /** Vitrine du tenant courant (gestion) */
     getShowcase(options = {}) {
       return request("GET", "/showcase", options);
