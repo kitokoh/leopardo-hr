@@ -38,7 +38,10 @@ Vérifié via l'API branche protection le **2026-09-09** : 4 contexts requis seu
 | `Module Structure Validator` | `architecture-check.yml` | #5584 |
 | `Frontend — ESLint + TypeScript` | `architecture-check.yml` | Phase 1 |
 | `actionlint (+ shellcheck)` | `actionlint.yml` | #2131 |
-| `Ratio fix/feat (cible ≤ 2.5)` *(signal fort, **non requis**)* | `fix-feat-ratio-guard.yml` | 2026-08-26 |
+
+> **Note — `Ratio fix/feat (cible ≤ 2.5)`** (`fix-feat-ratio-guard.yml`, créé 2026-08-26) : signal fort
+> mais **non requis au merge** — il ne fait pas partie des 4 contexts requis ci-dessus et n'a jamais
+> été ajouté aux required status checks (voir §Règles du garde ratio fix/feat).
 
 > **Backend Coverage — PAS requis au merge, exigé à la release.** `Backend Coverage
 > (PHP 8.4 + PostgreSQL 16)` (`coverage-gate.yml`) a été retiré des checks requis au merge
