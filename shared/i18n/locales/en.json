@@ -5084,6 +5084,20 @@
       "consent": "I agree to be contacted by email about my request.",
       "sending": "Sending…",
       "send": "Send request"
+    },
+    "home": {
+      "kpisToday": "Today's activity",
+      "kpiRevenue": "Net revenue",
+      "kpiTrips": "Today's trips",
+      "open": "Open",
+      "network": "Network",
+      "networkDesc": "Stations, offices, routes and ordered stops.",
+      "trips": "Trips",
+      "tripsDesc": "Scheduling, class fares, publishing and manifest.",
+      "bookingsDesc": "Counter sales, confirmation, cancellation, refund and tickets.",
+      "reportsDesc": "Sales, occupancy, revenue, cancellations and CSV exports.",
+      "portal": "Traveller portal",
+      "portalDesc": "Customer-facing trip search and booking."
     }
   },
   "travelPortal": {

@@ -5084,6 +5084,20 @@
       "consent": "Talebim hakkında e-posta ile iletişime geçilmesini kabul ediyorum.",
       "sending": "Gönderiliyor…",
       "send": "Talebi gönder"
+    },
+    "home": {
+      "kpisToday": "Günün etkinliği",
+      "kpiRevenue": "Net gelir",
+      "kpiTrips": "Günün seferleri",
+      "open": "Aç",
+      "network": "Ağ",
+      "networkDesc": "Garlar, ofisler, hatlar ve sıralı duraklar.",
+      "trips": "Seferler",
+      "tripsDesc": "Planlama, sınıf tarifeleri, yayınlama ve manifest.",
+      "bookingsDesc": "Gişe satışları, onay, iptal, iade ve biletler.",
+      "reportsDesc": "Satışlar, doluluk, gelirler, iptaller ve CSV dışa aktarımları.",
+      "portal": "Yolcu portalı",
+      "portalDesc": "Müşteriye yönelik sefer arama ve rezervasyon."
     }
   },
   "travelPortal": {

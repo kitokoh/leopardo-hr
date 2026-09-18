@@ -5246,7 +5246,19 @@
       "subtitle": "Gestion de la verticale TravelAgency : réseau, ventes, billetterie et pilotage.",
       "flagActive": "Module actif",
       "flowTitle": "Flux métier",
-      "flowBody": "Référentiel & réseau → programmation des trajets → publication → vente au guichet → billetterie & check-in → rapports."
+      "flowBody": "Référentiel & réseau → programmation des trajets → publication → vente au guichet → billetterie & check-in → rapports.",
+      "kpisToday": "Activité du jour",
+      "kpiRevenue": "Recette nette",
+      "kpiTrips": "Trajets du jour",
+      "open": "Ouvrir",
+      "network": "Réseau",
+      "networkDesc": "Gares, bureaux, lignes et arrêts ordonnés.",
+      "trips": "Voyages",
+      "tripsDesc": "Programmation, tarifs par classe, publication et manifeste.",
+      "bookingsDesc": "Ventes au guichet, confirmation, annulation, remboursement et billets.",
+      "reportsDesc": "Ventes, occupation, recettes, annulations et exports CSV.",
+      "portal": "Portail voyageur",
+      "portalDesc": "Recherche de trajets et réservation côté client."
     },
     "referential": {
       "title": "Référentiel",

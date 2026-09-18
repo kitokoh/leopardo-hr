@@ -5841,7 +5841,19 @@
       "flowBody": "Referans ve ağ → sefer programlama → yayınlama → gişe satışı → biletleme ve check-in → raporlar.",
       "flowTitle": "İş akışı",
       "subtitle": "Seyahat acentesi dikeyinin yönetimi: ağ, satışlar, biletleme ve yönetim.",
-      "title": "Seyahat acentesi"
+      "title": "Seyahat acentesi",
+      "kpisToday": "Günün etkinliği",
+      "kpiRevenue": "Net gelir",
+      "kpiTrips": "Günün seferleri",
+      "open": "Aç",
+      "network": "Ağ",
+      "networkDesc": "Garlar, ofisler, hatlar ve sıralı duraklar.",
+      "trips": "Seferler",
+      "tripsDesc": "Planlama, sınıf tarifeleri, yayınlama ve manifest.",
+      "bookingsDesc": "Gişe satışları, onay, iptal, iade ve biletler.",
+      "reportsDesc": "Satışlar, doluluk, gelirler, iptaller ve CSV dışa aktarımları.",
+      "portal": "Yolcu portalı",
+      "portalDesc": "Müşteriye yönelik sefer arama ve rezervasyon."
     },
     "network": {
       "addPrice": "Fiyat ekle",

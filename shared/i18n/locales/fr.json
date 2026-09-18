@@ -5084,6 +5084,20 @@
       "consent": "J'accepte d'être contacté(e) par email au sujet de ma demande.",
       "sending": "Envoi…",
       "send": "Envoyer la demande"
+    },
+    "home": {
+      "kpisToday": "Activité du jour",
+      "kpiRevenue": "Recette nette",
+      "kpiTrips": "Trajets du jour",
+      "open": "Ouvrir",
+      "network": "Réseau",
+      "networkDesc": "Gares, bureaux, lignes et arrêts ordonnés.",
+      "trips": "Voyages",
+      "tripsDesc": "Programmation, tarifs par classe, publication et manifeste.",
+      "bookingsDesc": "Ventes au guichet, confirmation, annulation, remboursement et billets.",
+      "reportsDesc": "Ventes, occupation, recettes, annulations et exports CSV.",
+      "portal": "Portail voyageur",
+      "portalDesc": "Recherche de trajets et réservation côté client."
     }
   },
   "travelPortal": {

@@ -5240,7 +5240,19 @@
       "subtitle": "Manage the TravelAgency vertical: network, sales, ticketing and monitoring.",
       "flagActive": "Module active",
       "flowTitle": "Business flow",
-      "flowBody": "Referential & network → trip scheduling → publication → counter sales → ticketing & check-in → reports."
+      "flowBody": "Referential & network → trip scheduling → publication → counter sales → ticketing & check-in → reports.",
+      "kpisToday": "Today's activity",
+      "kpiRevenue": "Net revenue",
+      "kpiTrips": "Today's trips",
+      "open": "Open",
+      "network": "Network",
+      "networkDesc": "Stations, offices, routes and ordered stops.",
+      "trips": "Trips",
+      "tripsDesc": "Scheduling, class fares, publishing and manifest.",
+      "bookingsDesc": "Counter sales, confirmation, cancellation, refund and tickets.",
+      "reportsDesc": "Sales, occupancy, revenue, cancellations and CSV exports.",
+      "portal": "Traveller portal",
+      "portalDesc": "Customer-facing trip search and booking."
     },
     "referential": {
       "title": "Referential",
