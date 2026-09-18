@@ -33,6 +33,34 @@
 #     workflows dont le gate attend la conclusion. C'est la divergence de ces
 #     listes qui a produit #7511 puis #7528.
 #
+# Durcissements #7577 (reliquat de #7533, porté SANS sa régression) :
+#
+#  4. **parité stricte `push:` ↔ `pull_request:`** pour chaque workflow requis
+#     (`tests.yml`, `web-ci.yml`) : le gate attend la conclusion du run `push`
+#     sur `main` ; si les `paths:` de `pull_request:` divergent, le check vu
+#     en PR ne prédit plus le run que le gate exigera après merge.
+#  5. **couverture des préfixes `startsWith`** : le sens ⊆ ne vérifiait que
+#     les littéraux `p === '…'` — un préfixe (`p.startsWith('…/')`) ajouté au
+#     prédicat (les `paths:` par préfixe, p. ex. mobiles, fonctionnent ainsi)
+#     passait sous le radar. Chaque préfixe doit correspondre à un pattern
+#     `<préfixe>/**` d'un workflow requis.
+#  6. **pas de relâchement** : aucun chemin ne peut être couvert par les DEUX
+#     prédicats (une PR ne doit pas pouvoir élargir un prédicat pour faire
+#     passer son merge), et `isApiPath` ne doit JAMAIS couvrir
+#     `front/admin-dashboard/**` — régression connue de la PR de #7533 :
+#     `api_changed` pilote le redéploiement Render, l'élargir aurait
+#     redéployé l'API sur chaque merge front-only (le CHANGELOG de #7530
+#     documente l'exclusion inverse).
+#
+# Rôle de `.github/paths-filters.yml` (source de VÉRITÉ de qui ?) : ce fichier
+# alimente dorny/paths-filter dans le job `detect-changes` de `tests.yml` (et
+# le job `prepare` de `deploy-main.yml`) — il est VOLONTAIREMENT plus large
+# que les `paths:` de `web-ci.yml` (sa liste `web` ajoute `deploy-main.yml` et
+# deux docs). Il n'est PAS la référence des prédicats du gate : les prédicats
+# suivent les `paths:` des workflows requis (leçon #7528). La garde vérifie
+# seulement qu'il ne devient pas PLUS ÉTROIT que ces déclencheurs — sinon
+# `detect-changes` raterait des changements que les workflows requis voient.
+#
 # Usage :
 #   bash dev-hub/tools/check-deploy-gate-outcome.sh            # vérifie le dépôt
 #   bash dev-hub/tools/check-deploy-gate-outcome.sh <racine>   # autre racine
@@ -44,6 +72,7 @@ ACTION_PATH=".github/actions/verify-deploy-workflows/action.yml"
 DEPLOY_PATH=".github/workflows/deploy-main.yml"
 TESTS_PATH=".github/workflows/tests.yml"
 WEB_CI_PATH=".github/workflows/web-ci.yml"
+FILTERS_PATH=".github/paths-filters.yml"
 
 errors=0
 
@@ -65,13 +94,16 @@ extract_js_arrow_body() {
   ' "${file}"
 }
 
-# Extrait les `paths:` du bloc `push:` d'un workflow (liste YAML de chaînes).
-workflow_push_paths() {
-  python3 - "$1" <<'PYEXTRACT'
+# Extrait les `paths:` du bloc d'un événement (`push` / `pull_request`) d'un
+# workflow (liste YAML de chaînes). #7577 : paramétré par événement pour la
+# parité stricte push ↔ pull_request.
+workflow_event_paths() {
+  python3 - "$1" "${2:-push}" <<'PYEXTRACT'
 import re
 import sys
 
 path = sys.argv[1]
+event = sys.argv[2]
 lines = open(path, encoding="utf-8").read().split("\n")
 
 def find_block(start_index, indent):
@@ -87,11 +119,11 @@ def find_block(start_index, indent):
         out.append((i, line, cur))
     return out
 
-# Trouver `on:` (indent 0), puis `push:` (indent > 0), puis `paths:` dedans.
+# Trouver `on:` (indent 0), puis `<event>:` (indent > 0), puis `paths:` dedans.
 on_idx = next(i for i, l in enumerate(lines) if re.match(r"^on:\s*$", l))
 push_idx = None
 for i, line, cur in find_block(on_idx + 1, 0):
-    if re.match(r"^\s*push:\s*$", line):
+    if re.match(r"^\s*" + re.escape(event) + r":\s*$", line):
         push_idx = i
         push_indent = cur
         break
@@ -107,6 +139,52 @@ for i, line, cur in find_block(push_idx + 1, push_indent):
                 print(m.group(1).strip())
         break
 PYEXTRACT
+}
+
+# Compatibilité : l'appel historique (bloc `push:` seulement).
+workflow_push_paths() {
+  workflow_event_paths "$1" push
+}
+
+# Extrait une liste (`api` ou `web`) de .github/paths-filters.yml.
+filters_list_paths() {
+  python3 - "$1" "$2" <<'PYFILTERS'
+import re
+import sys
+
+path, key = sys.argv[1], sys.argv[2]
+lines = open(path, encoding="utf-8").read().split("\n")
+in_key = False
+for line in lines:
+    if re.match(r"^" + re.escape(key) + r":\s*$", line):
+        in_key = True
+        continue
+    if in_key:
+        m = re.match(r"^\s+-\s*['\"]?([^'\"]+?)['\"]?\s*$", line)
+        if m:
+            print(m.group(1).strip())
+        elif line.strip() and not line.startswith((" ", "\t")):
+            break
+PYFILTERS
+}
+
+# #7577 (1) — parité stricte `push:` ↔ `pull_request:` d'un workflow requis :
+# le gate attend la conclusion du run `push` sur main ; si les `paths:` de
+# `pull_request:` divergent, le feu vu en PR ne prédit plus le run exigé
+# après merge (dans un sens : PR verte sans run requis possible ; dans
+# l'autre : run PR jamais déclenché sur un chemin pourtant gaté).
+check_push_pr_parity() {
+  local wf="$1" label="$2"
+  local push_paths pr_paths
+  push_paths="$(workflow_event_paths "${wf}" push | sort)"
+  pr_paths="$(workflow_event_paths "${wf}" pull_request | sort)"
+  if [[ -z "${pr_paths}" ]]; then
+    fail "${label} : aucun \`paths:\` lisible sur \`pull_request:\` — la parité push ↔ pull_request n'est plus vérifiable (#7577)."
+    return
+  fi
+  if [[ "${push_paths}" != "${pr_paths}" ]]; then
+    fail "${label} : les \`paths:\` de \`push:\` et \`pull_request:\` divergent — le check vu en PR ne prédit plus le run push que le gate exigera après merge (#7577). push=[$(printf '%s' "${push_paths}" | tr '\n' ' ')] pull_request=[$(printf '%s' "${pr_paths}" | tr '\n' ' ')]"
+  fi
 }
 
 # Vérifie que l'ensemble des chemins traités par les prédicats du gate couvre
@@ -143,6 +221,64 @@ check_gate_paths() {
   done <<< "$(printf '%s\n%s\n' \
       "$(printf '%s\n' "${api_body}" | sed -n "s/.*p === '\\([^']*\\)'.*/\\1/p")" \
       "$(printf '%s\n' "${web_body}" | sed -n "s/.*p === '\\([^']*\\)'.*/\\1/p")")"
+
+  # #7577 (2) — même sens ⊆ pour les PRÉFIXES : le contrôle ci-dessus ne lit
+  # que les littéraux `p === '…'` ; un `p.startsWith('…/')` ajouté au prédicat
+  # (les `paths:` par préfixe — p. ex. mobiles — fonctionnent ainsi) passait
+  # sous le radar. Chaque préfixe du gate doit correspondre à un pattern
+  # `<préfixe>/**` déclencheur d'un workflow requis.
+  while IFS= read -r p; do
+    [[ -z "${p}" ]] && continue
+    if [[ "${p}" != */ ]]; then
+      fail "${DEPLOY_PATH} : préfixe « ${p} » sans « / » final dans un prédicat du gate — un startsWith non borné matcherait des chemins voisins (#7577)."
+      continue
+    fi
+    if ! printf '%s\n%s\n' "${tests_paths}" "${web_paths}" | grep -qxF "${p%/}/**"; then
+      fail "${DEPLOY_PATH} : le gate couvre le préfixe « ${p}** » alors qu'aucun workflow requis ne se déclenche dessus — _changed serait vrai sans run possible (#7528/#7577)."
+    fi
+  done <<< "$(printf '%s\n%s\n' "${api_body}" "${web_body}" | sed -n "s/.*startsWith('\\([^']*\\)').*/\\1/p")"
+
+  # #7577 (3) — pas de relâchement : aucun chemin ne peut être couvert par les
+  # DEUX prédicats. Élargir un prédicat pour faire passer un merge rendrait un
+  # `_changed` vrai de plus — donc une conclusion exigée en trop, ou un
+  # redéploiement en trop.
+  while IFS= read -r p; do
+    [[ -z "${p}" ]] && continue
+    if js_covers_path "${api_body}" "${p}" && js_covers_path "${web_body}" "${p}"; then
+      fail "${DEPLOY_PATH} : « ${p} » est couvert par isApiPath ET isWebPath — un prédicat a été élargi (relâchement interdit, #7577)."
+    fi
+  done <<< "$(printf '%s\n%s\n' "${tests_paths}" "${web_paths}" | sort -u)"
+
+  # #7577 (3, cas documenté) — régression connue de la PR de #7533 : élargir
+  # `isApiPath` à `front/admin-dashboard/**` ferait `api_changed=true` sur un
+  # merge front-only, donc un REDÉPLOIEMENT RENDER de l'API sans changement
+  # d'API (le CHANGELOG de #7530 documente l'exclusion inverse). Interdit
+  # explicitement, même si la disjonction ci-dessus l'attrape déjà.
+  if js_covers_path "${api_body}" 'front/admin-dashboard/**'; then
+    fail "${DEPLOY_PATH} : isApiPath couvre front/admin-dashboard/** — régression connue (#7533) : un merge front-only redéploierait Render (#7530 documente l'exclusion inverse)."
+  fi
+}
+
+# #7577 (4) — rôle de .github/paths-filters.yml : source de dorny/paths-filter
+# (detect-changes de tests.yml, prepare de deploy-main.yml), PAS des prédicats
+# du gate (leçon #7528 : sa liste `web` est volontairement PLUS LARGE que les
+# `paths:` de web-ci.yml). Seul invariant vérifiable : elle ne doit pas être
+# PLUS ÉTROITE que les déclencheurs des workflows requis, sinon detect-changes
+# raterait des changements que les workflows requis voient.
+check_filters_file_role() {
+  local filters="$1" tests_paths="$2" web_paths="$3"
+  local filter_union p
+  filter_union="$(printf '%s\n%s\n' "$(filters_list_paths "${filters}" api)" "$(filters_list_paths "${filters}" web)")"
+  if [[ -z "$(printf '%s' "${filter_union}" | tr -d '[:space:]')" ]]; then
+    fail "${FILTERS_PATH} : listes \`api\`/\`web\` illisibles — detect-changes (tests.yml) n'a plus de source (#7577)."
+    return
+  fi
+  while IFS= read -r p; do
+    [[ -z "${p}" ]] && continue
+    if ! printf '%s\n' "${filter_union}" | grep -qxF "${p}"; then
+      fail "${FILTERS_PATH} : « ${p} » déclenche un workflow requis mais manque des filtres api/web — detect-changes (tests.yml) raterait ce changement (#7577). Ce fichier peut être plus LARGE que les workflows, jamais plus étroit."
+    fi
+  done <<< "$(printf '%s\n%s\n' "${tests_paths}" "${web_paths}" | sort -u)"
 }
 
 # Le prédicat JS couvre-t-il ce chemin ? (`**` → préfixe, sinon égalité)
@@ -161,12 +297,14 @@ check_filters_parity() {
   local deploy="${root}/${DEPLOY_PATH}"
   local tests_wf="${root}/${TESTS_PATH}"
   local web_wf="${root}/${WEB_CI_PATH}"
+  local filters_file="${root}/${FILTERS_PATH}"
   local before=${errors}
 
   [[ -f "${action}" ]] || { fail "action introuvable : ${ACTION_PATH}"; return 1; }
   [[ -f "${deploy}" ]] || { fail "workflow introuvable : ${DEPLOY_PATH}"; return 1; }
   [[ -f "${tests_wf}" ]] || { fail "workflow introuvable : ${TESTS_PATH}"; return 1; }
   [[ -f "${web_wf}" ]] || { fail "workflow introuvable : ${WEB_CI_PATH}"; return 1; }
+  [[ -f "${filters_file}" ]] || { fail "fichier introuvable : ${FILTERS_PATH} — source de detect-changes (tests.yml), voir l'en-tête (#7577)"; return 1; }
 
   # --- 1. l'action déclare et consomme api_changed -------------------------
   if ! grep -qE '^  api_changed:' "${action}"; then
@@ -264,6 +402,11 @@ check_filters_parity() {
     check_gate_paths "${deploy}" "${api_body}" "${web_body}" "${api_patterns}" "${web_patterns}"
   fi
 
+  # --- 4. durcissements #7577 -----------------------------------------------
+  check_push_pr_parity "${tests_wf}" "${TESTS_PATH}"
+  check_push_pr_parity "${web_wf}" "${WEB_CI_PATH}"
+  check_filters_file_role "${filters_file}" "${api_patterns}" "${web_patterns}"
+
   [[ ${errors} -eq ${before} ]] || return 1
   return 0
 }
@@ -278,6 +421,7 @@ self_test() {
   cp "${DEPLOY_PATH}" "${tmp}/${DEPLOY_PATH}"
   cp "${TESTS_PATH}" "${tmp}/${TESTS_PATH}"
   cp "${WEB_CI_PATH}" "${tmp}/${WEB_CI_PATH}"
+  cp "${FILTERS_PATH}" "${tmp}/${FILTERS_PATH}"
   if ! ( check_filters_parity "${tmp}" ); then
     echo "::error::[deploy-gate --self-test] un dépôt conforme est refusé — garde trop stricte." >&2
     return 1
@@ -357,6 +501,81 @@ PYSELFTEST
     echo "::error::[deploy-gate --self-test] la régression #7559 (statuts `requested`/`waiting` retirés du prédicat « en vol ») n'est pas détectée." >&2
     return 1
   fi
+  cp "${ACTION_PATH}" "${tmp}/${ACTION_PATH}"
+
+  # --- mutation 6 (#7577) : les paths: de pull_request divergent de push ----
+  python3 - "${tmp}/${TESTS_PATH}" <<'PYSELFTEST'
+import sys
+p = sys.argv[1]
+s = open(p, encoding='utf-8').read()
+# Le bloc pull_request: précède push: dans tests.yml — la première occurrence
+# est donc celle du bloc PR. On en retire un déclencheur.
+old = "      - '.github/workflows/phpstan-baseline.yml'\n"
+assert s.count(old) >= 2, 'entrée attendue dans les deux blocs'
+s = s.replace(old, '', 1)
+open(p, 'w', encoding='utf-8').write(s)
+PYSELFTEST
+  if ( check_filters_parity "${tmp}" ) 2>/dev/null; then
+    echo "::error::[deploy-gate --self-test] la divergence push ↔ pull_request (#7577, mutation 6) n'est pas détectée." >&2
+    return 1
+  fi
+  cp "${TESTS_PATH}" "${tmp}/${TESTS_PATH}"
+
+  # --- mutation 7 (#7577, régression connue #7533) : isApiPath élargi -------
+  # au front — api_changed=true sur un merge front-only redéploierait Render.
+  python3 - "${tmp}/${DEPLOY_PATH}" <<'PYSELFTEST'
+import sys
+p = sys.argv[1]
+s = open(p, encoding='utf-8').read()
+old = """            const isApiPath = (p) =>
+              p.startsWith('api/') ||"""
+new = """            const isApiPath = (p) =>
+              p.startsWith('api/') ||
+              p.startsWith('front/admin-dashboard/') ||"""
+assert old in s, 'prédicat isApiPath attendu'
+s = s.replace(old, new, 1)
+open(p, 'w', encoding='utf-8').write(s)
+PYSELFTEST
+  if ( check_filters_parity "${tmp}" ) 2>/dev/null; then
+    echo "::error::[deploy-gate --self-test] le relâchement d'isApiPath vers front/admin-dashboard/** (#7533/#7577, mutation 7) n'est pas détecté." >&2
+    return 1
+  fi
+  cp "${DEPLOY_PATH}" "${tmp}/${DEPLOY_PATH}"
+
+  # --- mutation 8 (#7577) : un préfixe sans workflow entre dans le gate -----
+  python3 - "${tmp}/${DEPLOY_PATH}" <<'PYSELFTEST'
+import sys
+p = sys.argv[1]
+s = open(p, encoding='utf-8').read()
+old = """            const isWebPath = (p) =>
+              p.startsWith('front/admin-dashboard/') ||"""
+new = """            const isWebPath = (p) =>
+              p.startsWith('front/admin-dashboard/') ||
+              p.startsWith('mobile/apps/') ||"""
+assert old in s, 'prédicat isWebPath attendu'
+s = s.replace(old, new, 1)
+open(p, 'w', encoding='utf-8').write(s)
+PYSELFTEST
+  if ( check_filters_parity "${tmp}" ) 2>/dev/null; then
+    echo "::error::[deploy-gate --self-test] un préfixe startsWith sans workflow requis (#7577, mutation 8) n'est pas détecté." >&2
+    return 1
+  fi
+  cp "${DEPLOY_PATH}" "${tmp}/${DEPLOY_PATH}"
+
+  # --- mutation 9 (#7577) : paths-filters.yml devient plus étroit -----------
+  python3 - "${tmp}/${FILTERS_PATH}" <<'PYSELFTEST'
+import sys
+p = sys.argv[1]
+s = open(p, encoding='utf-8').read()
+old = "  - 'api/**'\n"
+assert old in s, "entrée api/** attendue dans la liste api"
+s = s.replace(old, '', 1)
+open(p, 'w', encoding='utf-8').write(s)
+PYSELFTEST
+  if ( check_filters_parity "${tmp}" ) 2>/dev/null; then
+    echo "::error::[deploy-gate --self-test] le rétrécissement de ${FILTERS_PATH} sous les déclencheurs requis (#7577, mutation 9) n'est pas détecté." >&2
+    return 1
+  fi
 
   echo "DEPLOY_GATE_GUARD_SELF_TEST_OK"
 }
@@ -369,7 +588,7 @@ main() {
     echo "::error::[deploy-gate] ${errors} invariant(s) rompu(s) — voir ci-dessus."
     exit 1
   fi
-  echo "✅  Verdict du gate de déploiement cohérent (api_changed, not-required, pending ≠ timeout, et le gate n'exige que ce que tests.yml/web-ci.yml peuvent produire)."
+  echo "✅  Verdict du gate de déploiement cohérent (api_changed, not-required, pending ≠ timeout, parité push ↔ pull_request, préfixes couverts, aucun relâchement — le gate n'exige que ce que tests.yml/web-ci.yml peuvent produire)."
 }
 
 if [[ "${1:-}" == "--self-test" ]]; then
