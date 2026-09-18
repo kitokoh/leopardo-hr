@@ -37,6 +37,8 @@ if (-not $changed) {
 }
 
 $requiredFiles = @(
+    # PILOTAGE.md a été archivé (#6698) puis déplacé de la racine vers
+    # docs/archive/ le 2026-09-18 (#7428) — la garde suit le fichier.
     "docs/archive/PILOTAGE.md",
     ".github/PULL_REQUEST_TEMPLATE.md",
     ".github/BRANCH_PROTECTION_REQUIRED.md",
@@ -90,7 +92,7 @@ Assert-NotContains ".github/BRANCH_PROTECTION_REQUIRED.md" 'CodeQL \(Backend\)' 
 Assert-Contains ".github/BRANCH_PROTECTION_REQUIRED.md" 'Backend Quality \(Pint \+ PHP Syntax \+ PHPStan/Larastan\)' 'Branch protection doc must reference the PHPStan/Larastan quality gate.'
 Pass "Branch protection guidance matches the active checks."
 
-$criticalPattern = '^(api/|mobile/|docs/dossierdeConception/|docs/GESTION_PROJET/|docs/REFERENTIEL_PRODUIT/|docs/notes/archive/|\.github/|tools/check-governance\.ps1)'
+$criticalPattern = '^(api/|mobile/|docs/dossierdeConception/|docs/GESTION_PROJET/|docs/REFERENTIEL_PRODUIT/|docs/notes/archive/|docs/archive/PILOTAGE\.md|\.github/|tools/check-governance\.ps1)'
 $requiresChangelog = $false
 foreach ($line in $changed) {
     if ($line -match $criticalPattern) {
