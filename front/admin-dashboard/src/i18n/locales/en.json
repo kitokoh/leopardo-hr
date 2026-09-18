@@ -6830,11 +6830,31 @@
     "ctaStart": "Set my password now",
     "ctaLater": "Later"
   },
+  "forms": {
+    "validation": {
+      "nameTooShort": "Name must be at least 2 characters",
+      "nameTooLong": "Name is too long",
+      "emailInvalid": "Invalid email",
+      "emailTooShort": "Email too short",
+      "emailTooLong": "Email too long",
+      "companyTooShort": "Company name must be at least 2 characters",
+      "companyTooLong": "Company name is too long",
+      "subjectTooShort": "Subject is too short",
+      "subjectTooLong": "Subject is too long",
+      "messageTooShort": "Message must be at least 10 characters",
+      "messageTooLong": "Message is too long",
+      "phoneInvalid": "Invalid phone number",
+      "employeesInvalid": "Select an employee range",
+      "dateFuture": "Date must be in the future"
+    }
+  },
   "setPassword": {
     "title": "Set your password",
     "subtitle": "You will use it for your next logins. This link is single-use and valid for 72 hours.",
     "passwordLabel": "New password",
     "confirmLabel": "Confirm password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "submit": "Set my password",
     "submitting": "Saving…",
     "success": "Password saved. You can now log in.",
@@ -6847,15 +6867,14 @@
     "errorWeakPassword": "Password too weak: at least 12 characters, including a number.",
     "errorMismatch": "The two passwords do not match.",
     "errorGeneric": "Could not save the password. Try again in a few moments.",
-    "backToLogin": "Back to login",
-    "showPassword": "Show password",
-    "hidePassword": "Hide password"
+    "backToLogin": "Back to login"
   },
   "loginCode": {
     "linkLabel": "Receive a login code",
     "title": "Log in with a code",
     "hint": "No password yet? Receive a single-use code by email.",
     "emailLabel": "Your email",
+    "emailPlaceholder": "manager@company.com",
     "sendCta": "Send the code",
     "sending": "Sending…",
     "sentInfo": "If an eligible account exists for this email, a code was just sent. It is valid for 10 minutes.",
@@ -6867,7 +6886,6 @@
     "errorInvalid": "Invalid or expired code. Request a new code.",
     "errorTooMany": "Too many attempts. Request a new code.",
     "errorPasswordRequired": "This account requires a password sign-in.",
-    "errorGeneric": "Could not log you in. Try again in a few moments.",
-    "emailPlaceholder": "manager@company.com"
+    "errorGeneric": "Could not log you in. Try again in a few moments."
   }
 }

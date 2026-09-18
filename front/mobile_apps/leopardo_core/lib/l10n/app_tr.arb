@@ -4291,5 +4291,19 @@
   "logincodeErrorinvalid": "Kod geçersiz veya süresi dolmuş. Yeni bir kod isteyin.",
   "logincodeErrortoomany": "Çok fazla deneme. Yeni bir kod isteyin.",
   "logincodeErrorpasswordrequired": "Bu hesap parola ile giriş gerektirir.",
-  "logincodeErrorgeneric": "Giriş yapılamadı. Birkaç dakika sonra tekrar deneyin."
+  "logincodeErrorgeneric": "Giriş yapılamadı. Birkaç dakika sonra tekrar deneyin.",
+  "formsValidationNametooshort": "Ad en az 2 karakter olmalıdır",
+  "formsValidationNametoolong": "Ad çok uzun",
+  "formsValidationEmailinvalid": "Geçersiz e-posta",
+  "formsValidationEmailtooshort": "E-posta çok kısa",
+  "formsValidationEmailtoolong": "E-posta çok uzun",
+  "formsValidationCompanytooshort": "Şirket adı en az 2 karakter olmalıdır",
+  "formsValidationCompanytoolong": "Şirket adı çok uzun",
+  "formsValidationSubjecttooshort": "Konu çok kısa",
+  "formsValidationSubjecttoolong": "Konu çok uzun",
+  "formsValidationMessagetooshort": "Mesaj en az 10 karakter olmalıdır",
+  "formsValidationMessagetoolong": "Mesaj çok uzun",
+  "formsValidationPhoneinvalid": "Geçersiz telefon numarası",
+  "formsValidationEmployeesinvalid": "Bir çalışan aralığı seçin",
+  "formsValidationDatefuture": "Tarih gelecekte olmalıdır"
 }

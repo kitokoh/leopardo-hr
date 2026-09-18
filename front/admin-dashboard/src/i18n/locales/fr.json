@@ -6836,11 +6836,31 @@
     "ctaStart": "Définir mon mot de passe maintenant",
     "ctaLater": "Plus tard"
   },
+  "forms": {
+    "validation": {
+      "nameTooShort": "Le nom doit contenir au moins 2 caractères",
+      "nameTooLong": "Le nom est trop long",
+      "emailInvalid": "Email invalide",
+      "emailTooShort": "Email trop court",
+      "emailTooLong": "Email trop long",
+      "companyTooShort": "Le nom de l'entreprise doit contenir au moins 2 caractères",
+      "companyTooLong": "Le nom de l'entreprise est trop long",
+      "subjectTooShort": "Le sujet est trop court",
+      "subjectTooLong": "Le sujet est trop long",
+      "messageTooShort": "Le message doit contenir au moins 10 caractères",
+      "messageTooLong": "Le message est trop long",
+      "phoneInvalid": "Numéro de téléphone invalide",
+      "employeesInvalid": "Sélectionnez une plage d'employés",
+      "dateFuture": "La date doit être dans le futur"
+    }
+  },
   "setPassword": {
     "title": "Définissez votre mot de passe",
     "subtitle": "Il servira à vos prochaines connexions. Ce lien est à usage unique et valable 72 heures.",
     "passwordLabel": "Nouveau mot de passe",
     "confirmLabel": "Confirmez le mot de passe",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
     "submit": "Définir mon mot de passe",
     "submitting": "Enregistrement…",
     "success": "Mot de passe enregistré. Vous pouvez maintenant vous connecter.",
@@ -6853,15 +6873,14 @@
     "errorWeakPassword": "Mot de passe trop faible : 12 caractères minimum, avec au moins un chiffre.",
     "errorMismatch": "Les deux mots de passe ne correspondent pas.",
     "errorGeneric": "Impossible d'enregistrer le mot de passe. Réessayez dans quelques instants.",
-    "backToLogin": "Retour à la connexion",
-    "showPassword": "Afficher le mot de passe",
-    "hidePassword": "Masquer le mot de passe"
+    "backToLogin": "Retour à la connexion"
   },
   "loginCode": {
     "linkLabel": "Recevoir un code de connexion",
     "title": "Connexion par code",
     "hint": "Pas encore de mot de passe ? Recevez un code à usage unique par e-mail.",
     "emailLabel": "Votre e-mail",
+    "emailPlaceholder": "manager@entreprise.com",
     "sendCta": "Envoyer le code",
     "sending": "Envoi…",
     "sentInfo": "Si un compte éligible existe pour cet e-mail, un code vient d'être envoyé. Il est valable 10 minutes.",
@@ -6873,7 +6892,6 @@
     "errorInvalid": "Code invalide ou expiré. Demandez un nouveau code.",
     "errorTooMany": "Trop de tentatives. Demandez un nouveau code.",
     "errorPasswordRequired": "Ce compte requiert une connexion par mot de passe.",
-    "errorGeneric": "Impossible de vous connecter. Réessayez dans quelques instants.",
-    "emailPlaceholder": "manager@entreprise.com"
+    "errorGeneric": "Impossible de vous connecter. Réessayez dans quelques instants."
   }
 }

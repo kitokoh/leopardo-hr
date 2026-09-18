@@ -4291,5 +4291,19 @@
   "logincodeErrorinvalid": "Code invalide ou expiré. Demandez un nouveau code.",
   "logincodeErrortoomany": "Trop de tentatives. Demandez un nouveau code.",
   "logincodeErrorpasswordrequired": "Ce compte requiert une connexion par mot de passe.",
-  "logincodeErrorgeneric": "Impossible de vous connecter. Réessayez dans quelques instants."
+  "logincodeErrorgeneric": "Impossible de vous connecter. Réessayez dans quelques instants.",
+  "formsValidationNametooshort": "Le nom doit contenir au moins 2 caractères",
+  "formsValidationNametoolong": "Le nom est trop long",
+  "formsValidationEmailinvalid": "Email invalide",
+  "formsValidationEmailtooshort": "Email trop court",
+  "formsValidationEmailtoolong": "Email trop long",
+  "formsValidationCompanytooshort": "Le nom de l'entreprise doit contenir au moins 2 caractères",
+  "formsValidationCompanytoolong": "Le nom de l'entreprise est trop long",
+  "formsValidationSubjecttooshort": "Le sujet est trop court",
+  "formsValidationSubjecttoolong": "Le sujet est trop long",
+  "formsValidationMessagetooshort": "Le message doit contenir au moins 10 caractères",
+  "formsValidationMessagetoolong": "Le message est trop long",
+  "formsValidationPhoneinvalid": "Numéro de téléphone invalide",
+  "formsValidationEmployeesinvalid": "Sélectionnez une plage d'employés",
+  "formsValidationDatefuture": "La date doit être dans le futur"
 }

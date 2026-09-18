@@ -6969,11 +6969,31 @@
     "ctaStart": "Şifremi şimdi belirle",
     "ctaLater": "Daha sonra"
   },
+  "forms": {
+    "validation": {
+      "nameTooShort": "Ad en az 2 karakter olmalıdır",
+      "nameTooLong": "Ad çok uzun",
+      "emailInvalid": "Geçersiz e-posta",
+      "emailTooShort": "E-posta çok kısa",
+      "emailTooLong": "E-posta çok uzun",
+      "companyTooShort": "Şirket adı en az 2 karakter olmalıdır",
+      "companyTooLong": "Şirket adı çok uzun",
+      "subjectTooShort": "Konu çok kısa",
+      "subjectTooLong": "Konu çok uzun",
+      "messageTooShort": "Mesaj en az 10 karakter olmalıdır",
+      "messageTooLong": "Mesaj çok uzun",
+      "phoneInvalid": "Geçersiz telefon numarası",
+      "employeesInvalid": "Bir çalışan aralığı seçin",
+      "dateFuture": "Tarih gelecekte olmalıdır"
+    }
+  },
   "setPassword": {
     "title": "Şifrenizi belirleyin",
     "subtitle": "Sonraki girişlerinizde kullanacaksınız. Bu bağlantı tek kullanımlıktır ve 72 saat geçerlidir.",
     "passwordLabel": "Yeni şifre",
     "confirmLabel": "Şifreyi onaylayın",
+    "showPassword": "Şifreyi göster",
+    "hidePassword": "Şifreyi gizle",
     "submit": "Şifremi belirle",
     "submitting": "Kaydediliyor…",
     "success": "Şifre kaydedildi. Artık giriş yapabilirsiniz.",
@@ -6986,15 +7006,14 @@
     "errorWeakPassword": "Şifre çok zayıf: en az 12 karakter ve en az bir rakam.",
     "errorMismatch": "İki şifre eşleşmiyor.",
     "errorGeneric": "Şifre kaydedilemedi. Birkaç dakika sonra tekrar deneyin.",
-    "backToLogin": "Girişe dön",
-    "showPassword": "Şifreyi göster",
-    "hidePassword": "Şifreyi gizle"
+    "backToLogin": "Girişe dön"
   },
   "loginCode": {
     "linkLabel": "Giriş kodu al",
     "title": "Kodla giriş",
     "hint": "Henüz şifreniz yok mu? E-postayla tek kullanımlık bir kod alın.",
     "emailLabel": "E-postanız",
+    "emailPlaceholder": "yonetici@sirket.com",
     "sendCta": "Kodu gönder",
     "sending": "Gönderiliyor…",
     "sentInfo": "Bu e-posta için uygun bir hesap varsa az önce bir kod gönderildi. 10 dakika geçerlidir.",
@@ -7006,7 +7025,6 @@
     "errorInvalid": "Kod geçersiz veya süresi dolmuş. Yeni bir kod isteyin.",
     "errorTooMany": "Çok fazla deneme. Yeni bir kod isteyin.",
     "errorPasswordRequired": "Bu hesap parola ile giriş gerektirir.",
-    "errorGeneric": "Giriş yapılamadı. Birkaç dakika sonra tekrar deneyin.",
-    "emailPlaceholder": "yonetici@sirket.com"
+    "errorGeneric": "Giriş yapılamadı. Birkaç dakika sonra tekrar deneyin."
   }
 }
