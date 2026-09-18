@@ -1185,6 +1185,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/auth/login", options);
     },
 
+    /** Demander un code de connexion a usage unique (compte sans mot de passe) */
+    postAuthLoginCodeRequest(options = {}) {
+      return request("POST", "/auth/login-code/request", options);
+    },
+
+    /** Verifier le code de connexion et ouvrir une session */
+    postAuthLoginCodeVerify(options = {}) {
+      return request("POST", "/auth/login-code/verify", options);
+    },
+
     /** Deconnexion employee */
     postAuthLogout(options = {}) {
       return request("POST", "/auth/logout", options);

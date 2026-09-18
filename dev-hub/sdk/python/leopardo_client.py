@@ -968,6 +968,14 @@ class LeopardoClient:
         """Connexion employee"""
         return self.request("POST", "/auth/login", **kwargs)
 
+    def post_auth_login_code_request(self, **kwargs):
+        """Demander un code de connexion a usage unique (compte sans mot de passe)"""
+        return self.request("POST", "/auth/login-code/request", **kwargs)
+
+    def post_auth_login_code_verify(self, **kwargs):
+        """Verifier le code de connexion et ouvrir une session"""
+        return self.request("POST", "/auth/login-code/verify", **kwargs)
+
     def post_auth_logout(self, **kwargs):
         """Deconnexion employee"""
         return self.request("POST", "/auth/logout", **kwargs)
