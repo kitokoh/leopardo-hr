@@ -63,23 +63,33 @@ test.describe('Marketing funnel preview', () => {
     const timestamp = Date.now();
     const email = `quick.trial.${timestamp}@example.com`;
 
+    // #7618 — jamais `networkidle` sur la home : la vidéo produit
+    // (`product-demo.webm`) garde une connexion de streaming ouverte (206)
+    // que Chromium met en pause → l'idle n'arrive jamais (timeout 90 s
+    // constaté 4× en CI, toutes les requêtes pourtant terminées en ~1,6 s).
+    // Les attentes déterministes qui suivent (visibilité/activation du
+    // formulaire) portent la synchronisation.
     await page.goto('/?lang=en&utm_source=e2e_quick_trial', {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
     });
 
     const quickTrialForm = page.locator('section form').first();
-    await quickTrialForm.locator('input[type="email"]').fill(email);
-
     const submitButton = quickTrialForm.locator('button[type="submit"]');
     await expect(submitButton).toBeVisible();
-    await expect(submitButton).toBeEnabled();
 
-    const [signupResponse] = await Promise.all([
-      page.waitForResponse((response) => response.url().includes('/api/forms/signup'), { timeout: 30000 }),
-      submitButton.click(),
-    ]);
-
-    expect(signupResponse.status()).toBe(201);
+    // Sans `networkidle`, fill/clic peuvent précéder l'hydratation React :
+    // l'input est CONTRÔLÉ, un fill pré-hydratation laisse l'état React vide
+    // et le submit échoue en validation locale sans jamais émettre de fetch.
+    // On rejoue donc fill + clic ensemble jusqu'à observer la réponse (la
+    // route est mockée, un double POST est sans effet).
+    await expect(async () => {
+      await quickTrialForm.locator('input[type="email"]').fill(email);
+      const [signupResponse] = await Promise.all([
+        page.waitForResponse((response) => response.url().includes('/api/forms/signup'), { timeout: 5000 }),
+        submitButton.click(),
+      ]);
+      expect(signupResponse.status()).toBe(201);
+    }).toPass({ timeout: 30000 });
     await expect(page.locator('body')).toContainText(/request received|demande recue|24 business hours|24h/i);
   });
 
@@ -88,7 +98,7 @@ test.describe('Marketing funnel preview', () => {
     const email = `trial.lead.${timestamp}@example.com`;
 
     await page.goto('/signup?lang=en&utm_source=e2e&plan=pilot', {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
     });
 
     // QA onboarding 2026-09-14 : la page /signup n'affiche plus de hero
@@ -100,13 +110,10 @@ test.describe('Marketing funnel preview', () => {
     // métier » avait déjà été retiré (#7249).
     const signupForm = page.locator('main form').first();
     await expect(signupForm.getByLabel(/email professionnel|email/i)).toBeVisible();
-    await signupForm.getByLabel(/email professionnel|email/i).fill(email);
-    await signupForm.getByLabel(/entreprise|company/i).fill('Leopardo Trial Co');
     // Le tunnel ne demande plus le rôle (le créateur EST le fondateur), ni la
     // taille d'équipe, ni le téléphone (l'e-mail est vérifié par code), ni le
     // pays (résolu côté serveur par géolocalisation). Seuls e-mail, entreprise
     // et CGU restent.
-    await signupForm.locator('input[type="checkbox"]').check();
     const submitButton = signupForm.locator('button[type="submit"]');
     await expect(submitButton).toBeVisible();
 
@@ -119,42 +126,52 @@ test.describe('Marketing funnel preview', () => {
       }
     });
 
-    const [signupResponse] = await Promise.all([
-      page.waitForResponse((response) => response.url().includes('/api/forms/signup'), { timeout: 30000 }),
-      submitButton.click(),
-    ]);
-
-    expect(signupResponse.status()).toBe(201);
+    // Champs contrôlés : rejouer les fills avec le clic (cf. test du hero).
+    await expect(async () => {
+      await signupForm.getByLabel(/email professionnel|email/i).fill(email);
+      await signupForm.getByLabel(/entreprise|company/i).fill('Leopardo Trial Co');
+      await signupForm.locator('input[type="checkbox"]').check();
+      const [signupResponse] = await Promise.all([
+        page.waitForResponse((response) => response.url().includes('/api/forms/signup'), { timeout: 5000 }),
+        submitButton.click(),
+      ]);
+      expect(signupResponse.status()).toBe(201);
+    }).toPass({ timeout: 30000 });
     await expect(page.locator('body')).toContainText(/demande d'essai|trial request|24h|email/i);
 
-    // #7249 — le PROFIL reste déclaré à l'API ; les outils et le métier ne sont
-    // plus demandés dans le tunnel (le client les choisit ensuite dans
-    // « Modules & plan »), donc le payload ne porte plus `modules`.
+    // #7489 — le profil (entreprise/indépendant) n'est PLUS déclaré par le
+    // tunnel : `company_type` est absent du payload (nullable côté API, la
+    // première question de l'entretien de préparation #7493 fera autorité).
+    // Cette assertion verrouille le contrat dans les deux sens : le payload
+    // existe, et il ne porte ni profil ni outils.
     const payload = JSON.parse(signupRequests[0]?.postData() ?? '{}');
-    expect(payload.company_type).toBe('company');
+    expect(payload.email).toBe(email);
+    expect(payload.company_type).toBeUndefined();
+    expect(payload.modules).toBeUndefined();
   });
 
   test('captures a localized demo request without leaving the vitrine', async ({ page }) => {
     const timestamp = Date.now();
     const email = `fatima.benali.${timestamp}@example.com`;
 
-    await page.goto('/demo?lang=fr&utm_source=e2e', { waitUntil: 'networkidle' });
+    await page.goto('/demo?lang=fr&utm_source=e2e', { waitUntil: 'domcontentloaded' });
 
     const demoForm = page.locator('#demo-form form').first();
-    await demoForm.locator('input[name="name"]').fill('Fatima Benali');
-    await demoForm.locator('input[name="email"]').fill(email);
-    await demoForm.locator('input[name="company"]').fill('Atlas RH');
-    await demoForm.locator('input[name="phone"]').fill('+213555111222');
-    await demoForm.locator('select[name="employees"]').selectOption('51-200');
-    await demoForm.locator('textarea[name="message"]').fill('Nous voulons qualifier Leopardo RH pour une equipe multi-sites.');
-    await demoForm.locator('input[name="name"]').fill('Fatima Benali');
-    await expect(demoForm.locator('input[name="name"]')).toHaveValue('Fatima Benali');
-    const [demoResponse] = await Promise.all([
-      page.waitForResponse((response) => response.url().includes('/api/forms/demo')),
-      demoForm.locator('button[type="submit"]').click(),
-    ]);
-
-    expect(demoResponse.status()).toBe(201);
+    // Champs contrôlés : rejouer les fills avec le clic (cf. test du hero).
+    await expect(async () => {
+      await demoForm.locator('input[name="name"]').fill('Fatima Benali');
+      await demoForm.locator('input[name="email"]').fill(email);
+      await demoForm.locator('input[name="company"]').fill('Atlas RH');
+      await demoForm.locator('input[name="phone"]').fill('+213555111222');
+      await demoForm.locator('select[name="employees"]').selectOption('51-200');
+      await demoForm.locator('textarea[name="message"]').fill('Nous voulons qualifier Leopardo RH pour une equipe multi-sites.');
+      await expect(demoForm.locator('input[name="name"]')).toHaveValue('Fatima Benali');
+      const [demoResponse] = await Promise.all([
+        page.waitForResponse((response) => response.url().includes('/api/forms/demo'), { timeout: 5000 }),
+        demoForm.locator('button[type="submit"]').click(),
+      ]);
+      expect(demoResponse.status()).toBe(201);
+    }).toPass({ timeout: 30000 });
     await expect(page.locator('body')).toContainText(/Demande envoyee|Request sent|Talep gonderildi/i);
   });
 

@@ -1,8 +1,12 @@
 # Core Features
 
+> **Référence** : catégorie **suite métier** et promesses autorisées/interdites dans
+> `docs/REFERENTIEL_PRODUIT/MESSAGE.md` (#7428). Les « métriques de succès » de ce document
+> sont des **objectifs cibles internes**, pas des résultats mesurés — ne pas les publier tels quels.
+
 ## Vue d'Ensemble
 
-Leopardo HR concentre **8 fonctionnalités cœur** qui forment un écosystème cohérent et interdépendant. Chaque feature est conçue pour être :
+Leopardo concentre **8 fonctionnalités cœur** qui forment un écosystème cohérent et interdépendant. Chaque feature est conçue pour être :
 
 - ✅ **Mobile-first** : Interface optimisée smartphone
 - ✅ **Offline-capable** : Fonctionne sans connexion permanente
@@ -61,15 +65,15 @@ Système de pointage biométrique et géolocalisé pour tracer avec précision l
 
 ### Description
 
-Moteur de paie automatisé, conforme aux législations locales, supportant multi-pays et multi-devises.
+Moteur de préparation de paie automatisé, multi-pays et multi-devises. Les règles paie par pays sont en statut **pilote** : le produit fournit calculs, contrôles et **export paie**, sans promesse de conformité légale validée.
 
 ### Fonctionnalités Clés
 
 | Feature | Description | Valeur |
 |---------|-------------|--------|
-| **Calcul automatique** | Heures normales, supp, nuit, weekend | Zéro erreur manuelle |
-| **Conformité légale** | SMIC, cotisations, impôts à jour | Risque légal éliminé |
-| **Multi-pays** | Sénégal, Côte d'Ivoire, France, Turquie, etc. | Scalabilité régionale |
+| **Calcul automatique** | Heures normales, supp, nuit, weekend | Réduction des erreurs manuelles |
+| **Catalogue de règles pays** | Barèmes et cotisations par pays — statut pilote, à valider selon le contexte client | Base structurée, transparente |
+| **Multi-pays** | Sénégal, Côte d'Ivoire, France, Turquie, etc. (21 pays référencés au 2026-09-09) | Scalabilité régionale |
 | **Variables intégrés** | Primes, commissions, pourboires | Flexibilité métier |
 | **Absences déduites** | Congés, maladies, retards automatiques | Précision garantie |
 | **Paiement intégré** | Virement bancaire + mobile money | Distribution fluide |
@@ -97,7 +101,7 @@ Moteur de paie automatisé, conforme aux législations locales, supportant multi
 ### Métriques de Succès
 
 - ⚡ Temps de calcul de paie : < 30 secondes pour 100 employés
-- ✅ Taux de conformité légale : 100%
+- ✅ Couverture des contrôles de préparation de paie : objectif 100 % des cas configurés
 - 🔄 Taux d'erreur corrigée : < 0.1%
 - 📄 Taux d'adoption fiches digitales : > 90%
 
@@ -434,4 +438,4 @@ Les 8 core features de Leopardo ne sont pas des produits isolés. Elles forment 
 
 > **La somme est greater than the parts.**
 
-C'est cette synergie qui fait de Leopardo un **Company OS**, pas un simple assemblage de fonctionnalités.
+C'est cette synergie qui fait de Leopardo une **suite métier**, pas un simple assemblage de fonctionnalités.

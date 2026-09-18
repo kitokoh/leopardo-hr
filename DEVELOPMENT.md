@@ -1,4 +1,4 @@
-# Development Guide — Leopardo RH
+# Development Guide — Leopardo
 
 Guide pour les nouveaux contributeurs. Pour les regles agent/CI, voir `AGENTS.md`.
 
@@ -122,7 +122,7 @@ php artisan test --filter=PayrollControllerTest
 ```
 
 > **Pourquoi `leopardo:migrate` et pas `artisan migrate` ?**
-> Leopardo RH utilise un modele multi-tenant hybride a deux schemas PostgreSQL : `public`
+> Leopardo utilise un modele multi-tenant hybride a deux schemas PostgreSQL : `public`
 > (tables partagees) et `shared_tenants` (tables metier : employes, contrats, paie, presence...).
 > `artisan migrate` seul ne lit que `database/migrations/` a la racine et **ne cree jamais le
 > schema `shared_tenants`**. La commande custom `leopardo:migrate` (voir `api/routes/console.php`)
@@ -232,7 +232,7 @@ GitHub Actions workflows:
 | Workflow | Trigger | Checks |
 |----------|---------|--------|
 | `tests.yml` | `api/**` changes | PHPUnit/Pest, PHPStan, Pint, sécurité backend (pas de job front — admin-dashboard couvert par `web-ci.yml`) |
-| `coverage-gate.yml` | `api/**` changes | Coverage >= threshold |
+| `coverage-gate.yml` | `api/**` changes | Coverage >= threshold — informatif, **non requis au merge** depuis #6928 (reste exigé à la release, voir `BRANCH_PROTECTION_REQUIRED.md`) |
 | `mobile-apps-ci.yml` | `front/mobile_apps/**` changes | Flutter analyze + test + APK |
 | `web-ci.yml` | `front/admin-dashboard/**` changes | ESLint + Vite build |
 | `web-marketing-ci.yml` | `front/web/**` changes | Lint + Next.js build |

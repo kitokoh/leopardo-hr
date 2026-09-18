@@ -1,6 +1,10 @@
-# 📑 PILOTAGE — LEOPARDO RH
+> 🗄️ **DOCUMENT ARCHIVÉ — NE PAS UTILISER COMME SOURCE DE VÉRITÉ.**
+> Archivé le 2026-09-02 (issue #6698), déplacé de la racine vers `docs/archive/` le 2026-09-18.
+> Contenu figé, conservé uniquement pour traçabilité historique.
+
+# 📑 PILOTAGE — LEOPARDO RH (ARCHIVÉ)
 # PROGRAM_VERSION = 4.24.0 | 2026-08-11
-# CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
+# CE FICHIER ÉTAIT PRÉSENTÉ COMME LA SOURCE DE VÉRITÉ OPÉRATIONNELLE — CE N'EST PLUS LE CAS (#6698)
 
 > ⚠️ **ARCHIVÉ (issue #6698, 2026-09-02)** — ce document n'est PLUS la source de
 > vérité opérationnelle. La gestion de projet active se fait **exclusivement via
@@ -16,7 +20,7 @@
 
 # 📑 PILOTAGE — LEOPARDO RH
 # PROGRAM_VERSION = 4.24.0 | 2026-08-11
-# CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
+# (mention historique retirée : ce fichier n'est plus une source de vérité — archivé, #6698)
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
 > ⚠️ **Avertissement — divergence scope vs code livré**
@@ -241,7 +245,7 @@ Multitenancy  : Shared schema PostgreSQL (shared_tenants)
 | 1 | `PILOTAGE.md` (ce fichier) | État projet, priorités, règles |
 | 2 | `AGENTS.md` | Règles opérationnelles agents (156 KB) |
 | 3 | `CHANGELOG.md` | Historique des changements (1,8 MB — à archiver selon règle < 150 Ko, issue #1729) |
-| 4 | `docs/GOTO_MARKET/LEOPARDO_STRATEGIC_ANALYSIS.md` | Analyse stratégique complète |
+| 4 | `docs/archive/LEOPARDO_STRATEGIC_ANALYSIS.md` | Analyse stratégique complète |
 | 5 | `docs/CONTEXT/` | Contexte produit/technique/opérationnel |
 | 6 | `docs/archive/PLAN_ACTION/` | 72 plans d'action livrés |
 | 7 | `docs/GOTO_MARKET/` | Stratégie commerciale |
@@ -257,7 +261,7 @@ Multitenancy  : Shared schema PostgreSQL (shared_tenants)
 
 | Sujet | Source de vérité | Notes |
 |---|---|---|
-| Priorités/phase courante, règles opérationnelles | `PILOTAGE.md` (ce fichier) | Ne remplace jamais l'état réel du code pour le scope/tenancy |
+| Priorités/phase courante, règles opérationnelles | GitHub Issues/Projects + `AGENTS.md` (avant archivage #6698 : ce fichier) | Ne remplace jamais l'état réel du code pour le scope/tenancy |
 | **Scope réel livré** (dépasse le MVP verrouillé décrit ci-dessous) | `docs/REFERENTIEL_PRODUIT/ROADMAP.md` + `docs/REFERENTIEL_PRODUIT/AUDIT_v2_v3_COMPLIANCE.md` | À consulter en priorité sur la section « SCOPE MVP VERROUILLÉ » de ce fichier, qui décrit un périmètre initial déjà dépassé |
 | Architecture backend (modules DDD, conventions, TODOs) | `api/ARCHITECTURE.md` | |
 | Architecture système/monorepo | `docs/architecture/ARCHITECTURE.md` + `ARCHITECTURE.md` (racine) | |
@@ -266,4 +270,4 @@ Multitenancy  : Shared schema PostgreSQL (shared_tenants)
 | Rapports de validation/QA datés | `docs/validation/*_YYYY_MM_DD.md` | Snapshots figés, jamais mis à jour — voir `docs/validation/README.md` |
 | Contrat API | `api/openapi.yaml` | Spec canonique (référencée par `dev-hub/sdk/MANIFEST.json`). Le second fichier `openapi/openapi.yaml` (racine) qui divergeait a été supprimé (voir `chore(monorepo): fix duplicated mobile CI, dedupe OpenAPI spec...` #840) ; `api/openapi.yaml` est désormais la seule spec présente dans le repo. |
 
-**Règle** : en cas de contradiction entre `PILOTAGE.md` et un document listé ci-dessus sur son sujet propre, le document spécialisé prime pour l'état réel — `PILOTAGE.md` reste la référence pour les priorités/règles opérationnelles.
+**Règle** (historique, avant archivage #6698) : en cas de contradiction entre `PILOTAGE.md` et un document listé ci-dessus sur son sujet propre, le document spécialisé primait pour l'état réel. Depuis l'archivage, les priorités et règles opérationnelles vivent dans GitHub Issues/Projects et `AGENTS.md` — ce fichier ne fait plus foi sur aucun sujet.
