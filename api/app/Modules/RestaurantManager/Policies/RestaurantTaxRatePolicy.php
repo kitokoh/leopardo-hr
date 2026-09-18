@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTaxRate;
+use App\Modules\RestaurantManager\Policies\Concerns\ChecksRestaurantBranchAccess;
 
 /**
  * RESTO-303 (#6184) — Policy des taux de TVA RestaurantManager.
@@ -17,6 +18,8 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantTaxRate;
  */
 class RestaurantTaxRatePolicy
 {
+    use ChecksRestaurantBranchAccess;
+
     public function viewAny(Employee $actor): bool
     {
         return true;
@@ -27,14 +30,15 @@ class RestaurantTaxRatePolicy
         return $taxRate->company_id === $actor->company_id;
     }
 
-    public function create(Employee $actor): bool
+    public function create(Employee $actor, int|string|null $branchId = null): bool
     {
-        return $actor->hasManagerRole('principal', 'rh');
+        return $this->canManageBranchResource($actor, $branchId);
     }
 
     public function update(Employee $actor, RestaurantTaxRate $taxRate): bool
     {
-        return $this->create($actor) && $taxRate->company_id === $actor->company_id;
+        return $taxRate->company_id === $actor->company_id
+            && $this->canManageBranchResource($actor, null);
     }
 
     public function delete(Employee $actor, RestaurantTaxRate $taxRate): bool

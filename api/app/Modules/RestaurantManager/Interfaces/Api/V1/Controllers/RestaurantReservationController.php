@@ -10,6 +10,7 @@ use App\Modules\RestaurantManager\Application\Actions\ReservationAction;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantReservationRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Enums\ReservationStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantReservation;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\Concerns\ScopesRestaurantBranchListings;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantReservationRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\UpdateRestaurantReservationRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantReservationResource;
@@ -27,6 +28,8 @@ use Illuminate\Support\Carbon;
  */
 class RestaurantReservationController extends Controller
 {
+    use ScopesRestaurantBranchListings;
+
     public function __construct(
         private readonly ReservationAction $action,
         private readonly RestaurantReservationRepositoryInterface $reservations,
@@ -43,7 +46,7 @@ class RestaurantReservationController extends Controller
 
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
-        $reservations = RestaurantReservation::query()
+        $reservations = $this->scopeToAccessibleBranches($actor, RestaurantReservation::query())
             ->when($request->has('branch_id'), fn ($query) => $query->where('branch_id', (int) $request->query('branch_id')))
             ->when($request->has('status'), fn ($query) => $query->where('status', (string) $request->query('status')))
             ->when($request->has('date'), fn ($query) => $query->whereDate('reserved_at', (string) $request->query('date')))
@@ -58,7 +61,7 @@ class RestaurantReservationController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('create', RestaurantReservation::class)) {
+        if ($actor->cannot('create', [RestaurantReservation::class, $request->validated()['branch_id'] ?? null])) {
             abort(403);
         }
 
@@ -112,6 +115,12 @@ class RestaurantReservationController extends Controller
 
         if ($actor->company_id !== $restaurantReservation->company_id) {
             abort(404);
+        }
+
+        // #7599 — lecture ressource-scopée : un employé sans assignation ne
+        // lit plus les données métier dès que le scoping est actif.
+        if ($actor->cannot('view', $restaurantReservation)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
         }
 
         return (new RestaurantReservationResource($restaurantReservation))->response();

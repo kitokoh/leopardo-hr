@@ -38,7 +38,7 @@ class RestaurantTableSessionController extends Controller
             abort(404);
         }
 
-        if ($actor->cannot('create', RestaurantTableSession::class)) {
+        if ($actor->cannot('create', [RestaurantTableSession::class, $restaurantTable->branch_id])) {
             abort(403);
         }
 

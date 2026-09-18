@@ -36,7 +36,7 @@ class RestaurantStockDecrementTest extends TestCase
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'manager',
-            'manager_role' => 'server',
+            'manager_role' => 'principal',
         ]);
 
         Sanctum::actingAs($employee);
@@ -201,13 +201,11 @@ class RestaurantStockDecrementTest extends TestCase
         });
     }
 
-
     private function addItemAndSubmit(RestaurantOrder $order, int $productId): void
     {
         $this->postJson("/api/v1/restaurant/orders/{$order->id}/items", ['product_id' => $productId, 'quantity' => 1])->assertStatus(201);
         $this->postJson("/api/v1/restaurant/orders/{$order->id}/submit")->assertStatus(200);
     }
-
 
     public function test_confirm_decrements_stock_and_traces_movement(): void
     {
@@ -242,7 +240,6 @@ class RestaurantStockDecrementTest extends TestCase
         $this->assertSame(-2.0, (float) $movement->quantity_delta);
     }
 
-
     public function test_two_orders_on_last_stock_only_first_passes_and_stock_never_negative(): void
     {
         /** @var Company $company */
@@ -252,7 +249,7 @@ class RestaurantStockDecrementTest extends TestCase
 
         // Une seule branche, un seul ingrédient, stock unique de 1.0 : les deux
         // commandes consomment LE MÊME stock (dernier exemplaire).
-        $fixture = app(TenantManager::class)->withinTenant($company, function () use ($company): array {
+        $fixture = app(TenantManager::class)->withinTenant($company, function (): array {
             $branch = RestaurantBranch::factory()->create();
             $product = RestaurantProduct::factory()->create([
                 'branch_id' => $branch->id,
@@ -324,7 +321,6 @@ class RestaurantStockDecrementTest extends TestCase
         $this->assertSame(1, $movementCount);
     }
 
-
     public function test_confirm_without_stock_level_blocked_when_policy_block(): void
     {
         /** @var Company $company */
@@ -332,7 +328,7 @@ class RestaurantStockDecrementTest extends TestCase
         $this->activateRestaurant($company);
         $this->server($company);
 
-        $fixture = app(TenantManager::class)->withinTenant($company, function () use ($company): array {
+        $fixture = app(TenantManager::class)->withinTenant($company, function (): array {
             $branch = RestaurantBranch::factory()->create();
             $product = RestaurantProduct::factory()->create([
                 'branch_id' => $branch->id,

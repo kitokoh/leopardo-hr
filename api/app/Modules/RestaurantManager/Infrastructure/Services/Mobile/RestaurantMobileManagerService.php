@@ -36,7 +36,10 @@ final class RestaurantMobileManagerService
         $start = now()->startOfDay();
         $currency = null;
 
+        $branchIds = $actor->accessibleResourceIds('restaurant_branch');
+
         $paidOrders = RestaurantOrder::query()
+            ->when($branchIds !== null, fn ($query) => $query->whereIn('branch_id', $branchIds ?? []))
             ->whereIn('status', [OrderStatus::PAID->value, OrderStatus::CLOSED->value])
             ->where('updated_at', '>=', $start)
             ->get();
@@ -51,6 +54,7 @@ final class RestaurantMobileManagerService
         $avgBasket = $ordersCount > 0 ? (int) round($revenue / $ordersCount) : 0;
 
         $tablesOpened = RestaurantTableSession::query()
+            ->when($branchIds !== null, fn ($query) => $query->whereIn('branch_id', $branchIds ?? []))
             ->where('opened_at', '>=', $start)
             ->count();
 
@@ -71,7 +75,10 @@ final class RestaurantMobileManagerService
      */
     public function stockAlerts(Employee $actor): array
     {
+        $branchIds = $actor->accessibleResourceIds('restaurant_branch');
+
         return RestaurantStockLevel::query()
+            ->when($branchIds !== null, fn ($query) => $query->whereIn('branch_id', $branchIds ?? []))
             ->with(['ingredient'])
             ->whereNotNull('alert_threshold')
             ->whereColumn('quantity', '<=', 'alert_threshold')
@@ -90,7 +97,10 @@ final class RestaurantMobileManagerService
 
     public function currentPosSession(Employee $actor): ?RestaurantPosSession
     {
+        $branchIds = $actor->accessibleResourceIds('restaurant_branch');
+
         return RestaurantPosSession::query()
+            ->when($branchIds !== null, fn ($query) => $query->whereIn('branch_id', $branchIds ?? []))
             ->where('status', PosSessionStatus::OPEN->value)
             ->orderBy('opened_at')
             ->first();

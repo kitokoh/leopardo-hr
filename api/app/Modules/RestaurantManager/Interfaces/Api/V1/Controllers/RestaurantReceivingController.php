@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantReceiving;
 use App\Modules\RestaurantManager\Infrastructure\Services\ReceivingService;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\Concerns\ScopesRestaurantBranchListings;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantReceivingRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantReceivingResource;
 use Illuminate\Http\JsonResponse;
@@ -24,6 +25,8 @@ use Illuminate\Http\Request;
  */
 class RestaurantReceivingController extends Controller
 {
+    use ScopesRestaurantBranchListings;
+
     public function __construct(private readonly ReceivingService $receiving) {}
 
     public function index(Request $request): JsonResponse
@@ -37,7 +40,7 @@ class RestaurantReceivingController extends Controller
 
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
-        $receivings = RestaurantReceiving::query()
+        $receivings = $this->scopeToAccessibleBranches($actor, RestaurantReceiving::query())
             ->when($request->has('branch_id'), fn ($query) => $query->where('branch_id', (int) $request->query('branch_id')))
             ->when($request->has('purchase_order_id'), fn ($query) => $query->where('purchase_order_id', (int) $request->query('purchase_order_id')))
             ->orderByDesc('received_at')
@@ -51,7 +54,7 @@ class RestaurantReceivingController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('create', RestaurantReceiving::class)) {
+        if ($actor->cannot('create', [RestaurantReceiving::class, $request->validated()['branch_id'] ?? null])) {
             abort(403);
         }
 

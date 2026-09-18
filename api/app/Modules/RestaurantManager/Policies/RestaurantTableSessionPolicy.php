@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTableSession;
+use App\Modules\RestaurantManager\Policies\Concerns\ChecksRestaurantBranchAccess;
 
 /**
  * RESTO-409 (#6196) — Policy des sessions d'occupation de table.
@@ -16,6 +17,8 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantTableSession;
  */
 class RestaurantTableSessionPolicy
 {
+    use ChecksRestaurantBranchAccess;
+
     public function viewAny(Employee $actor): bool
     {
         return true;
@@ -23,16 +26,18 @@ class RestaurantTableSessionPolicy
 
     public function view(Employee $actor, RestaurantTableSession $session): bool
     {
-        return $session->company_id === $actor->company_id;
+        return $session->company_id === $actor->company_id
+            && $this->canViewBranchResource($actor, $session->branch_id);
     }
 
-    public function create(Employee $actor): bool
+    public function create(Employee $actor, int|string|null $branchId = null): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager', 'server');
+        return $this->canOperateBranchResource($actor, $branchId);
     }
 
     public function close(Employee $actor, RestaurantTableSession $session): bool
     {
-        return $this->create($actor) && $session->company_id === $actor->company_id;
+        return $session->company_id === $actor->company_id
+            && $this->canOperateBranchResource($actor, $session->branch_id);
     }
 }

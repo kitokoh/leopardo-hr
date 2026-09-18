@@ -7,6 +7,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\Concerns\ScopesRestaurantBranchListings;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantStockLevelRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\UpdateRestaurantStockLevelRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantStockLevelResource;
@@ -21,6 +22,8 @@ use Illuminate\Http\Request;
  */
 class RestaurantStockLevelController extends Controller
 {
+    use ScopesRestaurantBranchListings;
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -32,7 +35,7 @@ class RestaurantStockLevelController extends Controller
 
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
-        $levels = RestaurantStockLevel::query()
+        $levels = $this->scopeToAccessibleBranches($actor, RestaurantStockLevel::query())
             ->when($request->query('branch_id'), fn ($query, $branchId) => $query->where('branch_id', (int) $branchId))
             ->when($request->query('ingredient_id'), fn ($query, $ingredientId) => $query->where('ingredient_id', (int) $ingredientId))
             ->when($request->query('low_only') === 'true', fn ($query) => $query->whereNotNull('alert_threshold')->whereColumn('quantity', '<=', 'alert_threshold'))
@@ -47,7 +50,7 @@ class RestaurantStockLevelController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('create', RestaurantStockLevel::class)) {
+        if ($actor->cannot('create', [RestaurantStockLevel::class, $request->validated()['branch_id'] ?? null])) {
             abort(403);
         }
 
@@ -63,6 +66,12 @@ class RestaurantStockLevelController extends Controller
 
         if ($actor->company_id !== $restaurantStockLevel->company_id) {
             abort(404);
+        }
+
+        // #7599 — lecture ressource-scopée : un employé sans assignation ne
+        // lit plus les données métier dès que le scoping est actif.
+        if ($actor->cannot('view', $restaurantStockLevel)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
         }
 
         return (new RestaurantStockLevelResource($restaurantStockLevel))->response();

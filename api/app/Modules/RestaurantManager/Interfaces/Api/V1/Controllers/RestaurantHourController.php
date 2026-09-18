@@ -7,6 +7,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantHour;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\Concerns\ScopesRestaurantBranchListings;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantHourRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\UpdateRestaurantHourRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantHourResource;
@@ -22,6 +23,8 @@ use Illuminate\Http\Request;
  */
 class RestaurantHourController extends Controller
 {
+    use ScopesRestaurantBranchListings;
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -33,7 +36,7 @@ class RestaurantHourController extends Controller
 
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
-        $hours = RestaurantHour::query()
+        $hours = $this->scopeToAccessibleBranches($actor, RestaurantHour::query())
             ->orderBy('day_of_week')
             ->orderBy('id')
             ->paginate($perPage);
@@ -46,7 +49,7 @@ class RestaurantHourController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('create', RestaurantHour::class)) {
+        if ($actor->cannot('create', [RestaurantHour::class, $request->validated()['branch_id'] ?? null])) {
             abort(403);
         }
 
@@ -62,6 +65,12 @@ class RestaurantHourController extends Controller
 
         if ($actor->company_id !== $restaurantHour->company_id) {
             abort(404);
+        }
+
+        // #7599 — lecture ressource-scopée : un employé sans assignation ne
+        // lit plus les données métier dès que le scoping est actif.
+        if ($actor->cannot('view', $restaurantHour)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
         }
 
         return (new RestaurantHourResource($restaurantHour))->response();

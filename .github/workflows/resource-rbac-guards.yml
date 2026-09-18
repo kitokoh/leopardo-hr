@@ -1,0 +1,41 @@
+name: Resource RBAC Guards
+
+# Épique #7597 — RBAC ressource-scopé.
+#
+# R2 (#7599) : tout contrôleur d'une verticale surveillée appelle une policy
+# (allowlist justifiée : webhooks signés, callbacks PSP, santé, surfaces
+# publiques, kiosque, contrôleurs mobiles dont l'autorisation vit dans leur
+# service).
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "api/app/**"
+      - "dev-hub/tools/check-vertical-controller-policies.sh"
+      - ".github/workflows/resource-rbac-guards.yml"
+  push:
+    branches: [main]
+    paths:
+      - "api/app/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: resource-rbac-guards-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  guard:
+    name: Resource RBAC guards (#7599)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Vertical controllers call a policy (#7599)
+        run: bash dev-hub/tools/check-vertical-controller-policies.sh

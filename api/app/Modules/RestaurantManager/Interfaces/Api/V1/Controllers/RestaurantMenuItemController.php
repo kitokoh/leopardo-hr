@@ -58,7 +58,7 @@ class RestaurantMenuItemController extends Controller
             abort(404);
         }
 
-        if ($actor->cannot('create', RestaurantMenuItem::class)) {
+        if ($actor->cannot('create', [RestaurantMenuItem::class, $restaurantMenu->branch_id])) {
             abort(403);
         }
 
