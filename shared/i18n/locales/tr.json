@@ -4811,7 +4811,8 @@
     "status": {
       "active": "Aktif",
       "inactive": "Pasif",
-      "archived": "Arşivlendi"
+      "archived": "Arşivlendi",
+      "disabled": "Devre dışı"
     },
     "carrierType": {
       "bus": "Otobüs",
@@ -4828,7 +4829,8 @@
     "tripStatus": {
       "draft": "Taslak",
       "published": "Yayınlandı",
-      "cancelled": "İptal edildi"
+      "cancelled": "İptal edildi",
+      "scheduled": "Planlandı"
     },
     "bookingStatus": {
       "pending": "Beklemede",
@@ -4852,12 +4854,18 @@
     "routes": {
       "title": "Güzergâhlar ve güzergâhlar",
       "subtitle": "Şehirler arası güzergâhlar, sıralı duraklar.",
-      "stopsTitle": "Güzergâh durakları"
+      "stopsTitle": "Güzergâh durakları",
+      "stops": "Duraklar",
+      "addStop": "Durak ekle"
     },
     "trips": {
       "title": "Planlı seferler",
       "subtitle": "Kalkışlar, sınıf fiyatları, yayın.",
-      "pricesTitle": "Sınıf başına fiyatlar"
+      "pricesTitle": "Sınıf başına fiyatlar",
+      "prices": "Ücretler",
+      "manifest": "Manifesto",
+      "manifestTitle": "Yolcu manifestosu",
+      "cancelReasonTitle": "Sefer iptal gerekçesi"
     },
     "bookings": {
       "title": "Rezervasyonlar",
@@ -4932,7 +4940,8 @@
       "ticketsIssued": "Biletler düzenlendi.",
       "checkedIn": "Yolcu biniş yaptı.",
       "ticketRevoked": "Bilet iptal edildi.",
-      "exported": "CSV dışa aktarıldı."
+      "exported": "CSV dışa aktarıldı.",
+      "tripCancelled": "Sefer iptal edildi."
     },
     "error": {
       "loadFailed": "Veriler yüklenemedi.",
@@ -4943,7 +4952,8 @@
     "confirm": {
       "deleteMessage": "Bu öğe kalıcı olarak silinsin mi?",
       "cancelTrip": "Bu sefer iptal edilsin mi? Rezervasyonlar iş kurallarına göre işlenecek.",
-      "cancelRental": "Bu kiralama rezervasyonu iptal edilsin mi?"
+      "cancelRental": "Bu kiralama rezervasyonu iptal edilsin mi?",
+      "publishTrip": "Bu sefer yayınlansın mı? Satışa açık hale gelecek."
     },
     "table": {
       "actions": "İşlemler",
@@ -4951,7 +4961,9 @@
     },
     "form": {
       "selectPlaceholder": "— Seçin —",
-      "moneyMinor": "Para birimi cinsinden tutar (1 = 100 birim)"
+      "moneyMinor": "Para birimi cinsinden tutar (1 = 100 birim)",
+      "required": "Bu alan zorunludur.",
+      "saving": "Kaydediliyor…"
     },
     "quiz": {
       "title": "Quiz ve yarışmalar",

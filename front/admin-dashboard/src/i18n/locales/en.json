@@ -5686,7 +5686,8 @@
     "status": {
       "active": "Active",
       "inactive": "Inactive",
-      "archived": "Archived"
+      "archived": "Archived",
+      "disabled": "Disabled"
     },
     "carrierType": {
       "bus": "Bus / coach",
@@ -5703,12 +5704,18 @@
     "routes": {
       "title": "Routes & itineraries",
       "subtitle": "City-to-city routes, ordered stops and stopovers.",
-      "stopsTitle": "Route stops"
+      "stopsTitle": "Route stops",
+      "stops": "Stops",
+      "addStop": "Add a stop"
     },
     "trips": {
       "title": "Scheduled trips",
       "subtitle": "Planned departures, class prices, publication.",
-      "pricesTitle": "Prices per class"
+      "pricesTitle": "Prices per class",
+      "prices": "Prices",
+      "manifest": "Manifest",
+      "manifestTitle": "Passenger manifest",
+      "cancelReasonTitle": "Trip cancellation reason"
     },
     "rentals": {
       "vehicles": "Rental vehicles",
@@ -5732,7 +5739,8 @@
       "ticketsIssued": "Tickets issued.",
       "checkedIn": "Passenger checked in.",
       "ticketRevoked": "Ticket revoked.",
-      "exported": "CSV export downloaded."
+      "exported": "CSV export downloaded.",
+      "tripCancelled": "Trip cancelled."
     },
     "error": {
       "loadFailed": "Unable to load data.",
@@ -5743,7 +5751,8 @@
     "confirm": {
       "deleteMessage": "Permanently delete this item?",
       "cancelTrip": "Cancel this trip? Bookings will be processed according to business rules.",
-      "cancelRental": "Cancel this rental booking?"
+      "cancelRental": "Cancel this rental booking?",
+      "publishTrip": "Publish this trip? It will become available for sale."
     },
     "table": {
       "actions": "Actions",
@@ -5751,7 +5760,9 @@
     },
     "form": {
       "selectPlaceholder": "— Select —",
-      "moneyMinor": "Amount in currency (1 = 100 minor)"
+      "moneyMinor": "Amount in currency (1 = 100 minor)",
+      "required": "This field is required.",
+      "saving": "Saving…"
     },
     "quiz": {
       "title": "Quizzes & contests",

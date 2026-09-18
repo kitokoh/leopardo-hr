@@ -5351,7 +5351,8 @@
     "status": {
       "active": "نشط",
       "inactive": "غير نشط",
-      "archived": "مؤرشف"
+      "archived": "مؤرشف",
+      "disabled": "معطّل"
     },
     "carrierType": {
       "bus": "حافلة",
@@ -5369,7 +5370,7 @@
       "draft": "مسودة",
       "published": "منشور",
       "cancelled": "ملغى",
-      "scheduled": "مجدول"
+      "scheduled": "مجدولة"
     },
     "bookingStatus": {
       "pending": "قيد الانتظار",
@@ -5397,12 +5398,18 @@
     "routes": {
       "title": "الخطوط والمسارات",
       "subtitle": "خطوط بين المدن مع محطات مرتبة.",
-      "stopsTitle": "محطات الخط"
+      "stopsTitle": "محطات الخط",
+      "stops": "المحطات",
+      "addStop": "إضافة محطة"
     },
     "trips": {
       "title": "الرحلات المجدولة",
       "subtitle": "مواعيد الانطلاق والأسعار حسب الدرجة والنشر.",
-      "pricesTitle": "الأسعار حسب الدرجة"
+      "pricesTitle": "الأسعار حسب الدرجة",
+      "prices": "الأسعار",
+      "manifest": "البيان",
+      "manifestTitle": "بيان الركاب",
+      "cancelReasonTitle": "سبب إلغاء الرحلة"
     },
     "bookings": {
       "title": "الحجوزات",
@@ -5540,7 +5547,8 @@
       "ticketsIssued": "تم إصدار التذاكر.",
       "checkedIn": "تم صعود الراكب.",
       "ticketRevoked": "تم إلغاء التذكرة.",
-      "exported": "تم تنزيل تصدير CSV."
+      "exported": "تم تنزيل تصدير CSV.",
+      "tripCancelled": "تم إلغاء الرحلة."
     },
     "error": {
       "loadFailed": "تعذّر تحميل البيانات.",
@@ -5551,7 +5559,8 @@
     "confirm": {
       "deleteMessage": "حذف هذا العنصر نهائيًا؟",
       "cancelTrip": "إلغاء هذه الرحلة؟ ستُعالج الحجوزات وفق القواعد.",
-      "cancelRental": "إلغاء حجز الإيجار هذا؟"
+      "cancelRental": "إلغاء حجز الإيجار هذا؟",
+      "publishTrip": "هل تريد نشر هذه الرحلة؟ ستصبح متاحة للبيع."
     },
     "table": {
       "actions": "إجراءات",
@@ -5559,7 +5568,9 @@
     },
     "form": {
       "selectPlaceholder": "— اختر —",
-      "moneyMinor": "المبلغ بالعملة (1 = 100 وحدة صغيرة)"
+      "moneyMinor": "المبلغ بالعملة (1 = 100 وحدة صغيرة)",
+      "required": "هذا الحقل إلزامي.",
+      "saving": "جارٍ الحفظ…"
     },
     "quiz": {
       "title": "الاختبارات والمسابقات",

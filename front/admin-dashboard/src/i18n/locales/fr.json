@@ -5692,7 +5692,8 @@
     "status": {
       "active": "Actif",
       "inactive": "Inactif",
-      "archived": "Archivé"
+      "archived": "Archivé",
+      "disabled": "Désactivé"
     },
     "carrierType": {
       "bus": "Bus / autocar",
@@ -5709,12 +5710,18 @@
     "routes": {
       "title": "Lignes & itinéraires",
       "subtitle": "Lignes ville-à-ville, étapes ordonnées et escales.",
-      "stopsTitle": "Étapes de la ligne"
+      "stopsTitle": "Étapes de la ligne",
+      "stops": "Étapes",
+      "addStop": "Ajouter une étape"
     },
     "trips": {
       "title": "Trajets datés",
       "subtitle": "Départs planifiés, tarifs par classe, publication.",
-      "pricesTitle": "Tarifs par classe"
+      "pricesTitle": "Tarifs par classe",
+      "prices": "Tarifs",
+      "manifest": "Manifeste",
+      "manifestTitle": "Manifeste des passagers",
+      "cancelReasonTitle": "Motif d'annulation du trajet"
     },
     "rentals": {
       "vehicles": "Véhicules de location",
@@ -5738,7 +5745,8 @@
       "ticketsIssued": "Billets émis.",
       "checkedIn": "Passager embarqué.",
       "ticketRevoked": "Billet révoqué.",
-      "exported": "Export CSV téléchargé."
+      "exported": "Export CSV téléchargé.",
+      "tripCancelled": "Trajet annulé."
     },
     "error": {
       "loadFailed": "Impossible de charger les données.",
@@ -5749,7 +5757,8 @@
     "confirm": {
       "deleteMessage": "Supprimer définitivement cet élément ?",
       "cancelTrip": "Annuler ce trajet ? Les réservations seront traitées selon les règles métier.",
-      "cancelRental": "Annuler cette réservation de location ?"
+      "cancelRental": "Annuler cette réservation de location ?",
+      "publishTrip": "Publier ce trajet ? Il deviendra visible à la vente."
     },
     "table": {
       "actions": "Actions",
@@ -5757,7 +5766,9 @@
     },
     "form": {
       "selectPlaceholder": "— Sélectionner —",
-      "moneyMinor": "Montant en devises (1 = 100 minor)"
+      "moneyMinor": "Montant en devises (1 = 100 minor)",
+      "required": "Ce champ est obligatoire.",
+      "saving": "Enregistrement…"
     },
     "quiz": {
       "title": "Quiz & jeux-concours",
