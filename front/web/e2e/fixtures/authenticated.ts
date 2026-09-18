@@ -1,5 +1,7 @@
 import { test as base, expect, type Page, type Route } from '@playwright/test';
 
+import { CONSENT_COOKIE_NAME, E2E_CONSENT_STATE } from '../session-helpers';
+
 export const SESSION_COOKIE_NAME = 'leopardo_token';
 export const E2E_SESSION_TOKEN = 'e2e-mocked-session-token';
 
@@ -202,6 +204,16 @@ export async function installAuthenticatedSession(
       value: token,
       url: baseURL,
       httpOnly: true,
+      sameSite: 'Lax',
+    },
+    {
+      // #7618 — comme `welcome_seen_at` : une session mockée modélise un
+      // visiteur qui a déjà répondu à la bannière cookies (#7593, `z-[90]`,
+      // fixed bottom), sinon elle intercepte les clics du bas de page.
+      // Lu par `document.cookie` ⇒ PAS httpOnly.
+      name: CONSENT_COOKIE_NAME,
+      value: encodeURIComponent(E2E_CONSENT_STATE),
+      url: baseURL,
       sameSite: 'Lax',
     },
   ]);
