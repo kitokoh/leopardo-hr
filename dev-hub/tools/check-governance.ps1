@@ -92,11 +92,7 @@ Assert-NotContains ".github/BRANCH_PROTECTION_REQUIRED.md" 'CodeQL \(Backend\)' 
 Assert-Contains ".github/BRANCH_PROTECTION_REQUIRED.md" 'Backend Quality \(Pint \+ PHP Syntax \+ PHPStan/Larastan\)' 'Branch protection doc must reference the PHPStan/Larastan quality gate.'
 Pass "Branch protection guidance matches the active checks."
 
-<<<<<<< HEAD
-$criticalPattern = '^(api/|mobile/|docs/dossierdeConception/|docs/GESTION_PROJET/|docs/REFERENTIEL_PRODUIT/|docs/notes/archive/|\.github/|tools/check-governance\.ps1)'
-=======
 $criticalPattern = '^(api/|mobile/|docs/dossierdeConception/|docs/GESTION_PROJET/|docs/REFERENTIEL_PRODUIT/|docs/notes/archive/|docs/archive/PILOTAGE\.md|\.github/|tools/check-governance\.ps1)'
->>>>>>> origin/chore/2026-09-18-pint-migrations
 $requiresChangelog = $false
 foreach ($line in $changed) {
     if ($line -match $criticalPattern) {
