@@ -1,6 +1,6 @@
-# Security Policy — Leopardo RH
+# Security Policy — Leopardo
 
-Leopardo RH prend la sécurité au sérieux : données RH sensibles (paie, biométrie, identifiants nationaux), multi-tenant, repo public.
+Leopardo prend la sécurité au sérieux : données RH sensibles (paie, biométrie, identifiants nationaux), multi-tenant, repo public.
 
 > ⚠️ **Document détaillé : [`docs/security/SECURITY.md`](docs/security/SECURITY.md)** — architecture de sécurité, gestion des secrets, conformité, runbooks d'incident (12 documents).
 
@@ -12,7 +12,7 @@ Le projet suit un modèle de release continu (trunk-based, tags `v*`). Seule la 
 
 **Ne publiez jamais une vulnérabilité dans une issue publique.**
 
-1. **Signalez-la en privé** : [security@leopardo-rh.com](mailto:security@leopardo-rh.com) — ou utilisez l'onglet **Security → Private vulnerability reporting** du repo GitHub.
+1. **Signalez-la en privé via GitHub Private Vulnerability Reporting** (canal primaire) : [https://github.com/kitokoh/leopardo-hr/security/advisories/new](https://github.com/kitokoh/leopardo-hr/security/advisories/new) (onglet **Security → Private vulnerability reporting** du repo). Il n'existe pas d'adresse e-mail de sécurité opérationnelle à ce jour — n'utilisez pas d'adresse `@leopardo-rh.com`, ce canal n'est pas relevé.
 2. N'exploitez pas la vulnérabilité et ne la divulguez pas avant correction.
 3. Réponse attendue sous **72 h** (accusé de réception), correctif ciblé selon la sévérité (SLA : Critique < 7 j, Élevée < 30 j).
 
