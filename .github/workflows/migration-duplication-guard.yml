@@ -1,16 +1,17 @@
 name: Migration Duplication Guard
 
-# Issue #7452 (+ tranche #7455) — 65 à 68 tables sont déclarées par 2 à 4 migrations
+# Issue #7452 (+ tranche #7455) — 65 à 68 tables étaient déclarées par 2 à 4 migrations
 # dans `api/database/migrations/`, dont 36 avec des colonnes divergentes. Le premier
 # `Schema::create` gagne (`schemaTableExists()`), les suivants sont des no-op : le code
 # écrit contre la dernière génération casse en `column "x" does not exist`, souvent
 # masqué par une cascade `25P02` (223 échecs de tests/Feature/Travel sur main).
 #
-# Cette garde ne résorbe pas la dette (c'est le rôle de #7452/#7417/#7410) : elle
-# empêche qu'une PR en ajoute. La dette existante est affichée, non bloquante.
+# La dette est SOLDÉE à l'échelle du dépôt (Travel #7467, EDU #7571 : 0 table dupliquée,
+# 0 divergente). Le mode par défaut est donc passé en zéro tolérance
+# (`--strict --fail-on-duplicate`, audit de clôture #7452) : toute PR qui redéclare une
+# table déjà créée est rouge, même sans divergence de colonnes — la porte reste fermée.
 #
-# `workflow_dispatch` expose `--strict` (échec sur toute divergence) pour suivre la
-# résorption module par module, et `--audit` pour régénérer l'inventaire publié dans
+# `workflow_dispatch` conserve `--audit` pour régénérer l'inventaire publié dans
 # `docs/audits/MIGRATIONS_DUPLIQUEES_TENANT.md`.
 
 on:
@@ -72,8 +73,8 @@ jobs:
           git fetch --no-tags origin main
           case "${MODE}" in
             audit)  python3 dev-hub/tools/check-duplicate-schema-create.py --audit ;;
-            strict) python3 dev-hub/tools/check-duplicate-schema-create.py --strict ;;
-            *)      python3 dev-hub/tools/check-duplicate-schema-create.py --base origin/main ;;
+            strict) python3 dev-hub/tools/check-duplicate-schema-create.py --strict --fail-on-duplicate ;;
+            *)      python3 dev-hub/tools/check-duplicate-schema-create.py --base origin/main --strict --fail-on-duplicate ;;
           esac
 
       - name: Rappel du traitement de la dette
