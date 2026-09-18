@@ -71,8 +71,10 @@ class SetupInterviewController extends Controller
         $sanitized = $this->planner->sanitize($raw);
         if ($sanitized['rejected'] !== []) {
             throw ValidationException::withMessages([
+                // #7630 (PA2-I18N-007) — message via le catalogue __() au lieu
+                // d'une chaîne française en dur.
                 'answers' => array_map(
-                    static fn (string $question): string => "Réponse invalide : {$question}",
+                    static fn (string $question): string => (string) __('onboarding.interview_invalid_answer', ['question' => $question]),
                     $sanitized['rejected']
                 ),
             ]);

@@ -174,7 +174,10 @@ final class SeedDefaultSteps
         ];
 
         if ($team && $tool('employees')) {
-            $steps[] = ['key' => 'first_employee', 'title' => 'Ajouter votre premier employé', 'required' => true, 'estimated_minutes' => 6];
+            // #7630 (PA2-I18N-007) — titre accentué via le catalogue __() au
+            // lieu d'une chaîne française en dur (garde
+            // check-hardcoded-accented-messages.sh).
+            $steps[] = ['key' => 'first_employee', 'title' => (string) __('onboarding.step_first_employee_title'), 'required' => true, 'estimated_minutes' => 6];
         }
 
         if ($team && ($answers['scheduled_hours'] ?? null) === 'yes' && $tool('attendance')) {
@@ -193,7 +196,8 @@ final class SeedDefaultSteps
         // mobiles, pas de local) ne voit JAMAIS kiosque ni géofence.
         if ($team && $tool('attendance') && $fieldPresence) {
             $steps[] = ['key' => 'install_kiosk', 'title' => 'Installer un kiosque', 'required' => false, 'estimated_minutes' => 5];
-            $steps[] = ['key' => 'activate_geofence', 'title' => 'Activer le géofence', 'required' => false, 'estimated_minutes' => 2];
+            // #7630 (PA2-I18N-007) — idem : catalogue au lieu du FR en dur.
+            $steps[] = ['key' => 'activate_geofence', 'title' => (string) __('onboarding.step_activate_geofence_title'), 'required' => false, 'estimated_minutes' => 2];
         }
 
         if ($showcase) {
