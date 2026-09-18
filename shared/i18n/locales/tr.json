@@ -5521,5 +5521,23 @@
     "body": "Şifrenizi belirlemeniz için bir bağlantı içeren e-posta gönderildi; sonraki girişlerinizde kullanılacaktır.",
     "ctaStart": "Kuruluma başla",
     "ctaLater": "Daha sonra"
+  },
+  "forms": {
+    "validation": {
+      "nameTooShort": "Ad en az 2 karakter olmalıdır",
+      "nameTooLong": "Ad çok uzun",
+      "emailInvalid": "Geçersiz e-posta",
+      "emailTooShort": "E-posta çok kısa",
+      "emailTooLong": "E-posta çok uzun",
+      "companyTooShort": "Şirket adı en az 2 karakter olmalıdır",
+      "companyTooLong": "Şirket adı çok uzun",
+      "subjectTooShort": "Konu çok kısa",
+      "subjectTooLong": "Konu çok uzun",
+      "messageTooShort": "Mesaj en az 10 karakter olmalıdır",
+      "messageTooLong": "Mesaj çok uzun",
+      "phoneInvalid": "Geçersiz telefon numarası",
+      "employeesInvalid": "Bir çalışan aralığı seçin",
+      "dateFuture": "Tarih gelecekte olmalıdır"
+    }
   }
 }

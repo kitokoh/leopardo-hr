@@ -19,6 +19,8 @@ import { Calendar, Building2, Users, CheckCircle } from 'lucide-react';
 import { FormDataNotice } from '@/modules/vitrine/components/FormDataNotice';
 import { antispamFields } from '@/modules/vitrine/lib/antispam-client';
 import { HoneypotField } from '@/modules/vitrine/components/common/HoneypotField';
+// #7594 — schéma zod branché côté client : messages dans la locale du site (×4).
+import { demoFormSchema, parseZodErrors } from '@/modules/vitrine/lib/validation';
 
 const employeeOptions = ['1-10', '11-50', '51-200', '201-500', '500+'] as const;
 
@@ -238,6 +240,7 @@ export default function DemoPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const { locale, direction } = useVitrineLocale();
   const copy = demoCopy[locale] ?? demoCopy.fr;
   useScrollReveal();
@@ -260,8 +263,21 @@ export default function DemoPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     setError(null);
+
+    // #7594 — validation zod côté client, messages localisés dans la langue
+    // du site (le HTML5 seul parle la langue du navigateur).
+    const validation = demoFormSchema(locale).safeParse(formData);
+    if (!validation.success) {
+      const errors: Record<string, string> = {};
+      for (const { field, message } of parseZodErrors(validation.error)) {
+        if (!errors[field]) errors[field] = message;
+      }
+      setFieldErrors(errors);
+      return;
+    }
+    setFieldErrors({});
+    setIsSubmitting(true);
 
     try {
       const res = await fetch('/api/forms/demo', {
@@ -380,7 +396,11 @@ export default function DemoPage() {
                   </h3>
 
                   {error && (
-                    <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm">
+                    <div
+                      role="alert"
+                      aria-live="assertive"
+                      className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm"
+                    >
                       {error}
                     </div>
                   )}
@@ -397,8 +417,11 @@ export default function DemoPage() {
                         value={formData.name}
                         onChange={handleChange}
                         placeholder={copy.placeholders.name}
+                        aria-invalid={fieldErrors.name ? true : undefined}
+                        aria-describedby={fieldErrors.name ? 'demo-name-error' : undefined}
                         className={inputClass}
                       />
+                      <p id="demo-name-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.name}</p>
                     </div>
 
                     <div>
@@ -412,8 +435,11 @@ export default function DemoPage() {
                         value={formData.email}
                         onChange={handleChange}
                         placeholder={copy.placeholders.email}
+                        aria-invalid={fieldErrors.email ? true : undefined}
+                        aria-describedby={fieldErrors.email ? 'demo-email-error' : undefined}
                         className={inputClass}
                       />
+                      <p id="demo-email-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.email}</p>
                     </div>
 
                     <div>
@@ -427,8 +453,11 @@ export default function DemoPage() {
                         value={formData.company}
                         onChange={handleChange}
                         placeholder={copy.placeholders.company}
+                        aria-invalid={fieldErrors.company ? true : undefined}
+                        aria-describedby={fieldErrors.company ? 'demo-company-error' : undefined}
                         className={inputClass}
                       />
+                      <p id="demo-company-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.company}</p>
                     </div>
 
                     <div>
@@ -441,8 +470,11 @@ export default function DemoPage() {
                         value={formData.phone}
                         onChange={handleChange}
                         placeholder={copy.placeholders.phone}
+                        aria-invalid={fieldErrors.phone ? true : undefined}
+                        aria-describedby={fieldErrors.phone ? 'demo-phone-error' : undefined}
                         className={inputClass}
                       />
+                      <p id="demo-phone-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.phone}</p>
                     </div>
 
                     <div>
@@ -474,8 +506,11 @@ export default function DemoPage() {
                     name="preferredDate"
                         value={formData.preferredDate}
                         onChange={handleChange}
+                        aria-invalid={fieldErrors.preferredDate ? true : undefined}
+                        aria-describedby={fieldErrors.preferredDate ? 'demo-preferredDate-error' : undefined}
                         className={inputClass}
                       />
+                      <p id="demo-preferredDate-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.preferredDate}</p>
                     </div>
 
                     <div>
