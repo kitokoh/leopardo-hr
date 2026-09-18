@@ -293,9 +293,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          program_version="$(sed -n 's/^# PROGRAM_VERSION = \([^ |]*\).*$/\1/p' PILOTAGE.md | head -n 1)"
+          program_version="$(sed -n 's/^# PROGRAM_VERSION = \([^ |]*\).*$/\1/p' docs/archive/PILOTAGE.md | head -n 1)"
           if [[ -z "${program_version}" ]]; then
-            echo "Unable to resolve PROGRAM_VERSION from PILOTAGE.md"
+            echo "Unable to resolve PROGRAM_VERSION from docs/archive/PILOTAGE.md"
             exit 1
           fi
           echo "app_version=${program_version}" >> "$GITHUB_OUTPUT"
