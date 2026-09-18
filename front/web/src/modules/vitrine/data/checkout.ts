@@ -108,6 +108,12 @@ export interface CheckoutCopy {
     }
     errors: {
       fillAll: string
+      // #7594 — validation carte côté client : Luhn, expiration MM/AA non
+      // passée, CVC cohérent avec le réseau (4 chiffres Amex, 3 sinon).
+      cardNumber: string
+      expiry: string
+      cvc: string
+      cardName: string
       generic: string
       network: string
     }
@@ -244,6 +250,10 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
       },
       errors: {
         fillAll: 'Veuillez remplir tous les champs de paiement.',
+        cardNumber: 'Numéro de carte invalide.',
+        expiry: "Date d'expiration invalide ou dépassée (MM/AA).",
+        cvc: 'CVC invalide pour cette carte.',
+        cardName: 'Nom sur la carte requis.',
         generic: 'Erreur lors du traitement du paiement.',
         network: 'Impossible de contacter le serveur. Vérifiez votre connexion.',
       },
@@ -444,6 +454,10 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
       },
       errors: {
         fillAll: 'Please fill in all payment fields.',
+        cardNumber: 'Invalid card number.',
+        expiry: 'Invalid or past expiry date (MM/YY).',
+        cvc: 'Invalid CVC for this card.',
+        cardName: 'Name on card is required.',
         generic: 'An error occurred while processing the payment.',
         network: 'Unable to reach the server. Check your connection.',
       },
@@ -644,6 +658,10 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
       },
       errors: {
         fillAll: 'Lütfen tüm ödeme alanlarını doldurun.',
+        cardNumber: 'Geçersiz kart numarası.',
+        expiry: 'Geçersiz veya geçmiş son kullanma tarihi (AA/YY).',
+        cvc: 'Bu kart için geçersiz CVC.',
+        cardName: 'Kart üzerindeki ad gereklidir.',
         generic: 'Ödeme işlenirken bir hata oluştu.',
         network: 'Sunucuya ulaşılamıyor. Bağlantınızı kontrol edin.',
       },
@@ -842,6 +860,10 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
       },
       errors: {
         fillAll: 'يرجى ملء جميع حقول الدفع.',
+        cardNumber: 'رقم البطاقة غير صالح.',
+        expiry: 'تاريخ انتهاء الصلاحية غير صالح أو منتهٍ (شهر/سنة).',
+        cvc: 'رمز CVC غير صالح لهذه البطاقة.',
+        cardName: 'الاسم على البطاقة مطلوب.',
         generic: 'حدث خطأ أثناء معالجة الدفع.',
         network: 'تعذر الوصول إلى الخادم. تحقق من اتصالك.',
       },

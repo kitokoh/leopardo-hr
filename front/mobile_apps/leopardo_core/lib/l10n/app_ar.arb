@@ -4261,5 +4261,19 @@
   "firstloginwelcomeTitle": "مساحتك جاهزة 🎉",
   "firstloginwelcomeBody": "أُرسل إليك بريد إلكتروني يحتوي على رابط لتعيين كلمة المرور، وسيُستخدم في تسجيلات دخولك المقبلة.",
   "firstloginwelcomeCtastart": "ابدأ الإعداد",
-  "firstloginwelcomeCtalater": "لاحقًا"
+  "firstloginwelcomeCtalater": "لاحقًا",
+  "formsValidationNametooshort": "يجب أن يتكون الاسم من حرفين على الأقل",
+  "formsValidationNametoolong": "الاسم طويل جداً",
+  "formsValidationEmailinvalid": "البريد الإلكتروني غير صالح",
+  "formsValidationEmailtooshort": "البريد الإلكتروني قصير جداً",
+  "formsValidationEmailtoolong": "البريد الإلكتروني طويل جداً",
+  "formsValidationCompanytooshort": "يجب أن يتكون اسم الشركة من حرفين على الأقل",
+  "formsValidationCompanytoolong": "اسم الشركة طويل جداً",
+  "formsValidationSubjecttooshort": "الموضوع قصير جداً",
+  "formsValidationSubjecttoolong": "الموضوع طويل جداً",
+  "formsValidationMessagetooshort": "يجب أن تتكون الرسالة من 10 أحرف على الأقل",
+  "formsValidationMessagetoolong": "الرسالة طويلة جداً",
+  "formsValidationPhoneinvalid": "رقم الهاتف غير صالح",
+  "formsValidationEmployeesinvalid": "اختر نطاق عدد الموظفين",
+  "formsValidationDatefuture": "يجب أن يكون التاريخ في المستقبل"
 }

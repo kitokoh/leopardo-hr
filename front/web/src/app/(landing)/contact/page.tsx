@@ -10,6 +10,10 @@ import { Mail, Phone, MapPin, Clock, Send, CheckCircle, AlertCircle } from 'luci
 import { FormDataNotice } from '@/modules/vitrine/components/FormDataNotice';
 import { antispamFields } from '@/modules/vitrine/lib/antispam-client';
 import { HoneypotField } from '@/modules/vitrine/components/common/HoneypotField';
+// #7594 — le schéma zod était mort (référencé uniquement par ses tests) : la
+// validation client se limitait au HTML5, dans la langue du navigateur. Il est
+// branché ici, avec des messages dans la locale du SITE (×4).
+import { contactFormSchema, parseZodErrors } from '@/modules/vitrine/lib/validation';
 
 // #4327 : libellés des sujets localisés ×4 locales (valeurs stables côté
 // formulaire = libellé localisé, l'API les traite en texte libre).
@@ -145,6 +149,7 @@ function ContactPageInner() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const { locale } = useVitrineLocale();
   const copy = contactCopy[locale] ?? contactCopy.fr;
   useScrollReveal();
@@ -175,8 +180,21 @@ function ContactPageInner() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     setError(null);
+
+    // #7594 — validation zod côté client, messages localisés dans la langue
+    // du site (le HTML5 seul parle la langue du navigateur).
+    const validation = contactFormSchema(locale).safeParse(form);
+    if (!validation.success) {
+      const errors: Record<string, string> = {};
+      for (const { field, message } of parseZodErrors(validation.error)) {
+        if (!errors[field]) errors[field] = message;
+      }
+      setFieldErrors(errors);
+      return;
+    }
+    setFieldErrors({});
+    setIsSubmitting(true);
 
     try {
       const res = await fetch('/api/forms/contact', {
@@ -263,8 +281,11 @@ function ContactPageInner() {
                         </label>
                         <input
                           id="name" name="name" required value={form.name} onChange={handleChange}
+                          aria-invalid={fieldErrors.name ? true : undefined}
+                          aria-describedby={fieldErrors.name ? 'name-error' : undefined}
                           className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                         />
+                        <p id="name-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.name}</p>
                       </div>
                       <div>
                         <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
@@ -272,8 +293,11 @@ function ContactPageInner() {
                         </label>
                         <input
                           id="email" name="email" type="email" required value={form.email} onChange={handleChange}
+                          aria-invalid={fieldErrors.email ? true : undefined}
+                          aria-describedby={fieldErrors.email ? 'email-error' : undefined}
                           className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                         />
+                        <p id="email-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.email}</p>
                       </div>
                     </div>
 
@@ -282,8 +306,11 @@ function ContactPageInner() {
                         <label htmlFor="company" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{copy.form.company}</label>
                         <input
                           id="company" name="company" value={form.company} onChange={handleChange}
+                          aria-invalid={fieldErrors.company ? true : undefined}
+                          aria-describedby={fieldErrors.company ? 'company-error' : undefined}
                           className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                         />
+                        <p id="company-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.company}</p>
                       </div>
                       <div>
                         <label htmlFor="subject" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
@@ -291,6 +318,8 @@ function ContactPageInner() {
                         </label>
                         <select
                           id="subject" name="subject" required value={form.subject} onChange={handleChange}
+                          aria-invalid={fieldErrors.subject ? true : undefined}
+                          aria-describedby={fieldErrors.subject ? 'subject-error' : undefined}
                           className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                         >
                           <option value="">{copy.form.subjectPlaceholder}</option>
@@ -298,6 +327,7 @@ function ContactPageInner() {
                             <option key={id} value={SUBJECT_LABELS[locale][id]}>{SUBJECT_LABELS[locale][id]}</option>
                           ))}
                         </select>
+                        <p id="subject-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.subject}</p>
                       </div>
                     </div>
 
@@ -307,12 +337,15 @@ function ContactPageInner() {
                       </label>
                       <textarea
                         id="message" name="message" required rows={5} value={form.message} onChange={handleChange}
+                        aria-invalid={fieldErrors.message ? true : undefined}
+                        aria-describedby={fieldErrors.message ? 'message-error' : undefined}
                         className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
                       />
+                      <p id="message-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.message}</p>
                     </div>
 
                     {error && (
-                      <div className="flex items-center gap-2 text-red-600 dark:text-red-400 text-sm" role="alert">
+                      <div className="flex items-center gap-2 text-red-600 dark:text-red-400 text-sm" role="alert" aria-live="assertive">
                         <AlertCircle className="w-4 h-4" />{error}
                       </div>
                     )}

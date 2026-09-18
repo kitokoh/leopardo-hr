@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
 import { antispamFields } from '@/modules/vitrine/lib/antispam-client';
+// #7594 — schéma zod branché côté client : messages dans la locale du site (×4).
+import { newsletterFormSchema } from '@/modules/vitrine/lib/validation';
+import { isSupportedLocale, type AppLocale } from '@/lib/i18n';
 
 interface NewsletterFormProps {
   locale?: string;
@@ -30,6 +33,16 @@ export function NewsletterForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // #7594 — validation zod localisée avant l'appel réseau.
+    const resolvedLocale: AppLocale = isSupportedLocale(locale) ? locale : 'fr';
+    const validation = newsletterFormSchema(resolvedLocale).safeParse({ email });
+    if (!validation.success) {
+      setStatus('error');
+      setMessage(validation.error.issues[0]?.message ?? errorFallback);
+      return;
+    }
+
     setStatus('loading');
 
     try {
@@ -89,6 +102,8 @@ export function NewsletterForm({
           onChange={(e) => setEmail(e.target.value)}
           placeholder={placeholder}
           aria-label={typeof ariaLabel === 'string' ? ariaLabel : placeholder}
+          aria-invalid={status === 'error' ? true : undefined}
+          aria-describedby={status === 'error' ? 'newsletter-inline-error' : undefined}
           required
           disabled={status === 'loading'}
           className="flex-1 px-4 py-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all disabled:opacity-50"
@@ -103,7 +118,7 @@ export function NewsletterForm({
       </motion.form>
 
       {status === 'error' && (
-        <p className="text-sm text-red-500 mt-2 text-center">{message}</p>
+        <p id="newsletter-inline-error" role="alert" aria-live="polite" className="text-sm text-red-500 mt-2 text-center">{message}</p>
       )}
     </div>
   );

@@ -14,7 +14,10 @@ const contactSchema = z.object({
   // supprime les clés inconnues, donc la valeur était **perdue en silence**
   // avant même d'atteindre le lead. Déclaré ici, et transmis ci-dessous.
   company: z.string().max(100).optional().or(z.literal('')),
-  subject: z.string().min(5).max(200),
+  // #7594 — min(2), pas min(5) : le sujet vient d'un <select> dont les valeurs
+  // sont les libellés LOCALISÉS — en arabe « أخرى » (Autre) fait 4 caractères,
+  // min(5) rejetait donc un parcours réel.
+  subject: z.string().min(2).max(200),
   message: z.string().min(10).max(5000),
   phone: z.string().max(30).optional().or(z.literal('')),
   locale: z.enum(['fr', 'en', 'ar', 'tr']).optional(),
