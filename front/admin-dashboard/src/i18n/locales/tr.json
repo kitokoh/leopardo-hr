@@ -5451,10 +5451,12 @@
       "refund": "Geri öde",
       "refundTitle": "Rezervasyonu geri öde",
       "seat": "Koltuk",
-      "source": "Kaynak",
-      "subtitle": "Gişe satışları, onay, iptal, geri ödeme ve biletler.",
+      "source": "Kanal",
+      "subtitle": "Gişe rezervasyonları: onay, iptal, iade ve biletler.",
       "total": "Toplam",
-      "trip": "Sefer"
+      "trip": "Sefer",
+      "refundPassenger": "Yolcuyu iade et",
+      "contact": "İletişim"
     },
     "checkin": {
       "selectTrip": "Bir sefer seçin",
@@ -5566,7 +5568,10 @@
       "deleteMessage": "Bu öğe kalıcı olarak silinsin mi?",
       "cancelTrip": "Bu sefer iptal edilsin mi? Rezervasyonlar iş kurallarına göre işlenecek.",
       "cancelRental": "Bu kiralama rezervasyonu iptal edilsin mi?",
-      "publishTrip": "Bu sefer yayınlansın mı? Satışa açık hale gelecek."
+      "publishTrip": "Bu sefer yayınlansın mı? Satışa açık hale gelecek.",
+      "confirmBooking": "Bu rezervasyon onaylansın mı? Ödeme tahsil edilmiş olarak işaretlenecek.",
+      "issueTickets": "Bu rezervasyonun biletleri düzenlensin mi?",
+      "revokeTicket": "Bu bilet iptal edilsin mi? PDF geçersiz kılınacak."
     },
     "table": {
       "actions": "İşlemler",
@@ -5762,7 +5767,8 @@
     "bookingSource": {
       "office": "Gişe",
       "online": "Çevrimiçi",
-      "phone": "Telefon"
+      "phone": "Telefon",
+      "partner": "İş ortağı"
     },
     "carriers": {
       "name": "Ad",

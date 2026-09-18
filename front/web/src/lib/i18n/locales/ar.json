@@ -4837,13 +4837,15 @@
       "confirmed": "مؤكد",
       "cancelled": "ملغى",
       "refunded": "مسترجع",
-      "expired": "منتهي الصلاحية"
+      "expired": "منتهي الصلاحية",
+      "completed": "مكتملة"
     },
     "paymentStatus": {
       "pending": "قيد الانتظار",
       "paid": "مدفوع",
       "failed": "فشل",
-      "refunded": "مسترجع"
+      "refunded": "مسترجع",
+      "confirmed": "مؤكد"
     },
     "ticketStatus": {
       "issued": "صادر",
@@ -4883,7 +4885,11 @@
       "cancelReasonTitle": "سبب الإلغاء",
       "refundReasonTitle": "سبب الاسترداد",
       "reason": "السبب",
-      "reasonRequired": "السبب إلزامي."
+      "reasonRequired": "السبب إلزامي.",
+      "subtitle": "حجوزات الشباك: التأكيد والإلغاء والاسترداد والتذاكر.",
+      "refundPassenger": "استرداد للراكب",
+      "contact": "جهة الاتصال",
+      "source": "القناة"
     },
     "checkin": {
       "selectTrip": "اختر رحلة",
@@ -4953,7 +4959,10 @@
       "deleteMessage": "حذف هذا العنصر نهائيًا؟",
       "cancelTrip": "إلغاء هذه الرحلة؟ ستُعالج الحجوزات وفق القواعد.",
       "cancelRental": "إلغاء حجز الإيجار هذا؟",
-      "publishTrip": "هل تريد نشر هذه الرحلة؟ ستصبح متاحة للبيع."
+      "publishTrip": "هل تريد نشر هذه الرحلة؟ ستصبح متاحة للبيع.",
+      "confirmBooking": "هل تريد تأكيد هذا الحجز؟ سيتم تسجيل الدفع كمُحصَّل.",
+      "issueTickets": "هل تريد إصدار تذاكر هذا الحجز؟",
+      "revokeTicket": "هل تريد إبطال هذه التذكرة؟ سيتم إلغاء ملف PDF."
     },
     "table": {
       "actions": "إجراءات",
@@ -5115,6 +5124,12 @@
       "infant": "رضيع",
       "child": "طفل",
       "adult": "بالغ"
+    },
+    "bookingSource": {
+      "online": "عبر الإنترنت",
+      "office": "الشباك",
+      "phone": "الهاتف",
+      "partner": "شريك"
     }
   },
   "travelPortal": {

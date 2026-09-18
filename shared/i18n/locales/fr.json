@@ -4837,13 +4837,15 @@
       "confirmed": "Confirmée",
       "cancelled": "Annulée",
       "refunded": "Remboursée",
-      "expired": "Expirée"
+      "expired": "Expirée",
+      "completed": "Terminée"
     },
     "paymentStatus": {
       "pending": "En attente",
       "paid": "Payé",
       "failed": "Échoué",
-      "refunded": "Remboursé"
+      "refunded": "Remboursé",
+      "confirmed": "Confirmé"
     },
     "ticketStatus": {
       "issued": "Émis",
@@ -4883,7 +4885,11 @@
       "cancelReasonTitle": "Motif d'annulation",
       "refundReasonTitle": "Motif de remboursement",
       "reason": "Motif",
-      "reasonRequired": "Le motif est obligatoire."
+      "reasonRequired": "Le motif est obligatoire.",
+      "subtitle": "Réservations guichet : confirmation, annulation, remboursement et billets.",
+      "refundPassenger": "Rembourser le passager",
+      "contact": "Contact",
+      "source": "Canal"
     },
     "checkin": {
       "selectTrip": "Sélectionner un trajet",
@@ -4953,7 +4959,10 @@
       "deleteMessage": "Supprimer définitivement cet élément ?",
       "cancelTrip": "Annuler ce trajet ? Les réservations seront traitées selon les règles métier.",
       "cancelRental": "Annuler cette réservation de location ?",
-      "publishTrip": "Publier ce trajet ? Il deviendra visible à la vente."
+      "publishTrip": "Publier ce trajet ? Il deviendra visible à la vente.",
+      "confirmBooking": "Confirmer cette réservation ? Le paiement sera marqué comme encaissé.",
+      "issueTickets": "Émettre les billets de cette réservation ?",
+      "revokeTicket": "Révoquer ce billet ? Le PDF sera invalidé."
     },
     "table": {
       "actions": "Actions",
@@ -5115,6 +5124,12 @@
       "infant": "Bébé",
       "child": "Enfant",
       "adult": "Adulte"
+    },
+    "bookingSource": {
+      "online": "En ligne",
+      "office": "Guichet",
+      "phone": "Téléphone",
+      "partner": "Partenaire"
     }
   },
   "travelPortal": {

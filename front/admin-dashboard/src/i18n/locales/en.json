@@ -5305,7 +5305,7 @@
     },
     "bookings": {
       "title": "Bookings",
-      "subtitle": "Counter sales, confirmation, cancellation, refund and tickets.",
+      "subtitle": "Counter bookings: confirmation, cancellation, refund and tickets.",
       "reference": "Reference",
       "referencePlaceholder": "e.g. GV-2026-0001…",
       "detail": "Details",
@@ -5316,7 +5316,7 @@
       "detailTitle": "Booking",
       "paymentStatus": "Payment",
       "trip": "Trip",
-      "source": "Source",
+      "source": "Channel",
       "passengerCount": "Passengers",
       "total": "Total",
       "passengers": "Passengers",
@@ -5340,7 +5340,9 @@
       "cancelReasonTitle": "Cancellation reason",
       "refundReasonTitle": "Refund reason",
       "reason": "Reason",
-      "reasonRequired": "Reason is required."
+      "reasonRequired": "Reason is required.",
+      "refundPassenger": "Refund passenger",
+      "contact": "Contact"
     },
     "checkin": {
       "title": "Check-in & manifest",
@@ -5521,9 +5523,10 @@
       "unknown": "Unknown"
     },
     "bookingSource": {
-      "office": "Counter",
+      "office": "Office",
       "phone": "Phone",
-      "online": "Online"
+      "online": "Online",
+      "partner": "Partner"
     },
     "ageCategory": {
       "infant": "Infant",
@@ -5752,7 +5755,10 @@
       "deleteMessage": "Permanently delete this item?",
       "cancelTrip": "Cancel this trip? Bookings will be processed according to business rules.",
       "cancelRental": "Cancel this rental booking?",
-      "publishTrip": "Publish this trip? It will become available for sale."
+      "publishTrip": "Publish this trip? It will become available for sale.",
+      "confirmBooking": "Confirm this booking? The payment will be marked as received.",
+      "issueTickets": "Issue the tickets for this booking?",
+      "revokeTicket": "Revoke this ticket? The PDF will be invalidated."
     },
     "table": {
       "actions": "Actions",

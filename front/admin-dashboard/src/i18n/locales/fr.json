@@ -5311,7 +5311,7 @@
     },
     "bookings": {
       "title": "Réservations",
-      "subtitle": "Ventes au guichet, confirmation, annulation, remboursement et billets.",
+      "subtitle": "Réservations guichet : confirmation, annulation, remboursement et billets.",
       "reference": "Référence",
       "referencePlaceholder": "Ex. GV-2026-0001…",
       "detail": "Détail",
@@ -5322,7 +5322,7 @@
       "detailTitle": "Réservation",
       "paymentStatus": "Paiement",
       "trip": "Trajet",
-      "source": "Source",
+      "source": "Canal",
       "passengerCount": "Passagers",
       "total": "Total",
       "passengers": "Passagers",
@@ -5346,7 +5346,9 @@
       "cancelReasonTitle": "Motif d'annulation",
       "refundReasonTitle": "Motif de remboursement",
       "reason": "Motif",
-      "reasonRequired": "Le motif est obligatoire."
+      "reasonRequired": "Le motif est obligatoire.",
+      "refundPassenger": "Rembourser le passager",
+      "contact": "Contact"
     },
     "checkin": {
       "title": "Check-in & manifeste",
@@ -5529,7 +5531,8 @@
     "bookingSource": {
       "office": "Guichet",
       "phone": "Téléphone",
-      "online": "En ligne"
+      "online": "En ligne",
+      "partner": "Partenaire"
     },
     "ageCategory": {
       "infant": "Bébé",
@@ -5758,7 +5761,10 @@
       "deleteMessage": "Supprimer définitivement cet élément ?",
       "cancelTrip": "Annuler ce trajet ? Les réservations seront traitées selon les règles métier.",
       "cancelRental": "Annuler cette réservation de location ?",
-      "publishTrip": "Publier ce trajet ? Il deviendra visible à la vente."
+      "publishTrip": "Publier ce trajet ? Il deviendra visible à la vente.",
+      "confirmBooking": "Confirmer cette réservation ? Le paiement sera marqué comme encaissé.",
+      "issueTickets": "Émettre les billets de cette réservation ?",
+      "revokeTicket": "Révoquer ce billet ? Le PDF sera invalidé."
     },
     "table": {
       "actions": "Actions",

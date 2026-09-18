@@ -4837,13 +4837,15 @@
       "confirmed": "Onaylandı",
       "cancelled": "İptal edildi",
       "refunded": "Geri ödendi",
-      "expired": "Süresi doldu"
+      "expired": "Süresi doldu",
+      "completed": "Tamamlandı"
     },
     "paymentStatus": {
       "pending": "Beklemede",
       "paid": "Ödendi",
       "failed": "Başarısız",
-      "refunded": "Geri ödendi"
+      "refunded": "Geri ödendi",
+      "confirmed": "Onaylandı"
     },
     "ticketStatus": {
       "issued": "Düzenlendi",
@@ -4883,7 +4885,11 @@
       "cancelReasonTitle": "İptal nedeni",
       "refundReasonTitle": "Geri ödeme nedeni",
       "reason": "Neden",
-      "reasonRequired": "Neden zorunludur."
+      "reasonRequired": "Neden zorunludur.",
+      "subtitle": "Gişe rezervasyonları: onay, iptal, iade ve biletler.",
+      "refundPassenger": "Yolcuyu iade et",
+      "contact": "İletişim",
+      "source": "Kanal"
     },
     "checkin": {
       "selectTrip": "Bir sefer seçin",
@@ -4953,7 +4959,10 @@
       "deleteMessage": "Bu öğe kalıcı olarak silinsin mi?",
       "cancelTrip": "Bu sefer iptal edilsin mi? Rezervasyonlar iş kurallarına göre işlenecek.",
       "cancelRental": "Bu kiralama rezervasyonu iptal edilsin mi?",
-      "publishTrip": "Bu sefer yayınlansın mı? Satışa açık hale gelecek."
+      "publishTrip": "Bu sefer yayınlansın mı? Satışa açık hale gelecek.",
+      "confirmBooking": "Bu rezervasyon onaylansın mı? Ödeme tahsil edilmiş olarak işaretlenecek.",
+      "issueTickets": "Bu rezervasyonun biletleri düzenlensin mi?",
+      "revokeTicket": "Bu bilet iptal edilsin mi? PDF geçersiz kılınacak."
     },
     "table": {
       "actions": "İşlemler",
@@ -5115,6 +5124,12 @@
       "infant": "Bebek",
       "child": "Çocuk",
       "adult": "Yetişkin"
+    },
+    "bookingSource": {
+      "online": "Çevrimiçi",
+      "office": "Gişe",
+      "phone": "Telefon",
+      "partner": "İş ortağı"
     }
   },
   "travelPortal": {
