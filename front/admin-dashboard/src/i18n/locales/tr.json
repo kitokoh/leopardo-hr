@@ -6968,5 +6968,121 @@
     "body": "Şifrenizi belirlemeniz için bir bağlantı içeren e-posta gönderildi; sonraki girişlerinizde kullanılacaktır.",
     "ctaStart": "Kuruluma başla",
     "ctaLater": "Daha sonra"
+  },
+  "setupInterview": {
+    "title": "Çalışma alanınızı hazırlayalım",
+    "subtitle": "Birkaç hızlı soru. Her soru atlanabilir.",
+    "progress": "Soru {current} / {total}",
+    "skip": "Atla",
+    "later": "Daha sonra bitir",
+    "back": "Geri",
+    "finish": "Bitir",
+    "completing": "Çalışma alanınız hazırlanıyor…",
+    "recapTitle": "Çalışma alanınız hazır",
+    "recapBody": "Sizin için etkinleştirdiklerimiz:",
+    "recapEmpty": "Temel çalışma alanınız hazır. Diğer araçları istediğiniz zaman etkinleştirebilirsiniz.",
+    "recapCta": "Alanımı keşfet",
+    "resume": "Alanımın kurulumunu tamamla",
+    "error": "Şu anda kaydedilemedi. Lütfen birazdan tekrar deneyin.",
+    "questions": {
+      "company_type": {
+        "label": "Tek başınıza mı yoksa bir ekiple mi çalışıyorsunuz?",
+        "options": {
+          "solo": "Tek başıma çalışıyorum",
+          "team": "Bir ekiple"
+        }
+      },
+      "team_size": {
+        "label": "Sizinle kaç kişi çalışıyor?",
+        "options": {
+          "1-10": "1 - 10",
+          "11-50": "11 - 50",
+          "51-200": "51 - 200",
+          "201-500": "201 - 500",
+          "500+": "500'den fazla"
+        }
+      },
+      "sector": {
+        "label": "Faaliyet alanınız nedir?",
+        "options": {
+          "restaurant": "Restoran",
+          "fuel_station": "Akaryakıt istasyonu",
+          "education": "Eğitim",
+          "commerce": "Ticaret",
+          "services": "Hizmetler",
+          "travel": "Seyahat acentesi",
+          "other": "Sektörüm listede yok"
+        }
+      },
+      "premises": {
+        "label": "Bir veya birden fazla fiziksel mekânınız var mı?",
+        "options": {
+          "single": "Tek mekân",
+          "multiple": "Birden fazla şube",
+          "mobile": "Mobil ekipler",
+          "none": "Fiziksel mekân yok"
+        }
+      },
+      "priorities": {
+        "label": "Bugün sizin için en önemli olan nedir?",
+        "hint": "Birden fazla seçim yapılabilir",
+        "options": {
+          "attendance": "Devam ve mesai takibi",
+          "payroll": "Bordro",
+          "accounting": "Muhasebe",
+          "crm": "Müşteri ilişkileri",
+          "cameras": "Mekân güvenliği (kameralar)",
+          "showcase": "Vitrin sitem"
+        }
+      },
+      "scheduled_hours": {
+        "label": "Çalışanlarınız planlı saatlerde mi çalışıyor?",
+        "options": {
+          "yes": "Evet",
+          "no": "Hayır"
+        }
+      }
+    },
+    "modules": {
+      "restaurant": "Restoran motoru",
+      "fuel_station": "Akaryakıt istasyonu",
+      "edumanager": "Eğitim",
+      "travelagency": "Seyahat acentesi",
+      "employees": "Çalışan yönetimi",
+      "attendance": "Devam ve mesai",
+      "absences": "İzinler",
+      "payroll": "Bordro",
+      "accounting": "Muhasebe",
+      "crm": "Müşteri ilişkileri",
+      "cameras": "Kameralar",
+      "showcase": "Vitrin sitesi",
+      "contracts": "Sözleşmeler",
+      "training": "Eğitim merkezi",
+      "reports": "Raporlar",
+      "marketing": "Pazarlama"
+    }
+  },
+  "nextSteps": {
+    "title": "Sonraki adımlar",
+    "subtitle": "Kurulumu bitirmek için birkaç işlem.",
+    "viewAll": "Tümünü gör ({n})",
+    "viewLess": "Daralt",
+    "complete": "Yapıldı olarak işaretle",
+    "skip": "Atla",
+    "dismiss": "Bu kartı gizle",
+    "restore": "Sonraki adımlar ({n})",
+    "done": "Kurulum tamamlandı!",
+    "progress": "{done} / {total}",
+    "error": "Sonraki adımlar yüklenemedi.",
+    "steps": {
+      "customize_showcase": {
+        "title": "Vitrin sitenizi kişiselleştirin",
+        "desc": "Renklerinizi, metinlerinizi ve görsellerinizi seçin."
+      },
+      "publish_showcase": {
+        "title": "Vitrin sitenizi yayınlayın",
+        "desc": "Sitenizi tek tıkla görünür yapın."
+      }
+    }
   }
 }

@@ -6835,5 +6835,121 @@
     "body": "Un e-mail vous a été envoyé avec un lien pour définir votre mot de passe : il servira à vos prochaines connexions.",
     "ctaStart": "Démarrer la mise en route",
     "ctaLater": "Plus tard"
+  },
+  "setupInterview": {
+    "title": "Préparons votre espace",
+    "subtitle": "Quelques questions rapides. Chaque question peut être passée.",
+    "progress": "Question {current} sur {total}",
+    "skip": "Passer",
+    "later": "Terminer plus tard",
+    "back": "Retour",
+    "finish": "Terminer",
+    "completing": "Préparation de votre espace…",
+    "recapTitle": "Votre espace est prêt",
+    "recapBody": "Voici ce que nous avons activé pour vous :",
+    "recapEmpty": "Votre espace de base est prêt. Vous pourrez activer d'autres outils à tout moment.",
+    "recapCta": "Découvrir mon espace",
+    "resume": "Terminer la configuration de mon espace",
+    "error": "Impossible d'enregistrer pour le moment. Réessayez dans un instant.",
+    "questions": {
+      "company_type": {
+        "label": "Travaillez-vous seul(e) ou avec une équipe ?",
+        "options": {
+          "solo": "Je travaille seul(e)",
+          "team": "Avec une équipe"
+        }
+      },
+      "team_size": {
+        "label": "Combien de personnes travaillent avec vous ?",
+        "options": {
+          "1-10": "1 à 10",
+          "11-50": "11 à 50",
+          "51-200": "51 à 200",
+          "201-500": "201 à 500",
+          "500+": "Plus de 500"
+        }
+      },
+      "sector": {
+        "label": "Quelle est votre activité ?",
+        "options": {
+          "restaurant": "Restauration",
+          "fuel_station": "Station-service",
+          "education": "Éducation",
+          "commerce": "Commerce",
+          "services": "Services",
+          "travel": "Agence de voyage",
+          "other": "Mon secteur n'est pas listé"
+        }
+      },
+      "premises": {
+        "label": "Avez-vous un ou plusieurs lieux physiques ?",
+        "options": {
+          "single": "Un local",
+          "multiple": "Plusieurs sites",
+          "mobile": "Équipes mobiles",
+          "none": "Pas de lieu physique"
+        }
+      },
+      "priorities": {
+        "label": "Qu'est-ce qui compte le plus pour vous aujourd'hui ?",
+        "hint": "Plusieurs choix possibles",
+        "options": {
+          "attendance": "Les présences et le pointage",
+          "payroll": "La paie",
+          "accounting": "La comptabilité",
+          "crm": "La relation client",
+          "cameras": "La sécurité des lieux (caméras)",
+          "showcase": "Mon site vitrine"
+        }
+      },
+      "scheduled_hours": {
+        "label": "Vos employés travaillent-ils sur des horaires planifiés ?",
+        "options": {
+          "yes": "Oui",
+          "no": "Non"
+        }
+      }
+    },
+    "modules": {
+      "restaurant": "Moteur restaurant",
+      "fuel_station": "Station-service",
+      "edumanager": "Éducation",
+      "travelagency": "Agence de voyage",
+      "employees": "Gestion des employés",
+      "attendance": "Présences et pointage",
+      "absences": "Absences",
+      "payroll": "Paie",
+      "accounting": "Comptabilité",
+      "crm": "Relation client",
+      "cameras": "Caméras",
+      "showcase": "Site vitrine",
+      "contracts": "Contrats",
+      "training": "Formation",
+      "reports": "Rapports",
+      "marketing": "Marketing"
+    }
+  },
+  "nextSteps": {
+    "title": "Prochaines étapes",
+    "subtitle": "Quelques actions pour finir votre mise en route.",
+    "viewAll": "Tout voir ({n})",
+    "viewLess": "Réduire",
+    "complete": "Marquer comme fait",
+    "skip": "Passer",
+    "dismiss": "Masquer cette carte",
+    "restore": "Prochaines étapes ({n})",
+    "done": "Mise en route terminée !",
+    "progress": "{done} sur {total}",
+    "error": "Impossible de charger vos prochaines étapes.",
+    "steps": {
+      "customize_showcase": {
+        "title": "Personnaliser votre site vitrine",
+        "desc": "Choisissez vos couleurs, textes et images."
+      },
+      "publish_showcase": {
+        "title": "Publier votre site vitrine",
+        "desc": "Rendez votre site visible en un clic."
+      }
+    }
   }
 }

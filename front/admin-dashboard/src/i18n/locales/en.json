@@ -6829,5 +6829,121 @@
     "body": "An email has been sent to you with a link to set your password — it will be used for your future sign-ins.",
     "ctaStart": "Start setting up",
     "ctaLater": "Later"
+  },
+  "setupInterview": {
+    "title": "Let's set up your workspace",
+    "subtitle": "A few quick questions. Every question can be skipped.",
+    "progress": "Question {current} of {total}",
+    "skip": "Skip",
+    "later": "Finish later",
+    "back": "Back",
+    "finish": "Finish",
+    "completing": "Preparing your workspace…",
+    "recapTitle": "Your workspace is ready",
+    "recapBody": "Here is what we enabled for you:",
+    "recapEmpty": "Your base workspace is ready. You can enable more tools at any time.",
+    "recapCta": "Explore my workspace",
+    "resume": "Finish setting up my workspace",
+    "error": "Could not save right now. Please try again in a moment.",
+    "questions": {
+      "company_type": {
+        "label": "Do you work alone or with a team?",
+        "options": {
+          "solo": "I work alone",
+          "team": "With a team"
+        }
+      },
+      "team_size": {
+        "label": "How many people work with you?",
+        "options": {
+          "1-10": "1 to 10",
+          "11-50": "11 to 50",
+          "51-200": "51 to 200",
+          "201-500": "201 to 500",
+          "500+": "More than 500"
+        }
+      },
+      "sector": {
+        "label": "What is your business?",
+        "options": {
+          "restaurant": "Restaurant",
+          "fuel_station": "Fuel station",
+          "education": "Education",
+          "commerce": "Retail",
+          "services": "Services",
+          "travel": "Travel agency",
+          "other": "My sector is not listed"
+        }
+      },
+      "premises": {
+        "label": "Do you have one or more physical locations?",
+        "options": {
+          "single": "One location",
+          "multiple": "Several sites",
+          "mobile": "Mobile teams",
+          "none": "No physical location"
+        }
+      },
+      "priorities": {
+        "label": "What matters most to you today?",
+        "hint": "Multiple choices allowed",
+        "options": {
+          "attendance": "Attendance and time tracking",
+          "payroll": "Payroll",
+          "accounting": "Accounting",
+          "crm": "Customer relations",
+          "cameras": "Site security (cameras)",
+          "showcase": "My showcase website"
+        }
+      },
+      "scheduled_hours": {
+        "label": "Do your employees work on planned schedules?",
+        "options": {
+          "yes": "Yes",
+          "no": "No"
+        }
+      }
+    },
+    "modules": {
+      "restaurant": "Restaurant engine",
+      "fuel_station": "Fuel station",
+      "edumanager": "Education",
+      "travelagency": "Travel agency",
+      "employees": "Employee management",
+      "attendance": "Attendance & time tracking",
+      "absences": "Absences",
+      "payroll": "Payroll",
+      "accounting": "Accounting",
+      "crm": "Customer relations",
+      "cameras": "Cameras",
+      "showcase": "Showcase website",
+      "contracts": "Contracts",
+      "training": "Training",
+      "reports": "Reports",
+      "marketing": "Marketing"
+    }
+  },
+  "nextSteps": {
+    "title": "Next steps",
+    "subtitle": "A few actions to finish getting started.",
+    "viewAll": "View all ({n})",
+    "viewLess": "Collapse",
+    "complete": "Mark as done",
+    "skip": "Skip",
+    "dismiss": "Hide this card",
+    "restore": "Next steps ({n})",
+    "done": "You're all set!",
+    "progress": "{done} of {total}",
+    "error": "Could not load your next steps.",
+    "steps": {
+      "customize_showcase": {
+        "title": "Customize your showcase website",
+        "desc": "Pick your colors, texts and images."
+      },
+      "publish_showcase": {
+        "title": "Publish your showcase website",
+        "desc": "Make your site visible in one click."
+      }
+    }
   }
 }
