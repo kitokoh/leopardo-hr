@@ -29,7 +29,16 @@ class CrmAutomationState extends Model
 
     public $timestamps = false;
 
-    protected $guarded = [];
+    // #7646 — allowlist explicite. `company_id` reste volontairement
+    // assignable ICI (exception justifiée) : c'est la clé primaire de cette
+    // table sans BelongsToCompany, écrite exclusivement côté serveur via
+    // AutomationEngine::setEmergencyStop() avec currentCompany()->id —
+    // jamais depuis un payload utilisateur.
+    protected $fillable = [
+        'company_id',
+        'enabled',
+        'updated_at',
+    ];
 
     protected function casts(): array
     {
