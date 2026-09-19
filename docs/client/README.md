@@ -1,4 +1,4 @@
-# Documentation client — Leopardo RH (F-25)
+# Documentation client — Leopardo (F-25)
 
 > Programme FOCUS — guides utilisateur du noyau (paie, RH, présence).
 > Statut : squelettes — à compléter au fil des pilotes (F-24).

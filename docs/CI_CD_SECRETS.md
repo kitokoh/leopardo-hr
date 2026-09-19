@@ -1,4 +1,4 @@
-# CI/CD Secrets & Variables — Leopardo RH
+# CI/CD Secrets & Variables — Leopardo
 
 > Audit Plan P4 (`docs/audits/PLAN_ACTION_CICD_2026-07-19.md`): single source of truth for
 > every GitHub Actions secret/variable required by `.github/workflows/**`,

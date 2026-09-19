@@ -70,6 +70,15 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
+      # Issue #7647 : tier de déploiement explicite, découplé d'APP_ENV (le
+      # dev tourne en APP_ENV=production — dette de nommage assumée, cf.
+      # en-tête). docker-entrypoint.sh est fail-closed dessus :
+      # RESET_TEST_DB_ONCE exige DEPLOY_TIER=dev explicite, et
+      # FORCE_SUPER_ADMIN_PASSWORD_RESET n'est propagée aux seeders que sur
+      # ce tier. Sans sync blueprint, poser aussi la variable dans le
+      # dashboard Render du service dev.
+      - key: DEPLOY_TIER
+        value: dev
       # Issue #7213 : doc API Blade publique sur le tier dev (QA/démos).
       # Verrouillée en prod (render.prod.yaml, Gate viewApiDocs).
       - key: API_DOCS_PUBLIC

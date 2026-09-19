@@ -2,7 +2,7 @@
 
 ## Description courte recommandée
 
-Open-source, AI-native HR & payroll OS for growing field-based companies. Multi-tenant, mobile-first, biometric attendance, multi-country payroll and OpenAPI integrations.
+Open-source, AI-native business suite for growing field-based companies — HR & payroll, multi-tenant, mobile-first, biometric attendance, multi-country payroll and OpenAPI integrations.
 
 ## Topics recommandés
 
@@ -14,7 +14,7 @@ Utiliser une URL produit stable et démontrée dès qu’elle est disponible. Ta
 
 ## Texte de présentation à placer au début du README
 
-Leopardo RH is an open-source, mobile-first HR and payroll operating system for growing companies with field teams and multiple sites. It replaces fragmented spreadsheets and messaging workflows with a unified platform for employee records, attendance, leave, schedules, documents, payroll preparation and workforce analytics.
+Leopardo is an open-source, mobile-first business suite for growing companies with field teams and multiple sites. It replaces fragmented spreadsheets and messaging workflows with a unified platform for employee records, attendance, leave, schedules, documents, payroll preparation and workforce analytics.
 
 The project is designed for self-hosting or SaaS deployment and includes web dashboards, native Flutter apps, a biometric kiosk path, multi-tenant isolation, RBAC, SSO options and an OpenAPI integration layer.
 

@@ -123,6 +123,27 @@ anciens orphelins (facturés, inutilisés). Le fichier reste donc identique
 sur ce point ; seule son rôle (dev/test continu) est désormais documenté
 en tête de fichier.
 
+### DEPLOY_TIER — identité de tier explicite (issue #7647)
+
+`APP_ENV=production` étant posé sur les DEUX tiers (dette de nommage
+assumée, cf. ci-dessus), aucun garde basé sur APP_ENV ne peut distinguer
+dev et prod. Les blueprints posent donc une variable de tier explicite :
+`DEPLOY_TIER=dev` (`render.yaml`) et `DEPLOY_TIER=prod`
+(`render.prod.yaml`). `api/docker-entrypoint.sh` est **fail-closed**
+dessus :
+
+- `RESET_TEST_DB_ONCE=true` (DROP total de la base) exige
+  `DEPLOY_TIER=dev` explicite — variable absente, vide ou autre valeur
+  ⇒ refus de démarrer, en plus des gardes APP_ENV #6537 (conservées) ;
+- `FORCE_SUPER_ADMIN_PASSWORD_RESET` n'est propagée aux seeders
+  (`SuperAdminSeeder`) que si `DEPLOY_TIER=dev` ; sinon elle est vidée
+  avant `db:seed`, avec warning.
+
+⚠️ Action propriétaire : le blueprint n'étant pas synchronisé
+automatiquement, poser `DEPLOY_TIER=dev` dans le dashboard Render du
+service dev AVANT le prochain usage de `RESET_TEST_DB_ONCE` (sinon le
+refus fail-closed est le comportement voulu).
+
 ### Phase 1 — tier gratuit pour `render.prod.yaml`
 
 Limite constatée (docs Render 2026) : les services de type **Background

@@ -1,15 +1,15 @@
-# SourceForge — Leopardo RH
+# SourceForge — Leopardo
 
 ## Fiche de projet proposée
 
 **Project name**  
-Leopardo RH
+Leopardo
 
 **Short description**  
-Open-source HR and payroll operating system for growing field-based companies.
+Open-source business suite for growing field-based companies — HR & payroll included.
 
 **Full description**  
-Leopardo RH is a modular, open-source HR and payroll platform for organizations that need to manage employees, attendance, schedules, leave, documents and payroll preparation across multiple sites. It provides web dashboards, Flutter mobile applications, biometric kiosk workflows and an OpenAPI integration layer. The project is MIT licensed and can be self-hosted with PostgreSQL and Redis.
+Leopardo is a modular, open-source business suite for organizations that need to manage employees, attendance, schedules, leave, documents and payroll preparation across multiple sites. It provides web dashboards, Flutter mobile applications, biometric kiosk workflows and an OpenAPI integration layer. The project is MIT licensed and can be self-hosted with PostgreSQL and Redis.
 
 **Project URL**  
 https://github.com/kitokoh/leopardo-hr

@@ -18,7 +18,7 @@
 | Rôle | Responsabilité |
 |---|---|
 | Client employeur (tenant) | **Responsable de traitement** pour ses données CRM (RGPD art. 4.7) |
-| Leopardo RH | Sous-traitant SaaS (hébergement, sécurité, support) — art. 28 |
+| Leopardo | Sous-traitant SaaS (hébergement, sécurité, support) — art. 28 |
 | Super-admin Leopardo | Accès plateforme limité : provisioning, support, conformité |
 | Utilisateurs tenant (principal/rh/employé CRM) | Accès selon rôles, Policies et tests cross-tenant |
 

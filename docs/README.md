@@ -1,4 +1,4 @@
-# Documentation — Leopardo HR
+# Documentation — Leopardo
 
 Index de la documentation technique et stratégique du projet.
 

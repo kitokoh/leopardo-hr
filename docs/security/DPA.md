@@ -1,11 +1,11 @@
 # 📄 DPA — Accord de traitement des données (RGPD) — F-18
 
-> Programme FOCUS — contrat de sous-traitance type pour les clients de Leopardo RH.
+> Programme FOCUS — contrat de sous-traitance type pour les clients de Leopardo.
 > Statut : **brouillon à faire relire par un conseil juridique** (ne constitue pas un avis juridique).
 
 ## Parties
-- **Responsable de traitement** : le client (entreprise utilisant Leopardo RH).
-- **Sous-traitant** : l'éditeur (Kitokoh.com / Leopardo RH).
+- **Responsable de traitement** : le client (entreprise utilisant Leopardo).
+- **Sous-traitant** : l'éditeur (Kitokoh.com / Leopardo).
 
 ## Données traitées
 Catégories : identité des employés, données de paie (salaires, IBAN), pointage et biométrie (kiosk/mobile), absences, congés, documents RH. Durées de conservation conformes à la matrice RGPD existante (`docs/security/MATRICE_CONFORMITE_RGPD_LOI_18_07.md`).
