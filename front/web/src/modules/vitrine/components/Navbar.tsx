@@ -27,6 +27,8 @@ import {
   X,
 } from 'lucide-react'
 import { useVitrineLocale } from '../lib/vitrine-locale'
+import { t } from '@/lib/i18n/locale-catalog'
+import type { AppLocale } from '@/lib/i18n'
 import { getEnvConfig } from '../lib/env'
 
 type Props = {
@@ -83,127 +85,45 @@ function filterNavEntries(entries: NavEntry[]): NavEntry[] {
   }, [])
 }
 
-const navByLocale: Record<string, NavEntry[]> = {
-  fr: [
-    { href: '/pricing', label: 'Tarifs' },
+/**
+ * #7665 — les libellés/descriptions de la nav vivaient en dur dans 4 blocs
+ * par locale (FR sans accents, TR sans diacritiques). Ils viennent désormais
+ * du catalogue partagé (`vitrine.nav.*`, shared/i18n ×4) — garde PA2-I18N-014.
+ * Les noms de plateformes (Windows, macOS, Android, iPhone) sont des noms de
+ * marque, identiques dans les 4 langues : ils restent des constantes.
+ */
+function buildNavEntries(locale: AppLocale): NavEntry[] {
+  const nav = (key: string) => t(locale, `vitrine.nav.${key}`)
+  return [
+    { href: '/pricing', label: nav('pricing') },
     {
-      label: 'Ressources',
+      label: nav('resources'),
       items: [
-        { href: '/guides/rh-startup', icon: <BookOpen className="w-4 h-4" />, label: 'Guides', description: 'Bonnes pratiques RH et tutoriels' },
-        { href: '/blog', icon: <PenTool className="w-4 h-4" />, label: 'Insights RH', description: 'Analyses, cas pratiques et idées de croissance' },
-        { href: '/docs', icon: <Book className="w-4 h-4" />, label: 'Docs API', description: 'Guides techniques et intégration' },
-        { href: '/changelog', icon: <FileText className="w-4 h-4" />, label: 'Changelog', description: 'Dernières mises à jour produit' },
+        { href: '/guides/rh-startup', icon: <BookOpen className="w-4 h-4" />, label: nav('guides'), description: nav('guidesDesc') },
+        { href: '/blog', icon: <PenTool className="w-4 h-4" />, label: nav('insights'), description: nav('insightsDesc') },
+        { href: '/docs', icon: <Book className="w-4 h-4" />, label: nav('apiDocs'), description: nav('apiDocsDesc') },
+        { href: '/changelog', icon: <FileText className="w-4 h-4" />, label: nav('changelog'), description: nav('changelogDesc') },
       ],
     },
-    { href: '/contact', label: 'Contact' },
+    { href: '/contact', label: nav('contact') },
     {
-      label: 'Installer Leopardo',
+      label: nav('install'),
       items: [
-        { href: '/download?platform=windows', icon: <Monitor className="w-4 h-4" />, label: 'Windows', description: 'Client desktop pour ZKTeco et synchronisation' },
-        { href: '/download?platform=macos', icon: <Laptop className="w-4 h-4" />, label: 'macOS', description: 'Espace bureau pour les équipes terrain' },
-        { href: '/download?platform=android', icon: <Smartphone className="w-4 h-4" />, label: 'Android', description: 'Pointage mobile et self-service employé' },
-        { href: '/download?platform=ios', icon: <Smartphone className="w-4 h-4" />, label: 'iPhone', description: 'Application mobile iOS pour employés et managers' },
-      ],
-    },
-    {
-      label: 'Communauté',
-      items: [
-        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'Communauté', description: 'Échangez avec la communauté' },
-        { href: '/faq', icon: <HelpCircle className="w-4 h-4" />, label: 'FAQ', description: 'Questions fréquentes' },
-        { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: 'Support', description: 'Contactez notre équipe' },
-      ],
-    },
-  ],
-  en: [
-    { href: '/pricing', label: 'Pricing' },
-    {
-      label: 'Resources',
-      items: [
-        { href: '/guides/rh-startup', icon: <BookOpen className="w-4 h-4" />, label: 'Guides', description: 'HR best practices and tutorials' },
-        { href: '/blog', icon: <PenTool className="w-4 h-4" />, label: 'HR Insights', description: 'Analysis, playbooks and growth ideas' },
-        { href: '/docs', icon: <Book className="w-4 h-4" />, label: 'API Docs', description: 'Technical guides and integration' },
-        { href: '/changelog', icon: <FileText className="w-4 h-4" />, label: 'Changelog', description: 'Latest product updates' },
-      ],
-    },
-    { href: '/contact', label: 'Contact' },
-    {
-      label: 'Install Leopardo',
-      items: [
-        { href: '/download?platform=windows', icon: <Monitor className="w-4 h-4" />, label: 'Windows', description: 'Desktop client for ZKTeco and sync' },
-        { href: '/download?platform=macos', icon: <Laptop className="w-4 h-4" />, label: 'macOS', description: 'Desktop workspace for field teams' },
-        { href: '/download?platform=android', icon: <Smartphone className="w-4 h-4" />, label: 'Android', description: 'Mobile attendance and employee self-service' },
-        { href: '/download?platform=ios', icon: <Smartphone className="w-4 h-4" />, label: 'iPhone', description: 'iOS app for employees and managers' },
+        { href: '/download?platform=windows', icon: <Monitor className="w-4 h-4" />, label: 'Windows', description: nav('windowsDesc') },
+        { href: '/download?platform=macos', icon: <Laptop className="w-4 h-4" />, label: 'macOS', description: nav('macosDesc') },
+        { href: '/download?platform=android', icon: <Smartphone className="w-4 h-4" />, label: 'Android', description: nav('androidDesc') },
+        { href: '/download?platform=ios', icon: <Smartphone className="w-4 h-4" />, label: 'iPhone', description: nav('iosDesc') },
       ],
     },
     {
-      label: 'Community',
+      label: nav('community'),
       items: [
-        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'Community', description: 'Connect with the community' },
-        { href: '/faq', icon: <HelpCircle className="w-4 h-4" />, label: 'FAQ', description: 'Frequently asked questions' },
-        { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: 'Support', description: 'Contact our team' },
+        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: nav('community'), description: nav('communityDesc') },
+        { href: '/faq', icon: <HelpCircle className="w-4 h-4" />, label: nav('faq'), description: nav('faqDesc') },
+        { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: nav('support'), description: nav('supportDesc') },
       ],
     },
-  ],
-  tr: [
-    { href: '/pricing', label: 'Fiyatlar' },
-    {
-      label: 'Kaynaklar',
-      items: [
-        { href: '/guides/rh-startup', icon: <BookOpen className="w-4 h-4" />, label: 'Rehberler', description: 'İK için en iyi uygulamalar' },
-        { href: '/blog', icon: <PenTool className="w-4 h-4" />, label: 'İK İçgörüleri', description: 'Analizler, rehberler ve büyüme fikirleri' },
-        { href: '/docs', icon: <Book className="w-4 h-4" />, label: 'API Dokümanları', description: 'Teknik rehberler ve entegrasyon' },
-        { href: '/changelog', icon: <FileText className="w-4 h-4" />, label: 'Değişiklikler', description: 'Son ürün güncellemeleri' },
-      ],
-    },
-    { href: '/contact', label: 'İletişim' },
-    {
-      label: "Leopardo'yu Kur",
-      items: [
-        { href: '/download?platform=windows', icon: <Monitor className="w-4 h-4" />, label: 'Windows', description: 'ZKTeco ve senkronizasyon için masaüstü istemcisi' },
-        { href: '/download?platform=macos', icon: <Laptop className="w-4 h-4" />, label: 'macOS', description: 'Saha ekipleri için masaüstü çalışma alanı' },
-        { href: '/download?platform=android', icon: <Smartphone className="w-4 h-4" />, label: 'Android', description: 'Mobil yoklama ve çalışan self-servis' },
-        { href: '/download?platform=ios', icon: <Smartphone className="w-4 h-4" />, label: 'iPhone', description: 'Çalışan ve yöneticiler için iOS uygulaması' },
-      ],
-    },
-    {
-      label: 'Topluluk',
-      items: [
-        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'Topluluk', description: 'Toplulukla bağlantı kurun' },
-        { href: '/faq', icon: <HelpCircle className="w-4 h-4" />, label: 'SSS', description: 'Sık sorulan sorular' },
-        { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: 'Destek', description: 'Ekibimize ulaşın' },
-      ],
-    },
-  ],
-  ar: [
-    { href: '/pricing', label: 'الأسعار' },
-    {
-      label: 'الموارد',
-      items: [
-        { href: '/guides/rh-startup', icon: <BookOpen className="w-4 h-4" />, label: 'الأدلة', description: 'ممارسات عملية للموارد البشرية والفرق الميدانية' },
-        { href: '/blog', icon: <PenTool className="w-4 h-4" />, label: 'رؤى التشغيل', description: 'تحليلات وأفكار نمو للشركات الصغيرة والمتوسطة' },
-        { href: '/docs', icon: <Book className="w-4 h-4" />, label: 'توثيق API', description: 'أدلة تقنية للتكاملات والشركاء' },
-        { href: '/changelog', icon: <FileText className="w-4 h-4" />, label: 'سجل التغييرات', description: 'آخر تحديثات المنتج' },
-      ],
-    },
-    { href: '/contact', label: 'اتصل بنا' },
-    {
-      label: 'تثبيت Leopardo',
-      items: [
-        { href: '/download?platform=windows', icon: <Monitor className="w-4 h-4" />, label: 'Windows', description: 'عميل سطح المكتب للمزامنة وأجهزة ZKTeco' },
-        { href: '/download?platform=macos', icon: <Laptop className="w-4 h-4" />, label: 'macOS', description: 'مساحة عمل للفرق الميدانية' },
-        { href: '/download?platform=android', icon: <Smartphone className="w-4 h-4" />, label: 'Android', description: 'الحضور والخدمة الذاتية على الجوال' },
-        { href: '/download?platform=ios', icon: <Smartphone className="w-4 h-4" />, label: 'iPhone', description: 'تطبيق iOS للموظفين والمديرين' },
-      ],
-    },
-    {
-      label: 'المجتمع',
-      items: [
-        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'المجتمع', description: 'تواصل مع المجتمع' },
-        { href: '/faq', icon: <HelpCircle className="w-4 h-4" />, label: 'الأسئلة الشائعة', description: 'إجابات سريعة قبل الإطلاق' },
-        { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: 'الدعم', description: 'تواصل مع فريقنا' },
-      ],
-    },
-  ],
+  ]
 }
 
 function DropdownMenu({
@@ -259,7 +179,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const entries = filterNavEntries(navByLocale[locale] ?? navByLocale.fr)
+  const entries = filterNavEntries(buildNavEntries(locale))
   const search = searchParams.toString()
 
   // #7492 — session active : les CTA « Connexion / Créer un compte » laissent
