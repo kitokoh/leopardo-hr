@@ -428,7 +428,7 @@ export default function MarketingPage() {
                             <button
                               onClick={() => handlePublishNow(post)}
                               disabled={pendingActionId === post.id}
-                              title="Publier maintenant"
+                              title={t(locale, 'marketing.publishNow')}
                               className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-700 disabled:opacity-50"
                             >
                               <Send className="h-4 w-4" />

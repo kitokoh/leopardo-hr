@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Sparkles, TrendingUp, Mail, CalendarClock, AlertTriangle } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
+import { t } from '@/lib/i18n/locale-catalog';
+import { getPreferredLocale } from '@/lib/i18n';
 
 export type WeeklyReport = {
   period: { from: string; to: string };
@@ -33,6 +35,7 @@ export function WeeklyReportCard() {
   const [report, setReport] = useState<WeeklyReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const locale = getPreferredLocale();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -42,11 +45,11 @@ export function WeeklyReportCard() {
       const payload = (await res.json()) as WeeklyReportPayload;
       setReport(payload.data ?? null);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de charger le bilan hebdomadaire.');
+      setError(err instanceof ApiError ? err.message : t(locale, 'marketing.weeklyReportLoadError'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [locale]);
 
   useEffect(() => {
     void load();
@@ -59,7 +62,7 @@ export function WeeklyReportCard() {
         {report ? (
           <span className="inline-flex items-center gap-1 rounded-full bg-violet-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-700">
             <Sparkles className="h-3 w-3" />
-            {report.summary_source === 'ai' ? 'Synthese IA' : 'Synthese automatique'}
+            {report.summary_source === 'ai' ? t(locale, 'marketing.aiSummary') : t(locale, 'marketing.autoSummary')}
           </span>
         ) : null}
       </div>

@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { MessageCircle, Send, Sparkles, RefreshCw } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
+import { t } from '@/lib/i18n/locale-catalog';
+import { getPreferredLocale } from '@/lib/i18n';
 
 export type SocialComment = {
   platform: string;
@@ -46,6 +48,7 @@ export function PostInteractions({ postId }: PostInteractionsProps) {
   const [sending, setSending] = useState(false);
   const [suggesting, setSuggesting] = useState(false);
   const [sent, setSent] = useState(false);
+  const locale = getPreferredLocale();
 
   const normalizeComments = (raw: unknown): SocialComment[] => {
     const result: SocialComment[] = [];
@@ -88,11 +91,11 @@ export function PostInteractions({ postId }: PostInteractionsProps) {
       const payload = (await res.json()) as CommentsPayload;
       setComments(normalizeComments(payload.data?.comments));
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de charger les commentaires.');
+      setError(err instanceof ApiError ? err.message : t(locale, 'marketing.commentsLoadError'));
     } finally {
       setLoading(false);
     }
-  }, [postId]);
+  }, [postId, locale]);
 
   useEffect(() => {
     void load();
@@ -111,7 +114,7 @@ export function PostInteractions({ postId }: PostInteractionsProps) {
         setReply(payload.data.suggestion);
       }
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Suggestion IA indisponible pour le moment.');
+      setError(err instanceof ApiError ? err.message : t(locale, 'marketing.aiSuggestUnavailable'));
     } finally {
       setSuggesting(false);
     }
@@ -132,7 +135,7 @@ export function PostInteractions({ postId }: PostInteractionsProps) {
       setReply('');
       setSent(true);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible d envoyer la reponse.');
+      setError(err instanceof ApiError ? err.message : t(locale, 'marketing.replySendError'));
     } finally {
       setSending(false);
     }
@@ -183,7 +186,7 @@ export function PostInteractions({ postId }: PostInteractionsProps) {
                   className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-bold text-violet-700 transition hover:bg-violet-50 disabled:opacity-50"
                 >
                   <Sparkles className="h-3.5 w-3.5" />
-                  {suggesting ? 'Suggestion...' : 'Suggerer une reponse (IA)'}
+                  {suggesting ? 'Suggestion...' : t(locale, 'marketing.suggestReply')}
                 </button>
               </div>
               <p className="mt-1 text-sm text-slate-800">{comment.comment}</p>
@@ -195,7 +198,7 @@ export function PostInteractions({ postId }: PostInteractionsProps) {
       <div className="mt-3 flex flex-col gap-2 md:flex-row md:items-end">
         <textarea
           data-testid="post-interactions-reply"
-          placeholder="Votre reponse (validee par vous avant envoi)..."
+          placeholder={t(locale, 'marketing.replyPlaceholder')}
           value={reply}
           onChange={(e) => setReply(e.target.value)}
           rows={2}

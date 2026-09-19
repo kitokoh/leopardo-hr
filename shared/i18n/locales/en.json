@@ -505,7 +505,16 @@
       }
     },
     "socialExamplePlaceholder": "Ex: Leopardo — Social media",
-    "postContentPlaceholder": "Post content..."
+    "postContentPlaceholder": "Post content...",
+    "publishNow": "Publish now",
+    "commentsLoadError": "Unable to load comments.",
+    "aiSuggestUnavailable": "AI suggestion is unavailable right now.",
+    "replySendError": "Unable to send the reply.",
+    "suggestReply": "Suggest a reply (AI)",
+    "replyPlaceholder": "Your reply (you validate it before sending)...",
+    "weeklyReportLoadError": "Unable to load the weekly report.",
+    "aiSummary": "AI summary",
+    "autoSummary": "Automatic summary"
   },
   "attendance": {
     "sending_to_server": "Sending {label} to the server...",
