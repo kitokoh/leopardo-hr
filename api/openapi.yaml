@@ -112,6 +112,245 @@ tags:
 - name: HealthManager
   description: 'BC-30 HEALTHMANAGER — solution verticale hôpitaux & cliniques privées (HC-001 #7785 à HC-008 #7792) : structure, patients, rendez-vous, consultations, ordonnances, hospitalisations, facturation des soins.'
 paths:
+  /travel/distributor-keys:
+    get:
+      tags:
+      - Travel
+      summary: Liste des cles API de lecture distributeurs
+      description: >-
+        BC-24 TRAVEL (#7641) — cles de LECTURE multiples par distributeur
+        (miroir du pattern partner-keys #6086) : nom, scopes
+        catalog.read/bookings.read, stats d'usage (usage_count,
+        last_used_at), rotation et revocation. Le hash n'est JAMAIS expose,
+        le token brut n'apparait qu'a la creation/rotation. Reserve
+        principal/rh.
+      responses:
+        '200':
+          description: Cles du tenant (jamais le token ni le hash)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelDistributorKey'
+        '401':
+          description: Non authentifie
+        '403':
+          description: Acteur non autorise
+    post:
+      tags:
+      - Travel
+      summary: Emettre une cle API de lecture pour un distributeur
+      description: >-
+        BC-24 TRAVEL (#7641) — emission d'une cle distributeur : token
+        `dsk_...` affiche UNE SEULE fois (hash SHA-256 au repos). `scopes`
+        est une allowlist fail-closed (catalog.read, bookings.read) — scope
+        inconnu → 422. Reserve principal/rh.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, scopes]
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 120
+                scopes:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: string
+                    enum: [catalog.read, bookings.read]
+      responses:
+        '201':
+          description: Cle emise — le champ api_key n'est plus jamais renvoye ensuite
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      scopes:
+                        type: array
+                        items:
+                          type: string
+                      api_key:
+                        type: string
+                      created_at:
+                        type: string
+                        format: date-time
+        '403':
+          description: Acteur non autorise
+        '422':
+          description: Validation (nom manquant, scope hors allowlist)
+  /travel/distributor-keys/{travelDistributorKey}/rotate:
+    post:
+      tags:
+      - Travel
+      summary: Rotation d'une cle distributeur
+      description: >-
+        BC-24 TRAVEL (#7641) — remplace le hash atomiquement : nouveau token
+        affiche une fois, l'ancien est immediatement invalide. Une cle
+        revoquee ne tourne pas (422). Reserve principal/rh, 404 sur cle d'un
+        autre tenant.
+      parameters:
+      - name: travelDistributorKey
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Nouveau token (affiche une seule fois)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      api_key:
+                        type: string
+                      rotated_at:
+                        type: string
+                        format: date-time
+        '403':
+          description: Acteur non autorise
+        '404':
+          description: Introuvable (ou autre tenant)
+        '422':
+          description: Cle revoquee
+  /travel/distributor-keys/{travelDistributorKey}/revoke:
+    post:
+      tags:
+      - Travel
+      summary: Revoquer une cle distributeur
+      description: >-
+        BC-24 TRAVEL (#7641) — revocation idempotente (acte metier POST,
+        convention #4930) : enabled=false + revoked_at, la ligne reste pour
+        la tracabilite et les stats. La cle cesse immediatement
+        d'authentifier la surface de lecture.
+      parameters:
+      - name: travelDistributorKey
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Cle revoquee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelDistributorKey'
+        '403':
+          description: Acteur non autorise
+        '404':
+          description: Introuvable (ou autre tenant)
+  /travel/distributor/catalog:
+    get:
+      tags:
+      - Travel
+      summary: Catalogue des voyages publies (surface distributeur)
+      description: >-
+        BC-24 TRAVEL (#7641) — surface de LECTURE authentifiee par cle
+        distributeur (header X-Distributor-Key, scope catalog.read requis —
+        403 sinon, cle inconnue/revoquee → 401). Seuls les voyages PUBLIES
+        sont exposes (meme regle que la boutique publique), tenant resolu
+        par la cle (isolation cross-tenant garantie). Rate limit dedie
+        60/min. Filtres origin_city_id, destination_city_id, date_from,
+        date_to ; pagination per_page (1..100, defaut 20).
+      security: []
+      parameters:
+      - name: X-Distributor-Key
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: origin_city_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: destination_city_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: date_from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: date_to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Voyages publies pagines (tarifs par classe inclus)
+        '401':
+          description: Cle manquante, inconnue ou revoquee
+        '403':
+          description: Scope catalog.read absent de la cle
+  /travel/distributor/bookings/{reference}:
+    get:
+      tags:
+      - Travel
+      summary: Suivi d'une reservation par reference (surface distributeur)
+      description: >-
+        BC-24 TRAVEL (#7641) — extrait MINIMAL d'une reservation du tenant de
+        la cle (scope bookings.read requis) : reference, statut, statut de
+        paiement, nombre de passagers et trajet — JAMAIS de PII passager
+        (meme posture que le portail voyageur #7395). Reservation d'un autre
+        tenant → 404.
+      security: []
+      parameters:
+      - name: X-Distributor-Key
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Extrait minimal de la reservation
+        '401':
+          description: Cle manquante, inconnue ou revoquee
+        '403':
+          description: Scope bookings.read absent de la cle
+        '404':
+          description: Reference inconnue dans le tenant de la cle
   /travel/staff-assignments:
     get:
       tags:
@@ -37196,6 +37435,41 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    TravelDistributorKey:
+      type: object
+      description: >-
+        Cle API de lecture d'un distributeur (TRAVEL-DISTRIBUTION, #7641) —
+        acces de lecture distinct, revocable et trace par plateforme de
+        distribution ; hash SHA-256 au repos, jamais expose.
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        scopes:
+          type: array
+          items:
+            type: string
+            enum: [catalog.read, bookings.read]
+        enabled:
+          type: boolean
+        last_used_at:
+          type: string
+          format: date-time
+          nullable: true
+        usage_count:
+          type: integer
+        rotated_at:
+          type: string
+          format: date-time
+          nullable: true
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
     TravelStaffAssignment:
       type: object
       description: >-
