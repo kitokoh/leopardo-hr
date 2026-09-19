@@ -1,4 +1,4 @@
-name: Tests - Leopardo RH
+name: Tests - Leopardo
 
 on:
   workflow_dispatch:
@@ -588,7 +588,7 @@ jobs:
           set -euo pipefail
           BACKEND_SUMMARY="artifacts/backend-quality-summary/backend-quality-summary.md"
           cat > ci-report.md <<EOF
-          # CI Report — Leopardo RH
+          # CI Report — Leopardo
 
           - Workflow: ${{ github.workflow }}
           - Run ID: ${{ github.run_id }}
@@ -651,7 +651,7 @@ jobs:
           username: ${{ env.CI_SMTP_USERNAME }}
           password: ${{ env.CI_SMTP_PASSWORD }}
           secure: false
-          subject: "Leopardo RH CI Report — Run #${{ github.run_number }}"
+          subject: "Leopardo CI Report — Run #${{ github.run_number }}"
           to: ${{ env.CI_REPORT_TO != '' && env.CI_REPORT_TO || 'nouractu.com@gmail.com' }}
           from: ${{ env.CI_REPORT_FROM != '' && env.CI_REPORT_FROM || env.CI_SMTP_USERNAME }}
           body: file://ci-report.md

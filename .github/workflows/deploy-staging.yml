@@ -1,9 +1,9 @@
-name: Deploy Staging - Leopardo RH
+name: Deploy Staging - Leopardo
 
 # Issue #4341 — miroir du correctif #3545/#4359 de deploy-main.yml :
 #
 # L'ancien déclencheur `workflow_run` lisait `workflow_run.conclusion`
-# directement : un run « Tests - Leopardo RH » annulé en pending (famine de
+# directement : un run « Tests - Leopardo » annulé en pending (famine de
 # file GitHub Actions sous rafale de merges) → should_deploy=false → gate VERT
 # + deploy sauté avec un simple `core.warning` noyé (échec silencieux).
 #
@@ -106,7 +106,7 @@ jobs:
         uses: ./.github/actions/verify-deploy-workflows
         with:
           sha: ${{ steps.context.outputs.sha }}
-          required_workflows: '["Tests - Leopardo RH"]'
+          required_workflows: '["Tests - Leopardo"]'
           web_changed: ${{ 'false' }}
       - name: Deployment decision summary
         id: final
@@ -120,7 +120,7 @@ jobs:
             echo "| Item | Value |"
             echo "|------|-------|"
             echo "| SHA | \`${{ steps.context.outputs.sha }}\` |"
-            echo "| Tests - Leopardo RH | ${{ steps.workflow_gate.outputs.tests_conclusion }} |"
+            echo "| Tests - Leopardo | ${{ steps.workflow_gate.outputs.tests_conclusion }} |"
             echo "| Decision | ${{ steps.workflow_gate.outputs.should_deploy }} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
