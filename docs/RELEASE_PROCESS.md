@@ -1,4 +1,4 @@
-# Release Process — Leopardo RH
+# Release Process — Leopardo
 
 > ⚠️ **OBSOLÈTE (corrigé le 2026-09-09)** — la procédure décrite ci-dessous
 > (création manuelle de la GitHub Release, tags `vX.Y.Z-rc.N` « Pre-release »,

@@ -1,4 +1,4 @@
-# Leopardo HR — Zones de complexité cumulative et plan de refactoring
+# Leopardo — Zones de complexité cumulative et plan de refactoring
 
 **Auteur :** Manus AI  
 **Périmètre :** monorepo Laravel 12 / PHP 8.4, dashboard Vue, vitrine web, applications Flutter, contrats OpenAPI, workflows GitHub Actions.  
@@ -6,7 +6,7 @@
 
 ## 1. Synthèse exécutive
 
-Leopardo HR dispose d’une base technique solide et de mécanismes de qualité avancés, mais la complexité cumulative devient le principal risque architectural. Elle se manifeste moins par un unique composant défectueux que par la multiplication des frontières implicites : règles métier partagées entre plusieurs modules, clients qui réimplémentent les mêmes flux, fichiers mobiles dupliqués, contrats E2E historiquement divergents et workflows CI nombreux qui se déclenchent ou s’annulent selon des chemins différents.
+Leopardo dispose d’une base technique solide et de mécanismes de qualité avancés, mais la complexité cumulative devient le principal risque architectural. Elle se manifeste moins par un unique composant défectueux que par la multiplication des frontières implicites : règles métier partagées entre plusieurs modules, clients qui réimplémentent les mêmes flux, fichiers mobiles dupliqués, contrats E2E historiquement divergents et workflows CI nombreux qui se déclenchent ou s’annulent selon des chemins différents.
 
 Le hotspot le plus critique est **Payroll**. Il concentre les règles nationales, les cycles, les calculs et de nombreux appels intermodules. Le deuxième est la frontière **mobile core / applications spécialisées**, où la déduplication récente a révélé des providers et repositories réellement spécifiques mélangés à des services communs. Le troisième est la frontière **contrat API / clients / tests E2E**, comme l’ont montré les locators de login et les routes historiques attendues par les tests mais absentes du routeur actuel.
 

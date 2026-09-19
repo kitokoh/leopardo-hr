@@ -1,6 +1,6 @@
 # Architecture Visuals
 
-This directory contains diagrams and visual assets explaining the Leopardo RH internal mechanics.
+This directory contains diagrams and visual assets explaining the Leopardo internal mechanics.
 
 ## 🔑 Multi-Tenant Authentication
 The following diagram explains how we route a single login request to the correct tenant schema in our multi-tenant PostgreSQL database.

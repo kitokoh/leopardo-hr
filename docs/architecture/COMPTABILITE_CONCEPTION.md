@@ -11,7 +11,7 @@
 
 ## 1. Vision & repositionnement
 
-Leopardo RH couvre aujourd'hui le cycle RH (présence, congés, paie). Le module **Comptabilité** étend la plateforme au cycle financier de l'entreprise : **ce que l'entreprise facture, dépense, encaisse et doit suivre**.
+Leopardo couvre aujourd'hui le cycle RH (présence, congés, paie). Le module **Comptabilité** étend la plateforme au cycle financier de l'entreprise : **ce que l'entreprise facture, dépense, encaisse et doit suivre**.
 
 - **Nouvelle promesse** : *« Company OS »* — gérer ses employés **et** son argent au même endroit.
 - Le nom du produit pourra évoluer (ex. Leopardo Business / Leopardo OS) — **décision de marque séparée**, sans impact technique.
