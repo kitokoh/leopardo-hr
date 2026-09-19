@@ -217,6 +217,7 @@ class RetailOnlineOrderController extends Controller
             'confirmed_at' => $order->confirmed_at?->toIso8601String(),
             'shipped_at' => $order->shipped_at?->toIso8601String(),
             'delivered_at' => $order->delivered_at?->toIso8601String(),
+            'delivery_reference' => $order->delivery_reference,
             'created_at' => $order->created_at?->toIso8601String(),
             'updated_at' => $order->updated_at?->toIso8601String(),
         ];

@@ -163,6 +163,12 @@ class RetailMarketOrderPublicController extends Controller
                     'city' => $sellerSettings?->city,
                 ],
                 'items' => $items,
+                'delivery' => [
+                    // Handoff BC-26 (#7811) : reference publique de la
+                    // livraison creee a la confirmation (null avant
+                    // confirmation ou si le vendeur n'a pas le module).
+                    'reference' => $order->delivery_reference,
+                ],
                 'timeline' => [
                     'placed_at' => $order->created_at?->toIso8601String(),
                     'confirmed_at' => $order->confirmed_at?->toIso8601String(),

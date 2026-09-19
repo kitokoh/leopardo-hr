@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Retail\Application\Services;
 
+use App\Events\RetailOnlineOrderConfirmed;
 use App\Modules\Retail\Domain\Enums\RetailFulfillmentStatus;
 use App\Modules\Retail\Domain\Enums\RetailOrderSource;
 use App\Modules\Retail\Domain\Enums\RetailOrderStatus;
@@ -12,8 +13,10 @@ use App\Modules\Retail\Domain\Enums\RetailStockReasonCode;
 use App\Modules\Retail\Domain\Models\RetailLocation;
 use App\Modules\Retail\Domain\Models\RetailOrder;
 use App\Modules\Retail\Domain\Models\RetailOrderItem;
+use App\Modules\Retail\Domain\Models\RetailOrderPayment;
 use App\Modules\Retail\Domain\Models\RetailProduct;
 use App\Modules\Retail\Domain\Models\RetailStockLevel;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
@@ -45,6 +48,7 @@ final class RetailOnlineOrderService
     public function __construct(
         private readonly ConnectionInterface $connection,
         private readonly RetailStockService $stockService,
+        private readonly Dispatcher $events,
     ) {}
 
     /**
@@ -170,6 +174,12 @@ final class RetailOnlineOrderService
      * l'emplacement fourni ou l'emplacement de la commande) et passe le
      * statut historique a `completed` + `confirmed_at` (spec §2.3).
      *
+     * APRES commit, dispatch `RetailOnlineOrderConfirmed` (#7811) : le
+     * handoff BC-26 (creation de la livraison `source=retail_online`) est
+     * consomme par le module Delivery — integration par evenement, jamais
+     * d'import cross-module (registre BC). Le montant COD est le solde non
+     * encaisse (v1 : tout le total — paiement a la livraison).
+     *
      * @throws ValidationException 422 INVALID_TRANSITION.
      */
     public function confirm(RetailOrder $order, ?RetailLocation $location = null, ?int $userId = null): RetailOrder
@@ -206,7 +216,37 @@ final class RetailOnlineOrderService
             }
         );
 
+        $this->events->dispatch(new RetailOnlineOrderConfirmed(
+            companyId: (string) $updated->company_id,
+            orderId: (int) $updated->id,
+            reference: $updated->reference,
+            totalMinor: (int) $updated->total_minor,
+            currency: $updated->currency,
+            codAmountMinor: $this->outstandingAmountMinor($updated),
+            customerName: $updated->customer_name,
+            customerPhone: $updated->customer_phone,
+            deliveryAddress: $updated->delivery_address,
+            deliveryCity: $updated->delivery_city,
+            deliveryNotes: $updated->delivery_notes,
+        ));
+
         return $updated;
+    }
+
+    /**
+     * Solde restant a encaisser a la livraison (COD) : total moins paiements
+     * captures (#7812 — un paiement en ligne reussi annule le COD). Jamais
+     * negatif.
+     */
+    private function outstandingAmountMinor(RetailOrder $order): int
+    {
+        $captured = (int) RetailOrderPayment::query()
+            ->where('company_id', (string) $order->company_id)
+            ->where('order_id', (int) $order->id)
+            ->where('status', 'captured')
+            ->sum('amount_minor');
+
+        return max(0, (int) $order->total_minor - $captured);
     }
 
     /**

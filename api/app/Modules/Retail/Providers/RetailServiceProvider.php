@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Retail\Providers;
 
+use App\Events\RetailOnlineOrderDeliveryCreated;
+use App\Modules\Retail\Application\Listeners\StoreRetailOrderDeliveryReference;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -30,5 +33,10 @@ class RetailServiceProvider extends ServiceProvider
     {
         // Les Policies métier sont enregistrées centralement dans
         // App\Providers\AuthServiceProvider (règle PA2-ARCH-008).
+
+        // Handoff BC-26 (#7811) : retour d'événement après création de la
+        // livraison — Retail stocke la référence DLV-… sur SA table pour la
+        // page de suivi publique (intégration par événements, registre BC).
+        Event::listen(RetailOnlineOrderDeliveryCreated::class, StoreRetailOrderDeliveryReference::class);
     }
 }

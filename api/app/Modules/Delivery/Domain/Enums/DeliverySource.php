@@ -17,7 +17,9 @@ enum DeliverySource: string
 {
     case Manual = 'manual';
     case Restaurant = 'restaurant'; // BC-25 RESTAURANT
-    case Retail = 'retail'; // BC-17 RETAIL
+    case Retail = 'retail'; // BC-17 RETAIL (POS)
+
+    case RetailOnline = 'retail_online'; // BC-17 RETAIL — marketplace Leopardo Marché (#7811)
     case Ecommerce = 'ecommerce'; // BC-14 INTEGRATION
     case Crm = 'crm'; // BC-11 CRM
     case Field = 'field'; // BC-18 FIELD

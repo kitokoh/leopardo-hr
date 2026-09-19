@@ -1548,6 +1548,7 @@ trait CreatesMvpSchema
                 $table->timestamp('confirmed_at')->nullable();
                 $table->timestamp('shipped_at')->nullable();
                 $table->timestamp('delivered_at')->nullable();
+                $table->string('delivery_reference', 30)->nullable();
                 $table->unsignedInteger('version')->default(1);
                 $table->timestamps();
 

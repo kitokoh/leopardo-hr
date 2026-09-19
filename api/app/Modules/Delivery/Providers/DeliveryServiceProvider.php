@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Delivery\Providers;
 
+use App\Events\RetailOnlineOrderConfirmed;
+use App\Modules\Delivery\Application\Listeners\CreateDeliveryForRetailOnlineOrder;
 use App\Modules\Delivery\Domain\Contracts\DeliveryAccountingContract;
 use App\Modules\Delivery\Domain\Contracts\DeliveryRepositoryInterface;
 use App\Modules\Delivery\Domain\Contracts\RecipientMessageContract;
@@ -72,5 +74,11 @@ class DeliveryServiceProvider extends ServiceProvider
         Event::listen('eloquent.created: '.DeliveryEvent::class, function (DeliveryEvent $event): void {
             app(DeliveryNotificationService::class)->scheduleForEvent($event);
         });
+
+        // Handoff Leopardo Marché (#7811) : à la confirmation d'une commande
+        // en ligne Retail, création automatique de la livraison BC-26
+        // (source=retail_online, idempotente par unicité source_reference) —
+        // intégration par événement, jamais d'import cross-module.
+        Event::listen(RetailOnlineOrderConfirmed::class, CreateDeliveryForRetailOnlineOrder::class);
     }
 }
