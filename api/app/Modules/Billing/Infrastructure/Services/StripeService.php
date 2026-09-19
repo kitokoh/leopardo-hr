@@ -276,8 +276,10 @@ class StripeService
     {
         // #7764 — checkout one-shot (mode=payment) d'un pack de crédits IA :
         // aucune souscription à activer, on crédite le ledger et on sort.
-        if (($session['mode'] ?? '') === 'payment'
-            && ($session['metadata']['purpose'] ?? '') === 'ai_credits') {
+        $creditMetadata = $session['metadata'] ?? null;
+        if (($session['mode'] ?? null) === 'payment'
+            && is_array($creditMetadata)
+            && ($creditMetadata['purpose'] ?? null) === 'ai_credits') {
             $this->handleAiCreditCheckoutCompleted($session);
 
             return;
@@ -367,7 +369,11 @@ class StripeService
      */
     private function handleAiCreditCheckoutCompleted(array $session): void
     {
-        $metadata = is_array($session['metadata'] ?? null) ? $session['metadata'] : [];
+        $metadata = $session['metadata'] ?? [];
+        if (! is_array($metadata)) {
+            $metadata = [];
+        }
+
         $companyId = $metadata['company_id'] ?? $session['client_reference_id'] ?? null;
         $pack = strval($metadata['pack'] ?? '');
         $tokens = (int) ($metadata['tokens'] ?? 0);

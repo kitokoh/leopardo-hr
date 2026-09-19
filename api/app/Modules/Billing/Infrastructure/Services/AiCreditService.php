@@ -227,6 +227,16 @@ class AiCreditService
     }
 
     /**
+     * Définition d'un pack achetable, ou `null` si le code est inconnu.
+     *
+     * @return array{tokens: int, price_eur_cents: int}|null
+     */
+    public function pack(string $code): ?array
+    {
+        return self::PACKS[$code] ?? null;
+    }
+
+    /**
      * Packs achetables — shape stable pour l'API et le front.
      *
      * @return list<array{code: string, tokens: int, price_eur_cents: int}>

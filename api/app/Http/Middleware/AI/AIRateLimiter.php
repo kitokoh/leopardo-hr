@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware\AI;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Billing\Domain\Exceptions\InsufficientAiCreditsException;
 use App\Modules\Billing\Domain\Services\EntitlementGuard;
 use App\Modules\Billing\Infrastructure\Services\AiCreditService;
@@ -44,7 +45,17 @@ class AIRateLimiter
             abort(401);
         }
 
-        $companyId = strval($user->company_id);
+        // Contexte compagnie fail-closed : posé par AITenantInjector sur les
+        // routes IA (`ai_company_id`), avec repli sur l'employé authentifié
+        // (invocation directe du middleware, ex. tests).
+        $companyId = strval($request->attributes->get('ai_company_id', ''));
+        if ($companyId === '' && $user instanceof Employee) {
+            $companyId = strval($user->company_id);
+        }
+        if ($companyId === '') {
+            abort(403, strval(__('errors.AI_COMPANY_CONTEXT_REQUIRED')));
+        }
+
         $period = now()->format('Y-m');
 
         $plan = $this->entitlements->planForCompany($companyId);

@@ -85,8 +85,13 @@ class AiCreditController extends Controller
         ]);
 
         $pack = strval($validated['pack']);
-        $tokens = AiCreditService::PACKS[$pack]['tokens'];
-        $amountCents = AiCreditService::PACKS[$pack]['price_eur_cents'];
+        $packDefinition = $this->aiCreditService->pack($pack);
+        if ($packDefinition === null) {
+            // Défensif : déjà garanti par Rule::in ci-dessus.
+            abort(422);
+        }
+        $tokens = $packDefinition['tokens'];
+        $amountCents = $packDefinition['price_eur_cents'];
 
         // ── Mode sandbox (opt-in explicite, dev/staging) ─────────────────
         // Cohérent avec SANDBOX_CHECKOUT du front (#2628) : paiement simulé,
