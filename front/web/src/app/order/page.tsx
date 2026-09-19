@@ -1,58 +1,24 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  BadgeCheck,
-  Loader2,
-  Minus,
-  Phone,
-  Plus,
-  ShoppingCart,
-  Store,
-  UtensilsCrossed,
-} from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { PackageSearch, RefreshCw, Store } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
-import { t } from '@/lib/i18n/locale-catalog';
 import { getPreferredLocale } from '@/lib/i18n';
+import { catalogDirection, t } from '@/lib/i18n/locale-catalog';
 
 /**
- * RESTO-805-front (#6404) — Commande en ligne publique RestaurantManager.
+ * RESTO-903 (#7748) — dédup de `/order` : la page est réduite au SEUL suivi
+ * de commande (le layout la titre déjà « Suivi de commande »).
  *
- * Page publique par tenant (jeton `?token=`, hash SHA-256 en base) : menu
- * (catégories + produits), panier, création de commande, suivi par référence
- * et paiement (cash à l'encaissement / mobile money). Consomme l'API
- * canonique `/public/restaurant/shop/*` — aucun accès inter-tenant possible
- * (scope BelongsToCompany posé par le middleware `restaurant.public.shop`).
+ * AVANT : un doublon quasi complet du parcours de /shop (menu, panier,
+ * commande, paiement) — deux implémentations du même flux RESTO-805 à
+ * maintenir. ICI : saisie d'une référence + jeton boutique existant
+ * (`?token=`, deep-link conservé — le lien du gérant reste valide) →
+ * `GET /public/restaurant/shop/orders/{ref}` (X-Restaurant-Shop-Token).
+ * Le parcours de commande vit sur /shop (jeton) et /restaurants/{slug}
+ * (public SEO) ; `?ref=` déclenche un suivi immédiat.
  */
-
-interface ShopProduct {
-  id: number;
-  code: string;
-  name: string;
-  description: string | null;
-  price_minor: number;
-  currency: string;
-  category_id: number | null;
-  available: boolean;
-}
-
-interface ShopCategory {
-  id: number;
-  name: string;
-}
-
-interface ShopMenu {
-  categories: ShopCategory[];
-  products: ShopProduct[];
-}
-
-interface ShopOrder {
-  reference: string;
-  status: string;
-  total_minor: number;
-  currency: string;
-  created: boolean;
-}
 
 interface ShopTrack {
   reference: string;
@@ -62,449 +28,207 @@ interface ShopTrack {
   total_minor: number;
   currency: string;
   items: { product_code: string; name: string; quantity: number; line_total_minor: number }[];
-  updated_at: string;
+  updated_at: string | null;
 }
 
-type ShopState =
-  | { step: 'idle' }
-  | { step: 'placing' }
-  | { step: 'placed'; order: ShopOrder }
-  | { step: 'tracking'; track: ShopTrack }
-  | { step: 'paying'; order: ShopOrder }
-  | { step: 'paid'; order: ShopOrder; provider: 'cash' | 'mobile_money' }
-  | { step: 'error'; message: string };
+const formatPrice = (minor: number, currency: string, locale: string): string => {
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency,
+      maximumFractionDigits: 2,
+    }).format(minor / 100);
+  } catch {
+    return `${(minor / 100).toFixed(2)} ${currency}`;
+  }
+};
 
-const formatPrice = (minor: number, currency: string): string =>
-  `${(minor / 100).toFixed(2)} ${currency}`;
-
-export default function RestaurantShopPage() {
+export default function OrderTrackingPage() {
+  const searchParams = useSearchParams();
   const locale = getPreferredLocale();
-  const [token, setToken] = useState<string>('');
-  const [tokenError, setTokenError] = useState<string | null>(null);
-  const [menu, setMenu] = useState<ShopMenu | null>(null);
-  const [menuLoading, setMenuLoading] = useState(false);
-  const [menuError, setMenuError] = useState<string | null>(null);
-  const [cart, setCart] = useState<Record<string, number>>({});
-  const [phone, setPhone] = useState('');
-  const [state, setState] = useState<ShopState>({ step: 'idle' });
+  const dir = catalogDirection(locale);
 
-  useEffect(() => {
-    const query = new URLSearchParams(window.location.search);
-    const raw = query.get('token') ?? '';
-    setToken(raw);
+  const token = searchParams.get('token') ?? '';
+  const initialRef = searchParams.get('ref') ?? searchParams.get('reference') ?? '';
 
-    if (raw === '') {
-      setTokenError(t(locale, 'restaurant.shop.tokenInvalid'));
-    }
-  }, [locale]);
+  const [reference, setReference] = useState(initialRef);
+  const [track, setTrack] = useState<ShopTrack | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const loadMenu = useCallback(async () => {
-    if (token === '') {
-      return;
-    }
-
-    setMenuLoading(true);
-    setMenuError(null);
-
-    try {
-      const res = await apiFetch('/public/restaurant/shop/menu', {
-        headers: { 'X-Restaurant-Shop-Token': token },
-        _cacheBust: true,
-      });
-      const json = (await res.json()) as { data: ShopMenu };
-      setMenu(json?.data ?? null);
-    } catch {
-      setMenuError(t(locale, 'restaurant.shop.loadError'));
-    } finally {
-      setMenuLoading(false);
-    }
-  }, [locale, token]);
-
-  useEffect(() => {
-    void loadMenu();
-  }, [loadMenu]);
-
-  const productsByCategory = useMemo(() => {
-    const products = menu?.products ?? [];
-    const categories = menu?.categories ?? [];
-    const available = products.filter((product) => product.available);
-
-    return categories
-      .map((category) => ({
-        category,
-        products: available.filter((product) => product.category_id === category.id),
-      }))
-      .filter((group) => group.products.length > 0);
-  }, [menu]);
-
-  const cartLines = useMemo(() => {
-    const products = menu?.products ?? [];
-    return products
-      .filter((product) => (cart[product.code] ?? 0) > 0)
-      .map((product) => ({ product, quantity: cart[product.code] }));
-  }, [cart, menu]);
-
-  const cartTotal = useMemo(
-    () => cartLines.reduce((sum, line) => sum + line.product.price_minor * line.quantity, 0),
-    [cartLines],
+  const lookup = useCallback(
+    async (ref: string) => {
+      const trimmed = ref.trim();
+      if (trimmed === '') {
+        return;
+      }
+      if (token === '') {
+        setError(t(locale, 'restaurant.shop.tokenInvalid'));
+        return;
+      }
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await apiFetch(`/public/restaurant/shop/orders/${encodeURIComponent(trimmed)}`, {
+          headers: { 'X-Restaurant-Shop-Token': token },
+          _cacheBust: true,
+        });
+        const json = (await res.json()) as { data?: ShopTrack };
+        if (!json.data) {
+          setError(t(locale, 'restaurant.public.trackNotFound'));
+          setTrack(null);
+          return;
+        }
+        setTrack(json.data);
+      } catch (err) {
+        const status = (err as { status?: number })?.status;
+        setError(
+          t(
+            locale,
+            status === 404
+              ? 'restaurant.public.trackNotFound'
+              : status === 401
+                ? 'restaurant.shop.tokenInvalid'
+                : 'restaurant.shop.trackError',
+          ),
+        );
+        setTrack(null);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [locale, token],
   );
 
-  const currency = menu?.products[0]?.currency ?? 'DZD';
-
-  const addToCart = (code: string): void => {
-    setCart((current) => ({ ...current, [code]: (current[code] ?? 0) + 1 }));
-  };
-
-  const removeFromCart = (code: string): void => {
-    setCart((current) => {
-      const next = { ...current };
-      const qty = (next[code] ?? 0) - 1;
-
-      if (qty <= 0) {
-        delete next[code];
-      } else {
-        next[code] = qty;
-      }
-
-      return next;
-    });
-  };
-
-  const placeOrder = async (): Promise<void> => {
-    if (cartLines.length === 0) {
-      return;
+  // Deep-link `?ref=` (compat) : suivi immédiat à l'arrivée sur la page.
+  useEffect(() => {
+    if (initialRef !== '') {
+      void lookup(initialRef);
     }
+  }, [initialRef, lookup]);
 
-    setState({ step: 'placing' });
-
-    try {
-      const res = await apiFetch('/public/restaurant/shop/orders', {
-        method: 'POST',
-        headers: { 'X-Restaurant-Shop-Token': token },
-        body: JSON.stringify({
-          customer_phone: phone !== '' ? phone : undefined,
-          items: cartLines.map((line) => ({
-            product_code: line.product.code,
-            quantity: line.quantity,
-          })),
-        }),
-      });
-
-      const json = (await res.json()) as { data?: ShopOrder };
-
-      if (!res.ok || !json?.data?.reference) {
-        setState({ step: 'error', message: t(locale, 'restaurant.shop.orderError') });
-        return;
-      }
-
-      setState({ step: 'placed', order: json.data });
-    } catch {
-      setState({ step: 'error', message: t(locale, 'restaurant.shop.orderError') });
-    }
+  const submit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void lookup(reference);
   };
-
-  const track = async (): Promise<void> => {
-    if (state.step !== 'placed') {
-      return;
-    }
-
-    try {
-      const res = await apiFetch(`/public/restaurant/shop/orders/${state.order.reference}`, {
-        headers: { 'X-Restaurant-Shop-Token': token },
-        _cacheBust: true,
-      });
-      const json = (await res.json()) as { data?: ShopTrack };
-
-      if (!res.ok || !json?.data) {
-        setState({ step: 'error', message: t(locale, 'restaurant.shop.trackError') });
-        return;
-      }
-
-      setState({ step: 'tracking', track: json.data });
-    } catch {
-      setState({ step: 'error', message: t(locale, 'restaurant.shop.trackError') });
-    }
-  };
-
-  const pay = async (provider: 'cash' | 'mobile_money'): Promise<void> => {
-    if (state.step !== 'placed') {
-      return;
-    }
-
-    const order = state.order;
-    setState({ step: 'paying', order });
-
-    try {
-      const res = await apiFetch(`/public/restaurant/shop/orders/${order.reference}/pay`, {
-        method: 'POST',
-        headers: { 'X-Restaurant-Shop-Token': token },
-        body: JSON.stringify({ provider_code: provider }),
-      });
-
-      if (!res.ok) {
-        setState({ step: 'error', message: t(locale, 'restaurant.shop.paymentError') });
-        return;
-      }
-
-      setState({ step: 'paid', order, provider });
-    } catch {
-      setState({ step: 'error', message: t(locale, 'restaurant.shop.paymentError') });
-    }
-  };
-
-  const reset = (): void => {
-    setCart({});
-    setPhone('');
-    setState({ step: 'idle' });
-    void loadMenu();
-  };
-
-  if (tokenError !== null) {
-    return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-white p-8">
-        <Store className="mb-4 h-12 w-12 text-amber-500" />
-        <h1 className="text-2xl font-semibold">{t(locale, 'restaurant.shop.title')}</h1>
-        <p className="mt-3 text-slate-500">{tokenError}</p>
-      </main>
-    );
-  }
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <UtensilsCrossed className="h-7 w-7 text-amber-500" />
-            <h1 className="text-xl font-semibold">{t(locale, 'restaurant.shop.title')}</h1>
+    <main
+      dir={dir}
+      className="min-h-screen bg-gradient-to-br from-slate-50 via-amber-50/40 to-orange-50/40 px-4 py-10"
+    >
+      <div className="mx-auto max-w-2xl">
+        <header className="mb-8 flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg shadow-amber-500/20">
+            <Store className="h-6 w-6 text-white" aria-hidden="true" />
           </div>
-          <div className="flex items-center gap-2 rounded-full bg-slate-100 px-4 py-1.5 text-sm">
-            <ShoppingCart className="h-4 w-4 text-amber-500" />
-            <span>
-              {cartLines.reduce((sum, line) => sum + line.quantity, 0)} {t(locale, 'restaurant.shop.items')}
+          <div>
+            <h1 className="text-2xl font-black tracking-tight text-slate-950">
+              {t(locale, 'restaurant.shop.trackTitle')}
+            </h1>
+            <p className="text-sm text-slate-500">{t(locale, 'restaurant.public.trackHint')}</p>
+          </div>
+        </header>
+
+        <form
+          onSubmit={submit}
+          className="mb-6 flex flex-wrap items-end gap-3 rounded-3xl border border-white/40 bg-white/80 p-5 shadow-sm backdrop-blur-xl"
+        >
+          <label className="block min-w-56 flex-1 space-y-1">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+              {t(locale, 'restaurant.public.referenceLabel')}
             </span>
-            <span className="font-semibold">{formatPrice(cartTotal, currency)}</span>
-          </div>
-        </div>
-      </header>
+            <input
+              type="text"
+              value={reference}
+              onChange={(event) => setReference(event.target.value)}
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 font-mono text-sm text-slate-900 placeholder:text-slate-400 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
+              maxLength={40}
+              required
+            />
+          </label>
+          <button
+            type="submit"
+            disabled={loading}
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 px-4 py-2 text-sm font-black text-white shadow-md shadow-amber-500/20 hover:from-amber-600 hover:to-orange-700 disabled:opacity-50"
+          >
+            <PackageSearch className="h-4 w-4" aria-hidden="true" />
+            {t(locale, 'restaurant.shop.track')}
+          </button>
+        </form>
 
-      {state.step === 'placed' || state.step === 'paying' ? (
-        <section className="mx-auto flex max-w-2xl flex-col items-center px-6 py-16 text-center">
-          <BadgeCheck className="mb-6 h-16 w-16 text-emerald-500" />
-          <h2 className="text-3xl font-semibold">{t(locale, 'restaurant.shop.orderPlaced')}</h2>
-          <p className="mt-4 text-lg text-slate-600">
-            {t(locale, 'restaurant.shop.orderReference')} :{' '}
-            <span className="font-mono font-semibold text-amber-600">{state.order.reference}</span>
+        {error ? (
+          <p className="rounded-2xl border border-rose-200 bg-rose-50/80 p-6 text-center text-sm font-bold text-rose-700" role="alert">
+            {error}
           </p>
-          <p className="mt-2 text-slate-500">
-            {t(locale, 'restaurant.shop.total')} : {formatPrice(state.order.total_minor, state.order.currency)}
-          </p>
+        ) : null}
 
-          {state.step === 'placed' && (
-            <div className="mt-10 flex w-full max-w-md flex-col gap-3">
+        {track ? (
+          <section
+            className="rounded-3xl border border-emerald-200 bg-emerald-50/70 p-6"
+            aria-label={t(locale, 'restaurant.shop.trackTitle')}
+          >
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <p className="font-mono font-black text-slate-900">{track.reference}</p>
+                <p className="text-sm text-slate-600">
+                  {t(locale, 'restaurant.shop.status')} :{' '}
+                  <span className="font-black text-emerald-800">{track.status}</span>
+                </p>
+              </div>
               <button
                 type="button"
-                onClick={() => void track()}
-                className="rounded-2xl bg-slate-900 px-6 py-4 text-lg font-semibold text-white transition hover:bg-slate-700"
+                onClick={() => void lookup(track.reference)}
+                disabled={loading}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-300 bg-white px-3 py-1.5 text-xs font-bold text-emerald-700 hover:bg-emerald-100 disabled:opacity-50"
               >
-                {t(locale, 'restaurant.shop.track')}
-              </button>
-              <button
-                type="button"
-                onClick={() => void pay('cash')}
-                className="rounded-2xl bg-emerald-500 px-6 py-4 text-lg font-semibold text-emerald-950 transition hover:bg-emerald-400"
-              >
-                {t(locale, 'restaurant.shop.payCashAtPickup')}
-              </button>
-              <button
-                type="button"
-                onClick={() => void pay('mobile_money')}
-                className="rounded-2xl bg-amber-500 px-6 py-4 text-lg font-semibold text-amber-950 transition hover:bg-amber-400"
-              >
-                {t(locale, 'restaurant.shop.payMobileMoney')}
+                <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
+                {t(locale, 'restaurant.public.refresh')}
               </button>
             </div>
-          )}
-
-          {state.step === 'paying' && (
-            <p className="mt-8 flex items-center gap-2 text-slate-500">
-              <Loader2 className="h-5 w-5 animate-spin" />
-              {t(locale, 'restaurant.shop.pendingPayment')}
-            </p>
-          )}
-        </section>
-      ) : state.step === 'tracking' ? (
-        <section className="mx-auto max-w-2xl px-6 py-16">
-          <h2 className="text-2xl font-semibold">{t(locale, 'restaurant.shop.trackTitle')}</h2>
-          <p className="mt-2 font-mono text-amber-600">{state.track.reference}</p>
-          <p className="mt-4 text-slate-600">
-            {t(locale, 'restaurant.shop.status')} :{' '}
-            <span className="font-semibold">{state.track.status}</span>
-          </p>
-          <ul className="mt-6 space-y-2">
-            {state.track.items.map((item) => (
-              <li key={item.product_code} className="flex justify-between rounded-xl bg-white p-3 shadow-sm">
-                <span>
-                  {item.quantity} × {item.name}
+            <ul className="mt-4 space-y-2">
+              {track.items.map((item) => (
+                <li
+                  key={item.product_code}
+                  className="flex justify-between rounded-xl bg-white/80 p-3 text-sm shadow-sm"
+                >
+                  <span className="text-slate-600">
+                    {item.quantity} × {item.name}
+                  </span>
+                  <span className="font-bold text-slate-800">
+                    {formatPrice(item.line_total_minor, track.currency, locale)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-4 space-y-1 border-t border-emerald-100 pt-3 text-sm">
+              <p className="flex justify-between">
+                <span className="text-slate-500">{t(locale, 'restaurant.shop.subtotal')}</span>
+                <span className="font-bold text-slate-800">
+                  {formatPrice(track.subtotal_minor, track.currency, locale)}
                 </span>
-                <span>{formatPrice(item.line_total_minor, state.track.currency)}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="mt-4 flex justify-between text-lg font-semibold">
-            <span>{t(locale, 'restaurant.shop.total')}</span>
-            <span>{formatPrice(state.track.total_minor, state.track.currency)}</span>
-          </div>
-          <button
-            type="button"
-            onClick={reset}
-            className="mt-8 rounded-2xl bg-slate-900 px-6 py-3 text-white transition hover:bg-slate-700"
-          >
-            {t(locale, 'restaurant.shop.backToMenu')}
-          </button>
-        </section>
-      ) : state.step === 'paid' ? (
-        <section className="mx-auto flex max-w-2xl flex-col items-center px-6 py-16 text-center">
-          <BadgeCheck className="mb-6 h-16 w-16 text-emerald-500" />
-          <h2 className="text-3xl font-semibold">{t(locale, 'restaurant.shop.paid')}</h2>
-          <p className="mt-4 text-lg text-slate-600">
-            {t(locale, 'restaurant.shop.orderReference')} :{' '}
-            <span className="font-mono font-semibold text-amber-600">{state.order.reference}</span>
-          </p>
-          {state.provider === 'cash' && (
-            <p className="mt-6 rounded-2xl bg-emerald-50 px-6 py-4 text-emerald-700">
-              {t(locale, 'restaurant.shop.payAtPickup')}
-            </p>
-          )}
-          {state.provider === 'mobile_money' && (
-            <p className="mt-6 rounded-2xl bg-amber-50 px-6 py-4 text-amber-700">
-              {t(locale, 'restaurant.shop.pendingPayment')}
-            </p>
-          )}
-          <button
-            type="button"
-            onClick={reset}
-            className="mt-10 rounded-2xl bg-slate-900 px-6 py-3 text-white transition hover:bg-slate-700"
-          >
-            {t(locale, 'restaurant.shop.startNewOrder')}
-          </button>
-        </section>
-      ) : (
-        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-6 py-6 lg:grid-cols-[1fr_340px]">
-          <section>
-            {menuLoading && (
-              <div className="flex items-center gap-3 py-12 text-slate-400">
-                <Loader2 className="h-5 w-5 animate-spin" />
-                {t(locale, 'restaurant.shop.loading')}
-              </div>
-            )}
-
-            {menuError !== null && <p className="py-12 text-red-400">{menuError}</p>}
-
-            {!menuLoading && menuError === null && (menu?.products.length ?? 0) === 0 && (
-              <p className="py-12 text-slate-400">{t(locale, 'restaurant.shop.emptyMenu')}</p>
-            )}
-
-            {productsByCategory.map(({ category, products }) => (
-              <div key={category.id} className="mb-8">
-                <h2 className="mb-3 text-lg font-semibold text-amber-600">{category.name}</h2>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                  {products.map((product) => (
-                    <div key={product.id} className="flex flex-col rounded-2xl bg-white p-4 shadow-sm">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold">{product.name}</h3>
-                        {product.description !== null && product.description !== '' && (
-                          <p className="mt-1 text-sm text-slate-500">{product.description}</p>
-                        )}
-                      </div>
-                      <div className="mt-3 flex items-center justify-between">
-                        <span className="font-semibold text-amber-600">
-                          {formatPrice(product.price_minor, product.currency)}
-                        </span>
-                        <div className="flex items-center gap-2">
-                          {(cart[product.code] ?? 0) > 0 && (
-                            <>
-                              <button
-                                type="button"
-                                onClick={() => removeFromCart(product.code)}
-                                aria-label={t(locale, 'restaurant.shop.remove')}
-                                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 transition hover:bg-slate-200"
-                              >
-                                <Minus className="h-4 w-4" />
-                              </button>
-                              <span className="w-5 text-center font-semibold">{cart[product.code]}</span>
-                            </>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => addToCart(product.code)}
-                            aria-label={t(locale, 'restaurant.shop.add')}
-                            className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-500 text-white transition hover:bg-amber-400"
-                          >
-                            <Plus className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
+              </p>
+              <p className="flex justify-between">
+                <span className="text-slate-500">{t(locale, 'restaurant.shop.tax')}</span>
+                <span className="font-bold text-slate-800">
+                  {formatPrice(track.tax_minor, track.currency, locale)}
+                </span>
+              </p>
+              <p className="flex justify-between text-base">
+                <span className="font-bold text-slate-800">{t(locale, 'restaurant.shop.total')}</span>
+                <span className="font-black text-emerald-800">
+                  {formatPrice(track.total_minor, track.currency, locale)}
+                </span>
+              </p>
+              {track.updated_at ? (
+                <p className="pt-1 text-xs text-slate-400">
+                  {t(locale, 'restaurant.public.updatedAt')} — {track.updated_at}
+                </p>
+              ) : null}
+            </div>
           </section>
-
-          <aside className="h-fit rounded-2xl bg-white p-5 shadow-sm lg:sticky lg:top-20">
-            <h2 className="mb-3 text-lg font-semibold">{t(locale, 'restaurant.shop.cart')}</h2>
-
-            {cartLines.length === 0 ? (
-              <p className="py-8 text-center text-slate-400">{t(locale, 'restaurant.shop.empty')}</p>
-            ) : (
-              <ul className="mb-4 space-y-2">
-                {cartLines.map((line) => (
-                  <li key={line.product.code} className="flex items-center justify-between gap-2 text-sm">
-                    <span className="text-slate-600">
-                      {line.quantity} × {line.product.name}
-                    </span>
-                    <span className="font-medium">
-                      {formatPrice(line.product.price_minor * line.quantity, line.product.currency)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            <label className="mb-1 block text-sm text-slate-500">{t(locale, 'restaurant.shop.phone')}</label>
-            <div className="mb-4 flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2">
-              <Phone className="h-4 w-4 text-slate-400" />
-              <input
-                type="tel"
-                value={phone}
-                onChange={(event) => setPhone(event.target.value)}
-                placeholder={t(locale, 'restaurant.shop.phonePlaceholder')}
-                className="w-full outline-none"
-              />
-            </div>
-
-            <div className="mb-4 flex items-center justify-between border-t border-slate-100 pt-3 text-lg font-semibold">
-              <span>{t(locale, 'restaurant.shop.total')}</span>
-              <span>{formatPrice(cartTotal, currency)}</span>
-            </div>
-
-            {state.step === 'error' && <p className="mb-3 text-sm text-red-400">{state.message}</p>}
-
-            <button
-              type="button"
-              onClick={() => void placeOrder()}
-              disabled={cartLines.length === 0 || state.step === 'placing'}
-              className="w-full rounded-2xl bg-amber-500 px-6 py-4 text-lg font-semibold text-white transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {state.step === 'placing' ? (
-                <Loader2 className="mx-auto h-6 w-6 animate-spin" />
-              ) : (
-                t(locale, 'restaurant.shop.checkout')
-              )}
-            </button>
-          </aside>
-        </div>
-      )}
+        ) : null}
+      </div>
     </main>
   );
 }

@@ -18,6 +18,15 @@ const DISALLOWED = [
   '/node_modules',
 ];
 
+// RESTO-903 (#7748) : l'annuaire public `/restaurants` et les profils
+// `/restaurants/{slug}` sont INDEXABLES, mais `Disallow: /restaurant`
+// (portail client protégé, PROTECTED_PREFIXES) les bloquerait par préfixe
+// (spec robots : correspondance par préfixe, sans frontière de segment).
+// Un `Allow` PLUS LONG gagne sur le `Disallow` plus court (règle de
+// précédence Google/Bing : chemin le plus spécifique) — il doit être répété
+// dans chaque groupe qui porte DISALLOWED.
+const ALLOWED = ['/', '/restaurants', '/restaurants/'];
+
 /**
  * #AI-SEO — crawlers des moteurs de réponse et assistants génératifs.
  *
@@ -66,26 +75,26 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
+        allow: ALLOWED,
         disallow: DISALLOWED,
       },
       {
         // #AI-SEO : groupe dédié aux crawlers IA — un groupe écrase `*` pour
         // ces agents, d'où la répétition explicite de DISALLOWED.
         userAgent: AI_CRAWLERS,
-        allow: '/',
+        allow: ALLOWED,
         disallow: DISALLOWED,
       },
       {
         // #3377 : un groupe dédié ÉCRASE le groupe `*` pour ce bot — sans
         // disallow explicite ici, Googlebot crawlait les 14 préfixes protégés.
         userAgent: 'Googlebot',
-        allow: '/',
+        allow: ALLOWED,
         disallow: DISALLOWED,
       },
       {
         userAgent: 'Bingbot',
-        allow: '/',
+        allow: ALLOWED,
         disallow: DISALLOWED,
       },
       {
