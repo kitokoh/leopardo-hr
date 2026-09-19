@@ -37,6 +37,8 @@ class BridgeSecurityTest(unittest.TestCase):
                 "apiBaseUrl": "https://example.test/api/v1",
                 "deviceCode": "KIOSK-SEC-001",
                 "kioskToken": "token-sec-123",
+                # #7651 — PIN admin de test (>= 6 caractères).
+                "adminPin": "654321",
                 # Pas de sync réseau pendant les tests d'insertion.
                 "autoSync": False,
             }
@@ -77,6 +79,18 @@ class BridgeSecurityTest(unittest.TestCase):
         headers = self._auth_headers(token)
         headers["Content-Type"] = "application/json"
         return headers
+
+    def _admin_token(self):
+        """Ouvre une session admin par PIN (#7651), rate-limit remis à zéro."""
+        bridge._ADMIN_LOGIN_BUCKETS.clear()
+        status, body, _ = self._request(
+            "/local/admin/login",
+            method="POST",
+            payload={"pin": "654321"},
+            headers={"Content-Type": "application/json"},
+        )
+        assert status == 200, body
+        return json.loads(body)["data"]["admin_token"]
 
     # ── #3586 : allowlist statique ───────────────────
     def test_config_json_is_never_served(self) -> None:
@@ -124,16 +138,31 @@ class BridgeSecurityTest(unittest.TestCase):
         self.assertIn("dead_letter_count", payload["data"])
 
     def test_local_events_and_roster_require_token(self) -> None:
-        for path in ("/local/events", "/local/roster"):
-            status, _, _ = self._request(path)
-            self.assertEqual(status, 401, path)
+        status, _, _ = self._request("/local/roster")
+        self.assertEqual(status, 401)
+        # #7651 — /local/events est une surface admin : même sans token du tout,
+        # le refus est un 401.
+        status, _, _ = self._request("/local/events")
+        self.assertEqual(status, 401)
 
     def test_html_injects_local_bridge_token(self) -> None:
         status, html, headers = self._request("/index.html")
         self.assertEqual(status, 200)
         self.assertIn("window.__LOCAL_BRIDGE_TOKEN", html)
+        # #7651 — le token cloud ne doit jamais transiter par le DOM.
+        self.assertNotIn("__KIOSK_TOKEN", html)
+        self.assertNotIn("token-sec-123", html)
         # Le HTML transporte le token : ne jamais le laisser en cache.
         self.assertIn("no-store", headers.get("Cache-Control", ""))
+
+    def test_admin_html_has_no_injected_token(self) -> None:
+        # #7651 — le token de session locale n'est injecté que dans index.html
+        # (surface pointage) : admin.html s'authentifie par PIN.
+        status, html, _ = self._request("/admin.html")
+        self.assertEqual(status, 200)
+        self.assertNotIn("__LOCAL_BRIDGE_TOKEN", html)
+        self.assertNotIn("__KIOSK_TOKEN", html)
+        self.assertNotIn("token-sec-123", html)
 
     # ── #3586 : guards POST ──────────────────────────
     def test_post_without_json_content_type_is_rejected(self) -> None:
@@ -199,7 +228,8 @@ class BridgeSecurityTest(unittest.TestCase):
         self.assertEqual(payload["data"]["sync_status"], "queued")
 
     # ── #3588 : requeue ops ──────────────────────────
-    def test_requeue_requires_token_and_known_event(self) -> None:
+    def test_requeue_requires_admin_token_and_known_event(self) -> None:
+        # Sans aucun token → 401.
         status, _, _ = self._request(
             "/local/events/requeue",
             method="POST",
@@ -208,13 +238,109 @@ class BridgeSecurityTest(unittest.TestCase):
         )
         self.assertEqual(status, 401)
 
+        # #7651 — le token de session kiosk ne suffit plus pour la surface admin.
+        status, body, _ = self._request(
+            "/local/events/requeue",
+            method="POST",
+            payload={"external_event_id": "evt-x"},
+            headers=self._json_headers(),
+        )
+        self.assertEqual(status, 401)
+        self.assertIn("ADMIN_TOKEN_REQUIRED", body)
+
+        admin_token = self._admin_token()
         status, _, _ = self._request(
             "/local/events/requeue",
             method="POST",
             payload={"external_event_id": "evt-does-not-exist"},
-            headers=self._json_headers(),
+            headers={"Content-Type": "application/json", bridge.ADMIN_TOKEN_HEADER: admin_token},
         )
         self.assertEqual(status, 404)
+
+    # ── #7651 : PIN admin + sessions ───────────────
+    def test_admin_endpoints_reject_kiosk_session_token(self) -> None:
+        status, body, _ = self._request("/local/events", headers=self._auth_headers())
+        self.assertEqual(status, 401)
+        self.assertIn("ADMIN_TOKEN_REQUIRED", body)
+        for path in ("/local/sync/roster", "/local/sync/events"):
+            status, body, _ = self._request(
+                path, method="POST", payload={}, headers=self._json_headers()
+            )
+            self.assertEqual(status, 401, path)
+            self.assertIn("ADMIN_TOKEN_REQUIRED", body)
+        # /local/sync/all reste accessible à la surface pointage (bouton
+        # « réessayer » PA2-KIO-003) : le token de session kiosk suffit — la
+        # requête passe la garde (l'échec éventuel est réseau, jamais 401).
+        status, body, _ = self._request(
+            "/local/sync/all", method="POST", payload={}, headers=self._json_headers()
+        )
+        self.assertNotEqual(status, 401)
+
+    def test_admin_login_rejects_wrong_pin(self) -> None:
+        bridge._ADMIN_LOGIN_BUCKETS.clear()
+        status, body, _ = self._request(
+            "/local/admin/login",
+            method="POST",
+            payload={"pin": "000000"},
+            headers={"Content-Type": "application/json"},
+        )
+        self.assertEqual(status, 401)
+        self.assertIn("ADMIN_PIN_INVALID", body)
+
+    def test_admin_login_is_rate_limited(self) -> None:
+        bridge._ADMIN_LOGIN_BUCKETS.clear()
+        for _ in range(bridge.ADMIN_LOGIN_MAX_ATTEMPTS):
+            status, _, _ = self._request(
+                "/local/admin/login",
+                method="POST",
+                payload={"pin": "000000"},
+                headers={"Content-Type": "application/json"},
+            )
+            self.assertEqual(status, 401)
+        status, body, _ = self._request(
+            "/local/admin/login",
+            method="POST",
+            payload={"pin": "654321"},
+            headers={"Content-Type": "application/json"},
+        )
+        self.assertEqual(status, 429)
+        self.assertIn("ADMIN_LOGIN_RATE_LIMITED", body)
+        bridge._ADMIN_LOGIN_BUCKETS.clear()
+
+    def test_admin_login_without_configured_pin_is_fail_closed(self) -> None:
+        bridge._ADMIN_LOGIN_BUCKETS.clear()
+        original = bridge.CONFIG.pop("adminPin", None)
+        try:
+            status, body, _ = self._request(
+                "/local/admin/login",
+                method="POST",
+                payload={"pin": "654321"},
+                headers={"Content-Type": "application/json"},
+            )
+            self.assertEqual(status, 503)
+            self.assertIn("ADMIN_PIN_NOT_CONFIGURED", body)
+        finally:
+            bridge.CONFIG["adminPin"] = original
+
+    def test_admin_session_grants_admin_and_kiosk_endpoints(self) -> None:
+        admin_token = self._admin_token()
+        status, body, _ = self._request(
+            "/local/events", headers={bridge.ADMIN_TOKEN_HEADER: admin_token}
+        )
+        self.assertEqual(status, 200)
+        self.assertIn("data", json.loads(body))
+        # La session admin (plus privilégiée) accède aussi à /local/status.
+        status, _, _ = self._request(
+            "/local/status", headers={bridge.ADMIN_TOKEN_HEADER: admin_token}
+        )
+        self.assertEqual(status, 200)
+
+    def test_admin_session_expires(self) -> None:
+        token = bridge.create_admin_session(now=0.0)
+        self.assertTrue(bridge.is_valid_admin_session(token, now=1.0))
+        self.assertFalse(
+            bridge.is_valid_admin_session(token, now=bridge.ADMIN_SESSION_TTL_SECONDS + 1.0)
+        )
 
 
 class SyncSkippedContractTest(unittest.TestCase):
@@ -316,6 +442,132 @@ class SyncSkippedContractTest(unittest.TestCase):
         queued = engine.store.queued_events()
         self.assertEqual(len(queued), 1)
         self.assertEqual(queued[0]["retry_count"], 0)
+
+
+class CloudProxyTest(unittest.TestCase):
+    """#7651 — le bridge proxifie les appels cloud : le token X-Kiosk-Token est
+    ajouté côté Python et ne transite jamais par le navigateur."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.upstream_calls: list[dict] = []
+        upstream_calls = cls.upstream_calls
+
+        class UpstreamHandler(bridge.BaseHTTPRequestHandler):
+            def _record(self, method: str) -> None:
+                length = int(self.headers.get("Content-Length", "0") or 0)
+                upstream_calls.append(
+                    {
+                        "method": method,
+                        "path": self.path,
+                        "kiosk_token": self.headers.get("X-Kiosk-Token", ""),
+                        "body": self.rfile.read(length).decode("utf-8") if length else "",
+                    }
+                )
+                body = json.dumps({"data": {"ok": True}}).encode("utf-8")
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            def do_GET(self) -> None:  # noqa: N802
+                self._record("GET")
+
+            def do_POST(self) -> None:  # noqa: N802
+                self._record("POST")
+
+            def log_message(self, format: str, *args) -> None:  # noqa: A002
+                return
+
+        cls.upstream = ThreadingHTTPServer(("127.0.0.1", 0), UpstreamHandler)
+        cls.upstream_port = cls.upstream.server_address[1]
+        threading.Thread(target=cls.upstream.serve_forever, daemon=True).start()
+
+        cls.original_config = dict(bridge.CONFIG)
+        bridge.CONFIG.clear()
+        bridge.CONFIG.update(
+            {
+                "apiBaseUrl": f"http://127.0.0.1:{cls.upstream_port}/api/v1",
+                "deviceCode": "KIOSK-PROXY-001",
+                "kioskToken": "cloud-secret-token",
+                "autoSync": False,
+            }
+        )
+        cls.server = ThreadingHTTPServer(("127.0.0.1", 0), bridge.BridgeHandler)
+        cls.port = cls.server.server_address[1]
+        threading.Thread(target=cls.server.serve_forever, daemon=True).start()
+        cls.base = f"http://127.0.0.1:{cls.port}"
+        cls.token = bridge.LOCAL_BRIDGE_TOKEN
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.server.shutdown()
+        cls.server.server_close()
+        cls.upstream.shutdown()
+        cls.upstream.server_close()
+        bridge.CONFIG.clear()
+        bridge.CONFIG.update(cls.original_config)
+
+    def _request(self, path, method="GET", data=None, headers=None):
+        req = urllib.request.Request(
+            f"{self.base}{path}", method=method, data=data, headers=headers or {}
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=30) as response:
+                return response.status, response.read().decode("utf-8")
+        except urllib.error.HTTPError as error:
+            return error.code, error.read().decode("utf-8")
+
+    def test_proxy_requires_local_session_token(self) -> None:
+        status, body = self._request("/local/cloud/config")
+        self.assertEqual(status, 401)
+        self.assertIn("LOCAL_TOKEN_REQUIRED", body)
+        self.assertEqual(self.upstream_calls, [])
+
+    def test_proxy_forwards_get_with_server_side_token(self) -> None:
+        self.upstream_calls.clear()
+        status, body = self._request(
+            "/local/cloud/config", headers={"X-Local-Bridge-Token": self.token}
+        )
+        self.assertEqual(status, 200)
+        self.assertEqual(json.loads(body)["data"]["ok"], True)
+        self.assertEqual(len(self.upstream_calls), 1)
+        call = self.upstream_calls[0]
+        self.assertEqual(call["path"], "/api/v1/kiosks/KIOSK-PROXY-001/config")
+        self.assertEqual(call["kiosk_token"], "cloud-secret-token")
+
+    def test_proxy_forwards_post_body(self) -> None:
+        self.upstream_calls.clear()
+        status, _ = self._request(
+            "/local/cloud/employee-info",
+            method="POST",
+            data=json.dumps({"identifier": "FP-42"}).encode("utf-8"),
+            headers={
+                "X-Local-Bridge-Token": self.token,
+                "Content-Type": "application/json",
+            },
+        )
+        self.assertEqual(status, 200)
+        call = self.upstream_calls[0]
+        self.assertEqual(call["method"], "POST")
+        self.assertEqual(call["path"], "/api/v1/kiosks/KIOSK-PROXY-001/employee-info")
+        self.assertIn("FP-42", call["body"])
+        self.assertEqual(call["kiosk_token"], "cloud-secret-token")
+
+    def test_proxy_rejects_routes_outside_allowlist(self) -> None:
+        self.upstream_calls.clear()
+        for path in ("/local/cloud/../admin", "/local/cloud/unknown", "/local/cloud/sync"):
+            status, _ = self._request(path, headers={"X-Local-Bridge-Token": self.token})
+            self.assertEqual(status, 404, path)
+        self.assertEqual(self.upstream_calls, [])
+
+    def test_served_pages_never_contain_cloud_token(self) -> None:
+        for page in ("/index.html", "/admin.html"):
+            status, html = self._request(page)
+            self.assertEqual(status, 200)
+            self.assertNotIn("cloud-secret-token", html, page)
+            self.assertNotIn("__KIOSK_TOKEN", html, page)
 
 
 if __name__ == "__main__":
