@@ -105,6 +105,8 @@ cat > "$REPO_TECH/front/admin-dashboard/src/components/PatternsTechniques.vue" <
     <template #default="{ row }"><span>{{ row.name }}</span></template>
     <!-- Dimensions d'image (Next.js) : jamais du texte utilisateur. -->
     <Image src="/blog/startup-rh.svg" alt={title} fill sizes="(min-width: 1024px) 33vw, 100vw" width={640} height={360} />
+    <!-- Filtre de type de fichier (#7776) : types MIME, pas du texte utilisateur. -->
+    <input type="file" accept=".csv,text/csv" />
   </div>
 </template>
 <script setup lang="ts">
@@ -142,6 +144,7 @@ for motif in 'form[key]' 'bg-emerald-500' 'item.x == null' 'options.0.label' 'se
 done
 expect_clean "d'indicateur d'étapes" "commentaire JSX français (apostrophes) — cas #7562"
 expect_clean "sizes=\"" "attribut de dimension d'image (Image sizes) — audit vitrine 2026-09-16"
+expect_clean '.csv,text/csv' "filtre de type de fichier (input accept) — #7776"
 expect_clean 'Acces administrateur' "valeur du catalogue i18n kiosk (#7651)"
 expect_clean 'PIN invalide.' "valeur du catalogue i18n kiosk (#7651)"
 
