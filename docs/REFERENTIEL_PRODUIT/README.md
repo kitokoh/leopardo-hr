@@ -1,4 +1,4 @@
-# Referentiel produit - Leopardo RH
+# Referentiel produit - Leopardo
 
 Ce dossier regroupe les documents courts qui font foi pour la vision produit active.
 
