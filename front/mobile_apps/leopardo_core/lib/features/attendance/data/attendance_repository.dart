@@ -4,6 +4,7 @@ import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/api/api_exceptions.dart';
 import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/core/api/idempotency_keys.dart';
+import 'package:leopardo_core/features/attendance/models/attendance_anomaly.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
 import 'package:leopardo_core/models/daily_summary.dart';
 import 'package:leopardo_core/models/employee_day_detail.dart';
@@ -32,15 +33,20 @@ class AttendanceRepository {
   }
 
   Future<AttendanceLog> checkIn({
+    String workType = 'normal',
+    String? punchNote,
     double? gpsLat,
     double? gpsLng,
     double? gpsAccuracy,
   }) async {
     final payload = {
+      'work_type': workType,
       'device_timezone': _deviceTimezoneContext(),
       if (gpsLat != null) 'gps_lat': gpsLat,
       if (gpsLng != null) 'gps_lng': gpsLng,
       if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
+      if (punchNote != null && punchNote.trim().isNotEmpty)
+        'punch_note': punchNote.trim(),
     };
     // RTMX (#5407) : une clé par pointage logique — envoyée en header et
     // stockée dans la file hors-ligne pour que le rejeu réutilise la MÊME clé.
@@ -59,22 +65,27 @@ class AttendanceRepository {
     } catch (e) {
       if (_isOfflineError(e)) {
         await _saveOfflinePunch('check-in', payload, idempotencyKey);
-        return _offlinePendingLog(checkIn: true);
+        return _offlinePendingLog(checkIn: true, workType: workType);
       }
       rethrow;
     }
   }
 
   Future<AttendanceLog> checkOut({
+    String workType = 'normal',
+    String? punchNote,
     double? gpsLat,
     double? gpsLng,
     double? gpsAccuracy,
   }) async {
     final payload = {
+      'work_type': workType,
       'device_timezone': _deviceTimezoneContext(),
       if (gpsLat != null) 'gps_lat': gpsLat,
       if (gpsLng != null) 'gps_lng': gpsLng,
       if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
+      if (punchNote != null && punchNote.trim().isNotEmpty)
+        'punch_note': punchNote.trim(),
     };
     final idempotencyKey = IdempotencyKeys.newKey();
 
@@ -91,7 +102,7 @@ class AttendanceRepository {
     } catch (e) {
       if (_isOfflineError(e)) {
         await _saveOfflinePunch('check-out', payload, idempotencyKey);
-        return _offlinePendingLog(checkIn: false);
+        return _offlinePendingLog(checkIn: false, workType: workType);
       }
       rethrow;
     }
@@ -128,6 +139,12 @@ class AttendanceRepository {
     final box = Hive.isBoxOpen('offline_punches')
         ? Hive.box<Map<dynamic, dynamic>>('offline_punches')
         : await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
+    // Règle F-21 « 1er pointage gagne » (héritée du fork leopardo_employee,
+    // réconciliée ici par #7652) : un pointage du même type déjà en file pour
+    // aujourd'hui n'est pas re-ajouté (le serveur rejetterait un doublon).
+    if (_hasQueuedPunchToday(box, type)) {
+      return;
+    }
     await box.add({
       'type': type,
       'payload': payload,
@@ -138,7 +155,25 @@ class AttendanceRepository {
     });
   }
 
-  static AttendanceLog _offlinePendingLog({required bool checkIn}) {
+  /// Règle F-21 « 1er pointage gagne » : vérifie si un pointage du même type
+  /// est déjà en file pour aujourd'hui (évite les doublons hors-ligne).
+  static bool _hasQueuedPunchToday(
+    Box<Map<dynamic, dynamic>> box,
+    String type,
+  ) {
+    final today = DateTime.now().toIso8601String().substring(0, 10);
+    for (final item in box.values) {
+      if (item['type'] != type) continue;
+      final queuedAt = (item['timestamp'] as String?) ?? '';
+      if (queuedAt.startsWith(today)) return true;
+    }
+    return false;
+  }
+
+  static AttendanceLog _offlinePendingLog({
+    required bool checkIn,
+    String workType = 'normal',
+  }) {
     final now = DateTime.now();
     return AttendanceLog(
       id: 0,
@@ -146,6 +181,8 @@ class AttendanceRepository {
       date: DateTime(now.year, now.month, now.day),
       status: 'offline_sync_pending',
       employeeName: 'Vous',
+      sessionNumber: 1,
+      workType: workType,
       checkIn: checkIn ? now : null,
       checkOut: checkIn ? null : now,
     );
@@ -228,6 +265,69 @@ class AttendanceRepository {
       queryParameters: qp,
     );
     return MonthlySummary.fromJson(extractDataMap(response.data));
+  }
+
+  /// PA2-ATT-004 - Anomalies detected on the caller's own attendance logs
+  /// (late arrivals, missing check-outs, excessive overtime, etc.) for the
+  /// given period. Defaults to the current calendar month so the day-detail
+  /// sheet can flag anything unusual for the visible week/day.
+  Future<AttendanceAnomalyReport> getMyAnomalies({
+    required DateTime from,
+    required DateTime to,
+  }) async {
+    String fmt(DateTime d) =>
+        '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+    try {
+      final response = await apiClient.requestWithRetry(
+        '/me/attendance-anomalies',
+        maxRetriesOverride: 0,
+        timeoutOverride: _readTimeout,
+        queryParameters: {
+          'date_from': fmt(from),
+          'date_to': fmt(to),
+          'per_page': 100,
+        },
+      );
+      final data = extractDataMap(response.data);
+      return AttendanceAnomalyReport.fromJson(data);
+    } catch (_) {
+      // Anomalies are a non-blocking enrichment of the day-detail view; a
+      // failure here must never prevent the employee from seeing their own
+      // punches, breaks and gains.
+      return AttendanceAnomalyReport.empty;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getTodayTasks() async {
+    final response = await apiClient.requestWithRetry(
+      '/tasks/today',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
+    );
+    final items = extractDataList(response.data);
+    return items
+        .whereType<Map>()
+        .map((entry) => entry.cast<String, dynamic>())
+        .toList();
+  }
+
+  Future<void> completeTask({
+    required int taskId,
+    required int completedMinutes,
+    String? note,
+  }) async {
+    await apiClient.requestWithRetry(
+      '/tasks/$taskId',
+      method: 'PATCH',
+      data: {
+        'status': 'done',
+        'completed_minutes': completedMinutes,
+        if (note != null && note.trim().isNotEmpty)
+          'completion_note': note.trim(),
+      },
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
   }
 
   Future<List<AttendanceLog>> getHistory(int year, int month) async {
@@ -344,7 +444,12 @@ class AttendanceRepository {
     final payload = responseData['data'];
 
     if (payload == null) {
-      return {'log': null, 'context': responseData['context']};
+      return {
+        'log': null,
+        'sessions': const <AttendanceLog>[],
+        'summary': responseData['summary'],
+        'context': responseData['context'],
+      };
     }
 
     if (payload is! Map) {
@@ -374,11 +479,25 @@ class AttendanceRepository {
         : (data.containsKey('item') ? null : data);
 
     if (todayPayload == null) {
-      return {'log': null, 'context': context};
+      return {
+        'log': null,
+        'sessions': const <AttendanceLog>[],
+        'summary': data['summary'],
+        'context': context,
+      };
     }
 
     final now = DateTime.now();
     final today = todayPayload.cast<String, dynamic>();
+    final rawSessions = data['sessions'];
+    final sessions = rawSessions is List
+        ? rawSessions
+            .whereType<Map>()
+            .map(
+              (entry) => AttendanceLog.fromJson(entry.cast<String, dynamic>()),
+            )
+            .toList()
+        : const <AttendanceLog>[];
 
     return {
       'log': AttendanceLog(
@@ -400,7 +519,12 @@ class AttendanceRepository {
         employeeName: today['name']?.toString(),
         employeePhotoUrl:
             (today['photo_url'] ?? today['photo_path'])?.toString(),
+        sessionNumber:
+            int.tryParse(today['session_number']?.toString() ?? '') ?? 1,
+        workType: (today['work_type'] ?? 'normal').toString(),
       ),
+      'sessions': sessions,
+      'summary': data['summary'],
       'context': context,
     };
   }
