@@ -136,16 +136,18 @@ return [
 
     'email_trial_welcome_subject' => 'Votre espace est prêt — :company',
     'email_trial_welcome_heading' => 'Bonjour :name 👋',
-    'email_trial_welcome_intro' => 'Votre espace :company a été créé avec succès. Voici vos identifiants de connexion :',
-    'email_trial_welcome_email_label' => 'Email',
-    'email_trial_welcome_password_label' => 'Mot de passe',
+    'email_trial_welcome_intro' => 'Votre espace :company a été créé avec succès.',
+    'email_trial_welcome_email_label' => 'Email de connexion',
+    'email_trial_welcome_set_pw_text' => 'Pour vos prochaines connexions, définissez votre mot de passe en cliquant sur le lien ci-dessous.',
+    'email_trial_welcome_set_pw_button' => 'Définir mon mot de passe',
+    'email_trial_welcome_set_pw_validity' => 'Ce lien est à usage unique et valable 72 heures. Passé ce délai, utilisez « Recevoir un code de connexion » sur la page de connexion.',
+    'email_trial_welcome_set_pw_fallback' => 'Pour vos prochaines connexions, définissez votre mot de passe depuis votre espace, ou demandez un code de connexion sur la page de connexion.',
     'email_trial_welcome_trial_badge' => 'Essai gratuit :days jours',
-    'email_trial_welcome_change_pw' => '⚠️ Changez votre mot de passe dès la première connexion depuis le menu Compte.',
     'email_trial_welcome_next_steps' => 'Prochaines étapes',
-    'email_trial_welcome_step1' => 'Connectez-vous avec les identifiants ci-dessus',
+    'email_trial_welcome_step1' => 'Définissez votre mot de passe via le lien ci-dessus',
     'email_trial_welcome_step2' => 'Ajoutez vos premiers employés',
     'email_trial_welcome_step3' => 'Testez votre premier pointage',
-    'email_trial_welcome_button' => 'Se connecter',
+    'email_trial_welcome_button' => 'Accéder à mon espace',
 
     'email_subscription_confirmed_subject' => 'Abonnement confirmé — :company',
     'email_subscription_confirmed_thanks' => 'Merci pour votre abonnement !',
@@ -188,5 +190,10 @@ return [
     'trial_verification_greeting' => 'Bonjour :name,',
     'trial_verification_intro' => 'Veuillez utiliser le code de vérification ci-dessous pour finaliser la création de votre espace de travail :',
     'trial_verification_validity' => "Ce code est valide pendant 30 minutes. Si vous n'avez pas fait cette demande, vous pouvez ignorer cet email.",
+
+    'login_code_subject' => 'Votre code de connexion Leopardo RH',
+    'login_code_greeting' => 'Bonjour,',
+    'login_code_intro' => 'Voici votre code de connexion à usage unique. Saisissez-le sur la page de connexion pour accéder à votre espace :',
+    'login_code_validity' => "Ce code est valide pendant 10 minutes et à usage unique. Si vous n'avez pas fait cette demande, vous pouvez ignorer cet email.",
 
 ];

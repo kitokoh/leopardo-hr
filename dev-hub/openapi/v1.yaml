@@ -829,6 +829,122 @@ paths:
           description: Manager principal du tenant requis
         '404':
           description: Type de ressource inconnu (RESOURCE_TYPE_UNKNOWN)
+  /resources/{type}/{resourceId}/access:
+    get:
+      tags:
+      - HR
+      summary: 'Qui a accès à cette ressource ? (vue inverse, R4 #7601)'
+      description: 'Vue inverse des assignations : une ressource (succursale, véhicule, caméra...) et la liste des collaborateurs qui y ont accès, avec leur niveau, qui a donné l''accès et quand. Réservée au manager principal du tenant.'
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: resourceId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Collaborateurs ayant accès à la ressource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        employee_id:
+                          type: integer
+                        employee_name:
+                          type: string
+                        access_level:
+                          type: string
+                          enum: [view, operate, manage]
+                        granted_by:
+                          type: integer
+                          nullable: true
+                        granted_by_name:
+                          type: string
+                          nullable: true
+                        granted_at:
+                          type: string
+                          nullable: true
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Manager principal du tenant requis (RESOURCE_ACCESS_DENIED)
+        '404':
+          description: Type inconnu (RESOURCE_TYPE_UNKNOWN) ou ressource introuvable dans le tenant (RESOURCE_NOT_FOUND)
+  /resource-access/audit:
+    get:
+      tags:
+      - HR
+      summary: 'Rapport d''audit des accès ressource (R4 #7601)'
+      description: 'Qui avait accès à quoi, quand, donné (ou retiré) par qui — lu depuis audit_logs (chaque pose/modification/révocation d''assignation y écrit une ligne, y compris la révocation en cascade au départ d''un collaborateur). `?format=csv` produit l''export téléchargeable. Réservé au manager principal du tenant.'
+      parameters:
+      - name: format
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [csv]
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 200
+      responses:
+        '200':
+          description: Journal des accès (JSON, ou CSV si format=csv)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        at:
+                          type: string
+                          nullable: true
+                        action:
+                          type: string
+                        actor_id:
+                          type: integer
+                          nullable: true
+                        employee_id:
+                          type: integer
+                          nullable: true
+                        resource_type:
+                          type: string
+                          nullable: true
+                        resource_id:
+                          type: integer
+                          nullable: true
+                        access_level:
+                          type: string
+                          nullable: true
+                        previous_level:
+                          type: string
+                          nullable: true
+            text/csv:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Manager principal du tenant requis (RESOURCE_ACCESS_DENIED)
   /employees/{employee}/end-of-contract:
     get:
       tags:
@@ -1697,8 +1813,126 @@ paths:
                     example: TRIAL_PASSWORD_ALREADY_SET
                   localized_message:
                     type: string
+        '410':
+          description: Lien de definition expire (TTL 72 h depuis le provisioning, issue #7490)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: TRIAL_PASSWORD_LINK_EXPIRED
+                  localized_message:
+                    type: string
         '422':
           description: Validation echouee (mot de passe trop faible ou confirmation absente)
+  /auth/login-code/request:
+    post:
+      tags:
+      - Auth
+      summary: Demander un code de connexion a usage unique (compte sans mot de passe)
+      description: "Issue #7490 — comptes self-service qui n'ont jamais defini de mot de passe (trial_provisionings.password_set_at NULL). Reponse TOUJOURS generique (anti-enumeration) ; le code (6 chiffres, TTL 10 min, usage unique) part par e-mail dans la locale du tenant. Bucket `auth-sensitive`."
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Reponse generique (aucune fuite d'existence de compte)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  localized_message:
+                    type: string
+        '422':
+          description: Email absent ou invalide
+  /auth/login-code/verify:
+    post:
+      tags:
+      - Auth
+      summary: Verifier le code de connexion et ouvrir une session
+      description: "Issue #7490 — meme contrat de reponse que POST /auth/login (EmployeeResource + token Sanctum). Code a usage unique, verrou apres 5 echecs, canal refuse aux comptes 2FA (LOGIN_CODE_PASSWORD_REQUIRED)."
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - code
+              properties:
+                email:
+                  type: string
+                  format: email
+                code:
+                  type: string
+                  minLength: 6
+                  maxLength: 6
+      responses:
+        '200':
+          description: Session ouverte (employe + token Sanctum)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                  token:
+                    type: string
+                  token_type:
+                    type: string
+                    example: Bearer
+                  token_expires_at:
+                    type: string
+                    nullable: true
+        '400':
+          description: Code invalide, expire ou deja consomme
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: LOGIN_CODE_INVALID
+                  localized_message:
+                    type: string
+        '403':
+          description: Compte 2FA ou politique MFA — le canal code est refuse
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: LOGIN_CODE_PASSWORD_REQUIRED
+        '429':
+          description: Verrou apres 5 echecs — demander un nouveau code
   /user/register:
     post:
       tags:
@@ -2825,6 +3059,123 @@ paths:
                         description: Date ISO 8601 de l'acquittement (jamais réécrite).
                       already_acknowledged:
                         type: boolean
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /setup-interview:
+    get:
+      tags:
+      - Onboarding
+      summary: "\xC9tat de l'entretien de pr\xE9paration conversationnel (#7493)"
+      description: |
+        Retourne l'état de l'entretien de préparation du tenant courant
+        (statut, réponses brouillon, questions allowlistées, activations).
+        Persisté côté serveur (`companies.metadata.setup_interview`) pour
+        reprendre le parcours sur un autre appareil. RBAC principal/rh.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: État courant de l'entretien
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetupInterviewState'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /setup-interview/answers:
+    patch:
+      tags:
+      - Onboarding
+      summary: Enregistrer un brouillon de réponses de l'entretien (#7493)
+      description: |
+        Enregistrement incrémental (rejouable) des réponses. Allowlist
+        fail-closed : question ou valeur inconnue refusée (422, aucune
+        écriture). `null` marque une question explicitement sautée. Sans effet
+        sur un entretien déjà complété.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - answers
+              properties:
+                answers:
+                  type: object
+                  description: Réponses partielles (clés allowlistées).
+      responses:
+        '200':
+          description: Brouillon fusionné et persisté
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetupInterviewState'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /setup-interview/complete:
+    post:
+      tags:
+      - Onboarding
+      summary: Clôturer l'entretien et activer les modules (#7493)
+      description: |
+        Traduit les réponses en activations réelles (verticales via
+        SolutionActivator, outils horizontaux allowlistés) puis marque
+        l'entretien `completed`. Idempotent : rejouer `complete` est un no-op
+        qui renvoie le récapitulatif d'origine. Un échec d'activation n'est
+        pas bloquant (traçé dans `activated.failed`).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Récapitulatif des activations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      already_completed:
+                        type: boolean
+                      completed_at:
+                        type: string
+                      activated:
+                        $ref: '#/components/schemas/SetupInterviewActivated'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /setup-interview/dismiss:
+    post:
+      tags:
+      - Onboarding
+      summary: Reporter l'entretien de préparation (« Terminer plus tard », #7493)
+      description: |
+        Marque l'entretien `dismissed` (relance douce depuis le dashboard,
+        jamais bloquante). Idempotent ; sans effet sur un entretien complété.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: État courant de l'entretien
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetupInterviewState'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -24844,6 +25195,180 @@ paths:
           description: Lead persiste
         '422':
           $ref: '#/components/responses/Validation422'
+  /funnel/events:
+    post:
+      tags:
+      - Marketing
+      summary: "Ingerer un evenement d'etape du funnel d'acquisition (vitrine)"
+      description: "#7496 — appele serveur-a-serveur par la route Next /api/forms/funnel-event de la vitrine (consentement mesure d'audience requis cote client). Meme secret partage que POST /marketing/leads (MARKETING_LEAD_WEBHOOK_TOKEN) ; secret configure = fail-closed (400). Aucune PII : liste fermee d'etapes, identifiant de correlation pseudonyme, attribution source/utm_* et contexte borne."
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - event
+              - correlation_id
+              properties:
+                event:
+                  type: string
+                  enum: [signup_view, signup_email_submitted, signup_otp_sent, signup_otp_verified, space_provisioned, welcome_seen, interview_started, interview_question_answered, interview_skipped, interview_completed, interview_dismissed, first_module_opened]
+                correlation_id:
+                  type: string
+                  minLength: 4
+                  maxLength: 64
+                occurred_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                attribution:
+                  type: object
+                  properties:
+                    source:
+                      type: string
+                      maxLength: 120
+                    utm_source:
+                      type: string
+                      maxLength: 120
+                    utm_medium:
+                      type: string
+                      maxLength: 120
+                    utm_campaign:
+                      type: string
+                      maxLength: 120
+                context:
+                  type: object
+                  properties:
+                    page:
+                      type: string
+                      maxLength: 300
+                    step_key:
+                      type: string
+                      maxLength: 120
+                    question_index:
+                      type: integer
+                      minimum: 0
+                      maximum: 1000
+                    resend:
+                      type: boolean
+      responses:
+        '202':
+          description: Evenement accepte
+        '400':
+          description: Secret partage invalide ou absent (quand il est configure)
+        '422':
+          description: Evenement hors liste fermee ou payload invalide
+  /admin/funnel/stats:
+    get:
+      tags:
+      - Admin
+      summary: "Conversions du funnel d'acquisition par etape, jour et source"
+      description: "#7496 — dashboard admin du tunnel d'acquisition : taux de passage entre etapes (signup_view → space_provisioned), conversion par jour et par source (attribution captee au premier ecran), et alerte livraison OTP (ratio verifie/envoye du jour sous le seuil = mailer probablement en echec). Reserve a la permission plateforme `metrics.view`."
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        description: Fenetre d'agregation en jours (1..90, defaut 30).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 90
+          default: 30
+      responses:
+        '200':
+          description: Agregats du funnel
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      window:
+                        type: object
+                        properties:
+                          days:
+                            type: integer
+                          from:
+                            type: string
+                            format: date-time
+                      totals:
+                        type: object
+                        properties:
+                          journeys:
+                            type: integer
+                          provisioned:
+                            type: integer
+                          conversion_rate:
+                            type: number
+                      steps:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            event:
+                              type: string
+                            events:
+                              type: integer
+                            journeys:
+                              type: integer
+                            rate_from_previous:
+                              type: number
+                              nullable: true
+                      by_day:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            date:
+                              type: string
+                              format: date
+                            steps:
+                              type: object
+                              additionalProperties:
+                                type: integer
+                            conversion_rate:
+                              type: number
+                      by_source:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            source:
+                              type: string
+                            steps:
+                              type: object
+                              additionalProperties:
+                                type: integer
+                            conversion_rate:
+                              type: number
+                      alerts:
+                        type: object
+                        properties:
+                          otp_delivery:
+                            type: object
+                            properties:
+                              sent_today:
+                                type: integer
+                              verified_today:
+                                type: integer
+                              ratio:
+                                type: number
+                                nullable: true
+                              threshold:
+                                type: number
+                              triggered:
+                                type: boolean
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Permission plateforme `metrics.view` absente
   /marketing/social-account:
     get:
       tags:
@@ -38534,3 +39059,40 @@ components:
           type: boolean
         correlation_id:
           type: string
+    SetupInterviewActivated:
+      type: object
+      description: "Activations issues de l'entretien de préparation (#7493)."
+      properties:
+        solutions:
+          type: array
+          items: {type: string}
+        tools:
+          type: array
+          items: {type: string}
+        failed:
+          type: array
+          items: {type: string}
+    SetupInterviewState:
+      type: object
+      description: "État de l'entretien de préparation conversationnel (#7493)."
+      properties:
+        data:
+          type: object
+          properties:
+            status:
+              type: string
+              enum: [not_started, in_progress, completed, dismissed]
+            answers:
+              type: object
+              description: Réponses brouillon (clés allowlistées côté serveur).
+            questions:
+              type: object
+              description: Allowlist des questions et réponses possibles.
+            completed_at:
+              type: string
+              nullable: true
+            dismissed_at:
+              type: string
+              nullable: true
+            activated:
+              $ref: '#/components/schemas/SetupInterviewActivated'

@@ -25,7 +25,7 @@ import { t as i18nT } from '@/lib/i18n/locale-catalog';
  * L'écran n'est pas rendu par ce composant : c'est le layout de l'espace qui
  * décide (`shouldShowFirstLoginWelcome`), une seule source de vérité.
  */
-export type WelcomeScreenAction = 'start_setup' | 'later';
+export type WelcomeScreenAction = 'set_password' | 'later';
 
 type Props = {
   /** Locale de l'espace (source : catalogue i18n, `shared/i18n/locales`). */
@@ -135,7 +135,7 @@ export function WelcomeScreen({ locale, onAcknowledged }: Props) {
           <button
             type="button"
             disabled={pending}
-            onClick={() => void acknowledge('start_setup')}
+            onClick={() => void acknowledge('set_password')}
             className="inline-flex flex-1 items-center justify-center rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-60"
           >
             {labels.ctaStart}

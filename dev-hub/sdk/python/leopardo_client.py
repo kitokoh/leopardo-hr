@@ -420,6 +420,10 @@ class LeopardoClient:
         """Alertes flotte cross-tenant (super-admin)"""
         return self.request("GET", "/admin/fleet/alerts", **kwargs)
 
+    def get_admin_funnel_stats(self, **kwargs):
+        """Conversions du funnel d'acquisition par etape, jour et source"""
+        return self.request("GET", "/admin/funnel/stats", **kwargs)
+
     def get_admin_hr_reports(self, **kwargs):
         """Rapports RH cross-tenant (super-admin)"""
         return self.request("GET", "/admin/hr-reports", **kwargs)
@@ -967,6 +971,14 @@ class LeopardoClient:
     def post_auth_login(self, **kwargs):
         """Connexion employee"""
         return self.request("POST", "/auth/login", **kwargs)
+
+    def post_auth_login_code_request(self, **kwargs):
+        """Demander un code de connexion a usage unique (compte sans mot de passe)"""
+        return self.request("POST", "/auth/login-code/request", **kwargs)
+
+    def post_auth_login_code_verify(self, **kwargs):
+        """Verifier le code de connexion et ouvrir une session"""
+        return self.request("POST", "/auth/login-code/verify", **kwargs)
 
     def post_auth_logout(self, **kwargs):
         """Deconnexion employee"""
@@ -2232,6 +2244,10 @@ class LeopardoClient:
         """Enregistrer un releve de compteur (cumulatif, idempotent)"""
         return self.request("POST", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", **kwargs)
 
+    def post_funnel_events(self, **kwargs):
+        """Ingerer un evenement d'etape du funnel d'acquisition (vitrine)"""
+        return self.request("POST", "/funnel/events", **kwargs)
+
     def post_growth_partner_apply(self, **kwargs):
         """Candidature partenaire"""
         return self.request("POST", "/growth/partner/apply", **kwargs)
@@ -3468,9 +3484,17 @@ class LeopardoClient:
         """Taux de rotation (turnover) sur N mois"""
         return self.request("GET", "/reports/turnover", **kwargs)
 
+    def get_resource_access_audit(self, **kwargs):
+        """Rapport d''audit des accès ressource (R4 #7601)"""
+        return self.request("GET", "/resource-access/audit", **kwargs)
+
     def get_resources_by_type(self, **kwargs):
         """Catalogue des ressources assignables d''un type"""
         return self.request("GET", "/resources/{type}", **kwargs)
+
+    def get_resources_by_type_by_resourceid_access(self, **kwargs):
+        """Qui a accès à cette ressource ? (vue inverse, R4 #7601)"""
+        return self.request("GET", "/resources/{type}/{resourceId}/access", **kwargs)
 
     def get_salary_advances(self, **kwargs):
         """Lister les avances sur salaire"""
@@ -3599,6 +3623,22 @@ class LeopardoClient:
     def post_schedules_by_schedule_assign_employees(self, **kwargs):
         """Affecter un horaire/regle entreprise a des employes"""
         return self.request("POST", "/schedules/{schedule}/assign-employees", **kwargs)
+
+    def get_setup_interview(self, **kwargs):
+        """\xC9tat de l'entretien de pr\xE9paration conversationnel (#7493)"""
+        return self.request("GET", "/setup-interview", **kwargs)
+
+    def patch_setup_interview_answers(self, **kwargs):
+        """Enregistrer un brouillon de réponses de l'entretien (#7493)"""
+        return self.request("PATCH", "/setup-interview/answers", **kwargs)
+
+    def post_setup_interview_complete(self, **kwargs):
+        """Clôturer l'entretien et activer les modules (#7493)"""
+        return self.request("POST", "/setup-interview/complete", **kwargs)
+
+    def post_setup_interview_dismiss(self, **kwargs):
+        """Reporter l'entretien de préparation (« Terminer plus tard », #7493)"""
+        return self.request("POST", "/setup-interview/dismiss", **kwargs)
 
     def get_showcase(self, **kwargs):
         """Vitrine du tenant courant (gestion)"""

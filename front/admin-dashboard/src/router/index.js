@@ -137,6 +137,15 @@ const routes = [
         }
       },
       {
+        path: '/crm/acquisition-funnel',
+        name: 'acquisition-funnel',
+        component: () => import('@/views/crm/AcquisitionFunnelView.vue'),
+        meta: {
+          title: 'navigation.acquisitionFunnel',
+          icon: 'ChartBarSquareIcon'
+        }
+      },
+      {
         path: '/system',
         name: 'system',
         component: () => import('@/views/system/SystemView.vue'),

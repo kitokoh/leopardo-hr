@@ -494,7 +494,28 @@
     "empty_departments": "No department yet.",
     "create_department_error": "Unable to create the department.",
     "create_employee_error": "Unable to add the collaborator.",
-    "open_team": "Open the Team page"
+    "open_team": "Open the Team page",
+    "resourceAccess": {
+      "button": "Access & resources",
+      "title": "Access & resources",
+      "subtitle": "Grant this collaborator access to your resources (restaurant branches, sites, vehicles, cameras), level by level.",
+      "loading": "Loading access…",
+      "loadError": "Unable to load this collaborator's access.",
+      "saveError": "Unable to save access.",
+      "saved": "Access saved.",
+      "empty": "No resource of this type to assign.",
+      "save": "Save access",
+      "levelNone": "None",
+      "levelView": "View",
+      "levelOperate": "Operate",
+      "levelManage": "Manage",
+      "types": {
+        "restaurant_branch": "Restaurant branches",
+        "site": "Sites",
+        "vehicle": "Vehicles",
+        "camera": "Cameras"
+      }
+    }
   },
   "smartAttendanceGpsAuto": "Automatic GPS",
   "smartAttendanceNoGpsSessions": "No GPS session for now.",
@@ -1732,16 +1753,16 @@
     "otpSentTo": "We sent a 6-digit verification code to:",
     "otpInvalidLength": "Please enter the 6 digits of the code.",
     "otpInvalidCode": "Invalid or expired code.",
-    "otpVerifyError": "An error occurred during verification. Please try again.",
+    "otpVerifyError": "Verification didn't go through. Check your connection and try again — your code is still valid.",
     "verifyLabel": "Verify and create my workspace",
     "verifyingLabel": "Verifying...",
     "codeValidity": "The code is valid for 30 minutes. Check your spam folder if you cannot find it.",
     "trackStatus": "Track my workspace status",
     "pendingTitle": "Trial request received",
     "pendingFallback": "Trial request received. Our team will contact you within 24 business hours.",
-    "pendingNote": "Our instant workspace provisioning is temporarily unavailable (server restart). Your request is recorded: a Leopardo team member will email you within 24 business hours with access suited to your context.",
+    "pendingNote": "Instant setup is temporarily unavailable. Your request is safely recorded: the Leopardo team will email your access within 24 business hours.",
     "readyTitle": "Your workspace is ready!",
-    "readySubtitle": "The demo sandbox is provisioned. Access it directly:",
+    "readySubtitle": "Everything is ready. One last step and you're in:",
     "accessCta": "Access my workspace",
     "copyLink": "Copy link",
     "linkCopied": "Link copied!",
@@ -1751,8 +1772,8 @@
     "timeoutTitle": "Still creating your workspace",
     "timeoutBody": "Creating your workspace is taking longer than usual. Refresh the status below to see where it stands, or try again in a few minutes.",
     "refreshStatus": "Refresh status",
-    "preparingTitle": "Preparing your workspace",
-    "preparingBody": "We are provisioning your demo sandbox. This usually takes less than 30 seconds.",
+    "preparingTitle": "We're preparing your workspace",
+    "preparingBody": "Your tools are being set up — this usually takes less than a minute. You can stay on this page, it updates automatically.",
     "statusFor": "For:",
     "statusEvery5s": "Status checked every 5 seconds.",
     "successTitle": "Your workspace is ready!",
@@ -1852,7 +1873,13 @@
     "planSelected": "Selected plan",
     "planChange": "Change",
     "countryDetectionFailed": "Select your country.",
-    "verifiedByGoogle": "Email verified by Google"
+    "verifiedByGoogle": "Email verified by Google",
+    "otpResend": "Resend code",
+    "otpResending": "Sending a new code…",
+    "otpResent": "A new code is on its way. Remember to check your spam folder.",
+    "otpResendError": "We couldn't resend the code. Try again in a moment or contact support.",
+    "preparingLonger": "This is taking a little longer than usual — your workspace is on its way. No need to reload the page.",
+    "supportCta": "Contact support"
   },
   "attendanceDayDetail": "Daily detail",
   "support_tickets": {
@@ -5119,7 +5146,8 @@
       "parametres": "Settings",
       "systeme": "System"
     },
-    "team": "Platform team"
+    "team": "Platform team",
+    "acquisitionFunnel": "Acquisition funnel"
   },
   "companydetailCoreModuleAlwaysActive": "Core module always active",
   "smartAttendanceSessionsTitle": "Smart Attendance sessions",
@@ -6863,8 +6891,32 @@
   "firstLoginWelcome": {
     "title": "Your workspace is ready 🎉",
     "body": "An email has been sent to you with a link to set your password — it will be used for your future sign-ins.",
-    "ctaStart": "Start setting up",
+    "ctaStart": "Set my password now",
     "ctaLater": "Later"
+  },
+  "funnelStats": {
+    "title": "Acquisition funnel",
+    "subtitle": "Signup funnel conversions by step, day and source (#7496).",
+    "refresh": "Refresh",
+    "retry": "Retry",
+    "loading": "Loading…",
+    "empty": "No events for this period.",
+    "daysUnit": "days",
+    "otpAlert": "Code delivery alert: today's verified/sent ratio is below the threshold — the mailer may be failing.",
+    "metricJourneys": "Journeys (/signup views)",
+    "metricProvisioned": "Workspaces ready",
+    "metricConversionRate": "Visit → workspace conversion",
+    "stepsTitle": "Step-by-step pass rates",
+    "stepsHint": "Distinct journeys reaching each step; % = pass rate from the previous step.",
+    "byDayTitle": "Conversion by day",
+    "byDayHint": "/signup views and workspaces ready, day by day.",
+    "bySourceTitle": "Conversion by source",
+    "bySourceHint": "Attribution captured on the first funnel screen (source / utm).",
+    "dateColumn": "Date",
+    "viewsColumn": "Views",
+    "provisionedColumn": "Ready",
+    "conversionColumn": "Conversion",
+    "sourceColumn": "Source"
   },
   "forms": {
     "validation": {
@@ -6883,5 +6935,161 @@
       "employeesInvalid": "Select an employee range",
       "dateFuture": "Date must be in the future"
     }
+  },
+  "setupInterview": {
+    "title": "Let's set up your workspace",
+    "subtitle": "A few quick questions. Every question can be skipped.",
+    "progress": "Question {current} of {total}",
+    "skip": "Skip",
+    "later": "Finish later",
+    "back": "Back",
+    "finish": "Finish",
+    "completing": "Preparing your workspace…",
+    "recapTitle": "Your workspace is ready",
+    "recapBody": "Here is what we enabled for you:",
+    "recapEmpty": "Your base workspace is ready. You can enable more tools at any time.",
+    "recapCta": "Explore my workspace",
+    "resume": "Finish setting up my workspace",
+    "error": "Could not save right now. Please try again in a moment.",
+    "questions": {
+      "company_type": {
+        "label": "Do you work alone or with a team?",
+        "options": {
+          "solo": "I work alone",
+          "team": "With a team"
+        }
+      },
+      "team_size": {
+        "label": "How many people work with you?",
+        "options": {
+          "1-10": "1 to 10",
+          "11-50": "11 to 50",
+          "51-200": "51 to 200",
+          "201-500": "201 to 500",
+          "500+": "More than 500"
+        }
+      },
+      "sector": {
+        "label": "What is your business?",
+        "options": {
+          "restaurant": "Restaurant",
+          "fuel_station": "Fuel station",
+          "education": "Education",
+          "commerce": "Retail",
+          "services": "Services",
+          "travel": "Travel agency",
+          "other": "My sector is not listed"
+        }
+      },
+      "premises": {
+        "label": "Do you have one or more physical locations?",
+        "options": {
+          "single": "One location",
+          "multiple": "Several sites",
+          "mobile": "Mobile teams",
+          "none": "No physical location"
+        }
+      },
+      "priorities": {
+        "label": "What matters most to you today?",
+        "hint": "Multiple choices allowed",
+        "options": {
+          "attendance": "Attendance and time tracking",
+          "payroll": "Payroll",
+          "accounting": "Accounting",
+          "crm": "Customer relations",
+          "cameras": "Site security (cameras)",
+          "showcase": "My showcase website"
+        }
+      },
+      "scheduled_hours": {
+        "label": "Do your employees work on planned schedules?",
+        "options": {
+          "yes": "Yes",
+          "no": "No"
+        }
+      }
+    },
+    "modules": {
+      "restaurant": "Restaurant engine",
+      "fuel_station": "Fuel station",
+      "edumanager": "Education",
+      "travelagency": "Travel agency",
+      "employees": "Employee management",
+      "attendance": "Attendance & time tracking",
+      "absences": "Absences",
+      "payroll": "Payroll",
+      "accounting": "Accounting",
+      "crm": "Customer relations",
+      "cameras": "Cameras",
+      "showcase": "Showcase website",
+      "contracts": "Contracts",
+      "training": "Training",
+      "reports": "Reports",
+      "marketing": "Marketing"
+    }
+  },
+  "nextSteps": {
+    "title": "Next steps",
+    "subtitle": "A few actions to finish getting started.",
+    "viewAll": "View all ({n})",
+    "viewLess": "Collapse",
+    "complete": "Mark as done",
+    "skip": "Skip",
+    "dismiss": "Hide this card",
+    "restore": "Next steps ({n})",
+    "done": "You're all set!",
+    "progress": "{done} of {total}",
+    "error": "Could not load your next steps.",
+    "steps": {
+      "customize_showcase": {
+        "title": "Customize your showcase website",
+        "desc": "Pick your colors, texts and images."
+      },
+      "publish_showcase": {
+        "title": "Publish your showcase website",
+        "desc": "Make your site visible in one click."
+      }
+    }
+  },
+  "setPassword": {
+    "title": "Set your password",
+    "subtitle": "You will use it for your next logins. This link is single-use and valid for 72 hours.",
+    "passwordLabel": "New password",
+    "confirmLabel": "Confirm password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "submit": "Set my password",
+    "submitting": "Saving…",
+    "success": "Password saved. You can now log in.",
+    "successCta": "Go to login",
+    "missingToken": "Incomplete or expired link. Open the link you received by email, or request a login code from the login page.",
+    "errorInvalidToken": "This link is invalid. Open the link you received by email.",
+    "errorExpired": "This link has expired (72 h). Request a login code from the login page.",
+    "errorAlreadySet": "A password has already been set for this workspace. Use the regular sign-in or the password reset.",
+    "errorNotReady": "Your workspace is not ready yet. Try again in a few moments.",
+    "errorWeakPassword": "Password too weak: at least 12 characters, including a number.",
+    "errorMismatch": "The two passwords do not match.",
+    "errorGeneric": "Could not save the password. Try again in a few moments.",
+    "backToLogin": "Back to login"
+  },
+  "loginCode": {
+    "linkLabel": "Receive a login code",
+    "title": "Log in with a code",
+    "hint": "No password yet? Receive a single-use code by email.",
+    "emailLabel": "Your email",
+    "emailPlaceholder": "manager@company.com",
+    "sendCta": "Send the code",
+    "sending": "Sending…",
+    "sentInfo": "If an eligible account exists for this email, a code was just sent. It is valid for 10 minutes.",
+    "codeLabel": "Code received by email",
+    "verifyCta": "Log in",
+    "verifying": "Verifying…",
+    "resend": "Resend a code",
+    "backToPassword": "Log in with a password",
+    "errorInvalid": "Invalid or expired code. Request a new code.",
+    "errorTooMany": "Too many attempts. Request a new code.",
+    "errorPasswordRequired": "This account requires a password sign-in.",
+    "errorGeneric": "Could not log you in. Try again in a few moments."
   }
 }

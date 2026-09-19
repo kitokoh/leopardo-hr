@@ -105,7 +105,8 @@ export async function POST(request: NextRequest) {
     } | null;
 
     if (!backendResponse.ok || payload === null || payload.success === false) {
-      const passthroughStatuses = [404, 409, 422, 429];
+      // 410 : lien de définition expiré (TTL 72 h, #7490).
+      const passthroughStatuses = [404, 409, 410, 422, 429];
       return NextResponse.json(
         {
           success: false,

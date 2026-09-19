@@ -2,6 +2,7 @@
 
 use App\AI\Interfaces\Api\V1\Controllers\VoiceController;
 use App\Core\Auth\Interfaces\Api\V1\Controllers\AuthController;
+use App\Core\Auth\Interfaces\Api\V1\Controllers\LoginCodeController;
 use App\Core\Auth\Interfaces\Api\V1\Controllers\PasswordResetController;
 use App\Core\Auth\Interfaces\Api\V1\Controllers\PlatformAuthController;
 use App\Core\Auth\Interfaces\Api\V1\Controllers\TwoFactorAuthController;
@@ -21,11 +22,13 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBankingController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBrandingController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyModuleController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\PrivacyController;
+use App\Modules\Marketing\Interfaces\Api\V1\Controllers\AcquisitionFunnelEventController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingLeadController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
+use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\SetupInterviewController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\WelcomeScreenController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\IslamicCalendarController;
 use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PayrollAuditController;
@@ -40,6 +43,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\DemoUserController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\HealthController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\LaunchReadinessController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\MetricsController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAcquisitionFunnelController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminAiConversationController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminDashboardController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminFleetAlertController;
@@ -113,6 +117,12 @@ Route::prefix('v1')->group(function (): void {
         // Issue #2626 : réinitialisation de mot de passe (usage unique, 60 min).
         Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgot']);
         Route::post('/auth/reset-password', [PasswordResetController::class, 'reset']);
+        // #7490 : connexion par code à usage unique pour les comptes SANS mot
+        // de passe défini (self-service). Réponse générique côté demande
+        // (anti-énumération), verrou applicatif à 5 échecs côté verify — le
+        // bucket auth-sensitive (email+IP) suit la même politique que /auth/login.
+        Route::post('/auth/login-code/request', [LoginCodeController::class, 'request']);
+        Route::post('/auth/login-code/verify', [LoginCodeController::class, 'verify']);
         Route::post('/auth/google/token', [AuthController::class, 'handleGoogleToken']);
 
         // QA onboarding 2026-09-14 — le flux Google a besoin d'une SESSION.
@@ -191,6 +201,11 @@ Route::prefix('v1')->group(function (): void {
     // Protected by a shared secret (see services.marketing_lead_webhook),
     // not Sanctum, since the caller has no tenant yet.
     Route::middleware(['throttle:webhooks-inbound'])->post('/marketing/leads', [MarketingLeadController::class, 'store']);
+
+    // #7496 — événements d'étape du funnel d'acquisition (vitrine, server-to-
+    // server via la route Next /api/forms/funnel-event, même secret partagé
+    // que /marketing/leads). Aucune PII : liste fermée d'étapes + corrélation.
+    Route::middleware(['throttle:webhooks-inbound'])->post('/funnel/events', [AcquisitionFunnelEventController::class, 'store']);
 
     // Stripe/Chargily webhooks (public, verified by provider signature inside
     // the controller). PA2-API-005: dedicated 'webhooks-inbound' throttle since
@@ -354,6 +369,18 @@ Route::prefix('v1')->group(function (): void {
         // contrôleur ; la lecture de l'état se fait par `/auth/me`
         // (`company.metadata`), il n'y a pas de route de lecture à ajouter.
         Route::post('/onboarding/welcome-ack', WelcomeScreenController::class);
+
+        // #7493 — entretien de préparation conversationnel (première
+        // connexion, après l'écran de bienvenue #7490) : une question à la
+        // fois, zappable, reprenable. Brouillon SERVEUR
+        // (`public.companies.metadata.setup_interview`, exposé par `/auth/me`) ;
+        // la clôture active les modules selon les réponses (allowlist
+        // fail-closed, `SolutionActivator` idempotent). RBAC principal/rh
+        // appliqué dans le contrôleur.
+        Route::get('/setup-interview', [SetupInterviewController::class, 'show']);
+        Route::patch('/setup-interview/answers', [SetupInterviewController::class, 'saveAnswers']);
+        Route::post('/setup-interview/complete', [SetupInterviewController::class, 'complete']);
+        Route::post('/setup-interview/dismiss', [SetupInterviewController::class, 'dismiss']);
     });
 
     // APV L.08 — Modules Leopardo, chaque module a son propre route group.
@@ -566,6 +593,10 @@ Route::prefix('v1')->group(function (): void {
         // du wizard vitrine, agrégées depuis marketing_leads type solution_survey).
         Route::get('/solutions/survey-stats', [PlatformSolutionSurveyStatsController::class, 'index']);
         Route::get('/marketing/leads', [PlatformMarketingLeadController::class, 'index'])->middleware('platform.permission:crm.view');
+
+        // #7496 — conversions du funnel d'acquisition par étape/jour/source
+        // (dashboard admin CRM commercial, données acquisition_funnel_events).
+        Route::get('/funnel/stats', [PlatformAcquisitionFunnelController::class, 'index'])->middleware('platform.permission:metrics.view');
 
         Route::get('/fleet/alerts', [PlatformAdminFleetAlertController::class, 'index']);
 

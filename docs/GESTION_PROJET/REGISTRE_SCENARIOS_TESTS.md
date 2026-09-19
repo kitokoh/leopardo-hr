@@ -2,6 +2,42 @@
 > Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
 > Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
 
+> **MAJ 2026-09-18 — #7490, première connexion sans mot de passe en clair (epic #7486).**
+> L'e-mail de bienvenue self-service ne contient plus aucun secret : lien magique de
+> définition de mot de passe (`/auth/set-password?token=…`, `provisioning_token` à usage
+> unique, **TTL 72 h** — `POST /trial/set-password` répond `410 TRIAL_PASSWORD_LINK_EXPIRED`
+> au-delà) et **connexion par code** pour les comptes sans mot de passe : nouveaux endpoints
+> publics `POST /auth/login-code/request|verify` (réponse générique anti-énumération, code
+> 6 chiffres haché en cache 10 min, consommé au premier usage, verrou après 5 échecs,
+> canal refermé dès qu'un mot de passe existe, 2FA refusée — `403
+> LOGIN_CODE_PASSWORD_REQUIRED`). Contrat documenté dans `api/openapi.yaml` (+2 paths,
+> +410 sur set-password, miroir/SDK régénérés). Scénarios API couverts par
+> `api/tests/Feature/FirstLoginPasswordlessTest.php` (8 cas Feature : lien magique sans
+> secret rendu, 410 après 72 h / 200 avant, envoi du code éligible, réponse générique pour
+> un e-mail inconnu, session ouverte + usage unique, verrou 5 échecs, canal refermé après
+> définition du mot de passe). Surfaces mobile touchées par **propagation i18n uniquement**
+> (`sync-mobile.js`, clés `setPassword.*`/`loginCode.*` ×4) : aucun écran ni parcours
+> mobile modifié. Surface web : page publique `/auth/set-password` + mode « code » sur
+> `/auth/login` (Jest 125 suites / 1030 tests verts).
+> **MAJ 2026-09-18 — lot tunnel d'acquisition #7495/#7496 (epic #7486) : pass copy/a11y ×4
+> locales et tracking first-party par étape.** Surface **API** : `POST /api/v1/funnel/events`
+> (ingestion server-to-server des jalons du funnel, secret partagé `MARKETING_LEAD_WEBHOOK_TOKEN`,
+> liste fermée d'événements, contexte en liste blanche, **aucune PII**) et
+> `GET /api/v1/admin/funnel/stats` (`platform.permission:metrics.view` — taux de passage par
+> étape en parcours distincts, conversion visite → espace prêt par jour/source, alerte livraison
+> OTP) — détail dans `SCENARIOS_TEST_API_GITHUB_ACTIONS.md`, addendum 2026-09-18. Surface **web
+> vitrine** (#7495) : reformulation des écrans du tunnel ×4 locales (`shared/i18n`, propagée par
+> les 3 synchronisations), renvoi de code OTP en 1 clic (anti-spam 30 s, annonces `aria-live`),
+> focus géré à chaque transition, `prefers-reduced-motion` respecté ; e2e bloquants
+> `front/web/e2e/funnel-tracking.spec.ts` exécutés par `.github/workflows/funnel-e2e-gate.yml`.
+> Surface **web admin** : nouvelle vue `/crm/acquisition-funnel` (admin-dashboard, nav + palette,
+> clés `funnelStats.*`). Surface **mobile** : aucune — seules les valeurs traduites des catalogues
+> ARB sont propagées depuis le catalogue partagé (détection par chemin). Non-régression :
+> `api/tests/Feature/Marketing/AcquisitionFunnelEventControllerTest.php`,
+> `api/tests/Feature/Platform/PlatformAcquisitionFunnelStatsTest.php`, Jest web (renvoi OTP,
+> jalons funnel), Playwright `funnel-tracking.spec.ts` (ordre des jalons, corrélation stable,
+> attribution conservée, zéro PII, zéro beacon sans consentement).
+
 > **MAJ 2026-09-18 — #7594, vitrine : validation zod localisée ×4 et a11y des formulaires
 > publics — surface mobile touchée par propagation i18n uniquement.** Le lot branche les
 > schémas zod (`contactFormSchema`/`demoFormSchema`/`newsletterFormSchema`) côté client avec
@@ -41,6 +77,21 @@
 > `test_portfolio_defaults_and_legacy_limit_param_stay_compatible`,
 > `test_portfolio_query_count_does_not_grow_with_company_count` — dont le comptage de
 > requêtes, faussé par un `DB::listen()` jamais retiré, est réparé).
+
+> **MAJ 2026-09-18 — tranche #7490 (PR #7629), connexion de première fois sans mot de passe
+> (code à usage unique) + définition du mot de passe.** Surface **API** (module Auth) :
+> `POST /auth/login-code/request` (réponse générique anti-énumération, e-mail
+> `LoginCodeMail` ×4 locales, code OTP 6 chiffres, TTL 10 min) et
+> `POST /auth/login-code/verify` (verrou applicatif à 5 échecs, code consommé au premier
+> usage, même bucket auth-sensitive email+IP que `/auth/login`). Surface **web client** :
+> écran de connexion « code reçu par e-mail » (`/auth/login`), page `/auth/set-password`
+> (`SetPasswordForm.tsx`) et CTA « Définir mon mot de passe maintenant » de l'écran de
+> bienvenue (`WelcomeScreen.tsx`, action `set_password`). Surfaces **web admin** et
+> **mobile** : aucun parcours modifié — propagation des seules valeurs traduites depuis
+> `shared/i18n` (clés `setPassword.*`, `loginCode.*`). Non-régression :
+> `api/tests/Feature/FirstLoginPasswordlessTest.php`,
+> `front/web/src/app/api/v1/auth/__tests__/login-code-verify.route.test.ts`,
+> `front/web/src/app/auth/set-password/__tests__/SetPasswordForm.test.tsx`.
 
 > **MAJ 2026-09-17 — tranche #7490 (lot #7604), écran de bienvenue de première connexion,
 > affiché une seule fois (persisté serveur).** Surface **API** (module Onboarding) :
@@ -82,6 +133,26 @@
 > d'erreur ×4 langues (`api/lang/{fr,en,ar,tr}/errors.php`). Aucune surface web admin ni
 > mobile modifiée dans cette tranche (écrans R2+). Non-régression :
 > `api/tests/Feature/Security/ResourceScopedRbacTest.php`.
+
+> **MAJ 2026-09-18 — #7599/#7600/#7601 (R2-R4 de l'épique #7597), RBAC ressource-scopé
+> généralisé.** Surface **API** : les 31 policies RestaurantManager passent sur
+> `hasResourceAccess('restaurant_branch', …)` (conditions mortes `'manager'`/`'server'`
+> supprimées, listings bornés par `accessibleResourceIds`, COGS/cuisine/mobile scopés) —
+> scénarios `api/tests/Feature/Restaurant/RestaurantResourceScopedRbacTest.php` (gérant
+> refusé sur l'autre branche, serveur borné à sa branche, non-assigné fail-closed,
+> comportement inchangé avant la première assignation) et suites Restaurant réalignées
+> (personas = assignations via `tests/Support/AssignsResourceAccess`). Généralisation aux
+> verticales (trait Core `ChecksResourceScopedAccess` — Vehicle/FuelStation/EduCampus/
+> TravelOffice/TravelStation/Camera) : `api/tests/Feature/Security/
+> ResourceScopedVerticalPoliciesTest.php`. Cycle de vie (invitation pré-assignée créée à
+> l'activation, vue inverse `GET /resources/{type}/{id}/access`, révocation en cascade au
+> départ avec audit conservé, rapport `GET /resource-access/audit` + export CSV) :
+> `api/tests/Feature/Security/ResourceAccessLifecycleTest.php`. Surface **web client** :
+> panneau « Accès & ressources » par collaborateur dans `employees` (matrice ressources ×
+> niveaux, i18n ×4) — couvert par les checks front (tsc/eslint/jest) ; sélecteur de branche
+> du dashboard restaurant borné côté serveur. Gardes CI :
+> `dev-hub/tools/check-vertical-controller-policies.sh` et
+> `dev-hub/tools/check-manager-role-enum.sh` (workflow `resource-rbac-guards.yml`).
 
 > **MAJ 2026-09-17 — #7593, vitrine : consentement cookies, Consent Mode et mentions
 > d'information.** Surface **web client (vitrine)** uniquement : bandeau de consentement
@@ -594,3 +665,24 @@ restent les gates applicables.
 - **Surface API / mobile** : aucun changement de code. `api/lang/*/shared.php` et les ARB mobiles
   ne bougent que par la **synchronisation** du catalogue partage (cibles generees : `sync-backend`,
   `sync-mobile`) — voir la note du meme jour dans `SCENARIOS_TEST_MOBILE_FLUTTER.md`.
+
+## Mise a jour 2026-09-18 — entretien conversationnel + checklist personnalisee (PR #7630, issues #7493/#7494)
+
+- **Surface API** : nouvel entretien de preparation tenant-scoped (`GET /api/v1/setup-interview`,
+  `PATCH /api/v1/setup-interview/answers`, `POST /api/v1/setup-interview/complete`) porte par
+  `SetupInterviewController` + `SetupInterviewPlanner` (mapping reponses -> plan `{solutions, tools}`,
+  fail-closed sur allowlist, plancher solo #7423). A la completion, `SeedDefaultSteps` genere la
+  checklist d'onboarding **personnalisee** a partir des reponses et des modules actifs (jamais de
+  kiosque/geofence sans presence terrain ; etapes deja completees/sautees toujours conservees ;
+  tenants sans entretien : 10 etapes par defaut inchangees). Les titres d'etapes et le message
+  d'erreur de validation passent par le catalogue `api/lang/*/onboarding.php` (garde i18n
+  PA2-I18N-007 / #5432). Scenarios automatises :
+  `api/tests/Feature/Onboarding/SetupInterviewControllerTest.php` (contrat, idempotence du
+  complete, rejet 422 des reponses hors allowlist sans ecriture) et
+  `api/tests/Feature/Onboarding/SetupInterviewSeedingTest.php` (profils restaurateur/solo vitrine,
+  convergence des etapes `pending` apres entretien).
+- **Surface web** : nouveau parcours `setupInterview` (catalogue `shared/i18n/locales/*.json`,
+  synchronise vers `front/web` et `front/admin-dashboard` par `sync-web.js`) — questions
+  passables une a une, recapitulatif d'activation, reprise ulterieure.
+- **Surface mobile** : cles ARB synchronisees par `sync-mobile.js` (cibles generees), aucun
+  contrat modifie.

@@ -207,6 +207,15 @@ export const NAV_ENTRIES = [
     group: 'entreprise',
     descKey: 'adminPalette.itemCrmDesc',
   },
+  // #7496 — conversions du funnel d'acquisition par étape/jour/source.
+  {
+    name: 'acquisition-funnel',
+    path: '/crm/acquisition-funnel',
+    titleKey: 'navigation.acquisitionFunnel',
+    icon: ArrowTrendingUpIcon,
+    permission: 'metrics.view',
+    group: 'entreprise',
+  },
   {
     name: 'growth',
     path: '/growth',

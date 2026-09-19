@@ -7,6 +7,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantIngredient;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\Concerns\ScopesRestaurantBranchListings;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantIngredientRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\UpdateRestaurantIngredientRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantIngredientResource;
@@ -22,6 +23,8 @@ use Illuminate\Http\Request;
  */
 class RestaurantIngredientController extends Controller
 {
+    use ScopesRestaurantBranchListings;
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -33,7 +36,7 @@ class RestaurantIngredientController extends Controller
 
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
-        $ingredients = RestaurantIngredient::query()
+        $ingredients = $this->scopeToAccessibleBranches($actor, RestaurantIngredient::query())
             ->orderBy('name')
             ->paginate($perPage);
 
@@ -45,7 +48,7 @@ class RestaurantIngredientController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('create', RestaurantIngredient::class)) {
+        if ($actor->cannot('create', [RestaurantIngredient::class, $request->validated()['branch_id'] ?? null])) {
             abort(403);
         }
 
@@ -61,6 +64,12 @@ class RestaurantIngredientController extends Controller
 
         if ($actor->company_id !== $restaurantIngredient->company_id) {
             abort(404);
+        }
+
+        // #7599 — lecture ressource-scopée : un employé sans assignation ne
+        // lit plus les données métier dès que le scoping est actif.
+        if ($actor->cannot('view', $restaurantIngredient)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
         }
 
         return (new RestaurantIngredientResource($restaurantIngredient))->response();

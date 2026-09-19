@@ -500,6 +500,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/admin/fleet/alerts", options);
     },
 
+    /** Conversions du funnel d'acquisition par etape, jour et source */
+    getAdminFunnelStats(options = {}) {
+      return request("GET", "/admin/funnel/stats", options);
+    },
+
     /** Rapports RH cross-tenant (super-admin) */
     getAdminHrReports(options = {}) {
       return request("GET", "/admin/hr-reports", options);
@@ -1183,6 +1188,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Connexion employee */
     postAuthLogin(options = {}) {
       return request("POST", "/auth/login", options);
+    },
+
+    /** Demander un code de connexion a usage unique (compte sans mot de passe) */
+    postAuthLoginCodeRequest(options = {}) {
+      return request("POST", "/auth/login-code/request", options);
+    },
+
+    /** Verifier le code de connexion et ouvrir une session */
+    postAuthLoginCodeVerify(options = {}) {
+      return request("POST", "/auth/login-code/verify", options);
     },
 
     /** Deconnexion employee */
@@ -2765,6 +2780,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", options);
     },
 
+    /** Ingerer un evenement d'etape du funnel d'acquisition (vitrine) */
+    postFunnelEvents(options = {}) {
+      return request("POST", "/funnel/events", options);
+    },
+
     /** Candidature partenaire */
     postGrowthPartnerApply(options = {}) {
       return request("POST", "/growth/partner/apply", options);
@@ -4310,9 +4330,19 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/reports/turnover", options);
     },
 
+    /** Rapport d''audit des accès ressource (R4 #7601) */
+    getResourceAccessAudit(options = {}) {
+      return request("GET", "/resource-access/audit", options);
+    },
+
     /** Catalogue des ressources assignables d''un type */
     getResourcesByType(options = {}) {
       return request("GET", "/resources/{type}", options);
+    },
+
+    /** Qui a accès à cette ressource ? (vue inverse, R4 #7601) */
+    getResourcesByTypeByResourceIdAccess(options = {}) {
+      return request("GET", "/resources/{type}/{resourceId}/access", options);
     },
 
     /** Lister les avances sur salaire */
@@ -4473,6 +4503,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Affecter un horaire/regle entreprise a des employes */
     postSchedulesByScheduleAssignEmployees(options = {}) {
       return request("POST", "/schedules/{schedule}/assign-employees", options);
+    },
+
+    /** \xC9tat de l'entretien de pr\xE9paration conversationnel (#7493) */
+    getSetupInterview(options = {}) {
+      return request("GET", "/setup-interview", options);
+    },
+
+    /** Enregistrer un brouillon de réponses de l'entretien (#7493) */
+    patchSetupInterviewAnswers(options = {}) {
+      return request("PATCH", "/setup-interview/answers", options);
+    },
+
+    /** Clôturer l'entretien et activer les modules (#7493) */
+    postSetupInterviewComplete(options = {}) {
+      return request("POST", "/setup-interview/complete", options);
+    },
+
+    /** Reporter l'entretien de préparation (« Terminer plus tard », #7493) */
+    postSetupInterviewDismiss(options = {}) {
+      return request("POST", "/setup-interview/dismiss", options);
     },
 
     /** Vitrine du tenant courant (gestion) */

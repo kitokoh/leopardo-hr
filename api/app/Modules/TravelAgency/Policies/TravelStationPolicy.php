@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Domain\Policies\Concerns\ChecksResourceScopedAccess;
 use App\Modules\TravelAgency\Domain\Models\TravelStation;
 
 /**
@@ -18,6 +19,8 @@ use App\Modules\TravelAgency\Domain\Models\TravelStation;
  */
 class TravelStationPolicy
 {
+    use ChecksResourceScopedAccess;
+
     public function viewAny(Employee $actor): bool
     {
         return true;
@@ -25,17 +28,20 @@ class TravelStationPolicy
 
     public function view(Employee $actor, TravelStation $station): bool
     {
-        return $station->company_id === $actor->company_id;
+        return $station->company_id === $actor->company_id
+            && $this->canViewScopedResource($actor, 'travel_station', $station->id);
     }
 
     public function create(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager');
+        // #7600 — ouvrir une gare est un acte company-wide.
+        return $this->canManageScopedResource($actor, 'travel_station', null, $actor->hasManagerRole('principal', 'rh'));
     }
 
     public function update(Employee $actor, TravelStation $station): bool
     {
-        return $this->create($actor) && $station->company_id === $actor->company_id;
+        return $station->company_id === $actor->company_id
+            && $this->canManageScopedResource($actor, 'travel_station', $station->id, $actor->hasManagerRole('principal', 'rh'));
     }
 
     public function delete(Employee $actor, TravelStation $station): bool

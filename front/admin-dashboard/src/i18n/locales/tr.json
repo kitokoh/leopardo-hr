@@ -494,7 +494,28 @@
     "empty_departments": "Henüz departman yok.",
     "create_department_error": "Departman oluşturulamadı.",
     "create_employee_error": "İşbirlikçi eklenemedi.",
-    "open_team": "Ekip sayfasını aç"
+    "open_team": "Ekip sayfasını aç",
+    "resourceAccess": {
+      "button": "Erişim ve kaynaklar",
+      "title": "Erişim ve kaynaklar",
+      "subtitle": "Bu çalışana kaynaklarınıza (restoran şubeleri, sahalar, araçlar, kameralar) seviye seviye erişim verin.",
+      "loading": "Erişimler yükleniyor…",
+      "loadError": "Bu çalışanın erişimleri yüklenemedi.",
+      "saveError": "Erişimler kaydedilemedi.",
+      "saved": "Erişimler kaydedildi.",
+      "empty": "Atanacak bu türde kaynak yok.",
+      "save": "Erişimleri kaydet",
+      "levelNone": "Yok",
+      "levelView": "Görüntüleme",
+      "levelOperate": "İşletme",
+      "levelManage": "Yönetim",
+      "types": {
+        "restaurant_branch": "Restoran şubeleri",
+        "site": "Sahalar",
+        "vehicle": "Araçlar",
+        "camera": "Kameralar"
+      }
+    }
   },
   "smartAttendanceGpsAuto": "Otomatik GPS",
   "smartAttendanceNoGpsSessions": "Şu anda GPS oturumu yok.",
@@ -1738,16 +1759,16 @@
     "otpSentTo": "6 haneli doğrulama kodunu şu adrese gönderdik:",
     "otpInvalidLength": "Lütfen kodun 6 hanesini girin.",
     "otpInvalidCode": "Geçersiz veya süresi dolmuş kod.",
-    "otpVerifyError": "Doğrulama sırasında bir hata oluştu. Lütfen tekrar deneyin.",
+    "otpVerifyError": "Doğrulama tamamlanamadı. Bağlantınızı kontrol edip tekrar deneyin — kodunuz hâlâ geçerli.",
     "verifyLabel": "Doğrula ve alanımı oluştur",
     "verifyingLabel": "Doğrulanıyor...",
     "codeValidity": "Kod 30 dakika geçerlidir. Bulamazsanız spam klasörünü kontrol edin.",
     "trackStatus": "Alanımın durumunu takip et",
     "pendingTitle": "Deneme talebi alındı",
     "pendingFallback": "Deneme talebi alındı. Ekibimiz 24 iş saati içinde sizinle iletişime geçecek.",
-    "pendingNote": "Anlık alan oluşturma hizmetimiz geçici olarak kullanılamıyor (sunucu yeniden başlatıldı). Talebiniz kaydedildi: Leopardo ekibinden biri 24 iş saati içinde size uygun erişimle e-posta gönderecek.",
+    "pendingNote": "Anında kurulum geçici olarak kullanılamıyor. Talebiniz kaydedildi: Leopardo ekibi erişim bilgilerinizi 24 iş saati içinde e-postayla gönderecek.",
     "readyTitle": "Alanınız hazır!",
-    "readySubtitle": "Demo sandbox hazır. Doğrudan erişin:",
+    "readySubtitle": "Her şey hazır. Son bir adım ve içeridesiniz:",
     "accessCta": "Alanıma eriş",
     "copyLink": "Bağlantıyı kopyala",
     "linkCopied": "Bağlantı kopyalandı!",
@@ -1757,8 +1778,8 @@
     "timeoutTitle": "Çalışma alanınız hâlâ oluşturuluyor",
     "timeoutBody": "Çalışma alanınızın oluşturulması normalden uzun sürüyor. Nerede kaldığını görmek için aşağıdaki durumu yenileyin veya birkaç dakika sonra tekrar deneyin.",
     "refreshStatus": "Durumu yenile",
-    "preparingTitle": "Alanınız hazırlanıyor",
-    "preparingBody": "Demo sandbox sağlanıyor. Bu genellikle 30 saniyeden az sürer.",
+    "preparingTitle": "Çalışma alanınızı hazırlıyoruz",
+    "preparingBody": "Araçlarınız kuruluyor — bu genellikle bir dakikadan az sürer. Bu sayfada kalabilirsiniz, otomatik olarak güncellenir.",
     "statusFor": "İçin:",
     "statusEvery5s": "Durum her 5 saniyede bir kontrol edilir.",
     "successTitle": "Alanınız hazır!",
@@ -1858,7 +1879,13 @@
     "planSelected": "Seçilen plan",
     "planChange": "Değiştir",
     "countryDetectionFailed": "Ülkenizi seçin.",
-    "verifiedByGoogle": "E-posta Google ile doğrulandı"
+    "verifiedByGoogle": "E-posta Google ile doğrulandı",
+    "otpResend": "Kodu yeniden gönder",
+    "otpResending": "Yeni kod gönderiliyor…",
+    "otpResent": "Yeni bir kod gönderildi. Spam klasörünüzü kontrol etmeyi unutmayın.",
+    "otpResendError": "Kod yeniden gönderilemedi. Birazdan tekrar deneyin veya destek ekibiyle iletişime geçin.",
+    "preparingLonger": "Bu her zamankinden biraz daha uzun sürüyor — alanınız yolda. Sayfayı yenilemenize gerek yok.",
+    "supportCta": "Destek ekibiyle iletişime geçin"
   },
   "attendanceDayDetail": "Günlük detay",
   "support_tickets": {
@@ -5125,7 +5152,8 @@
       "parametres": "Ayarlar",
       "systeme": "Sistem"
     },
-    "team": "Platform ekibi"
+    "team": "Platform ekibi",
+    "acquisitionFunnel": "Edinim hunisi"
   },
   "companydetailCoreModuleAlwaysActive": "Çekirdek modül her zaman aktif",
   "smartAttendanceSessionsTitle": "Akıllı yoklama oturumları",
@@ -7002,8 +7030,32 @@
   "firstLoginWelcome": {
     "title": "Alanınız hazır 🎉",
     "body": "Şifrenizi belirlemeniz için bir bağlantı içeren e-posta gönderildi; sonraki girişlerinizde kullanılacaktır.",
-    "ctaStart": "Kuruluma başla",
+    "ctaStart": "Şifremi şimdi belirle",
     "ctaLater": "Daha sonra"
+  },
+  "funnelStats": {
+    "title": "Edinim hunisi",
+    "subtitle": "Kayıt hunisinin adım, gün ve kaynağa göre dönüşümleri (#7496).",
+    "refresh": "Yenile",
+    "retry": "Tekrar dene",
+    "loading": "Yükleniyor…",
+    "empty": "Bu dönemde etkinlik yok.",
+    "daysUnit": "gün",
+    "otpAlert": "Kod teslim uyarısı: bugünkü doğrulanan/gönderilen oranı eşiğin altında — posta sunucusu arızalı olabilir.",
+    "metricJourneys": "Yolculuklar (/signup görüntülemeleri)",
+    "metricProvisioned": "Hazır çalışma alanları",
+    "metricConversionRate": "Ziyaret → alan hazır dönüşümü",
+    "stepsTitle": "Adım adım geçiş oranları",
+    "stepsHint": "Her adıma ulaşan ayrık yolculuklar; % = önceki adımdan geçiş.",
+    "byDayTitle": "Güne göre dönüşüm",
+    "byDayHint": "/signup görüntülemeleri ve hazır alanlar, gün gün.",
+    "bySourceTitle": "Kaynağa göre dönüşüm",
+    "bySourceHint": "Huninin ilk ekranında yakalanan atıf (source / utm).",
+    "dateColumn": "Tarih",
+    "viewsColumn": "Görüntüleme",
+    "provisionedColumn": "Hazır",
+    "conversionColumn": "Dönüşüm",
+    "sourceColumn": "Kaynak"
   },
   "forms": {
     "validation": {
@@ -7022,5 +7074,161 @@
       "employeesInvalid": "Bir çalışan aralığı seçin",
       "dateFuture": "Tarih gelecekte olmalıdır"
     }
+  },
+  "setupInterview": {
+    "title": "Çalışma alanınızı hazırlayalım",
+    "subtitle": "Birkaç hızlı soru. Her soru atlanabilir.",
+    "progress": "Soru {current} / {total}",
+    "skip": "Atla",
+    "later": "Daha sonra bitir",
+    "back": "Geri",
+    "finish": "Bitir",
+    "completing": "Çalışma alanınız hazırlanıyor…",
+    "recapTitle": "Çalışma alanınız hazır",
+    "recapBody": "Sizin için etkinleştirdiklerimiz:",
+    "recapEmpty": "Temel çalışma alanınız hazır. Diğer araçları istediğiniz zaman etkinleştirebilirsiniz.",
+    "recapCta": "Alanımı keşfet",
+    "resume": "Alanımın kurulumunu tamamla",
+    "error": "Şu anda kaydedilemedi. Lütfen birazdan tekrar deneyin.",
+    "questions": {
+      "company_type": {
+        "label": "Tek başınıza mı yoksa bir ekiple mi çalışıyorsunuz?",
+        "options": {
+          "solo": "Tek başıma çalışıyorum",
+          "team": "Bir ekiple"
+        }
+      },
+      "team_size": {
+        "label": "Sizinle kaç kişi çalışıyor?",
+        "options": {
+          "1-10": "1 - 10",
+          "11-50": "11 - 50",
+          "51-200": "51 - 200",
+          "201-500": "201 - 500",
+          "500+": "500'den fazla"
+        }
+      },
+      "sector": {
+        "label": "Faaliyet alanınız nedir?",
+        "options": {
+          "restaurant": "Restoran",
+          "fuel_station": "Akaryakıt istasyonu",
+          "education": "Eğitim",
+          "commerce": "Ticaret",
+          "services": "Hizmetler",
+          "travel": "Seyahat acentesi",
+          "other": "Sektörüm listede yok"
+        }
+      },
+      "premises": {
+        "label": "Bir veya birden fazla fiziksel mekânınız var mı?",
+        "options": {
+          "single": "Tek mekân",
+          "multiple": "Birden fazla şube",
+          "mobile": "Mobil ekipler",
+          "none": "Fiziksel mekân yok"
+        }
+      },
+      "priorities": {
+        "label": "Bugün sizin için en önemli olan nedir?",
+        "hint": "Birden fazla seçim yapılabilir",
+        "options": {
+          "attendance": "Devam ve mesai takibi",
+          "payroll": "Bordro",
+          "accounting": "Muhasebe",
+          "crm": "Müşteri ilişkileri",
+          "cameras": "Mekân güvenliği (kameralar)",
+          "showcase": "Vitrin sitem"
+        }
+      },
+      "scheduled_hours": {
+        "label": "Çalışanlarınız planlı saatlerde mi çalışıyor?",
+        "options": {
+          "yes": "Evet",
+          "no": "Hayır"
+        }
+      }
+    },
+    "modules": {
+      "restaurant": "Restoran motoru",
+      "fuel_station": "Akaryakıt istasyonu",
+      "edumanager": "Eğitim",
+      "travelagency": "Seyahat acentesi",
+      "employees": "Çalışan yönetimi",
+      "attendance": "Devam ve mesai",
+      "absences": "İzinler",
+      "payroll": "Bordro",
+      "accounting": "Muhasebe",
+      "crm": "Müşteri ilişkileri",
+      "cameras": "Kameralar",
+      "showcase": "Vitrin sitesi",
+      "contracts": "Sözleşmeler",
+      "training": "Eğitim merkezi",
+      "reports": "Raporlar",
+      "marketing": "Pazarlama"
+    }
+  },
+  "nextSteps": {
+    "title": "Sonraki adımlar",
+    "subtitle": "Kurulumu bitirmek için birkaç işlem.",
+    "viewAll": "Tümünü gör ({n})",
+    "viewLess": "Daralt",
+    "complete": "Yapıldı olarak işaretle",
+    "skip": "Atla",
+    "dismiss": "Bu kartı gizle",
+    "restore": "Sonraki adımlar ({n})",
+    "done": "Kurulum tamamlandı!",
+    "progress": "{done} / {total}",
+    "error": "Sonraki adımlar yüklenemedi.",
+    "steps": {
+      "customize_showcase": {
+        "title": "Vitrin sitenizi kişiselleştirin",
+        "desc": "Renklerinizi, metinlerinizi ve görsellerinizi seçin."
+      },
+      "publish_showcase": {
+        "title": "Vitrin sitenizi yayınlayın",
+        "desc": "Sitenizi tek tıkla görünür yapın."
+      }
+    }
+  },
+  "setPassword": {
+    "title": "Şifrenizi belirleyin",
+    "subtitle": "Sonraki girişlerinizde kullanacaksınız. Bu bağlantı tek kullanımlıktır ve 72 saat geçerlidir.",
+    "passwordLabel": "Yeni şifre",
+    "confirmLabel": "Şifreyi onaylayın",
+    "showPassword": "Şifreyi göster",
+    "hidePassword": "Şifreyi gizle",
+    "submit": "Şifremi belirle",
+    "submitting": "Kaydediliyor…",
+    "success": "Şifre kaydedildi. Artık giriş yapabilirsiniz.",
+    "successCta": "Girişe git",
+    "missingToken": "Bağlantı eksik veya süresi dolmuş. E-postayla aldığınız bağlantıyı açın veya giriş sayfasından bir giriş kodu isteyin.",
+    "errorInvalidToken": "Bu bağlantı geçersiz. E-postayla aldığınız bağlantıyı açın.",
+    "errorExpired": "Bu bağlantının süresi doldu (72 saat). Giriş sayfasından bir giriş kodu isteyin.",
+    "errorAlreadySet": "Bu alan için zaten bir parola belirlenmiş. Normal girişi veya parola sıfırlamayı kullanın.",
+    "errorNotReady": "Alanınız henüz hazır değil. Birkaç dakika sonra tekrar deneyin.",
+    "errorWeakPassword": "Şifre çok zayıf: en az 12 karakter ve en az bir rakam.",
+    "errorMismatch": "İki şifre eşleşmiyor.",
+    "errorGeneric": "Şifre kaydedilemedi. Birkaç dakika sonra tekrar deneyin.",
+    "backToLogin": "Girişe dön"
+  },
+  "loginCode": {
+    "linkLabel": "Giriş kodu al",
+    "title": "Kodla giriş",
+    "hint": "Henüz şifreniz yok mu? E-postayla tek kullanımlık bir kod alın.",
+    "emailLabel": "E-postanız",
+    "emailPlaceholder": "yonetici@sirket.com",
+    "sendCta": "Kodu gönder",
+    "sending": "Gönderiliyor…",
+    "sentInfo": "Bu e-posta için uygun bir hesap varsa az önce bir kod gönderildi. 10 dakika geçerlidir.",
+    "codeLabel": "E-postayla alınan kod",
+    "verifyCta": "Giriş yap",
+    "verifying": "Doğrulanıyor…",
+    "resend": "Yeni kod gönder",
+    "backToPassword": "Şifre ile giriş yap",
+    "errorInvalid": "Kod geçersiz veya süresi dolmuş. Yeni bir kod isteyin.",
+    "errorTooMany": "Çok fazla deneme. Yeni bir kod isteyin.",
+    "errorPasswordRequired": "Bu hesap parola ile giriş gerektirir.",
+    "errorGeneric": "Giriş yapılamadı. Birkaç dakika sonra tekrar deneyin."
   }
 }

@@ -10,6 +10,7 @@ use App\Modules\RestaurantManager\Application\Actions\InventoryCountAction;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryCount;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryCountItem;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\Concerns\ScopesRestaurantBranchListings;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantInventoryCountRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\UpdateRestaurantInventoryCountItemRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantInventoryCountItemResource;
@@ -30,6 +31,8 @@ use Illuminate\Support\Facades\DB;
  */
 class RestaurantInventoryCountController extends Controller
 {
+    use ScopesRestaurantBranchListings;
+
     public function __construct(private readonly InventoryCountAction $action) {}
 
     public function index(Request $request): JsonResponse
@@ -43,7 +46,7 @@ class RestaurantInventoryCountController extends Controller
 
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
-        $counts = RestaurantInventoryCount::query()
+        $counts = $this->scopeToAccessibleBranches($actor, RestaurantInventoryCount::query())
             ->with('items')
             ->when($request->has('branch_id'), fn ($query) => $query->where('branch_id', (int) $request->query('branch_id')))
             ->when($request->has('status'), fn ($query) => $query->where('status', (string) $request->query('status')))
@@ -58,7 +61,7 @@ class RestaurantInventoryCountController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('create', RestaurantInventoryCount::class)) {
+        if ($actor->cannot('create', [RestaurantInventoryCount::class, $request->validated()['branch_id'] ?? null])) {
             abort(403);
         }
 
@@ -103,6 +106,12 @@ class RestaurantInventoryCountController extends Controller
 
         if ($actor->company_id !== $restaurantInventoryCount->company_id) {
             abort(404);
+        }
+
+        // #7599 — lecture ressource-scopée : un employé sans assignation ne
+        // lit plus les données métier dès que le scoping est actif.
+        if ($actor->cannot('view', $restaurantInventoryCount)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
         }
 
         return (new RestaurantInventoryCountResource($restaurantInventoryCount->load('items')))->response();

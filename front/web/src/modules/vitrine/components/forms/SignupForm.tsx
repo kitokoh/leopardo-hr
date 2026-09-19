@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, MotionConfig } from 'framer-motion';
 import {
   AlertCircle,
   ArrowLeft,
@@ -85,6 +85,13 @@ const TRIAL_TOKEN_STORAGE_KEY = 'lp_trial_provisioning_token';
 const TRIAL_POLL_INTERVAL_MS = 5000;
 const TRIAL_POLL_MAX_ATTEMPTS = 60;
 
+// #7495 — renvoi du code OTP en 1 clic : délai avant de pouvoir renvoyer à
+// nouveau (évite le spam du seau throttle:5,15 côté API).
+const OTP_RESEND_COOLDOWN_S = 30;
+// #7495 — jamais de spinner muet > 10 s : au-delà de ce délai, l'écran de
+// préparation affiche un message de réassurance supplémentaire.
+const PREPARING_LONG_WAIT_MS = 10_000;
+
 /**
  * #7235 — Outils HORIZONTAUX proposés à l'inscription. Les clés sont celles
  * du catalogue client (`@/lib/client-features`) et de l'allowlist serveur
@@ -102,7 +109,7 @@ type SignupFormCopy = Record<(typeof signupFormKeys)[number], string>;
 // Clés du catalogue i18n partagé (shared/i18n/locales/*.json — source de
 // vérité). Le record est construit via t() (garde PA2-I18N-014 : aucun
 // littéral utilisateur ajouté dans le composant).
-const signupFormKeys = ['badge', 'title', 'subtitle', 'profileTitle', 'profileSubtitle', 'profileCompanyTitle', 'profileCompanyDesc', 'profileCompanyBullet1', 'profileCompanyBullet2', 'profileCompanyBullet3', 'profileSoloTitle', 'profileSoloDesc', 'profileSoloBullet1', 'profileSoloBullet2', 'profileSoloBullet3', 'profileCompanyBadge', 'profileSoloBadge', 'toolsTitle', 'toolsSubtitle', 'toolsTeamGroup', 'toolsManagementGroup', 'toolsEmployees', 'toolsEmployeesDesc', 'toolsAttendance', 'toolsAttendanceDesc', 'toolsAbsences', 'toolsAbsencesDesc', 'toolsPayroll', 'toolsPayrollDesc', 'toolsAccounting', 'toolsAccountingDesc', 'toolsCrm', 'toolsCrmDesc', 'toolsReports', 'toolsReportsDesc', 'toolsMarketing', 'toolsMarketingDesc', 'toolsHint', 'verticalTitle', 'verticalSubtitle', 'verticalRestaurant', 'verticalRestaurantDesc', 'verticalFuel', 'verticalFuelDesc', 'verticalEdu', 'verticalEduDesc', 'verticalNone', 'verticalNoneDesc', 'continueLabel', 'stepProfileLabel', 'stepToolsLabel', 'stepIdentityLabel', 'soloNote', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelCountry', 'countryPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'setPasswordTitle', 'setPasswordSubtitle', 'setPasswordLabel', 'setPasswordConfirmLabel', 'setPasswordSubmit', 'setPasswordSubmitting', 'setPasswordSuccess', 'setPasswordTooWeak', 'setPasswordMismatch', 'setPasswordUnavailable', 'goToLogin', 'planSelected', 'planChange', 'countryDetectionFailed', 'verifiedByGoogle', 'defaultError'] as const;
+const signupFormKeys = ['badge', 'title', 'subtitle', 'profileTitle', 'profileSubtitle', 'profileCompanyTitle', 'profileCompanyDesc', 'profileCompanyBullet1', 'profileCompanyBullet2', 'profileCompanyBullet3', 'profileSoloTitle', 'profileSoloDesc', 'profileSoloBullet1', 'profileSoloBullet2', 'profileSoloBullet3', 'profileCompanyBadge', 'profileSoloBadge', 'toolsTitle', 'toolsSubtitle', 'toolsTeamGroup', 'toolsManagementGroup', 'toolsEmployees', 'toolsEmployeesDesc', 'toolsAttendance', 'toolsAttendanceDesc', 'toolsAbsences', 'toolsAbsencesDesc', 'toolsPayroll', 'toolsPayrollDesc', 'toolsAccounting', 'toolsAccountingDesc', 'toolsCrm', 'toolsCrmDesc', 'toolsReports', 'toolsReportsDesc', 'toolsMarketing', 'toolsMarketingDesc', 'toolsHint', 'verticalTitle', 'verticalSubtitle', 'verticalRestaurant', 'verticalRestaurantDesc', 'verticalFuel', 'verticalFuelDesc', 'verticalEdu', 'verticalEduDesc', 'verticalNone', 'verticalNoneDesc', 'continueLabel', 'stepProfileLabel', 'stepToolsLabel', 'stepIdentityLabel', 'soloNote', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelCountry', 'countryPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'setPasswordTitle', 'setPasswordSubtitle', 'setPasswordLabel', 'setPasswordConfirmLabel', 'setPasswordSubmit', 'setPasswordSubmitting', 'setPasswordSuccess', 'setPasswordTooWeak', 'setPasswordMismatch', 'setPasswordUnavailable', 'goToLogin', 'planSelected', 'planChange', 'countryDetectionFailed', 'verifiedByGoogle', 'defaultError', 'otpResend', 'otpResending', 'otpResent', 'otpResendError', 'preparingLonger', 'supportCta'] as const;
 
 function buildSignupFormCopy(locale: AppLocale): SignupFormCopy {
   const copy = {} as SignupFormCopy;
@@ -218,6 +225,40 @@ export function SignupForm({
   // trialToken]`, il ne se relançait jamais et l'utilisateur restait bloqué.
   const [pollNonce, setPollNonce] = useState(0);
   const [isTracking, setIsTracking] = useState(false);
+
+  // #7495 — renvoi du code OTP en 1 clic (code expiré ou jamais reçu).
+  const lastSignupPayloadRef = useRef<SignupFormData | null>(null);
+  const [resendState, setResendState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [resendCooldown, setResendCooldown] = useState(0);
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const id = setTimeout(() => setResendCooldown((value) => Math.max(0, value - 1)), 1000);
+    return () => clearTimeout(id);
+  }, [resendCooldown]);
+
+  // #7495 — réassurance sur l'écran de préparation : au-delà de 10 s, un
+  // message honnête explique que l'attente est normale (jamais de spinner muet).
+  const [preparingLong, setPreparingLong] = useState(false);
+  useEffect(() => {
+    if (currentStep !== 'tracking' || trialStatus !== 'pending' || trialTimedOut) {
+      setPreparingLong(false);
+      return;
+    }
+    const id = setTimeout(() => setPreparingLong(true), PREPARING_LONG_WAIT_MS);
+    return () => clearTimeout(id);
+  }, [currentStep, trialStatus, trialTimedOut, pollNonce]);
+
+  // #7495 — accessibilité : à chaque transition d'écran du tunnel, le focus se
+  // déplace sur le titre de l'écran (annonce lecteur d'écran + navigation
+  // clavier sans perte de contexte). Jamais au premier rendu (on ne vole pas
+  // le focus du champ e-mail).
+  const stepHeadingRef = useRef<HTMLHeadingElement | null>(null);
+  const prevStepRef = useRef<Step>(currentStep);
+  useEffect(() => {
+    if (prevStepRef.current === currentStep) return;
+    prevStepRef.current = currentStep;
+    stepHeadingRef.current?.focus();
+  }, [currentStep]);
 
   // #7542 — jalons du funnel. Les gardes sont des refs : elles survivent au
   // re-render (donc pas de doublon quand le formulaire se rafraîchit) mais pas à
@@ -420,6 +461,7 @@ export function SignupForm({
         ...data,
         role: data.role ?? 'founder',
       };
+      lastSignupPayloadRef.current = payload;
       const response = await submitSignupForm(payload, page);
 
       if (response.success) {
@@ -607,6 +649,33 @@ export function SignupForm({
     }
   };
 
+  // #7495 — code expiré ou jamais reçu : renvoi en 1 clic. On rejoue la
+  // soumission d'origine (même contrat API, même capture de lead côté
+  // backend) sans redemander le formulaire à l'utilisateur.
+  const handleResendCode = async () => {
+    const payload = lastSignupPayloadRef.current;
+    if (!payload || resendState === 'sending' || resendCooldown > 0) return;
+
+    setResendState('sending');
+    setOtpError('');
+
+    try {
+      const response = await submitSignupForm(payload, page);
+      if (response.success) {
+        setResendState('sent');
+        setResendCooldown(OTP_RESEND_COOLDOWN_S);
+        setOtpValues(['', '', '', '', '', '']);
+        otpRefs.current[0]?.focus();
+        // #7496 — le renvoi est un signal de friction à mesurer (jamais le code).
+        trackFunnelStep(FUNNEL_EVENTS.signupOtpSent, { page, resend: true });
+      } else {
+        setResendState('error');
+      }
+    } catch {
+      setResendState('error');
+    }
+  };
+
   // ── Render ──
   return (
     <Card className={`p-6 md:p-8 ${className}`}>
@@ -614,6 +683,9 @@ export function SignupForm({
           (coordonnées, puis code). Le premier écran doit tenir sans scroll
           sur mobile 360 px. */}
 
+      {/* #7495 — respecter prefers-reduced-motion : les transitions du tunnel
+          se coupent pour les utilisateurs qui le demandent. */}
+      <MotionConfig reducedMotion="user">
       <AnimatePresence mode="wait">
         {/* ═══════════════════════════════════════ */}
         {/* STEP 0: Coordonnées (e-mail + espace)   */}
@@ -665,6 +737,7 @@ export function SignupForm({
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
+                role="alert"
                 className="mb-6 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20"
               >
                 <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400" />
@@ -824,7 +897,11 @@ export function SignupForm({
               <ShieldCheck className="h-8 w-8 text-emerald-700 dark:text-emerald-400" />
             </div>
 
-            <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
+            <h2
+              ref={stepHeadingRef}
+              tabIndex={-1}
+              className="mb-2 text-2xl font-black tracking-tight text-slate-950 outline-none dark:text-white"
+            >
               {c.otpTitle}
             </h2>
             <p className="mb-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
@@ -835,13 +912,19 @@ export function SignupForm({
             </p>
 
             {/* OTP Inputs */}
-            <div className="mb-4 flex justify-center gap-2">
+            <div
+              role="group"
+              aria-label={c.otpTitle}
+              className="mb-4 flex justify-center gap-2"
+              dir="ltr"
+            >
               {otpValues.map((val, i) => (
                 <input
                   key={i}
                   ref={(el) => { otpRefs.current[i] = el; }}
                   type="text"
                   inputMode="numeric"
+                  autoComplete={i === 0 ? 'one-time-code' : 'off'}
                   maxLength={1}
                   value={val}
                   onChange={(e) => handleOtpChange(i, e.target.value)}
@@ -862,6 +945,7 @@ export function SignupForm({
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
+                role="alert"
                 className="mb-4 text-sm font-medium text-red-600 dark:text-red-400"
               >
                 {otpError}
@@ -882,6 +966,26 @@ export function SignupForm({
 
             <p className="mt-4 text-xs text-slate-400">
               {c.codeValidity}
+            </p>
+
+            {/* #7495 — renvoi du code en 1 clic, avec délai anti-spam et retour
+                honnête (annoncé aux lecteurs d'écran via aria-live). */}
+            <button
+              type="button"
+              onClick={handleResendCode}
+              disabled={resendState === 'sending' || resendCooldown > 0}
+              className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 transition hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-50 dark:text-emerald-400"
+            >
+              <Mail className="h-4 w-4" aria-hidden="true" />
+              {resendState === 'sending' ? c.otpResending : c.otpResend}
+              {resendCooldown > 0 ? ` (${resendCooldown})` : ''}
+            </button>
+            <p aria-live="polite" className="mt-2 min-h-[1rem] text-xs">
+              {resendState === 'sent' ? (
+                <span className="font-medium text-emerald-600 dark:text-emerald-400">{c.otpResent}</span>
+              ) : resendState === 'error' ? (
+                <span role="alert" className="font-medium text-red-600 dark:text-red-400">{c.otpResendError}</span>
+              ) : null}
             </p>
 
             {trialToken && (
@@ -913,7 +1017,11 @@ export function SignupForm({
               <Clock3 className="h-8 w-8 text-amber-600 dark:text-amber-400" />
             </div>
 
-            <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
+            <h2
+              ref={stepHeadingRef}
+              tabIndex={-1}
+              className="mb-2 text-2xl font-black tracking-tight text-slate-950 outline-none dark:text-white"
+            >
               {c.pendingTitle}
             </h2>
             <p className="mb-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
@@ -959,12 +1067,19 @@ export function SignupForm({
             transition={{ duration: 0.3 }}
             className="text-center"
           >
+            {/* #7495 — les changements d'état du suivi (préparation → prêt/échec)
+                sont annoncés aux lecteurs d'écran sans reprise manuelle. */}
+            <div aria-live="polite">
             {trialStatus === 'ready' ? (
               <>
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 dark:bg-emerald-900/40">
                   <CheckCircle className="h-8 w-8 text-emerald-700 dark:text-emerald-400" />
                 </div>
-                <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
+                <h2
+                  ref={stepHeadingRef}
+                  tabIndex={-1}
+                  className="mb-2 text-2xl font-black tracking-tight text-slate-950 outline-none dark:text-white"
+                >
                   {c.readyTitle}
                 </h2>
                 <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
@@ -1048,7 +1163,7 @@ export function SignupForm({
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-red-100 dark:bg-red-900/40">
                   <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
                 </div>
-                <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
+                <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 outline-none dark:text-white">
                   {c.failedTitle}
                 </h2>
                 <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
@@ -1075,6 +1190,13 @@ export function SignupForm({
                   <Button type="button" variant="ghost" size="lg" fullWidth onClick={restartSignup}>
                     {c.back}
                   </Button>
+                  {/* #7495 — état d'erreur honnête : lien support actionnable. */}
+                  <Link
+                    href="/contact"
+                    className="inline-flex items-center justify-center gap-1.5 text-sm font-semibold text-emerald-600 transition hover:text-emerald-700 dark:text-emerald-400"
+                  >
+                    {c.supportCta}
+                  </Link>
                 </div>
               </>
             ) : trialTimedOut ? (
@@ -1116,20 +1238,26 @@ export function SignupForm({
             ) : (
               <>
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 dark:bg-emerald-900/40">
-                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-600 border-t-transparent" />
+                  <div aria-hidden="true" className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-600 border-t-transparent" />
                 </div>
-                <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
+                <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 outline-none dark:text-white">
                   {c.preparingTitle}
                 </h2>
-                <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                <p className="mb-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
                   {c.preparingBody}
-                   
                 </p>
+                {/* #7495 — jamais de spinner muet > 10 s : réassurance honnête. */}
+                {preparingLong ? (
+                  <p className="mb-3 text-sm font-medium leading-6 text-emerald-700 dark:text-emerald-400">
+                    {c.preparingLonger}
+                  </p>
+                ) : null}
                 <p className="text-xs text-slate-400">
                   {pendingEmail ? `${c.statusFor} ${pendingEmail}` : c.statusEvery5s}
                 </p>
               </>
             )}
+            </div>
           </motion.div>
         )}
 
@@ -1220,6 +1348,7 @@ export function SignupForm({
           </motion.div>
         )}
       </AnimatePresence>
+      </MotionConfig>
     </Card>
   );
 }

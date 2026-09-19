@@ -32,7 +32,7 @@ class RestaurantOrderCreateTest extends TestCase
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'manager',
-            'manager_role' => 'server',
+            'manager_role' => 'principal',
         ]);
 
         Sanctum::actingAs($employee);

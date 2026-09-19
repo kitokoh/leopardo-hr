@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantZone;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\Concerns\ScopesRestaurantBranchListings;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantZoneRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\UpdateRestaurantZoneRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantZoneResource;
@@ -23,6 +24,8 @@ use Illuminate\Http\Request;
  */
 class RestaurantZoneController extends Controller
 {
+    use ScopesRestaurantBranchListings;
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -34,7 +37,7 @@ class RestaurantZoneController extends Controller
 
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
-        $zones = RestaurantZone::query()
+        $zones = $this->scopeToAccessibleBranches($actor, RestaurantZone::query())
             ->orderBy('name')
             ->paginate($perPage);
 
@@ -72,7 +75,7 @@ class RestaurantZoneController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('create', RestaurantZone::class)) {
+        if ($actor->cannot('create', [RestaurantZone::class, $request->validated()['branch_id'] ?? null])) {
             abort(403);
         }
 
@@ -88,6 +91,12 @@ class RestaurantZoneController extends Controller
 
         if ($actor->company_id !== $restaurantZone->company_id) {
             abort(404);
+        }
+
+        // #7599 — lecture ressource-scopée : un employé sans assignation ne
+        // lit plus les données métier dès que le scoping est actif.
+        if ($actor->cannot('view', $restaurantZone)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
         }
 
         return (new RestaurantZoneResource($restaurantZone))->response();

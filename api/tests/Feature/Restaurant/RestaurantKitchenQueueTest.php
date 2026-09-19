@@ -14,6 +14,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTaxRate;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
+use Tests\Support\AssignsResourceAccess;
 use Tests\TestCase;
 
 /**
@@ -26,6 +27,7 @@ use Tests\TestCase;
  */
 class RestaurantKitchenQueueTest extends TestCase
 {
+    use AssignsResourceAccess;
     use RefreshTenantDatabase;
 
     private function kitchen(Company $company): Employee
@@ -110,8 +112,10 @@ class RestaurantKitchenQueueTest extends TestCase
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateRestaurant($company);
-        $this->kitchen($company);
+        $kitchen = $this->kitchen($company);
         ['branch' => $branch, 'orderInPreparation' => $orderInPreparation, 'orderReady' => $orderReady, 'orderOpen' => $orderOpen] = $this->makeKitchenData($company);
+        // #7599 — le cuisinier agit par assignation `operate` sur SA succursale.
+        $this->assignResourceAccess($kitchen, 'restaurant_branch', $branch->id, 'operate');
 
         $response = $this->getJson("/api/v1/restaurant/kitchen/orders?branch_id={$branch->id}")
             ->assertStatus(200);
@@ -155,8 +159,9 @@ class RestaurantKitchenQueueTest extends TestCase
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateRestaurant($company);
-        $this->kitchen($company);
+        $kitchen = $this->kitchen($company);
         ['branch' => $branch] = $this->makeKitchenData($company);
+        $this->assignResourceAccess($kitchen, 'restaurant_branch', $branch->id, 'operate');
 
         /** @var RestaurantOrder $openOrder */
         $openOrder = app(TenantManager::class)->withinTenant($company, fn (): RestaurantOrder => RestaurantOrder::factory()->create([

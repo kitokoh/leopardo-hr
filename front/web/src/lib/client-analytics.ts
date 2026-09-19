@@ -11,6 +11,12 @@ export type ClientAnalyticsEventName =
   // (incident de service, pas un échec d'identifiants). Événement distinct pour
   // que la mesure ne compte pas ces cas comme des échecs de connexion.
   | 'login_profile_unavailable'
+  // #7490 — connexion par code à usage unique (comptes sans mot de passe) :
+  // demande de code, succès et échec distincts du login mot de passe pour que
+  // les tableaux de bord d'acquisition mesurent le canal OTP séparément.
+  | 'login_code_requested'
+  | 'login_code_success'
+  | 'login_code_failed'
   | 'dashboard_loaded'
   | 'feature_blocked'
   | 'demo_user_selected'
