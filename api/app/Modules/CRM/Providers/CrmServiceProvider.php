@@ -19,6 +19,7 @@ use App\Modules\CRM\Infrastructure\Services\ConsentTableCampaignConsentChecker;
 use App\Modules\CRM\Infrastructure\Services\CrmChannelService;
 use App\Modules\CRM\Infrastructure\Services\LogEmailProvider;
 use App\Modules\CRM\Infrastructure\Services\MailEmailProvider;
+use App\Modules\CRM\Infrastructure\Services\ResendEmailProvider;
 
 use App\Modules\CRM\Domain\Contracts\CrmImportRepositoryInterface;
 use App\Modules\CRM\Domain\Events\CampaignStarted;
@@ -115,13 +116,15 @@ class CrmServiceProvider extends ServiceProvider
         // #5723 — source de contacts par défaut pour l'évaluation des segments.
         $this->app->bind(SegmentContactSourceInterface::class, CrmContactSegmentSource::class);
 
-        // #5726 — fournisseur email interchangeable (log | mail).
+        // #5726/#7752 — fournisseur email interchangeable (log | mail | resend).
         $this->app->bind(EmailProviderInterface::class, function (): EmailProviderInterface {
             $provider = config('crm.email.provider', 'log');
 
-            return is_string($provider) && $provider === 'mail'
-                ? new MailEmailProvider
-                : new LogEmailProvider;
+            return match (is_string($provider) ? $provider : 'log') {
+                'mail' => new MailEmailProvider,
+                'resend' => new ResendEmailProvider,
+                default => new LogEmailProvider,
+            };
         });
 
         // #5724 — garde de consentement avant tout envoi de campagne.
