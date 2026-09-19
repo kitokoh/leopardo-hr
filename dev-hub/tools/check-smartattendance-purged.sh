@@ -22,9 +22,11 @@ if grep -rIl --include="*.php" -E "App\\\\Modules\\\\SmartAttendance" \
   violations=$((violations + 1))
 fi
 
-# 2. Chemins /smart-attendance/* dans les specs OpenAPI (api + miroir)
-if grep -qE "^  /smart-attendance/" "$REPO_ROOT/api/openapi.yaml" "$REPO_ROOT/dev-hub/openapi/v1.yaml" 2>/dev/null; then
-  echo "::error::Chemins /smart-attendance/* résiduels dans les specs OpenAPI (ADR-0016 Phase 5 #5356)."
+# 2. Chemins /smart-attendance/* dans la spec OpenAPI canonique
+# (le miroir dev-hub/openapi/v1.yaml n'est plus committé depuis #7654 — il est
+#  généré depuis api/openapi.yaml, donc couvert par le même grep)
+if grep -qE "^  /smart-attendance/" "$REPO_ROOT/api/openapi.yaml" 2>/dev/null; then
+  echo "::error::Chemins /smart-attendance/* résiduels dans la spec OpenAPI (ADR-0016 Phase 5 #5356)."
   violations=$((violations + 1))
 fi
 

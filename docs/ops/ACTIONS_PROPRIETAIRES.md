@@ -28,6 +28,7 @@
 | 6 | **Canal d'alerte** | (a) e-mail, (b) Slack (`SLACK_MONITORING_WEBHOOK_URL`), (c) paging | Aujourd'hui les incidents ne sont visibles que comme des runs rouges : personne n'est notifié. |
 | 7 | **Plan Render** | (a) plan payant (worker + scheduler), (b) statu quo | En gratuit : tâches planifiées **non exécutées** (facturation, échéances, purges) et drain de queue assuré par un cron GitHub détenant des accès prod. |
 | 8 | **Rotation des secrets** | (a) rotation complète, (b) rotation partielle | Des jetons exposés le 2026-09-09 n'ont pas tous été régénérés (voir `docs/ops/JETONS_ROTATION_RUNBOOK.md`). |
+| 9 | **Réécriture d'historique #7654** | (a) purge simple (~800 MB d'objets), (b) purge agressive openapi/i18n inclus (repo < 15 MiB), (c) statu quo | Pack à 93 MiB : chaque clone/CI paie le coût. Procédure complète et checklist : `docs/ops/REECRITURE_HISTORIQUE_7654.md`. **Invalide tous les clones — fenêtre à planifier.** |
 
 ## Ce qui a été corrigé par du code (pour mémoire)
 
