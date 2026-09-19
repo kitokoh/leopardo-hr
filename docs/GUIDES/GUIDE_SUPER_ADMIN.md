@@ -1,4 +1,4 @@
-# Guide super-admin — Leopardo RH
+# Guide super-admin — Leopardo
 
 Le **super-admin** gere la plateforme elle-meme : les societes clientes, leurs
 modules actifs, leur statut d abonnement. Il n a acces a aucune donnee RH

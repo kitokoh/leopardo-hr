@@ -1,4 +1,4 @@
-# Guide manager — Leopardo RH
+# Guide manager — Leopardo
 
 Le **manager principal** est le premier utilisateur d une societe : il recoit
 l email d invitation du super-admin, active son compte, et devient

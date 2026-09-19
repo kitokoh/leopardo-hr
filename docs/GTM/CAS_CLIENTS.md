@@ -1,4 +1,4 @@
-# Cas Clients — Leopardo RH
+# Cas Clients — Leopardo
 
 5 mini cas clients types pour la prospection PME Maghreb et Afrique francophone.
 

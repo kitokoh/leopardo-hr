@@ -1,4 +1,4 @@
-# Registre des bounded contexts — Leopardo HR
+# Registre des bounded contexts — Leopardo
 
 > **MAT-001 (issue #5859)** — Registre automatisé des bounded contexts.
 > Source de vérité machine-readable : [`dev-hub/governance/bounded-context-registry.json`](../../dev-hub/governance/bounded-context-registry.json)

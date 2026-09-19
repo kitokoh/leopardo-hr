@@ -1,7 +1,7 @@
 # 🤝 Handoff opérationnel — R6 (livrable final du plan, issue #5160)
 
 **Version** : 1.0 · **Date** : 2026-08-20 · **Auteur** : Agent PM
-**Objet** : passation complète de l'exploitation Leopardo RH — pour l'équipe, les ops et les agents entrants.
+**Objet** : passation complète de l'exploitation Leopardo — pour l'équipe, les ops et les agents entrants.
 **Règle d'or** : ce document est le **point d'entrée unique** ; chaque procédure détaillée vit dans son runbook dédié (index §4).
 
 > ⚠️ **Correction (2026-08-29)** : §1 et §5 décrivaient la base de données comme un Postgres

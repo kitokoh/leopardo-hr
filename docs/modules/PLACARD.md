@@ -1,6 +1,6 @@
 # Module Placard (Cabinet Personnel)
 
-> Espace de stockage personnel pour chaque utilisateur de la plateforme Leopardo RH.
+> Espace de stockage personnel pour chaque utilisateur de la plateforme Leopardo.
 
 ## Objectif
 

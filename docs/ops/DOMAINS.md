@@ -1,4 +1,4 @@
-# Registre canonique des domaines — Leopardo RH (source de vérité)
+# Registre canonique des domaines — Leopardo (source de vérité)
 
 ## Domaines actuellement joignables (`live`)
 

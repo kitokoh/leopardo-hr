@@ -1,6 +1,6 @@
-# AI Architecture & Predictive Insights — Leopardo RH
+# AI Architecture & Predictive Insights — Leopardo
 
-Leopardo RH integrates advanced AI layers to transform raw HR data into actionable workforce intelligence. Our AI strategy focuses on **Augmentation**, not replacement.
+Leopardo integrates advanced AI layers to transform raw HR data into actionable workforce intelligence. Our AI strategy focuses on **Augmentation**, not replacement.
 
 ## 🤖 The AI Orchestrator
 
