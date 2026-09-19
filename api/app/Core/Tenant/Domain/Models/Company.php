@@ -152,6 +152,11 @@ class Company extends Model
         // sous `api.manager` et la surface client est ouverte par capacité
         // (`can_view_fleet`).
         'fleet',
+        // BC-17 RETAIL (#7672) — module vendeur générique : produits &
+        // catégories (fondations backend). Flag tenant `retail`
+        // (`RetailFeatures::RETAIL`), lu par le middleware `module.retail`.
+        // Fail-closed conservé (défaut false).
+        'retail',
         // BC-29 COMMUNICATION / #7685 (R0) — module HORIZONTAL « Communication »
         // (boîte mail connectée + IA, spec MODULE_COMMUNICATION_EMAIL_IA.md,
         // exception freeze #7644). Transversal : activable pour n'importe quel

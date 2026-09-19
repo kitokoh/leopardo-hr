@@ -2,6 +2,21 @@
 > Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
 > Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
 
+> **MAJ 2026-09-19 — lot BC-17 RETAIL #7672–#7675 (PR #7718), le module vendeur devient actif.**
+> Surface **API** : nouveau préfixe `/v1/retail` (flag tenant `retail`, middleware `module.retail`,
+> fail-closed) — produits/catégories (CRUD + publish/unpublish, SKU/slug uniques par tenant),
+> stock (emplacements, niveaux, mouvements tracés, alertes ; toute quantité ne bouge que par
+> `RetailStockService::applyMovement`), POS (sessions de caisse à index unique partiel
+> `WHERE status='open'`, ventes, paiements idempotents cash|card|mobile — `online` réservé
+> e-commerce —, décrément stock à la complétion, contre-mouvements à l'annulation, reçu).
+> Scénarios automatisés : `api/tests/Feature/Retail/{RetailApiTest,RetailStockApiTest,
+> RetailPosApiTest}.php` — 27 tests / 321 assertions (flag off 403, RBAC écriture, isolation
+> tenant 404, SKU dupliqué 422, survente tracée, idempotence paiement, variance de clôture,
+> deux sessions fermées coexistent). Surface **web** : espace vendeur `/commerce{,/products,
+> /stock,/pos}` gaté par le flag `retail` (Jest + tsc + eslint verts ; helpers monétaires testés
+> `commerce-format.test.ts`). Surface **mobile** : aucune — propagation i18n des catalogues
+> uniquement (clés `commerce.*` ×4, `sync-mobile.js`).
+
 > **MAJ 2026-09-19 — #7713, image de marque du tenant dans l'espace client web (PR #7719), surface
 > mobile touchée par propagation i18n uniquement.** La PR ajoute les clés `brandingPage.*` ×4
 > locales au catalogue partagé (`shared/i18n/locales/*.json`) ; elles sont propagées par

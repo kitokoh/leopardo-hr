@@ -33,6 +33,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `EduManager` | Verticale scolaire BC-16 : inscriptions, classes, notes, frais, portail guardian, marketing admissions |
 | `Restaurant` | Solutions restaurant publiques BC-25 (enquêtes) |
 | `RestaurantManager` | Verticale restauration BC-25 : commandes, menus, livraisons, fidélité, promotions, kiosque |
+| `Retail` | Module vendeur générique BC-17 : produits, catégories, publication (fondations #7672) |
 | `EdgeSync` | Synchronisation offline/mobile (structure spécialisée, hors squelette DDD standard) |
 | `Expense` | Notes de frais employés |
 | `Fleet` | Véhicules, trajets, affectations |

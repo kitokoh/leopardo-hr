@@ -35,6 +35,8 @@ const PROTECTED_PREFIXES = [
   '/accounting',
   '/edu-manager',
   '/fuel',
+  // BC-17 — espace vendeur (zone dashboard).
+  '/commerce',
 ];
 
 function isProtectedPath(url) {

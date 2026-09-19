@@ -157,6 +157,8 @@ export type CopyTree = {
       restaurant_kitchen: string; edu_manager: string; travel: string; travel_portal: string; fuel: string; fleet: string; showcase: string;
       /** BC-19 (#7425) — mur de caméras (libellé localisé du menu) */
       cameras: string;
+      /** BC-17 (#7675) — espace vendeur Commerce (libellé localisé du menu) */
+      commerce: string;
     };
     /** #7225 — « Entreprise » (bandeau horizontal transverse) */
     sectionEnterprise: string;
@@ -817,6 +819,7 @@ const copy: Record<AppLocale, CopyTree> = {
         fleet: 'Flotte',
         showcase: 'Site vitrine',
         cameras: 'Caméras',
+        commerce: 'Commerce',
       },
       sectionEnterprise: 'Entreprise',
       sectionModules: 'Modules & plan',
@@ -1506,6 +1509,7 @@ const copy: Record<AppLocale, CopyTree> = {
         fleet: 'الأسطول',
         showcase: 'موقع التعريف',
         cameras: 'الكاميرات',
+        commerce: 'التجارة',
       },
       sectionEnterprise: 'الشركة',
       sectionModules: 'الوحدات والخطة',
@@ -2191,6 +2195,7 @@ const copy: Record<AppLocale, CopyTree> = {
         fleet: 'Filo',
         showcase: 'Tanıtım sitesi',
         cameras: 'Kameralar',
+        commerce: 'Ticaret',
       },
       sectionEnterprise: 'Şirket',
       sectionModules: 'Modüller ve plan',
@@ -2876,6 +2881,7 @@ const copy: Record<AppLocale, CopyTree> = {
         fleet: 'Fleet',
         showcase: 'Showcase site',
         cameras: 'Cameras',
+        commerce: 'Commerce',
       },
       sectionEnterprise: 'Company',
       sectionModules: 'Modules & plan',
