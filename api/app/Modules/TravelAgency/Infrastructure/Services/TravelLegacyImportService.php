@@ -212,8 +212,10 @@ final class TravelLegacyImportService
             'vehicle_id' => null,
             'departure_date' => $row['departure_date'] ?? now()->toDateString(),
             'departure_time' => $row['departure_time'] ?? '08:00',
-            'arrival_date' => $row['arrival_date'] ?? null,
-            'arrival_time' => $row['arrival_time'] ?? null,
+            // #7452 — arrival_date/arrival_time sont NOT NULL (contrat API :
+            // requis) : les exports legacy sans arrivée retombent sur le départ.
+            'arrival_date' => $row['arrival_date'] ?? $row['departure_date'] ?? now()->toDateString(),
+            'arrival_time' => $row['arrival_time'] ?? $row['departure_time'] ?? '08:00',
             'means_of_transport' => $row['means_of_transport'] ?? 'bus',
             'total_seats' => (int) ($row['total_seats'] ?? 40),
             'status' => $status,

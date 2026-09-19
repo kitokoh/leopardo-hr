@@ -6,7 +6,6 @@ namespace Tests\Feature\Edge;
 
 use App\Console\Commands\DetectSilentEdgeNodes;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
@@ -38,15 +37,20 @@ class EdgeLicenseExpiryTest extends TestCase
         $this->createEdgeNodesTable();
 
         $this->company = Company::factory()->create([
-            'schema_name'  => 'shared_tenants',
+            'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
-            'status'       => 'active',
+            'status' => 'active',
         ]);
     }
 
     protected function tearDown(): void
     {
         DB::statement('DROP TABLE IF EXISTS edge_nodes CASCADE');
+        // #7452 — ce tearDown a remplacé edge_nodes par un schéma legacy :
+        // restaurer la table canonique de la fixture (le cache #6928 ne la
+        // rebâtit plus), sinon les classes MVP suivantes échouent en
+        // « relation "edge_nodes" does not exist ».
+        $this->recreateCanonicalEdgeNodesTable();
         $this->tearDownMvpSchema();
         parent::tearDown();
     }
@@ -84,16 +88,16 @@ class EdgeLicenseExpiryTest extends TestCase
     private function insertNode(array $overrides = []): object
     {
         $id = DB::table('edge_nodes')->insertGetId(array_merge([
-            'company_id'   => $this->company->id,
-            'node_id'      => 'edge-lic-001',
-            'name'         => 'Kiosque Test',
-            'status'       => 'online',
-            'license_valid'  => true,
+            'company_id' => $this->company->id,
+            'node_id' => 'edge-lic-001',
+            'name' => 'Kiosque Test',
+            'status' => 'online',
+            'license_valid' => true,
             'license_expires_at' => Carbon::now()->addDays(30)->toDateTimeString(),
             'last_seen_at' => Carbon::now()->toDateTimeString(),
             'pending_count' => 0,
-            'created_at'   => Carbon::now(),
-            'updated_at'   => Carbon::now(),
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ], $overrides));
 
         return DB::table('edge_nodes')->find($id);
@@ -107,7 +111,7 @@ class EdgeLicenseExpiryTest extends TestCase
     public function test_expired_license_is_marked_invalid(): void
     {
         $node = $this->insertNode([
-            'license_valid'      => true,
+            'license_valid' => true,
             'license_expires_at' => Carbon::now()->subDay()->toDateTimeString(), // expiré hier
         ]);
 
@@ -118,8 +122,8 @@ class EdgeLicenseExpiryTest extends TestCase
             DB::table('edge_nodes')
                 ->where('id', $node->id)
                 ->update([
-                    'license_valid'  => false,
-                    'status'         => 'warning',
+                    'license_valid' => false,
+                    'status' => 'warning',
                 ]);
         }
 
@@ -134,7 +138,7 @@ class EdgeLicenseExpiryTest extends TestCase
     public function test_valid_license_stays_valid(): void
     {
         $node = $this->insertNode([
-            'license_valid'      => true,
+            'license_valid' => true,
             'license_expires_at' => Carbon::now()->addDays(15)->toDateTimeString(),
         ]);
 
@@ -151,9 +155,9 @@ class EdgeLicenseExpiryTest extends TestCase
         $ttlDays = (int) config('edge.license_ttl_days', 30);
 
         $node = $this->insertNode([
-            'license_valid'      => false,
+            'license_valid' => false,
             'license_expires_at' => Carbon::now()->subDay()->toDateTimeString(),
-            'status'             => 'warning',
+            'status' => 'warning',
         ]);
 
         // Simuler le renouvellement automatique
@@ -162,9 +166,9 @@ class EdgeLicenseExpiryTest extends TestCase
         DB::table('edge_nodes')
             ->where('id', $node->id)
             ->update([
-                'license_valid'      => true,
+                'license_valid' => true,
                 'license_expires_at' => $newExpiry->toDateTimeString(),
-                'status'             => 'online',
+                'status' => 'online',
             ]);
 
         $renewed = DB::table('edge_nodes')->find($node->id);
@@ -183,7 +187,7 @@ class EdgeLicenseExpiryTest extends TestCase
     public function test_revoked_node_cannot_be_relicensed(): void
     {
         $node = $this->insertNode([
-            'status'     => 'revoked',
+            'status' => 'revoked',
             'revoked_at' => Carbon::now()->subHour()->toDateTimeString(),
         ]);
 
@@ -210,25 +214,25 @@ class EdgeLicenseExpiryTest extends TestCase
 
         // Nœud révoqué silencieux — ne doit PAS déclencher d'alerte
         $this->insertNode([
-            'node_id'    => 'edge-lic-revoked',
-            'status'     => 'revoked',
+            'node_id' => 'edge-lic-revoked',
+            'status' => 'revoked',
             'revoked_at' => Carbon::now()->subDay()->toDateTimeString(),
             'last_seen_at' => Carbon::now()->subHours(2)->toDateTimeString(),
         ]);
 
         // Nœud normal silencieux — doit déclencher une alerte
         DB::table('edge_nodes')->insertGetId([
-            'company_id'   => $this->company->id,
-            'node_id'      => 'edge-lic-silent',
-            'name'         => 'Kiosque Silencieux',
-            'status'       => 'online',
-            'license_valid'  => true,
+            'company_id' => $this->company->id,
+            'node_id' => 'edge-lic-silent',
+            'name' => 'Kiosque Silencieux',
+            'status' => 'online',
+            'license_valid' => true,
             'license_expires_at' => Carbon::now()->addDays(30)->toDateTimeString(),
             'last_seen_at' => Carbon::now()->subHours(2)->toDateTimeString(), // silence > seuil
             'pending_count' => 0,
-            'alert_muted'  => false,
-            'created_at'   => Carbon::now(),
-            'updated_at'   => Carbon::now(),
+            'alert_muted' => false,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ]);
 
         // Requête manuelle reproduisant la logique de DetectSilentEdgeNodes
@@ -238,7 +242,7 @@ class EdgeLicenseExpiryTest extends TestCase
             ->where('status', '!=', 'revoked')
             ->where(function ($q) use ($threshold) {
                 $q->where('last_seen_at', '<', $threshold)
-                  ->orWhereNull('last_seen_at');
+                    ->orWhereNull('last_seen_at');
             })
             ->where('alert_muted', false)
             ->get();
@@ -287,8 +291,8 @@ class EdgeLicenseExpiryTest extends TestCase
     public function test_license_expiring_soon_is_detectable(): void
     {
         $this->insertNode([
-            'node_id'            => 'edge-lic-expiring',
-            'license_valid'      => true,
+            'node_id' => 'edge-lic-expiring',
+            'license_valid' => true,
             'license_expires_at' => Carbon::now()->addDays(3)->toDateTimeString(), // expire dans 3j
         ]);
 
@@ -304,4 +308,3 @@ class EdgeLicenseExpiryTest extends TestCase
         $this->assertSame('edge-lic-expiring', $expiringSoon->first()->node_id);
     }
 }
-

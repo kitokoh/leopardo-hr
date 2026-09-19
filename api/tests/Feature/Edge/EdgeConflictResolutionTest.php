@@ -68,6 +68,11 @@ class EdgeConflictResolutionTest extends TestCase
     protected function tearDown(): void
     {
         DB::statement('DROP TABLE IF EXISTS edge_nodes CASCADE');
+        // #7452 — ce tearDown a remplacé edge_nodes par un schéma legacy :
+        // restaurer la table canonique de la fixture (le cache #6928 ne la
+        // rebâtit plus), sinon les classes MVP suivantes échouent en
+        // « relation "edge_nodes" does not exist ».
+        $this->recreateCanonicalEdgeNodesTable();
         $this->tearDownMvpSchema();
         parent::tearDown();
     }
