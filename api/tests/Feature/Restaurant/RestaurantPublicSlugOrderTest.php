@@ -203,7 +203,9 @@ class RestaurantPublicSlugOrderTest extends TestCase
         // Jamais de PII (note interne « Client: … ») dans la réponse publique.
         $data = (array) $track->json('data');
         $this->assertArrayNotHasKey('note_redacted', $data);
-        $this->assertStringNotContainsString('Awa', $track->getContent());
+        $content = $track->getContent();
+        $this->assertIsString($content);
+        $this->assertStringNotContainsString('Awa', $content);
     }
 
     public function test_tracking_is_scoped_to_the_slug_branch(): void
