@@ -21,6 +21,7 @@ use App\Modules\Marketing\Providers\MarketingServiceProvider;
 use App\Modules\Notification\Providers\NotificationServiceProvider;
 use App\Modules\Onboarding\Providers\OnboardingServiceProvider;
 use App\Modules\Payroll\Providers\PayrollServiceProvider;
+use App\Modules\Pharmacy\Providers\PharmacyServiceProvider;
 use App\Modules\Planning\Providers\PlanningServiceProvider;
 use App\Modules\Platform\Providers\PlatformServiceProvider;
 use App\Modules\Recruitment\Providers\RecruitmentServiceProvider;
@@ -66,6 +67,8 @@ return [
     DeliveryServiceProvider::class,
     FuelStationServiceProvider::class,
     TravelAgencyServiceProvider::class,
+    // PHARMA-001 (#7798) — verticale PharmaManager (officines de pharmacie).
+    PharmacyServiceProvider::class,
     EduManagerServiceProvider::class,
     RestaurantManagerServiceProvider::class,
     CatalogServiceProvider::class,

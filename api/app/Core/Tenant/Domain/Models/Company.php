@@ -124,6 +124,10 @@ class Company extends Model
         // jamais activer ni exposer la verticale Travel. Fail-closed conservé
         // (défaut false, `rh` seul actif par défaut).
         'travelagency',
+        // PHARMA-001 (#7798) : verticale PharmaManager (officines de pharmacie).
+        // Code du PharmacyManifest — flag posé par SolutionActivator ;
+        // fail-closed conservé (défaut false, `rh` seul actif par défaut).
+        'pharmacy',
         // #7235 (audit 2026-09-12) : la comptabilité est un module HORIZONTAL
         // (transverse à tous les secteurs) et le module serveur existe
         // (`app/Modules/Accounting`, routes `/api/v1/accounting/*`) — mais il
