@@ -6245,7 +6245,8 @@
       "bookingsDesc": "Gişe satışları, onay, iptal, iade ve biletler.",
       "reportsDesc": "Satışlar, doluluk, gelirler, iptaller ve CSV dışa aktarımları.",
       "portal": "Yolcu portalı",
-      "portalDesc": "Müşteriye yönelik sefer arama ve rezervasyon."
+      "portalDesc": "Müşteriye yönelik sefer arama ve rezervasyon.",
+      "staffDesc": "Şoför, gişe görevlisi, kontrolör ve ofis şefi atamaları."
     },
     "network": {
       "addPrice": "Fiyat ekle",
@@ -6624,7 +6625,38 @@
     "travel.tripStatus.published": "Yayınlandı",
     "travel.tripStatus.scheduled": "Planlandı",
     "travel.vehicles.registration": "Plaka",
-    "travel.vehicles.seats": "Koltuklar"
+    "travel.vehicles.seats": "Koltuklar",
+    "staff": {
+      "title": "Ekip",
+      "subtitle": "Çalışanlarınızı bir ofiste veya seferde travel rollerine (şoför, gişe görevlisi, kontrolör, ofis şefi) atayın.",
+      "assignTitle": "Ekip üyesi ata",
+      "employee": "Çalışan",
+      "role": "Rol",
+      "scope": "Kapsam",
+      "scopeOffice": "Ofis",
+      "scopeTrip": "Sefer",
+      "assign": "Ata",
+      "revoke": "İptal et",
+      "assignFailed": "Atama başarısız oldu.",
+      "revokeFailed": "İptal işlemi başarısız oldu.",
+      "formIncomplete": "Bir çalışan, bir rol ve bir kapsam seçin.",
+      "activeTitle": "Aktif atamalar",
+      "empty": "Aktif atama yok.",
+      "historyTitle": "Atama geçmişi",
+      "historyEmpty": "İptal edilmiş veya süresi dolmuş atama yok.",
+      "revokedAt": "İptal tarihi"
+    },
+    "staffRole": {
+      "driver": "Şoför",
+      "agent": "Gişe görevlisi",
+      "controller": "Kontrolör",
+      "office_manager": "Ofis şefi"
+    },
+    "staffStatus": {
+      "active": "Aktif",
+      "revoked": "İptal edildi",
+      "expired": "Süresi doldu"
+    }
   },
   "edu": {
     "nav": {
@@ -7545,6 +7577,18 @@
       "publish_showcase": {
         "title": "Vitrin sitenizi yayınlayın",
         "desc": "Sitenizi tek tıkla görünür yapın."
+      },
+      "travel_setup_network": {
+        "title": "Ağınızı oluşturun (istasyonlar, ofisler, hatlar)",
+        "desc": "İstasyonlarınızı, satış ofislerinizi ve şehirlerarası hatlarınızı tanımlayın."
+      },
+      "travel_first_trip": {
+        "title": "İlk seferinizi planlayın",
+        "desc": "Tarihli bir sefer ve sınıf tarifelerini oluşturup yayınlayın."
+      },
+      "travel_first_sale": {
+        "title": "İlk satışınızı kaydedin",
+        "desc": "Gişeden veya çevrimiçi ilk biletinizi satın."
       }
     }
   },
