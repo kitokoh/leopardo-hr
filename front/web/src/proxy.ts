@@ -66,6 +66,8 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/crm',
   '/accounting',
   '/edu-manager',
+  // BC-30 HEALTH (#7792) — verticale HealthManager (données de santé).
+  '/health',
   '/fuel',
   // #7759 — tickets support côté client (zone dashboard).
   '/support',
@@ -199,6 +201,7 @@ export const config = {
     '/crm/:path*', // #7663 CRM — gate session (source unique #3377)
     '/accounting/:path*', // #7663 comptabilité applicative (vitrine = /comptabilite)
     '/edu-manager/:path*', // #7663 gestion scolaire — gate session
+    '/health/:path*', // BC-30 (#7792) HealthManager — gate session
     '/fuel/:path*', // #7663 stations-service — gate session
     '/support/:path*', // #7759 tickets support côté client — gate session
     '/communication/:path*', // BC-29 (#7691) boîte connectée — gate session

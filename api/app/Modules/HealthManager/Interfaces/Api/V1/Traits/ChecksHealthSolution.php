@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Model;
  * - `assertSameTenant()` : ressource d'un autre tenant → 404 (isolation
  *   fail-closed, aucune fuite cross-tenant — pattern ChecksEduSolution).
  */
+// Contrôleurs consommateurs livrés par HC-002+ (#7786–#7792).
+// @phpstan-ignore trait.unused
 trait ChecksHealthSolution
 {
     private function assertSolutionActive(): void
