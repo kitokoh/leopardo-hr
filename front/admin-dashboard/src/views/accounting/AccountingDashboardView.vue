@@ -30,6 +30,19 @@
       </div>
     </div>
 
+    <!-- #7776 — hub du rôle comptable (US-1 spec 5534) : accès direct aux 7 écrans. -->
+    <nav class="flex flex-wrap gap-2" :aria-label="$t('navigation.accounting')">
+      <router-link
+        v-for="link in quickLinks"
+        :key="link.path"
+        :to="link.path"
+        class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm font-semibold text-slate-600 transition-all hover:border-emerald-300 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-300 dark:hover:border-emerald-700 dark:hover:text-emerald-300"
+      >
+        <component :is="link.icon" class="h-4 w-4" aria-hidden="true" />
+        {{ link.label }}
+      </router-link>
+    </nav>
+
     <div v-if="loading" class="glass-card p-6 text-slate-500 dark:text-slate-400">
       {{ $t('common.busy', 'Chargement…') }}
     </div>
@@ -174,9 +187,15 @@ import { computed, onMounted, ref } from 'vue'
 import {
   ArrowDownTrayIcon,
   BanknotesIcon,
+  BookOpenIcon,
+  BuildingLibraryIcon,
+  CalendarDaysIcon,
+  ChartPieIcon,
   DocumentTextIcon,
   ExclamationTriangleIcon,
-  ShoppingCartIcon
+  LinkIcon,
+  ShoppingCartIcon,
+  TableCellsIcon
 } from '@heroicons/vue/24/outline'
 import api, { downloadApiFile } from '@/services/api'
 import { translate } from '@/i18n/index.js'
@@ -195,6 +214,17 @@ const loading = ref(true)
 const data = ref({})
 const from = ref(startOfMonth())
 const to = ref(today())
+
+// #7776 — hub de navigation du comptable (US-1 spec 5534).
+const quickLinks = computed(() => [
+  { path: '/accounting/documents', icon: DocumentTextIcon, label: t('accountingModule.navDocuments') },
+  { path: '/accounting/chart', icon: TableCellsIcon, label: t('accountingModule.navChart') },
+  { path: '/accounting/ledger', icon: BookOpenIcon, label: t('accountingModule.navLedger') },
+  { path: '/accounting/lettering', icon: LinkIcon, label: t('accountingModule.navLettering') },
+  { path: '/accounting/fiscal-years', icon: CalendarDaysIcon, label: t('accountingModule.navFiscalYears') },
+  { path: '/accounting/bank', icon: BuildingLibraryIcon, label: t('accountingModule.navBank') },
+  { path: '/accounting/statements', icon: ChartPieIcon, label: t('accountingModule.navStatements') },
+])
 
 function startOfMonth() {
   const now = new Date()
