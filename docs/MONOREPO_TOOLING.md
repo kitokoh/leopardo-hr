@@ -1,4 +1,4 @@
-# Monorepo Tooling — Leopardo HR
+# Monorepo Tooling — Leopardo
 
 ## Vue d'ensemble
 

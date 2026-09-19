@@ -1,4 +1,4 @@
-# Leopardo RH — Dossier de référencement
+# Leopardo — Dossier de référencement
 
 Ce dossier contient les textes et champs prêts à être adaptés dans les plateformes de découverte. Il ne constitue pas une autorisation de publication : les comptes, URL canoniques, visuels finaux et éventuels paiements doivent être validés par l’équipe.
 

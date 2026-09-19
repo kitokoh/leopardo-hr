@@ -649,6 +649,12 @@ propagation i18n du 2026-09-14 (PR #7350).
 - Les specs Playwright existantes restent la non-regression fonctionnelle : elles sement le
   token via `addInitScript` (avant le boot de l'app), chemin identique a un rechargement.
 
+<<<<<<< HEAD
 ## Note de conservation — catalogues i18n régénérés, étape 2 positionnement (PR #7714, issue #7708, 2026-09-19)
 
 **Aucun changement de comportement de la console admin.** Le diff touche `front/admin-dashboard/src/i18n/locales/{fr,en,tr,ar}.json` uniquement parce que ces catalogues sont **générés** par `shared/i18n/sync/sync-web.js` (union clés partagées + admin-only, checksums #4805) : le débrandage des clés partagées à la source (`seo.llms.summary`, `systemPage`, `partnerPage`, `signupPage`, `welcome`, `marketing` — phrases canoniques P03 ×4 locales) est propagé mécaniquement. Les clés admin-only ne changent pas ici (étape 5, PR #7715). Scénarios existants valides tels quels.
+=======
+## Note de conservation — marque « Leopardo » dans la console (PR #7715, issue #7709, 2026-09-19)
+
+**Aucun changement de comportement de la console admin.** Le diff ne touche que des chaînes d'affichage (title `index.html`, suffixe de `document.title` du routeur, en-têtes Login/Logout, fallback Growth, catalogues i18n fr/en/tr/ar, aria-labels SVG) : la marque affichée devient « Leopardo » seul (positionnement P03 étape 5, `docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md`). Les scénarios existants restent valides tels quels, à une exception près : toute assertion e2e qui verrouillait le libellé « Leopardo RH » (titre de page, heading de connexion) doit attendre « Leopardo » — les regex des specs ont été mises à jour dans la même PR. URLs, clés de storage et identifiants inchangés (§4).
+>>>>>>> origin/main

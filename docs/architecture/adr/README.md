@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-Ce dossier capture les decisions structurantes qui doivent rester stables pour Leopardo RH. Une ADR est ajoutee quand un choix influence la securite, l'exploitation, le multi-tenant, les contrats API ou les couts de changement futurs.
+Ce dossier capture les decisions structurantes qui doivent rester stables pour Leopardo. Une ADR est ajoutee quand un choix influence la securite, l'exploitation, le multi-tenant, les contrats API ou les couts de changement futurs.
 
 ## Registre
 

@@ -1,6 +1,6 @@
 # Platform Admin Documentation
 
-Guides and references for Super Admins managing the Leopardo RH SaaS platform.
+Guides and references for Super Admins managing the Leopardo SaaS platform.
 
 ## 🔑 Key Responsibilities
 - Tenant provisioning and lifecycle management.
