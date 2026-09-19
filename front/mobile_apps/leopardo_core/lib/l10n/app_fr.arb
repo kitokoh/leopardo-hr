@@ -105,6 +105,7 @@
   "modulesNotifications": "Notifications",
   "modulesEvaluations": "Evaluations",
   "modulesRestaurant": "Point de vente (POS)",
+  "modulesCommunication": "Communication (boite mail + IA)",
   "emailsInvitationSubject": "Vous etes invite(e) a rejoindre :company sur Leopardo RH",
   "emailsInvitationGreeting": "Bonjour :name,",
   "emailsInvitationBody": "Vous avez ete invite(e) a rejoindre :company. Cliquez sur le lien ci-dessous pour activer votre compte.",
