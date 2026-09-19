@@ -37,20 +37,26 @@ class EdgeLicenseService
 
         $signed = $this->sign($payload);
 
-        return EdgeLicense::updateOrCreate(
-            ['edge_node_id' => $node->id],
-            [
-                'company_id'        => $node->company_id,
-                'license_key'       => Str::uuid()->toString(),
-                'signed_payload'    => $signed,
-                'allowed_features'  => $payload['allowed_features'],
-                'max_employees'     => $payload['max_employees'],
-                'issued_at'         => now(),
-                'expires_at'        => now()->addDays($validDays),
-                'last_validated_at' => now(),
-                'validation_status' => 'valid',
-            ]
-        );
+        // #7711 : company_id n'est plus mass-assignable (trait BelongsToCompany).
+        // forceFill conserve le comportement pour TOUS les chemins : sous tenant
+        // (route /edge/{id}/license) le hook creating force de toute façon le
+        // tenant courant ; hors tenant (console, renouvellement machine) la
+        // valeur du nœud est préservée — pas de licence orpheline.
+        /** @var EdgeLicense $license */
+        $license = EdgeLicense::query()->firstOrNew(['edge_node_id' => $node->id]);
+        $license->forceFill([
+            'company_id'        => $node->company_id,
+            'license_key'       => Str::uuid()->toString(),
+            'signed_payload'    => $signed,
+            'allowed_features'  => $payload['allowed_features'],
+            'max_employees'     => $payload['max_employees'],
+            'issued_at'         => now(),
+            'expires_at'        => now()->addDays($validDays),
+            'last_validated_at' => now(),
+            'validation_status' => 'valid',
+        ])->save();
+
+        return $license;
     }
 
     /** @return array<string, mixed> */

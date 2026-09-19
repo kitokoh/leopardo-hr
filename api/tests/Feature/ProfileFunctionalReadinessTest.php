@@ -171,7 +171,7 @@ class ProfileFunctionalReadinessTest extends TestCase
             'occurred_at' => now(),
         ]);
 
-        ClientEvent::query()->create([
+        ClientEvent::query()->forceCreate([
             'company_id' => $company->id,
             'employee_id' => $profiles['principal']->id,
             'event_name' => 'launch_readiness_viewed',

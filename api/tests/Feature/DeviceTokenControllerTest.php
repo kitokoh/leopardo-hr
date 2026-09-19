@@ -117,7 +117,7 @@ class DeviceTokenControllerTest extends TestCase
 
     public function test_unregister_removes_only_current_user_token(): void
     {
-        DeviceToken::query()->create([
+        DeviceToken::query()->forceCreate([
             'employee_id' => $this->employee->id,
             'company_id' => $this->company->id,
             'token' => 'employee-fcm-token',
@@ -126,7 +126,7 @@ class DeviceTokenControllerTest extends TestCase
             'last_used_at' => now(),
         ]);
 
-        DeviceToken::query()->create([
+        DeviceToken::query()->forceCreate([
             'employee_id' => $this->manager->id,
             'company_id' => $this->company->id,
             'token' => 'manager-fcm-token',

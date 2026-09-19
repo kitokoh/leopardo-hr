@@ -25,7 +25,7 @@ class ClientEventController extends Controller
         $validated = $request->validated();
 
         $event = ClientEvent::create([
-            'company_id' => $employee->company_id,
+            // #7711 : company_id délégué au trait BelongsToCompany (tenant actif).
             'employee_id' => $employee->id,
             'event_name' => $validated['name'],
             'surface' => $validated['surface'] ?? 'web',
