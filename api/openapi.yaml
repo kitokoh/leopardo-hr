@@ -783,6 +783,98 @@ paths:
           description: Manager principal du tenant requis
         '422':
           description: Type de ressource inconnu, niveau invalide, ou ressource inexistante dans cette entreprise (RESOURCE_TYPE_UNKNOWN / RESOURCE_NOT_FOUND)
+  /employees/{employee}/module-grants:
+    get:
+      tags:
+      - HR
+      summary: 'Modules délégués à un collaborateur (issue #7761)'
+      description: 'Grants de modules composables (registre fermé : marketing, accounting, support, crm, showcase, hr, billing_view) explicitement accordés au collaborateur par le responsable du tenant. Réservé au manager principal ; isolé par tenant.'
+      parameters:
+      - name: employee
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Modules délégués au collaborateur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      module_keys:
+                        type: array
+                        items:
+                          type: string
+                          enum:
+                          - marketing
+                          - accounting
+                          - support
+                          - crm
+                          - showcase
+                          - hr
+                          - billing_view
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Manager principal du tenant requis
+    put:
+      tags:
+      - HR
+      summary: 'Remplacer les modules délégués à un collaborateur'
+      description: 'Remplace le jeu COMPLET des grants : ce qui n''est pas envoyé est révoqué. Une clé hors registre fermé est refusée (fail-closed, 422). Chaque pose et révocation est auditée (audit_logs). L''enforcement côté middleware accepte manager_role autorisé OU grant explicite ; le principal a implicitement tout.'
+      parameters:
+      - name: employee
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - module_keys
+              properties:
+                module_keys:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                    - marketing
+                    - accounting
+                    - support
+                    - crm
+                    - showcase
+                    - hr
+                    - billing_view
+      responses:
+        '200':
+          description: Nouveau jeu de modules délégués
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      module_keys:
+                        type: array
+                        items:
+                          type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Manager principal du tenant requis
+        '422':
+          description: Clé de module hors registre fermé (MODULE_KEY_UNKNOWN)
   /resources/{type}:
     get:
       tags:
@@ -9436,6 +9528,41 @@ paths:
                         type: string
                         format: email
                       resent_at:
+                        type: string
+                        format: date-time
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '410':
+          description: Invitation deja acceptee
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /invitations/{invitation}:
+    delete:
+      tags:
+      - Invitations
+      summary: 'Révoquer une invitation en attente (issue #7762)'
+      description: 'Supprime l''invitation : son token devient inutilisable immédiatement (l''activation répond 404). Une invitation déjà acceptée n''est pas révocable (410) — le compte existe, c''est l''archivage de l''employé qui retire l''accès. Réservé aux managers principal/rh (gate manageInvitations), isolé par tenant.'
+      parameters:
+      - $ref: '#/components/parameters/InvitationId'
+      responses:
+        '200':
+          description: Invitation révoquée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      revoked_at:
                         type: string
                         format: date-time
         '403':
