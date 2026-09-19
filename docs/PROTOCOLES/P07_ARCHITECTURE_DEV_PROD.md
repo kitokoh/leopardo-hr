@@ -99,7 +99,7 @@ Règles structurelles opposables :
 - **Existant :** `deploy-main.yml`, `deploy-prod.yml`, `deploy-staging.yml`, `render.prod.yaml`,
   `check-render-env-parity.sh`, `check-canonical-domains.sh`, `check-env-example-*.sh`,
   `launch-observability-smoke.yml`, `launch-api-profile-smoke.yml`, `queue-supervision.yml`,
-  `queue-worker-fallback.yml`, `database-backup.yml`, `cleanup-orphan-runs.yml`.
+  `database-backup.yml`, `cleanup-orphan-runs.yml`.
 - **À créer (issues) :** (a) workflow `infra-audit.yml` (hebdo : healthchecks dev+prod + rapport
   automatique de parité via les API fournisseurs) ; (b) script `check-render-live-vs-yaml.sh`
   (diff services/vars live vs `render.yaml`/`render.prod.yaml`, généralisation de la leçon #6831) ;

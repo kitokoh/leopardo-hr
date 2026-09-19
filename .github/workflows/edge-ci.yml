@@ -33,3 +33,5 @@ jobs:
         run: bash edge/tests/check-edge-migrations-path.sh
       - name: Install manifest parse guard (issue #4007)
         run: bash edge/tests/install-manifest-parse.sh
+      - name: Install manifest signature guard (issue #7653)
+        run: bash edge/tests/install-manifest-signature.sh
