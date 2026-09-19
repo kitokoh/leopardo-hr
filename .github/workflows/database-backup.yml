@@ -25,6 +25,11 @@ permissions:
 env:
   BACKUP_DIR: /tmp/leopardo-backups
   AWS_REGION: ${{ secrets.AWS_REGION || 'eu-west-3' }}
+  # #7676 — stockage S3-compatible (Backblaze B2, Cloudflare R2…) : endpoint
+  # explicite passé en argument à chaque appel `aws` (le fallback awscli v1
+  # installé via pip ignore la variable d'environnement AWS_ENDPOINT_URL).
+  # Vide = AWS S3, comportement historique inchangé.
+  BACKUP_S3_ENDPOINT: ${{ secrets.AWS_ENDPOINT_URL }}
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 concurrency:
@@ -111,14 +116,29 @@ jobs:
           dump_file="${dump_file}.age"
 
           object_key="postgres/daily/$(date -u +%Y/%m/%d)/$(basename "${dump_file}")"
+
+          # #7676 — fournisseur S3-compatible : endpoint explicite, et pas de
+          # classe de stockage AWS-spécifique (Backblaze B2 ne connaît que
+          # STANDARD — STANDARD_IA ferait échouer l'upload). `--sse AES256`
+          # est conservé dans les deux cas (SSE-S3 côté AWS, SSE-B2 côté B2).
+          s3_args=(--region "${AWS_REGION}")
+          if [[ -n "${BACKUP_S3_ENDPOINT:-}" ]]; then
+            s3_args+=(--endpoint-url "${BACKUP_S3_ENDPOINT}")
+          else
+            s3_args+=(--storage-class STANDARD_IA)
+          fi
+
           aws s3 cp "${dump_file}" "s3://${BACKUP_S3_BUCKET}/${object_key}" \
-            --region "${AWS_REGION}" \
-            --storage-class STANDARD_IA \
-            --sse AES256
+            --sse AES256 \
+            "${s3_args[@]}"
 
           # #7253 — vérifier que l'objet est réellement présent et complet :
           # un `aws s3 cp` peut sortir 0 sans que l'objet soit exploitable.
-          remote_size="$(aws s3api head-object --bucket "${BACKUP_S3_BUCKET}" --key "${object_key}" --region "${AWS_REGION}" --query 'ContentLength' --output text)"
+          head_args=(--region "${AWS_REGION}")
+          if [[ -n "${BACKUP_S3_ENDPOINT:-}" ]]; then
+            head_args+=(--endpoint-url "${BACKUP_S3_ENDPOINT}")
+          fi
+          remote_size="$(aws s3api head-object --bucket "${BACKUP_S3_BUCKET}" --key "${object_key}" "${head_args[@]}" --query 'ContentLength' --output text)"
           local_size="$(stat -c %s "${dump_file}")"
           if [[ "${remote_size}" != "${local_size}" ]]; then
             echo "::error::Sauvegarde incohérente (issue #7253) : taille distante=${remote_size} octets, taille locale=${local_size} octets."
@@ -184,9 +204,16 @@ jobs:
           set -euo pipefail
           export TZ=UTC
 
+          # #7676 — même règle que l'upload : endpoint explicite si fournisseur
+          # S3-compatible (le fallback awscli v1 ignore AWS_ENDPOINT_URL).
+          ls_args=(--region "${AWS_REGION}")
+          if [[ -n "${BACKUP_S3_ENDPOINT:-}" ]]; then
+            ls_args+=(--endpoint-url "${BACKUP_S3_ENDPOINT}")
+          fi
+
           # La clé contient la date (postgres/daily/YYYY/MM/DD/...) : un tri
           # lexicographique suffit à isoler la sauvegarde la plus récente.
-          latest="$(aws s3 ls "s3://${BACKUP_S3_BUCKET}/postgres/daily/" --recursive --region "${AWS_REGION}" | sort | tail -1 || true)"
+          latest="$(aws s3 ls "s3://${BACKUP_S3_BUCKET}/postgres/daily/" --recursive "${ls_args[@]}" | sort | tail -1 || true)"
 
           if [[ -z "${latest}" ]]; then
             echo "::error::Aucune sauvegarde trouvée sous s3://${BACKUP_S3_BUCKET}/postgres/daily/ (issue #7253) — RPO non tenu."
