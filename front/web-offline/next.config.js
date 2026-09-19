@@ -6,7 +6,7 @@ const nextConfig = {
   trailingSlash: true,
   images: { unoptimized: true },
   env: {
-    NEXT_PUBLIC_EDGE_API: process.env.NEXT_PUBLIC_EDGE_API || 'http://leopardo.local:7878',
+    NEXT_PUBLIC_EDGE_API: process.env.NEXT_PUBLIC_EDGE_API || '',  // #7653 : same-origin via le proxy TLS
   },
   // This sub-project has its own package-lock.json alongside the monorepo
   // root lockfile. Pin the workspace root explicitly so Turbopack does not
