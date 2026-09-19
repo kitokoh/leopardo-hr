@@ -7131,5 +7131,48 @@
       "support": "Support",
       "supportDesc": "Contactez notre équipe"
     }
+  },
+  "paymentGateways": {
+    "nav": "Passerelles de paiement",
+    "title": "Passerelles de paiement",
+    "subtitle": "Configurez les comptes Stripe et Chargily de la plateforme — les clés sont chiffrées en base et prises en compte sans redéploiement.",
+    "loading": "Chargement…",
+    "loadError": "Impossible de charger les passerelles.",
+    "mode": "Mode",
+    "mode_test": "Test",
+    "mode_live": "Live",
+    "isActive": "Configuration active",
+    "save": "Enregistrer",
+    "saved": "Passerelle enregistrée.",
+    "saveError": "Enregistrement impossible.",
+    "testConnection": "Tester la connexion",
+    "secretEmpty": "Non configuré",
+    "secretKeepHint": "Laisser vide pour conserver la clé en place (jamais réaffichée en clair).",
+    "secretMissing": "Aucune clé enregistrée.",
+    "source": {
+      "database": "Configuré via BDD",
+      "env": "Configuré via env",
+      "none": "Non configuré"
+    },
+    "testStatus": {
+      "OK": "Connexion réussie — clés valides.",
+      "INVALID_CREDENTIALS": "Clés refusées par la passerelle.",
+      "NOT_CONFIGURED": "Aucune clé configurée.",
+      "CONNECTION_FAILED": "Connexion à la passerelle impossible.",
+      "UNKNOWN_GATEWAY": "Passerelle inconnue."
+    },
+    "field": {
+      "stripe": {
+        "secret_key": "Clé secrète (sk_…)",
+        "webhook_secret": "Webhook secret (whsec_…)",
+        "price_pilot": "Price ID — offre Pilot",
+        "price_operations": "Price ID — offre Operations",
+        "price_enterprise": "Price ID — offre Enterprise"
+      },
+      "chargily": {
+        "api_key": "Clé API",
+        "webhook_secret": "Webhook secret"
+      }
+    }
   }
 }

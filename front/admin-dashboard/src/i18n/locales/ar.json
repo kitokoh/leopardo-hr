@@ -7258,5 +7258,48 @@
       "support": "الدعم",
       "supportDesc": "تواصل مع فريقنا"
     }
+  },
+  "paymentGateways": {
+    "nav": "بوابات الدفع",
+    "title": "بوابات الدفع",
+    "subtitle": "قم بإعداد حسابات Stripe وChargily للمنصة — تُشفَّر المفاتيح في قاعدة البيانات وتُطبَّق دون إعادة نشر.",
+    "loading": "جارٍ التحميل…",
+    "loadError": "تعذر تحميل البوابات.",
+    "mode": "الوضع",
+    "mode_test": "تجريبي",
+    "mode_live": "فعلي",
+    "isActive": "الإعداد مفعّل",
+    "save": "حفظ",
+    "saved": "تم حفظ البوابة.",
+    "saveError": "تعذر الحفظ.",
+    "testConnection": "اختبار الاتصال",
+    "secretEmpty": "غير مُعدّ",
+    "secretKeepHint": "اتركه فارغًا للاحتفاظ بالمفتاح الحالي (لا يُعرض أبدًا بشكل صريح).",
+    "secretMissing": "لا يوجد مفتاح مسجّل.",
+    "source": {
+      "database": "مُعدّ عبر قاعدة البيانات",
+      "env": "مُعدّ عبر البيئة",
+      "none": "غير مُعدّ"
+    },
+    "testStatus": {
+      "OK": "نجح الاتصال — المفاتيح صالحة.",
+      "INVALID_CREDENTIALS": "رفضت البوابة المفاتيح.",
+      "NOT_CONFIGURED": "لا يوجد مفتاح مُعدّ.",
+      "CONNECTION_FAILED": "تعذر الوصول إلى البوابة.",
+      "UNKNOWN_GATEWAY": "بوابة غير معروفة."
+    },
+    "field": {
+      "stripe": {
+        "secret_key": "المفتاح السري (sk_…)",
+        "webhook_secret": "سر Webhook (whsec_…)",
+        "price_pilot": "معرّف السعر — خطة Pilot",
+        "price_operations": "معرّف السعر — خطة Operations",
+        "price_enterprise": "معرّف السعر — خطة Enterprise"
+      },
+      "chargily": {
+        "api_key": "مفتاح API",
+        "webhook_secret": "سر Webhook"
+      }
+    }
   }
 }

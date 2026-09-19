@@ -378,6 +378,17 @@ export const NAV_ENTRIES = [
     permission: 'plans.view',
     group: 'parametres',
   },
+  // #7726 — « Passerelles de paiement » : configuration Stripe/Chargily de la
+  // plateforme (clés chiffrées BDD, fallback env). Même groupe que les offres ;
+  // permission alignée sur `GET /platform/billing/gateways` (billing.manage).
+  {
+    name: 'settings-payment-gateways',
+    path: '/settings/payment-gateways',
+    titleKey: 'paymentGateways.nav',
+    icon: CreditCardIcon,
+    permission: 'billing.manage',
+    group: 'parametres',
+  },
   {
     name: 'settings-email-templates',
     path: '/settings/emails',

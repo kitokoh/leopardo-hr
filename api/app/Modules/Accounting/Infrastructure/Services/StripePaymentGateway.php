@@ -9,6 +9,7 @@ use App\Modules\Accounting\Application\DTOs\PaymentCheckout;
 use App\Modules\Accounting\Application\DTOs\PaymentWebhookData;
 use App\Modules\Accounting\Domain\Exceptions\PaymentGatewayNotConfiguredException;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
+use App\Shared\Contracts\Payments\PaymentGatewayConfigProviderInterface;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -32,9 +33,16 @@ final class StripePaymentGateway implements PaymentGatewayInterface
 
     private string $secretKey;
 
-    public function __construct()
+    private string $webhookSecret;
+
+    public function __construct(?PaymentGatewayConfigProviderInterface $gatewayConfig = null)
     {
-        $this->secretKey = (string) config('services.stripe.secret');
+        // #7726 : précédence BDD (admin plateforme, secrets chiffrés) →
+        // fallback env — comportement historique inchangé sans ligne BDD.
+        $gatewayConfig ??= app(PaymentGatewayConfigProviderInterface::class);
+        $settings = $gatewayConfig->resolve('stripe');
+        $this->secretKey = $settings['secret_key'] ?? '';
+        $this->webhookSecret = $settings['webhook_secret'] ?? '';
     }
 
     public function gatewayName(): string
@@ -104,8 +112,23 @@ final class StripePaymentGateway implements PaymentGatewayInterface
 
     public function verifyWebhookSignature(string $payload, string $signatureHeader): ?array
     {
-        $secret = (string) config('services.stripe.webhook_secret');
+        // #7726 — le secret provient de la config résolue (BDD → env), ou des
+        // clés du tenant si la passerelle a été clonée via withTenantCredentials.
+        $data = $this->verifyWithSecret($this->webhookSecret, $payload, $signatureHeader);
+        if ($data !== null) {
+            return $data;
+        }
 
+        return null;
+    }
+
+    /**
+     * Vérification HMAC Stripe (`t=<ts>,v1=<sig>`) avec un secret donné.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function verifyWithSecret(string $secret, string $payload, string $signatureHeader): ?array
+    {
         if ($secret === '') {
             // #2614 fail-closed : secret absent = webhook non vérifiable = rejet.
             Log::error('Stripe: webhook secret not configured — webhook REJETÉ (fail-closed).');
@@ -151,44 +174,6 @@ final class StripePaymentGateway implements PaymentGatewayInterface
         $data = json_decode($payload, true);
 
         return is_array($data) ? $data : null;
-    }
-
-    /**
-     * @param  array<string, mixed>  $payload
-     */
-    public function extractPayment(array $payload): ?PaymentWebhookData
-    {
-        $type = (string) ($payload['type'] ?? '');
-        $session = $payload['data']['object'] ?? null;
-
-        if (! is_array($session)) {
-            return null;
-        }
-
-        $id = (string) ($session['id'] ?? '');
-        if ($id === '') {
-            return null;
-        }
-
-        $paymentStatus = (string) ($session['payment_status'] ?? '');
-        $eventType = match (true) {
-            $type === 'checkout.session.completed' && $paymentStatus === 'paid' => 'paid',
-            $type === 'checkout.session.completed' => 'other',
-            $type === 'checkout.session.expired' => 'cancelled',
-            default => 'other',
-        };
-
-        $metadata = is_array($session['metadata'] ?? null) ? $session['metadata'] : [];
-
-        return new PaymentWebhookData(
-            gatewayPaymentId: $id,
-            amountMinor: (int) ($session['amount_total'] ?? 0),
-            currency: strtoupper((string) ($session['currency'] ?? 'eur')),
-            eventType: $eventType,
-            documentId: isset($metadata['document_id']) ? (int) $metadata['document_id'] : null,
-            companyId: isset($metadata['company_id']) ? (string) $metadata['company_id'] : null,
-            method: 'online_stripe',
-        );
     }
 
     private function productName(AccountingDocument $document): string
