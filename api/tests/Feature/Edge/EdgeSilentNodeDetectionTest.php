@@ -10,9 +10,9 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Testing\PendingCommand;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
-use Illuminate\Testing\PendingCommand;
 
 /**
  * Phase 4 — Scénario 3.4 / 4.4 : Monitoring & alertes
@@ -38,15 +38,20 @@ class EdgeSilentNodeDetectionTest extends TestCase
         $this->createEdgeNodesTable();
 
         $this->company = Company::factory()->create([
-            'schema_name'  => 'shared_tenants',
+            'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
-            'status'       => 'active',
+            'status' => 'active',
         ]);
     }
 
     protected function tearDown(): void
     {
         DB::statement('DROP TABLE IF EXISTS edge_nodes CASCADE');
+        // #7452 — ce tearDown a remplacé edge_nodes par un schéma legacy :
+        // restaurer la table canonique de la fixture (le cache #6928 ne la
+        // rebâtit plus), sinon les classes MVP suivantes échouent en
+        // « relation "edge_nodes" does not exist ».
+        $this->recreateCanonicalEdgeNodesTable();
         $this->tearDownMvpSchema();
         parent::tearDown();
     }
@@ -84,17 +89,17 @@ class EdgeSilentNodeDetectionTest extends TestCase
     private function insertNode(string $nodeId, array $overrides = []): object
     {
         $id = DB::table('edge_nodes')->insertGetId(array_merge([
-            'company_id'    => $this->company->id,
-            'node_id'       => $nodeId,
-            'name'          => "Node {$nodeId}",
-            'status'        => 'online',
+            'company_id' => $this->company->id,
+            'node_id' => $nodeId,
+            'name' => "Node {$nodeId}",
+            'status' => 'online',
             'license_valid' => true,
             'license_expires_at' => Carbon::now()->addDays(30)->toDateTimeString(),
-            'last_seen_at'  => Carbon::now()->toDateTimeString(),
+            'last_seen_at' => Carbon::now()->toDateTimeString(),
             'pending_count' => 0,
-            'alert_muted'   => false,
-            'created_at'    => Carbon::now(),
-            'updated_at'    => Carbon::now(),
+            'alert_muted' => false,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ], $overrides));
 
         return DB::table('edge_nodes')->find($id);
@@ -124,7 +129,7 @@ class EdgeSilentNodeDetectionTest extends TestCase
 
         $this->insertNode('edge-dry-001', [
             'last_seen_at' => Carbon::now()->subHours(2)->toDateTimeString(),
-            'status'       => 'online',
+            'status' => 'online',
         ]);
 
         $statusBefore = DB::table('edge_nodes')
@@ -134,7 +139,7 @@ class EdgeSilentNodeDetectionTest extends TestCase
         /** @var PendingCommand $cmd */
         $cmd = $this->artisan('edge:detect-silent-nodes', [
             '--threshold' => 30,
-            '--dry-run'   => true,
+            '--dry-run' => true,
         ]);
         $cmd->assertExitCode(0);
         $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
@@ -201,7 +206,7 @@ class EdgeSilentNodeDetectionTest extends TestCase
     {
         $this->insertNode('edge-muted-001', [
             'last_seen_at' => Carbon::now()->subHours(3)->toDateTimeString(),
-            'alert_muted'  => true,
+            'alert_muted' => true,
         ]);
 
         $threshold = Carbon::now()->subMinutes(30);
@@ -228,10 +233,10 @@ class EdgeSilentNodeDetectionTest extends TestCase
         $lastSeen = Carbon::now()->subHours(2);
 
         $notification = new EdgeNodeSilentAlert(
-            nodeName:      'Kiosque RDC',
-            nodeId:        'edge-notif-001',
-            companyName:   'Acme Corp',
-            lastSeenAt:    $lastSeen,
+            nodeName: 'Kiosque RDC',
+            nodeId: 'edge-notif-001',
+            companyName: 'Acme Corp',
+            lastSeenAt: $lastSeen,
             thresholdMins: 30,
         );
 
@@ -242,7 +247,7 @@ class EdgeSilentNodeDetectionTest extends TestCase
         $this->assertTrue($lastSeen->equalTo($notification->lastSeenAt));
 
         // Via array (pour notifications DB ou webhook)
-        $array = $notification->toArray(new \stdClass());
+        $array = $notification->toArray(new \stdClass);
         $this->assertArrayHasKey('type', $array);
         $this->assertSame('edge_node_silent', $array['type']);
         $this->assertSame('edge-notif-001', $array['node_id']);
@@ -254,22 +259,22 @@ class EdgeSilentNodeDetectionTest extends TestCase
     public function test_alert_notification_handles_null_last_seen_at(): void
     {
         $notification = new EdgeNodeSilentAlert(
-            nodeName:      'Nouveau Kiosque',
-            nodeId:        'edge-new-001',
-            companyName:   'Startup XYZ',
-            lastSeenAt:    null,
+            nodeName: 'Nouveau Kiosque',
+            nodeId: 'edge-new-001',
+            companyName: 'Startup XYZ',
+            lastSeenAt: null,
             thresholdMins: 30,
         );
 
         $this->assertNull($notification->lastSeenAt);
 
-        $mail = $notification->toMail(new \stdClass());
+        $mail = $notification->toMail(new \stdClass);
         // Le mail doit contenir "Jamais" pour un nœud jamais vu
         $this->assertStringContainsString(
             'Jamais',
-            collect($mail->introLines)->implode(' ') . ' ' . collect($mail->outroLines)->implode(' ')
-                . ' ' . $mail->subject . ' ' . implode(' ', array_map(
-                    fn($line) => is_array($line) ? $line[0] : $line,
+            collect($mail->introLines)->implode(' ').' '.collect($mail->outroLines)->implode(' ')
+                .' '.$mail->subject.' '.implode(' ', array_map(
+                    fn ($line) => is_array($line) ? $line[0] : $line,
                     $mail->introLines
                 ))
         );
@@ -302,4 +307,3 @@ class EdgeSilentNodeDetectionTest extends TestCase
         $this->assertNotEmpty($silent5, 'Seuil 5 min : nœud de 10 min doit être détecté');
     }
 }
-

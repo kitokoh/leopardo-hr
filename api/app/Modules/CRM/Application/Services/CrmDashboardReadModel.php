@@ -144,9 +144,11 @@ class CrmDashboardReadModel
 
         // Accounts sans contact primaire (is_primary = true). Défensif sur
         // archived_at (deux variantes #5708 : status='archived' ou archived_at).
+        // #7452 — sans le « AND » en tête : whereRaw l'ajoute déjà (sinon
+        // « where … and AND … » → 42601 syntax error).
         $archivedClause = Schema::hasColumn('crm_accounts', 'archived_at')
-            ? 'AND a.archived_at IS NULL'
-            : 'AND a.status <> \'archived\'';
+            ? 'a.archived_at IS NULL'
+            : 'a.status <> \'archived\'';
 
         $accountsWithoutPrimary = DB::table('crm_accounts as a')
             ->leftJoin('crm_contacts as c', function ($join): void {
@@ -174,7 +176,9 @@ class CrmDashboardReadModel
             ->where('email', '<>', '')
             ->select(DB::raw('LOWER(TRIM(email)) as email'), DB::raw('COUNT(*) as cnt'))
             ->groupBy(DB::raw('LOWER(TRIM(email))'))
-            ->having('cnt', '>', 1)
+            // #7452 — PostgreSQL n'accepte pas un alias de SELECT dans HAVING
+            // (42703 « column "cnt" does not exist ») : répéter l'agrégat.
+            ->havingRaw('COUNT(*) > 1')
             ->count();
 
         $archivedCount = (int) ($accounts->archived_by_status ?? 0) + (int) ($accounts->archived_by_date ?? 0);

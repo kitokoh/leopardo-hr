@@ -47,6 +47,18 @@ class CrmPipelineStage extends Model
         'created_by',
     ];
 
+    /**
+     * #7452 — miroir des défauts SQL (is_won/is_lost DEFAULT false) : un
+     * modèle fraîchement créé sans refresh() exposait null au lieu de false.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'position' => 0,
+        'is_won' => false,
+        'is_lost' => false,
+    ];
+
     protected $casts = [
         'position' => 'integer',
         'is_won' => 'boolean',
