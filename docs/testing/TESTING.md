@@ -1,6 +1,6 @@
 # Testing Strategy & Guidelines
 
-Leopardo RH maintains high reliability through a comprehensive multi-layered testing strategy.
+Leopardo maintains high reliability through a comprehensive multi-layered testing strategy.
 
 ## 🧪 Testing Pyramid
 

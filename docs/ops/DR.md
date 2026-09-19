@@ -1,4 +1,4 @@
-# DR — Reprise d'activité (Disaster Recovery) — Leopardo RH
+# DR — Reprise d'activité (Disaster Recovery) — Leopardo
 
 **Version** : 1.0 · **Date** : 2026-08-22 · **Module** : `platform` (issue #5283)
 **Statut** : 🟡 procédure de restauration **testée** (exercice consigné §6) — mais backups **non opérationnels** tant que les secrets de destination manquent (§3.1, garde #6836 : échec bruyant, aucune sauvegarde réelle)

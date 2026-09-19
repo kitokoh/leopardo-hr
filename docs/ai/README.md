@@ -1,6 +1,6 @@
-# AI & Intelligent Automation — Leopardo RH
+# AI & Intelligent Automation — Leopardo
 
-Leopardo RH integrates Artificial Intelligence at its core to transform traditional HR data into actionable business intelligence. Our AI architecture is designed for privacy, accuracy, and enterprise scale.
+Leopardo integrates Artificial Intelligence at its core to transform traditional HR data into actionable business intelligence. Our AI architecture is designed for privacy, accuracy, and enterprise scale.
 
 ## 🧠 AI Capabilities
 

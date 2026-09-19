@@ -1,4 +1,4 @@
-# Leopardo RH - Scripts commerciaux
+# Leopardo - Scripts commerciaux
 
 ## Objet
 
@@ -16,7 +16,7 @@ Le principe:
 ### Premier message
 
 "Bonjour [Prenom],
-ca fait quelques semaines que vous utilisez Leopardo RH.
+ca fait quelques semaines que vous utilisez Leopardo.
 J'aimerais avoir votre retour honnete en 10 minutes:
 quelle est la chose la plus utile aujourd'hui pour vous, et qu'est-ce qui vous manque encore ?"
 
@@ -24,7 +24,7 @@ quelle est la chose la plus utile aujourd'hui pour vous, et qu'est-ce qui vous m
 
 "Merci pour votre retour.
 Vous m'avez dit que [reprendre leur probleme / gain].
-On est en train de passer Leopardo RH en version payante, et je voulais voir avec vous si cela a assez de valeur aujourd'hui pour continuer dans un cadre pro."
+On est en train de passer Leopardo en version payante, et je voulais voir avec vous si cela a assez de valeur aujourd'hui pour continuer dans un cadre pro."
 
 ### Proposition commerciale
 
@@ -36,7 +36,7 @@ Si vous voulez, on prend 10 minutes et je vous montre la formule la plus adaptee
 ### Reactivation
 
 "Bonjour [Prenom],
-je reprends contact au sujet de Leopardo RH.
+je reprends contact au sujet de Leopardo.
 Je voulais comprendre simplement: qu'est-ce qui vous a empeche de l'utiliser davantage jusqu'ici ?
 Le produit, le temps, le setup, ou autre chose ?"
 
@@ -48,7 +48,7 @@ Si je vous aide a le configurer en 10 minutes sur WhatsApp ou en appel, est-ce q
 ## 3. Script WhatsApp - demande de temoignage
 
 "Bonjour [Prenom],
-j'aimerais vous poser 2 questions tres simples sur votre experience avec Leopardo RH:
+j'aimerais vous poser 2 questions tres simples sur votre experience avec Leopardo:
 1. qu'est-ce qui est plus simple qu'avant ?
 2. combien d'heures ou d'erreurs cela vous a permis d'eviter environ ?
 
@@ -75,7 +75,7 @@ Dans votre cas, le point le plus penible aujourd'hui, c'est plutot le temps perd
 ## 6. Script LinkedIn - demande de demo
 
 "Merci, je vois tres bien.
-Je peux vous montrer en 15 minutes comment des structures proches de la votre gerent cela plus simplement avec Leopardo RH.
+Je peux vous montrer en 15 minutes comment des structures proches de la votre gerent cela plus simplement avec Leopardo.
 Si vous voulez, on cale un petit creneau cette semaine."
 
 ## 7. Script email / message - cabinet comptable partenaire
@@ -83,7 +83,7 @@ Si vous voulez, on cale un petit creneau cette semaine."
 "Bonjour [Prenom],
 je vous contacte car vous accompagnez des PME sur la paie, et je pense qu'il y a un vrai gain de temps possible.
 
-Leopardo RH aide les gerants a centraliser presences, absences et informations utiles a la paie, sans Excel eparpille ni messages de fin de mois.
+Leopardo aide les gerants a centraliser presences, absences et informations utiles a la paie, sans Excel eparpille ni messages de fin de mois.
 
 L'interet pour un cabinet comme le votre:
 - moins de collecte manuelle
@@ -119,7 +119,7 @@ Est-ce que vous voulez qu'on passe sur une formule active pour continuer sans in
 
 "Je comprends.
 La vraie question pour moi est de savoir si la valeur est suffisamment claire pour vous aujourd'hui.
-Vous m'avez dit que cela vous prend environ [X] heures par mois. Si Leopardo RH vous en fait gagner une bonne partie, est-ce que le sujet est vraiment le prix, ou plutot le besoin d'etre rassure avant de decider ?"
+Vous m'avez dit que cela vous prend environ [X] heures par mois. Si Leopardo vous en fait gagner une bonne partie, est-ce que le sujet est vraiment le prix, ou plutot le besoin d'etre rassure avant de decider ?"
 
 ### "J'ai deja Excel"
 

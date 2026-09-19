@@ -23,7 +23,7 @@
           <span class="text-4xl font-black text-white tracking-tighter relative z-10">LRH</span>
         </div>
         <h1 class="mt-8 text-center text-5xl font-black tracking-tight text-white uppercase italic">
-          Leopardo <span class="text-brand-500 not-italic font-black">RH</span>
+          Leopardo
         </h1>
         <p class="mt-4 text-center text-slate-400 font-bold tracking-[0.15em] uppercase text-xs">
           Platform Administration • v{{ backendVersion || '4.24' }}

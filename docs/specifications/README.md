@@ -1,6 +1,6 @@
 # Spécifications Fonctionnelles et Techniques
 
-Conformément aux règles du projet (`AGENTS.md`), ce dossier contient les spécifications de tous les nouveaux modules de Leopardo RH.
+Conformément aux règles du projet (`AGENTS.md`), ce dossier contient les spécifications de tous les nouveaux modules de Leopardo.
 
 **Règle d'Or :**
 1. Un agent doit toujours rédiger et faire valider la spécification d'un module ICI avant de générer des tickets GitHub (Issues).
