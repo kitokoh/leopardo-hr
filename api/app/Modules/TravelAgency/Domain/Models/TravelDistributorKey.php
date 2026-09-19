@@ -57,8 +57,6 @@ class TravelDistributorKey extends Model
 
     public function hasScope(string $scope): bool
     {
-        $scopes = $this->scopes;
-
-        return is_array($scopes) && in_array($scope, $scopes, true);
+        return in_array($scope, $this->scopes, true);
     }
 }

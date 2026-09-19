@@ -81,7 +81,7 @@ class TravelDistributorReadController extends Controller
                 'passenger_count' => $booking->passenger_count,
                 'trip' => $booking->trip !== null ? [
                     'code' => $booking->trip->code,
-                    'departure_date' => $booking->trip->departure_date?->toDateString(),
+                    'departure_date' => $booking->trip->departure_date->toDateString(),
                     'departure_time' => $booking->trip->departure_time,
                     'status' => $booking->trip->status,
                 ] : null,
