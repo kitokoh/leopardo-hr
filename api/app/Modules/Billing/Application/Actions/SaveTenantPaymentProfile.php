@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Billing\Application\Actions;
 
 use App\Modules\Billing\Domain\Models\TenantPaymentProfile;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\ConnectionInterface;
 
 /**
  * #7727 — création / édition d'un profil de paiement du tenant.
@@ -20,12 +20,16 @@ use Illuminate\Support\Facades\DB;
  */
 class SaveTenantPaymentProfile
 {
+    public function __construct(
+        private readonly ConnectionInterface $db,
+    ) {}
+
     /**
      * @param  array<string, mixed>  $payload  validé par le contrôleur
      */
     public function execute(array $payload, ?TenantPaymentProfile $profile = null, ?int $actorId = null): TenantPaymentProfile
     {
-        return DB::transaction(function () use ($payload, $profile, $actorId): TenantPaymentProfile {
+        return $this->db->transaction(function () use ($payload, $profile, $actorId): TenantPaymentProfile {
             $isNew = $profile === null;
             $profile ??= new TenantPaymentProfile([
                 'type' => (string) $payload['type'],

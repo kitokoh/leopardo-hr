@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Billing\Application\Actions;
 
 use App\Modules\Billing\Domain\Models\TenantPaymentProfile;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\ConnectionInterface;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -17,6 +17,10 @@ use Illuminate\Validation\ValidationException;
  */
 class ActivateTenantPaymentProfile
 {
+    public function __construct(
+        private readonly ConnectionInterface $db,
+    ) {}
+
     public function execute(TenantPaymentProfile $profile): TenantPaymentProfile
     {
         // Un profil Stripe sans clé secrète ne peut pas encaisser : refus
@@ -30,7 +34,7 @@ class ActivateTenantPaymentProfile
             }
         }
 
-        return DB::transaction(function () use ($profile): TenantPaymentProfile {
+        return $this->db->transaction(function () use ($profile): TenantPaymentProfile {
             TenantPaymentProfile::query()
                 ->where('type', $profile->type)
                 ->where('status', 'active')
