@@ -105,6 +105,7 @@
   "modulesNotifications": "الاشعارات",
   "modulesEvaluations": "التقييمات",
   "modulesRestaurant": "المطعم",
+  "modulesCommunication": "التواصل (البريد المتصل + الذكاء الاصطناعي)",
   "emailsInvitationSubject": "تمت دعوتك للانضمام الى :company على ليوباردو للموارد البشرية",
   "emailsInvitationGreeting": "مرحبا :name،",
   "emailsInvitationBody": "لقد تمت دعوتك للانضمام الى :company. اضغط على الرابط ادناه لتفعيل حسابك.",
