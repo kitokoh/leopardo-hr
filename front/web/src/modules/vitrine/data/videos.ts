@@ -44,15 +44,15 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
       badge: 'Vidéos',
       headline: 'Vidéos & Démos',
       subheadline:
-        'Découvrez Leopardo RH en action à travers notre démo produit et nos tutoriels',
+        'Découvrez Leopardo en action à travers notre démo produit et nos tutoriels',
       ctaPrimary: 'Demander une démo live',
       ctaSecondary: 'Essai gratuit',
     },
     demo: {
-      title: 'Présentation complète de Leopardo RH',
+      title: 'Présentation complète de Leopardo',
       description:
         "Tour d'horizon de la plateforme — pointage, paie, absences, mobile et kiosk.",
-      ariaLabel: 'Vidéo de présentation de Leopardo RH',
+      ariaLabel: 'Vidéo de présentation de Leopardo',
       fallback: 'Votre navigateur ne supporte pas la lecture vidéo HTML5.',
     },
     upcoming: {
@@ -64,7 +64,7 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
         {
           title: 'Configuration du pointage ZKTeco',
           description:
-            'Connecter et configurer vos bornes biométriques ZKTeco avec Leopardo RH.',
+            'Connecter et configurer vos bornes biométriques ZKTeco avec Leopardo.',
           category: 'Tutoriel',
         },
         {
@@ -82,7 +82,7 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
         {
           title: 'Intégration API et webhooks',
           description:
-            "Connecter Leopardo RH à vos outils existants via l'API REST et les webhooks.",
+            "Connecter Leopardo à vos outils existants via l'API REST et les webhooks.",
           category: 'Intégration',
         },
         {
@@ -94,7 +94,7 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
       ],
     },
     cta: {
-      title: 'Prêt à voir Leopardo RH en action ?',
+      title: 'Prêt à voir Leopardo en action ?',
       description: 'Réservez une démo personnalisée avec notre équipe',
       primary: 'Réserver ma démo',
       secondary: 'Voir les tarifs',
@@ -105,15 +105,15 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
       badge: 'Videos',
       headline: 'Videos & Demos',
       subheadline:
-        'See Leopardo RH in action through our product demo and tutorials',
+        'See Leopardo in action through our product demo and tutorials',
       ctaPrimary: 'Book a live demo',
       ctaSecondary: 'Start free trial',
     },
     demo: {
-      title: 'Full Leopardo RH walkthrough',
+      title: 'Full Leopardo walkthrough',
       description:
         'Platform overview — time tracking, payroll, absences, mobile and kiosk.',
-      ariaLabel: 'Leopardo RH presentation video',
+      ariaLabel: 'Leopardo presentation video',
       fallback: 'Your browser does not support HTML5 video playback.',
     },
     upcoming: {
@@ -125,7 +125,7 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
         {
           title: 'ZKTeco time tracking setup',
           description:
-            'Connect and configure your ZKTeco biometric terminals with Leopardo RH.',
+            'Connect and configure your ZKTeco biometric terminals with Leopardo.',
           category: 'Tutorial',
         },
         {
@@ -143,7 +143,7 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
         {
           title: 'API and webhooks integration',
           description:
-            'Connect Leopardo RH to your existing tools via the REST API and webhooks.',
+            'Connect Leopardo to your existing tools via the REST API and webhooks.',
           category: 'Integration',
         },
         {
@@ -155,7 +155,7 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
       ],
     },
     cta: {
-      title: 'Ready to see Leopardo RH in action?',
+      title: 'Ready to see Leopardo in action?',
       description: 'Book a personalised demo with our team',
       primary: 'Book my demo',
       secondary: 'See pricing',
@@ -166,15 +166,15 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
       badge: 'Videolar',
       headline: 'Videolar & Demolar',
       subheadline:
-        'Leopardo RH’i ürün demomuz ve eğitimlerimizle keşfedin',
+        'Leopardo’yu ürün demomuz ve eğitimlerimizle keşfedin',
       ctaPrimary: 'Canlı demo talep edin',
       ctaSecondary: 'Ücretsiz deneme',
     },
     demo: {
-      title: 'Leopardo RH kapsamlı tanıtımı',
+      title: 'Leopardo kapsamlı tanıtımı',
       description:
         'Platforma genel bakış — yoklama, maaş, izinler, mobil ve kiosk.',
-      ariaLabel: 'Leopardo RH tanıtım videosu',
+      ariaLabel: 'Leopardo tanıtım videosu',
       fallback: 'Tarayıcınız HTML5 video oynatmayı desteklemiyor.',
     },
     upcoming: {
@@ -186,7 +186,7 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
         {
           title: 'ZKTeco yoklama kurulumu',
           description:
-            'ZKTeco biyometrik terminallerinizi Leopardo RH ile bağlayın ve yapılandırın.',
+            'ZKTeco biyometrik terminallerinizi Leopardo ile bağlayın ve yapılandırın.',
           category: 'Eğitim',
         },
         {
@@ -204,7 +204,7 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
         {
           title: 'API ve webhook entegrasyonu',
           description:
-            'Leopardo RH’i REST API ve webhook’lar aracılığıyla mevcut araçlarınıza bağlayın.',
+            'Leopardo’yu REST API ve webhook’lar aracılığıyla mevcut araçlarınıza bağlayın.',
           category: 'Entegrasyon',
         },
         {
@@ -216,7 +216,7 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
       ],
     },
     cta: {
-      title: 'Leopardo RH’i görmeye hazır mısınız?',
+      title: 'Leopardo’yu görmeye hazır mısınız?',
       description: 'Ekibimizle kişisel bir demo planlayın',
       primary: 'Demomu planla',
       secondary: 'Fiyatları gör',

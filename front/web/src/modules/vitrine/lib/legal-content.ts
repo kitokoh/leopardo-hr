@@ -39,7 +39,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
       eyebrow: 'Conformite et données RH',
       title: 'Politique de confidentialité',
       intro:
-        'Leopardo RH traite des données RH sensibles pour aider les entreprises a piloter le pointage, la paie, les absences et les workflows terrain. Cette page explique notre approche de protection, de transparence et de controle.',
+        'Leopardo traite des données RH sensibles pour aider les entreprises a piloter le pointage, la paie, les absences et les workflows terrain. Cette page explique notre approche de protection, de transparence et de controle.',
       updatedAt: 'Dernière mise a jour : 14 mai 2026',
       backLabel: 'Retour à l’accueil',
       languageLabel: 'Langue du document',
@@ -68,15 +68,15 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'Sécurité',
           body: [
-            'Leopardo RH applique l isolation multi-tenant, le controle d accès par roles, la journalisation des accès sensibles et une logique de moindre privilege.',
+            'Leopardo applique l isolation multi-tenant, le controle d accès par roles, la journalisation des accès sensibles et une logique de moindre privilege.',
             'Les clients restent responsables de la configuration de leurs utilisateurs, de leurs politiques internes et de la vérification des obligations locales.',
           ],
         },
         {
           title: 'Responsable de traitement',
           body: [
-            'Leopardo RH édite et héberge la plateforme. Pour les données de vos salariés (pointage, absences, paie, documents RH), votre entreprise est responsable de traitement et Leopardo RH agit comme sous-traitant, sur vos instructions.',
-            'Pour les données de la vitrine et de la relation commerciale, Leopardo RH est responsable de traitement.',
+            'Leopardo édite et héberge la plateforme. Pour les données de vos salariés (pointage, absences, paie, documents RH), votre entreprise est responsable de traitement et Leopardo agit comme sous-traitant, sur vos instructions.',
+            'Pour les données de la vitrine et de la relation commerciale, Leopardo est responsable de traitement.',
           ],
         },
         {
@@ -133,7 +133,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
       eyebrow: 'Conditions de service',
       title: 'Conditions generales d utilisation',
       intro:
-        'Ces conditions encadrent l utilisation de Leopardo RH par les entreprises, administrateurs, managers, employés, kiosques et integrateurs autorises.',
+        'Ces conditions encadrent l utilisation de Leopardo par les entreprises, administrateurs, managers, employés, kiosques et integrateurs autorises.',
       updatedAt: 'Dernière mise a jour : 14 mai 2026',
       backLabel: 'Retour à l’accueil',
       languageLabel: 'Langue du document',
@@ -141,7 +141,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'Accès a la plateforme',
           body: [
-            'L accès est reserve aux utilisateurs autorises par une entreprise cliente ou par Leopardo RH pour l’administration de la plateforme.',
+            'L accès est reserve aux utilisateurs autorises par une entreprise cliente ou par Leopardo pour l’administration de la plateforme.',
             'Chaque utilisateur doit proteger ses identifiants, respecter les permissions accordees et signaler toute activité suspecte.',
           ],
         },
@@ -162,7 +162,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'Disponibilité et evolution',
           body: [
-            'Leopardo RH peut faire evoluer les modules, APIs et interfaces pour ameliorer la sécurité, la performance et la valeur produit.',
+            'Leopardo peut faire evoluer les modules, APIs et interfaces pour ameliorer la sécurité, la performance et la valeur produit.',
             'Les operations critiques de maintenance, migration ou incident sont traitees selon les procedures d exploitation et de support en vigueur.',
           ],
         },
@@ -185,7 +185,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'Éditeur du site',
           body: [
-            'Le site vitrine et la plateforme Leopardo RH sont édités par Leopardo RH (Alger, Algérie).',
+            'Le site vitrine et la plateforme Leopardo sont édités par Leopardo (Alger, Algérie).',
             'Contact : contact@leopardo-rh.com.',
           ],
         },
@@ -226,7 +226,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
       eyebrow: 'HR data compliance',
       title: 'Privacy policy',
       intro:
-        'Leopardo RH processes sensitive HR data to help companies run attendance, payroll, leave and field workflows. This page explains our approach to protection, transparency and control.',
+        'Leopardo processes sensitive HR data to help companies run attendance, payroll, leave and field workflows. This page explains our approach to protection, transparency and control.',
       updatedAt: 'Last updated: May 14, 2026',
       backLabel: 'Back to home',
       languageLabel: 'Document language',
@@ -255,15 +255,15 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'Security',
           body: [
-            'Leopardo RH applies tenant isolation, role-based access control, sensitive data access logging and least-privilege principles.',
+            'Leopardo applies tenant isolation, role-based access control, sensitive data access logging and least-privilege principles.',
             'Customers remain responsible for user configuration, internal policies and local legal obligations.',
           ],
         },
         {
           title: 'Data controller',
           body: [
-            'Leopardo RH publishes and hosts the platform. For your employees\' data (attendance, leave, payroll, HR documents), your company is the data controller and Leopardo RH acts as a processor, on your instructions.',
-            'For website and commercial relationship data, Leopardo RH is the data controller.',
+            'Leopardo publishes and hosts the platform. For your employees\' data (attendance, leave, payroll, HR documents), your company is the data controller and Leopardo acts as a processor, on your instructions.',
+            'For website and commercial relationship data, Leopardo is the data controller.',
           ],
         },
         {
@@ -320,7 +320,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
       eyebrow: 'Service terms',
       title: 'Terms of use',
       intro:
-        'These terms govern the use of Leopardo RH by companies, administrators, managers, employees, kiosks and authorized integrators.',
+        'These terms govern the use of Leopardo by companies, administrators, managers, employees, kiosks and authorized integrators.',
       updatedAt: 'Last updated: May 14, 2026',
       backLabel: 'Back to home',
       languageLabel: 'Document language',
@@ -328,7 +328,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'Platform access',
           body: [
-            'Access is limited to users authorized by a customer company or by Leopardo RH for platform administration.',
+            'Access is limited to users authorized by a customer company or by Leopardo for platform administration.',
             'Each user must protect credentials, respect granted permissions and report suspicious activity.',
           ],
         },
@@ -349,7 +349,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'Availability and evolution',
           body: [
-            'Leopardo RH may evolve modules, APIs and interfaces to improve security, performance and product value.',
+            'Leopardo may evolve modules, APIs and interfaces to improve security, performance and product value.',
             'Critical maintenance, migration or incident operations are handled through the current operations and support procedures.',
           ],
         },
@@ -372,7 +372,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'Site publisher',
           body: [
-            'The Leopardo RH website and platform are published by Leopardo RH (Algiers, Algeria).',
+            'The Leopardo website and platform are published by Leopardo (Algiers, Algeria).',
             'Contact: contact@leopardo-rh.com.',
           ],
         },
@@ -413,7 +413,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
       eyebrow: 'IK veri uyumu',
       title: 'Gizlilik politikasi',
       intro:
-        'Leopardo RH, sirketlerin devam, bordro, izin ve saha is akışlarini yonetmesine yardim etmek icin hassas IK verilerini isler. Bu sayfa koruma, seffaflik ve kontrol yaklasimimizi aciklar.',
+        'Leopardo, sirketlerin devam, bordro, izin ve saha is akışlarini yonetmesine yardim etmek icin hassas IK verilerini isler. Bu sayfa koruma, seffaflik ve kontrol yaklasimimizi aciklar.',
       updatedAt: 'Son guncelleme: 14 Mayis 2026',
       backLabel: 'Ana sayfaya don',
       languageLabel: 'Belge dili',
@@ -442,15 +442,15 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'Guvenlik',
           body: [
-            'Leopardo RH tenant izolasyonu, rol tabanli erisim kontrolu, hassas veri erisim gunlugu ve en az ayricalik ilkelerini uygular.',
+            'Leopardo tenant izolasyonu, rol tabanli erisim kontrolu, hassas veri erisim gunlugu ve en az ayricalik ilkelerini uygular.',
             'Musteriler kullanici yapilandirmasi, ic politikalar ve yerel hukuki yukumluluklerden sorumludur.',
           ],
         },
         {
           title: 'Veri sorumlusu',
           body: [
-            'Leopardo RH platformu yayınlar ve barındırır. Çalışanlarınızın verileri (yoklama, izin, bordro, İK belgeleri) için veri sorumlusu şirketinizdir; Leopardo RH talimatlarınız doğrultusunda veri işleyen olarak hareket eder.',
-            'Site ve ticari ilişki verileri için veri sorumlusu Leopardo RH\'tir.',
+            'Leopardo platformu yayınlar ve barındırır. Çalışanlarınızın verileri (yoklama, izin, bordro, İK belgeleri) için veri sorumlusu şirketinizdir; Leopardo talimatlarınız doğrultusunda veri işleyen olarak hareket eder.',
+            'Site ve ticari ilişki verileri için veri sorumlusu Leopardo\'dur.',
           ],
         },
         {
@@ -507,7 +507,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
       eyebrow: 'Hizmet sartlari',
       title: 'Kullanim kosullari',
       intro:
-        'Bu kosullar Leopardo RH nin sirketler, yoneticiler, mudurler, calisanlar, kiosklar ve yetkili entegratorler tarafindan kullanimini duzenler.',
+        'Bu kosullar Leopardo\'nun sirketler, yoneticiler, mudurler, calisanlar, kiosklar ve yetkili entegratorler tarafindan kullanimini duzenler.',
       updatedAt: 'Son guncelleme: 14 Mayis 2026',
       backLabel: 'Ana sayfaya don',
       languageLabel: 'Belge dili',
@@ -515,7 +515,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'Platform erisimi',
           body: [
-            'Erisim, musteri sirket tarafindan veya platform yonetimi icin Leopardo RH tarafindan yetkilendirilen kullanicilarla sinirlidir.',
+            'Erisim, musteri sirket tarafindan veya platform yonetimi icin Leopardo tarafindan yetkilendirilen kullanicilarla sinirlidir.',
             'Her kullanici kimlik bilgilerini korumali, verilen izinlere uymali ve supheli etkinlikleri bildirmelidir.',
           ],
         },
@@ -536,7 +536,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'Erisilebilirlik ve gelisim',
           body: [
-            'Leopardo RH guvenlik, performans ve urun degerini artirmak icin modulleri, API leri ve arayuzleri gelistirebilir.',
+            'Leopardo guvenlik, performans ve urun degerini artirmak icin modulleri, API leri ve arayuzleri gelistirebilir.',
             'Kritik bakim, migrasyon veya olay operasyonlari guncel isletim ve destek prosedurleriyle yonetilir.',
           ],
         },
@@ -559,7 +559,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'Site yayıncısı',
           body: [
-            'Leopardo RH web sitesi ve platformu Leopardo RH (Cezayir, Cezayir) tarafından yayımlanır.',
+            'Leopardo web sitesi ve platformu Leopardo (Cezayir, Cezayir) tarafından yayımlanır.',
             'İletişim: contact@leopardo-rh.com.',
           ],
         },
@@ -600,7 +600,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
       eyebrow: 'الامتثال وبيانات الموارد البشرية',
       title: 'سياسة الخصوصية',
       intro:
-        'تعالج Leopardo RH بيانات موارد بشرية حساسة لمساعدة الشركات على إدارة الحضور والرواتب والإجازات وسير العمل الميداني. توضح هذه الصفحة نهجنا في الحماية والشفافية والتحكم.',
+        'تعالج Leopardo بيانات موارد بشرية حساسة لمساعدة الشركات على إدارة الحضور والرواتب والإجازات وسير العمل الميداني. توضح هذه الصفحة نهجنا في الحماية والشفافية والتحكم.',
       updatedAt: 'آخر تحديث: 14 مايو 2026',
       backLabel: 'العودة إلى الصفحة الرئيسية',
       languageLabel: 'لغة الوثيقة',
@@ -629,15 +629,15 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'الأمان',
           body: [
-            'تطبق Leopardo RH عزل المستأجرين والتحكم في الوصول حسب الأدوار وتسجيل الوصول إلى البيانات الحساسة ومبدأ أقل صلاحية.',
+            'تطبق Leopardo عزل المستأجرين والتحكم في الوصول حسب الأدوار وتسجيل الوصول إلى البيانات الحساسة ومبدأ أقل صلاحية.',
             'يبقى العملاء مسؤولين عن إعداد المستخدمين والسياسات الداخلية والتحقق من الالتزامات القانونية المحلية.',
           ],
         },
         {
           title: 'المسؤول عن المعالجة',
           body: [
-            'تنشر Leopardo RH المنصة وتستضيفها. بالنسبة لبيانات موظفيكم (الحضور والإجازات والرواتب ووثائق الموارد البشرية)، فإن شركتكم هي المسؤولة عن المعالجة، وتعمل Leopardo RH كمُعالج بناءً على تعليماتكم.',
-            'أما بيانات الموقع والعلاقة التجارية فالمسؤولة عن معالجتها هي Leopardo RH.',
+            'تنشر Leopardo المنصة وتستضيفها. بالنسبة لبيانات موظفيكم (الحضور والإجازات والرواتب ووثائق الموارد البشرية)، فإن شركتكم هي المسؤولة عن المعالجة، وتعمل Leopardo كمُعالج بناءً على تعليماتكم.',
+            'أما بيانات الموقع والعلاقة التجارية فالمسؤولة عن معالجتها هي Leopardo.',
           ],
         },
         {
@@ -694,7 +694,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
       eyebrow: 'شروط الخدمة',
       title: 'شروط الاستخدام',
       intro:
-        'تنظم هذه الشروط استخدام Leopardo RH من قبل الشركات والمسؤولين والمديرين والموظفين وأجهزة الكشك والمكاملين المعتمدين.',
+        'تنظم هذه الشروط استخدام Leopardo من قبل الشركات والمسؤولين والمديرين والموظفين وأجهزة الكشك والمكاملين المعتمدين.',
       updatedAt: 'آخر تحديث: 14 مايو 2026',
       backLabel: 'العودة إلى الصفحة الرئيسية',
       languageLabel: 'لغة الوثيقة',
@@ -702,7 +702,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'الوصول إلى المنصة',
           body: [
-            'يقتصر الوصول على المستخدمين المصرح لهم من شركة عميلة أو من Leopardo RH لإدارة المنصة.',
+            'يقتصر الوصول على المستخدمين المصرح لهم من شركة عميلة أو من Leopardo لإدارة المنصة.',
             'يجب على كل مستخدم حماية بيانات الدخول واحترام الصلاحيات الممنوحة والإبلاغ عن أي نشاط مشبوه.',
           ],
         },
@@ -723,7 +723,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'التوفر والتطور',
           body: [
-            'قد تطور Leopardo RH الوحدات وواجهات API والواجهات لتحسين الأمان والأداء وقيمة المنتج.',
+            'قد تطور Leopardo الوحدات وواجهات API والواجهات لتحسين الأمان والأداء وقيمة المنتج.',
             'تدار عمليات الصيانة أو الترحيل أو الحوادث الحرجة وفق إجراءات التشغيل والدعم المعمول بها.',
           ],
         },
@@ -746,7 +746,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'ناشر الموقع',
           body: [
-            'يُنشر موقع ومنصة Leopardo RH بواسطة Leopardo RH (الجزائر العاصمة، الجزائر).',
+            'يُنشر موقع ومنصة Leopardo بواسطة Leopardo (الجزائر العاصمة، الجزائر).',
             'التواصل: contact@leopardo-rh.com.',
           ],
         },
