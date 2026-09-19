@@ -124,6 +124,22 @@ CREATE TABLE public.user_employee_links (
 
 CREATE UNIQUE INDEX user_employee_links_user_id_company_id_unique ON public.user_employee_links (user_id, company_id);
 
+-- Audit des bascules de feature flags par tenant (migration 2026_08_30_000001,
+-- MAT-010 #5868 — écrite par FeatureFlagAuditRecorder via PlatformCompanyFeatureController).
+CREATE TABLE public.feature_flag_audits (
+    id bigserial PRIMARY KEY,
+    company_id uuid NOT NULL,
+    flag_key varchar(80) NOT NULL,
+    previous_value boolean NOT NULL,
+    new_value boolean NOT NULL,
+    source varchar(40) NOT NULL DEFAULT 'platform_controller',
+    actor_user_id bigint NULL,
+    created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX feature_flag_audits_company_id_index ON public.feature_flag_audits (company_id);
+CREATE INDEX feature_flag_audits_company_key_idx ON public.feature_flag_audits (company_id, flag_key, created_at);
+
 -- Growth module tables
 CREATE TABLE public.partners (
     id bigserial PRIMARY KEY,
