@@ -198,6 +198,10 @@ return [
     'AI_ANALYTICS_ACCESS_REQUIRED' => 'يتطلب الوصول إلى تحليلات الذكاء الاصطناعي دور المدير الرئيسي أو مدير الموارد البشرية.',
     'MANAGER_REQUIRED' => 'مطلوب وصول المدير.',
     'INSUFFICIENT_ROLE' => 'صلاحية غير كافية لهذا الإجراء.',
+    // #7761
+    'MODULE_ACCESS_REQUIRED' => 'تتطلب هذه الوحدة تفويضًا صريحًا أو وصول مدير.',
+    'MODULE_KEYS_REQUIRED' => 'قائمة الوحدات المفوَّضة مطلوبة.',
+    'MODULE_KEY_UNKNOWN' => 'مفتاح وحدة غير معروف.',
     'EMPLOYEE_NOT_FOUND' => 'الموظف غير موجود.',
     'INVALID_TOKEN' => 'رمز غير صالح أو منتهي الصلاحية.',
     'CAMERA_NOT_FOUND' => 'الكاميرا غير موجودة.',

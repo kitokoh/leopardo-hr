@@ -199,6 +199,10 @@ return [
     'AI_ANALYTICS_ACCESS_REQUIRED' => 'L\'accès aux analyses IA requiert un rôle Principal ou RH.',
     'MANAGER_REQUIRED' => 'Un accès manager est requis.',
     'INSUFFICIENT_ROLE' => 'Rôle insuffisant pour cette action.',
+    // #7761 — délégation de modules composables (grants)
+    'MODULE_ACCESS_REQUIRED' => 'Ce module requiert une délégation explicite ou un accès manager.',
+    'MODULE_KEYS_REQUIRED' => 'La liste des modules délégués est requise.',
+    'MODULE_KEY_UNKNOWN' => 'Clé de module inconnue.',
     'EMPLOYEE_NOT_FOUND' => 'Employé introuvable.',
     'INVALID_TOKEN' => 'Jeton invalide ou expiré.',
     'CAMERA_NOT_FOUND' => 'Caméra introuvable.',
