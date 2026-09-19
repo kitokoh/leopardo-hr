@@ -56,6 +56,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRoundTripContro
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteStopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelShopController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStaffAssignmentController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTouristSiteController;
@@ -137,8 +138,16 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::put('/trips/{travelTrip}/prices/{travelTripPrice}', [TravelTripPriceController::class, 'update']);
         Route::delete('/trips/{travelTrip}/prices/{travelTripPrice}', [TravelTripPriceController::class, 'destroy']);
 
-        // Manifeste des passagers (TRAVEL-318/#6048).
+        // Manifeste des passagers (TRAVEL-318/#6048) + équipage (#7638).
         Route::get('/trips/{travelTrip}/manifest', [TravelTripController::class, 'manifest']);
+
+        // Affectations d'équipage — pont RH employee_id (TRAVEL-STAFF/#7638).
+        Route::get('/staff-assignments', [TravelStaffAssignmentController::class, 'index']);
+        Route::post('/staff-assignments', [TravelStaffAssignmentController::class, 'store']);
+        Route::get('/staff-assignments/{travelStaffAssignment}', [TravelStaffAssignmentController::class, 'show']);
+        Route::put('/staff-assignments/{travelStaffAssignment}', [TravelStaffAssignmentController::class, 'update']);
+        Route::post('/staff-assignments/{travelStaffAssignment}/revoke', [TravelStaffAssignmentController::class, 'revoke']);
+        Route::delete('/staff-assignments/{travelStaffAssignment}', [TravelStaffAssignmentController::class, 'destroy']);
 
         // Réservations & billetterie (TRAVEL-312..316/#6042..#6046).
         Route::get('/bookings', [TravelBookingController::class, 'index']);

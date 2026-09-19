@@ -3935,6 +3935,16 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('travel_staff_assignments'))) {
+            Schema::create($this->moduleTable('travel_staff_assignments'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('travel_stations'))) {
             Schema::create($this->moduleTable('travel_stations'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
