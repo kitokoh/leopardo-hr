@@ -67,6 +67,7 @@ Lecteur ZKTeco / capteur visage
    - `apiBaseUrl`
    - `deviceCode`
    - `kioskToken`
+   - `adminPin` (6 caracteres minimum — requis pour utiliser `admin.html`)
    - `companyName`
 3. Sur le PC local :
 
@@ -108,12 +109,24 @@ Deux modes reels sont prevus :
    - ou dans le navigateur :
    - `window.ZKTecoBridge.submitIdentifier("FP-00042", "check_in", "fingerprint")`
 
-## Securite du bridge local (2026-08-15, #3586/#3587/#3588)
+## Securite du bridge local (2026-08-15, #3586/#3587/#3588 — durci #7651)
 
 - Tous les endpoints `/local/*` exigent le header `X-Local-Bridge-Token` :
-  token de session genere a chaque demarrage du bridge et injecte dans les
-  pages servies (`window.__LOCAL_BRIDGE_TOKEN`). Les integrations SDK locales
-  doivent le lire depuis la page servie par le bridge.
+  token de session genere a chaque demarrage du bridge et injecte UNIQUEMENT
+  dans `index.html` (surface pointage, `window.__LOCAL_BRIDGE_TOKEN`). Les
+  integrations SDK locales doivent le lire depuis cette page.
+- **#7651 — le token cloud (`kioskToken`) n'est JAMAIS injecte dans les pages** :
+  il reste cote Python et le bridge proxifie les appels cloud de l'UI via
+  `/local/cloud/<route>` (allowlist stricte : config, roster, announcements,
+  employee-info, leave-balance, qr-punch, punch, verify-face).
+- **#7651 — `admin.html` est protegee par un PIN distinct** (`adminPin`,
+  jamais injecte ni servi) : `POST /local/admin/login` ouvre une session
+  admin courte (15 min), rate-limitee (5 tentatives / 5 min / IP). Sans
+  `adminPin` configure, la surface admin reste verrouillee (fail-closed).
+  Les endpoints sensibles (`/local/events`, `/local/events/requeue`,
+  `/local/sync/roster`, `/local/sync/events`) exigent le header
+  `X-Local-Admin-Token` (`/local/sync/all` reste accessible a la surface
+  pointage : bouton « reessayer » PA2-KIO-003, action idempotente).
 - Le bridge ne sert que les assets UI (`index.html`, `admin.html`, `app.js`,
   `admin.js`, `i18n.js`) : `config.json` et `desktop-bridge/data/kiosk.db`
   ne sont jamais exposes.
