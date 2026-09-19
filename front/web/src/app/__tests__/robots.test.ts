@@ -71,6 +71,17 @@ describe('robots.txt — groupes et exclusions', () => {
     }
   });
 
+  it('RESTO-903 (#7748) : /restaurants reste crawlable malgré Disallow: /restaurant', () => {
+    // Spec robots : correspondance par PRÉFIXE — `Disallow: /restaurant`
+    // couvrirait aussi /restaurants sans un Allow plus long (plus spécifique).
+    const allowingRules = rules.filter((rule) => asArray(rule.allow).includes('/'));
+    expect(allowingRules.length).toBeGreaterThan(0);
+    for (const rule of allowingRules) {
+      expect(asArray(rule.allow)).toContain('/restaurants');
+      expect(asArray(rule.allow)).toContain('/restaurants/');
+    }
+  });
+
   it('conserve le blocage des aspirateurs SEO', () => {
     for (const bot of ['MJ12bot', 'AhrefsBot', 'SemrushBot']) {
       const rule = rules.find((r) => agentsOf(r).includes(bot));

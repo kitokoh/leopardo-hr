@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { getBlogPosts, type BlogPost } from '@/modules/vitrine/data/blog';
+import { getAllPublicRestaurantSlugs } from '@/lib/restaurants-public-api';
 import { getEnvConfig } from '@/modules/vitrine/lib/env';
 import { getSiteUrl } from '@/lib/site';
 import { getAllCaseStudySlugs } from '@/modules/vitrine/lib/case-studies';
@@ -43,7 +44,12 @@ function page(
   };
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
+// RESTO-903 (#7748) : le sitemap interroge l'annuaire public des restaurants
+// (slugs dynamiques) — revalidation horaire raisonnable, les publications de
+// profils sont rares et le fetch sous-jacent est déjà caché 60 s.
+export const revalidate = 3600;
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // #3807 : lastModified stable — la génération par requête (new Date()) faisait
   // churner les lastmod chaque jour sans changement de contenu. Les pages
   // statiques n'émettent plus de lastmod ; seuls les posts blog gardent une
@@ -74,6 +80,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // BC-25 : vitrine « Je suis restaurateur » — page publique indexable, elle
     // avait une route mais ni métadonnées dédiées ni entrée sitemap.
     page('/restaurateur', 'monthly', 0.6),
+    // RESTO-903 (#7748) : annuaire public des restaurants (page SSR indexable).
+    page('/restaurants', 'daily', 0.8),
     page('/privacy', 'yearly', 0.4, false),
     page('/terms', 'yearly', 0.4, false),
     // #7593 — mentions légales (page FR, comme privacy/terms).
@@ -101,7 +109,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     alternates: localizedAlternates(`/case-studies/${slug}`),
   }));
 
-  const allStatic = [...staticPages, ...caseStudyPages];
+  // RESTO-903 (#7748) : profils publics /restaurants/{slug} (SSR indexables,
+  // GET /public/restaurants paginé). Best-effort : une API indisponible ne
+  // casse JAMAIS le sitemap (liste vide) — les pages statiques restent servies.
+  // Pas de variantes ?lang= : le contenu du profil (menu, description) vient
+  // du restaurateur et n'est pas localisé par le catalogue.
+  const restaurantPages: MetadataRoute.Sitemap = (await getAllPublicRestaurantSlugs()).map((slug) => ({
+    url: `${siteUrl}/restaurants/${slug}`,
+    changeFrequency: 'daily' as const,
+    priority: 0.7,
+  }));
+
+  const allStatic = [...staticPages, ...caseStudyPages, ...restaurantPages];
 
   // Blog posts: source réelle = src/modules/vitrine/data/blog (getBlogPosts).
   // Déduplication des slugs toutes locales confondues : un seul entry par slug,
