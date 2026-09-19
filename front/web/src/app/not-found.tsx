@@ -34,8 +34,9 @@ export async function generateMetadata(): Promise<Metadata> {
  * #7664 — le corps était resté 100 % français en dur alors que le titre
  * (metadata) était déjà localisé : un visiteur en/tr/ar tombait sur une page
  * d'erreur illisible. Tout le texte visible vient désormais du catalogue
- * (`vitrine.notFound.*`, ×4 locales), locale résolue via `x-vitrine-lang`
- * (même mécanique que `generateMetadata`, #4004).
+ * (`vitrine.notFound.*`, ×4 locales, sans fallback littéral — la garde
+ * PA2-I18N-014 lisait les fallbacks comme des chaînes en dur, #7669), locale
+ * résolue via `x-vitrine-lang` (même mécanique que `generateMetadata`, #4004).
  */
 export default async function NotFound() {
   const headerList = await headers();
@@ -45,36 +46,32 @@ export default async function NotFound() {
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 py-16 dark:bg-slate-950">
       <div className="w-full max-w-lg text-center">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-400">
-          {t(locale, 'vitrine.notFound.kicker', 'Erreur 404')}
+          {t(locale, 'vitrine.notFound.kicker')}
         </p>
         <h1 className="mt-4 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-white">
-          {t(locale, 'vitrine.notFound.title', 'Page introuvable')}
+          {t(locale, 'vitrine.notFound.title')}
         </h1>
         <p className="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-400">
-          {t(
-            locale,
-            'vitrine.notFound.body',
-            "Cette page n'existe pas ou a été déplacée. Vérifiez l'adresse, ou reprenez depuis l'accueil.",
-          )}
+          {t(locale, 'vitrine.notFound.body')}
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link
             href="/"
             className="inline-flex items-center rounded-xl bg-brand-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
           >
-            {t(locale, 'vitrine.notFound.ctaHome', "Retour à l'accueil")}
+            {t(locale, 'vitrine.notFound.ctaHome')}
           </Link>
           <Link
             href="/pricing"
             className="inline-flex items-center rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-900"
           >
-            {t(locale, 'vitrine.notFound.ctaPricing', 'Voir les tarifs')}
+            {t(locale, 'vitrine.notFound.ctaPricing')}
           </Link>
           <Link
             href="/contact"
             className="inline-flex items-center rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-900"
           >
-            {t(locale, 'vitrine.notFound.ctaContact', 'Contacter le support')}
+            {t(locale, 'vitrine.notFound.ctaContact')}
           </Link>
         </div>
       </div>
