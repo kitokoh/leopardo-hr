@@ -1712,6 +1712,38 @@ trait CreatesMvpSchema
             });
         }
 
+        // R3 Communication (#7688) — parité fixture ↔ migrations tenant
+        // 2026_09_20_000002/000003 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('communication_categories'))) {
+            Schema::create($this->moduleTable('communication_categories'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->string('key', 64);
+                $table->string('label', 128)->nullable();
+                $table->boolean('is_system')->default(false);
+                $table->boolean('active')->default(true);
+                $table->timestamps();
+                $table->unique(['company_id', 'key'], 'communication_categories_company_key_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('communication_contact_proposals'))) {
+            Schema::create($this->moduleTable('communication_contact_proposals'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('integration_id');
+                $table->string('email', 320);
+                $table->string('suggested_name', 128)->nullable();
+                $table->string('status', 16)->default('proposed')->index();
+                $table->unsignedInteger('message_count')->default(1);
+                $table->unsignedBigInteger('crm_contact_id')->nullable();
+                $table->timestamp('decided_at')->nullable();
+                $table->unsignedInteger('decided_by')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'integration_id', 'email'], 'communication_contact_proposals_unique');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('export_history'))) {
             Schema::create($this->moduleTable('export_history'), function (Blueprint $table): void {
                 $table->id();
@@ -4155,6 +4187,8 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "conversation_messages"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "conversation_threads"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "communication_events"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_categories"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_contact_proposals"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "communication_threads"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "notification_preferences"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "crm_imports"'.$cascade);
