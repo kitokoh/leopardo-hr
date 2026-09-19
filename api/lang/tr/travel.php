@@ -23,7 +23,7 @@ return [
         'expire_adverts_tenant_summary' => 'Kiracı :company: :expired süresi geçti, :archived arşivlendi.',
         'expire_adverts_total' => 'Toplam: :expired ilan süresi geçti, :archived arşivlendi.',
     ],
-    'staff_assignments' => [
-        'duplicate' => 'Bu çalışan bu kapsamda bu role zaten atanmış.',
+    'marketplace' => [
+        'booking_not_found' => 'Pazar yeri rezervasyonu bulunamadı.',
     ],
 ];

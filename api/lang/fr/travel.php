@@ -23,7 +23,7 @@ return [
         'expire_adverts_tenant_summary' => 'Tenant :company : :expired expirée(s), :archived archivée(s).',
         'expire_adverts_total' => 'Total : :expired annonce(s) expirée(s), :archived archivée(s).',
     ],
-    'staff_assignments' => [
-        'duplicate' => 'Cet employé est déjà affecté à ce rôle sur ce scope.',
+    'marketplace' => [
+        'booking_not_found' => 'Réservation marketplace introuvable.',
     ],
 ];
