@@ -7695,5 +7695,213 @@
         "unsubscribe": "Unsubscribed"
       }
     }
+  },
+  "commerce": {
+    "section": {
+      "title": "Commerce",
+      "subtitle": "Seller space: products, stock and cash register for the Commerce vertical."
+    },
+    "loading": "Loading…",
+    "gate": {
+      "retry": "Retry"
+    },
+    "search": {
+      "placeholder": "Search…"
+    },
+    "common": {
+      "status": "Status"
+    },
+    "table": {
+      "actions": "Actions",
+      "empty": "No items."
+    },
+    "action": {
+      "create": "Create",
+      "createTitle": "Create an item",
+      "edit": "Edit",
+      "editTitle": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "form": {
+      "required": "This field is required.",
+      "saving": "Saving…",
+      "selectPlaceholder": "— Select —"
+    },
+    "confirm": {
+      "deleteMessage": "Permanently delete this item?"
+    },
+    "error": {
+      "loadFailed": "Unable to load data.",
+      "saveFailed": "Saving failed.",
+      "deleteFailed": "Deletion failed.",
+      "actionFailed": "The action failed."
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page",
+      "items": "items"
+    },
+    "home": {
+      "kpisTitle": "Quick overview",
+      "kpiProducts": "Products in catalog",
+      "kpiAlerts": "Low-stock alerts",
+      "kpiSession": "Cash register",
+      "sessionOpen": "Session open",
+      "sessionClosed": "No open session",
+      "empty": "No data available.",
+      "open": "Open",
+      "products": "Products",
+      "productsDesc": "Categories, product sheets, prices and publishing.",
+      "stock": "Stock",
+      "stockDesc": "Locations, levels, tracked movements and alerts.",
+      "pos": "Cash register",
+      "posDesc": "Cash sessions, sales, payments and receipts."
+    },
+    "tab": {
+      "products": "Products",
+      "categories": "Categories",
+      "levels": "Levels",
+      "movements": "Movements",
+      "locations": "Locations",
+      "alerts": "Alerts"
+    },
+    "categories": {
+      "title": "Categories",
+      "name": "Name",
+      "slug": "Slug",
+      "position": "Position"
+    },
+    "products": {
+      "pageTitle": "Product catalog",
+      "pageSubtitle": "Categories, product sheets, currency pricing and publishing.",
+      "title": "Products",
+      "name": "Name",
+      "category": "Category",
+      "barcode": "Barcode",
+      "price": "Price",
+      "currency": "Currency",
+      "cost": "Cost",
+      "unit": "Unit",
+      "description": "Description",
+      "publish": "Publish",
+      "unpublish": "Unpublish",
+      "createTitle": "Create a product",
+      "editTitle": "Edit product",
+      "allStatuses": "All statuses",
+      "statusFilter": "Filter by status",
+      "invalidPrice": "Invalid price.",
+      "invalidCost": "Invalid cost."
+    },
+    "productStatus": {
+      "draft": "Draft",
+      "published": "Published",
+      "archived": "Archived"
+    },
+    "locations": {
+      "title": "Locations",
+      "name": "Name",
+      "code": "Code",
+      "type": "Type",
+      "active": "Active"
+    },
+    "locationType": {
+      "store": "Store",
+      "warehouse": "Warehouse"
+    },
+    "stock": {
+      "pageTitle": "Stock",
+      "pageSubtitle": "Locations, levels, tracked movements and low-stock alerts.",
+      "location": "Location",
+      "product": "Product",
+      "quantity": "Quantity",
+      "threshold": "Alert threshold",
+      "allLocations": "All locations",
+      "allProducts": "All products",
+      "belowThreshold": "Below alert threshold only",
+      "noLevels": "No stock levels.",
+      "newMovement": "Record a movement",
+      "reason": "Reason",
+      "note": "Note",
+      "saveMovement": "Save movement",
+      "movementSaved": "Movement recorded.",
+      "invalidQuantity": "Invalid quantity.",
+      "history": "Movement history",
+      "date": "Date",
+      "delta": "Delta",
+      "noMovements": "No movements recorded.",
+      "noAlerts": "No low-stock alerts."
+    },
+    "stockDirection": {
+      "in": "Stock in (quantity added).",
+      "out": "Stock out (quantity removed).",
+      "signed": "Signed adjustment: enter the delta (+/−)."
+    },
+    "stockReason": {
+      "purchase": "Purchase (in)",
+      "sale": "Sale (out)",
+      "adjustment": "Adjustment",
+      "return": "Return (in)",
+      "transfer_in": "Transfer in",
+      "transfer_out": "Transfer out",
+      "loss": "Loss / breakage"
+    },
+    "pos": {
+      "pageTitle": "Cash register",
+      "pageSubtitle": "Cash sessions, sales, payments and receipts.",
+      "openTitle": "Open a cash session",
+      "openHint": "Only one open session per location.",
+      "openingCash": "Opening cash",
+      "open": "Open the register",
+      "selectLocation": "Select a location.",
+      "invalidAmount": "Invalid amount.",
+      "sessionBanner": "Session open",
+      "close": "Close the register",
+      "closeTitle": "Session closing",
+      "closeHint": "Expected cash and variance are computed server-side (opening cash + captured cash payments).",
+      "countedCash": "Counted cash",
+      "expectedCash": "Expected cash",
+      "variance": "Variance",
+      "varianceReason": "Variance reason",
+      "confirmClose": "Confirm closing",
+      "closedTitle": "Session closed",
+      "catalog": "Published catalog",
+      "noProducts": "No published products.",
+      "cart": "Current order",
+      "emptyCart": "No items. Click a product to add it.",
+      "quantity": "Quantity",
+      "removeLine": "Remove",
+      "estimatedTotal": "Estimated total (final total is computed server-side)",
+      "submitOrder": "Submit order",
+      "receipt": "Receipt",
+      "print": "Print",
+      "item": "Item",
+      "lineTotal": "Line total",
+      "total": "Total",
+      "paid": "Paid",
+      "remaining": "Remaining",
+      "payment": "Payment",
+      "method": "Payment method",
+      "amount": "Amount",
+      "addPayment": "Take payment",
+      "completed": "Order paid: stock has been decremented.",
+      "cancelled": "Order cancelled: stock has been restored.",
+      "cancelOrder": "Cancel order",
+      "cancelConfirm": "Cancel this order?",
+      "newOrder": "New sale"
+    },
+    "orderStatus": {
+      "draft": "Draft",
+      "completed": "Paid",
+      "cancelled": "Cancelled"
+    },
+    "paymentMethod": {
+      "cash": "Cash",
+      "card": "Card",
+      "mobile": "Mobile money",
+      "online": "Online"
+    }
   }
 }

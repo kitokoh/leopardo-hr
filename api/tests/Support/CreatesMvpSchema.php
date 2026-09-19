@@ -1423,6 +1423,192 @@ trait CreatesMvpSchema
             });
         }
 
+        // BC-17 RETAIL #7672 — fondations du module vendeur generique.
+        // Miroir de la migration 2026_09_19_000301_7672 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('retail_categories'))) {
+            Schema::create($this->moduleTable('retail_categories'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 160);
+                $table->string('slug', 180);
+                $table->unsignedBigInteger('parent_id')->nullable();
+                $table->unsignedSmallInteger('position')->default(0);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'slug'], 'retail_categories_company_slug_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('retail_products'))) {
+            Schema::create($this->moduleTable('retail_products'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('category_id')->nullable();
+                $table->string('name', 200);
+                $table->string('slug', 220);
+                $table->string('sku', 64);
+                $table->string('barcode', 64)->nullable();
+                $table->text('description')->nullable();
+                $table->unsignedBigInteger('price_minor')->default(0);
+                $table->unsignedBigInteger('cost_minor')->nullable();
+                $table->char('currency', 3)->default('XOF');
+                $table->string('unit', 30)->nullable();
+                $table->string('status', 20)->default('draft');
+                $table->json('meta')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'slug'], 'retail_products_company_slug_unique');
+                $table->unique(['company_id', 'sku'], 'retail_products_company_sku_unique');
+                $table->index(['company_id', 'status'], 'retail_products_company_status_idx');
+                $table->index(['company_id', 'barcode'], 'retail_products_company_barcode_idx');
+            });
+        }
+
+        // BC-17 RETAIL #7673 — gestion de stock du module vendeur generique.
+        // Miroir de la migration 2026_09_19_000302_7673 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('retail_locations'))) {
+            Schema::create($this->moduleTable('retail_locations'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 160);
+                $table->string('code', 40);
+                $table->string('type', 20)->default('store');
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'retail_locations_company_code_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('retail_stock_levels'))) {
+            Schema::create($this->moduleTable('retail_stock_levels'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('location_id');
+                $table->unsignedBigInteger('product_id');
+                $table->decimal('quantity', 12, 3)->default(0);
+                $table->unsignedBigInteger('avg_cost_minor')->nullable();
+                $table->decimal('reorder_level', 12, 3)->nullable();
+                $table->decimal('alert_threshold', 12, 3)->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'location_id', 'product_id'], 'retail_stock_levels_company_location_product_unique');
+                $table->index(['company_id', 'product_id'], 'retail_stock_levels_company_product_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('retail_inventory_movements'))) {
+            Schema::create($this->moduleTable('retail_inventory_movements'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('location_id');
+                $table->unsignedBigInteger('product_id');
+                $table->unsignedBigInteger('stock_level_id')->nullable();
+                $table->decimal('quantity_delta', 12, 3);
+                $table->string('reason_code', 30);
+                $table->string('reference_type', 80)->nullable();
+                $table->unsignedBigInteger('reference_id')->nullable();
+                $table->text('note')->nullable();
+                $table->unsignedBigInteger('user_id')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'location_id', 'product_id'], 'retail_inventory_movements_company_location_product_idx');
+                $table->index(['company_id', 'reference_type', 'reference_id'], 'retail_inventory_movements_company_reference_idx');
+            });
+        }
+
+        // BC-17 RETAIL #7674 — POS v1 du module vendeur generique.
+        // Miroir de la migration 2026_09_19_000303_7674 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('retail_pos_sessions'))) {
+            Schema::create($this->moduleTable('retail_pos_sessions'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('location_id');
+                $table->timestamp('opened_at')->useCurrent();
+                $table->timestamp('closed_at')->nullable();
+                $table->unsignedBigInteger('opened_by_user_id');
+                $table->unsignedBigInteger('closed_by_user_id')->nullable();
+                $table->unsignedBigInteger('opening_cash_minor')->default(0);
+                $table->unsignedBigInteger('expected_cash_minor')->nullable();
+                $table->unsignedBigInteger('counted_cash_minor')->nullable();
+                $table->bigInteger('variance_minor')->nullable();
+                $table->string('variance_reason', 255)->nullable();
+                $table->string('status', 20)->default('open');
+                $table->unsignedInteger('version')->default(1);
+                $table->timestamps();
+
+                $table->index(['company_id', 'location_id'], 'retail_pos_sessions_company_location_idx');
+            });
+
+            // Index unique PARTIEL (une seule session open par emplacement) —
+            // miroir de la migration #7674, Postgres-only.
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement('CREATE UNIQUE INDEX IF NOT EXISTS retail_pos_sessions_company_location_open_unique ON '.$this->moduleTable('retail_pos_sessions')." (company_id, location_id) WHERE status = 'open'");
+            }
+        }
+
+        if (! Schema::hasTable($this->moduleTable('retail_orders'))) {
+            Schema::create($this->moduleTable('retail_orders'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('location_id');
+                $table->unsignedBigInteger('pos_session_id')->nullable();
+                $table->string('reference', 40);
+                $table->string('status', 20)->default('draft');
+                $table->unsignedBigInteger('subtotal_minor')->default(0);
+                $table->unsignedBigInteger('discount_minor')->default(0);
+                $table->unsignedBigInteger('total_minor')->default(0);
+                $table->char('currency', 3)->default('XOF');
+                $table->string('source', 20)->default('pos');
+                $table->text('note')->nullable();
+                $table->string('idempotency_key', 64)->nullable();
+                $table->unsignedInteger('version')->default(1);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'reference'], 'retail_orders_company_reference_unique');
+                $table->unique(['company_id', 'idempotency_key'], 'retail_orders_company_idempotency_key_unique');
+                $table->index(['company_id', 'location_id', 'status'], 'retail_orders_company_location_status_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('retail_order_items'))) {
+            Schema::create($this->moduleTable('retail_order_items'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('order_id');
+                $table->unsignedBigInteger('product_id');
+                $table->string('product_name', 200);
+                $table->decimal('quantity', 12, 3);
+                $table->unsignedBigInteger('unit_price_minor');
+                $table->unsignedBigInteger('line_total_minor');
+                $table->unsignedSmallInteger('line_index')->default(0);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'order_id', 'product_id', 'line_index'], 'retail_order_items_company_order_product_line_unique');
+                $table->index(['company_id', 'order_id'], 'retail_order_items_company_order_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('retail_order_payments'))) {
+            Schema::create($this->moduleTable('retail_order_payments'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('order_id');
+                $table->unsignedBigInteger('pos_session_id')->nullable();
+                $table->string('method', 20);
+                $table->unsignedBigInteger('amount_minor');
+                $table->char('currency', 3)->default('XOF');
+                $table->string('status', 20)->default('captured');
+                $table->timestamp('paid_at')->nullable();
+                $table->string('reference', 120)->nullable();
+                $table->string('idempotency_key', 64)->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'idempotency_key'], 'retail_order_payments_company_idempotency_key_unique');
+                $table->index(['company_id', 'order_id'], 'retail_order_payments_company_order_idx');
+            });
+        }
+
         // Issue #7761 — grants de modules composables par collaborateur.
         // Miroir de la migration 2026_09_19_001401_7761 (garde #5443).
         if (! Schema::hasTable($this->moduleTable('employee_module_grants'))) {
