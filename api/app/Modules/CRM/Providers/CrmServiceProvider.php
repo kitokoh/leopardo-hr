@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\CRM\Providers;
 
+use App\Modules\CRM\Application\Listeners\DispatchCampaignSends;
 use App\Modules\CRM\Application\Listeners\PropagateConsentRevocation;
 use App\Modules\CRM\Domain\Contracts\CampaignConsentCheckerInterface;
 use App\Modules\CRM\Domain\Contracts\EmailProviderInterface;
@@ -20,6 +21,7 @@ use App\Modules\CRM\Infrastructure\Services\LogEmailProvider;
 use App\Modules\CRM\Infrastructure\Services\MailEmailProvider;
 
 use App\Modules\CRM\Domain\Contracts\CrmImportRepositoryInterface;
+use App\Modules\CRM\Domain\Events\CampaignStarted;
 use App\Modules\CRM\Domain\Contracts\CrmImportRowPersisterInterface;
 use App\Modules\CRM\Domain\Contracts\CrmLeadRepositoryInterface;
 use App\Modules\CRM\Domain\Events\CrmConsentRevoked;
@@ -132,7 +134,11 @@ class CrmServiceProvider extends ServiceProvider
         // app/Console/Commands → enregistrement explicite.
         $this->commands([
             \App\Modules\CRM\Console\Commands\CleanupCrmExports::class,
+            \App\Modules\CRM\Console\Commands\ProcessCampaignSends::class,
         ]);
+        // #7751 — le canal email prend en charge les envois d'une campagne
+        // dès son démarrage (worker asynchrone, claim atomique par send).
+        Event::listen(CampaignStarted::class, DispatchCampaignSends::class);
         // #5722 — propagation du retrait de consentement vers les campagnes
         // (#5724) : annulation des envois pending/queued du contact.
         Event::listen(CrmConsentRevoked::class, PropagateConsentRevocation::class);

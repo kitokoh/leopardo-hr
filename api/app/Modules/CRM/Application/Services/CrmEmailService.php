@@ -10,6 +10,7 @@ use App\Modules\CRM\Domain\Contracts\EmailProviderInterface;
 use App\Modules\CRM\Domain\DTOs\EmailDeliveryResult;
 use App\Modules\CRM\Domain\DTOs\EmailMessage;
 use App\Modules\CRM\Domain\Exceptions\EmailRateLimitExceededException;
+use App\Modules\CRM\Domain\Models\CrmCampaign;
 use App\Modules\CRM\Domain\Models\CrmCampaignSend;
 use App\Modules\CRM\Infrastructure\Services\EmailRateLimiter;
 use Illuminate\Support\Facades\Auth;
@@ -109,10 +110,21 @@ final class CrmEmailService
             return EmailDeliveryResult::failed('contact not found or without email');
         }
 
+        // #7751 — le message envoyé est celui porté par la campagne
+        // (subject/body), plus aucun contenu codé en dur. Repli défensif
+        // pour les campagnes historiques sans contenu (jamais bloquant).
+        $campaign = CrmCampaign::query()
+            ->withoutGlobalScopes()
+            ->where('company_id', $companyId)
+            ->find($send->campaign_id);
+
+        $subject = $campaign?->subject;
+        $body = $campaign?->body;
+
         $message = new EmailMessage(
             $contact->email,
-            'Campagne CRM '.$send->campaign_id,
-            'Message de campagne (canal email).',
+            $subject !== null && $subject !== '' ? $subject : 'Campagne CRM '.$send->campaign_id,
+            $body !== null && $body !== '' ? $body : 'Message de campagne (canal email).',
             ['contact_id' => $send->contact_id, 'campaign_send_id' => $send->id],
         );
 
