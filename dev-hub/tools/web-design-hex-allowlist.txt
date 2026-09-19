@@ -42,3 +42,9 @@
 # Fixtures de tests — couleurs arbitraires de parsing (jamais rendues)
 #ff0000 — fixture test (front/web/src/lib/__tests__/careers-api.test.ts)
 #00ff00 — fixture test (careers-api.test.ts)
+
+# Image de marque du tenant (#7713) — défauts alignés sur l'API company/branding
+# (CompanyBrandingController normalise accent_color à #2563EB). À migrer vers
+# les tokens tenant quand le module branding sera tokenisé (P05).
+#2563eb — blue-600, couleur d'accent PAR DÉFAUT renvoyée par l'API company/branding (front/web/src/app/(dashboard)/settings/branding/page.tsx)
+#000000 — repli purement technique de l'input type=color quand le champ hex est invalide (front/web/src/app/(dashboard)/settings/branding/page.tsx)
