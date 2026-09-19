@@ -1,4 +1,4 @@
-# Benchmarks Performance — Leopardo RH
+# Benchmarks Performance — Leopardo
 
 Derniere mise a jour : 2026-05-12
 

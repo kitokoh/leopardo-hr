@@ -1,4 +1,4 @@
-# Roadmap et backlog de refactoring — Leopardo HR
+# Roadmap et backlog de refactoring — Leopardo
 
 ## Objectif
 

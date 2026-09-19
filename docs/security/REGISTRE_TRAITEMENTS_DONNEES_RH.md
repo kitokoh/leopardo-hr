@@ -4,7 +4,7 @@ Version 1.0 | 2026-05-14
 
 ## 1. Objet
 
-Ce registre documente les traitements de donnees personnelles portes par Leopardo RH afin de soutenir les obligations de conformite RGPD, loi 18-07 DZ et appels d'offres enterprise.
+Ce registre documente les traitements de donnees personnelles portes par Leopardo afin de soutenir les obligations de conformite RGPD, loi 18-07 DZ et appels d'offres enterprise.
 
 Il complete :
 
@@ -17,8 +17,8 @@ Il complete :
 | Role | Responsabilite |
 |---|---|
 | Client employeur | Responsable principal du traitement pour ses salaries et candidats |
-| Leopardo RH | Sous-traitant SaaS pour l'hebergement, la maintenance, le support et la securite de la plateforme |
-| Super administrateurs Leopardo RH | Acces limite aux operations plateforme, support, provisioning, securite et conformite |
+| Leopardo | Sous-traitant SaaS pour l'hebergement, la maintenance, le support et la securite de la plateforme |
+| Super administrateurs Leopardo | Acces limite aux operations plateforme, support, provisioning, securite et conformite |
 | Utilisateurs client | Acces selon roles : admin, RH, manager, employe, kiosque |
 | Integrateurs autorises | Acces API limite par contrat, permissions, scopes et journaux |
 
@@ -71,7 +71,7 @@ Il complete :
 
 ## 7. Sous-traitants et transferts
 
-Les sous-traitants exacts dependent de l'environnement deploye par le client ou l'operateur Leopardo RH.
+Les sous-traitants exacts dependent de l'environnement deploye par le client ou l'operateur Leopardo.
 
 | Categorie | Exemples actuels | Donnees exposees | Controle attendu |
 |---|---|---|---|

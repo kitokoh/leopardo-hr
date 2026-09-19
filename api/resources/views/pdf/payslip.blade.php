@@ -5,6 +5,11 @@
     $t = static fn (string $key, array $replace = []): string => $rtl
         ? \App\Modules\Payroll\Infrastructure\Pdf\ArabicPdfText::shape((string) __($key, $replace))
         : (string) __($key, $replace);
+    // #7713 — image de marque du tenant : logo (chemin fichier local, compatible
+    // dompdf) + couleur primaire pour les bandeaux de section. Sans branding
+    // exploitable, le rendu reste STRICTEMENT identique à l'historique.
+    $pdfBrandLogo = \App\Support\PdfBranding::logoPath($company ?? null);
+    $pdfBrandColor = \App\Support\PdfBranding::primaryColor($company ?? null, '');
 @endphp
 <!doctype html>
 
@@ -32,9 +37,13 @@
         .info-col { display: table-cell; width: 50%; vertical-align: top; }
         .info-label { font-size: 9px; color: #888; text-transform: uppercase; }
         .info-value { font-size: 11px; margin-bottom: 6px; }
+        @if($pdfBrandColor !== '') .section-title { background: {{ $pdfBrandColor }}; color: #ffffff; } @endif
     </style>
 </head>
 <body>
+    @if($pdfBrandLogo !== null)
+    <img src="{{ $pdfBrandLogo }}" alt="" style="height: 48px; margin-bottom: 8px;">
+    @endif
     <div class="company-name">{{ $company->name ?? $t('pdf.payslip_company_fallback') }}</div>
     <div style="font-size: 10px; color: #666;">
         {{ $company->address ?? '' }}

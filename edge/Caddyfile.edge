@@ -1,25 +1,77 @@
 # Leopardo Edge — Caddy reverse proxy
-# Serves http://leopardo.local (or IP) for the local network
+#
+# #7653 : TLS interne PAR DÉFAUT sur le LAN client (CA locale Caddy,
+# `tls internal`). Pointage, PII et données biométriques ZKTeco ne
+# circulent plus jamais en clair sur le réseau du client.
+#
+# - https://leopardo.local (ou l'IP LAN) : UI + API derrière le proxy.
+# - Ports historiques 7878 (API) / 7879 (UI) : conservés pour
+#   compatibilité, mais désormais servis en TLS via le proxy
+#   (les conteneurs edge-api/edge-ui ne publient plus rien sur l'hôte).
+# - :80 : redirection 308 vers HTTPS (+ /health en clair pour les sondes).
+#
+# La CA racine à installer sur les kiosques/postes clients vit dans le
+# volume caddy_data : /data/caddy/pki/authorities/local/root.crt
+# (procédure : edge/README.md, section « TLS sur le LAN »).
+#
+# EDGE_DOMAIN / EDGE_LAN_IP sont écrits dans .env par install.sh et
+# injectés par docker-compose.yml (service edge-proxy).
 
+{
+	# Émission par la CA interne uniquement — aucune tentative ACME publique
+	# (l'Edge est offline-first, souvent sans résolution DNS publique).
+	local_certs
+}
+
+(leopardo_edge) {
+	tls internal
+
+	# API
+	handle /api/* {
+		reverse_proxy edge-api:80
+	}
+
+	# Health check
+	handle /health {
+		respond "OK" 200
+	}
+
+	# Web UI
+	handle {
+		reverse_proxy edge-ui:3000
+	}
+
+	encode gzip
+	log {
+		output stdout
+		format console
+	}
+}
+
+# Site principal (UI + API) en HTTPS.
+https://{$EDGE_DOMAIN:leopardo.local}, https://{$EDGE_LAN_IP:127.0.0.1} {
+	import leopardo_edge
+}
+
+# Port historique UI (ex `7879:3000` publié en clair par edge-ui).
+# Sert le snippet complet : l'UI y joint l'API en same-origin (/api/*).
+https://{$EDGE_DOMAIN:leopardo.local}:7879, https://{$EDGE_LAN_IP:127.0.0.1}:7879 {
+	import leopardo_edge
+}
+
+# Port historique API (ex `7878:80` publié en clair par edge-api).
+# Snippet complet : les clients API existants appellent /api/v1/* — inchangé.
+https://{$EDGE_DOMAIN:leopardo.local}:7878, https://{$EDGE_LAN_IP:127.0.0.1}:7878 {
+	import leopardo_edge
+}
+
+# HTTP :80 — plus aucun contenu applicatif : redirection vers HTTPS.
+# /health reste servi en clair (sondes locales sans magasin de CA).
 :80 {
-    # Web UI
-    handle / {
-        reverse_proxy edge-ui:3000
-    }
-
-    # API
-    handle /api/* {
-        reverse_proxy edge-api:80
-    }
-
-    # Health check
-    handle /health {
-        respond "OK" 200
-    }
-
-    encode gzip
-    log {
-        output stdout
-        format console
-    }
+	handle /health {
+		respond "OK" 200
+	}
+	handle {
+		redir https://{host}{uri} 308
+	}
 }

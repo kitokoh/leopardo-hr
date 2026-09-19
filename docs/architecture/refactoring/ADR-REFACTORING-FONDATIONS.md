@@ -1,4 +1,4 @@
-# ADR — Fondations du refactoring de Leopardo HR
+# ADR — Fondations du refactoring de Leopardo
 
 - **Statut :** proposé pour validation
 - **Date :** 2026-08-25

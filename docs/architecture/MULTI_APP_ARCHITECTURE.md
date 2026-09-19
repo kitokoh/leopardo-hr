@@ -1,8 +1,8 @@
-# Architecture Multi-App Leopardo HR
+# Architecture Multi-App Leopardo
 
 ## Vue d'ensemble
 
-Leopardo HR est une plateforme **multi-tenant** et **multi-app**. Une seule API centrale sert plusieurs applications distinctes (web et mobile), chacune ayant un scope fonctionnel précis.
+Leopardo est une plateforme **multi-tenant** et **multi-app**. Une seule API centrale sert plusieurs applications distinctes (web et mobile), chacune ayant un scope fonctionnel précis.
 
 ---
 

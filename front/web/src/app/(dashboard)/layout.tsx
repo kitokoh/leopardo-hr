@@ -3,13 +3,13 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, ChevronDown, Globe, KeyRound, LayoutGrid, LockKeyhole, LogOut, Menu, Plus, ShieldCheck, Sparkles, UserCircle, X } from 'lucide-react';
+import { Bell, ChevronDown, Globe, KeyRound, LayoutGrid, LockKeyhole, LogOut, Menu, Paintbrush, Plus, ShieldCheck, Sparkles, UserCircle, X } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { teamRolesT } from '@/lib/i18n/team-roles';
 import { trackClientEvent } from '@/lib/client-analytics';
 import { getClientModuleAccess, getModuleAccessForPath, getSidebarSections, isSelfActivable, mergeActivationSurface, sessionModuleSignature, type ClientModuleAccess, type ClientModuleKey } from '@/lib/client-features';
-import { buildDashboardNav, isHrEntryActive, toNavModules, type DashboardNavEntry } from '@/lib/dashboard-nav';
+import { buildBusinessRail, buildDashboardNav, isNavEntryActive, toNavModules, type DashboardNavEntry, type NavMenuGroupId } from '@/lib/dashboard-nav';
 import {
   applyDocumentLocale,
   clearAuthSession,
@@ -44,6 +44,21 @@ const MD_BREAKPOINT_MEDIA_QUERY = `(min-width: ${768}px)`;
  * entre onglets, tout en rattrapant une activation faite côté plateforme.
  */
 const SESSION_REFRESH_MIN_INTERVAL_MS = 60_000;
+
+/**
+ * #7713 — image de marque du tenant consommée par le shell : couleurs
+ * exposées en CSS custom properties, logo affiché à la place du badge LRH.
+ * Repli silencieux vers le thème par défaut si l'appel échoue.
+ */
+type TenantBranding = {
+  display_name: string | null;
+  logo_url: string | null;
+  primary_color: string;
+  accent_color: string;
+  brand_mode: string;
+};
+
+const HEX_COLOR_PATTERN = /^#[0-9A-Fa-f]{6}$/;
 
 /**
  * #7556 — Verrou de défilement partagé par les surfaces superposées (tiroir,
@@ -146,12 +161,15 @@ function DashboardModuleLinks({
             onClick={onNavigate}
             className={modulesNavLinkClass(pathname === entry.module.href)}
           >
-            {labels.dashboard.modules[entry.module.key] ?? entry.module.label}
+            <span className="flex min-w-0 items-center gap-2">
+              {entry.module.icon ? <entry.module.icon className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" /> : null}
+              <span className="truncate">{labels.dashboard.modules[entry.module.key] ?? entry.module.label}</span>
+            </span>
           </Link>
         ) : (
           <div key={`menu-${entry.id}`} className="mt-1 border-t border-slate-100 pt-1">
             <p className="px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-500">
-              {labels.dashboard.hrMenu}
+              {labels.dashboard.navGroups[entry.id] ?? labels.dashboard.hrMenu}
             </p>
             {entry.modules.map((module) => (
               <Link
@@ -160,7 +178,10 @@ function DashboardModuleLinks({
                 onClick={onNavigate}
                 className={`ps-6 ${modulesNavLinkClass(pathname === module.href)}`}
               >
-                {labels.dashboard.modules[module.key] ?? module.label}
+                <span className="flex min-w-0 items-center gap-2">
+                  {module.icon ? <module.icon className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" /> : null}
+                  <span className="truncate">{labels.dashboard.modules[module.key] ?? module.label}</span>
+                </span>
               </Link>
             ))}
           </div>
@@ -194,14 +215,18 @@ export default function DashboardLayout({
   // #7322 — auto-activation d'un module horizontal depuis « Modules & plan ».
   const [activatingModule, setActivatingModule] = useState<ClientModuleKey | null>(null);
   const [activateError, setActivateError] = useState('');
-  // #7328 — menu sur une seule ligne : sous-menu RH + menu mobile des modules.
-  const [hrMenuOpen, setHrMenuOpen] = useState(false);
+  // #7328/#7724 — menu sur une seule ligne : sous-menus de groupe (RH,
+  // Finance, Clients & croissance, Opérations) + menu mobile des modules.
+  // Un seul sous-menu de groupe ouvert à la fois.
+  const [openNavMenu, setOpenNavMenu] = useState<NavMenuGroupId | null>(null);
   const [mobileModulesOpen, setMobileModulesOpen] = useState(false);
   // #7225 — le rail métier (`business-rail`) est `hidden md:flex` : sous 768 px
   // il était inaccessible (aucun déclencheur). Il devient un tiroir piloté par
   // un bouton hamburger, sur le même modèle que l'admin.
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  // #7713 — branding du tenant (couleurs + logo), chargé après montage.
+  const [tenantBranding, setTenantBranding] = useState<TenantBranding | null>(null);
   const user = userOverride ?? storedUser;
   const locale = localeOverride ?? normalizeLocale(user?.language);
   const labels = useMemo(() => getCopy(locale), [locale]);
@@ -220,6 +245,49 @@ export default function DashboardLayout({
     setStoredUser(getStoredUser());
     setMounted(true);
   }, []);
+
+  // #7713 — charge l'image de marque du tenant. Toute erreur est silencieuse :
+  // le shell garde son thème par défaut (badge LRH, palette emerald).
+  useEffect(() => {
+    if (!mounted || !user) {
+      return;
+    }
+
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const response = await apiFetch('/company/branding');
+        const payload = await response.json() as { data?: { branding?: TenantBranding } };
+        if (!cancelled && payload.data?.branding) {
+          setTenantBranding(payload.data.branding);
+        }
+      } catch {
+        // Repli silencieux : thème par défaut.
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [mounted, user]);
+
+  // Couleurs du tenant → CSS custom properties posées à la racine du shell.
+  const tenantThemeStyle = useMemo(() => {
+    if (!tenantBranding) {
+      return undefined;
+    }
+    const style: Record<string, string> = {};
+    if (HEX_COLOR_PATTERN.test(tenantBranding.primary_color ?? '')) {
+      style['--tenant-primary'] = tenantBranding.primary_color;
+    }
+    if (HEX_COLOR_PATTERN.test(tenantBranding.accent_color ?? '')) {
+      style['--tenant-accent'] = tenantBranding.accent_color;
+    }
+    return Object.keys(style).length > 0 ? (style as React.CSSProperties) : undefined;
+  }, [tenantBranding]);
+
+  const tenantLogoUrl = tenantBranding?.logo_url ?? null;
 
   useEffect(() => {
     if (!mounted) {
@@ -247,9 +315,9 @@ export default function DashboardLayout({
     setModulesOpen(false);
     setMobileModulesOpen(false);
     setUserMenuOpen(false);
-    setHrMenuOpen(false);
+    setOpenNavMenu(null);
   }, []);
-  const headerPanelOpen = notificationsOpen || modulesOpen || mobileModulesOpen || userMenuOpen || hrMenuOpen;
+  const headerPanelOpen = notificationsOpen || modulesOpen || mobileModulesOpen || userMenuOpen || openNavMenu !== null;
 
   useEffect(() => {
     let cancelled = false;
@@ -346,7 +414,7 @@ export default function DashboardLayout({
   usePanelDismiss(modulesOpen, () => setModulesOpen(false));
   usePanelDismiss(mobileModulesOpen, () => setMobileModulesOpen(false));
   usePanelDismiss(userMenuOpen, () => setUserMenuOpen(false));
-  usePanelDismiss(hrMenuOpen, () => setHrMenuOpen(false));
+  usePanelDismiss(openNavMenu !== null, () => setOpenNavMenu(null));
 
   const [showInterview, setShowInterview] = useState(false);
   // #7493 — relance douce : tant que l'entretien n'est pas complété (report
@@ -606,7 +674,7 @@ export default function DashboardLayout({
   const navEntries = buildDashboardNav(toNavModules(navPills));
 
   return (
-    <div className="flex min-h-screen bg-transparent">
+    <div className="flex min-h-screen bg-transparent" style={tenantThemeStyle}>
       {/* Decorative background elements */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-emerald-500/5 blur-[120px]" />
@@ -637,9 +705,14 @@ export default function DashboardLayout({
         >
         <div className="flex h-16 shrink-0 items-center justify-between gap-3 border-b border-slate-200/50 px-5">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20">
-              <span className="text-xs font-black text-white">LRH</span>
-            </div>
+            {tenantLogoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element -- logo du tenant servi par l'API (URL par entreprise, hors allowlist next/image)
+              <img src={tenantLogoUrl} alt="" data-testid="tenant-logo" className="h-9 w-9 shrink-0 rounded-xl border border-slate-200 bg-white object-contain shadow-sm" />
+            ) : (
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20">
+                <span className="text-xs font-black text-white">LRH</span>
+              </div>
+            )}
             <div className="min-w-0">
               <p className="truncate text-sm font-black tracking-tight text-slate-950">{user?.company?.name ?? 'Leopardo'}</p>
               <p className="truncate text-[10px] font-black uppercase tracking-widest text-emerald-700">{labels.dashboard.businessSection}</p>
@@ -657,8 +730,19 @@ export default function DashboardLayout({
         </div>
 
         <nav className="mt-4 flex-1 space-y-1 overflow-y-auto px-3" aria-label={labels.dashboard.businessSection}>
-          {business.map((module) => (
-            <BusinessCard key={module.key} module={module} active={pathname === module.href} labels={labels} />
+          {/* #7724 — rail hiérarchisé : les sous-écrans (Cuisine, Portail
+              voyageur) sont rendus sous leur carte parente. */}
+          {buildBusinessRail(business).map(({ module, children }) => (
+            <div key={module.key}>
+              <BusinessCard module={module} active={pathname === module.href} labels={labels} />
+              {children.length > 0 ? (
+                <div className="ms-6 mt-1 space-y-1 border-s border-slate-200 ps-3">
+                  {children.map((child) => (
+                    <BusinessCard key={child.key} module={child} active={pathname === child.href} labels={labels} compact />
+                  ))}
+                </div>
+              ) : null}
+            </div>
           ))}
         </nav>
 
@@ -696,6 +780,11 @@ export default function DashboardLayout({
             <Link href="/settings/team" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
               <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
               {teamRolesT(locale, 'menuLabel')}
+            </Link>
+            {/* #7713 — image de marque du tenant. */}
+            <Link href="/settings/branding" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+              <Paintbrush className="h-4 w-4 text-slate-400" aria-hidden="true" />
+              {i18nT(locale, 'brandingPage.title')}
             </Link>
             <Link href="/settings/account#password" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
               <KeyRound className="h-4 w-4 text-slate-400" aria-hidden="true" />
@@ -758,9 +847,14 @@ export default function DashboardLayout({
                   badge LRH (`business-rail`), donc la barre du haut ne le rend plus
                   au-dessus de `md` que lorsque le tenant n'a aucun rail métier.
                   Sous `md` le rail est un tiroir hors-écran : le badge reste. */}
-              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20 ${business.length > 0 ? 'md:hidden' : ''}`}>
-                <span className="text-xs font-black text-white">LRH</span>
-              </div>
+              {tenantLogoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element -- logo du tenant servi par l'API (URL par entreprise, hors allowlist next/image)
+                <img src={tenantLogoUrl} alt="" className={`h-9 w-9 shrink-0 rounded-xl border border-slate-200 bg-white object-contain shadow-sm ${business.length > 0 ? 'md:hidden' : ''}`} />
+              ) : (
+                <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20 ${business.length > 0 ? 'md:hidden' : ''}`}>
+                  <span className="text-xs font-black text-white">LRH</span>
+                </div>
+              )}
               <div className="min-w-0">
                 <h2 className="truncate text-base font-black uppercase tracking-tight text-slate-950">{pageTitle}</h2>
                 <p className="truncate text-[11px] font-semibold text-slate-500">{user?.company?.name ?? ''}</p>
@@ -786,44 +880,47 @@ export default function DashboardLayout({
                     <button
                       type="button"
                       data-testid={`dashboard-${entry.id}-menu`}
-                      aria-expanded={hrMenuOpen}
+                      aria-expanded={openNavMenu === entry.id}
                       aria-haspopup="true"
-                      aria-controls="dashboard-hr-menu-panel"
+                      aria-controls={`dashboard-${entry.id}-menu-panel`}
                       onClick={() => {
                         // Même correction que le menu de compte : fermer les
                         // autres panneaux puis basculer CELUI-CI sur une cible
                         // calculée avant (sinon il restait ouvert).
-                        const next = !hrMenuOpen;
+                        const next = openNavMenu === entry.id ? null : entry.id;
                         closeHeaderPanels();
-                        setHrMenuOpen(next);
+                        setOpenNavMenu(next);
                       }}
                       className={[
                         'group inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[11px] font-black uppercase tracking-tight transition-all',
-                        isHrEntryActive(entry, pathname)
+                        isNavEntryActive(entry, pathname)
                           ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm'
                           : 'border-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-slate-900',
                       ].join(' ')}
                     >
-                      {labels.dashboard.hrMenu}
+                      {labels.dashboard.navGroups[entry.id] ?? labels.dashboard.hrMenu}
                       <ChevronDown
-                        className={`h-3.5 w-3.5 transition-transform ${hrMenuOpen ? 'rotate-180' : ''}`}
+                        className={`h-3.5 w-3.5 transition-transform ${openNavMenu === entry.id ? 'rotate-180' : ''}`}
                         aria-hidden="true"
                       />
                     </button>
-                    {hrMenuOpen ? (
+                    {openNavMenu === entry.id ? (
                       <div
-                        id="dashboard-hr-menu-panel"
-                        data-testid="dashboard-hr-menu-panel"
+                        id={`dashboard-${entry.id}-menu-panel`}
+                        data-testid={`dashboard-${entry.id}-menu-panel`}
                         className="absolute start-0 top-10 z-30 max-h-[70vh] w-56 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-xl"
                       >
                         {entry.modules.map((module) => (
                           <Link
                             key={module.key}
                             href={module.href}
-                            onClick={() => setHrMenuOpen(false)}
+                            onClick={() => setOpenNavMenu(null)}
                             className={modulesNavLinkClass(pathname === module.href)}
                           >
-                            {labels.dashboard.modules[module.key] ?? module.label}
+                            <span className="flex min-w-0 items-center gap-2">
+                              {module.icon ? <module.icon className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" /> : null}
+                              <span className="truncate">{labels.dashboard.modules[module.key] ?? module.label}</span>
+                            </span>
                           </Link>
                         ))}
                       </div>
@@ -1103,6 +1200,11 @@ export default function DashboardLayout({
                       <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
                       {teamRolesT(locale, 'menuLabel')}
                     </Link>
+                    {/* #7713 — image de marque du tenant. */}
+                    <Link href="/settings/branding" role="menuitem" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
+                      <Paintbrush className="h-4 w-4 text-slate-400" aria-hidden="true" />
+                      {i18nT(locale, 'brandingPage.title')}
+                    </Link>
                     <Link
                       href="/settings/account#password"
                       role="menuitem"
@@ -1224,6 +1326,8 @@ function NavPill({ module, active, labels }: { module: ClientModuleAccess; activ
 
   return (
     <Link href={module.href ?? '#'} className={className} aria-disabled={!module.enabled} aria-current={active ? 'page' : undefined}>
+      {/* #7724 — icône de module sur les pills (plus de pill texte seul). */}
+      {module.icon ? <module.icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /> : null}
       {label}
       {!module.enabled ? <LockKeyhole className="h-3 w-3" aria-label={labels.dashboard.featureLockedBadge} /> : null}
       {module.enabled && module.state === 'trial' ? (
@@ -1233,16 +1337,18 @@ function NavPill({ module, active, labels }: { module: ClientModuleAccess; activ
   );
 }
 
-function BusinessCard({ module, active, labels }: { module: ClientModuleAccess; active: boolean; labels: CopyTree }) {
+function BusinessCard({ module, active, labels, compact = false }: { module: ClientModuleAccess; active: boolean; labels: CopyTree; compact?: boolean }) {
   const label = labels.dashboard.modules[module.key] ?? module.label;
   const initials = label.trim().slice(0, 2).toUpperCase();
+  const Icon = module.icon;
 
   return (
     <Link
       href={module.href ?? '#'}
       aria-current={active ? 'page' : undefined}
       className={[
-        'group flex items-center gap-3 rounded-2xl border px-3.5 py-3 text-sm font-bold transition-all',
+        'group flex items-center gap-3 rounded-2xl border text-sm font-bold transition-all',
+        compact ? 'px-3 py-2' : 'px-3.5 py-3',
         active
           ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm'
           : 'border-transparent text-slate-600 hover:border-slate-200 hover:bg-white hover:text-slate-900',
@@ -1250,13 +1356,15 @@ function BusinessCard({ module, active, labels }: { module: ClientModuleAccess; 
     >
       <span
         className={[
-          'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border text-[11px] font-black uppercase',
+          'flex shrink-0 items-center justify-center rounded-xl border text-[11px] font-black uppercase',
+          compact ? 'h-7 w-7' : 'h-9 w-9',
           active
             ? 'border-emerald-200 bg-white text-emerald-700'
             : 'border-slate-200 bg-slate-50 text-slate-500 group-hover:text-emerald-700',
         ].join(' ')}
       >
-        {initials}
+        {/* #7724 — icône de module sur les cartes métier (repli : initiales). */}
+        {Icon ? <Icon className={compact ? 'h-3.5 w-3.5' : 'h-4 w-4'} aria-hidden="true" /> : initials}
       </span>
       <span className="min-w-0 flex-1 truncate">{label}</span>
       {module.state === 'trial' ? (

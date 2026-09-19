@@ -2,6 +2,13 @@
 <html lang="{{ app()->getLocale() }}" dir="{{ \App\Support\I18nCatalog::isRtl(app()->getLocale()) ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
+    @php
+        // #7713 — image de marque du tenant : logo (chemin fichier local, compatible
+        // dompdf) + couleur primaire pour les en-têtes de tableau. Sans branding
+        // exploitable, le rendu reste STRICTEMENT identique à l'historique.
+        $pdfBrandLogo = \App\Support\PdfBranding::logoPath($company ?? null);
+        $pdfBrandColor = \App\Support\PdfBranding::primaryColor($company ?? null, '');
+    @endphp
     <style>
         body { font-family: DejaVu Sans, sans-serif; font-size: 12px; color: #111; }
         h1 { font-size: 18px; margin: 0 0 8px; }
@@ -11,9 +18,13 @@
         th { background: #f5f5f5; }
         .muted { color: #666; }
         .disclaimer { margin-top: 14px; font-weight: bold; }
+        @if($pdfBrandColor !== '') th { background: {{ $pdfBrandColor }}; color: #ffffff; } @endif
     </style>
 </head>
 <body>
+    @if($pdfBrandLogo !== null)
+    <img src="{{ $pdfBrandLogo }}" alt="" style="height: 48px; margin-bottom: 8px;">
+    @endif
     <h1>{{ __('pdf.receipt_estimate_title') }}</h1>
     <div class="muted">{{ $company->name }} — {{ $company->city }} — {{ $company->country }}</div>
 

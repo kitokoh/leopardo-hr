@@ -1,4 +1,4 @@
-# Guide Jules - Traduction multilingue Leopardo RH
+# Guide Jules - Traduction multilingue Leopardo
 
 ## Objectif
 
@@ -72,7 +72,7 @@ Si `validate.js` echoue a cause d'une dette existante hors changement Jules, doc
 ## Prompt Jules - Anglais
 
 ```text
-Tu es traducteur produit SaaS senior pour Leopardo RH.
+Tu es traducteur produit SaaS senior pour Leopardo.
 
 Mission :
 - Traduire/reviser uniquement les fichiers anglais autorises :
@@ -101,7 +101,7 @@ Sortie attendue :
 ## Prompt Jules - Arabe
 
 ```text
-Tu es traducteur produit SaaS senior arabe RTL pour Leopardo RH.
+Tu es traducteur produit SaaS senior arabe RTL pour Leopardo.
 
 Mission :
 - Traduire/reviser uniquement les fichiers arabes autorises :
@@ -131,7 +131,7 @@ Sortie attendue :
 ## Prompt Jules - Turc
 
 ```text
-Tu es traducteur produit SaaS senior turc pour Leopardo RH.
+Tu es traducteur produit SaaS senior turc pour Leopardo.
 
 Mission :
 - Traduire/reviser uniquement les fichiers turcs autorises :

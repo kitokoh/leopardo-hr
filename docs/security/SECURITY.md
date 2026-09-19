@@ -1,6 +1,6 @@
-# Security Policy — Leopardo RH
+# Security Policy — Leopardo
 
-At Leopardo RH, security is not a feature; it's our foundation. We follow industry best practices to ensure the confidentiality, integrity, and availability of your HR data.
+At Leopardo, security is not a feature; it's our foundation. We follow industry best practices to ensure the confidentiality, integrity, and availability of your HR data.
 
 ## 🛡 Security Architecture
 
