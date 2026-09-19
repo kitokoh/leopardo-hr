@@ -434,6 +434,8 @@ Route::prefix('v1')->group(function (): void {
 
     // BC-17 RETAIL #7672 — module vendeur générique (produits & catégories)
     require __DIR__.'/modules/retail.php';
+    // BC-29 COMMUNICATION — boîte mail connectée + IA, squelette R0 (#7685)
+    require __DIR__.'/modules/communication.php';
 
     // C-PUBLIC #6882 — catalogue public (routes isolées, sans auth)
     require __DIR__.'/modules/catalog_public.php';

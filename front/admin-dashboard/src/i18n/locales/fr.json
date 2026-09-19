@@ -3246,7 +3246,8 @@
     "cabinet": "Coffre documentaire",
     "notifications": "Notifications",
     "evaluations": "Evaluations",
-    "restaurant": "Point de vente (POS)"
+    "restaurant": "Point de vente (POS)",
+    "communication": "Communication (boite mail + IA)"
   },
   "settingsUpdatePassword": "Mettre à jour le mot de passe",
   "companies": {

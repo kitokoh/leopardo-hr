@@ -9,6 +9,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ApiVersionMiddleware;
 use App\Http\Middleware\AuthenticateZktecoDevice;
 use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
+use App\Http\Middleware\Communication\EnsureCommunicationModuleMiddleware;
 use App\Http\Middleware\CompressResponse;
 use App\Http\Middleware\Delivery\EnsureDeliveryModuleMiddleware;
 use App\Http\Middleware\EnsureApiManagerMiddleware;
@@ -195,6 +196,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.restaurantmanager' => EnsureRestaurantManagerModuleMiddleware::class,
             // BC-27 SHOWCASE — gate feature flag company_showcase (#6865/#6866).
             'module.showcase' => \App\Http\Middleware\Showcase\EnsureShowcaseModuleMiddleware::class,
+            // Issue #5742 (CRM PRE) — gate `crm.enabled` des routes /api/v1/crm/* (CrmFeatureGateTest).
+            'crm.enabled' => \App\Http\Middleware\Crm\EnsureCrmEnabledMiddleware::class,
             // RESTO-805 (#6226) — boutique publique RestaurantManager (jeton signé par tenant).
             'restaurant.public.shop' => EnsureRestaurantPublicShopAccess::class,
             // TRAVEL-1001 (#6114) — boutique publique (jeton tenant signé).
@@ -204,6 +207,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.catalog' => \App\Http\Middleware\Catalog\EnsureCatalogModuleMiddleware::class,
             // BC-17 RETAIL — gate feature flag retail (#7672).
             'module.retail' => \App\Http\Middleware\Retail\EnsureRetailModuleMiddleware::class,
+            // BC-29 COMMUNICATION — gate feature flag communication (R0 #7685).
+            'module.communication' => EnsureCommunicationModuleMiddleware::class,
             // C-PUBLIC #6882 — accès public par slug (catalogue vitrine).
             'catalog.public' => \App\Http\Middleware\Catalog\EnsureCatalogPublicAccess::class,
             'delivery.permission' => \App\Http\Middleware\Delivery\EnsureDeliveryPermissionMiddleware::class,
