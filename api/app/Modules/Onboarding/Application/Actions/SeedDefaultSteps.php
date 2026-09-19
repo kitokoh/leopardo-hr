@@ -203,6 +203,19 @@ final class SeedDefaultSteps
             $steps[] = ['key' => 'publish_showcase', 'title' => __('onboarding.step_publish_showcase'), 'required' => false, 'estimated_minutes' => 2];
         }
 
+        // #7640 — checklist orientée agence de voyage : le gérant qui s'est
+        // déclaré « agence » à l'entretien (verticale `travelagency` activée
+        // par `CompleteSetupInterview` → feature flag tenant) démarre par son
+        // réseau, son premier voyage et sa première vente. Étapes déclaratives
+        // (aucun prédicat `StepCompletionGuard`) : vérifier l'existence de
+        // gares/voyages exigerait un import Onboarding → TravelAgency,
+        // interdit par la garde d'isolation inter-modules (#5584).
+        if ($company->hasFeature('travelagency')) {
+            $steps[] = ['key' => 'travel_setup_network', 'title' => __('onboarding.step_travel_setup_network'), 'required' => true, 'estimated_minutes' => 8];
+            $steps[] = ['key' => 'travel_first_trip', 'title' => __('onboarding.step_travel_first_trip'), 'required' => true, 'estimated_minutes' => 5];
+            $steps[] = ['key' => 'travel_first_sale', 'title' => __('onboarding.step_travel_first_sale'), 'required' => false, 'estimated_minutes' => 4];
+        }
+
         $ordered = [];
         $order = 1;
         foreach ($steps as $step) {

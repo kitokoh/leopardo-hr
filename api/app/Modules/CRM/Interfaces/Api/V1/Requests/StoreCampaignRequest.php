@@ -28,6 +28,8 @@ class StoreCampaignRequest extends FormRequest
             'name' => ['required', 'string', 'max:120'],
             'description' => ['nullable', 'string', 'max:255'],
             'channel' => ['required', 'string', 'in:email,sms,whatsapp'],
+            'subject' => ['nullable', 'string', 'max:255'],
+            'body' => ['nullable', 'string', 'max:100000'],
             'segment_id' => ['nullable', 'integer', 'min:1'],
             'audience' => ['nullable', 'array', 'min:1', 'max:10000'],
             'audience.*' => ['integer', 'min:1'],
