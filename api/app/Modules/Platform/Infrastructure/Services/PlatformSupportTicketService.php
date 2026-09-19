@@ -31,8 +31,7 @@ class PlatformSupportTicketService
             $now = now();
 
             /** @var PlatformSupportTicket $ticket */
-            $ticket = PlatformSupportTicket::query()->create([
-                'company_id' => $author->company_id,
+            $ticket = new PlatformSupportTicket([
                 'created_by_employee_id' => $author->id,
                 'subject' => $subject,
                 'category' => $category,
@@ -40,6 +39,9 @@ class PlatformSupportTicketService
                 'status' => PlatformSupportTicket::STATUS_OPEN,
                 'last_message_at' => $now,
             ]);
+            // #7711 : company_id n'est plus mass-assignable — valeur de
+            // confiance issue de l'auteur authentifié, posée en forceFill.
+            $ticket->forceFill(['company_id' => $author->company_id])->save();
 
             PlatformSupportMessage::query()->create([
                 'platform_support_ticket_id' => $ticket->id,
