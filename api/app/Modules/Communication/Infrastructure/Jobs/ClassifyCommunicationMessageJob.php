@@ -72,5 +72,13 @@ final class ClassifyCommunicationMessageJob implements ShouldQueue, TenantScoped
         }
 
         $classifier->classify($message, $this->force);
+
+        // R5 (#7690) — la classification reussie alimente le pipeline des
+        // reponses assistees (politiques off/draft/confirm/auto par boite ×
+        // categorie). Idempotent : UNIQUE (company, message) dans la file
+        // Pending, un rejeu (`force`) ne produit pas de doublon.
+        if ($message->refresh()->classification_status === CommunicationMessage::CLASSIFICATION_CLASSIFIED) {
+            PrepareCommunicationReplyJob::dispatch($this->companyId, $this->messageId);
+        }
     }
 }

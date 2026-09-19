@@ -57,6 +57,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $classified_at
  * @property int|null $crm_contact_id
  * @property string|null $contact_link_status
+ * @property bool $is_auto_reply
+ * @property bool $is_list_message
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
@@ -126,6 +128,10 @@ class CommunicationMessage extends Model
             'ai_confidence' => 'integer',
             'classified_at' => 'datetime',
             'crm_contact_id' => 'integer',
+            // R4 (#7689) — drapeaux auto-repondeur / liste de diffusion
+            // poses par la sync (les headers eux-memes ne sont pas stockes).
+            'is_auto_reply' => 'boolean',
+            'is_list_message' => 'boolean',
         ];
     }
 

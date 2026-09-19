@@ -23,9 +23,14 @@
 
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationCategoryController;
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationContactProposalController;
+use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationFollowUpController;
+use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationFollowUpOptOutController;
+use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationFollowUpRuleController;
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationIntegrationController;
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationMessageClassificationController;
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationModuleStatusController;
+use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationPendingReplyController;
+use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationReplyPolicyController;
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationThreadController;
 use Illuminate\Support\Facades\Route;
 
@@ -63,6 +68,33 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/contact-proposals', [CommunicationContactProposalController::class, 'index']);
         Route::post('/contact-proposals/{proposal}/accept', [CommunicationContactProposalController::class, 'accept'])->whereUuid('proposal');
         Route::post('/contact-proposals/{proposal}/dismiss', [CommunicationContactProposalController::class, 'dismiss'])->whereUuid('proposal');
+
+        // R4 (#7689) — relances automatiques : regles/sequences PERSONNELLES
+        // (boite du proprietaire), file d'attente consultable + annulation,
+        // opt-outs du tenant (garde-fou protecteur).
+        Route::get('/follow-up-rules', [CommunicationFollowUpRuleController::class, 'index']);
+        Route::post('/follow-up-rules', [CommunicationFollowUpRuleController::class, 'store']);
+        Route::patch('/follow-up-rules/{rule}', [CommunicationFollowUpRuleController::class, 'update'])->whereUuid('rule');
+        Route::delete('/follow-up-rules/{rule}', [CommunicationFollowUpRuleController::class, 'destroy'])->whereUuid('rule');
+
+        Route::get('/follow-ups', [CommunicationFollowUpController::class, 'index']);
+        Route::post('/follow-ups/{followUp}/cancel', [CommunicationFollowUpController::class, 'cancel'])->whereUuid('followUp');
+
+        Route::get('/follow-up-opt-outs', [CommunicationFollowUpOptOutController::class, 'index']);
+        Route::post('/follow-up-opt-outs', [CommunicationFollowUpOptOutController::class, 'store']);
+        Route::delete('/follow-up-opt-outs/{optOut}', [CommunicationFollowUpOptOutController::class, 'destroy'])->whereUuid('optOut');
+
+        // R5 (#7690) — reponses assistees : politique PERSONNELLE par boite
+        // × categorie (off/draft/confirm/auto) et file Pending durable —
+        // edition/approbation/rejet reserves au proprietaire de la boite
+        // (approve = SEUL chemin d'envoi du mode confirm).
+        Route::get('/reply-policies', [CommunicationReplyPolicyController::class, 'index']);
+        Route::post('/reply-policies', [CommunicationReplyPolicyController::class, 'store']);
+
+        Route::get('/pending-replies', [CommunicationPendingReplyController::class, 'index']);
+        Route::patch('/pending-replies/{pendingReply}', [CommunicationPendingReplyController::class, 'update'])->whereUuid('pendingReply');
+        Route::post('/pending-replies/{pendingReply}/approve', [CommunicationPendingReplyController::class, 'approve'])->whereUuid('pendingReply');
+        Route::post('/pending-replies/{pendingReply}/reject', [CommunicationPendingReplyController::class, 'reject'])->whereUuid('pendingReply');
     });
 
 // R1 (#7686) — callback OAuth Google : route PUBLIQUE par construction (le

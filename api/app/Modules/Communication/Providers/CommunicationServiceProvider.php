@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Communication\Providers;
 
 use App\AI\Support\AIToolDefinitionRegistry;
+use App\Modules\Communication\Console\Commands\CommunicationSendFollowUpsCommand;
 use App\Modules\Communication\Console\Commands\CommunicationSyncMailboxesCommand;
 use App\Modules\Communication\Domain\Support\CommunicationAiToolCatalog;
 use Illuminate\Support\ServiceProvider;
@@ -40,6 +41,7 @@ class CommunicationServiceProvider extends ServiceProvider
         // enregistrement explicite, pattern TravelAgencyServiceProvider).
         $this->commands([
             CommunicationSyncMailboxesCommand::class,
+            CommunicationSendFollowUpsCommand::class,
         ]);
 
         // R3 (#7688) — outils IA du module (contrat A3 #6850, garde

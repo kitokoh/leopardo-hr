@@ -334,4 +334,56 @@ return [
         'body_excerpt_bytes' => (int) env('COMMUNICATION_CLASSIFY_BODY_EXCERPT_BYTES', 8000),
         'no_proposal_categories' => ['spam_newsletter'],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relances automatiques (BC-29 COMMUNICATION, R4 #7689)
+    |--------------------------------------------------------------------------
+    |
+    | Garde-fous globaux du moteur de relances (spec §3.4) — les regles et
+    | sequences (max 3 etapes) sont configurees PAR UTILISATEUR via l'API ;
+    | ces bornes-ci s'appliquent a tout le monde et ne sont PAS contournables
+    | par les regles :
+    | - `daily_cap_per_user`    : plafond journalier de relances par boite ;
+    | - `contact_daily_cap`     : plafond journalier par DESTINATAIRE (tous
+    |                             fils/regles confondus) — defaut 1 ;
+    | - `quiet_hours`           : fenetre horaire pendant laquelle AUCUNE
+    |                             relance ne part (les echeances restent
+    |                             `pending` et repartent a la passe suivante).
+    |                             `start` > `end` = fenetre nocturne (20h->8h).
+    |
+    */
+
+    'follow_ups' => [
+        'max_steps' => 3,
+        'daily_cap_per_user' => (int) env('COMMUNICATION_FOLLOW_UP_DAILY_CAP', 25),
+        'contact_daily_cap' => (int) env('COMMUNICATION_FOLLOW_UP_CONTACT_DAILY_CAP', 1),
+        'quiet_hours' => [
+            'start' => (int) env('COMMUNICATION_FOLLOW_UP_QUIET_START', 20),
+            'end' => (int) env('COMMUNICATION_FOLLOW_UP_QUIET_END', 8),
+            'timezone' => env('COMMUNICATION_FOLLOW_UP_TIMEZONE', 'Africa/Algiers'),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Assisted replies (BC-29 Communication R5, #7690 — spec §3.5)
+    |--------------------------------------------------------------------------
+    |
+    | Bornes protectrices des reponses assistees. La fenetre calme est
+    | PARTAGEE avec les relances R4 (`follow_ups.quiet_hours`) — aucun envoi
+    | automatique la nuit, quel que soit le canal. Les categories interdites
+    | en mode `auto` (finance/RH/juridique) sont bloquees EN DUR dans
+    | `CommunicationReplyPolicy::BLOCKED_AUTO_CATEGORIES`, jamais en config :
+    | non contournables par environnement.
+    |
+    | - `auto_daily_cap`         : plafond journalier d'envois AUTO par boite ;
+    | - `reply_body_excerpt_bytes`: borne du corps transmis au LLM (cout §5.6).
+    |
+    */
+
+    'replies' => [
+        'auto_daily_cap' => (int) env('COMMUNICATION_REPLY_AUTO_DAILY_CAP', 25),
+        'reply_body_excerpt_bytes' => (int) env('COMMUNICATION_REPLY_BODY_EXCERPT_BYTES', 8000),
+    ],
 ];
