@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -41,6 +42,9 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $connected_at
  * @property Carbon|null $revoked_at
  * @property string|null $last_error
+ * @property string|null $sync_history_id
+ * @property string|null $sync_page_token
+ * @property Carbon|null $last_synced_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
@@ -103,6 +107,7 @@ class CommunicationIntegration extends Model
             'expires_at' => 'datetime',
             'connected_at' => 'datetime',
             'revoked_at' => 'datetime',
+            'last_synced_at' => 'datetime',
         ];
     }
 
@@ -114,9 +119,48 @@ class CommunicationIntegration extends Model
         return $this->belongsTo(Employee::class);
     }
 
+    /**
+     * Fils synchronises de la boite (R2 #7687).
+     *
+     * @return HasMany<CommunicationThread, $this>
+     */
+    public function threads(): HasMany
+    {
+        return $this->hasMany(CommunicationThread::class, 'integration_id');
+    }
+
     public function isActive(): bool
     {
         return $this->status === self::STATUS_ACTIVE;
+    }
+
+    /**
+     * La boite a-t-elle accorde le scope d'ENVOI Gmail (R4 #7689) ? Les
+     * relances automatiques exigent `gmail.send` — demande a l'activation
+     * via POST /integrations/google `with_send=true` (scopes incrementaux).
+     */
+    public function hasSendScope(): bool
+    {
+        return in_array(
+            'https://www.googleapis.com/auth/gmail.send',
+            $this->scopes ?? [],
+            true
+        );
+    }
+
+    /**
+     * La boite a-t-elle accorde le scope de COMPOSITION Gmail (R5 #7690) ?
+     * La politique de reponse `draft` depose un brouillon dans la boite —
+     * `gmail.compose` est demande avec `gmail.send` a l'activation via
+     * POST /integrations/google `with_send=true` (scopes incrementaux).
+     */
+    public function hasComposeScope(): bool
+    {
+        return in_array(
+            'https://www.googleapis.com/auth/gmail.compose',
+            $this->scopes ?? [],
+            true
+        );
     }
 
     /**

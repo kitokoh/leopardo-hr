@@ -498,6 +498,12 @@ class CommunicationIntegrationTest extends TestCase
         // Le callback est public : on repart d'un client anonyme.
         app('auth')->forgetGuards();
 
-        return (string) $query['state'];
+        $state = $query['state'] ?? null;
+
+        if (! is_string($state)) {
+            $this->fail("state manquant dans l'URL d'autorisation Google.");
+        }
+
+        return $state;
     }
 }

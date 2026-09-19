@@ -56,6 +56,22 @@ class GoogleGmailOAuthService
     ];
 
     /**
+     * Scope d'ENVOI Gmail — demande UNIQUEMENT quand l'utilisateur active
+     * les relances automatiques (R4 #7689, « scope gmail.send demande a
+     * l'activation ») : POST /integrations/google avec `with_send=true`
+     * (consentement incremental, `include_granted_scopes`).
+     */
+    public const GMAIL_SEND_SCOPE = 'https://www.googleapis.com/auth/gmail.send';
+
+    /**
+     * Scope de COMPOSITION Gmail (creation de brouillons) — demande avec
+     * `gmail.send` quand l'utilisateur active les capacites d'ecriture
+     * (R5 #7690 : politique `draft` = brouillon depose dans SA boite).
+     * Meme mecanique incrementale que GMAIL_SEND_SCOPE.
+     */
+    public const GMAIL_COMPOSE_SCOPE = 'https://www.googleapis.com/auth/gmail.compose';
+
+    /**
      * Les trois variables d'env necessaires au flow (pattern #5170).
      */
     public function isConfigured(): bool
