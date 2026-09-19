@@ -7326,5 +7326,197 @@
     "save": "Save",
     "saved": "Branding updated.",
     "saveError": "Saving failed. Please try again."
+  },
+  "communicationApp": {
+    "moduleTitle": "Communication",
+    "moduleSubtitle": "Connected mailbox, AI classification and assisted replies — human validation at every step.",
+    "tabs": {
+      "inbox": "Connected mailbox",
+      "replies": "Confirmation queue",
+      "settings": "Settings"
+    },
+    "common": {
+      "loading": "Loading…",
+      "retry": "Retry",
+      "error": "Something went wrong. Please try again.",
+      "featureLocked": "The Communication module is not enabled for your company.",
+      "refresh": "Refresh",
+      "save": "Save",
+      "cancel": "Cancel",
+      "close": "Close",
+      "confirm": "Confirm",
+      "stage": "Stage :stage"
+    },
+    "mailbox": {
+      "title": "Connected mailbox",
+      "subtitle": "Connect your personal Gmail mailbox: read-only by default, sending only with explicit opt-in.",
+      "connect": "Connect Google",
+      "connectHint": "You will be redirected to Google to grant read access to your mailbox.",
+      "connectWithSend": "Also allow sending (follow-ups and replies)",
+      "withSendHint": "Adds the gmail.send and gmail.compose scopes — required for follow-ups and assisted replies.",
+      "connecting": "Redirecting to Google…",
+      "connectError": "Could not start the Google connection.",
+      "empty": "No mailbox connected",
+      "emptyHint": "Connect your Google account to synchronise your conversation threads.",
+      "status": {
+        "active": "Active",
+        "revoked": "Revoked",
+        "error": "Error"
+      },
+      "revoke": "Revoke",
+      "revokeConfirm": "Revoke this mailbox? Synchronised data and related policies will be purged.",
+      "revokeSuccess": "Mailbox revoked: related data has been purged.",
+      "revokeError": "Revocation failed.",
+      "connectedAt": "Connected on",
+      "scopeSend": "Sending allowed",
+      "readOnly": "Read-only"
+    },
+    "threads": {
+      "title": "Threads",
+      "subtitle": "Synchronised Gmail threads, classified by AI using your company taxonomy.",
+      "empty": "No threads synchronised yet",
+      "emptyHint": "Synchronisation runs periodically after the mailbox is connected.",
+      "messagesCount": ":count messages",
+      "showMessages": "Show messages",
+      "hideMessages": "Hide messages",
+      "loadingMessages": "Loading messages…",
+      "messagesError": "Could not load the messages of this thread.",
+      "noSubject": "(no subject)"
+    },
+    "messages": {
+      "from": "From",
+      "to": "To",
+      "category": "Category",
+      "uncategorized": "Uncategorised",
+      "confidence": "Confidence: :value%",
+      "attachments": "Attachments",
+      "sentiment": {
+        "positive": "Positive",
+        "neutral": "Neutral",
+        "negative": "Negative"
+      },
+      "action": {
+        "reply": "Reply",
+        "follow_up": "Follow up",
+        "schedule": "Schedule",
+        "task": "Task",
+        "payment": "Payment",
+        "none": "No action"
+      },
+      "reclassify": "Reclassify",
+      "reclassifyQueued": "Reclassification requested — the result will arrive shortly.",
+      "reclassifyError": "Reclassification failed."
+    },
+    "proposals": {
+      "title": "Contact proposals",
+      "subtitle": "AI suggests CRM contacts from your exchanges — nothing is created without your approval.",
+      "empty": "No pending proposals",
+      "accept": "Accept",
+      "dismiss": "Dismiss",
+      "accepted": "Contact created in the CRM.",
+      "dismissed": "Proposal dismissed.",
+      "actionError": "The action on the proposal failed.",
+      "seenIn": "Seen in :count messages"
+    },
+    "replies": {
+      "title": "Confirmation queue",
+      "subtitle": "AI reply proposals awaiting review: read, edit, then approve or reject. Nothing is sent without you.",
+      "empty": "No reply proposals",
+      "emptyHint": "Proposals appear here when a \"draft\" or \"confirm\" policy is active.",
+      "filterLabel": "Filter by status",
+      "status": {
+        "pending": "Pending",
+        "drafted": "Draft created",
+        "sent": "Sent",
+        "rejected": "Rejected",
+        "skipped": "Skipped",
+        "failed": "Failed"
+      },
+      "mode": {
+        "draft": "Draft",
+        "confirm": "Confirm",
+        "auto": "Automatic"
+      },
+      "modeLabel": "Applied policy",
+      "to": "Recipient",
+      "subject": "Subject",
+      "body": "Reply body",
+      "skipReason": "Reason",
+      "edit": "Edit",
+      "saved": "Proposal updated.",
+      "saveError": "Saving the proposal failed.",
+      "approve": "Approve and send",
+      "approveSuccess": "Reply approved and sent.",
+      "reject": "Reject",
+      "rejectSuccess": "Proposal rejected.",
+      "blocked": "Sending blocked by a safeguard (:reason).",
+      "rateLimited": "Too many approvals in a short time — please wait a moment.",
+      "sendFailed": "Sending via Gmail failed. The proposal stays in the queue.",
+      "actionError": "The action failed.",
+      "confidence": "AI confidence: :value%"
+    },
+    "policies": {
+      "title": "Reply policies",
+      "subtitle": "Choose, per mailbox and per category, what the AI is allowed to do. Default: nothing.",
+      "mailbox": "Mailbox",
+      "category": "Category",
+      "level": "Policy",
+      "off": "Off",
+      "offHint": "No reply proposals for this category.",
+      "draft": "Gmail draft",
+      "draftHint": "AI drops a draft in Gmail — you send it yourself.",
+      "confirmPolicy": "Confirm before sending",
+      "confirmHint": "AI proposes, you approve in the confirmation queue before anything is sent.",
+      "auto": "Automatic",
+      "autoHint": "Automatic sending with safeguards (opt-in, daily cap, quiet hours).",
+      "autoBlocked": "Sensitive category: automatic mode is forbidden (finance, HR, legal).",
+      "saved": "Policy saved.",
+      "saveError": "Saving the policy failed.",
+      "errors": {
+        "autoCategoryBlocked": "This category is blocked in automatic mode.",
+        "sendScopeRequired": "Reconnect the mailbox with sending allowed (gmail.send scope).",
+        "composeScopeRequired": "Reconnect the mailbox with sending allowed (gmail.compose scope).",
+        "categoryUnknown": "Unknown category for your company."
+      }
+    },
+    "followUps": {
+      "title": "Follow-up rules",
+      "subtitle": "Automatic follow-up sequences for your mailbox: 3 steps maximum, stops as soon as a reply arrives.",
+      "empty": "No follow-up rules",
+      "emptyHint": "Create a rule to automatically follow up on threads left without a reply.",
+      "ruleName": "Rule name",
+      "ruleNamePlaceholder": "E.g. quote follow-up",
+      "active": "Active",
+      "inactive": "Inactive",
+      "steps": "Steps",
+      "stepLabel": "Step :position — after :days days",
+      "delayDays": "Delay (days)",
+      "addStep": "Add a step",
+      "removeStep": "Remove step",
+      "create": "Create rule",
+      "created": "Follow-up rule created.",
+      "createError": "Creating the rule failed.",
+      "deleteRule": "Delete",
+      "deleteConfirm": "Delete this follow-up rule?",
+      "deleted": "Rule deleted.",
+      "updated": "Rule updated.",
+      "updateError": "Updating the rule failed."
+    },
+    "optOuts": {
+      "title": "Follow-up exclusions",
+      "subtitle": "Recipients who are never followed up automatically, whatever the rule.",
+      "empty": "No exclusions recorded",
+      "email": "Email address",
+      "emailPlaceholder": "contact@example.com",
+      "add": "Exclude",
+      "added": "Address excluded from follow-ups.",
+      "addError": "Adding the exclusion failed.",
+      "remove": "Remove",
+      "removed": "Exclusion removed.",
+      "source": {
+        "manual": "Manual",
+        "unsubscribe": "Unsubscribed"
+      }
+    }
   }
 }
