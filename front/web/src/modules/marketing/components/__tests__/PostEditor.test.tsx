@@ -32,6 +32,7 @@ describe('PostEditor', () => {
       content: 'A new post',
       targetPlatforms: ['linkedin', 'twitter'],
       scheduledAt: null,
+      mediaPaths: [],
     });
   });
 
