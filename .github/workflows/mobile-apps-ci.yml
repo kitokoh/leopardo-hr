@@ -243,6 +243,8 @@ jobs:
             path: front/mobile_apps/leopardo_marketing
           - name: leopardo_travel_agent
             path: front/mobile_apps/leopardo_travel_agent
+          - name: leopardo_cameras
+            path: front/mobile_apps/leopardo_cameras
 
     steps:
       - name: Checkout code
@@ -378,6 +380,9 @@ jobs:
           - name: leopardo_travel_agent
             path: front/mobile_apps/leopardo_travel_agent
             artifact: leopardo-travel-agent-debug-apk
+          - name: leopardo_cameras
+            path: front/mobile_apps/leopardo_cameras
+            artifact: leopardo-cameras-debug-apk
 
     steps:
       - name: Checkout code
