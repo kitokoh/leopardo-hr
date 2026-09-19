@@ -114,7 +114,7 @@ class RetailMarketPaymentPublicController extends Controller
         $secret = (string) config('services.retail_market.webhook_secret');
 
         if ($secret === '') {
-            Log::error('Retail market webhook: secret not configured — webhook REJETÉ (fail-closed).');
+            Log::error('Retail market webhook: secret not configured - webhook rejected (fail-closed).');
 
             return null;
         }
