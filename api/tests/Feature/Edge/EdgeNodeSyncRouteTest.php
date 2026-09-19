@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Edge;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncLog;
+use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
 use Illuminate\Support\Facades\DB;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -34,6 +34,11 @@ class EdgeNodeSyncRouteTest extends TestCase
     {
         DB::statement('DROP TABLE IF EXISTS edge_nodes CASCADE');
         DB::statement('DROP TABLE IF EXISTS sync_logs CASCADE');
+        // #7452 — ce tearDown a remplacé edge_nodes par un schéma legacy :
+        // restaurer la table canonique de la fixture (le cache #6928 ne la
+        // rebâtit plus), sinon les classes MVP suivantes échouent en
+        // « relation "edge_nodes" does not exist ».
+        $this->recreateCanonicalEdgeNodesTable();
         $this->tearDownMvpSchema();
         parent::tearDown();
     }

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Tests\Feature\Edge;
 
 use App\Modules\EdgeSync\Application\Actions\PushEdgeRecords;
-use App\Modules\EdgeSync\Application\Services\SyncEngineService;
+// #7452 — la classe vit dans Infrastructure\Services (l'import Application\Services ne résout pas).
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
 use App\Modules\EdgeSync\Infrastructure\Services\EdgeDaemonSyncClient;
-use Illuminate\Support\Facades\DB;
+use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
@@ -33,8 +33,11 @@ class EdgeSyncDedupTest extends TestCase
 
     protected function tearDown(): void
     {
-        DB::statement('DROP TABLE IF EXISTS sync_queue CASCADE');
-        DB::statement('DROP TABLE IF EXISTS edge_nodes CASCADE');
+        // #7452 — ne PAS dropper sync_queue/edge_nodes ici : ce sont désormais
+        // les tables canoniques des migrations tenant (dedup_key inclus via
+        // #6554). Les dropper détruisait le schéma pour toutes les classes
+        // suivantes du worker (canonicalSchemaReady ne les surveille pas).
+        // L'isolation des données est assurée par la transaction par test.
         parent::tearDown();
     }
 

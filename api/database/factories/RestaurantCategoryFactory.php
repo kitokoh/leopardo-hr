@@ -18,6 +18,9 @@ class RestaurantCategoryFactory extends Factory
     public function definition(): array
     {
         return [
+            // #7452 — company_id est NOT NULL : hors contexte tenant, le trait
+            // BelongsToCompany ne peut pas l'injecter (cf. RestaurantBranchFactory).
+            'company_id' => \App\Core\Tenant\Domain\Models\Company::factory(),
             'branch_id' => null,
             'name' => $this->faker->unique()->words(2, true),
             'color' => $this->faker->optional()->hexColor(),

@@ -38,8 +38,7 @@ final class CreateOnlineOrderAction
     public function __construct(
         private readonly BillCalculator $calculator,
         private readonly RestaurantOutboxPublisher $outbox,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{
@@ -143,11 +142,16 @@ final class CreateOnlineOrderAction
 
             $order->load('items');
             $totals = $this->calculator->calculate($order);
+            // Même workflow que le pipeline RESTO-805 routé
+            // (RestaurantPublicOrderService::createOrder) : une commande en
+            // ligne soumise par le client passe en `open` (payable / visible
+            // cuisine) dès que les totaux serveur sont posés.
             $order->forceFill([
                 'subtotal_minor' => $totals['subtotal_minor'],
                 'tax_minor' => $totals['tax_minor'],
                 'discount_minor' => $totals['discount_minor'],
                 'total_minor' => $totals['total_minor'],
+                'status' => OrderStatus::OPEN->value,
             ])->save();
 
             return $order;
