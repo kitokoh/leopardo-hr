@@ -39,7 +39,7 @@
       <a href="#demo" data-i18n="nav.demo">Live demo</a>
       <a href="#opensource" data-i18n="nav.opensource">Open source</a>
       <a class="btn btn-ghost" href="https://github.com/kitokoh/leopardo-hr" target="_blank" rel="noopener">GitHub ★</a>
-      <button class="btn lang-toggle" id="langToggle" aria-label="Toggle language">FR</button>
+      <button class="btn lang-toggle" id="langToggle" aria-label="Switch language">FR</button>
     </div>
   </div>
 </nav>
@@ -52,6 +52,7 @@
       <p class="hero-sub" data-i18n="hero.sub">Leopardo is the business suite for field-based companies — HR &amp; payroll, attendance, leave, CRM, accounting and operations, on web, mobile and kiosks.</p>
       <div class="hero-cta">
         <a class="btn btn-solid btn-lg" href="https://gestionemployer-backend.vercel.app" target="_blank" rel="noopener" data-i18n="hero.cta1">See the live demo</a>
+        <a class="btn btn-ghost btn-lg" href="https://gestionemployer-backend.vercel.app/contact" target="_blank" rel="noopener" data-i18n="hero.ctaContact">Contact / Get a demo</a>
         <a class="btn btn-ghost btn-lg" href="https://github.com/kitokoh/leopardo-hr" target="_blank" rel="noopener" data-i18n="hero.cta2">Star on GitHub</a>
       </div>
       <p class="hero-note" data-i18n="hero.note">14-day free trial, no credit card · guided demo · onboarding in under 30 minutes</p>
@@ -158,7 +159,8 @@
     <p class="foot-links">
       <a href="https://github.com/kitokoh/leopardo-hr" target="_blank" rel="noopener">GitHub</a> ·
       <a href="https://github.com/kitokoh/leopardo-hr/tree/main/docs" target="_blank" rel="noopener" data-i18n="footer.docs">Documentation</a> ·
-      <a href="https://github.com/kitokoh/leopardo-hr/security" target="_blank" rel="noopener" data-i18n="footer.security">Security</a>
+      <a href="https://github.com/kitokoh/leopardo-hr/security" target="_blank" rel="noopener" data-i18n="footer.security">Security</a> ·
+      <a href="https://gestionemployer-backend.vercel.app/contact" target="_blank" rel="noopener" data-i18n="footer.contact">Contact / Get a demo</a>
     </p>
   </div>
 </footer>
@@ -170,7 +172,7 @@ const I18N = {
     "hero.eyebrow":"Open source · MIT · Self-hosted or cloud",
     "hero.title":"The <span class=\"teal\">business suite</span> for field-based companies",
     "hero.sub":"Leopardo is the business suite for field-based companies — HR &amp; payroll, attendance, leave, CRM, accounting and operations, on web, mobile and kiosks.",
-    "hero.cta1":"See the live demo","hero.cta2":"Star on GitHub",
+    "hero.cta1":"See the live demo","hero.cta2":"Star on GitHub","hero.ctaContact":"Contact / Get a demo",
     "hero.note":"14-day free trial, no credit card · guided demo · onboarding in under 30 minutes",
     "hero.tag1":"Mobile-first multi-country payroll","hero.tag2":"Biometric kiosks (ZKTeco)","hero.tag3":"Offline edge mode","hero.tag4":"Multi-tenant",
     "stats.modules":"DDD business modules","stats.endpoints":"API endpoints (OpenAPI)","stats.tests":"Backend test files",
@@ -214,14 +216,15 @@ const I18N = {
     "os.sub":"MIT licensed, self-hostable, community-driven. No vendor lock-in, no closed core — and a 14-day free trial with no credit card if you'd rather not host it yourself.",
     "os.cta2":"Contributing guide",
     "footer.tagline":"the business suite for field-based companies. Open source, MIT licensed.",
-    "footer.docs":"Documentation","footer.security":"Security"
+    "footer.docs":"Documentation","footer.security":"Security","footer.contact":"Contact / Get a demo",
+    "lang.toggleAria":"Switch the site to French"
   },
   fr: {
     "nav.suite":"La suite","nav.audiences":"Pour qui","nav.apps":"Apps","nav.demo":"Démo live","nav.opensource":"Open source",
     "hero.eyebrow":"Open source · MIT · Auto-hébergé ou cloud",
     "hero.title":"La <span class=\"teal\">suite métier</span> des entreprises de terrain",
     "hero.sub":"Leopardo est la suite métier des entreprises de terrain — RH &amp; paie, pointage, absences, CRM, comptabilité et opérations, sur web, mobile et bornes.",
-    "hero.cta1":"Voir la démo live","hero.cta2":"Star sur GitHub",
+    "hero.cta1":"Voir la démo live","hero.cta2":"Star sur GitHub","hero.ctaContact":"Contact / Demander une démo",
     "hero.note":"Essai gratuit 14 jours sans CB · démo guidée · onboarding en moins de 30 minutes",
     "hero.tag1":"Paie multi-pays mobile-first","hero.tag2":"Bornes biométriques (ZKTeco)","hero.tag3":"Mode edge hors-ligne","hero.tag4":"Multi-tenant",
     "stats.modules":"modules métier DDD","stats.endpoints":"endpoints API (OpenAPI)","stats.tests":"fichiers de tests backend",
@@ -265,20 +268,41 @@ const I18N = {
     "os.sub":"Licence MIT, auto-hébergeable, porté par la communauté. Aucun verrouillage, aucun cœur fermé — et un essai gratuit de 14 jours sans CB si vous préférez ne pas l'héberger vous-même.",
     "os.cta2":"Guide de contribution",
     "footer.tagline":"la suite métier des entreprises de terrain. Open source, sous licence MIT.",
-    "footer.docs":"Documentation","footer.security":"Sécurité"
+    "footer.docs":"Documentation","footer.security":"Sécurité","footer.contact":"Contact / Demander une démo",
+    "lang.toggleAria":"Passer le site en anglais"
   }
 };
 let lang = "en";
+// UX #7708 : la langue choisie est persistée (localStorage) et, au premier
+// chargement, détectée depuis navigator.language (fr → FR, sinon EN).
+const LANG_STORAGE_KEY = "leopardo-gh-pages-lang";
+try {
+  const stored = localStorage.getItem(LANG_STORAGE_KEY);
+  if (stored === "en" || stored === "fr") {
+    lang = stored;
+  } else if ((navigator.language || "").toLowerCase().startsWith("fr")) {
+    lang = "fr";
+  }
+} catch (e) {
+  /* stockage indisponible (navigation privée) : défaut EN */
+}
 function applyLang() {
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.getAttribute("data-i18n");
     if (I18N[lang] && I18N[lang][key] !== undefined) el.innerHTML = I18N[lang][key];
   });
-  document.getElementById("langToggle").textContent = lang === "en" ? "FR" : "EN";
+  const toggle = document.getElementById("langToggle");
+  toggle.textContent = lang === "en" ? "FR" : "EN";
+  toggle.setAttribute("aria-label", I18N[lang]["lang.toggleAria"]);
   document.documentElement.lang = lang;
 }
 document.getElementById("langToggle").addEventListener("click", () => {
   lang = lang === "en" ? "fr" : "en";
+  try {
+    localStorage.setItem(LANG_STORAGE_KEY, lang);
+  } catch (e) {
+    /* stockage indisponible : le choix vaut pour la session courante */
+  }
   applyLang();
 });
 applyLang();
