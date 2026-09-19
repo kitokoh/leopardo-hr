@@ -7296,5 +7296,197 @@
     "save": "Enregistrer",
     "saved": "Image de marque mise à jour.",
     "saveError": "Échec de l'enregistrement. Réessayez."
+  },
+  "communicationApp": {
+    "moduleTitle": "Communication",
+    "moduleSubtitle": "Boîte mail connectée, classement IA et réponses assistées — validation humaine à chaque étape.",
+    "tabs": {
+      "inbox": "Boîte connectée",
+      "replies": "File de confirmations",
+      "settings": "Réglages"
+    },
+    "common": {
+      "loading": "Chargement…",
+      "retry": "Réessayer",
+      "error": "Une erreur est survenue. Réessayez.",
+      "featureLocked": "Le module Communication n'est pas activé pour votre entreprise.",
+      "refresh": "Actualiser",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "close": "Fermer",
+      "confirm": "Confirmer",
+      "stage": "Étape :stage"
+    },
+    "mailbox": {
+      "title": "Boîte connectée",
+      "subtitle": "Connectez votre boîte Gmail personnelle : lecture seule par défaut, envoi uniquement sur opt-in explicite.",
+      "connect": "Connecter Google",
+      "connectHint": "Vous serez redirigé vers Google pour autoriser l'accès en lecture à votre boîte.",
+      "connectWithSend": "Autoriser aussi l'envoi (relances et réponses)",
+      "withSendHint": "Ajoute les scopes gmail.send et gmail.compose — requis pour les relances et les réponses assistées.",
+      "connecting": "Redirection vers Google…",
+      "connectError": "Impossible de démarrer la connexion Google.",
+      "empty": "Aucune boîte connectée",
+      "emptyHint": "Connectez votre compte Google pour synchroniser vos fils de discussion.",
+      "status": {
+        "active": "Active",
+        "revoked": "Révoquée",
+        "error": "Erreur"
+      },
+      "revoke": "Révoquer",
+      "revokeConfirm": "Révoquer cette boîte ? Les données synchronisées et les politiques associées seront purgées.",
+      "revokeSuccess": "Boîte révoquée : les données associées ont été purgées.",
+      "revokeError": "La révocation a échoué.",
+      "connectedAt": "Connectée le",
+      "scopeSend": "Envoi autorisé",
+      "readOnly": "Lecture seule"
+    },
+    "threads": {
+      "title": "Fils de discussion",
+      "subtitle": "Fils Gmail synchronisés, classés par l'IA selon la taxonomie de votre entreprise.",
+      "empty": "Aucun fil synchronisé pour le moment",
+      "emptyHint": "La synchronisation s'exécute périodiquement après la connexion de la boîte.",
+      "messagesCount": ":count messages",
+      "showMessages": "Voir les messages",
+      "hideMessages": "Masquer les messages",
+      "loadingMessages": "Chargement des messages…",
+      "messagesError": "Impossible de charger les messages de ce fil.",
+      "noSubject": "(sans objet)"
+    },
+    "messages": {
+      "from": "De",
+      "to": "À",
+      "category": "Catégorie",
+      "uncategorized": "Non classé",
+      "confidence": "Confiance : :value %",
+      "attachments": "Pièces jointes",
+      "sentiment": {
+        "positive": "Positif",
+        "neutral": "Neutre",
+        "negative": "Négatif"
+      },
+      "action": {
+        "reply": "Répondre",
+        "follow_up": "Relancer",
+        "schedule": "Planifier",
+        "task": "Tâche",
+        "payment": "Paiement",
+        "none": "Aucune action"
+      },
+      "reclassify": "Reclasser",
+      "reclassifyQueued": "Reclassement demandé — le résultat arrive sous peu.",
+      "reclassifyError": "Le reclassement a échoué."
+    },
+    "proposals": {
+      "title": "Propositions de contacts",
+      "subtitle": "L'IA propose des contacts CRM depuis vos échanges — rien n'est créé sans votre accord.",
+      "empty": "Aucune proposition en attente",
+      "accept": "Accepter",
+      "dismiss": "Écarter",
+      "accepted": "Contact créé dans le CRM.",
+      "dismissed": "Proposition écartée.",
+      "actionError": "L'action sur la proposition a échoué.",
+      "seenIn": "Vu dans :count messages"
+    },
+    "replies": {
+      "title": "File de confirmations",
+      "subtitle": "Propositions de réponses IA en attente : relisez, éditez puis approuvez ou rejetez. Rien ne part sans vous.",
+      "empty": "Aucune proposition de réponse",
+      "emptyHint": "Les propositions apparaissent ici quand une politique « brouillon » ou « confirmer » est active.",
+      "filterLabel": "Filtrer par statut",
+      "status": {
+        "pending": "En attente",
+        "drafted": "Brouillon créé",
+        "sent": "Envoyée",
+        "rejected": "Rejetée",
+        "skipped": "Ignorée",
+        "failed": "Échouée"
+      },
+      "mode": {
+        "draft": "Brouillon",
+        "confirm": "Confirmer",
+        "auto": "Automatique"
+      },
+      "modeLabel": "Politique appliquée",
+      "to": "Destinataire",
+      "subject": "Objet",
+      "body": "Corps de la réponse",
+      "skipReason": "Motif",
+      "edit": "Éditer",
+      "saved": "Proposition mise à jour.",
+      "saveError": "L'enregistrement de la proposition a échoué.",
+      "approve": "Approuver et envoyer",
+      "approveSuccess": "Réponse approuvée et envoyée.",
+      "reject": "Rejeter",
+      "rejectSuccess": "Proposition rejetée.",
+      "blocked": "Envoi bloqué par un garde-fou (:reason).",
+      "rateLimited": "Trop d'approbations rapprochées — patientez un instant.",
+      "sendFailed": "L'envoi via Gmail a échoué. La proposition reste en file.",
+      "actionError": "L'action a échoué.",
+      "confidence": "Confiance IA : :value %"
+    },
+    "policies": {
+      "title": "Politiques de réponse",
+      "subtitle": "Choisissez, par boîte et par catégorie, ce que l'IA a le droit de faire. Par défaut : rien.",
+      "mailbox": "Boîte",
+      "category": "Catégorie",
+      "level": "Politique",
+      "off": "Désactivé",
+      "offHint": "Aucune proposition de réponse pour cette catégorie.",
+      "draft": "Brouillon Gmail",
+      "draftHint": "L'IA dépose un brouillon dans Gmail — vous envoyez vous-même.",
+      "confirmPolicy": "Confirmer avant envoi",
+      "confirmHint": "L'IA propose, vous approuvez dans la file de confirmations avant tout envoi.",
+      "auto": "Automatique",
+      "autoHint": "Envoi automatique avec garde-fous (opt-in, plafond quotidien, heures calmes).",
+      "autoBlocked": "Catégorie sensible : le mode automatique est interdit (finance, RH, juridique).",
+      "saved": "Politique enregistrée.",
+      "saveError": "L'enregistrement de la politique a échoué.",
+      "errors": {
+        "autoCategoryBlocked": "Cette catégorie est bloquée en mode automatique.",
+        "sendScopeRequired": "Reconnectez la boîte avec l'envoi autorisé (scope gmail.send).",
+        "composeScopeRequired": "Reconnectez la boîte avec l'envoi autorisé (scope gmail.compose).",
+        "categoryUnknown": "Catégorie inconnue pour votre entreprise."
+      }
+    },
+    "followUps": {
+      "title": "Règles de relance",
+      "subtitle": "Séquences de relance automatiques de votre boîte : 3 étapes maximum, arrêt dès qu'une réponse arrive.",
+      "empty": "Aucune règle de relance",
+      "emptyHint": "Créez une règle pour relancer automatiquement les fils restés sans réponse.",
+      "ruleName": "Nom de la règle",
+      "ruleNamePlaceholder": "Ex. : relance devis",
+      "active": "Active",
+      "inactive": "Inactive",
+      "steps": "Étapes",
+      "stepLabel": "Étape :position — après :days jours",
+      "delayDays": "Délai (jours)",
+      "addStep": "Ajouter une étape",
+      "removeStep": "Retirer l'étape",
+      "create": "Créer la règle",
+      "created": "Règle de relance créée.",
+      "createError": "La création de la règle a échoué.",
+      "deleteRule": "Supprimer",
+      "deleteConfirm": "Supprimer cette règle de relance ?",
+      "deleted": "Règle supprimée.",
+      "updated": "Règle mise à jour.",
+      "updateError": "La mise à jour de la règle a échoué."
+    },
+    "optOuts": {
+      "title": "Exclusions de relance",
+      "subtitle": "Destinataires jamais relancés automatiquement, quelle que soit la règle.",
+      "empty": "Aucune exclusion enregistrée",
+      "email": "Adresse email",
+      "emailPlaceholder": "contact@exemple.com",
+      "add": "Exclure",
+      "added": "Adresse exclue des relances.",
+      "addError": "L'ajout de l'exclusion a échoué.",
+      "remove": "Retirer",
+      "removed": "Exclusion retirée.",
+      "source": {
+        "manual": "Manuel",
+        "unsubscribe": "Désinscription"
+      }
+    }
   }
 }

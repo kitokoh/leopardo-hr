@@ -211,4 +211,7 @@ return [
     'support_ticket_tenant_reply_intro' => 'ردّت شركة :company على التذكرة #:ticket («:subject»).',
     'support_ticket_tenant_reply_footer' => 'سجّل الدخول إلى وحدة تحكم المنصة لقراءة الرد.',
 
+    // BC-29 Communication R4 (#7689) — قالب المتابعة التلقائية.
+    'communication_follow_up_subject' => 'متابعة بخصوص: :subject',
+    'communication_follow_up_body' => "مرحباً،\n\nأود المتابعة بخصوص رسالتي السابقة \":subject\" التي لم تتلقَّ رداً بعد.\n\nهل سنحت لكم الفرصة للاطلاع عليها؟\n\nمع أطيب التحيات،\n:name",
 ];

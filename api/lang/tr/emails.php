@@ -211,4 +211,7 @@ return [
     'support_ticket_tenant_reply_intro' => ':company şirketi #:ticket numaralı bilete yanıt verdi («:subject»).',
     'support_ticket_tenant_reply_footer' => 'Yanıtı okumak için platform konsoluna giriş yapın.',
 
+    // BC-29 Communication R4 (#7689) — otomatik takip şablonu.
+    'communication_follow_up_subject' => 'Hatırlatma: :subject',
+    'communication_follow_up_body' => "Merhaba,\n\nHenüz yanıt almayan \":subject\" konulu önceki mesajımla ilgili size tekrar yazıyorum.\n\nİnceleme fırsatınız oldu mu?\n\nSaygılarımla,\n:name",
 ];

@@ -211,4 +211,7 @@ return [
     'support_ticket_tenant_reply_intro' => 'The company :company replied to ticket #:ticket (":subject").',
     'support_ticket_tenant_reply_footer' => 'Sign in to the platform console to read the reply.',
 
+    // BC-29 Communication R4 (#7689) — automatic follow-up template.
+    'communication_follow_up_subject' => 'Following up on: :subject',
+    'communication_follow_up_body' => "Hello,\n\nI am following up on my previous message \":subject\", which has not received a reply yet.\n\nHave you had a chance to look at it?\n\nBest regards,\n:name",
 ];
