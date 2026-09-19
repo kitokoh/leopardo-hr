@@ -195,6 +195,18 @@ return [
     'login_code_intro' => 'İşte tek kullanımlık giriş kodunuz. Alanınıza erişmek için giriş sayfasında bu kodu girin:',
     'login_code_validity' => 'Bu kod 10 dakika geçerlidir ve tek kullanımlıktır. Bunu talep etmediyseniz, bu e-postayı güvenle yok sayabilirsiniz.',
 
+    // Platform faturalandırma (#7763)
+    'invoice_issued_subject' => 'Leopardo faturanız :number hazır',
+    'invoice_issued_heading' => 'Yeni fatura',
+    'invoice_issued_greeting' => 'Merhaba :name,',
+    'invoice_issued_intro' => ':company için :number numaralı faturanız hazır. Tutar: :total :currency, son ödeme tarihi :due_date.',
+    'invoice_issued_attachment_note' => 'Faturayı bu e-postanın ekinde PDF olarak bulabilirsiniz.',
+    'invoice_payment_receipt_subject' => 'Ödeme makbuzu — fatura :number',
+    'invoice_payment_receipt_heading' => 'Ödeme alındı',
+    'invoice_payment_receipt_greeting' => 'Merhaba :name,',
+    'invoice_payment_receipt_intro' => ':company için :number numaralı faturanın ödemesini onaylıyoruz. Ödenen tutar: :total :currency, tarih: :paid_at.',
+    'invoice_payment_receipt_attachment_note' => 'Ödenmiş fatura bu e-postaya PDF olarak eklenmiştir.',
+
     // BC-29 Communication R4 (#7689) — otomatik takip şablonu.
     'communication_follow_up_subject' => 'Hatırlatma: :subject',
     'communication_follow_up_body' => "Merhaba,\n\nHenüz yanıt almayan \":subject\" konulu önceki mesajımla ilgili size tekrar yazıyorum.\n\nİnceleme fırsatınız oldu mu?\n\nSaygılarımla,\n:name",
