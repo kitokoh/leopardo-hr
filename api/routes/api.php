@@ -81,6 +81,7 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDelive
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantKioskController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
+use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailMarketController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierSyncController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelMarketplaceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;
@@ -319,6 +320,18 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/public/restaurant/kiosk/menu', [RestaurantKioskController::class, 'menu']);
         Route::post('/public/restaurant/kiosk/orders', [RestaurantKioskController::class, 'storeOrder']);
         Route::get('/public/restaurant/kiosk/orders/{reference}', [RestaurantKioskController::class, 'track']);
+    });
+
+    // #7807/#7808 (BC-17 RETAIL) — marketplace publique Retail : découverte
+    // cross-tenant des produits/boutiques opt-in, checkout invité et suivi
+    // par référence + jeton (pattern marketplace inter-agences #7737 : AUCUNE
+    // auth ni jeton tenant — le tenant est résolu par la ressource, throttle
+    // `shop-public` uniquement, 404 fail-closed).
+    Route::middleware(['throttle:shop-public'])->prefix('public/market')->group(function (): void {
+        Route::get('/products', [RetailMarketController::class, 'products']);
+        Route::get('/products/{product}', [RetailMarketController::class, 'product']);
+        Route::get('/sellers', [RetailMarketController::class, 'sellers']);
+        Route::get('/sellers/{slug}', [RetailMarketController::class, 'seller']);
     });
 
     Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {

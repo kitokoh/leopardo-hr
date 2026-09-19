@@ -29961,6 +29961,96 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
 
+  /public/market/products:
+    get:
+      tags:
+      - Retail
+      summary: "Marketplace publique \u2014 recherche cross-tenant des produits en\
+        \ ligne (#7807, sans auth)"
+      description: "Produits publiquement visibles des boutiques opt-in : produit\
+        \ published ET online_visible ET boutique enabled (fail-closed). DTO public\
+        \ strict \u2014 aucune donn\xE9e interne (stock chiffr\xE9, marges, company_id)."
+      parameters:
+      - name: q
+        in: query
+        schema:
+          type: string
+      - name: seller
+        in: query
+        description: Slug public de la boutique
+        schema:
+          type: string
+      - name: category
+        in: query
+        schema:
+          type: string
+      - name: min_price
+        in: query
+        description: Prix minimum en minor units
+        schema:
+          type: integer
+      - name: max_price
+        in: query
+        description: Prix maximum en minor units
+        schema:
+          type: integer
+      - name: sort
+        in: query
+        schema:
+          type: string
+          enum: [price_asc, price_desc, newest, name]
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 50
+      responses:
+        '200':
+          description: Liste paginee des produits publics (id, name, description,
+            price_minor, currency, image_url, category, seller, available)
+        '422':
+          $ref: '#/components/responses/Error422'
+  /public/market/products/{product}:
+    get:
+      tags:
+      - Retail
+      summary: "Marketplace publique \u2014 fiche produit (#7807, 404 fail-closed)"
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: DTO public du produit
+        '404':
+          $ref: '#/components/responses/Error404'
+  /public/market/sellers:
+    get:
+      tags:
+      - Retail
+      summary: "Marketplace publique \u2014 annuaire des boutiques opt-in (#7807)"
+      responses:
+        '200':
+          description: Boutiques actives (slug, display_name, description, product_count)
+  /public/market/sellers/{slug}:
+    get:
+      tags:
+      - Retail
+      summary: "Marketplace publique \u2014 fiche boutique par slug (#7807, 404 fail-closed)"
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Fiche publique de la boutique
+        '404':
+          $ref: '#/components/responses/Error404'
+
   /retail/categories:
     get:
       tags:

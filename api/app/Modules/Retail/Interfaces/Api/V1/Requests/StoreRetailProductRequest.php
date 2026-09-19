@@ -67,6 +67,7 @@ class StoreRetailProductRequest extends FormRequest
             'cost_minor' => ['nullable', 'integer', 'min:0', 'max:9223372036854775807'],
             'currency' => ['nullable', 'string', 'size:3', 'regex:/^[A-Z]{3}$/', Rule::in(RetailPricePolicy::allowedCurrencies())],
             'unit' => ['nullable', 'string', 'max:30'],
+            'image_url' => ['nullable', 'string', 'url', 'max:500'],
             'status' => ['nullable', Rule::in($statuses)],
             'meta' => ['nullable', 'array'],
         ];

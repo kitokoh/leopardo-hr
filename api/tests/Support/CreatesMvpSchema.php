@@ -1426,6 +1426,8 @@ trait CreatesMvpSchema
                 $table->char('currency', 3)->default('XOF');
                 $table->string('unit', 30)->nullable();
                 $table->string('status', 20)->default('draft');
+                $table->boolean('online_visible')->default(false);
+                $table->string('image_url', 500)->nullable();
                 $table->json('meta')->nullable();
                 $table->timestamps();
 
@@ -1433,6 +1435,7 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'sku'], 'retail_products_company_sku_unique');
                 $table->index(['company_id', 'status'], 'retail_products_company_status_idx');
                 $table->index(['company_id', 'barcode'], 'retail_products_company_barcode_idx');
+                $table->index(['company_id', 'online_visible'], 'retail_products_company_online_visible_idx');
             });
         }
 
@@ -1578,6 +1581,25 @@ trait CreatesMvpSchema
 
                 $table->unique(['company_id', 'idempotency_key'], 'retail_order_payments_company_idempotency_key_unique');
                 $table->index(['company_id', 'order_id'], 'retail_order_payments_company_order_idx');
+            });
+        }
+
+        // BC-17 RETAIL #7807 — marketplace publique : opt-in boutique en ligne.
+        // Miroir de la migration 2026_09_19_000304_7807 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('retail_online_settings'))) {
+            Schema::create($this->moduleTable('retail_online_settings'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('slug', 160);
+                $table->string('display_name', 160);
+                $table->text('description')->nullable();
+                $table->boolean('enabled')->default(false);
+                $table->unsignedBigInteger('location_id')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id'], 'retail_online_settings_company_unique');
+                $table->unique(['slug'], 'retail_online_settings_slug_unique');
+                $table->index(['enabled'], 'retail_online_settings_enabled_idx');
             });
         }
 

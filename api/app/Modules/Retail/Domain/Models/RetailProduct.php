@@ -32,6 +32,8 @@ use Illuminate\Support\Carbon;
  * @property string $currency
  * @property string|null $unit
  * @property RetailProductStatus $status
+ * @property bool $online_visible
+ * @property string|null $image_url
  * @property array<string, mixed>|null $meta
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -59,6 +61,8 @@ class RetailProduct extends Model
         'currency',
         'unit',
         'status',
+        'online_visible',
+        'image_url',
         'meta',
     ];
 
@@ -69,6 +73,7 @@ class RetailProduct extends Model
     {
         return [
             'status' => RetailProductStatus::class,
+            'online_visible' => 'boolean',
             'meta' => 'array',
         ];
     }

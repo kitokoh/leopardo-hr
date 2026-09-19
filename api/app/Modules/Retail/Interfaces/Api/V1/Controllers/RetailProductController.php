@@ -87,6 +87,7 @@ class RetailProductController extends Controller
             // fournit pas (pattern Catalog C-CURRENCY #6886).
             'currency' => $request->input('currency') ?? (string) currentCompany()->currency,
             'unit' => $request->input('unit'),
+            'image_url' => $request->input('image_url'),
             'status' => $request->input('status', RetailProductStatus::Draft->value),
             'meta' => $request->input('meta'),
         ]);
@@ -134,6 +135,7 @@ class RetailProductController extends Controller
             'cost_minor' => $request->filled('cost_minor') ? $request->integer('cost_minor') : null,
             'currency' => $request->input('currency') ?? $product->currency,
             'unit' => $request->input('unit') ?? $product->unit,
+            'image_url' => $request->input('image_url', $product->image_url),
             'status' => $request->input('status') ?? $product->status->value,
             'meta' => $request->input('meta'),
         ]);
@@ -223,6 +225,8 @@ class RetailProductController extends Controller
             'currency' => $product->currency,
             'unit' => $product->unit,
             'status' => $product->status->value,
+            'online_visible' => (bool) $product->online_visible,
+            'image_url' => $product->image_url,
             'meta' => $product->meta,
             'created_at' => $product->created_at?->toIso8601String(),
             'updated_at' => $product->updated_at?->toIso8601String(),
