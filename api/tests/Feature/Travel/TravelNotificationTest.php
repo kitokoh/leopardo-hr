@@ -48,7 +48,7 @@ class TravelNotificationTest extends TestCase
             $booking = TravelBooking::factory()->create([
                 'status' => BookingStatus::CONFIRMED->value,
                 'notify_consent' => false,
-                'customer_contact_id' => 'crm-contact-1',
+                'customer_contact_id' => 424242,
             ]);
 
             $count = app(TravelNotificationService::class)->notify(
