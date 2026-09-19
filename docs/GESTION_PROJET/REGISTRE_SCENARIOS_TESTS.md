@@ -698,3 +698,17 @@ restent les gates applicables.
   passables une a une, recapitulatif d'activation, reprise ulterieure.
 - **Surface mobile** : cles ARB synchronisees par `sync-mobile.js` (cibles generees), aucun
   contrat modifie.
+
+## Mise à jour 2026-09-19 — lot audit vendeur vitrine (PR #7667, issues #7662–#7665)
+
+- **Surface web (vitrine)** : redirects des URLs devinables (`/login`, `/register`,
+  `/onboarding`, `/tarifs`, `/inscription`, `/connexion`, `/a-propos` — 404 vérifiés en prod),
+  gate session + robots + sw.js sur `/crm`, `/accounting`, `/edu-manager`, `/fuel`
+  (2 nouveaux tests de garde dans `protected-prefixes.test.ts`), 404 globale localisée
+  (`vitrine.notFound.*` ×4) et Navbar pilotée par le catalogue (`vitrine.nav.*` ×4 —
+  fin des libellés FR sans accents / TR sans diacritiques). Scénarios automatisés :
+  Jest front/web complet (127 suites), garde funnel e2e (proxy touché).
+- **Surface API / mobile** : aucun changement de code. `api/lang/*/shared.php` et les ARB
+  mobiles ne bougent que par la **synchronisation** du catalogue partagé (`sync-backend`,
+  `sync-mobile`) — clés additives `vitrine.notFound.*` / `vitrine.nav.*`, aucun contrat modifié,
+  aucun scénario mobile nouveau requis.

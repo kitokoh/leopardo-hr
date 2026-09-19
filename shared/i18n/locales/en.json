@@ -5765,6 +5765,30 @@
       "ctaHome": "Back to home",
       "ctaPricing": "See pricing",
       "ctaContact": "Contact support"
+    },
+    "nav": {
+      "pricing": "Pricing",
+      "resources": "Resources",
+      "guides": "Guides",
+      "guidesDesc": "HR best practices and tutorials",
+      "insights": "HR Insights",
+      "insightsDesc": "Analysis, playbooks and growth ideas",
+      "apiDocs": "API Docs",
+      "apiDocsDesc": "Technical guides and integration",
+      "changelog": "Changelog",
+      "changelogDesc": "Latest product updates",
+      "contact": "Contact",
+      "install": "Install Leopardo",
+      "windowsDesc": "Desktop client for ZKTeco and sync",
+      "macosDesc": "Desktop workspace for field teams",
+      "androidDesc": "Mobile attendance and employee self-service",
+      "iosDesc": "iOS app for employees and managers",
+      "community": "Community",
+      "communityDesc": "Connect with the community",
+      "faq": "FAQ",
+      "faqDesc": "Frequently asked questions",
+      "support": "Support",
+      "supportDesc": "Contact our team"
     }
   }
 }
