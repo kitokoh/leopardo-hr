@@ -1,0 +1,70 @@
+name: Repo Hygiene Guard
+
+# ============================================================
+# Issue #7654 — anti-régression hygiène du repo.
+# L'audit 2026-09-19 mesurait un pack de 93 MiB causé par des
+# artefacts générés committés (openapi mirror/SDK, caches de
+# build Flutter, composer.phar, ci_log.txt, CHANGELOG_ARCHIVE…).
+# Les tranches 1-3 les ont sortis du tree ; cette garde refuse
+# leur retour dans l'index git sur toute PR et tout push main.
+# La purge de l'HISTORIQUE (git filter-repo) reste une décision
+# propriétaire : docs/ops/REECRITURE_HISTORIQUE_7654.md.
+# ============================================================
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repo-hygiene-guard-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  forbidden-artifacts:
+    timeout-minutes: 10
+    name: Refuse committed generated artifacts (issue #7654)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Check tracked files against forbidden artifact patterns
+        run: |
+          set -euo pipefail
+          # Chaque pattern ci-dessous correspond à un artefact dénoncé par
+          # l'audit #7654 et retiré du tree par les tranches 1-3.
+          patterns=(
+            'CHANGELOG_ARCHIVE.md'            # journal d'agent 4,3 MB (tranche 2)
+            'docs/api-mock-data/*'            # exemples API générés (tranche 2)
+            '*/build/test_cache/*'            # cache de build Flutter (52,7 MB/blob)
+            '*.dill'                          # blobs de compilation Dart
+            '*composer.phar'                  # outillage vendored
+            'ci_log*.txt'                     # logs CI committés
+            '*/ci_log*.txt'
+            'dev-hub/openapi/v1.yaml'         # miroir OpenAPI généré (tranche 3)
+            'dev-hub/sdk/MANIFEST.json'       # SDK générés (tranche 3)
+            'dev-hub/sdk/javascript/leopardoClient.js'
+            'dev-hub/sdk/python/leopardo_client.py'
+            '*/.composed/*'                   # sorties composées .specify (#6599)
+          )
+          violations=0
+          for pattern in "${patterns[@]}"; do
+            matches=$(git ls-files -- "$pattern")
+            if [ -n "$matches" ]; then
+              echo "::error::Artefact généré re-committé (interdit par #7654, pattern '$pattern') :"
+              echo "$matches"
+              violations=$((violations + 1))
+            fi
+          done
+          if [ "$violations" -gt 0 ]; then
+            echo "::error::$violations pattern(s) d'artefacts interdits présents dans l'index. Voir .gitignore et docs/ops/REECRITURE_HISTORIQUE_7654.md."
+            exit 1
+          fi
+          echo "OK — aucun artefact interdit tracké."
