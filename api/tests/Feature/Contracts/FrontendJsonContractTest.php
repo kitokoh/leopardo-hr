@@ -120,7 +120,7 @@ class FrontendJsonContractTest extends TestCase
         [$company, , $employee] = $this->kioskActor();
         [$kiosk, $plainToken] = $this->kiosk($company);
 
-        KioskAnnouncement::query()->create([
+        KioskAnnouncement::query()->forceCreate([
             'company_id' => $company->id,
             'title' => 'Maintenance',
             'body' => 'Pointage kiosque operationnel.',

@@ -21,7 +21,7 @@ class CorrectionWorkflowTest extends TestCase
     {
         [$company, $schedule, $manager, $employee] = $this->fixture();
 
-        $correction = AttendanceCorrectionRequest::query()->create([
+        $correction = AttendanceCorrectionRequest::query()->forceCreate([
             'company_id' => $company->id,
             'employee_id' => $employee->id,
             'date' => '2026-05-27',
@@ -75,7 +75,7 @@ class CorrectionWorkflowTest extends TestCase
         [, , $manager] = $this->fixture('company-a', 'a.test');
         [$otherCompany, , , $otherEmployee] = $this->fixture('company-b', 'b.test');
 
-        $correction = AttendanceCorrectionRequest::query()->create([
+        $correction = AttendanceCorrectionRequest::query()->forceCreate([
             'company_id' => $otherCompany->id,
             'employee_id' => $otherEmployee->id,
             'date' => '2026-05-27',

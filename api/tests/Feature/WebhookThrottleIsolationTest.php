@@ -69,7 +69,7 @@ class WebhookThrottleIsolationTest extends TestCase
         ]);
 
         foreach (['SN-A', 'SN-B'] as $serial) {
-            ZktecoDevice::query()->create([
+            ZktecoDevice::query()->forceCreate([
                 'company_id' => $company->id,
                 'serial_number' => $serial,
                 'name' => 'Device '.$serial,

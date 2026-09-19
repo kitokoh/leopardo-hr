@@ -18,7 +18,7 @@ class AttendanceCorrectionAdminPagesTest extends TestCase
     {
         [$company, $manager, $employee] = $this->makeCompanyWithUsers();
 
-        $correction = AttendanceCorrectionRequest::query()->create([
+        $correction = AttendanceCorrectionRequest::query()->forceCreate([
             'company_id' => $company->id,
             'employee_id' => $employee->id,
             'date' => '2026-05-27',
@@ -57,7 +57,7 @@ class AttendanceCorrectionAdminPagesTest extends TestCase
     {
         [, $manager, $employee] = $this->makeCompanyWithUsers();
 
-        $correction = AttendanceCorrectionRequest::query()->create([
+        $correction = AttendanceCorrectionRequest::query()->forceCreate([
             'company_id' => $manager->company_id,
             'employee_id' => $employee->id,
             'date' => '2026-05-27',
@@ -92,7 +92,7 @@ class AttendanceCorrectionAdminPagesTest extends TestCase
         [, $manager] = $this->makeCompanyWithUsers();
         [$otherCompany, , $otherEmployee] = $this->makeCompanyWithUsers('company-b', 'b.test');
 
-        $correction = AttendanceCorrectionRequest::query()->create([
+        $correction = AttendanceCorrectionRequest::query()->forceCreate([
             'company_id' => $otherCompany->id,
             'employee_id' => $otherEmployee->id,
             'date' => '2026-05-27',

@@ -157,8 +157,9 @@ class GeoSessionManager
     private function logEvent(GeoEventDTO $dto, ?int $sessionId, string $eventType): void
     {
         EmployeeLocationEvent::create([
+            // #7711 : company_id délégué au trait BelongsToCompany (ce service
+            // tourne sous contexte tenant — cf. currentCompany() plus haut).
             'employee_id' => $dto->employeeId,
-            'company_id' => $dto->companyId,
             'geo_session_id' => $sessionId,
             'event_type' => $eventType,
             'latitude' => $dto->latitude,

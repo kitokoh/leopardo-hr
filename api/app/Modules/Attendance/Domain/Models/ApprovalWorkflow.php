@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Domain\Models;
 
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -20,8 +21,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ApprovalWorkflow extends Model
 {
+    // Issue #7711 (suite #7646) — table `approval_workflows` du schéma partagé
+    // shared_tenants : company_id est l'unique frontière d'isolation.
+    use BelongsToCompany;
+
     protected $fillable = [
-        'company_id',
         'name',
         'model_type',
         'levels',

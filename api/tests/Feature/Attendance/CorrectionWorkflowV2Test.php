@@ -30,7 +30,7 @@ class CorrectionWorkflowV2Test extends TestCase
 
     private function makeCorrection(Company $company, Employee $employee, string $date = '2026-05-27'): AttendanceCorrectionRequest
     {
-        return AttendanceCorrectionRequest::query()->create([
+        return AttendanceCorrectionRequest::query()->forceCreate([
             'company_id' => $company->id,
             'employee_id' => $employee->id,
             'date' => $date,
@@ -198,7 +198,7 @@ class CorrectionWorkflowV2Test extends TestCase
         ]);
 
         $conflicting = $this->makeCorrection($company, $employee); // 08:12 → 17:20
-        $matching = AttendanceCorrectionRequest::query()->create([
+        $matching = AttendanceCorrectionRequest::query()->forceCreate([
             'company_id' => $company->id,
             'employee_id' => $employee->id,
             'date' => '2026-05-27',
