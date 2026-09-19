@@ -12,5 +12,8 @@ return [
     'step_activate_geofence' => 'فعّل السياج الجغرافي',
     'step_customize_showcase' => 'خصص موقع الواجهة الخاص بك',
     'step_publish_showcase' => 'انشر موقع الواجهة الخاص بك',
+    'step_travel_setup_network' => 'أنشئ شبكتك (محطات، مكاتب، خطوط)',
+    'step_travel_first_trip' => 'برمج رحلتك الأولى',
+    'step_travel_first_sale' => 'سجّل أول عملية بيع',
     'interview_invalid_answer' => 'إجابة غير صالحة: :question',
 ];
