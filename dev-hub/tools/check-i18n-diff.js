@@ -221,6 +221,10 @@ const structuralAttributes = new Set([
   // `<Image … sizes="(min-width: 1024px) 33vw, 100vw" />` était signalé comme
   // « nouvelle chaîne en dur » et poussait à réécrire un appel correct.
   'sizes', 'width', 'height', 'srcset', 'loading', 'decoding', 'fetchpriority',
+  // Filtre de type de fichier d'un <input type="file"> : liste d'extensions/
+  // types MIME (`accept=".csv,text/csv"`), jamais du texte utilisateur
+  // (constat #7776 — import de relevé bancaire de la console admin).
+  'accept', ':accept',
 ]);
 
 // Noms d'attribut : `:class`, `@click`, `v-model`, `#default`, `aria-label`…

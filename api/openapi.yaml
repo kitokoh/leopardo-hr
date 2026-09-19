@@ -105,6 +105,8 @@ tags:
   description: 'BC-17 RETAIL — module vendeur generique des tenants : gestion des produits & categories (fondations backend #7672).'
 - name: Travel
   description: 'BC-24 TRAVEL — boutique, tunnel public et espace voyageur (suivi par reference + code de controle du billet).'
+- name: Restaurant
+  description: 'BC-25 RESTAURANT — verticale RestaurantManager : profil public par branche et annuaire public des restaurants (RESTO-901).'
 - name: Communication
   description: 'BC-29 COMMUNICATION — boite mail connectee + IA (OAuth Gmail serveur, sync, classification, relances) ; squelette R0 (#7685).'
 paths:
@@ -32329,6 +32331,240 @@ paths:
       responses:
         '200':
           description: Fiche publique (DTO strict)
+        '404':
+          $ref: '#/components/responses/Error404'
+
+  /restaurant/branches/{restaurantBranch}/public-profile:
+    get:
+      tags:
+      - Restaurant
+      summary: Lire le profil public d'une succursale (gestion tenant)
+      description: >-
+        RESTO-901 (#7746) - vue gerant du profil public d'une branche (opt-in
+        annuaire). Pile tenant (Sanctum + tenant + module.restaurantmanager) ;
+        branche d'un autre tenant → 404 (jamais 403).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantBranch
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Profil public de la branche (vue gerant, avec id interne)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - Restaurant
+      summary: Mettre a jour le profil public d'une succursale
+      description: >-
+        RESTO-901 (#7746) - publication opt-in dans l'annuaire public. Le
+        public_slug est unique GLOBAL (cross-tenant) : fourni, il est valide
+        (slugifie + unicite, 422 en collision) ; omis alors que is_public
+        passe a true, il est genere depuis le nom avec suffixe numerique en
+        cas de collision. Reserve aux gerants de la branche
+        (RestaurantBranchPolicy, pattern ScopesRestaurantBranchListings).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantBranch
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                is_public:
+                  type: boolean
+                public_slug:
+                  type: string
+                  nullable: true
+                  maxLength: 160
+                  pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+                establishment_type:
+                  type: string
+                  nullable: true
+                  enum: [restaurant, fast_food, pizzeria, brasserie, cafe, patisserie, traiteur, autre]
+                cuisine_types:
+                  type: array
+                  nullable: true
+                  maxItems: 10
+                  items:
+                    type: string
+                    maxLength: 40
+                public_description:
+                  type: string
+                  nullable: true
+                  maxLength: 2000
+                cover_image_url:
+                  type: string
+                  nullable: true
+                  format: uri
+                  maxLength: 500
+                latitude:
+                  type: number
+                  nullable: true
+                  minimum: -90
+                  maximum: 90
+                longitude:
+                  type: number
+                  nullable: true
+                  minimum: -180
+                  maximum: 180
+      responses:
+        '200':
+          description: Profil public mis a jour (slug genere si necessaire)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /restaurant/products/{restaurantProduct}/publication:
+    patch:
+      tags:
+      - Restaurant
+      summary: Publier/depublier un produit sur le menu public
+      description: >-
+        RESTO-901 (#7746) - bascule is_published_online (opt-in, defaut
+        false). Seuls les produits publies ET disponibles apparaissent dans
+        le menu du profil public. Reserve aux gerants de la branche
+        (RestaurantProductPolicy).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantProduct
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [is_published_online]
+              properties:
+                is_published_online:
+                  type: boolean
+      responses:
+        '200':
+          description: Etat de publication mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /public/restaurants:
+    get:
+      tags:
+      - Restaurant
+      summary: Annuaire public des restaurants (sans auth)
+      description: >-
+        RESTO-901 (#7746) - annuaire public cross-tenant (throttle:shop-public,
+        AUCUN middleware tenant/Sanctum). Seules les branches is_public=true et
+        actives, de societes ni suspendues ni expirees avec la verticale
+        restaurantmanager, sont listees. DTO public STRICT : aucun company_id
+        ni ID interne - le slug est l'identifiant public. Recherche q
+        (nom/description), city, type, cuisine, et proximite near=lat,lng +
+        radius_km (defaut 10, max 50) par formule haversine SQL ; tri par
+        distance si near, sinon par nom ; pagination bornee a 50/page.
+      security: []
+      parameters:
+      - name: q
+        in: query
+        schema:
+          type: string
+          maxLength: 120
+      - name: city
+        in: query
+        schema:
+          type: string
+          maxLength: 120
+      - name: type
+        in: query
+        schema:
+          type: string
+          enum: [restaurant, fast_food, pizzeria, brasserie, cafe, patisserie, traiteur, autre]
+      - name: cuisine
+        in: query
+        schema:
+          type: string
+          maxLength: 40
+      - name: near
+        in: query
+        description: 'Couple lat,lng (ex. 4.0511,9.7679) - active le tri par distance.'
+        schema:
+          type: string
+          pattern: '^-?\d{1,2}(\.\d+)?,-?\d{1,3}(\.\d+)?$'
+      - name: radius_km
+        in: query
+        schema:
+          type: number
+          minimum: 0.1
+          maximum: 50
+          default: 10
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Liste paginee (slug, name, establishment_type, cuisine_types, city, description, cover_image_url, latitude, longitude, distance_km si near)
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /public/restaurants/{slug}:
+    get:
+      tags:
+      - Restaurant
+      summary: Profil public d'un restaurant par slug (sans auth)
+      description: >-
+        RESTO-901 (#7746) - profil public (identite, geoloc, horaires) + menu
+        PUBLIE uniquement (categories → produits is_published_online ET
+        is_available). 404 fail-closed uniforme : slug inconnu, profil
+        depublie, societe suspendue/expiree ou verticale desactivee. Reponse
+        mise en cache cote serveur (TTL borne, invalidee a la mutation du
+        profil).
+      security: []
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9-]{0,159}$'
+      responses:
+        '200':
+          description: Profil public (slug, identite, horaires, menu publie) - aucun ID interne
         '404':
           $ref: '#/components/responses/Error404'
 
