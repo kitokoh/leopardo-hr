@@ -36,8 +36,6 @@ class HealthAdmissionApiTest extends TestCase
 
     private Company $companyB;
 
-    private Employee $principalA;
-
     private Employee $receptionA;
 
     private Employee $lambdaA;
@@ -78,14 +76,6 @@ class HealthAdmissionApiTest extends TestCase
             'features' => ['healthmanager' => true],
         ]);
         $this->companyB = $companyB;
-
-        /** @var Employee $principalA */
-        $principalA = Employee::factory()->create([
-            'company_id' => $companyA->id,
-            'role' => 'manager',
-            'manager_role' => 'principal',
-        ]);
-        $this->principalA = $principalA;
 
         /** @var Employee $receptionA */
         $receptionA = Employee::factory()->create([

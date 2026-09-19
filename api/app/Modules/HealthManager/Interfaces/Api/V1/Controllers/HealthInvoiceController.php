@@ -40,9 +40,7 @@ class HealthInvoiceController extends Controller
 {
     use ChecksHealthSolution;
 
-    public function __construct(private readonly HealthInvoiceNumberGenerator $numbers)
-    {
-    }
+    public function __construct(private readonly HealthInvoiceNumberGenerator $numbers) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -54,7 +52,7 @@ class HealthInvoiceController extends Controller
 
         $query = HealthInvoice::query()
             ->with(['items', 'payments'])
-            ->where('company_id', $actor->company_id);
+            ->where('company_id', (string) $actor->company_id);
 
         if ($request->filled('status')) {
             $query->where('status', $request->input('status'));
@@ -104,7 +102,7 @@ class HealthInvoiceController extends Controller
 
             /** @var array<int, array<string, int|string>> $items */
             $items = $validated['items'];
-            $this->replaceItems($created, $items, $actor->company_id);
+            $this->replaceItems($created, $items, (string) $actor->company_id);
 
             return $created;
         });
@@ -118,7 +116,7 @@ class HealthInvoiceController extends Controller
 
         /** @var Employee $actor */
         $actor = $request->user();
-        $this->assertSameTenant($invoice, $actor->company_id);
+        $this->assertSameTenant($invoice, (string) $actor->company_id);
         $this->authorize('view', $invoice);
 
         return response()->json(['data' => $this->payload($invoice->load(['items', 'payments']))]);
@@ -134,7 +132,7 @@ class HealthInvoiceController extends Controller
 
         /** @var Employee $actor */
         $actor = $request->user();
-        $this->assertSameTenant($invoice, $actor->company_id);
+        $this->assertSameTenant($invoice, (string) $actor->company_id);
         $this->authorize('update', $invoice);
 
         if (! $invoice->isDraft()) {
@@ -154,7 +152,7 @@ class HealthInvoiceController extends Controller
                 $invoice->items()->delete();
                 /** @var array<int, array<string, int|string>> $items */
                 $items = $validated['items'];
-                $this->replaceItems($invoice, $items, $actor->company_id);
+                $this->replaceItems($invoice, $items, (string) $actor->company_id);
             } else {
                 $this->recomputeTotals($invoice);
             }
@@ -173,7 +171,7 @@ class HealthInvoiceController extends Controller
 
         /** @var Employee $actor */
         $actor = $request->user();
-        $this->assertSameTenant($invoice, $actor->company_id);
+        $this->assertSameTenant($invoice, (string) $actor->company_id);
         $this->authorize('transition', $invoice);
 
         if (! $invoice->canTransitionTo(HealthInvoice::STATUS_ISSUED)) {
@@ -181,7 +179,7 @@ class HealthInvoiceController extends Controller
         }
 
         DB::transaction(function () use ($invoice, $actor): void {
-            $invoice->number = $this->numbers->next($actor->company_id);
+            $invoice->number = $this->numbers->next((string) $actor->company_id);
             $invoice->status = HealthInvoice::STATUS_ISSUED;
             $invoice->issued_at = now();
             $invoice->save();
@@ -200,7 +198,7 @@ class HealthInvoiceController extends Controller
 
         /** @var Employee $actor */
         $actor = $request->user();
-        $this->assertSameTenant($invoice, $actor->company_id);
+        $this->assertSameTenant($invoice, (string) $actor->company_id);
         $this->authorize('transition', $invoice);
 
         if (! $invoice->canTransitionTo(HealthInvoice::STATUS_CANCELLED)) {
@@ -226,7 +224,7 @@ class HealthInvoiceController extends Controller
 
         /** @var Employee $actor */
         $actor = $request->user();
-        $this->assertSameTenant($invoice, $actor->company_id);
+        $this->assertSameTenant($invoice, (string) $actor->company_id);
         $this->authorize('transition', $invoice);
 
         $validated = $request->validated();
@@ -234,7 +232,7 @@ class HealthInvoiceController extends Controller
         DB::transaction(function () use ($invoice, $validated, $actor): void {
             /** @var HealthInvoice $locked */
             $locked = HealthInvoice::query()
-                ->where('company_id', $actor->company_id)
+                ->where('company_id', (string) $actor->company_id)
                 ->whereKey($invoice->getKey())
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -287,14 +285,14 @@ class HealthInvoiceController extends Controller
 
         /** @var string|null $monthRevenue */
         $monthRevenue = HealthInvoicePayment::query()
-            ->where('company_id', $actor->company_id)
+            ->where('company_id', (string) $actor->company_id)
             ->whereBetween('paid_at', [now()->startOfMonth(), now()->endOfMonth()])
             ->sum('amount');
 
         /** @var list<HealthInvoice> $outstanding */
         $outstanding = HealthInvoice::query()
             ->with('payments')
-            ->where('company_id', $actor->company_id)
+            ->where('company_id', (string) $actor->company_id)
             ->whereIn('status', HealthInvoice::OUTSTANDING_STATUSES)
             ->get()
             ->all();

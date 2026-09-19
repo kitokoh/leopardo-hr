@@ -74,7 +74,7 @@ class HealthPractitionerController extends Controller
         /** @var HealthPractitioner $practitioner */
         $practitioner = HealthPractitioner::query()->create($validated);
 
-        $this->syncSpecialties($practitioner, $specialtyIds, $actor->company_id);
+        $this->syncSpecialties($practitioner, $specialtyIds, (string) $actor->company_id);
 
         return response()->json(['data' => $this->payload($practitioner->load('specialties'))], 201);
     }
@@ -109,7 +109,7 @@ class HealthPractitionerController extends Controller
         $practitioner->update($validated);
 
         if ($syncSpecialties) {
-            $this->syncSpecialties($practitioner, $specialtyIds, $actor->company_id);
+            $this->syncSpecialties($practitioner, $specialtyIds, (string) $actor->company_id);
         }
 
         return response()->json(['data' => $this->payload($practitioner->refresh()->load('specialties'))]);

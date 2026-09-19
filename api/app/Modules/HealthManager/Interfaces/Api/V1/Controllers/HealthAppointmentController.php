@@ -153,7 +153,7 @@ class HealthAppointmentController extends Controller
         /** @var HealthAppointment $appointment */
         $appointment = DB::transaction(function () use ($validated, $actor): HealthAppointment {
             $this->assertNoConflict(
-                $actor->company_id,
+                (string) $actor->company_id,
                 (int) $validated['practitioner_id'],
                 Carbon::parse((string) $validated['starts_at']),
                 Carbon::parse((string) $validated['ends_at']),
@@ -204,7 +204,7 @@ class HealthAppointmentController extends Controller
             }
 
             $this->assertNoConflict(
-                $actor->company_id,
+                (string) $actor->company_id,
                 $appointment->practitioner_id,
                 $appointment->starts_at,
                 $appointment->ends_at,

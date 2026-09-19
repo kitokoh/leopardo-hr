@@ -6,7 +6,7 @@ namespace App\Modules\HealthManager\Domain\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\HealthManager\Domain\Access\HealthAccess;
-use App\Modules\HealthManager\Domain\Models${model};
+use App\Modules\HealthManager\Domain\Models\HealthSpecialty;
 
 /**
  * HC-002 (#7786) — Policy spécialité (structure clinique, BC-30).

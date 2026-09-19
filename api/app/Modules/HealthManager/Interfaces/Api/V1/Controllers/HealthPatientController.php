@@ -92,7 +92,7 @@ class HealthPatientController extends Controller
         $patient = DB::transaction(function () use ($validated, $actor): HealthPatient {
             /** @var HealthPatient $created */
             $created = new HealthPatient($validated);
-            $created->mrn = $this->mrnGenerator->next($actor->company_id);
+            $created->mrn = $this->mrnGenerator->next((string) $actor->company_id);
             $created->save();
 
             return $created;

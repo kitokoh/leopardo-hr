@@ -84,7 +84,7 @@ class HealthAdmissionController extends Controller
 
         /** @var HealthAdmission $admission */
         $admission = DB::transaction(function () use ($validated, $actor): HealthAdmission {
-            $bed = $this->lockFreeBed($actor->company_id, (int) $validated['bed_id']);
+            $bed = $this->lockFreeBed((string) $actor->company_id, (int) $validated['bed_id']);
 
             $alreadyAdmitted = HealthAdmission::query()
                 ->where('company_id', $actor->company_id)
@@ -156,7 +156,7 @@ class HealthAdmissionController extends Controller
                 throw new HealthBedUnavailableException;
             }
 
-            $newBed = $this->lockFreeBed($actor->company_id, $targetBedId);
+            $newBed = $this->lockFreeBed((string) $actor->company_id, $targetBedId);
 
             $admission->bed_id = (int) $newBed->getAttribute('id');
             $admission->transferred_from_bed_id = $previousBedId;
@@ -165,7 +165,7 @@ class HealthAdmissionController extends Controller
             $admission->save();
 
             $newBed->update(['status' => HealthBed::STATUS_OCCUPIED]);
-            $this->releaseBed($actor->company_id, $previousBedId);
+            $this->releaseBed((string) $actor->company_id, $previousBedId);
         });
 
         return response()->json(['data' => $this->payload($admission->refresh())]);
@@ -199,7 +199,7 @@ class HealthAdmissionController extends Controller
             $admission->discharge_notes = $validated['discharge_notes'] ?? null;
             $admission->save();
 
-            $this->releaseBed($actor->company_id, $admission->bed_id);
+            $this->releaseBed((string) $actor->company_id, $admission->bed_id);
         });
 
         return response()->json(['data' => $this->payload($admission->refresh())]);
@@ -233,7 +233,7 @@ class HealthAdmissionController extends Controller
             ->orderBy('health_departments.name')
             ->selectRaw(
                 'health_departments.id as department_id, health_departments.name as department_name, '
-                ."count(health_beds.id) as total_beds, "
+                .'count(health_beds.id) as total_beds, '
                 ."count(health_beds.id) filter (where health_beds.status = 'occupied') as occupied_beds, "
                 ."count(health_beds.id) filter (where health_beds.status = 'free') as free_beds, "
                 ."count(health_beds.id) filter (where health_beds.status = 'maintenance') as maintenance_beds"
