@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
+use Illuminate\Testing\PendingCommand;
 
 /**
  * BC-29 COMMUNICATION (R2, #7687) — sync Gmail incrementale : full sync
@@ -492,8 +493,9 @@ class CommunicationGmailSyncTest extends TestCase
         $other = Company::factory()->create(['country' => 'SN', 'currency' => 'XOF']);
         $this->makeIntegration($this->makeEmployee($other));
 
-        $this->artisan('communication:sync-mailboxes')
-            ->assertExitCode(0);
+        $sync = $this->artisan('communication:sync-mailboxes');
+        $this->assertInstanceOf(PendingCommand::class, $sync);
+        $sync->assertExitCode(0);
 
         Queue::assertPushed(SyncGmailMailboxJob::class, 1);
         Queue::assertPushedOn('communication', SyncGmailMailboxJob::class);
@@ -504,7 +506,9 @@ class CommunicationGmailSyncTest extends TestCase
 
         // Idempotence du polling : rejouer la commande ne fait que re-dispatcher
         // des jobs upsert (le WithoutOverlapping par boite protege l'execution).
-        $this->artisan('communication:sync-mailboxes')->assertExitCode(0);
+        $replay = $this->artisan('communication:sync-mailboxes');
+        $this->assertInstanceOf(PendingCommand::class, $replay);
+        $replay->assertExitCode(0);
         Queue::assertPushed(SyncGmailMailboxJob::class, 2);
         $this->assertNotNull($active->refresh());
     }
