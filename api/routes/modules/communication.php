@@ -29,6 +29,8 @@ use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationFollowU
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationIntegrationController;
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationMessageClassificationController;
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationModuleStatusController;
+use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationPendingReplyController;
+use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationReplyPolicyController;
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationThreadController;
 use Illuminate\Support\Facades\Route;
 
@@ -81,6 +83,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/follow-up-opt-outs', [CommunicationFollowUpOptOutController::class, 'index']);
         Route::post('/follow-up-opt-outs', [CommunicationFollowUpOptOutController::class, 'store']);
         Route::delete('/follow-up-opt-outs/{optOut}', [CommunicationFollowUpOptOutController::class, 'destroy'])->whereUuid('optOut');
+
+        // R5 (#7690) — reponses assistees : politique PERSONNELLE par boite
+        // × categorie (off/draft/confirm/auto) et file Pending durable —
+        // edition/approbation/rejet reserves au proprietaire de la boite
+        // (approve = SEUL chemin d'envoi du mode confirm).
+        Route::get('/reply-policies', [CommunicationReplyPolicyController::class, 'index']);
+        Route::post('/reply-policies', [CommunicationReplyPolicyController::class, 'store']);
+
+        Route::get('/pending-replies', [CommunicationPendingReplyController::class, 'index']);
+        Route::patch('/pending-replies/{pendingReply}', [CommunicationPendingReplyController::class, 'update'])->whereUuid('pendingReply');
+        Route::post('/pending-replies/{pendingReply}/approve', [CommunicationPendingReplyController::class, 'approve'])->whereUuid('pendingReply');
+        Route::post('/pending-replies/{pendingReply}/reject', [CommunicationPendingReplyController::class, 'reject'])->whereUuid('pendingReply');
     });
 
 // R1 (#7686) — callback OAuth Google : route PUBLIQUE par construction (le

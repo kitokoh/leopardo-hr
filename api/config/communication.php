@@ -364,4 +364,26 @@ return [
             'timezone' => env('COMMUNICATION_FOLLOW_UP_TIMEZONE', 'Africa/Algiers'),
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Assisted replies (BC-29 Communication R5, #7690 — spec §3.5)
+    |--------------------------------------------------------------------------
+    |
+    | Bornes protectrices des reponses assistees. La fenetre calme est
+    | PARTAGEE avec les relances R4 (`follow_ups.quiet_hours`) — aucun envoi
+    | automatique la nuit, quel que soit le canal. Les categories interdites
+    | en mode `auto` (finance/RH/juridique) sont bloquees EN DUR dans
+    | `CommunicationReplyPolicy::BLOCKED_AUTO_CATEGORIES`, jamais en config :
+    | non contournables par environnement.
+    |
+    | - `auto_daily_cap`         : plafond journalier d'envois AUTO par boite ;
+    | - `reply_body_excerpt_bytes`: borne du corps transmis au LLM (cout §5.6).
+    |
+    */
+
+    'replies' => [
+        'auto_daily_cap' => (int) env('COMMUNICATION_REPLY_AUTO_DAILY_CAP', 25),
+        'reply_body_excerpt_bytes' => (int) env('COMMUNICATION_REPLY_BODY_EXCERPT_BYTES', 8000),
+    ],
 ];

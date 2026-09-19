@@ -100,11 +100,14 @@ class CommunicationIntegrationController extends Controller
 
         // R4 (#7689) — activation des relances : le scope `gmail.send` est
         // demande a la connexion (consentement INCREMENTAL, les scopes deja
-        // accordes restent via include_granted_scopes).
+        // accordes restent via include_granted_scopes). R5 (#7690) ajoute
+        // `gmail.compose` au meme geste : la politique `draft` depose des
+        // brouillons dans la boite de l'utilisateur.
         $scopes = GoogleGmailOAuthService::DEFAULT_SCOPES;
 
         if ($request->boolean('with_send')) {
             $scopes[] = GoogleGmailOAuthService::GMAIL_SEND_SCOPE;
+            $scopes[] = GoogleGmailOAuthService::GMAIL_COMPOSE_SCOPE;
         }
 
         $state = Str::random(40);
