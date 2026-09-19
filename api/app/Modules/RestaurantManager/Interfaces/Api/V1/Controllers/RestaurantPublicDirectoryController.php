@@ -9,10 +9,12 @@ use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Domain\Enums\RestaurantEstablishmentType;
 use App\Modules\RestaurantManager\Domain\Enums\RestaurantRecordStatus;
+use App\Modules\RestaurantManager\Domain\Enums\RestaurantReviewStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantCategory;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantHour;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantReview;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantPublicDirectoryCache;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantPublicBranchResource;
 use Illuminate\Database\Query\Builder;
@@ -64,6 +66,13 @@ class RestaurantPublicDirectoryController extends Controller
         private readonly RestaurantPublicDirectoryCache $cache,
     ) {}
 
+    /**
+     * Mémo par requête des stats d'avis publiés (profil par slug).
+     *
+     * @var array{rating_avg: float|null, reviews_count: int}|null
+     */
+    private ?array $ratingStats = null;
+
     public function index(Request $request): JsonResponse
     {
         /** @var array<string, mixed> $filters */
@@ -90,6 +99,23 @@ class RestaurantPublicDirectoryController extends Controller
                 'b.latitude',
                 'b.longitude',
             ]);
+
+        // RESTO-902 (#7747) — note moyenne + nombre d'avis PUBLIÉS par carte,
+        // calculés en sous-requêtes sur le schéma partagé (pas de compteur
+        // dénormalisé — zéro dérive, la modération fait foi). `avg(rating)`
+        // retourne un numeric → round(x, 2) valide en PostgreSQL ET SQLite.
+        $reviewsTable = $this->tenantTable('restaurant_reviews');
+        $query->selectRaw(
+            '(select round(avg(rv.rating), 2) from '.$reviewsTable.' rv'
+            .' where rv.branch_id = b.id and rv.company_id = b.company_id'
+            .' and rv.status = ?) as rating_avg',
+            ['published']
+        )->selectRaw(
+            '(select count(*) from '.$reviewsTable.' rv2'
+            .' where rv2.branch_id = b.id and rv2.company_id = b.company_id'
+            .' and rv2.status = ?) as reviews_count',
+            ['published']
+        );
 
         $like = $this->isPostgres() ? 'ilike' : 'like';
 
@@ -240,10 +266,50 @@ class RestaurantPublicDirectoryController extends Controller
                 'longitude' => $branch->longitude,
                 'currency' => $branch->currency,
                 'timezone' => $branch->timezone,
+                'rating_avg' => $this->publishedRatingStats($branch)['rating_avg'],
+                'reviews_count' => $this->publishedRatingStats($branch)['reviews_count'],
                 'hours' => $this->publicHours($branch),
                 'menu' => $this->publishedMenu($branch),
             ];
         });
+    }
+
+    /**
+     * RESTO-902 (#7747) — note moyenne + nombre d'avis PUBLIÉS de la branche
+     * (les avis pending/rejected ne comptent jamais). Calcul à la lecture,
+     * mémorisé par requête puis porté par le cache du profil public
+     * (RestaurantPublicDirectoryCache) — invalidé à chaque publication/rejet
+     * (RestaurantReviewModerationController). Pas de compteur dénormalisé :
+     * zéro dérive possible, la modération fait foi.
+     *
+     * @return array{rating_avg: float|null, reviews_count: int}
+     */
+    private function publishedRatingStats(RestaurantBranch $branch): array
+    {
+        if ($this->ratingStats !== null) {
+            return $this->ratingStats;
+        }
+
+        /** @var object{reviews_count: int|string|null, rating_avg: float|int|string|null}|null $row */
+        $row = RestaurantReview::query()
+            ->where('branch_id', $branch->id)
+            ->where('status', RestaurantReviewStatus::PUBLISHED->value)
+            ->toBase()
+            ->selectRaw('count(*) as reviews_count, avg(rating) as rating_avg')
+            ->first();
+
+        if ($row === null) {
+            return $this->ratingStats = ['rating_avg' => null, 'reviews_count' => 0];
+        }
+
+        $count = is_numeric($row->reviews_count) ? (int) $row->reviews_count : 0;
+
+        return $this->ratingStats = [
+            'rating_avg' => $count > 0 && is_numeric($row->rating_avg)
+                ? round((float) $row->rating_avg, 2)
+                : null,
+            'reviews_count' => $count,
+        ];
     }
 
     /**
@@ -268,8 +334,10 @@ class RestaurantPublicDirectoryController extends Controller
     /**
      * Menu publié : catégories actives → produits `is_published_online` ET
      * `is_available` ET actifs, de la branche ou company-wide (branch_id
-     * null). DTO public sans ID interne de produit ; `image_asset_id` est la
-     * référence média déjà exposée par le menu public RESTO-805.
+     * null). DTO public sans ID interne de produit : `code` est l'identifiant
+     * MÉTIER commandé par la commande publique RESTO-902 (même contrat que la
+     * boutique publique RESTO-805) ; `image_asset_id` est la référence média
+     * déjà exposée par le menu public RESTO-805.
      *
      * @return array<int, array<string, mixed>>
      */
@@ -306,6 +374,7 @@ class RestaurantPublicDirectoryController extends Controller
                     'sort_order' => $category->sort_order,
                     'products' => $items
                         ->map(fn (RestaurantProduct $product): array => [
+                            'code' => $product->code,
                             'name' => $product->name,
                             'description' => $product->description_redacted,
                             'price_minor' => (int) $product->price_minor,

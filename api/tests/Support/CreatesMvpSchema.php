@@ -1395,6 +1395,192 @@ trait CreatesMvpSchema
             });
         }
 
+        // BC-17 RETAIL #7672 — fondations du module vendeur generique.
+        // Miroir de la migration 2026_09_19_000301_7672 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('retail_categories'))) {
+            Schema::create($this->moduleTable('retail_categories'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 160);
+                $table->string('slug', 180);
+                $table->unsignedBigInteger('parent_id')->nullable();
+                $table->unsignedSmallInteger('position')->default(0);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'slug'], 'retail_categories_company_slug_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('retail_products'))) {
+            Schema::create($this->moduleTable('retail_products'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('category_id')->nullable();
+                $table->string('name', 200);
+                $table->string('slug', 220);
+                $table->string('sku', 64);
+                $table->string('barcode', 64)->nullable();
+                $table->text('description')->nullable();
+                $table->unsignedBigInteger('price_minor')->default(0);
+                $table->unsignedBigInteger('cost_minor')->nullable();
+                $table->char('currency', 3)->default('XOF');
+                $table->string('unit', 30)->nullable();
+                $table->string('status', 20)->default('draft');
+                $table->json('meta')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'slug'], 'retail_products_company_slug_unique');
+                $table->unique(['company_id', 'sku'], 'retail_products_company_sku_unique');
+                $table->index(['company_id', 'status'], 'retail_products_company_status_idx');
+                $table->index(['company_id', 'barcode'], 'retail_products_company_barcode_idx');
+            });
+        }
+
+        // BC-17 RETAIL #7673 — gestion de stock du module vendeur generique.
+        // Miroir de la migration 2026_09_19_000302_7673 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('retail_locations'))) {
+            Schema::create($this->moduleTable('retail_locations'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 160);
+                $table->string('code', 40);
+                $table->string('type', 20)->default('store');
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'retail_locations_company_code_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('retail_stock_levels'))) {
+            Schema::create($this->moduleTable('retail_stock_levels'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('location_id');
+                $table->unsignedBigInteger('product_id');
+                $table->decimal('quantity', 12, 3)->default(0);
+                $table->unsignedBigInteger('avg_cost_minor')->nullable();
+                $table->decimal('reorder_level', 12, 3)->nullable();
+                $table->decimal('alert_threshold', 12, 3)->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'location_id', 'product_id'], 'retail_stock_levels_company_location_product_unique');
+                $table->index(['company_id', 'product_id'], 'retail_stock_levels_company_product_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('retail_inventory_movements'))) {
+            Schema::create($this->moduleTable('retail_inventory_movements'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('location_id');
+                $table->unsignedBigInteger('product_id');
+                $table->unsignedBigInteger('stock_level_id')->nullable();
+                $table->decimal('quantity_delta', 12, 3);
+                $table->string('reason_code', 30);
+                $table->string('reference_type', 80)->nullable();
+                $table->unsignedBigInteger('reference_id')->nullable();
+                $table->text('note')->nullable();
+                $table->unsignedBigInteger('user_id')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'location_id', 'product_id'], 'retail_inventory_movements_company_location_product_idx');
+                $table->index(['company_id', 'reference_type', 'reference_id'], 'retail_inventory_movements_company_reference_idx');
+            });
+        }
+
+        // BC-17 RETAIL #7674 — POS v1 du module vendeur generique.
+        // Miroir de la migration 2026_09_19_000303_7674 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('retail_pos_sessions'))) {
+            Schema::create($this->moduleTable('retail_pos_sessions'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('location_id');
+                $table->timestamp('opened_at')->useCurrent();
+                $table->timestamp('closed_at')->nullable();
+                $table->unsignedBigInteger('opened_by_user_id');
+                $table->unsignedBigInteger('closed_by_user_id')->nullable();
+                $table->unsignedBigInteger('opening_cash_minor')->default(0);
+                $table->unsignedBigInteger('expected_cash_minor')->nullable();
+                $table->unsignedBigInteger('counted_cash_minor')->nullable();
+                $table->bigInteger('variance_minor')->nullable();
+                $table->string('variance_reason', 255)->nullable();
+                $table->string('status', 20)->default('open');
+                $table->unsignedInteger('version')->default(1);
+                $table->timestamps();
+
+                $table->index(['company_id', 'location_id'], 'retail_pos_sessions_company_location_idx');
+            });
+
+            // Index unique PARTIEL (une seule session open par emplacement) —
+            // miroir de la migration #7674, Postgres-only.
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement('CREATE UNIQUE INDEX IF NOT EXISTS retail_pos_sessions_company_location_open_unique ON '.$this->moduleTable('retail_pos_sessions')." (company_id, location_id) WHERE status = 'open'");
+            }
+        }
+
+        if (! Schema::hasTable($this->moduleTable('retail_orders'))) {
+            Schema::create($this->moduleTable('retail_orders'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('location_id');
+                $table->unsignedBigInteger('pos_session_id')->nullable();
+                $table->string('reference', 40);
+                $table->string('status', 20)->default('draft');
+                $table->unsignedBigInteger('subtotal_minor')->default(0);
+                $table->unsignedBigInteger('discount_minor')->default(0);
+                $table->unsignedBigInteger('total_minor')->default(0);
+                $table->char('currency', 3)->default('XOF');
+                $table->string('source', 20)->default('pos');
+                $table->text('note')->nullable();
+                $table->string('idempotency_key', 64)->nullable();
+                $table->unsignedInteger('version')->default(1);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'reference'], 'retail_orders_company_reference_unique');
+                $table->unique(['company_id', 'idempotency_key'], 'retail_orders_company_idempotency_key_unique');
+                $table->index(['company_id', 'location_id', 'status'], 'retail_orders_company_location_status_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('retail_order_items'))) {
+            Schema::create($this->moduleTable('retail_order_items'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('order_id');
+                $table->unsignedBigInteger('product_id');
+                $table->string('product_name', 200);
+                $table->decimal('quantity', 12, 3);
+                $table->unsignedBigInteger('unit_price_minor');
+                $table->unsignedBigInteger('line_total_minor');
+                $table->unsignedSmallInteger('line_index')->default(0);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'order_id', 'product_id', 'line_index'], 'retail_order_items_company_order_product_line_unique');
+                $table->index(['company_id', 'order_id'], 'retail_order_items_company_order_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('retail_order_payments'))) {
+            Schema::create($this->moduleTable('retail_order_payments'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('order_id');
+                $table->unsignedBigInteger('pos_session_id')->nullable();
+                $table->string('method', 20);
+                $table->unsignedBigInteger('amount_minor');
+                $table->char('currency', 3)->default('XOF');
+                $table->string('status', 20)->default('captured');
+                $table->timestamp('paid_at')->nullable();
+                $table->string('reference', 120)->nullable();
+                $table->string('idempotency_key', 64)->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'idempotency_key'], 'retail_order_payments_company_idempotency_key_unique');
+                $table->index(['company_id', 'order_id'], 'retail_order_payments_company_order_idx');
+            });
+        }
+
         // Issue #7761 — grants de modules composables par collaborateur.
         // Miroir de la migration 2026_09_19_001401_7761 (garde #5443).
         if (! Schema::hasTable($this->moduleTable('employee_module_grants'))) {
@@ -2786,6 +2972,9 @@ trait CreatesMvpSchema
                 $table->string('entity_id');
                 $table->string('operation');
                 $table->json('payload');
+                // #7452 — parité avec la migration tenant : clé de dédup des
+                // rejeux PushEdgeRecords + unique (edge_node_id, dedup_key).
+                $table->string('dedup_key', 64)->nullable();
                 $table->string('status')->default('pending');
                 $table->integer('attempt_count')->default(0);
                 $table->string('conflict_resolution')->nullable();
@@ -2793,6 +2982,7 @@ trait CreatesMvpSchema
                 $table->timestamp('synced_at')->nullable();
                 $table->timestamps();
 
+                $table->unique(['edge_node_id', 'dedup_key'], 'sync_queue_dedup_unique');
                 $table->foreign('edge_node_id')
                     ->references('id')->on('edge_nodes')
                     ->cascadeOnDelete();
@@ -3577,6 +3767,38 @@ trait CreatesMvpSchema
             });
         }
 
+        // #7452 — tables restaurées par 2026_09_19_120100 (retirées à tort par
+        // la dédup #7572 alors qu'aucune autre migration ne les déclarait).
+        if (! Schema::hasTable($this->moduleTable('fuel_deliveries'))) {
+            Schema::create($this->moduleTable('fuel_deliveries'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_stock_movements'))) {
+            Schema::create($this->moduleTable('fuel_stock_movements'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_stock_reconciliations'))) {
+            Schema::create($this->moduleTable('fuel_stock_reconciliations'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('fuel_report_exports'))) {
             Schema::create($this->moduleTable('fuel_report_exports'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
@@ -3634,6 +3856,27 @@ trait CreatesMvpSchema
                 $table->timestamps();
 
                 $table->index(['company_id', 'id']);
+            });
+        }
+
+        // #7747 (RESTO-902) — avis clients publics : colonnes réelles (et pas un
+        // stub minimal) car RestaurantPublicDirectoryController sous-requête
+        // branch_id/company_id/status/rating sur cette table.
+        if (! Schema::hasTable($this->moduleTable('restaurant_reviews'))) {
+            Schema::create($this->moduleTable('restaurant_reviews'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('branch_id');
+                $table->string('order_reference', 40);
+                $table->unsignedTinyInteger('rating');
+                $table->text('comment')->nullable();
+                $table->string('author_name', 120);
+                $table->string('status', 20)->default('pending');
+                $table->timestamps();
+
+                $table->unique(['company_id', 'order_reference']);
+                $table->index(['branch_id', 'status']);
+                $table->index(['company_id', 'status']);
             });
         }
 
@@ -4414,6 +4657,89 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "geo_attendance_sessions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "employee_attendance_preferences"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_mode_settings"'.$cascade);
+    }
+
+    /**
+     * #7452 — restaure la table `public.edge_nodes` CANONIQUE de la fixture
+     * après qu'un test l'a remplacée par un schéma legacy (bigint + node_id,
+     * cf. EdgeSilentNodeDetectionTest & co). Depuis le cache de fixture
+     * (#6928), le prochain setUpMvpSchema() ne rebâtit plus la structure : sans
+     * cette restauration, toutes les classes MVP suivantes du worker échouent
+     * en « relation "edge_nodes" does not exist ». Le DROP CASCADE emporte les
+     * FKs de sync_logs / sync_queue / edge_licenses : elles sont re-posées
+     * (gardées par pg_constraint). Beaucoup moins coûteux qu'une invalidation
+     * du marqueur (rebuild complet ~30 s par test).
+     */
+    protected function recreateCanonicalEdgeNodesTable(): void
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return;
+        }
+
+        DB::statement('DROP TABLE IF EXISTS edge_nodes CASCADE');
+
+        DB::statement(<<<'SQL'
+            CREATE TABLE IF NOT EXISTS public.edge_nodes (
+                id uuid PRIMARY KEY,
+                company_id uuid NOT NULL,
+                name varchar(255) NOT NULL,
+                slug varchar(255) NOT NULL UNIQUE,
+                site_address varchar(255) NULL,
+                status varchar(50) NOT NULL DEFAULT 'active',
+                mode varchar(50) NOT NULL DEFAULT 'hybrid',
+                license_key varchar(255) NULL UNIQUE,
+                license_expires_at timestamptz NULL,
+                last_sync_at timestamptz NULL,
+                last_seen_at timestamptz NULL,
+                local_ip varchar(45) NULL,
+                public_ip varchar(45) NULL,
+                edge_version varchar(50) NOT NULL DEFAULT '1.0.0',
+                capabilities jsonb NOT NULL DEFAULT '{}',
+                metadata jsonb NOT NULL DEFAULT '{}',
+                created_at timestamptz NULL,
+                updated_at timestamptz NULL
+            )
+            SQL);
+        DB::statement('CREATE INDEX IF NOT EXISTS edge_nodes_company_id_status_idx ON public.edge_nodes (company_id, status)');
+
+        // Tables satellites potentiellement droppées par un tearDown legacy
+        // (sync_logs) — recréées à l'identique de la fixture si absentes.
+        DB::statement(<<<'SQL'
+            CREATE TABLE IF NOT EXISTS public.sync_logs (
+                id uuid PRIMARY KEY,
+                edge_node_id uuid NOT NULL REFERENCES public.edge_nodes(id) ON DELETE CASCADE,
+                direction varchar(50) NOT NULL,
+                status varchar(50) NOT NULL,
+                records_sent integer NOT NULL DEFAULT 0,
+                records_received integer NOT NULL DEFAULT 0,
+                conflicts_detected integer NOT NULL DEFAULT 0,
+                conflicts_resolved integer NOT NULL DEFAULT 0,
+                error_message text NULL,
+                summary jsonb NOT NULL DEFAULT '{}',
+                started_at timestamptz NOT NULL,
+                finished_at timestamptz NULL,
+                created_at timestamptz NULL,
+                updated_at timestamptz NULL
+            )
+            SQL);
+
+        foreach ([
+            'sync_logs' => 'sync_logs_edge_node_id_fkey',
+            'sync_queue' => 'sync_queue_edge_node_id_fkey',
+            'edge_licenses' => 'edge_licenses_edge_node_id_fkey',
+        ] as $table => $constraint) {
+            $tableExists = DB::selectOne("SELECT to_regclass('public.{$table}') AS t");
+
+            if ($tableExists === null || $tableExists->t === null) {
+                continue;
+            }
+
+            if (DB::selectOne('SELECT 1 FROM pg_constraint WHERE conname = ?', [$constraint]) !== null) {
+                continue;
+            }
+
+            DB::statement("ALTER TABLE public.{$table} ADD CONSTRAINT {$constraint} FOREIGN KEY (edge_node_id) REFERENCES public.edge_nodes(id) ON DELETE CASCADE");
+        }
     }
 
     private function restoreDefaultSearchPath(): void

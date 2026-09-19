@@ -92,7 +92,7 @@ class CrmChannelSendTest extends TestCase
         $this->postJson('/api/v1/crm/channels/'.$channel->id.'/send', [
             'to' => '+213555010203',
             'body' => 'Bonjour !',
-            'contact_id' => 'contact-123',
+            'contact_id' => '123', // #7452 — crm_consents.contact_id est bigint (migration #5722)
         ])->assertStatus(422)->assertJsonPath('error', 'CRM_CONSENT_REQUIRED');
 
         $this->assertDatabaseMissing('crm_channel_messages', [

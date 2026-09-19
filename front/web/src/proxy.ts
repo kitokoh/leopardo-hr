@@ -67,6 +67,9 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/accounting',
   '/edu-manager',
   '/fuel',
+  // BC-17 — espace vendeur (produits, stock, caisse) : zone dashboard.
+  '/commerce',
+
   // #7759 — tickets support côté client (zone dashboard).
   '/support',
   // BC-29 COMMUNICATION (#7691) — boîte connectée (zone dashboard).
@@ -200,6 +203,8 @@ export const config = {
     '/accounting/:path*', // #7663 comptabilité applicative (vitrine = /comptabilite)
     '/edu-manager/:path*', // #7663 gestion scolaire — gate session
     '/fuel/:path*', // #7663 stations-service — gate session
+    '/commerce/:path*', // BC-17 espace vendeur — gate session (source unique #3377)
+
     '/support/:path*', // #7759 tickets support côté client — gate session
     '/communication/:path*', // BC-29 (#7691) boîte connectée — gate session
     // Vitrine landing — ?lang= → en-tête x-vitrine-lang (issue #4004).
