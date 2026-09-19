@@ -124,11 +124,11 @@ queue-status: ## Show queue status
 ## — OpenAPI / SDK ————————————————————————————————
 
 .PHONY: openapi-sync
-openapi-sync: ## Régénère le miroir dev-hub/openapi/v1.yaml + les SDK JS/Python depuis api/openapi.yaml (issue #2450)
+openapi-sync: ## Régénère le miroir dev-hub/openapi/v1.yaml + les SDK JS/Python depuis api/openapi.yaml (gitignorés depuis #7654)
 	@node dev-hub/tools/generate-openapi-sdk.mjs
 
 .PHONY: openapi-check
-openapi-check: ## Vérifie que le miroir + les SDK sont synchronisés avec api/openapi.yaml (garde CI #2450)
+openapi-check: ## Vérifie que le miroir + les SDK générés LOCALEMENT sont synchronisés avec api/openapi.yaml (exécuter openapi-sync d'abord ; artefacts non committés depuis #7654)
 	@node dev-hub/tools/generate-openapi-sdk.mjs --check
 
 ## — Help —————————————————————————————————————————————
