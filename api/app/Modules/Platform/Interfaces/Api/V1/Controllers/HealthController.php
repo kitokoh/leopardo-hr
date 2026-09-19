@@ -360,7 +360,8 @@ class HealthController extends Controller
     /**
      * @return array{ok: bool, driver?: string, size?: int, queues?: array<string, int>,
      *     pending?: array<string, int>, scheduled?: array<string, int>, reserved?: array<string, int>,
-     *     pending_total?: int, scheduled_total?: int, failed_jobs?: int|null}
+     *     pending_total?: int, scheduled_total?: int, failed_jobs?: int|null,
+     *     oldest_reserved_seconds?: int|null}
      */
     private function checkQueue(): array
     {
@@ -412,6 +413,12 @@ class HealthController extends Controller
                 'pending_total' => array_sum($pending),
                 'scheduled_total' => array_sum($scheduled),
                 'failed_jobs' => $this->failedJobsCount(),
+                // #7694 — âge de la plus vieille réservation : permet à la
+                // supervision externe (queue-supervision.yml, sonde HTTP sans
+                // credentials) de détecter un worker mort ; le seuil « stale »
+                // appartient à la sonde. `null` = aucune réservation en cours
+                // ou non mesurable (driver non `database`).
+                'oldest_reserved_seconds' => QueueObservabilityService::oldestReservedAgeSeconds(),
             ];
         } catch (Throwable) {
             return ['ok' => false, 'driver' => $driver];

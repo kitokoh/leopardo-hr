@@ -1,0 +1,64 @@
+name: Mobile Core Duplication Guard
+
+# Issue #7652 — duplication divergente leopardo_core <-> apps Flutter.
+# 48 fichiers d'apps (attendance, absences, auth, settings, ...) sont des copies
+# MODIFIÉES de leopardo_core/lib/features : trois forks du même écran, correctifs
+# de bugs et fixes sécu non propagés — en contradiction avec la règle du
+# front/mobile_apps/README.md (« toute modification partagée va dans leopardo_core »).
+#
+# La dette EXISTANTE est figée dans dev-hub/tools/mobile-core-duplication-baseline.txt.
+# Ce garde ne rougit QUE sur une NOUVELLE copie core->app (un shim de ré-export
+# `export 'package:leopardo_core/...';`, pattern #5279, est l'état cible et passe).
+# Inventaire et plan de dé-duplication : docs/audits/FLUTTER_DUPLICATION_CORE_APPS_7652.md.
+# Aucune toolchain Flutter requise : le garde compare des chemins, pas des builds.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "front/mobile_apps/**"
+      - "dev-hub/tools/check-mobile-core-duplication.py"
+      - "dev-hub/tools/mobile-core-duplication-baseline.txt"
+      - ".github/workflows/mobile-core-duplication-guard.yml"
+  push:
+    branches: [main]
+    paths:
+      - "front/mobile_apps/**"
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: mobile-core-duplication-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    name: Pas de nouvelle copie core->app (#7652)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+
+      - name: Run core<->apps duplication guard
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 dev-hub/tools/check-mobile-core-duplication.py
+
+      - name: Rappel du traitement de la dette
+        if: failure()
+        shell: bash
+        run: |
+          echo "::notice::Duplication core<->apps — inventaire et plan : docs/audits/FLUTTER_DUPLICATION_CORE_APPS_7652.md (issue #7652). La version canonique va dans leopardo_core ; l'app ré-exporte (pattern #5279)."
