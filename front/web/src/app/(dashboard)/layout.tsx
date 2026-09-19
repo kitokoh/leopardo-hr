@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, ChevronDown, Globe, KeyRound, LayoutGrid, LockKeyhole, LogOut, Menu, Plus, ShieldCheck, Sparkles, UserCircle, X } from 'lucide-react';
+import { Bell, ChevronDown, Globe, KeyRound, LayoutGrid, LockKeyhole, LogOut, Menu, Paintbrush, Plus, ShieldCheck, Sparkles, UserCircle, X } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { teamRolesT } from '@/lib/i18n/team-roles';
@@ -44,6 +44,21 @@ const MD_BREAKPOINT_MEDIA_QUERY = `(min-width: ${768}px)`;
  * entre onglets, tout en rattrapant une activation faite côté plateforme.
  */
 const SESSION_REFRESH_MIN_INTERVAL_MS = 60_000;
+
+/**
+ * #7713 — image de marque du tenant consommée par le shell : couleurs
+ * exposées en CSS custom properties, logo affiché à la place du badge LRH.
+ * Repli silencieux vers le thème par défaut si l'appel échoue.
+ */
+type TenantBranding = {
+  display_name: string | null;
+  logo_url: string | null;
+  primary_color: string;
+  accent_color: string;
+  brand_mode: string;
+};
+
+const HEX_COLOR_PATTERN = /^#[0-9A-Fa-f]{6}$/;
 
 /**
  * #7556 — Verrou de défilement partagé par les surfaces superposées (tiroir,
@@ -202,6 +217,8 @@ export default function DashboardLayout({
   // un bouton hamburger, sur le même modèle que l'admin.
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  // #7713 — branding du tenant (couleurs + logo), chargé après montage.
+  const [tenantBranding, setTenantBranding] = useState<TenantBranding | null>(null);
   const user = userOverride ?? storedUser;
   const locale = localeOverride ?? normalizeLocale(user?.language);
   const labels = useMemo(() => getCopy(locale), [locale]);
@@ -220,6 +237,49 @@ export default function DashboardLayout({
     setStoredUser(getStoredUser());
     setMounted(true);
   }, []);
+
+  // #7713 — charge l'image de marque du tenant. Toute erreur est silencieuse :
+  // le shell garde son thème par défaut (badge LRH, palette emerald).
+  useEffect(() => {
+    if (!mounted || !user) {
+      return;
+    }
+
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const response = await apiFetch('/company/branding');
+        const payload = await response.json() as { data?: { branding?: TenantBranding } };
+        if (!cancelled && payload.data?.branding) {
+          setTenantBranding(payload.data.branding);
+        }
+      } catch {
+        // Repli silencieux : thème par défaut.
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [mounted, user]);
+
+  // Couleurs du tenant → CSS custom properties posées à la racine du shell.
+  const tenantThemeStyle = useMemo(() => {
+    if (!tenantBranding) {
+      return undefined;
+    }
+    const style: Record<string, string> = {};
+    if (HEX_COLOR_PATTERN.test(tenantBranding.primary_color ?? '')) {
+      style['--tenant-primary'] = tenantBranding.primary_color;
+    }
+    if (HEX_COLOR_PATTERN.test(tenantBranding.accent_color ?? '')) {
+      style['--tenant-accent'] = tenantBranding.accent_color;
+    }
+    return Object.keys(style).length > 0 ? (style as React.CSSProperties) : undefined;
+  }, [tenantBranding]);
+
+  const tenantLogoUrl = tenantBranding?.logo_url ?? null;
 
   useEffect(() => {
     if (!mounted) {
@@ -606,7 +666,7 @@ export default function DashboardLayout({
   const navEntries = buildDashboardNav(toNavModules(navPills));
 
   return (
-    <div className="flex min-h-screen bg-transparent">
+    <div className="flex min-h-screen bg-transparent" style={tenantThemeStyle}>
       {/* Decorative background elements */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-emerald-500/5 blur-[120px]" />
@@ -637,9 +697,14 @@ export default function DashboardLayout({
         >
         <div className="flex h-16 shrink-0 items-center justify-between gap-3 border-b border-slate-200/50 px-5">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20">
-              <span className="text-xs font-black text-white">LRH</span>
-            </div>
+            {tenantLogoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element -- logo du tenant servi par l'API (URL par entreprise, hors allowlist next/image)
+              <img src={tenantLogoUrl} alt="" data-testid="tenant-logo" className="h-9 w-9 shrink-0 rounded-xl border border-slate-200 bg-white object-contain shadow-sm" />
+            ) : (
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20">
+                <span className="text-xs font-black text-white">LRH</span>
+              </div>
+            )}
             <div className="min-w-0">
               <p className="truncate text-sm font-black tracking-tight text-slate-950">{user?.company?.name ?? 'Leopardo'}</p>
               <p className="truncate text-[10px] font-black uppercase tracking-widest text-emerald-700">{labels.dashboard.businessSection}</p>
@@ -696,6 +761,11 @@ export default function DashboardLayout({
             <Link href="/settings/team" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
               <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
               {teamRolesT(locale, 'menuLabel')}
+            </Link>
+            {/* #7713 — image de marque du tenant. */}
+            <Link href="/settings/branding" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+              <Paintbrush className="h-4 w-4 text-slate-400" aria-hidden="true" />
+              {i18nT(locale, 'brandingPage.title')}
             </Link>
             <Link href="/settings/account#password" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
               <KeyRound className="h-4 w-4 text-slate-400" aria-hidden="true" />
@@ -758,9 +828,14 @@ export default function DashboardLayout({
                   badge LRH (`business-rail`), donc la barre du haut ne le rend plus
                   au-dessus de `md` que lorsque le tenant n'a aucun rail métier.
                   Sous `md` le rail est un tiroir hors-écran : le badge reste. */}
-              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20 ${business.length > 0 ? 'md:hidden' : ''}`}>
-                <span className="text-xs font-black text-white">LRH</span>
-              </div>
+              {tenantLogoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element -- logo du tenant servi par l'API (URL par entreprise, hors allowlist next/image)
+                <img src={tenantLogoUrl} alt="" className={`h-9 w-9 shrink-0 rounded-xl border border-slate-200 bg-white object-contain shadow-sm ${business.length > 0 ? 'md:hidden' : ''}`} />
+              ) : (
+                <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20 ${business.length > 0 ? 'md:hidden' : ''}`}>
+                  <span className="text-xs font-black text-white">LRH</span>
+                </div>
+              )}
               <div className="min-w-0">
                 <h2 className="truncate text-base font-black uppercase tracking-tight text-slate-950">{pageTitle}</h2>
                 <p className="truncate text-[11px] font-semibold text-slate-500">{user?.company?.name ?? ''}</p>
@@ -1102,6 +1177,11 @@ export default function DashboardLayout({
                     <Link href="/settings/team" role="menuitem" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
                       <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
                       {teamRolesT(locale, 'menuLabel')}
+                    </Link>
+                    {/* #7713 — image de marque du tenant. */}
+                    <Link href="/settings/branding" role="menuitem" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
+                      <Paintbrush className="h-4 w-4 text-slate-400" aria-hidden="true" />
+                      {i18nT(locale, 'brandingPage.title')}
                     </Link>
                     <Link
                       href="/settings/account#password"
