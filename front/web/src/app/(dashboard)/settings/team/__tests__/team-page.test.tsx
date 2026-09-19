@@ -108,6 +108,18 @@ function mockApiRoutes() {
       return { json: async () => ({ data: [{ id: 7, name: 'Technique' }] }) } as Response;
     }
 
+    if (url === '/employees/2/module-grants' && method === 'GET') {
+      return { json: async () => ({ data: { module_keys: ['marketing'] } }) } as Response;
+    }
+
+    if (url === '/employees/2/module-grants' && method === 'PUT') {
+      return { json: async () => ({ data: { module_keys: ['marketing', 'accounting'] } }) } as Response;
+    }
+
+    if (method === 'DELETE') {
+      return { json: async () => ({ data: { id: 'inv-2' } }) } as Response;
+    }
+
     if (url === '/employees' && method === 'POST') {
       return { json: async () => ({ data: { id: 4 } }) } as Response;
     }
@@ -377,5 +389,89 @@ describe('TeamSettingsPage (#7555) — invitations et archivage', () => {
     expect(confirmSpy).not.toHaveBeenCalled();
 
     confirmSpy.mockRestore();
+  });
+
+  it('révoque une invitation en attente après confirmation inline (#7762)', async () => {
+    render(<TeamSettingsPage />);
+    await screen.findByText('Amina Cherif');
+
+    // Une invitation acceptée ne propose pas de révocation.
+    expect(screen.queryByTestId('team-revoke-3')).toBeNull();
+
+    await userEvent.click(screen.getByTestId('team-revoke-2'));
+    expect(screen.getByTestId('team-revoke-confirm-2')).toBeInTheDocument();
+    expect(mockedApiFetch).not.toHaveBeenCalledWith('/invitations/inv-2', expect.anything());
+
+    await userEvent.click(screen.getByTestId('team-revoke-confirm-2'));
+
+    await waitFor(() =>
+      expect(mockedApiFetch).toHaveBeenCalledWith('/invitations/inv-2', { method: 'DELETE' }),
+    );
+    expect(await screen.findByRole('status')).toHaveTextContent('Invitation révoquée.');
+  });
+});
+
+describe('TeamSettingsPage (#7762) — modules délégués', () => {
+  it('charge la composition (GET module-grants) et affiche les 7 cases du registre', async () => {
+    render(<TeamSettingsPage />);
+    await screen.findByText('Amina Cherif');
+
+    await userEvent.click(screen.getByTestId('team-grants-toggle-2'));
+
+    await waitFor(() =>
+      expect(mockedApiFetch).toHaveBeenCalledWith('/employees/2/module-grants', { _cacheBust: true }),
+    );
+
+    // Registre fermé ModuleKey : 7 cases, ni plus ni moins.
+    const panel = await screen.findByTestId('team-grants-panel-2');
+    expect(panel.querySelectorAll('input[type="checkbox"]')).toHaveLength(7);
+
+    // La composition existante est cochée.
+    await waitFor(() => expect(screen.getByTestId('team-grant-2-marketing')).toBeChecked());
+    expect(screen.getByTestId('team-grant-2-accounting')).not.toBeChecked();
+  });
+
+  it('envoie le jeu COMPLET en PUT (ce qui n’est pas coché est révoqué)', async () => {
+    render(<TeamSettingsPage />);
+    await screen.findByText('Amina Cherif');
+
+    await userEvent.click(screen.getByTestId('team-grants-toggle-2'));
+    await waitFor(() => expect(screen.getByTestId('team-grant-2-marketing')).toBeChecked());
+
+    await userEvent.click(screen.getByTestId('team-grant-2-accounting'));
+    await userEvent.click(screen.getByTestId('team-grants-save-2'));
+
+    await waitFor(() =>
+      expect(mockedApiFetch).toHaveBeenCalledWith(
+        '/employees/2/module-grants',
+        expect.objectContaining({ method: 'PUT' }),
+      ),
+    );
+
+    expect(bodyOf('/employees/2/module-grants', 'PUT')).toEqual({
+      module_keys: ['marketing', 'accounting'],
+    });
+    expect(await screen.findByRole('status')).toHaveTextContent('Modules délégués mis à jour.');
+  });
+
+  it('ne propose pas le panneau sur sa propre ligne (le principal a déjà tout)', async () => {
+    render(<TeamSettingsPage />);
+    await screen.findByText('Amina Cherif');
+
+    expect(screen.queryByTestId('team-grants-toggle-1')).toBeNull();
+    expect(screen.getByTestId('team-grants-toggle-2')).toBeInTheDocument();
+  });
+
+  it('ne propose aucun bouton de délégation à un non-principal (miroir RBAC serveur)', async () => {
+    // Un manager RH (non principal) : la policy manageModuleGrants répondrait 403.
+    window.localStorage.setItem(
+      'auth_user',
+      JSON.stringify({ ...managerUser, id: 3, manager_role: 'rh' }),
+    );
+
+    render(<TeamSettingsPage />);
+    await screen.findByText('Amina Cherif');
+
+    expect(screen.queryByTestId('team-grants-toggle-2')).toBeNull();
   });
 });
