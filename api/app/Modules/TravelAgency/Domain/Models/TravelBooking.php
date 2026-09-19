@@ -21,6 +21,24 @@ use Illuminate\Support\Str;
  * `reference` est générée automatiquement (`GV-…`) si absente à la création.
  * `idempotency_key` garantit qu'une requête rejouée (retry réseau, double
  * clic guichet) ne crée jamais deux réservations pour le même tenant.
+ *
+ * @property int|null $booked_by_user_id
+ * @property \App\Modules\TravelAgency\Domain\Enums\BookingSource $booking_source
+ * @property string $company_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property string $currency
+ * @property int|null $customer_contact_id
+ * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property int $id
+ * @property string $idempotency_key
+ * @property int $passenger_count
+ * @property \App\Modules\TravelAgency\Domain\Enums\PaymentStatus $payment_status
+ * @property string $reference
+ * @property \App\Modules\TravelAgency\Domain\Enums\BookingStatus $status
+ * @property int $total_amount_minor
+ * @property int $trip_id
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int $version
  */
 class TravelBooking extends Model
 {

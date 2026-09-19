@@ -10,7 +10,6 @@ use App\Modules\TravelAgency\Domain\Models\TravelPassenger;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use Carbon\CarbonImmutable;
 use DateTimeInterface;
-use Illuminate\Support\Carbon;
 
 /**
  * TRAVEL-813 (#6103) — Résolution et application des politiques
@@ -129,12 +128,10 @@ final class TravelCancellationPolicyService
             return ['refundable' => false, 'refund_amount_minor' => 0, 'penalty_minor' => 0];
         }
 
+        // #7655 — `departure_date` est non-nullable (types désormais déclarés sur
+        // TravelTrip) : le garde `instanceof Carbon` qui suivait était du code mort.
         $departureAt = $trip->departure_date->copy()
             ->setTimeFromTimeString((string) ($trip->departure_time ?? '00:00'));
-
-        if (! $departureAt instanceof Carbon) {
-            $departureAt = now()->addDay();
-        }
 
         $total = 0;
         $penalty = 0;

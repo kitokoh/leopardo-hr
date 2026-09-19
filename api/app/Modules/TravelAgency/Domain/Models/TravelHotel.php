@@ -17,6 +17,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  *
  * `classification` bornée 1-5 étoiles (contrainte DB
  * `travel_hotels_classification_check`).
+ *
+ * @property string|null $address
+ * @property int $city_id
+ * @property int $classification
+ * @property string $company_id
+ * @property string|null $contact_phone
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property string|null $description_redacted
+ * @property int $id
+ * @property string $name
+ * @property \App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus $status
+ * @property \Illuminate\Support\Carbon|null $updated_at
  */
 class TravelHotel extends Model
 {

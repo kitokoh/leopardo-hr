@@ -17,6 +17,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Rattachement au pays par code ISO2 (référentiel tenant-scoped, pas de FK
  * inter-tenant). `region` = découpage administratif de premier niveau
  * (les découpages à 3 niveaux de gv-back sont planifiés en Phase 2).
+ *
+ * @property string $country_iso2
+ * @property int $id
+ * @property float|null $latitude
+ * @property float|null $longitude
+ * @property string $name
+ * @property string|null $region
+ * @property \App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus $status
  */
 class TravelCity extends Model
 {

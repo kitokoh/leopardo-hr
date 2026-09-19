@@ -16,6 +16,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  *
  * Tenant-scoped : chaque tenant reçoit son référentiel complet au provisioning
  * (TravelGeoSeederService) et peut le personnaliser via l'API.
+ *
+ * @property int $id
+ * @property string $iso2
+ * @property string $iso3
+ * @property string $name
+ * @property int|null $phone_code
+ * @property \App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus $status
  */
 class TravelCountry extends Model
 {
