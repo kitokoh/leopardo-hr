@@ -120,7 +120,7 @@ class ZktecoControllerTest extends TestCase
 
     public function test_heartbeat_requires_device_token(): void
     {
-        $device = ZktecoDevice::query()->create([
+        $device = ZktecoDevice::query()->forceCreate([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-AUTH-001',
             'name' => 'Porte B',
@@ -139,7 +139,7 @@ class ZktecoControllerTest extends TestCase
 
     public function test_heartbeat_rejects_wrong_device_token(): void
     {
-        ZktecoDevice::query()->create([
+        ZktecoDevice::query()->forceCreate([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-AUTH-002',
             'name' => 'Porte C',
@@ -153,7 +153,7 @@ class ZktecoControllerTest extends TestCase
 
     public function test_heartbeat_succeeds_with_valid_token(): void
     {
-        ZktecoDevice::query()->create([
+        ZktecoDevice::query()->forceCreate([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-AUTH-003',
             'name' => 'Porte D',
@@ -179,7 +179,7 @@ class ZktecoControllerTest extends TestCase
      */
     public function test_heartbeat_restores_search_path_after_success(): void
     {
-        ZktecoDevice::query()->create([
+        ZktecoDevice::query()->forceCreate([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-SP-001',
             'name' => 'Porte SP1',
@@ -203,7 +203,7 @@ class ZktecoControllerTest extends TestCase
 
     public function test_heartbeat_restores_search_path_after_rejected_token(): void
     {
-        ZktecoDevice::query()->create([
+        ZktecoDevice::query()->forceCreate([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-SP-002',
             'name' => 'Porte SP2',
@@ -219,7 +219,7 @@ class ZktecoControllerTest extends TestCase
 
     public function test_sync_attendance_restores_search_path_after_success(): void
     {
-        ZktecoDevice::query()->create([
+        ZktecoDevice::query()->forceCreate([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-SP-003',
             'name' => 'Porte SP3',
@@ -245,7 +245,7 @@ class ZktecoControllerTest extends TestCase
 
     public function test_sync_attendance_rejects_unauthenticated_device_and_writes_nothing(): void
     {
-        ZktecoDevice::query()->create([
+        ZktecoDevice::query()->forceCreate([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-AUTH-004',
             'name' => 'Porte E',
@@ -272,7 +272,7 @@ class ZktecoControllerTest extends TestCase
 
     public function test_sync_attendance_succeeds_with_valid_token(): void
     {
-        ZktecoDevice::query()->create([
+        ZktecoDevice::query()->forceCreate([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-AUTH-005',
             'name' => 'Porte F',
@@ -306,7 +306,7 @@ class ZktecoControllerTest extends TestCase
     public function test_regenerate_token_rotates_and_revokes_old_token(): void
     {
         /** @var ZktecoDevice $device */
-        $device = ZktecoDevice::query()->create([
+        $device = ZktecoDevice::query()->forceCreate([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-AUTH-006',
             'name' => 'Porte G',
@@ -336,7 +336,7 @@ class ZktecoControllerTest extends TestCase
     public function test_regenerate_token_requires_manager(): void
     {
         /** @var ZktecoDevice $device */
-        $device = ZktecoDevice::query()->create([
+        $device = ZktecoDevice::query()->forceCreate([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-AUTH-007',
             'name' => 'Porte H',
@@ -350,7 +350,7 @@ class ZktecoControllerTest extends TestCase
 
     public function test_push_users_requires_manager_role(): void
     {
-        $device = ZktecoDevice::query()->create([
+        $device = ZktecoDevice::query()->forceCreate([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-PUSH-001',
             'name' => 'Porte I',
@@ -368,7 +368,7 @@ class ZktecoControllerTest extends TestCase
         // (lookup autrefois par serial seul → action cross-tenant).
         /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create();
-        $otherDevice = ZktecoDevice::query()->create([
+        $otherDevice = ZktecoDevice::query()->forceCreate([
             'company_id' => $otherCompany->id,
             'serial_number' => 'SN-PUSH-OTHER-001',
             'name' => 'Porte tenant B',
@@ -379,7 +379,7 @@ class ZktecoControllerTest extends TestCase
             ->assertStatus(404);
 
         // L'appareil du tenant courant reste joignable (pas de sur-scope).
-        $ownDevice = ZktecoDevice::query()->create([
+        $ownDevice = ZktecoDevice::query()->forceCreate([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-PUSH-OWN-001',
             'name' => 'Porte tenant A',
@@ -417,7 +417,7 @@ class ZktecoControllerTest extends TestCase
         // (migrations 2026-08-14/19). En prod, un schéma non rejoué faisait
         // 500 INTERNAL_ERROR sur la sérialisation.
         /** @var ZktecoDevice $device */
-        $device = ZktecoDevice::query()->create([
+        $device = ZktecoDevice::query()->forceCreate([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-IDX-001',
             'name' => 'Porte Index',
@@ -472,7 +472,7 @@ class ZktecoControllerTest extends TestCase
     public function test_update_device_sets_punch_methods(): void
     {
         /** @var ZktecoDevice $device */
-        $device = ZktecoDevice::query()->create([
+        $device = ZktecoDevice::query()->forceCreate([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-PM-004',
             'name' => 'Porte PM4',
@@ -490,7 +490,7 @@ class ZktecoControllerTest extends TestCase
     public function test_update_device_resets_punch_methods_to_null(): void
     {
         /** @var ZktecoDevice $device */
-        $device = ZktecoDevice::query()->create([
+        $device = ZktecoDevice::query()->forceCreate([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-PM-005',
             'name' => 'Porte PM5',
@@ -510,7 +510,7 @@ class ZktecoControllerTest extends TestCase
     {
         /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create();
-        $otherDevice = ZktecoDevice::query()->create([
+        $otherDevice = ZktecoDevice::query()->forceCreate([
             'company_id' => $otherCompany->id,
             'serial_number' => 'SN-PM-OTHER-001',
             'name' => 'Borne autre tenant',
@@ -525,7 +525,7 @@ class ZktecoControllerTest extends TestCase
 
     public function test_index_exposes_punch_methods(): void
     {
-        ZktecoDevice::query()->create([
+        ZktecoDevice::query()->forceCreate([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-PM-IDX-001',
             'name' => 'Porte IDX',
@@ -574,7 +574,7 @@ class ZktecoControllerTest extends TestCase
 
     public function test_show_returns_device_with_sync_history(): void
     {
-        $device = ZktecoDevice::query()->create([
+        $device = ZktecoDevice::query()->forceCreate([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-SHOW-001',
             'name' => 'Porte SHOW',
@@ -595,7 +595,7 @@ class ZktecoControllerTest extends TestCase
     {
         /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create();
-        $otherDevice = ZktecoDevice::query()->create([
+        $otherDevice = ZktecoDevice::query()->forceCreate([
             'company_id' => $otherCompany->id,
             'serial_number' => 'SN-SHOW-OTHER-001',
             'name' => 'Porte tenant B',
@@ -608,7 +608,7 @@ class ZktecoControllerTest extends TestCase
 
     public function test_sync_logs_returns_list_for_device(): void
     {
-        $device = ZktecoDevice::query()->create([
+        $device = ZktecoDevice::query()->forceCreate([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-LOGS-001',
             'name' => 'Porte LOGS',
@@ -624,7 +624,7 @@ class ZktecoControllerTest extends TestCase
     {
         /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create();
-        $otherDevice = ZktecoDevice::query()->create([
+        $otherDevice = ZktecoDevice::query()->forceCreate([
             'company_id' => $otherCompany->id,
             'serial_number' => 'SN-LOGS-OTHER-001',
             'name' => 'Porte tenant B',
@@ -652,7 +652,7 @@ class ZktecoControllerTest extends TestCase
 
     public function test_show_returns_503_with_actionable_code_on_schema_drift(): void
     {
-        $device = ZktecoDevice::query()->create([
+        $device = ZktecoDevice::query()->forceCreate([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-DRIFT-001',
             'name' => 'Porte drift',

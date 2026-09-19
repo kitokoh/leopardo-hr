@@ -114,7 +114,7 @@ class GeoAttendanceModeConfigTest extends TestCase
      */
     public function test_get_config_returns_company_forced_mode(): void
     {
-        AttendanceModeSettings::query()->create([
+        AttendanceModeSettings::query()->forceCreate([
             'company_id' => $this->company->id,
             'forced_mode' => 'gps_auto',
             'gps_enabled' => true,
@@ -159,7 +159,7 @@ class GeoAttendanceModeConfigTest extends TestCase
     public function test_employee_can_set_preference_when_no_forced_mode(): void
     {
         // Paramétrer la company pour autoriser l'override
-        AttendanceModeSettings::query()->create([
+        AttendanceModeSettings::query()->forceCreate([
             'company_id' => $this->company->id,
             'forced_mode' => null,
             'gps_enabled' => true,
@@ -185,7 +185,7 @@ class GeoAttendanceModeConfigTest extends TestCase
     public function test_employee_preference_ignored_when_company_has_forced_mode(): void
     {
         // Mode forcé défini
-        AttendanceModeSettings::query()->create([
+        AttendanceModeSettings::query()->forceCreate([
             'company_id' => $this->company->id,
             'forced_mode' => 'manual',
             'gps_enabled' => false,

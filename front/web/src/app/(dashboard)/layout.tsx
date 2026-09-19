@@ -3,11 +3,12 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Banknote, Bell, ChevronDown, Globe, KeyRound, LayoutGrid, LockKeyhole, LogOut, Menu, Paintbrush, Plus, ShieldCheck, Sparkles, UserCircle, X } from 'lucide-react';
+import { Banknote, Bell, ChevronDown, Globe, KeyRound, LayoutGrid, LifeBuoy, LockKeyhole, LogOut, Menu, Paintbrush, Plus, ShieldCheck, Sparkles, UserCircle, X } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { teamRolesT } from '@/lib/i18n/team-roles';
 import { paymentProfilesT } from '@/lib/i18n/payment-profiles';
+import { supportTicketsT } from '@/lib/i18n/support-tickets';
 import { trackClientEvent } from '@/lib/client-analytics';
 import { getClientModuleAccess, getModuleAccessForPath, getSidebarSections, isSelfActivable, mergeActivationSurface, sessionModuleSignature, type ClientModuleAccess, type ClientModuleKey } from '@/lib/client-features';
 import { buildBusinessRail, buildDashboardNav, isNavEntryActive, toNavModules, type DashboardNavEntry, type NavMenuGroupId } from '@/lib/dashboard-nav';
@@ -787,6 +788,12 @@ export default function DashboardLayout({
               <Banknote className="h-4 w-4 text-slate-400" aria-hidden="true" />
               {paymentProfilesT(locale, 'menuLabel')}
             </Link>
+            {/* #7759 — tickets support côté client (tous les rôles pour l'instant,
+                la restriction par grant `support` arrive dans un autre lot). */}
+            <Link href="/support" onClick={() => setMobileNavOpen(false)} data-testid="dashboard-drawer-support" className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+              <LifeBuoy className="h-4 w-4 text-slate-400" aria-hidden="true" />
+              {supportTicketsT(locale, 'menu_label')}
+            </Link>
             {/* #7713 — image de marque du tenant. */}
             <Link href="/settings/branding" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
               <Paintbrush className="h-4 w-4 text-slate-400" aria-hidden="true" />
@@ -1210,6 +1217,11 @@ export default function DashboardLayout({
                     <Link href="/settings/encaissements" role="menuitem" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
                       <Banknote className="h-4 w-4 text-slate-400" aria-hidden="true" />
                       {paymentProfilesT(locale, 'menuLabel')}
+                    </Link>
+                    {/* #7759 — tickets support côté client. */}
+                    <Link href="/support" role="menuitem" onClick={() => setUserMenuOpen(false)} data-testid="user-menu-support" className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
+                      <LifeBuoy className="h-4 w-4 text-slate-400" aria-hidden="true" />
+                      {supportTicketsT(locale, 'menu_label')}
                     </Link>
                     {/* #7713 — image de marque du tenant. */}
                     <Link href="/settings/branding" role="menuitem" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
