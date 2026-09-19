@@ -133,13 +133,29 @@ var CATALOG = {
 JS
 git -C "$REPO_TECH" add -A
 git -C "$REPO_TECH" commit -q -m "catalogue kiosk i18n.js (#7651)"
+# Cas 1quinquies — données structurées JSON-LD (#7748) : les clés du
+# vocabulaire schema.org ('@context', '@type'…) sont des constantes
+# techniques, pas du texte utilisateur.
+mkdir -p "$REPO_TECH/front/web/src/app/restaurants"
+cat > "$REPO_TECH/front/web/src/app/restaurants/jsonld.tsx" <<'TSX'
+export function restaurantJsonLd(name: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Restaurant',
+    name,
+    geo: { '@type': 'GeoCoordinates', latitude: 0, longitude: 0 },
+  }
+}
+TSX
+git -C "$REPO_TECH" add -A
+git -C "$REPO_TECH" commit -q -m "clés JSON-LD schema.org (#7748)"
 run_guard "$REPO_TECH"
 if [[ "$GUARD_STATUS" -ne 0 ]]; then
   printf '%s\n' "$OUT" >&2
   fail "cas 1 : un diff sans chaîne utilisateur est refusé (code $GUARD_STATUS) — critère 1 de #7482"
 fi
 echo "ok: cas 1 vert (aucune réécriture de code technique exigée)"
-for motif in 'form[key]' 'bg-emerald-500' 'item.x == null' 'options.0.label' 'settings.billing.title' '(min-width: 1024px) 33vw, 100vw'; do
+for motif in 'form[key]' 'bg-emerald-500' 'item.x == null' 'options.0.label' 'settings.billing.title' '(min-width: 1024px) 33vw, 100vw' '@context' '@type'; do
   expect_clean "$motif" "motif technique « $motif »"
 done
 expect_clean "d'indicateur d'étapes" "commentaire JSX français (apostrophes) — cas #7562"
