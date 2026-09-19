@@ -9,7 +9,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Boxes, LayoutGrid, ShoppingBag, Store, Tags } from 'lucide-react';
+import { Boxes, Globe, LayoutGrid, ShoppingBag, Store, Tags } from 'lucide-react';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { apiFetch } from '@/lib/api-client';
 import { getPreferredLocale } from '@/lib/i18n';
@@ -104,6 +104,15 @@ export default function CommerceHomePage() {
       title: t(locale, 'commerce.home.pos', 'Caisse'),
       description: t(locale, 'commerce.home.posDesc', 'Sessions de caisse, ventes, encaissements et tickets.'),
       accent: 'from-amber-500 to-orange-600',
+    },
+    // #7810 — marketplace « Leopardo Marché » : réglages boutique,
+    // publication en ligne par produit et commandes web.
+    {
+      href: '/commerce/boutique',
+      icon: Globe,
+      title: t(locale, 'commerce.shop.tileTitle', 'Boutique en ligne'),
+      description: t(locale, 'commerce.shop.tileDesc', 'Réglages marketplace, publication des produits et commandes web.'),
+      accent: 'from-violet-500 to-purple-600',
     },
   ];
 

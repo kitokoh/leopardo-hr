@@ -88,6 +88,7 @@ class RetailProductController extends Controller
             'currency' => $request->input('currency') ?? (string) currentCompany()->currency,
             'unit' => $request->input('unit'),
             'status' => $request->input('status', RetailProductStatus::Draft->value),
+            'image_url' => $request->input('image_url'),
             'meta' => $request->input('meta'),
         ]);
 
@@ -135,6 +136,7 @@ class RetailProductController extends Controller
             'currency' => $request->input('currency') ?? $product->currency,
             'unit' => $request->input('unit') ?? $product->unit,
             'status' => $request->input('status') ?? $product->status->value,
+            'image_url' => $request->input('image_url'),
             'meta' => $request->input('meta'),
         ]);
 
@@ -165,6 +167,25 @@ class RetailProductController extends Controller
     public function unpublish(Request $request, RetailProduct $product): JsonResponse
     {
         return $this->setStatus($request, $product, RetailProductStatus::Draft);
+    }
+
+    /**
+     * Bascule ON la publication marketplace Leopardo Marche (#7807) —
+     * `online_visible = true` (independant du statut : le produit ne sera
+     * visible publiquement que s'il est aussi `published` ET que la
+     * boutique du tenant est activee).
+     */
+    public function publishOnline(Request $request, RetailProduct $product): JsonResponse
+    {
+        return $this->setOnlineVisibility($request, $product, true);
+    }
+
+    /**
+     * Bascule OFF la publication marketplace Leopardo Marche (#7807).
+     */
+    public function unpublishOnline(Request $request, RetailProduct $product): JsonResponse
+    {
+        return $this->setOnlineVisibility($request, $product, false);
     }
 
     /**
@@ -205,6 +226,26 @@ class RetailProductController extends Controller
     }
 
     /**
+     * Bascule de la visibilite marketplace (#7807) — meme portee RBAC que
+     * la publication (RetailProductPolicy@publish), 404 cross-tenant.
+     */
+    private function setOnlineVisibility(Request $request, RetailProduct $product, bool $visible): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($product->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('publish', $product);
+
+        $product->update(['online_visible' => $visible]);
+
+        return response()->json(['data' => $this->payload($product->refresh())]);
+    }
+
+    /**
      * @return array<string, mixed>
      */
     private function payload(RetailProduct $product): array
@@ -223,6 +264,8 @@ class RetailProductController extends Controller
             'currency' => $product->currency,
             'unit' => $product->unit,
             'status' => $product->status->value,
+            'online_visible' => $product->online_visible,
+            'image_url' => $product->image_url,
             'meta' => $product->meta,
             'created_at' => $product->created_at?->toIso8601String(),
             'updated_at' => $product->updated_at?->toIso8601String(),
