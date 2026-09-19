@@ -277,11 +277,6 @@ return [
             'title_key' => 'notifications.payment_document_processing_title',
             'body_key' => 'notifications.payment_document_processing_body',
         ],
-        'payment_document_ready' => [
-            'category' => 'payroll',
-            'title_key' => 'notifications.payment_document_ready_title',
-            'body_key' => 'notifications.payment_document_ready_body',
-        ],
         'payment_document_failed' => [
             'category' => 'payroll',
             'title_key' => 'notifications.payment_document_failed_title',
@@ -305,5 +300,90 @@ return [
             'title_key' => 'notifications.payment_document_ready_title',
             'body_key' => 'notifications.payment_document_ready_body',
         ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Classification IA des emails (BC-29 COMMUNICATION, R3 #7688)
+    |--------------------------------------------------------------------------
+    |
+    | Taxonomie par defaut (materialisee paresseusement par tenant, libelles
+    | i18n `communication.category_<key>` FR/EN/AR/TR) + seuils du pipeline :
+    | la classification tourne d'abord sur metadonnees + snippet (cout LLM,
+    | spec §5.6) et n'escalade vers le corps complet (borne) que si la
+    | confiance est sous `body_fallback_confidence`. Les categories listees
+    | dans `no_proposal_categories` ne declenchent JAMAIS de proposition de
+    | contact CRM (pas de spam/newsletter dans le CRM).
+    |
+    */
+
+    'classification' => [
+        'default_categories' => [
+            'prospect',
+            'client',
+            'supplier',
+            'invoice',
+            'commercial',
+            'hr',
+            'spam_newsletter',
+            'personal',
+            'urgent',
+            'other',
+        ],
+        'body_fallback_confidence' => (int) env('COMMUNICATION_CLASSIFY_BODY_FALLBACK_CONFIDENCE', 50),
+        'body_excerpt_bytes' => (int) env('COMMUNICATION_CLASSIFY_BODY_EXCERPT_BYTES', 8000),
+        'no_proposal_categories' => ['spam_newsletter'],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relances automatiques (BC-29 COMMUNICATION, R4 #7689)
+    |--------------------------------------------------------------------------
+    |
+    | Garde-fous globaux du moteur de relances (spec §3.4) — les regles et
+    | sequences (max 3 etapes) sont configurees PAR UTILISATEUR via l'API ;
+    | ces bornes-ci s'appliquent a tout le monde et ne sont PAS contournables
+    | par les regles :
+    | - `daily_cap_per_user`    : plafond journalier de relances par boite ;
+    | - `contact_daily_cap`     : plafond journalier par DESTINATAIRE (tous
+    |                             fils/regles confondus) — defaut 1 ;
+    | - `quiet_hours`           : fenetre horaire pendant laquelle AUCUNE
+    |                             relance ne part (les echeances restent
+    |                             `pending` et repartent a la passe suivante).
+    |                             `start` > `end` = fenetre nocturne (20h->8h).
+    |
+    */
+
+    'follow_ups' => [
+        'max_steps' => 3,
+        'daily_cap_per_user' => (int) env('COMMUNICATION_FOLLOW_UP_DAILY_CAP', 25),
+        'contact_daily_cap' => (int) env('COMMUNICATION_FOLLOW_UP_CONTACT_DAILY_CAP', 1),
+        'quiet_hours' => [
+            'start' => (int) env('COMMUNICATION_FOLLOW_UP_QUIET_START', 20),
+            'end' => (int) env('COMMUNICATION_FOLLOW_UP_QUIET_END', 8),
+            'timezone' => env('COMMUNICATION_FOLLOW_UP_TIMEZONE', 'Africa/Algiers'),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Assisted replies (BC-29 Communication R5, #7690 — spec §3.5)
+    |--------------------------------------------------------------------------
+    |
+    | Bornes protectrices des reponses assistees. La fenetre calme est
+    | PARTAGEE avec les relances R4 (`follow_ups.quiet_hours`) — aucun envoi
+    | automatique la nuit, quel que soit le canal. Les categories interdites
+    | en mode `auto` (finance/RH/juridique) sont bloquees EN DUR dans
+    | `CommunicationReplyPolicy::BLOCKED_AUTO_CATEGORIES`, jamais en config :
+    | non contournables par environnement.
+    |
+    | - `auto_daily_cap`         : plafond journalier d'envois AUTO par boite ;
+    | - `reply_body_excerpt_bytes`: borne du corps transmis au LLM (cout §5.6).
+    |
+    */
+
+    'replies' => [
+        'auto_daily_cap' => (int) env('COMMUNICATION_REPLY_AUTO_DAILY_CAP', 25),
+        'reply_body_excerpt_bytes' => (int) env('COMMUNICATION_REPLY_BODY_EXCERPT_BYTES', 8000),
     ],
 ];
