@@ -6,35 +6,36 @@ namespace App\Modules\CRM\Providers;
 
 use App\Modules\CRM\Application\Listeners\PropagateConsentRevocation;
 use App\Modules\CRM\Domain\Contracts\CampaignConsentCheckerInterface;
-use App\Modules\CRM\Domain\Contracts\EmailProviderInterface;
 use App\Modules\CRM\Domain\Contracts\ChannelAdapterContract;
 use App\Modules\CRM\Domain\Contracts\CrmChannelMessageRepositoryInterface;
-use App\Modules\CRM\Domain\Enums\CrmChannelType;
-use App\Modules\CRM\Infrastructure\Integrations\WhatsApp\WhatsAppAdapter;
-use App\Modules\CRM\Infrastructure\Integrations\Sms\SmsAdapter;
-use App\Modules\CRM\Infrastructure\Integrations\WhatsApp\WhatsAppCloudApiClient;
-use App\Modules\CRM\Infrastructure\Repositories\CrmChannelMessageRepository;
-use App\Modules\CRM\Infrastructure\Services\ConsentTableCampaignConsentChecker;
-use App\Modules\CRM\Infrastructure\Services\CrmChannelService;
-use App\Modules\CRM\Infrastructure\Services\LogEmailProvider;
-use App\Modules\CRM\Infrastructure\Services\MailEmailProvider;
-
 use App\Modules\CRM\Domain\Contracts\CrmImportRepositoryInterface;
 use App\Modules\CRM\Domain\Contracts\CrmImportRowPersisterInterface;
 use App\Modules\CRM\Domain\Contracts\CrmLeadRepositoryInterface;
-use App\Modules\CRM\Domain\Events\CrmConsentRevoked;
+use App\Modules\CRM\Domain\Contracts\EmailProviderInterface;
 use App\Modules\CRM\Domain\Contracts\SegmentContactSourceInterface;
+use App\Modules\CRM\Domain\Enums\CrmChannelType;
+use App\Modules\CRM\Domain\Events\CrmConsentRevoked;
+use App\Modules\CRM\Infrastructure\Integrations\Sms\SmsAdapter;
+use App\Modules\CRM\Infrastructure\Integrations\WhatsApp\WhatsAppAdapter;
+use App\Modules\CRM\Infrastructure\Integrations\WhatsApp\WhatsAppCloudApiClient;
+use App\Modules\CRM\Infrastructure\Repositories\CrmChannelMessageRepository;
 use App\Modules\CRM\Infrastructure\Repositories\CrmImportRepository;
 use App\Modules\CRM\Infrastructure\Repositories\CrmLeadRepository;
+use App\Modules\CRM\Infrastructure\Services\AutomationEngine;
+use App\Modules\CRM\Infrastructure\Services\ConsentTableCampaignConsentChecker;
+use App\Modules\CRM\Infrastructure\Services\CrmChannelRegistry;
+use App\Modules\CRM\Infrastructure\Services\CrmChannelService;
+use App\Modules\CRM\Infrastructure\Services\CrmConditionEvaluator;
 use App\Modules\CRM\Infrastructure\Services\CrmContactSegmentSource;
+use App\Modules\CRM\Infrastructure\Services\CrmEmailContactDirectory;
+use App\Modules\CRM\Infrastructure\Services\CrmEmailFollowUpConsentGate;
 use App\Modules\CRM\Infrastructure\Services\CrmImportRowPersister;
 use App\Modules\CRM\Infrastructure\Services\CrmOutboxConsumerRegistry;
-use App\Modules\CRM\Infrastructure\Services\AutomationEngine;
-use App\Modules\CRM\Infrastructure\Services\CrmChannelRegistry;
-use App\Modules\CRM\Infrastructure\Services\CrmConditionEvaluator;
-
 use App\Modules\CRM\Infrastructure\Services\CrmOutboxPublisher;
-use Illuminate\Contracts\Foundation\Application;
+use App\Modules\CRM\Infrastructure\Services\LogEmailProvider;
+use App\Modules\CRM\Infrastructure\Services\MailEmailProvider;
+use App\Shared\Contracts\Crm\EmailContactDirectory;
+use App\Shared\Contracts\Crm\EmailFollowUpConsentGate;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
@@ -61,6 +62,17 @@ class CrmServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(CrmChannelMessageRepositoryInterface::class, CrmChannelMessageRepository::class);
+
+        // R3 Communication (#7688) — contrat partagé de liaison email ↔
+        // contacts (pattern PublishedProductsProvider) : le module
+        // Communication (BC-29) consomme l'interface App\Shared, jamais les
+        // modèles CRM (isolation #5584).
+        $this->app->bind(EmailContactDirectory::class, CrmEmailContactDirectory::class);
+
+        // R4 Communication (#7689) — contrat partagé de consentement email
+        // (suppressions/unsubscribe #5726 + consentements #5722) consommé par
+        // le moteur de relances automatiques, même pattern d'isolation.
+        $this->app->bind(EmailFollowUpConsentGate::class, CrmEmailFollowUpConsentGate::class);
 
         $this->app->singleton(WhatsAppCloudApiClient::class);
         $this->app->singleton(WhatsAppAdapter::class);

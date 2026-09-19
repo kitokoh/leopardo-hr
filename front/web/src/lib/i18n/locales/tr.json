@@ -5903,5 +5903,197 @@
       "support": "Destek",
       "supportDesc": "Ekibimize ulaşın"
     }
+  },
+  "communicationApp": {
+    "moduleTitle": "İletişim",
+    "moduleSubtitle": "Bağlı posta kutusu, yapay zekâ sınıflandırması ve destekli yanıtlar — her adımda insan onayı.",
+    "tabs": {
+      "inbox": "Bağlı posta kutusu",
+      "replies": "Onay kuyruğu",
+      "settings": "Ayarlar"
+    },
+    "common": {
+      "loading": "Yükleniyor…",
+      "retry": "Tekrar dene",
+      "error": "Bir hata oluştu. Lütfen tekrar deneyin.",
+      "featureLocked": "İletişim modülü şirketiniz için etkin değil.",
+      "refresh": "Yenile",
+      "save": "Kaydet",
+      "cancel": "İptal",
+      "close": "Kapat",
+      "confirm": "Onayla",
+      "stage": "Aşama :stage"
+    },
+    "mailbox": {
+      "title": "Bağlı posta kutusu",
+      "subtitle": "Kişisel Gmail kutunuzu bağlayın: varsayılan olarak salt okunur, gönderim yalnızca açık onayla.",
+      "connect": "Google'ı bağla",
+      "connectHint": "Posta kutunuza okuma erişimi vermek için Google'a yönlendirileceksiniz.",
+      "connectWithSend": "Göndermeye de izin ver (hatırlatmalar ve yanıtlar)",
+      "withSendHint": "gmail.send ve gmail.compose kapsamlarını ekler — hatırlatmalar ve destekli yanıtlar için gereklidir.",
+      "connecting": "Google'a yönlendiriliyor…",
+      "connectError": "Google bağlantısı başlatılamadı.",
+      "empty": "Bağlı posta kutusu yok",
+      "emptyHint": "Konuşmalarınızı senkronize etmek için Google hesabınızı bağlayın.",
+      "status": {
+        "active": "Aktif",
+        "revoked": "İptal edildi",
+        "error": "Hata"
+      },
+      "revoke": "Bağlantıyı kaldır",
+      "revokeConfirm": "Bu posta kutusunun bağlantısı kaldırılsın mı? Senkronize veriler ve ilgili politikalar silinecek.",
+      "revokeSuccess": "Posta kutusu kaldırıldı: ilgili veriler silindi.",
+      "revokeError": "Bağlantı kaldırma başarısız oldu.",
+      "connectedAt": "Bağlanma tarihi",
+      "scopeSend": "Gönderim izinli",
+      "readOnly": "Salt okunur"
+    },
+    "threads": {
+      "title": "Konuşmalar",
+      "subtitle": "Senkronize Gmail konuşmaları, şirket taksonominize göre yapay zekâ ile sınıflandırılır.",
+      "empty": "Henüz senkronize konuşma yok",
+      "emptyHint": "Senkronizasyon, posta kutusu bağlandıktan sonra düzenli olarak çalışır.",
+      "messagesCount": ":count mesaj",
+      "showMessages": "Mesajları göster",
+      "hideMessages": "Mesajları gizle",
+      "loadingMessages": "Mesajlar yükleniyor…",
+      "messagesError": "Bu konuşmanın mesajları yüklenemedi.",
+      "noSubject": "(konu yok)"
+    },
+    "messages": {
+      "from": "Kimden",
+      "to": "Kime",
+      "category": "Kategori",
+      "uncategorized": "Sınıflandırılmamış",
+      "confidence": "Güven: %:value",
+      "attachments": "Ekler",
+      "sentiment": {
+        "positive": "Olumlu",
+        "neutral": "Nötr",
+        "negative": "Olumsuz"
+      },
+      "action": {
+        "reply": "Yanıtla",
+        "follow_up": "Hatırlat",
+        "schedule": "Planla",
+        "task": "Görev",
+        "payment": "Ödeme",
+        "none": "İşlem yok"
+      },
+      "reclassify": "Yeniden sınıflandır",
+      "reclassifyQueued": "Yeniden sınıflandırma istendi — sonuç kısa süre içinde gelecek.",
+      "reclassifyError": "Yeniden sınıflandırma başarısız oldu."
+    },
+    "proposals": {
+      "title": "Kişi önerileri",
+      "subtitle": "Yapay zekâ yazışmalarınızdan CRM kişileri önerir — onayınız olmadan hiçbir şey oluşturulmaz.",
+      "empty": "Bekleyen öneri yok",
+      "accept": "Kabul et",
+      "dismiss": "Yoksay",
+      "accepted": "Kişi CRM'de oluşturuldu.",
+      "dismissed": "Öneri yoksayıldı.",
+      "actionError": "Öneri üzerindeki işlem başarısız oldu.",
+      "seenIn": ":count mesajda görüldü"
+    },
+    "replies": {
+      "title": "Onay kuyruğu",
+      "subtitle": "İncelenmeyi bekleyen yapay zekâ yanıt önerileri: okuyun, düzenleyin, sonra onaylayın veya reddedin. Sizsiz hiçbir şey gönderilmez.",
+      "empty": "Yanıt önerisi yok",
+      "emptyHint": "\"Taslak\" veya \"onay\" politikası etkin olduğunda öneriler burada görünür.",
+      "filterLabel": "Duruma göre filtrele",
+      "status": {
+        "pending": "Beklemede",
+        "drafted": "Taslak oluşturuldu",
+        "sent": "Gönderildi",
+        "rejected": "Reddedildi",
+        "skipped": "Atlandı",
+        "failed": "Başarısız"
+      },
+      "mode": {
+        "draft": "Taslak",
+        "confirm": "Onay",
+        "auto": "Otomatik"
+      },
+      "modeLabel": "Uygulanan politika",
+      "to": "Alıcı",
+      "subject": "Konu",
+      "body": "Yanıt metni",
+      "skipReason": "Neden",
+      "edit": "Düzenle",
+      "saved": "Öneri güncellendi.",
+      "saveError": "Öneri kaydedilemedi.",
+      "approve": "Onayla ve gönder",
+      "approveSuccess": "Yanıt onaylandı ve gönderildi.",
+      "reject": "Reddet",
+      "rejectSuccess": "Öneri reddedildi.",
+      "blocked": "Gönderim bir güvenlik önlemiyle engellendi (:reason).",
+      "rateLimited": "Kısa sürede çok fazla onay — lütfen biraz bekleyin.",
+      "sendFailed": "Gmail üzerinden gönderim başarısız oldu. Öneri kuyrukta kalır.",
+      "actionError": "İşlem başarısız oldu.",
+      "confidence": "Yapay zekâ güveni: %:value"
+    },
+    "policies": {
+      "title": "Yanıt politikaları",
+      "subtitle": "Posta kutusu ve kategori bazında yapay zekânın neler yapabileceğini seçin. Varsayılan: hiçbir şey.",
+      "mailbox": "Posta kutusu",
+      "category": "Kategori",
+      "level": "Politika",
+      "off": "Kapalı",
+      "offHint": "Bu kategori için yanıt önerisi yok.",
+      "draft": "Gmail taslağı",
+      "draftHint": "Yapay zekâ Gmail'e bir taslak bırakır — gönderimi siz yaparsınız.",
+      "confirmPolicy": "Göndermeden önce onayla",
+      "confirmHint": "Yapay zekâ önerir, siz her gönderimden önce onay kuyruğunda onaylarsınız.",
+      "auto": "Otomatik",
+      "autoHint": "Güvenlik önlemleriyle otomatik gönderim (açık onay, günlük sınır, sessiz saatler).",
+      "autoBlocked": "Hassas kategori: otomatik mod yasaktır (finans, İK, hukuk).",
+      "saved": "Politika kaydedildi.",
+      "saveError": "Politika kaydedilemedi.",
+      "errors": {
+        "autoCategoryBlocked": "Bu kategori otomatik modda engellidir.",
+        "sendScopeRequired": "Posta kutusunu gönderim izniyle yeniden bağlayın (gmail.send kapsamı).",
+        "composeScopeRequired": "Posta kutusunu gönderim izniyle yeniden bağlayın (gmail.compose kapsamı).",
+        "categoryUnknown": "Şirketiniz için bilinmeyen kategori."
+      }
+    },
+    "followUps": {
+      "title": "Hatırlatma kuralları",
+      "subtitle": "Posta kutunuz için otomatik hatırlatma dizileri: en fazla 3 adım, yanıt gelir gelmez durur.",
+      "empty": "Hatırlatma kuralı yok",
+      "emptyHint": "Yanıtsız kalan konuşmaları otomatik hatırlatmak için bir kural oluşturun.",
+      "ruleName": "Kural adı",
+      "ruleNamePlaceholder": "Örn. teklif hatırlatması",
+      "active": "Aktif",
+      "inactive": "Pasif",
+      "steps": "Adımlar",
+      "stepLabel": "Adım :position — :days gün sonra",
+      "delayDays": "Süre (gün)",
+      "addStep": "Adım ekle",
+      "removeStep": "Adımı kaldır",
+      "create": "Kuralı oluştur",
+      "created": "Hatırlatma kuralı oluşturuldu.",
+      "createError": "Kural oluşturulamadı.",
+      "deleteRule": "Sil",
+      "deleteConfirm": "Bu hatırlatma kuralı silinsin mi?",
+      "deleted": "Kural silindi.",
+      "updated": "Kural güncellendi.",
+      "updateError": "Kural güncellenemedi."
+    },
+    "optOuts": {
+      "title": "Hatırlatma istisnaları",
+      "subtitle": "Kural ne olursa olsun asla otomatik hatırlatma yapılmayan alıcılar.",
+      "empty": "Kayıtlı istisna yok",
+      "email": "E-posta adresi",
+      "emailPlaceholder": "contact@example.com",
+      "add": "Hariç tut",
+      "added": "Adres hatırlatmalardan hariç tutuldu.",
+      "addError": "İstisna eklenemedi.",
+      "remove": "Kaldır",
+      "removed": "İstisna kaldırıldı.",
+      "source": {
+        "manual": "Manuel",
+        "unsubscribe": "Abonelikten çıkma"
+      }
+    }
   }
 }

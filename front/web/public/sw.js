@@ -35,6 +35,8 @@ const PROTECTED_PREFIXES = [
   '/accounting',
   '/edu-manager',
   '/fuel',
+  // BC-29 COMMUNICATION (#7691) — boîte connectée (zone dashboard).
+  '/communication',
 ];
 
 function isProtectedPath(url) {
