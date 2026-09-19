@@ -136,6 +136,19 @@ return [
             'killable' => true,
             'description' => 'Solution Agence de voyage (ventes, réservations, check-in).',
         ],
+        // BC-30 HEALTH (HC-001 #7785) — verticale hôpitaux & cliniques
+        // privées. Déclarée ici ET dans `Company::KNOWN_MODULES` ET dans le
+        // `SolutionCatalogue` (les 3 points d'enregistrement obligatoires,
+        // leçons #7220/#7235). Fail-closed : désactivée par défaut, toute
+        // route /api/v1/health-manager/* répond 403 HEALTH_SOLUTION_INACTIVE
+        // tant que le tenant n'a pas activé la solution.
+        'healthmanager' => [
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.33.0',
+            'killable' => true,
+            'description' => 'Solution HealthManager (hôpitaux & cliniques : services, salles, lits, praticiens, patients).',
+        ],
         // BC-27 SHOWCASE — module HORIZONTAL « Site vitrine » (site public de
         // l'entreprise créé en 1 clic par le responsable du tenant). Le module
         // serveur existait (`app/Modules/Showcase`, routes `/api/v1/showcase/*`,

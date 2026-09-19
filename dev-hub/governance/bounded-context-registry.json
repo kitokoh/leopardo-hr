@@ -921,6 +921,34 @@
     "BC-11",
     "BC-13"
    ]
+  },
+  {
+   "code": "BC-30",
+   "name": "HEALTH",
+   "context": "HealthManager",
+   "responsibility": "Verticale hôpitaux & cliniques privées (spec HEALTHMANAGER_SOLUTION.md, #7785/#7786/#7787) : structure clinique (services médicaux, salles, lits, praticiens, spécialités) et registre patients (dossier administratif, données de santé, RBAC strict) — solution activable par tenant (flag `healthmanager`).",
+   "owner": "Agent 30 — BC-HEALTH",
+   "priority": "P1",
+   "status": "active",
+   "paths": [
+    {
+     "path": "api/app/Modules/HealthManager",
+     "status": "active"
+    }
+   ],
+   "routes": [
+    "api/routes/modules/health_manager.php"
+   ],
+   "migrations": [
+    "api/database/migrations/tenant"
+   ],
+   "events": [],
+   "dependencies": [
+    "BC-02",
+    "BC-05",
+    "BC-13",
+    "BC-20"
+   ]
   }
  ]
 }

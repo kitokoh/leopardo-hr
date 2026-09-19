@@ -124,6 +124,11 @@ class Company extends Model
         // jamais activer ni exposer la verticale Travel. Fail-closed conservé
         // (défaut false, `rh` seul actif par défaut).
         'travelagency',
+        // BC-30 HEALTH (HC-001 #7785) — verticale hôpitaux & cliniques privées.
+        // Code du HealthManagerManifest et clé du feature flag `healthmanager`
+        // (scope solution, défaut false) : déclaré ici pour que l'admin
+        // plateforme puisse reconstruire/exposer la clé (leçons #7220/#7235).
+        'healthmanager',
         // #7235 (audit 2026-09-12) : la comptabilité est un module HORIZONTAL
         // (transverse à tous les secteurs) et le module serveur existe
         // (`app/Modules/Accounting`, routes `/api/v1/accounting/*`) — mais il

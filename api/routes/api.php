@@ -452,6 +452,9 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/showcase.php';
     require __DIR__.'/modules/fuel_station.php';
     require __DIR__.'/modules/edu_manager.php';
+
+    // BC-30 HEALTH — solution HealthManager (hôpitaux & cliniques, HC-001 #7785)
+    require __DIR__.'/modules/health_manager.php';
     require __DIR__.'/modules/catalog.php';
 
     // BC-29 COMMUNICATION — boîte mail connectée + IA, squelette R0 (#7685)
