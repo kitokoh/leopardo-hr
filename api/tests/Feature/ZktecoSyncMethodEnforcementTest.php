@@ -59,7 +59,7 @@ class ZktecoSyncMethodEnforcementTest extends TestCase
      */
     private function createDevice(array $extra = []): ZktecoDevice
     {
-        return ZktecoDevice::query()->create(array_merge([
+        return ZktecoDevice::query()->forceCreate(array_merge([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-ENF-'.uniqid(),
             'name' => 'Borne test enforcement',

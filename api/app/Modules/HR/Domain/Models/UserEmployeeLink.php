@@ -20,10 +20,16 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Company|null $company
+ *
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class UserEmployeeLink extends Model
 {
+    // Issue #7711 (exceptions BelongsToCompany) — PAS de trait : table de
+    // liaison User↔Employee résolue au LOGIN, AVANT que le contexte tenant
+    // n'existe (c'est elle qui permet de déterminer la société de
+    // l'utilisateur). Un scope fail-closed casserait l'authentification.
+
     protected $table = 'user_employee_links';
 
     protected $fillable = [

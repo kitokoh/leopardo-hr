@@ -125,7 +125,7 @@ class WorkforceTenantIsolationTest extends TestCase
 
     private function makeCorrection(Company $company, Employee $employee): AttendanceCorrectionRequest
     {
-        return AttendanceCorrectionRequest::query()->create([
+        return AttendanceCorrectionRequest::query()->forceCreate([
             'company_id' => $company->id,
             'employee_id' => $employee->id,
             'date' => '2026-05-27',

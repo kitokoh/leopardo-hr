@@ -237,7 +237,7 @@ class GeoSessionDashboardTest extends TestCase
         $session = $this->createSession();
 
         // Ajouter un événement de localisation
-        EmployeeLocationEvent::query()->create([
+        EmployeeLocationEvent::query()->forceCreate([
             'employee_id' => $this->employee->id,
             'company_id' => $this->company->id,
             'geo_session_id' => $session->id,

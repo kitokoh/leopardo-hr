@@ -21,6 +21,15 @@ trait GuardsPilotSeeding
     {
         $environment = (string) app()->environment();
 
+        // #7648 : fail-closed sur le TIER prod (DEPLOY_TIER=prod, #7647) —
+        // même un APP_ENV permissif ne doit jamais autoriser un seed pilote
+        // sur le tier de production. ALLOW_PILOT_SEEDING ne lève PAS ce refus.
+        if (env('DEPLOY_TIER') === 'prod') {
+            throw new \RuntimeException(
+                "Seed pilote '{$feature}' interdit sur le tier de production (DEPLOY_TIER=prod, #7648) — jamais de données pilote en production."
+            );
+        }
+
         if (in_array($environment, $allowedEnvironments, true)) {
             return;
         }
