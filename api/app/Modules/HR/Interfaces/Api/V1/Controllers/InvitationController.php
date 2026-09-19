@@ -79,5 +79,44 @@ class InvitationController extends Controller
             ],
         ]);
     }
+
+    /**
+     * Issue #7762 (spec MISSION_ESPACE_CLIENT §3.1) — révocation d'une
+     * invitation en attente : la ligne est SUPPRIMÉE (le schéma
+     * `user_invitations` n'a pas de soft delete), donc son `token_hash`
+     * disparaît et `UserInvitationService::accept()` (firstOrFail sur le hash)
+     * répond 404 — le lien reçu par email devient inutilisable immédiatement.
+     * Une invitation déjà acceptée n'est pas révocable (410, comme resend) :
+     * le compte existe, c'est l'archivage de l'employé qui retire l'accès.
+     */
+    public function destroy(Request $request, string $invitationId): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $this->authorize('manageInvitations', Employee::class);
+
+        /** @var UserInvitation $invitation */
+        $invitation = UserInvitation::query()
+            ->where('id', $invitationId)
+            ->where('company_id', $actor->company_id)
+            ->firstOrFail();
+
+        if ($invitation->accepted_at !== null) {
+            return new JsonResponse([
+                'error' => 'INVITATION_ALREADY_ACCEPTED',
+                'message' => 'INVITATION_ALREADY_ACCEPTED',
+                'localized_message' => __('errors.INVITATION_ALREADY_ACCEPTED'),
+            ], 410);
+        }
+
+        $invitation->delete();
+
+        return new JsonResponse([
+            'data' => [
+                'id' => $invitationId,
+                'revoked_at' => now()->toIso8601String(),
+            ],
+        ]);
+    }
 }
 
