@@ -21,7 +21,7 @@ on:
         required: false
         default: "false"
   workflow_run:
-    workflows: ["Deploy - Leopardo RH"]
+    workflows: ["Deploy - Leopardo"]
     types: [completed]
     branches: [main]
 
@@ -68,7 +68,7 @@ jobs:
         run: |
           echo "::error::DEV_API_BASE_URL / DEV_ADMIN_URL / DEV_WEB_URL must be set (silent fallbacks removed, issue #4720)."
           exit 1
-      # Audit §4.2 / Plan P3: previously gated on the parent "Deploy - Leopardo RH"
+      # Audit §4.2 / Plan P3: previously gated on the parent "Deploy - Leopardo"
       # workflow_run's overall conclusion, which also depends on the
       # distribute-mobile job (Flutter/Firebase). A broken mobile build could
       # mark the whole workflow failed and skip these API/admin/web E2E smoke
