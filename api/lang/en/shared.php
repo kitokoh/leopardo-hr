@@ -123,5 +123,6 @@ return [
         'notifications' => 'Notifications',
         'evaluations' => 'Evaluations',
         'restaurant' => 'Point of sale (POS)',
+        'communication' => 'Communication (connected mailbox + AI)',
     ],
 ];

@@ -1,0 +1,49 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Middleware\Communication;
+
+use App\Modules\Communication\Domain\Support\CommunicationFeatures;
+use Closure;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+/**
+ * Gate du module Communication (BC-29 COMMUNICATION, R0 #7685).
+ *
+ * Exige que la company courante ait le feature flag `communication` activé
+ * (companies.features.communication = true, mécanisme Core/Feature) — pattern
+ * calqué sur EnsureCatalogModuleMiddleware (BC-28, #6881).
+ *
+ * Placé APRÈS le middleware `tenant`, qui a déjà résolu la company courante.
+ * Kill switch opérationnel : désactiver le flag → 403 immédiat, sans toucher
+ * aux données.
+ */
+class EnsureCommunicationModuleMiddleware
+{
+    /**
+     * @param  Closure(Request): (Response)  $next
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        $company = app()->bound('current_company') ? currentCompany() : null;
+
+        if ($company === null) {
+            return new JsonResponse([
+                'error' => 'COMPANY_NOT_FOUND',
+                'message' => 'COMPANY_NOT_FOUND',
+            ], 403);
+        }
+
+        if (! $company->hasFeature(CommunicationFeatures::COMMUNICATION)) {
+            return new JsonResponse([
+                'error' => 'FEATURE_NOT_ENABLED',
+                'message' => 'Your plan does not include the Communication module.',
+            ], 403);
+        }
+
+        return $next($request);
+    }
+}
