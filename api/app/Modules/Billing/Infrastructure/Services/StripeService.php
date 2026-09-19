@@ -105,6 +105,76 @@ class StripeService
     }
 
     /**
+     * Create a Stripe Checkout Session `mode=payment` (one-shot) for an AI
+     * credit pack purchase (#7764).
+     *
+     * Pas de Price pré-créé côté Stripe : les packs sont des constantes
+     * versionnées (`AiCreditService::PACKS`), le prix part en `price_data`
+     * inline. Les metadata `{purpose, company_id, pack, tokens}` permettent au
+     * webhook `checkout.session.completed` (mode payment) de créditer le
+     * ledger — idempotent via le registre #5444 ET la référence unique
+     * (id de session) du ledger.
+     *
+     * @return array{url: string, session_id: string}
+     */
+    public function createCreditCheckoutSession(
+        Company $company,
+        string $pack,
+        int $tokens,
+        int $amountCents,
+        string $successUrl,
+        string $cancelUrl,
+    ): array {
+        $response = Http::withToken($this->secretKey, 'Bearer')
+            ->asForm()
+            ->post('https://api.stripe.com/v1/checkout/sessions', [
+                'mode' => 'payment',
+                'payment_method_types[]' => 'card',
+                'line_items[0][price_data][currency]' => 'eur',
+                'line_items[0][price_data][unit_amount]' => $amountCents,
+                'line_items[0][price_data][product_data][name]' => sprintf(
+                    'Leopardo — Crédits IA pack %s (%s tokens)',
+                    strtoupper($pack),
+                    number_format($tokens, 0, ',', ' '),
+                ),
+                'line_items[0][quantity]' => 1,
+                'success_url' => $successUrl.'?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => $cancelUrl,
+                'client_reference_id' => (string) $company->id,
+                'customer_email' => $company->email,
+                'metadata[purpose]' => 'ai_credits',
+                'metadata[company_id]' => (string) $company->id,
+                'metadata[pack]' => $pack,
+                'metadata[tokens]' => (string) $tokens,
+            ]);
+
+        if (! $response->successful()) {
+            Log::error('Stripe: Failed to create AI credit checkout session', [
+                'status' => $response->status(),
+                'body' => $response->json(),
+                'company_id' => $company->id,
+                'pack' => $pack,
+            ]);
+            throw new RuntimeException('Failed to create Stripe AI credit checkout session.');
+        }
+
+        $data = $response->json();
+
+        if (! is_array($data) || ! isset($data['url'], $data['id'])) {
+            Log::error('Stripe: Réponse checkout crédits IA invalide', [
+                'status' => $response->status(),
+                'company_id' => $company->id,
+            ]);
+            throw new RuntimeException('Invalid Stripe AI credit checkout response.');
+        }
+
+        return [
+            'url' => strval($data['url']),
+            'session_id' => strval($data['id']),
+        ];
+    }
+
+    /**
      * Create a Stripe Customer Portal session for subscription management.
      */
     public function createPortalSession(string $stripeCustomerId, string $returnUrl): string
@@ -204,6 +274,17 @@ class StripeService
 
     private function handleCheckoutCompleted(array $session): void
     {
+        // #7764 — checkout one-shot (mode=payment) d'un pack de crédits IA :
+        // aucune souscription à activer, on crédite le ledger et on sort.
+        $creditMetadata = $session['metadata'] ?? null;
+        if (($session['mode'] ?? null) === 'payment'
+            && is_array($creditMetadata)
+            && ($creditMetadata['purpose'] ?? null) === 'ai_credits') {
+            $this->handleAiCreditCheckoutCompleted($session);
+
+            return;
+        }
+
         $companyId = $session['metadata']['company_id'] ?? $session['client_reference_id'] ?? null;
         $plan = PlanCode::normalize((string) ($session['metadata']['plan'] ?? PlanCode::Pilot->value))->value;
         $subscriptionId = $session['subscription'] ?? null;
@@ -272,6 +353,50 @@ class StripeService
             'company_id' => $companyId,
             'plan' => $plan,
             'stripe_subscription_id' => $subscriptionId,
+        ]);
+    }
+
+    /**
+     * #7764 — crédite le ledger après un achat one-shot de crédits IA.
+     *
+     * Idempotence à DEUX niveaux : le registre webhook (#5444, rejeu d'événement
+     * Stripe) ET la référence unique du ledger (id de session — couvre aussi un
+     * événement DIFFÉRENT portant la même session). Un payload sans metadata
+     * exploitables est journalisé et ignoré (jamais d'exception → pas de retry
+     * inutile côté Stripe pour un payload définitivement invalide).
+     *
+     * @param  array<string, mixed>  $session
+     */
+    private function handleAiCreditCheckoutCompleted(array $session): void
+    {
+        $metadata = $session['metadata'] ?? [];
+        if (! is_array($metadata)) {
+            $metadata = [];
+        }
+
+        $companyId = $metadata['company_id'] ?? $session['client_reference_id'] ?? null;
+        $pack = strval($metadata['pack'] ?? '');
+        $tokens = (int) ($metadata['tokens'] ?? 0);
+        $sessionId = strval($session['id'] ?? '');
+
+        if (! $companyId || $tokens <= 0 || $sessionId === '') {
+            Log::warning('Stripe: checkout crédits IA sans metadata exploitables — ignoré', [
+                'session_id' => $sessionId,
+                'company_id' => $companyId,
+                'tokens' => $tokens,
+            ]);
+
+            return;
+        }
+
+        $credited = app(AiCreditService::class)->credit(strval($companyId), $tokens, $sessionId);
+
+        Log::info('Stripe: achat de crédits IA traité', [
+            'company_id' => $companyId,
+            'pack' => $pack,
+            'tokens' => $tokens,
+            'session_id' => $sessionId,
+            'credited' => $credited,
         ]);
     }
 

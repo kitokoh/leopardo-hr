@@ -2066,7 +2066,23 @@
     "checkout_sandbox_message": "Simulated payment (sandbox mode). No card is charged.",
     "checkout_unavailable": "Online payment is temporarily unavailable. Contact support at support@leopardo-rh.com.",
     "checkout_failed": "Unable to create the payment session.",
-    "redirect_url_invalid": "Redirect URLs must belong to the authorized site."
+    "redirect_url_invalid": "Redirect URLs must belong to the authorized site.",
+    "ai_credits": {
+      "title": "AI credits",
+      "subtitle": "Token packs for the AI assistant, on top of your plan's monthly quota.",
+      "optional_note": "Strictly optional: your subscription and modules are never blocked if you never buy credits.",
+      "balance_label": "Credit balance",
+      "tokens_unit": "tokens",
+      "buy_pack": "Buy",
+      "pack_label": "Pack {code}",
+      "history_title": "Recent history",
+      "history_empty": "No credit movements yet.",
+      "reason_purchase": "Purchase",
+      "reason_consumption": "Consumption",
+      "reason_adjustment": "Adjustment",
+      "load_error": "Unable to load AI credits.",
+      "checkout_error": "Unable to create the AI credit payment session."
+    }
   },
   "contracts": {
     "list_subtitle": "Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API.",
