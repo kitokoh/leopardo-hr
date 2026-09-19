@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Attendance\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -26,6 +27,11 @@ use Illuminate\Support\Carbon;
  */
 class EmployeeLocationEvent extends Model
 {
+    // Issue #7711 (suite #7646) — table `employee_location_events` du schéma
+    // partagé shared_tenants (données de géolocalisation sensibles) :
+    // company_id est l'unique frontière d'isolation.
+    use BelongsToCompany;
+
     protected $table = 'employee_location_events';
 
     public $timestamps = false;
@@ -51,7 +57,6 @@ class EmployeeLocationEvent extends Model
 
     protected $fillable = [
         'employee_id',
-        'company_id',
         'geo_session_id',
         'event_type',
         'latitude',

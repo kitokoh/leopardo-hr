@@ -6,6 +6,7 @@ namespace App\Modules\Attendance\Domain\Models;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanySetting;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,6 +17,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class ZktecoDevice extends Model
 {
+    // Issue #7711 (suite #7646) — table `zkteco_devices` du schéma partagé
+    // shared_tenants. Le flux device pré-tenant (heartbeat/sync-attendance,
+    // AuthenticateZktecoDevice) résout le device par serial_number HORS
+    // contexte tenant via withoutGlobalScope('company') — lookup cross-tenant
+    // volontaire, l'authentification se fait par X-Device-Token.
+    use BelongsToCompany;
+
     // ── Constantes de méthodes de pointage (#5120) ────────────────────
     /** @var string */
     public const PUNCH_METHOD_FINGERPRINT = 'fingerprint';
@@ -34,7 +42,6 @@ class ZktecoDevice extends Model
     ];
 
     protected $fillable = [
-        'company_id',
         'serial_number',
         'sync_token_hash',
         'name',
