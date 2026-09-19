@@ -57,6 +57,7 @@ class TenantPaymentProfileApiTest extends TestCase
 
     /**
      * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
      */
     private function createProfilePayload(array $overrides = []): array
     {
