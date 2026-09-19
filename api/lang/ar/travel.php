@@ -23,4 +23,10 @@ return [
         'expire_adverts_tenant_summary' => 'المستأجر :company: :expired منتهية، :archived مؤرشفة.',
         'expire_adverts_total' => 'الإجمالي: :expired إعلانًا منتهيًا، :archived مؤرشفة.',
     ],
+    'staff_assignments' => [
+        'duplicate' => 'هذا الموظف معيّن بالفعل لهذا الدور في هذا النطاق.',
+    ],
+    'distributor_keys' => [
+        'rotate_revoked' => 'لا يمكن تدوير مفتاح تم إبطاله.',
+    ],
 ];

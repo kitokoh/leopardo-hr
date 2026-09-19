@@ -23,4 +23,10 @@ return [
         'expire_adverts_tenant_summary' => 'Kiracı :company: :expired süresi geçti, :archived arşivlendi.',
         'expire_adverts_total' => 'Toplam: :expired ilan süresi geçti, :archived arşivlendi.',
     ],
+    'staff_assignments' => [
+        'duplicate' => 'Bu çalışan bu kapsamda bu role zaten atanmış.',
+    ],
+    'distributor_keys' => [
+        'rotate_revoked' => 'İptal edilmiş bir anahtar döndürülemez.',
+    ],
 ];

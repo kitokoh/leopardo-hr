@@ -91,7 +91,7 @@ class TravelDistributorKeyController extends Controller
         }
 
         if (! $travelDistributorKey->enabled) {
-            abort(422, 'Impossible de faire tourner une clé révoquée.');
+            abort(422, __('travel.distributor_keys.rotate_revoked'));
         }
 
         $token = 'dsk_'.Str::random(40);
