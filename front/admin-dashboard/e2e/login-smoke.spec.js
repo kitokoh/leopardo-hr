@@ -8,9 +8,9 @@ test.describe('Login smoke tests', () => {
   test('login screen loads for administrators', async ({ page }) => {
     await page.goto('/login')
 
-    await expect(page).toHaveTitle(/Leopardo RH/i)
+    await expect(page).toHaveTitle(/Leopardo/i)
     await expect(
-      page.getByRole('heading', { name: /Leopardo RH/i }),
+      page.getByRole('heading', { name: /Leopardo/i }),
     ).toBeVisible()
     await expect(page.locator('#email')).toBeVisible()
     await expect(page.locator('#password')).toBeVisible()

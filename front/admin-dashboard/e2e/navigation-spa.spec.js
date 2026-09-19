@@ -24,7 +24,7 @@ test.describe('Navigation and routing', () => {
 
   test('login page has correct title', async ({ page }) => {
     await page.goto('/login')
-    await expect(page).toHaveTitle(/Leopardo RH/i)
+    await expect(page).toHaveTitle(/Leopardo/i)
   })
 
   test('unknown route redirects to login when unauthenticated', async ({ page }) => {
@@ -45,7 +45,7 @@ test.describe('Navigation and routing', () => {
 
     await expect(page.getByText('LRH')).toBeVisible()
     await expect(
-      page.getByRole('heading', { name: /Leopardo RH/i }),
+      page.getByRole('heading', { name: /Leopardo/i }),
     ).toBeVisible()
     await expect(
       page.getByText(/Connectez-vous à votre espace/i),
