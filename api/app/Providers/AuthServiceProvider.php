@@ -214,6 +214,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelRentalBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelRentalVehicle;
 use App\Modules\TravelAgency\Domain\Models\TravelRoundTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelRoute;
+use App\Modules\TravelAgency\Domain\Models\TravelStaffAssignment;
 use App\Modules\TravelAgency\Domain\Models\TravelStation;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
@@ -233,6 +234,7 @@ use App\Modules\TravelAgency\Policies\TravelRentalBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelRentalVehiclePolicy;
 use App\Modules\TravelAgency\Policies\TravelRoundTripPolicy;
 use App\Modules\TravelAgency\Policies\TravelRoutePolicy;
+use App\Modules\TravelAgency\Policies\TravelStaffAssignmentPolicy;
 use App\Modules\TravelAgency\Policies\TravelStationPolicy;
 use App\Modules\TravelAgency\Policies\TravelTicketPolicy;
 use App\Modules\TravelAgency\Policies\TravelTripPolicy;
@@ -462,6 +464,7 @@ class AuthServiceProvider extends ServiceProvider
 
         // — TravelAgency (consolidation BC-25) & RestaurantManager (BC-22)
         Gate::policy(TravelStation::class, TravelStationPolicy::class);
+        Gate::policy(TravelStaffAssignment::class, TravelStaffAssignmentPolicy::class);
         Gate::policy(TravelWebhookSubscription::class, TravelWebhookSubscriptionPolicy::class);
         Gate::policy(TravelOffice::class, TravelOfficePolicy::class);
         Gate::policy(TravelCarrier::class, TravelCarrierPolicy::class);
