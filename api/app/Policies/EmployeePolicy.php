@@ -119,4 +119,31 @@ class EmployeePolicy
     {
         return $this->manageResourceAssignments($actor, $employee);
     }
+
+    /**
+     * Issue #7761 (délégation d'accès, spec MISSION_ESPACE_CLIENT §3.1) — qui
+     * compose les MODULES délégués à un collaborateur (« Moussa → marketing +
+     * comptabilité + tickets ») ?
+     *
+     * Le principal du tenant uniquement, par un geste explicite et audité —
+     * même doctrine que `manageResourceAssignments` (#7598). Fail-closed
+     * cross-tenant : jamais sur un employé d'une autre société (#3232).
+     */
+    public function manageModuleGrants(Employee $actor, Employee $employee): bool
+    {
+        if ($employee->company_id !== $actor->company_id) {
+            return false;
+        }
+
+        return $actor->isPrincipal();
+    }
+
+    /**
+     * Même règle pour la LECTURE : la composition des modules d'un
+     * collaborateur est une donnée de gouvernance, pas une donnée d'équipe.
+     */
+    public function viewModuleGrants(Employee $actor, Employee $employee): bool
+    {
+        return $this->manageModuleGrants($actor, $employee);
+    }
 }

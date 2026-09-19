@@ -21,6 +21,7 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartureController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartureNoticeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeImportController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeModuleGrantController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeResourceAssignmentController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EvaluationController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\InvitationController;
@@ -58,6 +59,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     // réservé au principal du tenant par la policy `EmployeePolicy`.
     Route::get('/employees/{employee}/resource-assignments', [EmployeeResourceAssignmentController::class, 'index'])->whereNumber('employee');
     Route::put('/employees/{employee}/resource-assignments', [EmployeeResourceAssignmentController::class, 'update'])->whereNumber('employee');
+
+    // Issue #7761 (spec MISSION_ESPACE_CLIENT §3.1) — accès MODULE d'un
+    // collaborateur : « Moussa → marketing + comptabilité + tickets »,
+    // composable (registre fermé ModuleKey). `PUT` remplace le jeu complet
+    // (seule forme qui rende la révocation possible en un geste) ; réservé au
+    // principal du tenant par la policy `EmployeePolicy::manageModuleGrants`.
+    Route::get('/employees/{employee}/module-grants', [EmployeeModuleGrantController::class, 'index'])->whereNumber('employee');
+    Route::put('/employees/{employee}/module-grants', [EmployeeModuleGrantController::class, 'update'])->whereNumber('employee');
 
     // Catalogue des ressources assignables (le sélecteur du responsable) :
     // filtré par ce que l'acteur voit du type, fail-closed sur un type inconnu.
