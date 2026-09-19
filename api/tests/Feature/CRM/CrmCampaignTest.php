@@ -355,6 +355,12 @@ class CrmCampaignTest extends TestCase
             'audience_snapshot' => [10],
         ]);
 
+        // #7646 — libérer le tenant B avant de créer le manager A : sous
+        // tenant actif, la fixture Employee serait FORCÉE dans le tenant B
+        // (même contrat que le modèle testé) et le test verrait son propre
+        // tenant au lieu d'un cross-tenant.
+        app()->forgetInstance('current_company');
+
         Sanctum::actingAs($this->manager($this->companyA));
 
         $this->getJson("/api/v1/crm/campaigns/{$campaignB->id}")->assertStatus(404);
