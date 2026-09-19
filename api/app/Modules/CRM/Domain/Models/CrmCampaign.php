@@ -20,6 +20,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $description
  * @property string $channel
  * @property string $status
+ * @property string|null $subject
+ * @property string|null $body
  * @property int|null $segment_id
  * @property list<int>|null $audience_snapshot
  * @property Carbon|null $scheduled_at
@@ -45,6 +47,8 @@ class CrmCampaign extends Model
         'description',
         'channel',
         'status',
+        'subject',
+        'body',
         'segment_id',
         'audience_snapshot',
         'scheduled_at',

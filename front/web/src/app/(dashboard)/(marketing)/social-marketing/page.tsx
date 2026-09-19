@@ -16,6 +16,7 @@ import {
   Clock,
   AlertTriangle,
   Megaphone,
+  MessageCircle,
   Plus,
 } from 'lucide-react';
 import {
@@ -26,6 +27,9 @@ import {
   type SocialPost,
   type SocialPostsPayload,
 } from '@/modules/marketing/types';
+import { MediaUrlsInput } from '@/modules/marketing/components/MediaUrlsInput';
+import { WeeklyReportCard } from '@/modules/marketing/components/WeeklyReportCard';
+import { PostInteractions } from '@/modules/marketing/components/PostInteractions';
 
 function statusBadge(status: string) {
   const style = STATUS_STYLES[status] ?? STATUS_STYLES.draft;
@@ -54,9 +58,11 @@ export default function MarketingPage() {
   const [content, setContent] = useState('');
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [scheduledAt, setScheduledAt] = useState('');
+  const [mediaUrls, setMediaUrls] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [pendingActionId, setPendingActionId] = useState<number | null>(null);
+  const [interactionsPostId, setInteractionsPostId] = useState<number | null>(null);
 
   const loadAccount = useCallback(async () => {
     setAccountLoading(true);
@@ -150,11 +156,13 @@ export default function MarketingPage() {
           content: content.trim(),
           target_platforms: selectedPlatforms,
           scheduled_at: scheduledAt ? new Date(scheduledAt).toISOString() : null,
+          media_paths: mediaUrls,
         }),
       });
       setContent('');
       setSelectedPlatforms([]);
       setScheduledAt('');
+      setMediaUrls([]);
       await loadPosts(1, false);
     } catch (err) {
       setActionError(err instanceof ApiError ? err.message : 'Impossible de créer la publication.');
@@ -307,6 +315,8 @@ export default function MarketingPage() {
             ))}
           </section>
 
+          <WeeklyReportCard />
+
           <section className="rounded-3xl border border-app-border bg-white shadow-sm">
             <div className="border-b border-app-border px-6 py-4">
               <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">Nouvelle publication</h2>
@@ -345,6 +355,7 @@ export default function MarketingPage() {
                   })}
                 </div>
               </div>
+              <MediaUrlsInput value={mediaUrls} onChange={setMediaUrls} disabled={submitting} />
               <div className="flex flex-col gap-3 md:flex-row md:items-end">
                 <div className="flex-1">
                   <label htmlFor="marketing-scheduled-at" className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-500">
@@ -383,46 +394,60 @@ export default function MarketingPage() {
                 <div className="px-6 py-8 text-sm text-slate-500">Aucune publication pour le moment.</div>
               ) : (
                 posts.map((post) => (
-                  <div key={post.id} className="flex flex-col gap-3 px-6 py-5 md:flex-row md:items-center md:justify-between">
-                    <div className="flex-1">
-                      <p className="line-clamp-2 text-sm font-bold text-slate-950">{post.content}</p>
-                      <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-                        {post.target_platforms.map((platform) => (
-                          <span key={platform} className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-600">
-                            {platform}
-                          </span>
-                        ))}
-                        {post.scheduled_at ? (
-                          <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{post.scheduled_at}</span>
+                  <div key={post.id} className="px-6 py-5">
+                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                      <div className="flex-1">
+                        <p className="line-clamp-2 text-sm font-bold text-slate-950">{post.content}</p>
+                        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                          {post.target_platforms.map((platform) => (
+                            <span key={platform} className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-600">
+                              {platform}
+                            </span>
+                          ))}
+                          {post.scheduled_at ? (
+                            <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{post.scheduled_at}</span>
+                          ) : null}
+                        </div>
+                        {post.error_message ? (
+                          <p className="mt-1 text-xs text-red-600">{post.error_message}</p>
                         ) : null}
                       </div>
-                      {post.error_message ? (
-                        <p className="mt-1 text-xs text-red-600">{post.error_message}</p>
-                      ) : null}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {statusBadge(post.status)}
-                      {isActionable(post) ? (
-                        <>
+                      <div className="flex items-center gap-2">
+                        {statusBadge(post.status)}
+                        {post.status === 'published' ? (
                           <button
-                            onClick={() => handlePublishNow(post)}
-                            disabled={pendingActionId === post.id}
-                            title="Publier maintenant"
-                            className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-700 disabled:opacity-50"
+                            onClick={() => setInteractionsPostId((prev) => (prev === post.id ? null : post.id))}
+                            title="Commentaires"
+                            className={`rounded-lg p-2 transition hover:bg-slate-100 ${interactionsPostId === post.id ? 'text-emerald-700' : 'text-slate-400 hover:text-emerald-700'}`}
                           >
-                            <Send className="h-4 w-4" />
+                            <MessageCircle className="h-4 w-4" />
                           </button>
-                          <button
-                            onClick={() => handleDelete(post)}
-                            disabled={pendingActionId === post.id}
-                            title="Supprimer"
-                            className="rounded-lg p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </>
-                      ) : null}
+                        ) : null}
+                        {isActionable(post) ? (
+                          <>
+                            <button
+                              onClick={() => handlePublishNow(post)}
+                              disabled={pendingActionId === post.id}
+                              title={t(locale, 'marketing.publishNow')}
+                              className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-700 disabled:opacity-50"
+                            >
+                              <Send className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(post)}
+                              disabled={pendingActionId === post.id}
+                              title="Supprimer"
+                              className="rounded-lg p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </>
+                        ) : null}
+                      </div>
                     </div>
+                    {interactionsPostId === post.id ? (
+                      <PostInteractions postId={post.id} />
+                    ) : null}
                   </div>
                 ))
               )}

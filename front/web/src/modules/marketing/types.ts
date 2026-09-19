@@ -25,6 +25,7 @@ export type SocialPost = {
   id: number;
   content: string;
   target_platforms: string[];
+  media_paths?: string[] | null;
   status: string;
   scheduled_at?: string | null;
   published_at?: string | null;

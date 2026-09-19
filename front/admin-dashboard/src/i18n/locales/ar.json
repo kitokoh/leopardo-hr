@@ -3704,7 +3704,16 @@
       }
     },
     "socialExamplePlaceholder": "مثال: Leopardo — وسائل التواصل الاجتماعي",
-    "postContentPlaceholder": "محتوى المنشور..."
+    "postContentPlaceholder": "محتوى المنشور...",
+    "publishNow": "انشر الآن",
+    "commentsLoadError": "تعذر تحميل التعليقات.",
+    "aiSuggestUnavailable": "اقتراح الذكاء الاصطناعي غير متاح حاليًا.",
+    "replySendError": "تعذر إرسال الرد.",
+    "suggestReply": "اقتراح رد (ذكاء اصطناعي)",
+    "replyPlaceholder": "ردك (تراجعه قبل الإرسال)...",
+    "weeklyReportLoadError": "تعذر تحميل التقرير الأسبوعي.",
+    "aiSummary": "ملخص الذكاء الاصطناعي",
+    "autoSummary": "ملخص تلقائي"
   },
   "attendanceCorrectionEditDateTitle": "تعديل {date}",
   "attendanceSaving": "جارٍ الحفظ...",
