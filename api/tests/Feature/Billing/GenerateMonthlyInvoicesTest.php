@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Tests\Feature\Billing;
 
 use App\Console\Commands\GenerateMonthlyInvoices;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Mail\InvoiceIssuedMail;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Billing\Domain\Models\Subscription;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Testing\PendingCommand;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -224,5 +227,98 @@ class GenerateMonthlyInvoicesTest extends TestCase
         $counter = DB::table('billing_invoice_number_counters')->first();
         $this->assertNotNull($counter);
         $this->assertSame(1, $counter->last_number);
+    }
+
+    // ── #7763 — prix depuis la table `plans` ─────────────────────────────
+
+    public function test_invoice_amount_is_read_from_plans_table(): void
+    {
+        // Prix paramétré depuis l'admin (#7430) : c'est LUI qui doit être
+        // facturé, pas l'ancien barème codé en dur.
+        DB::table('plans')->updateOrInsert(
+            ['name' => 'Operations'],
+            ['price_monthly' => 149.50, 'is_active' => true],
+        );
+
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        $this->activeSubscription($company);
+
+        Artisan::call(GenerateMonthlyInvoices::class);
+
+        $invoice = Invoice::query()->firstOrFail();
+        $this->assertSame('149.50', (string) $invoice->amount);
+        $this->assertSame('149.50', (string) $invoice->total);
+        $this->assertSame('EUR', $invoice->currency);
+    }
+
+    public function test_missing_plan_price_falls_back_to_documented_default(): void
+    {
+        // Plan absent de la table (ou inactif) → repli sûr documenté
+        // (FALLBACK_PLAN_PRICES) : on facture le tarif public historique.
+        DB::table('plans')->whereRaw('LOWER(name) = ?', ['operations'])->delete();
+
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        $this->activeSubscription($company);
+
+        Artisan::call(GenerateMonthlyInvoices::class);
+
+        $invoice = Invoice::query()->firstOrFail();
+        $this->assertSame('99.00', (string) $invoice->amount);
+        $this->assertSame('EUR', $invoice->currency);
+    }
+
+    public function test_inactive_plan_price_is_ignored_in_favor_of_fallback(): void
+    {
+        DB::table('plans')->updateOrInsert(
+            ['name' => 'Operations'],
+            ['price_monthly' => 500.00, 'is_active' => false],
+        );
+
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        $this->activeSubscription($company);
+
+        Artisan::call(GenerateMonthlyInvoices::class);
+
+        $invoice = Invoice::query()->firstOrFail();
+        $this->assertSame('99.00', (string) $invoice->amount);
+    }
+
+    // ── #7763 — email « facture émise » au principal du tenant ────────────
+
+    public function test_issued_invoice_email_is_queued_to_tenant_principal(): void
+    {
+        Mail::fake();
+
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        /** @var Employee $principal */
+        $principal = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $this->activeSubscription($company);
+
+        Artisan::call(GenerateMonthlyInvoices::class);
+
+        $this->assertSame(1, Invoice::query()->count());
+        Mail::assertQueued(
+            InvoiceIssuedMail::class,
+            fn (InvoiceIssuedMail $mail): bool => $mail->hasTo($principal->email)
+        );
+    }
+
+    public function test_invoice_is_still_generated_when_tenant_has_no_principal(): void
+    {
+        Mail::fake();
+
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        $this->activeSubscription($company);
+
+        Artisan::call(GenerateMonthlyInvoices::class);
+
+        // Pas de principal → pas d'email, mais la facturation N'ÉCHOUE PAS.
+        $this->assertSame(1, Invoice::query()->count());
+        Mail::assertNotQueued(InvoiceIssuedMail::class);
     }
 }
