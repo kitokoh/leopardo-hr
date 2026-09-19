@@ -30,7 +30,9 @@ class SuperAdminSeeder extends Seeder
         // Lecture par `config()` (et non `env()`) pour rester cohérent avec
         // `DemoCompanyOnceSeeder` et rester testable.
         $demoMode = (bool) config('app.demo_mode_enabled', false);
-        $demoPassword = config('demo.password', 'password123');
+        // #7696 : plus de fallback « password123 » — sans DEMO_PASSWORD le mode
+        // démo retombe sur un mot de passe aléatoire (et /demo-users répond 503).
+        $demoPassword = config('demo.password');
         $password = $passwordFromEnv
             ?: ($demoMode && is_string($demoPassword)
                 ? $demoPassword
