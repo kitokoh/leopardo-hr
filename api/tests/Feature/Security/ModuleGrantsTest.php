@@ -38,7 +38,7 @@ class ModuleGrantsTest extends TestCase
 
         // La table de cette tranche n'est pas dans le schéma MVP : on exécute
         // la migration réelle (convention du dépôt, cf. ResourceScopedRbacTest).
-        $migration = require database_path('migrations/tenant/2026_09_19_000001_7761_create_employee_module_grants.php');
+        $migration = require database_path('migrations/tenant/2026_09_19_001401_7761_create_employee_module_grants.php');
         $migration->up();
 
         $this->company = Company::factory()->create();
