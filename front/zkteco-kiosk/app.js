@@ -8,7 +8,8 @@ const CONFIG = {
   localBridgeUrl: '/local',
   apiBaseUrl: window.__KIOSK_API_BASE || '',
   deviceCode: window.__KIOSK_DEVICE_CODE || '',
-  kioskToken: window.__KIOSK_TOKEN || '',
+  // #7651 — le token cloud n'est plus injecté dans la page : tous les appels
+  // cloud passent par le proxy du bridge (/local/cloud/*), token côté Python.
   // BIO-009 #6774 — action par defaut (config.example.json defaultAction)
   defaultAction: window.__KIOSK_DEFAULT_ACTION || 'check_in',
   refreshInterval: 15000,
@@ -143,17 +144,11 @@ async function localFetchJson(url, options = {}) {
   });
 }
 
+// #7651 — les appels cloud passent par le proxy du bridge : le token kiosk
+// cloud reste côté Python (jamais dans le DOM), seul le token de session
+// local (surface pointage) accompagne la requête.
 async function kioskApi(path, options = {}) {
-  const apiBaseUrl = (CONFIG.apiBaseUrl || '').replace(/\/$/, '');
-  const versionedBaseUrl = apiBaseUrl.endsWith('/api/v1') ? apiBaseUrl : `${apiBaseUrl}/api/v1`;
-  const url = `${versionedBaseUrl}/kiosks/${CONFIG.deviceCode}${path}`;
-  return fetchJson(url, {
-    ...options,
-    headers: {
-      'X-Kiosk-Token': CONFIG.kioskToken,
-      ...(options.headers || {}),
-    },
-  });
+  return localFetchJson(`/local/cloud${path}`, options);
 }
 
 /**
@@ -163,17 +158,14 @@ async function kioskApi(path, options = {}) {
  * fallback_methods) — fetchJson jetterait ces informations.
  */
 async function rawKioskJson(path, options = {}) {
-  const apiBaseUrl = (CONFIG.apiBaseUrl || '').replace(/\/$/, '');
-  const versionedBaseUrl = apiBaseUrl.endsWith('/api/v1') ? apiBaseUrl : `${apiBaseUrl}/api/v1`;
-  const url = `${versionedBaseUrl}/kiosks/${CONFIG.deviceCode}${path}`;
   const isForm = options.form === true;
-  const response = await fetch(url, {
+  const response = await fetch(`/local/cloud${path}`, {
     method: options.method || 'GET',
     body: options.body,
     headers: {
       'Accept': 'application/json',
       ...(isForm ? {} : { 'Content-Type': 'application/json' }),
-      'X-Kiosk-Token': CONFIG.kioskToken,
+      'X-Local-Bridge-Token': window.__LOCAL_BRIDGE_TOKEN || '',
       ...(options.headers || {}),
     },
   });
@@ -437,9 +429,10 @@ function renderMethodGrid() {
   }
   if (els.noMethodWarning) els.noMethodWarning.classList.add('hidden');
 
+  // Audit #7651 — `method` vient d'une réponse serveur : échappement obligatoire.
   grid.innerHTML = methods
     .map((method) => `
-      <button type="button" class="method-btn" data-action="start-method" data-method="${method}">
+      <button type="button" class="method-btn" data-action="start-method" data-method="${escapeHtml(method)}">
         <span class="m-icon" aria-hidden="true">${METHOD_META[method] ? METHOD_META[method].icon : '&#10033;'}</span>
         <span class="m-name">${escapeHtml(t(`method.${method}`))}</span>
         <span class="m-tag">${escapeHtml(t(`method.tagline.${method}`))}</span>
@@ -463,10 +456,9 @@ async function loadKioskConfig() {
   try {
     const controller = new AbortController();
     const timer = window.setTimeout(() => { timedOut = true; controller.abort(); }, 4000);
-    const apiBaseUrl = (CONFIG.apiBaseUrl || '').replace(/\/$/, '');
-    const base = apiBaseUrl.endsWith('/api/v1') ? apiBaseUrl : `${apiBaseUrl}/api/v1`;
-    const response = await fetch(`${base}/kiosks/${CONFIG.deviceCode}/config`, {
-      headers: { 'Accept': 'application/json', 'X-Kiosk-Token': CONFIG.kioskToken },
+    // #7651 — /config via le proxy bridge : le token cloud reste côté Python.
+    const response = await fetch('/local/cloud/config', {
+      headers: { 'Accept': 'application/json', 'X-Local-Bridge-Token': window.__LOCAL_BRIDGE_TOKEN || '' },
       signal: controller.signal,
     });
     const payload = await response.json().catch(() => ({}));
@@ -1541,10 +1533,10 @@ async function searchEmployeeInfo() {
       let html = '';
       if (att.check_in) html += `<span class="att-badge att-in">${escapeHtml(t('attendance.checkIn', { time: formatTime(att.check_in) }))}</span>`;
       if (att.check_out) html += `<span class="att-badge att-out">${escapeHtml(t('attendance.checkOut', { time: formatTime(att.check_out) }))}</span>`;
-      if (!att.check_in && !att.check_out) html = `<span class="att-badge att-pending">${t('info.attendance.none')}</span>`;
+      if (!att.check_in && !att.check_out) html = `<span class="att-badge att-pending">${escapeHtml(t('info.attendance.none'))}</span>`;
       attEl.innerHTML = html;
     } else {
-      attEl.innerHTML = `<span class="att-badge att-pending">${t('info.attendance.pending')}</span>`;
+      attEl.innerHTML = `<span class="att-badge att-pending">${escapeHtml(t('info.attendance.pending'))}</span>`;
     }
 
     // Biometric enrollment status (PA2-KIO-004)
@@ -1564,7 +1556,7 @@ async function searchEmployeeInfo() {
         </div>
       `).join('');
     } else {
-      balancesEl.innerHTML = `<p style="color:var(--muted);font-size:13px;">${t('info.balances.none')}</p>`;
+      balancesEl.innerHTML = `<p style="color:var(--muted);font-size:13px;">${escapeHtml(t('info.balances.none'))}</p>`;
     }
 
     $('#employeeInfoResult').classList.remove('hidden');
@@ -1577,14 +1569,14 @@ async function searchEmployeeInfo() {
 // ── H2: Announcements ────────────────────────────────
 async function loadAnnouncements() {
   const container = $('#announcementsList');
-  container.innerHTML = `<p style="text-align:center;padding:20px;color:var(--muted);">${t('announcements.loading')}</p>`;
+  container.innerHTML = `<p style="text-align:center;padding:20px;color:var(--muted);">${escapeHtml(t('announcements.loading'))}</p>`;
 
   try {
     const data = await kioskApi('/announcements');
     const items = data.data || [];
 
     if (items.length === 0) {
-      container.innerHTML = `<p style="text-align:center;padding:40px 0;color:var(--muted);">${t('announcements.empty')}</p>`;
+      container.innerHTML = `<p style="text-align:center;padding:40px 0;color:var(--muted);">${escapeHtml(t('announcements.empty'))}</p>`;
       return;
     }
 
@@ -1599,7 +1591,7 @@ async function loadAnnouncements() {
       `;
     }).join('');
   } catch (error) {
-    container.innerHTML = `<p style="text-align:center;padding:20px;color:#fecdd3;">${t('announcements.error', { message: escapeHtml(error.message) })}</p>`;
+    container.innerHTML = `<p style="text-align:center;padding:20px;color:#fecdd3;">${escapeHtml(t('announcements.error', { message: error.message }))}</p>`;
   }
 }
 
@@ -1635,7 +1627,7 @@ async function searchLeaveBalance() {
         </div>
       `).join('');
     } else {
-      container.innerHTML = `<p style="color:var(--muted);font-size:13px;">${t('leave.balances.none')}</p>`;
+      container.innerHTML = `<p style="color:var(--muted);font-size:13px;">${escapeHtml(t('leave.balances.none'))}</p>`;
     }
 
     $('#leaveResult').classList.remove('hidden');
@@ -1708,27 +1700,27 @@ function formatDateTime(isoString) {
 // badge on the kiosk employee-info screen (enabled / pending / rejected / none).
 function renderBiometricStatus(biometric) {
   if (!biometric) {
-    return `<span class="att-badge att-pending">${t('info.biometric.unavailable')}</span>`;
+    return `<span class="att-badge att-pending">${escapeHtml(t('info.biometric.unavailable'))}</span>`;
   }
 
   const badges = [];
 
   if (biometric.face_enabled) {
-    badges.push(`<span class="att-badge att-in">${t('info.biometric.faceEnabled')}</span>`);
+    badges.push(`<span class="att-badge att-in">${escapeHtml(t('info.biometric.faceEnabled'))}</span>`);
   }
 
   if (biometric.fingerprint_enabled) {
-    badges.push(`<span class="att-badge att-in">${t('info.biometric.fingerprintEnabled')}</span>`);
+    badges.push(`<span class="att-badge att-in">${escapeHtml(t('info.biometric.fingerprintEnabled'))}</span>`);
   }
 
   if (biometric.pending_request) {
-    badges.push(`<span class="att-badge att-pending">${t('info.biometric.pending')}</span>`);
+    badges.push(`<span class="att-badge att-pending">${escapeHtml(t('info.biometric.pending'))}</span>`);
   } else if (biometric.latest_request_status === 'rejected') {
-    badges.push(`<span class="att-badge att-out">${t('info.biometric.rejected')}</span>`);
+    badges.push(`<span class="att-badge att-out">${escapeHtml(t('info.biometric.rejected'))}</span>`);
   }
 
   if (badges.length === 0) {
-    badges.push(`<span class="att-badge att-pending">${t('info.biometric.none')}</span>`);
+    badges.push(`<span class="att-badge att-pending">${escapeHtml(t('info.biometric.none'))}</span>`);
   }
 
   return badges.join('');
