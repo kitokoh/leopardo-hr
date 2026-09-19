@@ -1712,7 +1712,7 @@
     "statusApproved": "Approuvé",
     "statusPending": "En attente",
     "statusRejected": "Rejeté",
-    "subtitle": "Pilotez le programme partenaire et les commissions Leopardo RH.",
+    "subtitle": "Pilotez le programme partenaire et les commissions Leopardo.",
     "syncing": "Synchronisation des données...",
     "tabAudit": "Audit Log",
     "tabPartners": "Partenaires",
@@ -2592,7 +2592,7 @@
     "payroll_ready": {
       "subject": "Votre bulletin de paie est disponible",
       "greeting": "Bonjour :name,",
-      "body": "Votre bulletin de paie pour :period est pret. Vous pouvez le consulter dans Leopardo RH.",
+      "body": "Votre bulletin de paie pour :period est pret. Vous pouvez le consulter dans Leopardo.",
       "action": "Voir mon bulletin",
       "footer": "Merci de verifier vos informations avant export comptable."
     },
