@@ -7578,5 +7578,48 @@
         "unsubscribe": "Abonelikten çıkma"
       }
     }
+  },
+  "paymentGateways": {
+    "nav": "Ödeme geçitleri",
+    "title": "Ödeme geçitleri",
+    "subtitle": "Platformun Stripe ve Chargily hesaplarını yapılandırın — anahtarlar veritabanında şifrelenir ve yeniden dağıtım gerekmeden uygulanır.",
+    "loading": "Yükleniyor…",
+    "loadError": "Geçitler yüklenemedi.",
+    "mode": "Mod",
+    "mode_test": "Test",
+    "mode_live": "Canlı",
+    "isActive": "Yapılandırma etkin",
+    "save": "Kaydet",
+    "saved": "Geçit kaydedildi.",
+    "saveError": "Kaydedilemedi.",
+    "testConnection": "Bağlantıyı test et",
+    "secretEmpty": "Yapılandırılmadı",
+    "secretKeepHint": "Mevcut anahtarı korumak için boş bırakın (asla açık gösterilmez).",
+    "secretMissing": "Kayıtlı anahtar yok.",
+    "source": {
+      "database": "Veritabanı ile yapılandırıldı",
+      "env": "Ortam değişkeni ile yapılandırıldı",
+      "none": "Yapılandırılmadı"
+    },
+    "testStatus": {
+      "OK": "Bağlantı başarılı — anahtarlar geçerli.",
+      "INVALID_CREDENTIALS": "Anahtarlar geçit tarafından reddedildi.",
+      "NOT_CONFIGURED": "Yapılandırılmış anahtar yok.",
+      "CONNECTION_FAILED": "Geçide ulaşılamadı.",
+      "UNKNOWN_GATEWAY": "Bilinmeyen geçit."
+    },
+    "field": {
+      "stripe": {
+        "secret_key": "Gizli anahtar (sk_…)",
+        "webhook_secret": "Webhook secret (whsec_…)",
+        "price_pilot": "Price ID — Pilot planı",
+        "price_operations": "Price ID — Operations planı",
+        "price_enterprise": "Price ID — Enterprise planı"
+      },
+      "chargily": {
+        "api_key": "API anahtarı",
+        "webhook_secret": "Webhook secret"
+      }
+    }
   }
 }

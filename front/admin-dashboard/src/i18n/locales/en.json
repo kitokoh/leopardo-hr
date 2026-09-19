@@ -7439,5 +7439,48 @@
         "unsubscribe": "Unsubscribed"
       }
     }
+  },
+  "paymentGateways": {
+    "nav": "Payment gateways",
+    "title": "Payment gateways",
+    "subtitle": "Configure the platform Stripe and Chargily accounts — keys are encrypted at rest and applied without redeployment.",
+    "loading": "Loading…",
+    "loadError": "Unable to load gateways.",
+    "mode": "Mode",
+    "mode_test": "Test",
+    "mode_live": "Live",
+    "isActive": "Configuration active",
+    "save": "Save",
+    "saved": "Gateway saved.",
+    "saveError": "Unable to save.",
+    "testConnection": "Test connection",
+    "secretEmpty": "Not configured",
+    "secretKeepHint": "Leave empty to keep the current key (never shown in clear).",
+    "secretMissing": "No key stored.",
+    "source": {
+      "database": "Configured via DB",
+      "env": "Configured via env",
+      "none": "Not configured"
+    },
+    "testStatus": {
+      "OK": "Connection succeeded — keys are valid.",
+      "INVALID_CREDENTIALS": "Keys rejected by the gateway.",
+      "NOT_CONFIGURED": "No key configured.",
+      "CONNECTION_FAILED": "Could not reach the gateway.",
+      "UNKNOWN_GATEWAY": "Unknown gateway."
+    },
+    "field": {
+      "stripe": {
+        "secret_key": "Secret key (sk_…)",
+        "webhook_secret": "Webhook secret (whsec_…)",
+        "price_pilot": "Price ID — Pilot plan",
+        "price_operations": "Price ID — Operations plan",
+        "price_enterprise": "Price ID — Enterprise plan"
+      },
+      "chargily": {
+        "api_key": "API key",
+        "webhook_secret": "Webhook secret"
+      }
+    }
   }
 }
