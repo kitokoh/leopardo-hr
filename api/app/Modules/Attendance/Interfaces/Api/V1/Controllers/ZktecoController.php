@@ -62,9 +62,8 @@ class ZktecoController extends Controller
             'punch_methods.*' => ['string', 'in:fingerprint,face,card', 'distinct'],
         ]);
 
-        $company = currentCompany();
         $device = $this->guardZktecoQuery(
-            fn (): ZktecoDevice => $this->zktecoService->registerDevice($company->id, $validated),
+            fn (): ZktecoDevice => $this->zktecoService->registerDevice($validated),
         );
 
         // Sécurité #2216 : token de device généré à l'enregistrement, retourné

@@ -42,10 +42,16 @@ use Illuminate\Support\Carbon;
  */
 class PlatformSupportTicket extends Model
 {
+    // Issue #7711 (exceptions BelongsToCompany) — PAS de trait : ticket de
+    // support PLATEFORME (table public), trié et traité par les super-admins
+    // TOUTES sociétés confondues hors contexte tenant. company_id retiré du
+    // $fillable (#7711) : il est posé en forceFill par
+    // PlatformSupportTicketService depuis l'auteur authentifié, jamais
+    // mass-assigné depuis un payload.
+
     protected $table = 'platform_support_tickets';
 
     protected $fillable = [
-        'company_id',
         'created_by_employee_id',
         'subject',
         'category',

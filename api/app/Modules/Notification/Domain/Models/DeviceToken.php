@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Notification\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,9 +15,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class DeviceToken extends Model
 {
+    // Issue #7711 (suite #7646) — table `device_tokens` du schéma partagé
+    // shared_tenants : company_id est l'unique frontière d'isolation. Les jobs
+    // push tournent sous EnsureTenantContext (contexte tenant disponible).
+    use BelongsToCompany;
+
     protected $fillable = [
         'employee_id',
-        'company_id',
         'token',
         'platform',
         'device_name',

@@ -505,7 +505,7 @@ class ExportController extends Controller
 
         try {
             ExportHistory::create([
-                'company_id' => $user->company_id,
+                // #7711 : company_id délégué au trait BelongsToCompany (tenant actif).
                 'employee_id' => $user->id,
                 'type' => $type,
                 'format' => $format,
