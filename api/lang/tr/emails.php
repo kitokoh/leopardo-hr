@@ -210,6 +210,17 @@ return [
     'support_ticket_tenant_reply_title' => 'Müşteri yanıt verdi',
     'support_ticket_tenant_reply_intro' => ':company şirketi #:ticket numaralı bilete yanıt verdi («:subject»).',
     'support_ticket_tenant_reply_footer' => 'Yanıtı okumak için platform konsoluna giriş yapın.',
+    // Platform faturalandırma (#7763)
+    'invoice_issued_subject' => 'Leopardo faturanız :number hazır',
+    'invoice_issued_heading' => 'Yeni fatura',
+    'invoice_issued_greeting' => 'Merhaba :name,',
+    'invoice_issued_intro' => ':company için :number numaralı faturanız hazır. Tutar: :total :currency, son ödeme tarihi :due_date.',
+    'invoice_issued_attachment_note' => 'Faturayı bu e-postanın ekinde PDF olarak bulabilirsiniz.',
+    'invoice_payment_receipt_subject' => 'Ödeme makbuzu — fatura :number',
+    'invoice_payment_receipt_heading' => 'Ödeme alındı',
+    'invoice_payment_receipt_greeting' => 'Merhaba :name,',
+    'invoice_payment_receipt_intro' => ':company için :number numaralı faturanın ödemesini onaylıyoruz. Ödenen tutar: :total :currency, tarih: :paid_at.',
+    'invoice_payment_receipt_attachment_note' => 'Ödenmiş fatura bu e-postaya PDF olarak eklenmiştir.',
 
     // BC-29 Communication R4 (#7689) — otomatik takip şablonu.
     'communication_follow_up_subject' => 'Hatırlatma: :subject',

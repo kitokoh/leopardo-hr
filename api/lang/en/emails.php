@@ -210,6 +210,17 @@ return [
     'support_ticket_tenant_reply_title' => 'The client replied',
     'support_ticket_tenant_reply_intro' => 'The company :company replied to ticket #:ticket (":subject").',
     'support_ticket_tenant_reply_footer' => 'Sign in to the platform console to read the reply.',
+    // Platform billing (#7763)
+    'invoice_issued_subject' => 'Your Leopardo invoice :number is available',
+    'invoice_issued_heading' => 'New invoice',
+    'invoice_issued_greeting' => 'Hello :name,',
+    'invoice_issued_intro' => 'Your invoice :number for :company is available. Amount: :total :currency, due on :due_date.',
+    'invoice_issued_attachment_note' => 'You will find the invoice attached to this email as a PDF.',
+    'invoice_payment_receipt_subject' => 'Payment receipt — invoice :number',
+    'invoice_payment_receipt_heading' => 'Payment received',
+    'invoice_payment_receipt_greeting' => 'Hello :name,',
+    'invoice_payment_receipt_intro' => 'We confirm the payment of invoice :number for :company. Amount paid: :total :currency on :paid_at.',
+    'invoice_payment_receipt_attachment_note' => 'The settled invoice is attached to this email as a PDF.',
 
     // BC-29 Communication R4 (#7689) — automatic follow-up template.
     'communication_follow_up_subject' => 'Following up on: :subject',

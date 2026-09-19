@@ -13,8 +13,8 @@ use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Billing\Domain\Enums\SubscriptionStatus;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Billing\Domain\Models\Subscription;
+use App\Modules\Billing\Infrastructure\Services\InvoicePdfRenderer;
 use App\Modules\Billing\Infrastructure\Services\StripeService;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -25,6 +25,7 @@ class BillingController extends Controller
 {
     public function __construct(
         private readonly StripeService $stripeService,
+        private readonly InvoicePdfRenderer $pdfRenderer,
     ) {}
 
     public function subscription(Request $request): JsonResponse
@@ -164,21 +165,13 @@ class BillingController extends Controller
         $invoice = Invoice::where('company_id', $user->company_id)->findOrFail($id);
         $company = Company::find($user->company_id);
 
-        $pdf = Pdf::loadView('pdf.invoice', [
-            'invoice' => $invoice,
-            'company' => $company,
-            'legalMentions' => '',
-        ]);
+        // #7763 : rendu factorisé dans InvoicePdfRenderer — le même PDF est
+        // joint aux emails de facture/reçu (une seule source de rendu).
+        $pdf = $this->pdfRenderer->render($invoice, $company);
 
-        $pdf->setPaper('A4', 'portrait');
-
-        $filename = sprintf('facture_%s.pdf',
-            $invoice->number ?? 'LEO-'.now()->format('Y').'-'.str_pad((string) $invoice->id, 4, '0', STR_PAD_LEFT)
-        );
-
-        return response($pdf->output(), 200, [
+        return response($pdf['content'], 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+            'Content-Disposition' => 'attachment; filename="'.$pdf['filename'].'"',
         ]);
     }
 

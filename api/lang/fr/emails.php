@@ -214,6 +214,17 @@ return [
     'support_ticket_tenant_reply_title' => 'Le client a répondu',
     'support_ticket_tenant_reply_intro' => 'La société :company a répondu au ticket #:ticket (« :subject »).',
     'support_ticket_tenant_reply_footer' => 'Connectez-vous à la console plateforme pour lire la réponse.',
+    // Facturation plateforme (#7763)
+    'invoice_issued_subject' => 'Votre facture Leopardo :number est disponible',
+    'invoice_issued_heading' => 'Nouvelle facture',
+    'invoice_issued_greeting' => 'Bonjour :name,',
+    'invoice_issued_intro' => 'Votre facture :number pour :company est disponible. Montant : :total :currency, échéance le :due_date.',
+    'invoice_issued_attachment_note' => 'Vous trouverez la facture au format PDF en pièce jointe de cet email.',
+    'invoice_payment_receipt_subject' => 'Reçu de paiement — facture :number',
+    'invoice_payment_receipt_heading' => 'Paiement reçu',
+    'invoice_payment_receipt_greeting' => 'Bonjour :name,',
+    'invoice_payment_receipt_intro' => 'Nous confirmons le paiement de la facture :number pour :company. Montant réglé : :total :currency le :paid_at.',
+    'invoice_payment_receipt_attachment_note' => 'La facture acquittée au format PDF est jointe à cet email.',
 
     // BC-29 Communication R4 (#7689) — gabarit de relance automatique.
     'communication_follow_up_subject' => 'Suite à mon message : :subject',
