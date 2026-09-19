@@ -1726,6 +1726,48 @@ trait CreatesMvpSchema
             });
         }
 
+        // Issue #7802 (PHARMA-005) — ventes comptoir (POS).
+        // Miroir de la migration 2026_09_22_100004_7802 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('pharmacy_sales'))) {
+            Schema::create($this->moduleTable('pharmacy_sales'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('number', 20);
+                $table->timestamp('sold_at');
+                $table->string('customer_name', 191)->nullable();
+                $table->unsignedBigInteger('prescription_id')->nullable();
+                $table->string('payment_method', 20);
+                $table->decimal('total_amount', 12, 2)->default(0);
+                $table->string('status', 20)->default('completed');
+                $table->unsignedBigInteger('sold_by_employee_id')->nullable();
+                $table->string('void_reason', 500)->nullable();
+                $table->timestamp('voided_at')->nullable();
+                $table->unsignedBigInteger('voided_by_employee_id')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'number'], 'pharmacy_sales_company_number_unique');
+                $table->index(['company_id', 'status'], 'pharmacy_sales_company_status_idx');
+                $table->index(['company_id', 'sold_at'], 'pharmacy_sales_company_sold_at_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('pharmacy_sale_lines'))) {
+            Schema::create($this->moduleTable('pharmacy_sale_lines'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('sale_id');
+                $table->unsignedBigInteger('product_id');
+                $table->unsignedInteger('quantity');
+                $table->decimal('unit_price', 12, 2);
+                $table->decimal('tax_rate', 5, 2)->default(0);
+                $table->decimal('line_total', 12, 2);
+                $table->timestamps();
+
+                $table->index(['company_id', 'sale_id'], 'pharmacy_sale_lines_company_sale_idx');
+                $table->index(['company_id', 'product_id'], 'pharmacy_sale_lines_company_product_idx');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('catalog_inquiries'))) {
             Schema::create($this->moduleTable('catalog_inquiries'), function (Blueprint $table): void {
                 $table->bigIncrements('id');

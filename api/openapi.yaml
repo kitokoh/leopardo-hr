@@ -35022,6 +35022,196 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
+  /pharmacy/sales:
+    get:
+      tags:
+      - Pharmacy
+      summary: Lister les ventes comptoir
+      description: 'PHARMA-005 (#7802). Filtres `status`, `payment_method`, `from`, `to` (date de
+        vente) ; pagination `per_page`, de la plus récente à la plus ancienne.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [completed, voided]
+      - name: payment_method
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [cash, card, mobile, insurance]
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginée des ventes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PharmacySale'
+                  meta:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Pharmacy
+      summary: Encaisser une vente comptoir (délivrance FEFO)
+      description: 'PHARMA-005 (#7802). Tout employé du tenant. Le client n''envoie QUE produits
+        et quantités : prix, taxes et totaux sont calculés SERVEUR (prix figés dans les lignes).
+        Délivrance FEFO multi-lots (#7800) ; produit à ordonnance sans `prescription_id` → 422
+        PHARMACY_PRESCRIPTION_REQUIRED ; stock insuffisant → 422 PHARMACY_INSUFFICIENT_STOCK sans
+        effet partiel.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - lines
+              - payment_method
+              properties:
+                lines:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - product_id
+                    - quantity
+                    properties:
+                      product_id:
+                        type: integer
+                      quantity:
+                        type: integer
+                payment_method:
+                  type: string
+                  enum: [cash, card, mobile, insurance]
+                customer_name:
+                  type: string
+                  nullable: true
+                prescription_id:
+                  type: integer
+                  nullable: true
+      responses:
+        '201':
+          description: Vente encaissée (ticket avec lignes)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacySale'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/sales/{sale}:
+    get:
+      tags:
+      - Pharmacy
+      summary: Détail d'une vente (avec lignes)
+      description: 'PHARMA-005 (#7802). Vente d''un autre tenant → 404 fail-closed.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: sale
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de la vente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacySale'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /pharmacy/sales/{sale}/void:
+    post:
+      tags:
+      - Pharmacy
+      summary: Annuler une vente (re-crédit des lots d'origine)
+      description: 'PHARMA-005 (#7802). Manager uniquement, raison OBLIGATOIRE. Le stock est
+        re-crédité par mouvements `return` sur les lots d''ORIGINE de la délivrance ; la vente
+        passe `voided` et reste consultable — jamais supprimée.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: sale
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reason
+              properties:
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Vente annulée (conservée voided)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacySale'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
 components:
   securitySchemes:
     BearerAuth:
@@ -35370,6 +35560,58 @@ components:
               quantity_received:
                 type: integer
               unit_price:
+                type: string
+    PharmacySale:
+      type: object
+      description: Vente comptoir d'officine (PHARMA-005, #7802) — numéro VT-YYYY-XXXXX séquencé par tenant, totaux serveur, prix figés, void conservé.
+      properties:
+        id:
+          type: integer
+        number:
+          type: string
+        sold_at:
+          type: string
+          format: date-time
+        customer_name:
+          type: string
+          nullable: true
+        prescription_id:
+          type: integer
+          nullable: true
+        payment_method:
+          type: string
+          enum: [cash, card, mobile, insurance]
+        total_amount:
+          type: string
+        status:
+          type: string
+          enum: [completed, voided]
+        sold_by_employee_id:
+          type: integer
+          nullable: true
+        void_reason:
+          type: string
+          nullable: true
+        voided_at:
+          type: string
+          format: date-time
+          nullable: true
+        lines:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              product_id:
+                type: integer
+              quantity:
+                type: integer
+              unit_price:
+                type: string
+              tax_rate:
+                type: string
+              line_total:
                 type: string
     TravelStaffAssignment:
       type: object

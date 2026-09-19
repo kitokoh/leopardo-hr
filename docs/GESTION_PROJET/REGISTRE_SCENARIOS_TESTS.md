@@ -2,6 +2,18 @@
 > Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
 > Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
 
+> **MAJ 2026-09-22 — #7800/#7801/#7802 (PHARMA-003/004/005), tranche 2 PharmaManager (branche bc/pharma-tranche2).**
+> Surface **API** : stock d'officine par lots (`/api/v1/pharmacy/stock/*` — niveaux hors périmés,
+> lots triés FEFO, mouvements immuables paginés, ajustements manager — et `/api/v1/pharmacy/alerts`),
+> fournisseurs + commandes d'achat (`/api/v1/pharmacy/suppliers`, `/api/v1/pharmacy/purchase-orders`
+> — cycle draft→ordered→partially_received→received|cancelled, réception → lots + mouvements) et
+> ventes comptoir POS (`/api/v1/pharmacy/sales` — délivrance FEFO, contrôle ordonnance 422
+> `PHARMACY_PRESCRIPTION_REQUIRED`, totaux serveur, void avec ré-crédit des lots d'origine).
+> Scénarios automatisés : `api/tests/Feature/Pharmacy/PharmacyStockTest.php` (8 cas),
+> `PharmacyPurchasingTest.php` (7 cas) et `PharmacySaleTest.php` (7 cas) — FEFO multi-lots,
+> périmés exclus, journal append-only, transitions d'état invalides refusées, sur-réception
+> refusée, isolation tenant et 403 solution inactive partout. Surfaces web/mobile : aucune.
+
 > **MAJ 2026-09-22 — #7798/#7799 (PHARMA-001/002), fondation verticale PharmaManager (PR #7805).**
 > Surface **API** : nouvelle verticale `pharmacy` activable par tenant — routes tenant-scoped
 > `/api/v1/pharmacy/products` (liste paginée avec recherche nom/DCI/code-barres + filtres,
