@@ -28,81 +28,20 @@ import type { NextConfig } from "next";
  * ───────────────────────────────────────────────────────────────────────────
  */
 /**
- * Content-Security-Policy (Report-Only for now).
+ * Content-Security-Policy — DÉPLACÉE dans le proxy (issue #7650).
  *
- * Issue #1300: front/web had every other common security header (HSTS,
- * X-Frame-Options, X-Content-Type-Options, Referrer-Policy,
- * Permissions-Policy) but no CSP at all. We start in
- * `Content-Security-Policy-Report-Only` mode so violations are reported to
- * the browser console/devtools without breaking GA4, Mixpanel, Sentry, or
- * the Stripe-backed checkout flow while the report is reviewed. Once a
- * production report comes back clean, swap the header key below from
- * `Content-Security-Policy-Report-Only` to `Content-Security-Policy` to
- * enforce it.
- *
- * ── DÉCISION DATÉE — CSP vitrine (issue #1607, revue 2026-08-09) ──────────
- * Décision : MAINTENIR `Content-Security-Policy-Report-Only`.
- * Justification :
- *   1. Le passage en enforce exige d'abord de supprimer `'unsafe-inline'` de
- *      `script-src` (bootstrap inline GA4/Mixpanel dans layout.tsx) — ce qui
- *      demande un câblage nonce/hash. Sans lui, enforce casserait
- *      l'analytics, Sentry et le checkout Stripe (régression e2e réelle).
- *   2. Aucun endpoint d'ingestion des rapports (`report-uri`/`report-to`)
- *      n'existe côté API — les violations ne remontent que dans la console
- *      navigateur. Ajouter `report-uri` maintenant sans endpoint produirait
- *      un flux de 404 inexploitable.
- * Plan de passage en enforce (revue datée) :
- *   - [ ] Câbler nonce/hash sur les scripts inline (layout.tsx) ;
- *   - [ ] Ajouter un endpoint d'ingestion CSP côté API
- *         (`POST /api/v1/security/csp-report`) + `report-to` ;
- *   - [ ] Collecter 30 jours de rapports sur la vitrine de prod ;
- *   - [ ] Basculer le header en `Content-Security-Policy` (enforce) ;
- *   - [ ] Vérifier e2e vitrine (login, checkout, docs) + test de headers.
- * Prochaine revue : 2026-09-09 (ou à chaque changement de dépendance tierce).
- * ────────────────────────────────────────────────────────────────────────────
- *
- * Origins below come from what actually gets loaded today:
- *  - script-src: GA4 (googletagmanager.com), Mixpanel (mxpnl.com), Sentry
- *    browser bundle (sentry-cdn.com). 'unsafe-inline' is required because
- *    the GA4/Mixpanel bootstrap snippets in src/app/layout.tsx are inline
- *    <script> tags (no nonce/hash wiring yet).
- *  - connect-src: the Cloud API (NEXT_PUBLIC_API_URL) plus the GA4/Mixpanel/
- *    Sentry ingestion endpoints those SDKs call at runtime.
- *  - img-src/style-src: kept permissive (data:, 'unsafe-inline') because
- *    Tailwind v4 and framer-motion inject inline styles, and GA/Mixpanel
- *    send 1x1 tracking pixels.
+ * Historique : née Report-Only (#1300), maintenue Report-Only par la décision
+ * datée du 2026-08-09 (#1607, checklist de bascule jamais cochée, `CSP_ENFORCE`
+ * jamais activé) — une CSP report-only ne bloque rien. L'audit #7650 acte la
+ * bascule en ENFORCE, ce qui exige un nonce PAR REQUÊTE : impossible ici (les
+ * headers de `next.config.ts` sont statiques). La politique vit désormais dans
+ * `src/lib/csp.ts` (source unique des directives, `connect-src` par
+ * environnement via `NEXT_PUBLIC_API_URL`) et est émise par `src/proxy.ts`
+ * avec `'nonce-…' 'strict-dynamic'` et SANS `'unsafe-inline'` dans
+ * script-src. Ne PAS réintroduire de CSP ici : deux polices enforce
+ * s'intersectent et la copie statique (sans nonce) bloquerait tout.
+ * Rollback opérationnel : `CSP_REPORT_ONLY=true` (cf. `src/lib/csp.ts`).
  */
-const apiOrigin = (() => {
-  try {
-    return new URL(
-      process.env.NEXT_PUBLIC_API_URL ||
-        "https://gestionemployerbackend.onrender.com",
-    ).origin;
-  } catch {
-    return "https://gestionemployerbackend.onrender.com";
-  }
-})();
-
-const cspDirectives = [
-  "default-src 'self'",
-  `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdn4.mxpnl.com https://cdn.mxpnl.com https://browser.sentry-cdn.com`,
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: https:",
-  "font-src 'self' data:",
-  `connect-src 'self' ${apiOrigin} https://www.google-analytics.com https://www.googletagmanager.com https://api.mixpanel.com https://*.sentry.io https://*.ingest.sentry.io`,
-  "frame-src 'self' https://js.stripe.com https://checkout.stripe.com",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  "frame-ancestors 'none'",
-  "upgrade-insecure-requests",
-].join("; ");
-
-// Le passage en enforcement doit être explicite après validation des rapports.
-// Par défaut, on conserve Report-Only pour les environnements qui n'ont pas
-// encore migré leurs scripts inline vers des nonces/hashes.
-const enforceCsp = process.env.CSP_ENFORCE === "true";
-
 const nextConfig: NextConfig = {
   /**
    * Next bloque les ressources de développement (`/_next/*`) quand l'en-tête
@@ -191,13 +130,8 @@ const nextConfig: NextConfig = {
           key: "Permissions-Policy",
           value: "geolocation=(), microphone=(), camera=()",
         },
-        {
-          // Activation explicite uniquement après revue des rapports CSP.
-          key: enforceCsp
-            ? "Content-Security-Policy"
-            : "Content-Security-Policy-Report-Only",
-          value: cspDirectives,
-        },
+        // #7650 — plus de CSP ici : elle est émise par le proxy en mode
+        // enforce avec un nonce par requête (cf. bloc de décision ci-dessus).
       ],
     },
     {

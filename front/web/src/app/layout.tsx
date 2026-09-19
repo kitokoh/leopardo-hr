@@ -192,6 +192,15 @@ export default async function RootLayout({
   const gaId = analyticsEnabled ? process.env.NEXT_PUBLIC_GA_ID : undefined;
   const mixpanelToken = analyticsEnabled ? process.env.NEXT_PUBLIC_MIXPANEL_TOKEN : undefined;
 
+  // #7650 — CSP enforce sans 'unsafe-inline' : le script inline
+  // `beforeInteractive` ci-dessous est rendu dans le HTML SSR (inséré par le
+  // parseur), il doit donc porter le nonce généré par requête dans le proxy
+  // (en-tête `x-nonce`). Les scripts `afterInteractive` (ConsentScripts)
+  // sont injectés par JS et couverts par 'strict-dynamic' — pas de nonce à
+  // propager côté client. Nonce absent (route hors proxy) → undefined,
+  // comportement inchangé.
+  const cspNonce = (await headers()).get('x-nonce') ?? undefined;
+
   return (
     <html lang={ssrLang} dir={resolveSsrDir(ssrLang)} className={inter.variable} suppressHydrationWarning>
       <head>
@@ -206,7 +215,7 @@ export default async function RootLayout({
         {/* #7593 — Consent Mode v2 : le défaut est « refusé » et il est posé
             AVANT tout script de mesure. Les traceurs ne sont injectés qu'après
             un choix explicite (voir ConsentScripts). */}
-        <Script id="consent-mode-default" strategy="beforeInteractive">
+        <Script id="consent-mode-default" strategy="beforeInteractive" nonce={cspNonce}>
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}

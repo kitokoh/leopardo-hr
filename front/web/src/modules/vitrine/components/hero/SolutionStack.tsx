@@ -17,6 +17,7 @@
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Layers, LayoutGrid, Blocks } from 'lucide-react';
+import { LeoMascot } from '@/components/ui/LeoMascot';
 import type { AppLocale } from '@/lib/i18n';
 import {
   EXTRA_MODULE_LABELS,
@@ -146,13 +147,19 @@ export function SolutionStack({ locale }: SolutionStackProps) {
         </p>
       </div>
 
-      {/* Canvas */}
-      <div
-        role="img"
-        aria-label={copy.canvasAlt}
-        dir="ltr"
-        className="relative mx-auto h-[320px] w-full max-w-4xl overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-b from-slate-900 to-slate-950 shadow-2xl sm:h-[400px] lg:h-[440px] dark:border-slate-800"
-      >
+      {/* Canvas — enveloppé dans un conteneur relatif pour laisser Leo, la
+          mascotte pieuvre, émerger au-dessus du coin de la pile 3D sans être
+          rognée par l'`overflow-hidden` du canvas. */}
+      <div className="relative mx-auto w-full max-w-4xl">
+        <div className="absolute -top-12 right-6 z-10 hidden sm:block" aria-hidden="true">
+          <LeoMascot size={92} float />
+        </div>
+        <div
+          role="img"
+          aria-label={copy.canvasAlt}
+          dir="ltr"
+          className="relative h-[320px] w-full overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-b from-slate-900 to-slate-950 shadow-2xl sm:h-[400px] lg:h-[440px] dark:border-slate-800"
+        >
         <div className="solution-stack-glow-bottom pointer-events-none absolute inset-0" />
         <div className="solution-stack-glow-top pointer-events-none absolute inset-0" />
 
@@ -186,6 +193,7 @@ export function SolutionStack({ locale }: SolutionStackProps) {
               {layer.name}
             </div>
           ))}
+        </div>
         </div>
       </div>
 

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Check, Loader2, Sparkles } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
+import { LeoMascot } from '@/components/ui/LeoMascot';
 import type { AppLocale, StoredAuthUser } from '@/lib/i18n';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 
@@ -264,7 +265,7 @@ export function SetupInterview({
       aria-modal="true"
       aria-label={t('title', 'Préparons votre espace')}
       data-testid="setup-interview"
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-50/95 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-50/95 p-4 backdrop-blur-sm dark:bg-slate-950/95"
     >
       <div className="w-full max-w-2xl">
         {loading ? (
@@ -275,13 +276,16 @@ export function SetupInterview({
           <motion.section
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-3xl border border-emerald-100 bg-white p-8 shadow-xl"
+            className="rounded-3xl border border-emerald-100 bg-white p-8 shadow-xl dark:border-emerald-900/40 dark:bg-slate-900"
             data-testid="interview-recap"
           >
-            <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50">
-              <Sparkles className="h-6 w-6 text-emerald-600" aria-hidden="true" />
+            <div className="mb-4 flex items-center gap-4">
+              <LeoMascot variant="wave" size={72} float />
+              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-50 to-cyan-50 dark:from-emerald-900/30 dark:to-cyan-900/20">
+                <Sparkles className="h-6 w-6 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+              </div>
             </div>
-            <h2 className="text-2xl font-black text-slate-900">{t('recapTitle', 'Votre espace est prêt')}</h2>
+            <h2 className="text-2xl font-black text-slate-900 dark:text-white">{t('recapTitle', 'Votre espace est prêt')}</h2>
             {recap.solutions.length + recap.tools.length > 0 ? (
               <>
                 <p className="mt-2 text-sm text-slate-600">{t('recapBody', 'Voici ce que nous avons activé pour vous :')}</p>
@@ -312,14 +316,18 @@ export function SetupInterview({
             </button>
           </motion.section>
         ) : question ? (
-          <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-xl">
+          <section className="relative rounded-3xl border border-slate-200 bg-white p-8 shadow-xl dark:border-slate-800 dark:bg-slate-900">
+            {/* Leo accompagne l'entretien — décoratif, masqué sur mobile. */}
+            <div className="absolute -top-10 right-8 hidden sm:block" aria-hidden="true">
+              <LeoMascot size={64} float />
+            </div>
             <header className="mb-6">
-              <p className="text-[11px] font-black uppercase tracking-widest text-emerald-600">
+              <p className="text-[11px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
                 {progressLabel}
               </p>
-              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-100" aria-hidden="true">
+              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800" aria-hidden="true">
                 <div
-                  className="h-full rounded-full bg-emerald-500 transition-all"
+                  className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 transition-all"
                   style={{ width: `${Math.round((index / Math.max(visibleQuestions.length, 1)) * 100)}%` }}
                 />
               </div>
@@ -332,7 +340,7 @@ export function SetupInterview({
                 exit={{ opacity: 0, x: -16 }}
                 transition={{ duration: 0.18 }}
               >
-                <h2 className="text-xl font-black text-slate-900" data-testid="interview-question">
+                <h2 className="text-xl font-black text-slate-900 dark:text-white" data-testid="interview-question">
                   {i18nT(locale, `setupInterview.questions.${question.key}.label`, question.key)}
                 </h2>
                 {question.multi ? (
@@ -355,8 +363,8 @@ export function SetupInterview({
                         className={[
                           'flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left text-sm font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40',
                           selected
-                            ? 'border-emerald-500 bg-emerald-50 text-emerald-800'
-                            : 'border-slate-200 bg-white text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/40',
+                            ? 'border-emerald-500 bg-emerald-50 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300'
+                            : 'border-slate-200 bg-white text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/40 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-emerald-800 dark:hover:bg-emerald-900/20',
                         ].join(' ')}
                       >
                         <span>
