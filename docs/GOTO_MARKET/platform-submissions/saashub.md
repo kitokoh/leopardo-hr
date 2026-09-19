@@ -1,18 +1,18 @@
-# SaaSHub — Leopardo RH
+# SaaSHub — Leopardo
 
 ## Fiche prête à saisir
 
 **Product name**  
-Leopardo RH
+Leopardo
 
 **Website**  
 À renseigner avec l’URL canonique stable. Lien de secours : https://github.com/kitokoh/leopardo-hr
 
 **One-line description**  
-Open-source HR and payroll platform for mobile-first, multi-site and field-based companies.
+Open-source business suite for mobile-first, multi-site and field-based companies — HR & payroll included.
 
 **Long description**  
-Leopardo RH is an open-source HR and payroll operating system built for growing companies with field teams and multiple sites. It brings together employee records, contracts, attendance, schedules, leave, tasks, documents, payroll preparation, notifications and workforce analytics. The platform combines web dashboards, Flutter mobile apps and a biometric kiosk / ZKTeco bridge. It is designed for self-hosting or SaaS deployment, with multi-tenant isolation, RBAC, SSO options and an OpenAPI-based integration layer.
+Leopardo is an open-source business suite built for growing companies with field teams and multiple sites — HR & payroll included. It brings together employee records, contracts, attendance, schedules, leave, tasks, documents, payroll preparation, notifications and workforce analytics. The platform combines web dashboards, Flutter mobile apps and a biometric kiosk / ZKTeco bridge. It is designed for self-hosting or SaaS deployment, with multi-tenant isolation, RBAC, SSO options and an OpenAPI-based integration layer.
 
 **Categories**  
 Human Resources, Payroll, Workforce Management, Time Tracking, Employee Management, Business Operations, Open Source Software.

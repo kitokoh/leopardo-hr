@@ -1,4 +1,4 @@
-# Demo Accounts & Personas — Leopardo RH
+# Demo Accounts & Personas — Leopardo
 
 To explore the platform's capabilities across different roles, you can use the
 built-in demo environment.

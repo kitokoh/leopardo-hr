@@ -3,7 +3,7 @@
 > **Statut :** Proposition **validée par le propriétaire** (2026-08-29) — prête pour implémentation par lots
 > **Base :** dernière tête de `main` vérifiée le 29 août 2026 (`a66aae3b3`)
 > **Origine :** portage de l'ancien projet `gv-back` (fork `kitokoh/gv-back` de `lesphinx/gv-back-unified`,
-> Laravel 5.6 / PHP 7.1) vers l'architecture DDD multi-tenant Leopardo HR.
+> Laravel 5.6 / PHP 7.1) vers l'architecture DDD multi-tenant Leopardo.
 > **Périmètre :** verticale opérationnelle « Agence de Voyage » = vente de billets en ligne (voyages
 > interurbains), gestion du réseau (routes, trajets, gares, compagnies), réservations & passagers,
 > paiements mobile money, billets PDF, location de véhicules, hôtellerie, rapports, contenu &
@@ -38,7 +38,7 @@
 
 ### 1.1 Pourquoi cette verticale
 
-Leopardo HR est une plateforme modulaire multi-tenant (identité, tenant, RBAC, HR, présence, paie, CRM
+Leopardo est une plateforme modulaire multi-tenant (identité, tenant, RBAC, HR, présence, paie, CRM
 client, marketing, comptabilité, documents, notifications, audit). Les **solutions verticales** ajoutent
 des workflows propres à un secteur sans remplacer ni recopier les modules transversaux
 (voir `docs/specifications/PLATFORM_ONBOARDING_AND_VERTICAL_SOLUTIONS.md`).

@@ -1,6 +1,6 @@
-# Observability & Monitoring — Leopardo RH
+# Observability & Monitoring — Leopardo
 
-Maintaining 99.9% uptime and high performance requires a comprehensive observability strategy. Leopardo RH implements a three-pillar monitoring approach.
+Maintaining 99.9% uptime and high performance requires a comprehensive observability strategy. Leopardo implements a three-pillar monitoring approach.
 
 ## 📊 The Three Pillars
 

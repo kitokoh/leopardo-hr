@@ -1,4 +1,4 @@
-# Guide RH — Leopardo RH
+# Guide RH — Leopardo
 
 Le sous-role **manager_role=rh** est un manager avec des droits focalises sur
 le cycle de vie des employes : creation, invitation, relance, archivage.

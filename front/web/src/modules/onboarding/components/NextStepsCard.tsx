@@ -173,7 +173,7 @@ export function NextStepsCard({ locale }: { locale: AppLocale }) {
     <section
       data-testid="next-steps-card"
       aria-label={t('title', 'Prochaines étapes')}
-      className="mb-6 rounded-3xl border border-emerald-100 bg-white shadow-sm"
+      className="mb-6 overflow-hidden rounded-3xl border border-emerald-100 bg-gradient-to-br from-white via-white to-emerald-50/40 shadow-sm dark:border-emerald-900/40 dark:from-slate-900 dark:via-slate-900 dark:to-emerald-950/20"
     >
       <header className="flex items-center justify-between gap-3 px-5 py-4">
         <button
@@ -183,11 +183,11 @@ export function NextStepsCard({ locale }: { locale: AppLocale }) {
           data-testid="next-steps-toggle"
           className="flex flex-1 items-center gap-3 text-left"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50">
-            <ListChecks className="h-5 w-5 text-emerald-600" aria-hidden="true" />
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-50 to-cyan-50 dark:from-emerald-900/40 dark:to-cyan-900/20">
+            <ListChecks className="h-5 w-5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
           </span>
           <span>
-            <span className="block text-sm font-black text-slate-900">
+            <span className="block text-sm font-black text-slate-900 dark:text-white">
               {t('title', 'Prochaines étapes')}
               {quickStart ? (
                 <span className="ml-2 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-emerald-700">
@@ -195,7 +195,7 @@ export function NextStepsCard({ locale }: { locale: AppLocale }) {
                 </span>
               ) : null}
             </span>
-            <span className="block text-xs font-semibold text-slate-500">
+            <span className="block text-xs font-semibold text-slate-500 dark:text-slate-400">
               {t('progress', '{done} sur {total}')
                 .replace('{done}', String(doneCount))
                 .replace('{total}', String(steps.length))}
@@ -221,7 +221,7 @@ export function NextStepsCard({ locale }: { locale: AppLocale }) {
         </button>
       </header>
       {!collapsed ? (
-        <div className="border-t border-slate-100 px-5 py-4">
+        <div className="border-t border-slate-100 px-5 py-4 dark:border-slate-800">
           <ul className="space-y-2">
             {visible.map((step) => {
               const meta = stepMeta(step);
@@ -230,12 +230,12 @@ export function NextStepsCard({ locale }: { locale: AppLocale }) {
                 <li
                   key={step.step_key}
                   data-testid={`next-step-${step.step_key}`}
-                  className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-slate-100 bg-slate-50/60 px-4 py-3"
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-slate-100 bg-slate-50/60 px-4 py-3 transition hover:border-emerald-200 hover:bg-emerald-50/30 dark:border-slate-800 dark:bg-slate-800/40 dark:hover:border-emerald-900"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-bold text-slate-800">{meta.title}</p>
+                    <p className="truncate text-sm font-bold text-slate-800 dark:text-slate-200">{meta.title}</p>
                     {meta.desc ? (
-                      <p className="truncate text-xs text-slate-500">{meta.desc}</p>
+                      <p className="truncate text-xs text-slate-500 dark:text-slate-400">{meta.desc}</p>
                     ) : null}
                   </div>
                   <div className="flex items-center gap-1.5">
