@@ -1,6 +1,6 @@
 # Regression Test Suite
 
-To ensure the stability of Leopardo RH, we maintain a registry of critical regression tests that must pass before any release.
+To ensure the stability of Leopardo, we maintain a registry of critical regression tests that must pass before any release.
 
 ## 🔑 Critical Paths
 

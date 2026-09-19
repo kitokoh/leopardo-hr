@@ -1,4 +1,4 @@
-# 🎯 Pitch pilote — Leopardo RH pour les PME algériennes (issue #5154)
+# 🎯 Pitch pilote — Leopardo pour les PME algériennes (issue #5154)
 
 **Version** : 1.0 · **Date** : 2026-08-20 · **Usage** : 1 page, support de la signature des 3 pilotes DZ (Phase 2).
 
@@ -12,7 +12,7 @@
 
 ## La solution
 
-**Leopardo RH** — un OS RH/paie open-source, multi-tenant, pensé pour les PME :
+**Leopardo** — la suite métier open-source et multi-tenant pensée pour les PME, ici sa brique RH & paie :
 
 - **Paie DZ conforme** : moteur de paie algérien avec barème IRG (LF en vigueur), CNAS 9 %/26 %, SMIG, abattement 40 % (plancher 12 000 / plafond 18 000 DZD/an) — **validé par un expert-comptable DZ le 2026-08-08**.
 - **Pointage biométrique** : kiosques ZKTeco (empreinte/visage/carte), géofencing, horaires par équipe.

@@ -1,8 +1,8 @@
-# Architecture — Leopardo HR API
+# Architecture — Leopardo API
 
 ## Vue d'ensemble
 
-L'API Leopardo HR suit une **Clean Architecture modulaire** basée sur le pattern
+L'API Leopardo suit une **Clean Architecture modulaire** basée sur le pattern
 Domain-Driven Design (DDD) avec des modules plug-and-play.
 
 ## Structure globale

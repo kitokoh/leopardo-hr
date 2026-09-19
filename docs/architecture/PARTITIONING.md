@@ -1,4 +1,4 @@
-# Strategie de partitionnement et scalabilite — Leopardo RH
+# Strategie de partitionnement et scalabilite — Leopardo
 
 > Derniere mise a jour : 2026-05-14
 
@@ -6,7 +6,7 @@
 
 ## 1. Contexte
 
-Leopardo RH est une application SaaS multi-tenant. Chaque entreprise cliente (tenant) a ses propres donnees isolees. La strategie de partitionnement doit supporter :
+Leopardo est une application SaaS multi-tenant. Chaque entreprise cliente (tenant) a ses propres donnees isolees. La strategie de partitionnement doit supporter :
 
 - **Isolation des donnees** entre tenants (obligatoire, reglementaire)
 - **Scalabilite horizontale** a mesure que le nombre de tenants et d'employes croit

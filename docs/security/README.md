@@ -1,4 +1,4 @@
-# Sécurité — Leopardo RH
+# Sécurité — Leopardo
 
 Index de la documentation sécurité. **MAJ : 2026-08-17 (revue PM).**
 
