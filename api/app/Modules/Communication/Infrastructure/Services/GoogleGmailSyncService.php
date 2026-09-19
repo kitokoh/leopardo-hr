@@ -9,6 +9,7 @@ use App\Modules\Communication\Domain\Exceptions\GmailSyncAuthException;
 use App\Modules\Communication\Domain\Models\CommunicationIntegration;
 use App\Modules\Communication\Domain\Models\CommunicationMessage;
 use App\Modules\Communication\Domain\Models\CommunicationThread;
+use App\Modules\Communication\Infrastructure\Jobs\ClassifyCommunicationMessageJob;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -410,6 +411,17 @@ class GoogleGmailSyncService
         ]);
 
         $message->save();
+
+        // R3 (#7688) — « messages classés à la sync » : chaque message
+        // nouvellement ingéré (ou re-syncé avant classification) part en
+        // classification IA sur la queue `communication`. Idempotent : un
+        // message déjà classifié n'est pas re-dispatché.
+        if ($message->classification_status === CommunicationMessage::CLASSIFICATION_PENDING) {
+            ClassifyCommunicationMessageJob::dispatch(
+                (string) $integration->company_id,
+                (string) $message->id,
+            );
+        }
 
         return $message;
     }

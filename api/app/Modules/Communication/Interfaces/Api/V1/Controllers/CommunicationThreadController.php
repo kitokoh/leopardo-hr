@@ -115,6 +115,16 @@ class CommunicationThreadController extends Controller
             'labels' => $message->labels ?? [],
             'attachment_refs' => $message->attachment_refs ?? [],
             'sent_at' => $message->sent_at?->toIso8601String(),
+            // R3 (#7688) — classification IA + liaison CRM.
+            'ai_category' => $message->ai_category,
+            'ai_language' => $message->ai_language,
+            'ai_sentiment' => $message->ai_sentiment,
+            'ai_action' => $message->ai_action,
+            'ai_confidence' => $message->ai_confidence,
+            'classification_status' => $message->classification_status,
+            'classified_at' => $message->classified_at?->toIso8601String(),
+            'crm_contact_id' => $message->crm_contact_id,
+            'contact_link_status' => $message->contact_link_status,
         ];
     }
 }

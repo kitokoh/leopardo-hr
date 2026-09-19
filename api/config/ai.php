@@ -201,6 +201,9 @@ return [
             'leave.view',
             // A8 (#7378) — pointage libre-service depuis l'assistant.
             'attendance.punch',
+            // R3 Communication (#7688) — classification IA des emails de SA
+            // boîte connectée (la boîte est personnelle, policy owner-only).
+            'communication.classify',
         ],
         'manager' => [
             'employees.view',
@@ -221,6 +224,8 @@ return [
             'attendance.punch',
             // B3c (#6858) — annonce d'équipe via l'outil `notify_team` (AIToolContractGuardTest).
             'announcements.create',
+            // R3 Communication (#7688) — classification IA des emails.
+            'communication.classify',
         ],
         'admin' => [
             'employees.view',
@@ -241,6 +246,8 @@ return [
             'attendance.punch',
             // B3c (#6858) — annonce d'équipe via l'outil `notify_team` (AIToolContractGuardTest).
             'announcements.create',
+            // R3 Communication (#7688) — classification IA des emails.
+            'communication.classify',
         ],
         'super_admin' => [
             'employees.view',
@@ -261,6 +268,8 @@ return [
             'attendance.punch',
             // B3c (#6858) — annonce d'équipe via l'outil `notify_team` (AIToolContractGuardTest).
             'announcements.create',
+            // R3 Communication (#7688) — classification IA des emails.
+            'communication.classify',
         ],
     ],
 

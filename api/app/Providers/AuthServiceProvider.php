@@ -15,9 +15,15 @@ use App\Modules\Cameras\Domain\Models\CameraAccessToken;
 use App\Modules\Cameras\Domain\Models\CameraAlert;
 use App\Modules\Cameras\Domain\Models\CameraEvent;
 use App\Modules\Cameras\Domain\Policies\CameraAlertPolicy;
+use App\Modules\Communication\Domain\Models\CommunicationCategory;
+use App\Modules\Communication\Domain\Models\CommunicationContactProposal;
 use App\Modules\Communication\Domain\Models\CommunicationIntegration;
+use App\Modules\Communication\Domain\Models\CommunicationMessage;
 use App\Modules\Communication\Domain\Models\CommunicationThread;
+use App\Modules\Communication\Domain\Policies\CommunicationCategoryPolicy;
+use App\Modules\Communication\Domain\Policies\CommunicationContactProposalPolicy;
 use App\Modules\Communication\Domain\Policies\CommunicationIntegrationPolicy;
+use App\Modules\Communication\Domain\Policies\CommunicationMessagePolicy;
 use App\Modules\Communication\Domain\Policies\CommunicationThreadPolicy;
 use App\Modules\Catalog\Domain\Models\CatalogCategory;
 use App\Modules\Catalog\Domain\Models\CatalogProduct;
@@ -273,6 +279,12 @@ class AuthServiceProvider extends ServiceProvider
         // #7687 — fils Gmail synchronises (Communication R2) : contenu
         // reserve au PROPRIETAIRE de la boite (pas meme principal/rh).
         Gate::policy(CommunicationThread::class, CommunicationThreadPolicy::class);
+        // #7688 — classification IA (Communication R3) : re-classification
+        // reservee au proprietaire ; taxonomie geree par principal/rh ;
+        // propositions de contact decidees par le proprietaire de la boite.
+        Gate::policy(CommunicationMessage::class, CommunicationMessagePolicy::class);
+        Gate::policy(CommunicationCategory::class, CommunicationCategoryPolicy::class);
+        Gate::policy(CommunicationContactProposal::class, CommunicationContactProposalPolicy::class);
 
         // Org structure
         Gate::policy(FuelMeterReading::class, FuelMeterReadingPolicy::class);

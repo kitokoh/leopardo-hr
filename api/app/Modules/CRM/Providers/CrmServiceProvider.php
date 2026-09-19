@@ -34,6 +34,8 @@ use App\Modules\CRM\Infrastructure\Services\CrmChannelRegistry;
 use App\Modules\CRM\Infrastructure\Services\CrmConditionEvaluator;
 
 use App\Modules\CRM\Infrastructure\Services\CrmOutboxPublisher;
+use App\Modules\CRM\Infrastructure\Services\CrmEmailContactDirectory;
+use App\Shared\Contracts\Crm\EmailContactDirectory;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
@@ -61,6 +63,12 @@ class CrmServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(CrmChannelMessageRepositoryInterface::class, CrmChannelMessageRepository::class);
+
+        // R3 Communication (#7688) — contrat partagé de liaison email ↔
+        // contacts (pattern PublishedProductsProvider) : le module
+        // Communication (BC-29) consomme l'interface App\Shared, jamais les
+        // modèles CRM (isolation #5584).
+        $this->app->bind(EmailContactDirectory::class, CrmEmailContactDirectory::class);
 
         $this->app->singleton(WhatsAppCloudApiClient::class);
         $this->app->singleton(WhatsAppAdapter::class);

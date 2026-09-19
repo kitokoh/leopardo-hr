@@ -21,7 +21,10 @@
  * Référence : docs/specifications/MODULE_COMMUNICATION_EMAIL_IA.md.
  */
 
+use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationCategoryController;
+use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationContactProposalController;
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationIntegrationController;
+use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationMessageClassificationController;
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationModuleStatusController;
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationThreadController;
 use Illuminate\Support\Facades\Route;
@@ -44,6 +47,22 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // dechiffre) est reserve au proprietaire (policy view).
         Route::get('/threads', [CommunicationThreadController::class, 'index']);
         Route::get('/threads/{thread}/messages', [CommunicationThreadController::class, 'messages'])->whereUuid('thread');
+
+        // R3 (#7688) — classification IA + liaison contacts CRM.
+        // Taxonomie du tenant (lecture: tout employe ; ecriture: principal/rh).
+        Route::get('/categories', [CommunicationCategoryController::class, 'index']);
+        Route::post('/categories', [CommunicationCategoryController::class, 'store']);
+        Route::patch('/categories/{category}', [CommunicationCategoryController::class, 'update'])->whereUuid('category');
+        Route::delete('/categories/{category}', [CommunicationCategoryController::class, 'destroy'])->whereUuid('category');
+
+        // Re-classification manuelle (proprietaire de la boite uniquement).
+        Route::post('/messages/{message}/classify', [CommunicationMessageClassificationController::class, 'classify'])->whereUuid('message');
+
+        // Propositions de contact CRM (jamais de creation silencieuse) :
+        // le proprietaire de la boite accepte ou ecarte.
+        Route::get('/contact-proposals', [CommunicationContactProposalController::class, 'index']);
+        Route::post('/contact-proposals/{proposal}/accept', [CommunicationContactProposalController::class, 'accept'])->whereUuid('proposal');
+        Route::post('/contact-proposals/{proposal}/dismiss', [CommunicationContactProposalController::class, 'dismiss'])->whereUuid('proposal');
     });
 
 // R1 (#7686) — callback OAuth Google : route PUBLIQUE par construction (le

@@ -306,4 +306,37 @@ return [
             'body_key' => 'notifications.payment_document_ready_body',
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Classification IA des emails (BC-29 COMMUNICATION, R3 #7688)
+    |--------------------------------------------------------------------------
+    |
+    | Taxonomie par defaut (materialisee paresseusement par tenant, libelles
+    | i18n `communication.category_<key>` FR/EN/AR/TR) + seuils du pipeline :
+    | la classification tourne d'abord sur metadonnees + snippet (cout LLM,
+    | spec §5.6) et n'escalade vers le corps complet (borne) que si la
+    | confiance est sous `body_fallback_confidence`. Les categories listees
+    | dans `no_proposal_categories` ne declenchent JAMAIS de proposition de
+    | contact CRM (pas de spam/newsletter dans le CRM).
+    |
+    */
+
+    'classification' => [
+        'default_categories' => [
+            'prospect',
+            'client',
+            'supplier',
+            'invoice',
+            'commercial',
+            'hr',
+            'spam_newsletter',
+            'personal',
+            'urgent',
+            'other',
+        ],
+        'body_fallback_confidence' => (int) env('COMMUNICATION_CLASSIFY_BODY_FALLBACK_CONFIDENCE', 50),
+        'body_excerpt_bytes' => (int) env('COMMUNICATION_CLASSIFY_BODY_EXCERPT_BYTES', 8000),
+        'no_proposal_categories' => ['spam_newsletter'],
+    ],
 ];
