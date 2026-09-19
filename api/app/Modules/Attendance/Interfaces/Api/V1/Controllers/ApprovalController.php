@@ -56,7 +56,7 @@ class ApprovalController extends Controller
 
         $workflow = ApprovalWorkflow::create([
             ...$validated,
-            'company_id' => $actor->company_id,
+            // #7711 : company_id délégué au trait BelongsToCompany (tenant actif).
         ]);
 
         return (new ApprovalWorkflowResource($workflow))

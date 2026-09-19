@@ -2,12 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
-use App\Modules\Planning\Domain\Models\ClientEvent;
-use App\Modules\Notification\Domain\Models\CommunicationEvent;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
+use App\Modules\Notification\Domain\Models\CommunicationEvent;
 use App\Modules\Notification\Domain\Models\NotificationPreference;
+use App\Modules\Planning\Domain\Models\ClientEvent;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -139,6 +139,7 @@ class ProfileFunctionalReadinessTest extends TestCase
             'status' => 'active',
             'salary_base' => 100000,
         ])->save();
+
         return $sensitiveEmployee0;
     }
 
@@ -171,7 +172,7 @@ class ProfileFunctionalReadinessTest extends TestCase
             'occurred_at' => now(),
         ]);
 
-        ClientEvent::query()->create([
+        ClientEvent::query()->forceCreate([
             'company_id' => $company->id,
             'employee_id' => $profiles['principal']->id,
             'event_name' => 'launch_readiness_viewed',
@@ -188,4 +189,3 @@ class ProfileFunctionalReadinessTest extends TestCase
         ]);
     }
 }
-

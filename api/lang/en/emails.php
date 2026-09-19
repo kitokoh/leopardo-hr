@@ -195,6 +195,21 @@ return [
     'login_code_intro' => 'Here is your single-use login code. Enter it on the login page to access your workspace:',
     'login_code_validity' => 'This code is valid for 10 minutes and single-use. If you did not request this, you can safely ignore this email.',
 
+
+    // #7760 — support ticket email notifications (client ↔ platform).
+    'support_ticket_opened_subject' => '[Ticket #:ticket] New support ticket — :subject',
+    'support_ticket_opened_title' => 'New support ticket',
+    'support_ticket_opened_intro' => 'The company :company has just opened ticket #:ticket (":subject", category :category, priority :priority).',
+    'support_ticket_opened_footer' => 'Sign in to the platform console to read the message and reply.',
+    'support_ticket_platform_reply_subject' => '[Ticket #:ticket] Support replied to you — :subject',
+    'support_ticket_platform_reply_title' => 'Support replied to you',
+    'support_ticket_platform_reply_greeting' => 'Hello :name,',
+    'support_ticket_platform_reply_intro' => 'The support team replied to your ticket #:ticket (":subject").',
+    'support_ticket_platform_reply_footer' => 'Sign in to your client area (Support page) to read the reply and continue the conversation.',
+    'support_ticket_tenant_reply_subject' => '[Ticket #:ticket] Client replied — :subject',
+    'support_ticket_tenant_reply_title' => 'The client replied',
+    'support_ticket_tenant_reply_intro' => 'The company :company replied to ticket #:ticket (":subject").',
+    'support_ticket_tenant_reply_footer' => 'Sign in to the platform console to read the reply.',
     // Platform billing (#7763)
     'invoice_issued_subject' => 'Your Leopardo invoice :number is available',
     'invoice_issued_heading' => 'New invoice',

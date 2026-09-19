@@ -196,6 +196,24 @@ return [
     'login_code_intro' => 'Voici votre code de connexion à usage unique. Saisissez-le sur la page de connexion pour accéder à votre espace :',
     'login_code_validity' => "Ce code est valide pendant 10 minutes et à usage unique. Si vous n'avez pas fait cette demande, vous pouvez ignorer cet email.",
 
+
+    // #7760 — notifications e-mail des tickets support client ↔ plateforme.
+    // Le CONTENU du message n'est volontairement jamais recopié dans
+    // l'e-mail : la conversation se lit dans l'espace client / la console
+    // plateforme (l'e-mail est une notification, pas un canal de données).
+    'support_ticket_opened_subject' => '[Ticket #:ticket] Nouveau ticket support — :subject',
+    'support_ticket_opened_title' => 'Nouveau ticket support',
+    'support_ticket_opened_intro' => 'La société :company vient d\'ouvrir le ticket #:ticket (« :subject », catégorie :category, priorité :priority).',
+    'support_ticket_opened_footer' => 'Connectez-vous à la console plateforme pour lire le message et répondre.',
+    'support_ticket_platform_reply_subject' => '[Ticket #:ticket] Le support vous a répondu — :subject',
+    'support_ticket_platform_reply_title' => 'Le support vous a répondu',
+    'support_ticket_platform_reply_greeting' => 'Bonjour :name,',
+    'support_ticket_platform_reply_intro' => 'L\'équipe support a répondu à votre ticket #:ticket (« :subject »).',
+    'support_ticket_platform_reply_footer' => 'Connectez-vous à votre espace client (page Support) pour lire la réponse et poursuivre la conversation.',
+    'support_ticket_tenant_reply_subject' => '[Ticket #:ticket] Réponse du client — :subject',
+    'support_ticket_tenant_reply_title' => 'Le client a répondu',
+    'support_ticket_tenant_reply_intro' => 'La société :company a répondu au ticket #:ticket (« :subject »).',
+    'support_ticket_tenant_reply_footer' => 'Connectez-vous à la console plateforme pour lire la réponse.',
     // Facturation plateforme (#7763)
     'invoice_issued_subject' => 'Votre facture Leopardo :number est disponible',
     'invoice_issued_heading' => 'Nouvelle facture',

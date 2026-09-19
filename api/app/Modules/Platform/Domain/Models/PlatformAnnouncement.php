@@ -38,6 +38,11 @@ use Illuminate\Support\Carbon;
  */
 class PlatformAnnouncement extends Model
 {
+    // Issue #7711 (exceptions BelongsToCompany) — PAS de trait : annonce
+    // PLATEFORME (table public, auteur super-admin), diffusée vers N sociétés
+    // via la pivot platform_announcement_companies. Lue/écrite hors contexte
+    // tenant par les surfaces super-admin.
+
     protected $table = 'platform_announcements';
 
     protected $fillable = [

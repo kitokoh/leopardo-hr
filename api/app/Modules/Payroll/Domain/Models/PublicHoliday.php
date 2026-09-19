@@ -35,6 +35,12 @@ use Illuminate\Support\Carbon;
  */
 class PublicHoliday extends Model
 {
+    // Issue #7711 (exceptions BelongsToCompany) — PAS de trait : référentiel
+    // MIXTE. `company_id = NULL` = férié national partagé par tous les tenants
+    // du pays ; un scope global `where company_id = tenant` masquerait ces
+    // fériés nationaux. L'isolation des fériés d'entreprise reste à la charge
+    // des requêtes appelantes (filtre company_id/NULL explicite).
+
     protected $table = 'public_holidays';
 
     protected $fillable = [

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Attendance\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -23,11 +24,14 @@ use Illuminate\Support\Carbon;
  */
 class EmployeeAttendancePreference extends Model
 {
+    // Issue #7711 (suite #7646) — table `employee_attendance_preferences` du
+    // schéma partagé shared_tenants : company_id est l'unique frontière d'isolation.
+    use BelongsToCompany;
+
     protected $table = 'employee_attendance_preferences';
 
     protected $fillable = [
         'employee_id',
-        'company_id',
         'preferred_mode',
         'gps_consent_given',
         'gps_consent_at',
