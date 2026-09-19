@@ -31,5 +31,15 @@ class CrmWebhookChannelLookup extends Model
 
     protected $table = 'public.crm_webhook_channel_lookup';
 
-    protected $guarded = [];
+    // #7646 — allowlist explicite. `company_id` reste volontairement
+    // assignable ICI (exception justifiée) : table `public` hors tenant,
+    // sans BelongsToCompany — le mapping provider_key → tenant est écrit
+    // côté serveur (CrmWebhookLookupService::upsert) depuis le canal
+    // propriétaire, jamais depuis un payload utilisateur.
+    protected $fillable = [
+        'company_id',
+        'channel_id',
+        'provider',
+        'provider_key',
+    ];
 }

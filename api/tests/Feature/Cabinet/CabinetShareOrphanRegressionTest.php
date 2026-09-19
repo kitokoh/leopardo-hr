@@ -51,7 +51,7 @@ class CabinetShareOrphanRegressionTest extends TestCase
 
     private function makeShare(string $shareableType, int $shareableId, string $token): CabinetShare
     {
-        return CabinetShare::create([
+        return CabinetShare::forceCreate([
             'company_id' => $this->company->id,
             'employee_id' => $this->employee->id,
             'shareable_type' => $shareableType,
@@ -64,7 +64,7 @@ class CabinetShareOrphanRegressionTest extends TestCase
 
     public function test_list_ignores_legacy_shareable_type_without_500(): void
     {
-        $folder = CabinetFolder::create([
+        $folder = CabinetFolder::forceCreate([
             'company_id' => $this->company->id,
             'employee_id' => $this->employee->id,
             'name' => 'Dossier #6674',
@@ -101,7 +101,7 @@ class CabinetShareOrphanRegressionTest extends TestCase
 
     public function test_deleting_document_revokes_its_shares(): void
     {
-        $document = CabinetDocument::create([
+        $document = CabinetDocument::forceCreate([
             'company_id' => $this->company->id,
             'employee_id' => $this->employee->id,
             'name' => 'doc-6674.pdf',
@@ -127,13 +127,13 @@ class CabinetShareOrphanRegressionTest extends TestCase
 
     public function test_deleting_folder_revokes_folder_and_document_shares(): void
     {
-        $folder = CabinetFolder::create([
+        $folder = CabinetFolder::forceCreate([
             'company_id' => $this->company->id,
             'employee_id' => $this->employee->id,
             'name' => 'Dossier racine #6674',
         ]);
 
-        $document = CabinetDocument::create([
+        $document = CabinetDocument::forceCreate([
             'company_id' => $this->company->id,
             'employee_id' => $this->employee->id,
             'folder_id' => $folder->id,
