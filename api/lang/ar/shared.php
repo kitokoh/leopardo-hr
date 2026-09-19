@@ -123,5 +123,6 @@ return [
         'notifications' => 'الاشعارات',
         'evaluations' => 'التقييمات',
         'restaurant' => 'المطعم',
+        'communication' => 'التواصل (البريد المتصل + الذكاء الاصطناعي)',
     ],
 ];
