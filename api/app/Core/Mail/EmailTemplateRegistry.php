@@ -80,6 +80,20 @@ final class EmailTemplateRegistry
             'cta_label' => 'emails.onboarding_reminder_cta',
             'variables' => [':name', ':company', ':brand'],
         ],
+        'invoice_issued' => [
+            'subject' => 'emails.invoice_issued_subject',
+            'heading' => 'emails.invoice_issued_heading',
+            'body' => ['emails.invoice_issued_intro'],
+            'cta_label' => null,
+            'variables' => [':company', ':number', ':total', ':currency', ':due_date', ':name', ':brand'],
+        ],
+        'invoice_payment_receipt' => [
+            'subject' => 'emails.invoice_payment_receipt_subject',
+            'heading' => 'emails.invoice_payment_receipt_heading',
+            'body' => ['emails.invoice_payment_receipt_intro'],
+            'cta_label' => null,
+            'variables' => [':company', ':number', ':total', ':currency', ':paid_at', ':name', ':brand'],
+        ],
     ];
 
     /**

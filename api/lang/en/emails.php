@@ -195,4 +195,16 @@ return [
     'login_code_intro' => 'Here is your single-use login code. Enter it on the login page to access your workspace:',
     'login_code_validity' => 'This code is valid for 10 minutes and single-use. If you did not request this, you can safely ignore this email.',
 
+    // Platform billing (#7763)
+    'invoice_issued_subject' => 'Your Leopardo invoice :number is available',
+    'invoice_issued_heading' => 'New invoice',
+    'invoice_issued_greeting' => 'Hello :name,',
+    'invoice_issued_intro' => 'Your invoice :number for :company is available. Amount: :total :currency, due on :due_date.',
+    'invoice_issued_attachment_note' => 'You will find the invoice attached to this email as a PDF.',
+    'invoice_payment_receipt_subject' => 'Payment receipt — invoice :number',
+    'invoice_payment_receipt_heading' => 'Payment received',
+    'invoice_payment_receipt_greeting' => 'Hello :name,',
+    'invoice_payment_receipt_intro' => 'We confirm the payment of invoice :number for :company. Amount paid: :total :currency on :paid_at.',
+    'invoice_payment_receipt_attachment_note' => 'The settled invoice is attached to this email as a PDF.',
+
 ];

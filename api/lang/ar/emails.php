@@ -195,4 +195,16 @@ return [
     'login_code_intro' => 'إليك رمز تسجيل الدخول الخاص بك للاستخدام مرة واحدة. أدخله في صفحة تسجيل الدخول للوصول إلى مساحتك:',
     'login_code_validity' => 'هذا الرمز صالح لمدة 10 دقائق وللاستخدام مرة واحدة. إذا لم تطلب ذلك، يمكنك تجاهل هذه الرسالة.',
 
+    // فوترة المنصة (#7763)
+    'invoice_issued_subject' => 'فاتورتك Leopardo :number متاحة الآن',
+    'invoice_issued_heading' => 'فاتورة جديدة',
+    'invoice_issued_greeting' => 'مرحباً :name،',
+    'invoice_issued_intro' => 'فاتورتك :number لشركة :company متاحة. المبلغ: :total :currency، تاريخ الاستحقاق :due_date.',
+    'invoice_issued_attachment_note' => 'ستجد الفاتورة بصيغة PDF مرفقة بهذه الرسالة.',
+    'invoice_payment_receipt_subject' => 'إيصال الدفع — الفاتورة :number',
+    'invoice_payment_receipt_heading' => 'تم استلام الدفعة',
+    'invoice_payment_receipt_greeting' => 'مرحباً :name،',
+    'invoice_payment_receipt_intro' => 'نؤكد سداد الفاتورة :number لشركة :company. المبلغ المدفوع: :total :currency بتاريخ :paid_at.',
+    'invoice_payment_receipt_attachment_note' => 'الفاتورة المسددة بصيغة PDF مرفقة بهذه الرسالة.',
+
 ];
