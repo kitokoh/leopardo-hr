@@ -2,7 +2,7 @@
 
 ## Objectif
 
-Donner le point d'entree unique pour les procedures d'exploitation Leopardo RH. Ce document ne remplace pas les runbooks specialises ; il indique quel runbook utiliser selon l'incident ou l'action.
+Donner le point d'entree unique pour les procedures d'exploitation Leopardo. Ce document ne remplace pas les runbooks specialises ; il indique quel runbook utiliser selon l'incident ou l'action.
 
 ## Runbooks sources de verite
 

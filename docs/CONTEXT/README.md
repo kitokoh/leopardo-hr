@@ -1,4 +1,4 @@
-# CONTEXT - Leopardo HR
+# CONTEXT - Leopardo
 
 Ce dossier sert de contexte rapide pour une nouvelle IA ou un nouvel intervenant.
 
