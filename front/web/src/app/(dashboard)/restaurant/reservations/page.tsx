@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { CalendarCheck } from 'lucide-react';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { BranchSelect, useRestaurantBranches } from '@/components/restaurant/BranchSelect';
 import { apiFetch } from '@/lib/api-client';
 import { getPreferredLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
@@ -35,11 +36,19 @@ const STATUS_STYLES: Record<string, string> = {
 
 export default function RestaurantReservationsPage() {
   const locale = getPreferredLocale();
+  const { branches } = useRestaurantBranches();
   const [rows, setRows] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [form, setForm] = useState({ branch_id: '', contact_name: '', contact_phone: '', reserved_at: '', covers: '2', table_id: '' });
+  // RESTO-904 (#7749) : la branche est choisie via le sélecteur partagé
+  // (plus de saisie d'ID brute).
+  const [branchId, setBranchId] = useState<number | null>(null);
+  const [form, setForm] = useState({ contact_name: '', contact_phone: '', reserved_at: '', covers: '2', table_id: '' });
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (branchId === null && branches.length > 0) setBranchId(branches[0].id);
+  }, [branches, branchId]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -62,12 +71,12 @@ export default function RestaurantReservationsPage() {
     setBusy(true);
     setError('');
     try {
-      const res = await apiFetch('/restaurant/reservations', { method: 'POST', body: JSON.stringify({ ...form, covers: Number(form.covers), table_id: form.table_id ? Number(form.table_id) : null }) });
+      const res = await apiFetch('/restaurant/reservations', { method: 'POST', body: JSON.stringify({ ...form, branch_id: branchId, covers: Number(form.covers), table_id: form.table_id ? Number(form.table_id) : null }) });
       if (!res.ok) {
         const payload = await res.json().catch(() => ({}));
         throw new Error((payload as { message?: string }).message ?? `HTTP ${res.status}`);
       }
-      setForm({ branch_id: '', contact_name: '', contact_phone: '', reserved_at: '', covers: '2', table_id: '' });
+      setForm({ contact_name: '', contact_phone: '', reserved_at: '', covers: '2', table_id: '' });
       await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : t(locale, 'restaurant.res.createError', 'Erreur de création.'));
@@ -97,7 +106,7 @@ export default function RestaurantReservationsPage() {
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h3 className="font-bold text-slate-900">{t(locale, 'restaurant.res.new', 'Nouvelle réservation')}</h3>
         <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-6">
-          <input className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Branche ID" value={form.branch_id} onChange={(e) => setForm({ ...form, branch_id: e.target.value })} aria-label="Branche ID" />
+          <BranchSelect branches={branches} value={branchId} onChange={setBranchId} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" />
           <input className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder={t(locale, 'restaurant.res.name', 'Nom du client')} value={form.contact_name} onChange={(e) => setForm({ ...form, contact_name: e.target.value })} aria-label="Nom" />
           <input className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder={t(locale, 'restaurant.res.phone', 'Téléphone')} value={form.contact_phone} onChange={(e) => setForm({ ...form, contact_phone: e.target.value })} aria-label="Téléphone" />
           <input type="datetime-local" className="rounded-lg border border-slate-200 px-3 py-2 text-sm" value={form.reserved_at} onChange={(e) => setForm({ ...form, reserved_at: e.target.value })} aria-label="Date" />
