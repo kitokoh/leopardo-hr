@@ -211,6 +211,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.communication' => EnsureCommunicationModuleMiddleware::class,
             // C-PUBLIC #6882 — accès public par slug (catalogue vitrine).
             'catalog.public' => \App\Http\Middleware\Catalog\EnsureCatalogPublicAccess::class,
+            // BC-17 #7807 — marketplace publique Leopardo Marché (slug vendeur, fail-closed 404).
+            'market.public' => \App\Http\Middleware\Retail\EnsureMarketPublicAccess::class,
             'delivery.permission' => \App\Http\Middleware\Delivery\EnsureDeliveryPermissionMiddleware::class,
             // #7553 — permission interne plateforme (`platform.permission:team.manage`).
             'platform.permission' => \App\Http\Middleware\EnsurePlatformPermissionMiddleware::class,
