@@ -3031,6 +3031,7 @@ trait CreatesMvpSchema
                 $table->unsignedInteger('volume_cm3')->nullable();
                 $table->unsignedInteger('declared_value_minor')->default(0);
                 $table->unsignedInteger('cod_amount_minor')->nullable();
+                $table->string('cod_currency', 3)->nullable(); // #7811 handoff retail_online
                 $table->string('pickup_contact', 150)->nullable();
                 $table->text('pickup_address')->nullable();
                 $table->string('dropoff_contact', 150);
@@ -3433,6 +3434,7 @@ trait CreatesMvpSchema
                 $table->unsignedInteger('volume_cm3')->nullable();
                 $table->unsignedInteger('declared_value_minor')->default(0);
                 $table->unsignedInteger('cod_amount_minor')->nullable();
+                $table->string('cod_currency', 3)->nullable(); // #7811 handoff retail_online
                 $table->string('pickup_contact', 150)->nullable();
                 $table->text('pickup_address')->nullable();
                 $table->string('dropoff_contact', 150);

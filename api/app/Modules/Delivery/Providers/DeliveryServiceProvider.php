@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Delivery\Providers;
 
+use App\Modules\Delivery\Application\Listeners\CreateRetailOnlineDelivery;
 use App\Modules\Delivery\Domain\Contracts\DeliveryAccountingContract;
 use App\Modules\Delivery\Domain\Contracts\DeliveryRepositoryInterface;
 use App\Modules\Delivery\Domain\Contracts\RecipientMessageContract;
@@ -12,8 +13,11 @@ use App\Modules\Delivery\Domain\Manifests\DeliveryManifest;
 use App\Modules\Delivery\Domain\Models\DeliveryEvent;
 use App\Modules\Delivery\Infrastructure\Repositories\DeliveryRepository;
 use App\Modules\Delivery\Infrastructure\Services\DeliveryNotificationService;
+use App\Modules\Delivery\Infrastructure\Services\EloquentPublicDeliveryStatusProvider;
 use App\Modules\Delivery\Infrastructure\Services\LoggingDeliveryAccountingAdapter;
 use App\Modules\Delivery\Infrastructure\Services\LoggingRecipientMessageAdapter;
+use App\Shared\Contracts\Delivery\PublicDeliveryStatusProvider;
+use App\Shared\Events\RetailOnlineOrderConfirmed;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
@@ -61,6 +65,11 @@ class DeliveryServiceProvider extends ServiceProvider
         // branchés sur les destinataires externes.
         $this->app->singleton(RecipientMessageContract::class, LoggingRecipientMessageAdapter::class);
 
+        // Port PUBLIC lecture seule (#7811) : le suivi public marketplace
+        // (module Retail) lit l'état de la livraison de SA commande via ce
+        // contrat Shared — jamais de requête directe sur les tables Delivery.
+        $this->app->singleton(PublicDeliveryStatusProvider::class, EloquentPublicDeliveryStatusProvider::class);
+
     }
 
     public function boot(): void
@@ -72,5 +81,10 @@ class DeliveryServiceProvider extends ServiceProvider
         Event::listen('eloquent.created: '.DeliveryEvent::class, function (DeliveryEvent $event): void {
             app(DeliveryNotificationService::class)->scheduleForEvent($event);
         });
+
+        // Handoff BC-17 → BC-26 (#7811) : création idempotente de la
+        // livraison `retail_online` à la confirmation d'une commande en ligne
+        // retail — intégration par événement Shared, aucun import croisé.
+        Event::listen(RetailOnlineOrderConfirmed::class, CreateRetailOnlineDelivery::class);
     }
 }
