@@ -150,6 +150,10 @@ final class TravelLegacyImportService
 
         $values = [
             'company_id' => $company->id,
+            // #7452 — `code` est NOT NULL et sert de clé de rapprochement :
+            // l'omettre faisait échouer chaque création en 23502 (et avortait
+            // la transaction d'import entière en cascade 25P02).
+            'code' => $code,
             'origin_city_id' => $originId,
             'destination_city_id' => $destinationId,
             'distance_km' => isset($row['distance_km']) ? (int) $row['distance_km'] : null,
@@ -200,6 +204,9 @@ final class TravelLegacyImportService
 
         $values = [
             'company_id' => $company->id,
+            // #7452 — même défaut que les routes : `code` (NOT NULL, clé de
+            // rapprochement du voyage) manquait du INSERT de création.
+            'code' => $code,
             'route_id' => $route->id,
             'carrier_id' => null,
             'vehicle_id' => null,

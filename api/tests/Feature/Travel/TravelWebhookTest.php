@@ -152,6 +152,7 @@ class TravelWebhookTest extends TestCase
             TravelWebhookSubscription::query()->create([
                 'company_id' => $booking->company_id,
                 'carrier_id' => $carrier->id,
+                'name' => 'Webhook transporteur test',
                 'url' => 'https://carrier.example.com/webhooks',
                 'secret_encrypted' => Crypt::encryptString('webhooksecret123456'),
                 'events' => ['travel.booking.confirmed.v1'],
@@ -223,6 +224,7 @@ class TravelWebhookTest extends TestCase
             $subscription = TravelWebhookSubscription::query()->create([
                 'company_id' => $trip->company_id,
                 'carrier_id' => $trip->carrier_id,
+                'name' => 'Webhook rejeu test',
                 'url' => 'https://carrier.example.com/webhooks',
                 'secret_encrypted' => Crypt::encryptString('webhooksecret123456'),
                 'events' => ['travel.booking.confirmed.v1'],
@@ -274,6 +276,7 @@ class TravelWebhookTest extends TestCase
             $subscription = TravelWebhookSubscription::query()->create([
                 'company_id' => $trip->company_id,
                 'carrier_id' => $trip->carrier_id,
+                'name' => 'Webhook dead-letter test',
                 'url' => 'https://carrier.example.com/webhooks',
                 'secret_encrypted' => Crypt::encryptString('webhooksecret123456'),
                 'events' => ['travel.booking.confirmed.v1'],
