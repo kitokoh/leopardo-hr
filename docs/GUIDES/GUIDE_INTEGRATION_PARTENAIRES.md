@@ -2,7 +2,7 @@
 
 ## Objectif
 
-Ce guide donne le contrat d'integration minimal pour les partenaires Leopardo RH : API REST, webhooks, exports et futur SSO. Il sert aux integrateurs paie, comptabilite, pointeuses, support client et revendeurs terrain.
+Ce guide donne le contrat d'integration minimal pour les partenaires Leopardo : API REST, webhooks, exports et futur SSO. Il sert aux integrateurs paie, comptabilite, pointeuses, support client et revendeurs terrain.
 
 Les decisions open core et marketplace sont cadrees dans `docs/GUIDES/GUIDE_OPEN_CORE_MARKETPLACE.md` et l'ADR `docs/architecture/adr/0004-open-core-marketplace-boundaries.md`. Un partenaire ne doit jamais importer directement du code backend ou mobile interne : l'integration passe par API publique, webhooks signes et scopes documentes.
 

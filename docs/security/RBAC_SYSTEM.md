@@ -1,12 +1,12 @@
-# Role-Based Access Control (RBAC) — Leopardo RH
+# Role-Based Access Control (RBAC) — Leopardo
 
-Leopardo RH implements a granular RBAC system to ensure that users have exactly the permissions they need to perform their roles, and nothing more.
+Leopardo implements a granular RBAC system to ensure that users have exactly the permissions they need to perform their roles, and nothing more.
 
 Cette page a été réalignée le 2026-07-21 (PA2-SEC-005) sur l'implémentation réelle du code après correction du scope `dept`/`superviseur` (PA2-SEC-002/003). Les sections ci-dessous décrivent ce que le code applique aujourd'hui, pas un modèle RBAC générique aspirationnel.
 
 ## 👥 Deux couches d'authentification distinctes
 
-Leopardo RH n'a **pas** de super-admin unifié qui traverserait tous les tenants via le même modèle. Deux couches complètement séparées coexistent :
+Leopardo n'a **pas** de super-admin unifié qui traverserait tous les tenants via le même modèle. Deux couches complètement séparées coexistent :
 
 1. **Platform Admin** (`api/app/Modules/Platform`, guard Sanctum `super_admin_api`, préfixe de routes `/platform/*`, middleware `auth:super_admin_api`). Isolé de la table `employees`/du modèle `Employee` décrit ci-dessous ; gère les tenants (billing, activation client, métriques plateforme), pas les données RH d'une entreprise.
 2. **Employee** (`App\Core\Auth\Domain\Models\Employee`, guard Sanctum par défaut, middleware `auth:sanctum` + `tenant`). C'est le modèle décrit dans tout le reste de ce document — un employé, manager ou non, toujours rattaché à un `company_id` (tenant) unique.

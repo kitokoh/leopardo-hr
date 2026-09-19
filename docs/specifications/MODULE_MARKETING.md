@@ -3,7 +3,7 @@
 Dernière mise à jour : 2026-08-02
 
 ## 1. Contexte & Objectifs
-Le module Marketing permet aux équipes de gérer leur présence sur les réseaux sociaux directement depuis l'écosystème Leopardo RH.
+Le module Marketing permet aux équipes de gérer leur présence sur les réseaux sociaux directement depuis l'écosystème Leopardo.
 L'objectif principal est de planifier, valider et publier du contenu (texte, images) en un clic sur de multiples plateformes (LinkedIn, Facebook, X/Twitter).
 
 ## 2. Rôles et Permissions

@@ -1,4 +1,4 @@
-# Strategie commerciale - Leopardo RH
+# Strategie commerciale - Leopardo
 
 Ce dossier centralise les supports business et go-to-market lies a l'acquisition, au suivi CRM et a l'execution commerciale.
 

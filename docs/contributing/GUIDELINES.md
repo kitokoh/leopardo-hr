@@ -1,11 +1,11 @@
-# Contributing to Leopardo RH
+# Contributing to Leopardo
 
 > 📌 Ce document est le guide de contribution detaille (conventions de code, structure, workflow),
 > complementaire au [`/CONTRIBUTING.md`](../../CONTRIBUTING.md) racine (aperçu rapide + liens).
 > Les deux sont maintenus ensemble ; en cas de divergence factuelle (versions, chemins), verifier
 > l'etat reel du depot plutot que de trancher arbitrairement entre les deux.
 
-Merci de contribuer a Leopardo RH ! Ce guide explique comment participer au projet.
+Merci de contribuer a Leopardo ! Ce guide explique comment participer au projet.
 
 ## Prerequis
 

@@ -4,7 +4,7 @@ Version 1.0 | 2026-05-17
 
 ## 1. Objet
 
-Cette matrice croise les exigences reglementaires applicables a une plateforme RH SaaS multi-tenant avec les mesures techniques et organisationnelles implementees dans Leopardo RH.
+Cette matrice croise les exigences reglementaires applicables a une suite metier SaaS multi-tenant traitant des donnees RH avec les mesures techniques et organisationnelles implementees dans Leopardo.
 
 Reglementations couvertes :
 - **RGPD** (Reglement UE 2016/679) — applicable aux clients europeens ou traitant des donnees de residents UE.
@@ -23,7 +23,7 @@ Documents connexes :
 
 ### 2.1 Principes fondamentaux
 
-| Exigence | RGPD | Loi 18-07 DZ | Loi 09-08 MA | Implementation Leopardo RH | Statut |
+| Exigence | RGPD | Loi 18-07 DZ | Loi 09-08 MA | Implementation Leopardo | Statut |
 |---|---|---|---|---|---|
 | Licite, loyaute, transparence | Art. 5(1)(a) | Art. 7 | Art. 3 | Pages `/privacy` et `/terms` publiques (FR/EN/TR/AR) ; consentement enregistre via `email_verified_at` ; politique affichee a la premiere connexion | CONFORME |
 | Limitation des finalites | Art. 5(1)(b) | Art. 7 | Art. 3 | Donnees collectees uniquement pour workflows RH actives ; registre des traitements documente dans `REGISTRE_TRAITEMENTS_DONNEES_RH.md` | CONFORME |
@@ -35,7 +35,7 @@ Documents connexes :
 
 ### 2.2 Droits des personnes concernees
 
-| Droit | RGPD | Loi 18-07 DZ | Loi 09-08 MA | Implementation Leopardo RH | Statut |
+| Droit | RGPD | Loi 18-07 DZ | Loi 09-08 MA | Implementation Leopardo | Statut |
 |---|---|---|---|---|---|
 | Droit d'acces | Art. 15 | Art. 32 | Art. 7 | `GET /api/v1/privacy/export` — export personnel de l'utilisateur authentifie | CONFORME |
 | Droit de rectification | Art. 16 | Art. 34 | Art. 8 | Self-service `/me/*` ; workflow support/RH pour champs restreints | CONFORME |
@@ -48,7 +48,7 @@ Documents connexes :
 
 ### 2.3 Securite des traitements
 
-| Exigence | RGPD | Loi 18-07 DZ | Loi 09-08 MA | Implementation Leopardo RH | Statut |
+| Exigence | RGPD | Loi 18-07 DZ | Loi 09-08 MA | Implementation Leopardo | Statut |
 |---|---|---|---|---|---|
 | Chiffrement donnees sensibles | Art. 32(1)(a) | Art. 38 | Art. 23 | `EncryptedCast` AES-256-CBC sur `iban`, `bank_account`, `national_id` via Eloquent ; `Hash::make()` bcrypt cout >= 12 pour mots de passe | CONFORME |
 | Pseudonymisation | Art. 32(1)(a) | Art. 38 | — | Anonymisation a l'archivage employe ; `company_id` scope sans exposition croisee | PARTIEL |
@@ -60,7 +60,7 @@ Documents connexes :
 
 ### 2.4 Isolation multi-tenant
 
-| Exigence | RGPD | Loi 18-07 DZ | Loi 09-08 MA | Implementation Leopardo RH | Statut |
+| Exigence | RGPD | Loi 18-07 DZ | Loi 09-08 MA | Implementation Leopardo | Statut |
 |---|---|---|---|---|---|
 | Separation des donnees | Art. 32 | Art. 38 | Art. 23 | PostgreSQL schema par tenant + `company_id` applicatif ; `TenantMiddleware` sur toutes les routes authentifiees | CONFORME |
 | Non-acces inter-tenant | Art. 32 | Art. 38 | Art. 23 | Policies Laravel verifient `company_id` ; tests d'isolation Feature en CI ; tokens Sanctum scopes par tenant | CONFORME |
@@ -69,7 +69,7 @@ Documents connexes :
 
 ### 2.5 Notification des violations
 
-| Exigence | RGPD | Loi 18-07 DZ | Loi 09-08 MA | Implementation Leopardo RH | Statut |
+| Exigence | RGPD | Loi 18-07 DZ | Loi 09-08 MA | Implementation Leopardo | Statut |
 |---|---|---|---|---|---|
 | Detection incidents | Art. 33 | Art. 41 | Art. 24 | Sentry APM + `SentryContextMiddleware` ; `SlackAlertNotification` webhook ; `monitor:slow-queries` schedule 15min | CONFORME |
 | Notification autorite (72h) | Art. 33 | Art. 42 | Art. 24 | Procedure documentee dans `RUNBOOK_OPERATIONS.md` ; Slack alertes immediates ; processus interne a formaliser | PARTIEL |
@@ -77,10 +77,10 @@ Documents connexes :
 
 ### 2.6 Donnees biometriques
 
-| Exigence | RGPD | Loi 18-07 DZ | Loi 09-08 MA | Implementation Leopardo RH | Statut |
+| Exigence | RGPD | Loi 18-07 DZ | Loi 09-08 MA | Implementation Leopardo | Statut |
 |---|---|---|---|---|---|
 | Consentement explicite | Art. 9(2)(a) | Art. 18 | Art. 12 | `PATCH /api/v1/privacy/biometric-consent` avec flag explicite | CONFORME |
-| Non-stockage biometrique | Art. 9 | Art. 18 | Art. 12 | Leopardo RH ne stocke AUCUNE donnee biometrique ; le lecteur ZKTeco stocke les empreintes localement ; seuls `employee_id + timestamp + direction` sont transmis | CONFORME |
+| Non-stockage biometrique | Art. 9 | Art. 18 | Art. 12 | Leopardo ne stocke AUCUNE donnee biometrique ; le lecteur ZKTeco stocke les empreintes localement ; seuls `employee_id + timestamp + direction` sont transmis | CONFORME |
 | Reversibilite consentement | Art. 7(3) | Art. 18 | Art. 12 | Retrait via `PATCH /api/v1/privacy/biometric-consent` + nettoyage references templates | CONFORME |
 
 ---

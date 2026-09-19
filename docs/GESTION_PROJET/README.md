@@ -1,4 +1,4 @@
-﻿# Gestion projet - Leopardo RH
+﻿# Gestion projet - Leopardo
 
 Ce dossier centralise les documents de pilotage, les runbooks, les audits d'ecarts et les supports d'execution du projet.
 
@@ -49,7 +49,7 @@ Cette section liste explicitement tous les fichiers du dossier, classes par sous
 | `RELEASE_v0.1.0.md` | Notes de la premiere release publique |
 | `RENDER_SETUP.md` | Guide pas-a-pas de deploiement gratuit Neon + Render |
 | `SCHEMA_DEPLOIEMENT_ZKTECO_CLIENT.md` | Schema d'integration borne ZKTeco / PC local / mobile / API |
-| `SUPPORT_COMMERCIAL_ZKTECO_LEOPARDO_RH.md` | Argumentaire commercial pointage ZKTeco + Leopardo RH |
+| `SUPPORT_COMMERCIAL_ZKTECO_LEOPARDO_RH.md` | Argumentaire commercial pointage ZKTeco + Leopardo |
 
 ### Runbooks d'exploitation (`RUNBOOK_*`)
 
