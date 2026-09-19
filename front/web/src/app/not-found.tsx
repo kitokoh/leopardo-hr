@@ -34,8 +34,9 @@ export async function generateMetadata(): Promise<Metadata> {
  * #7664 — le corps était resté 100 % français en dur alors que le titre
  * (metadata) était déjà localisé : un visiteur en/tr/ar tombait sur une page
  * d'erreur illisible. Tout le texte visible vient désormais du catalogue
- * (`vitrine.notFound.*`, ×4 locales), locale résolue via `x-vitrine-lang`
- * (même mécanique que `generateMetadata`, #4004).
+ * (`vitrine.notFound.*`, ×4 locales, sans fallback littéral — la garde
+ * PA2-I18N-014 lisait les fallbacks comme des chaînes en dur, #7669), locale
+ * résolue via `x-vitrine-lang` (même mécanique que `generateMetadata`, #4004).
  */
 export default async function NotFound() {
   const headerList = await headers();
