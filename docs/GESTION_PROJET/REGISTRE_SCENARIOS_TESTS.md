@@ -16,6 +16,19 @@
 > 403 non-principal, isolation cross-tenant, routage checkout tenant + fallback plateforme).
 > Surfaces web : écran admin Vue « Passerelles de paiement » et page client « Encaissements »
 > (couverts par ESLint/tsc/Jest du lot). Surface mobile : aucune.
+> **MAJ 2026-09-19 — #7713, image de marque du tenant dans l'espace client web (PR #7719), surface
+> mobile touchée par propagation i18n uniquement.** La PR ajoute les clés `brandingPage.*` ×4
+> locales au catalogue partagé (`shared/i18n/locales/*.json`) ; elles sont propagées par
+> `sync-mobile.js` aux catalogues `front/mobile_apps/leopardo_core/lib/l10n/app_*.arb` et par
+> `sync-web.js` à `front/admin-dashboard/src/i18n/locales/*.json` — **aucun écran, aucune route
+> ni aucun parcours mobile ou admin n'est modifié** (détection par chemin `front/mobile_apps/`
+> et `front/admin-dashboard/src/`). L'écran mobile `company_branding` existant reste inchangé
+> et ses scénarios (`SCENARIOS_TEST_MOBILE_FLUTTER.md`) restent valides. La surface
+> fonctionnelle réellement livrée est **web client** (`/settings/branding`, thème tenant du
+> shell) et **PDF API** (helper `App\Support\PdfBranding`, vues invoice/receipt/payslip).
+> Non-régression : Jest front/web complet (127 suites) vert, nouveau
+> `api/tests/Feature/PdfBrandingTest.php` (5 cas : logo + couleur rendus, rendu inchangé sans
+> branding, repli silencieux fichier manquant/couleur invalide, génération payslip binaire).
 
 > **MAJ 2026-09-19 — #7680, dédoublonnage des routes platform (PR de fix RouteCollisionGuard).**
 > Surface **API** : suppression de 5 déclarations dupliquées SANS `platform.permission`
