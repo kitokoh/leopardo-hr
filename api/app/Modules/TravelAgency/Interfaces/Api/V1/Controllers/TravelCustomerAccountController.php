@@ -135,13 +135,11 @@ class TravelCustomerAccountController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
-        // Garde runtime sans `instanceof` (type certain pour PHPStan —
-        // instanceof.alwaysTrue) : même pattern que Core LogoutAction.
-        $token = $this->authenticated($request)->currentAccessToken();
-
-        if ($token) {
-            $token->delete();
-        }
+        // Sous `auth:travel_customer` (Sanctum, bearer token), le token
+        // courant est toujours un PersonalAccessToken : pas de garde
+        // conditionnelle — PHPStan (modules + strict) la signale
+        // toujours-vraie (instanceof.alwaysTrue / if.alwaysTrue).
+        $this->authenticated($request)->currentAccessToken()->delete();
 
         return response()->json(['data' => ['logged_out' => true]]);
     }
