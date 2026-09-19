@@ -40,7 +40,22 @@ class CrmExportJob extends Model
 
     protected $table = 'crm_export_jobs';
 
-    protected $guarded = [];
+    // #7646 — allowlist explicite SANS `company_id` : le tenant est posé par
+    // le hook creating de BelongsToCompany, jamais par mass assignment.
+    protected $fillable = [
+        'user_id',
+        'entity',
+        'format',
+        'filters',
+        'columns',
+        'status',
+        'progress',
+        'file_path',
+        'file_name',
+        'expires_at',
+        'error',
+        'completed_at',
+    ];
 
     protected function casts(): array
     {

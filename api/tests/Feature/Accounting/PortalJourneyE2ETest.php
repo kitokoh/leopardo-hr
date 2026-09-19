@@ -7,10 +7,10 @@ namespace Tests\Feature\Accounting;
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Mail\DocumentShareMail;
-use App\Modules\Accounting\Infrastructure\Services\SendDocumentEmail;
 use App\Modules\Accounting\Domain\Models\AccountingContact;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentShare;
+use App\Modules\Accounting\Infrastructure\Services\SendDocumentEmail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Tests\RefreshTenantDatabase;
@@ -127,6 +127,10 @@ class PortalJourneyE2ETest extends TestCase
         // autre tenant (résolution par token unique + isExpired — fail-closed).
         /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD', 'status' => 'active']);
+        // #7646 — les fixtures de l'autre tenant sont créées SOUS son tenant
+        // (company_id est désormais forcé depuis le tenant actif) ; le
+        // contexte est restauré sur $this->company juste après.
+        app()->instance('current_company', $otherCompany);
         /** @var AccountingContact $otherContact */
         $otherContact = AccountingContact::create([
             'company_id' => $otherCompany->id,

@@ -63,7 +63,6 @@ class AccountingAuditRetentionTest extends TestCase
 
     /**
      * @param  array<string, mixed>  $overrides
-     *
      * @return array<string, mixed>
      */
     private function payload(array $overrides = []): array
@@ -168,11 +167,13 @@ class AccountingAuditRetentionTest extends TestCase
 
         /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create();
+        // #7646 — bascule du tenant AVANT la création de l'employé de l'autre
+        // tenant : company_id est désormais forcé depuis le tenant actif.
+        app()->instance('current_company', $otherCompany);
         /** @var Employee $otherManager */
         $otherManager = Employee::factory()->manager()->create(['company_id' => $otherCompany->id]);
 
         Sanctum::actingAs($otherManager);
-        app()->instance('current_company', $otherCompany);
 
         $this->getJson('/api/v1/accounting/audit-logs')
             ->assertOk()

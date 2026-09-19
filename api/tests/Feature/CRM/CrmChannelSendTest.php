@@ -60,7 +60,7 @@ class CrmChannelSendTest extends TestCase
     private function whatsappChannel(array $overrides = []): CrmChannel
     {
         /** @var CrmChannel $channel */
-        $channel = CrmChannel::query()->create(array_merge([
+        $channel = CrmChannel::query()->forceCreate(array_merge([
             'company_id' => $this->company->id,
             'type' => 'whatsapp',
             'provider' => 'whatsapp_cloud_api',
