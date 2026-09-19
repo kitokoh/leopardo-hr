@@ -12,5 +12,8 @@ return [
     'step_activate_geofence' => 'Coğrafi sınırlamayı etkinleştirin',
     'step_customize_showcase' => 'Vitrin sitenizi kişiselleştirin',
     'step_publish_showcase' => 'Vitrin sitenizi yayınlayın',
+    'step_travel_setup_network' => 'Ağınızı oluşturun (istasyonlar, ofisler, hatlar)',
+    'step_travel_first_trip' => 'İlk seferinizi planlayın',
+    'step_travel_first_sale' => 'İlk satışınızı kaydedin',
     'interview_invalid_answer' => 'Geçersiz yanıt: :question',
 ];

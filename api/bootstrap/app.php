@@ -193,6 +193,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.travelagency' => EnsureTravelAgencyModuleMiddleware::class,
             // BC-24 TRAVEL — API entrante transporteurs (TRAVEL-807/#6086).
             'travel.partner' => TravelPartnerAuthMiddleware::class,
+            // BC-24 TRAVEL — lecture distributeurs par clé scopée (TRAVEL-DISTRIBUTION/#7641).
+            'travel.distributor' => \App\Http\Middleware\Travel\TravelDistributorAuthMiddleware::class,
             // BC-25 RESTAURANT — gate feature flag restaurantmanager (RESTO-102/#6159).
             'module.restaurantmanager' => EnsureRestaurantManagerModuleMiddleware::class,
             // BC-27 SHOWCASE — gate feature flag company_showcase (#6865/#6866).
