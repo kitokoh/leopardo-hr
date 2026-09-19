@@ -195,6 +195,33 @@ return [
     'login_code_intro' => 'إليك رمز تسجيل الدخول الخاص بك للاستخدام مرة واحدة. أدخله في صفحة تسجيل الدخول للوصول إلى مساحتك:',
     'login_code_validity' => 'هذا الرمز صالح لمدة 10 دقائق وللاستخدام مرة واحدة. إذا لم تطلب ذلك، يمكنك تجاهل هذه الرسالة.',
 
+
+    // #7760 — إشعارات البريد الإلكتروني لتذاكر الدعم (العميل ↔ المنصة).
+    'support_ticket_opened_subject' => '[تذكرة #:ticket] تذكرة دعم جديدة — :subject',
+    'support_ticket_opened_title' => 'تذكرة دعم جديدة',
+    'support_ticket_opened_intro' => 'قامت شركة :company بفتح التذكرة #:ticket («:subject»، الفئة :category، الأولوية :priority).',
+    'support_ticket_opened_footer' => 'سجّل الدخول إلى وحدة تحكم المنصة لقراءة الرسالة والرد.',
+    'support_ticket_platform_reply_subject' => '[تذكرة #:ticket] ردّ عليك فريق الدعم — :subject',
+    'support_ticket_platform_reply_title' => 'ردّ عليك فريق الدعم',
+    'support_ticket_platform_reply_greeting' => 'مرحباً :name،',
+    'support_ticket_platform_reply_intro' => 'ردّ فريق الدعم على تذكرتك #:ticket («:subject»).',
+    'support_ticket_platform_reply_footer' => 'سجّل الدخول إلى مساحة العميل (صفحة الدعم) لقراءة الرد ومتابعة المحادثة.',
+    'support_ticket_tenant_reply_subject' => '[تذكرة #:ticket] ردّ العميل — :subject',
+    'support_ticket_tenant_reply_title' => 'ردّ العميل',
+    'support_ticket_tenant_reply_intro' => 'ردّت شركة :company على التذكرة #:ticket («:subject»).',
+    'support_ticket_tenant_reply_footer' => 'سجّل الدخول إلى وحدة تحكم المنصة لقراءة الرد.',
+    // فوترة المنصة (#7763)
+    'invoice_issued_subject' => 'فاتورتك Leopardo :number متاحة الآن',
+    'invoice_issued_heading' => 'فاتورة جديدة',
+    'invoice_issued_greeting' => 'مرحباً :name،',
+    'invoice_issued_intro' => 'فاتورتك :number لشركة :company متاحة. المبلغ: :total :currency، تاريخ الاستحقاق :due_date.',
+    'invoice_issued_attachment_note' => 'ستجد الفاتورة بصيغة PDF مرفقة بهذه الرسالة.',
+    'invoice_payment_receipt_subject' => 'إيصال الدفع — الفاتورة :number',
+    'invoice_payment_receipt_heading' => 'تم استلام الدفعة',
+    'invoice_payment_receipt_greeting' => 'مرحباً :name،',
+    'invoice_payment_receipt_intro' => 'نؤكد سداد الفاتورة :number لشركة :company. المبلغ المدفوع: :total :currency بتاريخ :paid_at.',
+    'invoice_payment_receipt_attachment_note' => 'الفاتورة المسددة بصيغة PDF مرفقة بهذه الرسالة.',
+
     // BC-29 Communication R4 (#7689) — قالب المتابعة التلقائية.
     'communication_follow_up_subject' => 'متابعة بخصوص: :subject',
     'communication_follow_up_body' => "مرحباً،\n\nأود المتابعة بخصوص رسالتي السابقة \":subject\" التي لم تتلقَّ رداً بعد.\n\nهل سنحت لكم الفرصة للاطلاع عليها؟\n\nمع أطيب التحيات،\n:name",
