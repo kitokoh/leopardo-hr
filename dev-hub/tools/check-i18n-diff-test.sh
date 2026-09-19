@@ -119,6 +119,22 @@ VUE
 git -C "$REPO_TECH" add -A
 git -C "$REPO_TECH" commit -q -m "motifs techniques du constat #7482"
 
+# Cas 1ter — signature maison du portail Next.js (BC-17 #7675) :
+# `t(locale, 'clé', 'Texte de repli FR')` est un appel de catalogue
+# (src/lib/i18n/locale-catalog.ts) — le repli français n'est PAS une chaîne
+# hors i18n (200 faux positifs mesurés sur le diff BC-24 #7643).
+mkdir -p "$REPO_TECH/front/web/src/app/(dashboard)/commerce"
+cat > "$REPO_TECH/front/web/src/app/(dashboard)/commerce/page.tsx" <<'TSX'
+export default function CommerceHomePage() {
+  const locale = getPreferredLocale();
+  const config = { endpoint: '/retail/categories', listQuery: 'per_page=100' };
+  return (
+    <p>{t(locale, 'commerce.error.loadFailed', 'Impossible de charger les données.')}</p>
+  )
+}
+TSX
+git -C "$REPO_TECH" add -A
+git -C "$REPO_TECH" commit -q -m "repli FR d'un appel t(locale, ...) (#7675)"
 # Cas 1quater — catalogue i18n du kiosque (#7651) : i18n.js EST le mécanisme de
 # localisation (catalogue inline ×4) — ses valeurs ne sont pas des chaînes en
 # dur hors catalogue (même cas que vitrine-locale.ts).
@@ -160,6 +176,8 @@ for motif in 'form[key]' 'bg-emerald-500' 'item.x == null' 'options.0.label' 'se
 done
 expect_clean "d'indicateur d'étapes" "commentaire JSX français (apostrophes) — cas #7562"
 expect_clean "sizes=\"" "attribut de dimension d'image (Image sizes) — audit vitrine 2026-09-16"
+expect_clean 'Impossible de charger les données.' "repli FR d'un appel t(locale, ...) — cas #7675"
+expect_clean 'per_page=100' "query string d'API (listQuery) — cas #7675"
 expect_clean '.csv,text/csv' "filtre de type de fichier (input accept) — #7776"
 expect_clean 'Acces administrateur' "valeur du catalogue i18n kiosk (#7651)"
 expect_clean 'PIN invalide.' "valeur du catalogue i18n kiosk (#7651)"
