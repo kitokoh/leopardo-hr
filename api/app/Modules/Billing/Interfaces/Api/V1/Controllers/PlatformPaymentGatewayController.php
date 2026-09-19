@@ -250,8 +250,8 @@ class PlatformPaymentGatewayController extends Controller
         return [
             'gateway' => $gateway,
             'source' => $resolved['source'] ?? 'none',
-            'mode' => $setting?->mode ?? ($resolved['mode'] ?? 'live'),
-            'is_active' => $setting?->is_active ?? true,
+            'mode' => $setting->mode ?? ($resolved['mode'] ?? 'live'),
+            'is_active' => $setting->is_active ?? true,
             'config' => $config,
             'secrets' => $secrets,
             'updated_at' => $setting?->updated_at?->toIso8601String(),

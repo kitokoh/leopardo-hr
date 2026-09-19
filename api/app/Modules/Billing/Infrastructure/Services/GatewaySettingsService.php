@@ -67,7 +67,7 @@ class GatewaySettingsService implements PaymentGatewayConfigProviderInterface
             if ($key === 'source') {
                 continue;
             }
-            if (is_string($value) && $value !== '') {
+            if ($value !== '') {
                 $merged[$key] = $value;
             }
         }

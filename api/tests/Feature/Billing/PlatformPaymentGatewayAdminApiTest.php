@@ -102,7 +102,9 @@ class PlatformPaymentGatewayAdminApiTest extends TestCase
 
         $response->assertOk();
 
-        $items = collect($response->json('data.items'));
+        /** @var list<array<string, mixed>> $rows */
+        $rows = $response->json('data.items');
+        $items = collect($rows);
         $stripe = $items->firstWhere('gateway', 'stripe');
 
         $this->assertNotNull($stripe);

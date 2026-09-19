@@ -43,7 +43,7 @@ class TenantPaymentProfileResolver implements TenantPaymentProfileResolverInterf
         }
 
         $secrets = $profile->secrets ?? [];
-        $secretKey = isset($secrets['secret_key']) && is_string($secrets['secret_key']) ? $secrets['secret_key'] : '';
+        $secretKey = $secrets['secret_key'] ?? '';
 
         if ($secretKey === '') {
             return null;
@@ -52,9 +52,7 @@ class TenantPaymentProfileResolver implements TenantPaymentProfileResolverInterf
         return [
             'profile_id' => (int) $profile->id,
             'secret_key' => $secretKey,
-            'webhook_secret' => isset($secrets['webhook_secret']) && is_string($secrets['webhook_secret'])
-                ? $secrets['webhook_secret']
-                : '',
+            'webhook_secret' => $secrets['webhook_secret'] ?? '',
             'stripe_account_id' => $profile->stripe_account_id,
         ];
     }
@@ -85,8 +83,8 @@ class TenantPaymentProfileResolver implements TenantPaymentProfileResolverInterf
             return null;
         }
 
-        $secrets = $profile?->secrets ?? [];
-        $secret = isset($secrets['webhook_secret']) && is_string($secrets['webhook_secret']) ? $secrets['webhook_secret'] : '';
+        $secrets = $profile->secrets ?? [];
+        $secret = $secrets['webhook_secret'] ?? '';
 
         return $secret !== '' ? $secret : null;
     }

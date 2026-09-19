@@ -90,7 +90,7 @@ class TenantPaymentProfile extends Model
         $secrets = $this->secrets ?? [];
 
         foreach (self::SECRET_FIELDS[$this->type] ?? [] as $field) {
-            $value = isset($secrets[$field]) && is_string($secrets[$field]) ? $secrets[$field] : '';
+            $value = $secrets[$field] ?? '';
             $masked[$field] = [
                 'configured' => $value !== '',
                 'mask' => PaymentGatewaySetting::maskSecret($value !== '' ? $value : null),
