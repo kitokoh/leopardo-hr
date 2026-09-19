@@ -1,6 +1,6 @@
 # Leopardo RH JavaScript SDK
 
-Generated from `api/openapi.yaml`.
+Generated from `api/openapi.yaml`. **Not committed since #7654** — run `make openapi-sync` (or `node dev-hub/tools/generate-openapi-sdk.mjs`) to generate it locally.
 
 ## Usage
 
