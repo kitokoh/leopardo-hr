@@ -42,6 +42,9 @@ Route::prefix('api/v1/edge')->group(function (): void {
         ->middleware('throttle:60,1');
     Route::get('/download/sha256.txt', [EdgeDownloadController::class, 'sha256'])
         ->middleware('throttle:60,1');
+    // #7653 : signature RS256 du manifeste — vérifiée par install.sh (fail-closed).
+    Route::get('/download/sha256.txt.sig', [EdgeDownloadController::class, 'sha256Signature'])
+        ->middleware('throttle:60,1');
     Route::get('/download/docker-compose.yml.sha256', [EdgeDownloadController::class, 'dockerComposeSha256'])
         ->middleware('throttle:60,1');
     Route::get('/download/Caddyfile.edge.sha256', [EdgeDownloadController::class, 'caddyfileSha256'])
