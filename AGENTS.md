@@ -418,7 +418,7 @@ pour les résoudre au checkout.
 ### 2026-09-15 - Dérive dev Render : un déploiement « vert » ne déploie pas (#7304)
 
 - `deploy-main.yml` peut sortir **`success` sans déployer** : le job
-  `Deploy API + Web to Render` est *skipped* quand le run `Tests - Leopardo RH`
+  `Deploy API + Web to Render` est *skipped* quand le run `Tests - Leopardo`
   du SHA est absent (`Tests=missing` — runs `synchronize` non créés sous charge,
   leçon #3545). Mesuré le 2026-09-14 : **12 runs successifs, 0 déploiement**, dev
   figé sur `fe2ab9f` à ~60 merges derrière `main` → recettes menées sur du code
