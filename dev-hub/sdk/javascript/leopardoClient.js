@@ -4180,6 +4180,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/public/restaurants/{slug}", options);
     },
 
+    /** Commander en ligne depuis la page publique d'un restaurant (sans auth) */
+    postPublicRestaurantsBySlugOrders(options = {}) {
+      return request("POST", "/public/restaurants/{slug}/orders", options);
+    },
+
+    /** Suivre une commande publique par reference (sans auth) */
+    getPublicRestaurantsBySlugOrdersByRef(options = {}) {
+      return request("GET", "/public/restaurants/{slug}/orders/{ref}", options);
+    },
+
+    /** Payer une commande publique (cash a la livraison / mobile money) */
+    postPublicRestaurantsBySlugOrdersByRefPay(options = {}) {
+      return request("POST", "/public/restaurants/{slug}/orders/{ref}/pay", options);
+    },
+
+    /** Lister les avis clients publies d'un restaurant (sans auth) */
+    getPublicRestaurantsBySlugReviews(options = {}) {
+      return request("GET", "/public/restaurants/{slug}/reviews", options);
+    },
+
+    /** Deposer un avis client sur une commande servie/livree (sans auth) */
+    postPublicRestaurantsBySlugReviews(options = {}) {
+      return request("POST", "/public/restaurants/{slug}/reviews", options);
+    },
+
     /** Annulation en ligne d'une réservation par le passager (espace voyageur) */
     postPublicTravelShopBookingsByReferenceCancel(options = {}) {
       return request("POST", "/public/travel/shop/bookings/{reference}/cancel", options);
@@ -4368,6 +4393,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Publier/depublier un produit sur le menu public */
     patchRestaurantProductsByRestaurantProductPublication(options = {}) {
       return request("PATCH", "/restaurant/products/{restaurantProduct}/publication", options);
+    },
+
+    /** File de moderation des avis clients (tenant) */
+    getRestaurantReviews(options = {}) {
+      return request("GET", "/restaurant/reviews", options);
+    },
+
+    /** Publier un avis client (moderation gerant) */
+    postRestaurantReviewsByReviewPublish(options = {}) {
+      return request("POST", "/restaurant/reviews/{review}/publish", options);
+    },
+
+    /** Rejeter un avis client (moderation gerant) */
+    postRestaurantReviewsByReviewReject(options = {}) {
+      return request("POST", "/restaurant/reviews/{review}/reject", options);
     },
 
     /** Lister les avances sur salaire */

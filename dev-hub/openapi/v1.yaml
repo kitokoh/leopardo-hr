@@ -29923,7 +29923,7 @@ paths:
           minimum: 1
       responses:
         '200':
-          description: Liste paginee (slug, name, establishment_type, cuisine_types, city, description, cover_image_url, latitude, longitude, distance_km si near)
+          description: Liste paginee (slug, name, establishment_type, cuisine_types, city, description, cover_image_url, latitude, longitude, rating_avg + reviews_count sur avis publies RESTO-902, distance_km si near)
         '422':
           $ref: '#/components/responses/Error422'
 
@@ -29949,7 +29949,348 @@ paths:
           pattern: '^[a-z0-9][a-z0-9-]{0,159}$'
       responses:
         '200':
-          description: Profil public (slug, identite, horaires, menu publie) - aucun ID interne
+          description: Profil public (slug, identite, horaires, menu publie avec code produit commandable, rating_avg + reviews_count sur avis publies RESTO-902) - aucun ID interne
+        '404':
+          $ref: '#/components/responses/Error404'
+
+  /public/restaurants/{slug}/orders:
+    post:
+      tags:
+      - Restaurant
+      summary: Commander en ligne depuis la page publique d'un restaurant (sans auth)
+      description: >-
+        RESTO-902 (#7747) - creation d'une commande publique par slug
+        (throttle:shop-public, AUCUN middleware tenant/Sanctum). Meme pipeline
+        que RESTO-805 : prix unitaires et TVA SERVEUR (aucun montant accepte du
+        client), idempotence par idempotency_key (rejeu -> meme commande, 200),
+        source online. Produits identifies par leur code metier (identifiant
+        expose par le menu public) et acceptes UNIQUEMENT si publies en ligne
+        (is_published_online) ET disponibles ET servis par la branche (422
+        sinon). Branche non publique / societe suspendue -> 404 fail-closed.
+        order_type accepte l'alias public pickup (-> takeaway) ou delivery.
+      security: []
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9-]{0,159}$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [customer_name, customer_phone, items]
+              properties:
+                customer_name:
+                  type: string
+                  maxLength: 120
+                customer_phone:
+                  type: string
+                  maxLength: 30
+                order_type:
+                  type: string
+                  enum: [pickup, takeaway, delivery]
+                  default: pickup
+                note:
+                  type: string
+                  maxLength: 500
+                idempotency_key:
+                  type: string
+                  maxLength: 64
+                items:
+                  type: array
+                  minItems: 1
+                  maxItems: 50
+                  items:
+                    type: object
+                    required: [product_code, quantity]
+                    properties:
+                      product_code:
+                        type: string
+                        maxLength: 80
+                      quantity:
+                        type: number
+                        exclusiveMinimum: 0
+                        maximum: 999
+                      note:
+                        type: string
+                        maxLength: 200
+      responses:
+        '201':
+          description: Commande creee (reference RST- non enumerable, statut, order_type, totaux minor, currency, items_count, created=true)
+        '200':
+          description: Rejeu idempotent (meme idempotency_key) - commande existante, created=false
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /public/restaurants/{slug}/orders/{ref}:
+    get:
+      tags:
+      - Restaurant
+      summary: Suivre une commande publique par reference (sans auth)
+      description: >-
+        RESTO-902 (#7747) - suivi d'une commande de LA branche du slug par sa
+        reference RST- non enumerable (statut, lignes nom/quantite/montants,
+        totaux). AUCUNE PII : la note interne (contact client) n'est jamais
+        renvoyee. Reference inconnue ou d'une autre branche -> 404 uniforme.
+      security: []
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9-]{0,159}$'
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+          maxLength: 40
+      responses:
+        '200':
+          description: Suivi (reference, status, order_type, items, totaux minor, currency, updated_at) - sans PII
+        '404':
+          $ref: '#/components/responses/Error404'
+
+  /public/restaurants/{slug}/orders/{ref}/pay:
+    post:
+      tags:
+      - Restaurant
+      summary: Payer une commande publique (cash a la livraison / mobile money)
+      description: >-
+        RESTO-902 (#7747) - initiation du paiement d'une commande publique via
+        le contrat PaymentGatewayInterface RESTO-805. Fournisseurs ouverts :
+        cash (alias public cash_on_delivery) et mobile_money - la passerelle
+        carte (PSP) reste volontairement fermee (spec #5272 en attente, 422).
+        Idempotence par idempotency_key ; 409 si la commande n'est pas payable
+        ou deja soldee.
+      security: []
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9-]{0,159}$'
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+          maxLength: 40
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider_code]
+              properties:
+                provider_code:
+                  type: string
+                  enum: [cash, cash_on_delivery, mobile_money]
+                idempotency_key:
+                  type: string
+                  maxLength: 64
+      responses:
+        '201':
+          description: Paiement initie (order_reference, provider_code, provider_reference, status, amount_minor, currency)
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Commande non payable dans son statut, ou deja soldee
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /public/restaurants/{slug}/reviews:
+    get:
+      tags:
+      - Restaurant
+      summary: Lister les avis clients publies d'un restaurant (sans auth)
+      description: >-
+        RESTO-902 (#7747) - avis PUBLIES uniquement, pagines (max 50/page), du
+        plus recent au plus ancien. DTO public STRICT : author_name, rating,
+        comment, date - jamais d'order_reference (secret du client), d'ID
+        interne ni de PII. Branche non publique -> 404 fail-closed.
+      security: []
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9-]{0,159}$'
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Liste paginee des avis publies (author_name, rating, comment, date)
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      tags:
+      - Restaurant
+      summary: Deposer un avis client sur une commande servie/livree (sans auth)
+      description: >-
+        RESTO-902 (#7747) - soumission d'un avis avec preuve d'achat : la
+        order_ref (reference RST- non enumerable remise a la commande) d'une
+        commande de CETTE branche en statut terminal servi/livre
+        (served/paid/closed). UN SEUL avis par commande (409 en doublon) ;
+        statut initial pending (moderation gerant avant publication). Throttle
+        STRICT dedie (restaurant-reviews-public) en plus du throttle du groupe.
+        Reference inconnue ou d'une autre branche -> 404 ; commande non
+        terminale -> 422.
+      security: []
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9-]{0,159}$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [order_ref, rating, author_name]
+              properties:
+                order_ref:
+                  type: string
+                  maxLength: 40
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                comment:
+                  type: string
+                  maxLength: 2000
+                author_name:
+                  type: string
+                  maxLength: 120
+      responses:
+        '201':
+          description: Avis cree en attente de moderation (status=pending, rating, author_name)
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Un avis existe deja pour cette commande
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /restaurant/reviews:
+    get:
+      tags:
+      - Restaurant
+      summary: File de moderation des avis clients (tenant)
+      description: >-
+        RESTO-902 (#7747) - listing tenant des avis (filtres status
+        pending/published/rejected, branch_id), scope par succursales
+        accessibles (ScopesRestaurantBranchListings) et par tenant
+        (BelongsToCompany). DTO de moderation : id, branch_id,
+        order_reference, rating, comment, author_name, status, created_at.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum: [pending, published, rejected]
+      - name: branch_id
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Liste paginee des avis du tenant
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+
+  /restaurant/reviews/{review}/publish:
+    post:
+      tags:
+      - Restaurant
+      summary: Publier un avis client (moderation gerant)
+      description: >-
+        RESTO-902 (#7747) - publication d'un avis (visible publiquement et
+        compte dans la note moyenne). Geste de GESTION de la succursale
+        (RestaurantReviewPolicy::moderate, pattern gerant #7599) ; 404
+        cross-tenant. Purge le cache du profil public de la branche.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: review
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Avis publie
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+
+  /restaurant/reviews/{review}/reject:
+    post:
+      tags:
+      - Restaurant
+      summary: Rejeter un avis client (moderation gerant)
+      description: >-
+        RESTO-902 (#7747) - rejet d'un avis (jamais expose publiquement,
+        retire de la note moyenne s'il etait publie). Geste de GESTION de la
+        succursale (RestaurantReviewPolicy::moderate) ; 404 cross-tenant.
+        Purge le cache du profil public de la branche.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: review
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Avis rejete
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
 

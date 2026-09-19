@@ -3364,6 +3364,26 @@ class LeopardoClient:
         """Profil public d'un restaurant par slug (sans auth)"""
         return self.request("GET", "/public/restaurants/{slug}", **kwargs)
 
+    def post_public_restaurants_by_slug_orders(self, **kwargs):
+        """Commander en ligne depuis la page publique d'un restaurant (sans auth)"""
+        return self.request("POST", "/public/restaurants/{slug}/orders", **kwargs)
+
+    def get_public_restaurants_by_slug_orders_by_ref(self, **kwargs):
+        """Suivre une commande publique par reference (sans auth)"""
+        return self.request("GET", "/public/restaurants/{slug}/orders/{ref}", **kwargs)
+
+    def post_public_restaurants_by_slug_orders_by_ref_pay(self, **kwargs):
+        """Payer une commande publique (cash a la livraison / mobile money)"""
+        return self.request("POST", "/public/restaurants/{slug}/orders/{ref}/pay", **kwargs)
+
+    def get_public_restaurants_by_slug_reviews(self, **kwargs):
+        """Lister les avis clients publies d'un restaurant (sans auth)"""
+        return self.request("GET", "/public/restaurants/{slug}/reviews", **kwargs)
+
+    def post_public_restaurants_by_slug_reviews(self, **kwargs):
+        """Deposer un avis client sur une commande servie/livree (sans auth)"""
+        return self.request("POST", "/public/restaurants/{slug}/reviews", **kwargs)
+
     def post_public_travel_shop_bookings_by_reference_cancel(self, **kwargs):
         """Annulation en ligne d'une réservation par le passager (espace voyageur)"""
         return self.request("POST", "/public/travel/shop/bookings/{reference}/cancel", **kwargs)
@@ -3515,6 +3535,18 @@ class LeopardoClient:
     def patch_restaurant_products_by_restaurantproduct_publication(self, **kwargs):
         """Publier/depublier un produit sur le menu public"""
         return self.request("PATCH", "/restaurant/products/{restaurantProduct}/publication", **kwargs)
+
+    def get_restaurant_reviews(self, **kwargs):
+        """File de moderation des avis clients (tenant)"""
+        return self.request("GET", "/restaurant/reviews", **kwargs)
+
+    def post_restaurant_reviews_by_review_publish(self, **kwargs):
+        """Publier un avis client (moderation gerant)"""
+        return self.request("POST", "/restaurant/reviews/{review}/publish", **kwargs)
+
+    def post_restaurant_reviews_by_review_reject(self, **kwargs):
+        """Rejeter un avis client (moderation gerant)"""
+        return self.request("POST", "/restaurant/reviews/{review}/reject", **kwargs)
 
     def get_salary_advances(self, **kwargs):
         """Lister les avances sur salaire"""
