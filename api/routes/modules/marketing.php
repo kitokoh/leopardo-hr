@@ -16,6 +16,7 @@
  * Les anciennes routes sont conservees pour la compatibilite ascendante.
  */
 
+use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingAiController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingLeadConversionController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\SocialAccountController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\SocialPostController;
@@ -65,4 +66,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::patch('/posts/{socialPost}', [SocialPostController::class, 'update']);
         Route::delete('/posts/{socialPost}', [SocialPostController::class, 'destroy']);
         Route::post('/posts/{socialPost}/publish', [SocialPostController::class, 'publish']);
+
+        // ----------------------------------------------------------------
+        // IA marketing (issue #7753) : suggestion de contenu (humain dans
+        // la boucle — jamais de publication automatique) + bilan hebdo.
+        // ----------------------------------------------------------------
+        Route::post('/ai/suggest-post', [MarketingAiController::class, 'suggestPost']);
+        Route::get('/reports/weekly', [MarketingAiController::class, 'weeklyReport']);
     });
