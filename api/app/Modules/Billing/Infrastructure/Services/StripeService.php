@@ -12,6 +12,7 @@ use App\Modules\Billing\Domain\Enums\SubscriptionStatus;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Billing\Domain\Models\Subscription;
 use App\Modules\Payroll\Domain\Models\Payment;
+use App\Shared\Contracts\Payments\PaymentGatewayConfigProviderInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -35,16 +36,22 @@ class StripeService
     /** @var array<string, string> plan => Stripe Price ID */
     private array $priceIds;
 
-    public function __construct()
+    public function __construct(?PaymentGatewayConfigProviderInterface $gatewayConfig = null)
     {
-        // strval() plutôt que (string) : PHPStan (diff-gate) refuse le cast de
-        // `mixed` retourné par config() — strval accepte mixed sans élargir la baseline.
-        $this->secretKey = strval(config('services.stripe.secret'));
-        $this->webhookSecret = strval(config('services.stripe.webhook_secret'));
+        // #7726 : la configuration passe par GatewaySettingsService —
+        // précédence BDD (admin plateforme, secrets chiffrés) → fallback env
+        // (comportement historique inchangé sans ligne BDD). Paramètre
+        // optionnel : les appels historiques `new StripeService` restent
+        // valides (résolution container par défaut).
+        $gatewayConfig ??= app(PaymentGatewayConfigProviderInterface::class);
+        $settings = $gatewayConfig->resolve('stripe');
+
+        $this->secretKey = $settings['secret_key'] ?? '';
+        $this->webhookSecret = $settings['webhook_secret'] ?? '';
         $this->priceIds = [
-            'pilot' => strval(config('services.stripe.price_pilot')),
-            'operations' => strval(config('services.stripe.price_operations')),
-            'enterprise' => strval(config('services.stripe.price_enterprise')),
+            'pilot' => $settings['price_pilot'] ?? '',
+            'operations' => $settings['price_operations'] ?? '',
+            'enterprise' => $settings['price_enterprise'] ?? '',
         ];
     }
 

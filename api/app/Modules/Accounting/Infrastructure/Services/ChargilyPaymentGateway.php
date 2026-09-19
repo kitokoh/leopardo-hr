@@ -9,6 +9,7 @@ use App\Modules\Accounting\Application\DTOs\PaymentCheckout;
 use App\Modules\Accounting\Application\DTOs\PaymentWebhookData;
 use App\Modules\Accounting\Domain\Exceptions\PaymentGatewayNotConfiguredException;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
+use App\Shared\Contracts\Payments\PaymentGatewayConfigProviderInterface;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -33,10 +34,17 @@ final class ChargilyPaymentGateway implements PaymentGatewayInterface
 
     private string $mode;
 
-    public function __construct()
+    private string $webhookSecret;
+
+    public function __construct(?PaymentGatewayConfigProviderInterface $gatewayConfig = null)
     {
-        $this->apiKey = (string) config('services.chargily.api_key');
-        $this->mode = (string) config('services.chargily.mode', 'live');
+        // #7726 : précédence BDD (admin plateforme, secrets chiffrés) →
+        // fallback env — comportement historique inchangé sans ligne BDD.
+        $gatewayConfig ??= app(PaymentGatewayConfigProviderInterface::class);
+        $settings = $gatewayConfig->resolve('chargily');
+        $this->apiKey = $settings['api_key'] ?? '';
+        $this->mode = ($settings['mode'] ?? '') !== '' ? $settings['mode'] : 'live';
+        $this->webhookSecret = $settings['webhook_secret'] ?? '';
     }
 
     public function gatewayName(): string
@@ -106,7 +114,7 @@ final class ChargilyPaymentGateway implements PaymentGatewayInterface
 
     public function verifyWebhookSignature(string $payload, string $signatureHeader): ?array
     {
-        $secret = (string) config('services.chargily.webhook_secret');
+        $secret = $this->webhookSecret;
 
         if ($secret === '') {
             // #2615 fail-closed : secret absent = webhook non vérifiable = rejet.

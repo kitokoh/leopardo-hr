@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, ChevronDown, Globe, KeyRound, LayoutGrid, LockKeyhole, LogOut, Menu, Paintbrush, Plus, ShieldCheck, Sparkles, UserCircle, X } from 'lucide-react';
+import { Banknote, Bell, ChevronDown, Globe, KeyRound, LayoutGrid, LockKeyhole, LogOut, Menu, Paintbrush, Plus, ShieldCheck, Sparkles, UserCircle, X } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { teamRolesT } from '@/lib/i18n/team-roles';
+import { paymentProfilesT } from '@/lib/i18n/payment-profiles';
 import { trackClientEvent } from '@/lib/client-analytics';
 import { getClientModuleAccess, getModuleAccessForPath, getSidebarSections, isSelfActivable, mergeActivationSurface, sessionModuleSignature, type ClientModuleAccess, type ClientModuleKey } from '@/lib/client-features';
 import { buildBusinessRail, buildDashboardNav, isNavEntryActive, toNavModules, type DashboardNavEntry, type NavMenuGroupId } from '@/lib/dashboard-nav';
@@ -781,6 +782,11 @@ export default function DashboardLayout({
               <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
               {teamRolesT(locale, 'menuLabel')}
             </Link>
+            {/* #7727 — encaissements : profils de paiement du tenant (principal). */}
+            <Link href="/settings/encaissements" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+              <Banknote className="h-4 w-4 text-slate-400" aria-hidden="true" />
+              {paymentProfilesT(locale, 'menuLabel')}
+            </Link>
             {/* #7713 — image de marque du tenant. */}
             <Link href="/settings/branding" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
               <Paintbrush className="h-4 w-4 text-slate-400" aria-hidden="true" />
@@ -1199,6 +1205,11 @@ export default function DashboardLayout({
                     <Link href="/settings/team" role="menuitem" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
                       <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
                       {teamRolesT(locale, 'menuLabel')}
+                    </Link>
+                    {/* #7727 — encaissements : profils de paiement du tenant (principal). */}
+                    <Link href="/settings/encaissements" role="menuitem" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
+                      <Banknote className="h-4 w-4 text-slate-400" aria-hidden="true" />
+                      {paymentProfilesT(locale, 'menuLabel')}
                     </Link>
                     {/* #7713 — image de marque du tenant. */}
                     <Link href="/settings/branding" role="menuitem" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">

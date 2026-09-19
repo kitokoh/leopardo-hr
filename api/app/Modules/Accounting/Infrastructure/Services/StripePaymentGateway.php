@@ -9,6 +9,8 @@ use App\Modules\Accounting\Application\DTOs\PaymentCheckout;
 use App\Modules\Accounting\Application\DTOs\PaymentWebhookData;
 use App\Modules\Accounting\Domain\Exceptions\PaymentGatewayNotConfiguredException;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
+use App\Shared\Contracts\Payments\PaymentGatewayConfigProviderInterface;
+use App\Shared\Contracts\Payments\TenantPaymentProfileResolverInterface;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -32,9 +34,38 @@ final class StripePaymentGateway implements PaymentGatewayInterface
 
     private string $secretKey;
 
-    public function __construct()
+    private string $webhookSecret;
+
+    /**
+     * #7727 — identifiant du `tenant_payment_profile` (type stripe_keys) dont
+     * proviennent les clés. Null = clés de la PLATEFORME (comportement
+     * historique). Tracé dans les métadonnées du checkout.
+     */
+    private ?int $tenantProfileId = null;
+
+    public function __construct(?PaymentGatewayConfigProviderInterface $gatewayConfig = null)
     {
-        $this->secretKey = (string) config('services.stripe.secret');
+        // #7726 : précédence BDD (admin plateforme, secrets chiffrés) →
+        // fallback env — comportement historique inchangé sans ligne BDD.
+        $gatewayConfig ??= app(PaymentGatewayConfigProviderInterface::class);
+        $settings = $gatewayConfig->resolve('stripe');
+        $this->secretKey = $settings['secret_key'] ?? '';
+        $this->webhookSecret = $settings['webhook_secret'] ?? '';
+    }
+
+    /**
+     * #7727 — variante de la passerelle opérant avec les clés Stripe PROPRES
+     * du tenant (profil `stripe_keys` actif) : l'encaissement de la facture
+     * client part sur le compte Stripe du tenant, pas celui de la plateforme.
+     */
+    public function withTenantCredentials(string $secretKey, string $webhookSecret, int $profileId): self
+    {
+        $clone = clone $this;
+        $clone->secretKey = $secretKey;
+        $clone->webhookSecret = $webhookSecret;
+        $clone->tenantProfileId = $profileId;
+
+        return $clone;
     }
 
     public function gatewayName(): string
@@ -71,6 +102,11 @@ final class StripePaymentGateway implements PaymentGatewayInterface
                 'cancel_url' => $cancelUrl,
                 'metadata[document_id]' => $document->id,
                 'metadata[company_id]' => (string) $document->company_id,
+                // #7727 — traçabilité : quel profil de paiement tenant a
+                // encaissé (absent = clés plateforme, comportement historique).
+                ...($this->tenantProfileId !== null
+                    ? ['metadata[payment_profile_id]' => (string) $this->tenantProfileId]
+                    : []),
             ]);
 
         if (! $response->successful()) {
@@ -104,8 +140,33 @@ final class StripePaymentGateway implements PaymentGatewayInterface
 
     public function verifyWebhookSignature(string $payload, string $signatureHeader): ?array
     {
-        $secret = (string) config('services.stripe.webhook_secret');
+        // #7726 — le secret provient de la config résolue (BDD → env), ou des
+        // clés du tenant si la passerelle a été clonée via withTenantCredentials.
+        $data = $this->verifyWithSecret($this->webhookSecret, $payload, $signatureHeader);
+        if ($data !== null) {
+            return $data;
+        }
 
+        // #7727 — un paiement encaissé avec les clés PROPRES d'un tenant est
+        // notifié par le compte Stripe DU TENANT : sa signature n'est
+        // vérifiable qu'avec le webhook secret du profil. Le company_id des
+        // métadonnées (non fiable seul) ne sert qu'à SÉLECTIONNER le secret
+        // candidat — la signature HMAC reste l'unique preuve (fail-closed).
+        $tenantSecret = $this->tenantWebhookSecretFromPayload($payload);
+        if ($tenantSecret !== null && $tenantSecret !== $this->webhookSecret) {
+            return $this->verifyWithSecret($tenantSecret, $payload, $signatureHeader);
+        }
+
+        return null;
+    }
+
+    /**
+     * Vérification HMAC Stripe (`t=<ts>,v1=<sig>`) avec un secret donné.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function verifyWithSecret(string $secret, string $payload, string $signatureHeader): ?array
+    {
         if ($secret === '') {
             // #2614 fail-closed : secret absent = webhook non vérifiable = rejet.
             Log::error('Stripe: webhook secret not configured — webhook REJETÉ (fail-closed).');
@@ -151,6 +212,30 @@ final class StripePaymentGateway implements PaymentGatewayInterface
         $data = json_decode($payload, true);
 
         return is_array($data) ? $data : null;
+    }
+
+    /**
+     * #7727 — webhook secret du profil `stripe_keys` actif du tenant désigné
+     * par les métadonnées du payload (chemin non vérifié : sert uniquement à
+     * choisir le secret candidat, jamais à accepter le payload).
+     */
+    private function tenantWebhookSecretFromPayload(string $payload): ?string
+    {
+        $data = json_decode($payload, true);
+        if (! is_array($data)) {
+            return null;
+        }
+
+        $session = $data['data']['object'] ?? null;
+        $metadata = is_array($session) && is_array($session['metadata'] ?? null) ? $session['metadata'] : [];
+        $companyId = isset($metadata['company_id']) ? (string) $metadata['company_id'] : '';
+
+        if ($companyId === '') {
+            return null;
+        }
+
+        return app(TenantPaymentProfileResolverInterface::class)
+            ->stripeWebhookSecretForCompany($companyId);
     }
 
     /**
