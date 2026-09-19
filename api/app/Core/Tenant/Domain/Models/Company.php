@@ -152,6 +152,15 @@ class Company extends Model
         // sous `api.manager` et la surface client est ouverte par capacité
         // (`can_view_fleet`).
         'fleet',
+        // BC-29 COMMUNICATION / #7685 (R0) — module HORIZONTAL « Communication »
+        // (boîte mail connectée + IA, spec MODULE_COMMUNICATION_EMAIL_IA.md,
+        // exception freeze #7644). Transversal : activable pour n'importe quel
+        // profil de tenant. Présent ici pour que l'admin plateforme
+        // (`PATCH /platform/companies/{company}/features`) reconstruise et
+        // expose la clé (même leçon que `travelagency` #7220 / `accounting`
+        // #7235). Fail-closed conservé (défaut false) ; gate serveur
+        // `module.communication` sur les routes /api/v1/communication/*.
+        'communication',
     ];
 
     /**
