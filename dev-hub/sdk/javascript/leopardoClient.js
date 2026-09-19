@@ -4885,6 +4885,36 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/training/sessions/{trainingSession}/enroll", options);
     },
 
+    /** Liste des cles API de lecture distributeurs */
+    getTravelDistributorKeys(options = {}) {
+      return request("GET", "/travel/distributor-keys", options);
+    },
+
+    /** Emettre une cle API de lecture pour un distributeur */
+    postTravelDistributorKeys(options = {}) {
+      return request("POST", "/travel/distributor-keys", options);
+    },
+
+    /** Revoquer une cle distributeur */
+    postTravelDistributorKeysByTravelDistributorKeyRevoke(options = {}) {
+      return request("POST", "/travel/distributor-keys/{travelDistributorKey}/revoke", options);
+    },
+
+    /** Rotation d'une cle distributeur */
+    postTravelDistributorKeysByTravelDistributorKeyRotate(options = {}) {
+      return request("POST", "/travel/distributor-keys/{travelDistributorKey}/rotate", options);
+    },
+
+    /** Suivi d'une reservation par reference (surface distributeur) */
+    getTravelDistributorBookingsByReference(options = {}) {
+      return request("GET", "/travel/distributor/bookings/{reference}", options);
+    },
+
+    /** Catalogue des voyages publies (surface distributeur) */
+    getTravelDistributorCatalog(options = {}) {
+      return request("GET", "/travel/distributor/catalog", options);
+    },
+
     /** Liste des affectations d'equipage de la verticale voyage */
     getTravelStaffAssignments(options = {}) {
       return request("GET", "/travel/staff-assignments", options);

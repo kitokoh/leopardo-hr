@@ -3928,6 +3928,30 @@ class LeopardoClient:
         """Inscrire un employe"""
         return self.request("POST", "/training/sessions/{trainingSession}/enroll", **kwargs)
 
+    def get_travel_distributor_keys(self, **kwargs):
+        """Liste des cles API de lecture distributeurs"""
+        return self.request("GET", "/travel/distributor-keys", **kwargs)
+
+    def post_travel_distributor_keys(self, **kwargs):
+        """Emettre une cle API de lecture pour un distributeur"""
+        return self.request("POST", "/travel/distributor-keys", **kwargs)
+
+    def post_travel_distributor_keys_by_traveldistributorkey_revoke(self, **kwargs):
+        """Revoquer une cle distributeur"""
+        return self.request("POST", "/travel/distributor-keys/{travelDistributorKey}/revoke", **kwargs)
+
+    def post_travel_distributor_keys_by_traveldistributorkey_rotate(self, **kwargs):
+        """Rotation d'une cle distributeur"""
+        return self.request("POST", "/travel/distributor-keys/{travelDistributorKey}/rotate", **kwargs)
+
+    def get_travel_distributor_bookings_by_reference(self, **kwargs):
+        """Suivi d'une reservation par reference (surface distributeur)"""
+        return self.request("GET", "/travel/distributor/bookings/{reference}", **kwargs)
+
+    def get_travel_distributor_catalog(self, **kwargs):
+        """Catalogue des voyages publies (surface distributeur)"""
+        return self.request("GET", "/travel/distributor/catalog", **kwargs)
+
     def get_travel_staff_assignments(self, **kwargs):
         """Liste des affectations d'equipage de la verticale voyage"""
         return self.request("GET", "/travel/staff-assignments", **kwargs)
