@@ -42,6 +42,9 @@ export const PROTECTED_PREFIXES = [
   // (`/cameras/{id}`) : données de vidéosurveillance, jamais servies sans
   // session. Le viewer tiers public vit hors de ce préfixe (`/view/cam`).
   '/cameras',
+  // BC-17 RETAIL (#7675) — espace vendeur Commerce (produits, stock, caisse) :
+  // données tenant, jamais servies sans session.
+  '/commerce',
   // #7400 — flotte & véhicules de service (module horizontal).
   '/fleet',
   // #7663 — zones applicatives (dashboard) servies sans session et absentes
