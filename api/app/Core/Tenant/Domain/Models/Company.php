@@ -46,6 +46,10 @@ use Illuminate\Support\Facades\DB;
  */
 class Company extends Model
 {
+    // Issue #7711 (exceptions BelongsToCompany) — PAS de trait : Company EST
+    // la frontière tenant elle-même (registre public.companies, résolu
+    // pré-tenant par TenantMiddleware et les surfaces plateforme).
+
     /** @use HasFactory<\Database\Factories\CompanyFactory> */
     use HasFactory;
 
