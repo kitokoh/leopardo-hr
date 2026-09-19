@@ -12,6 +12,18 @@
 > `api/tests/Feature/HealthEndpointTest.php::test_unversioned_health_alias_serves_the_same_probe`
 > (contrat identique à la sonde canonique). Surfaces web/mobile : aucune.
 
+> **MAJ 2026-09-19 — lot audit vendeur du funnel #7662–#7665/#7669 (PR #7667), surface mobile
+> touchée par propagation i18n uniquement.** Le lot corrige la mojibake du catalogue partagé
+> (`shared/i18n/locales/*.json`, accents FR / caractères TR) et ajoute les clés
+> `vitrine.notFound.*` ×4 ; ces valeurs sont propagées par `sync-mobile.js` aux catalogues
+> `front/mobile_apps/leopardo_core/lib/l10n/app_*.arb` — **aucun écran, aucune route ni aucun
+> parcours mobile n'est modifié** (détection par chemin `front/mobile_apps/`). Les scénarios
+> mobile Flutter existants (`SCENARIOS_TEST_MOBILE_FLUTTER.md`) restent inchangés et valides ;
+> la surface fonctionnelle réellement livrée est **web vitrine** : redirects 404 du funnel,
+> zones app protégées (`protected-prefixes.ts` + tests), 404 localisée (`not-found.tsx`,
+> catalogue `vitrine.notFound.*`) et Navbar accentuée (catalogue inline ×4). Non-régression :
+> Jest web (`protected-prefixes.test.ts`), e2e funnel (`funnel-e2e-gate.yml`) verts sur la PR.
+
 > **MAJ 2026-09-18 — #7490, première connexion sans mot de passe en clair (epic #7486).**
 > L'e-mail de bienvenue self-service ne contient plus aucun secret : lien magique de
 > définition de mot de passe (`/auth/set-password?token=…`, `provisioning_token` à usage
@@ -696,3 +708,17 @@ restent les gates applicables.
   passables une a une, recapitulatif d'activation, reprise ulterieure.
 - **Surface mobile** : cles ARB synchronisees par `sync-mobile.js` (cibles generees), aucun
   contrat modifie.
+
+## Mise à jour 2026-09-19 — lot audit vendeur vitrine (PR #7667, issues #7662–#7665)
+
+- **Surface web (vitrine)** : redirects des URLs devinables (`/login`, `/register`,
+  `/onboarding`, `/tarifs`, `/inscription`, `/connexion`, `/a-propos` — 404 vérifiés en prod),
+  gate session + robots + sw.js sur `/crm`, `/accounting`, `/edu-manager`, `/fuel`
+  (2 nouveaux tests de garde dans `protected-prefixes.test.ts`), 404 globale localisée
+  (`vitrine.notFound.*` ×4) et Navbar pilotée par le catalogue (`vitrine.nav.*` ×4 —
+  fin des libellés FR sans accents / TR sans diacritiques). Scénarios automatisés :
+  Jest front/web complet (127 suites), garde funnel e2e (proxy touché).
+- **Surface API / mobile** : aucun changement de code. `api/lang/*/shared.php` et les ARB
+  mobiles ne bougent que par la **synchronisation** du catalogue partagé (`sync-backend`,
+  `sync-mobile`) — clés additives `vitrine.notFound.*` / `vitrine.nav.*`, aucun contrat modifié,
+  aucun scénario mobile nouveau requis.
