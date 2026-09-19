@@ -123,5 +123,6 @@ return [
         'notifications' => 'Bildirimler',
         'evaluations' => 'Degerlendirmeler',
         'restaurant' => 'Satış noktası (POS)',
+        'communication' => 'Iletisim (bagli posta kutusu + yapay zeka)',
     ],
 ];
