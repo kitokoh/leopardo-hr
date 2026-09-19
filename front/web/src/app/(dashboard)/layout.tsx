@@ -787,6 +787,7 @@ export default function DashboardLayout({
             <Link href="/support" onClick={() => setMobileNavOpen(false)} data-testid="dashboard-drawer-support" className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
               <LifeBuoy className="h-4 w-4 text-slate-400" aria-hidden="true" />
               {supportTicketsT(locale, 'menu_label')}
+            </Link>
             {/* #7713 — image de marque du tenant. */}
             <Link href="/settings/branding" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
               <Paintbrush className="h-4 w-4 text-slate-400" aria-hidden="true" />
@@ -1210,6 +1211,7 @@ export default function DashboardLayout({
                     <Link href="/support" role="menuitem" onClick={() => setUserMenuOpen(false)} data-testid="user-menu-support" className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
                       <LifeBuoy className="h-4 w-4 text-slate-400" aria-hidden="true" />
                       {supportTicketsT(locale, 'menu_label')}
+                    </Link>
                     {/* #7713 — image de marque du tenant. */}
                     <Link href="/settings/branding" role="menuitem" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
                       <Paintbrush className="h-4 w-4 text-slate-400" aria-hidden="true" />
