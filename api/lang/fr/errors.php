@@ -329,4 +329,7 @@ return [
     'HEALTH_SOLUTION_INACTIVE' => 'La solution HealthManager n\'est pas active pour cet espace.',
     'HEALTH_APPOINTMENT_CONFLICT' => 'Le créneau chevauche un rendez-vous existant de ce praticien.',
     'HEALTH_INVALID_STATUS_TRANSITION' => 'Transition de statut invalide pour cette ressource.',
+    // BC-30 HealthManager — HC-006 (#7790), hospitalisations.
+    'HEALTH_BED_UNAVAILABLE' => 'Ce lit n\'est pas disponible (occupé, en maintenance ou déjà affecté).',
+    'HEALTH_PATIENT_ALREADY_ADMITTED' => 'Ce patient a déjà une hospitalisation en cours.',
 ];

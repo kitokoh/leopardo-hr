@@ -127,6 +127,7 @@ use App\Modules\FuelStation\Domain\Policies\FuelSitePolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelStationPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelStockEntryPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelStockPolicy;
+use App\Modules\HealthManager\Domain\Models\HealthAdmission;
 use App\Modules\HealthManager\Domain\Models\HealthAppointment;
 use App\Modules\HealthManager\Domain\Models\HealthBed;
 use App\Modules\HealthManager\Domain\Models\HealthConsultation;
@@ -136,6 +137,7 @@ use App\Modules\HealthManager\Domain\Models\HealthPractitioner;
 use App\Modules\HealthManager\Domain\Models\HealthPrescription;
 use App\Modules\HealthManager\Domain\Models\HealthRoom;
 use App\Modules\HealthManager\Domain\Models\HealthSpecialty;
+use App\Modules\HealthManager\Domain\Policies\HealthAdmissionPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthAppointmentPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthBedPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthConsultationPolicy;
@@ -361,6 +363,8 @@ class AuthServiceProvider extends ServiceProvider
         // — HealthManager dossier médical (HC-005, #7789) — réception exclue
         Gate::policy(HealthConsultation::class, HealthConsultationPolicy::class);
         Gate::policy(HealthPrescription::class, HealthPrescriptionPolicy::class);
+        // — HealthManager hospitalisations & occupation des lits (HC-006, #7790)
+        Gate::policy(HealthAdmission::class, HealthAdmissionPolicy::class);
         Gate::policy(EduCourseSlot::class, EduCourseSlotPolicy::class);
         Gate::policy(EduAssessment::class, EduAssessmentPolicy::class);
         Gate::policy(EduGrade::class, EduGradePolicy::class);

@@ -15,6 +15,7 @@ declare(strict_types=1);
  * lambda = 403. Données de santé JAMAIS exposées hors tenant.
  */
 
+use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthAdmissionController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthAppointmentController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthBedController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthConsultationController;
@@ -97,4 +98,15 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/health-manager/prescriptions', [HealthPrescriptionController::class, 'index']);
     Route::post('/health-manager/prescriptions', [HealthPrescriptionController::class, 'store']);
     Route::get('/health-manager/prescriptions/{prescription}', [HealthPrescriptionController::class, 'show'])->whereNumber('prescription');
+
+    // HC-006 (#7790) — hospitalisations : admission (lit libre verrouillé
+    // sous transaction, 409 sinon), transfert tracé (libère l'ancien lit),
+    // sortie (libère le lit, notes chiffrées). Pas de suppression : un
+    // séjour ne s'efface pas. `/occupancy` = occupation par service.
+    Route::get('/health-manager/admissions', [HealthAdmissionController::class, 'index']);
+    Route::post('/health-manager/admissions', [HealthAdmissionController::class, 'store']);
+    Route::get('/health-manager/admissions/{admission}', [HealthAdmissionController::class, 'show'])->whereNumber('admission');
+    Route::post('/health-manager/admissions/{admission}/transfer', [HealthAdmissionController::class, 'transfer'])->whereNumber('admission');
+    Route::post('/health-manager/admissions/{admission}/discharge', [HealthAdmissionController::class, 'discharge'])->whereNumber('admission');
+    Route::get('/health-manager/occupancy', [HealthAdmissionController::class, 'occupancy']);
 });

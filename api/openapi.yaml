@@ -33925,6 +33925,291 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+  /health-manager/admissions:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les hospitalisations
+      description: 'HC-006 (#7790, BC-30). Direction, accueil et praticiens actifs. Filtres status (admitted|transferred|discharged), department_id, patient_id. Liste paginée (data, meta).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - admitted
+          - transferred
+          - discharged
+      - name: department_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: patient_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Hospitalisations du tenant (paginées)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        patient_id:
+                          type: integer
+                        practitioner_id:
+                          type: integer
+                        department_id:
+                          type: integer
+                        bed_id:
+                          type: integer
+                        transferred_from_bed_id:
+                          type: integer
+                          nullable: true
+                          description: Lit d'origine du dernier transfert (traçabilité)
+                        reason:
+                          type: string
+                        admitted_at:
+                          type: string
+                          format: date-time
+                        expected_discharge_at:
+                          type: string
+                          format: date-time
+                          nullable: true
+                        discharged_at:
+                          type: string
+                          format: date-time
+                          nullable: true
+                        transferred_at:
+                          type: string
+                          format: date-time
+                          nullable: true
+                        status:
+                          type: string
+                          enum:
+                          - admitted
+                          - transferred
+                          - discharged
+                        discharge_notes:
+                          type: string
+                          nullable: true
+                          description: Notes de sortie — chiffrées au repos
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Admettre un patient (affectation d'un lit)
+      description: 'Direction et accueil uniquement. Patient, praticien référent (ACTIF), service et lit du MÊME tenant (422 sinon). SOUS TRANSACTION : le lit est verrouillé et doit être LIBRE (409 HEALTH_BED_UNAVAILABLE — un lit occupé ne peut pas être réaffecté), un patient n''a qu''un séjour actif (409 HEALTH_PATIENT_ALREADY_ADMITTED), le lit passe `occupied` atomiquement. Index uniques partiels en base en filet.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - patient_id
+              - practitioner_id
+              - department_id
+              - bed_id
+              - reason
+              properties:
+                patient_id:
+                  type: integer
+                practitioner_id:
+                  type: integer
+                department_id:
+                  type: integer
+                bed_id:
+                  type: integer
+                reason:
+                  type: string
+                  maxLength: 255
+                admitted_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                expected_discharge_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+      responses:
+        '201':
+          description: Patient admis (lit occupé)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '409':
+          description: Lit indisponible ou patient déjà hospitalisé (HEALTH_BED_UNAVAILABLE, HEALTH_PATIENT_ALREADY_ADMITTED)
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/admissions/{admission}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter une hospitalisation
+      description: 'Direction, accueil et praticiens actifs. Séjour d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: admission
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Hospitalisation
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /health-manager/admissions/{admission}/transfer:
+    post:
+      tags:
+      - HealthManager
+      summary: Transférer le patient vers un autre lit
+      description: 'Direction et accueil, séjour ACTIF uniquement (422 sinon). SOUS TRANSACTION : le nouveau lit doit être LIBRE (409), l''ancien lit est LIBÉRÉ, le transfert est TRACÉ (transferred_from_bed_id, transferred_at, statut `transferred`).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: admission
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - bed_id
+              properties:
+                bed_id:
+                  type: integer
+      responses:
+        '200':
+          description: Transfert effectué (ancien lit libéré, nouveau occupé)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Lit cible indisponible (HEALTH_BED_UNAVAILABLE)
+        '422':
+          description: Séjour non actif (HEALTH_INVALID_STATUS_TRANSITION)
+  /health-manager/admissions/{admission}/discharge:
+    post:
+      tags:
+      - HealthManager
+      summary: Sortie d'hospitalisation
+      description: 'Direction et accueil, séjour ACTIF uniquement (422 sinon). SOUS TRANSACTION : statut `discharged` (terminal), date de sortie réelle posée (défaut maintenant), notes de sortie chiffrées au repos, lit LIBÉRÉ.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: admission
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                discharged_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                discharge_notes:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Sortie enregistrée (lit libéré)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          description: Séjour déjà sorti (HEALTH_INVALID_STATUS_TRANSITION)
+  /health-manager/occupancy:
+    get:
+      tags:
+      - HealthManager
+      summary: Occupation des lits par service
+      description: 'HC-006 (#7790). Direction, accueil et praticiens actifs. Par service : lits totaux, occupés, libres, en maintenance et taux d''occupation — calculés depuis l''état RÉEL des lits (health_beds), borné au tenant.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Occupation par service
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        department_id:
+                          type: integer
+                        department_name:
+                          type: string
+                        total_beds:
+                          type: integer
+                        occupied_beds:
+                          type: integer
+                        free_beds:
+                          type: integer
+                        maintenance_beds:
+                          type: integer
+                        occupancy_rate:
+                          type: number
+                          description: occupés / totaux (0 si aucun lit)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /edu-manager/fee-charges:
     post:
       tags:

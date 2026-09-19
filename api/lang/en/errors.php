@@ -335,4 +335,7 @@ return [
     'HEALTH_SOLUTION_INACTIVE' => 'The HealthManager solution is not active for this workspace.',
     'HEALTH_APPOINTMENT_CONFLICT' => 'The time slot overlaps an existing appointment for this practitioner.',
     'HEALTH_INVALID_STATUS_TRANSITION' => 'Invalid status transition for this resource.',
+    // BC-30 HealthManager — HC-006 (#7790), admissions.
+    'HEALTH_BED_UNAVAILABLE' => 'This bed is not available (occupied, under maintenance or already assigned).',
+    'HEALTH_PATIENT_ALREADY_ADMITTED' => 'This patient already has an ongoing admission.',
 ];

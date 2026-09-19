@@ -328,4 +328,7 @@ return [
     'HEALTH_SOLUTION_INACTIVE' => 'HealthManager çözümü bu çalışma alanı için etkin değil.',
     'HEALTH_APPOINTMENT_CONFLICT' => 'Zaman aralığı bu hekimin mevcut bir randevusuyla çakışıyor.',
     'HEALTH_INVALID_STATUS_TRANSITION' => 'Bu kayıt için geçersiz durum geçişi.',
+    // BC-30 HealthManager — HC-006 (#7790), yatışlar.
+    'HEALTH_BED_UNAVAILABLE' => 'Bu yatak uygun değil (dolu, bakımda veya zaten atanmış).',
+    'HEALTH_PATIENT_ALREADY_ADMITTED' => 'Bu hastanın devam eden bir yatışı zaten var.',
 ];
