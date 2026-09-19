@@ -80,15 +80,9 @@ export async function generateMetadata(): Promise<Metadata> {
       // #4612 : template localisé — les titres de page n'embarquent plus la
       // marque (retirée des catalogues) ; le template la pose dans la langue
       // de la page pour éviter doublon + mix FR/autre.
-      template: `%s | ${
-        ssrLocale === 'en'
-          ? 'Leopardo'
-          : ssrLocale === 'tr'
-            ? 'Leopardo İK'
-            : ssrLocale === 'ar'
-              ? 'ليوباردو'
-              : 'Leopardo'
-      }`,
+      // #7708 : marque affichée « Leopardo » seul (décision #7428) — source
+      // unique BRAND_NAME_BY_LOCALE (ليوباردو en AR, translittération).
+      template: `%s | ${BRAND_NAME_BY_LOCALE[ssrLocale] ?? 'Leopardo'}`,
     },
     description,
     keywords: rootL10n.keywords,

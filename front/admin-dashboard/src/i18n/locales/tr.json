@@ -314,7 +314,7 @@
       "description": "Şeffaf fiyatlandirma: Free plani, Pilot aylik 29 EUR, Operations aylik 79 EUR, Enterprise teklif bazli. 14 gunluk ucretsiz deneme."
     },
     "llms": {
-      "summary": "Leopardo İK, saha KOBİ'leri için bulut tabanlı bir personel yönetimi (İK) yazılımıdır. Giriş-çıkış, izin, vardiya, çok ülkeli bordro, İK belgeleri ve raporlamayı mobilden kioska tek bir uygulamada birleştirir.",
+      "summary": "Leopardo, saha ekipleri için işletme yönetimi paketidir — İK ve bordro, yoklama, izin, CRM, muhasebe ve saha operasyonları; web, mobil ve kiosk üzerinde. Paket; giriş-çıkış, izin, vardiya, çok ülkeli bordro, İK belgeleri ve raporlamayı mobilden kioska tek bir uygulamada birleştirir.",
       "factsLabel": "Öne çıkan bilgiler",
       "factCountries": "bordro kataloğunda kapsanan ülke",
       "factLanguages": "ürün dilleri (FR/EN/TR/AR)",
@@ -952,7 +952,7 @@
     "retry": "Yeniden dene",
     "serviceUnreachable": "hizmete ulaşılamıyor",
     "statsLoadError": "Sistem istatistikleri yüklenirken hata oluştu",
-    "subtitle": "Leopardo RH platformunun izlenmesi, yapılandırılması ve otomasyonu.",
+    "subtitle": "Leopardo platformunun izlenmesi, yapılandırılması ve otomasyonu.",
     "title": "Sistem Yönetimi"
   },
   "payrollNoReceipts": "Şu anda mevcut makbuz veya slip yok.",
@@ -3654,7 +3654,7 @@
         "placeholder_uri": "https://example.com/oauth/callback"
       }
     },
-    "socialExamplePlaceholder": "Örn: Leopardo RH — Sosyal medya",
+    "socialExamplePlaceholder": "Örn: Leopardo — Sosyal medya",
     "postContentPlaceholder": "Gönderi içeriği..."
   },
   "attendanceCorrectionEditDateTitle": "{date} düzenle",
@@ -5162,7 +5162,7 @@
     "applyErrorPrefix": "Başvuru sırasında hata: ",
     "notApplied": {
       "title": "Partner Olun",
-      "subtitle": "Leopardo RH ekosistemine katılın ve yönlendirdiğiniz her şirket için komisyon kazanın. %20'ye varan düzenli komisyon.",
+      "subtitle": "Leopardo ekosistemine katılın ve yönlendirdiğiniz her şirket için komisyon kazanın. %20'ye varan düzenli komisyon.",
       "individual": "Bireysel olarak başvurun",
       "agency": "Ajans olarak başvurun"
     },
@@ -5172,7 +5172,7 @@
     },
     "dashboard": {
       "title": "Partner Paneli",
-      "subtitle": "Leopardo RH dönüşümlerinizi ve komisyonlarınızı takip edin — aktif partner durumu."
+      "subtitle": "Leopardo dönüşümlerinizi ve komisyonlarınızı takip edin — aktif partner durumu."
     },
     "metrics": {
       "conversions": "Dönüşümler",
@@ -6675,7 +6675,7 @@
   },
   "signupPage": {
     "badge": "2 dakikada kayit",
-    "headline": "Leopardo RH yi agir bir kayit akisi olmadan deneyin",
+    "headline": "Leopardo'yu agir bir kayit akisi olmadan deneyin",
     "subheadline": "Çalışma alanınızı kendiniz oluşturun: e-postanız, şirketiniz, bir doğrulama kodu — ve uygulamanın içindesiniz. Kredi kartı gerekmez.",
     "cta": "Deneme alanimi olustur",
     "sideBadge": "Alan hemen hazir",

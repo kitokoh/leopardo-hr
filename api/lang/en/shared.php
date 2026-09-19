@@ -15,7 +15,7 @@ return [
         'story' => [
             'clarity' => [
                 'title' => 'A home screen that speaks before it overwhelms',
-                'body' => 'Leopardo HR starts with a few clear actions: clock in, follow the month, and find the information that matters.',
+                'body' => 'Leopardo starts with a few clear actions: clock in, follow the month, and find the information that matters.',
             ],
             'field' => [
                 'title' => 'Mobile-first for field teams',
