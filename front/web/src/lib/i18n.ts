@@ -701,11 +701,11 @@ export type CopyTree = {
 const copy: Record<AppLocale, CopyTree> = {
   fr: {
     login: {
-      title: 'Connexion à Leopardo RH',
+      title: 'Connexion à Leopardo',
       subtitle: 'Accédez à votre espace RH, suivez vos équipes et pilotez les modules actifs de votre entreprise.',
       clientSpace: 'Espace client',
       heroTitle: 'Un accès RH clair pour chaque manager, chaque pays et chaque équipe.',
-      heroCopy: 'Votre portail client reste connecté à l’API Leopardo RH, avec permissions, langue et contexte tenant appliqués dès la connexion.',
+      heroCopy: 'Votre portail client reste connecté à l’API Leopardo, avec permissions, langue et contexte tenant appliqués dès la connexion.',
       secureBadge: 'Connexion sécurisée',
       trustPoints: [
         'Session liée à votre tenant',
@@ -741,7 +741,7 @@ const copy: Record<AppLocale, CopyTree> = {
         google: 'La connexion avec Google a échoué. Veuillez réessayer.',
         googleNetwork: 'Impossible de contacter Google. Vérifiez votre connexion et réessayez.',
         googleAuthFailed: 'Google a refusé la connexion. Veuillez réessayer.',
-        googleNoAccount: 'Aucun compte Leopardo RH n’est associé à cet email Google. Demandez une invitation à votre administrateur.',
+        googleNoAccount: 'Aucun compte Leopardo n’est associé à cet email Google. Demandez une invitation à votre administrateur.',
         googleNoAccountCta: 'Démarrer un essai sans invitation',
         googleUnavailable: 'La connexion Google n’est pas encore disponible. Utilisez votre email et votre mot de passe.',
         // Issue #7479 : ne jamais parler d'identifiants quand la session a été créée.
@@ -772,7 +772,7 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedRole: "Votre rôle actuel ne permet pas d'accéder à ce module.",
       featureLockedPlan: "Ce module n'est pas inclus dans votre plan actuel.",
       featureLockedBadge: 'Module non inclus',
-      featureLockedExplanation: "Leopardo RH garde l'interface explicite afin d'éviter les 404 confuses et les erreurs API inutiles.",
+      featureLockedExplanation: "Leopardo garde l'interface explicite afin d'éviter les 404 confuses et les erreurs API inutiles.",
       featureLockedAdminHint: "Demandez l'activation au super administrateur de la plateforme ou passez sur un plan incluant ce module.",
       featureLockedPlanRoleTitle: 'Plan & rôle',
       featureLockedPlanRoleBody: "Les modules visibles dans cet espace sont calculés depuis les droits, le plan de l'entreprise et le rôle utilisateur.",
@@ -855,7 +855,7 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     accountActivation: {
       title: 'Activez votre compte',
-      subtitle: 'Définissez un mot de passe pour activer votre compte Leopardo RH.',
+      subtitle: 'Définissez un mot de passe pour activer votre compte Leopardo.',
       passwordLabel: 'Mot de passe',
       passwordPlaceholder: '8 caractères minimum',
       confirmPasswordLabel: 'Confirmer le mot de passe',
@@ -1190,7 +1190,7 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     developerSettingsPage: {
       title: 'Espace Développeur',
-      subtitle: 'Gerez vos cles API et vos webhooks pour integrer Leopardo RH a vos outils.',
+      subtitle: 'Gerez vos cles API et vos webhooks pour integrer Leopardo a vos outils.',
       loadTokensError: 'Impossible de charger les cles API.',
       loadWebhooksError: 'Impossible de charger les webhooks.',
       createTokenError: 'Impossible de créer la clé API.',
@@ -1237,7 +1237,7 @@ const copy: Record<AppLocale, CopyTree> = {
       applyErrorPrefix: 'Erreur lors de la candidature : ',
       notApplied: {
         title: 'Devenir Partenaire',
-        subtitle: "Rejoignez l'écosystème Leopardo RH et gagnez des commissions sur chaque entreprise que vous parrainez. Jusqu'à 20 % de commission récurrente.",
+        subtitle: "Rejoignez l'écosystème Leopardo et gagnez des commissions sur chaque entreprise que vous parrainez. Jusqu'à 20 % de commission récurrente.",
         individual: "Postuler en tant qu'Individuel",
         agency: "Postuler en tant qu'Agence",
       },
@@ -1247,7 +1247,7 @@ const copy: Record<AppLocale, CopyTree> = {
       },
       dashboard: {
         title: 'Dashboard Partenaire',
-        subtitle: 'Suivez vos conversions et vos commissions Leopardo RH — statut partenaire actif.',
+        subtitle: 'Suivez vos conversions et vos commissions Leopardo — statut partenaire actif.',
       },
       metrics: {
         conversions: 'Conversions',
@@ -1394,7 +1394,7 @@ const copy: Record<AppLocale, CopyTree> = {
   },
   ar: {
     login: {
-      title: 'تسجيل الدخول إلى Leopardo RH',
+      title: 'تسجيل الدخول إلى Leopardo',
       subtitle: 'ادخل إلى مساحة الموارد البشرية مع اللغة والدور والصلاحيات المناسبة.',
       clientSpace: 'مساحة العميل',
       heroTitle: 'دخول واضح وآمن للمديرين وفرق الموارد البشرية والموظفين.',
@@ -1431,7 +1431,7 @@ const copy: Record<AppLocale, CopyTree> = {
         google: 'فشل تسجيل الدخول عبر Google. حاول مرة أخرى.',
         googleNetwork: 'تعذر الوصول إلى Google. تحقق من اتصالك وحاول مرة أخرى.',
         googleAuthFailed: 'رفض Google تسجيل الدخول. حاول مرة أخرى.',
-        googleNoAccount: 'لا يوجد حساب Leopardo RH مرتبط ببريد Google هذا. اطلب دعوة من المسؤول.',
+        googleNoAccount: 'لا يوجد حساب Leopardo مرتبط ببريد Google هذا. اطلب دعوة من المسؤول.',
         googleNoAccountCta: 'ابدأ تجربة دون دعوة',
         googleUnavailable: 'تسجيل الدخول عبر Google غير متاح بعد. استخدم بريدك وكلمة المرور.',
         // Issue #7479.
@@ -1462,7 +1462,7 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedRole: 'دورك الحالي لا يسمح بالوصول إلى هذه الوحدة.',
       featureLockedPlan: 'هذه الوحدة غير مشمولة في خطتك الحالية.',
       featureLockedBadge: 'الوحدة غير مشمولة',
-      featureLockedExplanation: 'يحافظ Leopardo RH على واجهة واضحة لتجنب أخطاء 404 المربكة وأخطاء API غير الضرورية.',
+      featureLockedExplanation: 'يحافظ Leopardo على واجهة واضحة لتجنب أخطاء 404 المربكة وأخطاء API غير الضرورية.',
       featureLockedAdminHint: 'اطلب تفعيل الوحدة من مدير المنصة أو انتقل إلى خطة تتضمن هذه الوحدة.',
       featureLockedPlanRoleTitle: 'الخطة والدور',
       featureLockedPlanRoleBody: 'تُحسب الوحدات الظاهرة في هذه المساحة بناءً على الصلاحيات وخطة الشركة ودور المستخدم.',
@@ -1876,7 +1876,7 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     developerSettingsPage: {
       title: 'إعدادات المطور',
-      subtitle: 'أدر مفاتيح API والويب هوكس لدمج Leopardo RH مع أدواتك.',
+      subtitle: 'أدر مفاتيح API والويب هوكس لدمج Leopardo مع أدواتك.',
       loadTokensError: 'تعذر تحميل مفاتيح API.',
       loadWebhooksError: 'تعذر تحميل الردود.',
       createTokenError: 'تعذر إنشاء مفتاح API.',
@@ -1923,7 +1923,7 @@ const copy: Record<AppLocale, CopyTree> = {
       applyErrorPrefix: 'خطأ أثناء التقديم: ',
       notApplied: {
         title: 'كن شريكاً',
-        subtitle: 'انضم إلى منظومة Leopardo RH واربح عمولات عن كل شركة تحيلها. عمولة متكررة تصل إلى 20%.',
+        subtitle: 'انضم إلى منظومة Leopardo واربح عمولات عن كل شركة تحيلها. عمولة متكررة تصل إلى 20%.',
         individual: 'التقديم كفرد',
         agency: 'التقديم كوكالة',
       },
@@ -1933,7 +1933,7 @@ const copy: Record<AppLocale, CopyTree> = {
       },
       dashboard: {
         title: 'لوحة تحكم الشريك',
-        subtitle: 'تابع تحويلاتك وعمولاتك في Leopardo RH — حالة شريك نشط.',
+        subtitle: 'تابع تحويلاتك وعمولاتك في Leopardo — حالة شريك نشط.',
       },
       metrics: {
         conversions: 'التحويلات',
@@ -2084,7 +2084,7 @@ const copy: Record<AppLocale, CopyTree> = {
       subtitle: 'Sirket alaniniza, ekiplerinize ve aktif IK modullerinize guvenli sekilde erisin.',
       clientSpace: 'Musteri alani',
       heroTitle: 'Her yonetici, ulke ve ekip icin net bir IK girisi.',
-      heroCopy: 'Leopardo RH portali giristen itibaren tenant, rol, dil ve izin baglaminizi uygular.',
+      heroCopy: 'Leopardo portali giristen itibaren tenant, rol, dil ve izin baglaminizi uygular.',
       secureBadge: 'Guvenli giris',
       trustPoints: [
         'Tenant bazli oturum',
@@ -2117,7 +2117,7 @@ const copy: Record<AppLocale, CopyTree> = {
         google: 'Google ile giris basarisiz oldu. Lutfen tekrar deneyin.',
         googleNetwork: 'Google ile baglanti kurulamadi. Baglantinizi kontrol edip tekrar deneyin.',
         googleAuthFailed: 'Google girisini reddetti. Lutfen tekrar deneyin.',
-        googleNoAccount: 'Bu Google e-postasiyla iliskili Leopardo RH hesabi yok. Yoneticinizden davet isteyin.',
+        googleNoAccount: 'Bu Google e-postasiyla iliskili Leopardo hesabi yok. Yoneticinizden davet isteyin.',
         googleNoAccountCta: 'Davet olmadan deneme başlat',
         googleUnavailable: 'Google ile giris henuz kullanilamiyor. E-posta ve sifrenizle giris yapin.',
         // Issue #7479.
@@ -2148,7 +2148,7 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedRole: "Mevcut rolunuz bu module erisim izni vermiyor.",
       featureLockedPlan: "Bu modul mevcut planiniza dahil degil.",
       featureLockedBadge: 'Modul dahil degil',
-      featureLockedExplanation: "Leopardo RH, kafa karistiran 404'leri ve gereksiz API hatalarini onlemek icin arayuzu acik tutar.",
+      featureLockedExplanation: "Leopardo, kafa karistiran 404'leri ve gereksiz API hatalarini onlemek icin arayuzu acik tutar.",
       featureLockedAdminHint: 'Aktivasyonu platform super yoneticisinden isteyin veya bu modulu iceren bir plana gecin.',
       featureLockedPlanRoleTitle: 'Plan ve rol',
       featureLockedPlanRoleBody: 'Bu alanda gorunen moduller, haklara, sirket planina ve kullanici rolune gore hesaplanir.',
@@ -2231,7 +2231,7 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     accountActivation: {
       title: 'Hesabınızı etkinleştirin',
-      subtitle: 'Leopardo RH hesabınızı etkinleştirmek için bir şifre belirleyin.',
+      subtitle: 'Leopardo hesabınızı etkinleştirmek için bir şifre belirleyin.',
       passwordLabel: 'Şifre',
       passwordPlaceholder: 'En az 8 karakter',
       confirmPasswordLabel: 'Şifreyi onayla',
@@ -2562,7 +2562,7 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     developerSettingsPage: {
       title: 'Gelistirici Alani',
-      subtitle: 'Leopardo HR\'yi araclarinizla entegre etmek icin API anahtarlarinizi ve webhook\'larinizi yonetin.',
+      subtitle: 'Leopardo\'yu araclarinizla entegre etmek icin API anahtarlarinizi ve webhook\'larinizi yonetin.',
       loadTokensError: 'API anahtarlari yuklenemedi.',
       loadWebhooksError: 'Webhook\'lar yuklenemedi.',
       createTokenError: 'API anahtari olusturulamadi.',
@@ -2609,7 +2609,7 @@ const copy: Record<AppLocale, CopyTree> = {
       applyErrorPrefix: 'Başvuru sırasında hata: ',
       notApplied: {
         title: 'Partner Olun',
-        subtitle: "Leopardo RH ekosistemine katılın ve yönlendirdiğiniz her şirket için komisyon kazanın. %20'ye varan düzenli komisyon.",
+        subtitle: "Leopardo ekosistemine katılın ve yönlendirdiğiniz her şirket için komisyon kazanın. %20'ye varan düzenli komisyon.",
         individual: 'Bireysel olarak başvurun',
         agency: 'Ajans olarak başvurun',
       },
@@ -2619,7 +2619,7 @@ const copy: Record<AppLocale, CopyTree> = {
       },
       dashboard: {
         title: 'Partner Paneli',
-        subtitle: 'Leopardo RH dönüşümlerinizi ve komisyonlarınızı takip edin — aktif partner durumu.',
+        subtitle: 'Leopardo dönüşümlerinizi ve komisyonlarınızı takip edin — aktif partner durumu.',
       },
       metrics: {
         conversions: 'Dönüşümler',
@@ -2766,11 +2766,11 @@ const copy: Record<AppLocale, CopyTree> = {
   },
   en: {
     login: {
-      title: 'Sign in to Leopardo RH',
+      title: 'Sign in to Leopardo',
       subtitle: 'Access your HR workspace, follow your teams, and manage the modules enabled for your company.',
       clientSpace: 'Client workspace',
       heroTitle: 'A clear HR access point for every manager, country, and team.',
-      heroCopy: 'Your client portal stays connected to the Leopardo RH API with tenant context, language, and permissions applied after sign-in.',
+      heroCopy: 'Your client portal stays connected to the Leopardo API with tenant context, language, and permissions applied after sign-in.',
       secureBadge: 'Secure sign-in',
       trustPoints: [
         'Session bound to your tenant',
@@ -2803,7 +2803,7 @@ const copy: Record<AppLocale, CopyTree> = {
         google: 'Google sign-in failed. Please try again.',
         googleNetwork: 'Could not reach Google. Check your connection and try again.',
         googleAuthFailed: 'Google refused the sign-in. Please try again.',
-        googleNoAccount: 'No Leopardo RH account is linked to this Google email. Ask your administrator for an invitation.',
+        googleNoAccount: 'No Leopardo account is linked to this Google email. Ask your administrator for an invitation.',
         googleNoAccountCta: 'Start a trial without an invitation',
         googleUnavailable: 'Google sign-in is not available yet. Use your email and password instead.',
         // Issue #7479.
@@ -2834,7 +2834,7 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedRole: "Your current role does not allow access to this module.",
       featureLockedPlan: "This module is not included in your current plan.",
       featureLockedBadge: 'Module not included',
-      featureLockedExplanation: "Leopardo RH keeps the interface explicit to avoid confusing 404s and unnecessary API errors.",
+      featureLockedExplanation: "Leopardo keeps the interface explicit to avoid confusing 404s and unnecessary API errors.",
       featureLockedAdminHint: "Ask the platform super administrator to enable it, or switch to a plan that includes this module.",
       featureLockedPlanRoleTitle: 'Plan & role',
       featureLockedPlanRoleBody: 'The modules visible in this space are computed from permissions, the company plan and the user role.',
@@ -2917,7 +2917,7 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     accountActivation: {
       title: 'Activate your account',
-      subtitle: 'Set a password to activate your Leopardo RH account.',
+      subtitle: 'Set a password to activate your Leopardo account.',
       passwordLabel: 'Password',
       passwordPlaceholder: '8 characters minimum',
       confirmPasswordLabel: 'Confirm password',
@@ -3248,7 +3248,7 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     developerSettingsPage: {
       title: 'Developer Area',
-      subtitle: 'Manage your API keys and webhooks to integrate Leopardo HR with your tools.',
+      subtitle: 'Manage your API keys and webhooks to integrate Leopardo with your tools.',
       loadTokensError: 'Unable to load API keys.',
       loadWebhooksError: 'Unable to load webhooks.',
       createTokenError: 'Unable to create the API key.',
@@ -3295,7 +3295,7 @@ const copy: Record<AppLocale, CopyTree> = {
       applyErrorPrefix: 'Error while applying: ',
       notApplied: {
         title: 'Become a Partner',
-        subtitle: 'Join the Leopardo RH ecosystem and earn commissions on every company you refer. Up to 20% recurring commission.',
+        subtitle: 'Join the Leopardo ecosystem and earn commissions on every company you refer. Up to 20% recurring commission.',
         individual: 'Apply as an Individual',
         agency: 'Apply as an Agency',
       },
@@ -3305,7 +3305,7 @@ const copy: Record<AppLocale, CopyTree> = {
       },
       dashboard: {
         title: 'Partner Dashboard',
-        subtitle: 'Track your Leopardo RH conversions and commissions — active partner status.',
+        subtitle: 'Track your Leopardo conversions and commissions — active partner status.',
       },
       metrics: {
         conversions: 'Conversions',
@@ -3568,10 +3568,10 @@ export function applyDocumentLocale(locale: AppLocale, isRtl?: boolean): void {
 }
 
 export function getDisplayName(user?: StoredAuthUser | null): string {
-  if (!user) return 'Leopardo RH';
+  if (!user) return 'Leopardo';
 
   const fullName = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
-  return fullName || user.name || user.email || 'Leopardo RH';
+  return fullName || user.name || user.email || 'Leopardo';
 }
 
 export function getApiErrorMessage(payload: unknown, fallback: string): string {

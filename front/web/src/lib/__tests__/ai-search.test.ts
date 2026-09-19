@@ -35,15 +35,18 @@ describe('localizedUrl (#AI-SEO)', () => {
 
 describe('buildLlmsTxt (#AI-SEO)', () => {
   it('expose le nom de marque localisé et le résumé', () => {
+    // #7708 : marque affichée « Leopardo » seul + catégorie « suite métier »
+    // (phrases canoniques POSITIONNEMENT_SUITE_METIER.md §2).
     const fr = buildLlmsTxt('fr');
-    expect(fr.startsWith('# Leopardo RH')).toBe(true);
-    expect(fr).toContain('logiciel SaaS de gestion du personnel');
+    expect(fr.startsWith('# Leopardo')).toBe(true);
+    expect(fr).toContain('suite métier des entreprises de terrain');
 
     const en = buildLlmsTxt('en');
-    expect(en.startsWith('# Leopardo HR')).toBe(true);
+    expect(en.startsWith('# Leopardo')).toBe(true);
+    expect(en).toContain('business suite for field-based companies');
 
     const tr = buildLlmsTxt('tr');
-    expect(tr.startsWith('# Leopardo İK')).toBe(true);
+    expect(tr.startsWith('# Leopardo')).toBe(true);
 
     const ar = buildLlmsTxt('ar');
     expect(ar.startsWith('# ليوباردو')).toBe(true);
