@@ -1,4 +1,4 @@
-# Leopardo RH - Modele CRM simple
+# Leopardo - Modele CRM simple
 
 ## Objet
 

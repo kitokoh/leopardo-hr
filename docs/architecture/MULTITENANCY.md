@@ -1,6 +1,6 @@
-# Multi-Tenancy Strategy — Leopardo RH
+# Multi-Tenancy Strategy — Leopardo
 
-Leopardo RH is built from the ground up as a native multi-tenant SaaS. Our architecture ensures that customer data remains strictly isolated, whether you are a small startup or a large enterprise with strict compliance requirements.
+Leopardo is built from the ground up as a native multi-tenant SaaS. Our architecture ensures that customer data remains strictly isolated, whether you are a small startup or a large enterprise with strict compliance requirements.
 
 ## 🏗 The Hybrid Isolation Model
 
@@ -52,7 +52,7 @@ public function switchToTenant(Company $company)
 
 ## 🚀 Scalability
 
-By supporting both models, Leopardo RH can scale to thousands of small tenants efficiently while providing the heavyweight isolation required for premium enterprise clients without changing a single line of business logic.
+By supporting both models, Leopardo can scale to thousands of small tenants efficiently while providing the heavyweight isolation required for premium enterprise clients without changing a single line of business logic.
 
 ---
 

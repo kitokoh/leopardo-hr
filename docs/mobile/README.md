@@ -1,6 +1,6 @@
 # Mobile Application Documentation
 
-This directory contains resources and guides for the Leopardo RH Flutter mobile application.
+This directory contains resources and guides for the Leopardo Flutter mobile application.
 
 ## 📱 Overview
 The mobile app is the primary touchpoint for employees and on-site managers. It handles:

@@ -1,6 +1,6 @@
-# Quick Start Guide — Leopardo RH
+# Quick Start Guide — Leopardo
 
-Welcome to Leopardo RH! This guide will help you get your environment set up and make your first API call in minutes.
+Welcome to Leopardo! This guide will help you get your environment set up and make your first API call in minutes.
 
 ## Fast Track (Docker) — recommandé
 
@@ -32,7 +32,7 @@ docker compose exec api php artisan leopardo:migrate --seed --demo
 Votre API est maintenant disponible sur `http://localhost:8000/api/v1/health`.
 
 > **Pourquoi `leopardo:migrate` et pas `artisan migrate` ?**
-> Leopardo RH utilise un modèle multi-tenant hybride à deux schemas PostgreSQL.
+> Leopardo utilise un modèle multi-tenant hybride à deux schemas PostgreSQL.
 > La commande custom `leopardo:migrate` bascule le `search_path` et joue les
 > migrations `database/migrations/public/` puis `database/migrations/tenant/`
 > dans le bon ordre. Voir `docs/architecture/MULTITENANCY.md`.

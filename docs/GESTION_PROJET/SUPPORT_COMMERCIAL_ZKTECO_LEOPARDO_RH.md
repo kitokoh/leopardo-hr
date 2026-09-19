@@ -2,7 +2,7 @@
 
 ## 1. Resume executif
 
-Leopardo RH propose une solution moderne de pointage et de gestion RH qui combine :
+Leopardo propose une solution moderne de pointage et de gestion RH qui combine :
 
 - application mobile employe
 - plateforme web manager / RH
@@ -28,7 +28,7 @@ Beaucoup d entreprises font face aux memes difficultes :
 
 ## 3. Notre reponse
 
-Leopardo RH combine trois niveaux complementaires :
+Leopardo combine trois niveaux complementaires :
 
 ### 3.1 Plateforme web
 
@@ -57,7 +57,7 @@ Pour :
 - pointer rapidement a l entree de l entreprise
 - utiliser visage et empreinte
 - fonctionner meme si internet est indisponible
-- synchroniser plus tard avec Leopardo RH
+- synchroniser plus tard avec Leopardo
 
 ## 4. Parcours utilisateur
 
@@ -112,7 +112,7 @@ Pour :
 
 ## 6. Proposition de valeur client
 
-Avec Leopardo RH, l entreprise gagne :
+Avec Leopardo, l entreprise gagne :
 
 - un pointage plus rapide
 - une meilleure discipline horaire
@@ -159,7 +159,7 @@ Cette solution est particulierement adaptee a :
 
 ## 10. Argumentaire court pour rendez-vous client
 
-Leopardo RH permet a votre entreprise de moderniser le pointage et la gestion RH avec une solution simple, fiable et adaptee au terrain.  
+Leopardo permet a votre entreprise de moderniser le pointage et la gestion RH avec une solution simple, fiable et adaptee au terrain.  
 Vos employes peuvent utiliser leur mobile, et si vous le souhaitez, une borne d entree avec visage et empreinte.  
 L un des grands avantages est que la solution continue de fonctionner meme si internet est instable, grace a un stockage local puis une synchronisation ulterieure.
 
@@ -181,13 +181,13 @@ Ce n est pas bloquant. La borne et le PC local continuent a travailler hors lign
 
 Reponse :
 
-Un simple PC local et un reseau minimal suffisent pour exploiter la borne avec Leopardo RH.
+Un simple PC local et un reseau minimal suffisent pour exploiter la borne avec Leopardo.
 
 ### Objection 3 : la biometrie doit etre controlee
 
 Reponse :
 
-Chez Leopardo RH, la biometrie employe n est pas activee librement. Elle passe par une validation manager ou RH.
+Chez Leopardo, la biometrie employe n est pas activee librement. Elle passe par une validation manager ou RH.
 
 ### Objection 4 : nous voulons aussi du mobile
 
@@ -228,7 +228,7 @@ Le vrai produit n est pas juste l appareil, c est l ensemble de l experience et 
 
 ## 15. Conclusion
 
-Leopardo RH avec borne ZKTeco est une offre forte parce qu elle repond a un besoin concret :
+Leopardo avec borne ZKTeco est une offre forte parce qu elle repond a un besoin concret :
 
 - mieux gerer les employes
 - mieux securiser les pointages

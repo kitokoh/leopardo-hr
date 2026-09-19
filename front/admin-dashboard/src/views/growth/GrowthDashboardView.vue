@@ -3,7 +3,7 @@
     <div class="mb-8 flex justify-between items-center">
       <div>
         <h1 class="text-3xl font-bold text-slate-900">{{ t('growth.title', 'Administration Growth') }}</h1>
-        <p class="text-slate-500 mt-1">{{ t('growth.subtitle', 'Pilotez le programme partenaire et les commissions Leopardo RH.') }}</p>
+        <p class="text-slate-500 mt-1">{{ t('growth.subtitle', 'Pilotez le programme partenaire et les commissions Leopardo.') }}</p>
       </div>
     </div>
 

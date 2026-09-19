@@ -2,14 +2,14 @@
 
 ## 1. Objet
 
-Ce document explique comment installer et exploiter une borne de pointage ZKTeco dans une entreprise cliente avec Leopardo RH, en tenant compte des deux modes reels du terrain :
+Ce document explique comment installer et exploiter une borne de pointage ZKTeco dans une entreprise cliente avec Leopardo, en tenant compte des deux modes reels du terrain :
 
 - mode connecte : la borne et le poste local synchronisent automatiquement avec l API
 - mode offline : la borne continue a collecter les pointages en local puis les synchronise plus tard
 
 Le flux metier vise est le suivant :
 
-1. le super admin Leopardo RH cree la societe et son manager principal
+1. le super admin Leopardo cree la societe et son manager principal
 2. le manager ou le RH cree les employes
 3. chaque employe recoit un email d invitation pour installer l application mobile et activer son compte
 4. l employe complete son profil et soumet ses donnees de biometrie
@@ -25,8 +25,8 @@ Le flux metier vise est le suivant :
 - 1 PC local Windows dedie ou mini PC place a l accueil ou dans le local IT
 - 1 routeur ou reseau local minimal
 - acces internet optionnel mais recommande
-- application mobile Leopardo RH pour les employes
-- API Leopardo RH distante
+- application mobile Leopardo pour les employes
+- API Leopardo distante
 
 ### 2.2 Architecture logique
 
@@ -36,7 +36,7 @@ Le flux metier vise est le suivant :
 - si internet est disponible, le pont envoie automatiquement les evenements a l API
 - si internet est indisponible, le pont garde les evenements en attente
 - le manager ou le RH peut lancer une synchronisation manuelle depuis l interface locale
-- une fois synchronises, les pointages deviennent visibles dans Leopardo RH web et mobile
+- une fois synchronises, les pointages deviennent visibles dans Leopardo web et mobile
 
 ### 2.3 Topologie minimale conseillee
 
@@ -49,7 +49,7 @@ Le flux metier vise est le suivant :
 
 Avant installation chez le client, verifier que :
 
-- la societe existe dans Leopardo RH
+- la societe existe dans Leopardo
 - le manager principal peut se connecter
 - le RH et les employes sont crees ou pourront l etre
 - l invitation email fonctionne
@@ -71,7 +71,7 @@ Avant installation chez le client, verifier que :
 - reseau local stable entre la borne et le PC
 - IP fixe ou reservee DHCP recommandee pour la borne
 - IP fixe ou reservee DHCP recommandee pour le PC local
-- acces HTTP/HTTPS sortant vers Leopardo RH si synchro internet active
+- acces HTTP/HTTPS sortant vers Leopardo si synchro internet active
 
 ## 5. Dossiers et composants techniques
 
@@ -84,7 +84,7 @@ Les elements deployes se trouvent ici :
 
 ## 6. Installation terrain
 
-### 6.1 Etape 1 - creer la borne dans Leopardo RH
+### 6.1 Etape 1 - creer la borne dans Leopardo
 
 Depuis l espace manager ou RH :
 
@@ -203,7 +203,7 @@ Le stockage local peut conserver plusieurs semaines ou mois, mais en pratique il
 
 ### 9.2 Limite importante
 
-Sur mobile standard, Android/iOS ne donnent pas librement le gabarit brut de l empreinte. Leopardo RH prepare donc un flux realiste :
+Sur mobile standard, Android/iOS ne donnent pas librement le gabarit brut de l empreinte. Leopardo prepare donc un flux realiste :
 
 - mobile pour demande, consentement, profil et verification locale
 - borne/lecteur entreprise pour la capture et l usage reel du pointage materiel
@@ -307,7 +307,7 @@ Pour un client avec internet stable :
 - manager cree et actif
 - RH cree si applicable
 - employes invites
-- borne creee dans Leopardo RH
+- borne creee dans Leopardo
 - `device_code` recupere
 - `sync_token` recupere
 - PC local prepare
@@ -319,7 +319,7 @@ Pour un client avec internet stable :
 
 ## 16. Recommandation finale
 
-La solution la plus professionnelle et la plus realiste pour le terrain est de considerer la borne ZKTeco comme dispositif d acquisition locale, le PC local comme tampon offline-first, et Leopardo RH comme systeme central de validation, consultation mobile et synchronisation long terme.
+La solution la plus professionnelle et la plus realiste pour le terrain est de considerer la borne ZKTeco comme dispositif d acquisition locale, le PC local comme tampon offline-first, et Leopardo comme systeme central de validation, consultation mobile et synchronisation long terme.
 
 Cette architecture permet :
 

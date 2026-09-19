@@ -14,7 +14,7 @@
 ## 1. Objet et périmètre
 
 Le module Recrutement gère le cycle de vie complet d'une offre d'emploi et de ses candidatures,
-pour le compte d'une entreprise cliente (tenant) de Leopardo RH :
+pour le compte d'une entreprise cliente (tenant) de Leopardo :
 
 - création, publication et fermeture d'offres d'emploi (`JobPosting`) ;
 - portail public de candidature (page carrières par entreprise, flux XML Google Jobs/Indeed) ;
@@ -164,7 +164,7 @@ sur cette surface intentionnellement anonyme.
 ## 7. Écarts connus / hors périmètre actuel
 
 - Pas de webhook sortant (ATS externe, LinkedIn Job Sync) — candidatures et offres restent
-  internes à Leopardo RH.
+  internes à Leopardo.
 - Pas de scoring automatique / matching IA des candidats (voir `docs/ai/README.md` pour la
   feuille de route IA générale du produit, non spécifique au recrutement à ce jour).
 - `resume_path` accepte un fichier uploadé (stockage `local`, chemin `recruitment/{company_id}/resumes`)

@@ -33,7 +33,7 @@
 
 ### 1.1 Pourquoi cette verticale
 
-Leopardo HR est une plateforme modulaire multi-tenant. Les **solutions verticales** ajoutent des
+Leopardo est une plateforme modulaire multi-tenant. Les **solutions verticales** ajoutent des
 workflows propres à un secteur sans remplacer ni recopier les modules transversaux
 (voir `docs/specifications/PLATFORM_ONBOARDING_AND_VERTICAL_SOLUTIONS.md`).
 
