@@ -37,6 +37,8 @@ const PROTECTED_PREFIXES = [
   '/fuel',
   // BC-17 — espace vendeur (zone dashboard).
   '/commerce',
+  // BC-29 COMMUNICATION (#7691) — boîte connectée (zone dashboard).
+  '/communication',
 ];
 
 function isProtectedPath(url) {

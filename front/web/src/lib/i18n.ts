@@ -159,6 +159,8 @@ export type CopyTree = {
       cameras: string;
       /** BC-17 (#7675) — espace vendeur Commerce (libellé localisé du menu) */
       commerce: string;
+      /** BC-29 (#7691) — module Communication (boîte mail + IA) */
+      communication: string;
     };
     /** #7225 — « Entreprise » (bandeau horizontal transverse) */
     sectionEnterprise: string;
@@ -820,6 +822,7 @@ const copy: Record<AppLocale, CopyTree> = {
         showcase: 'Site vitrine',
         cameras: 'Caméras',
         commerce: 'Commerce',
+        communication: 'Communication',
       },
       sectionEnterprise: 'Entreprise',
       sectionModules: 'Modules & plan',
@@ -1510,6 +1513,7 @@ const copy: Record<AppLocale, CopyTree> = {
         showcase: 'موقع التعريف',
         cameras: 'الكاميرات',
         commerce: 'التجارة',
+        communication: 'التواصل',
       },
       sectionEnterprise: 'الشركة',
       sectionModules: 'الوحدات والخطة',
@@ -2196,6 +2200,7 @@ const copy: Record<AppLocale, CopyTree> = {
         showcase: 'Tanıtım sitesi',
         cameras: 'Kameralar',
         commerce: 'Ticaret',
+        communication: 'İletişim',
       },
       sectionEnterprise: 'Şirket',
       sectionModules: 'Modüller ve plan',
@@ -2882,6 +2887,7 @@ const copy: Record<AppLocale, CopyTree> = {
         showcase: 'Showcase site',
         cameras: 'Cameras',
         commerce: 'Commerce',
+        communication: 'Communication',
       },
       sectionEnterprise: 'Company',
       sectionModules: 'Modules & plan',

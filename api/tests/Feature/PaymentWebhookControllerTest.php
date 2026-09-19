@@ -2,11 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Mail\InvoicePaymentReceiptMail;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Billing\Domain\Models\Subscription;
 use App\Modules\Payroll\Domain\Models\Payment;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Testing\TestResponse;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -204,6 +207,7 @@ class PaymentWebhookControllerTest extends TestCase
         string $invoiceNumber = 'LEO-2026-TEST',
         ?string $stripeInvoiceId = null,
         ?string $stripeSubscriptionId = null,
+        ?string $period = null,
     ): array {
         $company = Company::factory()->create();
         $subscription = Subscription::create([
@@ -219,6 +223,7 @@ class PaymentWebhookControllerTest extends TestCase
             'company_id' => $company->id,
             'subscription_id' => $subscription->id,
             'number' => $invoiceNumber,
+            'period' => $period,
             'amount' => 99.00,
             'currency' => 'EUR',
             'total' => 99.00,
@@ -266,5 +271,142 @@ class PaymentWebhookControllerTest extends TestCase
 
         // #2614 : secret de test configuré → signature invalide → 400 déterministe.
         $response->assertStatus(400);
+    }
+
+    // ── #7763 — rapprochement Stripe (stripe_invoice_id) + reçu de paiement ──
+
+    public function test_stripe_invoice_created_reconciles_internal_invoice(): void
+    {
+        [, , $invoice] = $this->billingFixture(
+            stripeSubscriptionId: 'sub_rec_created',
+            period: now()->format('Y-m'),
+        );
+
+        $this->assertNull($invoice->stripe_invoice_id);
+
+        $this->postStripeWebhook([
+            'id' => 'evt_invoice_created_1',
+            'type' => 'invoice.created',
+            'data' => [
+                'object' => [
+                    'id' => 'in_rec_created',
+                    'subscription' => 'sub_rec_created',
+                    'period_start' => now()->timestamp,
+                ],
+            ],
+        ])->assertOk()->assertJsonPath('received', true);
+
+        $fresh = $invoice->refresh();
+        // stripe_invoice_id écrit — le statut interne ne bouge PAS sur created.
+        $this->assertSame('in_rec_created', $fresh->stripe_invoice_id);
+        $this->assertSame('sent', $fresh->status);
+        $this->assertSame(0, Payment::count());
+    }
+
+    public function test_stripe_invoice_paid_reconciles_by_subscription_and_period_then_marks_paid(): void
+    {
+        Mail::fake();
+
+        [$company, $subscription, $invoice] = $this->billingFixture(
+            stripeSubscriptionId: 'sub_rec_paid',
+            period: now()->format('Y-m'),
+        );
+        $principal = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        $payload = [
+            'id' => 'evt_invoice_paid_rec_1',
+            'type' => 'invoice.paid',
+            'data' => [
+                'object' => [
+                    'id' => 'in_rec_paid',
+                    'subscription' => 'sub_rec_paid',
+                    'period_start' => now()->timestamp,
+                    'amount_paid' => 9900,
+                    'currency' => 'eur',
+                    'charge' => 'ch_rec_paid',
+                ],
+            ],
+        ];
+
+        $this->postStripeWebhook($payload)->assertOk()->assertJsonPath('received', true);
+
+        $fresh = $invoice->refresh();
+        $this->assertSame('in_rec_paid', $fresh->stripe_invoice_id);
+        $this->assertSame('paid', $fresh->status);
+        $this->assertSame('stripe', $fresh->payment_method);
+        $this->assertSame(1, Payment::count());
+
+        // Reçu de paiement au principal (point unique transitionTo → event).
+        Mail::assertQueued(
+            InvoicePaymentReceiptMail::class,
+            fn (InvoicePaymentReceiptMail $mail): bool => $mail->hasTo($principal->email)
+        );
+
+        // Rejeu idempotent (#5444) : réponse mémorisée, zéro double paiement
+        // ni second reçu (la transition paid → paid ne re-dispatch pas).
+        $this->postStripeWebhook($payload)
+            ->assertOk()
+            ->assertJsonPath('replayed', true);
+
+        $this->assertSame(1, Payment::count());
+        Mail::assertQueued(InvoicePaymentReceiptMail::class, 1);
+    }
+
+    public function test_chargily_checkout_paid_queues_payment_receipt_to_principal(): void
+    {
+        Mail::fake();
+
+        [$company, , $invoice] = $this->billingFixture(invoiceNumber: 'LEO-CHARGILY-RECEIPT');
+        $principal = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        $this->postChargilyWebhook([
+            'type' => 'checkout.paid',
+            'data' => [
+                'id' => 'checkout_receipt_1',
+                'payment_method' => 'cib',
+                'metadata' => ['invoice_number' => 'LEO-CHARGILY-RECEIPT'],
+            ],
+        ])->assertOk()->assertJsonPath('received', true);
+
+        $this->assertSame('paid', $invoice->refresh()->status);
+        Mail::assertQueued(
+            InvoicePaymentReceiptMail::class,
+            fn (InvoicePaymentReceiptMail $mail): bool => $mail->hasTo($principal->email)
+        );
+        Mail::assertQueued(InvoicePaymentReceiptMail::class, 1);
+    }
+
+    public function test_stripe_invoice_paid_without_matching_internal_invoice_stays_safe(): void
+    {
+        Mail::fake();
+
+        // Période DIFFÉRENTE → aucun rapprochement possible : zéro écriture,
+        // zéro paiement fantôme, zéro reçu.
+        [, $subscription, $invoice] = $this->billingFixture(
+            stripeSubscriptionId: 'sub_rec_other',
+            period: now()->subMonths(2)->format('Y-m'),
+        );
+
+        $this->postStripeWebhook([
+            'id' => 'evt_invoice_paid_nomatch',
+            'type' => 'invoice.paid',
+            'data' => [
+                'object' => [
+                    'id' => 'in_nomatch',
+                    'subscription' => 'sub_rec_other',
+                    'period_start' => now()->timestamp,
+                    'amount_paid' => 9900,
+                ],
+            ],
+        ])->assertOk();
+
+        $fresh = $invoice->refresh();
+        $this->assertNull($fresh->stripe_invoice_id);
+        $this->assertSame('sent', $fresh->status);
+        $this->assertSame(0, Payment::count());
+        Mail::assertNotQueued(InvoicePaymentReceiptMail::class);
+        // La souscription Stripe correspondante est bien renouvelée (comportement
+        // historique conservé : subscription active même sans facture interne).
+        $this->assertSame('active', $subscription->refresh()->status);
     }
 }
