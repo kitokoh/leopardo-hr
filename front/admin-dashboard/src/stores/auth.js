@@ -7,15 +7,15 @@ import { translate } from '@/i18n/index.js'
 const PLATFORM_AUTH_BASE = '/platform/auth'
 const PLATFORM_DEVICE_NAME = 'leo-admin-dashboard'
 
-// Security fix (#1299): migrated from localStorage to sessionStorage.
-// sessionStorage is scoped to the browser tab — the token is cleared when
-// the tab closes, reducing the persistence window for a stolen token.
-// A full httpOnly cookie migration for this SPA requires a server-side
-// BFF or a backend /platform/auth/login endpoint that sets the cookie;
-// that is tracked as the next step in issue #1299.
+// Security fix (#1299 → #7695): le token super-admin ne vit plus dans un
+// stockage DOM pendant la session — il est tenu en mémoire volatile par
+// src/services/token-storage.js (hand-off sessionStorage éphémère au seul
+// rechargement de page). La migration complète cookie httpOnly + BFF reste
+// trackée côté #1299 (le SPA statique Cloudflare Pages n'a pas de serveur
+// pour poser le cookie).
 // See also: docs/security/AUDIT_API_2026-07-19.md
-// Stockage centralisé : src/services/token-storage.js (sessionStorage,
-// cf. PR #1299). Ne pas réintroduire localStorage ici (#1575).
+// Stockage centralisé : src/services/token-storage.js. Ne pas réintroduire
+// localStorage/sessionStorage ici (#1575, #7695).
 import { getAuthToken, setAuthToken, removeAuthToken } from '@/services/token-storage'
 const storage = {
   getToken: getAuthToken,
