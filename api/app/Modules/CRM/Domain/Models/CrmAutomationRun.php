@@ -44,7 +44,23 @@ class CrmAutomationRun extends Model
 
     protected $table = 'crm_automation_runs';
 
-    protected $guarded = [];
+    // #7646 — allowlist explicite SANS `company_id` : le tenant est posé par
+    // le hook creating de BelongsToCompany, jamais par mass assignment.
+    protected $fillable = [
+        'automation_id',
+        'trigger_event',
+        'entity_type',
+        'entity_id',
+        'run_key',
+        'conditions_snapshot',
+        'actions_snapshot',
+        'status',
+        'attempts',
+        'max_attempts',
+        'dry_run',
+        'error',
+        'ran_at',
+    ];
 
     protected function casts(): array
     {
