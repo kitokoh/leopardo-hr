@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
+use Tests\Support\SwitchesTenantContext;
 use Tests\TestCase;
 
 /**
@@ -37,6 +38,7 @@ use Tests\TestCase;
 class EduGradeTest extends TestCase
 {
     use RefreshTenantDatabase;
+    use SwitchesTenantContext;
     use WithFaker;
 
     private Company $company;
@@ -365,13 +367,13 @@ class EduGradeTest extends TestCase
         $published->refresh();
 
         /** @var EduGrade $otherGrade */
-        $otherGrade = EduGrade::query()->create([
+        $otherGrade = $this->withTenantContext($this->otherCompany, fn (): EduGrade => EduGrade::query()->create([
             'company_id' => $this->otherCompany->id,
             'assessment_id' => $otherAssessment->id,
             'student_id' => $otherStudent->id,
             'score' => 12.0,
             'status' => EduGrade::STATUS_DRAFT,
-        ]);
+        ]));
 
         $policy = app(EduGradePolicy::class);
 
@@ -454,8 +456,10 @@ class EduGradeTest extends TestCase
         $subjectId = $overrides['subject_id'] ?? $this->subjectId($company);
         $yearId = $this->academicYearId($company);
 
+        // #7646 — la fixture d'un autre tenant est créée SOUS son tenant
+        // (company_id est désormais forcé depuis le tenant actif).
         /** @var EduAssessment $assessment */
-        $assessment = EduAssessment::query()->create([
+        $assessment = $this->withTenantContext($company, fn (): EduAssessment => EduAssessment::query()->create([
             'company_id' => $company->id,
             'class_id' => $classId,
             'subject_id' => $subjectId,
@@ -467,7 +471,7 @@ class EduGradeTest extends TestCase
             'assessment_date' => '2026-09-15',
             'status' => EduAssessment::STATUS_DRAFT,
             'created_by' => $this->manager->id,
-        ]);
+        ]));
 
         return $assessment;
     }
@@ -541,12 +545,13 @@ class EduGradeTest extends TestCase
 
     private function student(Company $company, string $number): EduStudent
     {
+        // #7646 — idem : création sous le tenant propriétaire de la fixture.
         /** @var EduStudent $student */
-        $student = EduStudent::query()->create([
+        $student = $this->withTenantContext($company, fn (): EduStudent => EduStudent::query()->create([
             'company_id' => $company->id,
             'student_number' => $number,
             'display_name' => $this->faker->name(),
-        ]);
+        ]));
 
         return $student;
     }

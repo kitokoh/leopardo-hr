@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Cabinet\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -28,10 +29,15 @@ use Illuminate\Support\Carbon;
  */
 class CabinetDocument extends Model
 {
+    // Issue #7646 (modèles orphelins) — table `cabinet_documents` du schéma
+    // partagé shared_tenants : sans ce trait, aucune isolation en lecture
+    // (ShareDocument::handle faisait un findOrFail non filtré) et company_id
+    // était mass-assignable en écriture.
+    use BelongsToCompany;
+
     protected $table = 'cabinet_documents';
 
     protected $fillable = [
-        'company_id',
         'employee_id',
         'folder_id',
         'name',
