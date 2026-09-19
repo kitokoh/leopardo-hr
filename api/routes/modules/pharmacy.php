@@ -15,6 +15,7 @@
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyAlertController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyProductController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyPurchaseOrderController;
+use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacySaleController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyStockController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacySupplierController;
 use Illuminate\Support\Facades\Route;
@@ -48,4 +49,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/purchase-orders/{purchaseOrder}/place', [PharmacyPurchaseOrderController::class, 'place'])->whereNumber('purchaseOrder');
         Route::post('/purchase-orders/{purchaseOrder}/cancel', [PharmacyPurchaseOrderController::class, 'cancel'])->whereNumber('purchaseOrder');
         Route::post('/purchase-orders/{purchaseOrder}/receive', [PharmacyPurchaseOrderController::class, 'receive'])->whereNumber('purchaseOrder');
+
+        // ── Ventes comptoir POS (PHARMA-005, #7802) ───────────────────────
+        Route::get('/sales', [PharmacySaleController::class, 'index']);
+        Route::post('/sales', [PharmacySaleController::class, 'store']);
+        Route::get('/sales/{sale}', [PharmacySaleController::class, 'show'])->whereNumber('sale');
+        Route::post('/sales/{sale}/void', [PharmacySaleController::class, 'void'])->whereNumber('sale');
     });
