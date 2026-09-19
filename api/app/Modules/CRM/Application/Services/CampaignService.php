@@ -52,6 +52,8 @@ final class CampaignService
         array $audience,
         ?Carbon $scheduledAt,
         ?int $actorId,
+        ?string $subject = null,
+        ?string $body = null,
     ): CrmCampaign {
         $this->assertChannel($channel);
         $this->assertAudienceSource($segmentId, $audience);
@@ -66,6 +68,8 @@ final class CampaignService
             'description' => $description,
             'channel' => $channel,
             'status' => $status,
+            'subject' => $subject,
+            'body' => $body,
             'segment_id' => $segmentId,
             'audience_snapshot' => $audience === [] ? null : $audience,
             'scheduled_at' => $scheduledAt,
@@ -93,6 +97,8 @@ final class CampaignService
         array $audience,
         ?Carbon $scheduledAt,
         ?int $actorId,
+        ?string $subject = null,
+        ?string $body = null,
     ): CrmCampaign {
         $this->assertEditable($campaign);
         $this->assertChannel($campaign->channel);
@@ -101,6 +107,8 @@ final class CampaignService
         $campaign->update([
             'name' => $name,
             'description' => $description,
+            'subject' => $subject,
+            'body' => $body,
             'segment_id' => $segmentId,
             'audience_snapshot' => $audience === [] ? null : $audience,
             'scheduled_at' => $scheduledAt,
@@ -115,6 +123,14 @@ final class CampaignService
     {
         if (! in_array($campaign->status, [CampaignStatus::Draft->value, CampaignStatus::Scheduled->value, CampaignStatus::Paused->value], true)) {
             throw ValidationException::withMessages(['campaign' => 'Only draft, scheduled or paused campaigns can start.']);
+        }
+
+        // #7751 — une campagne email doit porter son message avant tout envoi.
+        if ($campaign->channel === 'email'
+            && (($campaign->subject ?? '') === '' || ($campaign->body ?? '') === '')) {
+            throw ValidationException::withMessages([
+                'campaign' => __('crm.campaigns.email_requires_subject_body'),
+            ]);
         }
 
         $audience = $this->resolveAudience($campaign);

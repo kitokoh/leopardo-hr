@@ -29,4 +29,14 @@ return [
     'CRM_EXPORT_FAILED' => 'Génération de l\'export CRM en échec.',
     'CRM_EXPORT_ENTITY_INVALID' => 'Entité d\'export CRM inconnue.',
 
+    // #7751 — campagnes email effectives (tranche 1 Marketing & Communication)
+    'campaigns' => [
+        'email_requires_subject_body' => 'Une campagne email requiert un sujet et un corps de message avant de démarrer.',
+    ],
+    'console' => [
+        'process_sends_description' => 'Démarre les campagnes email planifiées dues et draine les envois pending des campagnes running.',
+        'process_sends_tables_missing' => 'crm:process-campaign-sends — tables campagnes absentes, rien à faire.',
+        'process_sends_summary' => 'crm:process-campaign-sends — dues: :due, running: :running, dispatchés: :dispatched, échecs: :failed.',
+    ],
+
 ];
