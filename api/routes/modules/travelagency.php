@@ -34,6 +34,8 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCorporateContro
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCountryController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCurrencyRateController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCustomerContactController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelDistributorKeyController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelDistributorReadController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelEngagementController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelExportController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHealthController;
@@ -204,6 +206,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/partner-keys', [TravelPartnerController::class, 'storePartnerKey']);
         Route::delete('/partner-keys/{travelCarrierApiKey}', [TravelPartnerController::class, 'revokePartnerKey']);
 
+        // Clés API de lecture distributeurs (TRAVEL-DISTRIBUTION/#7641) —
+        // gérées par le tenant (policy principal/rh), token affiché une fois.
+        Route::get('/distributor-keys', [TravelDistributorKeyController::class, 'index']);
+        Route::post('/distributor-keys', [TravelDistributorKeyController::class, 'store']);
+        Route::post('/distributor-keys/{travelDistributorKey}/rotate', [TravelDistributorKeyController::class, 'rotate']);
+        Route::post('/distributor-keys/{travelDistributorKey}/revoke', [TravelDistributorKeyController::class, 'revoke']);
+
         // Taux de conversion multi-devise (TRAVEL-805/#6096).
         Route::get('/currency-rates', [TravelCurrencyRateController::class, 'index']);
         Route::post('/currency-rates', [TravelCurrencyRateController::class, 'store']);
@@ -262,6 +271,21 @@ Route::middleware(['throttle:api', 'travel.partner'])
         // (Les rapports TravelReportController exigent un Employee auth:sanctum
         // + policy travel.reports — surfaces internes, pas partner.)
         Route::post('/sync', [TravelPartnerController::class, 'sync']);
+    });
+
+// ── Surface de LECTURE distributeurs (TRAVEL-DISTRIBUTION/#7641) — hors
+// auth:sanctum : le distributeur s'authentifie par sa clé (header
+// X-Distributor-Key), le middleware travel.distributor:<scope> pose le
+// contexte tenant, vérifie le scope de lecture (fail-closed) et trace
+// l'usage. Rate limit dédié 60/min par IP (même posture que le formulaire
+// public TRAVEL-913).
+Route::middleware(['throttle:60,1'])
+    ->prefix('travel/distributor')
+    ->group(function (): void {
+        Route::get('/catalog', [TravelDistributorReadController::class, 'catalog'])
+            ->middleware('travel.distributor:catalog.read');
+        Route::get('/bookings/{reference}', [TravelDistributorReadController::class, 'booking'])
+            ->middleware('travel.distributor:bookings.read');
     });
 
 // ── Boutique en ligne (TRAVEL-401..404/#6053..#6056), PDV (TRAVEL-301/#6031),

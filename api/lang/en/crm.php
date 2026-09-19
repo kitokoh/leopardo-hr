@@ -29,4 +29,14 @@ return [
     'CRM_EXPORT_FAILED' => 'CRM export generation failed.',
     'CRM_EXPORT_ENTITY_INVALID' => 'Unknown CRM export entity.',
 
+    // #7751 — campagnes email effectives (tranche 1 Marketing & Communication)
+    'campaigns' => [
+        'email_requires_subject_body' => 'An email campaign requires a subject and a message body before starting.',
+    ],
+    'console' => [
+        'process_sends_description' => 'Starts due scheduled email campaigns and drains pending sends of running campaigns.',
+        'process_sends_tables_missing' => 'crm:process-campaign-sends — campaign tables missing, nothing to do.',
+        'process_sends_summary' => 'crm:process-campaign-sends — due: :due, running: :running, dispatched: :dispatched, failures: :failed.',
+    ],
+
 ];

@@ -73,8 +73,12 @@ return [
 
     'email' => [
         // Fournisseur interchangeable (contrat EmailProviderInterface) : log
-        // (défaut, aucun envoi réel) ou mail (Laravel Mail).
+        // (défaut, aucun envoi réel), mail (Laravel Mail) ou resend (ESP
+        // dédié production, clé RESEND_KEY — #7752).
         'provider' => env('CRM_EMAIL_PROVIDER', 'log'),
+        // Adresse expéditeur des emails CRM/campagnes (défaut :
+        // MAIL_FROM_ADDRESS). Requis pour le provider resend.
+        'from_address' => env('CRM_EMAIL_FROM'),
         'webhook_secret' => env('CRM_EMAIL_WEBHOOK_SECRET'),
         'rate_limit_per_hour' => (int) env('CRM_EMAIL_RATE_LIMIT_PER_HOUR', 500),
         'transactional_rate_limit_per_hour' => (int) env('CRM_EMAIL_TRANSACTIONAL_RATE_LIMIT_PER_HOUR', 2000),
