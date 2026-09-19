@@ -54,8 +54,9 @@ class CrmExportTest extends TestCase
             });
         }
 
+        // #7452 — schéma canonique : PK bigint auto-incrémentée (migration
+        // #5708) — ne plus forcer d'id uuid (22P02 sur base migrée).
         \Illuminate\Support\Facades\DB::table('crm_accounts')->insert([
-            'id' => (string) \Illuminate\Support\Str::uuid(),
             'company_id' => $this->companyA->id,
             'name' => 'Acme SARL',
             'status' => 'active',
@@ -254,18 +255,18 @@ class CrmExportTest extends TestCase
             });
         }
 
-        $pipelineId = (string) \Illuminate\Support\Str::uuid();
-        \Illuminate\Support\Facades\DB::table('crm_pipelines')->insert([
-            'id' => $pipelineId,
+        // #7452 — schéma canonique : PK bigint (migrations #5709), l'id est
+        // généré par la séquence.
+        $pipelineId = \Illuminate\Support\Facades\DB::table('crm_pipelines')->insertGetId([
             'company_id' => $this->companyA->id,
             'name' => 'Ventes',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
         \Illuminate\Support\Facades\DB::table('crm_opportunities')->insert([
-            'id' => (string) \Illuminate\Support\Str::uuid(),
             'company_id' => $this->companyA->id,
             'pipeline_id' => $pipelineId,
+            'name' => 'Opportunité Ventes', // #7452 — name est NOT NULL (migration #5709)
             'stage' => 'negotiation',
             'amount' => 5000,
             'created_at' => now(),
