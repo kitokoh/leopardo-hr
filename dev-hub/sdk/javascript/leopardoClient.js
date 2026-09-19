@@ -4885,6 +4885,36 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/training/sessions/{trainingSession}/enroll", options);
     },
 
+    /** Liste des affectations d'equipage de la verticale voyage */
+    getTravelStaffAssignments(options = {}) {
+      return request("GET", "/travel/staff-assignments", options);
+    },
+
+    /** Affecter un employe RH a un role metier travel */
+    postTravelStaffAssignments(options = {}) {
+      return request("POST", "/travel/staff-assignments", options);
+    },
+
+    /** Supprimer une affectation d'equipage */
+    deleteTravelStaffAssignmentsByTravelStaffAssignment(options = {}) {
+      return request("DELETE", "/travel/staff-assignments/{travelStaffAssignment}", options);
+    },
+
+    /** Detail d'une affectation d'equipage */
+    getTravelStaffAssignmentsByTravelStaffAssignment(options = {}) {
+      return request("GET", "/travel/staff-assignments/{travelStaffAssignment}", options);
+    },
+
+    /** Modifier le role d'une affectation d'equipage */
+    putTravelStaffAssignmentsByTravelStaffAssignment(options = {}) {
+      return request("PUT", "/travel/staff-assignments/{travelStaffAssignment}", options);
+    },
+
+    /** Revoquer une affectation d'equipage */
+    postTravelStaffAssignmentsByTravelStaffAssignmentRevoke(options = {}) {
+      return request("POST", "/travel/staff-assignments/{travelStaffAssignment}/revoke", options);
+    },
+
     /** Definir le mot de passe du manager d'un essai guide */
     postTrialSetPassword(options = {}) {
       return request("POST", "/trial/set-password", options);

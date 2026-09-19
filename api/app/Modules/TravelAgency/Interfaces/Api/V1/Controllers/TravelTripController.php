@@ -12,6 +12,7 @@ use App\Modules\TravelAgency\Application\Actions\GenerateTripSeatsAction;
 use App\Modules\TravelAgency\Application\Actions\PublishTripAction;
 use App\Modules\TravelAgency\Domain\Enums\TripStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelPassenger;
+use App\Modules\TravelAgency\Domain\Models\TravelStaffAssignment;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelTripRequest;
@@ -23,7 +24,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Modules\TravelAgency\Application\Actions\CancelTripWithRefundsAction;
 
 /**
  * TRAVEL-308 (#6038) — CRUD des trajets dates (+ generation des sieges).
@@ -338,6 +338,10 @@ class TravelTripController extends Controller
      *
      * Passagers des reservations confirmees (ou au-dela), tries par siege.
      * PII restreinte : jamais de n° de piece d'identite (TravelPassengerResource).
+     *
+     * #7638 (TRAVEL-STAFF) — le manifeste liste aussi l'ÉQUIPAGE : les
+     * affectations actives du trajet, enrichies du nom RH (employee_id par
+     * valeur — la verticale lit Core\Auth\Employee, jamais l'inverse).
      */
     public function manifest(Request $request, TravelTrip $travelTrip): JsonResponse
     {
@@ -353,8 +357,32 @@ class TravelTripController extends Controller
             ->orderBy('seat_number')
             ->get();
 
-        return TravelPassengerResource::collection($passengers)->response();
+        $assignments = TravelStaffAssignment::query()
+            ->active()
+            ->where('trip_id', $travelTrip->id)
+            ->orderBy('id')
+            ->get();
+
+        $employees = Employee::query()
+            ->whereIn('id', $assignments->pluck('employee_id')->all())
+            ->get(['id', 'first_name', 'last_name'])
+            ->keyBy('id');
+
+        $crew = $assignments->map(function (TravelStaffAssignment $assignment) use ($employees): array {
+            $employee = $employees->get($assignment->employee_id);
+
+            return [
+                'assignment_id' => $assignment->id,
+                'employee_id' => $assignment->employee_id,
+                'role' => $assignment->role->value,
+                'full_name' => $employee !== null
+                    ? trim($employee->first_name.' '.$employee->last_name)
+                    : null,
+            ];
+        })->values()->all();
+
+        return TravelPassengerResource::collection($passengers)
+            ->additional(['crew' => $crew])
+            ->response();
     }
-
-
 }

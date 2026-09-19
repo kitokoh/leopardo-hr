@@ -3928,6 +3928,30 @@ class LeopardoClient:
         """Inscrire un employe"""
         return self.request("POST", "/training/sessions/{trainingSession}/enroll", **kwargs)
 
+    def get_travel_staff_assignments(self, **kwargs):
+        """Liste des affectations d'equipage de la verticale voyage"""
+        return self.request("GET", "/travel/staff-assignments", **kwargs)
+
+    def post_travel_staff_assignments(self, **kwargs):
+        """Affecter un employe RH a un role metier travel"""
+        return self.request("POST", "/travel/staff-assignments", **kwargs)
+
+    def delete_travel_staff_assignments_by_travelstaffassignment(self, **kwargs):
+        """Supprimer une affectation d'equipage"""
+        return self.request("DELETE", "/travel/staff-assignments/{travelStaffAssignment}", **kwargs)
+
+    def get_travel_staff_assignments_by_travelstaffassignment(self, **kwargs):
+        """Detail d'une affectation d'equipage"""
+        return self.request("GET", "/travel/staff-assignments/{travelStaffAssignment}", **kwargs)
+
+    def put_travel_staff_assignments_by_travelstaffassignment(self, **kwargs):
+        """Modifier le role d'une affectation d'equipage"""
+        return self.request("PUT", "/travel/staff-assignments/{travelStaffAssignment}", **kwargs)
+
+    def post_travel_staff_assignments_by_travelstaffassignment_revoke(self, **kwargs):
+        """Revoquer une affectation d'equipage"""
+        return self.request("POST", "/travel/staff-assignments/{travelStaffAssignment}/revoke", **kwargs)
+
     def post_trial_set_password(self, **kwargs):
         """Definir le mot de passe du manager d'un essai guide"""
         return self.request("POST", "/trial/set-password", **kwargs)
