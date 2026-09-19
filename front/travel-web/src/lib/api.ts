@@ -1,7 +1,10 @@
 import type {
+  AccountAuthPayload,
   Booking,
   BookingInput,
   BookingResponse,
+  CustomerAccount,
+  CustomerBooking,
   MarketplaceCity,
   MarketplaceTrip,
   MarketplaceTripDetail,
@@ -105,13 +108,22 @@ export async function fetchCities(): Promise<MarketplaceCity[]> {
   return payload.data;
 }
 
-export async function createBooking(input: BookingInput): Promise<{
+export async function createBooking(
+  input: BookingInput,
+  token?: string | null,
+): Promise<{
   booking: Booking;
   agencyName: string | null;
 }> {
   const payload = await request<BookingResponse>(
     `/api/v1/${MARKETPLACE}/bookings`,
-    { method: "POST", body: JSON.stringify(input) },
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+      // #7739 — client connecté : la réservation est rattachée à son compte
+      // à la création (le checkout invité reste possible sans token).
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    },
   );
   return {
     booking: payload.data,
@@ -151,4 +163,63 @@ export async function getTicketPdfUrl(
     `/api/v1/${MARKETPLACE}/tickets/${ticketId}/pdf?code=${encodeURIComponent(code)}`,
   );
   return payload.data.pdf_url ?? null;
+}
+
+// ── Compte client grand public (issue #7739) ────────────────────────────────
+// Auth par token Sanctum du guard DÉDIÉ `travel_customer`, relayé par le
+// proxy same-origin uniquement sur la surface `account/*` (fail-closed).
+
+const ACCOUNT = `${MARKETPLACE}/account`;
+
+function authHeaders(token: string): Record<string, string> {
+  return { Authorization: `Bearer ${token}` };
+}
+
+export async function registerAccount(input: {
+  name: string;
+  email: string;
+  phone?: string;
+  password: string;
+}): Promise<AccountAuthPayload> {
+  const payload = await request<{ data: AccountAuthPayload }>(
+    `/api/v1/${ACCOUNT}/register`,
+    { method: "POST", body: JSON.stringify(input) },
+  );
+  return payload.data;
+}
+
+export async function loginAccount(input: {
+  email: string;
+  password: string;
+}): Promise<AccountAuthPayload> {
+  const payload = await request<{ data: AccountAuthPayload }>(
+    `/api/v1/${ACCOUNT}/login`,
+    { method: "POST", body: JSON.stringify(input) },
+  );
+  return payload.data;
+}
+
+export async function logoutAccount(token: string): Promise<void> {
+  await request<{ data: { logged_out: boolean } }>(`/api/v1/${ACCOUNT}/logout`, {
+    method: "POST",
+    headers: authHeaders(token),
+  });
+}
+
+export async function fetchAccount(token: string): Promise<CustomerAccount> {
+  const payload = await request<{ data: { account: CustomerAccount } }>(
+    `/api/v1/${ACCOUNT}/me`,
+    { headers: authHeaders(token) },
+  );
+  return payload.data.account;
+}
+
+export async function fetchMyBookings(
+  token: string,
+  perPage = 50,
+): Promise<{ data: CustomerBooking[]; meta: SearchMeta }> {
+  return request<{ data: CustomerBooking[]; meta: SearchMeta }>(
+    `/api/v1/${ACCOUNT}/bookings?per_page=${perPage}`,
+    { headers: authHeaders(token) },
+  );
 }

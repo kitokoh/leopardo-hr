@@ -31718,6 +31718,136 @@ paths:
           description: Rejeu idempotent (paiement existant)
         '404':
           $ref: '#/components/responses/Error404'
+  /public/travel/marketplace/account/register:
+    post:
+      tags:
+      - Travel
+      summary: "Marketplace : inscription d'un compte client grand public"
+      description: >-
+        BC-24 TRAVEL (#7739, épic #7736) — création d'un compte client
+        PLATEFORME (hors tenant, table publique travel_customer_accounts).
+        Mot de passe hashé (min 12 caractères + chiffre), throttle
+        auth-sensitive (e-mail + IP). Les réservations marketplace
+        existantes portant le même e-mail de contact sont rattachées au
+        compte à la création (claimed_bookings). Retourne un token Sanctum
+        du guard DÉDIÉ travel_customer (jamais le guard employés).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                  maxLength: 40
+                password:
+                  type: string
+                  minLength: 12
+      responses:
+        '201':
+          description: Compte créé (profil, token, nombre de réservations rattachées)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /public/travel/marketplace/account/login:
+    post:
+      tags:
+      - Travel
+      summary: "Marketplace : connexion d'un client grand public"
+      description: >-
+        BC-24 TRAVEL (#7739) — throttle auth-sensitive (e-mail + IP) +
+        verrouillage 15 min après 5 échecs (pattern #6563). Réponse 401
+        indifférenciée (compte inconnu / mot de passe faux). Retourne un
+        token Sanctum du guard dédié travel_customer.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Connexion réussie (profil + token)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '423':
+          description: Compte temporairement verrouillé (trop d'échecs)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /public/travel/marketplace/account/logout:
+    post:
+      tags:
+      - Travel
+      summary: "Marketplace : déconnexion du client (révocation du token courant)"
+      description: >-
+        BC-24 TRAVEL (#7739) — révoque le SEUL token Sanctum courant du
+        guard travel_customer (les autres appareils restent connectés).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Déconnexion effectuée
+        '401':
+          $ref: '#/components/responses/Error401'
+  /public/travel/marketplace/account/me:
+    get:
+      tags:
+      - Travel
+      summary: "Marketplace : profil du client connecté"
+      description: >-
+        BC-24 TRAVEL (#7739) — profil du compte client authentifié (guard
+        dédié travel_customer) : nom, e-mail, téléphone. Aucune donnée
+        d'agence.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Profil du client
+        '401':
+          $ref: '#/components/responses/Error401'
+  /public/travel/marketplace/account/bookings:
+    get:
+      tags:
+      - Travel
+      summary: "Marketplace : mes réservations cross-agences du client connecté"
+      description: >-
+        BC-24 TRAVEL (#7739) — liste paginée des réservations du compte,
+        toutes agences confondues, STRICTEMENT bornée par
+        customer_account_id (un client ne voit que ses propres
+        réservations). Charge utile publique : référence, statut, trajet,
+        numéros de billets (jamais le code de validation) et NOM PUBLIC de
+        l'agence — aucun identifiant tenant ni donnée interne d'agence.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+      responses:
+        '200':
+          description: Réservations paginées du client (data + meta)
+        '401':
+          $ref: '#/components/responses/Error401'
         '422':
           $ref: '#/components/responses/Error422'
 

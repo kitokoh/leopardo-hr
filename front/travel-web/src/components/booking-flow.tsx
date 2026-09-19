@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { ApiError, createBooking } from "@/lib/api";
+import { useAccount } from "@/lib/account-provider";
 import {
   cityLabel,
   formatDate,
@@ -35,6 +36,7 @@ function priceFor(price: TripPrice | undefined, age: AgeCategory): number {
 
 export function BookingFlow({ trip }: { trip: MarketplaceTripDetail }) {
   const { dict, locale } = useLocale();
+  const { account, token } = useAccount();
   const router = useRouter();
 
   const defaultClassId = trip.prices[0]?.class_id ?? 0;
@@ -52,6 +54,16 @@ export function BookingFlow({ trip }: { trip: MarketplaceTripDetail }) {
   const [notifyConsent, setNotifyConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // #7739 — pré-remplissage checkout : client connecté → coordonnées du
+  // compte, sans jamais écraser une saisie manuelle.
+  const prefilled = useRef(false);
+  useEffect(() => {
+    if (!account || prefilled.current) return;
+    prefilled.current = true;
+    setContactEmail((current) => current || account.email);
+    setContactPhone((current) => current || (account.phone ?? ""));
+  }, [account]);
 
   // Idempotence : UNE clé par session de checkout — un rejeu réseau ne crée
   // jamais deux réservations (contrat #7737).
@@ -140,19 +152,23 @@ export function BookingFlow({ trip }: { trip: MarketplaceTripDetail }) {
 
     setSubmitting(true);
     try {
-      const { booking, agencyName } = await createBooking({
-        trip_id: trip.id,
-        idempotency_key: idempotencyKey.current,
-        contact_email: contactEmail.trim() || undefined,
-        contact_phone: contactPhone.trim() || undefined,
-        notify_consent: notifyConsent,
-        passengers: passengers.map((p) => ({
-          full_name: p.full_name.trim(),
-          age_category: p.age_category,
-          class_id: p.class_id,
-          seat_number: p.seat_number,
-        })),
-      });
+      const { booking, agencyName } = await createBooking(
+        {
+          trip_id: trip.id,
+          idempotency_key: idempotencyKey.current,
+          contact_email: contactEmail.trim() || undefined,
+          contact_phone: contactPhone.trim() || undefined,
+          notify_consent: notifyConsent,
+          passengers: passengers.map((p) => ({
+            full_name: p.full_name.trim(),
+            age_category: p.age_category,
+            class_id: p.class_id,
+            seat_number: p.seat_number,
+          })),
+        },
+        // #7739 — client connecté : réservation rattachée à son compte.
+        token,
+      );
 
       try {
         sessionStorage.setItem(
@@ -422,6 +438,11 @@ export function BookingFlow({ trip }: { trip: MarketplaceTripDetail }) {
               {dict.checkout.contactTitle}
             </h2>
             <p className="mt-1 text-sm text-slate-500">{dict.checkout.contactHint}</p>
+            {account ? (
+              <p className="mt-2 rounded-lg bg-brand-50 px-3 py-2 text-sm text-brand-800">
+                {dict.checkout.loggedInAs} : {account.email}
+              </p>
+            ) : null}
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
                 {dict.checkout.contactEmail}

@@ -123,3 +123,48 @@ export type TrackedBooking = {
   tickets?: BookingTicket[];
   [key: string]: unknown;
 };
+
+/**
+ * Comptes clients grand public (issue #7739) — miroir TypeScript des
+ * payloads de `TravelCustomerAccountController` (guard Sanctum dédié
+ * `travel_customer`, jamais le guard employés).
+ */
+export type CustomerAccount = {
+  id: number;
+  name: string;
+  email: string;
+  phone: string | null;
+  created_at: string | null;
+};
+
+export type AccountAuthPayload = {
+  account: CustomerAccount;
+  token: string;
+  claimed_bookings?: number;
+};
+
+export type CustomerBookingTicket = {
+  id: number;
+  ticket_number: string;
+  status: string;
+};
+
+export type CustomerBooking = {
+  reference: string;
+  status: string;
+  payment_status: string;
+  passenger_count: number;
+  total_amount_minor: number;
+  currency: string;
+  created_at: string | null;
+  expires_at: string | null;
+  trip: {
+    code: string;
+    departure_date: string;
+    departure_time: string | null;
+    origin_city: string | null;
+    destination_city: string | null;
+  } | null;
+  tickets: CustomerBookingTicket[];
+  agency: { name: string | null };
+};

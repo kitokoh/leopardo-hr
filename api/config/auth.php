@@ -3,6 +3,7 @@
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
+use App\Modules\TravelAgency\Domain\Models\TravelCustomerAccount;
 
 return [
 
@@ -60,6 +61,13 @@ return [
             'driver' => 'sanctum',
             'provider' => 'users',
         ],
+        // #7739 — clients GRAND PUBLIC de la marketplace travel : guard
+        // Sanctum DÉDIÉ (jamais le guard employés), provider plateforme
+        // `travel_customer_accounts` (schéma public, hors tenant).
+        'travel_customer' => [
+            'driver' => 'sanctum',
+            'provider' => 'travel_customers',
+        ],
     ],
 
     /*
@@ -92,6 +100,11 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => User::class,
+        ],
+
+        'travel_customers' => [
+            'driver' => 'eloquent',
+            'model' => TravelCustomerAccount::class,
         ],
     ],
 

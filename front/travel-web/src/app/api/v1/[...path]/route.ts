@@ -24,10 +24,27 @@ const HOP_BY_HOP_HEADERS = new Set([
   "trailer",
   "transfer-encoding",
   "upgrade",
-  // Jamais de credentials relayés depuis le navigateur sur cette surface.
+  // Jamais de credentials relayés depuis le navigateur sur cette surface —
+  // SEULE exception (#7739) : le token Sanctum du compte client sur la
+  // sous-surface `public/travel/marketplace/account/*` et la création de
+  // réservation (rattachement au compte), voir forwardsAuthorization().
   "authorization",
   "cookie",
 ]);
+
+/**
+ * #7739 — chemins autorisés à relayer le header Authorization (token du
+ * guard dédié `travel_customer`) : la surface compte client + la création
+ * de réservation marketplace (compte optionnel — checkout invité possible).
+ * Tout le reste du proxy reste sans credentials (fail-closed).
+ */
+function forwardsAuthorization(path: string[]): boolean {
+  const joined = path.join("/");
+  return (
+    joined.startsWith("public/travel/marketplace/account/") ||
+    joined === "public/travel/marketplace/bookings"
+  );
+}
 
 const PROXY_TIMEOUT_MS = 30_000;
 
@@ -48,7 +65,7 @@ function toBackendUrl(request: NextRequest, path: string[]): string {
   return backendUrl.toString();
 }
 
-function proxyHeaders(request: NextRequest): Headers {
+function proxyHeaders(request: NextRequest, path: string[]): Headers {
   const headers = new Headers();
   const contentType = request.headers.get("content-type");
 
@@ -58,6 +75,11 @@ function proxyHeaders(request: NextRequest): Headers {
   }
   const acceptLanguage = request.headers.get("accept-language");
   if (acceptLanguage) headers.set("Accept-Language", acceptLanguage);
+
+  const authorization = request.headers.get("authorization");
+  if (authorization && forwardsAuthorization(path)) {
+    headers.set("Authorization", authorization);
+  }
 
   return headers;
 }
@@ -87,7 +109,7 @@ async function proxy(
   try {
     response = await fetch(toBackendUrl(request, path), {
       method,
-      headers: proxyHeaders(request),
+      headers: proxyHeaders(request, path),
       body,
       redirect: "manual",
       signal: AbortSignal.timeout(PROXY_TIMEOUT_MS),
