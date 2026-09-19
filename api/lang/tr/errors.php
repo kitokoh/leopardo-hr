@@ -197,6 +197,10 @@ return [
     'AI_ANALYTICS_ACCESS_REQUIRED' => 'AI analizlerine erişim Principal veya İK yöneticisi rolü gerektirir.',
     'MANAGER_REQUIRED' => 'Yönetici erişimi gereklidir.',
     'INSUFFICIENT_ROLE' => 'Bu işlem için yetersiz rol.',
+    // #7761
+    'MODULE_ACCESS_REQUIRED' => 'Bu modül açık bir yetkilendirme veya yönetici erişimi gerektirir.',
+    'MODULE_KEYS_REQUIRED' => 'Devredilen modüllerin listesi gereklidir.',
+    'MODULE_KEY_UNKNOWN' => 'Bilinmeyen modül anahtarı.',
     'EMPLOYEE_NOT_FOUND' => 'Çalışan bulunamadı.',
     'INVALID_TOKEN' => 'Geçersiz veya süresi dolmuş jeton.',
     'CAMERA_NOT_FOUND' => 'Kamera bulunamadı.',
