@@ -5,11 +5,16 @@ declare(strict_types=1);
 namespace App\Modules\Retail\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Retail\Application\Services\RetailOnlineOrderService;
+use App\Modules\Retail\Domain\Enums\RetailOrderSource;
 use App\Modules\Retail\Domain\Models\RetailCategory;
 use App\Modules\Retail\Domain\Models\RetailOnlineSettings;
+use App\Modules\Retail\Domain\Models\RetailOrder;
+use App\Modules\Retail\Domain\Models\RetailOrderItem;
 use App\Modules\Retail\Domain\Models\RetailProduct;
 use App\Modules\Retail\Domain\Models\RetailStockLevel;
 use App\Modules\Retail\Infrastructure\Services\RetailMarketplaceService;
+use App\Modules\Retail\Interfaces\Api\V1\Requests\StoreRetailMarketOrderRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -119,6 +124,121 @@ class RetailMarketController extends Controller
         }
 
         return response()->json(['data' => $this->sellerPayload($settings)]);
+    }
+
+    /**
+     * #7808 — Checkout invite : 1 commande = 1 vendeur (slug), prix relus
+     * en base, totaux serveur, source=online, fulfillment_status=pending,
+     * reference WEB-…, tracking_token 64 hex remis au seul invite,
+     * idempotence par cle. Boutique inconnue/non opt-in => 404 fail-closed.
+     */
+    public function storeOrder(
+        StoreRetailMarketOrderRequest $request,
+        RetailOnlineOrderService $orders,
+    ): JsonResponse {
+        $settings = $this->marketplace->findEligibleSellerBySlug((string) $request->validated('seller'));
+
+        if (! $settings instanceof RetailOnlineSettings) {
+            abort(404);
+        }
+
+        /** @var list<array{product_id: int, quantity: float}> $lines */
+        $lines = $request->validated('lines');
+
+        /** @var array{name: string, phone: string, email?: string|null} $customer */
+        $customer = $request->validated('customer');
+
+        /** @var array{address?: string|null, city?: string|null, note?: string|null} $delivery */
+        $delivery = $request->validated('delivery') ?? [];
+
+        $order = $orders->createGuestOrder(
+            settings: $settings,
+            lines: $lines,
+            customer: $customer,
+            delivery: $delivery,
+            idempotencyKey: (string) $request->validated('idempotency_key'),
+        );
+
+        return response()->json([
+            'data' => [
+                'reference' => $order->reference,
+                'tracking_token' => $order->tracking_token,
+                'fulfillment_status' => $order->fulfillment_status?->value,
+                'total_minor' => (int) $order->total_minor,
+                'currency' => $order->currency,
+                'seller' => [
+                    'slug' => $settings->slug,
+                    'display_name' => $settings->display_name,
+                ],
+                'track_url' => '/api/v1/public/market/orders/'.$order->reference,
+            ],
+        ], 201);
+    }
+
+    /**
+     * #7808 — Suivi public par reference + jeton : 404 fail-closed (jeton
+     * absent/mauvais, reference inconnue, reference ambigue cross-tenant —
+     * reponse indistincte, pattern EnsurePublicShopAccess).
+     */
+    public function trackOrder(Request $request, string $reference): JsonResponse
+    {
+        $token = (string) $request->query('token', '');
+
+        if (preg_match('/^[0-9a-f]{64}$/', $token) !== 1) {
+            abort(404);
+        }
+
+        $matches = RetailOrder::query()
+            ->withoutGlobalScope('company')
+            ->where('reference', $reference)
+            ->where('tracking_token', $token)
+            ->where('source', RetailOrderSource::Online)
+            ->limit(2)
+            ->get();
+
+        /** @var RetailOrder|null $order */
+        $order = $matches->count() === 1 ? $matches->first() : null;
+
+        if (! $order instanceof RetailOrder) {
+            abort(404);
+        }
+
+        $seller = RetailOnlineSettings::query()
+            ->withoutGlobalScope('company')
+            ->where('company_id', (string) $order->company_id)
+            ->first();
+
+        $items = RetailOrderItem::query()
+            ->withoutGlobalScope('company')
+            ->where('company_id', (string) $order->company_id)
+            ->where('order_id', (int) $order->id)
+            ->orderBy('line_index')
+            ->get();
+
+        return response()->json([
+            'data' => [
+                'reference' => $order->reference,
+                'fulfillment_status' => $order->fulfillment_status?->value,
+                'total_minor' => (int) $order->total_minor,
+                'currency' => $order->currency,
+                'seller' => $seller instanceof RetailOnlineSettings ? [
+                    'slug' => $seller->slug,
+                    'display_name' => $seller->display_name,
+                ] : null,
+                'items' => $items->map(fn (RetailOrderItem $item): array => [
+                    'product_name' => $item->product_name,
+                    'quantity' => $item->quantity,
+                    'unit_price_minor' => (int) $item->unit_price_minor,
+                    'line_total_minor' => (int) $item->line_total_minor,
+                ])->values()->all(),
+                'placed_at' => $order->created_at?->toIso8601String(),
+                'confirmed_at' => $order->confirmed_at?->toIso8601String(),
+                'ready_at' => $order->ready_at?->toIso8601String(),
+                'shipped_at' => $order->shipped_at?->toIso8601String(),
+                'delivered_at' => $order->delivered_at?->toIso8601String(),
+                'cancelled_at' => $order->cancelled_at?->toIso8601String(),
+            ],
+        ]);
     }
 
     /**

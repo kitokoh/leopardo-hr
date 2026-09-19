@@ -1538,11 +1538,26 @@ trait CreatesMvpSchema
                 $table->text('note')->nullable();
                 $table->string('idempotency_key', 64)->nullable();
                 $table->unsignedInteger('version')->default(1);
+                $table->string('customer_name', 160)->nullable();
+                $table->string('customer_phone', 40)->nullable();
+                $table->string('customer_email', 160)->nullable();
+                $table->string('delivery_address', 255)->nullable();
+                $table->string('delivery_city', 120)->nullable();
+                $table->string('delivery_note', 500)->nullable();
+                $table->string('fulfillment_status', 20)->nullable();
+                $table->char('tracking_token', 64)->nullable();
+                $table->timestamp('confirmed_at')->nullable();
+                $table->timestamp('ready_at')->nullable();
+                $table->timestamp('shipped_at')->nullable();
+                $table->timestamp('delivered_at')->nullable();
+                $table->timestamp('cancelled_at')->nullable();
                 $table->timestamps();
 
                 $table->unique(['company_id', 'reference'], 'retail_orders_company_reference_unique');
                 $table->unique(['company_id', 'idempotency_key'], 'retail_orders_company_idempotency_key_unique');
                 $table->index(['company_id', 'location_id', 'status'], 'retail_orders_company_location_status_idx');
+                $table->index(['tracking_token'], 'retail_orders_tracking_token_idx');
+                $table->index(['company_id', 'fulfillment_status'], 'retail_orders_company_fulfillment_idx');
             });
         }
 

@@ -30051,6 +30051,95 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
 
+  /public/market/orders:
+    post:
+      tags:
+      - Retail
+      summary: "Marketplace publique \u2014 checkout invit\xE9 (#7808, sans auth)"
+      description: "1 commande = 1 vendeur (slug), prix relus en base, totaux serveur\
+        \ en minor units, source=online, fulfillment_status=pending, r\xE9f\xE9rence\
+        \ WEB-\u2026, tracking_token 64 hex remis au seul invit\xE9, idempotence par\
+        \ cl\xE9. Boutique inconnue ou non opt-in : 404 fail-closed."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [seller, idempotency_key, customer, lines]
+              properties:
+                seller:
+                  type: string
+                  description: Slug public de la boutique
+                idempotency_key:
+                  type: string
+                  maxLength: 64
+                customer:
+                  type: object
+                  required: [name, phone]
+                  properties:
+                    name:
+                      type: string
+                    phone:
+                      type: string
+                    email:
+                      type: string
+                      nullable: true
+                delivery:
+                  type: object
+                  nullable: true
+                  properties:
+                    address:
+                      type: string
+                      nullable: true
+                    city:
+                      type: string
+                      nullable: true
+                    note:
+                      type: string
+                      nullable: true
+                lines:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required: [product_id, quantity]
+                    properties:
+                      product_id:
+                        type: integer
+                      quantity:
+                        type: number
+      responses:
+        '201':
+          description: Commande creee (reference, tracking_token, fulfillment_status,
+            total_minor, currency, track_url)
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /public/market/orders/{reference}:
+    get:
+      tags:
+      - Retail
+      summary: "Marketplace publique \u2014 suivi de commande par r\xE9f\xE9rence\
+        \ + jeton (#7808, 404 fail-closed)"
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: token
+        in: query
+        required: true
+        description: tracking_token 64 hex remis au checkout
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Etat public de la commande (statut, lignes, totaux, jalons)
+        '404':
+          $ref: '#/components/responses/Error404'
   /retail/categories:
     get:
       tags:
@@ -30465,6 +30554,266 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+  /retail/products/{product}/publish-online:
+    post:
+      tags:
+      - Retail
+      summary: Rendre un produit visible sur la marketplace publique (#7808)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit visible en ligne (online_visible=true)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /retail/products/{product}/unpublish-online:
+    post:
+      tags:
+      - Retail
+      summary: Retirer un produit de la marketplace publique (#7808)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit retire de la vente en ligne
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /retail/online/settings:
+    get:
+      tags:
+      - Retail
+      summary: Reglages boutique en ligne du tenant (#7808)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Reglages courants (slug, display_name, description, enabled,
+            location_id) ou defauts si jamais configures
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    put:
+      tags:
+      - Retail
+      summary: Mettre a jour les reglages boutique en ligne (gestion principal/rh,
+        #7808)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slug, display_name, enabled]
+              properties:
+                slug:
+                  type: string
+                  description: Slug public unique GLOBAL (cross-tenant)
+                display_name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                enabled:
+                  type: boolean
+                location_id:
+                  type: integer
+                  nullable: true
+      responses:
+        '200':
+          description: Reglages enregistres
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /retail/online/orders:
+    get:
+      tags:
+      - Retail
+      summary: Commandes web du tenant (#7808)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fulfillment_status
+        in: query
+        schema:
+          type: string
+          enum: [pending, confirmed, ready, shipped, delivered, cancelled]
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginee des commandes en ligne
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /retail/online/orders/{order}:
+    get:
+      tags:
+      - Retail
+      summary: Detail d'une commande web (lignes + coordonnees client, #7808)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Detail de la commande
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /retail/online/orders/{order}/confirm:
+    post:
+      tags:
+      - Retail
+      summary: Confirmer une commande web (decremente le stock, #7808)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande confirmee (stock decremente via RetailStockService)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          description: Transition invalide (code INVALID_TRANSITION) ou stock insuffisant
+  /retail/online/orders/{order}/ready:
+    post:
+      tags:
+      - Retail
+      summary: Marquer une commande web prete (#7808)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande prete
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          description: Transition invalide (code INVALID_TRANSITION)
+  /retail/online/orders/{order}/ship:
+    post:
+      tags:
+      - Retail
+      summary: Expedier une commande web (#7808)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande expediee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          description: Transition invalide (code INVALID_TRANSITION)
+  /retail/online/orders/{order}/deliver:
+    post:
+      tags:
+      - Retail
+      summary: Marquer une commande web livree (#7808)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande livree (status=completed)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          description: Transition invalide (code INVALID_TRANSITION)
+  /retail/online/orders/{order}/cancel:
+    post:
+      tags:
+      - Retail
+      summary: Annuler une commande web (restaure le stock si confirmee, #7808)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande annulee (mouvements return si le stock etait engage)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          description: Transition invalide (code INVALID_TRANSITION)
   /retail/locations:
     get:
       tags:

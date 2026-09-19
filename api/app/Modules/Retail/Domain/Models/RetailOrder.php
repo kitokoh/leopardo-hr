@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Retail\Domain\Models;
 
+use App\Modules\Retail\Domain\Enums\RetailFulfillmentStatus;
 use App\Modules\Retail\Domain\Enums\RetailOrderSource;
 use App\Modules\Retail\Domain\Enums\RetailOrderStatus;
 use App\Shared\Traits\BelongsToCompany;
@@ -36,6 +37,19 @@ use Illuminate\Support\Carbon;
  * @property string|null $note
  * @property string|null $idempotency_key
  * @property int $version
+ * @property string|null $customer_name
+ * @property string|null $customer_phone
+ * @property string|null $customer_email
+ * @property string|null $delivery_address
+ * @property string|null $delivery_city
+ * @property string|null $delivery_note
+ * @property RetailFulfillmentStatus|null $fulfillment_status
+ * @property string|null $tracking_token
+ * @property Carbon|null $confirmed_at
+ * @property Carbon|null $ready_at
+ * @property Carbon|null $shipped_at
+ * @property Carbon|null $delivered_at
+ * @property Carbon|null $cancelled_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
@@ -63,6 +77,19 @@ class RetailOrder extends Model
         'note',
         'idempotency_key',
         'version',
+        'customer_name',
+        'customer_phone',
+        'customer_email',
+        'delivery_address',
+        'delivery_city',
+        'delivery_note',
+        'fulfillment_status',
+        'tracking_token',
+        'confirmed_at',
+        'ready_at',
+        'shipped_at',
+        'delivered_at',
+        'cancelled_at',
     ];
 
     /**
@@ -77,6 +104,12 @@ class RetailOrder extends Model
             'status' => RetailOrderStatus::class,
             'source' => RetailOrderSource::class,
             'version' => 'integer',
+            'fulfillment_status' => RetailFulfillmentStatus::class,
+            'confirmed_at' => 'datetime',
+            'ready_at' => 'datetime',
+            'shipped_at' => 'datetime',
+            'delivered_at' => 'datetime',
+            'cancelled_at' => 'datetime',
         ];
     }
 

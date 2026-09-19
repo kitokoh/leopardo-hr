@@ -332,6 +332,10 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/products/{product}', [RetailMarketController::class, 'product']);
         Route::get('/sellers', [RetailMarketController::class, 'sellers']);
         Route::get('/sellers/{slug}', [RetailMarketController::class, 'seller']);
+        // #7808 — checkout invité (1 commande = 1 vendeur, totaux serveur,
+        // idempotence par clé) et suivi par référence + jeton (404 fail-closed).
+        Route::post('/orders', [RetailMarketController::class, 'storeOrder']);
+        Route::get('/orders/{reference}', [RetailMarketController::class, 'trackOrder']);
     });
 
     Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {

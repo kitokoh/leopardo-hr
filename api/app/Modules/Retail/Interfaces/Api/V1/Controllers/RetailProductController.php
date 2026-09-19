@@ -170,6 +170,40 @@ class RetailProductController extends Controller
     }
 
     /**
+     * #7808 — rend le produit visible sur la marketplace publique
+     * (`online_visible = true` ; la visibilité effective exige aussi le
+     * statut `published` ET la boutique `enabled`, spec §2).
+     */
+    public function publishOnline(Request $request, RetailProduct $product): JsonResponse
+    {
+        return $this->setOnlineVisibility($request, $product, true);
+    }
+
+    /**
+     * #7808 — retire le produit de la marketplace publique.
+     */
+    public function unpublishOnline(Request $request, RetailProduct $product): JsonResponse
+    {
+        return $this->setOnlineVisibility($request, $product, false);
+    }
+
+    private function setOnlineVisibility(Request $request, RetailProduct $product, bool $visible): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($product->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('publish', $product);
+
+        $product->update(['online_visible' => $visible]);
+
+        return response()->json(['data' => $this->payload($product->refresh())]);
+    }
+
+    /**
      * Slug unique par tenant : suffixe numérique (-2, -3…) en cas de collision.
      */
     private function uniqueSlug(string $slug, string $companyId, int $ignoreId = 0): string

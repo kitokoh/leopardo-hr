@@ -49,4 +49,14 @@ class RetailOrderPolicy
         return $actor->hasManagerRole('principal', 'rh')
             && $order->company_id === (string) $actor->company_id;
     }
+
+    /**
+     * Transitions du cycle de vie des commandes EN LIGNE (#7808 :
+     * confirm/ready/ship/deliver/cancel) — meme portee que l'encaissement.
+     */
+    public function fulfill(Employee $actor, RetailOrder $order): bool
+    {
+        return $actor->hasManagerRole('principal', 'rh')
+            && $order->company_id === (string) $actor->company_id;
+    }
 }

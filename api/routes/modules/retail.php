@@ -19,6 +19,7 @@
 
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailCategoryController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailLocationController;
+use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailOnlineController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailOrderController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailPosSessionController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailProductController;
@@ -43,6 +44,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::delete('/products/{product}', [RetailProductController::class, 'destroy'])->whereNumber('product');
         Route::post('/products/{product}/publish', [RetailProductController::class, 'publish'])->whereNumber('product');
         Route::post('/products/{product}/unpublish', [RetailProductController::class, 'unpublish'])->whereNumber('product');
+        // Visibilité marketplace publique (#7808 — online_visible, spec §2).
+        Route::post('/products/{product}/publish-online', [RetailProductController::class, 'publishOnline'])->whereNumber('product');
+        Route::post('/products/{product}/unpublish-online', [RetailProductController::class, 'unpublishOnline'])->whereNumber('product');
 
         // Emplacements de stock (gestion réservée principal/rh — RetailLocationPolicy, #7673).
         Route::get('/locations', [RetailLocationController::class, 'index']);
@@ -71,4 +75,17 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/pos/orders/{order}', [RetailOrderController::class, 'show'])->whereNumber('order');
         Route::post('/pos/orders/{order}/payments', [RetailOrderController::class, 'addPayment'])->whereNumber('order');
         Route::post('/pos/orders/{order}/cancel', [RetailOrderController::class, 'cancel'])->whereNumber('order');
+
+        // Boutique en ligne (#7808) : réglages opt-in marketplace, commandes
+        // web et machine d'états pending → confirmed → ready → shipped →
+        // delivered (+ cancelled) — transition invalide → 422 INVALID_TRANSITION.
+        Route::get('/online/settings', [RetailOnlineController::class, 'showSettings']);
+        Route::put('/online/settings', [RetailOnlineController::class, 'updateSettings']);
+        Route::get('/online/orders', [RetailOnlineController::class, 'orders']);
+        Route::get('/online/orders/{order}', [RetailOnlineController::class, 'order'])->whereNumber('order');
+        Route::post('/online/orders/{order}/confirm', [RetailOnlineController::class, 'confirm'])->whereNumber('order');
+        Route::post('/online/orders/{order}/ready', [RetailOnlineController::class, 'ready'])->whereNumber('order');
+        Route::post('/online/orders/{order}/ship', [RetailOnlineController::class, 'ship'])->whereNumber('order');
+        Route::post('/online/orders/{order}/deliver', [RetailOnlineController::class, 'deliver'])->whereNumber('order');
+        Route::post('/online/orders/{order}/cancel', [RetailOnlineController::class, 'cancel'])->whereNumber('order');
     });
