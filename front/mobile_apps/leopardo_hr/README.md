@@ -85,10 +85,10 @@ Le fichier `.aab` se trouve dans : `build/app/outputs/bundle/release/app-release
 
 Pour travailler sans API fonctionnelle, l'application utilise des mocks situés dans `assets/mock/`.
 
-**Important :** La source de vérité pour les structures de données API se trouve dans le dossier racine `/docs/api-mock-data/`. Les fichiers JSON dans `assets/mock/` doivent être maintenus en synchronisation avec ces schémas centraux.
+**Important :** La source de vérité pour les structures de données API est `api/openapi.yaml` ; les exemples JSON `/docs/api-mock-data/` sont générés à la demande (`python dev-hub/tools/generate_api_examples.py`, non versionnés — #7654). Les fichiers JSON dans `assets/mock/` doivent être maintenus en synchronisation avec ces schémas centraux.
 
 Pour mettre à jour les mocks :
-1. Consulter `/docs/api-mock-data/` pour les derniers schémas.
+1. Régénérer puis consulter `/docs/api-mock-data/` (`python dev-hub/tools/generate_api_examples.py`).
 2. Utiliser le script `/tools/generate_api_examples.py` pour régénérer les exemples si nécessaire.
 3. Copier les fichiers pertinents dans `mobile/assets/mock/` en suivant la convention `mock_{nom}.json`.
 
