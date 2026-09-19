@@ -25,38 +25,22 @@
   },
   "locales": {
     "fr": {
-<<<<<<< HEAD
-      "checksum": "8c6ab2881cc97cc5b6cf91e44928d055c057347438802fad02e292122c8cb431",
-=======
-      "checksum": "19a4dc40bbf6ebc0288d761f04efad427d284211fd376446c41f20297c9c54da",
->>>>>>> origin/main
+      "checksum": "133efb94464972575ffe861f97bfb46e543b393d6b286f9528a0ac25ff7d3d13",
       "version": "1.0.0",
       "updated_at": "2026-08-30T15:05:00Z"
     },
     "ar": {
-<<<<<<< HEAD
-      "checksum": "0965cfcb04004db555389f9f8b72aa401f3aba8683b795e1c0825c0edbe37393",
-=======
-      "checksum": "757bd001697c20e7f7dca282c7fc760ea21341e1525586951c7d5938a3a7b010",
->>>>>>> origin/main
+      "checksum": "71f2175a96a0f832711f1027bbe33e9b6bc3a1adddda4efc9510783b8740587d",
       "version": "1.0.0",
       "updated_at": "2026-08-30T15:05:00Z"
     },
     "tr": {
-<<<<<<< HEAD
-      "checksum": "69271195b172065cc2c4f02733e716711a3156f34d0839e5a541fd4ea169a432",
-=======
-      "checksum": "433dc713b7a08267ba7bd525de4ed7c386a16c45044268f75f9c9c82a8f000eb",
->>>>>>> origin/main
+      "checksum": "1476e134519828801c6827754096f000d76c2e914ada5e261d00445504006f46",
       "version": "1.0.0",
       "updated_at": "2026-08-30T15:05:00Z"
     },
     "en": {
-<<<<<<< HEAD
-      "checksum": "fa16e28585e69940021fbbb4c2256c8eb20d0acf6a00f29e278cf8341f50549b",
-=======
-      "checksum": "611bc388ad59cf3ae11da420fb83690395a6c7426c33f619a40ecea8df90bc36",
->>>>>>> origin/main
+      "checksum": "0ba92fdc062038253d7431a84f7f9ebcb6e5f02543324171fd31d1c7c781c488",
       "version": "1.0.0",
       "updated_at": "2026-08-30T15:05:00Z"
     }
@@ -64,39 +48,21 @@
   "surfaces": {
     "web": {
       "checksums": {
-<<<<<<< HEAD
-        "ar": "0965cfcb04004db555389f9f8b72aa401f3aba8683b795e1c0825c0edbe37393",
-        "en": "fa16e28585e69940021fbbb4c2256c8eb20d0acf6a00f29e278cf8341f50549b",
-        "fr": "8c6ab2881cc97cc5b6cf91e44928d055c057347438802fad02e292122c8cb431",
-        "tr": "69271195b172065cc2c4f02733e716711a3156f34d0839e5a541fd4ea169a432"
+        "ar": "71f2175a96a0f832711f1027bbe33e9b6bc3a1adddda4efc9510783b8740587d",
+        "en": "0ba92fdc062038253d7431a84f7f9ebcb6e5f02543324171fd31d1c7c781c488",
+        "fr": "133efb94464972575ffe861f97bfb46e543b393d6b286f9528a0ac25ff7d3d13",
+        "tr": "1476e134519828801c6827754096f000d76c2e914ada5e261d00445504006f46"
       },
-      "updated_at": "2026-09-19T13:58:05.687Z"
+      "updated_at": "2026-09-19T15:07:45.098Z"
     },
     "admin": {
       "checksums": {
-        "ar": "627d2a5fe71dc33244d12796f82ca0ad6eaf1a2bc26a8b2c7dc2bc21dd50c8ff",
-        "en": "d65835ee6add64ddca5fb9456de472efa5732d672774d9f358091eb001244262",
-        "fr": "8549c2c8b36c4cba43c07b856404eb03830d85c8eea5cad97b4bbd8b4ef9b1ee",
-        "tr": "0d3b399851345460635279c39117a6701a028f2dcd5485f33b39a271ca91f214"
+        "ar": "ec54e0dabdc93e085df766254b4ecad1542a2bdbda4d7745aabaff44b2c01bf0",
+        "en": "a906ee5f16fac238ee7eeabba2d31ad27ddbff12b8eb0b32e40cc69457301eff",
+        "fr": "1249ee66f4e3428a48790d5668c4b86ed5661a1aa9ba0e49d697c24804e1f8f7",
+        "tr": "50c60dd55e9251171fd36323791321ee3aa07d8330df1aa374f9cb8dcea93ac9"
       },
-      "updated_at": "2026-09-19T13:58:05.820Z"
-=======
-        "ar": "757bd001697c20e7f7dca282c7fc760ea21341e1525586951c7d5938a3a7b010",
-        "en": "611bc388ad59cf3ae11da420fb83690395a6c7426c33f619a40ecea8df90bc36",
-        "fr": "19a4dc40bbf6ebc0288d761f04efad427d284211fd376446c41f20297c9c54da",
-        "tr": "433dc713b7a08267ba7bd525de4ed7c386a16c45044268f75f9c9c82a8f000eb"
-      },
-      "updated_at": "2026-09-19T13:58:40.842Z"
-    },
-    "admin": {
-      "checksums": {
-        "ar": "50fc6df8025802c4c1735b334c8bea36496f40eaef20f16c13bc6b754849d184",
-        "en": "dd6237bbcb8cef2ffef0189c8a5fee6b7b36f4c7d2ebc1a3e3b5ccab9fa47621",
-        "fr": "0e9581b237bc85388bc413fe2746701b1cb4d44bf20bf22776418072417180e4",
-        "tr": "fca502849a2201047e46a5f55b300a6deb8547bae292da18c6f4b243a67cdb1a"
-      },
-      "updated_at": "2026-09-19T13:58:40.897Z"
->>>>>>> origin/main
+      "updated_at": "2026-09-19T15:07:45.174Z"
     }
   }
 }
