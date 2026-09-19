@@ -92,7 +92,7 @@ class ProcessCampaignSends extends Command
             } catch (Throwable $e) {
                 $failed++;
 
-                Log::error('crm:process-campaign-sends — dispatch failed', [
+                Log::error('crm:process-campaign-sends - dispatch failed', [
                     'campaign_id' => $campaign->id,
                     'company_id' => $campaign->company_id,
                     'error' => $e->getMessage(),
