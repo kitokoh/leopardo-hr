@@ -130,13 +130,17 @@ class GoogleGmailFollowUpSender
         // gabarit possible par locale via EmailTemplateRegistry #7347).
         $locale = (string) config('app.locale');
 
-        $originalSubject = $anchor?->subject ?? $thread?->subject ?? '';
+        $originalSubject = $anchor->subject ?? $thread->subject ?? '';
+
+        $senderName = trim(sprintf(
+            '%s %s',
+            (string) ($employee->first_name ?? ''),
+            (string) ($employee->last_name ?? ''),
+        ));
 
         $template = $this->templates->resolve($templateKey, $locale, [
             ':subject' => $originalSubject,
-            ':name' => trim((string) ($employee?->first_name ?? '')) !== ''
-                ? trim((string) $employee?->first_name.' '.(string) ($employee?->last_name ?? ''))
-                : (string) $integration->email,
+            ':name' => $senderName !== '' ? $senderName : (string) $integration->email,
             ':brand' => (string) config('app.name'),
         ]);
 

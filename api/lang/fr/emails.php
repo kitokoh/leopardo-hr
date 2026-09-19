@@ -196,7 +196,6 @@ return [
     'login_code_intro' => 'Voici votre code de connexion à usage unique. Saisissez-le sur la page de connexion pour accéder à votre espace :',
     'login_code_validity' => "Ce code est valide pendant 10 minutes et à usage unique. Si vous n'avez pas fait cette demande, vous pouvez ignorer cet email.",
 
-
     // BC-29 Communication R4 (#7689) — gabarit de relance automatique.
     'communication_follow_up_subject' => 'Suite à mon message : :subject',
     'communication_follow_up_body' => "Bonjour,\n\nJe me permets de revenir vers vous au sujet de mon précédent message « :subject », resté sans réponse.\n\nAuriez-vous eu l'occasion d'y jeter un œil ?\n\nBien cordialement,\n:name",

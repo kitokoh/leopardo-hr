@@ -113,7 +113,9 @@ class CommunicationFollowUpTest extends TestCase
             ),
             'access_token' => 'plain-access-token-'.$employee->id,
             'refresh_token' => 'plain-refresh-token-'.$employee->id,
-            'expires_at' => now()->addHour(),
+            // Longue validite : les tests voyagent dans le temps (travel())
+            // sans declencher de refresh OAuth (aucun appel reseau).
+            'expires_at' => now()->addYear(),
             'status' => CommunicationIntegration::STATUS_ACTIVE,
             'connected_at' => now(),
         ], $attributes));

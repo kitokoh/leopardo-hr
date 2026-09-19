@@ -204,8 +204,8 @@ class CommunicationFollowUpGuard
         }
 
         return $this->sentTodayQuery($followUp)
-                ->where('integration_id', $followUp->integration_id)
-                ->count() >= $cap;
+            ->where('integration_id', $followUp->integration_id)
+            ->count() >= $cap;
     }
 
     /**
@@ -220,8 +220,8 @@ class CommunicationFollowUpGuard
         }
 
         return $this->sentTodayQuery($followUp)
-                ->where('contact_email', mb_strtolower($followUp->contact_email))
-                ->count() >= $cap;
+            ->where('contact_email', mb_strtolower($followUp->contact_email))
+            ->count() >= $cap;
     }
 
     /**

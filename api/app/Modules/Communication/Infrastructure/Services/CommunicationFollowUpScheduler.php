@@ -95,26 +95,34 @@ class CommunicationFollowUpScheduler
     }
 
     /**
-     * Dernier message du fil s'il est SORTANT (envoye par la boite) et
-     * qu'aucune reponse humaine n'est arrivee apres lui — sinon null.
-     * Les auto-reponses (RFC 3834) ne comptent pas comme le dernier mot du
-     * destinataire MAIS gelent le fil (prudence, garde-fou re-evalue a
-     * l'envoi) ; les fils de liste de diffusion sont exclus d'emblee.
+     * Dernier message « humain » du fil s'il est SORTANT (envoye par la
+     * boite) — sinon null. Les auto-reponses (RFC 3834) ne comptent pas
+     * comme le dernier mot du destinataire (l'ancre reste le sortant — le
+     * garde-fou `auto_reply` gele ensuite la sequence a l'envoi) ; les fils
+     * de liste de diffusion sont exclus d'emblee.
      */
     private function outboundAnchor(CommunicationThread $thread, string $mailbox): ?CommunicationMessage
     {
-        /** @var CommunicationMessage|null $last */
-        $last = CommunicationMessage::query()
+        $recent = CommunicationMessage::query()
             ->withoutGlobalScopes()
             ->where('thread_id', $thread->id)
             ->whereNotNull('sent_at')
             ->orderByDesc('sent_at')
-            ->first();
+            ->limit(25)
+            ->get();
+
+        if ($recent->contains(fn (CommunicationMessage $message): bool => $message->is_list_message)) {
+            return null;
+        }
+
+        /** @var CommunicationMessage|null $last */
+        $last = $recent->first(
+            fn (CommunicationMessage $message): bool => ! $message->is_auto_reply
+        );
 
         if ($last === null
             || $last->from_email === null
-            || mb_strtolower($last->from_email) !== $mailbox
-            || $last->is_list_message) {
+            || mb_strtolower($last->from_email) !== $mailbox) {
             return null;
         }
 

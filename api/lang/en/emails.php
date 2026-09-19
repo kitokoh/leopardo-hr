@@ -195,7 +195,6 @@ return [
     'login_code_intro' => 'Here is your single-use login code. Enter it on the login page to access your workspace:',
     'login_code_validity' => 'This code is valid for 10 minutes and single-use. If you did not request this, you can safely ignore this email.',
 
-
     // BC-29 Communication R4 (#7689) — automatic follow-up template.
     'communication_follow_up_subject' => 'Following up on: :subject',
     'communication_follow_up_body' => "Hello,\n\nI am following up on my previous message \":subject\", which has not received a reply yet.\n\nHave you had a chance to look at it?\n\nBest regards,\n:name",

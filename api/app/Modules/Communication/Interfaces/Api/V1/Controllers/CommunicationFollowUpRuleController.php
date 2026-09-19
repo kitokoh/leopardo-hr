@@ -120,7 +120,7 @@ class CommunicationFollowUpRuleController extends Controller
             $rule->forceFill(['active' => $active]);
             $rule->save();
 
-            if (array_key_exists('steps', $validated) && is_array($validated['steps'])) {
+            if (array_key_exists('steps', $validated)) {
                 CommunicationFollowUpStep::query()
                     ->where('rule_id', $rule->id)
                     ->delete();
@@ -166,7 +166,7 @@ class CommunicationFollowUpRuleController extends Controller
      */
     private function syncSteps(CommunicationFollowUpRule $rule, array $steps): void
     {
-        foreach (array_values($steps) as $index => $payload) {
+        foreach ($steps as $index => $payload) {
             $step = new CommunicationFollowUpStep;
             $step->forceFill([
                 'company_id' => $rule->company_id,
