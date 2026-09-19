@@ -52,6 +52,8 @@ final class CampaignService
         array $audience,
         ?Carbon $scheduledAt,
         ?int $actorId,
+        ?string $subject = null,
+        ?string $body = null,
     ): CrmCampaign {
         $this->assertChannel($channel);
         $this->assertAudienceSource($segmentId, $audience);
@@ -70,6 +72,8 @@ final class CampaignService
             'audience_snapshot' => $audience === [] ? null : $audience,
             'scheduled_at' => $scheduledAt,
             'created_by' => $actorId,
+            'subject' => $subject,
+            'body' => $body,
         ]);
 
         $this->audit($campaign, 'campaign.created', [
@@ -93,6 +97,8 @@ final class CampaignService
         array $audience,
         ?Carbon $scheduledAt,
         ?int $actorId,
+        ?string $subject = null,
+        ?string $body = null,
     ): CrmCampaign {
         $this->assertEditable($campaign);
         $this->assertChannel($campaign->channel);
@@ -104,6 +110,8 @@ final class CampaignService
             'segment_id' => $segmentId,
             'audience_snapshot' => $audience === [] ? null : $audience,
             'scheduled_at' => $scheduledAt,
+            'subject' => $subject,
+            'body' => $body,
         ]);
 
         $this->audit($campaign, 'campaign.updated', ['segment_id' => $segmentId]);
@@ -115,6 +123,14 @@ final class CampaignService
     {
         if (! in_array($campaign->status, [CampaignStatus::Draft->value, CampaignStatus::Scheduled->value, CampaignStatus::Paused->value], true)) {
             throw ValidationException::withMessages(['campaign' => 'Only draft, scheduled or paused campaigns can start.']);
+        }
+
+        // #7751 — le canal email exige un contenu de campagne au start :
+        // sans sujet ET corps, rien d'exploitable ne peut partir (fail-closed).
+        if ($campaign->channel === 'email'
+            && (! is_string($campaign->subject) || trim($campaign->subject) === ''
+                || ! is_string($campaign->body) || trim($campaign->body) === '')) {
+            throw ValidationException::withMessages(['campaign' => 'Une campagne email exige un sujet et un corps de message avant le démarrage.']);
         }
 
         $audience = $this->resolveAudience($campaign);

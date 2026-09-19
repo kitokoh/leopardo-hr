@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\CRM\Providers;
 
+use App\Modules\CRM\Application\Listeners\DispatchCampaignSends;
 use App\Modules\CRM\Application\Listeners\PropagateConsentRevocation;
 use App\Modules\CRM\Domain\Contracts\CampaignConsentCheckerInterface;
 use App\Modules\CRM\Domain\Contracts\ChannelAdapterContract;
@@ -14,6 +15,7 @@ use App\Modules\CRM\Domain\Contracts\CrmLeadRepositoryInterface;
 use App\Modules\CRM\Domain\Contracts\EmailProviderInterface;
 use App\Modules\CRM\Domain\Contracts\SegmentContactSourceInterface;
 use App\Modules\CRM\Domain\Enums\CrmChannelType;
+use App\Modules\CRM\Domain\Events\CampaignStarted;
 use App\Modules\CRM\Domain\Events\CrmConsentRevoked;
 use App\Modules\CRM\Infrastructure\Integrations\Sms\SmsAdapter;
 use App\Modules\CRM\Infrastructure\Integrations\WhatsApp\WhatsAppAdapter;
@@ -144,9 +146,14 @@ class CrmServiceProvider extends ServiceProvider
         // app/Console/Commands → enregistrement explicite.
         $this->commands([
             \App\Modules\CRM\Console\Commands\CleanupCrmExports::class,
+            \App\Modules\CRM\Console\Commands\ProcessCampaignSends::class,
         ]);
         // #5722 — propagation du retrait de consentement vers les campagnes
         // (#5724) : annulation des envois pending/queued du contact.
         Event::listen(CrmConsentRevoked::class, PropagateConsentRevocation::class);
+        // #7751 — une campagne email démarrée envoie effectivement ses
+        // sends : le canal email consomme `CampaignStarted` (découplage
+        // #5724) et met en file le job de traitement des envois pending.
+        Event::listen(CampaignStarted::class, DispatchCampaignSends::class);
     }
 }

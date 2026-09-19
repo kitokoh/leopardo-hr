@@ -10,7 +10,9 @@ use App\Modules\CRM\Domain\Contracts\CampaignConsentCheckerInterface;
 use App\Modules\CRM\Domain\Events\CampaignStarted;
 use App\Modules\CRM\Domain\Models\CrmCampaign;
 use App\Modules\CRM\Domain\Models\CrmCampaignSend;
+use App\Modules\CRM\Infrastructure\Jobs\ProcessCampaignSendsJob;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
@@ -45,6 +47,12 @@ class CrmCampaignTest extends TestCase
         /** @var Company $companyB */
         $companyB = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD']);
         $this->companyB = $companyB;
+
+        // #7751 — le démarrage d'une campagne email met en file le job de
+        // traitement des envois (queue sync en tests) : cette suite couvre le
+        // CYCLE DE VIE, le traitement effectif est couvert par
+        // CrmCampaignSendProcessingTest — on fake uniquement ce job.
+        Bus::fake([ProcessCampaignSendsJob::class]);
     }
 
     protected function tearDown(): void
@@ -112,6 +120,9 @@ class CrmCampaignTest extends TestCase
             'channel' => $channel,
             'status' => 'draft',
             'audience_snapshot' => $audience === [] ? null : $audience,
+            // #7751 — le canal email exige un contenu au start.
+            'subject' => $channel === 'email' ? 'Sujet test' : null,
+            'body' => $channel === 'email' ? 'Corps du message test.' : null,
         ]);
 
         return $campaign;

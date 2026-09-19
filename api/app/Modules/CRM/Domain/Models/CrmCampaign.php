@@ -26,6 +26,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $started_at
  * @property Carbon|null $finished_at
  * @property int|null $created_by
+ * @property string|null $subject
+ * @property string|null $body
  * @property array<string, mixed>|null $metadata
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -51,6 +53,8 @@ class CrmCampaign extends Model
         'started_at',
         'finished_at',
         'created_by',
+        'subject',
+        'body',
         'metadata',
     ];
 

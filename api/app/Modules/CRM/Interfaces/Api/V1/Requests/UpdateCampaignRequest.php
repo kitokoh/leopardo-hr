@@ -24,6 +24,9 @@ class UpdateCampaignRequest extends FormRequest
         return [
             'name' => ['sometimes', 'string', 'max:120'],
             'description' => ['nullable', 'string', 'max:255'],
+            // #7751 — contenu de campagne (exigé au start pour le canal email).
+            'subject' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'body' => ['sometimes', 'nullable', 'string', 'max:100000'],
             'segment_id' => ['sometimes', 'nullable', 'integer', 'min:1'],
             'audience' => ['sometimes', 'array', 'min:1', 'max:10000'],
             'audience.*' => ['integer', 'min:1'],

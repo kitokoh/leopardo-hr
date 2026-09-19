@@ -28,6 +28,11 @@ class StoreCampaignRequest extends FormRequest
             'name' => ['required', 'string', 'max:120'],
             'description' => ['nullable', 'string', 'max:255'],
             'channel' => ['required', 'string', 'in:email,sms,whatsapp'],
+            // #7751 — contenu de campagne (obligatoire pour le canal email au
+            // START, validation métier CampaignService — un brouillon peut
+            // encore être sans contenu).
+            'subject' => ['nullable', 'string', 'max:255'],
+            'body' => ['nullable', 'string', 'max:100000'],
             'segment_id' => ['nullable', 'integer', 'min:1'],
             'audience' => ['nullable', 'array', 'min:1', 'max:10000'],
             'audience.*' => ['integer', 'min:1'],

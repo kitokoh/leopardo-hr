@@ -105,6 +105,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // BC-25 RESTAURANT (RESTO-808/#6229) — consommation de l'outbox
         // de la verticale (notifications cuisine/service, fidélité…).
         $schedule->command('restaurant:outbox-dispatch')->everyMinute()->withoutOverlapping();
+        // #7751 — campagnes email CRM : auto-start des campagnes scheduled
+        // dues + drainage des envois pending des campagnes running (jobs par
+        // campagne, respect pause/cancel) + auto-finish quand plus rien n'est
+        // pending.
+        $schedule->command('crm:process-campaign-sends')->everyFiveMinutes()->withoutOverlapping();
         // #7401 — synchronisation Traccar de la flotte (devices → positions →
         // trajets). Les trois endpoints `/tracking/sync-*` existaient mais
         // n'étaient appelés par AUCUNE tâche planifiée : sans un humain qui

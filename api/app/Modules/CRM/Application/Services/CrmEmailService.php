@@ -10,6 +10,7 @@ use App\Modules\CRM\Domain\Contracts\EmailProviderInterface;
 use App\Modules\CRM\Domain\DTOs\EmailDeliveryResult;
 use App\Modules\CRM\Domain\DTOs\EmailMessage;
 use App\Modules\CRM\Domain\Exceptions\EmailRateLimitExceededException;
+use App\Modules\CRM\Domain\Models\CrmCampaign;
 use App\Modules\CRM\Domain\Models\CrmCampaignSend;
 use App\Modules\CRM\Infrastructure\Services\EmailRateLimiter;
 use Illuminate\Support\Facades\Auth;
@@ -93,6 +94,10 @@ final class CrmEmailService
      * en charge `crm_campaign_sends`. L'adresse du contact est résolue depuis
      * `crm_contacts` (#5708) ; tant que la table n'existe pas, l'envoi est
      * marqué failed avec un message explicite (jamais de crash).
+     *
+     * #7751 — le message est construit depuis le CONTENU de la campagne
+     * (sujet/corps, obligatoires pour le canal email au start) au lieu d'un
+     * contenu codé en dur ; repli explicite si la campagne est introuvable.
      */
     public function sendCampaignSend(CrmCampaignSend $send, string $companyId): EmailDeliveryResult
     {
@@ -106,14 +111,31 @@ final class CrmEmailService
             ->first();
 
         if ($contact === null || ! is_string($contact->email ?? null) || $contact->email === '') {
-            return EmailDeliveryResult::failed('contact not found or without email');
+            $result = EmailDeliveryResult::failed('contact not found or without email');
+            $send->update(['status' => 'failed', 'error' => $result->error]);
+
+            return $result;
         }
+
+        /** @var CrmCampaign|null $campaign */
+        $campaign = CrmCampaign::query()
+            ->withoutGlobalScopes()
+            ->where('company_id', $companyId)
+            ->where('id', $send->campaign_id)
+            ->first();
+
+        $subject = is_string($campaign?->subject) && trim($campaign->subject) !== ''
+            ? $campaign->subject
+            : 'Campagne CRM '.$send->campaign_id;
+        $body = is_string($campaign?->body) && trim($campaign->body) !== ''
+            ? $campaign->body
+            : 'Message de campagne (canal email).';
 
         $message = new EmailMessage(
             $contact->email,
-            'Campagne CRM '.$send->campaign_id,
-            'Message de campagne (canal email).',
-            ['contact_id' => $send->contact_id, 'campaign_send_id' => $send->id],
+            $subject,
+            $body,
+            ['contact_id' => $send->contact_id, 'campaign_id' => $send->campaign_id, 'campaign_send_id' => $send->id],
         );
 
         $result = $this->sendTransactional($message, $companyId);
