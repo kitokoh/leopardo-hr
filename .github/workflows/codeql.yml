@@ -1,4 +1,4 @@
-name: CodeQL - Leopardo RH
+name: CodeQL - Leopardo
 
 on:
   # Issue #1903 — saturation de la file GitHub Actions : CodeQL (Actions +

@@ -23,7 +23,7 @@ on:
         description: "Notes de version (optionnel)"
         required: false
         type: string
-        default: "Build manuel Leopardo RH"
+        default: "Build manuel Leopardo"
       app:
         description: "Application mobile a distribuer"
         required: true
