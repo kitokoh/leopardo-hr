@@ -57,10 +57,12 @@ class RestaurantPublicOrderController extends Controller
     public function pay(Request $request, RestaurantOrder $order): JsonResponse
     {
         $companyId = (string) $request->query('company');
-        $payment = $this->publicOrders->pay($companyId, $order, $request->validate([
+        $result = $this->publicOrders->pay($companyId, $order, $request->validate([
             'provider_code' => ['nullable', 'string', 'max:30'],
             'idempotency_key' => ['nullable', 'string', 'max:120'],
         ]));
+
+        $payment = $result['payment'];
 
         return response()->json([
             'data' => [
@@ -71,6 +73,10 @@ class RestaurantPublicOrderController extends Controller
                 'status' => $payment->status->value,
                 'amount_minor' => (int) $payment->amount_minor,
                 'currency' => $payment->currency,
+                // #7728 — URL du checkout hébergé (Stripe sur les clés du
+                // TENANT / provider mobile money) quand la passerelle en
+                // fournit une ; null pour les flux confirmés par callback.
+                'checkout_url' => $result['checkout_url'],
             ],
         ], 201);
     }

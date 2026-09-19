@@ -4494,7 +4494,9 @@
       "colRevenue": "Today's revenue",
       "colOrders": "Orders",
       "colOccupancy": "Table rotation",
-      "colAlerts": "Stock alerts"
+      "colAlerts": "Stock alerts",
+      "payments": "Payments",
+      "paymentsDesc": "Online payment, Stripe & mobile money profiles"
     },
     "crud": {
       "search": "Search...",
@@ -4812,6 +4814,26 @@
       "reviewNotEligible": "Reviews are only possible after a served or delivered order.",
       "reviewDuplicate": "A review has already been submitted for this order.",
       "reviewError": "Unable to submit the review. Please retry."
+    },
+    "payments": {
+      "title": "Payments",
+      "desc": "Online payment configuration status (payment profiles)",
+      "loadError": "Unable to load the payment configuration.",
+      "onlineEnabled": "Online payment enabled",
+      "onlineDisabled": "Online payment not configured",
+      "onlineDisabledHint": "Your customers cannot pay online: add a payment profile (Stripe keys or mobile money) and activate it. Paying on site always remains possible.",
+      "cardOnline": "Online card (Stripe)",
+      "mobileMoney": "Mobile money",
+      "configured": "Configured",
+      "notConfigured": "Not configured",
+      "sandbox": "Sandbox mode",
+      "production": "Production",
+      "profileActive": "Active profile",
+      "profileMissing": "No active profile",
+      "payOnSite": "Pay on site (POS)",
+      "alwaysAvailable": "Always available",
+      "manageProfiles": "Manage payment profiles",
+      "manageProfilesHint": "Stripe keys and mobile money accounts are managed in Settings → Payments."
     }
   },
   "commonLanguageArabic": "العربية",

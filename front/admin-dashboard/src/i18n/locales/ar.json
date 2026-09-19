@@ -4494,7 +4494,9 @@
       "colRevenue": "إيرادات اليوم",
       "colOrders": "الطلبات",
       "colOccupancy": "دوران الطاولات",
-      "colAlerts": "تنبيهات المخزون"
+      "colAlerts": "تنبيهات المخزون",
+      "payments": "التحصيل",
+      "paymentsDesc": "الدفع عبر الإنترنت، ملفات Stripe والدفع عبر الهاتف"
     },
     "crud": {
       "search": "بحث...",
@@ -4812,6 +4814,26 @@
       "reviewNotEligible": "التقييم ممكن فقط بعد طلب مُقدَّم أو مُوصَّل.",
       "reviewDuplicate": "تم إرسال تقييم لهذا الطلب من قبل.",
       "reviewError": "تعذر إرسال التقييم. حاول مرة أخرى."
+    },
+    "payments": {
+      "title": "التحصيل",
+      "desc": "حالة إعداد الدفع عبر الإنترنت (ملفات الدفع)",
+      "loadError": "تعذر تحميل حالة التحصيل.",
+      "onlineEnabled": "الدفع عبر الإنترنت مفعّل",
+      "onlineDisabled": "الدفع عبر الإنترنت غير مُعد",
+      "onlineDisabledHint": "لا يمكن لعملائك الدفع عبر الإنترنت: أضف ملف دفع (مفاتيح Stripe أو الدفع عبر الهاتف) ثم فعّله. يبقى الدفع في الموقع متاحاً دائماً.",
+      "cardOnline": "بطاقة عبر الإنترنت (Stripe)",
+      "mobileMoney": "الدفع عبر الهاتف",
+      "configured": "مُعد",
+      "notConfigured": "غير مُعد",
+      "sandbox": "وضع الاختبار",
+      "production": "إنتاج",
+      "profileActive": "ملف نشط",
+      "profileMissing": "لا يوجد ملف نشط",
+      "payOnSite": "الدفع في الموقع (الصندوق)",
+      "alwaysAvailable": "متاح دائماً",
+      "manageProfiles": "إدارة ملفات الدفع",
+      "manageProfilesHint": "تُدار مفاتيح Stripe وحسابات الدفع عبر الهاتف في الإعدادات ← التحصيلات."
     }
   },
   "commonLanguageArabic": "العربية",

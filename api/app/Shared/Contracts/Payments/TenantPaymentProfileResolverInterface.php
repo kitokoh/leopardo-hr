@@ -34,4 +34,25 @@ interface TenantPaymentProfileResolverInterface
      * d'autorisation en soi.
      */
     public function stripeWebhookSecretForCompany(string $companyId): ?string;
+
+    /**
+     * #7728 (BC-25 RESTAURANT) — clés Stripe PROPRES d'une compagnie DONNÉE
+     * (profil `stripe_keys` actif). Nécessaire aux surfaces PUBLIQUES
+     * (commande en ligne restaurant : le tenant est résolu par le lien signé,
+     * pas par le contexte tenant courant). Null si aucun profil actif —
+     * l'appelant DOIT refuser le paiement en ligne (fail-closed), jamais de
+     * fallback vers les clés plateforme sur ces surfaces.
+     *
+     * @return array{profile_id: int, secret_key: string, webhook_secret: string, stripe_account_id: string|null}|null
+     */
+    public function stripeCredentialsForCompany(string $companyId): ?array;
+
+    /**
+     * #7728 (BC-25 RESTAURANT) — profil mobile money ACTIF d'une compagnie
+     * DONNÉE (opérateur configuré + numéro d'encaissement du restaurateur).
+     * Null si aucun profil actif ou opérateur/numéro manquant.
+     *
+     * @return array{profile_id: int, operator: string, phone_number: string}|null
+     */
+    public function activeMobileMoneyProfileForCompany(string $companyId): ?array;
 }
