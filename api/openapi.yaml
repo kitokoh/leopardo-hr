@@ -101,6 +101,8 @@ tags:
   description: 'Administration super-admin : gestion tenants, plans, metriques globales.'
 - name: Catalog
   description: 'BC-28 CATALOG — gestion du catalogue produits B2B des tenants (categories, produits, publication).'
+- name: Retail
+  description: 'BC-17 RETAIL — module vendeur generique des tenants : gestion des produits & categories (fondations backend #7672).'
 - name: Travel
   description: 'BC-24 TRAVEL — boutique, tunnel public et espace voyageur (suivi par reference + code de controle du billet).'
 - name: Restaurant
@@ -29959,6 +29961,939 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
 
+  /retail/categories:
+    get:
+      tags:
+      - Retail
+      summary: Lister les categories du module Retail (membres du tenant)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: q
+        in: query
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginee des categories
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Retail
+      summary: Creer une categorie (gestion principal/rh)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                slug:
+                  type: string
+                  nullable: true
+                parent_id:
+                  type: integer
+                  nullable: true
+                position:
+                  type: integer
+                  nullable: true
+      responses:
+        '201':
+          description: Categorie creee (slug auto-unique par tenant)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/categories/{category}:
+    get:
+      tags:
+      - Retail
+      summary: Detail d'une categorie (membres du tenant)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: category
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Categorie
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - Retail
+      summary: Mettre a jour une categorie (gestion principal/rh)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                slug:
+                  type: string
+                  nullable: true
+                parent_id:
+                  type: integer
+                  nullable: true
+                position:
+                  type: integer
+                  nullable: true
+      parameters:
+      - name: category
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Categorie mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    delete:
+      tags:
+      - Retail
+      summary: Supprimer une categorie (gestion principal/rh)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: category
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Categorie supprimee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /retail/products:
+    get:
+      tags:
+      - Retail
+      summary: Lister les produits du module Retail (membres du tenant)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: q
+        in: query
+        schema:
+          type: string
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - draft
+          - published
+          - archived
+      - name: category_id
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginee des produits
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Retail
+      summary: Creer un produit (gestion principal/rh)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - sku
+              - price_minor
+              properties:
+                name:
+                  type: string
+                  maxLength: 200
+                slug:
+                  type: string
+                  nullable: true
+                sku:
+                  type: string
+                  maxLength: 64
+                  description: Reference interne, unique par tenant
+                barcode:
+                  type: string
+                  nullable: true
+                  maxLength: 64
+                category_id:
+                  type: integer
+                  nullable: true
+                description:
+                  type: string
+                  nullable: true
+                price_minor:
+                  type: integer
+                  minimum: 0
+                  description: Prix de vente en minor units (jamais de flottants)
+                cost_minor:
+                  type: integer
+                  nullable: true
+                  minimum: 0
+                  description: Cout d'achat en minor units
+                currency:
+                  type: string
+                  pattern: '^[A-Z]{3}$'
+                  description: Devise ISO 4217
+                unit:
+                  type: string
+                  nullable: true
+                  description: Unite libre (piece, kg, m...)
+                status:
+                  type: string
+                  enum:
+                  - draft
+                  - published
+                  - archived
+                meta:
+                  type: object
+                  nullable: true
+      responses:
+        '201':
+          description: Produit cree (statut par defaut draft)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/products/{product}:
+    get:
+      tags:
+      - Retail
+      summary: Detail d'un produit (membres du tenant)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - Retail
+      summary: Mettre a jour un produit (gestion principal/rh)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - price_minor
+              properties:
+                name:
+                  type: string
+                  maxLength: 200
+                slug:
+                  type: string
+                  nullable: true
+                sku:
+                  type: string
+                  maxLength: 64
+                barcode:
+                  type: string
+                  nullable: true
+                  maxLength: 64
+                category_id:
+                  type: integer
+                  nullable: true
+                description:
+                  type: string
+                  nullable: true
+                price_minor:
+                  type: integer
+                  minimum: 0
+                cost_minor:
+                  type: integer
+                  nullable: true
+                  minimum: 0
+                currency:
+                  type: string
+                  pattern: '^[A-Z]{3}$'
+                unit:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum:
+                  - draft
+                  - published
+                  - archived
+                meta:
+                  type: object
+                  nullable: true
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    delete:
+      tags:
+      - Retail
+      summary: Supprimer un produit (gestion principal/rh)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /retail/products/{product}/publish:
+    post:
+      tags:
+      - Retail
+      summary: Publier un produit (statut published)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit publie
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /retail/products/{product}/unpublish:
+    post:
+      tags:
+      - Retail
+      summary: Depublier un produit (statut draft)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit depublie
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /retail/locations:
+    get:
+      tags:
+      - Retail
+      summary: Lister les emplacements de stock (membres du tenant)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: q
+        in: query
+        schema:
+          type: string
+      - name: type
+        in: query
+        schema:
+          type: string
+          enum:
+          - store
+          - warehouse
+      - name: is_active
+        in: query
+        schema:
+          type: boolean
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginee des emplacements
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Retail
+      summary: Creer un emplacement de stock (gestion principal/rh)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - code
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                code:
+                  type: string
+                  maxLength: 40
+                  description: Code interne, unique par tenant
+                type:
+                  type: string
+                  enum:
+                  - store
+                  - warehouse
+                is_active:
+                  type: boolean
+      responses:
+        '201':
+          description: Emplacement cree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/locations/{location}:
+    get:
+      tags:
+      - Retail
+      summary: Detail d'un emplacement (membres du tenant)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: location
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Emplacement
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - Retail
+      summary: Mettre a jour un emplacement (gestion principal/rh)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                code:
+                  type: string
+                  maxLength: 40
+                type:
+                  type: string
+                  enum:
+                  - store
+                  - warehouse
+                is_active:
+                  type: boolean
+      parameters:
+      - name: location
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Emplacement mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    delete:
+      tags:
+      - Retail
+      summary: Supprimer un emplacement (gestion principal/rh)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: location
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Emplacement supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /retail/stock/levels:
+    get:
+      tags:
+      - Retail
+      summary: Lister les niveaux de stock (membres du tenant)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: location_id
+        in: query
+        schema:
+          type: integer
+      - name: product_id
+        in: query
+        schema:
+          type: integer
+      - name: below_threshold
+        in: query
+        description: 1 = uniquement les niveaux au seuil d'alerte ou en dessous
+        schema:
+          type: boolean
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginee des niveaux de stock
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /retail/stock/movements:
+    get:
+      tags:
+      - Retail
+      summary: Journal des mouvements de stock (membres du tenant, ordre desc)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: location_id
+        in: query
+        schema:
+          type: integer
+      - name: product_id
+        in: query
+        schema:
+          type: integer
+      - name: reason_code
+        in: query
+        schema:
+          type: string
+          enum:
+          - purchase
+          - sale
+          - adjustment
+          - return
+          - transfer_in
+          - transfer_out
+          - loss
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginee des mouvements (ante-chronologique)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Retail
+      summary: Enregistrer un mouvement de stock (gestion principal/rh)
+      description: Seule voie d'ecriture des quantites - transaction + verrou
+        de ligne, le stock n'est jamais negatif (422 sinon).
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - location_id
+              - product_id
+              - quantity_delta
+              - reason_code
+              properties:
+                location_id:
+                  type: integer
+                product_id:
+                  type: integer
+                quantity_delta:
+                  type: number
+                  description: Delta signe non nul, 3 decimales max
+                reason_code:
+                  type: string
+                  enum:
+                  - purchase
+                  - sale
+                  - adjustment
+                  - return
+                  - transfer_in
+                  - transfer_out
+                  - loss
+                reference_type:
+                  type: string
+                  nullable: true
+                  maxLength: 80
+                reference_id:
+                  type: integer
+                  nullable: true
+                note:
+                  type: string
+                  nullable: true
+                  maxLength: 2000
+      responses:
+        '201':
+          description: Mouvement enregistre + niveau de stock a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/stock/alerts:
+    get:
+      tags:
+      - Retail
+      summary: Alertes de stock bas (quantite <= alert_threshold)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginee des niveaux en alerte
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /retail/pos/sessions:
+    get:
+      tags:
+      - Retail
+      summary: Lister les sessions de caisse POS (membres du tenant, ordre desc)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - open
+          - closed
+      - name: location_id
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginee des sessions de caisse
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Retail
+      summary: Ouvrir une session de caisse POS (gestion principal/rh)
+      description: Une seule session `open` par (tenant, emplacement) - index
+        unique partiel + garde applicative (422 si une session est deja ouverte).
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - location_id
+              properties:
+                location_id:
+                  type: integer
+                opening_cash_minor:
+                  type: integer
+                  minimum: 0
+                  description: Fonds d'ouverture en minor units (defaut 0)
+      responses:
+        '201':
+          description: Session ouverte
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/pos/sessions/{session}:
+    get:
+      tags:
+      - Retail
+      summary: Detail d'une session de caisse POS (membres du tenant)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Detail de la session
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /retail/pos/sessions/{session}/close:
+    post:
+      tags:
+      - Retail
+      summary: Cloturer une session de caisse POS (gestion principal/rh)
+      description: Attendu calcule serveur (fonds d'ouverture + paiements cash
+        captures de la session), ecart signe = compte - attendu. 422 si la
+        session n'est pas ouverte.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - counted_cash_minor
+              properties:
+                counted_cash_minor:
+                  type: integer
+                  minimum: 0
+                variance_reason:
+                  type: string
+                  nullable: true
+                  maxLength: 255
+      responses:
+        '200':
+          description: Session cloturee (attendu, compte, ecart)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/pos/orders:
+    get:
+      tags:
+      - Retail
+      summary: Lister les commandes de vente POS (membres du tenant, ordre desc)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - draft
+          - completed
+          - cancelled
+      - name: pos_session_id
+        in: query
+        schema:
+          type: integer
+      - name: source
+        in: query
+        schema:
+          type: string
+          enum:
+          - pos
+          - online
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginee des commandes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Retail
+      summary: Creer une commande de vente POS (gestion principal/rh)
+      description: Session ouverte requise ; produits publies uniquement,
+        meme devise sur toutes les lignes. Prix et totaux TOUJOURS calcules
+        serveur (snapshots). `idempotency_key` rejoue sans doublon.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - pos_session_id
+              - lines
+              properties:
+                pos_session_id:
+                  type: integer
+                lines:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required:
+                    - product_id
+                    - quantity
+                    properties:
+                      product_id:
+                        type: integer
+                      quantity:
+                        type: number
+                        description: Strictement positive, 3 decimales max
+                note:
+                  type: string
+                  nullable: true
+                  maxLength: 2000
+                idempotency_key:
+                  type: string
+                  nullable: true
+                  maxLength: 64
+      responses:
+        '201':
+          description: Commande creee (ticket avec lignes et paiements)
   /communication/status:
     get:
       tags:
@@ -30008,6 +30943,124 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/pos/orders/{order}:
+    get:
+      tags:
+      - Retail
+      summary: Ticket de caisse d'une commande POS (commande + lignes + paiements)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ticket (commande, lignes, paiements)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /retail/pos/orders/{order}/payments:
+    post:
+      tags:
+      - Retail
+      summary: Encaisser un paiement sur une commande POS (gestion principal/rh)
+      description: Multi-moyens (`online` reserve a la future boutique
+        e-commerce, aucune passerelle). Quand les paiements captures couvrent
+        le total, la commande passe `completed` et le stock est decremente
+        (mouvements `sale` traces ; survente auto-ajustee, jamais bloquante).
+        `idempotency_key` rejoue sans doublon.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - method
+              - amount_minor
+              properties:
+                method:
+                  type: string
+                  enum:
+                  - cash
+                  - card
+                  - mobile
+                  - online
+                amount_minor:
+                  type: integer
+                  minimum: 1
+                reference:
+                  type: string
+                  nullable: true
+                  maxLength: 120
+                idempotency_key:
+                  type: string
+                  nullable: true
+                  maxLength: 64
+      responses:
+        '201':
+          description: Paiement enregistre (ticket a jour)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/pos/orders/{order}/cancel:
+    post:
+      tags:
+      - Retail
+      summary: Annuler une commande POS (gestion principal/rh)
+      description: Une commande completee genere des mouvements `return`
+        restaurant le stock avant le passage a `cancelled`.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                note:
+                  type: string
+                  nullable: true
+                  maxLength: 2000
+      responses:
+        '200':
+          description: Commande annulee (ticket a jour)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
 
   /communication/integrations:
     get:

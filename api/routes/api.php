@@ -472,6 +472,8 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/edu_manager.php';
     require __DIR__.'/modules/catalog.php';
 
+    // BC-17 RETAIL #7672 — module vendeur générique (produits & catégories)
+    require __DIR__.'/modules/retail.php';
     // BC-29 COMMUNICATION — boîte mail connectée + IA, squelette R0 (#7685)
     require __DIR__.'/modules/communication.php';
 
