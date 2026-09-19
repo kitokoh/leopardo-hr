@@ -2,6 +2,21 @@
 > Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
 > Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
 
+> **MAJ 2026-09-19 — lot BC-21 paiements #7726/#7727 (PR #7732).**
+> Surface **API** : (1) endpoints admin plateforme `GET/PUT /platform/billing/gateways` et
+> `POST /platform/billing/gateways/{gateway}/test` (permission `platform.permission:billing.manage`,
+> secrets write-only masqués) — configuration des passerelles PSP (stripe|chargily) stockée
+> chiffrée en BDD avec précédence BDD → fallback env ; (2) endpoints tenant
+> `GET/POST/PUT/DELETE /billing/payment-profiles` + `/{id}/activate` (réservés au `principal`)
+> — profils de paiement du tenant (stripe_keys|bank_account|mobile_money) et routage des
+> encaissements Accounting vers les clés Stripe DU tenant quand un profil `stripe_keys` est actif.
+> Scénarios automatisés : `api/tests/Feature/Platform/PlatformPaymentGatewayAdminApiTest`
+> (7 cas — masquage, chiffrement au repos, précédence BDD/env, write-only, 403, webhook secret,
+> ping sans fuite) et `api/tests/Feature/Billing/TenantPaymentProfileApiTest` (6 cas — CRUD/activation,
+> 403 non-principal, isolation cross-tenant, routage checkout tenant + fallback plateforme).
+> Surfaces web : écran admin Vue « Passerelles de paiement » et page client « Encaissements »
+> (couverts par ESLint/tsc/Jest du lot). Surface mobile : aucune.
+
 > **MAJ 2026-09-19 — #7680, dédoublonnage des routes platform (PR de fix RouteCollisionGuard).**
 > Surface **API** : suppression de 5 déclarations dupliquées SANS `platform.permission`
 > (country/subscription/features de `platform/companies/{company}`) qui masquaient les versions
