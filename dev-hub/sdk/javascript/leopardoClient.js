@@ -4370,6 +4370,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/retail/categories/{category}", options);
     },
 
+    /** Lister les emplacements de stock (membres du tenant) */
+    getRetailLocations(options = {}) {
+      return request("GET", "/retail/locations", options);
+    },
+
+    /** Creer un emplacement de stock (gestion principal/rh) */
+    postRetailLocations(options = {}) {
+      return request("POST", "/retail/locations", options);
+    },
+
+    /** Supprimer un emplacement (gestion principal/rh) */
+    deleteRetailLocationsByLocation(options = {}) {
+      return request("DELETE", "/retail/locations/{location}", options);
+    },
+
+    /** Detail d'un emplacement (membres du tenant) */
+    getRetailLocationsByLocation(options = {}) {
+      return request("GET", "/retail/locations/{location}", options);
+    },
+
+    /** Mettre a jour un emplacement (gestion principal/rh) */
+    putRetailLocationsByLocation(options = {}) {
+      return request("PUT", "/retail/locations/{location}", options);
+    },
+
     /** Lister les produits du module Retail (membres du tenant) */
     getRetailProducts(options = {}) {
       return request("GET", "/retail/products", options);
@@ -4403,6 +4428,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Depublier un produit (statut draft) */
     postRetailProductsByProductUnpublish(options = {}) {
       return request("POST", "/retail/products/{product}/unpublish", options);
+    },
+
+    /** Alertes de stock bas (quantite <= alert_threshold) */
+    getRetailStockAlerts(options = {}) {
+      return request("GET", "/retail/stock/alerts", options);
+    },
+
+    /** Lister les niveaux de stock (membres du tenant) */
+    getRetailStockLevels(options = {}) {
+      return request("GET", "/retail/stock/levels", options);
+    },
+
+    /** Journal des mouvements de stock (membres du tenant, ordre desc) */
+    getRetailStockMovements(options = {}) {
+      return request("GET", "/retail/stock/movements", options);
+    },
+
+    /** Enregistrer un mouvement de stock (gestion principal/rh) */
+    postRetailStockMovements(options = {}) {
+      return request("POST", "/retail/stock/movements", options);
     },
 
     /** Lister les avances sur salaire */

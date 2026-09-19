@@ -177,9 +177,13 @@ use App\Modules\RestaurantManager\Policies\RestaurantTaxRatePolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantUnitPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantZonePolicy;
 use App\Modules\Retail\Domain\Models\RetailCategory;
+use App\Modules\Retail\Domain\Models\RetailLocation;
 use App\Modules\Retail\Domain\Models\RetailProduct;
+use App\Modules\Retail\Domain\Models\RetailStockLevel;
 use App\Modules\Retail\Domain\Policies\RetailCategoryPolicy;
+use App\Modules\Retail\Domain\Policies\RetailLocationPolicy;
 use App\Modules\Retail\Domain\Policies\RetailProductPolicy;
+use App\Modules\Retail\Domain\Policies\RetailStockLevelPolicy;
 use App\Modules\Showcase\Domain\Models\CompanyShowcase;
 use App\Modules\Showcase\Domain\Policies\CompanyShowcasePolicy;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
@@ -367,6 +371,9 @@ class AuthServiceProvider extends ServiceProvider
         // — Retail (BC-17 #7672 : socle domaine — catégories & produits du vendeur générique)
         Gate::policy(RetailCategory::class, RetailCategoryPolicy::class);
         Gate::policy(RetailProduct::class, RetailProductPolicy::class);
+        // — Retail (BC-17 #7673 : gestion de stock — emplacements, niveaux, mouvements)
+        Gate::policy(RetailLocation::class, RetailLocationPolicy::class);
+        Gate::policy(RetailStockLevel::class, RetailStockLevelPolicy::class);
         // — Showcase (BC-27 #6865 : socle domaine — vitrine entreprise)
         Gate::policy(CompanyShowcase::class, CompanyShowcasePolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);

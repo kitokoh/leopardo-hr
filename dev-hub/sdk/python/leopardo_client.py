@@ -3516,6 +3516,26 @@ class LeopardoClient:
         """Mettre a jour une categorie (gestion principal/rh)"""
         return self.request("PUT", "/retail/categories/{category}", **kwargs)
 
+    def get_retail_locations(self, **kwargs):
+        """Lister les emplacements de stock (membres du tenant)"""
+        return self.request("GET", "/retail/locations", **kwargs)
+
+    def post_retail_locations(self, **kwargs):
+        """Creer un emplacement de stock (gestion principal/rh)"""
+        return self.request("POST", "/retail/locations", **kwargs)
+
+    def delete_retail_locations_by_location(self, **kwargs):
+        """Supprimer un emplacement (gestion principal/rh)"""
+        return self.request("DELETE", "/retail/locations/{location}", **kwargs)
+
+    def get_retail_locations_by_location(self, **kwargs):
+        """Detail d'un emplacement (membres du tenant)"""
+        return self.request("GET", "/retail/locations/{location}", **kwargs)
+
+    def put_retail_locations_by_location(self, **kwargs):
+        """Mettre a jour un emplacement (gestion principal/rh)"""
+        return self.request("PUT", "/retail/locations/{location}", **kwargs)
+
     def get_retail_products(self, **kwargs):
         """Lister les produits du module Retail (membres du tenant)"""
         return self.request("GET", "/retail/products", **kwargs)
@@ -3543,6 +3563,22 @@ class LeopardoClient:
     def post_retail_products_by_product_unpublish(self, **kwargs):
         """Depublier un produit (statut draft)"""
         return self.request("POST", "/retail/products/{product}/unpublish", **kwargs)
+
+    def get_retail_stock_alerts(self, **kwargs):
+        """Alertes de stock bas (quantite <= alert_threshold)"""
+        return self.request("GET", "/retail/stock/alerts", **kwargs)
+
+    def get_retail_stock_levels(self, **kwargs):
+        """Lister les niveaux de stock (membres du tenant)"""
+        return self.request("GET", "/retail/stock/levels", **kwargs)
+
+    def get_retail_stock_movements(self, **kwargs):
+        """Journal des mouvements de stock (membres du tenant, ordre desc)"""
+        return self.request("GET", "/retail/stock/movements", **kwargs)
+
+    def post_retail_stock_movements(self, **kwargs):
+        """Enregistrer un mouvement de stock (gestion principal/rh)"""
+        return self.request("POST", "/retail/stock/movements", **kwargs)
 
     def get_salary_advances(self, **kwargs):
         """Lister les avances sur salaire"""

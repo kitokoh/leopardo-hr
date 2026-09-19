@@ -18,7 +18,9 @@
  */
 
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailCategoryController;
+use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailLocationController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailProductController;
+use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailStockController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.retail'])
@@ -39,4 +41,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::delete('/products/{product}', [RetailProductController::class, 'destroy'])->whereNumber('product');
         Route::post('/products/{product}/publish', [RetailProductController::class, 'publish'])->whereNumber('product');
         Route::post('/products/{product}/unpublish', [RetailProductController::class, 'unpublish'])->whereNumber('product');
+
+        // Emplacements de stock (gestion réservée principal/rh — RetailLocationPolicy, #7673).
+        Route::get('/locations', [RetailLocationController::class, 'index']);
+        Route::post('/locations', [RetailLocationController::class, 'store']);
+        Route::get('/locations/{location}', [RetailLocationController::class, 'show'])->whereNumber('location');
+        Route::put('/locations/{location}', [RetailLocationController::class, 'update'])->whereNumber('location');
+        Route::delete('/locations/{location}', [RetailLocationController::class, 'destroy'])->whereNumber('location');
+
+        // Stocks : niveaux, mouvements tracés (seule voie d'écriture des
+        // quantités — RetailStockService), alertes de stock bas (#7673).
+        Route::get('/stock/levels', [RetailStockController::class, 'levels']);
+        Route::post('/stock/movements', [RetailStockController::class, 'storeMovement']);
+        Route::get('/stock/movements', [RetailStockController::class, 'movements']);
+        Route::get('/stock/alerts', [RetailStockController::class, 'alerts']);
     });

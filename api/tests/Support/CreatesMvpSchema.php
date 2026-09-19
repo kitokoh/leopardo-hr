@@ -1435,6 +1435,59 @@ trait CreatesMvpSchema
             });
         }
 
+        // BC-17 RETAIL #7673 — gestion de stock du module vendeur generique.
+        // Miroir de la migration 2026_09_19_000002_7673 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('retail_locations'))) {
+            Schema::create($this->moduleTable('retail_locations'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 160);
+                $table->string('code', 40);
+                $table->string('type', 20)->default('store');
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'retail_locations_company_code_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('retail_stock_levels'))) {
+            Schema::create($this->moduleTable('retail_stock_levels'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('location_id');
+                $table->unsignedBigInteger('product_id');
+                $table->decimal('quantity', 12, 3)->default(0);
+                $table->unsignedBigInteger('avg_cost_minor')->nullable();
+                $table->decimal('reorder_level', 12, 3)->nullable();
+                $table->decimal('alert_threshold', 12, 3)->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'location_id', 'product_id'], 'retail_stock_levels_company_location_product_unique');
+                $table->index(['company_id', 'product_id'], 'retail_stock_levels_company_product_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('retail_inventory_movements'))) {
+            Schema::create($this->moduleTable('retail_inventory_movements'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('location_id');
+                $table->unsignedBigInteger('product_id');
+                $table->unsignedBigInteger('stock_level_id')->nullable();
+                $table->decimal('quantity_delta', 12, 3);
+                $table->string('reason_code', 30);
+                $table->string('reference_type', 80)->nullable();
+                $table->unsignedBigInteger('reference_id')->nullable();
+                $table->text('note')->nullable();
+                $table->unsignedBigInteger('user_id')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'location_id', 'product_id'], 'retail_inventory_movements_company_location_product_idx');
+                $table->index(['company_id', 'reference_type', 'reference_id'], 'retail_inventory_movements_company_reference_idx');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('catalog_inquiries'))) {
             Schema::create($this->moduleTable('catalog_inquiries'), function (Blueprint $table): void {
                 $table->bigIncrements('id');

@@ -30014,6 +30014,314 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+  /retail/locations:
+    get:
+      tags:
+      - Retail
+      summary: Lister les emplacements de stock (membres du tenant)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: q
+        in: query
+        schema:
+          type: string
+      - name: type
+        in: query
+        schema:
+          type: string
+          enum:
+          - store
+          - warehouse
+      - name: is_active
+        in: query
+        schema:
+          type: boolean
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginee des emplacements
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Retail
+      summary: Creer un emplacement de stock (gestion principal/rh)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - code
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                code:
+                  type: string
+                  maxLength: 40
+                  description: Code interne, unique par tenant
+                type:
+                  type: string
+                  enum:
+                  - store
+                  - warehouse
+                is_active:
+                  type: boolean
+      responses:
+        '201':
+          description: Emplacement cree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/locations/{location}:
+    get:
+      tags:
+      - Retail
+      summary: Detail d'un emplacement (membres du tenant)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: location
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Emplacement
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - Retail
+      summary: Mettre a jour un emplacement (gestion principal/rh)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                code:
+                  type: string
+                  maxLength: 40
+                type:
+                  type: string
+                  enum:
+                  - store
+                  - warehouse
+                is_active:
+                  type: boolean
+      parameters:
+      - name: location
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Emplacement mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    delete:
+      tags:
+      - Retail
+      summary: Supprimer un emplacement (gestion principal/rh)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: location
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Emplacement supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /retail/stock/levels:
+    get:
+      tags:
+      - Retail
+      summary: Lister les niveaux de stock (membres du tenant)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: location_id
+        in: query
+        schema:
+          type: integer
+      - name: product_id
+        in: query
+        schema:
+          type: integer
+      - name: below_threshold
+        in: query
+        description: 1 = uniquement les niveaux au seuil d'alerte ou en dessous
+        schema:
+          type: boolean
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginee des niveaux de stock
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /retail/stock/movements:
+    get:
+      tags:
+      - Retail
+      summary: Journal des mouvements de stock (membres du tenant, ordre desc)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: location_id
+        in: query
+        schema:
+          type: integer
+      - name: product_id
+        in: query
+        schema:
+          type: integer
+      - name: reason_code
+        in: query
+        schema:
+          type: string
+          enum:
+          - purchase
+          - sale
+          - adjustment
+          - return
+          - transfer_in
+          - transfer_out
+          - loss
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginee des mouvements (ante-chronologique)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Retail
+      summary: Enregistrer un mouvement de stock (gestion principal/rh)
+      description: Seule voie d'ecriture des quantites - transaction + verrou
+        de ligne, le stock n'est jamais negatif (422 sinon).
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - location_id
+              - product_id
+              - quantity_delta
+              - reason_code
+              properties:
+                location_id:
+                  type: integer
+                product_id:
+                  type: integer
+                quantity_delta:
+                  type: number
+                  description: Delta signe non nul, 3 decimales max
+                reason_code:
+                  type: string
+                  enum:
+                  - purchase
+                  - sale
+                  - adjustment
+                  - return
+                  - transfer_in
+                  - transfer_out
+                  - loss
+                reference_type:
+                  type: string
+                  nullable: true
+                  maxLength: 80
+                reference_id:
+                  type: integer
+                  nullable: true
+                note:
+                  type: string
+                  nullable: true
+                  maxLength: 2000
+      responses:
+        '201':
+          description: Mouvement enregistre + niveau de stock a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/stock/alerts:
+    get:
+      tags:
+      - Retail
+      summary: Alertes de stock bas (quantite <= alert_threshold)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginee des niveaux en alerte
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /public/catalog/sitemap.xml:
     get:
       tags:
