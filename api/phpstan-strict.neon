@@ -5,6 +5,16 @@ includes:
 parameters:
     level: 8
 
+    # 2026-09-19 (#7785/#7818) — le run CI (--memory-limit=1G) a commencé à
+    # crasher (« child process reached memory limit ») quand deux verticales
+    # (Retail #7672.., HealthManager #7785..) ont atterri le même jour : les
+    # lots par worker (jobSize 20 par défaut) dépassent 1G sur les gros
+    # modules. Des lots plus petits bornent la mémoire par worker sans
+    # changer le verdict de l'analyse.
+    parallel:
+        jobSize: 8
+        processTimeout: 600.0
+
     paths:
         - app/Core
         - app/Modules
