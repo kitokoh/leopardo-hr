@@ -1,4 +1,4 @@
-# Guide open core et marketplace Leopardo RH
+# Guide open core et marketplace Leopardo
 
 ## Objectif
 

@@ -1,6 +1,6 @@
 # 🚀 Guide de Migration : Design System "Premium Glassmorphism"
 
-Ce guide est la référence absolue pour migrer les pages et écrans de l'écosystème Leopardo RH (Mobile, Admin Web, Vitrine) vers le nouveau design premium.
+Ce guide est la référence absolue pour migrer les pages et écrans de l'écosystème Leopardo (Mobile, Admin Web, Vitrine) vers le nouveau design premium.
 
 ## 📱 Partie 1 : Applications Mobiles Flutter (`leopardo_core`)
 
