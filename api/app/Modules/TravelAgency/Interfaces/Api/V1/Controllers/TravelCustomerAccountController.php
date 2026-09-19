@@ -16,7 +16,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
-use Laravel\Sanctum\PersonalAccessToken;
 
 /**
  * Issue #7739 — Comptes clients GRAND PUBLIC de la marketplace (épic #7736).
@@ -136,9 +135,11 @@ class TravelCustomerAccountController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
+        // Garde runtime sans `instanceof` (type certain pour PHPStan —
+        // instanceof.alwaysTrue) : même pattern que Core LogoutAction.
         $token = $this->authenticated($request)->currentAccessToken();
 
-        if ($token instanceof PersonalAccessToken) {
+        if ($token) {
             $token->delete();
         }
 
