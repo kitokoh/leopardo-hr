@@ -150,10 +150,10 @@ Les pipelines principaux :
 > Décisions 2026-08-21 (#5204/#5205/#5206/#5207) — fournisseurs : Upstash (Redis),
 > Neon (PostgreSQL), GitHub Actions (worker de secours), Render/Vercel/Cloudflare Pages (hosting).
 
-- **Queue** : driver `database` (table `jobs` en PostgreSQL) — zéro quota. Deux consommateurs :
-  le worker en arrière-plan du conteneur web Render (latence) et le drain GitHub Actions
-  (`queue-worker-fallback.yml`, cron `*/5`, repo public = minutes illimitées). Pas de
-  split-brain : chaque job est verrouillé par PostgreSQL (`SELECT FOR UPDATE SKIP LOCKED`).
+- **Queue** : driver `database` (table `jobs` en PostgreSQL) — zéro quota. Consommateur :
+  le worker en arrière-plan du conteneur web Render. Le drain de secours GitHub Actions a été
+  **supprimé** (#7694 — il injectait les credentials DB de prod dans des runners CI toutes les
+  5 min) ; la supervision (`queue-supervision.yml`) est une sonde HTTP sans credentials.
 - **Cache / Session** : commande `infra:probe-availability` (ping Redis) exécutée par
   `api/docker-entrypoint.sh` **avant** `config:cache` → `redis` si Upstash répond, sinon `file`
   (fallback sans quota). Retour automatique sur Redis au redéploiement.

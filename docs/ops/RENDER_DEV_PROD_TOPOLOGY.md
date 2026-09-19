@@ -309,12 +309,13 @@ d'architecture résiduels listés ci-dessous.
    `BACKUP_S3_BUCKET`, `AWS_*` absents). Neon étant sur plan gratuit (pas de
    sauvegarde intégrée), la base prod n'a **aucune protection** → poser les
    secrets ou passer Neon en plan payant (backups PITR). P0.
-2. **Drain de secours GH** (`queue-worker-fallback.yml`, toutes les 5 min) :
-   inerte (mêmes secrets DB/APP_KEY absents) ; garde anti-faux-vert ajoutée
-   (PR #6831) → skip explicite au lieu d'un faux succès. Les workers
-   mono-conteneur Render drainent en conditions normales.
-3. **Supervision queue prod** (`queue-supervision.yml`) : skip explicite
-   (secrets absents) — activer avec les mêmes secrets une fois posés.
+2. **Drain de secours GH** : **supprimé** (#7694 — il injectait les secrets
+   DB/APP_KEY de prod dans des runners CI toutes les 5 min). Les workers
+   mono-conteneur Render drainent en conditions normales ; worker dédié à
+   provisionner (#7649).
+3. **Supervision queue prod** (`queue-supervision.yml`) : sonde HTTP sans
+   credentials (#7694) sur `GET /api/v1/health` — skip explicite tant que le
+   secret `APP_URL` n'est pas posé (seul secret requis).
 4. **Plan payant + scheduler prod** : ajouter `leopardo-scheduler` (+
    `leopardo-queue-worker` si on sort du mono-conteneur) sur plan Starter.
 5. **Neon prod** : passer le projet `LEOPARDO` en plan payant avant trafic
