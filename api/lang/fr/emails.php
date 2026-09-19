@@ -208,4 +208,7 @@ return [
     'invoice_payment_receipt_intro' => 'Nous confirmons le paiement de la facture :number pour :company. Montant réglé : :total :currency le :paid_at.',
     'invoice_payment_receipt_attachment_note' => 'La facture acquittée au format PDF est jointe à cet email.',
 
+    // BC-29 Communication R4 (#7689) — gabarit de relance automatique.
+    'communication_follow_up_subject' => 'Suite à mon message : :subject',
+    'communication_follow_up_body' => "Bonjour,\n\nJe me permets de revenir vers vous au sujet de mon précédent message « :subject », resté sans réponse.\n\nAuriez-vous eu l'occasion d'y jeter un œil ?\n\nBien cordialement,\n:name",
 ];

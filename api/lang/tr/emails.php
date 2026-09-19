@@ -207,4 +207,7 @@ return [
     'invoice_payment_receipt_intro' => ':company için :number numaralı faturanın ödemesini onaylıyoruz. Ödenen tutar: :total :currency, tarih: :paid_at.',
     'invoice_payment_receipt_attachment_note' => 'Ödenmiş fatura bu e-postaya PDF olarak eklenmiştir.',
 
+    // BC-29 Communication R4 (#7689) — otomatik takip şablonu.
+    'communication_follow_up_subject' => 'Hatırlatma: :subject',
+    'communication_follow_up_body' => "Merhaba,\n\nHenüz yanıt almayan \":subject\" konulu önceki mesajımla ilgili size tekrar yazıyorum.\n\nİnceleme fırsatınız oldu mu?\n\nSaygılarımla,\n:name",
 ];

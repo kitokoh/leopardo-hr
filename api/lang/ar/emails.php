@@ -207,4 +207,7 @@ return [
     'invoice_payment_receipt_intro' => 'نؤكد سداد الفاتورة :number لشركة :company. المبلغ المدفوع: :total :currency بتاريخ :paid_at.',
     'invoice_payment_receipt_attachment_note' => 'الفاتورة المسددة بصيغة PDF مرفقة بهذه الرسالة.',
 
+    // BC-29 Communication R4 (#7689) — قالب المتابعة التلقائية.
+    'communication_follow_up_subject' => 'متابعة بخصوص: :subject',
+    'communication_follow_up_body' => "مرحباً،\n\nأود المتابعة بخصوص رسالتي السابقة \":subject\" التي لم تتلقَّ رداً بعد.\n\nهل سنحت لكم الفرصة للاطلاع عليها؟\n\nمع أطيب التحيات،\n:name",
 ];

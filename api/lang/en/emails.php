@@ -207,4 +207,7 @@ return [
     'invoice_payment_receipt_intro' => 'We confirm the payment of invoice :number for :company. Amount paid: :total :currency on :paid_at.',
     'invoice_payment_receipt_attachment_note' => 'The settled invoice is attached to this email as a PDF.',
 
+    // BC-29 Communication R4 (#7689) — automatic follow-up template.
+    'communication_follow_up_subject' => 'Following up on: :subject',
+    'communication_follow_up_body' => "Hello,\n\nI am following up on my previous message \":subject\", which has not received a reply yet.\n\nHave you had a chance to look at it?\n\nBest regards,\n:name",
 ];

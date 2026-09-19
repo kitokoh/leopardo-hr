@@ -450,6 +450,18 @@ export const NAV_ENTRIES = [
     group: 'plateforme',
     descKey: 'adminPalette.itemMarketingDesc',
   },
+  // BC-29 COMMUNICATION — R6 (#7691) : boîte mail connectée + IA (fils
+  // classés, file de confirmations, réglages). La garde réelle est côté API
+  // (feature flag tenant `communication`) : un compte sans accès voit
+  // l'état verrouillé explicite de l'écran.
+  {
+    name: 'communication',
+    path: '/communication',
+    titleKey: 'communicationApp.moduleTitle',
+    icon: EnvelopeIcon,
+    permission: null,
+    group: 'plateforme',
+  },
   // #7554 — page routée mais inatteignable (`/solutions/survey-stats`).
   // #7725 — nom de route normalisé kebab-case (`solution-survey-stats`).
   {
