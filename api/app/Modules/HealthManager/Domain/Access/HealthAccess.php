@@ -146,6 +146,17 @@ final class HealthAccess
     }
 
     /**
+     * L'acteur peut-il GÉRER la facturation des soins (catalogue d'actes,
+     * factures, paiements — HC-007) ? `health.billing` et `health.admin`
+     * uniquement (critère d'acceptation) : la réception et les praticiens
+     * ne facturent pas, l'employé lambda est refusé partout.
+     */
+    public static function canManageBilling(Employee $actor): bool
+    {
+        return self::isAdmin($actor) || self::isBilling($actor);
+    }
+
+    /**
      * L'acteur peut-il accéder au CONTENU MÉDICAL (consultations,
      * prescriptions — HC-005) ? Praticiens actifs et direction UNIQUEMENT :
      * la réception gère l'administratif mais n'accède JAMAIS au dossier

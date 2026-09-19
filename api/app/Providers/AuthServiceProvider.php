@@ -130,8 +130,10 @@ use App\Modules\FuelStation\Domain\Policies\FuelStockPolicy;
 use App\Modules\HealthManager\Domain\Models\HealthAdmission;
 use App\Modules\HealthManager\Domain\Models\HealthAppointment;
 use App\Modules\HealthManager\Domain\Models\HealthBed;
+use App\Modules\HealthManager\Domain\Models\HealthCareAct;
 use App\Modules\HealthManager\Domain\Models\HealthConsultation;
 use App\Modules\HealthManager\Domain\Models\HealthDepartment;
+use App\Modules\HealthManager\Domain\Models\HealthInvoice;
 use App\Modules\HealthManager\Domain\Models\HealthPatient;
 use App\Modules\HealthManager\Domain\Models\HealthPractitioner;
 use App\Modules\HealthManager\Domain\Models\HealthPrescription;
@@ -140,8 +142,10 @@ use App\Modules\HealthManager\Domain\Models\HealthSpecialty;
 use App\Modules\HealthManager\Domain\Policies\HealthAdmissionPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthAppointmentPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthBedPolicy;
+use App\Modules\HealthManager\Domain\Policies\HealthCareActPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthConsultationPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthDepartmentPolicy;
+use App\Modules\HealthManager\Domain\Policies\HealthInvoicePolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthPatientPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthPractitionerPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthPrescriptionPolicy;
@@ -365,6 +369,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(HealthPrescription::class, HealthPrescriptionPolicy::class);
         // — HealthManager hospitalisations & occupation des lits (HC-006, #7790)
         Gate::policy(HealthAdmission::class, HealthAdmissionPolicy::class);
+        // — HealthManager catalogue d'actes & facturation des soins (HC-007, #7791)
+        Gate::policy(HealthCareAct::class, HealthCareActPolicy::class);
+        Gate::policy(HealthInvoice::class, HealthInvoicePolicy::class);
         Gate::policy(EduCourseSlot::class, EduCourseSlotPolicy::class);
         Gate::policy(EduAssessment::class, EduAssessmentPolicy::class);
         Gate::policy(EduGrade::class, EduGradePolicy::class);

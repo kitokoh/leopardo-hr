@@ -34210,6 +34210,475 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /health-manager/care-acts:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister le catalogue d'actes médicaux
+      description: 'HC-007 (#7791, BC-30). health.billing et health.admin uniquement. Filtres category (consultation|examination|procedure|hospitalization|other), active, recherche q (code, libellé). Liste paginée (data, meta).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: category
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - consultation
+          - examination
+          - procedure
+          - hospitalization
+          - other
+      - name: active
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: q
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Actes du catalogue tarifaire (paginés)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        code:
+                          type: string
+                        name:
+                          type: string
+                        category:
+                          type: string
+                        price:
+                          type: string
+                          description: Prix courant du catalogue (figé dans les lignes à la facturation)
+                        is_active:
+                          type: boolean
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Créer un acte du catalogue tarifaire
+      description: 'health.billing et health.admin uniquement. Code UNIQUE par tenant (422 sinon), catégorie bornée, prix >= 0.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              - category
+              - price
+              properties:
+                code:
+                  type: string
+                  maxLength: 30
+                name:
+                  type: string
+                  maxLength: 150
+                category:
+                  type: string
+                  enum:
+                  - consultation
+                  - examination
+                  - procedure
+                  - hospitalization
+                  - other
+                price:
+                  type: number
+                  minimum: 0
+                is_active:
+                  type: boolean
+      responses:
+        '201':
+          description: Acte créé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/care-acts/{careAct}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter un acte du catalogue
+      description: 'health.billing et health.admin uniquement. Acte d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: careAct
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Acte du catalogue
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - HealthManager
+      summary: Mettre à jour un acte du catalogue
+      description: 'health.billing et health.admin uniquement. Changer le prix ne modifie JAMAIS une facture existante (prix FIGÉS dans les lignes). Un acte facturé se DÉSACTIVE (is_active=false), il ne se supprime pas — pas de DELETE.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: careAct
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 30
+                name:
+                  type: string
+                  maxLength: 150
+                category:
+                  type: string
+                price:
+                  type: number
+                  minimum: 0
+                is_active:
+                  type: boolean
+      responses:
+        '200':
+          description: Acte mis à jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/invoices:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les factures de soins
+      description: 'HC-007 (#7791, BC-30). health.billing et health.admin uniquement. Filtres status (draft|issued|paid|partially_paid|cancelled), patient_id. Liste paginée (data, meta) avec lignes, paiements, montant encaissé et solde.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - draft
+          - issued
+          - paid
+          - partially_paid
+          - cancelled
+      - name: patient_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Factures de soins du tenant (paginées)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Créer une facture de soins (brouillon)
+      description: 'health.billing et health.admin uniquement. Patient du MÊME tenant (422 sinon), AU MOINS UNE ligne, actes ACTIFS du catalogue du tenant. Les prix ne sont JAMAIS acceptés du client : libellé et prix unitaire FIGÉS depuis le catalogue, total = Σ lignes − remise RECALCULÉ CÔTÉ SERVEUR.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - patient_id
+              - items
+              properties:
+                patient_id:
+                  type: integer
+                discount:
+                  type: number
+                  minimum: 0
+                notes:
+                  type: string
+                  nullable: true
+                items:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required:
+                    - care_act_id
+                    - quantity
+                    properties:
+                      care_act_id:
+                        type: integer
+                      quantity:
+                        type: integer
+                        minimum: 1
+      responses:
+        '201':
+          description: Facture créée en brouillon (totaux serveur, prix figés)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/invoices/{invoice}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter une facture de soins
+      description: 'health.billing et health.admin uniquement. Facture d''un autre tenant → 404. Payload avec lignes, paiements, montant encaissé et solde exact.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: invoice
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Facture de soins
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - HealthManager
+      summary: Mettre à jour une facture (brouillon uniquement)
+      description: 'health.billing et health.admin uniquement. BROUILLON seulement : une facture ÉMISE n''est plus modifiable (422 HEALTH_INVOICE_NOT_EDITABLE — annulation seulement). Remplacer les lignes re-fige les prix depuis le catalogue et recalcule le total serveur.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: invoice
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                discount:
+                  type: number
+                  minimum: 0
+                notes:
+                  type: string
+                  nullable: true
+                items:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    properties:
+                      care_act_id:
+                        type: integer
+                      quantity:
+                        type: integer
+                        minimum: 1
+      responses:
+        '200':
+          description: Brouillon mis à jour (totaux recalculés serveur)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          description: Facture émise non modifiable (HEALTH_INVOICE_NOT_EDITABLE) ou validation
+  /health-manager/invoices/{invoice}/issue:
+    post:
+      tags:
+      - HealthManager
+      summary: Émettre une facture de soins
+      description: 'health.billing et health.admin uniquement. Brouillon → `issued` : numéro HINV-YYYY-NNNN posé (séquence PAR TENANT et par année, verrouillée sous transaction, jamais réutilisée), horodatage d''émission. Toute autre transition → 422 HEALTH_INVALID_STATUS_TRANSITION.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: invoice
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Facture émise (numérotée)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          description: Transition invalide (HEALTH_INVALID_STATUS_TRANSITION)
+  /health-manager/invoices/{invoice}/cancel:
+    post:
+      tags:
+      - HealthManager
+      summary: Annuler une facture de soins
+      description: 'health.billing et health.admin uniquement. Seul mouvement permis sur une facture émise (critère HC-007). Une facture PAYÉE ne s''annule pas via l''API (422 HEALTH_INVALID_STATUS_TRANSITION).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: invoice
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Facture annulée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          description: Transition invalide (HEALTH_INVALID_STATUS_TRANSITION)
+  /health-manager/invoices/{invoice}/payments:
+    post:
+      tags:
+      - HealthManager
+      summary: Enregistrer un paiement sur une facture
+      description: 'health.billing et health.admin uniquement. Facture ÉMISE ou PARTIELLEMENT PAYÉE, verrouillée SOUS TRANSACTION. Solde comparé en centimes : sur-paiement → 422 HEALTH_INVOICE_OVERPAYMENT, couverture exacte → `paid`, sinon → `partially_paid`. Un paiement ne se modifie ni ne se supprime (piste comptable).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: invoice
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - amount
+              - method
+              properties:
+                amount:
+                  type: number
+                  exclusiveMinimum: true
+                  minimum: 0
+                method:
+                  type: string
+                  enum:
+                  - cash
+                  - card
+                  - transfer
+                  - cheque
+                  - insurance
+                paid_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                reference:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Paiement enregistré (statut de la facture dérivé du solde exact)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          description: Sur-paiement (HEALTH_INVOICE_OVERPAYMENT) ou facture non payable (HEALTH_INVALID_STATUS_TRANSITION)
+  /health-manager/billing/stats:
+    get:
+      tags:
+      - HealthManager
+      summary: Statistiques de facturation des soins
+      description: 'HC-007 (#7791). health.billing et health.admin uniquement. CA encaissé du mois courant (paiements) et impayés (solde restant des factures émises/partiellement payées), bornés au tenant.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: CA du mois et impayés
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      month_revenue:
+                        type: string
+                        description: Total encaissé sur le mois courant
+                      outstanding_total:
+                        type: string
+                        description: Solde restant dû (factures émises / partiellement payées)
+                      outstanding_count:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /edu-manager/fee-charges:
     post:
       tags:

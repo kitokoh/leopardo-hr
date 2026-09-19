@@ -79,6 +79,11 @@ final class HealthManagerManifest implements SolutionManifest
             'consultations médicales (examen clinique, diagnostic, constantes vitales — données de santé art. 9 RGPD, chiffrées au repos)',
             'ordonnances et lignes de médicaments (posologie — données de santé)',
             'occupation des lits (donnée de séjour — santé)',
+            // HC-007 (#7791) — la facturation des soins est ACTIVE : les
+            // factures relient un patient à des actes médicaux nommés (la
+            // nature du soin transparaît dans les libellés facturés).
+            'factures de soins et lignes d’actes (lien patient ↔ actes médicaux, montants — données de santé et financières)',
+            'paiements de factures de soins (montants, modes de paiement — PII financière)',
         ];
     }
 

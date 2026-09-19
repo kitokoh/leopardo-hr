@@ -332,4 +332,7 @@ return [
     // BC-30 HealthManager — HC-006 (#7790), hospitalisations.
     'HEALTH_BED_UNAVAILABLE' => 'Ce lit n\'est pas disponible (occupé, en maintenance ou déjà affecté).',
     'HEALTH_PATIENT_ALREADY_ADMITTED' => 'Ce patient a déjà une hospitalisation en cours.',
+    // BC-30 HealthManager — HC-007 (#7791), facturation des soins.
+    'HEALTH_INVOICE_NOT_EDITABLE' => 'Une facture émise n\'est plus modifiable (annulation seulement).',
+    'HEALTH_INVOICE_OVERPAYMENT' => 'Le paiement dépasse le solde restant de la facture.',
 ];

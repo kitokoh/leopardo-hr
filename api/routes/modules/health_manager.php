@@ -18,8 +18,10 @@ declare(strict_types=1);
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthAdmissionController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthAppointmentController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthBedController;
+use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthCareActController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthConsultationController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthDepartmentController;
+use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthInvoiceController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthPatientController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthPractitionerController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthPrescriptionController;
@@ -109,4 +111,26 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::post('/health-manager/admissions/{admission}/transfer', [HealthAdmissionController::class, 'transfer'])->whereNumber('admission');
     Route::post('/health-manager/admissions/{admission}/discharge', [HealthAdmissionController::class, 'discharge'])->whereNumber('admission');
     Route::get('/health-manager/occupancy', [HealthAdmissionController::class, 'occupancy']);
+
+    // HC-007 (#7791) — catalogue d'actes médicaux (tarifs) : health.billing
+    // et health.admin gèrent. Pas de DELETE : un acte facturé se DÉSACTIVE
+    // (les factures existantes gardent leurs prix FIGÉS).
+    Route::get('/health-manager/care-acts', [HealthCareActController::class, 'index']);
+    Route::post('/health-manager/care-acts', [HealthCareActController::class, 'store']);
+    Route::get('/health-manager/care-acts/{careAct}', [HealthCareActController::class, 'show'])->whereNumber('careAct');
+    Route::put('/health-manager/care-acts/{careAct}', [HealthCareActController::class, 'update'])->whereNumber('careAct');
+
+    // HC-007 (#7791) — factures de soins : total recalculé SERVEUR (Σ
+    // lignes − remise, prix figés), numéro HINV-YYYY-NNNN à l'émission,
+    // paiements sous transaction (sur-paiement 422), facture émise non
+    // modifiable (annulation seulement). Pas de DELETE (piste comptable).
+    // `/billing/stats` = CA du mois + impayés.
+    Route::get('/health-manager/invoices', [HealthInvoiceController::class, 'index']);
+    Route::post('/health-manager/invoices', [HealthInvoiceController::class, 'store']);
+    Route::get('/health-manager/invoices/{invoice}', [HealthInvoiceController::class, 'show'])->whereNumber('invoice');
+    Route::put('/health-manager/invoices/{invoice}', [HealthInvoiceController::class, 'update'])->whereNumber('invoice');
+    Route::post('/health-manager/invoices/{invoice}/issue', [HealthInvoiceController::class, 'issue'])->whereNumber('invoice');
+    Route::post('/health-manager/invoices/{invoice}/cancel', [HealthInvoiceController::class, 'cancel'])->whereNumber('invoice');
+    Route::post('/health-manager/invoices/{invoice}/payments', [HealthInvoiceController::class, 'storePayment'])->whereNumber('invoice');
+    Route::get('/health-manager/billing/stats', [HealthInvoiceController::class, 'stats']);
 });

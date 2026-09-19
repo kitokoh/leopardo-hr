@@ -331,4 +331,7 @@ return [
     // BC-30 HealthManager — HC-006 (#7790), yatışlar.
     'HEALTH_BED_UNAVAILABLE' => 'Bu yatak uygun değil (dolu, bakımda veya zaten atanmış).',
     'HEALTH_PATIENT_ALREADY_ADMITTED' => 'Bu hastanın devam eden bir yatışı zaten var.',
+    // BC-30 HealthManager — HC-007 (#7791), bakım faturalaması.
+    'HEALTH_INVOICE_NOT_EDITABLE' => 'Kesilmiş bir fatura artık değiştirilemez (yalnızca iptal edilebilir).',
+    'HEALTH_INVOICE_OVERPAYMENT' => 'Ödeme, faturanın kalan bakiyesini aşıyor.',
 ];

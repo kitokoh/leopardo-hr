@@ -338,4 +338,7 @@ return [
     // BC-30 HealthManager — HC-006 (#7790), admissions.
     'HEALTH_BED_UNAVAILABLE' => 'This bed is not available (occupied, under maintenance or already assigned).',
     'HEALTH_PATIENT_ALREADY_ADMITTED' => 'This patient already has an ongoing admission.',
+    // BC-30 HealthManager — HC-007 (#7791), care billing.
+    'HEALTH_INVOICE_NOT_EDITABLE' => 'An issued invoice can no longer be modified (cancellation only).',
+    'HEALTH_INVOICE_OVERPAYMENT' => 'The payment exceeds the remaining balance of the invoice.',
 ];

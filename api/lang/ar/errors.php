@@ -331,4 +331,7 @@ return [
     // BC-30 HealthManager — HC-006 (#7790)، حالات الإدخال.
     'HEALTH_BED_UNAVAILABLE' => 'هذا السرير غير متاح (مشغول أو قيد الصيانة أو مخصص بالفعل).',
     'HEALTH_PATIENT_ALREADY_ADMITTED' => 'لدى هذا المريض إدخال جارٍ بالفعل.',
+    // BC-30 HealthManager — HC-007 (#7791), فوترة الرعاية.
+    'HEALTH_INVOICE_NOT_EDITABLE' => 'الفاتورة الصادرة لم تعد قابلة للتعديل (الإلغاء فقط).',
+    'HEALTH_INVOICE_OVERPAYMENT' => 'الدفعة تتجاوز الرصيد المتبقي من الفاتورة.',
 ];
