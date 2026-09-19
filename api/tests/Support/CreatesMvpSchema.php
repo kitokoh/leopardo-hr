@@ -1578,6 +1578,9 @@ trait CreatesMvpSchema
 
                 $table->unique(['company_id', 'idempotency_key'], 'retail_order_payments_company_idempotency_key_unique');
                 $table->index(['company_id', 'order_id'], 'retail_order_payments_company_order_idx');
+            });
+        }
+
         // Issue #7761 — grants de modules composables par collaborateur.
         // Miroir de la migration 2026_09_19_001401_7761 (garde #5443).
         if (! Schema::hasTable($this->moduleTable('employee_module_grants'))) {

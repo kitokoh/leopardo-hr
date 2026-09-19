@@ -53,9 +53,8 @@ export type ClientModuleKey =
   | 'fleet'
   | 'cameras'
   | 'showcase'
-  | 'commerce';
   | 'communication'
-  | 'showcase';
+  | 'commerce';
 export type FeatureState = 'available' | 'trial' | 'locked';
 
 /**
