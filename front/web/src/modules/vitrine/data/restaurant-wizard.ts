@@ -97,6 +97,8 @@ export const LEAD_COPY: Record<
 };
 
 
-/** Commande d'installation du nœud Edge (affichée dans le wizard — contenu technique). */
+/** Commande d'installation du nœud Edge (affichée dans le wizard — contenu technique).
+ *  #7653 : le jeton ne passe jamais en argv (visible dans ps/history) — il est
+ *  transmis par variable d'environnement préservée à travers sudo. */
 export const EDGE_INSTALL_CMD =
-  'curl -fsSL https://gestionemployerbackend.onrender.com/api/v1/edge/install.sh | sudo bash -s -- --node-id <NODE_ID> --token <EDGE_TOKEN>';
+  'curl -fsSL https://gestionemployerbackend.onrender.com/api/v1/edge/install.sh -o install.sh && EDGE_TOKEN=<EDGE_TOKEN> sudo --preserve-env=EDGE_TOKEN bash install.sh --node-id <NODE_ID>';

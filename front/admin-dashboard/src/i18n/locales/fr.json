@@ -5231,10 +5231,19 @@
       "entreprise": "Entreprises clientes",
       "metier": "Métier plateforme",
       "parametres": "Paramètres",
-      "systeme": "Système"
+      "systeme": "Système",
+      "facturationOffres": "Facturation & offres",
+      "referentielsPaie": "Référentiels paie",
+      "plateforme": "Plateforme"
     },
     "team": "Équipe plateforme",
-    "acquisitionFunnel": "Funnel d'acquisition"
+    "acquisitionFunnel": "Funnel d'acquisition",
+    "accounting": "Comptabilité",
+    "accountingStart": "Démarrer",
+    "accountingOverview": "Tableau de bord",
+    "accountingConfig": "Paramétrage",
+    "fuelStationHub": "Hub stations-service",
+    "fuelStationOps": "Opérations"
   },
   "companydetailCoreModuleAlwaysActive": "Module cœur toujours actif",
   "smartAttendanceSessionsTitle": "Sessions Smart Attendance",
@@ -7212,5 +7221,35 @@
       "support": "Support",
       "supportDesc": "Contactez notre équipe"
     }
+  },
+  "brandingPage": {
+    "title": "Image de marque",
+    "subtitle": "Personnalisez le nom, le logo et les couleurs de votre espace et de vos documents.",
+    "forbidden": "Cette page est réservée aux gestionnaires principal et RH. Contactez un gestionnaire pour modifier l'image de marque.",
+    "loadError": "Impossible de charger l'image de marque. Réessayez plus tard.",
+    "identityTitle": "Identité",
+    "displayName": "Nom d'affichage",
+    "displayNameHint": "Nom affiché dans l'espace et sur vos documents (2 à 120 caractères).",
+    "logoTitle": "Logo",
+    "logoHint": "JPG, PNG ou WebP — 2 Mo maximum, 2048×2048 px maximum.",
+    "logoChoose": "Choisir un logo",
+    "logoTooLarge": "Le fichier dépasse 2 Mo.",
+    "logoInvalidType": "Format non pris en charge : utilisez JPG, PNG ou WebP.",
+    "logoPreviewAlt": "Aperçu du logo",
+    "colorsTitle": "Couleurs",
+    "primaryColor": "Couleur primaire",
+    "accentColor": "Couleur d'accent",
+    "invalidHex": "Couleur invalide : utilisez un code hexadécimal comme #10B981.",
+    "brandModeTitle": "Mode de marque",
+    "modeDefault": "Par défaut",
+    "modeLight": "Clair",
+    "modeDark": "Sombre",
+    "modeAuto": "Automatique",
+    "previewTitle": "Aperçu",
+    "previewHint": "Rendu en direct de votre marque dans l'espace client.",
+    "previewAction": "Bouton d'exemple",
+    "save": "Enregistrer",
+    "saved": "Image de marque mise à jour.",
+    "saveError": "Échec de l'enregistrement. Réessayez."
   }
 }
