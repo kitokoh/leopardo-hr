@@ -51,6 +51,9 @@ export const PROTECTED_PREFIXES = [
   '/accounting',
   '/edu-manager',
   '/fuel',
+  // #7759 — tickets support côté client (zone dashboard) : conversations
+  // support du tenant, jamais servies sans session.
+  '/support',
 ] as const;
 
 /**

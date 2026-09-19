@@ -35,6 +35,8 @@ const PROTECTED_PREFIXES = [
   '/accounting',
   '/edu-manager',
   '/fuel',
+  // #7759 — tickets support côté client (zone dashboard).
+  '/support',
 ];
 
 function isProtectedPath(url) {
