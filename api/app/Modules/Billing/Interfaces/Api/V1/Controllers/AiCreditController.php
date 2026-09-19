@@ -139,7 +139,7 @@ class AiCreditController extends Controller
                 ],
             ]);
         } catch (\Throwable $e) {
-            Log::error('Échec création session checkout crédits IA', [
+            Log::error('AiCredit: failed to create checkout session', [
                 'company_id' => $company->id,
                 'pack' => $pack,
                 'error' => $e->getMessage(),
