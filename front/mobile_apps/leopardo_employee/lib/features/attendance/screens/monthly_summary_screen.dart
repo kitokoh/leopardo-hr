@@ -5,8 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/models/monthly_summary.dart';
-import 'package:leopardo_employee/features/attendance/providers/attendance_provider.dart';
-import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/features/attendance/providers/attendance_provider.dart';
+import 'package:leopardo_core/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 

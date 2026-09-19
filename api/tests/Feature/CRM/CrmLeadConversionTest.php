@@ -59,7 +59,12 @@ class CrmLeadConversionTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->dropCrmTables();
+        // #7452 — les tables CRM sont désormais créées par les migrations
+        // tenant (#5708/#5709/#5710) : les dropper ici détruisait le schéma
+        // canonique pour toutes les classes suivantes du worker (2BP01 sur la
+        // FK crm_tasks → crm_contacts, puis cascade de « relation does not
+        // exist »). La fixture de création est devenue no-op (hasTable) ; le
+        // tearDown ne doit plus rien dropper.
         parent::tearDown();
     }
 
@@ -284,14 +289,5 @@ class CrmLeadConversionTest extends TestCase
                 $table->softDeletes();
             });
         }
-    }
-
-    private function dropCrmTables(): void
-    {
-        Schema::dropIfExists('crm_opportunities');
-        Schema::dropIfExists('crm_pipelines');
-        Schema::dropIfExists('crm_leads');
-        Schema::dropIfExists('crm_contacts');
-        Schema::dropIfExists('crm_accounts');
     }
 }

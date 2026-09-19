@@ -192,6 +192,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.travelagency' => EnsureTravelAgencyModuleMiddleware::class,
             // BC-24 TRAVEL — API entrante transporteurs (TRAVEL-807/#6086).
             'travel.partner' => TravelPartnerAuthMiddleware::class,
+            // BC-24 TRAVEL — lecture distributeurs par clé scopée (TRAVEL-DISTRIBUTION/#7641).
+            'travel.distributor' => \App\Http\Middleware\Travel\TravelDistributorAuthMiddleware::class,
             // BC-25 RESTAURANT — gate feature flag restaurantmanager (RESTO-102/#6159).
             'module.restaurantmanager' => EnsureRestaurantManagerModuleMiddleware::class,
             // BC-27 SHOWCASE — gate feature flag company_showcase (#6865/#6866).
@@ -205,6 +207,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.delivery' => EnsureDeliveryModuleMiddleware::class,
             // BC-28 CATALOG — gate feature flag b2b_catalog (#6881).
             'module.catalog' => \App\Http\Middleware\Catalog\EnsureCatalogModuleMiddleware::class,
+            // BC-17 RETAIL — gate feature flag retail (#7672).
+            'module.retail' => \App\Http\Middleware\Retail\EnsureRetailModuleMiddleware::class,
             // BC-29 COMMUNICATION — gate feature flag communication (R0 #7685).
             'module.communication' => EnsureCommunicationModuleMiddleware::class,
             // C-PUBLIC #6882 — accès public par slug (catalogue vitrine).

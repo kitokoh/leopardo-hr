@@ -121,6 +121,7 @@ restent libres. `Modules/CRM` existe et est complet (`CrmServiceProvider`) ; la 
 | `Modules/Recruitment` | ✅ routes/modules/hr_extended.php | 🔶 Application vide (0 Action) — Domain/Infrastructure/Interfaces présents | `RecruitmentServiceProvider` |
 | `Modules/EduManager` | ✅ routes/modules/edu_manager.php | 🟢 verticale BC-16 (EDU-001..020, core + batch2 + batch3) | `EduManagerServiceProvider` |
 | `Modules/RestaurantManager` | ✅ routes/modules/restaurantmanager.php | 🟢 verticale BC-25 (Application/Domain/Infrastructure/Interfaces/Providers) | `RestaurantManagerServiceProvider` |
+| `Modules/Retail` | ✅ routes/modules/retail.php | 🔶 socle domaine BC-17 (#7672) : migrations tenant `retail_categories`/`retail_products`, modèles, policies deny-by-default, feature flag `retail` — Application et Infrastructure vides (à peupler au fil des besoins) | `RetailServiceProvider` |
 | `Modules/Restaurant` | ✅ routes/modules/solutions.php (public) | 🔶 **Fournisseur de contenu** (Solution/Survey) — Application/Infrastructure/Interfaces **N/A intentionnel** (ADR-0020, #6901) ; webhooks/shop via RestaurantManager, surveys via `Core\Solutions` | `RestaurantServiceProvider` |
 | `Modules/Billing` | ✅ routes/modules/billing.php | ✅ complet | `BillingServiceProvider` |
 | `Modules/Cabinet` | ✅ routes/modules/cabinet.php | ✅ complet | `CabinetServiceProvider` |

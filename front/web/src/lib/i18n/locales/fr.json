@@ -505,7 +505,16 @@
       }
     },
     "socialExamplePlaceholder": "Ex: Leopardo — Reseaux sociaux",
-    "postContentPlaceholder": "Contenu de la publication..."
+    "postContentPlaceholder": "Contenu de la publication...",
+    "publishNow": "Publier maintenant",
+    "commentsLoadError": "Impossible de charger les commentaires.",
+    "aiSuggestUnavailable": "Suggestion IA indisponible pour le moment.",
+    "replySendError": "Impossible d'envoyer la réponse.",
+    "suggestReply": "Suggérer une réponse (IA)",
+    "replyPlaceholder": "Votre réponse (validée par vous avant envoi)...",
+    "weeklyReportLoadError": "Impossible de charger le bilan hebdomadaire.",
+    "aiSummary": "Synthèse IA",
+    "autoSummary": "Synthèse automatique"
   },
   "attendance": {
     "sending_to_server": "{label} vers le serveur...",
@@ -5500,7 +5509,8 @@
       "bookingsDesc": "Ventes au guichet, confirmation, annulation, remboursement et billets.",
       "reportsDesc": "Ventes, occupation, recettes, annulations et exports CSV.",
       "portal": "Portail voyageur",
-      "portalDesc": "Recherche de trajets et réservation côté client."
+      "portalDesc": "Recherche de trajets et réservation côté client.",
+      "staffDesc": "Affectations chauffeur, guichetier, contrôleur et chef de bureau."
     },
     "ageCategory": {
       "infant": "Bébé",
@@ -5512,6 +5522,37 @@
       "office": "Guichet",
       "phone": "Téléphone",
       "partner": "Partenaire"
+    },
+    "staff": {
+      "title": "Équipe",
+      "subtitle": "Affectez vos employés aux rôles travel (chauffeur, guichetier, contrôleur, chef de bureau) sur un bureau ou un voyage.",
+      "assignTitle": "Nommer un membre de l’équipe",
+      "employee": "Employé",
+      "role": "Rôle",
+      "scope": "Scope",
+      "scopeOffice": "Bureau",
+      "scopeTrip": "Voyage",
+      "assign": "Nommer",
+      "revoke": "Révoquer",
+      "assignFailed": "L'affectation a échoué.",
+      "revokeFailed": "La révocation a échoué.",
+      "formIncomplete": "Choisissez un employé, un rôle et un scope.",
+      "activeTitle": "Affectations actives",
+      "empty": "Aucune affectation active.",
+      "historyTitle": "Historique des affectations",
+      "historyEmpty": "Aucune affectation révoquée ou expirée.",
+      "revokedAt": "Révoquée le"
+    },
+    "staffRole": {
+      "driver": "Chauffeur",
+      "agent": "Guichetier",
+      "controller": "Contrôleur",
+      "office_manager": "Chef de bureau"
+    },
+    "staffStatus": {
+      "active": "Active",
+      "revoked": "Révoquée",
+      "expired": "Expirée"
     }
   },
   "travelPortal": {
@@ -6100,6 +6141,18 @@
       "publish_showcase": {
         "title": "Publier votre site vitrine",
         "desc": "Rendez votre site visible en un clic."
+      },
+      "travel_setup_network": {
+        "title": "Créer votre réseau (gares, bureaux, lignes)",
+        "desc": "Déclarez vos gares, bureaux de vente et lignes ville→ville."
+      },
+      "travel_first_trip": {
+        "title": "Programmer votre premier voyage",
+        "desc": "Créez un trajet daté, ses tarifs par classe, puis publiez-le."
+      },
+      "travel_first_sale": {
+        "title": "Enregistrer votre première vente",
+        "desc": "Vendez un premier billet au guichet ou en ligne."
       }
     }
   },
@@ -6135,6 +6188,214 @@
       "faqDesc": "Questions fréquentes",
       "support": "Support",
       "supportDesc": "Contactez notre équipe"
+    }
+  },
+  "commerce": {
+    "section": {
+      "title": "Commerce",
+      "subtitle": "Espace vendeur : produits, stock et caisse de la verticale Commerce."
+    },
+    "loading": "Chargement…",
+    "gate": {
+      "retry": "Réessayer"
+    },
+    "search": {
+      "placeholder": "Rechercher…"
+    },
+    "common": {
+      "status": "Statut"
+    },
+    "table": {
+      "actions": "Actions",
+      "empty": "Aucun élément."
+    },
+    "action": {
+      "create": "Créer",
+      "createTitle": "Créer un élément",
+      "edit": "Modifier",
+      "editTitle": "Modifier",
+      "delete": "Supprimer",
+      "cancel": "Annuler",
+      "save": "Enregistrer"
+    },
+    "form": {
+      "required": "Ce champ est obligatoire.",
+      "saving": "Enregistrement…",
+      "selectPlaceholder": "— Sélectionner —"
+    },
+    "confirm": {
+      "deleteMessage": "Supprimer définitivement cet élément ?"
+    },
+    "error": {
+      "loadFailed": "Impossible de charger les données.",
+      "saveFailed": "Échec de l'enregistrement.",
+      "deleteFailed": "Échec de la suppression.",
+      "actionFailed": "L'action a échoué."
+    },
+    "pagination": {
+      "previous": "Précédent",
+      "next": "Suivant",
+      "page": "Page",
+      "items": "éléments"
+    },
+    "home": {
+      "kpisTitle": "Aperçu rapide",
+      "kpiProducts": "Produits au catalogue",
+      "kpiAlerts": "Alertes de stock bas",
+      "kpiSession": "Caisse",
+      "sessionOpen": "Session ouverte",
+      "sessionClosed": "Aucune session ouverte",
+      "empty": "Aucune donnée disponible.",
+      "open": "Ouvrir",
+      "products": "Produits",
+      "productsDesc": "Catégories, fiches produits, prix et publication.",
+      "stock": "Stock",
+      "stockDesc": "Emplacements, niveaux, mouvements tracés et alertes.",
+      "pos": "Caisse",
+      "posDesc": "Sessions de caisse, ventes, encaissements et tickets."
+    },
+    "tab": {
+      "products": "Produits",
+      "categories": "Catégories",
+      "levels": "Niveaux",
+      "movements": "Mouvements",
+      "locations": "Emplacements",
+      "alerts": "Alertes"
+    },
+    "categories": {
+      "title": "Catégories",
+      "name": "Nom",
+      "slug": "Slug",
+      "position": "Position"
+    },
+    "products": {
+      "pageTitle": "Catalogue produits",
+      "pageSubtitle": "Catégories, fiches produits, prix en devise et publication.",
+      "title": "Produits",
+      "name": "Nom",
+      "category": "Catégorie",
+      "barcode": "Code-barres",
+      "price": "Prix",
+      "currency": "Devise",
+      "cost": "Coût",
+      "unit": "Unité",
+      "description": "Description",
+      "publish": "Publier",
+      "unpublish": "Dépublier",
+      "createTitle": "Créer un produit",
+      "editTitle": "Modifier le produit",
+      "allStatuses": "Tous les statuts",
+      "statusFilter": "Filtrer par statut",
+      "invalidPrice": "Prix invalide.",
+      "invalidCost": "Coût invalide."
+    },
+    "productStatus": {
+      "draft": "Brouillon",
+      "published": "Publié",
+      "archived": "Archivé"
+    },
+    "locations": {
+      "title": "Emplacements",
+      "name": "Nom",
+      "code": "Code",
+      "type": "Type",
+      "active": "Actif"
+    },
+    "locationType": {
+      "store": "Boutique",
+      "warehouse": "Entrepôt"
+    },
+    "stock": {
+      "pageTitle": "Stock",
+      "pageSubtitle": "Emplacements, niveaux, mouvements tracés et alertes de stock bas.",
+      "location": "Emplacement",
+      "product": "Produit",
+      "quantity": "Quantité",
+      "threshold": "Seuil d’alerte",
+      "allLocations": "Tous les emplacements",
+      "allProducts": "Tous les produits",
+      "belowThreshold": "Sous le seuil d’alerte uniquement",
+      "noLevels": "Aucun niveau de stock.",
+      "newMovement": "Enregistrer un mouvement",
+      "reason": "Motif",
+      "note": "Note",
+      "saveMovement": "Enregistrer le mouvement",
+      "movementSaved": "Mouvement enregistré.",
+      "invalidQuantity": "Quantité invalide.",
+      "history": "Historique des mouvements",
+      "date": "Date",
+      "delta": "Delta",
+      "noMovements": "Aucun mouvement enregistré.",
+      "noAlerts": "Aucune alerte de stock bas."
+    },
+    "stockDirection": {
+      "in": "Entrée de stock (quantité ajoutée).",
+      "out": "Sortie de stock (quantité retirée).",
+      "signed": "Ajustement signé : saisissez le delta (+/−)."
+    },
+    "stockReason": {
+      "purchase": "Achat (entrée)",
+      "sale": "Vente (sortie)",
+      "adjustment": "Ajustement",
+      "return": "Retour (entrée)",
+      "transfer_in": "Transfert entrant",
+      "transfer_out": "Transfert sortant",
+      "loss": "Perte / casse"
+    },
+    "pos": {
+      "pageTitle": "Caisse",
+      "pageSubtitle": "Sessions de caisse, ventes, encaissements et tickets.",
+      "openTitle": "Ouvrir une session de caisse",
+      "openHint": "Une seule session ouverte par emplacement.",
+      "openingCash": "Fonds de caisse",
+      "open": "Ouvrir la caisse",
+      "selectLocation": "Sélectionnez un emplacement.",
+      "invalidAmount": "Montant invalide.",
+      "sessionBanner": "Session ouverte",
+      "close": "Clôturer la caisse",
+      "closeTitle": "Clôture de session",
+      "closeHint": "L’attendu et l’écart sont calculés côté serveur (fonds d’ouverture + espèces encaissées).",
+      "countedCash": "Espèces comptées",
+      "expectedCash": "Espèces attendues",
+      "variance": "Écart",
+      "varianceReason": "Motif de l’écart",
+      "confirmClose": "Confirmer la clôture",
+      "closedTitle": "Session clôturée",
+      "catalog": "Catalogue publié",
+      "noProducts": "Aucun produit publié.",
+      "cart": "Commande en cours",
+      "emptyCart": "Aucun article. Cliquez sur un produit pour l’ajouter.",
+      "quantity": "Quantité",
+      "removeLine": "Retirer",
+      "estimatedTotal": "Total estimé (le total final est calculé serveur)",
+      "submitOrder": "Valider la commande",
+      "receipt": "Ticket de caisse",
+      "print": "Imprimer",
+      "item": "Article",
+      "lineTotal": "Total ligne",
+      "total": "Total",
+      "paid": "Payé",
+      "remaining": "Reste à payer",
+      "payment": "Encaissement",
+      "method": "Moyen de paiement",
+      "amount": "Montant",
+      "addPayment": "Encaisser",
+      "completed": "Commande encaissée : le stock a été décrémenté.",
+      "cancelled": "Commande annulée : le stock a été restauré.",
+      "cancelOrder": "Annuler la commande",
+      "cancelConfirm": "Annuler cette commande ?",
+      "newOrder": "Nouvelle vente"
+    },
+    "orderStatus": {
+      "draft": "Brouillon",
+      "completed": "Encaissée",
+      "cancelled": "Annulée"
+    },
+    "paymentMethod": {
+      "cash": "Espèces",
+      "card": "Carte",
+      "mobile": "Mobile money",
+      "online": "En ligne"
     }
   },
   "communicationApp": {

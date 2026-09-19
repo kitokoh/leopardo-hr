@@ -1,0 +1,75 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\Retail\Domain\Models;
+
+use App\Modules\Retail\Domain\Enums\RetailProductStatus;
+use App\Shared\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
+
+/**
+ * Produit du module Retail d'un tenant (BC-17 RETAIL, #7672).
+ *
+ * Prix de vente et coût d'achat stockés en **minor units** (entier) +
+ * devise ISO 4217 — jamais de flottants (pattern Catalog #6880). SKU
+ * unique par tenant (référence interne), code-barres optionnel. Statut
+ * string `draft|published|archived` (enum PHP côté code). Meta libre
+ * (attributs, specs). Tenant-scoped (`company_id`), slug unique par tenant.
+ *
+ * @property int $id
+ * @property string $company_id
+ * @property int|null $category_id
+ * @property string $name
+ * @property string $slug
+ * @property string $sku
+ * @property string|null $barcode
+ * @property string|null $description
+ * @property int $price_minor
+ * @property int|null $cost_minor
+ * @property string $currency
+ * @property string|null $unit
+ * @property RetailProductStatus $status
+ * @property array<string, mixed>|null $meta
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @method static Builder<static> query()
+ *
+ * @mixin Builder<static>
+ */
+class RetailProduct extends Model
+{
+    use BelongsToCompany;
+
+    protected $table = 'retail_products';
+
+    protected $fillable = [
+        'company_id',
+        'category_id',
+        'name',
+        'slug',
+        'sku',
+        'barcode',
+        'description',
+        'price_minor',
+        'cost_minor',
+        'currency',
+        'unit',
+        'status',
+        'meta',
+    ];
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'status' => RetailProductStatus::class,
+            'meta' => 'array',
+        ];
+    }
+}

@@ -505,7 +505,16 @@
       }
     },
     "socialExamplePlaceholder": "مثال: Leopardo — وسائل التواصل الاجتماعي",
-    "postContentPlaceholder": "محتوى المنشور..."
+    "postContentPlaceholder": "محتوى المنشور...",
+    "publishNow": "انشر الآن",
+    "commentsLoadError": "تعذر تحميل التعليقات.",
+    "aiSuggestUnavailable": "اقتراح الذكاء الاصطناعي غير متاح حاليًا.",
+    "replySendError": "تعذر إرسال الرد.",
+    "suggestReply": "اقتراح رد (ذكاء اصطناعي)",
+    "replyPlaceholder": "ردك (تراجعه قبل الإرسال)...",
+    "weeklyReportLoadError": "تعذر تحميل التقرير الأسبوعي.",
+    "aiSummary": "ملخص الذكاء الاصطناعي",
+    "autoSummary": "ملخص تلقائي"
   },
   "attendance": {
     "sending_to_server": "جار إرسال {label} إلى الخادم...",
@@ -5500,7 +5509,8 @@
       "bookingsDesc": "مبيعات الشباك والتأكيد والإلغاء والاسترداد والتذاكر.",
       "reportsDesc": "المبيعات والإشغال والإيرادات والإلغاءات وتصدير CSV.",
       "portal": "بوابة المسافر",
-      "portalDesc": "بحث الرحلات والحجز من جهة العميل."
+      "portalDesc": "بحث الرحلات والحجز من جهة العميل.",
+      "staffDesc": "تعيينات السائق وموظف الشباك والمراقب ورئيس المكتب."
     },
     "ageCategory": {
       "infant": "رضيع",
@@ -5512,6 +5522,37 @@
       "office": "الشباك",
       "phone": "الهاتف",
       "partner": "شريك"
+    },
+    "staff": {
+      "title": "الفريق",
+      "subtitle": "عيّن موظفيك في أدوار السفر (سائق، موظف شباك، مراقب، رئيس مكتب) على مكتب أو رحلة.",
+      "assignTitle": "تعيين عضو في الفريق",
+      "employee": "الموظف",
+      "role": "الدور",
+      "scope": "النطاق",
+      "scopeOffice": "مكتب",
+      "scopeTrip": "رحلة",
+      "assign": "تعيين",
+      "revoke": "إلغاء",
+      "assignFailed": "فشل التعيين.",
+      "revokeFailed": "فشل الإلغاء.",
+      "formIncomplete": "اختر موظفًا ودورًا ونطاقًا.",
+      "activeTitle": "التعيينات النشطة",
+      "empty": "لا يوجد تعيين نشط.",
+      "historyTitle": "سجل التعيينات",
+      "historyEmpty": "لا يوجد تعيين ملغى أو منتهي الصلاحية.",
+      "revokedAt": "تاريخ الإلغاء"
+    },
+    "staffRole": {
+      "driver": "سائق",
+      "agent": "موظف شباك",
+      "controller": "مراقب",
+      "office_manager": "رئيس مكتب"
+    },
+    "staffStatus": {
+      "active": "نشط",
+      "revoked": "ملغى",
+      "expired": "منتهي الصلاحية"
     }
   },
   "travelPortal": {
@@ -6100,6 +6141,18 @@
       "publish_showcase": {
         "title": "نشر موقعك التعريفي",
         "desc": "اجعل موقعك مرئيًا بنقرة واحدة."
+      },
+      "travel_setup_network": {
+        "title": "أنشئ شبكتك (محطات، مكاتب، خطوط)",
+        "desc": "أعلن عن محطاتك ومكاتب البيع وخطوطك بين المدن."
+      },
+      "travel_first_trip": {
+        "title": "برمج رحلتك الأولى",
+        "desc": "أنشئ رحلة بتاريخ محدد وأسعارها حسب الدرجة ثم انشرها."
+      },
+      "travel_first_sale": {
+        "title": "سجّل أول عملية بيع",
+        "desc": "بِع أول تذكرة في الشباك أو عبر الإنترنت."
       }
     }
   },
@@ -6135,6 +6188,214 @@
       "faqDesc": "إجابات سريعة قبل الإطلاق",
       "support": "الدعم",
       "supportDesc": "تواصل مع فريقنا"
+    }
+  },
+  "commerce": {
+    "section": {
+      "title": "التجارة",
+      "subtitle": "فضاء البائع: المنتجات والمخزون والصندوق لقطاع التجارة."
+    },
+    "loading": "جارٍ التحميل…",
+    "gate": {
+      "retry": "إعادة المحاولة"
+    },
+    "search": {
+      "placeholder": "بحث…"
+    },
+    "common": {
+      "status": "الحالة"
+    },
+    "table": {
+      "actions": "إجراءات",
+      "empty": "لا توجد عناصر."
+    },
+    "action": {
+      "create": "إنشاء",
+      "createTitle": "إنشاء عنصر",
+      "edit": "تعديل",
+      "editTitle": "تعديل",
+      "delete": "حذف",
+      "cancel": "إلغاء",
+      "save": "حفظ"
+    },
+    "form": {
+      "required": "هذا الحقل إلزامي.",
+      "saving": "جارٍ الحفظ…",
+      "selectPlaceholder": "— اختيار —"
+    },
+    "confirm": {
+      "deleteMessage": "هل تريد حذف هذا العنصر نهائيًا؟"
+    },
+    "error": {
+      "loadFailed": "تعذّر تحميل البيانات.",
+      "saveFailed": "فشل الحفظ.",
+      "deleteFailed": "فشل الحذف.",
+      "actionFailed": "فشل تنفيذ الإجراء."
+    },
+    "pagination": {
+      "previous": "السابق",
+      "next": "التالي",
+      "page": "صفحة",
+      "items": "عناصر"
+    },
+    "home": {
+      "kpisTitle": "نظرة سريعة",
+      "kpiProducts": "المنتجات في الكتالوج",
+      "kpiAlerts": "تنبيهات انخفاض المخزون",
+      "kpiSession": "الصندوق",
+      "sessionOpen": "جلسة مفتوحة",
+      "sessionClosed": "لا توجد جلسة مفتوحة",
+      "empty": "لا توجد بيانات متاحة.",
+      "open": "فتح",
+      "products": "المنتجات",
+      "productsDesc": "الفئات وبطاقات المنتجات والأسعار والنشر.",
+      "stock": "المخزون",
+      "stockDesc": "المواقع والمستويات والحركات المتتبعة والتنبيهات.",
+      "pos": "الصندوق",
+      "posDesc": "جلسات الصندوق والمبيعات والمدفوعات والإيصالات."
+    },
+    "tab": {
+      "products": "المنتجات",
+      "categories": "الفئات",
+      "levels": "المستويات",
+      "movements": "الحركات",
+      "locations": "المواقع",
+      "alerts": "التنبيهات"
+    },
+    "categories": {
+      "title": "الفئات",
+      "name": "الاسم",
+      "slug": "المعرّف",
+      "position": "الترتيب"
+    },
+    "products": {
+      "pageTitle": "كتالوج المنتجات",
+      "pageSubtitle": "الفئات وبطاقات المنتجات والأسعار بالعملة والنشر.",
+      "title": "المنتجات",
+      "name": "الاسم",
+      "category": "الفئة",
+      "barcode": "الرمز الشريطي",
+      "price": "السعر",
+      "currency": "العملة",
+      "cost": "التكلفة",
+      "unit": "الوحدة",
+      "description": "الوصف",
+      "publish": "نشر",
+      "unpublish": "إلغاء النشر",
+      "createTitle": "إنشاء منتج",
+      "editTitle": "تعديل المنتج",
+      "allStatuses": "كل الحالات",
+      "statusFilter": "تصفية حسب الحالة",
+      "invalidPrice": "سعر غير صالح.",
+      "invalidCost": "تكلفة غير صالحة."
+    },
+    "productStatus": {
+      "draft": "مسودة",
+      "published": "منشور",
+      "archived": "مؤرشف"
+    },
+    "locations": {
+      "title": "المواقع",
+      "name": "الاسم",
+      "code": "الرمز",
+      "type": "النوع",
+      "active": "نشط"
+    },
+    "locationType": {
+      "store": "متجر",
+      "warehouse": "مستودع"
+    },
+    "stock": {
+      "pageTitle": "المخزون",
+      "pageSubtitle": "المواقع والمستويات والحركات المتتبعة وتنبيهات انخفاض المخزون.",
+      "location": "الموقع",
+      "product": "المنتج",
+      "quantity": "الكمية",
+      "threshold": "حد التنبيه",
+      "allLocations": "كل المواقع",
+      "allProducts": "كل المنتجات",
+      "belowThreshold": "تحت حد التنبيه فقط",
+      "noLevels": "لا توجد مستويات مخزون.",
+      "newMovement": "تسجيل حركة",
+      "reason": "السبب",
+      "note": "ملاحظة",
+      "saveMovement": "حفظ الحركة",
+      "movementSaved": "تم تسجيل الحركة.",
+      "invalidQuantity": "كمية غير صالحة.",
+      "history": "سجل الحركات",
+      "date": "التاريخ",
+      "delta": "الفرق",
+      "noMovements": "لا توجد حركات مسجلة.",
+      "noAlerts": "لا توجد تنبيهات انخفاض مخزون."
+    },
+    "stockDirection": {
+      "in": "إدخال مخزون (تُضاف الكمية).",
+      "out": "إخراج مخزون (تُخصم الكمية).",
+      "signed": "تعديل بإشارة: أدخل الفرق (+/−)."
+    },
+    "stockReason": {
+      "purchase": "شراء (إدخال)",
+      "sale": "بيع (إخراج)",
+      "adjustment": "تعديل",
+      "return": "إرجاع (إدخال)",
+      "transfer_in": "تحويل وارد",
+      "transfer_out": "تحويل صادر",
+      "loss": "فقدان / تلف"
+    },
+    "pos": {
+      "pageTitle": "الصندوق",
+      "pageSubtitle": "جلسات الصندوق والمبيعات والمدفوعات والإيصالات.",
+      "openTitle": "فتح جلسة صندوق",
+      "openHint": "جلسة مفتوحة واحدة فقط لكل موقع.",
+      "openingCash": "رصيد الافتتاح",
+      "open": "فتح الصندوق",
+      "selectLocation": "اختر موقعًا.",
+      "invalidAmount": "مبلغ غير صالح.",
+      "sessionBanner": "جلسة مفتوحة",
+      "close": "إغلاق الصندوق",
+      "closeTitle": "إغلاق الجلسة",
+      "closeHint": "المبلغ المتوقع والفرق يُحسبان في الخادم (رصيد الافتتاح + المدفوعات النقدية).",
+      "countedCash": "النقد المعدود",
+      "expectedCash": "النقد المتوقع",
+      "variance": "الفرق",
+      "varianceReason": "سبب الفرق",
+      "confirmClose": "تأكيد الإغلاق",
+      "closedTitle": "جلسة مغلقة",
+      "catalog": "الكتالوج المنشور",
+      "noProducts": "لا توجد منتجات منشورة.",
+      "cart": "الطلب الحالي",
+      "emptyCart": "لا توجد عناصر. انقر على منتج لإضافته.",
+      "quantity": "الكمية",
+      "removeLine": "إزالة",
+      "estimatedTotal": "الإجمالي التقديري (يُحسب الإجمالي النهائي في الخادم)",
+      "submitOrder": "تأكيد الطلب",
+      "receipt": "إيصال الصندوق",
+      "print": "طباعة",
+      "item": "الصنف",
+      "lineTotal": "إجمالي السطر",
+      "total": "الإجمالي",
+      "paid": "المدفوع",
+      "remaining": "المتبقي",
+      "payment": "الدفع",
+      "method": "وسيلة الدفع",
+      "amount": "المبلغ",
+      "addPayment": "تحصيل",
+      "completed": "تم دفع الطلب: تم خصم المخزون.",
+      "cancelled": "أُلغي الطلب: تمت استعادة المخزون.",
+      "cancelOrder": "إلغاء الطلب",
+      "cancelConfirm": "هل تريد إلغاء هذا الطلب؟",
+      "newOrder": "بيع جديد"
+    },
+    "orderStatus": {
+      "draft": "مسودة",
+      "completed": "مدفوع",
+      "cancelled": "ملغى"
+    },
+    "paymentMethod": {
+      "cash": "نقدًا",
+      "card": "بطاقة",
+      "mobile": "دفع عبر الهاتف",
+      "online": "عبر الإنترنت"
     }
   },
   "communicationApp": {
