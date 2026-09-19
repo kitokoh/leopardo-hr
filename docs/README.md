@@ -144,7 +144,7 @@ Index de la documentation technique et stratégique du projet.
 | Doc | Contenu |
 |---|---|
 | [`ai/`](ai/) | Architecture IA (`AI_ARCHITECTURE.md`) |
-| [`api-mock-data/`](api-mock-data/) | Jeux de données mock pour l'API |
+| `api-mock-data/` (généré, non versionné — #7654) | Jeux de données mock pour l'API — régénérer via `python dev-hub/tools/generate_api_examples.py` |
 | [`edge-sync/`](edge-sync/) | Architecture de synchronisation edge/offline |
 | [`kiosk/`](kiosk/) | Documentation kiosk (pointage biométrique/QR) |
 | [`admin/`](admin/) | Documentation admin-dashboard |
