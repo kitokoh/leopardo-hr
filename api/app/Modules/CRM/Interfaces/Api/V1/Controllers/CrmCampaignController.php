@@ -87,6 +87,8 @@ class CrmCampaignController extends Controller
             $this->audience($request),
             $request->filled('scheduled_at') ? now()->parse($request->string('scheduled_at')->toString()) : null,
             $this->actorId(),
+            $request->filled('subject') ? $request->string('subject')->toString() : null,
+            $request->filled('body') ? $request->string('body')->toString() : null,
         );
 
         return response()->json(['data' => $this->serialize($campaign->loadCount('sends'))], 201);
@@ -116,6 +118,12 @@ class CrmCampaignController extends Controller
         $scheduledAt = $request->has('scheduled_at')
             ? ($request->filled('scheduled_at') ? now()->parse($request->string('scheduled_at')->toString()) : null)
             : $campaign->scheduled_at;
+        $subject = $request->has('subject')
+            ? ($request->filled('subject') ? $request->string('subject')->toString() : null)
+            : $campaign->subject;
+        $body = $request->has('body')
+            ? ($request->filled('body') ? $request->string('body')->toString() : null)
+            : $campaign->body;
 
         $campaign = $this->campaigns->update(
             $campaign,
@@ -125,6 +133,8 @@ class CrmCampaignController extends Controller
             $audience,
             $scheduledAt,
             $this->actorId(),
+            $subject,
+            $body,
         );
 
         return response()->json(['data' => $this->serialize($campaign->loadCount('sends'))]);
@@ -233,6 +243,8 @@ class CrmCampaignController extends Controller
             'description' => $campaign->description,
             'channel' => $campaign->channel,
             'status' => $campaign->status,
+            'subject' => $campaign->subject,
+            'body' => $campaign->body,
             'segment_id' => $campaign->segment_id,
             'audience_snapshot' => $campaign->audience_snapshot,
             'scheduled_at' => $campaign->scheduled_at?->toIso8601String(),
