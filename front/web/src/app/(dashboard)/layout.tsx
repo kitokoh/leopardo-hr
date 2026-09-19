@@ -786,6 +786,7 @@ export default function DashboardLayout({
             <Link href="/settings/encaissements" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
               <Banknote className="h-4 w-4 text-slate-400" aria-hidden="true" />
               {paymentProfilesT(locale, 'menuLabel')}
+            </Link>
             {/* #7713 — image de marque du tenant. */}
             <Link href="/settings/branding" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
               <Paintbrush className="h-4 w-4 text-slate-400" aria-hidden="true" />
@@ -1209,6 +1210,7 @@ export default function DashboardLayout({
                     <Link href="/settings/encaissements" role="menuitem" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
                       <Banknote className="h-4 w-4 text-slate-400" aria-hidden="true" />
                       {paymentProfilesT(locale, 'menuLabel')}
+                    </Link>
                     {/* #7713 — image de marque du tenant. */}
                     <Link href="/settings/branding" role="menuitem" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
                       <Paintbrush className="h-4 w-4 text-slate-400" aria-hidden="true" />
