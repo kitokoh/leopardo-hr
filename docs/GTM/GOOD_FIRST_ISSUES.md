@@ -1,4 +1,4 @@
-# Good First Issues — Leopardo RH
+# Good First Issues — Leopardo
 
 > Mise à jour 2026-07-21 : cette liste ne reflète que des issues **réellement ouvertes sur GitHub**
 > avec le label `good first issue`, vérifiées contre l'état actuel du code (voir lien de chaque item).

@@ -2,15 +2,15 @@
 
 ## Vue d ensemble
 
-Ce schema montre comment la borne ZKTeco, le PC local client, l application mobile et l API Leopardo RH collaborent en mode connecte ou offline.
+Ce schema montre comment la borne ZKTeco, le PC local client, l application mobile et l API Leopardo collaborent en mode connecte ou offline.
 
 ```mermaid
 flowchart LR
-    A["Super Admin Leopardo RH"] --> B["Creation societe + manager principal"]
+    A["Super Admin Leopardo"] --> B["Creation societe + manager principal"]
     B --> C["Manager / RH"]
     C --> D["Creation RH / employes"]
     D --> E["Email invitation employe"]
-    E --> F["Application mobile Leopardo RH"]
+    E --> F["Application mobile Leopardo"]
     F --> G["Profil employe + demande biometrie"]
     G --> C
     C --> H["Validation biometrie visage / empreinte"]
@@ -27,11 +27,11 @@ flowchart LR
     L --> F
     L --> I
 
-    J -->|"Internet disponible"| M["API Leopardo RH"]
+    J -->|"Internet disponible"| M["API Leopardo"]
     J -->|"Pas d internet"| N["File locale de pointages"]
     N -->|"Sync auto ou manuelle plus tard"| M
 
-    M --> O["Web Leopardo RH"]
+    M --> O["Web Leopardo"]
     M --> P["Mobile employe"]
 ```
 
@@ -55,12 +55,12 @@ flowchart LR
 ```mermaid
 flowchart TB
     A["Borne ZKTeco"] --> B["Routeur / reseau local client"]
-    C["PC local Leopardo RH<br/>desktop bridge"] --> B
+    C["PC local Leopardo<br/>desktop bridge"] --> B
     D["Poste manager / RH"] --> B
     E["Telephone employe"] --> F["Internet mobile ou Wi-Fi"]
     B --> G["Internet optionnel"]
     F --> G
-    G --> H["API Leopardo RH / Backend"]
+    G --> H["API Leopardo / Backend"]
 ```
 
 ## Mode connecte

@@ -1,3 +1,30 @@
+import type { LucideIcon } from 'lucide-react';
+import {
+  BarChart3,
+  Building2,
+  Calculator,
+  CalendarX,
+  ChefHat,
+  Clock,
+  Contact,
+  CreditCard,
+  FileText,
+  Fuel,
+  GraduationCap,
+  Handshake,
+  LayoutDashboard,
+  MapPin,
+  Megaphone,
+  Plane,
+  Plug,
+  School,
+  Ticket,
+  Truck,
+  Users,
+  UtensilsCrossed,
+  Video,
+  Wallet,
+} from 'lucide-react';
 import type { StoredAuthUser } from '@/lib/i18n';
 export type ClientModuleKey =
   | 'dashboard'
@@ -43,6 +70,19 @@ export type BusinessVertical = 'restaurant' | 'travel' | 'education' | 'fuel' | 
 export type ClientModuleScope = 'core' | 'business';
 
 /**
+ * #7724 — groupes VISUELS de la barre de navigation. Le champ `group` du
+ * catalogue est désormais la SEULE source du groupement (l'ancienne liste
+ * `HR_SUBMENU_KEYS` de `dashboard-nav.ts` est dérivée du catalogue) :
+ * - `general`    : liens directs (Tableau de bord, Rapports) ;
+ * - `hr`         : sous-menu « RH » (Employés … Paie) ;
+ * - `finance`    : sous-menu « Finance » (Comptabilité) ;
+ * - `growth`     : sous-menu « Clients & croissance » (CRM, Marketing…) ;
+ * - `operations` : sous-menu « Opérations » (Flotte, Caméras) ;
+ * - `platform`   : hors barre (panneau « Modules & plan »), inchangé.
+ */
+export type ClientModuleGroup = 'general' | 'hr' | 'finance' | 'growth' | 'operations' | 'platform';
+
+/**
  * #7235 — Outils d'ÉQUIPE : sans objet pour un profil `solo` (indépendant).
  * La règle est aussi posée côté serveur (`Company::TEAM_TOOLS`, appliquée au
  * provisioning) ; on la rejoue ici pour qu'une session ancienne ou un payload
@@ -78,8 +118,21 @@ const SOLO_FLOOR_MODULE_KEYS: ClientModuleKey[] = [
 export type ClientModule = {
   key: ClientModuleKey;
   href?: string;
+  /**
+   * Libellé de COMPATIBILITÉ (donnée, pas une string d'UI) : la source unique
+   * des libellés affichés est l'i18n (`dashboard.modules`, 4 locales). Ce champ
+   * ne sert que de repli technique (#7724).
+   */
   label: string;
-  group: 'general' | 'hr' | 'finance' | 'platform';
+  group: ClientModuleGroup;
+  /** #7724 — icône du module (pills de la barre et cartes du rail métier). */
+  icon?: LucideIcon;
+  /**
+   * #7724 — hiérarchie du rail « Mon métier » : un sous-écran métier
+   * (Cuisine, Portail voyageur) est rattaché à sa carte parente au lieu
+   * d'être promu au premier niveau.
+   */
+  parentKey?: ClientModuleKey;
   capabilityKeys: string[];
   featureKeys: string[];
   allowedRoles: string[];
@@ -95,33 +148,43 @@ export type ClientModuleAccess = ClientModule & {
   reason: 'available' | 'trial' | 'feature_locked' | 'role_locked';
 };
 export const CLIENT_MODULES: ClientModule[] = [
-  {
-    key: 'restaurant',
-    href: '/restaurant',
-    label: 'Restaurant',
-    group: 'general',
-    capabilityKeys: ['restaurant', 'restaurant.kitchen', 'restaurantmanager', 'can_view_restaurant'],
-    featureKeys: ['restaurantmanager', 'restaurant'],
-    allowedRoles: ['super_admin', 'admin', 'manager'],
-    upgradeLabel: 'Restaurant Manager',
-    scope: 'business',
-    vertical: 'restaurant',
-  },
+  // #7724 — le catalogue est ORDONNÉ comme la barre : liens directs
+  // (Tableau de bord, Rapports), puis les groupes visuels dérivés du champ
+  // `group` (RH, Finance, Clients & croissance, Opérations), puis la
+  // plateforme (panneau « Modules & plan ») et enfin les verticales métier
+  // (rail « Mon métier », hiérarchisé par `parentKey`).
   {
     key: 'dashboard',
     href: '/dashboard',
     label: 'Tableau de bord',
     group: 'general',
+    icon: LayoutDashboard,
     capabilityKeys: ['can_view_dashboard', 'dashboard'],
     featureKeys: ['dashboard', 'rh'],
     allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
     upgradeLabel: 'Tableau de bord',
   },
   {
+    key: 'reports',
+    href: '/reports',
+    label: 'Rapports',
+    // #7724 — « Rapports » accompagne le tableau de bord en lien direct
+    // (pilotage transverse), il ne vit plus dans l'espace finance.
+    group: 'general',
+    icon: BarChart3,
+    capabilityKeys: ['reports', 'can_view_reports'],
+    featureKeys: ['reports', 'analytics'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Rapports avancés',
+  },
+
+  // ── RH ▾ (sous-menu dérivé de `group: 'hr'`) ──────────────────────────────
+  {
     key: 'employees',
     href: '/employees',
     label: 'Employés',
     group: 'hr',
+    icon: Users,
     capabilityKeys: ['employees', 'can_view_employees', 'can_create_employees'],
     featureKeys: ['employees', 'employee_management', 'rh'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
@@ -132,6 +195,7 @@ export const CLIENT_MODULES: ClientModule[] = [
     href: '/attendance',
     label: 'Pointages',
     group: 'hr',
+    icon: Clock,
     capabilityKeys: ['attendance', 'can_view_attendance'],
     featureKeys: ['attendance', 'time_tracking', 'rh'],
     allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
@@ -140,8 +204,11 @@ export const CLIENT_MODULES: ClientModule[] = [
   {
     key: 'attendance_geo',
     href: '/attendance/geo',
-    label: 'Attendance — Sessions GPS',
+    // #7724 — plus de franglais « Attendance — Sessions GPS » : le label de
+    // compat s'aligne sur l'i18n (`dashboard.modules.attendance_geo`).
+    label: 'Sessions GPS',
     group: 'hr',
+    icon: MapPin,
     capabilityKeys: ['smart_attendance', 'can_view_smart_attendance'],
     featureKeys: ['smart_attendance', 'geo_attendance', 'attendance', 'rh'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
@@ -152,6 +219,7 @@ export const CLIENT_MODULES: ClientModule[] = [
     href: '/absences',
     label: 'Absences',
     group: 'hr',
+    icon: CalendarX,
     capabilityKeys: ['absences', 'can_view_absences'],
     featureKeys: ['absences', 'leave_management', 'rh'],
     allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
@@ -162,59 +230,148 @@ export const CLIENT_MODULES: ClientModule[] = [
     href: '/contracts',
     label: 'Contrats',
     group: 'hr',
+    icon: FileText,
     capabilityKeys: ['contracts', 'can_view_contracts'],
     featureKeys: ['contracts', 'rh'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
     upgradeLabel: 'Contrats RH',
   },
   {
-    key: 'payroll',
-    href: '/payroll',
-    label: 'Paie',
-    group: 'finance',
-    capabilityKeys: ['payroll', 'can_view_payroll', 'can_manage_payroll'],
-    featureKeys: ['payroll', 'pay_slips'],
-    allowedRoles: ['super_admin', 'admin', 'manager'],
-    upgradeLabel: 'Paie et bulletins',
-  },
-  {
     key: 'training',
     href: '/training',
     label: 'Formations',
-    // #7432 — le champ `group` doit refléter l'emplacement RÉEL du module dans
-    // la navigation : « Formations » est rendue dans le sous-menu RH
-    // (`dashboard-nav.ts` → `HR_SUBMENU_KEYS`), pas dans l'espace finance.
     group: 'hr',
+    icon: GraduationCap,
     capabilityKeys: ['training', 'can_view_training'],
     featureKeys: ['training'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
     upgradeLabel: 'Formation',
   },
   {
-    key: 'reports',
-    href: '/reports',
-    label: 'Rapports',
-    group: 'finance',
-    capabilityKeys: ['reports', 'can_view_reports'],
-    featureKeys: ['reports', 'analytics'],
+    key: 'payroll',
+    href: '/payroll',
+    // #7724 — la Paie rejoint le groupe RH : elle n'est plus une pill de
+    // premier niveau éparpillée alors qu'Absences/Contrats/Formations sont
+    // sous le sous-menu « RH ». Aucun changement de route ni de gating.
+    label: 'Paie',
+    group: 'hr',
+    icon: Wallet,
+    capabilityKeys: ['payroll', 'can_view_payroll', 'can_manage_payroll'],
+    featureKeys: ['payroll', 'pay_slips'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
-    upgradeLabel: 'Rapports avancés',
+    upgradeLabel: 'Paie et bulletins',
+  },
+
+  // ── Finance ▾ ─────────────────────────────────────────────────────────────
+  // #5626 — Module Comptabilité (backend #5288/#5422 livré, front/web manquait
+  // d'une entrée sidebar). Rôles : comptable et principal uniquement.
+  {
+    key: 'accounting',
+    href: '/accounting',
+    label: 'Comptabilité',
+    group: 'finance',
+    icon: Calculator,
+    capabilityKeys: ['accounting', 'can_view_accounting', 'can_manage_accounting'],
+    featureKeys: ['accounting', 'accounting_module'],
+    allowedRoles: ['manager'],
+    upgradeLabel: 'Module Comptabilité',
+  },
+
+  // ── Clients & croissance ▾ ────────────────────────────────────────────────
+  // #5715 — CRM Client (tenant-scoped, ADR-CRM-DUAL-CONTEXTS). Le CRM
+  // commercial Leopardo reste dans l'admin plateforme : cette entrée est
+  // l'espace client du tenant, porté par la feature flag `crm`.
+  {
+    key: 'crm',
+    href: '/crm',
+    label: 'CRM Client',
+    group: 'growth',
+    icon: Contact,
+    capabilityKeys: ['crm', 'can_view_crm'],
+    featureKeys: ['crm'],
+    allowedRoles: ['manager'],
+    upgradeLabel: 'CRM Client',
+  },
+  {
+    key: 'marketing',
+    href: '/social-marketing',
+    label: 'Marketing',
+    group: 'growth',
+    icon: Megaphone,
+    capabilityKeys: ['marketing', 'can_view_marketing'],
+    featureKeys: ['marketing', 'social_marketing'],
+    allowedRoles: ['manager'],
+    upgradeLabel: 'Marketing & réseaux sociaux',
+  },
+  // BC-27 SHOWCASE (#6862) — module HORIZONTAL « Site vitrine » : le
+  // responsable du tenant crée, édite et publie le site public de son
+  // entreprise en 1 clic (page `/showcase`). Deux clés de résolution : la
+  // sélection d'inscription (`company.modules.showcase`) ET le feature flag
+  // tenant (`company_showcase`) — l'ordre de `featureKeys` fait autorité pour
+  // la sélection explicite (même sémantique que #7235).
+  {
+    key: 'showcase',
+    href: '/showcase',
+    label: 'Site vitrine',
+    group: 'growth',
+    icon: Building2,
+    capabilityKeys: ['company_showcase', 'showcase', 'can_view_showcase', 'can_manage_showcase'],
+    featureKeys: ['showcase', 'company_showcase'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Site vitrine public de l\'entreprise',
   },
   {
     key: 'partner',
     href: '/partner',
     label: 'Programme Partenaire',
-    group: 'general',
+    group: 'growth',
+    icon: Handshake,
     capabilityKeys: ['is_partner'],
     featureKeys: ['growth_module'],
     allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
     upgradeLabel: 'Programme Partenaire',
   },
+
+  // ── Opérations ▾ ──────────────────────────────────────────────────────────
+  // #7400 — Flotte & suivi des véhicules de service. Module HORIZONTAL
+  // (`scope: 'core'`) : toute PME de terrain a des véhicules. L'API est
+  // réservée aux managers (`api.manager`, sécurité #2217) : la capacité
+  // `can_view_fleet` rejoue ce gate, et la feature `fleet` permettra de
+  // vendre/activer le module par plan (voir #7400).
+  {
+    key: 'fleet',
+    href: '/fleet',
+    label: 'Flotte',
+    group: 'operations',
+    icon: Truck,
+    capabilityKeys: ['can_view_fleet', 'fleet'],
+    featureKeys: ['fleet'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Flotte (véhicules, positions, itinéraires)',
+    scope: 'core',
+  },
+  // BC-19 DEVICE (#7425) — module « Caméras » : porté par le seul flag tenant
+  // `cameras` (`module.cameras` renvoie 403 FEATURE_NOT_ENABLED sinon) et
+  // réservé au responsable du tenant (`api.manager:principal,rh`).
+  {
+    key: 'cameras',
+    href: '/cameras',
+    label: 'Caméras',
+    group: 'operations',
+    icon: Video,
+    capabilityKeys: ['cameras', 'can_view_cameras'],
+    featureKeys: ['cameras'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Surveillance caméras (mur, permissions, partage tiers)',
+  },
+
+  // ── Plateforme (panneau « Modules & plan », hors barre) ───────────────────
   {
     key: 'billing',
     href: '/billing',
     label: 'Facturation',
     group: 'platform',
+    icon: CreditCard,
     capabilityKeys: ['billing', 'can_manage_billing'],
     featureKeys: ['billing'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
@@ -225,51 +382,38 @@ export const CLIENT_MODULES: ClientModule[] = [
     href: '/settings/developer',
     label: 'Intégrations',
     group: 'platform',
+    icon: Plug,
     capabilityKeys: ['integrations', 'can_manage_integrations'],
     featureKeys: ['integrations', 'api_access', 'webhooks'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
     upgradeLabel: 'Intégrations',
   },
+
+  // ── Verticales métier (rail « Mon métier ») ───────────────────────────────
+  // #7724 — `restaurant` reprend sa place dans l'ordre du catalogue (il était
+  // déclaré AVANT `dashboard`, anomalie d'ordre).
   {
-    key: 'marketing',
-    href: '/social-marketing',
-    label: 'Marketing',
+    key: 'restaurant',
+    href: '/restaurant',
+    label: 'Restaurant',
     group: 'general',
-    capabilityKeys: ['marketing', 'can_view_marketing'],
-    featureKeys: ['marketing', 'social_marketing'],
-    allowedRoles: ['manager'],
-    upgradeLabel: 'Marketing & réseaux sociaux',
-  },
-  // #5626 — Module Comptabilité (backend #5288/#5422 livré, front/web manquait
-  // d'une entrée sidebar). Rôles : comptable et principal uniquement.
-  {
-    key: 'accounting',
-    href: '/accounting',
-    label: 'Comptabilité',
-    group: 'finance',
-    capabilityKeys: ['accounting', 'can_view_accounting', 'can_manage_accounting'],
-    featureKeys: ['accounting', 'accounting_module'],
-    allowedRoles: ['manager'],
-    upgradeLabel: 'Module Comptabilité',
-  },
-  // #5715 — CRM Client (tenant-scoped, ADR-CRM-DUAL-CONTEXTS). Le CRM
-  // commercial Leopardo reste dans l'admin plateforme : cette entrée est
-  // l'espace client du tenant, porté par la feature flag `crm`.
-  {
-    key: 'crm',
-    href: '/crm',
-    label: 'CRM Client',
-    group: 'general',
-    capabilityKeys: ['crm', 'can_view_crm'],
-    featureKeys: ['crm'],
-    allowedRoles: ['manager'],
-    upgradeLabel: 'CRM Client',
+    icon: UtensilsCrossed,
+    capabilityKeys: ['restaurant', 'restaurant.kitchen', 'restaurantmanager', 'can_view_restaurant'],
+    featureKeys: ['restaurantmanager', 'restaurant'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Restaurant Manager',
+    scope: 'business',
+    vertical: 'restaurant',
   },
   {
     key: 'restaurant_kitchen',
     href: '/restaurant/kitchen',
-    label: 'Restaurant',
+    // #7724 — label dédupliqué (il dupliquait « Restaurant ») et sous-écran
+    // rattaché à sa carte parente dans le rail métier (`parentKey`).
+    label: 'Cuisine',
     group: 'general',
+    icon: ChefHat,
+    parentKey: 'restaurant',
     capabilityKeys: ['restaurant', 'restaurant.kitchen'],
     featureKeys: ['restaurantmanager'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
@@ -277,20 +421,16 @@ export const CLIENT_MODULES: ClientModule[] = [
     scope: 'business',
     vertical: 'restaurant',
   },
-  // #7225 — verticale Agence de voyage (BC-13/TRAVEL). Le portail client
-  // `/travel/portal` existait mais n'était déclaré dans AUCUNE entrée de
-  // navigation : un manager d'agence de voyage n'avait aucun point d'entrée
-  // métier dans le menu. Feature flag tenant `travelagency`
-  // (TravelAgencyManifest::code(), ActivateTravelAgencyAction).
-  // BC-24 (#7633) — l'entrée pointe désormais sur le hub GÉRANT `/travel`
-  // (KPIs + réseau, voyages, réservations, rapports) ; le portail voyageur
-  // devient une sous-entrée dédiée `travel_portal` (même pattern que
-  // restaurant/restaurant_kitchen, même gating feature flag tenant).
+  // #7225 — verticale Agence de voyage (BC-13/TRAVEL). Feature flag tenant
+  // `travelagency` (TravelAgencyManifest::code(), ActivateTravelAgencyAction).
+  // BC-24 (#7633) — l'entrée pointe sur le hub GÉRANT `/travel` ; le portail
+  // voyageur est une sous-entrée dédiée `travel_portal`.
   {
     key: 'travel',
     href: '/travel',
     label: 'Agence de voyage',
     group: 'general',
+    icon: Plane,
     capabilityKeys: ['travelagency', 'travel', 'can_view_travel', 'can_manage_travel'],
     featureKeys: ['travelagency', 'travel_agency'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
@@ -303,6 +443,9 @@ export const CLIENT_MODULES: ClientModule[] = [
     href: '/travel/portal',
     label: 'Portail voyageur',
     group: 'general',
+    icon: Ticket,
+    // #7724 — sous-écran hiérarchisé sous la carte « Agence de voyage ».
+    parentKey: 'travel',
     capabilityKeys: ['travelagency', 'travel', 'can_view_travel', 'can_manage_travel'],
     featureKeys: ['travelagency', 'travel_agency'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
@@ -327,13 +470,13 @@ export const CLIENT_MODULES: ClientModule[] = [
     scope: 'business',
     vertical: 'commerce',
   },
-  // #7225 — verticale Station-service (BC-15 FUEL) : la page `/fuel/pump`
-  // existait sans entrée de navigation (même défaut que Travel).
+  // #7225 — verticale Station-service (BC-15 FUEL).
   {
     key: 'fuel',
     href: '/fuel/pump',
     label: 'Station-service',
     group: 'general',
+    icon: Fuel,
     capabilityKeys: ['fuel_station', 'fuel', 'can_view_fuel'],
     featureKeys: ['fuel_station', 'fuel'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
@@ -341,81 +484,22 @@ export const CLIENT_MODULES: ClientModule[] = [
     scope: 'business',
     vertical: 'fuel',
   },
-  // #7400 — Flotte & suivi des véhicules de service. Module HORIZONTAL
-  // (`scope: 'core'`) : toute PME de terrain a des véhicules, ce n'est pas
-  // rattaché à la verticale Agence de voyage. Le suivi n'existait que côté
-  // admin plateforme (`front/admin-dashboard/src/views/fleet/FleetView.vue`) ;
-  // l'agence ne pouvait ni voir ses véhicules, ni leur position, ni leurs
-  // itinéraires. L'API est déjà complète (`/vehicles`, `/vehicles/{id}/trips`,
-  // `/fleet/*`) et réservée aux managers (`api.manager`, sécurité #2217) :
-  // la capacité `can_view_fleet` rejoue ce gate, et la feature `fleet` (ajoutée
-  // au registre plateforme) permettra de vendre/activer le module par plan
-  // quand le middleware `module.fleet` sera tranché (voir #7400).
-  {
-    key: 'fleet',
-    href: '/fleet',
-    label: 'Flotte',
-    group: 'general',
-    capabilityKeys: ['can_view_fleet', 'fleet'],
-    featureKeys: ['fleet'],
-    allowedRoles: ['super_admin', 'admin', 'manager'],
-    upgradeLabel: 'Flotte (véhicules, positions, itinéraires)',
-    scope: 'core',
-  },
   // BC-16 EDU — EduManager (EDU-011/012/013, #5827/#5828/#5829). Navigation
-  // rôle-aware : manager direction (principal/rh) → administration scolaire ;
-  // employé enseignant → espace enseignant (périmètre = ses classes, gardé
-  // par les Policies EduManager côté API). L'entrée est portée par la
-  // feature flag `edumanager` (activation tenant #5817).
+  // rôle-aware, portée par la feature flag `edumanager` (activation tenant
+  // #5817). #7724 — c'est une VERTICALE métier (`vertical: 'education'`),
+  // plus jamais classée `group: 'hr'` ; label aligné sur l'i18n.
   {
     key: 'edu_manager',
     href: '/edu-manager',
-    label: 'EduManager',
-    group: 'hr',
+    label: 'Scolarité',
+    group: 'general',
+    icon: School,
     capabilityKeys: ['edumanager', 'can_view_edumanager'],
     featureKeys: ['edumanager'],
     allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
     upgradeLabel: 'EduManager',
     scope: 'business',
     vertical: 'education',
-  },
-
-  // BC-27 SHOWCASE (#6862) — module HORIZONTAL « Site vitrine » : le
-  // responsable du tenant crée, édite et publie le site public de son
-  // entreprise en 1 clic (page `/showcase`). Le module backend existe
-  // (`app/Modules/Showcase`, routes `/api/v1/showcase/*`) et son site public
-  // est servi par `/public/vitrine/{slug}` ; il manquait l'entrée d'espace
-  // client. Deux clés de résolution : la sélection d'inscription
-  // (`company.modules.showcase`) ET le feature flag tenant
-  // (`company_showcase`) — l'ordre de `featureKeys` fait autorité pour la
-  // sélection explicite (même sémantique que #7235).
-  {
-    key: 'showcase',
-    href: '/showcase',
-    label: 'Site vitrine',
-    group: 'general',
-    capabilityKeys: ['company_showcase', 'showcase', 'can_view_showcase', 'can_manage_showcase'],
-    featureKeys: ['showcase', 'company_showcase'],
-    allowedRoles: ['super_admin', 'admin', 'manager'],
-    upgradeLabel: 'Site vitrine public de l\'entreprise',
-  },
-
-  // BC-19 DEVICE (#7425) — module « Caméras » : le backend est complet et
-  // testé (routes `/cameras`, viewer public `/view/cam`), mais AUCUNE entrée
-  // de navigation ne l'exposait — le flag tenant `cameras` existait, la
-  // surface non. Le module est porté par ce seul flag (`module.cameras`
-  // renvoie 403 FEATURE_NOT_ENABLED sinon) et réservé au responsable du
-  // tenant (`api.manager:principal,rh` sur `api/routes/modules/cameras.php`).
-  // Un sous-rôle « sécurité » n'existe pas encore : on ne l'invente pas.
-  {
-    key: 'cameras',
-    href: '/cameras',
-    label: 'Caméras',
-    group: 'general',
-    capabilityKeys: ['cameras', 'can_view_cameras'],
-    featureKeys: ['cameras'],
-    allowedRoles: ['super_admin', 'admin', 'manager'],
-    upgradeLabel: 'Surveillance caméras (mur, permissions, partage tiers)',
   },
 ];
 
@@ -450,30 +534,20 @@ export function isSelfActivable(module: Pick<ClientModule, 'key'>): boolean {
   return SELF_ACTIVATABLE_MODULE_KEYS.includes(module.key);
 }
 
-const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
-  '/dashboard': 'dashboard',
-  '/employees': 'employees',
-  '/attendance': 'attendance',
-  '/attendance/geo': 'attendance_geo',
-  '/absences': 'absences',
-  '/contracts': 'contracts',
-  '/payroll': 'payroll',
-  '/training': 'training',
-  '/reports': 'reports',
-  '/billing': 'billing',
-  '/settings/developer': 'integrations',
-  '/social-marketing': 'marketing',
+/**
+ * #7724 — sous-routes et alias historiques qui résolvent vers un module.
+ * Les routes PRINCIPALES sont dérivées des `href` du catalogue : plus de
+ * double déclaration (`/social` et `/social-marketing` étaient déclarées
+ * séparément alors que `/social` n'est qu'un alias historique).
+ */
+const MODULE_ROUTE_ALIASES: Record<string, ClientModuleKey> = {
+  // Alias historique du module marketing.
   '/social': 'marketing',
-  '/accounting': 'accounting',
-  '/crm': 'crm',
   '/crm/accounts': 'crm',
   '/crm/contacts': 'crm',
   '/crm/leads': 'crm',
   '/crm/pipeline': 'crm',
-  '/restaurant': 'restaurant',
   '/restaurant/pos': 'restaurant',
-  '/restaurant/kitchen': 'restaurant_kitchen',
-  '/travel': 'travel',
   // BC-24 (#7633) — sous-routes de l'espace gérant travel (hub + pages A2–A5).
   '/travel/network': 'travel',
   '/travel/trips': 'travel',
@@ -486,9 +560,6 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/commerce/stock': 'commerce',
   '/commerce/pos': 'commerce',
   '/fuel': 'fuel',
-  '/fuel/pump': 'fuel',
-  '/fleet': 'fleet',
-  '/edu-manager': 'edu_manager',
   '/edu-manager/campuses': 'edu_manager',
   '/edu-manager/academic-years': 'edu_manager',
   '/edu-manager/subjects': 'edu_manager',
@@ -498,10 +569,23 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/edu-manager/assessments': 'edu_manager',
   '/edu-manager/report-cards': 'edu_manager',
   '/edu-manager/teacher': 'edu_manager',
-  '/showcase': 'showcase',
-  // BC-19 (#7425) — mur de caméras et sous-routes de détail (`/cameras/{id}`),
-  // ces dernières résolues par le match de préfixe de `getModuleAccessForPath`.
-  '/cameras': 'cameras',
+  // BC-19 (#7425) — les sous-routes de détail (`/cameras/{id}`) sont résolues
+  // par le match de préfixe de `getModuleAccessForPath`.
+};
+
+/**
+ * #7724 — table route → module DÉRIVÉE du catalogue (une seule source de
+ * vérité), complétée par les alias/sous-routes. L'ordre d'itération préserve
+ * la sémantique du match de préfixe (`getModuleAccessForPath`) : les routes
+ * principales (catalogue) passent avant les alias.
+ */
+const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
+  ...Object.fromEntries(
+    dedupeModulesByKey(CLIENT_MODULES)
+      .filter((module): module is ClientModule & { href: string } => !!module.href)
+      .map((module) => [module.href, module.key]),
+  ),
+  ...MODULE_ROUTE_ALIASES,
 };
 function normalizedRole(user?: StoredAuthUser | null): string {
   if (!user?.role) {

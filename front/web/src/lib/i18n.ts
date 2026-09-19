@@ -134,6 +134,13 @@ export type CopyTree = {
     businessSection: string;
     /** #7328 — libellé du menu RH (regroupe les modules RH en sous-menus) */
     hrMenu: string;
+    /** #7724 — libellés des sous-menus de groupe de la barre (RH, Finance…) */
+    navGroups: {
+      hr: string;
+      finance: string;
+      growth: string;
+      operations: string;
+    };
     /** #7556 — nom accessible du point d'entrée de navigation (tiroir mobile) */
     navMenu: string;
     /** #7556 — titre de la section « Compte » du tiroir mobile */
@@ -776,6 +783,12 @@ const copy: Record<AppLocale, CopyTree> = {
       resumeOnboarding: '▶ Reprendre la configuration',
       businessSection: 'Mon métier',
       hrMenu: 'RH',
+      navGroups: {
+        hr: 'RH',
+        finance: 'Finance',
+        growth: 'Clients & croissance',
+        operations: 'Opérations',
+      },
       navMenu: 'Menu',
       accountSection: 'Compte',
       modules: {
@@ -1460,6 +1473,12 @@ const copy: Record<AppLocale, CopyTree> = {
       resumeOnboarding: '▶ استئناف الإعداد',
       businessSection: 'قطاع عملك',
       hrMenu: 'الموارد البشرية',
+      navGroups: {
+        hr: 'الموارد البشرية',
+        finance: 'المالية',
+        growth: 'العملاء والنمو',
+        operations: 'العمليات',
+      },
       navMenu: 'القائمة',
       accountSection: 'الحساب',
       modules: {
@@ -2140,6 +2159,12 @@ const copy: Record<AppLocale, CopyTree> = {
       resumeOnboarding: '▶ Yapılandırmaya devam et',
       businessSection: 'İş kolunuz',
       hrMenu: 'İK',
+      navGroups: {
+        hr: 'İK',
+        finance: 'Finans',
+        growth: 'Müşteriler ve büyüme',
+        operations: 'Operasyonlar',
+      },
       navMenu: 'Menü',
       accountSection: 'Hesap',
       modules: {
@@ -2820,6 +2845,12 @@ const copy: Record<AppLocale, CopyTree> = {
       resumeOnboarding: '▶ Resume setup',
       businessSection: 'Your business',
       hrMenu: 'HR',
+      navGroups: {
+        hr: 'HR',
+        finance: 'Finance',
+        growth: 'Clients & growth',
+        operations: 'Operations',
+      },
       navMenu: 'Menu',
       accountSection: 'Account',
       modules: {

@@ -59,7 +59,7 @@ Règle : ces identifiants ne doivent **jamais** apparaître dans une phrase de p
 | 2 | Vitrine & SEO public | `modules/vitrine/lib/seo.ts` (42 occ.), `data/faq-page.ts` (27), `legal-content.ts` (20), `data/videos.ts` (18), `case-studies.ts` (14), `lib/vitrine-locale.ts`, `app/llms*.txt`, `components/JsonLd.tsx`, `site/gh-pages/index.html`, `app/layout.tsx` (13), `app/manifest/route.ts`, catalogues i18n | ⏳ suivi par issue dédiée (copy marketing → relecture fondateur) |
 | 3 | E-mails transactionnels | `api/lang/{fr,en,tr,ar}/emails.php` (≈21 chacun) + `MAIL_BRAND_NAME` | ⏳ à faire **avec** test d'envoi (le changement de nom expéditeur est visible client) |
 | 4 | Stores & apps | `android:label`, `Info.plist`, libellés de fiches | ⏳ **hors code** : nécessite une publication de version |
-| 5 | Admin plateforme | `front/admin-dashboard/index.html` + i18n (12 occ.) | ⏳ |
+| 5 | Admin plateforme | `front/admin-dashboard/index.html` + i18n (12 occ.) | ✅ **fait** (2026-09-19) — titre, meta, vues, catalogues fr/en/tr/ar, e2e alignés ; « Leopardo RH » ne subsiste plus dans la console |
 
 Le classement est volontairement **par rentabilité et par risque** : la copie publique avant les identifiants, jamais l'inverse.
 

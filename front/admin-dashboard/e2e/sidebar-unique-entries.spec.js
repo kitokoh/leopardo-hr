@@ -60,12 +60,15 @@ test.describe('Sidebar — une entrée par page (#6741)', () => {
     await expect(page.getByRole('navigation')).toBeVisible({ timeout: 15_000 })
 
     // Sidebar visible : vérifier l'unicité des entrées (liens de nav).
-    // #7554 : « Opérations stations-service » est un écran distinct — les
-    // sélecteurs sont ancrés pour ne cibler que l'entrée du hub.
+    // #7725 : « Stations-service » est désormais UNE entrée à sous-menu
+    // (bouton parent + enfants Hub/Opérations) — le libellé exact
+    // n'apparaît qu'une fois, sur le déclencheur du sous-menu.
     await expect(page.getByRole('navigation').getByText('Stations-service', { exact: true })).toHaveCount(1)
     await expect(page.getByRole('navigation').getByText('Chat IA', { exact: true })).toHaveCount(1)
-    // Pas de clé de rendu dupliquée : le lien fuel pointe bien vers /fuel-station.
-    await expect(page.getByRole('navigation').getByRole('link', { name: /^Stations-service$/i })).toHaveCount(1)
+    // Pas de clé de rendu dupliquée : le sous-menu fuel expose bien le hub
+    // (`/fuel-station`) et les opérations en UN exemplaire chacun.
+    await expect(page.getByRole('navigation').getByRole('button', { name: /^Stations-service$/i })).toHaveCount(1)
+    await expect(page.getByRole('navigation').getByRole('link', { name: /^Hub stations-service$/i })).toHaveCount(1)
   })
 })
 
@@ -107,16 +110,20 @@ test.describe('Sidebar — modules d’entreprise cliente regroupés (#7329)', (
     await expect(header).toBeVisible()
     await expect(header).toHaveAttribute('aria-expanded', 'true')
 
-    // Les 4 écrans du périmètre client restent atteignables en un clic.
+    // Les écrans du périmètre client restent atteignables en un clic.
+    // #7725 : « Stations-service » devient un sous-menu (Hub / Opérations).
     const modules = [
       /^Formations$/i,
       /^Flotte véhicules$/i,
-      /^Stations-service$/i,
       /^Agence de voyage$/i,
     ]
     for (const label of modules) {
       await expect(nav.getByRole('link', { name: label })).toBeVisible()
     }
+    const fuelSubmenu = nav.getByRole('button', { name: /^Stations-service$/i })
+    await expect(fuelSubmenu).toBeVisible()
+    await expect(fuelSubmenu).toHaveAttribute('aria-expanded', 'true')
+    await expect(nav.getByRole('link', { name: /^Hub stations-service$/i })).toBeVisible()
 
     // Géométrie : les 4 écrans sont SOUS le titre de section, lui-même sous
     // « Entreprises ». C'est ce qui en fait des sous-entrées, plus des rails.
@@ -223,12 +230,14 @@ test.describe('Sidebar — source de vérité unique (#7554)', () => {
     await expect(nav).toBeVisible({ timeout: 15_000 })
 
     // Pages routées mais inatteignables avant #7554 : une entrée, visible.
+    // #7725 : accents fr corrigés (« Barèmes fiscaux », « Taux légaux ») et
+    // les opérations stations-service vivent dans le sous-menu (« Opérations »).
     const orphanPages = [
       /^Surveys de solutions$/i,
-      /^Opérations stations-service$/i,
+      /^Opérations$/i,
       /^Cotisations sociales$/i,
-      /^Baremes fiscaux$/i,
-      /^Taux legaux$/i,
+      /^Barèmes fiscaux$/i,
+      /^Taux légaux$/i,
       /^Jours fériés$/i,
     ]
     for (const label of orphanPages) {
@@ -236,10 +245,15 @@ test.describe('Sidebar — source de vérité unique (#7554)', () => {
       await expect(nav.getByRole('link', { name: label })).toBeVisible()
     }
 
-    // Le pied de sidebar redondant a disparu : « Mon compte » et
-    // « Déconnexion » n'existent plus qu'en entrée de menu.
-    await expect(nav.getByRole('link', { name: /^Mon compte$/i })).toHaveCount(1)
-    await expect(nav.getByRole('link', { name: /^Déconnexion$/i })).toHaveCount(1)
+    // #7725 — « Mon compte » et « Déconnexion » ont quitté la sidebar : ils
+    // vivent dans le menu utilisateur du header.
+    await expect(nav.getByRole('link', { name: /^Mon compte$/i })).toHaveCount(0)
+    await expect(nav.getByRole('link', { name: /^Déconnexion$/i })).toHaveCount(0)
+    await page.getByTestId('admin-user-menu-toggle').click()
+    const userMenu = page.getByTestId('admin-user-menu')
+    await expect(userMenu).toBeVisible()
+    await expect(userMenu.getByRole('menuitem', { name: /Mon compte/i })).toBeVisible()
+    await expect(userMenu.getByTestId('admin-user-menu-logout')).toBeVisible()
 
     // Surlignage actif : la vitrine porte le `name` de sa route
     // (`showcase-editor`) — avec `showcase`, le lien n'était jamais actif.

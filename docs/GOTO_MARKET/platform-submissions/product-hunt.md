@@ -1,15 +1,15 @@
-# Product Hunt — Leopardo RH
+# Product Hunt — Leopardo
 
 ## Brouillon de lancement
 
 **Product name**  
-Leopardo RH
+Leopardo
 
 **Product URL**  
 À renseigner après mise en ligne d’une URL canonique stable. Le dépôt GitHub peut servir de lien provisoire, mais Product Hunt recommande une URL directe vers le produit [1].
 
 **Tagline**  
-Open-source HR and payroll OS for growing field teams
+Open-source business suite for growing field teams — HR & payroll included
 
 **Topics**  
 Open Source, Human Resources, Payroll, Artificial Intelligence, Mobile Apps, SaaS
@@ -21,10 +21,10 @@ Free, si l’offre publiée correspond bien à l’auto-hébergement gratuit. Aj
 Available, uniquement après vérification de la démo publique. Sinon, utiliser le statut correspondant à un produit en bêta ou non encore pleinement disponible.
 
 **Description — 260 caractères maximum**  
-Leopardo RH is an open-source, mobile-first HR and payroll OS for growing field companies. Manage employee records, attendance, leave, schedules, documents and payroll preparation across web, mobile and biometric kiosk.
+Leopardo is an open-source, mobile-first business suite for growing field companies — HR & payroll included. Manage employee records, attendance, leave, schedules, documents and payroll preparation across web, mobile and biometric kiosk.
 
 **First comment**  
-We built Leopardo RH for teams that still coordinate attendance, leave and payroll through spreadsheets and scattered messages. It is open source, self-hostable and designed for mobile-first field operations. We are looking for HR teams, operators and developers to test the workflows, challenge our assumptions and help shape the roadmap.
+We built Leopardo for teams that still coordinate attendance, leave and payroll through spreadsheets and scattered messages. It is open source, self-hostable and designed for mobile-first field operations. We are looking for HR teams, operators and developers to test the workflows, challenge our assumptions and help shape the roadmap.
 
 **Maker note**  
 Positionner l’équipe comme maker et expliquer le problème concret résolu. Éviter les promesses de réduction chiffrée sans étude de cas publiée.
