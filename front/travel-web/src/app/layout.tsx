@@ -10,6 +10,7 @@ import {
   type Locale,
 } from "@/lib/i18n";
 import { LocaleProvider } from "@/lib/locale-provider";
+import { AccountProvider } from "@/lib/account-provider";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 
@@ -54,9 +55,11 @@ export default async function RootLayout({
     <html lang={locale}>
       <body className="flex min-h-screen flex-col">
         <LocaleProvider initialLocale={locale}>
-          <SiteHeader />
-          <main className="flex-1">{children}</main>
-          <SiteFooter />
+          <AccountProvider>
+            <SiteHeader />
+            <main className="flex-1">{children}</main>
+            <SiteFooter />
+          </AccountProvider>
         </LocaleProvider>
       </body>
     </html>

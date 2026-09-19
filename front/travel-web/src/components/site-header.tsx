@@ -3,10 +3,12 @@
 import Link from "next/link";
 
 import { SUPPORTED_LOCALES } from "@/lib/i18n";
+import { useAccount } from "@/lib/account-provider";
 import { useLocale } from "@/lib/locale-provider";
 
 export function SiteHeader() {
   const { locale, dict, setLocale } = useLocale();
+  const { ready, account } = useAccount();
 
   return (
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
@@ -26,6 +28,15 @@ export function SiteHeader() {
             className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-slate-900"
           >
             {dict.nav.findBooking}
+          </Link>
+
+          {/* #7739 — compte client : « Connexion » tant que l'état n'est pas
+              résolu ou sans session, sinon « Mon compte ». */}
+          <Link
+            href={ready && account ? "/account" : "/account/login"}
+            className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-slate-900"
+          >
+            {ready && account ? dict.nav.account : dict.nav.login}
           </Link>
 
           <div
