@@ -83,6 +83,7 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymen
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierSyncController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelMarketplaceController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicCustomerAccountController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
 use Illuminate\Support\Facades\Route;
@@ -255,6 +256,22 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/public/travel/marketplace/trips/{trip}', [TravelMarketplaceController::class, 'show'])->whereNumber('trip');
         Route::post('/public/travel/marketplace/bookings', [TravelMarketplaceController::class, 'storeBooking']);
         Route::post('/public/travel/marketplace/payments/initiate', [TravelMarketplaceController::class, 'initiatePayment']);
+    });
+
+    // #7739 — COMPTES CLIENTS grand public de la marketplace voyage :
+    // inscription/connexion (throttle auth-sensitive email+IP, mots de passe
+    // hashés, verrouillage progressif) puis espace « mes réservations »
+    // cross-agences sous guard Sanctum DÉDIÉ `travel_customer_api` (jamais le
+    // guard employés). Le checkout invité (#7737) reste inchangé.
+    Route::middleware(['throttle:auth-sensitive'])->prefix('public/travel/marketplace/account')->group(function (): void {
+        Route::post('/register', [TravelPublicCustomerAccountController::class, 'register']);
+        Route::post('/login', [TravelPublicCustomerAccountController::class, 'login']);
+    });
+
+    Route::middleware(['throttle:shop-public', 'auth:travel_customer_api'])->prefix('public/travel/marketplace/account')->group(function (): void {
+        Route::get('/me', [TravelPublicCustomerAccountController::class, 'me']);
+        Route::post('/logout', [TravelPublicCustomerAccountController::class, 'logout']);
+        Route::get('/bookings', [TravelPublicCustomerAccountController::class, 'bookings']);
     });
 
     Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {

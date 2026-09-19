@@ -56,6 +56,7 @@ class TravelBooking extends Model
         'quote_id',
         'billing_deferred',
         'connection_group_id',
+        'public_customer_id',
     ];
 
     protected $casts = [
@@ -73,6 +74,9 @@ class TravelBooking extends Model
         'corporate_account_id' => 'integer',
         'quote_id' => 'integer',
         'billing_deferred' => 'boolean',
+        // #7739 — compte client grand public (référence par valeur vers
+        // public.travel_public_customers, nullable : checkout invité conservé).
+        'public_customer_id' => 'integer',
     ];
 
     protected static function booted(): void

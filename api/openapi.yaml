@@ -33010,6 +33010,148 @@ paths:
         '422':
           $ref: '#/components/responses/Error422'
 
+  /public/travel/marketplace/account/register:
+    post:
+      tags:
+      - Travel
+      summary: "Compte client grand public : inscription"
+      description: >-
+        BC-24 TRAVEL (#7739) — création d'un compte client GRAND PUBLIC de la
+        marketplace voyage (cross-agences, table partagée hors tenant). Mot de
+        passe hashé (min 12 caractères + chiffres + dictionnaire), email
+        unique, throttle auth-sensitive (email+IP). Les réservations INVITÉES
+        existantes portant cet email de contact sont rattachées au compte à la
+        création. Répond un token Sanctum DÉDIÉ (guard travel_customer_api,
+        jamais le guard employés).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [first_name, last_name, email, password]
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 100
+                last_name:
+                  type: string
+                  maxLength: 100
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 12
+                phone:
+                  type: string
+                  maxLength: 40
+                device_name:
+                  type: string
+                  maxLength: 255
+      responses:
+        '201':
+          description: Compte créé (profil + token Bearer dédié)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /public/travel/marketplace/account/login:
+    post:
+      tags:
+      - Travel
+      summary: "Compte client grand public : connexion"
+      description: >-
+        BC-24 TRAVEL (#7739) — connexion email + mot de passe : throttle
+        auth-sensitive (email+IP) et verrouillage progressif du compte (5
+        échecs → 15 min, 423 ACCOUNT_LOCKED). Les réservations invitées
+        faites entre-temps avec le même email de contact sont rattachées
+        (idempotent). Répond un token Sanctum dédié.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                device_name:
+                  type: string
+                  maxLength: 255
+      responses:
+        '200':
+          description: Connecté (profil + token Bearer dédié)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '423':
+          description: Compte verrouillé (5 échecs — réessayer plus tard)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /public/travel/marketplace/account/me:
+    get:
+      tags:
+      - Travel
+      summary: "Compte client grand public : profil du client connecté"
+      description: >-
+        BC-24 TRAVEL (#7739) — guard Sanctum dédié travel_customer_api : un
+        token employé ou user ne résout pas ici (401).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Profil du client (id, nom, email, téléphone, langue)
+        '401':
+          $ref: '#/components/responses/Error401'
+  /public/travel/marketplace/account/logout:
+    post:
+      tags:
+      - Travel
+      summary: "Compte client grand public : déconnexion"
+      description: >-
+        BC-24 TRAVEL (#7739) — révoque le token Sanctum COURANT du client
+        (les autres appareils restent connectés).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Token courant révoqué
+        '401':
+          $ref: '#/components/responses/Error401'
+  /public/travel/marketplace/account/bookings:
+    get:
+      tags:
+      - Travel
+      summary: "Compte client grand public : mes réservations (cross-agences)"
+      description: >-
+        BC-24 TRAVEL (#7739) — liste paginée des réservations RATTACHÉES au
+        compte (public_customer_id), toutes agences confondues. Isolation
+        stricte : jamais les réservations d'un autre client ni les invitées
+        non revendiquées. Charge utile minimisée (référence, statuts, trajet,
+        billets, montant) + NOM PUBLIC de l'agence uniquement — aucun
+        identifiant tenant ni donnée interne d'agence.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+      responses:
+        '200':
+          description: Réservations du client (data + meta de pagination)
+        '401':
+          $ref: '#/components/responses/Error401'
+
   /edu-manager/fee-charges:
     post:
       tags:

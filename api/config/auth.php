@@ -60,6 +60,12 @@ return [
             'driver' => 'sanctum',
             'provider' => 'users',
         ],
+        // #7739 — clients GRAND PUBLIC de la marketplace voyage : tokens
+        // Sanctum dédiés, jamais le guard employés ni le guard users.
+        'travel_customer_api' => [
+            'driver' => 'sanctum',
+            'provider' => 'travel_customers',
+        ],
     ],
 
     /*
@@ -92,6 +98,12 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => User::class,
+        ],
+
+        // #7739 — comptes clients grand public (marketplace voyage).
+        'travel_customers' => [
+            'driver' => 'eloquent',
+            'model' => \App\Modules\TravelAgency\Domain\Models\TravelPublicCustomer::class,
         ],
     ],
 

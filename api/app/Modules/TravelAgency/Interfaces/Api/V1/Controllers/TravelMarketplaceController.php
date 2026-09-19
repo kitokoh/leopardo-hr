@@ -13,6 +13,7 @@ use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;
 use App\Modules\TravelAgency\Domain\Enums\SeatStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelPayment;
+use App\Modules\TravelAgency\Domain\Models\TravelPublicCustomer;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
 use App\Modules\TravelAgency\Domain\Models\TravelTripSeat;
@@ -168,6 +169,16 @@ class TravelMarketplaceController extends Controller
             contactPhone: $request->validated('contact_phone'),
             notifyConsent: (bool) $request->validated('notify_consent', false),
         ));
+
+        // #7739 — rattachement À LA CRÉATION : token client grand public
+        // présent → la réservation est liée au compte (le checkout invité,
+        // sans token, reste inchangé). Écriture bornée à public_customer_id.
+        $customer = $request->user('travel_customer_api');
+        if ($customer instanceof TravelPublicCustomer && $booking->public_customer_id === null) {
+            $this->withinTenantScoped($company, function () use ($booking, $customer): void {
+                $booking->forceFill(['public_customer_id' => $customer->id])->save();
+            });
+        }
 
         return (new TravelBookingResource($booking))
             ->additional(['agency' => ['name' => $company->name]])
