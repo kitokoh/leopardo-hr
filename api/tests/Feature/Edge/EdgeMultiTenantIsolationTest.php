@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Edge;
 
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -30,10 +30,15 @@ class EdgeMultiTenantIsolationTest extends TestCase
     use CreatesMvpSchema;
 
     private Company $companyA;
+
     private Company $companyB;
+
     private Employee $employeeA;
+
     private Employee $employeeB;
+
     private Schedule $scheduleA;
+
     private Schedule $scheduleB;
 
     protected function setUp(): void
@@ -43,44 +48,44 @@ class EdgeMultiTenantIsolationTest extends TestCase
         $this->createEdgeNodesTable();
 
         $this->companyA = Company::factory()->create([
-            'name'         => 'Tenant Alpha',
-            'slug'         => 'tenant-alpha',
-            'schema_name'  => 'shared_tenants',
+            'name' => 'Tenant Alpha',
+            'slug' => 'tenant-alpha',
+            'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
-            'status'       => 'active',
+            'status' => 'active',
         ]);
 
         $this->companyB = Company::factory()->create([
-            'name'         => 'Tenant Beta',
-            'slug'         => 'tenant-beta',
-            'schema_name'  => 'shared_tenants',
+            'name' => 'Tenant Beta',
+            'slug' => 'tenant-beta',
+            'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
-            'status'       => 'active',
+            'status' => 'active',
         ]);
 
         $this->scheduleA = Schedule::factory()->create([
             'company_id' => $this->companyA->id,
-            'name'       => 'Alpha Schedule',
+            'name' => 'Alpha Schedule',
             'start_time' => '08:00:00',
-            'end_time'   => '17:00:00',
+            'end_time' => '17:00:00',
         ]);
 
         $this->scheduleB = Schedule::factory()->create([
             'company_id' => $this->companyB->id,
-            'name'       => 'Beta Schedule',
+            'name' => 'Beta Schedule',
             'start_time' => '09:00:00',
-            'end_time'   => '18:00:00',
+            'end_time' => '18:00:00',
         ]);
 
         $this->employeeA = Employee::factory()->create([
-            'company_id'  => $this->companyA->id,
-            'role'        => 'employee',
+            'company_id' => $this->companyA->id,
+            'role' => 'employee',
             'schedule_id' => $this->scheduleA->id,
         ]);
 
         $this->employeeB = Employee::factory()->create([
-            'company_id'  => $this->companyB->id,
-            'role'        => 'employee',
+            'company_id' => $this->companyB->id,
+            'role' => 'employee',
             'schedule_id' => $this->scheduleB->id,
         ]);
     }
@@ -88,6 +93,11 @@ class EdgeMultiTenantIsolationTest extends TestCase
     protected function tearDown(): void
     {
         DB::statement('DROP TABLE IF EXISTS edge_nodes CASCADE');
+        // #7452 — ce tearDown a remplacé edge_nodes par un schéma legacy :
+        // restaurer la table canonique de la fixture (le cache #6928 ne la
+        // rebâtit plus), sinon les classes MVP suivantes échouent en
+        // « relation "edge_nodes" does not exist ».
+        $this->recreateCanonicalEdgeNodesTable();
         $this->tearDownMvpSchema();
         parent::tearDown();
     }
@@ -125,16 +135,16 @@ class EdgeMultiTenantIsolationTest extends TestCase
     private function insertNode(Company $company, string $nodeId, string $name): object
     {
         $id = DB::table('edge_nodes')->insertGetId([
-            'company_id'         => $company->id,
-            'node_id'            => $nodeId,
-            'name'               => $name,
-            'status'             => 'online',
-            'license_valid'      => true,
+            'company_id' => $company->id,
+            'node_id' => $nodeId,
+            'name' => $name,
+            'status' => 'online',
+            'license_valid' => true,
             'license_expires_at' => Carbon::now()->addDays(30)->toDateTimeString(),
-            'last_seen_at'       => Carbon::now()->toDateTimeString(),
-            'pending_count'      => 0,
-            'created_at'         => Carbon::now(),
-            'updated_at'         => Carbon::now(),
+            'last_seen_at' => Carbon::now()->toDateTimeString(),
+            'pending_count' => 0,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ]);
 
         return DB::table('edge_nodes')->find($id);
@@ -143,20 +153,20 @@ class EdgeMultiTenantIsolationTest extends TestCase
     private function createLog(Company $company, Employee $employee, Schedule $schedule, int $session = 1): AttendanceLog
     {
         return AttendanceLog::create([
-            'company_id'          => $company->id,
-            'employee_id'         => $employee->id,
-            'schedule_id'         => $schedule->id,
-            'date'                => Carbon::today()->toDateString(),
-            'session_number'      => $session,
-            'check_in'            => Carbon::now()->setTime(8, 0, 0)->toDateTimeString(),
-            'method'              => 'qr_code',
-            'work_type'           => 'presentiel',
-            'biometric_type'      => 'none',
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'schedule_id' => $schedule->id,
+            'date' => Carbon::today()->toDateString(),
+            'session_number' => $session,
+            'check_in' => Carbon::now()->setTime(8, 0, 0)->toDateTimeString(),
+            'method' => 'qr_code',
+            'work_type' => 'presentiel',
+            'biometric_type' => 'none',
             'synced_from_offline' => false,
-            'status'              => 'present',
-            'hours_worked'        => '0',
-            'overtime_hours'      => '0',
-            'late_minutes'        => 0,
+            'status' => 'present',
+            'hours_worked' => '0',
+            'overtime_hours' => '0',
+            'late_minutes' => 0,
         ]);
     }
 
@@ -245,23 +255,23 @@ class EdgeMultiTenantIsolationTest extends TestCase
     public function test_three_tenants_strict_data_partitioning(): void
     {
         $companyC = Company::factory()->create([
-            'name'         => 'Tenant Gamma',
-            'slug'         => 'tenant-gamma',
-            'schema_name'  => 'shared_tenants',
+            'name' => 'Tenant Gamma',
+            'slug' => 'tenant-gamma',
+            'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
-            'status'       => 'active',
+            'status' => 'active',
         ]);
 
         $scheduleC = Schedule::factory()->create([
             'company_id' => $companyC->id,
-            'name'       => 'Gamma Schedule',
+            'name' => 'Gamma Schedule',
             'start_time' => '07:00:00',
-            'end_time'   => '16:00:00',
+            'end_time' => '16:00:00',
         ]);
 
         $employeeC = Employee::factory()->create([
-            'company_id'  => $companyC->id,
-            'role'        => 'employee',
+            'company_id' => $companyC->id,
+            'role' => 'employee',
             'schedule_id' => $scheduleC->id,
         ]);
 
@@ -318,32 +328,32 @@ class EdgeMultiTenantIsolationTest extends TestCase
     {
         // Node A : silencieux
         DB::table('edge_nodes')->insertGetId([
-            'company_id'    => $this->companyA->id,
-            'node_id'       => 'edge-alert-a',
-            'name'          => 'Silencieux A',
-            'status'        => 'online',
+            'company_id' => $this->companyA->id,
+            'node_id' => 'edge-alert-a',
+            'name' => 'Silencieux A',
+            'status' => 'online',
             'license_valid' => true,
             'license_expires_at' => Carbon::now()->addDays(30)->toDateTimeString(),
-            'last_seen_at'  => Carbon::now()->subHours(2)->toDateTimeString(),
+            'last_seen_at' => Carbon::now()->subHours(2)->toDateTimeString(),
             'pending_count' => 0,
-            'alert_muted'   => false,
-            'created_at'    => Carbon::now(),
-            'updated_at'    => Carbon::now(),
+            'alert_muted' => false,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ]);
 
         // Node B : online
         DB::table('edge_nodes')->insertGetId([
-            'company_id'    => $this->companyB->id,
-            'node_id'       => 'edge-alert-b',
-            'name'          => 'Actif B',
-            'status'        => 'online',
+            'company_id' => $this->companyB->id,
+            'node_id' => 'edge-alert-b',
+            'name' => 'Actif B',
+            'status' => 'online',
             'license_valid' => true,
             'license_expires_at' => Carbon::now()->addDays(30)->toDateTimeString(),
-            'last_seen_at'  => Carbon::now()->toDateTimeString(), // récent
+            'last_seen_at' => Carbon::now()->toDateTimeString(), // récent
             'pending_count' => 0,
-            'alert_muted'   => false,
-            'created_at'    => Carbon::now(),
-            'updated_at'    => Carbon::now(),
+            'alert_muted' => false,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ]);
 
         $threshold = Carbon::now()->subMinutes(30);
@@ -366,4 +376,3 @@ class EdgeMultiTenantIsolationTest extends TestCase
         $this->assertNotContains('edge-alert-b', $nodeIdsA, 'Le node silencieux de B NE DOIT PAS être dans les alertes de A');
     }
 }
-

@@ -52,7 +52,9 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPromot
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicDirectoryController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicMenuLinkController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicOrderController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicReviewController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicSlugOrderController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPurchaseOrderController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPurchaseOrderItemController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReceivingController;
@@ -61,6 +63,7 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReport
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReportExportController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReservationAvailabilityController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReservationController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReviewModerationController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantStockAlertController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantStockLevelController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantSupplierController;
@@ -251,6 +254,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/shop/token', [RestaurantPublicShopController::class, 'token']);
         Route::post('/shop/token/rotate', [RestaurantPublicShopController::class, 'rotateToken']);
 
+        // ── Modération des avis clients (RESTO-902/#7747) ──────────────────
+        // Chemins EXACTS attendus par le front (lot 904). Publication/rejet =
+        // geste gérant (RestaurantReviewPolicy::moderate) ; listing scopé par
+        // succursales accessibles ; purge du cache public à chaque transition.
+        Route::get('/reviews', [RestaurantReviewModerationController::class, 'index']);
+        Route::post('/reviews/{review}/publish', [RestaurantReviewModerationController::class, 'publish']);
+        Route::post('/reviews/{review}/reject', [RestaurantReviewModerationController::class, 'reject']);
+
         // ── Mobile (RESTO-801..804/#6222..#6225) — surfaces des apps ───────
         Route::prefix('mobile')->group(function (): void {
             // Serveur (RESTO-801/#6222) : file de service, tables, encaissement cash.
@@ -379,4 +390,31 @@ Route::middleware(['throttle:shop-public'])
         Route::get('/{slug}', [RestaurantPublicDirectoryController::class, 'show'])
             ->where('slug', '[a-z0-9][a-z0-9\-]{0,159}')
             ->name('restaurant.public.directory.show');
+
+        // ── RESTO-902 (#7747) — commande en ligne + avis par slug ──────────
+        // Même pipeline que RESTO-805 (CreateOnlineOrderAction /
+        // RestaurantPublicOrderService::pay) : le slug remplace le lien signé
+        // comme point d'entrée public — branche opt-in + produits publiés
+        // uniquement, 404 fail-closed sinon. Références `RST-…` non
+        // énumérables ; réponses sans PII.
+        Route::post('/{slug}/orders', [RestaurantPublicSlugOrderController::class, 'store'])
+            ->where('slug', '[a-z0-9][a-z0-9\-]{0,159}')
+            ->name('restaurant.public.slug.orders.store');
+        Route::get('/{slug}/orders/{ref}', [RestaurantPublicSlugOrderController::class, 'track'])
+            ->where(['slug' => '[a-z0-9][a-z0-9\-]{0,159}', 'ref' => '[A-Za-z0-9\-]{1,40}'])
+            ->name('restaurant.public.slug.orders.track');
+        Route::post('/{slug}/orders/{ref}/pay', [RestaurantPublicSlugOrderController::class, 'pay'])
+            ->where(['slug' => '[a-z0-9][a-z0-9\-]{0,159}', 'ref' => '[A-Za-z0-9\-]{1,40}'])
+            ->name('restaurant.public.slug.orders.pay');
+
+        // Avis clients : lecture publique (publiés uniquement) ; soumission
+        // sous throttle STRICT dédié (anti-spam, en plus du throttle du
+        // groupe) — un avis exige la référence d'une commande servie/livrée.
+        Route::get('/{slug}/reviews', [RestaurantPublicReviewController::class, 'index'])
+            ->where('slug', '[a-z0-9][a-z0-9\-]{0,159}')
+            ->name('restaurant.public.slug.reviews.index');
+        Route::post('/{slug}/reviews', [RestaurantPublicReviewController::class, 'store'])
+            ->where('slug', '[a-z0-9][a-z0-9\-]{0,159}')
+            ->middleware('throttle:restaurant-reviews-public')
+            ->name('restaurant.public.slug.reviews.store');
     });
