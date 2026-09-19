@@ -141,7 +141,7 @@ export function Footer() {
 
         <div className="pt-8 border-t border-slate-200/80 dark:border-slate-800/80 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            &copy; {new Date().getFullYear()} Leopardo RH. {copy.footer.rights}
+            &copy; {new Date().getFullYear()} Leopardo. {copy.footer.rights}
           </p>
           <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
             <Globe className="w-4 h-4" />
