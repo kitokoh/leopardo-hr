@@ -1,4 +1,4 @@
-# Conventions de Code — Leopardo RH
+# Conventions de Code — Leopardo
 
 > Ce document definit les standards de code obligatoires pour tout contributeur (humain ou IA).
 > Derniere mise a jour : 2026-08-17 (revue PM — réconciliation README/ARCHITECTURE/PILOTAGE)

@@ -22,7 +22,7 @@ Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi
 
 ## ⚡ Spec-Driven Development — Spec Kit (NOUVEAU 2026-08-14)
 
-Leopardo HR utilise desormais **GitHub Spec Kit** pour structurer tout travail significatif.
+Leopardo utilise desormais **GitHub Spec Kit** pour structurer tout travail significatif.
 Lire `.specify/constitution.md` — c'est la loi fondamentale du projet.
 
 ### Commandes disponibles (GitHub Copilot skills)
