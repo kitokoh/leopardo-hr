@@ -44,7 +44,7 @@
     "story": {
       "clarity": {
         "title": "Une home qui vous parle avant de vous noyer",
-        "body": "Leopardo RH commence par quelques actions claires: pointer, suivre le mois et retrouver les informations qui comptent."
+        "body": "Leopardo commence par quelques actions claires: pointer, suivre le mois et retrouver les informations qui comptent."
       },
       "field": {
         "title": "Mobile-first pour le terrain",
@@ -504,7 +504,7 @@
         "placeholder_uri": "https://example.com/oauth/callback"
       }
     },
-    "socialExamplePlaceholder": "Ex: Leopardo RH — Reseaux sociaux",
+    "socialExamplePlaceholder": "Ex: Leopardo — Reseaux sociaux",
     "postContentPlaceholder": "Contenu de la publication..."
   },
   "attendance": {
@@ -1555,7 +1555,7 @@
       "description": "Tarification transparente : plan Free, Pilot 29 €/mois, Operations 79 €/mois, Enterprise sur devis. Essai gratuit 14 jours."
     },
     "llms": {
-      "summary": "Leopardo RH est un logiciel SaaS de gestion du personnel pour PME terrain. Il centralise le pointage, les absences, les plannings, la paie multi-pays, les documents RH et le pilotage dans une seule application, du mobile au kiosque.",
+      "summary": "Leopardo est la suite métier des entreprises de terrain — RH & paie, pointage, absences, CRM, comptabilité et opérations, sur web, mobile et bornes. La suite centralise le pointage, les absences, les plannings, la paie multi-pays, les documents RH et le pilotage dans une seule application, du mobile au kiosque.",
       "factsLabel": "Chiffres clés",
       "factCountries": "pays couverts au catalogue de paie",
       "factLanguages": "langues du produit (FR/EN/TR/AR)",
@@ -1893,7 +1893,7 @@
     "applyErrorPrefix": "Erreur lors de la candidature : ",
     "notApplied": {
       "title": "Devenir Partenaire",
-      "subtitle": "Rejoignez l'écosystème Leopardo RH et gagnez des commissions sur chaque entreprise que vous parrainez. Jusqu'à 20 % de commission récurrente.",
+      "subtitle": "Rejoignez l'écosystème Leopardo et gagnez des commissions sur chaque entreprise que vous parrainez. Jusqu'à 20 % de commission récurrente.",
       "individual": "Postuler en tant qu'Individuel",
       "agency": "Postuler en tant qu'Agence"
     },
@@ -1903,7 +1903,7 @@
     },
     "dashboard": {
       "title": "Dashboard Partenaire",
-      "subtitle": "Suivez vos conversions et vos commissions Leopardo RH — statut partenaire actif."
+      "subtitle": "Suivez vos conversions et vos commissions Leopardo — statut partenaire actif."
     },
     "metrics": {
       "conversions": "Conversions",
@@ -2055,7 +2055,7 @@
     "retry": "Réessayer",
     "serviceUnreachable": "service injoignable",
     "statsLoadError": "Erreur lors du chargement des stats système",
-    "subtitle": "Monitoring, configuration et automatisation de la plateforme Leopardo RH.",
+    "subtitle": "Monitoring, configuration et automatisation de la plateforme Leopardo.",
     "title": "Administration Système"
   },
   "billing": {
@@ -5523,7 +5523,7 @@
   },
   "signupPage": {
     "badge": "Inscription en 2 minutes",
-    "headline": "Testez Leopardo RH sans tunnel complique",
+    "headline": "Testez Leopardo sans tunnel complique",
     "subheadline": "Créez votre espace vous-même : votre e-mail, votre entreprise, un code de vérification — et vous êtes dans l'application. Aucune carte bancaire.",
     "cta": "Créer mon espace d'essai",
     "sideBadge": "Espace disponible immédiatement",
