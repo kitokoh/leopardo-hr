@@ -43,6 +43,13 @@ class EdgeNode extends Model
     use HasFactory;
     use HasUuids;
 
+    // Issue #7711 (exceptions BelongsToCompany) — PAS de trait : le nœud Edge
+    // est répliqué en SQLite embarqué (mono-tenant par construction) et les
+    // routes machine cloud (/edge-node/{id}/push|pull|heartbeat,
+    // validate-license) s'authentifient par edge_token PRÉ-tenant, sans
+    // middleware tenant ; la surface super-admin (listAllNodes) lit
+    // volontairement TOUTES les sociétés.
+
     protected $table = 'edge_nodes';
 
     public $incrementing = false;

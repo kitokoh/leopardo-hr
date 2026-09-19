@@ -22,6 +22,11 @@ use Illuminate\Support\Carbon;
  */
 class PartnerReferral extends Model
 {
+    // Issue #7711 (exceptions BelongsToCompany) — PAS de trait : parrainage
+    // Growth PLATEFORME (table public). company_id désigne la société
+    // PARRAINÉE ; le flux (attribution au signup, calcul de commission,
+    // dashboard partenaire multi-sociétés) est cross-tenant par nature.
+
     protected $fillable = [
         'partner_id',
         'company_id',

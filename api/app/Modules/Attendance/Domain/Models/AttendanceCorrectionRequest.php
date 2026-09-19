@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Attendance\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -28,8 +29,12 @@ use Illuminate\Support\Carbon;
  */
 class AttendanceCorrectionRequest extends Model
 {
+    // Issue #7711 (suite #7646) — table `attendance_correction_requests` du
+    // schéma partagé shared_tenants : avant ce trait, l'isolation reposait
+    // uniquement sur des filtres manuels (DEP-BC05 #5881).
+    use BelongsToCompany;
+
     protected $fillable = [
-        'company_id',
         'employee_id',
         'attendance_log_id',
         'date',

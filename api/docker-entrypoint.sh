@@ -3,9 +3,11 @@ set -e
 
 # ─── Contrat DEPLOY_TIER (issue #7647) ────────────────────────────────────────
 # DEPLOY_TIER identifie le TIER de déploiement (`dev` | `prod`), découplé
-# d'APP_ENV : le tier dev tourne en APP_ENV=production (dette de nommage
-# assumée, cf. docs/ops/RENDER_DEV_PROD_TOPOLOGY.md), donc APP_ENV ne peut
-# PAS distinguer dev et prod. La variable est posée par les blueprints
+# d'APP_ENV (histoire : le tier dev a tourné en APP_ENV=production — dette
+# soldée par #7648, le dev est désormais en APP_ENV=staging, cf.
+# docs/ops/RENDER_DEV_PROD_TOPOLOGY.md). APP_ENV ne doit PAS servir à
+# distinguer dev et prod : c'est le rôle de DEPLOY_TIER. La variable est
+# posée par les blueprints
 # (render.yaml → dev, render.prod.yaml → prod). Effets FAIL-CLOSED ici :
 #   - RESET_TEST_DB_ONCE (DROP total de la base) exige DEPLOY_TIER=dev
 #     explicite — absente, vide ou toute autre valeur => refus de démarrer,
@@ -219,9 +221,9 @@ maybe_reset_test_database_once() {
         exit 1
     fi
 
-    # Issue #7647 : APP_ENV ne distingue PAS dev et prod (le tier dev tourne
-    # en APP_ENV=production — dette assumée, cf. topologie). Le tier est donc
-    # porté par DEPLOY_TIER (render.yaml → dev, render.prod.yaml → prod), et
+    # Issue #7647 : APP_ENV ne distingue PAS les tiers — le critère de tier
+    # est DEPLOY_TIER (render.yaml → dev, render.prod.yaml → prod ; depuis
+    # #7648 le tier dev est en APP_ENV=staging), et
     # la garde est fail-closed : DEPLOY_TIER absente, vide ou différente de
     # 'dev' => refus catégorique du reset destructif, EN PLUS des gardes
     # APP_ENV #6537 ci-dessus (conservées).
@@ -399,7 +401,11 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
     # the seeder will generate a random password that is never displayed in
     # production logs → the admin dashboard will be inaccessible.
     # See docs/deployment/RUNBOOK_SUPER_ADMIN.md for fix instructions.
-    if [ "${APP_ENV:-}" = "production" ] && [ -z "${SUPER_ADMIN_PASSWORD:-}" ]; then
+    # #7648 : le tier dev est passé en APP_ENV=staging — le critère réel de
+    # ce warning est « tier hébergé » (DEPLOY_TIER posée, dev OU prod), pas
+    # APP_ENV. Garde APP_ENV conservée (additive) pour les déploiements
+    # hors blueprint qui n'ont pas DEPLOY_TIER.
+    if { [ "${APP_ENV:-}" = "production" ] || [ -n "${DEPLOY_TIER:-}" ]; } && [ -z "${SUPER_ADMIN_PASSWORD:-}" ]; then
         echo "⚠️  WARNING: SUPER_ADMIN_PASSWORD is not set."
         echo "   SuperAdminSeeder will generate a random password that cannot be"
         echo "   recovered from production logs → admin@leopardo-rh.com login will fail."
@@ -425,11 +431,17 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
 
     # Audit #1697 : la démo ne doit jamais être seedée en production
     # (garde-fou additionnel à DISABLE_DEMO_SEEDING dans render.yaml).
-    if [ "${APP_ENV:-}" != "production" ]; then
+    # #7648 : garde étendue au TIER prod (DEPLOY_TIER=prod, #7647) —
+    # fail-closed même si APP_ENV changeait un jour côté prod. Sur le tier
+    # dev (APP_ENV=staging désormais), le seeder tourne mais reste verrouillé
+    # par DISABLE_DEMO_SEEDING=true + DEMO_MODE_ENABLED=false + DEMO_PASSWORD
+    # absente (#7696) : seuls les backfills non destructifs des démos
+    # existantes s'exécutent.
+    if [ "${APP_ENV:-}" != "production" ] && [ "${DEPLOY_TIER:-}" != "prod" ]; then
         echo "Running gated demo seed (DEMO_SEED_ONCE)..."
         php artisan db:seed --class=DemoCompanyOnceSeeder --force
     else
-        echo "Skipping demo seed (APP_ENV=production)."
+        echo "Skipping demo seed (APP_ENV=${APP_ENV:-<absente>}, DEPLOY_TIER=${DEPLOY_TIER:-<absente>})."
     fi
 
     # QA onboarding 2026-09-14 : un BACKFILL ne doit jamais empêcher le
