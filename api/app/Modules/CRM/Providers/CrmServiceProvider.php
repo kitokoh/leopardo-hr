@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\CRM\Providers;
 
+use App\Modules\CRM\Application\Listeners\DispatchCampaignSends;
 use App\Modules\CRM\Application\Listeners\PropagateConsentRevocation;
 use App\Modules\CRM\Domain\Contracts\CampaignConsentCheckerInterface;
 use App\Modules\CRM\Domain\Contracts\ChannelAdapterContract;
 use App\Modules\CRM\Domain\Contracts\CrmChannelMessageRepositoryInterface;
 use App\Modules\CRM\Domain\Contracts\CrmImportRepositoryInterface;
+use App\Modules\CRM\Domain\Events\CampaignStarted;
 use App\Modules\CRM\Domain\Contracts\CrmImportRowPersisterInterface;
 use App\Modules\CRM\Domain\Contracts\CrmLeadRepositoryInterface;
 use App\Modules\CRM\Domain\Contracts\EmailProviderInterface;
@@ -34,6 +36,7 @@ use App\Modules\CRM\Infrastructure\Services\CrmOutboxConsumerRegistry;
 use App\Modules\CRM\Infrastructure\Services\CrmOutboxPublisher;
 use App\Modules\CRM\Infrastructure\Services\LogEmailProvider;
 use App\Modules\CRM\Infrastructure\Services\MailEmailProvider;
+use App\Modules\CRM\Infrastructure\Services\ResendEmailProvider;
 use App\Shared\Contracts\Crm\EmailContactDirectory;
 use App\Shared\Contracts\Crm\EmailFollowUpConsentGate;
 use Illuminate\Support\Facades\Event;
@@ -125,13 +128,15 @@ class CrmServiceProvider extends ServiceProvider
         // #5723 — source de contacts par défaut pour l'évaluation des segments.
         $this->app->bind(SegmentContactSourceInterface::class, CrmContactSegmentSource::class);
 
-        // #5726 — fournisseur email interchangeable (log | mail).
+        // #5726/#7752 — fournisseur email interchangeable (log | mail | resend).
         $this->app->bind(EmailProviderInterface::class, function (): EmailProviderInterface {
             $provider = config('crm.email.provider', 'log');
 
-            return is_string($provider) && $provider === 'mail'
-                ? new MailEmailProvider
-                : new LogEmailProvider;
+            return match (is_string($provider) ? $provider : 'log') {
+                'mail' => new MailEmailProvider,
+                'resend' => new ResendEmailProvider,
+                default => new LogEmailProvider,
+            };
         });
 
         // #5724 — garde de consentement avant tout envoi de campagne.
@@ -144,7 +149,11 @@ class CrmServiceProvider extends ServiceProvider
         // app/Console/Commands → enregistrement explicite.
         $this->commands([
             \App\Modules\CRM\Console\Commands\CleanupCrmExports::class,
+            \App\Modules\CRM\Console\Commands\ProcessCampaignSends::class,
         ]);
+        // #7751 — le canal email prend en charge les envois d'une campagne
+        // dès son démarrage (worker asynchrone, claim atomique par send).
+        Event::listen(CampaignStarted::class, DispatchCampaignSends::class);
         // #5722 — propagation du retrait de consentement vers les campagnes
         // (#5724) : annulation des envois pending/queued du contact.
         Event::listen(CrmConsentRevoked::class, PropagateConsentRevocation::class);
