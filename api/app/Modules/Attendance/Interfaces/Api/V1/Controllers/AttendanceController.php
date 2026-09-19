@@ -367,7 +367,7 @@ class AttendanceController extends Controller
             : null;
 
         $correction = AttendanceCorrectionRequest::query()->create([
-            'company_id' => $actor->company_id,
+            // #7711 : company_id délégué au trait BelongsToCompany (tenant actif).
             'employee_id' => $actor->id,
             'attendance_log_id' => $log?->id,
             'date' => $validated['date'],

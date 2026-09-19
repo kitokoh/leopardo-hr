@@ -38,6 +38,11 @@ class Partner extends Model
 {
     use HasFactory;
 
+    // Issue #7711 (exceptions BelongsToCompany) — PAS de trait : partenaire
+    // Growth PLATEFORME (table public, migrations public/). company_id est un
+    // simple rattachement optionnel (candidature) : un partenaire parraine N
+    // sociétés et est administré par les surfaces super-admin hors tenant.
+
     protected $fillable = [
         'user_id',
         'referral_code',

@@ -10,7 +10,6 @@ use App\Shared\Contracts\Notification\PushNotifier;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Schema;
 
 class PushNotificationService implements PushNotifier
 {
@@ -23,9 +22,9 @@ class PushNotificationService implements PushNotifier
             'last_used_at' => now(),
         ];
 
-        if (Schema::hasColumn('device_tokens', 'company_id')) {
-            $values['company_id'] = (string) $employee->company_id;
-        }
+        // #7711 : company_id délégué au trait BelongsToCompany (appelé depuis
+        // DeviceTokenController, surface tenant) — l'ancien bloc
+        // Schema::hasColumn qui le mass-assignait est retiré.
 
         return DeviceToken::query()->updateOrCreate(
             [

@@ -61,7 +61,7 @@ class LaunchReadinessControllerTest extends TestCase
             ]);
         }
 
-        ClientEvent::query()->create([
+        ClientEvent::query()->forceCreate([
             'company_id' => $company->id,
             'employee_id' => $manager->id,
             'event_name' => 'dashboard_loaded',
