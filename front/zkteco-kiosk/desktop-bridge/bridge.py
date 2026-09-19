@@ -49,6 +49,81 @@ CONFIG = load_config()
 LOCAL_BRIDGE_TOKEN = secrets.token_urlsafe(32)
 LOCAL_TOKEN_HEADER = "X-Local-Bridge-Token"
 MAX_JSON_BODY_BYTES = 64 * 1024
+
+# Issue #7651 — le token cloud (kioskToken) n'est PLUS injecté dans les pages
+# HTML : il reste côté Python et le bridge proxifie les appels cloud de l'UI
+# via /local/cloud/<route> (allowlist stricte, token ajouté serveur-side).
+CLOUD_PROXY_PREFIX = "/local/cloud/"
+CLOUD_PROXY_ROUTES = frozenset({
+    ("GET", "config"),
+    ("GET", "roster"),
+    ("GET", "announcements"),
+    ("POST", "employee-info"),
+    ("POST", "leave-balance"),
+    ("POST", "qr-punch"),
+    ("POST", "punch"),
+    ("POST", "verify-face"),
+})
+# verify-face transporte une capture multipart : limite dédiée, plus large
+# que MAX_JSON_BODY_BYTES mais bornée pour éviter tout abus local.
+MAX_PROXY_BODY_BYTES = 8 * 1024 * 1024
+
+# Issue #7651 — admin.html n'est plus « authentifiée » par un token injecté
+# dans la page elle-même : un PIN admin distinct (config adminPin, jamais
+# injecté ni servi) ouvre une session admin courte, avec rate-limit local.
+ADMIN_TOKEN_HEADER = "X-Local-Admin-Token"
+ADMIN_PIN_MIN_LENGTH = 6
+ADMIN_SESSION_TTL_SECONDS = 15 * 60
+ADMIN_LOGIN_MAX_ATTEMPTS = 5
+ADMIN_LOGIN_WINDOW_SECONDS = 300.0
+_ADMIN_LOCK = threading.Lock()
+_ADMIN_SESSIONS: dict[str, float] = {}
+_ADMIN_LOGIN_BUCKETS: dict[str, list[float]] = {}
+
+# Endpoints /local/* réservés à la session admin (lecture de la file PII,
+# réparation, syncs ciblées) : le token de session kiosk ne suffit plus
+# (#7651). /local/sync/all reste accessible à la surface pointage : c'est le
+# bouton « réessayer » de la borne (PA2-KIO-003), action idempotente
+# équivalente à l'auto-sync périodique, sans lecture de données.
+ADMIN_GET_PATHS = frozenset({"/local/events"})
+ADMIN_POST_PATHS = frozenset({
+    "/local/events/requeue",
+    "/local/sync/roster",
+    "/local/sync/events",
+})
+
+
+def allow_admin_login(client_ip: str, now: float | None = None) -> bool:
+    """Rate-limit local (#7651) : 5 tentatives de PIN par IP par 5 minutes."""
+    current = time.monotonic() if now is None else now
+    cutoff = current - ADMIN_LOGIN_WINDOW_SECONDS
+    with _ADMIN_LOCK:
+        attempts = [t for t in _ADMIN_LOGIN_BUCKETS.get(client_ip, []) if t > cutoff]
+        if len(attempts) >= ADMIN_LOGIN_MAX_ATTEMPTS:
+            _ADMIN_LOGIN_BUCKETS[client_ip] = attempts
+            return False
+        attempts.append(current)
+        _ADMIN_LOGIN_BUCKETS[client_ip] = attempts
+        return True
+
+
+def create_admin_session(now: float | None = None) -> str:
+    current = time.monotonic() if now is None else now
+    token = secrets.token_urlsafe(32)
+    with _ADMIN_LOCK:
+        _ADMIN_SESSIONS[token] = current + ADMIN_SESSION_TTL_SECONDS
+    return token
+
+
+def is_valid_admin_session(token: str, now: float | None = None) -> bool:
+    if not token:
+        return False
+    current = time.monotonic() if now is None else now
+    with _ADMIN_LOCK:
+        for stored, expires_at in list(_ADMIN_SESSIONS.items()):
+            if expires_at <= current:
+                del _ADMIN_SESSIONS[stored]
+        return any(hmac.compare_digest(token, stored) for stored in _ADMIN_SESSIONS)
 PUNCH_RATE_LIMIT = 60
 PUNCH_RATE_WINDOW_SECONDS = 60.0
 _PUNCH_RATE_LOCK = threading.Lock()
@@ -605,7 +680,11 @@ class BridgeHandler(BaseHTTPRequestHandler):
         en temps constant pour éviter toute oracle temporelle.
         """
         provided = self.headers.get(LOCAL_TOKEN_HEADER, "")
-        return bool(provided) and hmac.compare_digest(provided, LOCAL_BRIDGE_TOKEN)
+        if bool(provided) and hmac.compare_digest(provided, LOCAL_BRIDGE_TOKEN):
+            return True
+        # #7651 — une session admin (strictement plus privilégiée) accède aussi
+        # aux endpoints de la surface pointage (/local/status, etc.).
+        return is_valid_admin_session(self.headers.get(ADMIN_TOKEN_HEADER, ""))
 
     def _is_same_origin(self) -> bool:
         """Anti-CSRF (#3586) : un Origin cross-site ne peut pas forger de punch.
@@ -627,10 +706,99 @@ class BridgeHandler(BaseHTTPRequestHandler):
             return self._json(403, {"error": "ORIGIN_FORBIDDEN"}) or False
         return True
 
+    def _guard_admin(self) -> bool:
+        """Garde admin (#7651) : session ouverte par PIN, jamais injectée."""
+        provided = self.headers.get(ADMIN_TOKEN_HEADER, "")
+        if not is_valid_admin_session(provided):
+            return self._json(401, {"error": "ADMIN_TOKEN_REQUIRED"}) or False
+        if not self._is_same_origin():
+            return self._json(403, {"error": "ORIGIN_FORBIDDEN"}) or False
+        return True
+
+    def _handle_admin_login(self) -> None:
+        """POST /local/admin/login (#7651) : PIN → session admin courte.
+
+        Pas de token de session kiosk requis (admin.html ne le reçoit plus) :
+        la protection vient du PIN (compare_digest), du rate-limit local et
+        des gardes Origin/Content-Type.
+        """
+        if not self._is_same_origin():
+            return self._json(403, {"error": "ORIGIN_FORBIDDEN"})
+        content_type = (self.headers.get("Content-Type") or "").split(";")[0].strip().lower()
+        if content_type != "application/json":
+            return self._json(415, {"error": "CONTENT_TYPE_JSON_REQUIRED"})
+        client_ip = self.client_address[0] if self.client_address else "unknown"
+        if not allow_admin_login(client_ip):
+            return self._json(429, {"error": "ADMIN_LOGIN_RATE_LIMITED"})
+        admin_pin = str(CONFIG.get("adminPin") or "")
+        if len(admin_pin) < ADMIN_PIN_MIN_LENGTH:
+            # Fail-closed : sans PIN configuré (>= 6 caractères), la surface
+            # admin reste verrouillée — jamais de PIN par défaut.
+            return self._json(503, {"error": "ADMIN_PIN_NOT_CONFIGURED"})
+        try:
+            payload = self._read_json()
+        except PayloadTooLargeError:
+            return self._json(413, {"error": "REQUEST_BODY_TOO_LARGE"})
+        except Exception:
+            payload = {}
+        pin = str(payload.get("pin", ""))
+        if not pin or not hmac.compare_digest(pin, admin_pin):
+            return self._json(401, {"error": "ADMIN_PIN_INVALID"})
+        token = create_admin_session()
+        return self._json(200, {"data": {"admin_token": token, "expires_in": ADMIN_SESSION_TTL_SECONDS}})
+
+    def _proxy_cloud(self, method: str, parsed) -> None:
+        """Proxy cloud (#7651) : l'UI appelle /local/cloud/<route>, le bridge
+        ajoute X-Kiosk-Token côté Python — le token ne quitte jamais le serveur."""
+        sub_path = parsed.path[len(CLOUD_PROXY_PREFIX):]
+        if (method, sub_path) not in CLOUD_PROXY_ROUTES:
+            return self._json(404, {"error": "NOT_FOUND"})
+        engine = SyncEngine(CONFIG, STORE)
+        if not engine.api_base_url or not engine.device_code:
+            return self._json(503, {"error": "KIOSK_NOT_CONFIGURED"})
+        url = f"{engine.api_base_url}/kiosks/{engine.device_code}/{sub_path}"
+        if parsed.query:
+            url = f"{url}?{parsed.query}"
+        headers = {"Accept": "application/json", "X-Kiosk-Token": engine.kiosk_token}
+        body = None
+        if method == "POST":
+            length = int(self.headers.get("Content-Length", "0") or 0)
+            if length > MAX_PROXY_BODY_BYTES:
+                return self._json(413, {"error": "REQUEST_BODY_TOO_LARGE"})
+            body = self.rfile.read(length) if length > 0 else b""
+            # Multipart (verify-face) : la boundary vit dans le Content-Type
+            # client, il est relayé tel quel.
+            content_type = self.headers.get("Content-Type")
+            if content_type:
+                headers["Content-Type"] = content_type
+        request = urllib.request.Request(url, method=method, data=body, headers=headers)
+        try:
+            with urllib.request.urlopen(request, timeout=20) as response:
+                status = response.status
+                payload = response.read()
+                response_type = response.headers.get("Content-Type", "application/json; charset=utf-8")
+        except urllib.error.HTTPError as error:
+            status = error.code
+            payload = error.read()
+            response_type = error.headers.get("Content-Type", "application/json; charset=utf-8")
+        except Exception as error:
+            return self._json(502, {"error": f"REMOTE_UNREACHABLE: {error}"})
+        self.send_response(status)
+        self.send_header("Content-Type", response_type)
+        self.send_header("Content-Length", str(len(payload)))
+        self.end_headers()
+        self.wfile.write(payload)
+
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
-        if parsed.path.startswith("/local/") and not self._guard_local():
-            return
+        if parsed.path.startswith("/local/"):
+            if parsed.path in ADMIN_GET_PATHS:
+                if not self._guard_admin():
+                    return
+            elif not self._guard_local():
+                return
+        if parsed.path.startswith(CLOUD_PROXY_PREFIX):
+            return self._proxy_cloud("GET", parsed)
 
         if parsed.path == "/local/status":
             online, error_message = SYNC_ENGINE.online_status()
@@ -661,8 +829,19 @@ class BridgeHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         parsed = urlparse(self.path)
-        if parsed.path.startswith("/local/"):
+        if parsed.path == "/local/admin/login":
+            return self._handle_admin_login()
+        if parsed.path.startswith(CLOUD_PROXY_PREFIX):
+            # Le proxy cloud garde le token de session kiosk + Origin, mais pas
+            # le Content-Type JSON strict (verify-face est multipart).
             if not self._guard_local():
+                return
+            return self._proxy_cloud("POST", parsed)
+        if parsed.path.startswith("/local/"):
+            if parsed.path in ADMIN_POST_PATHS:
+                if not self._guard_admin():
+                    return
+            elif not self._guard_local():
                 return
             # Anti-CSRF (#3586) : un POST cross-site simple (fetch no-cors) ne
             # peut pas poser application/json → rejet systématique.
@@ -764,15 +943,15 @@ class BridgeHandler(BaseHTTPRequestHandler):
         body = target.read_bytes()
 
         # Issue #2750 — injecter la config cloud dans les pages HTML servies :
-        # `app.js` lit `window.__KIOSK_API_BASE / __KIOSK_DEVICE_CODE /
-        # __KIOSK_TOKEN`. Sans injection, le device code est vide et les
-        # fonctions cloud (employee-info, announcements, leave-balance,
-        # qr-punch) appellent `/api/v1/kiosks//…` → 404 (déploiement
-        # documenté http://127.0.0.1:8037/index.html).
-        # Issue #3586 — on injecte aussi `window.__LOCAL_BRIDGE_TOKEN` :
-        # les appels `/local/*` exigent désormais le header
-        # `X-Local-Bridge-Token` (auth de session locale).
-        if target.suffix == ".html":
+        # `app.js` lit `window.__KIOSK_API_BASE / __KIOSK_DEVICE_CODE`. Sans
+        # injection, le device code est vide et l'état « non configuré »
+        # s'affiche (déploiement documenté http://127.0.0.1:8037/index.html).
+        # Issue #7651 — le token cloud (`__KIOSK_TOKEN`) n'est PLUS injecté :
+        # les appels cloud passent par le proxy /local/cloud/* (token côté
+        # Python). `window.__LOCAL_BRIDGE_TOKEN` (#3586) n'est injecté que
+        # dans index.html (surface pointage) — admin.html s'authentifie par
+        # PIN via /local/admin/login, jamais par un secret présent dans le DOM.
+        if target.suffix == ".html" and relative == "index.html":
             injected = (
                 "<script>\n"
                 "window.__KIOSK_API_BASE = "
@@ -780,9 +959,6 @@ class BridgeHandler(BaseHTTPRequestHandler):
                 + ";\n"
                 "window.__KIOSK_DEVICE_CODE = "
                 + json.dumps(CONFIG.get("deviceCode", ""))
-                + ";\n"
-                "window.__KIOSK_TOKEN = "
-                + json.dumps(CONFIG.get("kioskToken", ""))
                 + ";\n"
                 "window.__LOCAL_BRIDGE_TOKEN = "
                 + json.dumps(LOCAL_BRIDGE_TOKEN)
