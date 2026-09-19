@@ -21,6 +21,8 @@ use Illuminate\Support\Str;
  * `reference` est générée automatiquement (`GV-…`) si absente à la création.
  * `idempotency_key` garantit qu'une requête rejouée (retry réseau, double
  * clic guichet) ne crée jamais deux réservations pour le même tenant.
+ *
+ * @property int|null $customer_account_id
  */
 class TravelBooking extends Model
 {
