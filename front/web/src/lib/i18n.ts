@@ -10,6 +10,9 @@ export type StoredAuthUser = {
   is_rtl?: boolean;
   role?: string | null;
   manager_role?: string | null;
+  // #7761/#7762 — grants de modules délégués (registre fermé ModuleKey) renvoyés
+  // par /auth/me pour SA propre fiche : ['marketing', 'accounting', ...].
+  module_grants?: string[] | null;
   capabilities?: Record<string, unknown> | null;
   // Features tenant (FeatureFlag::for) renvoyées au niveau racine par
   // /auth/me (EmployeeResource) : {rh, finance, cameras, muhasebe, leo_ai}.
