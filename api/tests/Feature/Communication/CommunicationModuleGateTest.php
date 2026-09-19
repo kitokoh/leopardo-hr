@@ -115,7 +115,12 @@ class CommunicationModuleGateTest extends TestCase
         $this->companyEnabled->setFeature(CommunicationFeatures::COMMUNICATION, false);
         $this->companyEnabled->save();
 
-        Sanctum::actingAs($this->employeeEnabled);
+        // L'acteur est créé APRÈS la coupure (pattern DeliveryApiTest) : la
+        // relation `company` d'un Employee existant garde l'instantané du flag
+        // chargé à sa création, et c'est elle que lit TenantMiddleware —
+        // vérifié contre PostgreSQL réel : avec $this->employeeEnabled, la
+        // requête répondait 200 alors que public.companies portait bien false.
+        Sanctum::actingAs($this->employee($this->companyEnabled));
 
         $this->getJson('/api/v1/communication/status')
             ->assertStatus(403)
