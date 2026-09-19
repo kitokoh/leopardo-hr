@@ -80,7 +80,7 @@ PHPStan sur tous les commits — a été écartée le 2026-09-13 : elle aggrave 
 dont le coût dépasse le bénéfice d'un contrôle non applicable.
 
 Ne pas confondre avec un feu vert sur le code : le seuil réel de validation PHP reste
-`Tests - Leopardo RH` (sans gate de chemins) et, à la release, `Backend Coverage`.
+`Tests - Leopardo` (sans gate de chemins) et, à la release, `Backend Coverage`.
 
 ## Règles du garde ratio fix/feat
 

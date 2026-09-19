@@ -1,4 +1,4 @@
-name: k6 Load Smoke - Leopardo RH
+name: k6 Load Smoke - Leopardo
 
 on:
   workflow_dispatch:
