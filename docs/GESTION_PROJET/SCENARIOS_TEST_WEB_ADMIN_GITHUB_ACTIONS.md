@@ -648,3 +648,7 @@ propagation i18n du 2026-09-14 (PR #7350).
   ou `*` dans connect-src, ou le placeholder non remplace.
 - Les specs Playwright existantes restent la non-regression fonctionnelle : elles sement le
   token via `addInitScript` (avant le boot de l'app), chemin identique a un rechargement.
+
+## Note de conservation — marque « Leopardo » dans la console (PR #7715, issue #7709, 2026-09-19)
+
+**Aucun changement de comportement de la console admin.** Le diff ne touche que des chaînes d'affichage (title `index.html`, suffixe de `document.title` du routeur, en-têtes Login/Logout, fallback Growth, catalogues i18n fr/en/tr/ar, aria-labels SVG) : la marque affichée devient « Leopardo » seul (positionnement P03 étape 5, `docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md`). Les scénarios existants restent valides tels quels, à une exception près : toute assertion e2e qui verrouillait le libellé « Leopardo RH » (titre de page, heading de connexion) doit attendre « Leopardo » — les regex des specs ont été mises à jour dans la même PR. URLs, clés de storage et identifiants inchangés (§4).
