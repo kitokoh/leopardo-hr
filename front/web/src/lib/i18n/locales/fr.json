@@ -6592,7 +6592,7 @@
   },
   "health": {
     "section": {
-      "title": "HealthManager",
+      "title": "HealthManager — Gestion hôpitaux & cliniques",
       "subtitle": "Pilotage hôpital & clinique : patients, rendez-vous, hospitalisations, facturation des soins."
     },
     "common": {

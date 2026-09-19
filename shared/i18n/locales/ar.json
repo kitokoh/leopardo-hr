@@ -6592,7 +6592,7 @@
   },
   "health": {
     "section": {
-      "title": "HealthManager",
+      "title": "HealthManager — إدارة المستشفيات والعيادات",
       "subtitle": "إدارة المستشفى والعيادة: المرضى، المواعيد، حالات الاستشفاء وفوترة الرعاية."
     },
     "common": {

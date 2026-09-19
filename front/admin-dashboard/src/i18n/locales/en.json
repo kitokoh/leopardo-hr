@@ -7943,7 +7943,7 @@
   },
   "health": {
     "section": {
-      "title": "HealthManager",
+      "title": "HealthManager — Hospital & clinic management",
       "subtitle": "Hospital & clinic management: patients, appointments, admissions, care billing."
     },
     "common": {

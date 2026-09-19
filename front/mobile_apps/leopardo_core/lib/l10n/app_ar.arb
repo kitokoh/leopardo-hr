@@ -5177,7 +5177,7 @@
   "communicationappOptoutsRemoved": "أُزيل الاستثناء.",
   "communicationappOptoutsSourceManual": "يدوي",
   "communicationappOptoutsSourceUnsubscribe": "إلغاء اشتراك",
-  "healthSectionTitle": "HealthManager",
+  "healthSectionTitle": "HealthManager — إدارة المستشفيات والعيادات",
   "healthSectionSubtitle": "إدارة المستشفى والعيادة: المرضى، المواعيد، حالات الاستشفاء وفوترة الرعاية.",
   "healthCommonLoaderror": "تعذر تحميل البيانات.",
   "healthCommonRetry": "إعادة المحاولة",

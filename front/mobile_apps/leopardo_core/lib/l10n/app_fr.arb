@@ -5177,7 +5177,7 @@
   "communicationappOptoutsRemoved": "Exclusion retirée.",
   "communicationappOptoutsSourceManual": "Manuel",
   "communicationappOptoutsSourceUnsubscribe": "Désinscription",
-  "healthSectionTitle": "HealthManager",
+  "healthSectionTitle": "HealthManager — Gestion hôpitaux & cliniques",
   "healthSectionSubtitle": "Pilotage hôpital & clinique : patients, rendez-vous, hospitalisations, facturation des soins.",
   "healthCommonLoaderror": "Impossible de charger les données.",
   "healthCommonRetry": "Réessayer",

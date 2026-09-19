@@ -5177,7 +5177,7 @@
   "communicationappOptoutsRemoved": "İstisna kaldırıldı.",
   "communicationappOptoutsSourceManual": "Manuel",
   "communicationappOptoutsSourceUnsubscribe": "Abonelikten çıkma",
-  "healthSectionTitle": "HealthManager",
+  "healthSectionTitle": "HealthManager — Hastane ve klinik yönetimi",
   "healthSectionSubtitle": "Hastane ve klinik yönetimi: hastalar, randevular, yatışlar, bakım faturalama.",
   "healthCommonLoaderror": "Veriler yüklenemedi.",
   "healthCommonRetry": "Tekrar dene",

@@ -6592,7 +6592,7 @@
   },
   "health": {
     "section": {
-      "title": "HealthManager",
+      "title": "HealthManager — Hastane ve klinik yönetimi",
       "subtitle": "Hastane ve klinik yönetimi: hastalar, randevular, yatışlar, bakım faturalama."
     },
     "common": {

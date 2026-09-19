@@ -5177,7 +5177,7 @@
   "communicationappOptoutsRemoved": "Exclusion removed.",
   "communicationappOptoutsSourceManual": "Manual",
   "communicationappOptoutsSourceUnsubscribe": "Unsubscribed",
-  "healthSectionTitle": "HealthManager",
+  "healthSectionTitle": "HealthManager — Hospital & clinic management",
   "healthSectionSubtitle": "Hospital & clinic management: patients, appointments, admissions, care billing.",
   "healthCommonLoaderror": "Unable to load data.",
   "healthCommonRetry": "Retry",
