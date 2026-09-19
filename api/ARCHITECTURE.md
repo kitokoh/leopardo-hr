@@ -125,6 +125,7 @@ restent libres. `Modules/CRM` existe et est complet (`CrmServiceProvider`) ; la 
 | `Modules/Billing` | ✅ routes/modules/billing.php | ✅ complet | `BillingServiceProvider` |
 | `Modules/Cabinet` | ✅ routes/modules/cabinet.php | ✅ complet | `CabinetServiceProvider` |
 | `Modules/Catalog` | 🔶 socle domaine BC-28 — routes API privée à venir (C-API #6881) | 🟢 socle domaine BC-28 (#6880) : migrations tenant `catalog_categories`/`catalog_products`, modèles, policies deny-by-default, feature flag `b2b_catalog` | `CatalogServiceProvider` |
+| `Modules/Communication` | ✅ routes/modules/communication.php (squelette R0 : `GET /communication/status`) | 🔶 squelette BC-29 (R0 #7685) : feature flag tenant `communication`, gate `module.communication`, endpoint d'état — OAuth Gmail/sync/IA/relances aux lots R1→R5 (spec `MODULE_COMMUNICATION_EMAIL_IA.md`) | `CommunicationServiceProvider` |
 | `Modules/Fleet` | ✅ routes/modules/hr_extended.php | 🔶 Application et Infrastructure **vides actées** (ADR-0020, #6899) — conservées, à peupler au fil des besoins fonctionnels ; Domain + Interfaces seuls aujourd'hui | `FleetServiceProvider` |
 | `Modules/Cameras` | ✅ routes/modules/cameras.php | ✅ complet | `CamerasServiceProvider` |
 | `Modules/CRM` | ✅ routes/modules/crm.php | ✅ complet (CRM client, ADR-CRM-DUAL-CONTEXTS) | `CrmServiceProvider` |

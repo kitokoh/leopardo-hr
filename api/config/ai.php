@@ -225,6 +225,8 @@ return [
             'employees.create',
             // A8 (#7378) — pointage (self + équipe).
             'attendance.punch',
+            // B3c (#6858) — annonce d'équipe via l'outil `notify_team` (AIToolContractGuardTest).
+            'announcements.create',
         ],
         'admin' => [
             'employees.view',
@@ -243,6 +245,8 @@ return [
             'employees.create',
             // A8 (#7378) — pointage (self + équipe).
             'attendance.punch',
+            // B3c (#6858) — annonce d'équipe via l'outil `notify_team` (AIToolContractGuardTest).
+            'announcements.create',
         ],
         'super_admin' => [
             'employees.view',
@@ -261,6 +265,8 @@ return [
             'employees.create',
             // A8 (#7378) — pointage (self + équipe).
             'attendance.punch',
+            // B3c (#6858) — annonce d'équipe via l'outil `notify_team` (AIToolContractGuardTest).
+            'announcements.create',
         ],
     ],
 

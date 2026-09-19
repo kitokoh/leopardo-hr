@@ -103,6 +103,8 @@ tags:
   description: 'BC-28 CATALOG — gestion du catalogue produits B2B des tenants (categories, produits, publication).'
 - name: Travel
   description: 'BC-24 TRAVEL — boutique, tunnel public et espace voyageur (suivi par reference + code de controle du billet).'
+- name: Communication
+  description: 'BC-29 COMMUNICATION — boite mail connectee + IA (OAuth Gmail serveur, sync, classification, relances) ; squelette R0 (#7685).'
 paths:
   /attendance/config:
     get:
@@ -29875,6 +29877,55 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+
+  /communication/status:
+    get:
+      tags:
+      - Communication
+      summary: Etat du module Communication pour le tenant courant (squelette R0)
+      description: 'Sonde d''activation du module Communication (BC-29, #7685) : la route est gardee par le feature flag tenant `communication` (403 FEATURE_NOT_ENABLED si le module est inactif). Renvoie le jalon livre (stage R0) et les capacites, toutes desactivees tant que les lots R1-R5 ne sont pas livres.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Module actif pour le tenant courant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      module:
+                        type: string
+                        example: communication
+                      enabled:
+                        type: boolean
+                        example: true
+                      status:
+                        type: string
+                        example: active
+                      stage:
+                        type: string
+                        example: R0
+                      capabilities:
+                        type: object
+                        properties:
+                          integrations:
+                            type: boolean
+                          sync:
+                            type: boolean
+                          classification:
+                            type: boolean
+                          follow_ups:
+                            type: boolean
+                          replies:
+                            type: boolean
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
 
   /public/catalog/sitemap.xml:
     get:
