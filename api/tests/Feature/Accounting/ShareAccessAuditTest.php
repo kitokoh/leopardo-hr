@@ -6,9 +6,9 @@ namespace Tests\Feature\Accounting;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Accounting\Infrastructure\Services\SendDocumentEmail;
 use App\Modules\Accounting\Domain\Models\AccountingContact;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
+use App\Modules\Accounting\Infrastructure\Services\SendDocumentEmail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
