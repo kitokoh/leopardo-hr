@@ -67,7 +67,7 @@ class TravelStaffAssignmentController extends Controller
             ->exists();
 
         if ($duplicate) {
-            abort(409, 'Cet employé est déjà affecté à ce rôle sur ce scope.');
+            abort(409, __('travel.staff_assignments.duplicate'));
         }
 
         $assignment = TravelStaffAssignment::query()->create($validated);
