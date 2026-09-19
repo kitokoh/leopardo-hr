@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
+use Illuminate\Testing\PendingCommand;
 
 /**
  * BC-29 COMMUNICATION (R4, #7689) — moteur de relances automatiques :
@@ -139,7 +140,7 @@ class CommunicationFollowUpTest extends TestCase
         ]);
         $rule->save();
 
-        foreach (array_values($steps) as $index => $payload) {
+        foreach ($steps as $index => $payload) {
             $step = new CommunicationFollowUpStep;
             $step->forceFill([
                 'company_id' => (string) $integration->company_id,
@@ -225,7 +226,9 @@ class CommunicationFollowUpTest extends TestCase
 
     private function runCommand(): void
     {
-        $this->artisan('communication:send-follow-ups')->assertExitCode(0);
+        $command = $this->artisan('communication:send-follow-ups');
+        $this->assertInstanceOf(PendingCommand::class, $command);
+        $command->assertExitCode(0);
     }
 
     // ── CRUD regles / sequences ──────────────────────────────────────────
@@ -368,7 +371,7 @@ class CommunicationFollowUpTest extends TestCase
             $raw = base64_decode(strtr((string) $request['raw'], '-_', '+/'));
 
             return $request['threadId'] === $thread->gmail_thread_id
-                && is_string($raw)
+                && $raw !== ''
                 && str_contains($raw, 'To: prospect@example.com')
                 && str_contains($raw, 'In-Reply-To: '.(string) $anchor->internet_message_id);
         });
