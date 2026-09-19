@@ -19,6 +19,8 @@
 
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailCategoryController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailLocationController;
+use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailOnlineOrderController;
+use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailOnlineSettingsController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailOrderController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailPosSessionController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailProductController;
@@ -43,6 +45,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::delete('/products/{product}', [RetailProductController::class, 'destroy'])->whereNumber('product');
         Route::post('/products/{product}/publish', [RetailProductController::class, 'publish'])->whereNumber('product');
         Route::post('/products/{product}/unpublish', [RetailProductController::class, 'unpublish'])->whereNumber('product');
+
+        // Marketplace Leopardo Marché (#7807) : bascule de la visibilité
+        // publique par produit (RetailProductPolicy@publish, opt-in).
+        Route::post('/products/{product}/publish-online', [RetailProductController::class, 'publishOnline'])->whereNumber('product');
+        Route::post('/products/{product}/unpublish-online', [RetailProductController::class, 'unpublishOnline'])->whereNumber('product');
 
         // Emplacements de stock (gestion réservée principal/rh — RetailLocationPolicy, #7673).
         Route::get('/locations', [RetailLocationController::class, 'index']);
@@ -71,4 +78,23 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/pos/orders/{order}', [RetailOrderController::class, 'show'])->whereNumber('order');
         Route::post('/pos/orders/{order}/payments', [RetailOrderController::class, 'addPayment'])->whereNumber('order');
         Route::post('/pos/orders/{order}/cancel', [RetailOrderController::class, 'cancel'])->whereNumber('order');
+
+        // Boutique en ligne Leopardo Marché (#7807) : réglages publics du
+        // vendeur (create-or-update, RetailOnlineSettingsPolicy).
+        Route::get('/online/settings', [RetailOnlineSettingsController::class, 'show']);
+        Route::put('/online/settings', [RetailOnlineSettingsController::class, 'update']);
+
+        // Commandes en ligne Leopardo Marché (#7808) : liste/détail +
+        // pilotage logistique pending→confirmed→ready→shipped→delivered
+        // (+ cancel). La confirmation décrémente le stock (mouvements `sale`
+        // via RetailStockService), l'annulation post-confirmation le
+        // restaure (mouvements `return`) — transitions invalides → 422
+        // INVALID_TRANSITION.
+        Route::get('/online/orders', [RetailOnlineOrderController::class, 'index']);
+        Route::get('/online/orders/{order}', [RetailOnlineOrderController::class, 'show'])->whereNumber('order');
+        Route::post('/online/orders/{order}/confirm', [RetailOnlineOrderController::class, 'confirm'])->whereNumber('order');
+        Route::post('/online/orders/{order}/ready', [RetailOnlineOrderController::class, 'ready'])->whereNumber('order');
+        Route::post('/online/orders/{order}/ship', [RetailOnlineOrderController::class, 'ship'])->whereNumber('order');
+        Route::post('/online/orders/{order}/deliver', [RetailOnlineOrderController::class, 'deliver'])->whereNumber('order');
+        Route::post('/online/orders/{order}/cancel', [RetailOnlineOrderController::class, 'cancel'])->whereNumber('order');
     });
