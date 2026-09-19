@@ -1772,6 +1772,10 @@ class LeopardoClient:
         """Sommes SHA-256 des artefacts edge (public)"""
         return self.request("GET", "/edge/download/sha256.txt", **kwargs)
 
+    def get_edge_download_sha256_txt_sig(self, **kwargs):
+        """Signature RS256 du manifeste sha256.txt (public)"""
+        return self.request("GET", "/edge/download/sha256.txt.sig", **kwargs)
+
     def get_edge_health(self, **kwargs):
         """Healthcheck edge (public, machine-to-cloud)"""
         return self.request("GET", "/edge/health", **kwargs)

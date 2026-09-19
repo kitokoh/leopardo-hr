@@ -119,7 +119,7 @@ class EdgeDownloadController extends Controller
         }
 
         return response(base64_encode($signature), 200, [
-            'Content-Type'  => 'text/plain',
+            'Content-Type' => 'text/plain',
             'Cache-Control' => 'no-store',
         ]);
     }
@@ -142,12 +142,14 @@ class EdgeDownloadController extends Controller
             $path = $this->resolveEdgeAsset($asset);
             if ($path === null || ! is_file($path)) {
                 $missing[] = $asset;
+
                 continue;
             }
 
             $hash = hash_file('sha256', $path);
             if ($hash === false) {
                 $missing[] = $asset;
+
                 continue;
             }
 
@@ -196,8 +198,8 @@ class EdgeDownloadController extends Controller
         $hash = hash_file('sha256', $path);
 
         return response($hash === false ? '' : $hash, 200, [
-            'Content-Type'        => 'text/plain',
-            'Cache-Control'       => 'public, max-age=3600',
+            'Content-Type' => 'text/plain',
+            'Cache-Control' => 'public, max-age=3600',
         ]);
     }
 
@@ -222,7 +224,7 @@ class EdgeDownloadController extends Controller
         }
 
         return response($publicKey, 200, [
-            'Content-Type'  => 'text/plain',
+            'Content-Type' => 'text/plain',
             'Cache-Control' => 'public, max-age=86400',
         ]);
     }
@@ -257,9 +259,9 @@ class EdgeDownloadController extends Controller
         $content = file_get_contents($path);
 
         return response($content === false ? '' : $content, 200, [
-            'Content-Type'        => $contentType,
+            'Content-Type' => $contentType,
             'Content-Disposition' => 'attachment; filename="'.$filename.'"',
-            'Cache-Control'       => 'public, max-age=3600',
+            'Cache-Control' => 'public, max-age=3600',
         ]);
     }
 }

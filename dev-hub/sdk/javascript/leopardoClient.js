@@ -2190,6 +2190,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/edge/download/sha256.txt", options);
     },
 
+    /** Signature RS256 du manifeste sha256.txt (public) */
+    getEdgeDownloadSha256TxtSig(options = {}) {
+      return request("GET", "/edge/download/sha256.txt.sig", options);
+    },
+
     /** Healthcheck edge (public, machine-to-cloud) */
     getEdgeHealth(options = {}) {
       return request("GET", "/edge/health", options);

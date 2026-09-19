@@ -7,12 +7,12 @@ namespace App\Modules\EdgeSync\Interfaces\Api\V1\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\EdgeSync\Application\Actions\PushEdgeRecords;
 use App\Modules\EdgeSync\Application\Actions\RegisterEdgeNode;
-use App\Modules\EdgeSync\Infrastructure\Services\CloudDeltaBuilder;
-use App\Modules\EdgeSync\Infrastructure\Services\EdgeLicenseService;
-use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
 use App\Modules\EdgeSync\Domain\Models\EdgeLicense;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
+use App\Modules\EdgeSync\Infrastructure\Services\CloudDeltaBuilder;
+use App\Modules\EdgeSync\Infrastructure\Services\EdgeLicenseService;
+use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
 use App\Modules\EdgeSync\Interfaces\Api\V1\Requests\EdgeNodeActionRequest;
 use App\Modules\EdgeSync\Interfaces\Api\V1\Requests\IssueLicenseRequest;
 use Illuminate\Http\JsonResponse;
@@ -158,7 +158,7 @@ class EdgeNodeController extends Controller
         $queued = $this->pushEdgeRecords->execute($node, $validated['records']);
 
         return response()->json([
-            'queued'  => $queued['queued'],
+            'queued' => $queued['queued'],
             'results' => $queued['results'],
         ]);
     }
