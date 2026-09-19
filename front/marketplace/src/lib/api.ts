@@ -103,6 +103,19 @@ export interface TrackedItem {
   line_total_minor?: number;
 }
 
+/**
+ * État public de la livraison BC-26 (#7811) — présent uniquement si une
+ * livraison `retail_online` existe pour la commande (champ optionnel et
+ * défensif : statut + horodatages publics, rien d'autre).
+ */
+export interface DeliveryStatus {
+  status: string;
+  created_at: string | null;
+  delivered_at: string | null;
+  failed_at: string | null;
+  returned_at: string | null;
+}
+
 export interface OrderTracking {
   reference: string;
   fulfillment_status: FulfillmentStatus;
@@ -111,6 +124,7 @@ export interface OrderTracking {
   total_minor: number;
   currency: string;
   seller?: PublicSellerRef | string;
+  delivery?: DeliveryStatus;
 }
 
 /* ── Erreurs & fetch ────────────────────────────────────────────────────── */
@@ -320,6 +334,18 @@ function normalizeTimeline(raw: unknown): TimelineEntry[] {
   return [];
 }
 
+function normalizeDelivery(raw: unknown): DeliveryStatus | undefined {
+  if (!isRecord(raw) || typeof raw.status !== "string" || raw.status === "") return undefined;
+  const iso = (value: unknown): string | null => (typeof value === "string" ? value : null);
+  return {
+    status: raw.status,
+    created_at: iso(raw.created_at),
+    delivered_at: iso(raw.delivered_at),
+    failed_at: iso(raw.failed_at),
+    returned_at: iso(raw.returned_at),
+  };
+}
+
 export async function fetchOrderTracking(reference: string, token: string): Promise<OrderTracking> {
   const payload = await request<unknown>(
     `/public/market/orders/${encodeURIComponent(reference)}`,
@@ -362,5 +388,6 @@ export async function fetchOrderTracking(reference: string, token: string): Prom
       : typeof record.seller === "string"
         ? record.seller
         : undefined,
+    delivery: normalizeDelivery(record.delivery),
   };
 }

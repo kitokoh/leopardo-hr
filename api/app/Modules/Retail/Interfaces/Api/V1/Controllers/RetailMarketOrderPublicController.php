@@ -12,6 +12,7 @@ use App\Modules\Retail\Application\Services\RetailOnlineOrderService;
 use App\Modules\Retail\Domain\Models\RetailOrder;
 use App\Modules\Retail\Domain\Models\RetailOrderItem;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\StoreMarketOrderRequest;
+use App\Shared\Contracts\Delivery\PublicDeliveryStatusProvider;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -38,6 +39,7 @@ class RetailMarketOrderPublicController extends Controller
         private readonly RetailMarketplaceService $marketplace,
         private readonly RetailOnlineOrderService $orders,
         private readonly TenantManager $tenants,
+        private readonly PublicDeliveryStatusProvider $deliveryStatus,
     ) {}
 
     /**
@@ -151,6 +153,18 @@ class RetailMarketOrderPublicController extends Controller
             ->values()
             ->all();
 
+        // Handoff BC-26 (#7811) : si une livraison `retail_online` existe pour
+        // cette commande, son état public (statut + horodatages, DTO
+        // fail-closed) enrichit le suivi — lecture via le port Shared exposé
+        // par le module Delivery, jamais de requête directe sur ses tables.
+        // Optionnel et défensif : `delivery` est absent tant qu'aucune
+        // livraison n'existe (vendeur sans module BC-26, commande pending).
+        $delivery = $this->deliveryStatus->findBySourceReference(
+            $companyId,
+            'retail_online',
+            (string) $order->reference,
+        );
+
         return response()->json([
             'data' => [
                 'reference' => $order->reference,
@@ -169,6 +183,7 @@ class RetailMarketOrderPublicController extends Controller
                     'shipped_at' => $order->shipped_at?->toIso8601String(),
                     'delivered_at' => $order->delivered_at?->toIso8601String(),
                 ],
+                'delivery' => $delivery?->toArray(),
             ],
         ]);
     }
