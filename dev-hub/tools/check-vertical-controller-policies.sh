@@ -41,7 +41,9 @@ ALLOWLIST=(
   RestaurantHealthController.php               # sonde de santé
   RestaurantPublicOrderController.php          # surface publique (token boutique)
   RestaurantPublicShopController.php           # surface publique (token boutique)
-  RestaurantPublicDirectoryController.php      # annuaire public opt-in is_public (#7746, lecture seule sans acteur tenant)
+  RestaurantPublicDirectoryController.php      # annuaire public par slug (#7746) : lecture seule, opt-in + publiés uniquement, 404 fail-closed
+  RestaurantPublicReviewController.php         # avis publics par slug (#7747) : lecture publiés only ; dépôt gated par référence de commande servie/livrée + throttle dédié
+  RestaurantPublicSlugOrderController.php      # commande publique par slug (#7747) : même pipeline que RestaurantPublicOrderController (RESTO-805), réf RST- non énumérable
   RestaurantKioskController.php                # kiosque : auth locale dédiée
   RestaurantMobileServerController.php         # autorisation dans RestaurantMobileServerService
   RestaurantMobileManagerController.php        # autorisation dans RestaurantMobileManagerService

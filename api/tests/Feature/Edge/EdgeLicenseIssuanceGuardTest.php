@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Edge;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
-use Illuminate\Support\Facades\DB;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -60,7 +59,10 @@ class EdgeLicenseIssuanceGuardTest extends TestCase
 
     protected function tearDown(): void
     {
-        DB::statement('DROP TABLE IF EXISTS public.edge_nodes CASCADE');
+        // #7452 — ne pas laisser edge_nodes droppée : le cache de fixture
+        // (#6928) ne la rebâtit plus au setUp suivant — restaurer la table
+        // canonique (l'isolation des données passe par le TRUNCATE du reset).
+        $this->recreateCanonicalEdgeNodesTable();
         $this->tearDownMvpSchema();
         parent::tearDown();
     }

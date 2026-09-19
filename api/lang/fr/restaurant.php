@@ -22,4 +22,17 @@ return [
         'stock_alert_scan_result' => '%s (%s) : %d alerte(s) créée(s), %d doublon(s) ignoré(s).',
         'stock_alert_total' => 'Total : %d alerte(s) créée(s), %d doublon(s).',
     ],
+    // RESTO-805 (#6226) / RESTO-902 (#7747) — commande en ligne publique.
+    'public_shop' => [
+        'product_unavailable' => "Ce produit n'est pas disponible à la commande en ligne.",
+        'product_not_served' => "Ce produit n'est pas servi par cet établissement.",
+        'currency_mismatch' => 'La devise du produit ne correspond pas à celle de la commande.',
+        'quantity_invalid' => 'Quantité strictement positive requise.',
+        'empty_order' => 'Le panier est vide.',
+    ],
+    // RESTO-902 (#7747) — avis clients publics.
+    'public_reviews' => [
+        'order_not_eligible' => "Un avis n'est possible que pour une commande servie ou livrée.",
+        'already_reviewed' => 'Un avis a déjà été déposé pour cette commande.',
+    ],
 ];
