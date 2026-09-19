@@ -19,6 +19,12 @@ class DemoUserController extends Controller
             abort(404);
         }
 
+        // #7696 : le mode démo sans DEMO_PASSWORD explicite est une erreur de
+        // configuration — on ne sert JAMAIS un fallback en dur.
+        if (! is_string(config('demo.password')) || config('demo.password') === '') {
+            abort(503, 'Demo mode enabled but DEMO_PASSWORD is not configured.');
+        }
+
         return response()->json([
             'data' => [
                 'super_admin' => [

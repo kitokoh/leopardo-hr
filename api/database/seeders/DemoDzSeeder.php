@@ -38,7 +38,9 @@ class DemoDzSeeder extends Seeder
 {
     public const COMPANY_SLUG = 'demo-dz-spa';
 
-    private const DEMO_PASSWORD = 'password123';
+    // #7696 : littéral « password123 » raté par l'audit #1697 — aligné sur
+    // config/demo.php (env DEMO_PASSWORD requis, sinon le seeder refuse).
+    private const DEMO_PASSWORD_CONFIG_KEY = 'demo.password';
 
     /** Profils algériens réalistes (prénom + nom). */
     private const PROFILES = [
@@ -109,7 +111,7 @@ class DemoDzSeeder extends Seeder
         $this->seedPayrollHistory($company, $manager);
 
         $this->command?->info(sprintf(
-            'DemoDzSeeder : entreprise %s prête (%d employés, comptes demo password123 — voir docs/DEMO_KIT_DZ.md).',
+            'DemoDzSeeder : entreprise %s prête (%d employés, comptes demo = env DEMO_PASSWORD — voir docs/DEMO_KIT_DZ.md).',
             self::COMPANY_SLUG,
             max($count, $existingEmployees)
         ));
@@ -167,7 +169,7 @@ class DemoDzSeeder extends Seeder
             ['first_name' => 'Lila', 'last_name' => 'Demo Employe', 'email' => 'employe.demo-dz@leopardo.test', 'role' => 'employee', 'manager_role' => null],
         ];
 
-        $passwordHash = Hash::make(self::DEMO_PASSWORD);
+        $passwordHash = Hash::make($this->demoPassword());
         $manager = null;
 
         foreach ($accounts as $account) {
@@ -206,7 +208,7 @@ class DemoDzSeeder extends Seeder
 
     private function seedEmployees(Company $company, int $offset, int $count): void
     {
-        $passwordHash = Hash::make(self::DEMO_PASSWORD);
+        $passwordHash = Hash::make($this->demoPassword());
         $structures = SalaryStructure::query()
             ->where('company_id', $company->id)
             ->where('country_code', 'DZ')
@@ -292,5 +294,18 @@ class DemoDzSeeder extends Seeder
                 $closing->lock($run->fresh(), $manager);
             }
         }
+    }
+
+    // #7696 : le mot de passe démo vient exclusivement de la config (env
+    // DEMO_PASSWORD) — un seeder démo sans mot de passe explicite s'arrête.
+    private function demoPassword(): string
+    {
+        $password = config(self::DEMO_PASSWORD_CONFIG_KEY);
+
+        if (! is_string($password) || $password === '') {
+            throw new \RuntimeException('DemoDzSeeder : DEMO_PASSWORD non configuré — refus de seeder des comptes démo sans mot de passe explicite (#7696).');
+        }
+
+        return $password;
     }
 }
