@@ -111,3 +111,11 @@ docs/validation/I18N_DEBT_REPORT_2026_08_09.md
 
 # #7654 — exemples API générés depuis api/openapi.yaml (dev-hub/tools/generate_api_examples.py)
 docs/api-mock-data/
+
+# #7654 tranche 3 — miroir OpenAPI + SDKs générés depuis api/openapi.yaml
+# (make openapi-sync / node dev-hub/tools/generate-openapi-sdk.mjs) : régénérés
+# localement et en CI, plus jamais committés (chaque régénération regonflait le pack).
+dev-hub/openapi/v1.yaml
+dev-hub/sdk/MANIFEST.json
+dev-hub/sdk/javascript/leopardoClient.js
+dev-hub/sdk/python/leopardo_client.py
