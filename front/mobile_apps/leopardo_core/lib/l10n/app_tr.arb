@@ -105,6 +105,7 @@
   "modulesNotifications": "Bildirimler",
   "modulesEvaluations": "Degerlendirmeler",
   "modulesRestaurant": "Satış noktası (POS)",
+  "modulesCommunication": "Iletisim (bagli posta kutusu + yapay zeka)",
   "emailsInvitationSubject": ":company sirketine Leopardo IK uzerinden katilmaniz icin davet edildiniz",
   "emailsInvitationGreeting": "Merhaba :name,",
   "emailsInvitationBody": ":company sirketine katilmaniz icin davet edildiniz. Hesabinizi etkinlestirmek icin asagidaki baglantiya tiklayin.",

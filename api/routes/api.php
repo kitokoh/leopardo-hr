@@ -432,6 +432,9 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/edu_manager.php';
     require __DIR__.'/modules/catalog.php';
 
+    // BC-29 COMMUNICATION — boîte mail connectée + IA, squelette R0 (#7685)
+    require __DIR__.'/modules/communication.php';
+
     // C-PUBLIC #6882 — catalogue public (routes isolées, sans auth)
     require __DIR__.'/modules/catalog_public.php';
     require __DIR__.'/modules/solutions.php';

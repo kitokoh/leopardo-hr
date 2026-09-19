@@ -39,6 +39,7 @@
 /api/app/Modules/EdgeSync/  @kitokoh
 /api/app/Modules/Cameras/   @kitokoh
 /api/app/Modules/Catalog/   @kitokoh
+/api/app/Modules/Communication/ @kitokoh
 /api/app/Modules/Cabinet/   @kitokoh
 /api/app/Modules/Billing/   @kitokoh
 /api/app/Modules/Fleet/     @kitokoh
