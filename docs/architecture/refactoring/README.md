@@ -1,6 +1,6 @@
 # Dossier de refactoring architectural
 
-Ce dossier transforme l’analyse de complexité cumulative du monorepo Leopardo HR en plan de travail exécutable.
+Ce dossier transforme l’analyse de complexité cumulative du monorepo Leopardo en plan de travail exécutable.
 
 | Document | Rôle |
 |---|---|

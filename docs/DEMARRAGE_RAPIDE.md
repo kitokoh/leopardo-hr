@@ -5,7 +5,7 @@
 
 # 🚀 LEOPARDO RH — GUIDE DE DÉMARRAGE RAPIDE
 
-Ce guide explique comment lancer les trois composantes du projet **Leopardo RH** en environnement local.
+Ce guide explique comment lancer les trois composantes du projet **Leopardo** en environnement local.
 
 ---
 
