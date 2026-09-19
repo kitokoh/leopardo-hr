@@ -11,6 +11,12 @@
  *
  * Le `group` désigne la section repliable qui contient l'entrée ; l'état
  * replié/déplié est persisté par la sidebar (`admin.nav.openGroups`).
+ *
+ * Issue #7725 — une entrée peut porter `children` (UN niveau de sous-menu,
+ * ex. Comptabilité, Stations-service) : le parent est un déclencheur
+ * repliable, les enfants sont les liens navigables. La palette, la recherche
+ * et les raccourcis consomment la liste APLATIE (`flattenNavEntries`) : seuls
+ * les écrans réellement navigables y figurent.
  */
 import {
   HomeIcon,
@@ -19,6 +25,7 @@ import {
   UsersIcon,
   UserGroupIcon,
   BuildingOfficeIcon,
+  BuildingStorefrontIcon,
   CreditCardIcon,
   ChatBubbleLeftRightIcon,
   LifebuoyIcon,
@@ -29,7 +36,7 @@ import {
   PaperAirplaneIcon,
   BoltIcon,
   FireIcon,
-  SparklesIcon,
+  PlayIcon,
   PaintBrushIcon,
   LinkIcon,
   ArrowDownTrayIcon,
@@ -38,9 +45,9 @@ import {
   ClipboardDocumentListIcon,
   CpuChipIcon,
   EnvelopeIcon,
-  UserCircleIcon,
   BanknotesIcon,
   ScaleIcon,
+  ReceiptPercentIcon,
   CalculatorIcon,
   CalendarIcon,
   RocketLaunchIcon,
@@ -48,7 +55,6 @@ import {
   WrenchScrewdriverIcon,
   ServerIcon,
   CogIcon,
-  ArrowRightOnRectangleIcon,
 } from '@heroicons/vue/24/outline'
 
 /**
@@ -86,29 +92,37 @@ export const NAV_STATE_PENDING = 'pending'
 export const NAV_STATE_HIDDEN = 'hidden'
 
 /**
- * Sections du menu, dans l'ordre d'affichage. Chaque section est repliable et
- * son état est mémorisé (localStorage `admin.nav.openGroups`).
+ * Sections du menu, dans l'ordre d'affichage (#7725). Chaque section est
+ * repliable et son état est mémorisé (localStorage `admin.nav.openGroups`).
  */
 export const NAV_GROUPS = [
   { id: 'pilotage', titleKey: 'navigation.groups.pilotage' },
   { id: 'entreprise', titleKey: 'navigation.groups.entreprise' },
   { id: 'modules-clients', titleKey: 'navigation.clientModules' },
-  { id: 'metier', titleKey: 'navigation.groups.metier' },
-  { id: 'parametres', titleKey: 'navigation.groups.parametres' },
+  { id: 'facturation-offres', titleKey: 'navigation.groups.facturationOffres' },
+  { id: 'referentiels-paie', titleKey: 'navigation.groups.referentielsPaie' },
+  { id: 'plateforme', titleKey: 'navigation.groups.plateforme' },
   { id: 'systeme', titleKey: 'navigation.groups.systeme' },
 ]
 
-/** Ancien identifiant de la section des modules clients (avant #7554). */
-export const LEGACY_GROUP_IDS = { clientModules: 'modules-clients' }
+/**
+ * Anciens identifiants de section (persistance `admin.nav.openGroups`) :
+ * - `clientModules` → `modules-clients` (avant #7554) ;
+ * - `metier` → `plateforme` (avant #7725 : « Métier plateforme »).
+ */
+export const LEGACY_GROUP_IDS = { clientModules: 'modules-clients', metier: 'plateforme' }
 
 /**
  * Entrées de navigation. `name` doit correspondre au `name` de la route
- * (`src/router/index.js`) : c'est la clé du surlignage actif.
+ * (`src/router/index.js`) : c'est la clé du surlignage actif. Un parent de
+ * sous-menu (`children`) n'est PAS navigable : il ne porte pas de `path` et
+ * son surlignage suit celui de ses enfants.
  *
- * @type {{
+ * @typedef {{
  *   name: string,
- *   path: string,
+ *   path?: string,
  *   titleKey: string,
+ *   menuTitleKey?: string,
  *   icon: object,
  *   permission: string|null,
  *   group: string,
@@ -116,7 +130,9 @@ export const LEGACY_GROUP_IDS = { clientModules: 'modules-clients' }
  *   descKey?: string,
  *   badgeKey?: string,
  *   flag?: string,
- * }[]}
+ *   children?: object[],
+ * }} NavEntry
+ * @type {NavEntry[]}
  */
 export const NAV_ENTRIES = [
   // ── Pilotage ──────────────────────────────────────────────────────────────
@@ -139,6 +155,17 @@ export const NAV_ENTRIES = [
     group: 'pilotage',
     descKey: 'adminPalette.itemAnalyticsDesc',
   },
+  // #7496/#7725 — conversions du funnel d'acquisition par étape/jour/source :
+  // c'est un écran de PILOTAGE (perm `metrics.view`, comme Analytique), plus
+  // une entrée du groupe « Entreprises clientes ».
+  {
+    name: 'acquisition-funnel',
+    path: '/crm/acquisition-funnel',
+    titleKey: 'navigation.acquisitionFunnel',
+    icon: ArrowTrendingUpIcon,
+    permission: 'metrics.view',
+    group: 'pilotage',
+  },
   {
     name: 'globe',
     path: '/globe',
@@ -151,16 +178,6 @@ export const NAV_ENTRIES = [
 
   // ── Entreprises clientes ──────────────────────────────────────────────────
   {
-    name: 'users',
-    path: '/users',
-    titleKey: 'navigation.users',
-    icon: UsersIcon,
-    permission: 'users.view',
-    group: 'entreprise',
-    shortcut: 'U',
-    descKey: 'adminPalette.itemUsersDesc',
-  },
-  {
     name: 'companies',
     path: '/companies',
     titleKey: 'navigation.companies',
@@ -169,6 +186,16 @@ export const NAV_ENTRIES = [
     group: 'entreprise',
     shortcut: 'C',
     descKey: 'adminPalette.itemCompaniesDesc',
+  },
+  {
+    name: 'users',
+    path: '/users',
+    titleKey: 'navigation.users',
+    icon: UsersIcon,
+    permission: 'users.view',
+    group: 'entreprise',
+    shortcut: 'U',
+    descKey: 'adminPalette.itemUsersDesc',
   },
   {
     name: 'subscriptions',
@@ -180,23 +207,18 @@ export const NAV_ENTRIES = [
     shortcut: 'S',
     descKey: 'adminPalette.itemSubscriptionsDesc',
   },
+  // #7725 — fusion des deux entrées Support (« Support » `/support` et
+  // « Centre support client » `/support-tickets`, même permission, même
+  // groupe) : une seule entrée, l'ancienne route redirige (`router/index.js`).
   {
     name: 'support',
     path: '/support',
     titleKey: 'navigation.support',
-    icon: ChatBubbleLeftRightIcon,
+    icon: LifebuoyIcon,
     permission: 'support.manage',
     group: 'entreprise',
     descKey: 'adminPalette.itemSupportDesc',
     badgeKey: 'supportTickets',
-  },
-  {
-    name: 'support-tickets',
-    path: '/support-tickets',
-    titleKey: 'navigation.supportTickets',
-    icon: LifebuoyIcon,
-    permission: 'support.manage',
-    group: 'entreprise',
   },
   {
     name: 'crm-pipeline',
@@ -207,26 +229,58 @@ export const NAV_ENTRIES = [
     group: 'entreprise',
     descKey: 'adminPalette.itemCrmDesc',
   },
-  // #7496 — conversions du funnel d'acquisition par étape/jour/source.
-  {
-    name: 'acquisition-funnel',
-    path: '/crm/acquisition-funnel',
-    titleKey: 'navigation.acquisitionFunnel',
-    icon: ArrowTrendingUpIcon,
-    permission: 'metrics.view',
-    group: 'entreprise',
-  },
   {
     name: 'growth',
     path: '/growth',
     titleKey: 'navigation.growth',
-    icon: ArrowTrendingUpIcon,
+    icon: RocketLaunchIcon,
     permission: 'companies.manage',
     group: 'entreprise',
     descKey: 'adminPalette.itemGrowthDesc',
   },
 
   // ── Modules des entreprises clientes (#7329) ───────────────────────────────
+  // #7554 — comptabilité : les écrans sont rattachés à la permission
+  // plateforme qui couvre le périmètre d'une entreprise cliente.
+  // #7725 — UNE entrée « Comptabilité » avec sous-menu (Démarrer / Tableau de
+  // bord / Paramétrage) : plus de 3 entrées de premier niveau ni d'écran de
+  // settings posé nu sous « Modules clients ».
+  {
+    name: 'accounting',
+    titleKey: 'navigation.accounting',
+    icon: CalculatorIcon,
+    permission: 'companies.view',
+    group: 'modules-clients',
+    children: [
+      {
+        name: 'accounting-activation',
+        path: '/accounting/activation',
+        titleKey: 'navigation.accountingActivation',
+        menuTitleKey: 'navigation.accountingStart',
+        icon: PlayIcon,
+        permission: 'companies.view',
+        group: 'modules-clients',
+      },
+      {
+        name: 'accounting-dashboard',
+        path: '/accounting/dashboard',
+        titleKey: 'navigation.accountingDashboard',
+        menuTitleKey: 'navigation.accountingOverview',
+        icon: PresentationChartLineIcon,
+        permission: 'companies.view',
+        group: 'modules-clients',
+      },
+      {
+        name: 'accounting-settings',
+        path: '/accounting/settings',
+        titleKey: 'navigation.accountingSettings',
+        menuTitleKey: 'navigation.accountingConfig',
+        icon: WrenchScrewdriverIcon,
+        permission: 'companies.view',
+        group: 'modules-clients',
+      },
+    ],
+  },
   {
     name: 'training',
     path: '/training',
@@ -256,127 +310,96 @@ export const NAV_ENTRIES = [
     group: 'modules-clients',
     flag: 'travelagency',
   },
+  // #7725 — UNE entrée « Stations-service » avec sous-menu (Hub / Opérations) :
+  // le hub et ses opérations (#7554) ne sont plus deux entrées de premier
+  // niveau. Noms de routes normalisés kebab-case (`fuel-station`).
   {
-    name: 'fuelStation',
-    path: '/fuel-station',
+    name: 'fuel-station-menu',
     titleKey: 'navigation.fuelStation',
     icon: BoltIcon,
     permission: null,
     group: 'modules-clients',
-  },
-  // #7554 — page routée mais inatteignable : le hub `fuelStation`
-  // (FuelManagerView) ne proposait aucun lien vers ses opérations.
-  {
-    name: 'fuel-station-operations',
-    path: '/fuel-station/operations',
-    titleKey: 'navigation.fuelStationOperations',
-    icon: FireIcon,
-    permission: null,
-    group: 'modules-clients',
-  },
-  // #7554 — comptabilité : l'ancienne condition d'affichage
-  // (`user.role === 'manager' && manager_role ∈ {comptable, principal}`)
-  // ne pouvait plus jamais être vraie pour une session plateforme (la garde
-  // exige un compte `super_admins`). Les écrans sont désormais rattachés à la
-  // permission plateforme qui couvre le périmètre d'une entreprise cliente.
-  {
-    name: 'accounting-activation',
-    path: '/accounting/activation',
-    titleKey: 'navigation.accountingActivation',
-    icon: RocketLaunchIcon,
-    permission: 'companies.view',
-    group: 'modules-clients',
-  },
-  {
-    name: 'accounting-dashboard',
-    path: '/accounting/dashboard',
-    titleKey: 'navigation.accountingDashboard',
-    icon: PresentationChartLineIcon,
-    permission: 'companies.view',
-    group: 'modules-clients',
-  },
-  {
-    name: 'accounting-settings',
-    path: '/accounting/settings',
-    titleKey: 'navigation.accountingSettings',
-    icon: WrenchScrewdriverIcon,
-    permission: 'companies.view',
-    group: 'modules-clients',
+    children: [
+      {
+        name: 'fuel-station',
+        path: '/fuel-station',
+        titleKey: 'navigation.fuelStation',
+        menuTitleKey: 'navigation.fuelStationHub',
+        icon: BuildingStorefrontIcon,
+        permission: null,
+        group: 'modules-clients',
+      },
+      {
+        name: 'fuel-station-operations',
+        path: '/fuel-station/operations',
+        titleKey: 'navigation.fuelStationOperations',
+        menuTitleKey: 'navigation.fuelStationOps',
+        icon: FireIcon,
+        permission: null,
+        group: 'modules-clients',
+      },
+    ],
   },
 
-  // ── Métier plateforme ──────────────────────────────────────────────────────
-  {
-    name: 'chat',
-    path: '/chat',
-    titleKey: 'navigation.chat',
-    icon: SparklesIcon,
-    permission: 'companies.manage',
-    group: 'metier',
-  },
-  {
-    name: 'showcase-editor',
-    path: '/showcase',
-    titleKey: 'navigation.showcase',
-    icon: PaintBrushIcon,
-    permission: 'showcase.manage',
-    group: 'metier',
-  },
-  {
-    name: 'webhooks',
-    path: '/webhooks',
-    titleKey: 'navigation.webhooks',
-    icon: LinkIcon,
-    permission: 'companies.manage',
-    group: 'metier',
-  },
-  {
-    name: 'exports',
-    path: '/exports',
-    titleKey: 'navigation.exports',
-    icon: ArrowDownTrayIcon,
-    permission: 'companies.manage',
-    group: 'metier',
-  },
-  {
-    name: 'marketing-oauth',
-    path: '/marketing/oauth',
-    titleKey: 'marketing.oauth.nav_title',
-    icon: MegaphoneIcon,
-    permission: null,
-    group: 'metier',
-    descKey: 'adminPalette.itemMarketingDesc',
-  },
-  // #7554 — page routée mais inatteignable (`/solutions/survey-stats`).
-  {
-    name: 'solutionSurveyStats',
-    path: '/solutions/survey-stats',
-    titleKey: 'navigation.surveyStats',
-    icon: ClipboardDocumentListIcon,
-    permission: null,
-    group: 'metier',
-  },
-
-  // ── Paramètres ─────────────────────────────────────────────────────────────
-  {
-    name: 'settings',
-    path: '/settings',
-    titleKey: 'navigation.account',
-    icon: UserCircleIcon,
-    permission: null,
-    group: 'parametres',
-    descKey: 'adminPalette.itemSettingsDesc',
-  },
-  // #7430 (BC-21 BILLING) — les offres sont paramétrables (#7429) : l'écran
-  // « Offres & tarifs » vit sous Paramètres, comme les autres réglages
-  // plateforme. Sonde de permission alignée sur `GET /platform/plans`
-  // (`platform.permission:plans.view`).
+  // ── Facturation & offres (#7725) ───────────────────────────────────────────
+  // #7430 (BC-21 BILLING) — les offres sont paramétrables (#7429). Sonde de
+  // permission alignée sur `GET /platform/plans`
+  // (`platform.permission:plans.view`). (· Passerelles de paiement rejoindront
+  // ce groupe quand l'issue PSP sera livrée.)
   {
     name: 'settings-plans',
     path: '/settings/plans',
     titleKey: 'plans.nav',
     icon: TagIcon,
     permission: 'plans.view',
-    group: 'parametres',
+    group: 'facturation-offres',
+  },
+
+  // ── Référentiels paie (#7725) ──────────────────────────────────────────────
+  // #7554 — pages de paramétrage paie routées mais inatteignables : elles ont
+  // rejoint le menu ; #7725 leur donne un groupe métier DISTINCT (elles
+  // côtoyaient « Mon compte » et « E-mails » sous « Paramètres »).
+  {
+    name: 'social-contributions',
+    path: '/settings/payroll/social-contributions',
+    titleKey: 'navigation.contributions',
+    icon: BanknotesIcon,
+    permission: 'companies.manage',
+    group: 'referentiels-paie',
+  },
+  {
+    name: 'tax-slabs',
+    path: '/settings/payroll/tax-slabs',
+    titleKey: 'navigation.taxBrackets',
+    icon: ScaleIcon,
+    permission: 'companies.manage',
+    group: 'referentiels-paie',
+  },
+  {
+    name: 'tax-rates',
+    path: '/settings/payroll/tax-rates',
+    titleKey: 'navigation.legalRates',
+    icon: ReceiptPercentIcon,
+    permission: 'companies.manage',
+    group: 'referentiels-paie',
+  },
+  {
+    name: 'payroll-holidays',
+    path: '/settings/payroll/holidays',
+    titleKey: 'holidays.nav.title',
+    icon: CalendarIcon,
+    permission: 'companies.manage',
+    group: 'referentiels-paie',
+  },
+
+  // ── Plateforme (#7725, ex-« Métier plateforme » + config plateforme) ──────
+  {
+    name: 'showcase-editor',
+    path: '/showcase',
+    titleKey: 'navigation.showcase',
+    icon: PaintBrushIcon,
+    permission: 'showcase.manage',
+    group: 'plateforme',
   },
   // #7726 — « Passerelles de paiement » : configuration Stripe/Chargily de la
   // plateforme (clés chiffrées BDD, fallback env). Même groupe que les offres ;
@@ -395,7 +418,7 @@ export const NAV_ENTRIES = [
     titleKey: 'navigation.emailTemplates',
     icon: EnvelopeIcon,
     permission: 'companies.manage',
-    group: 'parametres',
+    group: 'plateforme',
   },
   {
     name: 'settings-ai-assistant',
@@ -403,53 +426,50 @@ export const NAV_ENTRIES = [
     titleKey: 'navigation.aiAssistant',
     icon: CpuChipIcon,
     permission: 'companies.manage',
-    group: 'parametres',
+    group: 'plateforme',
   },
-  // #7554 — pages de paramétrage paie routées mais inatteignables : elles
-  // rejoignent le groupe Paramètres, protégées par la permission de
-  // paramétrage plateforme (même famille que « E-mails » / « Assistant IA »).
   {
-    name: 'social-contributions',
-    path: '/settings/payroll/social-contributions',
-    titleKey: 'navigation.contributions',
-    icon: BanknotesIcon,
+    name: 'chat',
+    path: '/chat',
+    titleKey: 'navigation.chat',
+    icon: ChatBubbleLeftRightIcon,
     permission: 'companies.manage',
-    group: 'parametres',
+    group: 'plateforme',
   },
   {
-    name: 'tax-slabs',
-    path: '/settings/payroll/tax-slabs',
-    titleKey: 'navigation.taxBrackets',
-    icon: ScaleIcon,
+    name: 'webhooks',
+    path: '/webhooks',
+    titleKey: 'navigation.webhooks',
+    icon: LinkIcon,
     permission: 'companies.manage',
-    group: 'parametres',
+    group: 'plateforme',
   },
   {
-    name: 'tax-rates',
-    path: '/settings/payroll/tax-rates',
-    titleKey: 'navigation.legalRates',
-    icon: CalculatorIcon,
+    name: 'exports',
+    path: '/exports',
+    titleKey: 'navigation.exports',
+    icon: ArrowDownTrayIcon,
     permission: 'companies.manage',
-    group: 'parametres',
+    group: 'plateforme',
   },
   {
-    name: 'payroll-holidays',
-    path: '/settings/payroll/holidays',
-    titleKey: 'holidays.nav.title',
-    icon: CalendarIcon,
-    permission: 'companies.manage',
-    group: 'parametres',
-  },
-  // #7554 — pied de sidebar supprimé : l'identité et la sortie de session
-  // vivent désormais dans le menu (groupe Paramètres), plus dans un bloc
-  // redondant collé en bas de colonne.
-  {
-    name: 'logout',
-    path: '/logout',
-    titleKey: 'navigation.logout',
-    icon: ArrowRightOnRectangleIcon,
+    name: 'marketing-oauth',
+    path: '/marketing/oauth',
+    titleKey: 'marketing.oauth.nav_title',
+    icon: MegaphoneIcon,
     permission: null,
-    group: 'parametres',
+    group: 'plateforme',
+    descKey: 'adminPalette.itemMarketingDesc',
+  },
+  // #7554 — page routée mais inatteignable (`/solutions/survey-stats`).
+  // #7725 — nom de route normalisé kebab-case (`solution-survey-stats`).
+  {
+    name: 'solution-survey-stats',
+    path: '/solutions/survey-stats',
+    titleKey: 'navigation.surveyStats',
+    icon: ClipboardDocumentListIcon,
+    permission: null,
+    group: 'plateforme',
   },
 
   // ── Système ────────────────────────────────────────────────────────────────
@@ -478,10 +498,34 @@ export const NAV_ENTRIES = [
     permission: 'team.manage',
     group: 'systeme',
   },
+
+  // #7725 — « Mon compte » (`/settings`) et « Déconnexion » (`/logout`) ne
+  // sont plus des entrées de la sidebar : ils vivent dans le menu utilisateur
+  // du header (`components/layout/Header.vue`).
 ]
 
 /**
- * État de rendu d'une entrée pour un compte plateforme donné.
+ * Liste APLATIE des entrées NAVIGABLES : les parents de sous-menu (sans
+ * `path`) sont remplacés par leurs enfants. C'est la liste que consomment la
+ * palette de commandes, la recherche de l'en-tête et les raccourcis (#7725).
+ *
+ * @returns {object[]}
+ */
+export function flattenNavEntries(entries = NAV_ENTRIES) {
+  const flat = []
+  for (const entry of entries) {
+    if (Array.isArray(entry.children) && entry.children.length > 0) {
+      flat.push(...entry.children)
+      continue
+    }
+    flat.push(entry)
+  }
+  return flat
+}
+
+/**
+ * État de rendu d'une entrée pour un compte plateforme donné. Un parent de
+ * sous-menu est rendu si AU MOINS UN de ses enfants l'est (et masqué sinon).
  *
  * @param {object} entry entrée de NAV_ENTRIES
  * @param {{
@@ -498,6 +542,13 @@ export function navEntryState(entry, capabilities = {}) {
     return NAV_STATE_HIDDEN
   }
 
+  if (Array.isArray(entry.children) && entry.children.length > 0) {
+    const childStates = entry.children.map((child) => navEntryState(child, capabilities))
+    if (childStates.some((state) => state === NAV_STATE_SHOWN)) return NAV_STATE_SHOWN
+    if (childStates.some((state) => state === NAV_STATE_PENDING)) return NAV_STATE_PENDING
+    return NAV_STATE_HIDDEN
+  }
+
   if (entry.flag === 'travelagency') {
     if (!travelFlagReady) return NAV_STATE_PENDING
     return travelFlagActive ? NAV_STATE_SHOWN : NAV_STATE_HIDDEN
@@ -508,7 +559,8 @@ export function navEntryState(entry, capabilities = {}) {
 
 /**
  * Entrées réellement disponibles pour le compte courant (palette, recherche,
- * raccourcis). Les entrées en attente de sonde sont exclues.
+ * raccourcis). Les entrées en attente de sonde sont exclues, et les parents
+ * de sous-menu sont aplatis en leurs écrans navigables.
  *
  * @param {{
  *   hasPermission?: (permission: string|null) => boolean,
@@ -518,7 +570,7 @@ export function navEntryState(entry, capabilities = {}) {
  * @returns {object[]}
  */
 export function visibleNavEntries(capabilities = {}) {
-  return NAV_ENTRIES.filter((entry) => navEntryState(entry, capabilities) === NAV_STATE_SHOWN)
+  return flattenNavEntries().filter((entry) => navEntryState(entry, capabilities) === NAV_STATE_SHOWN)
 }
 
 /**
@@ -538,7 +590,7 @@ export function shortcutLabel(entry) {
  * @returns {{ key: string, label: string, path: string, titleKey: string, permission: string|null }[]}
  */
 export function navShortcuts() {
-  return NAV_ENTRIES.filter((entry) => entry.shortcut).map((entry) => ({
+  return flattenNavEntries().filter((entry) => entry.shortcut).map((entry) => ({
     key: entry.shortcut,
     label: shortcutLabel(entry),
     path: entry.path,

@@ -10,7 +10,7 @@ import { teamRolesT } from '@/lib/i18n/team-roles';
 import { paymentProfilesT } from '@/lib/i18n/payment-profiles';
 import { trackClientEvent } from '@/lib/client-analytics';
 import { getClientModuleAccess, getModuleAccessForPath, getSidebarSections, isSelfActivable, mergeActivationSurface, sessionModuleSignature, type ClientModuleAccess, type ClientModuleKey } from '@/lib/client-features';
-import { buildDashboardNav, isHrEntryActive, toNavModules, type DashboardNavEntry } from '@/lib/dashboard-nav';
+import { buildBusinessRail, buildDashboardNav, isNavEntryActive, toNavModules, type DashboardNavEntry, type NavMenuGroupId } from '@/lib/dashboard-nav';
 import {
   applyDocumentLocale,
   clearAuthSession,
@@ -147,12 +147,15 @@ function DashboardModuleLinks({
             onClick={onNavigate}
             className={modulesNavLinkClass(pathname === entry.module.href)}
           >
-            {labels.dashboard.modules[entry.module.key] ?? entry.module.label}
+            <span className="flex min-w-0 items-center gap-2">
+              {entry.module.icon ? <entry.module.icon className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" /> : null}
+              <span className="truncate">{labels.dashboard.modules[entry.module.key] ?? entry.module.label}</span>
+            </span>
           </Link>
         ) : (
           <div key={`menu-${entry.id}`} className="mt-1 border-t border-slate-100 pt-1">
             <p className="px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-500">
-              {labels.dashboard.hrMenu}
+              {labels.dashboard.navGroups[entry.id] ?? labels.dashboard.hrMenu}
             </p>
             {entry.modules.map((module) => (
               <Link
@@ -161,7 +164,10 @@ function DashboardModuleLinks({
                 onClick={onNavigate}
                 className={`ps-6 ${modulesNavLinkClass(pathname === module.href)}`}
               >
-                {labels.dashboard.modules[module.key] ?? module.label}
+                <span className="flex min-w-0 items-center gap-2">
+                  {module.icon ? <module.icon className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" /> : null}
+                  <span className="truncate">{labels.dashboard.modules[module.key] ?? module.label}</span>
+                </span>
               </Link>
             ))}
           </div>
@@ -195,8 +201,10 @@ export default function DashboardLayout({
   // #7322 — auto-activation d'un module horizontal depuis « Modules & plan ».
   const [activatingModule, setActivatingModule] = useState<ClientModuleKey | null>(null);
   const [activateError, setActivateError] = useState('');
-  // #7328 — menu sur une seule ligne : sous-menu RH + menu mobile des modules.
-  const [hrMenuOpen, setHrMenuOpen] = useState(false);
+  // #7328/#7724 — menu sur une seule ligne : sous-menus de groupe (RH,
+  // Finance, Clients & croissance, Opérations) + menu mobile des modules.
+  // Un seul sous-menu de groupe ouvert à la fois.
+  const [openNavMenu, setOpenNavMenu] = useState<NavMenuGroupId | null>(null);
   const [mobileModulesOpen, setMobileModulesOpen] = useState(false);
   // #7225 — le rail métier (`business-rail`) est `hidden md:flex` : sous 768 px
   // il était inaccessible (aucun déclencheur). Il devient un tiroir piloté par
@@ -248,9 +256,9 @@ export default function DashboardLayout({
     setModulesOpen(false);
     setMobileModulesOpen(false);
     setUserMenuOpen(false);
-    setHrMenuOpen(false);
+    setOpenNavMenu(null);
   }, []);
-  const headerPanelOpen = notificationsOpen || modulesOpen || mobileModulesOpen || userMenuOpen || hrMenuOpen;
+  const headerPanelOpen = notificationsOpen || modulesOpen || mobileModulesOpen || userMenuOpen || openNavMenu !== null;
 
   useEffect(() => {
     let cancelled = false;
@@ -347,7 +355,7 @@ export default function DashboardLayout({
   usePanelDismiss(modulesOpen, () => setModulesOpen(false));
   usePanelDismiss(mobileModulesOpen, () => setMobileModulesOpen(false));
   usePanelDismiss(userMenuOpen, () => setUserMenuOpen(false));
-  usePanelDismiss(hrMenuOpen, () => setHrMenuOpen(false));
+  usePanelDismiss(openNavMenu !== null, () => setOpenNavMenu(null));
 
   const [showInterview, setShowInterview] = useState(false);
   // #7493 — relance douce : tant que l'entretien n'est pas complété (report
@@ -658,8 +666,19 @@ export default function DashboardLayout({
         </div>
 
         <nav className="mt-4 flex-1 space-y-1 overflow-y-auto px-3" aria-label={labels.dashboard.businessSection}>
-          {business.map((module) => (
-            <BusinessCard key={module.key} module={module} active={pathname === module.href} labels={labels} />
+          {/* #7724 — rail hiérarchisé : les sous-écrans (Cuisine, Portail
+              voyageur) sont rendus sous leur carte parente. */}
+          {buildBusinessRail(business).map(({ module, children }) => (
+            <div key={module.key}>
+              <BusinessCard module={module} active={pathname === module.href} labels={labels} />
+              {children.length > 0 ? (
+                <div className="ms-6 mt-1 space-y-1 border-s border-slate-200 ps-3">
+                  {children.map((child) => (
+                    <BusinessCard key={child.key} module={child} active={pathname === child.href} labels={labels} compact />
+                  ))}
+                </div>
+              ) : null}
+            </div>
           ))}
         </nav>
 
@@ -792,44 +811,47 @@ export default function DashboardLayout({
                     <button
                       type="button"
                       data-testid={`dashboard-${entry.id}-menu`}
-                      aria-expanded={hrMenuOpen}
+                      aria-expanded={openNavMenu === entry.id}
                       aria-haspopup="true"
-                      aria-controls="dashboard-hr-menu-panel"
+                      aria-controls={`dashboard-${entry.id}-menu-panel`}
                       onClick={() => {
                         // Même correction que le menu de compte : fermer les
                         // autres panneaux puis basculer CELUI-CI sur une cible
                         // calculée avant (sinon il restait ouvert).
-                        const next = !hrMenuOpen;
+                        const next = openNavMenu === entry.id ? null : entry.id;
                         closeHeaderPanels();
-                        setHrMenuOpen(next);
+                        setOpenNavMenu(next);
                       }}
                       className={[
                         'group inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[11px] font-black uppercase tracking-tight transition-all',
-                        isHrEntryActive(entry, pathname)
+                        isNavEntryActive(entry, pathname)
                           ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm'
                           : 'border-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-slate-900',
                       ].join(' ')}
                     >
-                      {labels.dashboard.hrMenu}
+                      {labels.dashboard.navGroups[entry.id] ?? labels.dashboard.hrMenu}
                       <ChevronDown
-                        className={`h-3.5 w-3.5 transition-transform ${hrMenuOpen ? 'rotate-180' : ''}`}
+                        className={`h-3.5 w-3.5 transition-transform ${openNavMenu === entry.id ? 'rotate-180' : ''}`}
                         aria-hidden="true"
                       />
                     </button>
-                    {hrMenuOpen ? (
+                    {openNavMenu === entry.id ? (
                       <div
-                        id="dashboard-hr-menu-panel"
-                        data-testid="dashboard-hr-menu-panel"
+                        id={`dashboard-${entry.id}-menu-panel`}
+                        data-testid={`dashboard-${entry.id}-menu-panel`}
                         className="absolute start-0 top-10 z-30 max-h-[70vh] w-56 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-xl"
                       >
                         {entry.modules.map((module) => (
                           <Link
                             key={module.key}
                             href={module.href}
-                            onClick={() => setHrMenuOpen(false)}
+                            onClick={() => setOpenNavMenu(null)}
                             className={modulesNavLinkClass(pathname === module.href)}
                           >
-                            {labels.dashboard.modules[module.key] ?? module.label}
+                            <span className="flex min-w-0 items-center gap-2">
+                              {module.icon ? <module.icon className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" /> : null}
+                              <span className="truncate">{labels.dashboard.modules[module.key] ?? module.label}</span>
+                            </span>
                           </Link>
                         ))}
                       </div>
@@ -1235,6 +1257,8 @@ function NavPill({ module, active, labels }: { module: ClientModuleAccess; activ
 
   return (
     <Link href={module.href ?? '#'} className={className} aria-disabled={!module.enabled} aria-current={active ? 'page' : undefined}>
+      {/* #7724 — icône de module sur les pills (plus de pill texte seul). */}
+      {module.icon ? <module.icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /> : null}
       {label}
       {!module.enabled ? <LockKeyhole className="h-3 w-3" aria-label={labels.dashboard.featureLockedBadge} /> : null}
       {module.enabled && module.state === 'trial' ? (
@@ -1244,16 +1268,18 @@ function NavPill({ module, active, labels }: { module: ClientModuleAccess; activ
   );
 }
 
-function BusinessCard({ module, active, labels }: { module: ClientModuleAccess; active: boolean; labels: CopyTree }) {
+function BusinessCard({ module, active, labels, compact = false }: { module: ClientModuleAccess; active: boolean; labels: CopyTree; compact?: boolean }) {
   const label = labels.dashboard.modules[module.key] ?? module.label;
   const initials = label.trim().slice(0, 2).toUpperCase();
+  const Icon = module.icon;
 
   return (
     <Link
       href={module.href ?? '#'}
       aria-current={active ? 'page' : undefined}
       className={[
-        'group flex items-center gap-3 rounded-2xl border px-3.5 py-3 text-sm font-bold transition-all',
+        'group flex items-center gap-3 rounded-2xl border text-sm font-bold transition-all',
+        compact ? 'px-3 py-2' : 'px-3.5 py-3',
         active
           ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm'
           : 'border-transparent text-slate-600 hover:border-slate-200 hover:bg-white hover:text-slate-900',
@@ -1261,13 +1287,15 @@ function BusinessCard({ module, active, labels }: { module: ClientModuleAccess; 
     >
       <span
         className={[
-          'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border text-[11px] font-black uppercase',
+          'flex shrink-0 items-center justify-center rounded-xl border text-[11px] font-black uppercase',
+          compact ? 'h-7 w-7' : 'h-9 w-9',
           active
             ? 'border-emerald-200 bg-white text-emerald-700'
             : 'border-slate-200 bg-slate-50 text-slate-500 group-hover:text-emerald-700',
         ].join(' ')}
       >
-        {initials}
+        {/* #7724 — icône de module sur les cartes métier (repli : initiales). */}
+        {Icon ? <Icon className={compact ? 'h-3.5 w-3.5' : 'h-4 w-4'} aria-hidden="true" /> : initials}
       </span>
       <span className="min-w-0 flex-1 truncate">{label}</span>
       {module.state === 'trial' ? (

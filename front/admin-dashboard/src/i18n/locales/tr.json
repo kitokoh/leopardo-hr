@@ -5215,10 +5215,19 @@
       "entreprise": "Müşteri şirketler",
       "metier": "Platform işlemleri",
       "parametres": "Ayarlar",
-      "systeme": "Sistem"
+      "systeme": "Sistem",
+      "facturationOffres": "Faturalama ve teklifler",
+      "referentielsPaie": "Bordro referansları",
+      "plateforme": "Platform"
     },
     "team": "Platform ekibi",
-    "acquisitionFunnel": "Edinim hunisi"
+    "acquisitionFunnel": "Edinim hunisi",
+    "accounting": "Muhasebe",
+    "accountingStart": "Başlangıç",
+    "accountingOverview": "Panel",
+    "accountingConfig": "Ayarlar",
+    "fuelStationHub": "Akaryakıt istasyonu merkezi",
+    "fuelStationOps": "Operasyonlar"
   },
   "companydetailCoreModuleAlwaysActive": "Çekirdek modül her zaman aktif",
   "smartAttendanceSessionsTitle": "Akıllı yoklama oturumları",
