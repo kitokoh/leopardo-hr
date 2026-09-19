@@ -1,4 +1,4 @@
-# GLOSSAIRE ET DICTIONNAIRE TECHNIQUE — LEOPARDO RH
+# GLOSSAIRE ET DICTIONNAIRE TECHNIQUE — LEOPARDO
 # Version 1.1 | Mars 2026
 
 ---
@@ -29,7 +29,7 @@ Stocké en base dans `audit_logs`. Rétention 24 mois. Non modifiable.
 
 **Bearer Token**
 Format d'authentification HTTP : `Authorization: Bearer {token}`.
-Leopardo RH utilise des tokens Sanctum opaques (pas JWT) — stockés hashés en base.
+Leopardo utilise des tokens Sanctum opaques (pas JWT) — stockés hashés en base.
 
 **Brut Imposable (Gross Taxable)**
 Salaire brut total après déduction des cotisations salariales, avant application de l'IR.
@@ -121,7 +121,7 @@ Contient : taux de cotisations, tranches IR, règles de congé, calendrier des j
 **Inertia.js**
 Bibliothèque reliant Laravel (backend) et Vue.js (frontend) sans nécessiter une API REST dédiée
 pour les pages web. Les contrôleurs Laravel retournent des "Inertia responses" au lieu de JSON.
-Utilisé pour le frontend web de Leopardo RH (pas pour le mobile Flutter).
+Utilisé pour le frontend web de Leopardo (pas pour le mobile Flutter).
 
 **IR (Impôt sur le Revenu)**
 Taxe prélevée sur le salaire selon un barème progressif par tranches.
@@ -143,6 +143,18 @@ Exemples : envoi d'emails, push FCM, génération PDF, calcul de paie mensuel.
 ---
 
 ## L — TERMES MÉTIER
+
+**Leopardo**
+Marque et nom du produit : la **suite métier** multi-tenant (RH & paie, pointage, absences, CRM,
+comptabilité, opérations) sur web, mobile et bornes. Ne plus présenter le produit comme un
+« logiciel RH » / « SaaS RH » (décision P03, issue #7428 —
+`docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md`).
+
+**Leopardo RH**
+Identifiant **historique** du produit, conservé comme nom de l'**application RH & paie** de la suite
+(`android:label`) et dans les identifiants figés : dépôt `kitokoh/leopardo-hr`, domaine
+`leopardo-rh.com`, bundle ids `com.leopardo.*`, paquets `leopardo_*`. N'est plus une dénomination
+de présentation du produit.
 
 **Leave Balance**
 Solde de congés disponible d'un employé, en jours décimaux.
@@ -216,7 +228,7 @@ Voir spec : `07_securite_rbac/11_PLAN_LIMIT_MIDDLEWARE.md`.
 ## R — TERMES TECHNIQUES
 
 **RBAC (Role-Based Access Control)**
-Contrôle d'accès basé sur les rôles. Leopardo RH définit 7 rôles : Super Admin, Manager Principal,
+Contrôle d'accès basé sur les rôles. Leopardo définit 7 rôles : Super Admin, Manager Principal,
 Manager RH, Manager Département, Manager Comptable, Superviseur, Employé.
 Matrice complète : `07_securite_rbac/10_RBAC_COMPLET.md`.
 
@@ -237,7 +249,7 @@ Flutter gère le RTL automatiquement avec `Locale('ar')`. Vue.js nécessite `dir
 ## S — TERMES TECHNIQUES
 
 **Sanctum (Laravel Sanctum)**
-Package d'authentification Laravel. Leopardo RH utilise les **tokens opaques** (pas SPA cookies
+Package d'authentification Laravel. Leopardo utilise les **tokens opaques** (pas SPA cookies
 pour le mobile) — chaînes aléatoires stockées hashées en base dans `personal_access_tokens`.
 Durée : 90 jours mobile, 8h SPA web, 4h Super Admin.
 
@@ -269,7 +281,7 @@ Entreprise cliente utilisant la plateforme SaaS. Chaque tenant a ses propres don
 isolées (physiquement en mode schema, logiquement en mode shared).
 
 **TenantMiddleware**
-Middleware central de Leopardo RH. Responsable de : trouver l'entreprise de l'utilisateur
+Middleware central de Leopardo. Responsable de : trouver l'entreprise de l'utilisateur
 (via `user_lookups`), vérifier le statut (actif/suspendu), configurer le `search_path`
 PostgreSQL, injecter la company dans le contexte de la requête.
 
@@ -315,5 +327,5 @@ Utilisés pour calculer les jours ouvrables dans les absences et la paie.
 
 **ZKTeco**
 Marque de lecteurs biométriques (empreinte digitale, reconnaissance faciale) très répandue
-en Algérie, Maroc et Tunisie. Leopardo RH supporte le protocole Push/Pull ZKTeco via
+en Algérie, Maroc et Tunisie. Leopardo supporte le protocole Push/Pull ZKTeco via
 `ZKTecoService`. Le `zkteco_id` de l'employé est son identifiant dans le lecteur.

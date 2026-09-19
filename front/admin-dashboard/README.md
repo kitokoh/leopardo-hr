@@ -1,7 +1,7 @@
-# Leopardo RH - Admin Dashboard
+# Leopardo - Admin Dashboard
 
 ## 📊 Vue d'ensemble
-Dashboard d'administration interne pour la plateforme Leopardo RH. Interface moderne construite avec Vue.js 3, Tailwind CSS et des outils open source pour une gestion efficace de la plateforme.
+Dashboard d'administration interne pour la plateforme Leopardo. Interface moderne construite avec Vue.js 3, Tailwind CSS et des outils open source pour une gestion efficace de la plateforme.
 ## 🚀 Fonctionnalités Implémentées
 ### ✅ Phase 1 - Foundation (Complétée)
 **Architecture de Base**
@@ -189,7 +189,7 @@ Le service API est configuré dans `src/services/api.js` avec :
 4. Push vers la branche
 5. Ouvrir une Pull Request
 ## 📄 License
-Propriétaire - Leopardo RH
+Propriétaire - Leopardo
 ---
 **Status**: ✅ Phase 2 Complétée - Prêt pour la Phase 3
 **Version**: 1.0.0 (alignée sur package.json)

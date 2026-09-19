@@ -1,10 +1,10 @@
-# Dossier Technique — Leopardo RH
+# Dossier Technique — Leopardo
 
 ## Fiche d'identite solution
 
 | Critere | Detail |
 |---------|--------|
-| **Nom** | Leopardo RH |
+| **Nom** | Leopardo |
 | **Type** | SaaS multi-tenant |
 | **Version** | 4.16.x |
 | **Langages** | PHP 8.4 (API), TypeScript/JavaScript (web), Dart (mobile) |

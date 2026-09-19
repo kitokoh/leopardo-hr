@@ -1,6 +1,6 @@
 # JULES_ORIGE_BUG — Guide anti-regressions
 
-Ce document sert de garde-fou pour Jules et tout agent externe qui propose une PR sur Leopardo RH.
+Ce document sert de garde-fou pour Jules et tout agent externe qui propose une PR sur Leopardo.
 Objectif: eviter les PR opportunistes qui cassent le MVP, melangent les sujets ou oublient les regles de gouvernance.
 
 ## Regle d or

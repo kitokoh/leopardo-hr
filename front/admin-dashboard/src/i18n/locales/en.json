@@ -1706,7 +1706,7 @@
     "statusApproved": "Approved",
     "statusPending": "Pending",
     "statusRejected": "Rejected",
-    "subtitle": "Manage the partner program and Leopardo RH commissions.",
+    "subtitle": "Manage the partner program and Leopardo commissions.",
     "syncing": "Syncing data...",
     "tabAudit": "Audit Log",
     "tabPartners": "Partners",
@@ -2586,7 +2586,7 @@
     "payroll_ready": {
       "subject": "Your payslip is ready",
       "greeting": "Hello :name,",
-      "body": "Your payslip for :period is ready. You can review it in Leopardo HR.",
+      "body": "Your payslip for :period is ready. You can review it in Leopardo.",
       "action": "View my payslip",
       "footer": "Please review your information before accounting export."
     },

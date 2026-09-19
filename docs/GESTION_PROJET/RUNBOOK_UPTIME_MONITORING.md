@@ -4,7 +4,7 @@ Version 4.16.73 | 2026-05-18
 
 ## 1. Objectif
 
-Surveiller la disponibilite et la performance des services Leopardo RH avec des outils de monitoring externe. Ce runbook couvre la configuration UptimeRobot/BetterUptime et l'integration avec le health check existant.
+Surveiller la disponibilite et la performance des services Leopardo avec des outils de monitoring externe. Ce runbook couvre la configuration UptimeRobot/BetterUptime et l'integration avec le health check existant.
 
 ## 2. Health Check Endpoint
 

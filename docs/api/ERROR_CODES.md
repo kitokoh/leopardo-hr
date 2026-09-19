@@ -1,6 +1,6 @@
-# API Error Codes — Leopardo RH
+# API Error Codes — Leopardo
 
-This page documents the custom, machine-readable error codes returned by the Leopardo RH API,
+This page documents the custom, machine-readable error codes returned by the Leopardo API,
 in addition to standard HTTP status codes. All error responses share the same JSON envelope:
 
 ```json

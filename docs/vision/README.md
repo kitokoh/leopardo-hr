@@ -1,4 +1,4 @@
-# Documents de vision - Leopardo RH
+# Documents de vision - Leopardo
 
 Ce dossier contient les documents fondateurs produits en avril 2026 qui decrivent la vision produit long-terme.
 

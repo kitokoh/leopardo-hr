@@ -75,7 +75,7 @@ test.describe('Portail blade — connexion manager', () => {
     await page.goto('/login')
 
     const email = page.getByLabel('Email')
-    // Le lien « Leopardo RH » du header est le premier élément focusable :
+    // Le lien « Leopardo » du header est le premier élément focusable :
     // on tabule jusqu'à atteindre le champ email (robuste à l'ordre exact).
     for (let i = 0; i < 6; i++) {
       await page.keyboard.press('Tab')
