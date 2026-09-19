@@ -123,11 +123,7 @@ export default function HealthHomePage() {
     <ModulePageShell
       icon={HeartPulse}
       title={t(locale, 'health.section.title', 'HealthManager')}
-      description={t(
-        locale,
-        'health.section.subtitle',
-        'Pilotage hôpital & clinique : patients, rendez-vous, hospitalisations, facturation des soins.',
-      )}
+      description={t(locale, 'health.section.subtitle')}
     >
       <div className="space-y-6">
         {error ? (
