@@ -8082,7 +8082,16 @@
         "email": "E-posta",
         "empty": "Web siparişi yok.",
         "invalidTransition": "Geçersiz geçiş: siparişin durumu zaten değişti. Liste yenilendi.",
-        "close": "Kapat"
+        "close": "Kapat",
+        "deliveryReference": "BC-26 teslimatı",
+        "paymentsTitle": "Ödeme",
+        "payment": {
+          "paid": "Çevrimiçi ödendi",
+          "partial": "Çevrimiçi ön ödeme alındı",
+          "cod": "Teslimatta tahsil edilecek"
+        },
+        "invoicePdf": "Fatura PDF",
+        "invoiceError": "Fatura oluşturulamıyor."
       },
       "action": {
         "confirm": "Onayla",

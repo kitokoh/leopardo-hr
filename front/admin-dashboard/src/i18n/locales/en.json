@@ -7943,7 +7943,16 @@
         "email": "Email",
         "empty": "No web orders.",
         "invalidTransition": "Invalid transition: the order already changed state. The list has been refreshed.",
-        "close": "Close"
+        "close": "Close",
+        "deliveryReference": "BC-26 delivery",
+        "paymentsTitle": "Payment",
+        "payment": {
+          "paid": "Paid online",
+          "partial": "Online deposit received",
+          "cod": "Cash on delivery"
+        },
+        "invoicePdf": "Invoice PDF",
+        "invoiceError": "The invoice cannot be generated."
       },
       "action": {
         "confirm": "Confirm",
