@@ -29,6 +29,10 @@ return [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URL'),
+        // #7686 — callback OAuth du module Communication (connexion Gmail par
+        // utilisateur, distinct du login Google) : GET
+        // /api/v1/communication/integrations/google/callback en absolu.
+        'communication_redirect' => env('GOOGLE_COMMUNICATION_REDIRECT_URL'),
     ],
 
     'firebase' => [
