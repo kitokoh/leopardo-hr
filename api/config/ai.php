@@ -204,6 +204,8 @@ return [
             // R3 Communication (#7688) — classification IA des emails de SA
             // boîte connectée (la boîte est personnelle, policy owner-only).
             'communication.classify',
+            // R5 Communication (#7690) — brouillon de réponse assistée (jamais d'envoi direct).
+            'communication.reply_draft',
         ],
         'manager' => [
             'employees.view',
@@ -226,6 +228,8 @@ return [
             'announcements.create',
             // R3 Communication (#7688) — classification IA des emails.
             'communication.classify',
+            // R5 Communication (#7690) — brouillon de réponse assistée (jamais d'envoi direct).
+            'communication.reply_draft',
         ],
         'admin' => [
             'employees.view',
@@ -248,6 +252,8 @@ return [
             'announcements.create',
             // R3 Communication (#7688) — classification IA des emails.
             'communication.classify',
+            // R5 Communication (#7690) — brouillon de réponse assistée (jamais d'envoi direct).
+            'communication.reply_draft',
         ],
         'super_admin' => [
             'employees.view',
@@ -270,6 +276,8 @@ return [
             'announcements.create',
             // R3 Communication (#7688) — classification IA des emails.
             'communication.classify',
+            // R5 Communication (#7690) — brouillon de réponse assistée (jamais d'envoi direct).
+            'communication.reply_draft',
         ],
     ],
 
