@@ -12,6 +12,7 @@ use App\Modules\CRM\Providers\CrmServiceProvider;
 use App\Modules\Delivery\Providers\DeliveryServiceProvider;
 use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
 use App\Modules\EduManager\Providers\EduManagerServiceProvider;
+use App\Modules\HealthManager\Providers\HealthManagerServiceProvider;
 use App\Modules\Expense\Providers\ExpenseServiceProvider;
 use App\Modules\Fleet\Providers\FleetServiceProvider;
 use App\Modules\FuelStation\Providers\FuelStationServiceProvider;
@@ -67,6 +68,7 @@ return [
     FuelStationServiceProvider::class,
     TravelAgencyServiceProvider::class,
     EduManagerServiceProvider::class,
+    HealthManagerServiceProvider::class,
     RestaurantManagerServiceProvider::class,
     CatalogServiceProvider::class,
     ShowcaseServiceProvider::class,
