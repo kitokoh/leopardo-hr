@@ -70,6 +70,65 @@ class EdgeDownloadControllerTest extends TestCase
         $this->get('/api/v1/edge/download/not-a-real-file.yml')->assertNotFound();
     }
 
+    /**
+     * #7653 — sans clé privée configurée, la signature du manifeste est
+     * indisponible (503 explicite) : install.sh est fail-closed côté client.
+     */
+    public function test_sha256_signature_returns_503_without_signing_key(): void
+    {
+        config(['edge.license_private_key' => null]);
+
+        $this->getJson('/api/v1/edge/download/sha256.txt.sig')
+            ->assertStatus(503)
+            ->assertJsonPath('error', 'edge_manifest_signing_key_not_configured');
+    }
+
+    /**
+     * #7653 — la signature RS256 servie doit vérifier les octets EXACTS du
+     * manifeste sha256.txt avec la clé publique (c'est le contrat install.sh :
+     * `openssl dgst -sha256 -verify pub.pem -signature sig sha256.txt`), et
+     * échouer sur un manifeste altéré.
+     */
+    public function test_sha256_signature_verifies_manifest_bytes_and_rejects_tampering(): void
+    {
+        $key = openssl_pkey_new([
+            'private_key_bits' => 2048,
+            'private_key_type' => OPENSSL_KEYTYPE_RSA,
+        ]);
+        $this->assertNotFalse($key);
+
+        $privatePem = '';
+        $this->assertTrue(openssl_pkey_export($key, $privatePem));
+        $details = openssl_pkey_get_details($key);
+        $this->assertIsArray($details);
+        $publicPem = $details['key'];
+        $this->assertIsString($publicPem);
+
+        config(['edge.license_private_key' => $privatePem]);
+
+        $manifest = $this->get('/api/v1/edge/download/sha256.txt');
+        $manifest->assertOk();
+        $manifestBody = (string) $manifest->getContent();
+
+        $signatureResponse = $this->get('/api/v1/edge/download/sha256.txt.sig');
+        $signatureResponse->assertOk();
+
+        $signature = base64_decode((string) $signatureResponse->getContent(), true);
+        $this->assertNotFalse($signature, 'signature must be valid base64');
+
+        $this->assertSame(
+            1,
+            openssl_verify($manifestBody, $signature, $publicPem, OPENSSL_ALGO_SHA256),
+            'signature must verify the exact manifest bytes',
+        );
+
+        $this->assertNotSame(
+            1,
+            openssl_verify($manifestBody.'tampered', $signature, $publicPem, OPENSSL_ALGO_SHA256),
+            'signature must NOT verify a tampered manifest',
+        );
+    }
+
     private function assertAssetMatchesRepoFile(TestResponse $response, string $filename): void
     {
         $repoFile = self::REPO_ROOT.'/edge/'.$filename;

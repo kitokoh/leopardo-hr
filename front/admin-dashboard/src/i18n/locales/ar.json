@@ -5209,10 +5209,19 @@
       "entreprise": "شركات العملاء",
       "metier": "عمليات المنصة",
       "parametres": "الإعدادات",
-      "systeme": "النظام"
+      "systeme": "النظام",
+      "facturationOffres": "الفوترة والعروض",
+      "referentielsPaie": "مرجعيات الرواتب",
+      "plateforme": "المنصة"
     },
     "team": "فريق المنصة",
-    "acquisitionFunnel": "قمع الاكتساب"
+    "acquisitionFunnel": "قمع الاكتساب",
+    "accounting": "المحاسبة",
+    "accountingStart": "البدء",
+    "accountingOverview": "لوحة القيادة",
+    "accountingConfig": "الإعدادات",
+    "fuelStationHub": "مركز محطات الوقود",
+    "fuelStationOps": "العمليات"
   },
   "companydetailCoreModuleAlwaysActive": "الوحدة الأساسية نشطة دائمًا",
   "smartAttendanceSessionsTitle": "جلسات الحضور الذكي",
@@ -7323,5 +7332,35 @@
       "support": "الدعم",
       "supportDesc": "تواصل مع فريقنا"
     }
+  },
+  "brandingPage": {
+    "title": "الهوية البصرية",
+    "subtitle": "خصص اسم مساحة العمل وشعارها وألوانها وكذلك مستنداتك.",
+    "forbidden": "هذه الصفحة مخصصة للمدير الرئيسي ومديري الموارد البشرية فقط. اطلب من مدير تحديث الهوية البصرية.",
+    "loadError": "تعذر تحميل الهوية البصرية. يرجى المحاولة لاحقًا.",
+    "identityTitle": "الهوية",
+    "displayName": "اسم العرض",
+    "displayNameHint": "الاسم المعروض في مساحة العمل وعلى مستنداتك (من 2 إلى 120 حرفًا).",
+    "logoTitle": "الشعار",
+    "logoHint": "JPG أو PNG أو WebP — بحد أقصى 2 ميغابايت و2048×2048 بكسل.",
+    "logoChoose": "اختيار شعار",
+    "logoTooLarge": "يتجاوز الملف 2 ميغابايت.",
+    "logoInvalidType": "صيغة غير مدعومة: استخدم JPG أو PNG أو WebP.",
+    "logoPreviewAlt": "معاينة الشعار",
+    "colorsTitle": "الألوان",
+    "primaryColor": "اللون الأساسي",
+    "accentColor": "لون التمييز",
+    "invalidHex": "لون غير صالح: استخدم رمزًا سداسيًا مثل #10B981.",
+    "brandModeTitle": "وضع العلامة",
+    "modeDefault": "افتراضي",
+    "modeLight": "فاتح",
+    "modeDark": "داكن",
+    "modeAuto": "تلقائي",
+    "previewTitle": "معاينة",
+    "previewHint": "عرض مباشر لعلامتك داخل مساحة العميل.",
+    "previewAction": "زر تجريبي",
+    "save": "حفظ",
+    "saved": "تم تحديث الهوية البصرية.",
+    "saveError": "فشل الحفظ. يرجى المحاولة مرة أخرى."
   }
 }

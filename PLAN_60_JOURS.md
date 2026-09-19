@@ -1,4 +1,4 @@
-# 📋 PLAN 60 JOURS — Leopardo RH
+# 📋 PLAN 60 JOURS — Leopardo
 
 > ⚠️ **Statuts figés au 2026-08-20 (J2). Suivi opérationnel courant : GitHub Issues.**
 
