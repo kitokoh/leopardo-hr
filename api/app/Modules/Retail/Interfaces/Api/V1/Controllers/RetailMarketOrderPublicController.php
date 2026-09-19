@@ -9,6 +9,7 @@ use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
 use App\Modules\Retail\Application\Services\RetailMarketplaceService;
 use App\Modules\Retail\Application\Services\RetailOnlineOrderService;
+use App\Modules\Retail\Application\Services\RetailOnlinePaymentService;
 use App\Modules\Retail\Domain\Models\RetailOrder;
 use App\Modules\Retail\Domain\Models\RetailOrderItem;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\StoreMarketOrderRequest;
@@ -37,6 +38,7 @@ class RetailMarketOrderPublicController extends Controller
     public function __construct(
         private readonly RetailMarketplaceService $marketplace,
         private readonly RetailOnlineOrderService $orders,
+        private readonly RetailOnlinePaymentService $payments,
         private readonly TenantManager $tenants,
     ) {}
 
@@ -163,6 +165,12 @@ class RetailMarketOrderPublicController extends Controller
                     'city' => $sellerSettings?->city,
                 ],
                 'items' => $items,
+                'payment' => [
+                    // Paiement en ligne (#7812) : 'paid' quand le solde est
+                    // couvert (paiements capturés >= total), sinon 'pending'
+                    // (COD à la livraison).
+                    'status' => $this->payments->outstandingAmountMinor($order) === 0 ? 'paid' : 'pending',
+                ],
                 'delivery' => [
                     // Handoff BC-26 (#7811) : reference publique de la
                     // livraison creee a la confirmation (null avant

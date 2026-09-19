@@ -30,6 +30,7 @@
  */
 
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailMarketOrderPublicController;
+use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailMarketPaymentPublicController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailMarketPublicController;
 use Illuminate\Support\Facades\Route;
 
@@ -50,6 +51,14 @@ Route::middleware(['throttle:shop-public'])
             ->name('market.public.orders.store');
         Route::get('/orders/{reference}', [RetailMarketOrderPublicController::class, 'track'])
             ->name('market.public.orders.track');
+
+        // Paiement en ligne (#7812, chantier BC-21) : intent de paiement
+        // (jeton de suivi obligatoire, 404 fail-closed) et webhook PSP signe
+        // HMAC-SHA256 (X-Leopardo-Signature, fail-closed #2615).
+        Route::post('/orders/{reference}/pay', [RetailMarketPaymentPublicController::class, 'pay'])
+            ->name('market.public.orders.pay');
+        Route::post('/payments/webhook', [RetailMarketPaymentPublicController::class, 'webhook'])
+            ->name('market.public.payments.webhook');
     });
 
 // Surface mono-vendeur : tenant résolu par slug public dans `market.public`

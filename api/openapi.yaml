@@ -32863,9 +32863,90 @@ paths:
           maxLength: 64
       responses:
         '200':
-          description: Suivi public (statut + timeline + lignes + total)
+          description: Suivi public (statut + timeline + lignes + total + paiement + livraison)
         '404':
           $ref: '#/components/responses/Error404'
+
+  /public/market/orders/{reference}/pay:
+    post:
+      tags:
+      - Retail
+      summary: Creer l'intent de paiement en ligne d'une commande Leopardo Marche (jeton obligatoire, sans auth)
+      description: 'BC-17 #7812 (chantier BC-21) : paiement mobile money / PSP
+        du solde restant de la commande. Exige le jeton tracking_token dans le
+        corps - 404 fail-closed si jeton absent, errone ou reference
+        inconnue. Idempotent : un intent pending existant est rejoue (200),
+        sinon creation (201). Montant TOUJOURS recalcule serveur (solde non
+        encaisse). DTO public strict (provider, provider_reference, status,
+        amount_minor, currency, checkout_url). Commande annulee ou deja payee
+        = 422. La confirmation ne vient QUE du webhook signe.'
+      security: []
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token:
+                  type: string
+                  maxLength: 64
+      responses:
+        '200':
+          description: Intent pending existant rejoue (idempotence)
+        '201':
+          description: Intent de paiement cree
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+
+  /public/market/payments/webhook:
+    post:
+      tags:
+      - Retail
+      summary: Webhook PSP du paiement marketplace (signature HMAC-SHA256 obligatoire)
+      description: 'BC-17 #7812 : reconciliation des paiements en ligne.
+        Signature X-Leopardo-Signature (sha256=hmac du corps brut, secret
+        RETAIL_MARKET_WEBHOOK_SECRET) - fail-closed pattern Chargily #2615 :
+        secret non configure ou signature invalide = 400, AUCUNE ecriture.
+        Payload {provider_reference, status: paid|failed, failure_reason?}.
+        paid capture un RetailOrderPayment method=online (le COD du handoff
+        BC-26 #7811 devient nul) ; rejeu idempotent (etat final deja atteint
+        = 200 sans double ecriture) ; reference inconnue = 404.'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider_reference, status]
+              properties:
+                provider_reference:
+                  type: string
+                status:
+                  type: string
+                  enum: [paid, failed]
+                failure_reason:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Reconciliation appliquee (ou rejeu idempotent)
+        '400':
+          description: Signature absente/invalide ou secret non configure (fail-closed)
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
 
   /restaurant/branches/{restaurantBranch}/public-profile:
     get:

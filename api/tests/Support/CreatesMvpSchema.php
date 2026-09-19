@@ -1598,6 +1598,31 @@ trait CreatesMvpSchema
             });
         }
 
+        // BC-17 RETAIL #7812 — intents de paiement en ligne marketplace.
+        if (! Schema::hasTable($this->moduleTable('retail_payment_intents'))) {
+            Schema::create($this->moduleTable('retail_payment_intents'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('order_id');
+                $table->string('provider', 30);
+                $table->string('status', 20)->default('pending');
+                $table->unsignedBigInteger('amount_minor');
+                $table->char('currency', 3)->default('XOF');
+                $table->string('provider_reference', 120);
+                $table->string('checkout_url', 500)->nullable();
+                $table->string('failure_reason', 255)->nullable();
+                $table->timestamp('paid_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'provider_reference'], 'retail_payment_intents_company_provider_ref_unique');
+                $table->index(['company_id', 'order_id'], 'retail_payment_intents_company_order_idx');
+            });
+
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement('CREATE UNIQUE INDEX IF NOT EXISTS retail_payment_intents_company_order_pending_unique ON '.$this->moduleTable('retail_payment_intents')." (company_id, order_id) WHERE status = 'pending'");
+            }
+        }
+
         // BC-17 RETAIL #7807 — reglages boutique en ligne Leopardo Marche.
         // Miroir de la migration 2026_09_19_000401_7807 (garde #5443).
         if (! Schema::hasTable($this->moduleTable('retail_online_settings'))) {

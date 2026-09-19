@@ -6,6 +6,8 @@ namespace App\Modules\Retail\Providers;
 
 use App\Events\RetailOnlineOrderDeliveryCreated;
 use App\Modules\Retail\Application\Listeners\StoreRetailOrderDeliveryReference;
+use App\Modules\Retail\Domain\Contracts\RetailPaymentProviderContract;
+use App\Modules\Retail\Infrastructure\Services\LoggingRetailPaymentProviderAdapter;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,7 +28,11 @@ class RetailServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        // Aucun binding pour l'instant (socle fondations #7672).
+        // Port PSP marketplace (#7812, chantier BC-21) : seam journalisé tant
+        // que les profils de paiement tenant (bc/bc21-paiements-encaissement)
+        // ne sont pas mergés — pattern DeliveryAccountingContract
+        // (DELIVERY-205). Remplacer CE binding suffit à brancher le PSP réel.
+        $this->app->singleton(RetailPaymentProviderContract::class, LoggingRetailPaymentProviderAdapter::class);
     }
 
     public function boot(): void
