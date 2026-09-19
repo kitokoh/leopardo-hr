@@ -10,7 +10,7 @@ inputs:
     description: Deployment SHA to verify.
     required: true
   required_workflows:
-    description: JSON array of required workflow names, e.g. ["Tests - Leopardo RH","Web CI - Leopardo Admin"].
+    description: JSON array of required workflow names, e.g. ["Tests - Leopardo","Web CI - Leopardo Admin"].
     required: true
   web_changed:
     description: Whether the web app changed on this SHA ("true"/"false").
@@ -95,7 +95,7 @@ runs:
           const REQUIRED_WORKFLOWS = JSON.parse(core.getInput('required_workflows'));
           const { owner, repo } = context.repo;
 
-          const TESTS_WORKFLOW = 'Tests - Leopardo RH';
+          const TESTS_WORKFLOW = 'Tests - Leopardo';
           const WEB_WORKFLOW = 'Web CI - Leopardo Admin';
 
           if (EVENT === 'workflow_dispatch') {
