@@ -518,7 +518,7 @@ router.beforeEach(async (to) => {
   if (to.meta.title) {
     const localeStore = useLocaleStore()
     const title = translate(localeStore.current, to.meta.title, to.meta.title)
-    document.title = `${title} - Leopardo RH Admin`
+    document.title = `${title} - Leopardo Admin`
   }
 
   return true
