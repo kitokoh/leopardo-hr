@@ -71,7 +71,13 @@ class PurgeAuditLogsCommand extends Command
                 $months = $this->retentionMonthsFor($company, $globalMonths);
                 $cutoff = now()->subMonths($months);
 
-                $query = AuditLog::query()->where('created_at', '<', $cutoff);
+                // #7711 — AuditLog porte désormais BelongsToCompany : sous
+                // withinTenant, le scope 'company' exclurait les logs
+                // plateforme (company_id NULL) du schéma ambiant, qui ne
+                // seraient alors JAMAIS purgés (violation rétention RGPD).
+                // La purge est une commande de maintenance par schéma —
+                // comportement pré-#7711 conservé : tout le schéma ambiant.
+                $query = AuditLog::query()->withoutGlobalScope('company')->where('created_at', '<', $cutoff);
                 $kept = (int) (clone $query)->count();
                 $deleted = 0;
 

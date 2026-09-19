@@ -19,6 +19,9 @@ class SetCompanyAttendanceMode
     public function execute(string $companyId, array $data, Employee $updatedBy): AttendanceModeSettings
     {
         /** @var AttendanceModeSettings $settings */
+        // #7711 : le where company_id reste explicite (idempotent avec le scope
+        // du trait) ; à la création, company_id n'est plus fillable — le hook
+        // creating du trait le remplit depuis le tenant actif.
         $settings = AttendanceModeSettings::firstOrNew(['company_id' => $companyId]);
 
         $settings->fill([

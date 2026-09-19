@@ -58,7 +58,7 @@ class EdgeCredentialVisibilityTest extends TestCase
         $this->node = $node;
 
         /** @var EdgeLicense $license */
-        $license = EdgeLicense::create([
+        $license = EdgeLicense::forceCreate([
             'company_id' => $this->company->id,
             'edge_node_id' => $node->id,
             'license_key' => 'lk-visibility-secret',

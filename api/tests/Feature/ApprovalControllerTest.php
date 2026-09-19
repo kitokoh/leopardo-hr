@@ -46,7 +46,7 @@ class ApprovalControllerTest extends TestCase
     private function makeApprovalRequest(string $status): ApprovalRequest
     {
         /** @var ApprovalWorkflow $workflow */
-        $workflow = ApprovalWorkflow::create([
+        $workflow = ApprovalWorkflow::forceCreate([
             'company_id' => $this->manager->company_id,
             'name' => 'Validation conge',
             'model_type' => Absence::class,
@@ -55,7 +55,7 @@ class ApprovalControllerTest extends TestCase
         ]);
 
         /** @var ApprovalRequest $request */
-        $request = ApprovalRequest::create([
+        $request = ApprovalRequest::forceCreate([
             'company_id' => $this->manager->company_id,
             'workflow_id' => $workflow->id,
             'approvable_type' => Absence::class,

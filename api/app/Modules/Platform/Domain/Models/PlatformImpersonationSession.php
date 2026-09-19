@@ -39,13 +39,19 @@ use Illuminate\Support\Carbon;
  */
 class PlatformImpersonationSession extends Model
 {
+    // Issue #7711 (exceptions BelongsToCompany) — PAS de trait : session
+    // d'impersonation PLATEFORME (PA2-ADM-006), créée et lue par les surfaces
+    // super-admin hors contexte tenant ; company_id désigne la société CIBLE,
+    // pas un tenant émetteur. company_id retiré du $fillable (#7711) : il est
+    // posé en forceFill par ImpersonationService, jamais mass-assigné depuis
+    // un payload.
+
     public $timestamps = false;
 
     protected $table = 'platform_impersonation_sessions';
 
     protected $fillable = [
         'super_admin_id',
-        'company_id',
         'employee_id',
         'personal_access_token_id',
         'company_name',
