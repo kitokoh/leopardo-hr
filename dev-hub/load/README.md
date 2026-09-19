@@ -32,7 +32,7 @@ k6 run dev-hub/load/k6/api-core-smoke.js
 
 ## Execution GitHub Actions
 
-Le workflow manuel `k6 Load Smoke - Leopardo RH` lance `k6/api-core-smoke.js` via Docker et publie `api-core-smoke-summary.json` en artefact.
+Le workflow manuel `k6 Load Smoke - Leopardo` lance `k6/api-core-smoke.js` via Docker et publie `api-core-smoke-summary.json` en artefact.
 
 Secrets optionnels :
 

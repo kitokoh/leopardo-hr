@@ -1,6 +1,21 @@
 #!/bin/sh
 set -e
 
+# ─── Contrat DEPLOY_TIER (issue #7647) ────────────────────────────────────────
+# DEPLOY_TIER identifie le TIER de déploiement (`dev` | `prod`), découplé
+# d'APP_ENV : le tier dev tourne en APP_ENV=production (dette de nommage
+# assumée, cf. docs/ops/RENDER_DEV_PROD_TOPOLOGY.md), donc APP_ENV ne peut
+# PAS distinguer dev et prod. La variable est posée par les blueprints
+# (render.yaml → dev, render.prod.yaml → prod). Effets FAIL-CLOSED ici :
+#   - RESET_TEST_DB_ONCE (DROP total de la base) exige DEPLOY_TIER=dev
+#     explicite — absente, vide ou toute autre valeur => refus de démarrer,
+#     EN PLUS des gardes APP_ENV existantes (#6537, conservées).
+#   - FORCE_SUPER_ADMIN_PASSWORD_RESET n'est propagée aux seeders
+#     (SuperAdminSeeder) que si DEPLOY_TIER=dev ; sinon la variable est
+#     vidée AVANT `db:seed`, avec warning — le hash super-admin n'est plus
+#     re-forcé à chaque boot hors du tier dev.
+# ──────────────────────────────────────────────────────────────────────────────
+
 echo "Optimizing Laravel at startup..."
 
 # Probe availability (meilleur -> pire, decision 2026-08-21) : Redis (Upstash)
@@ -204,6 +219,17 @@ maybe_reset_test_database_once() {
         exit 1
     fi
 
+    # Issue #7647 : APP_ENV ne distingue PAS dev et prod (le tier dev tourne
+    # en APP_ENV=production — dette assumée, cf. topologie). Le tier est donc
+    # porté par DEPLOY_TIER (render.yaml → dev, render.prod.yaml → prod), et
+    # la garde est fail-closed : DEPLOY_TIER absente, vide ou différente de
+    # 'dev' => refus catégorique du reset destructif, EN PLUS des gardes
+    # APP_ENV #6537 ci-dessus (conservées).
+    if [ "${DEPLOY_TIER:-}" != "dev" ]; then
+        echo "REFUSED (fail-closed, #7647): RESET_TEST_DB_ONCE=true exige DEPLOY_TIER=dev explicite (valeur actuelle: '${DEPLOY_TIER:-<absente>}'). Poser DEPLOY_TIER=dev sur le service Render dev (render.yaml) avant tout reset. Abandon du demarrage." >&2
+        exit 1
+    fi
+
     reset_key="${RESET_TEST_DB_LOCK_KEY:-render_test_db_reset_v1}"
 
     if php <<PHP
@@ -379,6 +405,19 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
         echo "   recovered from production logs → admin@leopardo-rh.com login will fail."
         echo "   Fix: set SUPER_ADMIN_PASSWORD in the Render dashboard and redeploy."
         echo "   See: docs/deployment/RUNBOOK_SUPER_ADMIN.md"
+    fi
+
+    # Issue #7647 : FORCE_SUPER_ADMIN_PASSWORD_RESET fait re-forcer le hash
+    # du super-admin par SuperAdminSeeder à CHAQUE déploiement depuis une env
+    # var (un accès dashboard Render = takeover admin permanent). Fail-closed :
+    # hors du tier dev explicite (DEPLOY_TIER=dev), la variable est vidée
+    # AVANT les seeders — le force-reset ne se propage pas, warning bruyant.
+    if [ "${DEPLOY_TIER:-}" != "dev" ] && [ -n "${FORCE_SUPER_ADMIN_PASSWORD_RESET:-}" ]; then
+        echo "⚠️  WARNING (#7647): FORCE_SUPER_ADMIN_PASSWORD_RESET est posee mais DEPLOY_TIER != 'dev' (valeur: '${DEPLOY_TIER:-<absente>}')."
+        echo "   La variable est videe avant les seeders : le hash super-admin ne sera PAS re-force a ce boot."
+        echo "   Rotation hors tier dev : php artisan super-admin:reset-password via un canal securise"
+        echo "   (docs/deployment/RUNBOOK_SUPER_ADMIN.md), jamais via une env var permanente."
+        unset FORCE_SUPER_ADMIN_PASSWORD_RESET
     fi
 
     echo "Running base seeders (idempotent)..."
