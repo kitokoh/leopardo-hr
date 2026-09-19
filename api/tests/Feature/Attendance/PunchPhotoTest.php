@@ -82,7 +82,7 @@ class PunchPhotoTest extends TestCase
 
     public function test_check_in_without_photo_is_rejected_when_company_requires_photo(): void
     {
-        AttendanceModeSettings::query()->create([
+        AttendanceModeSettings::query()->forceCreate([
             'company_id' => $this->company->id,
             'punch_photo_mode' => 'photo_required',
         ]);
@@ -99,7 +99,7 @@ class PunchPhotoTest extends TestCase
 
     public function test_check_in_with_photo_succeeds_when_company_requires_photo(): void
     {
-        AttendanceModeSettings::query()->create([
+        AttendanceModeSettings::query()->forceCreate([
             'company_id' => $this->company->id,
             'punch_photo_mode' => 'photo_required',
         ]);
@@ -121,7 +121,7 @@ class PunchPhotoTest extends TestCase
 
     public function test_check_in_without_photo_succeeds_when_company_mode_is_kiosk(): void
     {
-        AttendanceModeSettings::query()->create([
+        AttendanceModeSettings::query()->forceCreate([
             'company_id' => $this->company->id,
             'punch_photo_mode' => 'kiosk',
         ]);
@@ -176,7 +176,7 @@ class PunchPhotoTest extends TestCase
 
         $this->openAttendanceSession();
 
-        AttendanceModeSettings::query()->create([
+        AttendanceModeSettings::query()->forceCreate([
             'company_id' => $this->company->id,
             'punch_photo_mode' => 'photo_required',
         ]);
@@ -193,7 +193,7 @@ class PunchPhotoTest extends TestCase
 
         $this->openAttendanceSession();
 
-        AttendanceModeSettings::query()->create([
+        AttendanceModeSettings::query()->forceCreate([
             'company_id' => $this->company->id,
             'punch_photo_mode' => 'photo_required',
         ]);
@@ -212,7 +212,7 @@ class PunchPhotoTest extends TestCase
 
     public function test_attendance_config_exposes_requires_punch_photo(): void
     {
-        AttendanceModeSettings::query()->create([
+        AttendanceModeSettings::query()->forceCreate([
             'company_id' => $this->company->id,
             'punch_photo_mode' => 'photo_required',
         ]);
@@ -227,7 +227,7 @@ class PunchPhotoTest extends TestCase
 
     public function test_employee_can_download_own_punch_photo(): void
     {
-        AttendanceModeSettings::query()->create([
+        AttendanceModeSettings::query()->forceCreate([
             'company_id' => $this->company->id,
             'punch_photo_mode' => 'photo_required',
         ]);

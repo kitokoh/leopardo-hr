@@ -11,6 +11,7 @@ use App\Modules\RestaurantManager\Domain\Enums\PosSessionStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPosSession;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\Support\AssignsResourceAccess;
@@ -121,12 +122,21 @@ class RestaurantPosSessionPartialUniqueTest extends TestCase
 
             // L'index unique partiel (company_id, branch_id) WHERE status='open'
             // refuse une 2e session OUVERTE sur la même branche.
+            //
+            // #7729 (follow-up) : l'insertion fautive est isolée dans une
+            // transaction IMBRIQUÉE (savepoint) — la violation 23505 y est
+            // rollbackée, ce qui évite de laisser la transaction du test
+            // (posée par RefreshDatabase) en état « aborted » — sinon le
+            // SET search_path du tearDown échoue en 25P02 (constat #6954).
+            // Pattern repo identique à AbsenceTypesTenantUniqueTest.
             $this->expectException(QueryException::class);
 
-            RestaurantPosSession::factory()->create([
-                'branch_id' => $branch->id,
-                'status' => PosSessionStatus::OPEN->value,
-            ]);
+            DB::transaction(function () use ($branch): void {
+                RestaurantPosSession::factory()->create([
+                    'branch_id' => $branch->id,
+                    'status' => PosSessionStatus::OPEN->value,
+                ]);
+            });
         });
     }
 

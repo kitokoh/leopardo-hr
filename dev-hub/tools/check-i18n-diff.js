@@ -148,6 +148,11 @@ function isTechnicalToken(value) {
   if (/\$\{|\.(toString|padLeft|padRight|encodeComponent)\(/.test(trimmed)) return true;
   if (/^#[a-zA-Z][\w-]*$/.test(trimmed)) return true;
   if (trimmed === 'use client' || trimmed === 'use server' || trimmed === 'use strict') return true;
+  // Clés JSON-LD schema.org (« @context », « @type », « @id »…) : jamais du
+  // texte utilisateur — ce sont les clés du vocabulaire des données
+  // structurées (constat #7748 : le JSON-LD `Restaurant` des pages publiques
+  // /restaurants était signalé comme chaîne en dur).
+  if (/^@[a-zA-Z]+$/.test(trimmed)) return true;
   if (/^@?[a-zA-Z0-9_.-]+(?:\/[a-zA-Z0-9_.-]+)+$/.test(trimmed)) return true;
   // Imports Next.js alias (« @/modules/... ») — chemin technique, pas une
   // chaîne utilisateur (faux positif signalé sur #6663).
@@ -206,6 +211,10 @@ const structuralAttributes = new Set([
   // `<Image … sizes="(min-width: 1024px) 33vw, 100vw" />` était signalé comme
   // « nouvelle chaîne en dur » et poussait à réécrire un appel correct.
   'sizes', 'width', 'height', 'srcset', 'loading', 'decoding', 'fetchpriority',
+  // Filtre de type de fichier d'un <input type="file"> : liste d'extensions/
+  // types MIME (`accept=".csv,text/csv"`), jamais du texte utilisateur
+  // (constat #7776 — import de relevé bancaire de la console admin).
+  'accept', ':accept',
 ]);
 
 // Noms d'attribut : `:class`, `@click`, `v-model`, `#default`, `aria-label`…

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Domain\Models;
 
+use App\Modules\RestaurantManager\Domain\Enums\RestaurantEstablishmentType;
 use App\Modules\RestaurantManager\Domain\Enums\RestaurantRecordStatus;
 use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\RestaurantBranchFactory;
@@ -16,6 +17,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  *
  * `code` est unique par tenant ; `timezone` et `currency` servent de valeurs
  * par défaut aux entités rattachées (zones, tables, commandes).
+ *
+ * Profil public (RESTO-901/#7746) : `is_public` (opt-in annuaire),
+ * `public_slug` (unique GLOBAL cross-tenant), `establishment_type`,
+ * `cuisine_types`, `public_description`, `cover_image_url`,
+ * `latitude`/`longitude` (recherche par proximité).
  */
 class RestaurantBranch extends Model
 {
@@ -34,10 +40,23 @@ class RestaurantBranch extends Model
         'timezone',
         'currency',
         'status',
+        'is_public',
+        'public_slug',
+        'establishment_type',
+        'cuisine_types',
+        'public_description',
+        'cover_image_url',
+        'latitude',
+        'longitude',
     ];
 
     protected $casts = [
         'status' => RestaurantRecordStatus::class,
+        'is_public' => 'boolean',
+        'establishment_type' => RestaurantEstablishmentType::class,
+        'cuisine_types' => 'array',
+        'latitude' => 'float',
+        'longitude' => 'float',
     ];
 
     /**

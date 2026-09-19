@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Domain\Models;
 
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -21,15 +22,19 @@ use Illuminate\Support\Carbon;
  * @property int|null $payroll_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class LoanRepayment extends Model
 {
+    // Issue #7711 (suite #7646) — table `loan_repayments` du schéma partagé
+    // shared_tenants : company_id est l'unique frontière d'isolation.
+    use BelongsToCompany;
+
     protected $table = 'loan_repayments';
 
     protected $fillable = [
         'employee_loan_id',
-        'company_id',
         'due_date',
         'amount',
         'principal',
