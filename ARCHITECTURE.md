@@ -1,10 +1,10 @@
-# Architecture — Leopardo HR
+# Architecture — Leopardo
 
 > Ce document est la référence d'onboarding pour la structure du monorepo.
 
 ## Vue d'ensemble
 
-Leopardo HR est un monorepo multi-stack couvrant :
+Leopardo est un monorepo multi-stack couvrant :
 
 ```
 leopardo-hr/
