@@ -128,7 +128,10 @@ class TravelOutboxDispatchTest extends TestCase
         $this->registry->register($consumer);
 
         // Worker « mort » : événement en processing avec lease expirée.
+        // #7452 — `company_id` est NOT NULL (table tenant) et la factory ne le
+        // renseigne pas : hors contexte tenant, il doit être fourni explicitement.
         $event = TravelOutboxEvent::factory()->create([
+            'company_id' => $this->company->id,
             'event_type' => 'travel.test.event',
             'status' => TravelOutboxEvent::STATUS_PROCESSING,
             'updated_at' => now()->subMinutes(30),
@@ -146,6 +149,7 @@ class TravelOutboxDispatchTest extends TestCase
         $this->registry->register($consumer);
 
         TravelOutboxEvent::factory()->create([
+            'company_id' => $this->company->id,
             'event_type' => 'travel.test.event',
             'status' => TravelOutboxEvent::STATUS_PROCESSING,
             'updated_at' => now()->subMinutes(5), // lease encore active (15 min)
