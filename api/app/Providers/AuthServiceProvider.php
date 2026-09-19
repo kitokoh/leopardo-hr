@@ -145,6 +145,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantPurchaseOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantReceiving;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantRefund;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantReservation;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantReview;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantSupplier;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTable;
@@ -169,6 +170,7 @@ use App\Modules\RestaurantManager\Policies\RestaurantPurchaseOrderPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantReceivingPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantRefundPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantReservationPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantReviewPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantStockLevelPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantSupplierPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantTablePolicy;
@@ -459,6 +461,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(RestaurantReceiving::class, RestaurantReceivingPolicy::class);
         Gate::policy(RestaurantInventoryCount::class, RestaurantInventoryCountPolicy::class);
         Gate::policy(RestaurantReservation::class, RestaurantReservationPolicy::class);
+        Gate::policy(RestaurantReview::class, RestaurantReviewPolicy::class);
 
         // Gate definitions
         Gate::define('manage-billing', [BillingPolicy::class, 'manageSubscription']);
