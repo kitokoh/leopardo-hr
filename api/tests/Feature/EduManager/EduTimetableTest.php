@@ -15,6 +15,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tests\RefreshTenantDatabase;
+use Tests\Support\SwitchesTenantContext;
 use Tests\TestCase;
 
 /**
@@ -41,6 +42,7 @@ use Tests\TestCase;
 class EduTimetableTest extends TestCase
 {
     use RefreshTenantDatabase;
+    use SwitchesTenantContext;
 
     private Company $company;
 
@@ -374,7 +376,13 @@ class EduTimetableTest extends TestCase
         ?int $subjectId = null,
         ?string $room = null,
     ): EduTimetableSlot {
-        return app(TimetableService::class)->create([
+        // #7646 — le créneau d'un autre tenant est créé SOUS son tenant
+        // (company_id est désormais forcé depuis le tenant actif).
+        $targetCompany = $companyId === null || $companyId === $this->company->id
+            ? $this->company
+            : $this->otherCompany;
+
+        return $this->withTenantContext($targetCompany, fn (): EduTimetableSlot => app(TimetableService::class)->create([
             'company_id' => $companyId ?? $this->company->id,
             'class_id' => $classId,
             'subject_id' => $subjectId ?? $this->subjectId,
@@ -383,6 +391,6 @@ class EduTimetableTest extends TestCase
             'start_time' => $startTime,
             'end_time' => $endTime,
             'room' => $room,
-        ]);
+        ]));
     }
 }

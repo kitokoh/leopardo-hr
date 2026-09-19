@@ -16,11 +16,11 @@ use Illuminate\Support\Carbon;
  *
  * @property string $id
  * @property string $company_id
- * @property string $type              whatsapp|sms|email
- * @property string $provider          ex. whatsapp_cloud_api|sms_audit
- * @property string $status            active|inactive|error
+ * @property string $type whatsapp|sms|email
+ * @property string $provider ex. whatsapp_cloud_api|sms_audit
+ * @property string $status active|inactive|error
  * @property bool $is_configured
- * @property int|null $monthly_quota   null = illimité
+ * @property int|null $monthly_quota null = illimité
  * @property int $used_this_month
  * @property string|null $quota_period ex. "2026-08"
  * @property array<string, mixed>|null $settings
@@ -39,7 +39,21 @@ class CrmChannel extends Model
 
     protected $table = 'crm_channels';
 
-    protected $guarded = [];
+    // #7646 — allowlist explicite SANS `company_id` : le tenant est posé par
+    // le hook creating de BelongsToCompany, jamais par mass assignment.
+    protected $fillable = [
+        'type',
+        'provider',
+        'status',
+        'is_configured',
+        'monthly_quota',
+        'used_this_month',
+        'quota_period',
+        'settings',
+        'last_error_message',
+        'last_error_at',
+        'archived_at',
+    ];
 
     protected function casts(): array
     {
