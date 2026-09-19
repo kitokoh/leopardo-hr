@@ -6,9 +6,13 @@ namespace App\Modules\Pharmacy\Providers;
 
 use App\Core\Solutions\SolutionCatalogue;
 use App\Modules\Pharmacy\Domain\Models\PharmacyProduct;
+use App\Modules\Pharmacy\Domain\Models\PharmacyPurchaseOrder;
 use App\Modules\Pharmacy\Domain\Models\PharmacyStockMovement;
+use App\Modules\Pharmacy\Domain\Models\PharmacySupplier;
 use App\Modules\Pharmacy\Domain\Policies\PharmacyProductPolicy;
+use App\Modules\Pharmacy\Domain\Policies\PharmacyPurchaseOrderPolicy;
 use App\Modules\Pharmacy\Domain\Policies\PharmacyStockPolicy;
+use App\Modules\Pharmacy\Domain\Policies\PharmacySupplierPolicy;
 use App\Modules\Pharmacy\Domain\Solution\PharmacyManifest;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -35,5 +39,7 @@ class PharmacyServiceProvider extends ServiceProvider
     {
         Gate::policy(PharmacyProduct::class, PharmacyProductPolicy::class);
         Gate::policy(PharmacyStockMovement::class, PharmacyStockPolicy::class);
+        Gate::policy(PharmacySupplier::class, PharmacySupplierPolicy::class);
+        Gate::policy(PharmacyPurchaseOrder::class, PharmacyPurchaseOrderPolicy::class);
     }
 }
