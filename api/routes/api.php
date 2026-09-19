@@ -88,6 +88,16 @@ use Illuminate\Support\Facades\Route;
 
 // Edge routes are now registered by EdgeSyncServiceProvider
 
+// #7666 — alias de supervision NON versionné : les sondes externes
+// (UptimeRobot, Better Uptime, intégrateurs qui testent l'API à la main)
+// essaient d'abord `/api/health` par convention — vérifié 404 en prod le
+// 2026-09-19, elles concluaient « API morte » alors qu'elle était up.
+// `/api/v1/health` reste la route canonique (Render `healthCheckPath`,
+// docs/ops/HEALTH_ENDPOINTS.md) ; cet alias sert la MÊME sonde, même
+// throttle. `ApiVersionMiddleware` l'accepte (segment 2 non `v\d+` →
+// version courante v1).
+Route::get('/health', HealthController::class)->middleware('throttle:60,1');
+
 Route::prefix('v1')->group(function (): void {
     // Sonde live+ready : DB + Redis + storage. Consommee par Render (deploy hook)
     // et la supervision externe. 503 si la DB tombe, 200 sinon (Redis et storage

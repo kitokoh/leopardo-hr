@@ -2,6 +2,16 @@
 > Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
 > Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
 
+> **MAJ 2026-09-19 — #7666/#7670, alias de supervision `GET /api/health` (PR #7668).**
+> Surface **API** : nouvel alias **non versionné** `GET /api/health` → même `HealthController`
+> (sonde canonique `GET /api/v1/health`, même throttle `60,1`). Motif : les sondes externes
+> (UptimeRobot, Better Uptime, intégrateurs) essaient `/api/health` par convention — vérifié
+> 404 en prod le 2026-09-19, conclusion erronée « API morte ». Aucun contrat versionné modifié :
+> `/api/v1/health` reste la route canonique (Render `healthCheckPath`,
+> `docs/ops/HEALTH_ENDPOINTS.md`). Scénario automatisé :
+> `api/tests/Feature/HealthEndpointTest.php::test_unversioned_health_alias_serves_the_same_probe`
+> (contrat identique à la sonde canonique). Surfaces web/mobile : aucune.
+
 > **MAJ 2026-09-19 — lot audit vendeur du funnel #7662–#7665/#7669 (PR #7667), surface mobile
 > touchée par propagation i18n uniquement.** Le lot corrige la mojibake du catalogue partagé
 > (`shared/i18n/locales/*.json`, accents FR / caractères TR) et ajoute les clés
