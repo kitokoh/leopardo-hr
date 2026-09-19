@@ -246,10 +246,13 @@ $this->artisan('my:command')->assertSuccessful();
 
 - **CHANGELOG.md obligatoire** pour tout changement de comportement
 - **Taille du CHANGELOG** : `CHANGELOG.md` doit rester lisible (< 150 Ko).
-  À chaque release : archiver dans `CHANGELOG_ARCHIVE.md` les sections sorties du
-  périmètre (6 mois + release courante condensée si > 50 Ko + `[Unreleased]`),
-  et nettoyer `docs/archive/` des fichiers non référencés (l'historique git
-  conserve tout) — issue #1729.
+  À chaque release : **supprimer** du fichier les sections sorties du périmètre
+  (6 mois + release courante condensée si > 50 Ko + `[Unreleased]`) en les
+  recopiant dans les notes de la release GitHub correspondante, et nettoyer
+  `docs/archive/` des fichiers non référencés — l'historique git conserve tout
+  (issues #1729, #7654). Le fichier `CHANGELOG_ARCHIVE.md` (4,2 Mo) a été sorti
+  du dépôt (#7654) : dernière version consultable à
+  <https://github.com/kitokoh/leopardo-hr/blob/6a3819a9254d31d5f124c3e14bd3cdd5f31848c8/CHANGELOG_ARCHIVE.md>.
 - **CI doit etre vert** — GitHub Actions est la source de verite (pas la validation locale)
 - Workflows critiques : `tests.yml`, `coverage-gate.yml`, `backend-jobs-ci.yml`, `architecture-check.yml` (phpstan-modules + phpstan-strict), `mobile-apps-ci.yml`, `governance`, `CodeQL`, `secret-scan`
 
