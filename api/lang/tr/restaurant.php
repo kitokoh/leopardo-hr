@@ -22,4 +22,17 @@ return [
         'stock_alert_scan_result' => '%s (%s): %d uyarı oluşturuldu, %d yinelenen yok sayıldı.',
         'stock_alert_total' => 'Toplam: %d uyarı oluşturuldu, %d yinelenen.',
     ],
+    // RESTO-805 (#6226) / RESTO-902 (#7747) — herkese açık çevrimiçi sipariş.
+    'public_shop' => [
+        'product_unavailable' => 'Bu ürün çevrimiçi sipariş için mevcut değil.',
+        'product_not_served' => 'Bu ürün bu işletmede servis edilmiyor.',
+        'currency_mismatch' => 'Ürün para birimi sipariş para birimiyle eşleşmiyor.',
+        'quantity_invalid' => 'Miktar kesinlikle pozitif olmalıdır.',
+        'empty_order' => 'Sepet boş.',
+    ],
+    // RESTO-902 (#7747) — herkese açık müşteri yorumları.
+    'public_reviews' => [
+        'order_not_eligible' => 'Yorum yalnızca servis edilmiş veya teslim edilmiş bir sipariş için yapılabilir.',
+        'already_reviewed' => 'Bu sipariş için zaten bir yorum gönderildi.',
+    ],
 ];
