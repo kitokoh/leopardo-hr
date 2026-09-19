@@ -17,6 +17,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  *
  * `code` est unique par tenant ; les prix sont en unités mineures entières
  * (minor units). `branch_id` null = produit disponible dans toutes les branches.
+ *
+ * `is_published_online` (RESTO-901/#7746, opt-in) : publication du produit
+ * sur le menu du profil public de sa branche (combiné à `is_available`).
  */
 class RestaurantProduct extends Model
 {
@@ -37,6 +40,7 @@ class RestaurantProduct extends Model
         'cost_minor',
         'tax_rate_id',
         'is_available',
+        'is_published_online',
         'image_asset_id',
         'status',
     ];
@@ -45,6 +49,7 @@ class RestaurantProduct extends Model
         'price_minor' => 'integer',
         'cost_minor' => 'integer',
         'is_available' => 'boolean',
+        'is_published_online' => 'boolean',
         'status' => RestaurantRecordStatus::class,
     ];
 
