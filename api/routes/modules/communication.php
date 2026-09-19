@@ -14,12 +14,13 @@
  *   - throttle:api-plan       → limite selon le plan tarifaire
  *   - module.communication    → feature flag companies.features.communication
  *
- * Squelette R0 : seul l'endpoint d'état du module est exposé. Les routes
- * métier (intégrations OAuth, threads, messages, relances — kebab-case
- * pluriel) arrivent avec les lots R1→R5.
+ * Squelette R0 + lot R1 (#7686) : etat du module et connexion Google par
+ * utilisateur (OAuth serveur). Les routes metier suivantes (threads,
+ * messages, relances — kebab-case pluriel) arrivent avec les lots R2→R5.
  * Référence : docs/specifications/MODULE_COMMUNICATION_EMAIL_IA.md.
  */
 
+use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationIntegrationController;
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationModuleStatusController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,4 +29,23 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     ->group(function (): void {
         // État/santé du module pour le tenant courant (sonde d'activation).
         Route::get('/status', [CommunicationModuleStatusController::class, 'show']);
+
+        // R1 (#7686) — connexion Google par utilisateur (OAuth serveur).
+        // La boite est PERSONNELLE : l'index ne renvoie que les integrations
+        // de l'employe courant ; la revocation passe par la policy.
+        Route::get('/integrations', [CommunicationIntegrationController::class, 'index']);
+        Route::post('/integrations/google', [CommunicationIntegrationController::class, 'connectGoogle']);
+        Route::delete('/integrations/{integration}', [CommunicationIntegrationController::class, 'destroy']);
+    });
+
+// R1 (#7686) — callback OAuth Google : route PUBLIQUE par construction (le
+// navigateur revient de Google sans bearer token ni cookie de session). La
+// preuve d'identite est le state anti-CSRF a usage unique pose par
+// POST /communication/integrations/google (cache, TTL 10 min) ; le gate
+// module est re-verifie a la main sur la company portee par le state
+// (fail-closed). Bucket auth-sensitive : meme politique que /auth/google.
+Route::middleware(['throttle:auth-sensitive'])
+    ->prefix('communication')
+    ->group(function (): void {
+        Route::get('/integrations/google/callback', [CommunicationIntegrationController::class, 'googleCallback']);
     });

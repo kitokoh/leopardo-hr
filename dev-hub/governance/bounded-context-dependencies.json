@@ -697,6 +697,18 @@
       "to": "BC-02",
       "baseline": false,
       "note": "BC-27 → BC-02 — Actions/Controllers Showcase importent App\\Core\\Tenant\\Domain\\Models\\Company (scope tenant vitrine) + App\\Core\\Tenant\\TenantManager (résolution tenant route publique, #6866/#6867)"
+    },
+    {
+      "from": "BC-29",
+      "to": "BC-03",
+      "baseline": false,
+      "note": "BC-29 → BC-03 — modèle/policy/contrôleur Communication importent App\\Core\\Auth\\Domain\\Models\\Employee (boîte mail PAR employé + RBAC, pattern BC-28/#6880) — R1 #7686"
+    },
+    {
+      "from": "BC-29",
+      "to": "BC-02",
+      "baseline": false,
+      "note": "BC-29 → BC-02 — le callback OAuth (route publique, hors middleware tenant) recharge App\\Core\\Tenant\\Domain\\Models\\Company pour re-vérifier le feature flag `communication` fail-closed (pattern BC-27/BC-28) — R1 #7686"
     }
   ]
 }

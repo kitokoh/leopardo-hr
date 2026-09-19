@@ -29613,8 +29613,8 @@ paths:
     get:
       tags:
       - Communication
-      summary: Etat du module Communication pour le tenant courant (squelette R0)
-      description: 'Sonde d''activation du module Communication (BC-29, #7685) : la route est gardee par le feature flag tenant `communication` (403 FEATURE_NOT_ENABLED si le module est inactif). Renvoie le jalon livre (stage R0) et les capacites, toutes desactivees tant que les lots R1-R5 ne sont pas livres.'
+      summary: Etat du module Communication pour le tenant courant
+      description: 'Sonde d''activation du module Communication (BC-29, #7685) : la route est gardee par le feature flag tenant `communication` (403 FEATURE_NOT_ENABLED si le module est inactif). Renvoie le jalon livre (stage R1 depuis #7686 : capacite `integrations` active) et les capacites restantes, desactivees tant que les lots R2-R5 ne sont pas livres.'
       security:
       - BearerAuth: []
       responses:
@@ -29639,12 +29639,13 @@ paths:
                         example: active
                       stage:
                         type: string
-                        example: R0
+                        example: R1
                       capabilities:
                         type: object
                         properties:
                           integrations:
                             type: boolean
+                            example: true
                           sync:
                             type: boolean
                           classification:
@@ -29657,6 +29658,162 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+
+  /communication/integrations:
+    get:
+      tags:
+      - Communication
+      summary: Boites mail connectees de l'employe courant (Communication R1)
+      description: 'Liste les integrations OAuth de l''employe COURANT uniquement (#7686) : la boite est personnelle, aucune boite d''un autre employe n''apparait. Les tokens (chiffres au repos) ne sortent JAMAIS de l''API. Route gardee par le feature flag tenant `communication`.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Integrations de l'employe courant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CommunicationIntegration'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+
+  /communication/integrations/google:
+    post:
+      tags:
+      - Communication
+      summary: Demarre la connexion Google de l'employe courant (OAuth serveur)
+      description: 'Flow OAuth 2.0 cote serveur (#7686) : pose un state anti-CSRF a usage unique (10 min) et renvoie l''URL de consentement Google (access_type=offline, prompt=consent, scopes minimaux openid email gmail.readonly). Le client redirige le navigateur vers cette URL ; Google rappelle ensuite /communication/integrations/google/callback. 503 GOOGLE_OAUTH_UNAVAILABLE si le serveur n''a pas ses variables d''env Google (GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET / GOOGLE_COMMUNICATION_REDIRECT_URL).'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: URL de consentement Google prete
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      authorization_url:
+                        type: string
+                        example: 'https://accounts.google.com/o/oauth2/v2/auth?client_id=...&access_type=offline&prompt=consent&state=...'
+                      expires_in:
+                        type: integer
+                        description: Duree de vie du state en secondes
+                        example: 600
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '503':
+          description: OAuth Google non configure cote serveur (GOOGLE_OAUTH_UNAVAILABLE)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /communication/integrations/google/callback:
+    get:
+      tags:
+      - Communication
+      summary: Callback OAuth Google du module Communication (route publique)
+      description: 'Retour de l''ecran de consentement Google (#7686). Route publique par construction (le navigateur revient sans bearer token) : le state anti-CSRF a usage unique est la seule preuve d''identite (state inconnu, expire ou rejoue = 400 OAUTH_STATE_INVALID). Le feature flag du tenant est re-verifie (fail-closed, 403 FEATURE_NOT_ENABLED). Echange le code contre les tokens, stocke access/refresh tokens CHIFFRES (jamais en clair en base) et l''adresse de la boite (userinfo, scope email seul - minimisation).'
+      security: []
+      parameters:
+      - name: state
+        in: query
+        required: true
+        schema:
+          type: string
+        description: State anti-CSRF a usage unique pose par POST /communication/integrations/google
+      - name: code
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Code d'autorisation renvoye par Google
+      - name: error
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Code d'erreur Google (ex. access_denied si l'utilisateur refuse)
+      responses:
+        '200':
+          description: Boite connectee, tokens stockes chiffres
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: active
+                      provider:
+                        type: string
+                        example: google
+                      email:
+                        type: string
+                        nullable: true
+                        example: user@gmail.com
+        '400':
+          description: State invalide/rejoue (OAUTH_STATE_INVALID), consentement refuse (OAUTH_CONSENT_DENIED) ou code manquant (OAUTH_CODE_MISSING)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '502':
+          description: Google a rejete l'echange du code (OAUTH_EXCHANGE_FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /communication/integrations/{integration}:
+    delete:
+      tags:
+      - Communication
+      summary: Deconnecte une boite mail (revocation Google + purge des tokens)
+      description: 'Deconnexion PROPRE (#7686) : revocation du token aupres de Google (best effort - un token deja invalide ne bloque pas la deconnexion) puis purge locale inconditionnelle des deux tokens (statut `revoked`). Policy : le proprietaire de la boite, ou principal/rh (offboarding, incident). Une integration d''un autre tenant est un 404 (isolation tenant).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: integration
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Boite deconnectee, tokens purges
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationIntegration'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
 
   /public/catalog/sitemap.xml:
     get:
@@ -30863,6 +31020,46 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    CommunicationIntegration:
+      type: object
+      description: 'Boite mail connectee d''un employe (Communication R1, #7686). Les tokens OAuth sont chiffres au repos et n''apparaissent JAMAIS dans ce schema (minimisation des donnees).'
+      properties:
+        id:
+          type: string
+          format: uuid
+        provider:
+          type: string
+          example: google
+        email:
+          type: string
+          nullable: true
+          description: Adresse de la boite connectee (seule donnee de profil conservee)
+        scopes:
+          type: array
+          items:
+            type: string
+          example:
+          - openid
+          - email
+          - https://www.googleapis.com/auth/gmail.readonly
+        status:
+          type: string
+          enum:
+          - active
+          - revoked
+          - error
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        connected_at:
+          type: string
+          format: date-time
+          nullable: true
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
     EduFeeCharge:
       type: object
       description: Facturation d'un frais scolaire à un élève (EDU-016, #5832).
