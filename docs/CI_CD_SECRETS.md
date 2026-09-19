@@ -118,23 +118,20 @@ Ils ne sont donc pas nécessaires pour contribuer.
 | `CLOUDFLARE_PROD_API_TOKEN` | `deploy-prod.yml` | Token Cloudflare Pages pour déployer l'admin plateforme de production | Required for production admin deploys |
 | `CLOUDFLARE_PROD_ACCOUNT_ID` | `deploy-prod.yml` | Compte Cloudflare cible | Required for production admin deploys |
 
-### Secrets d'exploitation de la queue (drain + supervision via GitHub Actions)
+### Secrets de supervision de la queue (sonde HTTP via GitHub Actions)
 
-Ces crons s'exécutent sur la **base de production** (le worker Render n'étant pas déployé — voir
-issue #7258). Tant qu'ils ne sont pas configurés, les workflows se **sautent** : la queue prod n'est
-alors ni drainée ni supervisée.
+> 🔒 **#7694 (audit 2026-09-19)** : les secrets `DB_HOST` / `DB_PORT` / `DB_DATABASE` /
+> `DB_USERNAME` / `DB_PASSWORD` et `APP_KEY` ne sont **plus consommés par aucun workflow** —
+> le drain CI `queue-worker-fallback.yml` est supprimé et `queue-supervision.yml` est une sonde
+> HTTP sans credentials (`GET /api/v1/health`). **S'ils ont été posés un jour dans les GitHub
+> Secrets, les supprimer du dépôt ET faire tourner `DB_PASSWORD` + `APP_KEY` de prod** (ils ont
+> vécu dans l'environnement CI — voir `docs/ops/JETONS_ROTATION_RUNBOOK.md`). La garde
+> `check-queue-strategy-coherence.sh` interdit leur retour dans `.github/workflows/`.
 
 | Secret | Used by | Purpose | Required? |
 |---|---|---|---|
-| `DB_HOST` / `DB_PORT` / `DB_DATABASE` / `DB_USERNAME` / `DB_PASSWORD` | `queue-worker-fallback.yml`, `queue-supervision.yml` | Connexion directe à la base de production pour drainer la queue et compter les jobs en attente/échoués | Required for queue operations |
-| `APP_KEY` | `queue-worker-fallback.yml`, `queue-supervision.yml` | Clé applicative Laravel, nécessaire pour exécuter les commandes Artisan contre la base prod | Required for queue operations |
-| `APP_URL` | `queue-worker-fallback.yml`, `queue-supervision.yml` | URL applicative résolue par ces crons | Required for queue operations |
+| `APP_URL` | `queue-supervision.yml` | Base URL de l'API prod sondée (`GET /api/v1/health`) | Required (skip explicite si absent) |
 | `SLACK_MONITORING_WEBHOOK_URL` | `queue-supervision.yml` | Notification Slack en cas de queue dégradée | Optional (notification désactivée si absent) |
-
-> ⚠️ **Sécurité** : ces secrets donnent un accès **en écriture** à la base de production depuis un
-> runner GitHub Actions hébergé. Toute rotation doit être coordonnée (voir
-> `docs/ops/JETONS_ROTATION_RUNBOOK.md`) — c'est aussi ce qui motive la suppression de ce
-> contournement (issue #7258).
 
 ### Variables complémentaires (`vars.*`)
 

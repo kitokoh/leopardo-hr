@@ -41,8 +41,9 @@ aucun canal public (#3257).
 - **API + Web** : `gestionemployerbackend` — déployé via webhook
   `RENDER_DEPLOY_HOOK_URL` (secret GitHub, workflow `deploy-main.yml`).
 - **Queue worker** : mono-conteneur — le worker tourne en arrière-plan du conteneur web
-  (entrypoint, driver `database`) ; **drain de secours GitHub Actions** toutes les 5 min
-  (`queue-worker-fallback.yml`, #5205). #4948 résolu — plus de service séparé attendu.
+  (entrypoint, driver `database`). Le drain de secours GitHub Actions a été supprimé
+  (#7694 — credentials prod en CI) ; supervision par sonde HTTP (`queue-supervision.yml`).
+  #4948 résolu — plus de service séparé attendu.
 - **Drivers (boot)** : `QUEUE_CONNECTION=database` fixe ; `CACHE_STORE`/`SESSION_DRIVER`
   automatiques (Redis si Upstash répond, sinon `file`) via `infra:probe-availability` (#5206/#5207).
 - **Staging** : `RENDER_STAGING_DEPLOY_HOOK_URL` (fallback hook prod si absent) ;

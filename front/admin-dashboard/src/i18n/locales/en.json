@@ -1706,7 +1706,7 @@
     "statusApproved": "Approved",
     "statusPending": "Pending",
     "statusRejected": "Rejected",
-    "subtitle": "Manage the partner program and Leopardo RH commissions.",
+    "subtitle": "Manage the partner program and Leopardo commissions.",
     "syncing": "Syncing data...",
     "tabAudit": "Audit Log",
     "tabPartners": "Partners",
@@ -2586,7 +2586,7 @@
     "payroll_ready": {
       "subject": "Your payslip is ready",
       "greeting": "Hello :name,",
-      "body": "Your payslip for :period is ready. You can review it in Leopardo HR.",
+      "body": "Your payslip for :period is ready. You can review it in Leopardo.",
       "action": "View my payslip",
       "footer": "Please review your information before accounting export."
     },
@@ -5209,10 +5209,19 @@
       "entreprise": "Client companies",
       "metier": "Platform operations",
       "parametres": "Settings",
-      "systeme": "System"
+      "systeme": "System",
+      "facturationOffres": "Billing & plans",
+      "referentielsPaie": "Payroll references",
+      "plateforme": "Platform"
     },
     "team": "Platform team",
-    "acquisitionFunnel": "Acquisition funnel"
+    "acquisitionFunnel": "Acquisition funnel",
+    "accounting": "Accounting",
+    "accountingStart": "Get started",
+    "accountingOverview": "Dashboard",
+    "accountingConfig": "Settings",
+    "fuelStationHub": "Fuel station hub",
+    "fuelStationOps": "Operations"
   },
   "companydetailCoreModuleAlwaysActive": "Core module always active",
   "smartAttendanceSessionsTitle": "Smart Attendance sessions",
