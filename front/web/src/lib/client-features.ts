@@ -23,7 +23,8 @@ export type ClientModuleKey =
   | 'fuel'
   | 'fleet'
   | 'cameras'
-  | 'showcase';
+  | 'showcase'
+  | 'commerce';
 export type FeatureState = 'available' | 'trial' | 'locked';
 
 /**
@@ -32,7 +33,7 @@ export type FeatureState = 'available' | 'trial' | 'locked';
  * (#7225 — audit 2026-09-10 : le menu listait « Restaurant » à une agence de
  * voyage car les modules métier étaient rangés dans les groupes transverses.)
  */
-export type BusinessVertical = 'restaurant' | 'travel' | 'education' | 'fuel';
+export type BusinessVertical = 'restaurant' | 'travel' | 'education' | 'fuel' | 'commerce';
 
 /**
  * Portée d'un module :
@@ -309,6 +310,23 @@ export const CLIENT_MODULES: ClientModule[] = [
     scope: 'business',
     vertical: 'travel',
   },
+  // BC-17 RETAIL (#7675) — verticale Commerce (vente au détail). Le backend
+  // est complet (#7672/#7673/#7674 : produits/catégories, stock, POS sous
+  // `/v1/retail/*`, middleware `module.retail`) ; cette entrée expose
+  // l'espace vendeur `/commerce` (hub + produits, stock, caisse). Même
+  // pattern que `travel` (BC-24 #7633) : feature flag tenant `retail`.
+  {
+    key: 'commerce',
+    href: '/commerce',
+    label: 'Commerce',
+    group: 'general',
+    capabilityKeys: ['retail', 'can_view_retail', 'can_manage_retail'],
+    featureKeys: ['retail'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Commerce (produits, stock, caisse)',
+    scope: 'business',
+    vertical: 'commerce',
+  },
   // #7225 — verticale Station-service (BC-15 FUEL) : la page `/fuel/pump`
   // existait sans entrée de navigation (même défaut que Travel).
   {
@@ -462,6 +480,11 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/travel/bookings': 'travel',
   '/travel/reports': 'travel',
   '/travel/portal': 'travel_portal',
+  // BC-17 (#7675) — espace vendeur Commerce (hub + sous-pages).
+  '/commerce': 'commerce',
+  '/commerce/products': 'commerce',
+  '/commerce/stock': 'commerce',
+  '/commerce/pos': 'commerce',
   '/fuel': 'fuel',
   '/fuel/pump': 'fuel',
   '/fleet': 'fleet',

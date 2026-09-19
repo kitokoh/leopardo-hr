@@ -116,6 +116,23 @@ const classes = 'flex items-center'
 VUE
 git -C "$REPO_TECH" add -A
 git -C "$REPO_TECH" commit -q -m "motifs techniques du constat #7482"
+
+# Cas 1ter — signature maison du portail Next.js (BC-17 #7675) :
+# `t(locale, 'clé', 'Texte de repli FR')` est un appel de catalogue
+# (src/lib/i18n/locale-catalog.ts) — le repli français n'est PAS une chaîne
+# hors i18n (200 faux positifs mesurés sur le diff BC-24 #7643).
+mkdir -p "$REPO_TECH/front/web/src/app/(dashboard)/commerce"
+cat > "$REPO_TECH/front/web/src/app/(dashboard)/commerce/page.tsx" <<'TSX'
+export default function CommerceHomePage() {
+  const locale = getPreferredLocale();
+  const config = { endpoint: '/retail/categories', listQuery: 'per_page=100' };
+  return (
+    <p>{t(locale, 'commerce.error.loadFailed', 'Impossible de charger les données.')}</p>
+  )
+}
+TSX
+git -C "$REPO_TECH" add -A
+git -C "$REPO_TECH" commit -q -m "repli FR d'un appel t(locale, ...) (#7675)"
 run_guard "$REPO_TECH"
 if [[ "$GUARD_STATUS" -ne 0 ]]; then
   printf '%s\n' "$OUT" >&2
@@ -127,6 +144,8 @@ for motif in 'form[key]' 'bg-emerald-500' 'item.x == null' 'options.0.label' 'se
 done
 expect_clean "d'indicateur d'étapes" "commentaire JSX français (apostrophes) — cas #7562"
 expect_clean "sizes=\"" "attribut de dimension d'image (Image sizes) — audit vitrine 2026-09-16"
+expect_clean 'Impossible de charger les données.' "repli FR d'un appel t(locale, ...) — cas #7675"
+expect_clean 'per_page=100' "query string d'API (listQuery) — cas #7675"
 
 # ── Cas 2 : code technique + vrais textes utilisateur → ROUGE ────────────────
 REPO_TEXT="$(new_repo mixte)"

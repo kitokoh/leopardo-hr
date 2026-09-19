@@ -7264,5 +7264,213 @@
       "support": "Destek",
       "supportDesc": "Ekibimize ulaşın"
     }
+  },
+  "commerce": {
+    "section": {
+      "title": "Ticaret",
+      "subtitle": "Satıcı alanı: Ticaret iş kolunun ürünleri, stoğu ve kasası."
+    },
+    "loading": "Yükleniyor…",
+    "gate": {
+      "retry": "Tekrar dene"
+    },
+    "search": {
+      "placeholder": "Ara…"
+    },
+    "common": {
+      "status": "Durum"
+    },
+    "table": {
+      "actions": "İşlemler",
+      "empty": "Öğe yok."
+    },
+    "action": {
+      "create": "Oluştur",
+      "createTitle": "Öğe oluştur",
+      "edit": "Düzenle",
+      "editTitle": "Düzenle",
+      "delete": "Sil",
+      "cancel": "İptal",
+      "save": "Kaydet"
+    },
+    "form": {
+      "required": "Bu alan zorunludur.",
+      "saving": "Kaydediliyor…",
+      "selectPlaceholder": "— Seçin —"
+    },
+    "confirm": {
+      "deleteMessage": "Bu öğe kalıcı olarak silinsin mi?"
+    },
+    "error": {
+      "loadFailed": "Veriler yüklenemedi.",
+      "saveFailed": "Kaydetme başarısız oldu.",
+      "deleteFailed": "Silme başarısız oldu.",
+      "actionFailed": "İşlem başarısız oldu."
+    },
+    "pagination": {
+      "previous": "Önceki",
+      "next": "Sonraki",
+      "page": "Sayfa",
+      "items": "öğe"
+    },
+    "home": {
+      "kpisTitle": "Hızlı bakış",
+      "kpiProducts": "Katalogdaki ürünler",
+      "kpiAlerts": "Düşük stok uyarıları",
+      "kpiSession": "Kasa",
+      "sessionOpen": "Oturum açık",
+      "sessionClosed": "Açık oturum yok",
+      "empty": "Veri yok.",
+      "open": "Aç",
+      "products": "Ürünler",
+      "productsDesc": "Kategoriler, ürün kartları, fiyatlar ve yayınlama.",
+      "stock": "Stok",
+      "stockDesc": "Konumlar, seviyeler, izlenen hareketler ve uyarılar.",
+      "pos": "Kasa",
+      "posDesc": "Kasa oturumları, satışlar, tahsilatlar ve fişler."
+    },
+    "tab": {
+      "products": "Ürünler",
+      "categories": "Kategoriler",
+      "levels": "Seviyeler",
+      "movements": "Hareketler",
+      "locations": "Konumlar",
+      "alerts": "Uyarılar"
+    },
+    "categories": {
+      "title": "Kategoriler",
+      "name": "Ad",
+      "slug": "Kısa ad",
+      "position": "Sıra"
+    },
+    "products": {
+      "pageTitle": "Ürün kataloğu",
+      "pageSubtitle": "Kategoriler, ürün kartları, para birimiyle fiyatlar ve yayınlama.",
+      "title": "Ürünler",
+      "name": "Ad",
+      "category": "Kategori",
+      "barcode": "Barkod",
+      "price": "Fiyat",
+      "currency": "Para birimi",
+      "cost": "Maliyet",
+      "unit": "Birim",
+      "description": "Açıklama",
+      "publish": "Yayınla",
+      "unpublish": "Yayından kaldır",
+      "createTitle": "Ürün oluştur",
+      "editTitle": "Ürünü düzenle",
+      "allStatuses": "Tüm durumlar",
+      "statusFilter": "Duruma göre filtrele",
+      "invalidPrice": "Geçersiz fiyat.",
+      "invalidCost": "Geçersiz maliyet."
+    },
+    "productStatus": {
+      "draft": "Taslak",
+      "published": "Yayında",
+      "archived": "Arşivlendi"
+    },
+    "locations": {
+      "title": "Konumlar",
+      "name": "Ad",
+      "code": "Kod",
+      "type": "Tür",
+      "active": "Aktif"
+    },
+    "locationType": {
+      "store": "Mağaza",
+      "warehouse": "Depo"
+    },
+    "stock": {
+      "pageTitle": "Stok",
+      "pageSubtitle": "Konumlar, seviyeler, izlenen hareketler ve düşük stok uyarıları.",
+      "location": "Konum",
+      "product": "Ürün",
+      "quantity": "Miktar",
+      "threshold": "Uyarı eşiği",
+      "allLocations": "Tüm konumlar",
+      "allProducts": "Tüm ürünler",
+      "belowThreshold": "Yalnızca uyarı eşiğinin altındakiler",
+      "noLevels": "Stok seviyesi yok.",
+      "newMovement": "Hareket kaydet",
+      "reason": "Neden",
+      "note": "Not",
+      "saveMovement": "Hareketi kaydet",
+      "movementSaved": "Hareket kaydedildi.",
+      "invalidQuantity": "Geçersiz miktar.",
+      "history": "Hareket geçmişi",
+      "date": "Tarih",
+      "delta": "Fark",
+      "noMovements": "Kayıtlı hareket yok.",
+      "noAlerts": "Düşük stok uyarısı yok."
+    },
+    "stockDirection": {
+      "in": "Stok girişi (miktar eklenir).",
+      "out": "Stok çıkışı (miktar düşülür).",
+      "signed": "İşaretli düzeltme: farkı girin (+/−)."
+    },
+    "stockReason": {
+      "purchase": "Satın alma (giriş)",
+      "sale": "Satış (çıkış)",
+      "adjustment": "Düzeltme",
+      "return": "İade (giriş)",
+      "transfer_in": "Gelen transfer",
+      "transfer_out": "Giden transfer",
+      "loss": "Kayıp / fire"
+    },
+    "pos": {
+      "pageTitle": "Kasa",
+      "pageSubtitle": "Kasa oturumları, satışlar, tahsilatlar ve fişler.",
+      "openTitle": "Kasa oturumu aç",
+      "openHint": "Her konum için yalnızca bir açık oturum.",
+      "openingCash": "Açılış kasası",
+      "open": "Kasayı aç",
+      "selectLocation": "Bir konum seçin.",
+      "invalidAmount": "Geçersiz tutar.",
+      "sessionBanner": "Oturum açık",
+      "close": "Kasayı kapat",
+      "closeTitle": "Oturum kapanışı",
+      "closeHint": "Beklenen tutar ve fark sunucuda hesaplanır (açılış kasası + nakit tahsilatlar).",
+      "countedCash": "Sayılan nakit",
+      "expectedCash": "Beklenen nakit",
+      "variance": "Fark",
+      "varianceReason": "Fark nedeni",
+      "confirmClose": "Kapanışı onayla",
+      "closedTitle": "Oturum kapatıldı",
+      "catalog": "Yayınlanan katalog",
+      "noProducts": "Yayınlanmış ürün yok.",
+      "cart": "Geçerli sipariş",
+      "emptyCart": "Öğe yok. Eklemek için bir ürüne tıklayın.",
+      "quantity": "Miktar",
+      "removeLine": "Kaldır",
+      "estimatedTotal": "Tahmini toplam (nihai toplam sunucuda hesaplanır)",
+      "submitOrder": "Siparişi onayla",
+      "receipt": "Kasa fişi",
+      "print": "Yazdır",
+      "item": "Ürün",
+      "lineTotal": "Satır toplamı",
+      "total": "Toplam",
+      "paid": "Ödenen",
+      "remaining": "Kalan",
+      "payment": "Tahsilat",
+      "method": "Ödeme yöntemi",
+      "amount": "Tutar",
+      "addPayment": "Tahsil et",
+      "completed": "Sipariş ödendi: stok düşüldü.",
+      "cancelled": "Sipariş iptal edildi: stok geri yüklendi.",
+      "cancelOrder": "Siparişi iptal et",
+      "cancelConfirm": "Bu sipariş iptal edilsin mi?",
+      "newOrder": "Yeni satış"
+    },
+    "orderStatus": {
+      "draft": "Taslak",
+      "completed": "Ödendi",
+      "cancelled": "İptal edildi"
+    },
+    "paymentMethod": {
+      "cash": "Nakit",
+      "card": "Kart",
+      "mobile": "Mobil ödeme",
+      "online": "Çevrimiçi"
+    }
   }
 }
