@@ -34,7 +34,6 @@ DELETE /v1/travel/rental-vehicles/{param}
 DELETE /v1/travel/rental-vehicles/{param}/images/{param}
 DELETE /v1/travel/routes/{param}
 DELETE /v1/travel/routes/{param}/stops/{param}
-DELETE /v1/travel/staff-assignments/{param}
 DELETE /v1/travel/stations/{param}
 DELETE /v1/travel/tourist-sites/{param}
 DELETE /v1/travel/trips/{param}
@@ -109,8 +108,6 @@ GET /v1/travel/shop/bookings/{param}
 GET /v1/travel/shop/connections
 GET /v1/travel/shop/trips
 GET /v1/travel/shop/trips/{param}
-GET /v1/travel/staff-assignments
-GET /v1/travel/staff-assignments/{param}
 GET /v1/travel/stations
 GET /v1/travel/stations/{param}
 GET /v1/travel/tickets/{param}/pdf
@@ -202,8 +199,6 @@ POST /v1/travel/routes/{param}/stops
 POST /v1/travel/shop/bookings
 POST /v1/travel/shop/bookings/{param}/cancel
 POST /v1/travel/shop/connections/book
-POST /v1/travel/staff-assignments
-POST /v1/travel/staff-assignments/{param}/revoke
 POST /v1/travel/stations
 POST /v1/travel/tickets/{param}/check-in
 POST /v1/travel/tickets/{param}/revoke
@@ -232,7 +227,6 @@ PUT /v1/travel/quizzes/{param}/questions/{param}
 PUT /v1/travel/rental-vehicles/{param}
 PUT /v1/travel/routes/{param}
 PUT /v1/travel/routes/{param}/stops/{param}
-PUT /v1/travel/staff-assignments/{param}
 PUT /v1/travel/stations/{param}
 PUT /v1/travel/tourist-sites/{param}
 PUT /v1/travel/trips/{param}

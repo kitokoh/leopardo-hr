@@ -29843,6 +29843,227 @@ paths:
         '422':
           $ref: '#/components/responses/Error422'
 
+  /travel/staff-assignments:
+    get:
+      tags:
+      - Travel
+      summary: Liste des affectations d'equipage de la verticale voyage
+      description: >-
+        BC-24 TRAVEL (#7638) — pont RH : affectations d'employes RH
+        (employee_id par valeur, spec SOLUTION_TRAVEL_AGENCY §685) a un role
+        metier travel (driver/agent/controller/office_manager) sur un scope
+        bureau OU voyage. Filtres employee_id, office_id, trip_id, status,
+        role ; pagination per_page (1..1000, defaut 50).
+      parameters:
+      - name: employee_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: office_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: trip_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [active, revoked]
+      - name: role
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [driver, agent, controller, office_manager]
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Affectations paginees
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelStaffAssignment'
+        '401':
+          description: Non authentifie
+    post:
+      tags:
+      - Travel
+      summary: Affecter un employe RH a un role metier travel
+      description: >-
+        BC-24 TRAVEL (#7638) — cree une affectation ACTIVE. employee_id est
+        reference PAR VALEUR (HR reste proprietaire) et doit exister dans le
+        tenant courant (422 sinon). Scope exclusif : office_id OU trip_id,
+        exactement un (422 sinon). Doublon actif employe×role×scope → 409.
+        Reserve principal/rh, compose avec le RBAC ressource-scope #7600.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [employee_id, role]
+              properties:
+                employee_id:
+                  type: integer
+                role:
+                  type: string
+                  enum: [driver, agent, controller, office_manager]
+                office_id:
+                  type: integer
+                  nullable: true
+                trip_id:
+                  type: integer
+                  nullable: true
+      responses:
+        '201':
+          description: Affectation creee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelStaffAssignment'
+        '403':
+          description: Acteur non autorise a affecter du staff
+        '409':
+          description: Affectation active identique deja existante
+        '422':
+          description: Validation (employe hors tenant, scope manquant ou double)
+  /travel/staff-assignments/{travelStaffAssignment}:
+    get:
+      tags:
+      - Travel
+      summary: Detail d'une affectation d'equipage
+      description: >-
+        BC-24 TRAVEL (#7638) — 404 sur cross-tenant (jamais 403 sur la
+        ressource elle-meme).
+      parameters:
+      - name: travelStaffAssignment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Affectation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelStaffAssignment'
+        '404':
+          description: Introuvable (ou autre tenant)
+    put:
+      tags:
+      - Travel
+      summary: Modifier le role d'une affectation d'equipage
+      description: >-
+        BC-24 TRAVEL (#7638) — seul le role metier est mutable ; changer de
+        scope (bureau/voyage) ou d'employe = revoquer puis recreer, pour
+        preserver l'historique des manifestes.
+      parameters:
+      - name: travelStaffAssignment
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties:
+                role:
+                  type: string
+                  enum: [driver, agent, controller, office_manager]
+      responses:
+        '200':
+          description: Affectation mise a jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelStaffAssignment'
+        '403':
+          description: Acteur non autorise
+        '404':
+          description: Introuvable (ou autre tenant)
+        '422':
+          description: Role invalide
+    delete:
+      tags:
+      - Travel
+      summary: Supprimer une affectation d'equipage
+      description: >-
+        BC-24 TRAVEL (#7638) — suppression physique (geste d'administration ;
+        pour retirer un employe du service en gardant l'historique des
+        manifestes, utiliser la REVOCATION).
+      parameters:
+      - name: travelStaffAssignment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprimee
+        '403':
+          description: Acteur non autorise
+        '404':
+          description: Introuvable (ou autre tenant)
+  /travel/staff-assignments/{travelStaffAssignment}/revoke:
+    post:
+      tags:
+      - Travel
+      summary: Revoquer une affectation d'equipage
+      description: >-
+        BC-24 TRAVEL (#7638) — revocation SOFT (statut revoked + revoked_at,
+        acte metier POST convention #4930, la ligne reste pour l'historique).
+        Idempotente : rejouer la revocation est un no-op sur. L'equipage
+        revoque disparait du manifeste de voyage.
+      parameters:
+      - name: travelStaffAssignment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Affectation revoquee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelStaffAssignment'
+        '403':
+          description: Acteur non autorise
+        '404':
+          description: Introuvable (ou autre tenant)
   /public/travel/shop/bookings/{reference}/cancel:
     post:
       tags:
@@ -30803,6 +31024,39 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    TravelStaffAssignment:
+      type: object
+      description: >-
+        Affectation d'equipage de la verticale voyage (TRAVEL-STAFF, #7638) —
+        pont RH : employee_id reference PAR VALEUR (spec §685), role metier
+        travel, scope exclusif bureau OU voyage, revocation soft.
+      properties:
+        id:
+          type: integer
+        employee_id:
+          type: integer
+        role:
+          type: string
+          enum: [driver, agent, controller, office_manager]
+        office_id:
+          type: integer
+          nullable: true
+        trip_id:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum: [active, revoked]
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
     EduFeeCharge:
       type: object
       description: Facturation d'un frais scolaire à un élève (EDU-016, #5832).
