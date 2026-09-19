@@ -193,6 +193,7 @@ class StripeService
 
         match ($type) {
             'checkout.session.completed' => $this->handleCheckoutCompleted($data),
+            'invoice.created' => $this->handleInvoiceCreated($data),
             'invoice.paid' => $this->handleInvoicePaid($data),
             'invoice.payment_failed' => $this->handleInvoicePaymentFailed($data),
             'customer.subscription.updated' => $this->handleSubscriptionUpdated($data),
@@ -275,11 +276,103 @@ class StripeService
         ]);
     }
 
+    /**
+     * Rapprochement Stripe (#7763) — `invoice.created` : écrire
+     * `stripe_invoice_id` sur la facture interne du tenant (retrouvée par
+     * souscription + période). Aucun changement d'état ici : la facture
+     * interne suit sa propre machine à états (l'encaissement arrive via
+     * `invoice.paid`). Idempotent : un événement rejoué retombe sur la
+     * facture déjà rapprochée (lookup par stripe_invoice_id en premier),
+     * en plus du registre #5444 au niveau du contrôleur.
+     *
+     * @param  array<string, mixed>  $invoice
+     */
+    private function handleInvoiceCreated(array $invoice): void
+    {
+        $this->reconcileStripeInvoice($invoice);
+    }
+
+    /**
+     * Retrouve la facture interne correspondant à un objet `invoice` Stripe.
+     *
+     * 1. Par `stripe_invoice_id` (facture déjà rapprochée) — comportement
+     *    historique de handleInvoicePaid/handleInvoicePaymentFailed, inchangé.
+     * 2. Sinon par souscription (`stripe_subscription_id`) + période
+     *    (`period_start` → `Y-m`, le format de `invoices.period` posé par
+     *    GenerateMonthlyInvoices) : la facture interne encore non rapprochée
+     *    reçoit alors son `stripe_invoice_id` (#7763).
+     *
+     * @param  array<string, mixed>  $invoice
+     */
+    private function reconcileStripeInvoice(array $invoice): ?Invoice
+    {
+        $stripeInvoiceId = is_string($invoice['id'] ?? null) ? $invoice['id'] : '';
+
+        $invoiceModel = Invoice::query()
+            ->where('stripe_invoice_id', $stripeInvoiceId)
+            ->first();
+
+        if ($invoiceModel) {
+            return $invoiceModel;
+        }
+
+        if ($stripeInvoiceId === '') {
+            return null;
+        }
+
+        $subscriptionId = is_string($invoice['subscription'] ?? null) ? $invoice['subscription'] : null;
+        if ($subscriptionId === null || $subscriptionId === '') {
+            return null;
+        }
+
+        $subscription = Subscription::query()
+            ->where('stripe_subscription_id', $subscriptionId)
+            ->first();
+
+        if (! $subscription) {
+            return null;
+        }
+
+        $period = isset($invoice['period_start']) && is_numeric($invoice['period_start'])
+            ? Carbon::createFromTimestamp((int) $invoice['period_start'])->format('Y-m')
+            : now()->format('Y-m');
+
+        $invoiceModel = Invoice::query()
+            ->where('company_id', $subscription->company_id)
+            ->where('subscription_id', $subscription->id)
+            ->where('period', $period)
+            ->whereNull('stripe_invoice_id')
+            ->orderBy('id')
+            ->first();
+
+        if (! $invoiceModel) {
+            Log::info('Stripe: Aucune facture interne à rapprocher', [
+                'company_id' => $subscription->company_id,
+                'stripe_invoice_id' => $stripeInvoiceId,
+                'period' => $period,
+            ]);
+
+            return null;
+        }
+
+        $invoiceModel->forceFill(['stripe_invoice_id' => $stripeInvoiceId])->save();
+
+        Log::info('Stripe: Facture interne rapprochée', [
+            'company_id' => $invoiceModel->company_id,
+            'invoice_id' => $invoiceModel->id,
+            'stripe_invoice_id' => $stripeInvoiceId,
+            'period' => $period,
+        ]);
+
+        return $invoiceModel;
+    }
+
     private function handleInvoicePaid(array $invoice): void
     {
-        $invoiceModel = Invoice::query()
-            ->where('stripe_invoice_id', $invoice['id'] ?? '')
-            ->first();
+        // #7763 : lookup historique par stripe_invoice_id, avec repli sur le
+        // rapprochement souscription + période si l'événement invoice.created
+        // n'a pas été reçu (l'id Stripe est alors écrit ici).
+        $invoiceModel = $this->reconcileStripeInvoice($invoice);
 
         if ($invoiceModel) {
             $amountPaid = (float) (($invoice['amount_paid'] ?? 0) / 100);
