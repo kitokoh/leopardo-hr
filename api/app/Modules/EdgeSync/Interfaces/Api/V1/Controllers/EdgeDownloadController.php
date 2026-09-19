@@ -56,8 +56,84 @@ class EdgeDownloadController extends Controller
      * Manifeste d'intégrité (issue #3770 / #3529) : le script d'installation
      * vérifie chaque fichier téléchargé contre ces empreintes avant de
      * l'écrire — fail-closed, aucune écriture si un hash ne correspond pas.
+     *
+     * #7653 : le corps est produit par {@see self::manifestContent()} — les
+     * octets servis sont EXACTEMENT ceux signés par {@see self::sha256Signature()}.
      */
-    public function sha256(): JsonResponse
+    public function sha256(): Response|JsonResponse
+    {
+        $manifest = $this->manifestContent();
+
+        if (is_array($manifest)) {
+            return response()->json([
+                'error' => 'edge_assets_missing',
+                'missing' => $manifest,
+            ], 503);
+        }
+
+        return response($manifest, 200, [
+            'Content-Type' => 'application/json',
+        ]);
+    }
+
+    /**
+     * GET /edge/download/sha256.txt.sig
+     *
+     * #7653 — signature RS256 (SHA256withRSA, base64) des octets exacts du
+     * manifeste sha256.txt, produite avec la clé privée de licence Edge
+     * (EDGE_LICENSE_PRIVATE_KEY). Le manifeste était servi par le même
+     * endpoint que les fichiers qu'il vérifie (confiance circulaire) :
+     * install.sh vérifie désormais cette signature avec la clé publique
+     * (épinglée hors bande ou edge_license_public.pem), fail-closed.
+     */
+    public function sha256Signature(): Response|JsonResponse
+    {
+        $manifest = $this->manifestContent();
+
+        if (is_array($manifest)) {
+            return response()->json([
+                'error' => 'edge_assets_missing',
+                'missing' => $manifest,
+            ], 503);
+        }
+
+        $privateKey = config('edge.license_private_key');
+        if (! is_string($privateKey) || $privateKey === '') {
+            return response()->json([
+                'error' => 'edge_manifest_signing_key_not_configured',
+            ], 503);
+        }
+
+        $key = openssl_pkey_get_private($privateKey);
+        if ($key === false) {
+            return response()->json([
+                'error' => 'edge_manifest_signing_key_invalid',
+            ], 503);
+        }
+
+        $signature = '';
+        if (! openssl_sign($manifest, $signature, $key, OPENSSL_ALGO_SHA256)) {
+            return response()->json([
+                'error' => 'edge_manifest_signature_failed',
+            ], 503);
+        }
+
+        return response(base64_encode($signature), 200, [
+            'Content-Type' => 'text/plain',
+            'Cache-Control' => 'no-store',
+        ]);
+    }
+
+    /**
+     * Construit le corps JSON canonique du manifeste d'intégrité.
+     *
+     * Source unique pour {@see self::sha256()} et {@see self::sha256Signature()} :
+     * la signature ne vaut que si les deux endpoints servent des octets
+     * identiques (#7653).
+     *
+     * @return string|list<string> corps JSON, ou liste des assets manquants
+     */
+    private function manifestContent(): string|array
     {
         $lines = [];
         $missing = [];
@@ -66,12 +142,14 @@ class EdgeDownloadController extends Controller
             $path = $this->resolveEdgeAsset($asset);
             if ($path === null || ! is_file($path)) {
                 $missing[] = $asset;
+
                 continue;
             }
 
             $hash = hash_file('sha256', $path);
             if ($hash === false) {
                 $missing[] = $asset;
+
                 continue;
             }
 
@@ -79,16 +157,13 @@ class EdgeDownloadController extends Controller
         }
 
         if ($missing !== []) {
-            return response()->json([
-                'error' => 'edge_assets_missing',
-                'missing' => $missing,
-            ], 503);
+            return $missing;
         }
 
-        return response()->json([
+        return json_encode([
             'sha256' => $lines,
             'algorithm' => 'sha256',
-        ]);
+        ], JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -123,8 +198,8 @@ class EdgeDownloadController extends Controller
         $hash = hash_file('sha256', $path);
 
         return response($hash === false ? '' : $hash, 200, [
-            'Content-Type'        => 'text/plain',
-            'Cache-Control'       => 'public, max-age=3600',
+            'Content-Type' => 'text/plain',
+            'Cache-Control' => 'public, max-age=3600',
         ]);
     }
 
@@ -149,7 +224,7 @@ class EdgeDownloadController extends Controller
         }
 
         return response($publicKey, 200, [
-            'Content-Type'  => 'text/plain',
+            'Content-Type' => 'text/plain',
             'Cache-Control' => 'public, max-age=86400',
         ]);
     }
@@ -184,9 +259,9 @@ class EdgeDownloadController extends Controller
         $content = file_get_contents($path);
 
         return response($content === false ? '' : $content, 200, [
-            'Content-Type'        => $contentType,
+            'Content-Type' => $contentType,
             'Content-Disposition' => 'attachment; filename="'.$filename.'"',
-            'Cache-Control'       => 'public, max-age=3600',
+            'Cache-Control' => 'public, max-age=3600',
         ]);
     }
 }

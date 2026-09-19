@@ -36,16 +36,14 @@ services:
       LICENSE_PUBLIC_KEY_PATH: /var/leopardo/license.pub
     volumes:
       - edge_data:/var/leopardo
-      # #6604 : une seule copie de la clé publique dans le repo
-      # (edge/keys/edge_license_public.pem — servie aussi par l'API cloud).
+      # #6604 / #6700 : une seule copie de la clé publique dans le repo
+      # (edge/keys/edge_license_public.pem — servie aussi par l'API cloud,
+      # le doublon edge/license.pub a été supprimé). Chemins relatifs au
+      # fichier compose (edge/), cf. #2751. #7653 : montage dédupliqué
+      # (il était déclaré deux fois). Le chemin conteneur reste stable.
       - ./keys/edge_license_public.pem:/var/leopardo/license.pub:ro
-      # Issue #2751 — chemins relatifs au fichier compose (edge/) :
-      # ./edge/license.pub résolvait edge/edge/license.pub (inexistant).
-      # #6700 : clé canonique edge/keys/edge_license_public.pem (le doublon
-      # edge/license.pub a été supprimé). Le chemin conteneur reste stable.
-      - ./keys/edge_license_public.pem:/var/leopardo/license.pub:ro
-    ports:
-      - "7878:80"       # http://leopardo.local:7878
+    # #7653 : plus AUCUNE publication directe en clair sur l'hôte —
+    # l'API n'est joignable que via edge-proxy (TLS interne, port 7878).
     networks:
       - leopardo-local
     healthcheck:
@@ -66,9 +64,11 @@ services:
     container_name: leopardo-edge-ui
     restart: unless-stopped
     environment:
-      NEXT_PUBLIC_EDGE_API: "http://edge-api/api"   # lue par web-offline (next.config.js) — audit Vague 2 #6595
-    ports:
-      - "7879:3000"     # http://leopardo.local:7879
+      # #7653 : vide = same-origin — le proxy TLS route /api/* vers edge-api
+      # sur chaque origine UI (lue par web-offline, next.config.js — #6595).
+      NEXT_PUBLIC_EDGE_API: ""
+    # #7653 : plus de publication directe en clair (`7879:3000`) — l'UI
+    # n'est joignable que via edge-proxy (TLS interne, port 7879).
     depends_on:
       - edge-api
     networks:
@@ -107,8 +107,20 @@ services:
     image: caddy@sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648
     container_name: leopardo-edge-proxy
     restart: unless-stopped
+    # #7653 : le proxy est le SEUL point d'entrée LAN — TLS interne
+    # (`tls internal`, CA locale Caddy) par défaut. :80 ne fait que
+    # rediriger vers HTTPS ; 7878/7879 (ports historiques API/UI) sont
+    # conservés mais servis en TLS.
     ports:
       - "80:80"
+      - "443:443"
+      - "7878:7878"
+      - "7879:7879"
+    environment:
+      # Noms de site pour lesquels la CA interne émet les certificats
+      # (écrits dans .env par install.sh).
+      EDGE_DOMAIN: "${EDGE_DOMAIN:-leopardo.local}"
+      EDGE_LAN_IP: "${EDGE_LAN_IP:-127.0.0.1}"
     volumes:
       # Issue #2751 — ./edge/Caddyfile.edge résolvait edge/edge/…
       - ./Caddyfile.edge:/etc/caddy/Caddyfile:ro

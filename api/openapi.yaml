@@ -1298,6 +1298,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /edge/download/sha256.txt.sig:
+    get:
+      tags:
+      - Health
+      summary: Signature RS256 du manifeste sha256.txt (public)
+      description: 'Signature SHA256-RSA (base64) des octets exacts du manifeste sha256.txt, produite avec la cle privee de licence Edge. Verifiee par install.sh avec la cle publique embarquee/epinglee, fail-closed (issue #7653).'
+      security: []
+      responses:
+        '200':
+          description: Signature base64 du manifeste
+          content:
+            text/plain:
+              schema:
+                type: string
+        '503':
+          description: Cle de signature non configuree ou assets manquants
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /edge/download/docker-compose.yml.sha256:
     get:
       tags:
