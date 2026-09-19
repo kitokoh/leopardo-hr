@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Cabinet\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -30,10 +31,13 @@ use Illuminate\Support\Carbon;
  */
 class CabinetFolder extends Model
 {
+    // Issue #7646 (modèles orphelins) — schéma partagé shared_tenants :
+    // isolation lecture/écriture par tenant via le trait (cf. CabinetDocument).
+    use BelongsToCompany;
+
     protected $table = 'cabinet_folders';
 
     protected $fillable = [
-        'company_id',
         'employee_id',
         'parent_id',
         'name',

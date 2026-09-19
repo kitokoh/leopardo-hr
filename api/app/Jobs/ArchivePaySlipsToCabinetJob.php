@@ -190,8 +190,10 @@ class ArchivePaySlipsToCabinetJob implements ShouldQueue, TenantScopedJob
         Storage::disk('private')->put($relativePath, $pdfBinary);
 
         // 3. Création du document Cabinet (read_only, type payslip).
+        // #7646 (modèles orphelins) : company_id n'est plus fillable sur les
+        // modèles Cabinet — le trait BelongsToCompany le force depuis le tenant
+        // actif (ce job tourne sous EnsureTenantContext, même valeur qu'avant).
         $document = CabinetDocument::create([
-            'company_id' => $this->legacyCompanyKey($company),
             'employee_id' => $slip->employee_id,
             'folder_id' => null,
             'name' => sprintf('Bulletin de paie %s-%02d', $periodStart->year, $periodStart->month),
@@ -228,16 +230,6 @@ class ArchivePaySlipsToCabinetJob implements ShouldQueue, TenantScopedJob
         ]);
     }
 
-    /**
-     * Vague QA 2026-08-14 — company_id du Cabinet est désormais l'UUID
-     * réel de l'entreprise (migration 000019, plus de clé legacy 0).
-     */
-    private function legacyCompanyKey(Company $company): ?string
-    {
-        $key = $company->getKey();
-
-        return is_string($key) && $key !== '' ? $key : null;
-    }
 
     /**
      * #4205 : épuisement des retries — log d'alerte (archivage cabinet).

@@ -87,5 +87,35 @@ trait BelongsToCompany
 
             $model->setAttribute('company_id', $currentCompany->id);
         });
+
+        static::updating(function (Model $model): void {
+            // Issue #7646 (suite) — le chemin `updating` était resté ouvert :
+            // `company_id` mass-assignable permettait de DÉPLACER un
+            // enregistrement existant vers un autre tenant via un payload
+            // d'update validé. Même contrat que `creating` : sous tenant
+            // actif, `company_id` ne change jamais — toute tentative est
+            // écrasée et journalisée. Hors contexte tenant (console, jobs
+            // de maintenance), le comportement permissif est conservé.
+            if (! $model->isDirty('company_id')) {
+                return;
+            }
+
+            $currentCompany = app()->bound('current_company') ? currentCompany() : null;
+
+            if (! $currentCompany instanceof Company) {
+                return;
+            }
+
+            $original = $model->getRawOriginal('company_id');
+
+            Log::warning('BelongsToCompany: tentative de modification de company_id sous tenant actif — valeur restaurée (spoof cross-tenant sur update, #7646)', [
+                'model' => $model::class,
+                'original_company_id' => (string) $original,
+                'attempted_company_id' => (string) $model->getAttribute('company_id'),
+                'tenant_company_id' => $currentCompany->id,
+            ]);
+
+            $model->setAttribute('company_id', $original);
+        });
     }
 }
