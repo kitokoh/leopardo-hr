@@ -323,4 +323,9 @@ return [
     'RESOURCE_NOT_FOUND' => 'المورد غير موجود في هذه الشركة.',
     'RESOURCE_ASSIGNMENTS_REQUIRED' => 'قائمة الصلاحيات مطلوبة (يمكن أن تكون فارغة لإلغاء الكل).',
     'RESOURCE_ACCESS_LEVEL_INVALID' => 'مستوى الوصول غير صالح (view أو operate أو manage).',
+
+    // BC-30 HealthManager — HC-001/HC-004 (#7785, #7788)، حل الرعاية الصحية.
+    'HEALTH_SOLUTION_INACTIVE' => 'حل HealthManager غير مفعّل لمساحة العمل هذه.',
+    'HEALTH_APPOINTMENT_CONFLICT' => 'الموعد يتعارض مع موعد قائم لهذا الطبيب.',
+    'HEALTH_INVALID_STATUS_TRANSITION' => 'انتقال حالة غير صالح لهذا السجل.',
 ];

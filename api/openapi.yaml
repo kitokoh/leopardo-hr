@@ -33249,6 +33249,333 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+  /health-manager/appointments:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les rendez-vous
+      description: 'HC-004 (#7788, BC-30). Direction et accueil voient TOUS les rendez-vous du tenant ; un praticien actif ne voit que SON agenda. Filtres practitioner_id (gestionnaires), patient_id, status, from/to. Liste paginée (data, meta).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: practitioner_id
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Filtre gestionnaire (ignoré pour un praticien, borné à son agenda)
+      - name: patient_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - scheduled
+          - confirmed
+          - checked_in
+          - completed
+          - cancelled
+          - no_show
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: Rendez-vous du tenant (paginés)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        patient_id:
+                          type: integer
+                        practitioner_id:
+                          type: integer
+                        department_id:
+                          type: integer
+                          nullable: true
+                        starts_at:
+                          type: string
+                          format: date-time
+                        ends_at:
+                          type: string
+                          format: date-time
+                        reason:
+                          type: string
+                        status:
+                          type: string
+                          enum:
+                          - scheduled
+                          - confirmed
+                          - checked_in
+                          - completed
+                          - cancelled
+                          - no_show
+                        notes:
+                          type: string
+                          nullable: true
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Planifier un rendez-vous
+      description: 'Direction et accueil uniquement. Patient, praticien (ACTIF) et service du MÊME tenant (422 sinon). Le statut initial est TOUJOURS `scheduled` (cycle de vie via l''endpoint de transition). Chevauchement d''un rendez-vous actif du même praticien → 409 HEALTH_APPOINTMENT_CONFLICT (contrôle transactionnel lockForUpdate).'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - patient_id
+              - practitioner_id
+              - starts_at
+              - ends_at
+              - reason
+              properties:
+                patient_id:
+                  type: integer
+                practitioner_id:
+                  type: integer
+                department_id:
+                  type: integer
+                  nullable: true
+                starts_at:
+                  type: string
+                  format: date-time
+                ends_at:
+                  type: string
+                  format: date-time
+                reason:
+                  type: string
+                  maxLength: 255
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Rendez-vous planifié (statut scheduled)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '409':
+          description: Conflit de créneau praticien (HEALTH_APPOINTMENT_CONFLICT)
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/appointments/agenda:
+    get:
+      tags:
+      - HealthManager
+      summary: Agenda d'un praticien (vue jour ou semaine)
+      description: 'HC-004 (#7788). Un praticien actif consulte SON agenda (practitioner_id implicite, 403 s''il demande celui d''un autre) ; direction et accueil consultent l''agenda de n''importe quel praticien. `view=day|week` autour de `date` (défaut : aujourd''hui, vue jour).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: practitioner_id
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Requis pour un gestionnaire non praticien ; implicite pour un praticien
+      - name: date
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: view
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - day
+          - week
+      responses:
+        '200':
+          description: Rendez-vous du praticien sur la période (data + meta from/to/view)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/appointments/{appointment}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter un rendez-vous
+      description: 'Gestionnaires, ou le praticien du rendez-vous. Rendez-vous d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: appointment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Rendez-vous
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - HealthManager
+      summary: Replanifier un rendez-vous
+      description: 'Direction et accueil uniquement. Mêmes gardes tenant que la création ; le nouveau créneau est re-vérifié contre les rendez-vous ACTIFS du praticien (409 en cas de chevauchement). Le statut ne passe JAMAIS par cet endpoint.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: appointment
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                patient_id:
+                  type: integer
+                practitioner_id:
+                  type: integer
+                department_id:
+                  type: integer
+                  nullable: true
+                starts_at:
+                  type: string
+                  format: date-time
+                ends_at:
+                  type: string
+                  format: date-time
+                reason:
+                  type: string
+                  maxLength: 255
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Rendez-vous replanifié
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Conflit de créneau praticien (HEALTH_APPOINTMENT_CONFLICT)
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - HealthManager
+      summary: Supprimer un rendez-vous
+      description: 'Direction et accueil uniquement (préférer l''annulation via la transition de statut `cancelled`). Rendez-vous d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: appointment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Rendez-vous supprimé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /health-manager/appointments/{appointment}/status:
+    post:
+      tags:
+      - HealthManager
+      summary: Faire avancer le statut d'un rendez-vous
+      description: 'Machine à états HC-004 : scheduled → confirmed|checked_in|cancelled|no_show ; confirmed → checked_in|cancelled|no_show ; checked_in → completed|cancelled ; completed/cancelled/no_show terminaux. Transition invalide → 422 HEALTH_INVALID_STATUS_TRANSITION. Gestionnaires, ou le praticien du rendez-vous (arrivée, terminé).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: appointment
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  type: string
+                  enum:
+                  - scheduled
+                  - confirmed
+                  - checked_in
+                  - completed
+                  - cancelled
+                  - no_show
+      responses:
+        '200':
+          description: Statut mis à jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          description: Transition de statut invalide (HEALTH_INVALID_STATUS_TRANSITION)
   /edu-manager/fee-charges:
     post:
       tags:

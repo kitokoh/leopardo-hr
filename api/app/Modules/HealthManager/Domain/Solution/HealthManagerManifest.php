@@ -65,6 +65,8 @@ final class HealthManagerManifest implements SolutionManifest
         // naissance/sexe/groupe sanguin, contacts, personne à prévenir,
         // assurance, allergies/antécédents et statut vital. Chiffrement au
         // repos des champs les plus sensibles, archivage sans suppression.
+        // HC-004 (#7788) — les rendez-vous sont ACTIFS : lien patient ↔
+        // praticien, motif de consultation et présence (no_show).
         return [
             'patients (identité, naissance, contacts — PII, données de santé)',
             'n° de dossier médical (MRN — identifiant de santé par tenant)',
@@ -73,6 +75,7 @@ final class HealthManagerManifest implements SolutionManifest
             'couverture d’assurance santé (n° d’assuré — PII financière, chiffrée au repos)',
             'personne à prévenir (PII de tiers)',
             'praticiens et spécialités (données professionnelles de santé)',
+            'rendez-vous médicaux (lien patient ↔ praticien, motif de consultation, présence — données de santé)',
             'occupation des lits (donnée de séjour — santé)',
         ];
     }

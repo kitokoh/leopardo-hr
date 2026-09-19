@@ -324,4 +324,9 @@ return [
     'RESOURCE_NOT_FOUND' => 'Ressource introuvable dans cette entreprise.',
     'RESOURCE_ASSIGNMENTS_REQUIRED' => 'La liste des accès est requise (elle peut être vide pour tout retirer).',
     'RESOURCE_ACCESS_LEVEL_INVALID' => 'Niveau d\'accès invalide (view, operate ou manage).',
+
+    // BC-30 HealthManager — HC-001/HC-004 (#7785, #7788), solution santé.
+    'HEALTH_SOLUTION_INACTIVE' => 'La solution HealthManager n\'est pas active pour cet espace.',
+    'HEALTH_APPOINTMENT_CONFLICT' => 'Le créneau chevauche un rendez-vous existant de ce praticien.',
+    'HEALTH_INVALID_STATUS_TRANSITION' => 'Transition de statut invalide pour cette ressource.',
 ];

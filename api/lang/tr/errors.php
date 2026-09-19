@@ -323,4 +323,9 @@ return [
     'RESOURCE_NOT_FOUND' => 'Kaynak bu şirkette bulunamadı.',
     'RESOURCE_ASSIGNMENTS_REQUIRED' => 'Yetki listesi gereklidir (hepsini kaldırmak için boş olabilir).',
     'RESOURCE_ACCESS_LEVEL_INVALID' => 'Geçersiz erişim düzeyi (view, operate veya manage).',
+
+    // BC-30 HealthManager — HC-001/HC-004 (#7785, #7788), sağlık çözümü.
+    'HEALTH_SOLUTION_INACTIVE' => 'HealthManager çözümü bu çalışma alanı için etkin değil.',
+    'HEALTH_APPOINTMENT_CONFLICT' => 'Zaman aralığı bu hekimin mevcut bir randevusuyla çakışıyor.',
+    'HEALTH_INVALID_STATUS_TRANSITION' => 'Bu kayıt için geçersiz durum geçişi.',
 ];

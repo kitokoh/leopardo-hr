@@ -72,6 +72,24 @@ final class HealthAccess
     }
 
     /**
+     * Id du praticien ACTIF lié à l'acteur, ou null s'il n'est pas
+     * praticien — sert à borner l'agenda (HC-004) et le dossier médical
+     * (HC-005) au praticien lui-même.
+     */
+    public static function practitionerId(Employee $actor): ?int
+    {
+        /** @var int|null $id */
+        $id = HealthPractitioner::query()
+            ->withoutGlobalScope('company')
+            ->where('company_id', $actor->company_id)
+            ->where('employee_id', $actor->id)
+            ->where('status', HealthPractitioner::STATUS_ACTIVE)
+            ->value('id');
+
+        return $id === null ? null : (int) $id;
+    }
+
+    /**
      * L'acteur peut-il GÉRER la structure clinique (services, salles, lits,
      * spécialités, praticiens — HC-002) ? Direction uniquement.
      */
@@ -106,5 +124,35 @@ final class HealthAccess
     public static function canViewStructure(Employee $actor): bool
     {
         return self::isAdmin($actor) || self::isReception($actor) || self::isPractitioner($actor);
+    }
+
+    /**
+     * L'acteur peut-il GÉRER les rendez-vous (HC-004) et les admissions
+     * (HC-006) ? Direction et accueil (planification / admissions).
+     */
+    public static function canManageAppointments(Employee $actor): bool
+    {
+        return self::isAdmin($actor) || self::isReception($actor);
+    }
+
+    /**
+     * L'acteur peut-il LIRE des rendez-vous / admissions ? Gestionnaires
+     * et praticiens actifs — le praticien est ensuite borné à SON agenda
+     * par la policy (HC-004 : « le praticien ne voit que son agenda »).
+     */
+    public static function canViewAppointments(Employee $actor): bool
+    {
+        return self::canManageAppointments($actor) || self::isPractitioner($actor);
+    }
+
+    /**
+     * L'acteur peut-il accéder au CONTENU MÉDICAL (consultations,
+     * prescriptions — HC-005) ? Praticiens actifs et direction UNIQUEMENT :
+     * la réception gère l'administratif mais n'accède JAMAIS au dossier
+     * médical (critère d'acceptation HC-005), la facturation non plus.
+     */
+    public static function canViewMedicalRecords(Employee $actor): bool
+    {
+        return self::isAdmin($actor) || self::isPractitioner($actor);
     }
 }

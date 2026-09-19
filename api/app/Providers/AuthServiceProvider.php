@@ -127,12 +127,14 @@ use App\Modules\FuelStation\Domain\Policies\FuelSitePolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelStationPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelStockEntryPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelStockPolicy;
+use App\Modules\HealthManager\Domain\Models\HealthAppointment;
 use App\Modules\HealthManager\Domain\Models\HealthBed;
 use App\Modules\HealthManager\Domain\Models\HealthDepartment;
 use App\Modules\HealthManager\Domain\Models\HealthPatient;
 use App\Modules\HealthManager\Domain\Models\HealthPractitioner;
 use App\Modules\HealthManager\Domain\Models\HealthRoom;
 use App\Modules\HealthManager\Domain\Models\HealthSpecialty;
+use App\Modules\HealthManager\Domain\Policies\HealthAppointmentPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthBedPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthDepartmentPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthPatientPolicy;
@@ -350,6 +352,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(HealthPractitioner::class, HealthPractitionerPolicy::class);
         // — HealthManager registre patients (HC-003, #7787) — RBAC strict
         Gate::policy(HealthPatient::class, HealthPatientPolicy::class);
+        // — HealthManager rendez-vous & agenda praticiens (HC-004, #7788)
+        Gate::policy(HealthAppointment::class, HealthAppointmentPolicy::class);
         Gate::policy(EduCourseSlot::class, EduCourseSlotPolicy::class);
         Gate::policy(EduAssessment::class, EduAssessmentPolicy::class);
         Gate::policy(EduGrade::class, EduGradePolicy::class);

@@ -330,4 +330,9 @@ return [
     'RESOURCE_NOT_FOUND' => 'Resource not found in this company.',
     'RESOURCE_ASSIGNMENTS_REQUIRED' => 'The assignments list is required (it may be empty to revoke everything).',
     'RESOURCE_ACCESS_LEVEL_INVALID' => 'Invalid access level (view, operate or manage).',
+
+    // BC-30 HealthManager — HC-001/HC-004 (#7785, #7788), health solution.
+    'HEALTH_SOLUTION_INACTIVE' => 'The HealthManager solution is not active for this workspace.',
+    'HEALTH_APPOINTMENT_CONFLICT' => 'The time slot overlaps an existing appointment for this practitioner.',
+    'HEALTH_INVALID_STATUS_TRANSITION' => 'Invalid status transition for this resource.',
 ];

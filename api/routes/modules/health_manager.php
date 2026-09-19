@@ -15,6 +15,7 @@ declare(strict_types=1);
  * lambda = 403. Données de santé JAMAIS exposées hors tenant.
  */
 
+use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthAppointmentController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthBedController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthDepartmentController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthPatientController;
@@ -67,4 +68,16 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/health-manager/patients/{patient}', [HealthPatientController::class, 'show'])->whereNumber('patient');
     Route::put('/health-manager/patients/{patient}', [HealthPatientController::class, 'update'])->whereNumber('patient');
     Route::delete('/health-manager/patients/{patient}', [HealthPatientController::class, 'destroy'])->whereNumber('patient');
+
+    // HC-004 (#7788) — rendez-vous & agenda praticiens : direction et
+    // accueil planifient et voient tout, un praticien actif ne voit que SON
+    // agenda. Conflit de créneau praticien → 409 ; transitions de statut
+    // validées (machine à états) → 422. `/agenda` AVANT `/{appointment}`.
+    Route::get('/health-manager/appointments', [HealthAppointmentController::class, 'index']);
+    Route::get('/health-manager/appointments/agenda', [HealthAppointmentController::class, 'agenda']);
+    Route::post('/health-manager/appointments', [HealthAppointmentController::class, 'store']);
+    Route::get('/health-manager/appointments/{appointment}', [HealthAppointmentController::class, 'show'])->whereNumber('appointment');
+    Route::put('/health-manager/appointments/{appointment}', [HealthAppointmentController::class, 'update'])->whereNumber('appointment');
+    Route::post('/health-manager/appointments/{appointment}/status', [HealthAppointmentController::class, 'updateStatus'])->whereNumber('appointment');
+    Route::delete('/health-manager/appointments/{appointment}', [HealthAppointmentController::class, 'destroy'])->whereNumber('appointment');
 });
