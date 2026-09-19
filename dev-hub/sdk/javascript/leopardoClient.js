@@ -1250,6 +1250,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/bank-exports/{bankExport}/download", options);
     },
 
+    /** Solde, packs et historique des credits IA du tenant (principal) */
+    getBillingAiCredits(options = {}) {
+      return request("GET", "/billing/ai-credits", options);
+    },
+
+    /** Creer une session Stripe Checkout one-shot (mode payment) pour un */
+    createBillingAiCreditCheckoutSession(options = {}) {
+      return request("POST", "/billing/ai-credits/checkout", options);
+    },
+
     /** Creer une session Stripe Checkout pour souscrire/upgrader (manager) */
     createBillingCheckoutSession(options = {}) {
       return request("POST", "/billing/checkout", options);

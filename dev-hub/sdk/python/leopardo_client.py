@@ -1020,6 +1020,14 @@ class LeopardoClient:
         """Telecharger un export bancaire"""
         return self.request("GET", "/bank-exports/{bankExport}/download", **kwargs)
 
+    def getbillingaicredits(self, **kwargs):
+        """Solde, packs et historique des credits IA du tenant (principal)"""
+        return self.request("GET", "/billing/ai-credits", **kwargs)
+
+    def createbillingaicreditcheckoutsession(self, **kwargs):
+        """Creer une session Stripe Checkout one-shot (mode payment) pour un"""
+        return self.request("POST", "/billing/ai-credits/checkout", **kwargs)
+
     def createbillingcheckoutsession(self, **kwargs):
         """Creer une session Stripe Checkout pour souscrire/upgrader (manager)"""
         return self.request("POST", "/billing/checkout", **kwargs)
