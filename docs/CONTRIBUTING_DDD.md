@@ -15,7 +15,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | ~~`api/app/Services/`~~ — répertoire **supprimé** (2026-08-11, #1728), ne rien y ajouter | `Modules/<Name>/Infrastructure/Services/` |
 | `api/app/Exceptions/` (base `DomainException` partagée, encore étendue par des modules) | `Modules/<Name>/Domain/Exceptions/` |
 
-## Modules existants (28 modules)
+## Modules existants (29 modules)
 
 | Module | Domaine couvert |
 |---|---|
@@ -43,6 +43,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Notification` | Notifications in-app, dispatch FCM/APNs |
 | `Onboarding` | Provisioning entreprise, QR onboarding |
 | `Payroll` | Paie, bulletins, avances, loans |
+| `Pharmacy` | Verticale officines de pharmacie (BC-30) : référentiel produits, stock par lots/péremptions, achats, ventes comptoir, ordonnancier — flag tenant `pharmacy` (PHARMA-001, #7798) |
 | `Planning` | Planning, congés approbation side-manager |
 | `Platform` | Super-admin plateforme, gestion tenants |
 | `Recruitment` | Offres, candidats, entretiens |

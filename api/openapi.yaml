@@ -37,6 +37,8 @@ servers:
 security:
 - BearerAuth: []
 tags:
+- name: Pharmacy
+  description: Groupe d'opérations Pharmacy (BC-30 PHARMACY, verticale PharmaManager)
 - name: Health
   description: Groupe d'opérations Health
 - name: Auth
@@ -32689,6 +32691,235 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+  /pharmacy/products:
+    get:
+      tags:
+      - Pharmacy
+      summary: Lister le référentiel produits de l'officine
+      description: 'Verticale PharmaManager (PHARMA-002, #7799). Solution `pharmacy` requise (403
+        PHARMACY_SOLUTION_INACTIVE sinon). Lecture pour tout employé du tenant. Recherche
+        `search` (nom/DCI/code-barres/code interne), filtres `category`, `status`,
+        `prescription_required`, pagination `per_page`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: category
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [medicament, parapharmacie, dispositif, autre]
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [active, archived]
+      - name: prescription_required
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginée des produits
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PharmacyProduct'
+                  meta:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Pharmacy
+      summary: Créer un produit d'officine
+      description: 'Manager uniquement (PharmacyProductPolicy). Code-barres et code interne uniques
+        par tenant. Prix en decimal — jamais de float.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                dci:
+                  type: string
+                form:
+                  type: string
+                dosage:
+                  type: string
+                barcode:
+                  type: string
+                internal_code:
+                  type: string
+                category:
+                  type: string
+                  enum: [medicament, parapharmacie, dispositif, autre]
+                unit:
+                  type: string
+                prescription_required:
+                  type: boolean
+                is_controlled:
+                  type: boolean
+                purchase_price:
+                  type: number
+                sale_price:
+                  type: number
+                tax_rate:
+                  type: number
+                min_stock_level:
+                  type: integer
+                status:
+                  type: string
+                  enum: [active, archived]
+      responses:
+        '201':
+          description: Produit créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacyProduct'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/products/{product}:
+    get:
+      tags:
+      - Pharmacy
+      summary: Détail d'un produit d'officine
+      description: Ressource d'un autre tenant → 404 (isolation fail-closed).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacyProduct'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - Pharmacy
+      summary: Mettre à jour un produit d'officine
+      description: Manager uniquement. Unicité code-barres/code interne par tenant (produit courant ignoré).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                sale_price:
+                  type: number
+                min_stock_level:
+                  type: integer
+                status:
+                  type: string
+      responses:
+        '200':
+          description: Produit mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacyProduct'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/products/{product}/archive:
+    patch:
+      tags:
+      - Pharmacy
+      summary: Archiver un produit d'officine
+      description: 'Manager uniquement. Jamais de suppression : le produit peut être référencé par
+        des lots, ventes et commandes (traçabilité réglementaire).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit archivé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacyProduct'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
 components:
   securitySchemes:
     BearerAuth:
@@ -32872,6 +33103,49 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    PharmacyProduct:
+      type: object
+      description: Produit d'officine (PHARMA-002, #7799) — verticale PharmaManager.
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        dci:
+          type: string
+          nullable: true
+        form:
+          type: string
+          nullable: true
+        dosage:
+          type: string
+          nullable: true
+        barcode:
+          type: string
+          nullable: true
+        internal_code:
+          type: string
+          nullable: true
+        category:
+          type: string
+          enum: [medicament, parapharmacie, dispositif, autre]
+        unit:
+          type: string
+        prescription_required:
+          type: boolean
+        is_controlled:
+          type: boolean
+        purchase_price:
+          type: string
+        sale_price:
+          type: string
+        tax_rate:
+          type: string
+        min_stock_level:
+          type: integer
+        status:
+          type: string
+          enum: [active, archived]
     TravelStaffAssignment:
       type: object
       description: >-

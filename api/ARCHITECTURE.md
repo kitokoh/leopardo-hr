@@ -120,6 +120,7 @@ restent libres. `Modules/CRM` existe et est complet (`CrmServiceProvider`) ; la 
 | `Modules/Notification` | ✅ routes/api.php + dashboard.php + hr_extended.php | ✅ complet | `NotificationServiceProvider` |
 | `Modules/Recruitment` | ✅ routes/modules/hr_extended.php | 🔶 Application vide (0 Action) — Domain/Infrastructure/Interfaces présents | `RecruitmentServiceProvider` |
 | `Modules/EduManager` | ✅ routes/modules/edu_manager.php | 🟢 verticale BC-16 (EDU-001..020, core + batch2 + batch3) | `EduManagerServiceProvider` |
+| `Modules/Pharmacy` | ✅ routes/modules/pharmacy.php | 🟢 verticale BC-30 (PHARMA-001/002, #7798/#7799) : manifest solution `pharmacy`, référentiel produits — stock/achats/ventes/ordonnancier aux lots #7800–#7804 | `PharmacyServiceProvider` |
 | `Modules/RestaurantManager` | ✅ routes/modules/restaurantmanager.php | 🟢 verticale BC-25 (Application/Domain/Infrastructure/Interfaces/Providers) | `RestaurantManagerServiceProvider` |
 | `Modules/Restaurant` | ✅ routes/modules/solutions.php (public) | 🔶 **Fournisseur de contenu** (Solution/Survey) — Application/Infrastructure/Interfaces **N/A intentionnel** (ADR-0020, #6901) ; webhooks/shop via RestaurantManager, surveys via `Core\Solutions` | `RestaurantServiceProvider` |
 | `Modules/Billing` | ✅ routes/modules/billing.php | ✅ complet | `BillingServiceProvider` |

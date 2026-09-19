@@ -1414,6 +1414,36 @@ trait CreatesMvpSchema
             });
         }
 
+        // Issue #7799 (PHARMA-002) — référentiel produits d'officine.
+        // Miroir de la migration 2026_09_22_100001_7799 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('pharmacy_products'))) {
+            Schema::create($this->moduleTable('pharmacy_products'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 191);
+                $table->string('dci', 191)->nullable();
+                $table->string('form', 100)->nullable();
+                $table->string('dosage', 100)->nullable();
+                $table->string('barcode', 64)->nullable();
+                $table->string('internal_code', 64)->nullable();
+                $table->string('category', 30)->default('medicament');
+                $table->string('unit', 30)->default('unite');
+                $table->boolean('prescription_required')->default(false);
+                $table->boolean('is_controlled')->default(false);
+                $table->decimal('purchase_price', 12, 2)->default(0);
+                $table->decimal('sale_price', 12, 2)->default(0);
+                $table->decimal('tax_rate', 5, 2)->default(0);
+                $table->unsignedInteger('min_stock_level')->default(0);
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+
+                $table->unique(['company_id', 'barcode'], 'pharmacy_products_company_barcode_unique');
+                $table->unique(['company_id', 'internal_code'], 'pharmacy_products_company_internal_code_unique');
+                $table->index(['company_id', 'status'], 'pharmacy_products_company_status_idx');
+                $table->index(['company_id', 'category'], 'pharmacy_products_company_category_idx');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('catalog_inquiries'))) {
             Schema::create($this->moduleTable('catalog_inquiries'), function (Blueprint $table): void {
                 $table->bigIncrements('id');

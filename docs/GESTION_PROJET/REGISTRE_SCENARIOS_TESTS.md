@@ -2,6 +2,19 @@
 > Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
 > Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
 
+> **MAJ 2026-09-22 — #7798/#7799 (PHARMA-001/002), fondation verticale PharmaManager (PR #7805).**
+> Surface **API** : nouvelle verticale `pharmacy` activable par tenant — routes tenant-scoped
+> `/api/v1/pharmacy/products` (liste paginée avec recherche nom/DCI/code-barres + filtres,
+> création, détail, mise à jour, archivage — jamais de suppression) derrière le feature flag
+> `pharmacy` fail-closed (403 `PHARMACY_SOLUTION_INACTIVE`), RBAC `PharmacyProductPolicy`
+> (écriture manager, lecture employé du tenant). Contrat documenté dans `api/openapi.yaml`
+> (+3 paths, 5 opérations, schéma `PharmacyProduct`). Scénarios automatisés :
+> `api/tests/Feature/Pharmacy/PharmacyProductTest.php` (8 cas Feature : manifest résolu par la
+> `SolutionCatalogue`, 401, 403 fail-closed solution inactive, RBAC lecture/écriture, CRUD +
+> filtres + archivage, unicité code-barres par tenant mais autorisée cross-tenant, isolation
+> cross-tenant 404 liste ET détail). Surfaces web/mobile : aucune (API d'abord — les lots
+> stock/achats/ventes/ordonnancier/dashboard suivent, #7800–#7804).
+
 > **MAJ 2026-09-19 — #7737 (épic #7736), API publique MARKETPLACE inter-agences (PR #7750).**
 > Surface **API** : nouvelle surface publique `/api/v1/public/travel/marketplace/*` SANS jeton
 > d'agence (throttle `shop-public`) — villes desservies dédupliquées par identité géographique
