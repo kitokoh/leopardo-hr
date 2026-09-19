@@ -15,12 +15,13 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | ~~`api/app/Services/`~~ — répertoire **supprimé** (2026-08-11, #1728), ne rien y ajouter | `Modules/<Name>/Infrastructure/Services/` |
 | `api/app/Exceptions/` (base `DomainException` partagée, encore étendue par des modules) | `Modules/<Name>/Domain/Exceptions/` |
 
-## Modules existants (27 modules)
+## Modules existants (28 modules)
 
 | Module | Domaine couvert |
 |---|---|
 | `Showcase` | Site vitrine public 1-clic du tenant (BC-27) : moteur de sections + thèmes, publication draft/published, consultation publique isolée 0 donnée interne (#6864/#6865) |
 | `Catalog` | Catalogue produits B2B des tenants producteurs/fournisseurs (BC-28) : catégories, produits (prix indicatifs minor units + devise), publication, demandes de devis (#6879/#6880) |
+| `Communication` | Boîte mail connectée + IA (BC-29) : OAuth Gmail serveur, sync des fils, classification IA, relances et réponses assistées — squelette R0 (#7684/#7685), spec `MODULE_COMMUNICATION_EMAIL_IA.md` |
 | `Absence` | Demandes de congés, soldes, approbations |
 | `Attendance` | Pointage, ZKTeco, anomalies, géofencing |
 | `Billing` | Abonnements, webhooks Stripe, facturation |
