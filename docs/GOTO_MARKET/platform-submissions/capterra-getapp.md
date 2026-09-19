@@ -1,18 +1,18 @@
-# Capterra & GetApp — Leopardo RH
+# Capterra & GetApp — Leopardo
 
 ## Fiche de soumission (Gartner Digital Markets)
 
 **Product Name**  
-Leopardo RH
+Leopardo
 
 **Website URL**  
 À renseigner avec l'URL canonique stable.
 
 **Short Description (Max 200 characters)**  
-Open-source, mobile-first HR & Payroll OS for field teams. Features biometric attendance, multi-country payroll, and AI-driven workforce analytics.
+Open-source, mobile-first business suite for field teams — HR & payroll included. Features biometric attendance, multi-country payroll, and AI-driven workforce analytics.
 
 **Long Description**  
-Leopardo RH is an AI-native, open-source HRIS designed to streamline workforce operations for high-growth companies. It bridges the gap between office management and field reality by providing a unified suite for employee records, biometric time tracking, automated payroll preparation, and leave management. With native Flutter apps for employees and managers, a biometric kiosk integration, and a robust multi-tenant architecture, Leopardo RH ensures data compliance and operational visibility without the complexity of fragmented legacy systems.
+Leopardo is an AI-native, open-source business suite designed to streamline workforce operations for high-growth companies. It bridges the gap between office management and field reality by providing a unified suite for employee records, biometric time tracking, automated payroll preparation, and leave management. With native Flutter apps for employees and managers, a biometric kiosk integration, and a robust multi-tenant architecture, Leopardo ensures data compliance and operational visibility without the complexity of fragmented legacy systems.
 
 **Key Features Checklist**  
 - [x] Attendance Tracking

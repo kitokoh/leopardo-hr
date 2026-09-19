@@ -4,7 +4,7 @@
 **Statut :** Validé / En attente de création d'issues
 
 ## 1. Objectif (Le "WOW Effect")
-L'objectif est d'appliquer une refonte visuelle massive et globale sur l'ensemble de l'écosystème Leopardo RH (Web, Mobile, Kiosk, Vitrine). Le design doit être perçu comme hyper-moderne, extrêmement cohérent entre les différentes applications, et résolument "Premium" (Glassmorphism, animations fluides, contrastes profonds, palettes soigneusement choisies). 
+L'objectif est d'appliquer une refonte visuelle massive et globale sur l'ensemble de l'écosystème Leopardo (Web, Mobile, Kiosk, Vitrine). Le design doit être perçu comme hyper-moderne, extrêmement cohérent entre les différentes applications, et résolument "Premium" (Glassmorphism, animations fluides, contrastes profonds, palettes soigneusement choisies). 
 
 Le processus s'appuiera systématiquement sur **Google Stitch (MCP)** pour valider les maquettes interactives avant toute écriture de code, garantissant ainsi une mise à l'échelle d'un Design System unique.
 
