@@ -48,7 +48,7 @@ Route::middleware(['throttle:shop-public'])
     });
 
 // ── Privée (gestion tenant, #6866) ──────────────────────────────────────────
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.showcase', 'api.manager:principal,rh'])
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.showcase', 'api.manager:principal,rh,module:showcase'])
     ->prefix('showcase')
     ->group(function (): void {
         // Vitrine du tenant (création 1-clic US1 — socle des issues #6866/#6870).

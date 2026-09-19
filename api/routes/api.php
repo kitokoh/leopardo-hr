@@ -356,14 +356,20 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/company/modules/{module}/activate', [CompanyModuleController::class, 'activate'])
             ->where('module', '[a-z_]{1,40}');
 
-        // PA2-COMM-012 — Pilot client support center: a manager/employee can
-        // open a support ticket and reply on their own company's tickets.
-        Route::get('/support-tickets', [SupportTicketController::class, 'index']);
-        Route::post('/support-tickets', [SupportTicketController::class, 'store']);
-        Route::get('/support-tickets/{supportTicket}', [SupportTicketController::class, 'show'])->whereNumber('supportTicket');
-        Route::post('/support-tickets/{supportTicket}/reply', [SupportTicketController::class, 'reply'])->whereNumber('supportTicket');
-        // #4933 : clôture par l'auteur ou un manager du tenant.
-        Route::post('/support-tickets/{supportTicket}/close', [SupportTicketController::class, 'close'])->whereNumber('supportTicket');
+        // PA2-COMM-012 — Pilot client support center. #7761 : la gestion des
+        // tickets devient DÉLÉGABLE comme n'importe quel module (grant
+        // `support`) : accès = tout employé du tenant porteur du grant OU tout
+        // manager (comportement historique préservé pour les managers, le
+        // principal ayant implicitement tout) ; un employé non-manager sans
+        // grant est désormais refusé (fail-closed, MODULE_ACCESS_REQUIRED).
+        Route::middleware('api.module.grant:support')->group(function (): void {
+            Route::get('/support-tickets', [SupportTicketController::class, 'index']);
+            Route::post('/support-tickets', [SupportTicketController::class, 'store']);
+            Route::get('/support-tickets/{supportTicket}', [SupportTicketController::class, 'show'])->whereNumber('supportTicket');
+            Route::post('/support-tickets/{supportTicket}/reply', [SupportTicketController::class, 'reply'])->whereNumber('supportTicket');
+            // #4933 : clôture par l'auteur ou un manager du tenant.
+            Route::post('/support-tickets/{supportTicket}/close', [SupportTicketController::class, 'close'])->whereNumber('supportTicket');
+        });
 
         // DEPRECATED (#4929) : endpoint de « go-live readiness » calculé (8
         // étapes auto-détectées) — distinct de la checklist pilotée par la

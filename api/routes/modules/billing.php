@@ -44,16 +44,22 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/feature-flags/matrix', [FeatureFlagController::class, 'matrix']);
     Route::get('/feature-flags/check/{featureKey}', [FeatureFlagController::class, 'check']);
 
-    // Billing — principal only
-    Route::middleware('api.manager:principal')->group(function (): void {
+    // Billing — principal only ; LECTURE délégable par grant `billing_view`
+    // (#7761, spec §3.1) : un collaborateur délégué consulte l'abonnement et
+    // les factures, les actes (upgrade/cancel/renew/checkout/portal) restent
+    // strictement réservés au principal.
+    Route::middleware('api.manager:principal,module:billing_view')->group(function (): void {
         Route::get('/billing/subscription', [BillingController::class, 'subscription']);
-        Route::post('/billing/subscription/upgrade', [BillingController::class, 'upgrade']);
-        Route::post('/billing/subscription/cancel', [BillingController::class, 'cancel']);
-        Route::post('/billing/subscription/renew', [BillingController::class, 'renew']);
         Route::get('/billing/invoices', [BillingController::class, 'invoices']);
         Route::get('/billing/invoices/{id}', [BillingController::class, 'showInvoice'])->whereNumber('id');
         // #4931 : GET idempotent accepté — génération PDF pure (aucune écriture).
         Route::get('/billing/invoices/{id}/pdf', [BillingController::class, 'invoicePdf'])->whereNumber('id');
+    });
+
+    Route::middleware('api.manager:principal')->group(function (): void {
+        Route::post('/billing/subscription/upgrade', [BillingController::class, 'upgrade']);
+        Route::post('/billing/subscription/cancel', [BillingController::class, 'cancel']);
+        Route::post('/billing/subscription/renew', [BillingController::class, 'renew']);
 
         // Stripe Checkout & Portal
         Route::post('/billing/checkout', [BillingController::class, 'createCheckoutSession']);

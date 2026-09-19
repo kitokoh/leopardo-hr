@@ -198,6 +198,10 @@ return [
     'AI_ANALYTICS_ACCESS_REQUIRED' => 'AI analytics access requires Principal or RH manager role.',
     'MANAGER_REQUIRED' => 'A manager access is required.',
     'INSUFFICIENT_ROLE' => 'Insufficient role for this action.',
+    // #7761 — composable module delegation (grants)
+    'MODULE_ACCESS_REQUIRED' => 'This module requires an explicit grant or manager access.',
+    'MODULE_KEYS_REQUIRED' => 'The list of delegated modules is required.',
+    'MODULE_KEY_UNKNOWN' => 'Unknown module key.',
     'EMPLOYEE_NOT_FOUND' => 'Employee not found.',
     'INVALID_TOKEN' => 'Invalid or expired token.',
     'CAMERA_NOT_FOUND' => 'Camera not found.',
