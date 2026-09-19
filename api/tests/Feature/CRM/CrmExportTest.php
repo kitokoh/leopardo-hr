@@ -143,7 +143,7 @@ class CrmExportTest extends TestCase
     {
         Sanctum::actingAs($this->manager($this->companyA));
 
-        $job = CrmExportJob::query()->create([
+        $job = CrmExportJob::query()->forceCreate([
             'company_id' => $this->companyA->id,
             'user_id' => null,
             'entity' => 'accounts',
@@ -169,7 +169,7 @@ class CrmExportTest extends TestCase
     {
         Sanctum::actingAs($this->manager($this->companyA));
 
-        $job = CrmExportJob::query()->create([
+        $job = CrmExportJob::query()->forceCreate([
             'company_id' => $this->companyA->id,
             'entity' => 'accounts',
             'format' => 'csv',
@@ -186,7 +186,7 @@ class CrmExportTest extends TestCase
     {
         Sanctum::actingAs($this->manager($this->companyA));
 
-        $job = CrmExportJob::query()->create([
+        $job = CrmExportJob::query()->forceCreate([
             'company_id' => $this->companyB->id,
             'entity' => 'accounts',
             'format' => 'csv',
@@ -215,7 +215,7 @@ class CrmExportTest extends TestCase
     {
         Sanctum::actingAs($this->manager($this->companyA));
 
-        CrmExportJob::query()->create([
+        CrmExportJob::query()->forceCreate([
             'company_id' => $this->companyA->id,
             'entity' => 'accounts',
             'format' => 'csv',
