@@ -161,6 +161,7 @@ return [
             'since' => '4.33.0',
             'killable' => true,
             'description' => 'Module Retail — vendeur générique (BC-17) : produits, catégories, publication.',
+        ],
         // BC-29 COMMUNICATION (R0, #7685) — module transversal « Communication »
         // (boîte mail connectée Gmail + IA, spec
         // docs/specifications/MODULE_COMMUNICATION_EMAIL_IA.md). Déclaré ici ET
