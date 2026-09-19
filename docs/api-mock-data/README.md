@@ -1,6 +1,6 @@
-# Leopardo RH API Mock Data
+# Leopardo API Mock Data
 
-Ce dossier contient des exemples de réponses JSON pour les différents endpoints de l'API Leopardo RH. Ces fichiers sont générés automatiquement à partir de la spécification OpenAPI (`api/openapi.yaml`) et peuvent être utilisés par les développeurs Front-end (Web et Mobile) pour travailler sans avoir besoin de démarrer l'API Laravel.
+Ce dossier contient des exemples de réponses JSON pour les différents endpoints de l'API Leopardo. Ces fichiers sont générés automatiquement à partir de la spécification OpenAPI (`api/openapi.yaml`) et peuvent être utilisés par les développeurs Front-end (Web et Mobile) pour travailler sans avoir besoin de démarrer l'API Laravel.
 
 ## Structure des fichiers
 

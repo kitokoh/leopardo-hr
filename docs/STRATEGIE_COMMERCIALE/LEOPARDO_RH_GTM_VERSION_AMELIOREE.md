@@ -1,10 +1,10 @@
-# Leopardo RH - Go-to-Market améliore
+# Leopardo - Go-to-Market améliore
 
 ## Objet
 
 Cette note reprend les bonnes idees du document `Leopardo_RH_GoToMarket.pdf` et les renforce avec une lecture plus critique, plus priorisee et plus operationnelle.
 
-Le point central reste juste: avec zero budget, Leopardo RH ne doit pas essayer de "faire du marketing" au sens large. Il faut d'abord transformer l'usage beta en revenu, puis transformer les premiers clients en preuve, puis transformer cette preuve en acquisition repetitive.
+Le point central reste juste: avec zero budget, Leopardo ne doit pas essayer de "faire du marketing" au sens large. Il faut d'abord transformer l'usage beta en revenu, puis transformer les premiers clients en preuve, puis transformer cette preuve en acquisition repetitive.
 
 ## Lecture strategique rapide
 
@@ -35,7 +35,7 @@ Il faut le transformer en 4 blocs:
 3. acquisition d'un canal reproductible
 4. standardisation et automatisation
 
-Si Leopardo RH saute trop vite au bloc 3 ou 4, l'equipe risque de remplir des outils au lieu de creer du revenu.
+Si Leopardo saute trop vite au bloc 3 ou 4, l'equipe risque de remplir des outils au lieu de creer du revenu.
 
 ## Ce qu'il faut garder tel quel
 
@@ -60,7 +60,7 @@ Le document insiste a juste titre sur les douleurs:
 - absence de visibilite sur presences et absences
 - dependance a Excel et aux messages WhatsApp
 
-Ce point est strategiquement tres bon. Leopardo RH ne vend pas "un logiciel RH". Il vend:
+Ce point est strategiquement tres bon. Leopardo ne vend pas "un logiciel RH". Il vend:
 
 - moins d'erreurs
 - moins de temps perdu
@@ -81,7 +81,7 @@ La bonne lecture est:
 
 ### 4. La place des partenaires comptables
 
-Tres bonne intuition. Les cabinets comptables peuvent devenir un canal de distribution bien plus rentable que l'outreach direct, surtout si Leopardo RH simplifie vraiment la collecte des donnees de paie.
+Tres bonne intuition. Les cabinets comptables peuvent devenir un canal de distribution bien plus rentable que l'outreach direct, surtout si Leopardo simplifie vraiment la collecte des donnees de paie.
 
 ## Ce qu'il faut corriger ou nuancer
 
@@ -250,7 +250,7 @@ Le document parle de logiciel RH + finance. C'est peut-etre trop large au demarr
 
 Je recommande de simplifier le message en une promesse unique:
 
-"Leopardo RH aide les PME du Maghreb a suivre les presences et preparer la paie sans Excel, sans chaos WhatsApp et sans erreurs de fin de mois."
+"Leopardo aide les PME du Maghreb a suivre les presences et preparer la paie sans Excel, sans chaos WhatsApp et sans erreurs de fin de mois."
 
 Pourquoi cette formulation est meilleure:
 

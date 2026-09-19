@@ -1,4 +1,4 @@
-# Garde-fous de livraison — Refactoring Leopardo HR
+# Garde-fous de livraison — Refactoring Leopardo
 
 ## 1. Matrice des risques
 

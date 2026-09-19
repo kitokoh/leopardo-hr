@@ -1,8 +1,8 @@
-# Comparatif Concurrentiel — Leopardo RH vs Solutions du Marche
+# Comparatif Concurrentiel — Leopardo vs Solutions du Marche
 
 ## Vue d'ensemble
 
-| Critere | Leopardo RH | Sage HR | OrangeHRM | PaieNA | Kiwi HR |
+| Critere | Leopardo | Sage HR | OrangeHRM | PaieNA | Kiwi HR |
 |---------|------------|---------|-----------|--------|---------|
 | **Type** | SaaS multi-tenant | On-premise / SaaS | Open source / SaaS | Desktop | SaaS |
 | **Marche cible** | PME Maghreb + Afrique | Enterprises FR/EU | PME monde | PME DZ | PME EU |
@@ -14,7 +14,7 @@
 
 ### Paie multi-pays
 
-| Fonctionnalite | Leopardo RH | Sage HR | OrangeHRM | PaieNA | Kiwi HR |
+| Fonctionnalite | Leopardo | Sage HR | OrangeHRM | PaieNA | Kiwi HR |
 |---------------|------------|---------|-----------|--------|---------|
 | Paie DZ (IRG + CNAS) | **Oui** | Non | Non | **Oui** | Non |
 | Paie MA (IR + CNSS) | **Oui** | Partiel | Non | Non | Non |
@@ -29,7 +29,7 @@
 
 ### Pointage et presences
 
-| Fonctionnalite | Leopardo RH | Sage HR | OrangeHRM | PaieNA | Kiwi HR |
+| Fonctionnalite | Leopardo | Sage HR | OrangeHRM | PaieNA | Kiwi HR |
 |---------------|------------|---------|-----------|--------|---------|
 | QR Code | **Oui** | Non | Non | Non | Non |
 | Biometrique ZKTeco | **Oui** | Non | Non | Non | Non |
@@ -42,7 +42,7 @@
 
 ### Gestion RH
 
-| Fonctionnalite | Leopardo RH | Sage HR | OrangeHRM | PaieNA | Kiwi HR |
+| Fonctionnalite | Leopardo | Sage HR | OrangeHRM | PaieNA | Kiwi HR |
 |---------------|------------|---------|-----------|--------|---------|
 | Gestion conges | **Oui** | **Oui** | **Oui** | Basique | **Oui** |
 | Recrutement kanban | **Oui** | Addon | **Oui** | Non | Non |
@@ -54,7 +54,7 @@
 
 ### Technique et securite
 
-| Critere | Leopardo RH | Sage HR | OrangeHRM | PaieNA | Kiwi HR |
+| Critere | Leopardo | Sage HR | OrangeHRM | PaieNA | Kiwi HR |
 |---------|------------|---------|-----------|--------|---------|
 | API REST documentee | **Oui** (OpenAPI) | Limitee | **Oui** | Non | Limitee |
 | Webhooks | **Oui** | Non | Non | Non | Non |
@@ -69,7 +69,7 @@
 
 ### Prix et modele commercial
 
-| Critere | Leopardo RH | Sage HR | OrangeHRM | PaieNA | Kiwi HR |
+| Critere | Leopardo | Sage HR | OrangeHRM | PaieNA | Kiwi HR |
 |---------|------------|---------|-----------|--------|---------|
 | Essai gratuit | 14 jours | Sur demande | Community gratuit | Non | 14 jours |
 | Plan starter | 3 USD/emp/mois | ~10 EUR/emp/mois | 0 (limited) | ~500 USD licence | 3.50 EUR/emp/mois |
@@ -81,7 +81,7 @@
 
 ---
 
-## Synthese des avantages competitifs Leopardo RH
+## Synthese des avantages competitifs Leopardo
 
 1. **Multi-pays Afrique + Maghreb** — Seule solution couvrant DZ, MA, SN, TN, CI, CM, TR, FR avec baremes fiscaux natifs
 2. **Pointage multimodal** — QR + biometrique + geo + kiosque dans un seul produit

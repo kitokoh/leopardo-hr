@@ -1,4 +1,4 @@
-# Leopardo RH — Developer Makefile
+# Leopardo — Developer Makefile
 # Usage: make <target>
 # Run `make help` to see all available targets.
 
@@ -20,7 +20,7 @@ install: ## First-time setup: build, start, migrate, seed
 	$(API) composer install
 	$(ARTISAN) key:generate --force
 	$(ARTISAN) leopardo:migrate --seed
-	@echo "Leopardo RH is running at http://localhost:8000"
+	@echo "Leopardo is running at http://localhost:8000"
 
 .PHONY: up
 up: ## Start all core services (api, postgres, redis, queue, scheduler)

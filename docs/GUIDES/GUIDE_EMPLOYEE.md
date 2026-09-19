@@ -1,4 +1,4 @@
-# Guide employe — Leopardo RH
+# Guide employe — Leopardo
 
 L **employe simple** (role `employee`, sans sous-role manager) utilise
 uniquement l **app mobile** Leopardo RH. L espace web ne contient pas de

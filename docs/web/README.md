@@ -1,6 +1,6 @@
 # Web Applications Documentation
 
-Documentation for the Leopardo RH web ecosystem, including the Manager Dashboard and the Public Vitrine.
+Documentation for the Leopardo web ecosystem, including the Manager Dashboard and the Public Vitrine.
 
 ## 🖥 Manager Dashboard (Next.js)
 The central cockpit for HR administrators and business owners.

@@ -1,4 +1,4 @@
-# 💰 Budget & cadence agents — Leopardo RH (issue #5148, R6)
+# 💰 Budget & cadence agents — Leopardo (issue #5148, R6)
 
 **Version** : 1.0 · **Date** : 2026-08-19 · **Mise à jour** : chaque vendredi (rituel bilan)
 **Règle d'arrêt** : au plafond mensuel, les agents *feature* sont stoppés. Seuls les fixes P0/P1 continuent (sécurité, funnel, paie bloquante).

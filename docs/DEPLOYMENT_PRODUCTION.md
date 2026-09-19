@@ -63,7 +63,7 @@ Si/quand `leopardo.com` (ou un autre domaine officiel) est achete et pointe reel
 
 #### Option A: Domaine principal (une fois achete, ex. `leopardo-rh.com`)
 
-Cette section est un guide generique pour brancher un futur domaine officiel sur ce projet Vercel. Ne pas utiliser `leopardo.com` comme exemple : ce domaine appartient a une entreprise americaine de construction sans rapport avec ce produit et n'a jamais ete achete pour Leopardo RH (voir `docs/GUIDES/GUIDE_LIENS_PLATEFORME_ET_COMMUNICATION.md` pour les noms de domaine recommandes, ex. `www.leopardo-rh.com`).
+Cette section est un guide generique pour brancher un futur domaine officiel sur ce projet Vercel. Ne pas utiliser `leopardo.com` comme exemple : ce domaine appartient a une entreprise americaine de construction sans rapport avec ce produit et n'a jamais ete achete pour Leopardo (voir `docs/GUIDES/GUIDE_LIENS_PLATEFORME_ET_COMMUNICATION.md` pour les noms de domaine recommandes, ex. `www.leopardo-rh.com`).
 
 1. Dans Vercel Dashboard → **Domains**
 2. Ajouter le domaine achete (ex. `leopardo-rh.com`)
