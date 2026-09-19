@@ -25,22 +25,22 @@
   },
   "locales": {
     "fr": {
-      "checksum": "5c3096fe7640954d5b3511ed6a68159c81352b55e0832b9419360624a64145ff",
+      "checksum": "9cae5a3a23b0803350e3966eb65471050aaa21ec1b80bebad195db0d2a0ec100",
       "version": "1.0.0",
       "updated_at": "2026-08-30T15:05:00Z"
     },
     "ar": {
-      "checksum": "2d05730cf0a532996a3b271946856d71ab9f4c90d0d4d744b184417425ed9f95",
+      "checksum": "a9ecb858e611918dd452a01dab3c64cc8d0906d57182d2f1735b1500121daf9c",
       "version": "1.0.0",
       "updated_at": "2026-08-30T15:05:00Z"
     },
     "tr": {
-      "checksum": "7c3c0f116105df4245d70934cf7895b8bd6a5294d0afb4cebe51550f24628d73",
+      "checksum": "6191f92014fe8b271fd1a09f7718d0998e91578632ed6ec404a2c8d62dcc42d9",
       "version": "1.0.0",
       "updated_at": "2026-08-30T15:05:00Z"
     },
     "en": {
-      "checksum": "75b9693508e4b3cbbb05b718da1ee2a6a0889d0badc46f65ed725fb9ceaa9546",
+      "checksum": "9b10ca4a33e25bfc89e8fee03829fd62a26d52500338e898758fcebebea7dde3",
       "version": "1.0.0",
       "updated_at": "2026-08-30T15:05:00Z"
     }
@@ -48,21 +48,21 @@
   "surfaces": {
     "web": {
       "checksums": {
-        "ar": "2d05730cf0a532996a3b271946856d71ab9f4c90d0d4d744b184417425ed9f95",
-        "en": "75b9693508e4b3cbbb05b718da1ee2a6a0889d0badc46f65ed725fb9ceaa9546",
-        "fr": "5c3096fe7640954d5b3511ed6a68159c81352b55e0832b9419360624a64145ff",
-        "tr": "7c3c0f116105df4245d70934cf7895b8bd6a5294d0afb4cebe51550f24628d73"
+        "ar": "a9ecb858e611918dd452a01dab3c64cc8d0906d57182d2f1735b1500121daf9c",
+        "en": "9b10ca4a33e25bfc89e8fee03829fd62a26d52500338e898758fcebebea7dde3",
+        "fr": "9cae5a3a23b0803350e3966eb65471050aaa21ec1b80bebad195db0d2a0ec100",
+        "tr": "6191f92014fe8b271fd1a09f7718d0998e91578632ed6ec404a2c8d62dcc42d9"
       },
-      "updated_at": "2026-09-19T20:05:24.187Z"
+      "updated_at": "2026-09-19T22:14:16.706Z"
     },
     "admin": {
       "checksums": {
-        "ar": "69342ad18bfda8d9c7a71df86973c8717f44bfdd16d4f5863a712c16faf81a68",
-        "en": "ad0ab7fcd5b3037d7b5804004b0f8c0cd3c50a597b0b0b1c2178ecec54cf3dfb",
-        "fr": "b60ff20ee53cefa66027520276f652511a6381ef2d5f265df1de162533101e90",
-        "tr": "b71a50f8e1300eba6324a105d91b97de7926b45ed85fced6e7eee1f5f4d66527"
+        "ar": "e7a9eb2a85cb37a62af6136be1e2693132410009eab8902011490a6a4f886102",
+        "en": "8fcc5a4a5a52ecb55da4986a6a9ce4bf903be0792e654862e37144080e976dae",
+        "fr": "ab96a4d64c1f65eafcf1ef91118168b7908dd0723a0a4c91251c52ae3f0892f6",
+        "tr": "452c027b5c3a146673f5c14361dc68dcf92def5cad3812e4f266aeac4ffda330"
       },
-      "updated_at": "2026-09-19T20:05:24.255Z"
+      "updated_at": "2026-09-19T22:14:16.784Z"
     }
   }
 }
