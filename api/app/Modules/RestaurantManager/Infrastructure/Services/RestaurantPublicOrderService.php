@@ -45,8 +45,7 @@ final class RestaurantPublicOrderService
         private readonly RestaurantOutboxPublisher $outbox,
         private readonly PaymentGatewayRegistry $gateways,
         private readonly RestaurantPaymentConfigurationService $paymentConfiguration,
-    ) {
-    }
+    ) {}
 
     /**
      * Menu public d'un tenant (branches → menus → articles).

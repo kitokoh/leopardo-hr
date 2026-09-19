@@ -26,8 +26,7 @@ class RestaurantPublicOrderController extends Controller
     public function __construct(
         private readonly RestaurantPublicOrderService $publicOrders,
         private readonly RestaurantDeliveryWebhookService $webhooks,
-    ) {
-    }
+    ) {}
 
     public function menu(Request $request): JsonResponse
     {
