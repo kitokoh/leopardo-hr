@@ -196,6 +196,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.restaurantmanager' => EnsureRestaurantManagerModuleMiddleware::class,
             // BC-27 SHOWCASE — gate feature flag company_showcase (#6865/#6866).
             'module.showcase' => \App\Http\Middleware\Showcase\EnsureShowcaseModuleMiddleware::class,
+            // Issue #5742 (CRM PRE) — gate `crm.enabled` des routes /api/v1/crm/* (CrmFeatureGateTest).
+            'crm.enabled' => \App\Http\Middleware\Crm\EnsureCrmEnabledMiddleware::class,
             // RESTO-805 (#6226) — boutique publique RestaurantManager (jeton signé par tenant).
             'restaurant.public.shop' => EnsureRestaurantPublicShopAccess::class,
             // TRAVEL-1001 (#6114) — boutique publique (jeton tenant signé).
