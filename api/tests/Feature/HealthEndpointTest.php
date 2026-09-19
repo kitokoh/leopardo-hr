@@ -35,6 +35,19 @@ class HealthEndpointTest extends TestCase
         ]);
     }
 
+    public function test_unversioned_health_alias_serves_the_same_probe(): void
+    {
+        // #7666 : les sondes externes essaient d'abord `/api/health` par
+        // convention (vérifié 404 en prod le 2026-09-19 — elles concluaient
+        // « API morte » alors qu'elle était up). L'alias non versionné doit
+        // servir la MÊME sonde que la route canonique `/api/v1/health`.
+        $response = $this->getJson('/api/health');
+
+        $response->assertOk();
+        $response->assertJson(['status' => 'ok']);
+        $response->assertJsonStructure(['status', 'version', 'checks', 'timestamp']);
+    }
+
     public function test_health_web_check_flags_missing_app_key(): void
     {
         // #6957 : une APP_KEY absente fait 500 sur toutes les routes web
