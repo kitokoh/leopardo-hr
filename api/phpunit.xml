@@ -44,6 +44,8 @@
              dans public et que les migrations tenant sont correctement scoped (#1597). -->
         <env name="DB_SEARCH_PATH" value="public,shared_tenants"/>
         <env name="MAIL_MAILER" value="array"/>
+        <!-- #7696 : plus de fallback en dur dans config/demo.php — la valeur de test est explicite ici -->
+        <env name="DEMO_PASSWORD" value="password123"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>

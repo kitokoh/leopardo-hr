@@ -51,6 +51,16 @@ class DemoUserControllerTest extends TestCase
         $this->assertSame('/me', $users->firstWhere('role', 'employee')['primary_path']);
     }
 
+    public function test_demo_users_is_a_503_when_demo_password_is_not_configured(): void
+    {
+        // #7696 : mode démo actif mais DEMO_PASSWORD absent = erreur de
+        // configuration — on ne sert JAMAIS un mot de passe fallback en dur.
+        config(['app.demo_mode_enabled' => true]);
+        config(['demo.password' => null]);
+
+        $this->getJson('/api/v1/demo-users')->assertStatus(503);
+    }
+
     public function test_demo_users_endpoint_is_a_404_in_production_unless_explicitly_enabled(): void
     {
         // A prior version of this test asserted the opposite (200 in

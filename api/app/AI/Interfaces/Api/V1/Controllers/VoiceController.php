@@ -251,7 +251,10 @@ class VoiceController extends Controller
             return null;
         }
 
-        $binary = trim((string) shell_exec('command -v '.(string) config('ai.voice.edge_tts_binary', 'edge-tts').' 2>/dev/null'));
+        // #7696 : la valeur de config vient de l'env admin mais on l'échappe
+        // quand même (cohérence avec CameraService::probeStream, défense en
+        // profondeur si la config devient pilotable par un autre canal).
+        $binary = trim((string) shell_exec('command -v '.escapeshellarg((string) config('ai.voice.edge_tts_binary', 'edge-tts')).' 2>/dev/null'));
         if ($binary === '') {
             Log::error('TTS edge-tts unavailable: binary not found (pip install edge-tts, see Dockerfile.prod - issue #5616)');
 
