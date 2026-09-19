@@ -160,7 +160,23 @@ runs:
         );
         SQL);
 
+        // Issue #7660 — fail-fast sur les verrous : la suite Feature pendait
+        // indéfiniment quand une connexion restait « idle in transaction
+        // (aborted) » en tenant ses verrous pendant qu'une 2e connexion du
+        // même worker attendait dessus (wait_event transactionid/relation,
+        // INSERT bloqué > 22 min observé). Sans lock_timeout, l'attente est
+        // infinie → job tué à timeout-minutes (conclusion `cancelled`) →
+        // deploy-main.yml ne déploie jamais → dérive dev (#7304).
+        // Timeouts posés au niveau du RÔLE : ils s'appliquent aussi aux bases
+        // par worker `leopardo_test_test_{token}` créées par paratest.
+        $pdo->exec(<<<'SQL'
+        ALTER ROLE CURRENT_USER SET lock_timeout = '30s';
+        ALTER ROLE CURRENT_USER SET idle_in_transaction_session_timeout = '120s';
+        ALTER ROLE CURRENT_USER SET statement_timeout = '300s';
+        SQL);
+
         echo "Migration repositories ensured for public/shared_tenants.\n";
+        echo "Role-level lock/statement timeouts applied (#7660).\n";
         PHP
 
     - name: Run public migrations
