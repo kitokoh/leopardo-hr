@@ -11,6 +11,7 @@ use App\Modules\Communication\Domain\Models\CommunicationIntegration;
 use App\Modules\Communication\Domain\Support\CommunicationFeatures;
 use App\Modules\Communication\Infrastructure\Services\GoogleGmailOAuthService;
 use App\Modules\Communication\Infrastructure\Services\GoogleGmailSyncService;
+use App\Modules\Communication\Interfaces\Api\V1\Controllers\Concerns\AssertsTenantScope;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -41,6 +42,8 @@ use Illuminate\Support\Str;
  */
 class CommunicationIntegrationController extends Controller
 {
+    use AssertsTenantScope;
+
     private const STATE_CACHE_PREFIX = 'communication:oauth:state:';
 
     private const STATE_TTL_MINUTES = 10;
@@ -48,8 +51,7 @@ class CommunicationIntegrationController extends Controller
     public function __construct(
         private readonly GoogleGmailOAuthService $google,
         private readonly GoogleGmailSyncService $sync,
-    ) {
-    }
+    ) {}
 
     /**
      * Boites connectees de l'employe COURANT uniquement (minimisation :
@@ -233,8 +235,11 @@ class CommunicationIntegrationController extends Controller
      * Binding implicite tenant-scope : une integration d'un autre tenant
      * est un 404 avant meme la policy.
      */
-    public function destroy(CommunicationIntegration $integration): JsonResponse
+    public function destroy(Request $request, CommunicationIntegration $integration): JsonResponse
     {
+        // Binding implicite resolu avant le middleware tenant : garde 404
+        // explicite (une boite d'un autre tenant n'existe pas pour l'appelant).
+        $this->assertTenantScope($request, $integration);
         $this->authorize('delete', $integration);
 
         $this->google->revoke($integration);

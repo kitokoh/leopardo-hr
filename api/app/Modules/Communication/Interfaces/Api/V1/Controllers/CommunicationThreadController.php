@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\Communication\Domain\Models\CommunicationMessage;
 use App\Modules\Communication\Domain\Models\CommunicationThread;
+use App\Modules\Communication\Interfaces\Api\V1\Controllers\Concerns\AssertsTenantScope;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -22,6 +23,8 @@ use Illuminate\Http\Request;
  */
 class CommunicationThreadController extends Controller
 {
+    use AssertsTenantScope;
+
     /**
      * Fils des boites de l'employe courant, du plus recent au plus ancien
      * (les « 50 derniers fils » de l'acceptation tiennent sur la premiere
@@ -63,8 +66,11 @@ class CommunicationThreadController extends Controller
      * chronologiquement. Seul endpoint qui expose le corps (text/plain
      * borne, dechiffre a la lecture).
      */
-    public function messages(CommunicationThread $thread): JsonResponse
+    public function messages(Request $request, CommunicationThread $thread): JsonResponse
     {
+        // Binding implicite resolu avant le middleware tenant : garde 404
+        // explicite (un fil d'un autre tenant n'existe pas pour l'appelant).
+        $this->assertTenantScope($request, $thread);
         $this->authorize('view', $thread);
 
         $messages = $thread->messages()

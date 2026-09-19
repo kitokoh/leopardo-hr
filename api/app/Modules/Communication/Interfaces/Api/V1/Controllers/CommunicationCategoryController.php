@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\Communication\Domain\Models\CommunicationCategory;
 use App\Modules\Communication\Infrastructure\Services\CommunicationTaxonomyService;
+use App\Modules\Communication\Interfaces\Api\V1\Controllers\Concerns\AssertsTenantScope;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -23,6 +24,8 @@ use Illuminate\Http\Request;
  */
 class CommunicationCategoryController extends Controller
 {
+    use AssertsTenantScope;
+
     public function __construct(private readonly CommunicationTaxonomyService $taxonomy) {}
 
     public function index(Request $request): JsonResponse
@@ -81,6 +84,9 @@ class CommunicationCategoryController extends Controller
 
     public function update(Request $request, CommunicationCategory $category): JsonResponse
     {
+        // Binding implicite resolu avant le middleware tenant : garde 404
+        // explicite (cross-tenant n'existe pas pour l'appelant).
+        $this->assertTenantScope($request, $category);
         $this->authorize('update', $category);
 
         /** @var array{label?: string|null, active?: bool} $validated */
@@ -102,8 +108,9 @@ class CommunicationCategoryController extends Controller
         return new JsonResponse(['data' => $this->present($category)]);
     }
 
-    public function destroy(CommunicationCategory $category): JsonResponse
+    public function destroy(Request $request, CommunicationCategory $category): JsonResponse
     {
+        $this->assertTenantScope($request, $category);
         $this->authorize('delete', $category);
 
         $category->delete();

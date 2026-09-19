@@ -26,13 +26,13 @@ class CommunicationTaxonomyService
     {
         $this->materializeDefaults($companyId);
 
-        return CommunicationCategory::query()
+        return array_values(CommunicationCategory::query()
             ->withoutGlobalScopes()
             ->where('company_id', $companyId)
             ->where('active', true)
             ->orderBy('key')
             ->get()
-            ->all();
+            ->all());
     }
 
     /**
@@ -44,12 +44,12 @@ class CommunicationTaxonomyService
     {
         $this->materializeDefaults($companyId);
 
-        return CommunicationCategory::query()
+        return array_values(CommunicationCategory::query()
             ->withoutGlobalScopes()
             ->where('company_id', $companyId)
             ->orderBy('key')
             ->get()
-            ->all();
+            ->all());
     }
 
     /**
@@ -60,10 +60,10 @@ class CommunicationTaxonomyService
      */
     public function activeCategoryKeys(string $companyId): array
     {
-        return array_values(array_map(
+        return array_map(
             static fn (CommunicationCategory $category): string => $category->key,
             $this->activeCategories($companyId),
-        ));
+        );
     }
 
     private function materializeDefaults(string $companyId): void

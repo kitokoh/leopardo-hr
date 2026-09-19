@@ -177,29 +177,9 @@ class CommunicationClassificationTest extends TestCase
      *
      * @param  list<string>  $responses
      */
-    private function scriptLlm(array $responses): object
+    private function scriptLlm(array $responses): ScriptedLlmClient
     {
-        $client = new class($responses) implements LLMClient
-        {
-            /** @var array<int, array<int, array{role: string, content: mixed}>> */
-            public array $calls = [];
-
-            /** @param list<string> $responses */
-            public function __construct(private array $responses) {}
-
-            public function chat(array $messages, array $tools = []): AIResponse
-            {
-                $this->calls[] = $messages;
-                $content = array_shift($this->responses) ?? '';
-
-                return new AIResponse(content: $content, model: 'scripted');
-            }
-
-            public function provider(): string
-            {
-                return 'scripted';
-            }
-        };
+        $client = new ScriptedLlmClient($responses);
 
         $this->app->instance(LLMClient::class, $client);
 
@@ -717,5 +697,31 @@ class CommunicationClassificationTest extends TestCase
         $other->save();
         Sanctum::actingAs($this->makeEmployee($other));
         $this->postJson('/api/v1/communication/contact-proposals/'.$proposal->id.'/dismiss')->assertStatus(404);
+    }
+}
+
+/**
+ * Driver LLM scripte pour ces tests : file de contenus rejoues dans l'ordre,
+ * appels captures pour assertions (prompts, nombre de passes). Aucun reseau.
+ */
+final class ScriptedLlmClient implements LLMClient
+{
+    /** @var array<int, array<int, array{role: string, content: mixed}>> */
+    public array $calls = [];
+
+    /** @param list<string> $responses */
+    public function __construct(private array $responses) {}
+
+    public function chat(array $messages, array $tools = []): AIResponse
+    {
+        $this->calls[] = $messages;
+        $content = array_shift($this->responses) ?? '';
+
+        return new AIResponse(content: $content, model: 'scripted');
+    }
+
+    public function provider(): string
+    {
+        return 'scripted';
     }
 }

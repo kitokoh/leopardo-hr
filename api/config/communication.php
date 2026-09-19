@@ -277,11 +277,6 @@ return [
             'title_key' => 'notifications.payment_document_processing_title',
             'body_key' => 'notifications.payment_document_processing_body',
         ],
-        'payment_document_ready' => [
-            'category' => 'payroll',
-            'title_key' => 'notifications.payment_document_ready_title',
-            'body_key' => 'notifications.payment_document_ready_body',
-        ],
         'payment_document_failed' => [
             'category' => 'payroll',
             'title_key' => 'notifications.payment_document_failed_title',

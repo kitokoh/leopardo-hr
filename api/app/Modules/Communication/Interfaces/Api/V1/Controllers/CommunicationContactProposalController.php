@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\Communication\Domain\Models\CommunicationContactProposal;
 use App\Modules\Communication\Domain\Models\CommunicationMessage;
+use App\Modules\Communication\Interfaces\Api\V1\Controllers\Concerns\AssertsTenantScope;
 use App\Shared\Contracts\Crm\EmailContactDirectory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,6 +25,8 @@ use Illuminate\Http\Request;
  */
 class CommunicationContactProposalController extends Controller
 {
+    use AssertsTenantScope;
+
     public function __construct(private readonly EmailContactDirectory $contacts) {}
 
     /**
@@ -67,6 +70,9 @@ class CommunicationContactProposalController extends Controller
      */
     public function accept(Request $request, CommunicationContactProposal $proposal): JsonResponse
     {
+        // Binding implicite resolu avant le middleware tenant : garde 404
+        // explicite (cross-tenant n'existe pas pour l'appelant).
+        $this->assertTenantScope($request, $proposal);
         $this->authorize('decide', $proposal);
 
         if (! $proposal->isPending()) {
@@ -104,6 +110,7 @@ class CommunicationContactProposalController extends Controller
 
     public function dismiss(Request $request, CommunicationContactProposal $proposal): JsonResponse
     {
+        $this->assertTenantScope($request, $proposal);
         $this->authorize('decide', $proposal);
 
         if (! $proposal->isPending()) {

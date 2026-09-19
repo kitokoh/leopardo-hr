@@ -7,7 +7,9 @@ namespace App\Modules\Communication\Interfaces\Api\V1\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Communication\Domain\Models\CommunicationMessage;
 use App\Modules\Communication\Infrastructure\Jobs\ClassifyCommunicationMessageJob;
+use App\Modules\Communication\Interfaces\Api\V1\Controllers\Concerns\AssertsTenantScope;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * Re-classification MANUELLE d'un message (BC-29 COMMUNICATION, R3 #7688).
@@ -20,8 +22,13 @@ use Illuminate\Http\JsonResponse;
  */
 class CommunicationMessageClassificationController extends Controller
 {
-    public function classify(CommunicationMessage $message): JsonResponse
+    use AssertsTenantScope;
+
+    public function classify(Request $request, CommunicationMessage $message): JsonResponse
     {
+        // Binding implicite resolu avant le middleware tenant : garde 404
+        // explicite (un message d'un autre tenant n'existe pas pour l'appelant).
+        $this->assertTenantScope($request, $message);
         $this->authorize('classify', $message);
 
         ClassifyCommunicationMessageJob::dispatch(

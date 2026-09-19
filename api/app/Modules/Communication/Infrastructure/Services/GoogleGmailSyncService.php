@@ -62,9 +62,7 @@ class GoogleGmailSyncService
      */
     public const DEFAULT_RETRY_AFTER_SECONDS = 60;
 
-    public function __construct(private readonly GoogleGmailOAuthService $oauth)
-    {
-    }
+    public function __construct(private readonly GoogleGmailOAuthService $oauth) {}
 
     /**
      * Passe de synchronisation d'UNE boite. Leve GmailRateLimitedException
@@ -415,8 +413,12 @@ class GoogleGmailSyncService
         // R3 (#7688) — « messages classés à la sync » : chaque message
         // nouvellement ingéré (ou re-syncé avant classification) part en
         // classification IA sur la queue `communication`. Idempotent : un
-        // message déjà classifié n'est pas re-dispatché.
-        if ($message->classification_status === CommunicationMessage::CLASSIFICATION_PENDING) {
+        // message déjà classifié n'est pas re-dispatché. NB : sur une ligne
+        // fraîchement insérée, l'attribut vaut null en mémoire (défaut
+        // `pending` posé par la base) — null est donc traité comme pending.
+        $status = $message->classification_status ?? CommunicationMessage::CLASSIFICATION_PENDING;
+
+        if ($status === CommunicationMessage::CLASSIFICATION_PENDING) {
             ClassifyCommunicationMessageJob::dispatch(
                 (string) $integration->company_id,
                 (string) $message->id,
