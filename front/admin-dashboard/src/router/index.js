@@ -413,6 +413,17 @@ const routes = [
         }
       },
       {
+        // BC-29 COMMUNICATION — R6 (#7691) : boîte connectée, file de
+        // confirmations et réglages (politiques R5 + relances R4).
+        path: '/communication',
+        name: 'communication',
+        component: () => import('@/views/communication/CommunicationView.vue'),
+        meta: {
+          title: 'communicationApp.moduleTitle',
+          icon: 'EnvelopeIcon'
+        }
+      },
+      {
         path: '/showcase',
         name: 'showcase-editor',
         component: () => import('@/views/showcase/ShowcaseEditorView.vue'),
