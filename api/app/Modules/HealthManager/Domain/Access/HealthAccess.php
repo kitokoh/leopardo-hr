@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\HealthManager\Domain\Access;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\HealthManager\Domain\Models\HealthPractitioner;
 
 /**
  * Socle RBAC HealthManager — HC-001 (#7785), pattern EduAccess (EDU-009).
@@ -57,11 +58,34 @@ final class HealthAccess
     }
 
     /**
+     * Praticien de l'établissement (health.practitioner) : employé
+     * référencé comme praticien ACTIF dans `health_practitioners` (HC-002).
+     */
+    public static function isPractitioner(Employee $actor): bool
+    {
+        return HealthPractitioner::query()
+            ->withoutGlobalScope('company')
+            ->where('company_id', $actor->company_id)
+            ->where('employee_id', $actor->id)
+            ->where('status', HealthPractitioner::STATUS_ACTIVE)
+            ->exists();
+    }
+
+    /**
      * L'acteur peut-il GÉRER la structure clinique (services, salles, lits,
      * spécialités, praticiens — HC-002) ? Direction uniquement.
      */
     public static function canManageStructure(Employee $actor): bool
     {
         return self::isAdmin($actor);
+    }
+
+    /**
+     * L'acteur peut-il LIRE la structure clinique ? Direction, accueil et
+     * praticiens (jamais un employé lambda — deny-by-default).
+     */
+    public static function canViewStructure(Employee $actor): bool
+    {
+        return self::isAdmin($actor) || self::isReception($actor) || self::isPractitioner($actor);
     }
 }

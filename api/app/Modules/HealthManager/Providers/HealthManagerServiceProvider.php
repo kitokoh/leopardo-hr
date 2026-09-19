@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\HealthManager\Providers;
 
 use App\Core\Solutions\SolutionCatalogue;
+use App\Events\SolutionActivated;
 use App\Modules\HealthManager\Domain\Solution\HealthManagerManifest;
+use App\Modules\HealthManager\Infrastructure\Services\HealthSpecialtySeederService;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -37,6 +40,16 @@ class HealthManagerServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Rien à booter tant que le référentiel clinique n'existe pas (HC-002).
+        // HC-002 (#7786) — seed du référentiel de spécialités standards à
+        // l'activation de la solution (idempotent), pattern TravelAgency
+        // (SolutionActivated → seed tenant-scoped) : le core ne référence
+        // jamais App\Modules\*, chaque module écoute son propre code.
+        Event::listen(SolutionActivated::class, static function (SolutionActivated $event): void {
+            if ($event->solution !== HealthManagerManifest::CODE) {
+                return;
+            }
+
+            app(HealthSpecialtySeederService::class)->seed($event->company);
+        });
     }
 }

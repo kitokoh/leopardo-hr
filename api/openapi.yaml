@@ -39,6 +39,8 @@ security:
 tags:
 - name: Health
   description: Groupe d'opérations Health
+- name: HealthManager
+  description: Groupe d'opérations HealthManager (BC-30 HEALTH — hôpitaux & cliniques)
 - name: Auth
   description: Groupe d'opérations Auth
 - name: Delivery
@@ -31957,6 +31959,951 @@ paths:
         '422':
           $ref: '#/components/responses/Error422'
 
+  /health-manager/departments:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les services médicaux du tenant
+      description: 'HC-002 (#7786, BC-30). Solution `healthmanager` requise (403 HEALTH_SOLUTION_INACTIVE sinon). Lecture : direction, accueil, praticiens. Liste bornée au tenant courant, paginée (data, meta).'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des services médicaux
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        code:
+                          type: string
+                          maxLength: 50
+                        name:
+                          type: string
+                          maxLength: 191
+                        description:
+                          type: string
+                          maxLength: 255
+                        status:
+                          type: string
+                          enum:
+                          - active
+                          - inactive
+                          - archived
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Créer un(e) service médical
+      description: 'Direction uniquement (deny-by-default). Le tenant est TOUJOURS celui de l''acteur : aucun `company_id` accepté depuis la requête (isolation fail-closed).'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              properties:
+                code:
+                  type: string
+                  maxLength: 50
+                name:
+                  type: string
+                  maxLength: 191
+                description:
+                  type: string
+                  maxLength: 255
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                  - archived
+      responses:
+        '201':
+          description: 'Service médical créé(e)'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/departments/{department}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter un(e) service médical
+      description: 'Lecture : direction, accueil, praticiens. Ressource d''un autre tenant → 404 (aucune fuite cross-tenant).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: department
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: 'Service médical'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - HealthManager
+      summary: Mettre à jour un(e) service médical
+      description: 'Direction uniquement. Ressource d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: department
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 50
+                name:
+                  type: string
+                  maxLength: 191
+                description:
+                  type: string
+                  maxLength: 255
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                  - archived
+      responses:
+        '200':
+          description: 'Service médical'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - HealthManager
+      summary: Supprimer un(e) service médical
+      description: 'Direction uniquement. Ressource d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: department
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: 'Service médical supprimé(e)'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /health-manager/rooms:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les salles du tenant
+      description: 'HC-002 (#7786, BC-30). Solution `healthmanager` requise (403 HEALTH_SOLUTION_INACTIVE sinon). Lecture : direction, accueil, praticiens. Liste bornée au tenant courant, paginée (data, meta).'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des salles
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        department_id:
+                          type: integer
+                        code:
+                          type: string
+                          maxLength: 50
+                        name:
+                          type: string
+                          maxLength: 191
+                        room_type:
+                          type: string
+                          enum:
+                          - consultation
+                          - hospitalization
+                          - surgery
+                          - emergency
+                          - other
+                        status:
+                          type: string
+                          enum:
+                          - active
+                          - inactive
+                          - archived
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Créer un(e) salle
+      description: 'Direction uniquement (deny-by-default). Le tenant est TOUJOURS celui de l''acteur : aucun `company_id` accepté depuis la requête (isolation fail-closed).'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - department_id
+              - code
+              - name
+              properties:
+                department_id:
+                  type: integer
+                code:
+                  type: string
+                  maxLength: 50
+                name:
+                  type: string
+                  maxLength: 191
+                room_type:
+                  type: string
+                  enum:
+                  - consultation
+                  - hospitalization
+                  - surgery
+                  - emergency
+                  - other
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                  - archived
+      responses:
+        '201':
+          description: 'Salle créé(e)'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/rooms/{room}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter un(e) salle
+      description: 'Lecture : direction, accueil, praticiens. Ressource d''un autre tenant → 404 (aucune fuite cross-tenant).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: room
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: 'Salle'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - HealthManager
+      summary: Mettre à jour un(e) salle
+      description: 'Direction uniquement. Ressource d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: room
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                department_id:
+                  type: integer
+                code:
+                  type: string
+                  maxLength: 50
+                name:
+                  type: string
+                  maxLength: 191
+                room_type:
+                  type: string
+                  enum:
+                  - consultation
+                  - hospitalization
+                  - surgery
+                  - emergency
+                  - other
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                  - archived
+      responses:
+        '200':
+          description: 'Salle'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - HealthManager
+      summary: Supprimer un(e) salle
+      description: 'Direction uniquement. Ressource d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: room
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: 'Salle supprimé(e)'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /health-manager/beds:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les lits du tenant
+      description: 'HC-002 (#7786, BC-30). Solution `healthmanager` requise (403 HEALTH_SOLUTION_INACTIVE sinon). Lecture : direction, accueil, praticiens. Liste bornée au tenant courant, paginée (data, meta).'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des lits
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        room_id:
+                          type: integer
+                        code:
+                          type: string
+                          maxLength: 50
+                        status:
+                          type: string
+                          enum:
+                          - free
+                          - occupied
+                          - maintenance
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Créer un(e) lit
+      description: 'Direction uniquement (deny-by-default). Le tenant est TOUJOURS celui de l''acteur : aucun `company_id` accepté depuis la requête (isolation fail-closed).'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - room_id
+              - code
+              properties:
+                room_id:
+                  type: integer
+                code:
+                  type: string
+                  maxLength: 50
+                status:
+                  type: string
+                  enum:
+                  - free
+                  - occupied
+                  - maintenance
+      responses:
+        '201':
+          description: 'Lit créé(e)'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/beds/{bed}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter un(e) lit
+      description: 'Lecture : direction, accueil, praticiens. Ressource d''un autre tenant → 404 (aucune fuite cross-tenant).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: bed
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: 'Lit'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - HealthManager
+      summary: Mettre à jour un(e) lit
+      description: 'Direction uniquement. Ressource d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: bed
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                room_id:
+                  type: integer
+                code:
+                  type: string
+                  maxLength: 50
+                status:
+                  type: string
+                  enum:
+                  - free
+                  - occupied
+                  - maintenance
+      responses:
+        '200':
+          description: 'Lit'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - HealthManager
+      summary: Supprimer un(e) lit
+      description: 'Direction uniquement. Ressource d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: bed
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: 'Lit supprimé(e)'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /health-manager/specialties:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les spécialités médicales du tenant
+      description: 'HC-002 (#7786, BC-30). Solution `healthmanager` requise (403 HEALTH_SOLUTION_INACTIVE sinon). Lecture : direction, accueil, praticiens. Liste bornée au tenant courant, paginée (data, meta).'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des spécialités médicales
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        code:
+                          type: string
+                          maxLength: 50
+                        name:
+                          type: string
+                          maxLength: 191
+                        status:
+                          type: string
+                          enum:
+                          - active
+                          - inactive
+                          - archived
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Créer un(e) spécialité médicale
+      description: 'Direction uniquement (deny-by-default). Le tenant est TOUJOURS celui de l''acteur : aucun `company_id` accepté depuis la requête (isolation fail-closed).'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              properties:
+                code:
+                  type: string
+                  maxLength: 50
+                name:
+                  type: string
+                  maxLength: 191
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                  - archived
+      responses:
+        '201':
+          description: 'Spécialité médicale créé(e)'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/specialties/{specialty}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter un(e) spécialité médicale
+      description: 'Lecture : direction, accueil, praticiens. Ressource d''un autre tenant → 404 (aucune fuite cross-tenant).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: specialty
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: 'Spécialité médicale'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - HealthManager
+      summary: Mettre à jour un(e) spécialité médicale
+      description: 'Direction uniquement. Ressource d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: specialty
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 50
+                name:
+                  type: string
+                  maxLength: 191
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                  - archived
+      responses:
+        '200':
+          description: 'Spécialité médicale'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - HealthManager
+      summary: Supprimer un(e) spécialité médicale
+      description: 'Direction uniquement. Ressource d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: specialty
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: 'Spécialité médicale supprimé(e)'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /health-manager/practitioners:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les praticiens du tenant
+      description: 'HC-002 (#7786, BC-30). Solution `healthmanager` requise (403 HEALTH_SOLUTION_INACTIVE sinon). Lecture : direction, accueil, praticiens. Liste bornée au tenant courant, paginée (data, meta).'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des praticiens
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        employee_id:
+                          type: integer
+                          nullable: true
+                        display_name:
+                          type: string
+                          maxLength: 191
+                        license_number:
+                          type: string
+                          maxLength: 100
+                        title:
+                          type: string
+                          maxLength: 50
+                        status:
+                          type: string
+                          enum:
+                          - active
+                          - inactive
+                          - archived
+                        specialties:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                              code:
+                                type: string
+                              name:
+                                type: string
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Créer un(e) praticien
+      description: 'Direction uniquement (deny-by-default). Le tenant est TOUJOURS celui de l''acteur : aucun `company_id` accepté depuis la requête (isolation fail-closed).'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - display_name
+              properties:
+                employee_id:
+                  type: integer
+                  nullable: true
+                display_name:
+                  type: string
+                  maxLength: 191
+                license_number:
+                  type: string
+                  maxLength: 100
+                title:
+                  type: string
+                  maxLength: 50
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                  - archived
+                specialty_ids:
+                  type: array
+                  items:
+                    type: integer
+                  description: Spécialités du tenant (n-n, pivot tenant-scoped)
+      responses:
+        '201':
+          description: 'Praticien créé(e)'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/practitioners/{practitioner}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter un(e) praticien
+      description: 'Lecture : direction, accueil, praticiens. Ressource d''un autre tenant → 404 (aucune fuite cross-tenant).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: practitioner
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: 'Praticien'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - HealthManager
+      summary: Mettre à jour un(e) praticien
+      description: 'Direction uniquement. Ressource d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: practitioner
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employee_id:
+                  type: integer
+                  nullable: true
+                display_name:
+                  type: string
+                  maxLength: 191
+                license_number:
+                  type: string
+                  maxLength: 100
+                title:
+                  type: string
+                  maxLength: 50
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                  - archived
+                specialty_ids:
+                  type: array
+                  items:
+                    type: integer
+                  description: Spécialités du tenant (n-n, pivot tenant-scoped)
+      responses:
+        '200':
+          description: 'Praticien'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - HealthManager
+      summary: Supprimer un(e) praticien
+      description: 'Direction uniquement. Ressource d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: practitioner
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: 'Praticien supprimé(e)'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /edu-manager/fee-charges:
     post:
       tags:
