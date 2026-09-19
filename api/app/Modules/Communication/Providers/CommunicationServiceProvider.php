@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Communication\Providers;
 
+use App\Modules\Communication\Console\Commands\CommunicationSyncMailboxesCommand;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -12,22 +13,27 @@ use Illuminate\Support\ServiceProvider;
  * Boîte mail connectée + IA (spec validée
  * docs/specifications/MODULE_COMMUNICATION_EMAIL_IA.md, PR #7645) :
  * R0 = enregistrement du module (feature flag tenant `communication`,
- * middleware `module.communication`, routes squelette). Les services
- * OAuth Google, sync Gmail, classification IA et relances arrivent avec
- * les lots R1→R5 — le provider reste volontairement minimal tant qu'il
- * n'a pas de service à binder (pattern CatalogServiceProvider #6880).
+ * middleware `module.communication`, routes squelette). R2 (#7687) ajoute
+ * la commande de polling Gmail `communication:sync-mailboxes` (schedulee
+ * dans routes/console.php). Les services OAuth/sync sont resolus par le
+ * conteneur sans binding explicite (constructeurs concrets).
  */
 class CommunicationServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        // Aucun binding en R0.
+        // Aucun binding necessaire (resolution auto par le conteneur).
     }
 
     public function boot(): void
     {
-        // Les Policies métier seront enregistrées centralement dans
-        // App\Providers\AuthServiceProvider (règle PA2-ARCH-008) à partir
-        // des lots R1+ (aucun modèle en R0).
+        // Les Policies metier sont enregistrees centralement dans
+        // App\Providers\AuthServiceProvider (regle PA2-ARCH-008).
+
+        // Commandes artisan du module (hors app/Console/Commands ->
+        // enregistrement explicite, pattern TravelAgencyServiceProvider).
+        $this->commands([
+            CommunicationSyncMailboxesCommand::class,
+        ]);
     }
 }

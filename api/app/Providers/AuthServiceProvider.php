@@ -16,7 +16,9 @@ use App\Modules\Cameras\Domain\Models\CameraAlert;
 use App\Modules\Cameras\Domain\Models\CameraEvent;
 use App\Modules\Cameras\Domain\Policies\CameraAlertPolicy;
 use App\Modules\Communication\Domain\Models\CommunicationIntegration;
+use App\Modules\Communication\Domain\Models\CommunicationThread;
 use App\Modules\Communication\Domain\Policies\CommunicationIntegrationPolicy;
+use App\Modules\Communication\Domain\Policies\CommunicationThreadPolicy;
 use App\Modules\Catalog\Domain\Models\CatalogCategory;
 use App\Modules\Catalog\Domain\Models\CatalogProduct;
 use App\Modules\Catalog\Domain\Policies\CatalogCategoryPolicy;
@@ -268,6 +270,9 @@ class AuthServiceProvider extends ServiceProvider
         // #7686 — boites mail connectees (Communication R1) : boite personnelle,
         // revocation par le proprietaire ou principal/rh.
         Gate::policy(CommunicationIntegration::class, CommunicationIntegrationPolicy::class);
+        // #7687 — fils Gmail synchronises (Communication R2) : contenu
+        // reserve au PROPRIETAIRE de la boite (pas meme principal/rh).
+        Gate::policy(CommunicationThread::class, CommunicationThreadPolicy::class);
 
         // Org structure
         Gate::policy(FuelMeterReading::class, FuelMeterReadingPolicy::class);

@@ -27,10 +27,10 @@ class CommunicationModuleStatusController extends Controller
                 'enabled' => true,
                 'status' => 'active',
                 // Jalon livré du programme R0→R6 (spec MODULE_COMMUNICATION_EMAIL_IA.md).
-                'stage' => 'R1',
+                'stage' => 'R2',
                 'capabilities' => [
                     'integrations' => true,  // R1 (#7686) — OAuth Google serveur livré
-                    'sync' => false,         // R2 — sync Gmail incrémentale
+                    'sync' => true,          // R2 (#7687) — sync Gmail incrémentale livrée
                     'classification' => false, // R3 — classification IA + CRM
                     'follow_ups' => false,   // R4 — relances automatiques
                     'replies' => false,      // R5 — réponses draft/confirm/auto

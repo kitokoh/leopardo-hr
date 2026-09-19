@@ -194,6 +194,15 @@ Schedule::command('crm:tasks:send-overdue-reminders')
     ->withoutOverlapping()
     ->onOneServer();
 
+// BC-29 COMMUNICATION — polling Gmail des boites connectees (R2 #7687,
+// spec §3.2 : V1 = polling 5 min idempotent ; push Pub/Sub en V1.1). La
+// commande ne fait que dispatcher les jobs (queue `communication`) —
+// throttling par integration via WithoutOverlapping, backoff sur 429.
+Schedule::command('communication:sync-mailboxes')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->onOneServer();
+
 Schedule::command('growth:archive-clicks --days=90')
     ->weekly();
 

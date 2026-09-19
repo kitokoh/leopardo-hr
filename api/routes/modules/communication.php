@@ -14,14 +14,16 @@
  *   - throttle:api-plan       → limite selon le plan tarifaire
  *   - module.communication    → feature flag companies.features.communication
  *
- * Squelette R0 + lot R1 (#7686) : etat du module et connexion Google par
- * utilisateur (OAuth serveur). Les routes metier suivantes (threads,
- * messages, relances — kebab-case pluriel) arrivent avec les lots R2→R5.
+ * Squelette R0 + lot R1 (#7686) + lot R2 (#7687) : etat du module,
+ * connexion Google par utilisateur (OAuth serveur) et consultation des
+ * fils/messages Gmail synchronises. Les routes metier suivantes
+ * (relances, reponses — kebab-case pluriel) arrivent avec les lots R4/R5.
  * Référence : docs/specifications/MODULE_COMMUNICATION_EMAIL_IA.md.
  */
 
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationIntegrationController;
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationModuleStatusController;
+use App\Modules\Communication\Interfaces\Api\V1\Controllers\CommunicationThreadController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.communication'])
@@ -36,6 +38,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/integrations', [CommunicationIntegrationController::class, 'index']);
         Route::post('/integrations/google', [CommunicationIntegrationController::class, 'connectGoogle']);
         Route::delete('/integrations/{integration}', [CommunicationIntegrationController::class, 'destroy'])->whereUuid('integration');
+
+        // R2 (#7687) — fils/messages Gmail synchronises. Boite PERSONNELLE :
+        // l'index est borne aux boites de l'appelant, le detail (corps
+        // dechiffre) est reserve au proprietaire (policy view).
+        Route::get('/threads', [CommunicationThreadController::class, 'index']);
+        Route::get('/threads/{thread}/messages', [CommunicationThreadController::class, 'messages'])->whereUuid('thread');
     });
 
 // R1 (#7686) — callback OAuth Google : route PUBLIQUE par construction (le

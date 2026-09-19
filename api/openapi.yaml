@@ -29614,7 +29614,7 @@ paths:
       tags:
       - Communication
       summary: Etat du module Communication pour le tenant courant
-      description: 'Sonde d''activation du module Communication (BC-29, #7685) : la route est gardee par le feature flag tenant `communication` (403 FEATURE_NOT_ENABLED si le module est inactif). Renvoie le jalon livre (stage R1 depuis #7686 : capacite `integrations` active) et les capacites restantes, desactivees tant que les lots R2-R5 ne sont pas livres.'
+      description: 'Sonde d''activation du module Communication (BC-29, #7685) : la route est gardee par le feature flag tenant `communication` (403 FEATURE_NOT_ENABLED si le module est inactif). Renvoie le jalon livre (stage R2 depuis #7687 : capacites `integrations` et `sync` actives) et les capacites restantes, desactivees tant que les lots R3-R5 ne sont pas livres.'
       security:
       - BearerAuth: []
       responses:
@@ -29639,7 +29639,7 @@ paths:
                         example: active
                       stage:
                         type: string
-                        example: R1
+                        example: R2
                       capabilities:
                         type: object
                         properties:
@@ -29788,7 +29788,7 @@ paths:
       tags:
       - Communication
       summary: Deconnecte une boite mail (revocation Google + purge des tokens)
-      description: 'Deconnexion PROPRE (#7686) : revocation du token aupres de Google (best effort - un token deja invalide ne bloque pas la deconnexion) puis purge locale inconditionnelle des deux tokens (statut `revoked`). Policy : le proprietaire de la boite, ou principal/rh (offboarding, incident). Une integration d''un autre tenant est un 404 (isolation tenant).'
+      description: 'Deconnexion PROPRE (#7686, purge R2 #7687) : revocation du token aupres de Google (best effort - un token deja invalide ne bloque pas la deconnexion), purge locale inconditionnelle des deux tokens (statut `revoked`) puis PURGE COMPLETE des fils/messages synchronises (plus aucun corps de message en base) et des curseurs de sync. Policy : le proprietaire de la boite, ou principal/rh (offboarding, incident). Une integration d''un autre tenant est un 404 (isolation tenant).'
       security:
       - BearerAuth: []
       parameters:
@@ -29808,6 +29808,96 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/CommunicationIntegration'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+
+  /communication/threads:
+    get:
+      tags:
+      - Communication
+      summary: Fils Gmail synchronises des boites de l'employe courant (Communication R2)
+      description: 'Liste paginee des fils synchronises (#7687), bornee aux boites de l''employe COURANT (boite personnelle - aucun fil d''un autre employe), du plus recent au plus ancien : les 50 derniers fils tiennent sur la premiere page. Metadonnees + snippet uniquement, jamais de corps. Filtre optionnel ?integration={uuid}. Route gardee par le feature flag tenant `communication`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: integration
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: Restreindre a une boite connectee precise
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+          maximum: 100
+      responses:
+        '200':
+          description: Fils des boites de l'employe courant (metadonnees + snippet)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CommunicationThread'
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      last_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+
+  /communication/threads/{thread}/messages:
+    get:
+      tags:
+      - Communication
+      summary: Messages d'un fil Gmail synchronise (proprietaire de la boite uniquement)
+      description: 'Messages du fil, tries chronologiquement (#7687). Seul endpoint qui expose le corps (text/plain borne, chiffre au repos, dechiffre a la lecture) - reserve au PROPRIETAIRE de la boite : collegue (meme principal/rh) = 403, autre tenant = 404. Pieces jointes : references Gmail seulement, jamais le contenu.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: thread
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Fil + messages (corps dechiffre pour le proprietaire)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      thread:
+                        $ref: '#/components/schemas/CommunicationThread'
+                      messages:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/CommunicationMessage'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -31057,6 +31147,96 @@ components:
           format: date-time
           nullable: true
         revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+    CommunicationThread:
+      type: object
+      description: 'Fil Gmail synchronise (Communication R2, #7687). METADONNEES uniquement : sujet, snippet, compteur, date du dernier message - le corps chiffre vit sur les messages, les pieces jointes ne sont jamais stockees.'
+      properties:
+        id:
+          type: string
+          format: uuid
+        integration_id:
+          type: string
+          format: uuid
+        gmail_thread_id:
+          type: string
+          example: 18c2f9a7b3d4e5f6
+        subject:
+          type: string
+          nullable: true
+        snippet:
+          type: string
+          nullable: true
+          description: Extrait Gmail du message le plus recent (jamais le corps complet)
+        message_count:
+          type: integer
+        last_message_at:
+          type: string
+          format: date-time
+          nullable: true
+    CommunicationMessage:
+      type: object
+      description: 'Message Gmail synchronise (Communication R2, #7687). Minimisation : headers utiles (From/To/Cc/Subject), references RFC 5322 (Message-ID/In-Reply-To), snippet, labels, corps text/plain borne (chiffre au repos, dechiffre a la lecture pour le proprietaire seul) et REFERENCES de pieces jointes (le contenu n''est jamais stocke).'
+      properties:
+        id:
+          type: string
+          format: uuid
+        gmail_message_id:
+          type: string
+        internet_message_id:
+          type: string
+          nullable: true
+          description: Header Message-ID RFC 5322 (threading, relances R4)
+        in_reply_to:
+          type: string
+          nullable: true
+        from_email:
+          type: string
+          nullable: true
+        to_emails:
+          type: array
+          items:
+            type: string
+        cc_emails:
+          type: array
+          items:
+            type: string
+        subject:
+          type: string
+          nullable: true
+        snippet:
+          type: string
+          nullable: true
+        body:
+          type: string
+          nullable: true
+          description: Corps text/plain borne, chiffre au repos - visible du proprietaire de la boite uniquement
+        labels:
+          type: array
+          items:
+            type: string
+          example:
+          - INBOX
+          - UNREAD
+        attachment_refs:
+          type: array
+          description: References Gmail des pieces jointes (attachment_id, filename, mime_type, size) - contenu jamais stocke
+          items:
+            type: object
+            properties:
+              attachment_id:
+                type: string
+              filename:
+                type: string
+              mime_type:
+                type: string
+                nullable: true
+              size:
+                type: integer
+                nullable: true
+        sent_at:
           type: string
           format: date-time
           nullable: true

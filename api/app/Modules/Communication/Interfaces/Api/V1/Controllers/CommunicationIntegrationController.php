@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Communication\Domain\Models\CommunicationIntegration;
 use App\Modules\Communication\Domain\Support\CommunicationFeatures;
 use App\Modules\Communication\Infrastructure\Services\GoogleGmailOAuthService;
+use App\Modules\Communication\Infrastructure\Services\GoogleGmailSyncService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -44,8 +45,10 @@ class CommunicationIntegrationController extends Controller
 
     private const STATE_TTL_MINUTES = 10;
 
-    public function __construct(private readonly GoogleGmailOAuthService $google)
-    {
+    public function __construct(
+        private readonly GoogleGmailOAuthService $google,
+        private readonly GoogleGmailSyncService $sync,
+    ) {
     }
 
     /**
@@ -225,14 +228,20 @@ class CommunicationIntegrationController extends Controller
 
     /**
      * Deconnexion = revocation cote Google + purge des tokens (statut
-     * `revoked`). Binding implicite tenant-scope : une integration d'un
-     * autre tenant est un 404 avant meme la policy.
+     * `revoked`) + PURGE COMPLETE des fils/messages synchronises (exigence
+     * R2 #7687 : plus aucun corps de message en base apres deconnexion).
+     * Binding implicite tenant-scope : une integration d'un autre tenant
+     * est un 404 avant meme la policy.
      */
     public function destroy(CommunicationIntegration $integration): JsonResponse
     {
         $this->authorize('delete', $integration);
 
         $this->google->revoke($integration);
+
+        // Purge R2 : threads + messages (corps chiffres compris) + curseurs
+        // de sync — une reconnexion repart d'une full sync propre.
+        $this->sync->purge($integration);
 
         Log::channel('audit')->info('communication.google.revoked', [
             'company_id' => $integration->company_id,
