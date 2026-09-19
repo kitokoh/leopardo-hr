@@ -94,14 +94,6 @@ const ignorePathFragments = [
   // mécanisme de localisation, pas des chaînes hors catalogue. La complétude des
   // 4 langues reste couverte par validate-and-sync.
   '/vitrine/lib/legal-content.ts',
-  // Navbar vitrine (#7669, PR #7667) : `navByLocale` est le catalogue inline
-  // ×4 (fr/en/tr/ar) de la navigation — même mécanique que case-studies.ts
-  // (#4703) et RestaurantSolutionWizard.tsx (#6691) ci-dessus. Le diff du lot
-  // audit vendeur ne fait que réparer la mojibake (accents FR, caractères TR)
-  // de chaînes déjà traduites dans les 4 locales : ce fichier EST le mécanisme
-  // de localisation du composant, pas des chaînes hors catalogue. La parité
-  // des 4 langues reste garantie par la structure Record<locale, NavEntry[]>.
-  '/vitrine/components/Navbar.tsx',
 ];
 
 // Lines that already route text through a translation mechanism — never
