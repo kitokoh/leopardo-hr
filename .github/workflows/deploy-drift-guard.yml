@@ -13,6 +13,13 @@ name: Deploy Drift Guard
 #   - prod : l'environnement publie une **version de release** (`APP_VERSION`) →
 #            référence = **dernier tag publié** (`/releases/latest`), donc
 #            « une Release n'a pas été déployée » est détecté.
+#            #7648 : en COMPLÉMENT, un rapport d'ÉCART PROD ↔ MAIN est publié
+#            à chaque run (résumé de job + ::warning) — l'audit 2026-09-19 a
+#            mesuré une prod 5 jours / des dizaines de PR derrière main sans
+#            que rien ne le rende visible : être « au dernier tag » ne suffit
+#            pas si aucun tag n'a été publié depuis des jours. Le rapport est
+#            NON bloquant (la release est une décision propriétaire) et
+#            n'utilise AUCUN secret (health public + github.token).
 #
 # Portée : signal fort, planifié (hors PR) — elle n'est donc pas un check
 # requis au merge et n'allonge aucun cycle de PR. Elle tourne aussi à la
@@ -178,6 +185,77 @@ jobs:
             args+=(--strict-failed)
           fi
           bash dev-hub/tools/check-deploy-drift.sh "${args[@]}"
+
+      # #7648 : écart prod ↔ main VISIBLE. Le check « tag » ci-dessus dit si
+      # la prod sert le dernier tag publié ; il ne dit PAS de combien main a
+      # avancé depuis. Ce rapport mesure les commits/jours entre la version
+      # servie par la prod et origin/main, sans jamais faire échouer le job
+      # (report-only) et sans secret supplémentaire (RENDER_API_KEY inutile :
+      # health public + API GitHub avec github.token).
+      - name: "Rapport #7648 — écart prod ↔ main"
+        if: ${{ !cancelled() && matrix.mode == 'tag' && steps.target.outputs.skip != 'true' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_URL: ${{ steps.target.outputs.url }}
+        run: |
+          set -uo pipefail
+
+          case "${TARGET_URL%/}" in
+            */api/v1/health | */health) health_url="${TARGET_URL%/}" ;;
+            */api/v1) health_url="${TARGET_URL%/}/health" ;;
+            *) health_url="${TARGET_URL%/}/api/v1/health" ;;
+          esac
+
+          deployed="$(curl -fsS --max-time 30 "${health_url}" | jq -r '.version // empty' || true)"
+          if [[ -z "${deployed}" ]]; then
+            echo "::warning::rapport prod↔main (#7648) : version prod illisible sur ${health_url} — écart non mesurable ce run."
+            exit 0
+          fi
+
+          api="https://api.github.com/repos/${GITHUB_REPOSITORY}"
+          compare=""
+          # La prod publie une version de release (ex. 4.32.0) : tolérer le
+          # préfixe « v » dans les deux sens, puis un SHA brut.
+          for ref in "${deployed}" "v${deployed}" "${deployed#v}"; do
+            compare="$(curl -fsS -H "Authorization: Bearer ${GH_TOKEN}" \
+              "${api}/compare/$(printf '%s' "${ref}" | jq -sRr @uri)...heads/main" 2>/dev/null || true)"
+            [[ -n "${compare}" ]] && ref_used="${ref}" && break
+          done
+          if [[ -z "${compare}" ]]; then
+            echo "::warning::rapport prod↔main (#7648) : version servie « ${deployed} » introuvable comme ref/tag du dépôt — écart non mesurable (corrélation version↔commit impossible)."
+            exit 0
+          fi
+
+          gap="$(jq -r '.ahead_by // empty' <<<"${compare}")"
+          base_sha="$(jq -r '.base_commit.sha // empty' <<<"${compare}")"
+          base_date="$(jq -r '.base_commit.commit.committer.date // empty' <<<"${compare}")"
+          days=""
+          if [[ -n "${base_date}" ]]; then
+            days=$(( ( $(date -u +%s) - $(date -u -d "${base_date}" +%s) ) / 86400 ))
+          fi
+
+          {
+            echo "### Écart prod ↔ main (#7648)"
+            echo ""
+            echo "| Mesure | Valeur |"
+            echo "| --- | --- |"
+            echo "| Version servie (prod) | \`${deployed}\` (ref \`${ref_used}\`, ${base_sha:0:7}) |"
+            echo "| Commits de main non déployés | **${gap:-?}** |"
+            echo "| Date du commit déployé | ${base_date:-inconnue}${days:+ (${days} j)} |"
+            echo ""
+            if [[ "${gap:-0}" =~ ^[0-9]+$ && "${gap}" -gt 0 ]]; then
+              echo "> ⚠️ La prod est **${gap} commit(s)** derrière \`main\`${days:+ (dernier code déployé vieux de ${days} jour(s))}. Déployer = publier une Release (action propriétaire, cf. docs/ops/RENDER_DEV_PROD_TOPOLOGY.md)."
+            else
+              echo "> ✅ La prod sert le contenu de \`main\` (aucun commit en attente)."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [[ "${gap:-0}" =~ ^[0-9]+$ && "${gap}" -gt 0 ]]; then
+            echo "::warning::prod↔main (#7648) : ${gap} commit(s) de main non déployé(s) en prod${days:+ — dernier code déployé vieux de ${days} jour(s)} (version servie : ${deployed}). Publier une Release pour déployer (décision propriétaire)."
+          else
+            echo "prod↔main (#7648) : aucun écart (version servie : ${deployed})."
+          fi
 
       - name: Rappel du runbook
         if: failure()

@@ -10,11 +10,19 @@
 # push. Toute sync manuelle (dashboard Render → « New + » / Blueprint) doit
 # être faite avec prudence : Render mappe les services par `name:` ; un
 # renommage recrée un service au lieu de le renommer (doublon/orphelin).
-# Les noms de service physiques et APP_ENV=production ci-dessous sont donc
-# laissés inchangés intentionnellement (dette de nommage historique — le
-# « vrai » environnement de production, promu uniquement sur tag git validé
-# vX.Y.Z, vit dans render.prod.yaml + deploy-prod.yml ; voir
+# Les noms de service physiques ci-dessous sont donc laissés inchangés
+# intentionnellement (dette de nommage historique — le « vrai »
+# environnement de production, promu uniquement sur tag git validé vX.Y.Z,
+# vit dans render.prod.yaml + deploy-prod.yml ; voir
 # docs/ops/RENDER_DEV_PROD_TOPOLOGY.md).
+# ⚠️ Issue #7648 (audit 2026-09-19) : la dette APP_ENV=production sur le
+# tier dev est SOLDÉE — le tier dev tourne désormais en APP_ENV=staging +
+# DEPLOY_TIER=dev (identité de tier #7647). Plan de migration, deltas de
+# comportement et risques : docs/ops/RENDER_DEV_PROD_TOPOLOGY.md,
+# section « #7648 ». Les verrous démo (DISABLE_DEMO_SEEDING,
+# DEMO_MODE_ENABLED=false, DEMO_PASSWORD non posée — #7696) restent les
+# gardes effectives du seeding sous staging : ne pas les retirer sans
+# relire cette section.
 #
 # ⚠️ ALIGNEMENT SUR LA RÉALITÉ (vérifié dashboard 2026-09-04, re-vérifié
 # healthchecks publics 2026-09-05 — PR #6831) :
@@ -58,7 +66,10 @@ services:
     dockerfilePath: api/Dockerfile.prod
     dockerContext: .
     region: frankfurt
-    plan: starter
+    # #7648 : plan aligné sur la RÉALITÉ (API Render, vérifié 2026-09-19 :
+    # le service tourne en free, pas starter — le blueprint mentait).
+    # Upgrade = décision billing propriétaire, voir #7649.
+    plan: free
     healthCheckPath: /api/v1/health
     # #6700 : autoDeploy:false — le déploiement de l'API est piloté
     # par le workflow deploy-main.yml via RENDER_DEPLOY_HOOK_URL (gate tests +
@@ -66,13 +77,20 @@ services:
     # web/mobile/docs only) → gaspillage des build hours gratuits (~500 h/mois).
     autoDeploy: false
     envVars:
+      # #7648 : fin de la dette APP_ENV=production sur le tier dev. staging
+      # est pris en compte au prochain deploy (config:cache tourne au boot
+      # depuis l'env — docker-entrypoint.sh). Deltas de comportement dev
+      # recensés dans docs/ops/RENDER_DEV_PROD_TOPOLOGY.md §#7648 (Sentry
+      # environment=staging, sweep multi-tenant auth réactivé, fallbacks
+      # dev/test Edge/Cameras, driver IA par défaut = fake sans
+      # AI_LLM_DRIVER explicite). La sémantique prod (render.prod.yaml,
+      # APP_ENV=production) est inchangée.
       - key: APP_ENV
-        value: production
+        value: staging
       - key: APP_DEBUG
         value: false
-      # Issue #7647 : tier de déploiement explicite, découplé d'APP_ENV (le
-      # dev tourne en APP_ENV=production — dette de nommage assumée, cf.
-      # en-tête). docker-entrypoint.sh est fail-closed dessus :
+      # Issue #7647 : tier de déploiement explicite, découplé d'APP_ENV.
+      # docker-entrypoint.sh est fail-closed dessus :
       # RESET_TEST_DB_ONCE exige DEPLOY_TIER=dev explicite, et
       # FORCE_SUPER_ADMIN_PASSWORD_RESET n'est propagée aux seeders que sur
       # ce tier. Sans sync blueprint, poser aussi la variable dans le
@@ -84,7 +102,11 @@ services:
       - key: API_DOCS_PUBLIC
         value: "true"
       # Audit #1697 : ne jamais créer les sociétés démo / reset le mot de
-      # passe super-admin « password123 » en production.
+      # passe super-admin sur ce service. #7648 : flag CONSERVÉ sous
+      # APP_ENV=staging — c'est lui (avec DEMO_MODE_ENABLED=false et
+      # DEMO_PASSWORD non posée, #7696) qui verrouille le seeding démo
+      # maintenant qu'APP_ENV ne dit plus « production ». Le retirer =
+      # décision explicite d'activer la démo sur le tier dev (hors #7648).
       - key: DISABLE_DEMO_SEEDING
         value: "true"
       - key: APP_URL
@@ -222,6 +244,10 @@ services:
     dockerfilePath: api/Dockerfile.prod
     dockerContext: .
     region: frankfurt
+    # #7648 : starter CONSERVÉ — ce worker n'existe pas encore dans le
+    # workspace (cf. ⚠️ ci-dessus) et les Background Workers sont
+    # inéligibles au tier gratuit Render : starter est le plan minimal de
+    # provisionnement futur (décision billing : #7649).
     plan: starter
     # #6700 : pas de hook Render dédié pour les workers → autoDeploy:false
     # (déploiement manuel / blueprint sync assumé ; un autoDeploy:true sur
@@ -238,12 +264,15 @@ services:
       --max-jobs=500
       --max-time=3600
     envVars:
+      # #7648 : aligné sur le web service (tier dev = staging + DEPLOY_TIER).
       - key: APP_ENV
-        value: production
+        value: staging
+      - key: DEPLOY_TIER
+        value: dev
       - key: APP_DEBUG
         value: false
       # Audit #1697 : ne jamais créer les sociétés démo / reset le mot de
-      # passe super-admin « password123 » en production.
+      # passe super-admin sur ce service (cf. note #7648 du web service).
       - key: DISABLE_DEMO_SEEDING
         value: "true"
       # #6558 (audit ops M-3) : migrations + seed UNIQUEMENT sur le service
@@ -348,17 +377,22 @@ services:
     dockerfilePath: api/Dockerfile.prod
     dockerContext: .
     region: frankfurt
+    # #7648 : starter CONSERVÉ — service non provisionné (cf. ⚠️ ci-dessus),
+    # Background Workers inéligibles au tier gratuit (décision billing : #7649).
     plan: starter
     autoDeploy: false
     dockerCommand: >-
       sh -c "while true; do php artisan schedule:run --no-interaction; sleep 60; done"
     envVars:
+      # #7648 : aligné sur le web service (tier dev = staging + DEPLOY_TIER).
       - key: APP_ENV
-        value: production
+        value: staging
+      - key: DEPLOY_TIER
+        value: dev
       - key: APP_DEBUG
         value: false
       # Audit #1697 : ne jamais créer les sociétés démo / reset le mot de
-      # passe super-admin « password123 » en production.
+      # passe super-admin sur ce service (cf. note #7648 du web service).
       - key: DISABLE_DEMO_SEEDING
         value: "true"
       # #6558 (audit ops M-3) : migrations + seed UNIQUEMENT sur le service
