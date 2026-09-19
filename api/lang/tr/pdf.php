@@ -174,4 +174,14 @@ return [
     'payslip_regularization_banner' => 'DÜZELTME BORDROSU — :run numaralı ödemeyi düzeltir',
     'payslip_regularization_banner_slip' => 'DÜZELTME BORDROSU — :slip numaralı bordroyu düzeltir',
     'contract_legal_clauses_title' => 'Sözleşmenin yasal maddeleri',
+
+    // BC-17 RETAIL #7813 — POS fişi ve sipariş faturası.
+    'retail_receipt_title' => 'Satış fişi',
+    'retail_customer' => 'Müşteri',
+    'retail_payments_section' => 'Ödemeler',
+    'retail_discount' => 'İndirim',
+    'retail_thanks' => 'Satın aldığınız için teşekkürler!',
+    'retail_status_paid' => 'Ödendi',
+    'retail_status_unpaid' => 'Ödenecek tutar',
+    'retail_invoice_seller' => 'Satıcı',
 ];

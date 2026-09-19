@@ -1549,6 +1549,8 @@ trait CreatesMvpSchema
                 $table->timestamp('shipped_at')->nullable();
                 $table->timestamp('delivered_at')->nullable();
                 $table->string('delivery_reference', 30)->nullable();
+                $table->string('invoice_number', 30)->nullable();
+                $table->timestamp('invoiced_at')->nullable();
                 $table->unsignedInteger('version')->default(1);
                 $table->timestamps();
 
@@ -1558,6 +1560,10 @@ trait CreatesMvpSchema
                 $table->index(['company_id', 'location_id', 'status'], 'retail_orders_company_location_status_idx');
                 $table->index(['company_id', 'fulfillment_status'], 'retail_orders_company_fulfillment_status_idx');
             });
+
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement('CREATE UNIQUE INDEX IF NOT EXISTS retail_orders_company_invoice_number_unique ON '.$this->moduleTable('retail_orders').' (company_id, invoice_number) WHERE invoice_number IS NOT NULL');
+            }
         }
 
         if (! Schema::hasTable($this->moduleTable('retail_order_items'))) {

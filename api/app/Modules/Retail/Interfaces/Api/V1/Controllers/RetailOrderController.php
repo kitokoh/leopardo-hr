@@ -6,17 +6,22 @@ namespace App\Modules\Retail\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Retail\Application\Services\RetailInvoiceNumberService;
 use App\Modules\Retail\Application\Services\RetailPosService;
+use App\Modules\Retail\Domain\Enums\RetailOrderStatus;
 use App\Modules\Retail\Domain\Enums\RetailPaymentMethod;
 use App\Modules\Retail\Domain\Models\RetailOrder;
 use App\Modules\Retail\Domain\Models\RetailOrderItem;
 use App\Modules\Retail\Domain\Models\RetailOrderPayment;
 use App\Modules\Retail\Domain\Models\RetailPosSession;
+use App\Modules\Retail\Infrastructure\Services\RetailDocumentPdfRenderer;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\CancelRetailOrderRequest;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\StoreRetailOrderPaymentRequest;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\StoreRetailOrderRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Commandes de vente POS du module Retail (BC-17 RETAIL, #7674).
@@ -171,6 +176,74 @@ class RetailOrderController extends Controller
         );
 
         return response()->json(['data' => $this->receiptPayload($cancelled)]);
+    }
+
+    /**
+     * GET /retail/pos/orders/{order}/receipt — ticket de caisse PDF
+     * imprimable (rouleau 80 mm) d'une vente POS encaissée (#7813).
+     * Fail-closed : autre tenant → 404 ; commande non `completed` ou hors
+     * canal POS → 422.
+     */
+    public function receipt(
+        Request $request,
+        RetailOrder $order,
+        RetailDocumentPdfRenderer $renderer,
+    ): Response {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($order->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('view', $order);
+
+        if ($order->source->value !== 'pos') {
+            throw ValidationException::withMessages(['order' => 'ORDER_NOT_POS']);
+        }
+
+        if ($order->status !== RetailOrderStatus::Completed) {
+            throw ValidationException::withMessages(['order' => 'ORDER_NOT_COMPLETED']);
+        }
+
+        $document = $renderer->renderReceipt($order);
+
+        return response($document['content'], 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$document['filename'].'"',
+        ]);
+    }
+
+    /**
+     * GET /retail/orders/{order}/invoice — facture PDF (POS + commandes
+     * web, #7813). Le numéro légal `FAC-YYYY-NNNNNN` est assigné à la
+     * PREMIÈRE génération (par tenant, immuable — les rejeux re-rendent le
+     * même numéro). Fail-closed : autre tenant → 404 ; commande non
+     * facturable (pas `completed`) → 422.
+     */
+    public function invoice(
+        Request $request,
+        RetailOrder $order,
+        RetailInvoiceNumberService $numbers,
+        RetailDocumentPdfRenderer $renderer,
+    ): Response {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($order->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('view', $order);
+
+        $invoiced = $numbers->assign($order);
+
+        $document = $renderer->renderInvoice($invoiced);
+
+        return response($document['content'], 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$document['filename'].'"',
+        ]);
     }
 
     /**

@@ -54,6 +54,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $shipped_at
  * @property Carbon|null $delivered_at
  * @property string|null $delivery_reference
+ * @property string|null $invoice_number
+ * @property Carbon|null $invoiced_at
  * @property int $version
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -93,6 +95,8 @@ class RetailOrder extends Model
         'shipped_at',
         'delivered_at',
         'delivery_reference',
+        'invoice_number',
+        'invoiced_at',
         'version',
     ];
 
@@ -111,6 +115,7 @@ class RetailOrder extends Model
             'confirmed_at' => 'datetime',
             'shipped_at' => 'datetime',
             'delivered_at' => 'datetime',
+            'invoiced_at' => 'datetime',
             'version' => 'integer',
         ];
     }

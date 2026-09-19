@@ -31024,6 +31024,64 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Validation422'
+  /retail/pos/orders/{order}/receipt:
+    get:
+      tags:
+      - Retail
+      summary: Ticket de caisse PDF imprimable d'une vente POS (membres du tenant)
+      description: 'BC-17 #7813 : ticket rouleau 80 mm (DomPDF, i18n 4 locales,
+        montants en minor units rendus en unites). Commande d''un autre tenant
+        = 404 ; commande hors canal POS ou non completed = 422.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: PDF du ticket (application/pdf, inline)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/orders/{order}/invoice:
+    get:
+      tags:
+      - Retail
+      summary: Facture PDF d'une commande Retail - POS ou web (membres du tenant)
+      description: 'BC-17 #7813 : facture A4 avec numerotation LEGALE par
+        tenant (FAC-YYYY-NNNNNN, assignee a la premiere generation puis
+        IMMUABLE - les rejeux re-rendent le meme numero ; unicite
+        (company_id, invoice_number) en base). Reutilise la mecanique du
+        renderer PDF Billing (DomPDF + Blade, #7763) sans import
+        cross-module. Commande d''un autre tenant = 404 ; commande non
+        completed = 422 ORDER_NOT_INVOICEABLE.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: PDF de la facture (application/pdf, inline)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
   /retail/pos/orders/{order}/cancel:
     post:
       tags:

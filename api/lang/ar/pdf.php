@@ -174,4 +174,14 @@ return [
     'payslip_regularization_banner' => 'قسيمة تسوية — تصحيح الدفعة رقم :run',
     'payslip_regularization_banner_slip' => 'قسيمة تسوية — تصحيح الكشف رقم :slip',
     'contract_legal_clauses_title' => 'البنود القانونية للعقد',
+
+    // BC-17 RETAIL #7813 — إيصال نقطة البيع وفاتورة الطلبات.
+    'retail_receipt_title' => 'إيصال البيع',
+    'retail_customer' => 'العميل',
+    'retail_payments_section' => 'المدفوعات',
+    'retail_discount' => 'الخصم',
+    'retail_thanks' => 'شكراً لشرائكم!',
+    'retail_status_paid' => 'مدفوعة',
+    'retail_status_unpaid' => 'مبلغ مستحق',
+    'retail_invoice_seller' => 'البائع',
 ];
