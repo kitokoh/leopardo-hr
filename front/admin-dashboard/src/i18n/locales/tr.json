@@ -7382,5 +7382,35 @@
       "support": "Destek",
       "supportDesc": "Ekibimize ulaşın"
     }
+  },
+  "brandingPage": {
+    "title": "Marka kimliği",
+    "subtitle": "Çalışma alanınızın ve belgelerinizin adını, logosunu ve renklerini özelleştirin.",
+    "forbidden": "Bu sayfa yalnızca ana yönetici ve İK yöneticilerine açıktır. Marka kimliğini güncellemek için bir yöneticiye başvurun.",
+    "loadError": "Marka kimliği yüklenemedi. Lütfen daha sonra tekrar deneyin.",
+    "identityTitle": "Kimlik",
+    "displayName": "Görünen ad",
+    "displayNameHint": "Çalışma alanında ve belgelerinizde gösterilen ad (2–120 karakter).",
+    "logoTitle": "Logo",
+    "logoHint": "JPG, PNG veya WebP — en fazla 2 MB, en fazla 2048×2048 px.",
+    "logoChoose": "Logo seç",
+    "logoTooLarge": "Dosya 2 MB sınırını aşıyor.",
+    "logoInvalidType": "Desteklenmeyen biçim: JPG, PNG veya WebP kullanın.",
+    "logoPreviewAlt": "Logo önizlemesi",
+    "colorsTitle": "Renkler",
+    "primaryColor": "Ana renk",
+    "accentColor": "Vurgu rengi",
+    "invalidHex": "Geçersiz renk: #10B981 gibi bir onaltılık kod kullanın.",
+    "brandModeTitle": "Marka modu",
+    "modeDefault": "Varsayılan",
+    "modeLight": "Açık",
+    "modeDark": "Koyu",
+    "modeAuto": "Otomatik",
+    "previewTitle": "Önizleme",
+    "previewHint": "Markanızın müşteri alanındaki canlı görünümü.",
+    "previewAction": "Örnek düğme",
+    "save": "Kaydet",
+    "saved": "Marka kimliği güncellendi.",
+    "saveError": "Kaydetme başarısız oldu. Lütfen tekrar deneyin."
   }
 }
