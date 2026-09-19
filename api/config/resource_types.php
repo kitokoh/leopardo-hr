@@ -27,6 +27,16 @@ return [
         'label_column' => 'name',
         'scope_company' => true,
     ],
+    // #7686 (Communication R1) — boite mail connectee d'un employe : declaree
+    // des R1 pour que le RBAC ressource-scope (R2-R4 de l'epique #7597) reste
+    // fail-closed (« aucun acces inter-boites sans assignation »). Le libelle
+    // est l'adresse de la boite (seule donnee de profil conservee —
+    // minimisation) ; les tokens sont chiffres et caches ($hidden).
+    'communication_mailbox' => [
+        'model' => App\Modules\Communication\Domain\Models\CommunicationIntegration::class,
+        'label_column' => 'email',
+        'scope_company' => true,
+    ],
     // #7600 (R3) — généralisation aux autres verticales.
     'edu_campus' => [
         'model' => App\Modules\EduManager\Domain\Models\EduCampus::class,
