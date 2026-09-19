@@ -89,7 +89,8 @@ playwright-report/
 *.test-results/
 
 # Vendored tooling binaries (fetch via composer self-update / install script instead)
-composer.phar
+# #7654 : tout binaire .phar (composer, php-cs-fixer, phpunit…) — jamais committé.
+*.phar
 
 # Local SQLite dev/test databases
 *.sqlite
@@ -100,9 +101,15 @@ docs/validation/I18N_DEBT_REPORT_2026_08_09.md
 .claude/
 
 # Flutter/Dart build artifacts (cache local, chemins absolus — jamais en git)
+# #7654 : build/ des apps mobiles (dont test_cache/*.dill, 52,7 MB committés une
+# fois par erreur) — ceinture ET bretelles avec les .gitignore par app et la
+# garde CI repo-hygiene-guard.yml.
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
+front/mobile_apps/*/build/
+test_cache/
+*.dill
 
 # Flutter/Dart codegen (jamais commité — régénéré en CI, cf. #6590)
 *.g.dart
