@@ -16,6 +16,18 @@
 > `api/tests/Feature/PdfBrandingTest.php` (5 cas : logo + couleur rendus, rendu inchangé sans
 > branding, repli silencieux fichier manquant/couleur invalide, génération payslip binaire).
 
+> **MAJ 2026-09-19 — #7685, R0 du module Communication (BC-29, spec `MODULE_COMMUNICATION_EMAIL_IA.md`).**
+> Surface **API** : nouvel endpoint `GET /api/v1/communication/status` (état/santé du squelette
+> du module, gardé par la chaîne `throttle:api → auth:sanctum → token.refresh → tenant →
+> throttle:api-plan → module.communication`) — le feature flag tenant `communication`
+> (nouveau dans `Company::KNOWN_MODULES`, reconstruit par
+> `PATCH /platform/companies/{id}/features`) est fail-closed : module inactif → **403
+> `FEATURE_NOT_ENABLED`**. Contrat documenté dans `api/openapi.yaml` (tag `Communication`),
+> miroir + SDK régénérés. Scénario automatisé :
+> `api/tests/Feature/Communication/CommunicationModuleGateTest.php` (6 cas — présence dans
+> KNOWN_MODULES, 401 sans auth, 403 flag absent, état 200 complet, isolation du flag par
+> tenant, désactivation → 403 immédiat). Surfaces web/mobile : aucune (UI au lot R6).
+
 > **MAJ 2026-09-19 — #7680, dédoublonnage des routes platform (PR de fix RouteCollisionGuard).**
 > Surface **API** : suppression de 5 déclarations dupliquées SANS `platform.permission`
 > (country/subscription/features de `platform/companies/{company}`) qui masquaient les versions
