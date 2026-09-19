@@ -16,6 +16,7 @@ use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
 use App\Events\EmployeeRoleAssigned;
 use App\Events\FuelStationAlert;
+use App\Events\InvoicePaid;
 use App\Events\MarketingLeadQualified;
 use App\Events\PayrollValidated;
 use App\Events\SubscriptionPaid;
@@ -30,6 +31,7 @@ use App\Listeners\FuelStationAlertListener;
 use App\Listeners\LinkPartnerToNewCompany;
 use App\Listeners\NotifyTaxRateValidation;
 use App\Listeners\ProcessCommissionOnPayment;
+use App\Listeners\SendInvoicePaymentReceipt;
 use App\Listeners\WebhookListener;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -49,6 +51,11 @@ class EventServiceProvider extends ServiceProvider
         EmployeeRoleAssigned::class => [AuditLogger::class],
         CompanyCreated::class => [LinkPartnerToNewCompany::class],
         SubscriptionPaid::class => [ProcessCommissionOnPayment::class],
+
+        // #7763 (BC-21 BILLING) — reçu de paiement au principal du tenant sur
+        // la transition unique Invoice::transitionTo(Paid), Stripe et Chargily
+        // confondus (PDF joint, i18n via EmailTemplateResolver).
+        InvoicePaid::class => [SendInvoicePaymentReceipt::class],
 
         // Issue #1813/#1923 — workflow de validation des taux légaux : le
         // listener n'était enregistré nulle part (mort) alors que le
