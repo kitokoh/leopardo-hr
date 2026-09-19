@@ -3,11 +3,13 @@
 import { useState } from 'react';
 import { Plus, X } from 'lucide-react';
 import { SUPPORTED_PLATFORMS } from '@/modules/marketing/types';
+import { MediaUrlsInput } from '@/modules/marketing/components/MediaUrlsInput';
 
 export type PostEditorSubmitPayload = {
   content: string;
   targetPlatforms: string[];
   scheduledAt: string | null;
+  mediaPaths: string[];
 };
 
 type PostEditorProps = {
@@ -38,6 +40,7 @@ export function PostEditor({
   const [content, setContent] = useState('');
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [scheduledAt, setScheduledAt] = useState(initialScheduledAt ?? '');
+  const [mediaUrls, setMediaUrls] = useState<string[]>([]);
 
   const togglePlatform = (value: string) => {
     setSelectedPlatforms((prev) => (
@@ -56,11 +59,13 @@ export function PostEditor({
       content: content.trim(),
       targetPlatforms: selectedPlatforms,
       scheduledAt: scheduledAt ? new Date(scheduledAt).toISOString() : null,
+      mediaPaths: mediaUrls,
     });
 
     setContent('');
     setSelectedPlatforms([]);
     setScheduledAt('');
+    setMediaUrls([]);
   };
 
   return (
@@ -98,6 +103,8 @@ export function PostEditor({
           })}
         </div>
       </div>
+
+      <MediaUrlsInput value={mediaUrls} onChange={setMediaUrls} disabled={submitting} />
 
       <div className="flex flex-col gap-3 md:flex-row md:items-end">
         <div className="flex-1">

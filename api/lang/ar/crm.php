@@ -29,4 +29,14 @@ return [
     'CRM_EXPORT_FAILED' => 'فشل إنشاء تصدير CRM.',
     'CRM_EXPORT_ENTITY_INVALID' => 'كيان تصدير CRM غير معروف.',
 
+    // #7751 — campagnes email effectives (tranche 1 Marketing & Communication)
+    'campaigns' => [
+        'email_requires_subject_body' => 'تتطلب حملة البريد الإلكتروني موضوعًا ونص رسالة قبل البدء.',
+    ],
+    'console' => [
+        'process_sends_description' => 'يبدأ حملات البريد الإلكتروني المجدولة المستحقة ويعالج الإرسالات المعلقة للحملات الجارية.',
+        'process_sends_tables_missing' => 'crm:process-campaign-sends — جداول الحملات غير موجودة، لا شيء للقيام به.',
+        'process_sends_summary' => 'crm:process-campaign-sends — المستحقة: :due، الجارية: :running، المرسلة: :dispatched، الإخفاقات: :failed.',
+    ],
+
 ];
