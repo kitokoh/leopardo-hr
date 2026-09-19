@@ -38,7 +38,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     ->group(function (): void {
 
         // ── Contacts client/fournisseur (RBAC comptable + principal) ────────
-        Route::middleware('api.manager:comptable,principal')->group(function (): void {
+        Route::middleware('api.manager:comptable,principal,module:accounting')->group(function (): void {
             Route::get('/contacts', [AccountingContactController::class, 'index']);
             Route::post('/contacts', [AccountingContactController::class, 'store']);
             Route::get('/contacts/{contact}', [AccountingContactController::class, 'show'])->whereNumber('contact');
@@ -54,7 +54,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         });
 
         // ── Documents (Phase A, #5223) — RBAC principal/comptable ───────────
-        Route::middleware('api.manager:principal,comptable')->group(function (): void {
+        Route::middleware('api.manager:principal,comptable,module:accounting')->group(function (): void {
             Route::get('/documents', [AccountingDocumentController::class, 'index']);
             Route::post('/documents', [AccountingDocumentController::class, 'store']);
             Route::get('/documents/next-number', [AccountingDocumentController::class, 'nextNumber']);
@@ -129,7 +129,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // comptable/principal : données financières sensibles. VatDeclaration
         // et MultiCurrency ont été retrouvés HORS groupe api.manager après
         // un merge (200 pour un simple employé) — regroupés ici.
-        Route::middleware('api.manager:principal,comptable')->group(function (): void {
+        Route::middleware('api.manager:principal,comptable,module:accounting')->group(function (): void {
             Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
 
             // Conversion multi-devises — calcul pur, aucun état persistant :
@@ -150,7 +150,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingPaymentController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\BankStatementController;
 
-Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable'])->group(function (): void {
+Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable,module:accounting'])->group(function (): void {
     Route::get('accounting/payments', [AccountingPaymentController::class, 'index']);
     Route::post('accounting/documents/{document}/payments', [AccountingPaymentController::class, 'store']);
     Route::post('accounting/payments/{payment}/reconcile', [AccountingPaymentController::class, 'reconcile']);

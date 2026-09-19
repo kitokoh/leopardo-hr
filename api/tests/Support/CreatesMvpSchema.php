@@ -1395,6 +1395,25 @@ trait CreatesMvpSchema
             });
         }
 
+        // Issue #7761 — grants de modules composables par collaborateur.
+        // Miroir de la migration 2026_09_19_001401_7761 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('employee_module_grants'))) {
+            Schema::create($this->moduleTable('employee_module_grants'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id');
+                $table->string('module_key', 40);
+                $table->unsignedInteger('granted_by_employee_id')->nullable();
+                $table->timestamps();
+
+                $table->unique(
+                    ['company_id', 'employee_id', 'module_key'],
+                    'employee_module_grants_unique'
+                );
+                $table->index(['company_id', 'module_key'], 'employee_module_grants_module_idx');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('catalog_inquiries'))) {
             Schema::create($this->moduleTable('catalog_inquiries'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
