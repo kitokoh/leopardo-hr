@@ -9,7 +9,9 @@ import {
 } from '@/lib/edge-health';
 import { getUiCopy } from '@/lib/ui-copy';
 
-const EDGE_API = process.env.NEXT_PUBLIC_EDGE_API ?? 'http://leopardo.local:7878';
+// #7653 : défaut same-origin — le proxy Caddy (TLS interne) route `/api/*`
+// vers edge-api sur chaque origine UI ; plus d'URL http:// en dur.
+const EDGE_API = process.env.NEXT_PUBLIC_EDGE_API ?? '';
 
 export default function HomePage() {
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('checking');
@@ -127,7 +129,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="px-6 py-4 text-center text-slate-600 text-xs">
-        {t.footer(EDGE_API)}
+        {t.footer(EDGE_API || t.sameOrigin)}
       </footer>
     </div>
   );
