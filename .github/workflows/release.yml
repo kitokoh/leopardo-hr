@@ -1,4 +1,4 @@
-name: Release - Leopardo RH
+name: Release - Leopardo
 
 on:
   push:
@@ -261,7 +261,7 @@ jobs:
                   owner,
                   repo,
                   tag_name: tag,
-                  name: `Leopardo RH ${tag}`,
+                  name: `Leopardo ${tag}`,
                   body,
                   prerelease: isPrerelease,
                   generate_release_notes: true,
