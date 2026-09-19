@@ -467,11 +467,6 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/companies', [PlatformCompanyController::class, 'store'])->middleware('platform.permission:companies.provision');
         Route::get('/companies/health', [PlatformCompanyHealthController::class, 'index'])->middleware('platform.permission:companies.view');
         Route::get('/companies/{company}/health', PlatformCompanyHealthController::class)->middleware('platform.permission:companies.view');
-        // MULTI-PAYS (#1952) : réparation/choix du pays d'un tenant legacy
-        // (refusé si données de paie — invariant 9).
-        Route::patch('/companies/{company}/country', [PlatformCompanyController::class, 'updateCountry']);
-        Route::get('/companies/{company}/subscription', [PlatformCompanySubscriptionController::class, 'show']);
-        Route::patch('/companies/{company}/subscription', [PlatformCompanySubscriptionController::class, 'update']);
         // #7475 — suppression sûre d'un tenant : parcours en deux temps
         // (désactivation d'abord), inventaire chiffré, confirmation par
         // ressaisie du nom exact, journalisation dans
@@ -482,8 +477,10 @@ Route::prefix('v1')->group(function (): void {
         // scopée à une entreprise vivante (sinon la preuve est inexploitable).
         Route::get('/tenant-deletion-audits', [PlatformCompanyDeletionController::class, 'auditTrail'])->middleware('platform.permission:companies.view');
         Route::delete('/companies/{company}', [PlatformCompanyDeletionController::class, 'destroy']);
-        Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show']);
-        Route::patch('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'update']);
+        // MULTI-PAYS (#1952) : réparation/choix du pays d'un tenant legacy
+        // (refusé si données de paie — invariant 9). #7680 : les doublons SANS
+        // platform.permission masquaient ces versions protégées (Laravel matche
+        // la première route enregistrée) — supprimés, granularité rétablie.
         Route::patch('/companies/{company}/country', [PlatformCompanyController::class, 'updateCountry'])->middleware('platform.permission:companies.manage');
         Route::get('/companies/{company}/subscription', [PlatformCompanySubscriptionController::class, 'show'])->middleware('platform.permission:billing.view');
         Route::patch('/companies/{company}/subscription', [PlatformCompanySubscriptionController::class, 'update'])->middleware('platform.permission:billing.manage');
