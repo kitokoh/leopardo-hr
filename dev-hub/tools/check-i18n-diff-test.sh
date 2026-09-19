@@ -133,6 +133,20 @@ export default function CommerceHomePage() {
 TSX
 git -C "$REPO_TECH" add -A
 git -C "$REPO_TECH" commit -q -m "repli FR d'un appel t(locale, ...) (#7675)"
+# Cas 1quater — catalogue i18n du kiosque (#7651) : i18n.js EST le mécanisme de
+# localisation (catalogue inline ×4) — ses valeurs ne sont pas des chaînes en
+# dur hors catalogue (même cas que vitrine-locale.ts).
+mkdir -p "$REPO_TECH/front/zkteco-kiosk"
+cat > "$REPO_TECH/front/zkteco-kiosk/i18n.js" <<'JS'
+var CATALOG = {
+  fr: {
+    'admin.login.title': 'Acces administrateur',
+    'admin.login.invalid': 'PIN invalide.',
+  },
+};
+JS
+git -C "$REPO_TECH" add -A
+git -C "$REPO_TECH" commit -q -m "catalogue kiosk i18n.js (#7651)"
 run_guard "$REPO_TECH"
 if [[ "$GUARD_STATUS" -ne 0 ]]; then
   printf '%s\n' "$OUT" >&2
@@ -146,6 +160,8 @@ expect_clean "d'indicateur d'étapes" "commentaire JSX français (apostrophes) �
 expect_clean "sizes=\"" "attribut de dimension d'image (Image sizes) — audit vitrine 2026-09-16"
 expect_clean 'Impossible de charger les données.' "repli FR d'un appel t(locale, ...) — cas #7675"
 expect_clean 'per_page=100' "query string d'API (listQuery) — cas #7675"
+expect_clean 'Acces administrateur' "valeur du catalogue i18n kiosk (#7651)"
+expect_clean 'PIN invalide.' "valeur du catalogue i18n kiosk (#7651)"
 
 # ── Cas 2 : code technique + vrais textes utilisateur → ROUGE ────────────────
 REPO_TEXT="$(new_repo mixte)"

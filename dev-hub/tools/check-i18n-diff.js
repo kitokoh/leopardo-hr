@@ -94,6 +94,12 @@ const ignorePathFragments = [
   // mécanisme de localisation, pas des chaînes hors catalogue. La complétude des
   // 4 langues reste couverte par validate-and-sync.
   '/vitrine/lib/legal-content.ts',
+  // Catalogue i18n du kiosque ZKTeco (#7651) : `front/zkteco-kiosk/i18n.js`
+  // EST le mécanisme de localisation (catalogue inline ×4 fr/en/tr/ar,
+  // PA2-I18N-013) — exactement le même cas que vitrine-locale.ts ci-dessus.
+  // La parité des 4 langues reste couverte par tests/i18n.test.mjs (Lint +
+  // i18n tests, bloquant).
+  'front/zkteco-kiosk/i18n.js',
 ];
 
 // Lines that already route text through a translation mechanism — never
