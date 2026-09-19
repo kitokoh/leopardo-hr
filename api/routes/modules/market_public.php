@@ -29,6 +29,9 @@
  * Référence : docs/specifications/MARKETPLACE_RETAIL_PUBLIC.md (§3.1/§3.2).
  */
 
+use App\Modules\Retail\Interfaces\Api\V1\Controllers\MarketCustomerAccountController;
+use App\Modules\Retail\Interfaces\Api\V1\Controllers\MarketCustomerFavoriteController;
+use App\Modules\Retail\Interfaces\Api\V1\Controllers\MarketReviewController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailMarketOrderPublicController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailMarketPublicController;
 use Illuminate\Support\Facades\Route;
@@ -44,8 +47,17 @@ Route::middleware(['throttle:shop-public'])
         Route::get('/products/{id}', [RetailMarketPublicController::class, 'product'])
             ->whereNumber('id')
             ->name('market.public.product');
+        // #7814 — avis approuvés d'un produit public (fail-closed).
+        Route::get('/products/{id}/reviews', [MarketReviewController::class, 'productReviews'])
+            ->whereNumber('id')
+            ->name('market.public.product.reviews');
         Route::get('/sellers', [RetailMarketPublicController::class, 'sellers'])
             ->name('market.public.sellers');
+        // #7814 — avis boutique approuvés (slug résolu par
+        // RetailMarketplaceService, 404 fail-closed hors opt-in — pas besoin
+        // du middleware market.public, aucune écriture tenant).
+        Route::get('/sellers/{sellerSlug}/reviews', [MarketReviewController::class, 'sellerReviews'])
+            ->name('market.public.seller.reviews');
         Route::post('/orders', [RetailMarketOrderPublicController::class, 'store'])
             ->name('market.public.orders.store');
         Route::get('/orders/{reference}', [RetailMarketOrderPublicController::class, 'track'])
@@ -60,4 +72,39 @@ Route::middleware(['throttle:shop-public', 'market.public'])
     ->group(function (): void {
         Route::get('/sellers/{sellerSlug}', [RetailMarketPublicController::class, 'seller'])
             ->name('market.public.seller');
+    });
+
+// #7814 — comptes acheteurs GRAND PUBLIC de Leopardo Marché : guard Sanctum
+// DÉDIÉ `market_customer` (jamais le guard employés). Inscription/connexion
+// sous `auth-sensitive` (e-mail + IP, même politique que /auth/login) ;
+// surface connectée (profil, déconnexion, « mes commandes » cross-boutiques
+// bornées au compte, favoris, dépôt d'avis vérifiés) sous `shop-public` +
+// auth du guard dédié — même pattern que les comptes clients travel (#7739).
+Route::middleware(['throttle:auth-sensitive'])
+    ->prefix('public/market/account')
+    ->group(function (): void {
+        Route::post('/register', [MarketCustomerAccountController::class, 'register'])
+            ->name('market.public.account.register');
+        Route::post('/login', [MarketCustomerAccountController::class, 'login'])
+            ->name('market.public.account.login');
+    });
+
+Route::middleware(['throttle:shop-public', 'auth:market_customer'])
+    ->prefix('public/market/account')
+    ->group(function (): void {
+        Route::post('/logout', [MarketCustomerAccountController::class, 'logout'])
+            ->name('market.public.account.logout');
+        Route::get('/me', [MarketCustomerAccountController::class, 'me'])
+            ->name('market.public.account.me');
+        Route::get('/orders', [MarketCustomerAccountController::class, 'orders'])
+            ->name('market.public.account.orders');
+        Route::get('/favorites', [MarketCustomerFavoriteController::class, 'index'])
+            ->name('market.public.account.favorites');
+        Route::post('/favorites', [MarketCustomerFavoriteController::class, 'store'])
+            ->name('market.public.account.favorites.store');
+        Route::delete('/favorites/{favorite}', [MarketCustomerFavoriteController::class, 'destroy'])
+            ->whereNumber('favorite')
+            ->name('market.public.account.favorites.destroy');
+        Route::post('/reviews', [MarketReviewController::class, 'store'])
+            ->name('market.public.account.reviews.store');
     });

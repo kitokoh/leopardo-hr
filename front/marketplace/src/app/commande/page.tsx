@@ -21,6 +21,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { Price } from "@/components/Price";
 import { useCart } from "@/hooks/useCart";
 import { createOrder, type OrderCreated } from "@/lib/api";
+import { accountToken } from "@/lib/account";
 import { removeSellerFromCart, type CartGroup } from "@/lib/cart";
 import { idempotencyKeyFor, releaseIdempotencyKey, saveOrders, type SavedOrder } from "@/lib/orders";
 
@@ -65,25 +66,29 @@ export default function CheckoutPage() {
     for (const group of groups) {
       const key = idempotencyKeyFor(group.seller.slug);
       try {
-        const order: OrderCreated = await createOrder({
-          seller: group.seller.slug,
-          items: group.items.map((item) => ({
-            product_id: item.productId,
-            quantity: item.quantity,
-          })),
-          customer: {
-            name: form.name.trim(),
-            phone: form.phone.trim(),
-            ...(form.email.trim() ? { email: form.email.trim() } : {}),
+        const order: OrderCreated = await createOrder(
+          {
+            seller: group.seller.slug,
+            items: group.items.map((item) => ({
+              product_id: item.productId,
+              quantity: item.quantity,
+            })),
+            customer: {
+              name: form.name.trim(),
+              phone: form.phone.trim(),
+              ...(form.email.trim() ? { email: form.email.trim() } : {}),
+            },
+            delivery: {
+              address: form.address.trim(),
+              city: form.city.trim(),
+              ...(form.notes.trim() ? { notes: form.notes.trim() } : {}),
+            },
+            payment_method: "cash",
+            idempotency_key: key,
           },
-          delivery: {
-            address: form.address.trim(),
-            city: form.city.trim(),
-            ...(form.notes.trim() ? { notes: form.notes.trim() } : {}),
-          },
-          payment_method: "cash",
-          idempotency_key: key,
-        });
+          // #7814 — acheteur connecté : commande rattachée à son compte.
+          accountToken(),
+        );
         created.push({
           reference: order.reference,
           trackingToken: order.tracking_token,

@@ -1,10 +1,11 @@
 "use client";
 
-import { PawPrint, Search, ShoppingBag } from "lucide-react";
+import { PawPrint, Search, ShoppingBag, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
+import { useAccount } from "@/hooks/useAccount";
 import { useCart } from "@/hooks/useCart";
 
 /**
@@ -14,6 +15,7 @@ import { useCart } from "@/hooks/useCart";
 export function Header() {
   const router = useRouter();
   const { ready, count } = useCart();
+  const { session } = useAccount();
   const [query, setQuery] = useState("");
 
   const submitSearch = (event: FormEvent<HTMLFormElement>) => {
@@ -68,6 +70,13 @@ export function Header() {
             className="hidden rounded-full px-3 py-2 text-sm font-medium text-stone-700 transition hover:bg-stone-100 hover:text-stone-900 md:inline-block"
           >
             Suivi de commande
+          </Link>
+          <Link
+            href={session ? "/compte" : "/compte/connexion"}
+            aria-label={session ? "Mon compte" : "Se connecter"}
+            className="flex h-10 w-10 items-center justify-center rounded-full text-stone-700 transition hover:bg-amber-50 hover:text-amber-700"
+          >
+            <UserRound aria-hidden="true" className="h-5 w-5" />
           </Link>
           <Link
             href="/panier"

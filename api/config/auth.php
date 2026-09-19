@@ -3,6 +3,7 @@
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
+use App\Modules\Retail\Domain\Models\MarketCustomerAccount;
 
 return [
 
@@ -60,6 +61,14 @@ return [
             'driver' => 'sanctum',
             'provider' => 'users',
         ],
+        // #7814 — acheteurs GRAND PUBLIC de Leopardo Marché : guard Sanctum
+        // DÉDIÉ (jamais le guard employés), provider plateforme
+        // `market_customer_accounts` (schéma public, hors tenant) — même
+        // pattern que le guard travel_customer (#7739).
+        'market_customer' => [
+            'driver' => 'sanctum',
+            'provider' => 'market_customers',
+        ],
     ],
 
     /*
@@ -92,6 +101,12 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => User::class,
+        ],
+
+        // #7814 — comptes acheteurs plateforme de Leopardo Marché.
+        'market_customers' => [
+            'driver' => 'eloquent',
+            'model' => MarketCustomerAccount::class,
         ],
     ],
 

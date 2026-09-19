@@ -32860,6 +32860,366 @@ paths:
           description: Suivi public (statut + timeline + lignes + total)
         '404':
           $ref: '#/components/responses/Error404'
+  /public/market/products/{id}/reviews:
+    get:
+      tags:
+      - Retail
+      summary: Avis approuves d'un produit public Leopardo Marche (sans auth)
+      description: 'BC-17 #7814 - uniquement les avis APPROUVES (fail-closed,
+        jamais pending/rejected), note moyenne publique, prenom de l''acheteur
+        seul (jamais l''e-mail). 404 fail-closed si produit hors perimetre
+        opt-in.'
+      security: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 50
+      responses:
+        '200':
+          description: Avis approuves pagines + note moyenne
+        '404':
+          $ref: '#/components/responses/Error404'
+  /public/market/sellers/{sellerSlug}/reviews:
+    get:
+      tags:
+      - Retail
+      summary: Avis boutique approuves d'un vendeur Leopardo Marche (sans auth)
+      description: 'BC-17 #7814 - avis boutique APPROUVES uniquement + note
+        moyenne. 404 fail-closed hors opt-in.'
+      security: []
+      parameters:
+      - name: sellerSlug
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 50
+      responses:
+        '200':
+          description: Avis boutique approuves pagines + note moyenne
+        '404':
+          $ref: '#/components/responses/Error404'
+  /public/market/account/register:
+    post:
+      tags:
+      - Retail
+      summary: Inscription d'un compte acheteur Leopardo Marche (sans auth)
+      description: 'BC-17 #7814 - compte GRAND PUBLIC plateforme (guard Sanctum
+        dedie market_customer, jamais le guard employes). Mot de passe hashe
+        (min 12, chiffres, hors mots de passe communs), e-mail unique
+        insensible a la casse. Rattache a la creation les commandes en ligne
+        orphelines portant le meme e-mail. throttle:auth-sensitive.'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                  nullable: true
+                password:
+                  type: string
+                  minLength: 12
+      responses:
+        '201':
+          description: Compte cree (payload compte + token + claimed_orders)
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /public/market/account/login:
+    post:
+      tags:
+      - Retail
+      summary: Connexion d'un acheteur Leopardo Marche (sans auth)
+      description: 'BC-17 #7814 - 401 indifferencie (compte inconnu / mot de
+        passe faux), verrouillage 15 min apres 5 echecs (423).
+        throttle:auth-sensitive.'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Connexion reussie (payload compte + token)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '423':
+          description: Compte temporairement verrouille (echecs repetes)
+  /public/market/account/logout:
+    post:
+      tags:
+      - Retail
+      summary: Deconnexion de l'acheteur (revocation du token courant)
+      description: 'BC-17 #7814 - guard dedie market_customer ; seul le token
+        courant est revoque.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Deconnecte
+        '401':
+          $ref: '#/components/responses/Error401'
+  /public/market/account/me:
+    get:
+      tags:
+      - Retail
+      summary: Profil de l'acheteur connecte
+      description: 'BC-17 #7814 - guard dedie market_customer.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Profil du compte
+        '401':
+          $ref: '#/components/responses/Error401'
+  /public/market/account/orders:
+    get:
+      tags:
+      - Retail
+      summary: Mes commandes cross-boutiques (acheteur connecte)
+      description: 'BC-17 #7814 - STRICTEMENT bornees au compte
+        (customer_account_id) : reference, statut logistique, lignes, total,
+        jeton de suivi et NOM PUBLIC de la boutique - jamais de company_id.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 50
+      responses:
+        '200':
+          description: Commandes du compte paginees
+        '401':
+          $ref: '#/components/responses/Error401'
+  /public/market/account/favorites:
+    get:
+      tags:
+      - Retail
+      summary: Favoris de l'acheteur (produits et boutiques)
+      description: 'BC-17 #7814 - bornes au compte ; cibles resolues
+        publiquement (fail-closed : cible plus visible -> non resolue).'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Favoris du compte (cibles publiques resolues)
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      tags:
+      - Retail
+      summary: Ajouter un favori (produit ou boutique)
+      description: 'BC-17 #7814 - cible PUBLIQUEMENT visible exigee (404
+        fail-closed) ; idempotent (re-poster la meme cible -> 200 existant).'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [target_type]
+              properties:
+                target_type:
+                  type: string
+                  enum: [product, seller]
+                product_id:
+                  type: integer
+                seller:
+                  type: string
+                  description: Slug public de la boutique
+      responses:
+        '201':
+          description: Favori cree
+        '200':
+          description: Favori deja existant (idempotent)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /public/market/account/favorites/{favorite}:
+    delete:
+      tags:
+      - Retail
+      summary: Retirer un favori
+      description: 'BC-17 #7814 - borne au compte (favori d''un autre acheteur
+        -> 404 fail-closed).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: favorite
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Favori supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /public/market/account/reviews:
+    post:
+      tags:
+      - Retail
+      summary: Deposer un avis verifie (produit ou boutique)
+      description: 'BC-17 #7814 - avis VERIFIE post-livraison : exige une
+        commande LIVREE du compte chez ce vendeur (contenant le produit pour
+        un avis produit) - 422 REVIEW_NOT_ALLOWED sinon ; un avis par cible et
+        par compte (422 REVIEW_ALREADY_EXISTS). Cree en pending : PAS public
+        avant moderation vendeur.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [target_type, rating]
+              properties:
+                target_type:
+                  type: string
+                  enum: [product, seller]
+                product_id:
+                  type: integer
+                seller:
+                  type: string
+                  description: Slug public de la boutique
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                comment:
+                  type: string
+                  maxLength: 2000
+      responses:
+        '201':
+          description: Avis cree en attente de moderation
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/online/reviews:
+    get:
+      tags:
+      - Retail
+      summary: Avis Leopardo Marche de MA boutique (moderation vendeur)
+      description: 'BC-17 #7814 - pile tenant (Sanctum + tenant +
+        module.retail) ; avis bornes PAR VALEUR au tenant courant
+        (company_id), filtre status, pagination <= 50.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum: [pending, approved, rejected]
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 50
+      responses:
+        '200':
+          description: Avis du vendeur pagines (auteur + produit resolus)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/online/reviews/{review}/approve:
+    post:
+      tags:
+      - Retail
+      summary: Approuver un avis (pending -> approved, avis public)
+      description: 'BC-17 #7814 - MarketReviewPolicy@moderate (principal/rh du
+        vendeur concerne) ; avis d''un autre vendeur -> 404 fail-closed ;
+        transition invalide -> 422 INVALID_TRANSITION.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: review
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Avis approuve (public)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/online/reviews/{review}/reject:
+    post:
+      tags:
+      - Retail
+      summary: Rejeter un avis (pending -> rejected, terminal)
+      description: 'BC-17 #7814 - memes regles que l''approbation
+        (MarketReviewPolicy@moderate, 404 fail-closed, 422
+        INVALID_TRANSITION).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: review
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Avis rejete
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
 
   /restaurant/branches/{restaurantBranch}/public-profile:
     get:

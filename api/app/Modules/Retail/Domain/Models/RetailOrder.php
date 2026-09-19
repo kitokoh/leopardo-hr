@@ -45,6 +45,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $customer_name
  * @property string|null $customer_phone
  * @property string|null $customer_email
+ * @property int|null $customer_account_id
  * @property string|null $delivery_address
  * @property string|null $delivery_city
  * @property string|null $delivery_notes
@@ -83,6 +84,7 @@ class RetailOrder extends Model
         'customer_name',
         'customer_phone',
         'customer_email',
+        'customer_account_id',
         'delivery_address',
         'delivery_city',
         'delivery_notes',

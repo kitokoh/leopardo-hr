@@ -1540,6 +1540,8 @@ trait CreatesMvpSchema
                 $table->string('customer_name', 160)->nullable();
                 $table->string('customer_phone', 40)->nullable();
                 $table->string('customer_email', 160)->nullable();
+                // #7814 — rattachement compte acheteur plateforme (colonne nue).
+                $table->unsignedBigInteger('customer_account_id')->nullable()->index();
                 $table->string('delivery_address', 255)->nullable();
                 $table->string('delivery_city', 120)->nullable();
                 $table->text('delivery_notes')->nullable();
@@ -1615,6 +1617,55 @@ trait CreatesMvpSchema
 
                 $table->unique(['company_id'], 'retail_online_settings_company_unique');
                 $table->index(['enabled'], 'retail_online_settings_enabled_idx');
+            });
+        }
+
+        // BC-17 RETAIL #7814 — comptes acheteurs, favoris et avis modérés de
+        // Leopardo Marché (tables PLATEFORME, schema public — miroirs des
+        // migrations 2026_09_20_00000{1,2,3}_7814, garde #5443).
+        if (! Schema::hasTable('market_customer_accounts')) {
+            Schema::create('market_customer_accounts', function (Blueprint $table): void {
+                $table->id();
+                $table->string('name', 160);
+                $table->string('email', 255)->unique();
+                $table->string('phone', 40)->nullable();
+                $table->string('password', 255);
+                $table->timestamp('email_verified_at')->nullable();
+                $table->timestamp('last_login_at')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable('market_customer_favorites')) {
+            Schema::create('market_customer_favorites', function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('customer_account_id');
+                $table->string('target_type', 10);
+                $table->unsignedBigInteger('product_id')->nullable();
+                $table->string('seller_slug', 120)->nullable();
+                $table->timestamps();
+
+                $table->index(['customer_account_id', 'target_type']);
+            });
+        }
+
+        if (! Schema::hasTable('market_reviews')) {
+            Schema::create('market_reviews', function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('customer_account_id');
+                $table->uuid('company_id');
+                $table->string('target_type', 10);
+                $table->unsignedBigInteger('product_id')->nullable();
+                $table->unsignedBigInteger('order_id');
+                $table->unsignedTinyInteger('rating');
+                $table->text('comment')->nullable();
+                $table->string('status', 10)->default('pending');
+                $table->timestamp('moderated_at')->nullable();
+                $table->timestamps();
+
+                $table->index(['customer_account_id']);
+                $table->index(['company_id', 'status']);
+                $table->index(['product_id', 'status']);
             });
         }
 
@@ -4558,6 +4609,9 @@ trait CreatesMvpSchema
 
         DB::statement('DROP TABLE IF EXISTS "user_invitations"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "marketing_leads"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "market_customer_accounts"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "market_customer_favorites"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "market_reviews"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "platform_announcement_companies"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "platform_impersonation_sessions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "platform_support_messages"'.$cascade);

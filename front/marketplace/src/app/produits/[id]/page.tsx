@@ -4,8 +4,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AddToCartButton } from "@/components/AddToCartButton";
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { Price } from "@/components/Price";
 import { ProductImage } from "@/components/ProductImage";
+import { ReviewsSection } from "@/components/ReviewsSection";
 import { ApiError, fetchProduct, type PublicProduct } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -99,6 +101,8 @@ export default async function ProductPage({ params }: { params: Params }) {
 
           <AddToCartButton product={product} />
 
+          <FavoriteButton target={{ target_type: "product", product_id: product.id }} />
+
           <Link
             href={`/boutiques/${product.seller.slug}`}
             className="group mt-2 flex items-center gap-3 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm transition hover:border-amber-300"
@@ -126,6 +130,8 @@ export default async function ProductPage({ params }: { params: Params }) {
           </p>
         </div>
       </div>
+
+      <ReviewsSection target={{ target_type: "product", product_id: product.id }} />
     </div>
   );
 }

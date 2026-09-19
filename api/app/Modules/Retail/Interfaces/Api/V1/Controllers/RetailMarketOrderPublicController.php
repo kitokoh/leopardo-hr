@@ -9,6 +9,7 @@ use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
 use App\Modules\Retail\Application\Services\RetailMarketplaceService;
 use App\Modules\Retail\Application\Services\RetailOnlineOrderService;
+use App\Modules\Retail\Domain\Models\MarketCustomerAccount;
 use App\Modules\Retail\Domain\Models\RetailOrder;
 use App\Modules\Retail\Domain\Models\RetailOrderItem;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\StoreMarketOrderRequest;
@@ -69,6 +70,14 @@ class RetailMarketOrderPublicController extends Controller
 
         app()->instance('tenant_scope_required', true);
 
+        // #7814 — acheteur connecté (guard dédié, token OPTIONNEL sur cette
+        // route publique) : la commande est rattachée au compte à la
+        // création ; sans token le checkout reste 100 % invité.
+        $customerAccount = $request->user('market_customer');
+        $customerAccountId = $customerAccount instanceof MarketCustomerAccount
+            ? (int) $customerAccount->id
+            : null;
+
         try {
             /** @var array{order: RetailOrder, created: bool} $result */
             $result = $this->tenants->withinTenant(
@@ -87,6 +96,7 @@ class RetailMarketOrderPublicController extends Controller
                         'notes' => $request->filled('delivery.notes') ? (string) $request->input('delivery.notes') : null,
                     ],
                     idempotencyKey: (string) $request->input('idempotency_key'),
+                    customerAccountId: $customerAccountId,
                 ),
             );
         } finally {

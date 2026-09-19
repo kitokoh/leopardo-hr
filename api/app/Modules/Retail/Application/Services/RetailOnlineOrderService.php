@@ -58,6 +58,7 @@ final class RetailOnlineOrderService
      * @param  list<array{product_id: int, quantity: int}>  $items
      * @param  array{name: string, phone: string, email: string|null}  $customer
      * @param  array{address: string, city: string, notes: string|null}  $delivery
+     * @param  int|null  $customerAccountId  Compte acheteur connecté (#7814) — null pour le checkout invité.
      * @return array{order: RetailOrder, created: bool}
      *
      * @throws ValidationException 422 (produit indisponible, devises melangees, vendeur sans emplacement).
@@ -68,10 +69,11 @@ final class RetailOnlineOrderService
         array $customer,
         array $delivery,
         string $idempotencyKey,
+        ?int $customerAccountId = null,
     ): array {
         /** @var array{order: RetailOrder, created: bool} $result */
         $result = $this->connection->transaction(
-            function () use ($companyId, $items, $customer, $delivery, $idempotencyKey): array {
+            function () use ($companyId, $items, $customer, $delivery, $idempotencyKey, $customerAccountId): array {
                 /** @var RetailOrder|null $existing */
                 $existing = RetailOrder::query()
                     ->where('company_id', $companyId)
@@ -141,6 +143,7 @@ final class RetailOnlineOrderService
                     'customer_name' => $customer['name'],
                     'customer_phone' => $customer['phone'],
                     'customer_email' => $customer['email'],
+                    'customer_account_id' => $customerAccountId,
                     'delivery_address' => $delivery['address'],
                     'delivery_city' => $delivery['city'],
                     'delivery_notes' => $delivery['notes'],

@@ -52,3 +52,25 @@ export function formatDateTime(iso: string | null | undefined): string | null {
     timeStyle: "short",
   }).format(date);
 }
+
+/** ISO → « 19 sept. 2026 » (fr-FR, date seule). */
+export function formatDate(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(date);
+}
+
+const FULFILLMENT_LABELS: Record<string, string> = {
+  pending: "En attente",
+  confirmed: "Confirmée",
+  ready: "Prête",
+  shipped: "Expédiée",
+  delivered: "Livrée",
+  cancelled: "Annulée",
+};
+
+/** Statut logistique mis en mots (fr). */
+export function fulfillmentLabel(status: string | null | undefined): string {
+  return (status && FULFILLMENT_LABELS[status]) || "En attente";
+}

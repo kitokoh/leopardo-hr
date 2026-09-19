@@ -20,6 +20,7 @@
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailCategoryController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailLocationController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailOnlineOrderController;
+use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailOnlineReviewController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailOnlineSettingsController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailOrderController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailPosSessionController;
@@ -97,4 +98,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/online/orders/{order}/ship', [RetailOnlineOrderController::class, 'ship'])->whereNumber('order');
         Route::post('/online/orders/{order}/deliver', [RetailOnlineOrderController::class, 'deliver'])->whereNumber('order');
         Route::post('/online/orders/{order}/cancel', [RetailOnlineOrderController::class, 'cancel'])->whereNumber('order');
+
+        // Avis Leopardo Marché (#7814) : modération vendeur des avis de SA
+        // boutique/SES produits (MarketReviewPolicy — principal/rh,
+        // pending→approved|rejected, transitions invalides → 422
+        // INVALID_TRANSITION, avis d'un autre vendeur → 404 fail-closed).
+        Route::get('/online/reviews', [RetailOnlineReviewController::class, 'index']);
+        Route::post('/online/reviews/{review}/approve', [RetailOnlineReviewController::class, 'approve'])->whereNumber('review');
+        Route::post('/online/reviews/{review}/reject', [RetailOnlineReviewController::class, 'reject'])->whereNumber('review');
     });

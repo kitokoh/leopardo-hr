@@ -12,7 +12,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/panier", "/commande", "/confirmation", "/suivi"],
+        disallow: ["/panier", "/commande", "/confirmation", "/suivi", "/compte"],
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,

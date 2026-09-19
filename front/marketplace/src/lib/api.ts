@@ -132,10 +132,11 @@ interface RequestOptions {
   body?: unknown;
   query?: Record<string, string | number | undefined>;
   timeoutMs?: number;
+  headers?: Record<string, string>;
 }
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { method = "GET", body, query, timeoutMs = 12_000 } = options;
+  const { method = "GET", body, query, timeoutMs = 12_000, headers } = options;
 
   const url = new URL(`${apiBase()}${path}`);
   if (query) {
@@ -156,6 +157,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
       headers: {
         Accept: "application/json",
         ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
+        ...(headers ?? {}),
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
       cache: "no-store",
@@ -281,11 +283,17 @@ export async function fetchSeller(slug: string): Promise<PublicSeller> {
   return normalizeSeller(raw);
 }
 
-export async function createOrder(payload: OrderPayload): Promise<OrderCreated> {
+export async function createOrder(
+  payload: OrderPayload,
+  authToken?: string | null,
+): Promise<OrderCreated> {
   const response = await request<unknown>("/public/market/orders", {
     method: "POST",
     body: payload,
     timeoutMs: 20_000,
+    // #7814 — acheteur connecté : la commande est rattachée à son compte
+    // (token OPTIONNEL, le checkout invité reste inchangé).
+    ...(authToken ? { headers: { Authorization: `Bearer ${authToken}` } } : {}),
   });
   const raw = isRecord(response) && isRecord(response.data) ? response.data : response;
   return raw as OrderCreated;

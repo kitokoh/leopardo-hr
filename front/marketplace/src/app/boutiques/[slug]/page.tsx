@@ -3,8 +3,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { EmptyState } from "@/components/EmptyState";
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { Pagination } from "@/components/Pagination";
 import { ProductCard } from "@/components/ProductCard";
+import { ReviewsSection } from "@/components/ReviewsSection";
 import { ApiError, fetchProducts, fetchSeller, type PublicSeller } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -85,6 +87,10 @@ export default async function SellerPage({
           {seller.description ? (
             <p className="mt-3 max-w-2xl text-sm text-stone-600">{seller.description}</p>
           ) : null}
+          <FavoriteButton
+            target={{ target_type: "seller", seller: slug }}
+            className="mt-3"
+          />
         </div>
       </header>
 
@@ -122,6 +128,8 @@ export default async function SellerPage({
           action={{ href: "/boutiques", label: "Voir les autres boutiques" }}
         />
       )}
+
+      <ReviewsSection target={{ target_type: "seller", seller: slug }} />
     </div>
   );
 }
