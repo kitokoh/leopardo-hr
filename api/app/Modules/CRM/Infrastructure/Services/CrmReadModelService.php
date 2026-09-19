@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\CRM\Infrastructure\Services;
 
-use App\Modules\CRM\Domain\Enums\CrmExportEntity;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -125,7 +124,7 @@ final class CrmReadModelService
     {
         $accounts = $this->completenessScore('crm_accounts', ['name', 'status']);
         $contacts = $this->completenessScore('crm_contacts', ['first_name', 'last_name', 'email']);
-        $leads = $this->completenessScore('crm_leads', ['name', 'source']);
+        $leads = $this->completenessScore('crm_leads', ['first_name', 'last_name', 'source']);
 
         $totalSlots = $accounts['total'] * $accounts['fields']
             + $contacts['total'] * $contacts['fields']

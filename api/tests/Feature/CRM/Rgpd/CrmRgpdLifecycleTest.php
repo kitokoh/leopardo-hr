@@ -176,7 +176,7 @@ class CrmRgpdLifecycleTest extends TestCase
         /** @var Company $tenantA */
         $tenantA = Company::factory()->create();
         $gate = app(CrmConsentGate::class);
-        $contact = 'contact-123';
+        $contact = '123'; // #7452 — crm_consents.contact_id est bigint (migration #5722)
         $channel = 'email';
         $purpose = 'newsletter';
 
@@ -184,43 +184,41 @@ class CrmRgpdLifecycleTest extends TestCase
         $this->assertFalse($gate->canSend($channel, $purpose, $contact, (string) $tenantA->id));
 
         // Consentement accordé → envoi autorisé.
+        // #7452 — schéma canonique #5722 : `source` NOT NULL et un SEUL état
+        // courant par (tenant, contact, canal, finalité) (contrainte unique) —
+        // les transitions se font par UPDATE, pas par insertion d'historique.
         DB::table('crm_consents')->insert([
             'company_id' => $tenantA->id,
             'contact_id' => $contact,
             'channel' => $channel,
             'purpose' => $purpose,
             'status' => 'granted',
+            'source' => 'manual',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
         $this->assertTrue($gate->canSend($channel, $purpose, $contact, (string) $tenantA->id));
 
         // Retrait → les NOUVEAUX envois sont bloqués.
-        DB::table('crm_consents')->insert([
-            'company_id' => $tenantA->id,
-            'contact_id' => $contact,
-            'channel' => $channel,
-            'purpose' => $purpose,
-            'status' => 'revoked',
-            'created_at' => now()->addMinute(),
-            'updated_at' => now()->addMinute(),
-        ]);
+        DB::table('crm_consents')
+            ->where('company_id', $tenantA->id)
+            ->where('contact_id', $contact)
+            ->where('channel', $channel)
+            ->where('purpose', $purpose)
+            ->update(['status' => 'revoked', 'updated_at' => now()->addMinute()]);
         $this->assertFalse($gate->canSend($channel, $purpose, $contact, (string) $tenantA->id));
 
         // Ré-accord (consentement plus récent) → envois rétablis.
-        DB::table('crm_consents')->insert([
-            'company_id' => $tenantA->id,
-            'contact_id' => $contact,
-            'channel' => $channel,
-            'purpose' => $purpose,
-            'status' => 'granted',
-            'created_at' => now()->addMinutes(2),
-            'updated_at' => now()->addMinutes(2),
-        ]);
+        DB::table('crm_consents')
+            ->where('company_id', $tenantA->id)
+            ->where('contact_id', $contact)
+            ->where('channel', $channel)
+            ->where('purpose', $purpose)
+            ->update(['status' => 'granted', 'updated_at' => now()->addMinutes(2)]);
         $this->assertTrue($gate->canSend($channel, $purpose, $contact, (string) $tenantA->id));
 
         // Isolation : le consentement d'un autre contact/tenant ne s'applique pas.
-        $this->assertFalse($gate->canSend($channel, $purpose, 'contact-456', (string) $tenantA->id));
+        $this->assertFalse($gate->canSend($channel, $purpose, '456', (string) $tenantA->id));
     }
 
     public function test_consent_gate_fails_closed_when_table_missing(): void

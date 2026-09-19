@@ -18,6 +18,11 @@ class RestaurantBranchFactory extends Factory
     public function definition(): array
     {
         return [
+            // #7452 — company_id est NOT NULL : hors contexte tenant (factories
+            // imbriquées type 'branch_id' => RestaurantBranch::factory()), le
+            // trait BelongsToCompany ne peut pas l'injecter ; avec un tenant
+            // actif, la valeur est forcée depuis le tenant courant (#7646).
+            'company_id' => \App\Core\Tenant\Domain\Models\Company::factory(),
             'code' => strtoupper($this->faker->unique()->bothify('BR-###')),
             'name' => $this->faker->company().' Restaurant',
             'address' => $this->faker->optional()->streetAddress(),
