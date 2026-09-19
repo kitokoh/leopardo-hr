@@ -2,7 +2,7 @@
   "name": "leopardo-hr-monorepo",
   "version": "0.0.0",
   "private": true,
-  "description": "Leopardo HR — monorepo root convenience scripts (no npm workspaces, each sub-project manages its own lockfile)",
+  "description": "Leopardo — monorepo root convenience scripts (no npm workspaces, each sub-project manages its own lockfile)",
   "scripts": {
     "web:dev":       "npm run dev      --prefix front/web",
     "web:build":     "npm run build    --prefix front/web",
