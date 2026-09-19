@@ -2,6 +2,13 @@
 > Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
 > Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
 
+> **MAJ 2026-09-19 — #7680, dédoublonnage des routes platform (PR de fix RouteCollisionGuard).**
+> Surface **API** : suppression de 5 déclarations dupliquées SANS `platform.permission`
+> (country/subscription/features de `platform/companies/{company}`) qui masquaient les versions
+> protégées — aucune route effective ne change de contrôleur, la granularité RBAC est rétablie.
+> Scénario automatisé : `tests/Feature/Security/RouteCollisionGuardTest` (garde existante,
+> repasse au vert). Surfaces web/mobile : aucune.
+
 > **MAJ 2026-09-19 — #7666/#7670, alias de supervision `GET /api/health` (PR #7668).**
 > Surface **API** : nouvel alias **non versionné** `GET /api/health` → même `HealthController`
 > (sonde canonique `GET /api/v1/health`, même throttle `60,1`). Motif : les sondes externes
