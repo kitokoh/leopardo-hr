@@ -54,7 +54,7 @@ leopardo-hr/
 
 ```
 app/
-├── Modules/<Nom>/              # Monolithe modulaire DDD (29 modules actifs)
+├── Modules/<Nom>/              # Monolithe modulaire DDD (30 modules actifs)
 │   ├── Application/            # Actions, DTOs, Queries (orchestration)
 │   ├── Domain/                 # Models, Contracts, Exceptions (règles métier)
 │   ├── Infrastructure/         # Services, Repositories (implémentation)
@@ -67,7 +67,7 @@ app/
     └── Resources/Api/V1/       # JsonResource centralisées (dérogation PA2-ARCH-010)
 ```
 
-Modules actifs (28, ordre alphabétique) : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `Catalog`, `Communication`, `CRM`, `Delivery`, `EdgeSync`, `EduManager`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `Restaurant`, `RestaurantManager`, `Showcase`, `TravelAgency` — état couche-par-couche dans `docs/ARCHITECTURE_STATUS.md`.
+Modules actifs (30, ordre alphabétique) : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `Catalog`, `Communication`, `CRM`, `Delivery`, `EdgeSync`, `EduManager`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Pharmacy`, `Planning`, `Platform`, `Recruitment`, `Restaurant`, `RestaurantManager`, `Retail`, `Showcase`, `TravelAgency` — état couche-par-couche dans `docs/ARCHITECTURE_STATUS.md`.
 > `app/Http/Controllers/Api/V1/`, `app/Models/` et `app/Services/` ont été **supprimés** (PR #824, phase 2, #1728) — tout nouveau code va dans `Modules/<Nom>/` (`App\Modules\<Nom>\*`).
 
 ### 2.4 Multi-tenant
