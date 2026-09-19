@@ -4170,6 +4170,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/public/catalog/sitemap.xml", options);
     },
 
+    /** Annuaire public des restaurants (sans auth) */
+    getPublicRestaurants(options = {}) {
+      return request("GET", "/public/restaurants", options);
+    },
+
+    /** Profil public d'un restaurant par slug (sans auth) */
+    getPublicRestaurantsBySlug(options = {}) {
+      return request("GET", "/public/restaurants/{slug}", options);
+    },
+
     /** Annulation en ligne d'une réservation par le passager (espace voyageur) */
     postPublicTravelShopBookingsByReferenceCancel(options = {}) {
       return request("POST", "/public/travel/shop/bookings/{reference}/cancel", options);
@@ -4343,6 +4353,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Qui a accès à cette ressource ? (vue inverse, R4 #7601) */
     getResourcesByTypeByResourceIdAccess(options = {}) {
       return request("GET", "/resources/{type}/{resourceId}/access", options);
+    },
+
+    /** Lire le profil public d'une succursale (gestion tenant) */
+    getRestaurantBranchesByRestaurantBranchPublicProfile(options = {}) {
+      return request("GET", "/restaurant/branches/{restaurantBranch}/public-profile", options);
+    },
+
+    /** Mettre a jour le profil public d'une succursale */
+    putRestaurantBranchesByRestaurantBranchPublicProfile(options = {}) {
+      return request("PUT", "/restaurant/branches/{restaurantBranch}/public-profile", options);
+    },
+
+    /** Publier/depublier un produit sur le menu public */
+    patchRestaurantProductsByRestaurantProductPublication(options = {}) {
+      return request("PATCH", "/restaurant/products/{restaurantProduct}/publication", options);
     },
 
     /** Lister les avances sur salaire */

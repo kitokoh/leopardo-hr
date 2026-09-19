@@ -3356,6 +3356,14 @@ class LeopardoClient:
         """Sitemap des produits publies (BC-28 C-SEO #6888)"""
         return self.request("GET", "/public/catalog/sitemap.xml", **kwargs)
 
+    def get_public_restaurants(self, **kwargs):
+        """Annuaire public des restaurants (sans auth)"""
+        return self.request("GET", "/public/restaurants", **kwargs)
+
+    def get_public_restaurants_by_slug(self, **kwargs):
+        """Profil public d'un restaurant par slug (sans auth)"""
+        return self.request("GET", "/public/restaurants/{slug}", **kwargs)
+
     def post_public_travel_shop_bookings_by_reference_cancel(self, **kwargs):
         """Annulation en ligne d'une réservation par le passager (espace voyageur)"""
         return self.request("POST", "/public/travel/shop/bookings/{reference}/cancel", **kwargs)
@@ -3495,6 +3503,18 @@ class LeopardoClient:
     def get_resources_by_type_by_resourceid_access(self, **kwargs):
         """Qui a accès à cette ressource ? (vue inverse, R4 #7601)"""
         return self.request("GET", "/resources/{type}/{resourceId}/access", **kwargs)
+
+    def get_restaurant_branches_by_restaurantbranch_public_profile(self, **kwargs):
+        """Lire le profil public d'une succursale (gestion tenant)"""
+        return self.request("GET", "/restaurant/branches/{restaurantBranch}/public-profile", **kwargs)
+
+    def put_restaurant_branches_by_restaurantbranch_public_profile(self, **kwargs):
+        """Mettre a jour le profil public d'une succursale"""
+        return self.request("PUT", "/restaurant/branches/{restaurantBranch}/public-profile", **kwargs)
+
+    def patch_restaurant_products_by_restaurantproduct_publication(self, **kwargs):
+        """Publier/depublier un produit sur le menu public"""
+        return self.request("PATCH", "/restaurant/products/{restaurantProduct}/publication", **kwargs)
 
     def get_salary_advances(self, **kwargs):
         """Lister les avances sur salaire"""
