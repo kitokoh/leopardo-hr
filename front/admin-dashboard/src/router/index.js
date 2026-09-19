@@ -225,12 +225,12 @@ const routes = [
           icon: 'ChartBarIcon'
         }
       },
-      // #7776 — écrans du rôle comptable (spec 5534) : documents, plan
-      // comptable, journal/grand livre, lettrage, exercices, banque, états.
       {
+        // #7776 — écrans du rôle comptable (spec 5534) : documents, plan
+        // comptable, grand livre/journal, lettrage, exercices, banque, états.
         path: '/accounting/documents',
         name: 'accounting-documents',
-        component: () => import(`@/views/accounting/AccountingDocumentsView.vue`),
+        component: () => import('@/views/accounting/AccountingDocumentsView.vue'),
         meta: {
           title: 'navigation.accountingDocuments',
           icon: 'DocumentTextIcon'
@@ -239,16 +239,16 @@ const routes = [
       {
         path: '/accounting/chart',
         name: 'accounting-chart',
-        component: () => import(`@/views/accounting/AccountingChartView.vue`),
+        component: () => import('@/views/accounting/AccountingChartView.vue'),
         meta: {
           title: 'navigation.accountingChart',
-          icon: 'ListBulletIcon'
+          icon: 'TableCellsIcon'
         }
       },
       {
         path: '/accounting/ledger',
         name: 'accounting-ledger',
-        component: () => import(`@/views/accounting/AccountingLedgerView.vue`),
+        component: () => import('@/views/accounting/AccountingLedgerView.vue'),
         meta: {
           title: 'navigation.accountingLedger',
           icon: 'BookOpenIcon'
@@ -257,7 +257,7 @@ const routes = [
       {
         path: '/accounting/lettering',
         name: 'accounting-lettering',
-        component: () => import(`@/views/accounting/AccountingLetteringView.vue`),
+        component: () => import('@/views/accounting/AccountingLetteringView.vue'),
         meta: {
           title: 'navigation.accountingLettering',
           icon: 'LinkIcon'
@@ -266,7 +266,7 @@ const routes = [
       {
         path: '/accounting/fiscal-years',
         name: 'accounting-fiscal-years',
-        component: () => import(`@/views/accounting/AccountingFiscalYearsView.vue`),
+        component: () => import('@/views/accounting/AccountingFiscalYearsView.vue'),
         meta: {
           title: 'navigation.accountingFiscalYears',
           icon: 'CalendarDaysIcon'
@@ -275,7 +275,7 @@ const routes = [
       {
         path: '/accounting/bank',
         name: 'accounting-bank',
-        component: () => import(`@/views/accounting/AccountingBankView.vue`),
+        component: () => import('@/views/accounting/AccountingBankView.vue'),
         meta: {
           title: 'navigation.accountingBank',
           icon: 'BuildingLibraryIcon'
@@ -284,10 +284,10 @@ const routes = [
       {
         path: '/accounting/statements',
         name: 'accounting-statements',
-        component: () => import(`@/views/accounting/AccountingStatementsView.vue`),
+        component: () => import('@/views/accounting/AccountingStatementsView.vue'),
         meta: {
           title: 'navigation.accountingStatements',
-          icon: 'ReceiptPercentIcon'
+          icon: 'ChartPieIcon'
         }
       },
       {

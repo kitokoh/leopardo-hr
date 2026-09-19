@@ -1,286 +1,358 @@
 <template>
   <div class="space-y-8 animate-fade-in max-w-7xl">
-    <!-- En-tête + action de création -->
     <div class="flex flex-wrap items-end justify-between gap-4">
       <div>
         <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">
-          {{ $t('accounting.documents.title') }}
+          {{ t('accountingModule.docsTitle') }}
         </h1>
         <p class="mt-1 text-slate-500 dark:text-slate-400 font-medium text-lg">
-          {{ $t('accounting.documents.subtitle') }}
+          {{ t('accountingModule.docsSubtitle') }}
         </p>
       </div>
       <button type="button" class="btn-primary" @click="openCreate">
         <PlusIcon class="mr-2 h-4 w-4" aria-hidden="true" />
-        {{ $t('accounting.documents.new') }}
+        {{ t('accountingModule.docsNew') }}
       </button>
     </div>
 
     <!-- Filtres -->
-    <div class="glass-card p-4 flex flex-wrap items-end gap-3">
-      <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">
-        {{ $t('accounting.documents.filter_type') }}
-        <select v-model="filters.type" class="mt-1 block rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm">
-          <option value="">{{ $t('accounting.documents.all_types') }}</option>
-          <option v-for="docType in documentTypes" :key="docType" :value="docType">{{ typeLabel(docType) }}</option>
-        </select>
+    <div class="flex flex-wrap items-center gap-3">
+      <select v-model="filters.type" class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm">
+        <option value="">{{ t('accountingModule.docsAllTypes') }}</option>
+        <option v-for="option in typeOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+      </select>
+      <select v-model="filters.status" class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm">
+        <option value="">{{ t('accountingModule.docsAllStatuses') }}</option>
+        <option v-for="option in statusOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+      </select>
+      <label class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300">
+        {{ t('accounting.dashboard.from') }}
+        <input v-model="filters.from" type="date" class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
       </label>
-      <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">
-        {{ $t('accounting.documents.filter_status') }}
-        <select v-model="filters.status" class="mt-1 block rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm">
-          <option value="">{{ $t('accounting.documents.all_statuses') }}</option>
-          <option v-for="status in documentStatuses" :key="status" :value="status">{{ statusLabel(status) }}</option>
-        </select>
-      </label>
-      <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">
-        {{ $t('accounting.documents.filter_from') }}
-        <input v-model="filters.from" type="date" class="mt-1 block rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
-      </label>
-      <label class="block text-sm font-medium text-slate-600 dark:text-slate-300">
-        {{ $t('accounting.documents.filter_to') }}
-        <input v-model="filters.to" type="date" class="mt-1 block rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
+      <label class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300">
+        {{ t('accounting.dashboard.to') }}
+        <input v-model="filters.to" type="date" class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
       </label>
       <button type="button" class="btn-secondary" :disabled="loading" @click="load">
-        {{ $t('accounting.documents.apply') }}
+        {{ t('accountingModule.docsApply') }}
       </button>
     </div>
 
     <div v-if="loading" class="glass-card p-6 text-slate-500 dark:text-slate-400">
-      {{ $t('common.busy', 'Chargement…') }}
+      {{ t('accountingModule.loading') }}
     </div>
 
-    <!-- Liste -->
     <section v-else class="glass-card p-6">
       <p v-if="documents.length === 0" class="text-sm text-slate-500 dark:text-slate-400">
-        {{ $t('accounting.documents.empty') }}
+        {{ t('accountingModule.docsEmpty') }}
       </p>
       <div v-else class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-slate-200 dark:border-slate-700 text-left text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              <th class="py-2 pr-3 font-semibold">{{ $t('accounting.documents.col_number') }}</th>
-              <th class="py-2 pr-3 font-semibold">{{ $t('accounting.documents.col_type') }}</th>
-              <th class="py-2 pr-3 font-semibold">{{ $t('accounting.documents.col_contact') }}</th>
-              <th class="py-2 pr-3 font-semibold">{{ $t('accounting.documents.col_issue_date') }}</th>
-              <th class="py-2 pr-3 font-semibold">{{ $t('accounting.documents.col_due_date') }}</th>
-              <th class="py-2 pr-3 text-right font-semibold">{{ $t('accounting.documents.col_total') }}</th>
-              <th class="py-2 pr-3 text-right font-semibold">{{ $t('accounting.documents.col_paid') }}</th>
-              <th class="py-2 pr-3 font-semibold">{{ $t('accounting.documents.col_status') }}</th>
-              <th class="py-2 font-semibold text-right">{{ $t('accounting.documents.col_actions') }}</th>
+              <th class="py-2 pr-3 font-semibold">{{ t('accountingModule.docsNumber') }}</th>
+              <th class="py-2 pr-3 font-semibold">{{ t('accountingModule.docsType') }}</th>
+              <th class="py-2 pr-3 font-semibold">{{ t('accountingModule.docsContact') }}</th>
+              <th class="py-2 pr-3 font-semibold">{{ t('accountingModule.docsIssueDate') }}</th>
+              <th class="py-2 pr-3 font-semibold">{{ t('accountingModule.docsDueDate') }}</th>
+              <th class="py-2 pr-3 text-right font-semibold">{{ t('accountingModule.docsTotalTtc') }}</th>
+              <th class="py-2 pr-3 text-right font-semibold">{{ t('accountingModule.docsPaid') }}</th>
+              <th class="py-2 pr-3 font-semibold">{{ t('accountingModule.docsStatus') }}</th>
+              <th class="py-2 text-right font-semibold">{{ t('common.actions') }}</th>
             </tr>
           </thead>
           <tbody>
-            <template v-for="doc in documents" :key="doc.id">
-              <tr
-                class="border-b border-slate-100 dark:border-slate-800/60 cursor-pointer hover:bg-slate-50/60 dark:hover:bg-slate-800/40"
-                @click="toggleDetail(doc)"
-              >
-                <td class="py-2.5 pr-3 font-mono text-xs text-slate-700 dark:text-slate-300">{{ doc.number }}</td>
-                <td class="py-2.5 pr-3 text-slate-700 dark:text-slate-300">{{ typeLabel(doc.type) }}</td>
-                <td class="py-2.5 pr-3 text-slate-700 dark:text-slate-300">{{ doc.contact?.name || '—' }}</td>
-                <td class="py-2.5 pr-3 text-slate-500 dark:text-slate-400">{{ dateOnly(doc.issue_date) }}</td>
-                <td class="py-2.5 pr-3 text-slate-500 dark:text-slate-400">{{ dateOnly(doc.due_date) }}</td>
-                <td class="py-2.5 pr-3 text-right font-semibold text-slate-900 dark:text-white">
-                  {{ formatAmount(doc.total_ttc) }} {{ doc.currency }}
-                </td>
-                <td class="py-2.5 pr-3 text-right text-slate-500 dark:text-slate-400">{{ formatAmount(doc.paid_amount) }}</td>
-                <td class="py-2.5 pr-3">
-                  <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold" :class="statusClass(doc.status)">
-                    {{ statusLabel(doc.status) }}
-                  </span>
-                </td>
-                <td class="py-2.5 text-right whitespace-nowrap" @click.stop>
-                  <button
-                    v-if="doc.status === 'draft'"
-                    type="button"
-                    class="btn-secondary px-2.5 py-1 text-xs"
-                    :disabled="busyId === doc.id"
-                    @click="sendDocument(doc)"
-                  >
-                    {{ $t('accounting.documents.action_send') }}
-                  </button>
-                  <button
-                    v-if="doc.type === 'invoice' && ['sent', 'partially_paid', 'overdue', 'paid'].includes(doc.status)"
-                    type="button"
-                    class="btn-secondary ml-2 px-2.5 py-1 text-xs"
-                    :disabled="busyId === doc.id"
-                    @click="createCreditNote(doc)"
-                  >
-                    {{ $t('accounting.documents.action_credit_note') }}
-                  </button>
-                  <button
-                    v-if="!['cancelled', 'paid'].includes(doc.status)"
-                    type="button"
-                    class="btn-danger ml-2 px-2.5 py-1 text-xs"
-                    :disabled="busyId === doc.id"
-                    @click="cancelDocument(doc)"
-                  >
-                    {{ $t('accounting.documents.action_cancel') }}
-                  </button>
-                </td>
-              </tr>
-
-              <!-- Détail (lignes + paiements + encaissement) -->
-              <tr v-if="expandedId === doc.id" class="border-b border-slate-100 dark:border-slate-800/60 bg-slate-50/60 dark:bg-slate-800/30">
-                <td colspan="9" class="p-4">
-                  <div class="grid gap-6 lg:grid-cols-2">
-                    <div>
-                      <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ $t('accounting.documents.lines_title') }}</h3>
-                      <table class="mt-2 w-full text-xs">
-                        <thead>
-                          <tr class="text-left text-slate-500 dark:text-slate-400">
-                            <th class="py-1 pr-2 font-semibold">{{ $t('accounting.documents.line_description') }}</th>
-                            <th class="py-1 pr-2 text-right font-semibold">{{ $t('accounting.documents.line_quantity') }}</th>
-                            <th class="py-1 pr-2 text-right font-semibold">{{ $t('accounting.documents.line_unit_price') }}</th>
-                            <th class="py-1 text-right font-semibold">{{ $t('accounting.documents.line_total') }}</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr v-for="line in doc.lines || []" :key="line.id" class="text-slate-700 dark:text-slate-300">
-                            <td class="py-1 pr-2">{{ line.description }}</td>
-                            <td class="py-1 pr-2 text-right">{{ line.quantity }}</td>
-                            <td class="py-1 pr-2 text-right">{{ formatAmount(line.unit_price) }}</td>
-                            <td class="py-1 text-right">{{ formatAmount(line.total_ht ?? line.total ?? lineTotal(line)) }}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                        {{ $t('accounting.documents.totals_hint') }} :
-                        <span class="font-semibold">{{ formatAmount(doc.subtotal_ht) }}</span> HT ·
-                        <span class="font-semibold">{{ formatAmount(doc.tax_amount) }}</span> {{ $t('accounting.documents.tax') }} ·
-                        <span class="font-semibold">{{ formatAmount(doc.total_ttc) }}</span> TTC
-                      </p>
-                    </div>
-
-                    <div>
-                      <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ $t('accounting.documents.payments_title') }}</h3>
-                      <p v-if="!(doc.payments || []).length" class="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                        {{ $t('accounting.documents.payments_empty') }}
-                      </p>
-                      <ul v-else class="mt-2 space-y-1 text-xs text-slate-700 dark:text-slate-300">
-                        <li v-for="payment in doc.payments" :key="payment.id" class="flex justify-between gap-2">
-                          <span>{{ dateOnly(payment.received_at) }} — {{ methodLabel(payment.method) }} {{ payment.reference ? `(${payment.reference})` : '' }}</span>
-                          <span class="font-semibold">{{ formatAmount(payment.amount) }}</span>
-                        </li>
-                      </ul>
-
-                      <!-- Encaissement -->
-                      <form
-                        v-if="!['cancelled', 'paid', 'draft'].includes(doc.status)"
-                        class="mt-3 flex flex-wrap items-end gap-2"
-                        @submit.prevent="registerPayment(doc)"
-                      >
-                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-300">
-                          {{ $t('accounting.documents.payment_amount') }}
-                          <input v-model.number="paymentForm.amount" type="number" step="0.01" min="0.01" required class="mt-1 w-28 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1.5 text-xs" />
-                        </label>
-                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-300">
-                          {{ $t('accounting.documents.payment_method') }}
-                          <select v-model="paymentForm.method" class="mt-1 block rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1.5 text-xs">
-                            <option v-for="method in paymentMethods" :key="method" :value="method">{{ methodLabel(method) }}</option>
-                          </select>
-                        </label>
-                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-300">
-                          {{ $t('accounting.documents.payment_reference') }}
-                          <input v-model="paymentForm.reference" type="text" maxlength="255" class="mt-1 w-32 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1.5 text-xs" />
-                        </label>
-                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-300">
-                          {{ $t('accounting.documents.payment_date') }}
-                          <input v-model="paymentForm.received_at" type="date" class="mt-1 block rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1.5 text-xs" />
-                        </label>
-                        <button type="submit" class="btn-primary px-3 py-1.5 text-xs" :disabled="busyId === doc.id">
-                          {{ $t('accounting.documents.payment_submit') }}
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            </template>
+            <tr v-for="doc in documents" :key="doc.id" class="border-b border-slate-100 dark:border-slate-800/60">
+              <td class="py-2.5 pr-3 font-mono text-xs text-slate-700 dark:text-slate-300">{{ doc.number }}</td>
+              <td class="py-2.5 pr-3 text-slate-600 dark:text-slate-300">{{ typeLabel(doc.type) }}</td>
+              <td class="py-2.5 pr-3 text-slate-600 dark:text-slate-300">{{ doc.contact?.name || t('accountingModule.docsNoContact') }}</td>
+              <td class="py-2.5 pr-3 text-slate-500 dark:text-slate-400">{{ doc.issue_date?.slice(0, 10) }}</td>
+              <td class="py-2.5 pr-3 text-slate-500 dark:text-slate-400">{{ doc.due_date?.slice(0, 10) || '—' }}</td>
+              <td class="py-2.5 pr-3 text-right font-semibold text-slate-700 dark:text-slate-300">{{ formatAmount(doc.total_ttc) }} {{ doc.currency }}</td>
+              <td class="py-2.5 pr-3 text-right text-slate-500 dark:text-slate-400">{{ formatAmount(doc.paid_amount) }}</td>
+              <td class="py-2.5 pr-3">
+                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold" :class="statusClass(doc.status)">
+                  {{ statusLabel(doc.status) }}
+                </span>
+              </td>
+              <td class="py-2.5 text-right whitespace-nowrap">
+                <RowActionButton :icon="EyeIcon" :label="t('accountingModule.docsView')" tone="primary" @click="openDetail(doc)" />
+                <RowActionButton
+                  v-if="doc.status === 'draft'"
+                  :icon="PaperAirplaneIcon"
+                  :label="t('accountingModule.docsSend')"
+                  tone="success"
+                  @click="send(doc)"
+                />
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
     </section>
 
-    <!-- Modale de création -->
-    <div v-if="showCreate" class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4" @click.self="showCreate = false">
-      <div class="glass-card w-full max-w-3xl bg-white dark:bg-slate-900 p-6 my-8" role="dialog" aria-modal="true">
-        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('accounting.documents.create_title') }}</h2>
-        <p v-if="nextNumber" class="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          {{ $t('accounting.documents.next_number') }} : <span class="font-mono font-semibold">{{ nextNumber }}</span>
-        </p>
-
-        <form class="mt-4 space-y-4" @submit.prevent="submitCreate">
-          <div class="grid gap-4 md:grid-cols-3">
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
-              {{ $t('accounting.documents.filter_type') }}
-              <select v-model="createForm.type" class="mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" @change="loadNextNumber">
-                <option v-for="docType in documentTypes" :key="docType" :value="docType">{{ typeLabel(docType) }}</option>
-              </select>
-            </label>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
-              {{ $t('accounting.documents.col_contact') }}
-              <select v-model="createForm.contact_id" class="mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm">
-                <option :value="null">—</option>
-                <option v-for="contact in contacts" :key="contact.id" :value="contact.id">{{ contact.name }}</option>
-              </select>
-            </label>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
-              {{ $t('accounting.documents.tva_rate') }}
-              <input v-model.number="createForm.tva_rate" type="number" step="0.01" min="0" max="100" class="mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
-            </label>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
-              {{ $t('accounting.documents.col_issue_date') }}
-              <input v-model="createForm.issue_date" type="date" class="mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
-            </label>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
-              {{ $t('accounting.documents.col_due_date') }}
-              <input v-model="createForm.due_date" type="date" class="mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
-            </label>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
-              {{ $t('accounting.documents.notes') }}
-              <input v-model="createForm.notes" type="text" maxlength="2000" class="mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
-            </label>
-          </div>
-
-          <!-- Lignes -->
+    <!-- Détail document -->
+    <div v-if="detail" class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/50 p-4" @click.self="detail = null">
+      <div class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl glass-card bg-white/90 dark:bg-slate-900/90 p-6 space-y-5">
+        <div class="flex items-start justify-between gap-4">
           <div>
-            <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ $t('accounting.documents.lines_title') }}</h3>
-            <div v-for="(line, index) in createForm.lines" :key="index" class="mt-2 flex flex-wrap items-center gap-2">
-              <input
-                v-model="line.description"
-                type="text"
-                required
-                maxlength="500"
-                :placeholder="$t('accounting.documents.line_description')"
-                class="min-w-0 flex-1 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"
-              />
-              <input v-model.number="line.quantity" type="number" step="0.01" min="0" :placeholder="$t('accounting.documents.line_quantity')" class="w-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
-              <input v-model.number="line.unit_price" type="number" step="0.01" min="0" :placeholder="$t('accounting.documents.line_unit_price')" class="w-28 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
-              <span class="w-24 text-right text-sm font-semibold text-slate-700 dark:text-slate-300">{{ formatAmount(lineTotal(line)) }}</span>
-              <button type="button" class="btn-danger px-2.5 py-1" :aria-label="$t('accounting.documents.remove_line')" @click="createForm.lines.splice(index, 1)">✕</button>
-            </div>
-            <button type="button" class="btn-secondary mt-3" @click="addLine">
-              + {{ $t('accounting.documents.add_line') }}
-            </button>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">
+              {{ t('accountingModule.docsDetailTitle').replace('{number}', detail.number || '') }}
+            </h3>
+            <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+              {{ typeLabel(detail.type) }} · {{ detail.contact?.name || t('accountingModule.docsNoContact') }}
+            </p>
           </div>
+          <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold" :class="statusClass(detail.status)">
+            {{ statusLabel(detail.status) }}
+          </span>
+        </div>
 
-          <div class="flex justify-end gap-3">
-            <button type="button" class="btn-secondary" @click="showCreate = false">{{ $t('accounting.documents.cancel') }}</button>
-            <button type="submit" class="btn-primary" :disabled="creating || createForm.lines.length === 0">
-              {{ $t('accounting.documents.create_submit') }}
-            </button>
-          </div>
-        </form>
+        <!-- Lignes -->
+        <section>
+          <h4 class="text-sm font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">{{ t('accountingModule.docsLines') }}</h4>
+          <table class="mt-2 w-full text-sm">
+            <thead>
+              <tr class="border-b border-slate-200 dark:border-slate-700 text-left text-xs text-slate-500 dark:text-slate-400">
+                <th class="py-1.5 pr-3 font-semibold">{{ t('accountingModule.docsLineDescription') }}</th>
+                <th class="py-1.5 pr-3 text-right font-semibold">{{ t('accountingModule.docsLineQty') }}</th>
+                <th class="py-1.5 pr-3 text-right font-semibold">{{ t('accountingModule.docsLineUnitPrice') }}</th>
+                <th class="py-1.5 text-right font-semibold">{{ t('accountingModule.docsTotalHt') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="line in detail.lines || []" :key="line.id" class="border-b border-slate-100 dark:border-slate-800/60">
+                <td class="py-1.5 pr-3 text-slate-700 dark:text-slate-300">{{ line.description }}</td>
+                <td class="py-1.5 pr-3 text-right text-slate-500 dark:text-slate-400">{{ line.quantity }}</td>
+                <td class="py-1.5 pr-3 text-right text-slate-500 dark:text-slate-400">{{ formatAmount(line.unit_price) }}</td>
+                <td class="py-1.5 text-right text-slate-700 dark:text-slate-300">{{ formatAmount(line.total_ht ?? line.line_total) }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <dl class="mt-3 ml-auto w-56 space-y-1 text-sm">
+            <div class="flex justify-between text-slate-500 dark:text-slate-400">
+              <dt>{{ t('accountingModule.docsTotalHt') }}</dt>
+              <dd>{{ formatAmount(detail.subtotal_ht) }}</dd>
+            </div>
+            <div class="flex justify-between text-slate-500 dark:text-slate-400">
+              <dt>{{ t('accountingModule.docsTax') }}</dt>
+              <dd>{{ formatAmount(detail.tax_amount) }}</dd>
+            </div>
+            <div class="flex justify-between font-bold text-slate-900 dark:text-white">
+              <dt>{{ t('accountingModule.docsTotalTtc') }}</dt>
+              <dd>{{ formatAmount(detail.total_ttc) }} {{ detail.currency }}</dd>
+            </div>
+          </dl>
+        </section>
+
+        <!-- Paiements -->
+        <section>
+          <h4 class="text-sm font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">{{ t('accountingModule.docsPayments') }}</h4>
+          <p v-if="!(detail.payments || []).length" class="mt-2 text-sm text-slate-500 dark:text-slate-400">
+            {{ t('accountingModule.docsNoPayments') }}
+          </p>
+          <table v-else class="mt-2 w-full text-sm">
+            <thead>
+              <tr class="border-b border-slate-200 dark:border-slate-700 text-left text-xs text-slate-500 dark:text-slate-400">
+                <th class="py-1.5 pr-3 font-semibold">{{ t('accountingModule.docsPaymentDate') }}</th>
+                <th class="py-1.5 pr-3 text-right font-semibold">{{ t('accountingModule.docsPaymentAmount') }}</th>
+                <th class="py-1.5 pr-3 font-semibold">{{ t('accountingModule.docsPaymentMethod') }}</th>
+                <th class="py-1.5 font-semibold">{{ t('accountingModule.docsPaymentReference') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="payment in detail.payments" :key="payment.id" class="border-b border-slate-100 dark:border-slate-800/60">
+                <td class="py-1.5 pr-3 text-slate-500 dark:text-slate-400">{{ payment.received_at?.slice(0, 10) }}</td>
+                <td class="py-1.5 pr-3 text-right text-slate-700 dark:text-slate-300">{{ formatAmount(payment.amount) }}</td>
+                <td class="py-1.5 pr-3 text-slate-500 dark:text-slate-400">{{ methodLabel(payment.method) }}</td>
+                <td class="py-1.5 text-slate-500 dark:text-slate-400">{{ payment.reference || '—' }}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Enregistrer un paiement -->
+          <form
+            v-if="['sent', 'partially_paid', 'overdue'].includes(detail.status)"
+            class="mt-3 flex flex-wrap items-end gap-2"
+            @submit.prevent="addPayment"
+          >
+            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300">
+              {{ t('accountingModule.docsPaymentAmount') }}
+              <input v-model.number="paymentForm.amount" type="number" step="0.01" min="0.01" required class="mt-1 w-32 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
+            </label>
+            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300">
+              {{ t('accountingModule.docsPaymentMethod') }}
+              <select v-model="paymentForm.method" class="mt-1 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm">
+                <option v-for="option in methodOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+              </select>
+            </label>
+            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300">
+              {{ t('accountingModule.docsPaymentDate') }}
+              <input v-model="paymentForm.received_at" type="date" class="mt-1 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
+            </label>
+            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300">
+              {{ t('accountingModule.docsPaymentReference') }}
+              <input v-model="paymentForm.reference" type="text" maxlength="120" class="mt-1 w-36 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
+            </label>
+            <button type="submit" class="btn-secondary" :disabled="saving">{{ t('accountingModule.docsAddPayment') }}</button>
+          </form>
+        </section>
+
+        <!-- Actions -->
+        <div class="flex flex-wrap justify-end gap-2 border-t border-slate-200 dark:border-slate-700 pt-4">
+          <button v-if="detail.status === 'draft'" type="button" class="btn-primary" :disabled="saving" @click="send(detail)">
+            <PaperAirplaneIcon class="mr-2 h-4 w-4" aria-hidden="true" />
+            {{ t('accountingModule.docsSend') }}
+          </button>
+          <button type="button" class="btn-secondary" :disabled="saving" @click="post(detail)">
+            <BookOpenIcon class="mr-2 h-4 w-4" aria-hidden="true" />
+            {{ t('accountingModule.docsPost') }}
+          </button>
+          <button
+            v-if="detail.type !== 'credit_note' && detail.status !== 'cancelled'"
+            type="button"
+            class="btn-secondary"
+            :disabled="saving"
+            @click="openCreditNote(detail)"
+          >
+            <ReceiptRefundIcon class="mr-2 h-4 w-4" aria-hidden="true" />
+            {{ t('accountingModule.docsCreditNote') }}
+          </button>
+          <button
+            v-if="!['cancelled', 'paid'].includes(detail.status)"
+            type="button"
+            class="inline-flex items-center rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 transition-all hover:bg-red-100 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300 disabled:opacity-50"
+            :disabled="saving"
+            @click="cancelOpen = true"
+          >
+            <XCircleIcon class="mr-2 h-4 w-4" aria-hidden="true" />
+            {{ t('accountingModule.docsCancelAction') }}
+          </button>
+        </div>
       </div>
+    </div>
+
+    <!-- Annulation motivée -->
+    <div v-if="cancelOpen && detail" class="fixed inset-0 z-[70] flex items-center justify-center bg-gray-900/50 p-4" @click.self="cancelOpen = false">
+      <form class="w-full max-w-md rounded-2xl glass-card bg-white/90 dark:bg-slate-900/90 p-6 space-y-4" @submit.prevent="cancelDocument">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ t('accountingModule.docsCancelTitle') }}</h3>
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+          {{ t('accountingModule.docsCancelReason') }}
+          <textarea v-model="cancelReason" rows="2" maxlength="500" class="mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"></textarea>
+        </label>
+        <div class="flex justify-end gap-2">
+          <button type="button" class="btn-secondary" @click="cancelOpen = false">{{ t('accountingModule.chartCancel') }}</button>
+          <button
+            type="submit"
+            class="inline-flex items-center rounded-xl bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:bg-red-700 disabled:opacity-50"
+            :disabled="saving"
+          >
+            {{ t('accountingModule.docsCancelConfirm') }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Création (document ou avoir lié) -->
+    <div v-if="createOpen" class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/50 p-4" @click.self="createOpen = false">
+      <form class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl glass-card bg-white/90 dark:bg-slate-900/90 p-6 space-y-4" @submit.prevent="create">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">
+          {{ creditNoteSource
+            ? t('accountingModule.docsCreditNoteTitle').replace('{number}', creditNoteSource.number || '')
+            : t('accountingModule.docsCreateTitle') }}
+        </h3>
+
+        <div v-if="!creditNoteSource" class="grid gap-3 md:grid-cols-2">
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            {{ t('accountingModule.docsType') }}
+            <select v-model="createForm.type" class="mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" @change="loadNextNumber">
+              <option v-for="option in typeOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+            </select>
+            <span v-if="nextNumber" class="mt-1 block text-xs font-normal text-slate-400">
+              {{ t('accountingModule.docsNextNumber').replace('{number}', nextNumber) }}
+            </span>
+          </label>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            {{ t('accountingModule.docsContact') }}
+            <select v-model="createForm.contact_id" class="mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm">
+              <option :value="null">{{ t('accountingModule.docsSelectContact') }}</option>
+              <option v-for="contact in contacts" :key="contact.id" :value="contact.id">{{ contact.name }}</option>
+            </select>
+          </label>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            {{ t('accountingModule.docsIssueDate') }}
+            <input v-model="createForm.issue_date" type="date" class="mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
+          </label>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            {{ t('accountingModule.docsDueDate') }}
+            <input v-model="createForm.due_date" type="date" class="mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
+          </label>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            {{ t('accountingModule.docsTvaRate') }}
+            <input v-model.number="createForm.tva_rate" type="number" step="0.01" min="0" max="100" class="mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
+          </label>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            {{ t('accountingModule.docsNotes') }}
+            <input v-model="createForm.notes" type="text" maxlength="2000" class="mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
+          </label>
+        </div>
+
+        <!-- Lignes -->
+        <section>
+          <h4 class="text-sm font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">{{ t('accountingModule.docsLines') }}</h4>
+          <div v-for="(line, index) in createForm.lines" :key="index" class="mt-2 flex flex-wrap items-end gap-2">
+            <label class="block min-w-0 flex-1 text-xs font-medium text-slate-600 dark:text-slate-300">
+              {{ t('accountingModule.docsLineDescription') }}
+              <input v-model="line.description" type="text" required maxlength="500" class="mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
+            </label>
+            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300">
+              {{ t('accountingModule.docsLineQty') }}
+              <input v-model.number="line.quantity" type="number" step="0.01" min="0" class="mt-1 w-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
+            </label>
+            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300">
+              {{ t('accountingModule.docsLineUnitPrice') }}
+              <input v-model.number="line.unit_price" type="number" step="0.01" min="0" class="mt-1 w-28 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
+            </label>
+            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300">
+              {{ t('accountingModule.docsLineDiscount') }}
+              <input v-model.number="line.discount" type="number" step="0.01" min="0" class="mt-1 w-24 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" />
+            </label>
+            <RowActionButton
+              v-if="createForm.lines.length > 1"
+              :icon="TrashIcon"
+              :label="t('accountingModule.docsRemoveLine')"
+              tone="danger"
+              @click="createForm.lines.splice(index, 1)"
+            />
+          </div>
+          <button type="button" class="btn-secondary mt-3" @click="addLine">
+            <PlusIcon class="mr-2 h-4 w-4" aria-hidden="true" />
+            {{ t('accountingModule.docsAddLine') }}
+          </button>
+        </section>
+
+        <div class="flex justify-end gap-2 border-t border-slate-200 dark:border-slate-700 pt-4">
+          <button type="button" class="btn-secondary" @click="createOpen = false">{{ t('accountingModule.chartCancel') }}</button>
+          <button type="submit" class="btn-primary" :disabled="saving">{{ t('accountingModule.docsCreate') }}</button>
+        </div>
+      </form>
     </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
-import { PlusIcon } from '@heroicons/vue/24/outline'
+import { computed, onMounted, ref } from 'vue'
+import {
+  BookOpenIcon,
+  EyeIcon,
+  PaperAirplaneIcon,
+  PlusIcon,
+  ReceiptRefundIcon,
+  TrashIcon,
+  XCircleIcon
+} from '@heroicons/vue/24/outline'
 import api from '@/services/api'
+import RowActionButton from '@/components/common/RowActionButton.vue'
 import { translate, toIntlLocale } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import { useToast } from 'vue-toastification'
@@ -292,58 +364,72 @@ function t(key, fallback = '') {
   return translate(localeStore.current, key, fallback)
 }
 
-const documentTypes = ['invoice', 'proforma', 'quote', 'credit_note', 'delivery_note', 'receipt']
-const documentStatuses = ['draft', 'sent', 'partially_paid', 'paid', 'overdue', 'cancelled']
-const paymentMethods = ['cash', 'bank_transfer', 'check', 'card', 'other']
-
 const loading = ref(true)
+const saving = ref(false)
 const documents = ref([])
 const contacts = ref([])
-const filters = reactive({ type: '', status: '', from: '', to: '' })
-const expandedId = ref(null)
-const busyId = ref(null)
-
-const showCreate = ref(false)
-const creating = ref(false)
+const detail = ref(null)
+const createOpen = ref(false)
+const cancelOpen = ref(false)
+const cancelReason = ref('')
+const creditNoteSource = ref(null)
 const nextNumber = ref('')
-const createForm = reactive({
-  type: 'invoice',
-  contact_id: null,
-  issue_date: '',
-  due_date: '',
-  tva_rate: null,
-  notes: '',
-  lines: [{ description: '', quantity: 1, unit_price: 0 }],
-})
+const filters = ref({ type: '', status: '', from: '', to: '' })
+const createForm = ref(emptyForm())
+const paymentForm = ref(emptyPayment())
 
-const paymentForm = reactive({ amount: null, method: 'bank_transfer', reference: '', received_at: '' })
-
-function formatAmount(value) {
-  return new Intl.NumberFormat(toIntlLocale(localeStore.current), {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Number(value ?? 0))
+function emptyForm() {
+  return {
+    type: 'invoice',
+    contact_id: null,
+    issue_date: '',
+    due_date: '',
+    tva_rate: null,
+    notes: '',
+    lines: [{ description: '', quantity: 1, unit_price: 0, discount: 0 }],
+  }
 }
 
-function dateOnly(value) {
-  if (!value) return '—'
-  return String(value).slice(0, 10)
+function emptyPayment() {
+  return { amount: null, method: 'bank_transfer', reference: '', received_at: '' }
 }
 
-function lineTotal(line) {
-  return Number(line.quantity ?? 0) * Number(line.unit_price ?? 0) - Number(line.discount ?? 0)
-}
+const typeOptions = computed(() => [
+  { value: 'invoice', label: t('accountingModule.docsTypeInvoice') },
+  { value: 'proforma', label: t('accountingModule.docsTypeProforma') },
+  { value: 'quote', label: t('accountingModule.docsTypeQuote') },
+  { value: 'credit_note', label: t('accountingModule.docsTypeCreditNote') },
+  { value: 'delivery_note', label: t('accountingModule.docsTypeDeliveryNote') },
+  { value: 'receipt', label: t('accountingModule.docsTypeReceipt') },
+])
+
+const statusOptions = computed(() => [
+  { value: 'draft', label: t('accountingModule.docsStatusDraft') },
+  { value: 'sent', label: t('accountingModule.docsStatusSent') },
+  { value: 'partially_paid', label: t('accountingModule.docsStatusPartiallyPaid') },
+  { value: 'paid', label: t('accountingModule.docsStatusPaid') },
+  { value: 'overdue', label: t('accountingModule.docsStatusOverdue') },
+  { value: 'cancelled', label: t('accountingModule.docsStatusCancelled') },
+])
+
+const methodOptions = computed(() => [
+  { value: 'bank_transfer', label: t('accountingModule.docsMethodBankTransfer') },
+  { value: 'cash', label: t('accountingModule.docsMethodCash') },
+  { value: 'check', label: t('accountingModule.docsMethodCheck') },
+  { value: 'card', label: t('accountingModule.docsMethodCard') },
+  { value: 'other', label: t('accountingModule.docsMethodOther') },
+])
 
 function typeLabel(type) {
-  return t(`accounting.documents.type_${type}`) || type
+  return typeOptions.value.find((option) => option.value === type)?.label || type
 }
 
 function statusLabel(status) {
-  return t(`accounting.documents.status_${status}`) || status
+  return statusOptions.value.find((option) => option.value === status)?.label || status
 }
 
 function methodLabel(method) {
-  return t(`accounting.documents.method_${method}`) || method
+  return methodOptions.value.find((option) => option.value === method)?.label || method
 }
 
 function statusClass(status) {
@@ -358,23 +444,25 @@ function statusClass(status) {
   return classes[status] || classes.draft
 }
 
-function errorMessage(err, fallbackKey) {
-  return err?.response?.data?.message || t(fallbackKey, t('accounting.documents.load_error'))
+function formatAmount(value) {
+  return new Intl.NumberFormat(toIntlLocale(localeStore.current), {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Number(value ?? 0))
 }
 
 async function load() {
   loading.value = true
   try {
     const params = new URLSearchParams()
-    params.set('per_page', '100')
-    if (filters.type) params.set('type', filters.type)
-    if (filters.status) params.set('status', filters.status)
-    if (filters.from) params.set('from', filters.from)
-    if (filters.to) params.set('to', filters.to)
+    Object.entries(filters.value).forEach(([key, value]) => {
+      if (value) params.set(key, value)
+    })
+    params.set('per_page', '50')
     const { data: response } = await api.get(`/accounting/documents?${params.toString()}`)
     documents.value = Array.isArray(response?.data) ? response.data : []
   } catch (err) {
-    toast.error(errorMessage(err, 'accounting.documents.load_error'))
+    toast.error(err?.response?.data?.message || t('accountingModule.docsError'))
   } finally {
     loading.value = false
   }
@@ -382,142 +470,147 @@ async function load() {
 
 async function loadContacts() {
   try {
-    const { data: response } = await api.get('/accounting/contacts?per_page=100')
+    const { data: response } = await api.get('/accounting/contacts')
     contacts.value = Array.isArray(response?.data) ? response.data : []
   } catch {
     contacts.value = []
   }
 }
 
-async function toggleDetail(doc) {
-  if (expandedId.value === doc.id) {
-    expandedId.value = null
-    return
-  }
-  expandedId.value = doc.id
-  try {
-    const { data: response } = await api.get(`/accounting/documents/${doc.id}`)
-    const fresh = response?.data
-    if (fresh) Object.assign(doc, fresh)
-  } catch (err) {
-    toast.error(errorMessage(err, 'accounting.documents.load_error'))
-  }
-}
-
-function openCreate() {
-  showCreate.value = true
-  loadNextNumber()
-}
-
 async function loadNextNumber() {
   nextNumber.value = ''
   try {
-    const { data: response } = await api.get(`/accounting/documents/next-number?type=${createForm.type}`)
+    const { data: response } = await api.get(`/accounting/documents/next-number?type=${createForm.value.type}`)
     nextNumber.value = response?.data?.number || ''
   } catch {
     nextNumber.value = ''
   }
 }
 
-function addLine() {
-  createForm.lines.push({ description: '', quantity: 1, unit_price: 0 })
+function openCreate() {
+  creditNoteSource.value = null
+  createForm.value = emptyForm()
+  createOpen.value = true
+  loadNextNumber()
 }
 
-async function submitCreate() {
-  creating.value = true
+function openCreditNote(doc) {
+  creditNoteSource.value = doc
+  createForm.value = emptyForm()
+  createForm.value.lines = (doc.lines || []).map((line) => ({
+    description: line.description,
+    quantity: Number(line.quantity ?? 1),
+    unit_price: Number(line.unit_price ?? 0),
+    discount: Number(line.discount ?? 0),
+  }))
+  if (!createForm.value.lines.length) {
+    createForm.value.lines = [{ description: '', quantity: 1, unit_price: 0, discount: 0 }]
+  }
+  createOpen.value = true
+}
+
+function addLine() {
+  createForm.value.lines.push({ description: '', quantity: 1, unit_price: 0, discount: 0 })
+}
+
+async function create() {
+  saving.value = true
   try {
-    const payload = {
-      type: createForm.type,
-      contact_id: createForm.contact_id || undefined,
-      issue_date: createForm.issue_date || undefined,
-      due_date: createForm.due_date || undefined,
-      tva_rate: createForm.tva_rate ?? undefined,
-      notes: createForm.notes || undefined,
-      lines: createForm.lines.map((line) => ({
-        description: line.description,
-        quantity: line.quantity ?? undefined,
-        unit_price: line.unit_price ?? undefined,
-      })),
+    if (creditNoteSource.value) {
+      await api.post(`/accounting/documents/${creditNoteSource.value.id}/credit-note`, {
+        lines: createForm.value.lines,
+        notes: createForm.value.notes || null,
+      })
+      toast.success(t('accountingModule.docsCreditNoteCreated'))
+    } else {
+      const payload = { ...createForm.value }
+      Object.keys(payload).forEach((key) => {
+        if (payload[key] === '' || payload[key] === null) delete payload[key]
+      })
+      await api.post('/accounting/documents', payload)
+      toast.success(t('accountingModule.docsCreated'))
     }
-    await api.post('/accounting/documents', payload)
-    toast.success(t('accounting.documents.created'))
-    showCreate.value = false
-    createForm.lines = [{ description: '', quantity: 1, unit_price: 0 }]
-    createForm.notes = ''
+    createOpen.value = false
+    detail.value = null
     await load()
   } catch (err) {
-    toast.error(errorMessage(err, 'accounting.documents.create_error'))
+    toast.error(err?.response?.data?.message || t('accountingModule.errorGeneric'))
   } finally {
-    creating.value = false
+    saving.value = false
   }
 }
 
-async function sendDocument(doc) {
-  busyId.value = doc.id
+async function openDetail(doc) {
+  paymentForm.value = emptyPayment()
+  try {
+    const { data: response } = await api.get(`/accounting/documents/${doc.id}`)
+    detail.value = response?.data || doc
+  } catch (err) {
+    toast.error(err?.response?.data?.message || t('accountingModule.docsError'))
+  }
+}
+
+async function send(doc) {
+  saving.value = true
   try {
     await api.post(`/accounting/documents/${doc.id}/send`)
-    toast.success(t('accounting.documents.sent'))
+    toast.success(t('accountingModule.docsSentDone'))
+    if (detail.value?.id === doc.id) await openDetail(doc)
     await load()
   } catch (err) {
-    toast.error(errorMessage(err, 'accounting.documents.action_error'))
+    toast.error(err?.response?.data?.message || t('accountingModule.errorGeneric'))
   } finally {
-    busyId.value = null
+    saving.value = false
   }
 }
 
-async function cancelDocument(doc) {
-  if (!window.confirm(t('accounting.documents.cancel_confirm'))) return
-  busyId.value = doc.id
+async function cancelDocument() {
+  if (!detail.value) return
+  saving.value = true
   try {
-    await api.post(`/accounting/documents/${doc.id}/cancel`)
-    toast.success(t('accounting.documents.cancelled_ok'))
-    await load()
-  } catch (err) {
-    toast.error(errorMessage(err, 'accounting.documents.action_error'))
-  } finally {
-    busyId.value = null
-  }
-}
-
-async function createCreditNote(doc) {
-  if (!window.confirm(t('accounting.documents.credit_note_confirm'))) return
-  busyId.value = doc.id
-  try {
-    const { data: detail } = await api.get(`/accounting/documents/${doc.id}`)
-    const lines = (detail?.data?.lines || []).map((line) => ({
-      description: line.description,
-      quantity: line.quantity ?? undefined,
-      unit_price: line.unit_price ?? undefined,
-    }))
-    await api.post(`/accounting/documents/${doc.id}/credit-note`, {
-      lines: lines.length > 0 ? lines : [{ description: doc.number, quantity: 1, unit_price: doc.total_ttc }],
+    await api.post(`/accounting/documents/${detail.value.id}/cancel`, {
+      reason: cancelReason.value || null,
     })
-    toast.success(t('accounting.documents.credit_note_ok'))
+    toast.success(t('accountingModule.docsCancelledDone'))
+    cancelOpen.value = false
+    cancelReason.value = ''
+    await openDetail(detail.value)
     await load()
   } catch (err) {
-    toast.error(errorMessage(err, 'accounting.documents.action_error'))
+    toast.error(err?.response?.data?.message || t('accountingModule.errorGeneric'))
   } finally {
-    busyId.value = null
+    saving.value = false
   }
 }
 
-async function registerPayment(doc) {
-  busyId.value = doc.id
+async function post(doc) {
+  saving.value = true
   try {
-    await api.post(`/accounting/documents/${doc.id}/payments`, {
-      amount: paymentForm.amount,
-      method: paymentForm.method,
-      reference: paymentForm.reference || undefined,
-      received_at: paymentForm.received_at || undefined,
-    })
-    toast.success(t('accounting.documents.payment_ok'))
-    paymentForm.amount = null
-    paymentForm.reference = ''
+    const { data: response } = await api.post(`/accounting/documents/${doc.id}/journal`)
+    toast.success(t('accountingModule.docsPosted').replace('{count}', String(response?.entries ?? 0)))
+  } catch (err) {
+    toast.error(err?.response?.data?.message || t('accountingModule.errorGeneric'))
+  } finally {
+    saving.value = false
+  }
+}
+
+async function addPayment() {
+  if (!detail.value) return
+  saving.value = true
+  try {
+    const payload = { ...paymentForm.value }
+    if (!payload.reference) delete payload.reference
+    if (!payload.received_at) delete payload.received_at
+    await api.post(`/accounting/documents/${detail.value.id}/payments`, payload)
+    toast.success(t('accountingModule.docsPaymentAdded'))
+    paymentForm.value = emptyPayment()
+    await openDetail(detail.value)
     await load()
   } catch (err) {
-    toast.error(errorMessage(err, 'accounting.documents.action_error'))
+    toast.error(err?.response?.data?.message || t('accountingModule.errorGeneric'))
   } finally {
-    busyId.value = null
+    saving.value = false
   }
 }
 
