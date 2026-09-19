@@ -14,6 +14,7 @@
 | Santé API | `https://gestionemployerbackend.onrender.com/api/v1/health` | Render | 200, DB ok, redis pong, queue database — 2026-09-05 |
 | Vitrine / portail web | `https://gestionemployer-backend.vercel.app` | Vercel | HTTP 200 2026-09-05 |
 | Admin plateforme (super-admin) | `https://leo-admin.pages.dev` | Cloudflare Pages | HTTP 200 2026-09-05 |
+| Marketplace grand public « Leopardo Marché » | `https://leopardo-marche.vercel.app` | Vercel (projet `leopardo-marche`, rootDirectory `front/marketplace`, `NEXT_PUBLIC_MARKET_API_BASE` → API Render) | HTTP 200 2026-09-19 (#7815) |
 | Site marketing | `https://kitokoh.github.io/leopardo-hr/` | GitHub Pages (depuis main, #6827) | HTTP 200 2026-09-05 |
 
 > ⚠️ `https://leopardo.vercel.app` répond aussi HTTP 200 (2026-09-05) —

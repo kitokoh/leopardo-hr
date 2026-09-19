@@ -82,3 +82,71 @@ export function signedQuantityDelta(reason: StockReasonCode, quantity: number): 
   const magnitude = Math.abs(quantity);
   return direction === 'out' ? -magnitude : magnitude;
 }
+
+/**
+ * Statuts de suivi (`fulfillment_status`) des commandes web « Boutique en
+ * ligne » (BC-17 marketplace, #7810) — miroir de la machine d'états serveur
+ * `pending → confirmed → ready → shipped → delivered` (+ `cancelled`
+ * terminal, cf. docs/specifications/MARKETPLACE_RETAIL_PUBLIC.md §2.3).
+ */
+export const FULFILLMENT_STATUSES = [
+  'pending',
+  'confirmed',
+  'ready',
+  'shipped',
+  'delivered',
+  'cancelled',
+] as const;
+
+export type FulfillmentStatus = (typeof FULFILLMENT_STATUSES)[number];
+
+/** Actions vendeur exposées par `POST /retail/online/orders/{id}/{action}`. */
+export const FULFILLMENT_ACTIONS = ['confirm', 'ready', 'ship', 'deliver', 'cancel'] as const;
+
+export type FulfillmentAction = (typeof FULFILLMENT_ACTIONS)[number];
+
+/** Statut cible atteint après une action de suivi (affichage optimiste). */
+export function fulfillmentTarget(action: FulfillmentAction): FulfillmentStatus {
+  switch (action) {
+    case 'confirm':
+      return 'confirmed';
+    case 'ready':
+      return 'ready';
+    case 'ship':
+      return 'shipped';
+    case 'deliver':
+      return 'delivered';
+    case 'cancel':
+      return 'cancelled';
+  }
+}
+
+/**
+ * Actions proposées à l'opérateur pour un statut donné (miroir des
+ * transitions serveur ; une transition périmée est de toute façon rejetée
+ * en 422 `INVALID_TRANSITION`). Les statuts terminaux (`delivered`,
+ * `cancelled`) n'offrent aucune action ; un statut inconnu non plus
+ * (fail-closed).
+ */
+export function fulfillmentActions(status: string): FulfillmentAction[] {
+  switch (status as FulfillmentStatus) {
+    case 'pending':
+      return ['confirm', 'cancel'];
+    case 'confirmed':
+      return ['ready', 'cancel'];
+    case 'ready':
+      return ['ship', 'cancel'];
+    case 'shipped':
+      return ['deliver', 'cancel'];
+    case 'delivered':
+    case 'cancelled':
+      return [];
+    default:
+      return [];
+  }
+}
+
+/** Transition valide ? (le serveur reste seul juge — pré-filtre UI.) */
+export function canApplyFulfillmentAction(status: string, action: FulfillmentAction): boolean {
+  return fulfillmentActions(status).includes(action);
+}
