@@ -1,4 +1,4 @@
-name: Deploy Production - Leopardo RH
+name: Deploy Production - Leopardo
 
 # Déploiement PRODUCTION : déclenché par la PUBLICATION d'une GitHub Release
 # (chaîne : push d'un tag vX.Y.Z → release.yml crée la Release → cet
