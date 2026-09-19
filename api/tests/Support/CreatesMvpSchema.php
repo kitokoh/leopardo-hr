@@ -1817,6 +1817,47 @@ trait CreatesMvpSchema
             });
         }
 
+        // R5 Communication (#7690) — parité fixture ↔ migration tenant
+        // 2026_09_22_000001 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('communication_reply_policies'))) {
+            Schema::create($this->moduleTable('communication_reply_policies'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('integration_id')->index();
+                $table->string('category_key', 64);
+                $table->string('policy', 10)->default('off');
+                $table->timestamps();
+                $table->unique(['company_id', 'integration_id', 'category_key'], 'communication_reply_policies_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('communication_pending_replies'))) {
+            Schema::create($this->moduleTable('communication_pending_replies'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('integration_id')->index();
+                $table->uuid('thread_id')->index();
+                $table->uuid('message_id');
+                $table->string('category_key', 64);
+                $table->string('mode', 10);
+                $table->string('to_email');
+                $table->string('subject', 998)->nullable();
+                $table->text('body')->nullable();
+                $table->string('ai_language', 8)->nullable();
+                $table->unsignedSmallInteger('ai_confidence')->nullable();
+                $table->string('status', 20)->default('pending')->index();
+                $table->string('skip_reason', 64)->nullable();
+                $table->timestamp('edited_at')->nullable();
+                $table->unsignedBigInteger('decided_by')->nullable();
+                $table->timestamp('decided_at')->nullable();
+                $table->string('gmail_draft_id')->nullable();
+                $table->string('sent_gmail_message_id')->nullable();
+                $table->timestamp('sent_at')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'message_id', 'mode'], 'communication_pending_replies_unique');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('export_history'))) {
             Schema::create($this->moduleTable('export_history'), function (Blueprint $table): void {
                 $table->id();
@@ -4260,6 +4301,8 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "conversation_messages"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "conversation_threads"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "communication_events"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_reply_policies"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_pending_replies"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "communication_follow_up_rules"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "communication_follow_up_steps"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "communication_follow_ups"'.$cascade);
