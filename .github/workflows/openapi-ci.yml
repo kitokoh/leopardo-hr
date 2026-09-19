@@ -12,8 +12,6 @@ on:
     paths:
       - "api/openapi.yaml"
       - "api/routes/**"
-      - "dev-hub/openapi/v1.yaml"
-      - "dev-hub/sdk/**"
       - "dev-hub/tools/generate-openapi-sdk.mjs"
       - "dev-hub/tools/check-openapi-route-coverage.py"
       - "dev-hub/tools/openapi-coverage-allowlist.txt"
@@ -48,12 +46,28 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Check dev-hub OpenAPI mirror + generated SDKs are in sync (issue #1397)
-        # dev-hub/openapi/v1.yaml is generated from api/openapi.yaml by
-        # dev-hub/tools/generate-openapi-sdk.mjs so external integrators never
-        # see a stale/divergent stub. This fails the build if api/openapi.yaml
-        # changed without regenerating dev-hub/openapi/v1.yaml and the SDKs.
-        run: node dev-hub/tools/generate-openapi-sdk.mjs --check
+      - name: Generate dev-hub OpenAPI mirror + SDKs from api/openapi.yaml (issue #7654)
+        # #7654 tranche 3 : le miroir dev-hub/openapi/v1.yaml et les SDK JS/Python
+        # ne sont PLUS committés (le pattern « artefact committé + garde de fraîcheur »
+        # regonflait le pack à chaque régénération — ~618 MB + ~120 MB cumulés dans
+        # l'historique). Ce step prouve que la génération reste fonctionnelle sur
+        # chaque PR : si api/openapi.yaml casse le générateur, la PR est rouge.
+        run: |
+          node dev-hub/tools/generate-openapi-sdk.mjs
+          for f in dev-hub/openapi/v1.yaml dev-hub/sdk/MANIFEST.json \
+                   dev-hub/sdk/javascript/leopardoClient.js dev-hub/sdk/python/leopardo_client.py; do
+            [ -s "$f" ] || { echo "::error::$f non généré par generate-openapi-sdk.mjs"; exit 1; }
+          done
+
+      - name: Refuse re-committed generated OpenAPI artifacts (issue #7654)
+        # Anti-régression : ces artefacts générés ne doivent jamais revenir dans git.
+        run: |
+          tracked=$(git ls-files -- dev-hub/openapi/v1.yaml dev-hub/sdk/MANIFEST.json \
+            dev-hub/sdk/javascript/leopardoClient.js dev-hub/sdk/python/leopardo_client.py)
+          if [ -n "$tracked" ]; then
+            echo "::error::Artefacts OpenAPI générés re-committés (#7654) : $tracked — ils sont générés par make openapi-sync et gitignorés."
+            exit 1
+          fi
 
   route-coverage:
     timeout-minutes: 45

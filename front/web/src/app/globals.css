@@ -181,6 +181,24 @@ html {
 .solution-stack-glow-top {
   background: radial-gradient(ellipse 40% 40% at 50% -10%, rgba(34, 211, 238, 0.14), transparent);
 }
+/* ── Mascotte Leo (pieuvre) — flottement doux, purement décoratif ──────────
+   Désactivé pour les utilisateurs en `prefers-reduced-motion` : la mascotte
+   reste alors statique, aucune information n'est perdue. */
+@media (prefers-reduced-motion: no-preference) {
+  .leo-mascot-float {
+    animation: leo-float 5s ease-in-out infinite;
+  }
+  @keyframes leo-float {
+    0%,
+    100% {
+      transform: translateY(0) rotate(-2deg);
+    }
+    50% {
+      transform: translateY(-10px) rotate(2deg);
+    }
+  }
+}
+
 /* Repli sans WebGL : la composition CSS 3D équivalente. */
 .solution-fallback-plane {
   transform: rotateX(56deg) rotateZ(-28deg);
