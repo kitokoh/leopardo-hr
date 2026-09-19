@@ -313,12 +313,13 @@ class AppServiceProvider extends ServiceProvider
                 ->by('restaurant-shop-public:'.$request->ip());
         });
 
-        // RESTO-805 (#6226) — boutique en ligne publique RestaurantManager :
-        // throttling renforcé (endpoints publics sans auth utilisateur),
-        // anti-scraping par IP (pattern shop-public TRAVEL-1001/#6114).
-        RateLimiter::for('restaurant-shop-public', function (Request $request) {
-            return Limit::perMinute((int) config('security.rate_limits.restaurant_shop_public_per_minute', 30))
-                ->by('restaurant-shop-public:'.$request->ip());
+        // RESTO-902 (#7747) — soumission d'avis clients publics : throttle
+        // STRICT dédié (anti-spam d'avis), en plus du throttle shop-public du
+        // groupe. Clé par IP — la preuve d'achat (référence de commande non
+        // énumérable) limite déjà fortement la surface.
+        RateLimiter::for('restaurant-reviews-public', function (Request $request) {
+            return Limit::perMinute((int) config('security.rate_limits.restaurant_reviews_public_per_minute', 5))
+                ->by('restaurant-reviews-public:'.$request->ip());
         });
 
         // Audit expert 2026-08-15 (issue #2621) — GET /trial/status est pollé
