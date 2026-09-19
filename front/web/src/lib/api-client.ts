@@ -230,10 +230,16 @@ export async function apiFetch(
   const method = (options.method || 'GET').toUpperCase();
 
   const headers = new Headers({
-    'Content-Type': 'application/json',
     'Accept': 'application/json',
     'Accept-Language': typeof window !== 'undefined' ? getPreferredLocale() : 'fr',
   });
+
+  // Multipart (upload de fichier) : ne JAMAIS poser Content-Type nous-mêmes —
+  // fetch le génère avec la frontière (`boundary`) du FormData. Pour tout le
+  // reste, le comportement historique (JSON) est conservé.
+  if (!(options.body instanceof FormData)) {
+    headers.set('Content-Type', 'application/json');
+  }
   for (const [k, v] of Object.entries(options.headers ?? {})) {
     headers.set(k, String(v));
   }

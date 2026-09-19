@@ -106,11 +106,11 @@ Cherchez les issues taguees [`good first issue`](https://github.com/kitokoh/leop
 
 ## Signaler un bug
 
-Utilisez le template [Bug Report](https://github.com/kitokoh/leopardo-hr/issues/new?template=bug_report.md).
+Utilisez le template [Bug Report](https://github.com/kitokoh/leopardo-hr/issues/new?template=bug.yml).
 
 ## Proposer une fonctionnalite
 
-Utilisez le template [Feature Request](https://github.com/kitokoh/leopardo-hr/issues/new?template=feature_request.md).
+Utilisez le template [Feature Request](https://github.com/kitokoh/leopardo-hr/issues/new?template=feature.yml).
 
 ## Code de conduite
 
