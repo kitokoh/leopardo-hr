@@ -1,4 +1,4 @@
-name: Deploy - Leopardo RH
+name: Deploy - Leopardo
 
 on:
   # #3545 / #4359 : le déclencheur `push` direct est l’unique source de vérité
@@ -218,7 +218,7 @@ jobs:
         uses: ./.github/actions/verify-deploy-workflows
         with:
           sha: ${{ steps.context.outputs.sha }}
-          required_workflows: '["Tests - Leopardo RH","Web CI - Leopardo Admin"]'
+          required_workflows: '["Tests - Leopardo","Web CI - Leopardo Admin"]'
           web_changed: ${{ steps.changes_api.outputs.web_changed == 'true' }}
           # Issue #7511 — mesuré AVANT la gate pour que « aucun run requis »
           # puisse être qualifié (rien à déployer) au lieu d'échouer en bloc.
@@ -494,7 +494,7 @@ jobs:
   # avoir su décider. Un `should_deploy=false` recouvrait deux situations
   # opposées dans l'UI :
   #
-  #  - une DÉCISION : rien de déployable, run « Tests - Leopardo RH » rouge
+  #  - une DÉCISION : rien de déployable, run « Tests - Leopardo » rouge
   #    (le rouge est déjà porté par le run Tests), ou SHA dépassé par un push
   #    plus récent → un run vert est légitime ;
   #  - une INDÉCISION : aucun run trouvé pour le SHA, polling expiré, conclusion
@@ -579,7 +579,7 @@ jobs:
               echo "::notice::Gate concluant (${outcome}) mais aucune action de déploiement requise pour ${sha}."
               ;;
             tests-failure|tests-cancelled|tests-timed_out|tests-startup_failure|web-failure|web-cancelled|web-timed_out|web-startup_failure)
-              echo "::notice::Déploiement retenu pour ${sha} car ${outcome} — le rouge détaillé est porté par le run « Tests - Leopardo RH ». Le gate a bien décidé."
+              echo "::notice::Déploiement retenu pour ${sha} car ${outcome} — le rouge détaillé est porté par le run « Tests - Leopardo ». Le gate a bien décidé."
               ;;
             no-runs|timeout|tests-missing|web-missing|missing|unknown)
               {
@@ -587,7 +587,7 @@ jobs:
                 echo "> **Indécision** : le gate n'a pas pu établir la conclusion des workflows requis"
                 echo "> pour \`${sha}\` (\`${outcome}\`). Aucun déploiement n'a été décidé, et"
                 echo "> ce n'est **pas** un succès : le tier dev peut dériver de \`main\`."
-                echo "> Vérifier l'API Actions (\`Tests - Leopardo RH\` pour ce SHA) puis, si le"
+                echo "> Vérifier l'API Actions (\`Tests - Leopardo\` pour ce SHA) puis, si le"
                 echo "> contenu est vert, relancer ce workflow en \`workflow_dispatch\` (\`force_deploy\`)."
               } >> "$GITHUB_STEP_SUMMARY"
               echo "::error::Deploy gate indécis pour ${sha} — motif « ${outcome} ». Aucun déploiement décidé : voir le résumé du run (#7457)."
