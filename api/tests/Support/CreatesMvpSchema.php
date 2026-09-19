@@ -1223,6 +1223,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS public.edge_nodes CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.companies CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.user_employee_links CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.feature_flag_audits CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.users CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.plans CASCADE');
         DB::statement('DROP TABLE IF EXISTS shared_tenants.features CASCADE');
