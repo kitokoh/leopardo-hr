@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/branding/tenant_branding.dart';
 import 'package:leopardo_core/core/branding/tenant_branding_repository.dart';
 import 'package:leopardo_employee/core/providers/core_providers.dart';
-import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/features/auth/providers/auth_provider.dart';
 
 final tenantBrandingProvider = FutureProvider<TenantBranding?>((ref) async {
   final employee = ref.watch(authProvider.select((state) => state.employee));

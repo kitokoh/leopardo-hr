@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:leopardo_core/features/attendance/config/attendance_feature_config.dart';
 import 'package:leopardo_core/features/attendance/data/attendance_repository.dart';
+import 'package:leopardo_core/features/attendance/models/attendance_anomaly.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
 import 'package:leopardo_core/models/daily_summary.dart';
 import 'package:leopardo_core/models/employee_day_detail.dart';
@@ -18,6 +20,8 @@ class AttendanceState {
   final bool isLoading;
   final bool isPunching;
   final AttendanceLog? todayLog;
+  final List<AttendanceLog> todaySessions;
+  final Map<String, dynamic>? daySummary;
   final Map<String, dynamic>? context;
   final DailySummary? summary;
   final String? error;
@@ -27,6 +31,8 @@ class AttendanceState {
     this.isLoading = false,
     this.isPunching = false,
     this.todayLog,
+    this.todaySessions = const [],
+    this.daySummary,
     this.context,
     this.summary,
     this.error,
@@ -37,6 +43,8 @@ class AttendanceState {
     bool? isLoading,
     bool? isPunching,
     AttendanceLog? todayLog,
+    List<AttendanceLog>? todaySessions,
+    Map<String, dynamic>? daySummary,
     Map<String, dynamic>? context,
     DailySummary? summary,
     String? error,
@@ -48,6 +56,8 @@ class AttendanceState {
       isLoading: isLoading ?? this.isLoading,
       isPunching: isPunching ?? this.isPunching,
       todayLog: todayLog ?? this.todayLog,
+      todaySessions: todaySessions ?? this.todaySessions,
+      daySummary: daySummary ?? this.daySummary,
       context: context ?? this.context,
       summary: summary ?? this.summary,
       error: clearError ? null : (error ?? this.error),
@@ -75,6 +85,12 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
       final data = await _repository.getTodayStatus();
       state = state.copyWith(
         todayLog: data['log'],
+        todaySessions: data['sessions'] is List<AttendanceLog>
+            ? data['sessions'] as List<AttendanceLog>
+            : const <AttendanceLog>[],
+        daySummary: data['summary'] is Map
+            ? (data['summary'] as Map).cast<String, dynamic>()
+            : null,
         context: data['context'],
         isLoading: false,
       );
@@ -117,7 +133,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
     }
   }
 
-  Future<bool> checkIn() async {
+  Future<bool> checkIn({String workType = 'normal', String? punchNote}) async {
     if (state.isPunching) return false;
     state = state.copyWith(
       isPunching: true,
@@ -128,6 +144,8 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
       final location = await _attendanceLocation();
       final log = await _repository
           .checkIn(
+            workType: workType,
+            punchNote: punchNote,
             gpsLat: location.latitude,
             gpsLng: location.longitude,
             gpsAccuracy: location.accuracyMeters,
@@ -135,10 +153,13 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
           .timeout(_punchGuardTimeout);
       state = state.copyWith(
         todayLog: log,
+        todaySessions: _upsertTodaySession(state.todaySessions, log),
         isPunching: false,
         notice: _successNotice(
           log: log,
-          fallback: deviceL10n.attendanceCheckinRegistered,
+          fallback: workType == 'overtime'
+              ? deviceL10n.attendanceOvertimeSuccess
+              : deviceL10n.attendanceCheckinRegistered,
           location: location,
         ),
       );
@@ -155,7 +176,10 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
     }
   }
 
-  Future<bool> checkOut() async {
+  Future<bool> checkOut({
+    String workType = 'normal',
+    String? punchNote,
+  }) async {
     if (state.isPunching) return false;
     state = state.copyWith(
       isPunching: true,
@@ -166,6 +190,8 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
       final location = await _attendanceLocation();
       final log = await _repository
           .checkOut(
+            workType: workType,
+            punchNote: punchNote,
             gpsLat: location.latitude,
             gpsLng: location.longitude,
             gpsAccuracy: location.accuracyMeters,
@@ -173,10 +199,13 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
           .timeout(_punchGuardTimeout);
       state = state.copyWith(
         todayLog: log,
+        todaySessions: _upsertTodaySession(state.todaySessions, log),
         isPunching: false,
         notice: _successNotice(
           log: log,
-          fallback: deviceL10n.attendanceCheckoutRegistered,
+          fallback: workType == 'break'
+              ? deviceL10n.attendanceBreakRegistered
+              : deviceL10n.attendanceCheckoutRegistered,
           location: location,
         ),
       );
@@ -297,7 +326,12 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
   }) {
     final geofence = log.geofence;
     if (geofence != null && geofence['inside'] == false) {
-      return deviceL10n.attendanceOutsideZoneManagerNotice(fallback);
+      // #7652 — ton du message hors-zone paramétré par app/rôle via
+      // AttendanceFeatureConfig (plus de fork employee/manager du provider).
+      final config = _ref.read(attendanceFeatureConfigProvider);
+      return config.outsideZoneManagerTone
+          ? deviceL10n.attendanceOutsideZoneManagerNotice(fallback)
+          : deviceL10n.attendanceOutsideZoneNotice(fallback);
     }
 
     if (!location.hasCoordinates && location.message != null) {
@@ -305,6 +339,21 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
     }
 
     return fallback;
+  }
+
+  List<AttendanceLog> _upsertTodaySession(
+    List<AttendanceLog> sessions,
+    AttendanceLog log,
+  ) {
+    final next = [...sessions];
+    final index = next.indexWhere((item) => item.id == log.id);
+    if (index >= 0) {
+      next[index] = log;
+    } else {
+      next.add(log);
+    }
+    next.sort((a, b) => a.sessionNumber.compareTo(b.sessionNumber));
+    return next;
   }
 }
 
@@ -332,6 +381,25 @@ final monthlySummaryProvider = FutureProvider.family<MonthlySummary, DateTime>((
 ) async {
   final repo = ref.watch(attendanceRepositoryProvider);
   return await repo.getMyMonthlySummary(year: date.year, month: date.month);
+});
+
+final todayTasksProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) async {
+  final repo = ref.watch(attendanceRepositoryProvider);
+  return await repo.getTodayTasks();
+});
+
+/// PA2-ATT-004 - Anomalies detected on the caller's own attendance logs for
+/// the calendar month containing [date]. Non-blocking: repository swallows
+/// network errors and returns an empty report so the day-detail view never
+/// fails to render because of this enrichment.
+final monthlyAnomaliesProvider =
+    FutureProvider.family<AttendanceAnomalyReport, DateTime>((ref, date) async {
+  final repo = ref.watch(attendanceRepositoryProvider);
+  final from = DateTime(date.year, date.month, 1);
+  final to = DateTime(date.year, date.month + 1, 0);
+  return await repo.getMyAnomalies(from: from, to: to);
 });
 
 final managerAttendanceTodayProvider =
