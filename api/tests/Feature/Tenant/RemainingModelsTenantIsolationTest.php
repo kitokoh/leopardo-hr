@@ -184,7 +184,7 @@ class RemainingModelsTenantIsolationTest extends TestCase
 
             $this->assertSame(
                 $this->companyA->id,
-                (string) $record->company_id,
+                (string) $record->getAttribute('company_id'),
                 "{$model} : company_id doit être forcé au tenant courant",
             );
         }
