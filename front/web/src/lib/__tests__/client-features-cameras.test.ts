@@ -31,7 +31,8 @@ describe('client-features cameras (#7425)', () => {
   it('déclare le module avec le mur de caméras comme point d’entrée', () => {
     expect(camerasModule).toBeDefined();
     expect(camerasModule?.href).toBe('/cameras');
-    expect(camerasModule?.group).toBe('general');
+    // #7724 — le module rejoint le groupe visuel « Opérations » de la barre.
+    expect(camerasModule?.group).toBe('operations');
     expect(camerasModule?.featureKeys).toEqual(['cameras']);
     expect(camerasModule?.allowedRoles).toContain('manager');
   });

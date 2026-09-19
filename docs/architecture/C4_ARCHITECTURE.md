@@ -1,15 +1,15 @@
-# Leopardo RH - C4 Architecture
+# Leopardo - C4 Architecture
 
 ## Niveau 1 - Contexte
 
 ```mermaid
 C4Context
-    title Leopardo RH - Contexte systeme
+    title Leopardo - Contexte systeme
     Person(employee, "Employe", "Pointe, consulte ses bulletins et demande des conges")
     Person(manager, "Manager/RH", "Valide, pilote l'equipe et prepare la paie")
     Person(superAdmin, "Super-admin plateforme", "Suit les clients, plans, health et support")
     Person(integrator, "Integrateur partenaire", "Consomme API, webhooks et exports")
-    System(leopardo, "Leopardo RH", "SaaS RH multi-tenant pour PME")
+    System(leopardo, "Leopardo", "Suite metier multi-tenant pour PME")
     System_Ext(openai, "LLM providers", "OpenAI / Claude via LLMClient")
     System_Ext(storage, "Object Storage", "Backups, exports, documents")
     System_Ext(sentry, "Sentry", "Observabilite optionnelle")
@@ -26,7 +26,7 @@ C4Context
 
 ```mermaid
 C4Container
-    title Leopardo RH - Containers
+    title Leopardo - Containers
     Person(user, "Utilisateurs")
     Container(admin, "Admin Dashboard", "Vue 3 / Vite", "Pilotage plateforme et modules admin")
     Container(web, "Web manager", "Laravel Blade / Next selon surface", "Portail manager et vitrine")
@@ -50,7 +50,7 @@ C4Container
 
 ```mermaid
 C4Component
-    title Leopardo RH - Backend Laravel
+    title Leopardo - Backend Laravel
     Container_Boundary(api, "Backend API") {
         Component(routes, "Routes API/Web", "Laravel routes", "Surface v1, modules, docs")
         Component(auth, "Auth + RBAC", "Sanctum / guards / middleware", "Auth employee, super-admin, manager roles")

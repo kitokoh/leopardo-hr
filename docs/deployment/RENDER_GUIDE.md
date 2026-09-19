@@ -1,11 +1,11 @@
 # Render Deployment Guide
 
-Render is our recommended platform for hosting the Leopardo RH API due to its excellent Docker support and seamless scaling.
+Render is our recommended platform for hosting the Leopardo API due to its excellent Docker support and seamless scaling.
 
 ## 📋 Prerequisites
 - A GitHub account.
 - A Neon.tech PostgreSQL database.
-- The Leopardo RH repository forked to your account.
+- The Leopardo repository forked to your account.
 
 ## 🚀 Setup Steps
 

@@ -1,10 +1,10 @@
-# Guide testeurs / pilotes — Leopardo RH
+# Guide testeurs / pilotes — Leopardo
 
 Date : 2026-07-22
 Ticket : PA2-STR-003
 
 Ce guide reunit en un seul endroit tout ce dont a besoin un testeur externe
-ou un client pilote pour explorer Leopardo RH sans avoir a fouiller le repo :
+ou un client pilote pour explorer Leopardo sans avoir a fouiller le repo :
 liens applicatifs reels, comptes de demo, et scenarios de test par persona.
 Il complete (sans les dupliquer) :
 
@@ -81,7 +81,7 @@ identifiants.
 ## 4. Kiosk biometrique (borne d'entree)
 
 Le kiosk (`front/zkteco-kiosk`) est une page HTML/JS statique sans backend
-propre : elle appelle directement l'API Leopardo RH. Pour la tester sans
+propre : elle appelle directement l'API Leopardo. Pour la tester sans
 materiel biometrique physique :
 
 1. Ouvrir `front/zkteco-kiosk/index.html` dans un navigateur (double-clic ou
