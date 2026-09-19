@@ -23,15 +23,22 @@ import type { StoredAuthUser } from '@/lib/i18n';
  *    manquait complètement — `/travel/portal` existait sans entrée de menu).
  */
 describe('client-features — navigation par métier (#7225)', () => {
-  const BUSINESS_KEYS = ['restaurant', 'restaurant_kitchen', 'edu_manager', 'travel', 'fuel'];
+  const BUSINESS_KEYS = ['restaurant', 'restaurant_kitchen', 'edu_manager', 'travel', 'travel_portal', 'fuel'];
 
   it('déclare la verticale Agence de voyage (absente avant #7225)', () => {
     const travel = CLIENT_MODULES.find((m) => m.key === 'travel');
     expect(travel).toBeDefined();
-    expect(travel?.href).toBe('/travel/portal');
+    // BC-24 (#7633) — l'entrée principale pointe sur le hub GÉRANT /travel ;
+    // le portail voyageur reste accessible via la sous-entrée travel_portal.
+    expect(travel?.href).toBe('/travel');
     expect(travel?.featureKeys).toContain('travelagency');
     expect(travel?.scope).toBe('business');
     expect(travel?.vertical).toBe('travel');
+
+    const portal = CLIENT_MODULES.find((m) => m.key === 'travel_portal');
+    expect(portal?.href).toBe('/travel/portal');
+    expect(portal?.featureKeys).toContain('travelagency');
+    expect(portal?.vertical).toBe('travel');
   });
 
   it('marque tous les modules métier comme business + verticale', () => {
@@ -42,13 +49,16 @@ describe('client-features — navigation par métier (#7225)', () => {
     }
   });
 
-  it('route /travel/portal vers le module travel', () => {
+  it('route /travel/portal vers le module travel_portal (BC-24 #7633)', () => {
     const user: StoredAuthUser = {
       role: 'manager',
       manager_role: 'principal',
       features: { travelagency: true },
     };
-    expect(getModuleAccessForPath('/travel/portal', user)?.key).toBe('travel');
+    expect(getModuleAccessForPath('/travel/portal', user)?.key).toBe('travel_portal');
+    // Le hub gérant et ses sous-pages résolvent vers le module travel.
+    expect(getModuleAccessForPath('/travel', user)?.key).toBe('travel');
+    expect(getModuleAccessForPath('/travel/bookings', user)?.key).toBe('travel');
   });
 
   it('une agence de voyage voit SON métier, pas celui des autres', () => {

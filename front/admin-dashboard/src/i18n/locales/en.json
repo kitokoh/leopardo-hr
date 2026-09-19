@@ -5268,7 +5268,19 @@
       "subtitle": "Manage the TravelAgency vertical: network, sales, ticketing and monitoring.",
       "flagActive": "Module active",
       "flowTitle": "Business flow",
-      "flowBody": "Referential & network → trip scheduling → publication → counter sales → ticketing & check-in → reports."
+      "flowBody": "Referential & network → trip scheduling → publication → counter sales → ticketing & check-in → reports.",
+      "kpisToday": "Today's activity",
+      "kpiRevenue": "Net revenue",
+      "kpiTrips": "Today's trips",
+      "open": "Open",
+      "network": "Network",
+      "networkDesc": "Stations, offices, routes and ordered stops.",
+      "trips": "Trips",
+      "tripsDesc": "Scheduling, class fares, publishing and manifest.",
+      "bookingsDesc": "Counter sales, confirmation, cancellation, refund and tickets.",
+      "reportsDesc": "Sales, occupancy, revenue, cancellations and CSV exports.",
+      "portal": "Traveller portal",
+      "portalDesc": "Customer-facing trip search and booking."
     },
     "referential": {
       "title": "Referential",
@@ -5321,7 +5333,7 @@
     },
     "bookings": {
       "title": "Bookings",
-      "subtitle": "Counter sales, confirmation, cancellation, refund and tickets.",
+      "subtitle": "Counter bookings: confirmation, cancellation, refund and tickets.",
       "reference": "Reference",
       "referencePlaceholder": "e.g. GV-2026-0001…",
       "detail": "Details",
@@ -5332,7 +5344,7 @@
       "detailTitle": "Booking",
       "paymentStatus": "Payment",
       "trip": "Trip",
-      "source": "Source",
+      "source": "Channel",
       "passengerCount": "Passengers",
       "total": "Total",
       "passengers": "Passengers",
@@ -5356,7 +5368,9 @@
       "cancelReasonTitle": "Cancellation reason",
       "refundReasonTitle": "Refund reason",
       "reason": "Reason",
-      "reasonRequired": "Reason is required."
+      "reasonRequired": "Reason is required.",
+      "refundPassenger": "Refund passenger",
+      "contact": "Contact"
     },
     "checkin": {
       "title": "Check-in & manifest",
@@ -5396,7 +5410,7 @@
     },
     "reports": {
       "title": "Reports",
-      "subtitle": "Sales, occupancy, revenue, cancellations and CSV exports.",
+      "subtitle": "Sales, occupancy, revenue and cancellations over a period, with async CSV export.",
       "from": "From",
       "to": "To",
       "apply": "Apply",
@@ -5422,7 +5436,7 @@
       "cancellationsRate": "Rate",
       "cancellationsTotal": "Final bookings",
       "byReason": "By reason",
-      "bySource": "By source",
+      "bySource": "By channel",
       "count": "Count",
       "tabsLabel": "Reports",
       "sales": "Sales",
@@ -5431,7 +5445,14 @@
       "cancellations": "Cancellations",
       "exportCsv": "Export CSV",
       "empty": "No data for the period.",
-      "exportError": "Export failed."
+      "exportError": "Export failed.",
+      "byStatus": "By status",
+      "seatsSold": "Seats sold",
+      "occupancyRate": "Occupancy rate",
+      "confirmedAmount": "Collected",
+      "refundedAmount": "Refunded",
+      "exportPending": "Export in progress…",
+      "download": "Download CSV"
     },
     "catalog": {
       "title": "Title",
@@ -5537,9 +5558,10 @@
       "unknown": "Unknown"
     },
     "bookingSource": {
-      "office": "Counter",
+      "office": "Office",
       "phone": "Phone",
-      "online": "Online"
+      "online": "Online",
+      "partner": "Partner"
     },
     "ageCategory": {
       "infant": "Infant",
@@ -5702,7 +5724,8 @@
     "status": {
       "active": "Active",
       "inactive": "Inactive",
-      "archived": "Archived"
+      "archived": "Archived",
+      "disabled": "Disabled"
     },
     "carrierType": {
       "bus": "Bus / coach",
@@ -5719,12 +5742,18 @@
     "routes": {
       "title": "Routes & itineraries",
       "subtitle": "City-to-city routes, ordered stops and stopovers.",
-      "stopsTitle": "Route stops"
+      "stopsTitle": "Route stops",
+      "stops": "Stops",
+      "addStop": "Add a stop"
     },
     "trips": {
       "title": "Scheduled trips",
       "subtitle": "Planned departures, class prices, publication.",
-      "pricesTitle": "Prices per class"
+      "pricesTitle": "Prices per class",
+      "prices": "Prices",
+      "manifest": "Manifest",
+      "manifestTitle": "Passenger manifest",
+      "cancelReasonTitle": "Trip cancellation reason"
     },
     "rentals": {
       "vehicles": "Rental vehicles",
@@ -5748,7 +5777,8 @@
       "ticketsIssued": "Tickets issued.",
       "checkedIn": "Passenger checked in.",
       "ticketRevoked": "Ticket revoked.",
-      "exported": "CSV export downloaded."
+      "exported": "CSV export downloaded.",
+      "tripCancelled": "Trip cancelled."
     },
     "error": {
       "loadFailed": "Unable to load data.",
@@ -5759,7 +5789,11 @@
     "confirm": {
       "deleteMessage": "Permanently delete this item?",
       "cancelTrip": "Cancel this trip? Bookings will be processed according to business rules.",
-      "cancelRental": "Cancel this rental booking?"
+      "cancelRental": "Cancel this rental booking?",
+      "publishTrip": "Publish this trip? It will become available for sale.",
+      "confirmBooking": "Confirm this booking? The payment will be marked as received.",
+      "issueTickets": "Issue the tickets for this booking?",
+      "revokeTicket": "Revoke this ticket? The PDF will be invalidated."
     },
     "table": {
       "actions": "Actions",
@@ -5767,7 +5801,9 @@
     },
     "form": {
       "selectPlaceholder": "— Select —",
-      "moneyMinor": "Amount in currency (1 = 100 minor)"
+      "moneyMinor": "Amount in currency (1 = 100 minor)",
+      "required": "This field is required.",
+      "saving": "Saving…"
     },
     "quiz": {
       "title": "Quizzes & contests",

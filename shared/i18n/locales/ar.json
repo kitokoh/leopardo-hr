@@ -4838,7 +4838,8 @@
     "status": {
       "active": "نشط",
       "inactive": "غير نشط",
-      "archived": "مؤرشف"
+      "archived": "مؤرشف",
+      "disabled": "معطّل"
     },
     "carrierType": {
       "bus": "حافلة",
@@ -4855,20 +4856,23 @@
     "tripStatus": {
       "draft": "مسودة",
       "published": "منشور",
-      "cancelled": "ملغى"
+      "cancelled": "ملغى",
+      "scheduled": "مجدولة"
     },
     "bookingStatus": {
       "pending": "قيد الانتظار",
       "confirmed": "مؤكد",
       "cancelled": "ملغى",
       "refunded": "مسترجع",
-      "expired": "منتهي الصلاحية"
+      "expired": "منتهي الصلاحية",
+      "completed": "مكتملة"
     },
     "paymentStatus": {
       "pending": "قيد الانتظار",
       "paid": "مدفوع",
       "failed": "فشل",
-      "refunded": "مسترجع"
+      "refunded": "مسترجع",
+      "confirmed": "مؤكد"
     },
     "ticketStatus": {
       "issued": "صادر",
@@ -4879,12 +4883,18 @@
     "routes": {
       "title": "الخطوط والمسارات",
       "subtitle": "خطوط بين المدن مع محطات مرتبة.",
-      "stopsTitle": "محطات الخط"
+      "stopsTitle": "محطات الخط",
+      "stops": "المحطات",
+      "addStop": "إضافة محطة"
     },
     "trips": {
       "title": "الرحلات المجدولة",
       "subtitle": "مواعيد الانطلاق والأسعار حسب الدرجة والنشر.",
-      "pricesTitle": "الأسعار حسب الدرجة"
+      "pricesTitle": "الأسعار حسب الدرجة",
+      "prices": "الأسعار",
+      "manifest": "البيان",
+      "manifestTitle": "بيان الركاب",
+      "cancelReasonTitle": "سبب إلغاء الرحلة"
     },
     "bookings": {
       "title": "الحجوزات",
@@ -4902,7 +4912,11 @@
       "cancelReasonTitle": "سبب الإلغاء",
       "refundReasonTitle": "سبب الاسترداد",
       "reason": "السبب",
-      "reasonRequired": "السبب إلزامي."
+      "reasonRequired": "السبب إلزامي.",
+      "subtitle": "حجوزات الشباك: التأكيد والإلغاء والاسترداد والتذاكر.",
+      "refundPassenger": "استرداد للراكب",
+      "contact": "جهة الاتصال",
+      "source": "القناة"
     },
     "checkin": {
       "selectTrip": "اختر رحلة",
@@ -4935,7 +4949,16 @@
       "cancellations": "الإلغاءات",
       "exportCsv": "تصدير CSV",
       "empty": "لا بيانات للفترة.",
-      "exportError": "فشل التصدير."
+      "exportError": "فشل التصدير.",
+      "subtitle": "المبيعات والإشغال والإيرادات والإلغاءات خلال فترة، مع تصدير CSV غير متزامن.",
+      "bySource": "حسب القناة",
+      "byStatus": "حسب الحالة",
+      "seatsSold": "المقاعد المباعة",
+      "occupancyRate": "معدل الإشغال",
+      "confirmedAmount": "المحصَّل",
+      "refundedAmount": "المستردّ",
+      "exportPending": "جارٍ التصدير…",
+      "download": "تنزيل CSV"
     },
     "rentals": {
       "vehicles": "مركبات الإيجار",
@@ -4959,7 +4982,8 @@
       "ticketsIssued": "تم إصدار التذاكر.",
       "checkedIn": "تم صعود الراكب.",
       "ticketRevoked": "تم إلغاء التذكرة.",
-      "exported": "تم تنزيل تصدير CSV."
+      "exported": "تم تنزيل تصدير CSV.",
+      "tripCancelled": "تم إلغاء الرحلة."
     },
     "error": {
       "loadFailed": "تعذّر تحميل البيانات.",
@@ -4970,7 +4994,11 @@
     "confirm": {
       "deleteMessage": "حذف هذا العنصر نهائيًا؟",
       "cancelTrip": "إلغاء هذه الرحلة؟ ستُعالج الحجوزات وفق القواعد.",
-      "cancelRental": "إلغاء حجز الإيجار هذا؟"
+      "cancelRental": "إلغاء حجز الإيجار هذا؟",
+      "publishTrip": "هل تريد نشر هذه الرحلة؟ ستصبح متاحة للبيع.",
+      "confirmBooking": "هل تريد تأكيد هذا الحجز؟ سيتم تسجيل الدفع كمُحصَّل.",
+      "issueTickets": "هل تريد إصدار تذاكر هذا الحجز؟",
+      "revokeTicket": "هل تريد إبطال هذه التذكرة؟ سيتم إلغاء ملف PDF."
     },
     "table": {
       "actions": "إجراءات",
@@ -4978,7 +5006,9 @@
     },
     "form": {
       "selectPlaceholder": "— اختر —",
-      "moneyMinor": "المبلغ بالعملة (1 = 100 وحدة صغيرة)"
+      "moneyMinor": "المبلغ بالعملة (1 = 100 وحدة صغيرة)",
+      "required": "هذا الحقل إلزامي.",
+      "saving": "جارٍ الحفظ…"
     },
     "quiz": {
       "title": "الاختبارات والمسابقات",
@@ -5111,6 +5141,31 @@
       "consent": "أوافق على التواصل معي عبر البريد الإلكتروني بشأن طلبي.",
       "sending": "جارٍ الإرسال…",
       "send": "إرسال الطلب"
+    },
+    "home": {
+      "kpisToday": "نشاط اليوم",
+      "kpiRevenue": "صافي الإيرادات",
+      "kpiTrips": "رحلات اليوم",
+      "open": "فتح",
+      "network": "الشبكة",
+      "networkDesc": "المحطات والمكاتب والخطوط والمحطات المرتبة.",
+      "trips": "الرحلات",
+      "tripsDesc": "الجدولة وتعرفة الدرجات والنشر وبيان الركاب.",
+      "bookingsDesc": "مبيعات الشباك والتأكيد والإلغاء والاسترداد والتذاكر.",
+      "reportsDesc": "المبيعات والإشغال والإيرادات والإلغاءات وتصدير CSV.",
+      "portal": "بوابة المسافر",
+      "portalDesc": "بحث الرحلات والحجز من جهة العميل."
+    },
+    "ageCategory": {
+      "infant": "رضيع",
+      "child": "طفل",
+      "adult": "بالغ"
+    },
+    "bookingSource": {
+      "online": "عبر الإنترنت",
+      "office": "الشباك",
+      "phone": "الهاتف",
+      "partner": "شريك"
     }
   },
   "travelPortal": {

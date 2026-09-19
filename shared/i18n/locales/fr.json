@@ -4838,7 +4838,8 @@
     "status": {
       "active": "Actif",
       "inactive": "Inactif",
-      "archived": "Archivé"
+      "archived": "Archivé",
+      "disabled": "Désactivé"
     },
     "carrierType": {
       "bus": "Bus / autocar",
@@ -4855,20 +4856,23 @@
     "tripStatus": {
       "draft": "Brouillon",
       "published": "Publié",
-      "cancelled": "Annulé"
+      "cancelled": "Annulé",
+      "scheduled": "Planifié"
     },
     "bookingStatus": {
       "pending": "En attente",
       "confirmed": "Confirmée",
       "cancelled": "Annulée",
       "refunded": "Remboursée",
-      "expired": "Expirée"
+      "expired": "Expirée",
+      "completed": "Terminée"
     },
     "paymentStatus": {
       "pending": "En attente",
       "paid": "Payé",
       "failed": "Échoué",
-      "refunded": "Remboursé"
+      "refunded": "Remboursé",
+      "confirmed": "Confirmé"
     },
     "ticketStatus": {
       "issued": "Émis",
@@ -4879,12 +4883,18 @@
     "routes": {
       "title": "Lignes & itinéraires",
       "subtitle": "Lignes ville-à-ville, étapes ordonnées et escales.",
-      "stopsTitle": "Étapes de la ligne"
+      "stopsTitle": "Étapes de la ligne",
+      "stops": "Étapes",
+      "addStop": "Ajouter une étape"
     },
     "trips": {
       "title": "Trajets datés",
       "subtitle": "Départs planifiés, tarifs par classe, publication.",
-      "pricesTitle": "Tarifs par classe"
+      "pricesTitle": "Tarifs par classe",
+      "prices": "Tarifs",
+      "manifest": "Manifeste",
+      "manifestTitle": "Manifeste des passagers",
+      "cancelReasonTitle": "Motif d'annulation du trajet"
     },
     "bookings": {
       "title": "Réservations",
@@ -4902,7 +4912,11 @@
       "cancelReasonTitle": "Motif d'annulation",
       "refundReasonTitle": "Motif de remboursement",
       "reason": "Motif",
-      "reasonRequired": "Le motif est obligatoire."
+      "reasonRequired": "Le motif est obligatoire.",
+      "subtitle": "Réservations guichet : confirmation, annulation, remboursement et billets.",
+      "refundPassenger": "Rembourser le passager",
+      "contact": "Contact",
+      "source": "Canal"
     },
     "checkin": {
       "selectTrip": "Sélectionner un trajet",
@@ -4935,7 +4949,16 @@
       "cancellations": "Annulations",
       "exportCsv": "Exporter CSV",
       "empty": "Aucune donnée sur la période.",
-      "exportError": "Export impossible."
+      "exportError": "Export impossible.",
+      "subtitle": "Ventes, occupation, recettes et annulations sur période, export CSV asynchrone.",
+      "bySource": "Par canal",
+      "byStatus": "Par statut",
+      "seatsSold": "Places vendues",
+      "occupancyRate": "Taux d'occupation",
+      "confirmedAmount": "Encaissé",
+      "refundedAmount": "Remboursé",
+      "exportPending": "Export en cours…",
+      "download": "Télécharger le CSV"
     },
     "rentals": {
       "vehicles": "Véhicules de location",
@@ -4959,7 +4982,8 @@
       "ticketsIssued": "Billets émis.",
       "checkedIn": "Passager embarqué.",
       "ticketRevoked": "Billet révoqué.",
-      "exported": "Export CSV téléchargé."
+      "exported": "Export CSV téléchargé.",
+      "tripCancelled": "Trajet annulé."
     },
     "error": {
       "loadFailed": "Impossible de charger les données.",
@@ -4970,7 +4994,11 @@
     "confirm": {
       "deleteMessage": "Supprimer définitivement cet élément ?",
       "cancelTrip": "Annuler ce trajet ? Les réservations seront traitées selon les règles métier.",
-      "cancelRental": "Annuler cette réservation de location ?"
+      "cancelRental": "Annuler cette réservation de location ?",
+      "publishTrip": "Publier ce trajet ? Il deviendra visible à la vente.",
+      "confirmBooking": "Confirmer cette réservation ? Le paiement sera marqué comme encaissé.",
+      "issueTickets": "Émettre les billets de cette réservation ?",
+      "revokeTicket": "Révoquer ce billet ? Le PDF sera invalidé."
     },
     "table": {
       "actions": "Actions",
@@ -4978,7 +5006,9 @@
     },
     "form": {
       "selectPlaceholder": "— Sélectionner —",
-      "moneyMinor": "Montant en devises (1 = 100 minor)"
+      "moneyMinor": "Montant en devises (1 = 100 minor)",
+      "required": "Ce champ est obligatoire.",
+      "saving": "Enregistrement…"
     },
     "quiz": {
       "title": "Quiz & jeux-concours",
@@ -5111,6 +5141,31 @@
       "consent": "J'accepte d'être contacté(e) par email au sujet de ma demande.",
       "sending": "Envoi…",
       "send": "Envoyer la demande"
+    },
+    "home": {
+      "kpisToday": "Activité du jour",
+      "kpiRevenue": "Recette nette",
+      "kpiTrips": "Trajets du jour",
+      "open": "Ouvrir",
+      "network": "Réseau",
+      "networkDesc": "Gares, bureaux, lignes et arrêts ordonnés.",
+      "trips": "Voyages",
+      "tripsDesc": "Programmation, tarifs par classe, publication et manifeste.",
+      "bookingsDesc": "Ventes au guichet, confirmation, annulation, remboursement et billets.",
+      "reportsDesc": "Ventes, occupation, recettes, annulations et exports CSV.",
+      "portal": "Portail voyageur",
+      "portalDesc": "Recherche de trajets et réservation côté client."
+    },
+    "ageCategory": {
+      "infant": "Bébé",
+      "child": "Enfant",
+      "adult": "Adulte"
+    },
+    "bookingSource": {
+      "online": "En ligne",
+      "office": "Guichet",
+      "phone": "Téléphone",
+      "partner": "Partenaire"
     }
   },
   "travelPortal": {

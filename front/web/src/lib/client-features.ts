@@ -19,6 +19,7 @@ export type ClientModuleKey =
   | 'restaurant_kitchen'
   | 'edu_manager'
   | 'travel'
+  | 'travel_portal'
   | 'fuel'
   | 'fleet'
   | 'cameras'
@@ -280,15 +281,31 @@ export const CLIENT_MODULES: ClientModule[] = [
   // navigation : un manager d'agence de voyage n'avait aucun point d'entrée
   // métier dans le menu. Feature flag tenant `travelagency`
   // (TravelAgencyManifest::code(), ActivateTravelAgencyAction).
+  // BC-24 (#7633) — l'entrée pointe désormais sur le hub GÉRANT `/travel`
+  // (KPIs + réseau, voyages, réservations, rapports) ; le portail voyageur
+  // devient une sous-entrée dédiée `travel_portal` (même pattern que
+  // restaurant/restaurant_kitchen, même gating feature flag tenant).
   {
     key: 'travel',
-    href: '/travel/portal',
+    href: '/travel',
     label: 'Agence de voyage',
     group: 'general',
     capabilityKeys: ['travelagency', 'travel', 'can_view_travel', 'can_manage_travel'],
     featureKeys: ['travelagency', 'travel_agency'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
     upgradeLabel: 'Agence de voyage (ventes, réservations, check-in)',
+    scope: 'business',
+    vertical: 'travel',
+  },
+  {
+    key: 'travel_portal',
+    href: '/travel/portal',
+    label: 'Portail voyageur',
+    group: 'general',
+    capabilityKeys: ['travelagency', 'travel', 'can_view_travel', 'can_manage_travel'],
+    featureKeys: ['travelagency', 'travel_agency'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Portail voyageur (recherche de trajets, réservation)',
     scope: 'business',
     vertical: 'travel',
   },
@@ -439,7 +456,12 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/restaurant/pos': 'restaurant',
   '/restaurant/kitchen': 'restaurant_kitchen',
   '/travel': 'travel',
-  '/travel/portal': 'travel',
+  // BC-24 (#7633) — sous-routes de l'espace gérant travel (hub + pages A2–A5).
+  '/travel/network': 'travel',
+  '/travel/trips': 'travel',
+  '/travel/bookings': 'travel',
+  '/travel/reports': 'travel',
+  '/travel/portal': 'travel_portal',
   '/fuel': 'fuel',
   '/fuel/pump': 'fuel',
   '/fleet': 'fleet',
