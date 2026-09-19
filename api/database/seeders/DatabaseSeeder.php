@@ -71,7 +71,7 @@ class DatabaseSeeder extends Seeder
         $this->command->info('  1. Configurer Nginx (nginx-api.conf)');
         $this->command->info('  2. Configurer Supervisor (leopardo-horizon.supervisor.conf)');
         $this->command->info('  3. php artisan horizon:start');
-        $this->command->info('  4. Tester : GET /api/health');
+        $this->command->info('  4. Tester : GET /api/v1/health');
 
         // En environnement local : proposer les données de démo
         if (app()->environment('local', 'development')) {
