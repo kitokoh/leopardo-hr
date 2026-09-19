@@ -129,7 +129,7 @@ final class CampaignService
         if ($campaign->channel === 'email'
             && (($campaign->subject ?? '') === '' || ($campaign->body ?? '') === '')) {
             throw ValidationException::withMessages([
-                'campaign' => 'Une campagne email requiert un sujet et un corps de message avant de démarrer.',
+                'campaign' => __('crm.campaigns.email_requires_subject_body'),
             ]);
         }
 

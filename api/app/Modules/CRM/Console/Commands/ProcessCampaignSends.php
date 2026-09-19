@@ -31,14 +31,26 @@ use Throwable;
  */
 class ProcessCampaignSends extends Command
 {
-    protected $signature = 'crm:process-campaign-sends {--limit=20 : Nombre maximum de campagnes traitées par exécution}';
+    protected $signature = 'crm:process-campaign-sends {--limit=20 : Maximum number of campaigns processed per run}';
 
-    protected $description = 'Démarre les campagnes email planifiées dues et draine les envois pending des campagnes running';
+    /**
+     * PA2-I18N-007 — `$description` est une expression constante : le libellé
+     * traduit est posé dans le constructeur (catalogue api/lang, clé
+     * crm.console.process_sends_description) au lieu d'un littéral accentué.
+     */
+    protected $description = 'crm.console.process_sends_description';
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->description = __('crm.console.process_sends_description');
+    }
 
     public function handle(): int
     {
         if (! Schema::hasTable('crm_campaigns')) {
-            $this->info('crm:process-campaign-sends — tables campagnes absentes, rien à faire.');
+            $this->info(__('crm.console.process_sends_tables_missing'));
 
             return self::SUCCESS;
         }
@@ -80,7 +92,7 @@ class ProcessCampaignSends extends Command
             } catch (Throwable $e) {
                 $failed++;
 
-                Log::error('crm:process-campaign-sends — échec de dispatch', [
+                Log::error('crm:process-campaign-sends — dispatch failed', [
                     'campaign_id' => $campaign->id,
                     'company_id' => $campaign->company_id,
                     'error' => $e->getMessage(),
@@ -88,7 +100,12 @@ class ProcessCampaignSends extends Command
             }
         }
 
-        $this->info("crm:process-campaign-sends — dues: {$due->count()}, running: {$running->count()}, dispatchés: {$dispatched}, échecs: {$failed}.");
+        $this->info(__('crm.console.process_sends_summary', [
+            'due' => $due->count(),
+            'running' => $running->count(),
+            'dispatched' => $dispatched,
+            'failed' => $failed,
+        ]));
 
         return self::SUCCESS;
     }

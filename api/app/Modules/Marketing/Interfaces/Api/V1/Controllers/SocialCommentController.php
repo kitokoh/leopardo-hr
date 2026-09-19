@@ -128,7 +128,7 @@ class SocialCommentController extends Controller
 
         $tone = $request->filled('tone') ? $request->string('tone')->toString() : 'courtois et professionnel';
         $locale = $request->filled('locale') ? $request->string('locale')->toString() : 'fr';
-        $platform = $request->filled('platform') ? $request->string('platform')->toString() : 'réseau social';
+        $platform = $request->filled('platform') ? $request->string('platform')->toString() : __('marketing.social.default_platform');
 
         try {
             $suggestion = $this->ai->suggestReply(
@@ -140,7 +140,7 @@ class SocialCommentController extends Controller
         } catch (Throwable) {
             return new JsonResponse([
                 'error' => 'MARKETING_AI_UNAVAILABLE',
-                'message' => 'La suggestion IA est indisponible pour le moment. Réessayez plus tard.',
+                'message' => __('marketing.ai.suggestion_unavailable'),
             ], 503);
         }
 
@@ -185,7 +185,7 @@ class SocialCommentController extends Controller
     {
         return new JsonResponse([
             'error' => 'SOCIAL_POST_NOT_PUBLISHED',
-            'message' => 'Les interactions ne sont disponibles que pour un post publié (référence agrégateur requise).',
+            'message' => __('marketing.social.interactions_published_only'),
         ], 409);
     }
 }

@@ -53,7 +53,7 @@ class MarketingAiController extends Controller
         } catch (Throwable) {
             return new JsonResponse([
                 'error' => 'MARKETING_AI_UNAVAILABLE',
-                'message' => 'La suggestion IA est indisponible pour le moment. Réessayez plus tard.',
+                'message' => __('marketing.ai.suggestion_unavailable'),
             ], 503);
         }
 
