@@ -6,9 +6,15 @@ namespace App\Modules\Communication\Infrastructure\Services;
 
 use App\Modules\Communication\Domain\Exceptions\GmailRateLimitedException;
 use App\Modules\Communication\Domain\Exceptions\GmailSyncAuthException;
+use App\Modules\Communication\Domain\Models\CommunicationFollowUpLog;
+use App\Modules\Communication\Domain\Models\CommunicationFollowUpRule;
 use App\Modules\Communication\Domain\Models\CommunicationIntegration;
 use App\Modules\Communication\Domain\Models\CommunicationMessage;
+use App\Modules\Communication\Domain\Models\CommunicationPendingReply;
+use App\Modules\Communication\Domain\Models\CommunicationReplyLog;
+use App\Modules\Communication\Domain\Models\CommunicationReplyPolicy;
 use App\Modules\Communication\Domain\Models\CommunicationThread;
+use App\Modules\Communication\Infrastructure\Jobs\ClassifyCommunicationMessageJob;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -61,9 +67,7 @@ class GoogleGmailSyncService
      */
     public const DEFAULT_RETRY_AFTER_SECONDS = 60;
 
-    public function __construct(private readonly GoogleGmailOAuthService $oauth)
-    {
-    }
+    public function __construct(private readonly GoogleGmailOAuthService $oauth) {}
 
     /**
      * Passe de synchronisation d'UNE boite. Leve GmailRateLimitedException
@@ -106,6 +110,40 @@ class GoogleGmailSyncService
      */
     public function purge(CommunicationIntegration $integration): void
     {
+        // R4 (#7689) — droit a l'effacement etendu aux relances : echeances,
+        // regles (FK cascade) et journal d'audit de la boite.
+        CommunicationFollowUpLog::query()
+            ->withoutGlobalScopes()
+            ->where('company_id', $integration->company_id)
+            ->where('integration_id', $integration->id)
+            ->delete();
+
+        // R5 (#7690) — idem pour les reponses assistees : journal d'audit,
+        // file Pending (contenus generes chiffres) et politiques de la boite.
+        CommunicationReplyLog::query()
+            ->withoutGlobalScopes()
+            ->where('company_id', $integration->company_id)
+            ->where('integration_id', $integration->id)
+            ->delete();
+
+        CommunicationPendingReply::query()
+            ->withoutGlobalScopes()
+            ->where('company_id', $integration->company_id)
+            ->where('integration_id', $integration->id)
+            ->delete();
+
+        CommunicationReplyPolicy::query()
+            ->withoutGlobalScopes()
+            ->where('company_id', $integration->company_id)
+            ->where('integration_id', $integration->id)
+            ->delete();
+
+        CommunicationFollowUpRule::query()
+            ->withoutGlobalScopes()
+            ->where('company_id', $integration->company_id)
+            ->where('integration_id', $integration->id)
+            ->delete();
+
         CommunicationMessage::query()
             ->withoutGlobalScopes()
             ->where('company_id', $integration->company_id)
@@ -407,9 +445,30 @@ class GoogleGmailSyncService
             )),
             'attachment_refs' => $this->extractAttachmentRefs($part),
             'sent_at' => $sentAt,
+            // R4 (#7689) — garde-fous relances : seuls des BOOLEENS sont
+            // persistes, les headers Auto-Submitted / List-Id eux-memes ne
+            // sont jamais stockes (minimisation R2 conservee).
+            'is_auto_reply' => isset($headers['auto-submitted'])
+                && mb_strtolower(trim($headers['auto-submitted'])) !== 'no',
+            'is_list_message' => isset($headers['list-id']),
         ]);
 
         $message->save();
+
+        // R3 (#7688) — « messages classés à la sync » : chaque message
+        // nouvellement ingéré (ou re-syncé avant classification) part en
+        // classification IA sur la queue `communication`. Idempotent : un
+        // message déjà classifié n'est pas re-dispatché. NB : sur une ligne
+        // fraîchement insérée, l'attribut vaut null en mémoire (défaut
+        // `pending` posé par la base) — null est donc traité comme pending.
+        $status = $message->classification_status ?? CommunicationMessage::CLASSIFICATION_PENDING;
+
+        if ($status === CommunicationMessage::CLASSIFICATION_PENDING) {
+            ClassifyCommunicationMessageJob::dispatch(
+                (string) $integration->company_id,
+                (string) $message->id,
+            );
+        }
 
         return $message;
     }
@@ -476,7 +535,7 @@ class GoogleGmailSyncService
      */
     private function headerMap(array $part): array
     {
-        $wanted = ['from', 'to', 'cc', 'subject', 'message-id', 'in-reply-to'];
+        $wanted = ['from', 'to', 'cc', 'subject', 'message-id', 'in-reply-to', 'auto-submitted', 'list-id'];
         $map = [];
 
         /** @var list<array<string, mixed>> $headers */

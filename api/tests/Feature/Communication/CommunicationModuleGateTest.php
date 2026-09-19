@@ -91,12 +91,12 @@ class CommunicationModuleGateTest extends TestCase
             ->assertJsonPath('data.module', 'communication')
             ->assertJsonPath('data.enabled', true)
             ->assertJsonPath('data.status', 'active')
-            ->assertJsonPath('data.stage', 'R2')
+            ->assertJsonPath('data.stage', 'R5')
             ->assertJsonPath('data.capabilities.integrations', true)
             ->assertJsonPath('data.capabilities.sync', true)
-            ->assertJsonPath('data.capabilities.classification', false)
-            ->assertJsonPath('data.capabilities.follow_ups', false)
-            ->assertJsonPath('data.capabilities.replies', false);
+            ->assertJsonPath('data.capabilities.classification', true)
+            ->assertJsonPath('data.capabilities.follow_ups', true)
+            ->assertJsonPath('data.capabilities.replies', true);
     }
 
     public function test_gate_is_evaluated_per_tenant(): void

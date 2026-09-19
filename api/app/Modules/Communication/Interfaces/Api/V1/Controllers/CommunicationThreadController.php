@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\Communication\Domain\Models\CommunicationMessage;
 use App\Modules\Communication\Domain\Models\CommunicationThread;
+use App\Modules\Communication\Interfaces\Api\V1\Controllers\Concerns\AssertsTenantScope;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -22,6 +23,8 @@ use Illuminate\Http\Request;
  */
 class CommunicationThreadController extends Controller
 {
+    use AssertsTenantScope;
+
     /**
      * Fils des boites de l'employe courant, du plus recent au plus ancien
      * (les « 50 derniers fils » de l'acceptation tiennent sur la premiere
@@ -63,8 +66,11 @@ class CommunicationThreadController extends Controller
      * chronologiquement. Seul endpoint qui expose le corps (text/plain
      * borne, dechiffre a la lecture).
      */
-    public function messages(CommunicationThread $thread): JsonResponse
+    public function messages(Request $request, CommunicationThread $thread): JsonResponse
     {
+        // Binding implicite resolu avant le middleware tenant : garde 404
+        // explicite (un fil d'un autre tenant n'existe pas pour l'appelant).
+        $this->assertTenantScope($request, $thread);
         $this->authorize('view', $thread);
 
         $messages = $thread->messages()
@@ -115,6 +121,16 @@ class CommunicationThreadController extends Controller
             'labels' => $message->labels ?? [],
             'attachment_refs' => $message->attachment_refs ?? [],
             'sent_at' => $message->sent_at?->toIso8601String(),
+            // R3 (#7688) — classification IA + liaison CRM.
+            'ai_category' => $message->ai_category,
+            'ai_language' => $message->ai_language,
+            'ai_sentiment' => $message->ai_sentiment,
+            'ai_action' => $message->ai_action,
+            'ai_confidence' => $message->ai_confidence,
+            'classification_status' => $message->classification_status,
+            'classified_at' => $message->classified_at?->toIso8601String(),
+            'crm_contact_id' => $message->crm_contact_id,
+            'contact_link_status' => $message->contact_link_status,
         ];
     }
 }

@@ -26,6 +26,11 @@ use Illuminate\Support\Carbon;
  *
  * `company_id` hors `$fillable` (#7646).
  *
+ * CLASSIFICATION IA (R3 #7688) : sortie structuree du tool `email_classify`
+ * VALIDEE contre la taxonomie du tenant avant persistance (jamais de texte
+ * libre du LLM) ; `crm_contact_id` pose par correspondance d'email via le
+ * contrat partage `App\Shared\Contracts\Crm\EmailContactDirectory`.
+ *
  * @property string $id
  * @property string $company_id
  * @property string $thread_id
@@ -42,6 +47,18 @@ use Illuminate\Support\Carbon;
  * @property array<int, string>|null $labels
  * @property array<int, array<string, mixed>>|null $attachment_refs
  * @property Carbon|null $sent_at
+ * @property string|null $ai_category
+ * @property string|null $ai_language
+ * @property string|null $ai_sentiment
+ * @property string|null $ai_action
+ * @property int|null $ai_confidence
+ * @property string $classification_status
+ * @property string|null $classification_error
+ * @property Carbon|null $classified_at
+ * @property int|null $crm_contact_id
+ * @property string|null $contact_link_status
+ * @property bool $is_auto_reply
+ * @property bool $is_list_message
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
@@ -58,6 +75,18 @@ class CommunicationMessage extends Model
      * reste accessible chez Gmail via `gmail_message_id`.
      */
     public const BODY_MAX_BYTES = 65536;
+
+    public const CLASSIFICATION_PENDING = 'pending';
+
+    public const CLASSIFICATION_CLASSIFIED = 'classified';
+
+    public const CLASSIFICATION_FAILED = 'failed';
+
+    public const CONTACT_LINK_LINKED = 'linked';
+
+    public const CONTACT_LINK_PROPOSED = 'proposed';
+
+    public const CONTACT_LINK_NONE = 'none';
 
     protected $table = 'communication_messages';
 
@@ -96,6 +125,13 @@ class CommunicationMessage extends Model
             'labels' => 'array',
             'attachment_refs' => 'array',
             'sent_at' => 'datetime',
+            'ai_confidence' => 'integer',
+            'classified_at' => 'datetime',
+            'crm_contact_id' => 'integer',
+            // R4 (#7689) — drapeaux auto-repondeur / liste de diffusion
+            // poses par la sync (les headers eux-memes ne sont pas stockes).
+            'is_auto_reply' => 'boolean',
+            'is_list_message' => 'boolean',
         ];
     }
 
