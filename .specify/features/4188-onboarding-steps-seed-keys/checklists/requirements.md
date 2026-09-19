@@ -2,7 +2,7 @@
 
 **Purpose**: Validate specification completeness and quality before planning.
 **Created**: 2026-08-16
-**Feature**: [spec.md](spec.md)
+**Feature**: [spec.md](../spec.md)
 
 ## Content Quality
 - [x] Focused on user value and business needs (onboarding illisible)

@@ -51,7 +51,8 @@
 | `FIREBASE_READBACK_REQUIRED` | `deploy-main.yml`, `mobile-distribute.yml` | `"true"` makes the Firebase readback verification step hard-fail instead of warn | Optional, defaults to non-strict |
 | `AWS_ACCESS_KEY_ID` | `database-backup.yml` | S3 backup upload credentials | Required for backups |
 | `AWS_SECRET_ACCESS_KEY` | `database-backup.yml` | S3 backup upload credentials | Required for backups |
-| `AWS_REGION` | `database-backup.yml` | S3 region for backup bucket | Required for backups |
+| `AWS_REGION` | `database-backup.yml` | S3 region for backup bucket (for Backblaze B2, the region embedded in the endpoint, e.g. `eu-central-003`) | Required for backups |
+| `AWS_ENDPOINT_URL` | `database-backup.yml` | Optional S3-compatible endpoint (e.g. Backblaze B2 `https://s3.<region>.backblazeb2.com`, Cloudflare R2). Empty = AWS S3 (#7676) | Optional (defaults to AWS S3) |
 | `BACKUP_S3_BUCKET` | `database-backup.yml` | Target S3 bucket for DB backups | Required for backups |
 | `BACKUP_AGE_IDENTITY_FILE` | `database-backup.yml` | `age` private key for backup decryption (restore drills) | Optional (encryption feature) |
 | `BACKUP_AGE_RECIPIENT` | `database-backup.yml` | `age` public recipient for backup encryption | Optional (encryption feature) |

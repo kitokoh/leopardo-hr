@@ -5385,7 +5385,8 @@
     "status": {
       "active": "Aktif",
       "inactive": "Pasif",
-      "archived": "Arşivlendi"
+      "archived": "Arşivlendi",
+      "disabled": "Devre dışı"
     },
     "carrierType": {
       "bus": "Otobüs",
@@ -5431,12 +5432,18 @@
     "routes": {
       "title": "Güzergâhlar ve güzergâhlar",
       "subtitle": "Şehirler arası güzergâhlar, sıralı duraklar.",
-      "stopsTitle": "Güzergâh durakları"
+      "stopsTitle": "Güzergâh durakları",
+      "stops": "Duraklar",
+      "addStop": "Durak ekle"
     },
     "trips": {
       "title": "Planlı seferler",
       "subtitle": "Kalkışlar, sınıf fiyatları, yayın.",
-      "pricesTitle": "Sınıf başına fiyatlar"
+      "pricesTitle": "Sınıf başına fiyatlar",
+      "prices": "Ücretler",
+      "manifest": "Manifesto",
+      "manifestTitle": "Yolcu manifestosu",
+      "cancelReasonTitle": "Sefer iptal gerekçesi"
     },
     "bookings": {
       "title": "Rezervasyonlar",
@@ -5472,10 +5479,12 @@
       "refund": "Geri öde",
       "refundTitle": "Rezervasyonu geri öde",
       "seat": "Koltuk",
-      "source": "Kaynak",
-      "subtitle": "Gişe satışları, onay, iptal, geri ödeme ve biletler.",
+      "source": "Kanal",
+      "subtitle": "Gişe rezervasyonları: onay, iptal, iade ve biletler.",
       "total": "Toplam",
-      "trip": "Sefer"
+      "trip": "Sefer",
+      "refundPassenger": "Yolcuyu iade et",
+      "contact": "İletişim"
     },
     "checkin": {
       "selectTrip": "Bir sefer seçin",
@@ -5524,7 +5533,7 @@
       "exportError": "Dışa aktarma başarısız.",
       "apply": "Uygula",
       "byReason": "Sebebe göre",
-      "bySource": "Kaynağa göre",
+      "bySource": "Kanala göre",
       "cancellationsCount": "İptaller",
       "cancellationsRate": "Oran",
       "cancellationsTotal": "Final rezervasyonlar",
@@ -5544,13 +5553,20 @@
       "salesCount": "Satışlar",
       "salesPassengers": "Yolcular",
       "sold": "Satıldı",
-      "subtitle": "Satışlar, doluluk, gelirler, iptaller ve CSV dışa aktarım.",
+      "subtitle": "Dönem bazında satışlar, doluluk, gelirler ve iptaller; eşzamansız CSV dışa aktarımı.",
       "tabCancellations": "İptaller",
       "tabOccupancy": "Doluluk",
       "tabRevenue": "Gelirler",
       "tabSales": "Satışlar",
       "title": "Raporlar",
-      "to": "Kadar"
+      "to": "Kadar",
+      "byStatus": "Duruma göre",
+      "seatsSold": "Satılan koltuk",
+      "occupancyRate": "Doluluk oranı",
+      "confirmedAmount": "Tahsil edilen",
+      "refundedAmount": "İade edilen",
+      "exportPending": "Dışa aktarım sürüyor…",
+      "download": "CSV indir"
     },
     "rentals": {
       "vehicles": "Kiralık araçlar",
@@ -5574,7 +5590,8 @@
       "ticketsIssued": "Biletler düzenlendi.",
       "checkedIn": "Yolcu biniş yaptı.",
       "ticketRevoked": "Bilet iptal edildi.",
-      "exported": "CSV dışa aktarıldı."
+      "exported": "CSV dışa aktarıldı.",
+      "tripCancelled": "Sefer iptal edildi."
     },
     "error": {
       "loadFailed": "Veriler yüklenemedi.",
@@ -5585,7 +5602,11 @@
     "confirm": {
       "deleteMessage": "Bu öğe kalıcı olarak silinsin mi?",
       "cancelTrip": "Bu sefer iptal edilsin mi? Rezervasyonlar iş kurallarına göre işlenecek.",
-      "cancelRental": "Bu kiralama rezervasyonu iptal edilsin mi?"
+      "cancelRental": "Bu kiralama rezervasyonu iptal edilsin mi?",
+      "publishTrip": "Bu sefer yayınlansın mı? Satışa açık hale gelecek.",
+      "confirmBooking": "Bu rezervasyon onaylansın mı? Ödeme tahsil edilmiş olarak işaretlenecek.",
+      "issueTickets": "Bu rezervasyonun biletleri düzenlensin mi?",
+      "revokeTicket": "Bu bilet iptal edilsin mi? PDF geçersiz kılınacak."
     },
     "table": {
       "actions": "İşlemler",
@@ -5593,7 +5614,9 @@
     },
     "form": {
       "selectPlaceholder": "— Seçin —",
-      "moneyMinor": "Para birimi cinsinden tutar (1 = 100 birim)"
+      "moneyMinor": "Para birimi cinsinden tutar (1 = 100 birim)",
+      "required": "Bu alan zorunludur.",
+      "saving": "Kaydediliyor…"
     },
     "quiz": {
       "title": "Quiz ve yarışmalar",
@@ -5779,7 +5802,8 @@
     "bookingSource": {
       "office": "Gişe",
       "online": "Çevrimiçi",
-      "phone": "Telefon"
+      "phone": "Telefon",
+      "partner": "İş ortağı"
     },
     "carriers": {
       "name": "Ad",
@@ -5869,7 +5893,19 @@
       "flowBody": "Referans ve ağ → sefer programlama → yayınlama → gişe satışı → biletleme ve check-in → raporlar.",
       "flowTitle": "İş akışı",
       "subtitle": "Seyahat acentesi dikeyinin yönetimi: ağ, satışlar, biletleme ve yönetim.",
-      "title": "Seyahat acentesi"
+      "title": "Seyahat acentesi",
+      "kpisToday": "Günün etkinliği",
+      "kpiRevenue": "Net gelir",
+      "kpiTrips": "Günün seferleri",
+      "open": "Aç",
+      "network": "Ağ",
+      "networkDesc": "Garlar, ofisler, hatlar ve sıralı duraklar.",
+      "trips": "Seferler",
+      "tripsDesc": "Planlama, sınıf tarifeleri, yayınlama ve manifest.",
+      "bookingsDesc": "Gişe satışları, onay, iptal, iade ve biletler.",
+      "reportsDesc": "Satışlar, doluluk, gelirler, iptaller ve CSV dışa aktarımları.",
+      "portal": "Yolcu portalı",
+      "portalDesc": "Müşteriye yönelik sefer arama ve rezervasyon."
     },
     "network": {
       "addPrice": "Fiyat ekle",
@@ -7194,5 +7230,39 @@
     "errorTooMany": "Çok fazla deneme. Yeni bir kod isteyin.",
     "errorPasswordRequired": "Bu hesap parola ile giriş gerektirir.",
     "errorGeneric": "Giriş yapılamadı. Birkaç dakika sonra tekrar deneyin."
+  },
+  "vitrine": {
+    "notFound": {
+      "kicker": "Hata 404",
+      "title": "Sayfa bulunamadı",
+      "body": "Bu sayfa mevcut değil veya taşınmış. Adresi kontrol edin ya da ana sayfadan devam edin.",
+      "ctaHome": "Ana sayfaya dön",
+      "ctaPricing": "Fiyatları görün",
+      "ctaContact": "Destek ile iletişime geçin"
+    },
+    "nav": {
+      "pricing": "Fiyatlar",
+      "resources": "Kaynaklar",
+      "guides": "Rehberler",
+      "guidesDesc": "İK için en iyi uygulamalar",
+      "insights": "İK İçgörüleri",
+      "insightsDesc": "Analizler, rehberler ve büyüme fikirleri",
+      "apiDocs": "API Dokümanları",
+      "apiDocsDesc": "Teknik rehberler ve entegrasyon",
+      "changelog": "Değişiklikler",
+      "changelogDesc": "Son ürün güncellemeleri",
+      "contact": "İletişim",
+      "install": "Leopardo'yu Kur",
+      "windowsDesc": "ZKTeco ve senkronizasyon için masaüstü istemcisi",
+      "macosDesc": "Saha ekipleri için masaüstü çalışma alanı",
+      "androidDesc": "Mobil yoklama ve çalışan self-servis",
+      "iosDesc": "Çalışan ve yöneticiler için iOS uygulaması",
+      "community": "Topluluk",
+      "communityDesc": "Toplulukla bağlantı kurun",
+      "faq": "SSS",
+      "faqDesc": "Sık sorulan sorular",
+      "support": "Destek",
+      "supportDesc": "Ekibimize ulaşın"
+    }
   }
 }

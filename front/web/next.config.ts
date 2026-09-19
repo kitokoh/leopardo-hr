@@ -260,6 +260,49 @@ const nextConfig: NextConfig = {
       destination: "/auth/activate/:token",
       permanent: false,
     },
+    // #7662 : URLs « devinables » tapées/partagées par les prospects — vérifiées
+    // 404 en prod le 2026-09-19. Les alias d'auth/inscription sont en 307
+    // (compatibilité, l'emplacement canonique peut encore bouger — précédent
+    // #7259) ; les slugs FR des pages canoniques EN sont en 301 (règle SEO
+    // définitive, précédent #7101). La query (`?lang=`, `?source=`) est
+    // transférée automatiquement par Next.
+    {
+      source: "/login",
+      destination: "/auth/login",
+      permanent: false,
+    },
+    {
+      source: "/connexion",
+      destination: "/auth/login",
+      permanent: true,
+    },
+    {
+      source: "/register",
+      destination: "/signup",
+      permanent: false,
+    },
+    {
+      source: "/inscription",
+      destination: "/signup",
+      permanent: true,
+    },
+    // L'onboarding self-service commence sur /signup (aucune page /onboarding
+    // n'existe — seule l'API d'activation par invitation vit sous ce nom).
+    {
+      source: "/onboarding",
+      destination: "/signup",
+      permanent: false,
+    },
+    {
+      source: "/tarifs",
+      destination: "/pricing",
+      permanent: true,
+    },
+    {
+      source: "/a-propos",
+      destination: "/about",
+      permanent: true,
+    },
     // #7101 : l'i18n vitrine passe par `?lang=` (issue #4004/#4173) — aucune route
     // préfixée n'existe. Les chemins /fr /en /ar /tr (et sous-chemins) répondaient
     // 404 ; on les redirige en 301 vers la forme canonique `?lang=` pour ne jamais

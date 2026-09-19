@@ -4838,7 +4838,8 @@
     "status": {
       "active": "Active",
       "inactive": "Inactive",
-      "archived": "Archived"
+      "archived": "Archived",
+      "disabled": "Disabled"
     },
     "carrierType": {
       "bus": "Bus / coach",
@@ -4855,20 +4856,23 @@
     "tripStatus": {
       "draft": "Draft",
       "published": "Published",
-      "cancelled": "Cancelled"
+      "cancelled": "Cancelled",
+      "scheduled": "Scheduled"
     },
     "bookingStatus": {
       "pending": "Pending",
       "confirmed": "Confirmed",
       "cancelled": "Cancelled",
       "refunded": "Refunded",
-      "expired": "Expired"
+      "expired": "Expired",
+      "completed": "Completed"
     },
     "paymentStatus": {
       "pending": "Pending",
       "paid": "Paid",
       "failed": "Failed",
-      "refunded": "Refunded"
+      "refunded": "Refunded",
+      "confirmed": "Confirmed"
     },
     "ticketStatus": {
       "issued": "Issued",
@@ -4879,12 +4883,18 @@
     "routes": {
       "title": "Routes & itineraries",
       "subtitle": "City-to-city routes, ordered stops and stopovers.",
-      "stopsTitle": "Route stops"
+      "stopsTitle": "Route stops",
+      "stops": "Stops",
+      "addStop": "Add a stop"
     },
     "trips": {
       "title": "Scheduled trips",
       "subtitle": "Planned departures, class prices, publication.",
-      "pricesTitle": "Prices per class"
+      "pricesTitle": "Prices per class",
+      "prices": "Prices",
+      "manifest": "Manifest",
+      "manifestTitle": "Passenger manifest",
+      "cancelReasonTitle": "Trip cancellation reason"
     },
     "bookings": {
       "title": "Bookings",
@@ -4902,7 +4912,11 @@
       "cancelReasonTitle": "Cancellation reason",
       "refundReasonTitle": "Refund reason",
       "reason": "Reason",
-      "reasonRequired": "Reason is required."
+      "reasonRequired": "Reason is required.",
+      "subtitle": "Counter bookings: confirmation, cancellation, refund and tickets.",
+      "refundPassenger": "Refund passenger",
+      "contact": "Contact",
+      "source": "Channel"
     },
     "checkin": {
       "selectTrip": "Select a trip",
@@ -4935,7 +4949,16 @@
       "cancellations": "Cancellations",
       "exportCsv": "Export CSV",
       "empty": "No data for the period.",
-      "exportError": "Export failed."
+      "exportError": "Export failed.",
+      "subtitle": "Sales, occupancy, revenue and cancellations over a period, with async CSV export.",
+      "bySource": "By channel",
+      "byStatus": "By status",
+      "seatsSold": "Seats sold",
+      "occupancyRate": "Occupancy rate",
+      "confirmedAmount": "Collected",
+      "refundedAmount": "Refunded",
+      "exportPending": "Export in progress…",
+      "download": "Download CSV"
     },
     "rentals": {
       "vehicles": "Rental vehicles",
@@ -4959,7 +4982,8 @@
       "ticketsIssued": "Tickets issued.",
       "checkedIn": "Passenger checked in.",
       "ticketRevoked": "Ticket revoked.",
-      "exported": "CSV export downloaded."
+      "exported": "CSV export downloaded.",
+      "tripCancelled": "Trip cancelled."
     },
     "error": {
       "loadFailed": "Unable to load data.",
@@ -4970,7 +4994,11 @@
     "confirm": {
       "deleteMessage": "Permanently delete this item?",
       "cancelTrip": "Cancel this trip? Bookings will be processed according to business rules.",
-      "cancelRental": "Cancel this rental booking?"
+      "cancelRental": "Cancel this rental booking?",
+      "publishTrip": "Publish this trip? It will become available for sale.",
+      "confirmBooking": "Confirm this booking? The payment will be marked as received.",
+      "issueTickets": "Issue the tickets for this booking?",
+      "revokeTicket": "Revoke this ticket? The PDF will be invalidated."
     },
     "table": {
       "actions": "Actions",
@@ -4978,7 +5006,9 @@
     },
     "form": {
       "selectPlaceholder": "— Select —",
-      "moneyMinor": "Amount in currency (1 = 100 minor)"
+      "moneyMinor": "Amount in currency (1 = 100 minor)",
+      "required": "This field is required.",
+      "saving": "Saving…"
     },
     "quiz": {
       "title": "Quizzes & contests",
@@ -5111,6 +5141,31 @@
       "consent": "I agree to be contacted by email about my request.",
       "sending": "Sending…",
       "send": "Send request"
+    },
+    "home": {
+      "kpisToday": "Today's activity",
+      "kpiRevenue": "Net revenue",
+      "kpiTrips": "Today's trips",
+      "open": "Open",
+      "network": "Network",
+      "networkDesc": "Stations, offices, routes and ordered stops.",
+      "trips": "Trips",
+      "tripsDesc": "Scheduling, class fares, publishing and manifest.",
+      "bookingsDesc": "Counter sales, confirmation, cancellation, refund and tickets.",
+      "reportsDesc": "Sales, occupancy, revenue, cancellations and CSV exports.",
+      "portal": "Traveller portal",
+      "portalDesc": "Customer-facing trip search and booking."
+    },
+    "ageCategory": {
+      "infant": "Infant",
+      "child": "Child",
+      "adult": "Adult"
+    },
+    "bookingSource": {
+      "online": "Online",
+      "office": "Office",
+      "phone": "Phone",
+      "partner": "Partner"
     }
   },
   "travelPortal": {
@@ -5700,6 +5755,40 @@
         "title": "Publish your showcase website",
         "desc": "Make your site visible in one click."
       }
+    }
+  },
+  "vitrine": {
+    "notFound": {
+      "kicker": "Error 404",
+      "title": "Page not found",
+      "body": "This page does not exist or has been moved. Check the address, or start again from the home page.",
+      "ctaHome": "Back to home",
+      "ctaPricing": "See pricing",
+      "ctaContact": "Contact support"
+    },
+    "nav": {
+      "pricing": "Pricing",
+      "resources": "Resources",
+      "guides": "Guides",
+      "guidesDesc": "HR best practices and tutorials",
+      "insights": "HR Insights",
+      "insightsDesc": "Analysis, playbooks and growth ideas",
+      "apiDocs": "API Docs",
+      "apiDocsDesc": "Technical guides and integration",
+      "changelog": "Changelog",
+      "changelogDesc": "Latest product updates",
+      "contact": "Contact",
+      "install": "Install Leopardo",
+      "windowsDesc": "Desktop client for ZKTeco and sync",
+      "macosDesc": "Desktop workspace for field teams",
+      "androidDesc": "Mobile attendance and employee self-service",
+      "iosDesc": "iOS app for employees and managers",
+      "community": "Community",
+      "communityDesc": "Connect with the community",
+      "faq": "FAQ",
+      "faqDesc": "Frequently asked questions",
+      "support": "Support",
+      "supportDesc": "Contact our team"
     }
   }
 }
