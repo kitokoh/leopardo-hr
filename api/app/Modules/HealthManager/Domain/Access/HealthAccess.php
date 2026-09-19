@@ -81,6 +81,25 @@ final class HealthAccess
     }
 
     /**
+     * L'acteur peut-il GÉRER le registre patients (HC-003) ?
+     * Direction (health.admin) et accueil (health.reception).
+     */
+    public static function canManagePatients(Employee $actor): bool
+    {
+        return self::isAdmin($actor) || self::isReception($actor);
+    }
+
+    /**
+     * L'acteur peut-il LIRE le registre patients (HC-003) ? Gestionnaires,
+     * praticiens actifs et facturation (couverture assurance) — jamais un
+     * employé lambda (deny-by-default).
+     */
+    public static function canViewPatients(Employee $actor): bool
+    {
+        return self::canManagePatients($actor) || self::isPractitioner($actor) || self::isBilling($actor);
+    }
+
+    /**
      * L'acteur peut-il LIRE la structure clinique ? Direction, accueil et
      * praticiens (jamais un employé lambda — deny-by-default).
      */

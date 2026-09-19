@@ -61,10 +61,16 @@ final class HealthManagerManifest implements SolutionManifest
     /** @return list<string> */
     public function sensitiveData(): array
     {
+        // HC-003 (#7787) — le registre patients est ACTIF : MRN, identité,
+        // naissance/sexe/groupe sanguin, contacts, personne à prévenir,
+        // assurance, allergies/antécédents et statut vital. Chiffrement au
+        // repos des champs les plus sensibles, archivage sans suppression.
         return [
             'patients (identité, naissance, contacts — PII, données de santé)',
-            'dossiers administratifs patients (groupe sanguin, allergies, antécédents — données de santé art. 9 RGPD)',
-            'couverture d’assurance santé (n° d’assuré — PII financière)',
+            'n° de dossier médical (MRN — identifiant de santé par tenant)',
+            'dossiers administratifs patients (groupe sanguin, allergies, antécédents — données de santé art. 9 RGPD, chiffrées au repos)',
+            'statut vital du patient (décès — donnée de santé)',
+            'couverture d’assurance santé (n° d’assuré — PII financière, chiffrée au repos)',
             'personne à prévenir (PII de tiers)',
             'praticiens et spécialités (données professionnelles de santé)',
             'occupation des lits (donnée de séjour — santé)',

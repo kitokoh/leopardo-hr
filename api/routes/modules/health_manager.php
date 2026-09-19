@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthBedController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthDepartmentController;
+use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthPatientController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthPractitionerController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthRoomController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthSpecialtyController;
@@ -57,4 +58,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/health-manager/practitioners/{practitioner}', [HealthPractitionerController::class, 'show'])->whereNumber('practitioner');
     Route::put('/health-manager/practitioners/{practitioner}', [HealthPractitionerController::class, 'update'])->whereNumber('practitioner');
     Route::delete('/health-manager/practitioners/{practitioner}', [HealthPractitionerController::class, 'destroy'])->whereNumber('practitioner');
+
+    // HC-003 (#7787) — registre patients (RBAC strict : direction/accueil
+    // gèrent, praticiens/facturation lisent). MRN généré côté serveur ;
+    // DELETE = ARCHIVAGE (soft delete, jamais de suppression physique).
+    Route::get('/health-manager/patients', [HealthPatientController::class, 'index']);
+    Route::post('/health-manager/patients', [HealthPatientController::class, 'store']);
+    Route::get('/health-manager/patients/{patient}', [HealthPatientController::class, 'show'])->whereNumber('patient');
+    Route::put('/health-manager/patients/{patient}', [HealthPatientController::class, 'update'])->whereNumber('patient');
+    Route::delete('/health-manager/patients/{patient}', [HealthPatientController::class, 'destroy'])->whereNumber('patient');
 });

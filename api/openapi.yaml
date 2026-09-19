@@ -32904,6 +32904,351 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+  /health-manager/patients:
+    get:
+      tags:
+      - HealthManager
+      summary: Rechercher les patients du tenant (nom, MRN, téléphone)
+      description: 'HC-003 (#7787, BC-30). RBAC strict : direction/accueil gèrent, praticiens actifs et facturation lisent, employé lambda 403. Recherche `q` (nom, MRN, téléphone), filtre `status`, `with_archived` pour inclure les dossiers archivés. Liste bornée au tenant, paginée (data, meta).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: q
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Recherche nom / MRN / téléphone
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - active
+          - deceased
+          - archived
+      - name: with_archived
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Registre des patients (paginé)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        mrn:
+                          type: string
+                          description: N° de dossier `PAT-YYYY-NNNN`, généré côté serveur, unique par tenant
+                        first_name:
+                          type: string
+                        last_name:
+                          type: string
+                        sex:
+                          type: string
+                          enum:
+                          - female
+                          - male
+                          - other
+                          - unknown
+                        birth_date:
+                          type: string
+                          nullable: true
+                          description: Donnée sensible — chiffrée au repos (cast `encrypted`)
+                        blood_group:
+                          type: string
+                          nullable: true
+                        phone:
+                          type: string
+                          nullable: true
+                        status:
+                          type: string
+                          enum:
+                          - active
+                          - deceased
+                          - archived
+                        archived_at:
+                          type: string
+                          format: date-time
+                          nullable: true
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Créer un dossier patient
+      description: 'Direction et accueil uniquement. Le MRN `PAT-YYYY-NNNN` est généré CÔTÉ SERVEUR (jamais accepté depuis la requête) et unique par tenant ; le tenant est TOUJOURS celui de l''acteur. Champs sensibles chiffrés au repos.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - first_name
+              - last_name
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 100
+                last_name:
+                  type: string
+                  maxLength: 100
+                sex:
+                  type: string
+                  enum:
+                  - female
+                  - male
+                  - other
+                  - unknown
+                birth_date:
+                  type: string
+                  format: date
+                  nullable: true
+                blood_group:
+                  type: string
+                  nullable: true
+                  enum:
+                  - A+
+                  - A-
+                  - B+
+                  - B-
+                  - AB+
+                  - AB-
+                  - O+
+                  - O-
+                phone:
+                  type: string
+                  maxLength: 50
+                  nullable: true
+                email:
+                  type: string
+                  maxLength: 191
+                  nullable: true
+                address:
+                  type: string
+                  maxLength: 255
+                  nullable: true
+                emergency_contact_name:
+                  type: string
+                  maxLength: 191
+                  nullable: true
+                emergency_contact_phone:
+                  type: string
+                  maxLength: 50
+                  nullable: true
+                emergency_contact_relationship:
+                  type: string
+                  maxLength: 50
+                  nullable: true
+                insurance_provider:
+                  type: string
+                  maxLength: 191
+                  nullable: true
+                insurance_number:
+                  type: string
+                  maxLength: 100
+                  nullable: true
+                  description: PII — chiffrée au repos (cast `encrypted`)
+                allergies:
+                  type: string
+                  nullable: true
+                  description: Donnée de santé — chiffrée au repos
+                medical_history:
+                  type: string
+                  nullable: true
+                  description: Donnée de santé — chiffrée au repos
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - deceased
+                  - archived
+      responses:
+        '201':
+          description: Dossier patient créé (MRN généré)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/patients/{patient}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter un dossier patient
+      description: 'Lecture : direction, accueil, praticiens actifs, facturation. Dossier d''un autre tenant → 404 (aucune fuite cross-tenant).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: patient
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Dossier patient
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - HealthManager
+      summary: Mettre à jour un dossier patient
+      description: 'Direction et accueil uniquement. Le MRN n''est jamais modifiable. Dossier d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: patient
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 100
+                last_name:
+                  type: string
+                  maxLength: 100
+                sex:
+                  type: string
+                  enum:
+                  - female
+                  - male
+                  - other
+                  - unknown
+                birth_date:
+                  type: string
+                  format: date
+                  nullable: true
+                blood_group:
+                  type: string
+                  nullable: true
+                  enum:
+                  - A+
+                  - A-
+                  - B+
+                  - B-
+                  - AB+
+                  - AB-
+                  - O+
+                  - O-
+                phone:
+                  type: string
+                  maxLength: 50
+                  nullable: true
+                email:
+                  type: string
+                  maxLength: 191
+                  nullable: true
+                address:
+                  type: string
+                  maxLength: 255
+                  nullable: true
+                emergency_contact_name:
+                  type: string
+                  maxLength: 191
+                  nullable: true
+                emergency_contact_phone:
+                  type: string
+                  maxLength: 50
+                  nullable: true
+                emergency_contact_relationship:
+                  type: string
+                  maxLength: 50
+                  nullable: true
+                insurance_provider:
+                  type: string
+                  maxLength: 191
+                  nullable: true
+                insurance_number:
+                  type: string
+                  maxLength: 100
+                  nullable: true
+                  description: PII — chiffrée au repos (cast `encrypted`)
+                allergies:
+                  type: string
+                  nullable: true
+                  description: Donnée de santé — chiffrée au repos
+                medical_history:
+                  type: string
+                  nullable: true
+                  description: Donnée de santé — chiffrée au repos
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - deceased
+                  - archived
+      responses:
+        '200':
+          description: Dossier patient mis à jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - HealthManager
+      summary: Archiver un dossier patient (jamais de suppression physique)
+      description: 'Direction et accueil uniquement. ARCHIVAGE : statut `archived` + soft delete — le dossier et son MRN restent en base (le MRN n''est jamais réutilisé). Dossier d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: patient
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Dossier archivé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /edu-manager/fee-charges:
     post:
       tags:
