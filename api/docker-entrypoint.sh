@@ -459,4 +459,28 @@ echo "Starting background queue worker (web container, respawn loop)..."
     done
 ) &
 
+# Issue #7649 (intérim) : `php artisan schedule:run` ne tournait NULLE PART
+# (ni worker ni cron dans les workspaces Render — vérifié API 2026-09-19) :
+# accruals congés, relances billing/contrats, purges et réconciliations ne
+# s'exécutaient jamais en dehors de workflows GitHub ponctuels. En attendant
+# le service `leopardo-scheduler` dédié (bloqué : plan Render free, les
+# background workers exigent un plan payant — voir #7649), le conteneur web
+# exécute le scheduler. Limites assumées et documentées :
+#   - plan free = spin-down : les tâches ne tournent que si le service est
+#     éveillé (le keep-alive/health checks limitent la fenêtre morte) ;
+#   - `schedule:run` est relancé chaque minute ; les tâches longues doivent
+#     être `->runInBackground()` ou dispatcher des jobs (déjà la convention) ;
+#   - le scheduler Laravel est idempotent par design (due-check par cron
+#     expression) : aucun risque de double exécution tant qu'UN seul conteneur
+#     web tourne (plan free = 1 instance). À retirer du web dès que le
+#     service scheduler dédié existe (`onOneServer()` requis à ce moment-là).
+echo "Starting background scheduler loop (web container, interim #7649)..."
+(
+    while true; do
+        php artisan schedule:run --no-interaction >&2 || \
+            echo "[entrypoint] schedule:run failed ($?)" >&2
+        sleep 60
+    done
+) &
+
 exec frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile
