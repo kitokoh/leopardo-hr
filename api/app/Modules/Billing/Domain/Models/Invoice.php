@@ -13,6 +13,7 @@ namespace App\Modules\Billing\Domain\Models;
 // (preset laravel) réécrit les identifiants `\Foo\Bar::class` ; une chaîne n'est
 // touchée ni par Pint ni par PHPStan.
 // See: docs/architecture/adr/0011-billing-payroll-domain-boundary.md  — Issue #1395.
+use App\Events\InvoicePaid;
 use App\Modules\Billing\Domain\Enums\InvoiceStatus;
 use App\Modules\Payroll\Domain\Models\Payment;
 use App\Shared\Traits\BelongsToCompany;
@@ -28,6 +29,7 @@ use InvalidArgumentException;
  * @property int|null $company_id
  * @property int|null $subscription_id
  * @property string|null $number
+ * @property string|null $period
  * @property string $amount
  * @property string $currency
  * @property string $tax_amount
@@ -36,7 +38,7 @@ use InvalidArgumentException;
  * @property Carbon $due_date
  * @property Carbon|null $paid_at
  * @property string|null $payment_method
- * @property int|null $stripe_invoice_id
+ * @property string|null $stripe_invoice_id
  * @property string|null $pdf_path
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -120,6 +122,14 @@ class Invoice extends Model
             'status' => $status->value,
             ...$extra,
         ])->save();
+
+        // #7763 : point UNIQUE de notification de paiement — dispatché
+        // seulement sur une transition RÉELLE vers paid ($current !== $status),
+        // jamais sur la re-transition idempotente paid → paid d'un webhook
+        // rejoué : zéro reçu en double, quel que soit le provider.
+        if ($status === InvoiceStatus::Paid && $current !== InvoiceStatus::Paid) {
+            InvoicePaid::dispatch($this);
+        }
 
         return $this;
     }
