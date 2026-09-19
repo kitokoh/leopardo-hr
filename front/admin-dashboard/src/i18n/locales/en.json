@@ -5144,10 +5144,19 @@
       "entreprise": "Client companies",
       "metier": "Platform operations",
       "parametres": "Settings",
-      "systeme": "System"
+      "systeme": "System",
+      "facturationOffres": "Billing & plans",
+      "referentielsPaie": "Payroll references",
+      "plateforme": "Platform"
     },
     "team": "Platform team",
-    "acquisitionFunnel": "Acquisition funnel"
+    "acquisitionFunnel": "Acquisition funnel",
+    "accounting": "Accounting",
+    "accountingStart": "Get started",
+    "accountingOverview": "Dashboard",
+    "accountingConfig": "Settings",
+    "fuelStationHub": "Fuel station hub",
+    "fuelStationOps": "Operations"
   },
   "companydetailCoreModuleAlwaysActive": "Core module always active",
   "smartAttendanceSessionsTitle": "Smart Attendance sessions",

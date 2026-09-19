@@ -5144,10 +5144,19 @@
       "entreprise": "شركات العملاء",
       "metier": "عمليات المنصة",
       "parametres": "الإعدادات",
-      "systeme": "النظام"
+      "systeme": "النظام",
+      "facturationOffres": "الفوترة والعروض",
+      "referentielsPaie": "مرجعيات الرواتب",
+      "plateforme": "المنصة"
     },
     "team": "فريق المنصة",
-    "acquisitionFunnel": "قمع الاكتساب"
+    "acquisitionFunnel": "قمع الاكتساب",
+    "accounting": "المحاسبة",
+    "accountingStart": "البدء",
+    "accountingOverview": "لوحة القيادة",
+    "accountingConfig": "الإعدادات",
+    "fuelStationHub": "مركز محطات الوقود",
+    "fuelStationOps": "العمليات"
   },
   "companydetailCoreModuleAlwaysActive": "الوحدة الأساسية نشطة دائمًا",
   "smartAttendanceSessionsTitle": "جلسات الحضور الذكي",
