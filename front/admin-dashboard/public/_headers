@@ -13,8 +13,21 @@
 #
 # #4804 : la CSP est désormais ENFORCÉE (plus de report-only). La politique
 # liste explicitement toutes les origines chargées par le dashboard (API
-# Render, WebSocket, Google Fonts, ui-avatars, tuiles OpenStreetMap) et reste
-# permissive sur inline (script/style 'unsafe-inline', bundle Vite).
+# Render, WebSocket, Google Fonts, ui-avatars, tuiles OpenStreetMap).
+#
+# #7695 : la valeur de la CSP est GÉNÉRÉE AU BUILD (plugin `csp-headers` de
+# vite.config.js, module scripts/csp.mjs) — ce fichier ne porte qu'un
+# placeholder, remplacé dans dist/_headers. Deux durcissements :
+#  - script-src perd 'unsafe-inline' (le bundle Vite n'émet que des scripts
+#    externes, index.html n'a aucun script inline) ;
+#  - connect-src perd le wildcard `https:`/`wss:` nu : les origines backend
+#    sont dérivées de VITE_API_URL / VITE_WEBSOCKET_URL, connues au build
+#    (deploy-admin-dashboard.yml les fournit). Un backend tenant-configuré
+#    hors de ces variables exige donc un rebuild — c'est voulu : le wildcard
+#    permettait d'exfiltrer vers n'importe quelle origine HTTPS.
+# Test de garde : scripts/check-csp-guard.mjs (chaîné à `npm run build`)
+# échoue si la CSP du build contient encore 'unsafe-inline' (script-src) ou
+# un scheme nu dans connect-src.
 #
 # `upgrade-insecure-requests` was removed from the policy: Chrome logs
 # « The Content Security Policy directive 'upgrade-insecure-requests' is
@@ -26,9 +39,8 @@
 # Origins referenced below come from what the admin dashboard actually
 # loads/calls today:
 #  - connect-src: VITE_API_URL (REST) and VITE_WEBSOCKET_URL (Socket.IO
-#    realtime notifications, see src/stores/realtime.js) both point at the
-#    Render-hosted Cloud API by default; wildcarded to https:/wss: so any
-#    tenant-configured backend origin still works without editing this file.
+#    realtime notifications, see src/stores/realtime.js), explicit origins
+#    injected at build time (#7695).
 #  - img-src: ui-avatars.com (generated user avatars) and OpenStreetMap tile
 #    servers (Leaflet fleet map, src/views/fleet/FleetView.vue).
 #  - style-src/font-src: Google Fonts (Inter, loaded via <link> in
@@ -40,4 +52,4 @@
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com https://*.tile.openstreetmap.org; connect-src 'self' https: wss:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Content-Security-Policy: __CSP_BUILD_PLACEHOLDER__

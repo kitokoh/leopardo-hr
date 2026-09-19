@@ -35,7 +35,8 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 | `web-marketing-ci.yml` | PR → front/web | Lint + test + E2E Next.js |
 | `mobile-apps-ci.yml` | PR → `front/mobile_apps/**` | Build + lint + tests Flutter (8 apps, matrix) |
 | `architecture-check.yml` | PR → api | Vérifie les règles d'architecture DDD |
-| `openapi-ci.yml` | PR → openapi | Validation spec OpenAPI |
+| `openapi-ci.yml` | PR → openapi | Validation spec OpenAPI + preuve de génération miroir/SDK (#7654 : artefacts non committés) |
+| `repo-hygiene-guard.yml` | PR/push main | Refuse le retour des artefacts générés committés (#7654) |
 | `codeql.yml` | Hebdomadaire + PR | Analyse de sécurité CodeQL |
 | `secret-scan.yml` | Push | Détection de secrets commités |
 | *(Dependabot)* | Automatique | Config `.github/dependabot.yml` — pas un workflow |
@@ -49,7 +50,7 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 | `deploy-main.yml` | Push → main | Déploiement continu dev/test (Render `gestionemployerbackend` via hook) |
 | `deploy-prod.yml` | GitHub Release publiée (tag `vX.Y.Z` → `release.yml` → `release: published`) + `workflow_dispatch` | Déploiement PROD des trois surfaces : API Render `leopardo-prod` (job `deploy-prod`, rollback API), web Vercel `leopardo-prod` (job `deploy-web-prod`), admin Cloudflare Pages `leo-admin-prod` (job `deploy-admin-prod`) — voir `docs/ops/RENDER_DEV_PROD_TOPOLOGY.md` |
 | `deploy-staging.yml` | **Manuel** (dispatch) — #7256 | Déploiement du tier staging : **aucun staging n'existe**, le déclenchement sur push a été retiré (run toujours `skipped` = vert qui ne déployait rien). Fonctionnel en dispatch dès qu'un environnement sera provisionné |
-| `e2e-staging.yml` | `workflow_run` de « Deploy - Leopardo RH » (`deploy-main.yml`) | Tests E2E post-déploiement **prod** (nom de fichier historique ; contenu : `E2E - Playwright Prod Smoke`) |
+| `e2e-staging.yml` | `workflow_run` de « Deploy - Leopardo » (`deploy-main.yml`) | Tests E2E post-déploiement **prod** (nom de fichier historique ; contenu : `E2E - Playwright Prod Smoke`) |
 | `mobile-distribute.yml` | Manuel + tags | Distribution APK/IPA |
 | `release.yml` | Tags v*.*.* | Création de release GitHub |
 
@@ -61,7 +62,7 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 |---|---|---|
 | `phpstan-baseline.yml` | Manuel | Régénère phpstan-baseline.neon |
 | `lighthouse.yml` | PR/push → front/web + hebdomadaire | Audit Lighthouse (perf, a11y, SEO) + budget d'assets (`front/web/budget.json`), non bloquant (PA2-QA-008) |
-| `owasp-zap.yml` | Manuel + `workflow_run` de « Deploy - Leopardo RH » | Scan OWASP ZAP (sécurité API) |
+| `owasp-zap.yml` | Manuel + `workflow_run` de « Deploy - Leopardo » | Scan OWASP ZAP (sécurité API) |
 | `k6-load-smoke.yml` | Manuel | Load test k6 |
 | `i18n-enterprise.yml` | PR → shared/i18n | Validation et sync traductions |
 | `database-backup.yml` | Schedule | Backup PostgreSQL |
