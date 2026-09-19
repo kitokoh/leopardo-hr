@@ -33,7 +33,8 @@ return new class extends Migration
                 $table->json('actions');                             // [{type, config}]
                 $table->string('status', 20)->default('draft');      // draft|active|paused|disabled
                 $table->unsignedInteger('version')->default(1);
-                $table->uuid('created_by')->nullable();
+                // #7452 — created_by reçoit des id d'employés (PK bigint).
+                $table->unsignedBigInteger('created_by')->nullable();
                 $table->timestamp('archived_at')->nullable();
                 $table->timestamps();
 

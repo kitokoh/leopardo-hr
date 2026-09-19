@@ -6,8 +6,6 @@ import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/providers/core_providers.dart';
 import 'package:leopardo_core/offline/database/edge_database.dart';
 import 'package:leopardo_core/offline/services/sync_service.dart';
-import 'package:leopardo_employee/features/attendance/data/attendance_repository.dart';
-import 'package:leopardo_employee/features/auth/data/auth_repository.dart';
 import 'package:leopardo_employee/features/cabinet/data/cabinet_repository.dart';
 import 'package:leopardo_employee/features/evaluations/data/evaluation_repository.dart';
 import 'package:leopardo_employee/features/notifications/data/notification_repository.dart';
@@ -57,17 +55,11 @@ final syncServiceProvider = Provider<SyncService>((ref) {
   return service;
 });
 
-final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  final storage = ref.watch(secureStorageProvider);
-  final preferences = ref.watch(appPreferencesProvider);
-  return AuthRepository(apiClient, storage, preferences);
-});
-
-final attendanceRepositoryProvider = Provider<AttendanceRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return AttendanceRepository(apiClient);
-});
+// #7652 — auth + attendance sont réconciliés dans leopardo_core :
+// `authRepositoryProvider` vient du core_providers core (ré-export ci-dessus)
+// et `attendanceRepositoryProvider` vit dans
+// `package:leopardo_core/features/attendance/providers/attendance_provider.dart`.
+// Plus AUCUNE déclaration locale dupliquée ici.
 
 final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);

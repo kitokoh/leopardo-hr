@@ -27,6 +27,7 @@ use App\Modules\Platform\Providers\PlatformServiceProvider;
 use App\Modules\Recruitment\Providers\RecruitmentServiceProvider;
 use App\Modules\Restaurant\Providers\RestaurantServiceProvider;
 use App\Modules\RestaurantManager\Providers\RestaurantManagerServiceProvider;
+use App\Modules\Retail\Providers\RetailServiceProvider;
 use App\Modules\Showcase\Providers\ShowcaseServiceProvider;
 use App\Modules\TravelAgency\Providers\TravelAgencyServiceProvider;
 use App\Providers\AppServiceProvider;
@@ -71,6 +72,7 @@ return [
     HealthManagerServiceProvider::class,
     RestaurantManagerServiceProvider::class,
     CatalogServiceProvider::class,
+    RetailServiceProvider::class,
     ShowcaseServiceProvider::class,
     CommunicationServiceProvider::class,
 ];

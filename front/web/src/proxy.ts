@@ -67,6 +67,8 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/accounting',
   '/edu-manager',
   '/fuel',
+  // BC-17 — espace vendeur (produits, stock, caisse) : zone dashboard.
+  '/commerce',
   // BC-30 HEALTH (HC-008, #7792) — espace web clinique (zone dashboard).
   '/health',
   // #7759 — tickets support côté client (zone dashboard).
@@ -202,6 +204,7 @@ export const config = {
     '/accounting/:path*', // #7663 comptabilité applicative (vitrine = /comptabilite)
     '/edu-manager/:path*', // #7663 gestion scolaire — gate session
     '/fuel/:path*', // #7663 stations-service — gate session
+    '/commerce/:path*', // BC-17 espace vendeur — gate session (source unique #3377)
     '/health/:path*', // BC-30 (#7792) espace clinique — gate session
     '/support/:path*', // #7759 tickets support côté client — gate session
     '/communication/:path*', // BC-29 (#7691) boîte connectée — gate session

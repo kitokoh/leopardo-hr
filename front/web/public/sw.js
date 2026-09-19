@@ -35,6 +35,8 @@ const PROTECTED_PREFIXES = [
   '/accounting',
   '/edu-manager',
   '/fuel',
+  // BC-17 — espace vendeur (zone dashboard).
+  '/commerce',
   // BC-30 HEALTH (HC-008, #7792) — espace web clinique (zone dashboard).
   '/health',
   // #7759 — tickets support côté client (zone dashboard).

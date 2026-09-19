@@ -32,8 +32,10 @@ return new class extends Migration
             Schema::create('crm_leads', function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
-                $table->uuid('account_id')->nullable();
-                $table->uuid('owner_id')->nullable();
+                // #7452 — les PK cibles (crm_accounts.id, employees.id) sont
+                // bigint : liaisons uuid inécrivables (22P02).
+                $table->unsignedBigInteger('account_id')->nullable();
+                $table->unsignedBigInteger('owner_id')->nullable();
                 $table->string('first_name', 120)->nullable();
                 $table->string('last_name', 120)->nullable();
                 $table->string('email', 255)->nullable();

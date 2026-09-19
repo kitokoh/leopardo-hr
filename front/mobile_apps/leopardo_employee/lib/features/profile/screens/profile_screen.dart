@@ -7,7 +7,7 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_core/models/employee.dart';
-import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/features/auth/providers/auth_provider.dart';
 
 /// Dedicated employee profile screen: photo, identity, role, and quick
 /// language switcher. Reads the current [Employee] straight from
