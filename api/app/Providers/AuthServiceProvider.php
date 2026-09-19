@@ -26,6 +26,8 @@ use App\Modules\Communication\Domain\Models\CommunicationFollowUpOptOut;
 use App\Modules\Communication\Domain\Models\CommunicationFollowUpRule;
 use App\Modules\Communication\Domain\Models\CommunicationIntegration;
 use App\Modules\Communication\Domain\Models\CommunicationMessage;
+use App\Modules\Communication\Domain\Models\CommunicationPendingReply;
+use App\Modules\Communication\Domain\Models\CommunicationReplyPolicy;
 use App\Modules\Communication\Domain\Models\CommunicationThread;
 use App\Modules\Communication\Domain\Policies\CommunicationCategoryPolicy;
 use App\Modules\Communication\Domain\Policies\CommunicationContactProposalPolicy;
@@ -34,6 +36,8 @@ use App\Modules\Communication\Domain\Policies\CommunicationFollowUpPolicy;
 use App\Modules\Communication\Domain\Policies\CommunicationFollowUpRulePolicy;
 use App\Modules\Communication\Domain\Policies\CommunicationIntegrationPolicy;
 use App\Modules\Communication\Domain\Policies\CommunicationMessagePolicy;
+use App\Modules\Communication\Domain\Policies\CommunicationPendingReplyPolicy;
+use App\Modules\Communication\Domain\Policies\CommunicationReplyPolicyPolicy;
 use App\Modules\Communication\Domain\Policies\CommunicationThreadPolicy;
 use App\Modules\CRM\Domain\Models\CrmAccount;
 use App\Modules\CRM\Domain\Models\CrmImport;
@@ -297,6 +301,11 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(CommunicationFollowUpRule::class, CommunicationFollowUpRulePolicy::class);
         Gate::policy(CommunicationFollowUp::class, CommunicationFollowUpPolicy::class);
         Gate::policy(CommunicationFollowUpOptOut::class, CommunicationFollowUpOptOutPolicy::class);
+        // BC-29 Communication R5 (#7690) — reponses assistees : politiques
+        // par boite × categorie et file Pending (validation par le SEUL
+        // proprietaire de la boite).
+        Gate::policy(CommunicationReplyPolicy::class, CommunicationReplyPolicyPolicy::class);
+        Gate::policy(CommunicationPendingReply::class, CommunicationPendingReplyPolicy::class);
 
         // Org structure
         Gate::policy(FuelMeterReading::class, FuelMeterReadingPolicy::class);

@@ -10,6 +10,9 @@ use App\Modules\Communication\Domain\Models\CommunicationFollowUpLog;
 use App\Modules\Communication\Domain\Models\CommunicationFollowUpRule;
 use App\Modules\Communication\Domain\Models\CommunicationIntegration;
 use App\Modules\Communication\Domain\Models\CommunicationMessage;
+use App\Modules\Communication\Domain\Models\CommunicationPendingReply;
+use App\Modules\Communication\Domain\Models\CommunicationReplyLog;
+use App\Modules\Communication\Domain\Models\CommunicationReplyPolicy;
 use App\Modules\Communication\Domain\Models\CommunicationThread;
 use App\Modules\Communication\Infrastructure\Jobs\ClassifyCommunicationMessageJob;
 use Illuminate\Http\Client\Response;
@@ -110,6 +113,26 @@ class GoogleGmailSyncService
         // R4 (#7689) — droit a l'effacement etendu aux relances : echeances,
         // regles (FK cascade) et journal d'audit de la boite.
         CommunicationFollowUpLog::query()
+            ->withoutGlobalScopes()
+            ->where('company_id', $integration->company_id)
+            ->where('integration_id', $integration->id)
+            ->delete();
+
+        // R5 (#7690) — idem pour les reponses assistees : journal d'audit,
+        // file Pending (contenus generes chiffres) et politiques de la boite.
+        CommunicationReplyLog::query()
+            ->withoutGlobalScopes()
+            ->where('company_id', $integration->company_id)
+            ->where('integration_id', $integration->id)
+            ->delete();
+
+        CommunicationPendingReply::query()
+            ->withoutGlobalScopes()
+            ->where('company_id', $integration->company_id)
+            ->where('integration_id', $integration->id)
+            ->delete();
+
+        CommunicationReplyPolicy::query()
             ->withoutGlobalScopes()
             ->where('company_id', $integration->company_id)
             ->where('integration_id', $integration->id)

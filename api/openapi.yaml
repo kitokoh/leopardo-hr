@@ -29614,7 +29614,7 @@ paths:
       tags:
       - Communication
       summary: Etat du module Communication pour le tenant courant
-      description: 'Sonde d''activation du module Communication (BC-29, #7685) : la route est gardee par le feature flag tenant `communication` (403 FEATURE_NOT_ENABLED si le module est inactif). Renvoie le jalon livre (stage R4 depuis #7689 : capacites `integrations`, `sync`, `classification` et `follow_ups` actives) et les capacites restantes, desactivees tant que le lot R5 n''est pas livre.'
+      description: 'Sonde d''activation du module Communication (BC-29, #7685) : la route est gardee par le feature flag tenant `communication` (403 FEATURE_NOT_ENABLED si le module est inactif). Renvoie le jalon livre (stage R5 depuis #7690 : capacites `integrations`, `sync`, `classification`, `follow_ups` et `replies` toutes actives).'
       security:
       - BearerAuth: []
       responses:
@@ -29689,7 +29689,7 @@ paths:
       tags:
       - Communication
       summary: Demarre la connexion Google de l'employe courant (OAuth serveur)
-      description: 'Flow OAuth 2.0 cote serveur (#7686) : pose un state anti-CSRF a usage unique (10 min) et renvoie l''URL de consentement Google (access_type=offline, prompt=consent, scopes minimaux openid email gmail.readonly). `with_send=true` (R4 #7689) ajoute le scope gmail.send (consentement incremental) requis pour activer les relances automatiques. Le client redirige le navigateur vers cette URL ; Google rappelle ensuite /communication/integrations/google/callback. 503 GOOGLE_OAUTH_UNAVAILABLE si le serveur n''a pas ses variables d''env Google (GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET / GOOGLE_COMMUNICATION_REDIRECT_URL).'
+      description: 'Flow OAuth 2.0 cote serveur (#7686) : pose un state anti-CSRF a usage unique (10 min) et renvoie l''URL de consentement Google (access_type=offline, prompt=consent, scopes minimaux openid email gmail.readonly). `with_send=true` (R4 #7689, R5 #7690) ajoute les scopes gmail.send et gmail.compose (consentement incremental) requis pour activer les relances automatiques et les reponses assistees (envoi + brouillons). Le client redirige le navigateur vers cette URL ; Google rappelle ensuite /communication/integrations/google/callback. 503 GOOGLE_OAUTH_UNAVAILABLE si le serveur n''a pas ses variables d''env Google (GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET / GOOGLE_COMMUNICATION_REDIRECT_URL).'
       security:
       - BearerAuth: []
       requestBody:
@@ -30559,6 +30559,258 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+
+  /communication/reply-policies:
+    get:
+      tags:
+      - Communication
+      summary: Politiques de reponse assistee de l'employe courant
+      description: 'Liste les politiques de reponse assistee (#7690, spec 3.5) des boites de l''employe COURANT uniquement - une ligne par boite x categorie de la taxonomie (aucune ligne = off). La boite est personnelle : les politiques des autres employes n''apparaissent jamais.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Politiques de reponse du proprietaire
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CommunicationReplyPolicy'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Communication
+      summary: Definir la politique de reponse d'une boite pour une categorie
+      description: 'Upsert de LA politique (#7690) d''une boite de l''employe courant pour une categorie de la taxonomie : off (defaut, rien), draft (brouillon depose dans le Gmail), confirm (file Pending, envoi apres validation humaine), auto (envoi direct sous garde-fous R4, OPT-IN explicite). Garde-fous : auto est REFUSE sur les categories finance/RH/juridique (liste bloquee en dur, 422 REPLY_AUTO_CATEGORY_BLOCKED) ; confirm/auto exigent le scope gmail.send (422 GMAIL_SEND_SCOPE_REQUIRED) et draft le scope gmail.compose (422 GMAIL_COMPOSE_SCOPE_REQUIRED) - reconnexion via POST /communication/integrations/google avec with_send=true. Categorie inconnue = 422 REPLY_CATEGORY_UNKNOWN ; boite d''un autre employe = 404 (existence non revelee).'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [integration_id, category_key, policy]
+              properties:
+                integration_id:
+                  type: string
+                  format: uuid
+                category_key:
+                  type: string
+                  maxLength: 64
+                policy:
+                  type: string
+                  enum: [off, draft, confirm, auto]
+      responses:
+        '200':
+          description: Politique mise a jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationReplyPolicy'
+        '201':
+          description: Politique creee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationReplyPolicy'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /communication/pending-replies:
+    get:
+      tags:
+      - Communication
+      summary: File Pending des reponses assistees de l'employe courant
+      description: 'Liste paginee des propositions de reponse generees par l''IA (#7690) pour les boites de l''employe COURANT uniquement, de la plus recente a la plus ancienne. Chaque proposition porte sa politique snapshotee (draft/confirm/auto), son statut (pending/drafted/sent/rejected/skipped/failed) et le code machine du garde-fou qui l''a arretee (opted_out, consent_blocked, quiet_hours, missing_send_scope, missing_compose_scope...). Filtre optionnel ?status=. En mode confirm, AUCUN envoi ne part sans approbation explicite du proprietaire.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [pending, drafted, sent, rejected, skipped, failed]
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Propositions de reponse du proprietaire
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CommunicationPendingReply'
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      last_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /communication/pending-replies/{pendingReply}:
+    patch:
+      tags:
+      - Communication
+      summary: Editer le brouillon d'une proposition en attente
+      description: 'Edite le sujet et/ou le corps d''une proposition encore `pending` (#7690) AVANT approbation - le texte envoye est toujours celui que l''humain a valide (edition auditee). PROPRIETAIRE de la boite uniquement (meme principal/rh = 403), autre tenant = 404, deja traitee = 409 PENDING_REPLY_NOT_PENDING.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: pendingReply
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subject:
+                  type: string
+                  maxLength: 255
+                body:
+                  type: string
+                  maxLength: 10000
+      responses:
+        '200':
+          description: Proposition editee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationPendingReply'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /communication/pending-replies/{pendingReply}/approve:
+    post:
+      tags:
+      - Communication
+      summary: Approuver une proposition (envoi reel)
+      description: 'VALIDATION HUMAINE du mode confirm (#7690) : approuve une proposition `pending` et l''envoie immediatement depuis le Gmail du proprietaire (meme fil, threading RFC 5322, tokens R1) - c''est l''UNIQUE chemin d''envoi de la file Pending. Les garde-fous terminaux sont re-evalues juste avant l''envoi : opt-out ou consentement CRM retire = 422 REPLY_BLOCKED (une approbation n''outrepasse jamais un refus de consentement), scope gmail.send manquant = 422 GMAIL_SEND_SCOPE_REQUIRED. Quota Gmail = 429 (la proposition reste pending), echec d''envoi = 502 REPLY_SEND_FAILED. PROPRIETAIRE de la boite uniquement, autre tenant = 404, deja traitee = 409.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: pendingReply
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Reponse envoyee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationPendingReply'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '502':
+          description: Echec d'envoi Gmail (proposition marquee failed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /communication/pending-replies/{pendingReply}/reject:
+    post:
+      tags:
+      - Communication
+      summary: Rejeter une proposition de reponse
+      description: 'Rejette une proposition encore `pending` (#7690) - rien ne part, la proposition est fermee et la decision auditee (rejected_by_owner). La deduplication garantit qu''un message rejete ne sera jamais re-propose. PROPRIETAIRE de la boite uniquement, autre tenant = 404, deja traitee = 409.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: pendingReply
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Proposition rejetee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationPendingReply'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
 
   /public/catalog/sitemap.xml:
     get:
@@ -32063,6 +32315,89 @@ components:
         source:
           type: string
           enum: [manual, unsubscribe]
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+    CommunicationReplyPolicy:
+      type: object
+      description: Politique de reponse assistee d'une boite pour une categorie (Communication R5, #7690) - off (defaut), draft (brouillon Gmail), confirm (file Pending, validation humaine), auto (opt-in explicite, jamais sur finance/RH/juridique).
+      properties:
+        id:
+          type: string
+          format: uuid
+        integration_id:
+          type: string
+          format: uuid
+        category_key:
+          type: string
+        policy:
+          type: string
+          enum: [off, draft, confirm, auto]
+        auto_blocked:
+          type: boolean
+          description: true si la categorie est interdite en mode auto (liste finance/RH/juridique bloquee en dur).
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+    CommunicationPendingReply:
+      type: object
+      description: Proposition de reponse IA en file Pending (Communication R5, #7690) - deduplication par message entrant, corps genere chiffre au repos, envoi uniquement apres validation humaine (confirm) ou sous garde-fous R4 (auto opt-in).
+      properties:
+        id:
+          type: string
+          format: uuid
+        integration_id:
+          type: string
+          format: uuid
+        thread_id:
+          type: string
+          format: uuid
+        message_id:
+          type: string
+          format: uuid
+          description: Message ENTRANT auquel la proposition repond.
+        category_key:
+          type: string
+        mode:
+          type: string
+          enum: [draft, confirm, auto]
+          description: Politique appliquee au moment de la proposition (snapshot).
+        to_email:
+          type: string
+        subject:
+          type: string
+          nullable: true
+        body:
+          type: string
+          nullable: true
+          description: Corps text/plain genere par l'IA (borne, valide) - jamais envoye sans validation humaine en mode confirm.
+        ai_language:
+          type: string
+          nullable: true
+        ai_confidence:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum: [pending, drafted, sent, rejected, skipped, failed]
+        skip_reason:
+          type: string
+          nullable: true
+          description: Code machine du garde-fou ou de la decision (opted_out, consent_blocked, quiet_hours, auto_daily_cap_reached, missing_send_scope, missing_compose_scope, rejected_by_owner, gmail_send_failed...)
+        edited_at:
+          type: string
+          format: date-time
+          nullable: true
+        decided_at:
+          type: string
+          format: date-time
+          nullable: true
+        sent_at:
+          type: string
+          format: date-time
+          nullable: true
         created_at:
           type: string
           format: date-time

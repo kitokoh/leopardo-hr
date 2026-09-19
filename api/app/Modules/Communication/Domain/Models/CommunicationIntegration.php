@@ -149,6 +149,21 @@ class CommunicationIntegration extends Model
     }
 
     /**
+     * La boite a-t-elle accorde le scope de COMPOSITION Gmail (R5 #7690) ?
+     * La politique de reponse `draft` depose un brouillon dans la boite —
+     * `gmail.compose` est demande avec `gmail.send` a l'activation via
+     * POST /integrations/google `with_send=true` (scopes incrementaux).
+     */
+    public function hasComposeScope(): bool
+    {
+        return in_array(
+            'https://www.googleapis.com/auth/gmail.compose',
+            $this->scopes ?? [],
+            true
+        );
+    }
+
+    /**
      * L'access token est-il a rafraichir ? Marge de 60 s pour ne jamais
      * presenter a Google un token qui expire pendant l'appel.
      */
