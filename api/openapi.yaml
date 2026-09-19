@@ -34548,6 +34548,480 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /pharmacy/suppliers:
+    get:
+      tags:
+      - Pharmacy
+      summary: Lister les fournisseurs de l'officine
+      description: 'PHARMA-004 (#7801). Grossistes-répartiteurs, laboratoires et autres. Filtres
+        `type`, `status` ; pagination `per_page`. Lecture pour tout employé du tenant.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [wholesaler, laboratory, other]
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [active, archived]
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginée des fournisseurs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PharmacySupplier'
+                  meta:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Pharmacy
+      summary: Créer un fournisseur
+      description: 'PHARMA-004 (#7801). Manager uniquement (PharmacySupplierPolicy).'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                type:
+                  type: string
+                  enum: [wholesaler, laboratory, other]
+                contact_name:
+                  type: string
+                  nullable: true
+                phone:
+                  type: string
+                  nullable: true
+                email:
+                  type: string
+                  nullable: true
+                address:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, archived]
+      responses:
+        '201':
+          description: Fournisseur créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacySupplier'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/suppliers/{supplier}:
+    get:
+      tags:
+      - Pharmacy
+      summary: Détail d'un fournisseur
+      description: 'PHARMA-004 (#7801). Fournisseur d''un autre tenant → 404 fail-closed.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: supplier
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail du fournisseur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacySupplier'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - Pharmacy
+      summary: Mettre à jour un fournisseur
+      description: 'PHARMA-004 (#7801). Manager uniquement.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: supplier
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                type:
+                  type: string
+                contact_name:
+                  type: string
+                  nullable: true
+                phone:
+                  type: string
+                  nullable: true
+                email:
+                  type: string
+                  nullable: true
+                address:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+      responses:
+        '200':
+          description: Fournisseur mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacySupplier'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/suppliers/{supplier}/archive:
+    patch:
+      tags:
+      - Pharmacy
+      summary: Archiver un fournisseur
+      description: 'PHARMA-004 (#7801). Manager uniquement. Jamais de suppression : le fournisseur
+        peut être référencé par des lots et des commandes.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: supplier
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Fournisseur archivé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacySupplier'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /pharmacy/purchase-orders:
+    get:
+      tags:
+      - Pharmacy
+      summary: Lister les commandes d'achat
+      description: 'PHARMA-004 (#7801). Filtres `status`, `supplier_id` ; pagination `per_page`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [draft, ordered, partially_received, received, cancelled]
+      - name: supplier_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginée des commandes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PharmacyPurchaseOrder'
+                  meta:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Pharmacy
+      summary: Créer une commande d'achat (draft)
+      description: 'PHARMA-004 (#7801). Manager uniquement. Numéro `PO-YYYY-XXXX` séquencé par
+        tenant, lignes (produit du tenant, quantité, prix unitaire optionnel — sinon prix d''achat
+        du référentiel).'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - supplier_id
+              - lines
+              properties:
+                supplier_id:
+                  type: integer
+                notes:
+                  type: string
+                  nullable: true
+                lines:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - product_id
+                    - quantity_ordered
+                    properties:
+                      product_id:
+                        type: integer
+                      quantity_ordered:
+                        type: integer
+                      unit_price:
+                        type: number
+                        nullable: true
+      responses:
+        '201':
+          description: Commande créée (draft)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacyPurchaseOrder'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/purchase-orders/{purchaseOrder}:
+    get:
+      tags:
+      - Pharmacy
+      summary: Détail d'une commande d'achat (avec lignes)
+      description: 'PHARMA-004 (#7801). Commande d''un autre tenant → 404 fail-closed.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: purchaseOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de la commande
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacyPurchaseOrder'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /pharmacy/purchase-orders/{purchaseOrder}/order:
+    post:
+      tags:
+      - Pharmacy
+      summary: Passer une commande (draft → ordered)
+      description: 'PHARMA-004 (#7801). Manager uniquement. Transition invalide → 422.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: purchaseOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande passée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacyPurchaseOrder'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/purchase-orders/{purchaseOrder}/cancel:
+    post:
+      tags:
+      - Pharmacy
+      summary: Annuler une commande (draft|ordered uniquement)
+      description: 'PHARMA-004 (#7801). Manager uniquement. Une commande partiellement ou
+        totalement reçue a déjà produit des lots : annulation refusée (422).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: purchaseOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande annulée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacyPurchaseOrder'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/purchase-orders/{purchaseOrder}/receive:
+    post:
+      tags:
+      - Pharmacy
+      summary: Réceptionner une commande (lots + mouvements receipt)
+      description: 'PHARMA-004 (#7801). Manager uniquement. Chaque ligne reçue (quantité, n° de
+        lot, péremption, coût optionnel) crée/incrémente un lot via PharmacyStockService (#7800).
+        Réception partielle → `partially_received`, totale → `received` ; sur-réception → 422.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: purchaseOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - receipts
+              properties:
+                receipts:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - line_id
+                    - quantity
+                    - batch_number
+                    - expiry_date
+                    properties:
+                      line_id:
+                        type: integer
+                      quantity:
+                        type: integer
+                      batch_number:
+                        type: string
+                      expiry_date:
+                        type: string
+                        format: date
+                      unit_cost:
+                        type: number
+                        nullable: true
+      responses:
+        '200':
+          description: Commande réceptionnée (partiellement ou totalement)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacyPurchaseOrder'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
 components:
   securitySchemes:
     BearerAuth:
@@ -34832,6 +35306,71 @@ components:
           type: string
           format: date-time
           nullable: true
+    PharmacySupplier:
+      type: object
+      description: Fournisseur d'officine (PHARMA-004, #7801) — grossiste-répartiteur, laboratoire ou autre.
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+          enum: [wholesaler, laboratory, other]
+        contact_name:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, archived]
+    PharmacyPurchaseOrder:
+      type: object
+      description: Commande d'achat d'officine (PHARMA-004, #7801) — numéro PO-YYYY-XXXX séquencé par tenant, cycle draft→ordered→partially_received→received|cancelled.
+      properties:
+        id:
+          type: integer
+        number:
+          type: string
+        supplier_id:
+          type: integer
+        status:
+          type: string
+          enum: [draft, ordered, partially_received, received, cancelled]
+        ordered_at:
+          type: string
+          format: date-time
+          nullable: true
+        received_at:
+          type: string
+          format: date-time
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        lines:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              product_id:
+                type: integer
+              quantity_ordered:
+                type: integer
+              quantity_received:
+                type: integer
+              unit_price:
+                type: string
     TravelStaffAssignment:
       type: object
       description: >-

@@ -1671,6 +1671,61 @@ trait CreatesMvpSchema
             });
         }
 
+        // Issue #7801 (PHARMA-004) — fournisseurs + commandes d'achat.
+        // Miroir de la migration 2026_09_22_100003_7801 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('pharmacy_suppliers'))) {
+            Schema::create($this->moduleTable('pharmacy_suppliers'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 191);
+                $table->string('type', 20)->default('wholesaler');
+                $table->string('contact_name', 191)->nullable();
+                $table->string('phone', 50)->nullable();
+                $table->string('email', 191)->nullable();
+                $table->string('address', 500)->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+
+                $table->index(['company_id', 'status'], 'pharmacy_suppliers_company_status_idx');
+                $table->index(['company_id', 'type'], 'pharmacy_suppliers_company_type_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('pharmacy_purchase_orders'))) {
+            Schema::create($this->moduleTable('pharmacy_purchase_orders'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('supplier_id');
+                $table->string('number', 20);
+                $table->string('status', 30)->default('draft');
+                $table->timestamp('ordered_at')->nullable();
+                $table->timestamp('received_at')->nullable();
+                $table->string('notes', 500)->nullable();
+                $table->unsignedBigInteger('created_by_employee_id')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'number'], 'pharmacy_purchase_orders_company_number_unique');
+                $table->index(['company_id', 'status'], 'pharmacy_purchase_orders_company_status_idx');
+                $table->index(['company_id', 'supplier_id'], 'pharmacy_purchase_orders_company_supplier_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('pharmacy_purchase_order_lines'))) {
+            Schema::create($this->moduleTable('pharmacy_purchase_order_lines'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('purchase_order_id');
+                $table->unsignedBigInteger('product_id');
+                $table->unsignedInteger('quantity_ordered');
+                $table->unsignedInteger('quantity_received')->default(0);
+                $table->decimal('unit_price', 12, 2)->default(0);
+                $table->timestamps();
+
+                $table->index(['company_id', 'purchase_order_id'], 'pharmacy_po_lines_company_po_idx');
+                $table->index(['company_id', 'product_id'], 'pharmacy_po_lines_company_product_idx');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('catalog_inquiries'))) {
             Schema::create($this->moduleTable('catalog_inquiries'), function (Blueprint $table): void {
                 $table->bigIncrements('id');

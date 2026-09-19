@@ -14,7 +14,9 @@
 
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyAlertController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyProductController;
+use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyPurchaseOrderController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyStockController;
+use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacySupplierController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
@@ -34,4 +36,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/stock/movements', [PharmacyStockController::class, 'movements']);
         Route::post('/stock/adjustments', [PharmacyStockController::class, 'storeAdjustment']);
         Route::get('/alerts', [PharmacyAlertController::class, 'index']);
+
+        // ── Fournisseurs et commandes d'achat (PHARMA-004, #7801) ──────────
+        Route::get('/suppliers', [PharmacySupplierController::class, 'index']);
+        Route::post('/suppliers', [PharmacySupplierController::class, 'store']);
+        Route::get('/suppliers/{supplier}', [PharmacySupplierController::class, 'show'])->whereNumber('supplier');
+        Route::put('/suppliers/{supplier}', [PharmacySupplierController::class, 'update'])->whereNumber('supplier');
+        Route::patch('/suppliers/{supplier}/archive', [PharmacySupplierController::class, 'archive'])->whereNumber('supplier');
+
+        Route::get('/purchase-orders', [PharmacyPurchaseOrderController::class, 'index']);
+        Route::post('/purchase-orders', [PharmacyPurchaseOrderController::class, 'store']);
+        Route::get('/purchase-orders/{purchaseOrder}', [PharmacyPurchaseOrderController::class, 'show'])->whereNumber('purchaseOrder');
+        Route::post('/purchase-orders/{purchaseOrder}/order', [PharmacyPurchaseOrderController::class, 'markOrdered'])->whereNumber('purchaseOrder');
+        Route::post('/purchase-orders/{purchaseOrder}/cancel', [PharmacyPurchaseOrderController::class, 'cancel'])->whereNumber('purchaseOrder');
+        Route::post('/purchase-orders/{purchaseOrder}/receive', [PharmacyPurchaseOrderController::class, 'receive'])->whereNumber('purchaseOrder');
     });
