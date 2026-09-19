@@ -34315,6 +34315,239 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+  /pharmacy/stock/levels:
+    get:
+      tags:
+      - Pharmacy
+      summary: Niveaux de stock par produit (lots non périmés)
+      description: 'PHARMA-003 (#7800). Solution `pharmacy` requise. Lecture pour tout employé du
+        tenant. Le disponible EXCLUT les lots périmés ; la quantité périmée restant à retirer est
+        exposée séparément. Pagination `per_page`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Niveaux de stock paginés par produit
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        product_id:
+                          type: integer
+                        name:
+                          type: string
+                        min_stock_level:
+                          type: integer
+                        available_quantity:
+                          type: integer
+                        expired_quantity:
+                          type: integer
+                        below_min_stock:
+                          type: boolean
+                  meta:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /pharmacy/stock/batches:
+    get:
+      tags:
+      - Pharmacy
+      summary: Lister les lots de stock (tri FEFO par péremption)
+      description: 'PHARMA-003 (#7800). Lots du tenant triés par péremption croissante (ordre de
+        délivrance FEFO). Filtres `product_id`, `in_stock_only` ; pagination `per_page`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: in_stock_only
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginée des lots
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PharmacyBatch'
+                  meta:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /pharmacy/stock/movements:
+    get:
+      tags:
+      - Pharmacy
+      summary: Journal immuable des mouvements de stock
+      description: 'PHARMA-003 (#7800). Journal append-only (delta signé, type contrôlé
+        receipt|sale|adjustment|expiry_writeoff|return, référence polymorphe). Filtres `product_id`,
+        `batch_id`, `type` ; pagination `per_page`, du plus récent au plus ancien.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: batch_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [receipt, sale, adjustment, expiry_writeoff, return]
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Journal paginé des mouvements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PharmacyStockMovement'
+                  meta:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /pharmacy/stock/adjustments:
+    post:
+      tags:
+      - Pharmacy
+      summary: Ajustement d'inventaire d'un lot
+      description: 'PHARMA-003 (#7800). Manager uniquement (PharmacyStockPolicy). Delta signé non
+        nul, raison OBLIGATOIRE ; un lot ne devient jamais négatif (422 sinon). Chaque ajustement
+        journalise un mouvement immuable.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - batch_id
+              - quantity_delta
+              - reason
+              properties:
+                batch_id:
+                  type: integer
+                quantity_delta:
+                  type: integer
+                reason:
+                  type: string
+                type:
+                  type: string
+                  enum: [adjustment, expiry_writeoff]
+      responses:
+        '201':
+          description: Lot ajusté
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacyBatch'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/alerts:
+    get:
+      tags:
+      - Pharmacy
+      summary: Alertes de stock (rupture, péremption, périmés)
+      description: 'PHARMA-003 (#7800). Produits actifs sous `min_stock_level` (disponible hors
+        périmés), lots périmant sous `days` jours (défaut 90, max 365) et lots périmés restant
+        à retirer. Tenant-scopé, lecture pour tout employé.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Alertes de stock du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      low_stock:
+                        type: array
+                        items:
+                          type: object
+                      expiring_soon:
+                        type: array
+                        items:
+                          type: object
+                      expired:
+                        type: array
+                        items:
+                          type: object
+                  meta:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
 components:
   securitySchemes:
     BearerAuth:
@@ -34541,6 +34774,64 @@ components:
         status:
           type: string
           enum: [active, archived]
+    PharmacyBatch:
+      type: object
+      description: Lot de stock d'officine (PHARMA-003, #7800) — n° de lot unique par (tenant, produit), péremption, quantité restante.
+      properties:
+        id:
+          type: integer
+        product_id:
+          type: integer
+        supplier_id:
+          type: integer
+          nullable: true
+        batch_number:
+          type: string
+        expiry_date:
+          type: string
+          format: date
+        quantity:
+          type: integer
+        unit_cost:
+          type: string
+          nullable: true
+        received_at:
+          type: string
+          format: date-time
+          nullable: true
+        is_expired:
+          type: boolean
+    PharmacyStockMovement:
+      type: object
+      description: Mouvement de stock d'officine (PHARMA-003, #7800) — journal immuable append-only.
+      properties:
+        id:
+          type: integer
+        product_id:
+          type: integer
+        batch_id:
+          type: integer
+        type:
+          type: string
+          enum: [receipt, sale, adjustment, expiry_writeoff, return]
+        quantity_delta:
+          type: integer
+        reason:
+          type: string
+          nullable: true
+        reference_type:
+          type: string
+          nullable: true
+        reference_id:
+          type: integer
+          nullable: true
+        created_by_employee_id:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
     TravelStaffAssignment:
       type: object
       description: >-

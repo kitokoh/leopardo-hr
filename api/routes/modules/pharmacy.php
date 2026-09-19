@@ -12,7 +12,9 @@
  * PII santé (patients/ordonnances) jamais exposées hors tenant.
  */
 
+use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyAlertController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyProductController;
+use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyStockController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
@@ -25,4 +27,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/products/{product}', [PharmacyProductController::class, 'show'])->whereNumber('product');
         Route::put('/products/{product}', [PharmacyProductController::class, 'update'])->whereNumber('product');
         Route::patch('/products/{product}/archive', [PharmacyProductController::class, 'archive'])->whereNumber('product');
+
+        // ── Stock par lots, mouvements immuables, alertes (PHARMA-003, #7800) ─
+        Route::get('/stock/levels', [PharmacyStockController::class, 'levels']);
+        Route::get('/stock/batches', [PharmacyStockController::class, 'batches']);
+        Route::get('/stock/movements', [PharmacyStockController::class, 'movements']);
+        Route::post('/stock/adjustments', [PharmacyStockController::class, 'storeAdjustment']);
+        Route::get('/alerts', [PharmacyAlertController::class, 'index']);
     });

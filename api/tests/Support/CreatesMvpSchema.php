@@ -1630,6 +1630,47 @@ trait CreatesMvpSchema
             });
         }
 
+        // Issue #7800 (PHARMA-003) — stock d'officine par lots + mouvements.
+        // Miroir de la migration 2026_09_22_100002_7800 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('pharmacy_batches'))) {
+            Schema::create($this->moduleTable('pharmacy_batches'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('product_id');
+                $table->unsignedBigInteger('supplier_id')->nullable();
+                $table->string('batch_number', 64);
+                $table->date('expiry_date');
+                $table->unsignedInteger('quantity')->default(0);
+                $table->decimal('unit_cost', 12, 2)->nullable();
+                $table->timestamp('received_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'product_id', 'batch_number'], 'pharmacy_batches_company_product_batch_unique');
+                $table->index(['company_id', 'product_id', 'expiry_date'], 'pharmacy_batches_company_product_expiry_idx');
+                $table->index(['company_id', 'expiry_date'], 'pharmacy_batches_company_expiry_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('pharmacy_stock_movements'))) {
+            Schema::create($this->moduleTable('pharmacy_stock_movements'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('product_id');
+                $table->unsignedBigInteger('batch_id');
+                $table->string('type', 30);
+                $table->integer('quantity_delta');
+                $table->string('reason', 500)->nullable();
+                $table->string('reference_type', 80)->nullable();
+                $table->unsignedBigInteger('reference_id')->nullable();
+                $table->unsignedBigInteger('created_by_employee_id')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'product_id'], 'pharmacy_stock_movements_company_product_idx');
+                $table->index(['company_id', 'batch_id'], 'pharmacy_stock_movements_company_batch_idx');
+                $table->index(['company_id', 'reference_type', 'reference_id'], 'pharmacy_stock_movements_company_reference_idx');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('catalog_inquiries'))) {
             Schema::create($this->moduleTable('catalog_inquiries'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
