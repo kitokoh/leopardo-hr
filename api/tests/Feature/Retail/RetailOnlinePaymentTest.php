@@ -119,6 +119,7 @@ class RetailOnlinePaymentTest extends TestCase
 
     /**
      * @param  array<string, mixed>  $payload
+     * @return \Illuminate\Testing\TestResponse<\Symfony\Component\HttpFoundation\Response>
      */
     private function postSignedWebhook(array $payload, ?string $secret = self::WEBHOOK_SECRET): \Illuminate\Testing\TestResponse
     {
