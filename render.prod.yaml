@@ -46,6 +46,14 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
+      # Issue #7647 : tier de déploiement explicite, découplé d'APP_ENV
+      # (le tier dev tourne aussi en APP_ENV=production — seule cette
+      # variable distingue les tiers). docker-entrypoint.sh est fail-closed
+      # dessus : RESET_TEST_DB_ONCE est catégoriquement refusé et
+      # FORCE_SUPER_ADMIN_PASSWORD_RESET est vidée avant les seeders quand
+      # DEPLOY_TIER != dev.
+      - key: DEPLOY_TIER
+        value: prod
       # Issue #7213 : doc API verrouillée en prod (comportement explicite).
       - key: API_DOCS_PUBLIC
         value: "false"

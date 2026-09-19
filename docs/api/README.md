@@ -1,6 +1,6 @@
-# API Reference — Leopardo RH
+# API Reference — Leopardo
 
-Leopardo RH provides a robust, RESTful API that powers all our official clients (Web, Mobile, Kiosk) and allows for third-party integrations.
+Leopardo provides a robust, RESTful API that powers all our official clients (Web, Mobile, Kiosk) and allows for third-party integrations.
 
 ## 🔑 Authentication
 

@@ -1,4 +1,4 @@
-# Strategie CI rapide — Leopardo RH
+# Strategie CI rapide — Leopardo
 
 > Extrait d'AGENTS.md (2026-09-02, issue #6698 — désengorgement du fichier racine). Règles opérationnelles CI inchangées, pointées depuis AGENTS.md.
 
