@@ -48,6 +48,10 @@ class RestaurantPublicBranchResource extends JsonResource
             'cover_image_url' => $row['cover_image_url'] ?? null,
             'latitude' => isset($row['latitude']) && is_numeric($row['latitude']) ? (float) $row['latitude'] : null,
             'longitude' => isset($row['longitude']) && is_numeric($row['longitude']) ? (float) $row['longitude'] : null,
+            // RESTO-902 (#7747) — note moyenne + volume d'avis PUBLIÉS
+            // (sous-requêtes de l'annuaire ; null tant qu'aucun avis publié).
+            'rating_avg' => isset($row['rating_avg']) && is_numeric($row['rating_avg']) ? round((float) $row['rating_avg'], 2) : null,
+            'reviews_count' => isset($row['reviews_count']) && is_numeric($row['reviews_count']) ? (int) $row['reviews_count'] : 0,
         ];
 
         if (isset($row['distance_km']) && is_numeric($row['distance_km'])) {
