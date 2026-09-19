@@ -1,6 +1,15 @@
 # AGENTS.md - Guide de travail Leopardo
 
-Derniere mise a jour : 2026-09-05 (audit PM architecture — liste des apps mobiles alignée sur le dépôt)
+Derniere mise a jour : 2026-09-19 (verticale HealthManager BC-30 — checklist de création d'une verticale vérifiée de bout en bout)
+
+> Leçon 2026-09-19 (HC-001..008 #7785..#7792) : créer une VERTICALE complète = 8 points
+> d'enregistrement au-delà du module lui-même, tous vérifiés par des gardes locales :
+> catalogue (`SolutionCatalogue` via provider), `config/feature-flags.php`,
+> `Company::KNOWN_MODULES` (leçon #7220/#7235), registre BC + CODEOWNERS + arêtes MAT-002,
+> parité docs architecture ×4 (compteur de modules !), fixture `CreatesMvpSchema` (#5443),
+> couverture OpenAPI (63 ops sinon drift), préfixes protégés front (`protected-prefixes.ts`
+> + `proxy.ts` + `sw.js` — les tests Jest du dépôt le rattrapent). Lancer TOUTES les gardes
+> `dev-hub/tools/check-*.sh` AVANT le push évite chaque aller-retour CI.
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 

@@ -54,7 +54,7 @@ leopardo-hr/
 
 ```
 app/
-├── Modules/<Nom>/              # Monolithe modulaire DDD (28 modules actifs)
+├── Modules/<Nom>/              # Monolithe modulaire DDD (29 modules actifs)
 │   ├── Application/            # Actions, DTOs, Queries (orchestration)
 │   ├── Domain/                 # Models, Contracts, Exceptions (règles métier)
 │   ├── Infrastructure/         # Services, Repositories (implémentation)

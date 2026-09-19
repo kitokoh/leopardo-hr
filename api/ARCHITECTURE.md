@@ -120,6 +120,7 @@ restent libres. `Modules/CRM` existe et est complet (`CrmServiceProvider`) ; la 
 | `Modules/Notification` | ✅ routes/api.php + dashboard.php + hr_extended.php | ✅ complet | `NotificationServiceProvider` |
 | `Modules/Recruitment` | ✅ routes/modules/hr_extended.php | 🔶 Application vide (0 Action) — Domain/Infrastructure/Interfaces présents | `RecruitmentServiceProvider` |
 | `Modules/EduManager` | ✅ routes/modules/edu_manager.php | 🟢 verticale BC-16 (EDU-001..020, core + batch2 + batch3) | `EduManagerServiceProvider` |
+| `Modules/HealthManager` | ✅ routes/modules/health_manager.php | 🟢 verticale BC-30 (HC-001..008, pilote) | `HealthManagerServiceProvider` |
 | `Modules/RestaurantManager` | ✅ routes/modules/restaurantmanager.php | 🟢 verticale BC-25 (Application/Domain/Infrastructure/Interfaces/Providers) | `RestaurantManagerServiceProvider` |
 | `Modules/Restaurant` | ✅ routes/modules/solutions.php (public) | 🔶 **Fournisseur de contenu** (Solution/Survey) — Application/Infrastructure/Interfaces **N/A intentionnel** (ADR-0020, #6901) ; webhooks/shop via RestaurantManager, surveys via `Core\Solutions` | `RestaurantServiceProvider` |
 | `Modules/Billing` | ✅ routes/modules/billing.php | ✅ complet | `BillingServiceProvider` |
