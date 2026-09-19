@@ -11,6 +11,8 @@ import { useState } from 'react';
 import { BookOpen } from 'lucide-react';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { RestaurantCrudTable, type CrudConfig } from '@/components/restaurant/RestaurantCrudTable';
+import { ESTABLISHMENT_TYPES } from '@/components/restaurant/establishment-types';
+import { apiFetch } from '@/lib/api-client';
 import { getPreferredLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
 
@@ -24,6 +26,14 @@ export default function RestaurantReferentialPage() {
     { value: 'active', label: 'Active' },
     { value: 'disabled', label: t(locale, 'restaurant.ref.disabled') },
   ];
+
+  // RESTO-904 (#7749) — type d'établissement (8 valeurs du contrat
+  // RESTO-901). Persisté via `PUT /restaurant/branches/{id}/public-profile`
+  // (le CRUD branches n'accepte pas ce champ) — cf. hooks prepareEdit/afterSave.
+  const ESTABLISHMENT_TYPE_OPTIONS = ESTABLISHMENT_TYPES.map((type) => ({
+    value: type,
+    label: t(locale, `restaurant.establishmentType.${type}`),
+  }));
 
   const configs: Record<string, CrudConfig> = {
     branches: {
@@ -44,8 +54,24 @@ export default function RestaurantReferentialPage() {
         { name: 'city', label: 'Ville', type: 'text' },
         { name: 'phone', label: t(locale, 'restaurant.ref.fieldPhone'), type: 'text' },
         { name: 'currency', label: 'Devise (3 lettres)', type: 'text' },
+        { name: 'establishment_type', label: t(locale, 'restaurant.establishmentType.label'), type: 'select', options: ESTABLISHMENT_TYPE_OPTIONS },
         { name: 'status', label: 'Statut', type: 'select', options: STATUS_OPTIONS },
       ],
+      prepareEdit: async (row) => {
+        const res = await apiFetch(`/restaurant/branches/${String(row.id)}/public-profile`);
+        if (!res.ok) return {};
+        const payload = (await res.json()) as { data?: Record<string, unknown> };
+        return { establishment_type: payload.data?.establishment_type ?? '' };
+      },
+      afterSave: async (row, formData) => {
+        const id = row.id ?? null;
+        if (id === null || id === undefined) return;
+        const type = formData.establishment_type;
+        await apiFetch(`/restaurant/branches/${String(id)}/public-profile`, {
+          method: 'PUT',
+          body: JSON.stringify({ establishment_type: type === '' || type === undefined ? null : type }),
+        });
+      },
     },
     zones: {
       endpoint: '/restaurant/zones',
