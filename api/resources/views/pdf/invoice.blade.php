@@ -2,6 +2,13 @@
 <html lang="{{ app()->getLocale() }}" dir="{{ \App\Support\I18nCatalog::isRtl(app()->getLocale()) ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
+    @php
+        // #7713 — image de marque du tenant : logo (chemin fichier local, compatible
+        // dompdf) + couleur primaire pour les en-têtes de tableau. Sans branding
+        // exploitable, le rendu reste STRICTEMENT identique à l'historique.
+        $pdfBrandLogo = \App\Support\PdfBranding::logoPath($company ?? null);
+        $pdfBrandColor = \App\Support\PdfBranding::primaryColor($company ?? null, '');
+    @endphp
     <style>
         body { font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #111; margin: 30px; }
         .header { margin-bottom: 20px; }
@@ -24,9 +31,13 @@
         .status-paid { background: #d1fae5; color: #065f46; }
         .status-pending { background: #fef3c7; color: #92400e; }
         .status-overdue { background: #fee2e2; color: #991b1b; }
+        @if($pdfBrandColor !== '') th { background: {{ $pdfBrandColor }}; color: #ffffff; } @endif
     </style>
 </head>
 <body>
+    @if($pdfBrandLogo !== null)
+    <img src="{{ $pdfBrandLogo }}" alt="" style="height: 48px; margin-bottom: 8px;">
+    @endif
     <div class="company-name">{{ __('pdf.invoice_platform_name') }}</div>
     <div style="font-size: 10px; color: #666;">{{ __('pdf.invoice_platform_tagline') }}</div>
 
