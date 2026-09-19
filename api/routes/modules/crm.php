@@ -41,7 +41,7 @@ Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {
 });
 
 // ── Canaux de communication CRM (tenant, managers principal/rh) ─────────────
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'api.manager:principal,rh'])
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'api.manager:principal,rh,module:crm'])
     ->prefix('crm')
     ->group(function (): void {
         Route::get('/channels', [CrmChannelController::class, 'index']);
@@ -88,18 +88,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::post('/merge', [CrmDedupController::class, 'merge']);
 
     // ── Canal email (#5726) ──────────────────────────────────────────────────
-    Route::middleware('api.manager:principal,marketing')->group(function (): void {
+    Route::middleware('api.manager:principal,marketing,module:crm')->group(function (): void {
         Route::post('/email/transactional', [CrmEmailController::class, 'sendTransactional']);
         Route::post('/email/marketing', [CrmEmailController::class, 'sendMarketing']);
     });
     // ── Campagnes marketing (#5724) ──────────────────────────────────────────
-    Route::middleware('api.manager')->group(function (): void {
+    Route::middleware('api.manager:module:crm')->group(function (): void {
         Route::get('/campaigns', [CrmCampaignController::class, 'index']);
         Route::get('/campaigns/{campaign}', [CrmCampaignController::class, 'show'])->whereNumber('campaign');
         Route::get('/campaigns/{campaign}/report', [CrmCampaignController::class, 'report'])->whereNumber('campaign');
     });
 
-    Route::middleware('api.manager:principal,marketing')->group(function (): void {
+    Route::middleware('api.manager:principal,marketing,module:crm')->group(function (): void {
         Route::post('/campaigns', [CrmCampaignController::class, 'store']);
         Route::put('/campaigns/{campaign}', [CrmCampaignController::class, 'update'])->whereNumber('campaign');
         Route::delete('/campaigns/{campaign}', [CrmCampaignController::class, 'destroy'])->whereNumber('campaign');
@@ -113,7 +113,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     // ── Répertoire CRM — listes paginées tenant (#5712/#6977) ────────────────
     // Consommées par le dashboard client web (`/crm/leads|accounts|contacts|
     // pipeline`) ; lecture = managers du tenant (RBAC ADR-CRM-002).
-    Route::middleware('api.manager')->group(function (): void {
+    Route::middleware('api.manager:module:crm')->group(function (): void {
         Route::get('/leads', [CrmDirectoryController::class, 'leads']);
         Route::get('/accounts', [CrmDirectoryController::class, 'accounts']);
         Route::get('/contacts', [CrmDirectoryController::class, 'contacts']);
@@ -121,24 +121,24 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     });
 
     // ── Consentements et préférences de communication (#5722) ───────────────
-    Route::middleware('api.manager')->group(function (): void {
+    Route::middleware('api.manager:module:crm')->group(function (): void {
         Route::get('/consents', [CrmConsentController::class, 'index']);
         Route::get('/consents/{consent}', [CrmConsentController::class, 'show'])->whereNumber('consent');
     });
 
-    Route::middleware('api.manager:principal,marketing')->group(function (): void {
+    Route::middleware('api.manager:principal,marketing,module:crm')->group(function (): void {
         Route::post('/consents', [CrmConsentController::class, 'store']);
         Route::post('/consents/{consent}/revoke', [CrmConsentController::class, 'revoke'])->whereNumber('consent');
     });
 
     // ── Segments CRM (#5723) ─────────────────────────────────────────────────
-    Route::middleware('api.manager')->group(function (): void {
+    Route::middleware('api.manager:module:crm')->group(function (): void {
         Route::get('/segments', [CrmSegmentController::class, 'index']);
         Route::get('/segments/{segment}', [CrmSegmentController::class, 'show'])->whereNumber('segment');
         Route::get('/segments/{segment}/members', [CrmSegmentController::class, 'members'])->whereNumber('segment');
     });
 
-    Route::middleware('api.manager:principal,marketing')->group(function (): void {
+    Route::middleware('api.manager:principal,marketing,module:crm')->group(function (): void {
         Route::post('/segments', [CrmSegmentController::class, 'store']);
         Route::put('/segments/{segment}', [CrmSegmentController::class, 'update'])->whereNumber('segment');
         Route::delete('/segments/{segment}', [CrmSegmentController::class, 'destroy'])->whereNumber('segment');
