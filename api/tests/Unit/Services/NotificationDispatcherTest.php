@@ -82,7 +82,7 @@ class NotificationDispatcherTest extends TestCase
     public function test_dispatch_sends_push_to_active_device_token(): void
     {
         $employee = $this->makeEmployee();
-        DeviceToken::query()->create([
+        DeviceToken::query()->forceCreate([
             'employee_id' => $employee->id,
             'token' => 'fcm-token-1',
             'platform' => 'android',

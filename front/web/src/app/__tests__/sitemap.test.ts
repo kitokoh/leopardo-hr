@@ -39,13 +39,20 @@ jest.doMock('@/modules/vitrine/lib/case-studies', () => ({
   getAllCaseStudySlugs: () => ['techcorp-algerie', 'pharmaplus-casablanca'],
 }));
 
+// RESTO-903 (#7748) : les slugs publics /restaurants/{slug} viennent de l'API
+// publique — mockés ici (pas de réseau en test), avec un cas nominal.
+jest.doMock('@/lib/restaurants-public-api', () => ({
+  getAllPublicRestaurantSlugs: async () => ['chez-fatou', 'la-brasserie-du-port'],
+}));
+
 describe('sitemap integrity (#3807)', () => {
   let urls: string[];
   let entries: Array<{ url: string; lastModified?: unknown; alternates?: { languages?: Record<string, string> } }>;
 
   beforeAll(async () => {
     const { default: sitemap } = await import('../sitemap');
-    entries = sitemap() as typeof entries;
+    // RESTO-903 (#7748) : sitemap() est désormais async (slugs restaurants).
+    entries = (await sitemap()) as typeof entries;
     urls = entries.map((entry) => entry.url);
   });
 
@@ -73,6 +80,12 @@ describe('sitemap integrity (#3807)', () => {
   it('publie les études de cas individuelles', () => {
     expect(urls).toContain('https://www.leopardo-rh.com/case-studies/techcorp-algerie');
     expect(urls).toContain('https://www.leopardo-rh.com/case-studies/pharmaplus-casablanca');
+  });
+
+  it('RESTO-903 (#7748) : publie l’annuaire et les profils publics /restaurants/{slug}', () => {
+    expect(urls).toContain('https://www.leopardo-rh.com/restaurants');
+    expect(urls).toContain('https://www.leopardo-rh.com/restaurants/chez-fatou');
+    expect(urls).toContain('https://www.leopardo-rh.com/restaurants/la-brasserie-du-port');
   });
 
   it('ne publie pas de lastModified volatil sur les pages statiques', () => {

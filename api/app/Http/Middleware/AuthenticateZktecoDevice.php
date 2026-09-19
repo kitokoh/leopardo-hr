@@ -49,7 +49,13 @@ class AuthenticateZktecoDevice
         DB::statement('SET search_path TO shared_tenants,public');
 
         try {
+            // #7711 : ZktecoDevice porte désormais BelongsToCompany — ce
+            // lookup pré-tenant par serial_number (unique global) doit rester
+            // cross-tenant, l'authentification se fait par X-Device-Token.
+            // withoutGlobalScope explicite pour rester correct même si un
+            // `current_company` résiduel était lié (worker persistant).
             $device = ZktecoDevice::query()
+                ->withoutGlobalScope('company')
                 ->where('serial_number', $serialNumber)
                 ->firstOrFail();
 

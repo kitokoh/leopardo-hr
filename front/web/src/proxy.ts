@@ -67,6 +67,8 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/accounting',
   '/edu-manager',
   '/fuel',
+  // #7759 — tickets support côté client (zone dashboard).
+  '/support',
   // BC-29 COMMUNICATION (#7691) — boîte connectée (zone dashboard).
   '/communication',
 ];
@@ -198,6 +200,7 @@ export const config = {
     '/accounting/:path*', // #7663 comptabilité applicative (vitrine = /comptabilite)
     '/edu-manager/:path*', // #7663 gestion scolaire — gate session
     '/fuel/:path*', // #7663 stations-service — gate session
+    '/support/:path*', // #7759 tickets support côté client — gate session
     '/communication/:path*', // BC-29 (#7691) boîte connectée — gate session
     // Vitrine landing — ?lang= → en-tête x-vitrine-lang (issue #4004).
     // Routes statiques (exactes) + préfixes dynamiques (source
