@@ -97,7 +97,7 @@ class CabinetDocumentAuditTest extends TestCase
     {
         Sanctum::actingAs($this->manager);
 
-        $folder = CabinetFolder::create([
+        $folder = CabinetFolder::forceCreate([
             'company_id' => $this->company->id,
             'employee_id' => $this->manager->id,
             'name' => 'RH',
@@ -147,7 +147,7 @@ class CabinetDocumentAuditTest extends TestCase
     private function createDocument(array $attributes = []): CabinetDocument
     {
         /** @var CabinetDocument $document */
-        $document = CabinetDocument::create([
+        $document = CabinetDocument::forceCreate([
             'company_id' => $this->company->id,
             'employee_id' => $this->manager->id,
             'name' => 'Contrat audit',

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Cabinet\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -28,10 +29,16 @@ use Illuminate\Support\Carbon;
  */
 class CabinetShare extends Model
 {
+    // Issue #7646 (modèles orphelins) — schéma partagé shared_tenants :
+    // isolation lecture/écriture par tenant via le trait. L'accès public par
+    // token (accessByToken, route hors middleware tenant) reste fonctionnel :
+    // sans compagnie courante le scope global est inactif (chemin permissif
+    // documenté du trait), le token 64 chars EST la créance.
+    use BelongsToCompany;
+
     protected $table = 'cabinet_shares';
 
     protected $fillable = [
-        'company_id',
         'employee_id',
         'shareable_type',
         'shareable_id',
