@@ -71,23 +71,12 @@ class TravelDistributorAuthMiddleware
                 return $this->unauthorized('DISTRIBUTOR_COMPANY_UNAVAILABLE');
             }
 
-            // Contexte tenant pour toute la requête (comme TenantMiddleware).
-            app(TenantManager::class)->setTenant($company);
-            app()->instance('tenant_scope_required', true);
-            app()->instance('current_company', $company);
-
             // Stats d'usage par distributeur (critère #7641).
             $apiKey->forceFill(['last_used_at' => now()])->save();
             TravelDistributorKey::query()->whereKey($apiKey->id)->increment('usage_count');
 
             $request->attributes->set('travel_distributor_key', $apiKey);
             $request->attributes->set('travel_distributor_company', $company);
-
-            $response = $next($request);
-
-            app(TenantManager::class)->resetToPrevious();
-
-            return $response;
         } catch (\Throwable $exception) {
             Log::channel('audit')->warning('travel_distributor_auth.error', [
                 'error' => $exception->getMessage(),
@@ -101,6 +90,20 @@ class TravelDistributorAuthMiddleware
             } catch (\Throwable) {
                 // restauration best-effort
             }
+        }
+
+        // Contexte tenant pour toute la requête, relâché en finally (pattern
+        // canonique TenantMiddleware/EnsurePublicShopAccess) : le marqueur
+        // `tenant_scope_required` ne fuit plus hors de la requête, et les
+        // exceptions du contrôleur (404 ModelNotFound d'une ressource d'un
+        // autre tenant…) remontent au handler HTTP au lieu d'être converties
+        // en 401 générique par le catch d'authentification ci-dessus.
+        app()->instance('tenant_scope_required', true);
+
+        try {
+            return app(TenantManager::class)->withinTenant($company, fn (): Response => $next($request));
+        } finally {
+            app()->forgetInstance('tenant_scope_required');
         }
     }
 
