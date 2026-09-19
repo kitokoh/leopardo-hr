@@ -76,7 +76,7 @@ async function runGate({ apiChanged, webChanged, runs, eventName = 'push', mainH
   const outputs = {};
   const logs = [];
   const core = {
-    getInput: (name) => ({ sha: 'a'.repeat(40), required_workflows: '["Tests - Leopardo RH","Web CI - Leopardo Admin"]', web_changed: webChanged, api_changed: apiChanged }[name] ?? ''),
+    getInput: (name) => ({ sha: 'a'.repeat(40), required_workflows: '["Tests - Leopardo","Web CI - Leopardo Admin"]', web_changed: webChanged, api_changed: apiChanged }[name] ?? ''),
     setOutput: (k, v) => { outputs[k] = v; },
     setFailed: (msg) => { throw new Error(`setFailed: ${msg}`); },
     info: (m) => logs.push(`info: ${m}`),
@@ -140,7 +140,7 @@ function assertEqual(actual, expected, what) {
   if (actual !== expected) throw new Error(`${what} : attendu « ${expected} », obtenu « ${actual} »`);
 }
 
-const testsSuccessRun = [{ name: 'Tests - Leopardo RH', head_sha: 'a'.repeat(40), status: 'completed', conclusion: 'success' }];
+const testsSuccessRun = [{ name: 'Tests - Leopardo', head_sha: 'a'.repeat(40), status: 'completed', conclusion: 'success' }];
 
 // ── Défaut #7511 : aucun run requis parce que rien d'api/web n'a changé ─────
 await check('push sans aucun run requis, api_changed=false → not-required', async () => {
@@ -175,7 +175,7 @@ await check('run Tests rouge → tests-failure, should_deploy=false', async () =
   const { outputs } = await runGate({
     apiChanged: 'true',
     webChanged: 'false',
-    runs: [{ name: 'Tests - Leopardo RH', head_sha: 'a'.repeat(40), status: 'completed', conclusion: 'failure' }],
+    runs: [{ name: 'Tests - Leopardo', head_sha: 'a'.repeat(40), status: 'completed', conclusion: 'failure' }],
   });
   assertEqual(outputs.gate_outcome, 'tests-failure', 'gate_outcome');
   assertEqual(outputs.should_deploy, 'false', 'should_deploy');
@@ -193,7 +193,7 @@ await check('budget épuisé + run requis in_progress → pending (différé, no
   const { outputs, logs } = await runGate({
     apiChanged: 'true',
     webChanged: 'false',
-    runs: [{ name: 'Tests - Leopardo RH', head_sha: 'a'.repeat(40), status: 'in_progress', conclusion: null }],
+    runs: [{ name: 'Tests - Leopardo', head_sha: 'a'.repeat(40), status: 'in_progress', conclusion: null }],
     budgetMinutes: 0,
   });
   assertEqual(outputs.gate_outcome, 'pending', 'gate_outcome');
@@ -214,7 +214,7 @@ await check('budget épuisé + run requis en `requested` → pending (pas de mot
   const { outputs } = await runGate({
     apiChanged: 'true',
     webChanged: 'false',
-    runs: [{ name: 'Tests - Leopardo RH', head_sha: 'a'.repeat(40), status: 'requested', conclusion: null }],
+    runs: [{ name: 'Tests - Leopardo', head_sha: 'a'.repeat(40), status: 'requested', conclusion: null }],
     budgetMinutes: 0,
   });
   assertEqual(outputs.gate_outcome, 'pending', 'gate_outcome');

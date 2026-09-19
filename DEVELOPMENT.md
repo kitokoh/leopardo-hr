@@ -237,7 +237,7 @@ GitHub Actions workflows:
 | `web-ci.yml` | `front/admin-dashboard/**` changes | ESLint + Vite build |
 | `web-marketing-ci.yml` | `front/web/**` changes | Lint + Next.js build |
 | `deploy-staging.yml` | Merge to `main` | Auto deploy staging |
-| `e2e-staging.yml` | `workflow_run` après « Deploy - Leopardo RH » (`deploy-main.yml`) | Smoke E2E Playwright (nom historique ; contenu « Prod Smoke ») |
+| `e2e-staging.yml` | `workflow_run` après « Deploy - Leopardo » (`deploy-main.yml`) | Smoke E2E Playwright (nom historique ; contenu « Prod Smoke ») |
 | `release.yml` | Git tag `v*` | GitHub Release (mobile APKs are built/distributed separately by `mobile-distribute.yml`) |
 
 > Il n'existe pas de fichier `backend.yml` distinct dans `.github/workflows/` : les checks backend PHPUnit/PHPStan/Pint sont dans `tests.yml`.
