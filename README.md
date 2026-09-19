@@ -2,9 +2,9 @@
 
 # Leopardo
 
-### Open-source business operations platform for multi-site and field-based companies
+### The open-source business suite for field-based companies
 
-**Leopardo RH** is the core HR and payroll experience inside a broader modular platform for running people, workforce, financial and customer operations.
+Leopardo is the business suite for field-based companies — HR & payroll, attendance, leave, CRM, accounting and operations, on web, mobile and kiosks.
 
 [![CI/CD](https://img.shields.io/github/actions/workflow/status/kitokoh/leopardo-hr/tests.yml?branch=main&style=for-the-badge&logo=github&label=CI%2FCD)](https://github.com/kitokoh/leopardo-hr/actions)
 [![Coverage gate](https://img.shields.io/github/actions/workflow/status/kitokoh/leopardo-hr/coverage-gate.yml?branch=main&style=for-the-badge&logo=php&label=Coverage%20gate)](https://github.com/kitokoh/leopardo-hr/actions/workflows/coverage-gate.yml)
@@ -12,7 +12,7 @@
 [![License: MIT](https://img.shields.io/github/license/kitokoh/leopardo-hr?style=for-the-badge&label=License)](LICENSE)
 [![Security](https://img.shields.io/badge/security-security--first-brightgreen?style=for-the-badge)](SECURITY.md)
 
-**HR & Payroll · Workforce · Accounting · Customer CRM · Marketing · Mobile · Open API**
+**HR & Payroll · Workforce · Accounting · Customer CRM · Marketing · Vertical Solutions · Mobile · Open API**
 
 [Product site](https://kitokoh.github.io/leopardo-hr) · [Documentation](docs/README.md) · [Architecture](ARCHITECTURE.md) · [API](api/openapi.yaml) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
@@ -24,13 +24,19 @@
 
 ## What is Leopardo?
 
-Leopardo is an **open-source, self-hostable and SaaS-ready modular platform** for companies that manage people, sites, schedules, customers and operational processes across multiple locations.
+Leopardo is an **open-source, self-hostable and SaaS-ready business suite** for companies that manage people, sites, schedules, customers and operational processes across multiple locations.
 
-Its historical foundation is **Leopardo RH**: employee records, attendance, leave, documents, payroll preparation and workforce operations. The platform now extends that foundation with accounting capabilities, customer relationship management, marketing integrations and an API ecosystem.
+Its historical foundation is HR and payroll: employee records, attendance, leave, documents, payroll preparation and workforce operations. The suite extends that foundation with accounting, customer relationship management, marketing integrations, an API ecosystem — and **tenant-activable vertical solutions** for sector-specific operations (travel agencies, restaurants and delivery, fuel stations, schools).
+
+The suite is organized in three layers:
+
+1. **Platform core** — identity, tenant isolation, authorization, feature flags and audit.
+2. **Shared business modules** — HR, attendance, payroll, accounting, customer CRM, marketing, notifications and documents.
+3. **Vertical solutions** — sector packs activated per tenant on top of the shared modules, each declaring its required modules, permissions and maturity.
 
 The objective is not to force every company into one monolithic workflow. Leopardo provides a shared security, identity, tenant and integration foundation while each business capability remains isolated in its own bounded context.
 
-> **One platform. Several business domains. Explicit boundaries. Secure tenant isolation.**
+> **One suite. Several business domains. Explicit boundaries. Secure tenant isolation.**
 
 ## Why Leopardo?
 
@@ -44,16 +50,17 @@ Growing companies often coordinate HR, attendance, payroll, customer follow-up a
 | Manage company finances | Accounting documents, journals, currencies, VAT and payment-related workflows. |
 | Manage customers | Tenant-scoped accounts, contacts, leads, opportunities, activities and tasks. |
 | Activate customer marketing | Segments, consent, campaigns and official channel adapters. |
+| Run a sector-specific operation | Tenant-activable vertical solutions (pilot): travel agencies, restaurants & delivery, fuel stations, schools. |
 | Integrate existing systems | OpenAPI contracts, SDKs, webhooks and explicit domain events. |
 | Operate securely | Multi-tenant isolation, RBAC, audit, secret scanning and security testing. |
 
 ## Product map
 
-Leopardo is a platform, not a single undifferentiated application. Each module has a clear owner, data boundary and maturity level.
+Leopardo is a suite, not a single undifferentiated application. Each module has a clear owner, data boundary and maturity level.
 
 | Domain | Product surface | Maturity | Responsibility |
 | :--- | :--- | :--- | :--- |
-| **Leopardo RH** | Web, mobile and admin | Core | Employees, contracts, onboarding, documents, leave and HR workflows. |
+| **HR** | Web, mobile and admin | Core | Employees, contracts, onboarding, documents, leave and HR workflows. |
 | **Payroll** | Web and accounting/RH workflows | Core / evolving | Payroll preparation, country rules, validation and compliant outputs. |
 | **Attendance & Workforce** | Mobile, web, kiosk and edge | Core / evolving | Attendance, schedules, sites, GPS-aware and biometric paths. |
 | **Accounting** | Admin and finance workspaces | Evolving | Documents, journals, currencies, VAT, payments and reports. |
@@ -61,8 +68,22 @@ Leopardo is a platform, not a single undifferentiated application. Each module h
 | **Customer Marketing** | Client workspaces and channel API | Planned V1 | Segments, consent, campaigns, email/SMS and official WhatsApp integration. |
 | **Platform Administration** | Leopardo admin | Core | Platform configuration, tenant lifecycle, support and commercial operations. |
 | **Commercial CRM** | Leopardo admin only | Existing / evolving | Leopardo’s own acquisition, trials, onboarding and customer conversion pipeline. |
+| **Vertical solutions** | Tenant-activable sector packs | Pilot | Travel agencies, restaurants & delivery, fuel stations and schools — see below. |
 | **Mobile suite** | Flutter apps | Core / evolving | Employee, manager, HR, marketing and platform administration experiences. |
 | **Desktop clients** | Future targeted clients | Planned | Only justified desktop workflows such as intensive accounting or kiosk operation. |
+
+### Vertical solutions — sector packs on a shared foundation
+
+Beyond the shared modules, Leopardo ships **vertical solutions**: configuration packs a tenant can activate to run a sector-specific operation. A solution never replaces the shared modules — it composes them and adds its own bounded context. Solutions are registered in a server-side, fail-closed catalogue and activated per tenant through feature flags.
+
+| Solution | Sector | Maturity | Scope |
+| :--- | :--- | :--- | :--- |
+| **Travel agency** | Passenger transport and travel | Pilot | Network (stations, offices, lines), trips, fares, bookings, tickets, check-in and manager reports. |
+| **Restaurant & delivery** | Food service | Pilot | Branches, menus, POS and kitchen flows, stock and COGS, delivery workflows. |
+| **Fuel station** | Fuel retail | Pilot | Stations, pumps, shifts, stock and sales operations. |
+| **EduManager** | Education | Pilot | Campuses, classes, enrollment and school operations. |
+
+Companies outside these sectors simply run the horizontal modules (HR, attendance, payroll, accounting, CRM and more). The onboarding interview maps a declared sector to the matching solution — or to the horizontal toolset.
 
 ### Two CRM contexts — deliberately separate
 
@@ -143,6 +164,7 @@ graph TB
         Accounting[Accounting]
         CRM[Customer CRM]
         Marketing[Customer marketing and channels]
+        Verticals["Vertical solutions — travel, restaurant, fuel, education (pilot)"]
     end
 
     subgraph Infrastructure[Shared infrastructure]
@@ -155,11 +177,12 @@ graph TB
 
     Web & Mobile & Kiosk & Desktop --> Auth
     Auth --> API
-    API --> Platform & HR & Workforce & Payroll & Accounting & CRM & Marketing
+    API --> Platform & HR & Workforce & Payroll & Accounting & CRM & Marketing & Verticals
     HR --> Payroll
     CRM --> Marketing
+    Verticals -. compose shared modules .-> Workforce
     Platform -. tenant activation contract .-> CRM
-    Platform & HR & Workforce & Payroll & Accounting & CRM & Marketing --> DB
+    Platform & HR & Workforce & Payroll & Accounting & CRM & Marketing & Verticals --> DB
     Domains --> Queue & Cache & Storage & Audit
 ```
 
@@ -387,7 +410,7 @@ Leopardo is released under the [MIT License](LICENSE). It can be self-hosted or 
 
 <div align="center">
 
-**Leopardo — one modular platform for people, workforce and customer operations.**
+**Leopardo — one business suite for people, finance, customers and field operations.**
 
 [Star the repository](https://github.com/kitokoh/leopardo-hr) · [Explore the documentation](docs/README.md) · [Join the project](CONTRIBUTING.md)
 

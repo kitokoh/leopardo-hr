@@ -169,14 +169,26 @@ runs:
         // deploy-main.yml ne déploie jamais → dérive dev (#7304).
         // Timeouts posés au niveau du RÔLE : ils s'appliquent aussi aux bases
         // par worker `leopardo_test_test_{token}` créées par paratest.
+        //
+        // Issue #7683 (2e itération) — le réglage initial de #7660
+        // (lock 30s < idle 120s) faisait échouer les waiters AVANT le réap
+        // des zombies (60 × 55P03/run) ; la 1re correction (#7684,
+        // idle 15s < lock 45s) réglait l'ordre mais le reaper à 15s tuait
+        // des transactions LÉGITIMES pendant les migrations paratest
+        // (workers CPU-starved > 15s idle mid-transaction → bases à moitié
+        // migrées, 567 échecs). La bonne relation garde des valeurs
+        // conservatrices en inversant seulement l'ordre :
+        // idle 120s (réap des zombies, valeur éprouvée de #7661)
+        // < lock 150s (le waiter survit au réap et acquiert le verrou).
+        // Pire cas par verrou : ~2 min d'attente au lieu d'un échec.
         $pdo->exec(<<<'SQL'
-        ALTER ROLE CURRENT_USER SET lock_timeout = '30s';
+        ALTER ROLE CURRENT_USER SET lock_timeout = '150s';
         ALTER ROLE CURRENT_USER SET idle_in_transaction_session_timeout = '120s';
         ALTER ROLE CURRENT_USER SET statement_timeout = '300s';
         SQL);
 
         echo "Migration repositories ensured for public/shared_tenants.\n";
-        echo "Role-level lock/statement timeouts applied (#7660).\n";
+        echo "Role-level lock/statement timeouts applied (#7660, #7683).\n";
         PHP
 
     - name: Run public migrations

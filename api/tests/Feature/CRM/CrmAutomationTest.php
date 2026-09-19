@@ -100,7 +100,7 @@ class CrmAutomationTest extends TestCase
         config()->set('crm.channels.consent_fallback', 'allow');
         Sanctum::actingAs($this->manager());
 
-        $automation = CrmAutomation::query()->create([
+        $automation = CrmAutomation::query()->forceCreate([
             'company_id' => $this->company->id,
             'name' => 'Webhook sur message sent',
             'trigger_event' => 'crm.message.sent',
@@ -134,7 +134,7 @@ class CrmAutomationTest extends TestCase
     {
         Sanctum::actingAs($this->manager());
 
-        $automation = CrmAutomation::query()->create([
+        $automation = CrmAutomation::query()->forceCreate([
             'company_id' => $this->company->id,
             'name' => 'Idempotent',
             'trigger_event' => 'crm.message.inbound',
@@ -160,7 +160,7 @@ class CrmAutomationTest extends TestCase
     {
         Sanctum::actingAs($this->manager());
 
-        $automation = CrmAutomation::query()->create([
+        $automation = CrmAutomation::query()->forceCreate([
             'company_id' => $this->company->id,
             'name' => 'Simulation',
             'trigger_event' => 'crm.message.inbound',
@@ -188,7 +188,7 @@ class CrmAutomationTest extends TestCase
     {
         Sanctum::actingAs($this->manager());
 
-        CrmAutomation::query()->create([
+        CrmAutomation::query()->forceCreate([
             'company_id' => $this->company->id,
             'name' => 'Stoppée',
             'trigger_event' => 'crm.message.inbound',
@@ -212,7 +212,7 @@ class CrmAutomationTest extends TestCase
     {
         Sanctum::actingAs($this->manager());
 
-        $automation = CrmAutomation::query()->create([
+        $automation = CrmAutomation::query()->forceCreate([
             'company_id' => $this->company->id,
             'name' => 'Échec',
             'trigger_event' => 'crm.message.inbound',
@@ -239,7 +239,7 @@ class CrmAutomationTest extends TestCase
     {
         Sanctum::actingAs($this->manager());
 
-        $automation = CrmAutomation::query()->create([
+        $automation = CrmAutomation::query()->forceCreate([
             'company_id' => $this->company->id,
             'name' => 'Condition',
             'trigger_event' => 'crm.message.inbound',
@@ -269,7 +269,7 @@ class CrmAutomationTest extends TestCase
 
         /** @var \App\Core\Tenant\Domain\Models\Company $otherCompany */
         $otherCompany = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD']);
-        $automation = CrmAutomation::query()->create([
+        $automation = CrmAutomation::query()->forceCreate([
             'company_id' => $otherCompany->id,
             'name' => 'Autre tenant',
             'trigger_event' => 'crm.message.inbound',

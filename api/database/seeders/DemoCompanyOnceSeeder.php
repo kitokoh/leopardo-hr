@@ -349,9 +349,17 @@ class DemoCompanyOnceSeeder extends Seeder
 
         $updates = [];
 
-        $demoPassword = (string) config(self::DEMO_SUPER_ADMIN_PASSWORD_CONFIG_KEY, 'password123');
+        // #7696 : plus de fallback en dur — sans DEMO_PASSWORD, on ne touche
+        // pas au mot de passe (le seeding démo n'a pas de secret publiable).
+        $demoPassword = config(self::DEMO_SUPER_ADMIN_PASSWORD_CONFIG_KEY);
 
-        if (! Hash::check($demoPassword, (string) $superAdmin->password_hash)) {
+        if (! is_string($demoPassword) || $demoPassword === '') {
+            $this->command?->warn('DemoCompanyOnceSeeder : DEMO_PASSWORD absent — mot de passe super-admin démo non modifié (#7696).');
+
+            $demoPassword = null;
+        }
+
+        if ($demoPassword !== null && ! Hash::check($demoPassword, (string) $superAdmin->password_hash)) {
             $updates['password_hash'] = Hash::make($demoPassword);
         }
 

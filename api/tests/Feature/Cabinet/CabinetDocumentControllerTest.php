@@ -150,7 +150,7 @@ class CabinetDocumentControllerTest extends TestCase
     {
         // Cabinet company_id is UUID after migration #2172; keep the real
         // tenant identity instead of the removed legacy numeric key 0.
-        return CabinetDocument::create([
+        return CabinetDocument::forceCreate([
             'company_id' => $this->company->id,
             'employee_id' => $this->manager->id,
             'folder_id' => $folderId,
@@ -186,7 +186,7 @@ class CabinetDocumentControllerTest extends TestCase
     {
         Sanctum::actingAs($this->manager);
 
-        $folder = CabinetFolder::create([
+        $folder = CabinetFolder::forceCreate([
             'company_id' => $this->company->id,
             'employee_id' => $this->manager->id,
             'name' => 'Dossier cible',

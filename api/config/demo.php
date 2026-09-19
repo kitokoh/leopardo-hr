@@ -18,5 +18,9 @@ return [
 
     'super_admin_email' => env('SUPER_ADMIN_EMAIL', 'admin@leopardo-rh.com'),
 
-    'password' => env('DEMO_PASSWORD', 'password123'),
+    // #7696 : plus de fallback en dur — sans DEMO_PASSWORD explicite, les
+    // comptes démo n'ont pas de mot de passe publiable (le contrôleur démo
+    // répond 503 et le seeder refuse de seeder). Un staging qui active le
+    // mode démo sans définir la variable ne sert plus « password123 ».
+    'password' => env('DEMO_PASSWORD'),
 ];

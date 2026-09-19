@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
+use Tests\Support\SwitchesTenantContext;
 use Tests\TestCase;
 
 /**
@@ -32,6 +33,7 @@ use Tests\TestCase;
 class EduAdmissionTest extends TestCase
 {
     use RefreshTenantDatabase;
+    use SwitchesTenantContext;
     use WithFaker;
 
     private Company $company;
@@ -218,15 +220,17 @@ class EduAdmissionTest extends TestCase
 
     private function admission(Company $company, string $number, array $overrides = []): EduAdmission
     {
+        // #7646 — la fixture d'un autre tenant est créée SOUS son tenant
+        // (company_id est désormais forcé depuis le tenant actif).
         /** @var EduAdmission $admission */
-        $admission = EduAdmission::query()->create(array_merge([
+        $admission = $this->withTenantContext($company, fn (): EduAdmission => EduAdmission::query()->create(array_merge([
             'company_id' => $company->id,
             'admission_number' => $number,
             'applicant_name' => $this->faker->name(),
             'status' => EduAdmission::STATUS_PENDING,
             'consent_marketing' => false,
             'submitted_at' => now(),
-        ], $overrides));
+        ], $overrides)));
 
         return $admission;
     }

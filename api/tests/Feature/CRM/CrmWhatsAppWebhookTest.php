@@ -6,12 +6,11 @@ namespace Tests\Feature\CRM;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\CRM\Domain\Models\CrmChannel;
-use App\Modules\CRM\Domain\Models\CrmChannelConversation;
 use App\Modules\CRM\Domain\Models\CrmChannelMessage;
 use App\Modules\CRM\Domain\Models\CrmWebhookChannelLookup;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Testing\TestResponse;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Testing\TestResponse;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -43,7 +42,7 @@ class CrmWhatsAppWebhookTest extends TestCase
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
         $this->company = $company;
 
-        $this->channel = CrmChannel::query()->create([
+        $this->channel = CrmChannel::query()->forceCreate([
             'company_id' => $this->company->id,
             'type' => 'whatsapp',
             'provider' => 'whatsapp_cloud_api',
