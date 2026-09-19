@@ -7230,5 +7230,39 @@
     "errorTooMany": "Çok fazla deneme. Yeni bir kod isteyin.",
     "errorPasswordRequired": "Bu hesap parola ile giriş gerektirir.",
     "errorGeneric": "Giriş yapılamadı. Birkaç dakika sonra tekrar deneyin."
+  },
+  "vitrine": {
+    "notFound": {
+      "kicker": "Hata 404",
+      "title": "Sayfa bulunamadı",
+      "body": "Bu sayfa mevcut değil veya taşınmış. Adresi kontrol edin ya da ana sayfadan devam edin.",
+      "ctaHome": "Ana sayfaya dön",
+      "ctaPricing": "Fiyatları görün",
+      "ctaContact": "Destek ile iletişime geçin"
+    },
+    "nav": {
+      "pricing": "Fiyatlar",
+      "resources": "Kaynaklar",
+      "guides": "Rehberler",
+      "guidesDesc": "İK için en iyi uygulamalar",
+      "insights": "İK İçgörüleri",
+      "insightsDesc": "Analizler, rehberler ve büyüme fikirleri",
+      "apiDocs": "API Dokümanları",
+      "apiDocsDesc": "Teknik rehberler ve entegrasyon",
+      "changelog": "Değişiklikler",
+      "changelogDesc": "Son ürün güncellemeleri",
+      "contact": "İletişim",
+      "install": "Leopardo'yu Kur",
+      "windowsDesc": "ZKTeco ve senkronizasyon için masaüstü istemcisi",
+      "macosDesc": "Saha ekipleri için masaüstü çalışma alanı",
+      "androidDesc": "Mobil yoklama ve çalışan self-servis",
+      "iosDesc": "Çalışan ve yöneticiler için iOS uygulaması",
+      "community": "Topluluk",
+      "communityDesc": "Toplulukla bağlantı kurun",
+      "faq": "SSS",
+      "faqDesc": "Sık sorulan sorular",
+      "support": "Destek",
+      "supportDesc": "Ekibimize ulaşın"
+    }
   }
 }
