@@ -892,6 +892,35 @@
     "BC-20",
     "BC-26"
    ]
+  },
+  {
+   "code": "BC-29",
+   "name": "COMMUNICATION",
+   "context": "Communication",
+   "responsibility": "Boîte mail connectée + IA (spec MODULE_COMMUNICATION_EMAIL_IA.md, #7645/#7684) : connexion Gmail OAuth serveur par utilisateur, sync incrémentale des fils/messages, classification IA et rattachement contacts CRM (BC-11), relances automatiques et réponses draft/confirm/auto — module transversal activable par tenant (flag `communication`).",
+   "owner": "Agent 29 — BC-COMMUNICATION",
+   "priority": "P1",
+   "status": "active",
+   "paths": [
+    {
+     "path": "api/app/Modules/Communication",
+     "status": "active"
+    }
+   ],
+   "routes": [
+    "api/routes/modules/communication.php"
+   ],
+   "migrations": [
+    "api/database/migrations/tenant"
+   ],
+   "events": [],
+   "dependencies": [
+    "BC-01",
+    "BC-02",
+    "BC-03",
+    "BC-11",
+    "BC-13"
+   ]
   }
  ]
 }
