@@ -44,7 +44,7 @@
     "story": {
       "clarity": {
         "title": "Une home qui vous parle avant de vous noyer",
-        "body": "Leopardo RH commence par quelques actions claires: pointer, suivre le mois et retrouver les informations qui comptent."
+        "body": "Leopardo commence par quelques actions claires: pointer, suivre le mois et retrouver les informations qui comptent."
       },
       "field": {
         "title": "Mobile-first pour le terrain",
@@ -504,7 +504,7 @@
         "placeholder_uri": "https://example.com/oauth/callback"
       }
     },
-    "socialExamplePlaceholder": "Ex: Leopardo RH — Reseaux sociaux",
+    "socialExamplePlaceholder": "Ex: Leopardo — Reseaux sociaux",
     "postContentPlaceholder": "Contenu de la publication..."
   },
   "attendance": {
@@ -1555,7 +1555,7 @@
       "description": "Tarification transparente : plan Free, Pilot 29 €/mois, Operations 79 €/mois, Enterprise sur devis. Essai gratuit 14 jours."
     },
     "llms": {
-      "summary": "Leopardo RH est un logiciel SaaS de gestion du personnel pour PME terrain. Il centralise le pointage, les absences, les plannings, la paie multi-pays, les documents RH et le pilotage dans une seule application, du mobile au kiosque.",
+      "summary": "Leopardo est la suite métier des entreprises de terrain — RH & paie, pointage, absences, CRM, comptabilité et opérations, sur web, mobile et bornes. La suite centralise le pointage, les absences, les plannings, la paie multi-pays, les documents RH et le pilotage dans une seule application, du mobile au kiosque.",
       "factsLabel": "Chiffres clés",
       "factCountries": "pays couverts au catalogue de paie",
       "factLanguages": "langues du produit (FR/EN/TR/AR)",
@@ -1893,7 +1893,7 @@
     "applyErrorPrefix": "Erreur lors de la candidature : ",
     "notApplied": {
       "title": "Devenir Partenaire",
-      "subtitle": "Rejoignez l'écosystème Leopardo RH et gagnez des commissions sur chaque entreprise que vous parrainez. Jusqu'à 20 % de commission récurrente.",
+      "subtitle": "Rejoignez l'écosystème Leopardo et gagnez des commissions sur chaque entreprise que vous parrainez. Jusqu'à 20 % de commission récurrente.",
       "individual": "Postuler en tant qu'Individuel",
       "agency": "Postuler en tant qu'Agence"
     },
@@ -1903,7 +1903,7 @@
     },
     "dashboard": {
       "title": "Dashboard Partenaire",
-      "subtitle": "Suivez vos conversions et vos commissions Leopardo RH — statut partenaire actif."
+      "subtitle": "Suivez vos conversions et vos commissions Leopardo — statut partenaire actif."
     },
     "metrics": {
       "conversions": "Conversions",
@@ -2055,7 +2055,7 @@
     "retry": "Réessayer",
     "serviceUnreachable": "service injoignable",
     "statsLoadError": "Erreur lors du chargement des stats système",
-    "subtitle": "Monitoring, configuration et automatisation de la plateforme Leopardo RH.",
+    "subtitle": "Monitoring, configuration et automatisation de la plateforme Leopardo.",
     "title": "Administration Système"
   },
   "billing": {
@@ -3503,7 +3503,107 @@
     "loading": "Chargement…",
     "retry": "Réessayer",
     "errorGeneric": "Une erreur est survenue.",
-    "fecError": "Export FEC impossible."
+    "fecError": "Export FEC impossible.",
+    "navDocuments": "Documents & factures",
+    "navBank": "Banque & rapprochement",
+    "navVat": "Déclaration TVA",
+    "docsTitle": "Documents & factures",
+    "docsSubtitle": "Factures, devis, avoirs et reçus : cycle de vie complet (brouillon → envoyé → payé).",
+    "docsNew": "Nouveau document",
+    "docsCreateTitle": "Créer un document",
+    "docsType": "Type",
+    "docsStatus": "Statut",
+    "docsNumber": "Numéro",
+    "docsContact": "Contact",
+    "docsIssueDate": "Date d'émission",
+    "docsDueDate": "Échéance",
+    "docsCurrency": "Devise",
+    "docsTvaRate": "Taux de TVA (%)",
+    "docsNotes": "Notes",
+    "docsTotalHt": "Total HT",
+    "docsTax": "TVA",
+    "docsTotalTtc": "Total TTC",
+    "docsPaid": "Payé",
+    "docsTypeInvoice": "Facture",
+    "docsTypeProforma": "Proforma",
+    "docsTypeQuote": "Devis",
+    "docsTypeCreditNote": "Avoir",
+    "docsTypeDeliveryNote": "Bon de livraison",
+    "docsTypeReceipt": "Reçu",
+    "docsStatusDraft": "Brouillon",
+    "docsStatusSent": "Envoyé",
+    "docsStatusPartiallyPaid": "Partiellement payé",
+    "docsStatusPaid": "Payé",
+    "docsStatusOverdue": "En retard",
+    "docsStatusCancelled": "Annulé",
+    "docsAllTypes": "Tous les types",
+    "docsAllStatuses": "Tous les statuts",
+    "docsApply": "Filtrer",
+    "docsView": "Voir le détail",
+    "docsSend": "Envoyer",
+    "docsCancelAction": "Annuler le document",
+    "docsCreditNote": "Créer un avoir",
+    "docsPost": "Comptabiliser au journal",
+    "docsLines": "Lignes",
+    "docsLineDescription": "Description",
+    "docsLineQty": "Qté",
+    "docsLineUnitPrice": "Prix unitaire",
+    "docsLineDiscount": "Remise",
+    "docsAddLine": "Ajouter une ligne",
+    "docsRemoveLine": "Retirer la ligne",
+    "docsPayments": "Paiements",
+    "docsNoPayments": "Aucun paiement enregistré.",
+    "docsAddPayment": "Enregistrer un paiement",
+    "docsPaymentAmount": "Montant",
+    "docsPaymentMethod": "Moyen de paiement",
+    "docsPaymentReference": "Référence",
+    "docsPaymentDate": "Date de réception",
+    "docsMethodCash": "Espèces",
+    "docsMethodBankTransfer": "Virement",
+    "docsMethodCheck": "Chèque",
+    "docsMethodCard": "Carte",
+    "docsMethodOther": "Autre",
+    "docsNextNumber": "Prochain numéro : {number}",
+    "docsCreate": "Créer le brouillon",
+    "docsCreated": "Document créé.",
+    "docsSentDone": "Document envoyé.",
+    "docsCancelTitle": "Annuler ce document ?",
+    "docsCancelReason": "Motif d'annulation",
+    "docsCancelConfirm": "Confirmer l'annulation",
+    "docsCancelledDone": "Document annulé.",
+    "docsCreditNoteTitle": "Avoir lié au document {number}",
+    "docsCreditNoteCreated": "Avoir créé.",
+    "docsPosted": "Écritures générées au journal : {count}.",
+    "docsPaymentAdded": "Paiement enregistré.",
+    "docsDetailTitle": "Document {number}",
+    "docsEmpty": "Aucun document sur ces critères.",
+    "docsError": "Impossible de charger les documents.",
+    "docsNoContact": "Sans contact",
+    "docsSelectContact": "Sélectionner un contact…",
+    "tabLedger": "Grand livre",
+    "tabBalance": "Balance",
+    "tabJournal": "Journal",
+    "journalClose": "Clôturer la période",
+    "journalCloseConfirmTitle": "Clôturer la période {period} ?",
+    "journalCloseConfirmBody": "La clôture fige le journal de la période : plus aucune écriture ni lettrage possible.",
+    "journalCloseDone": "Période {period} clôturée.",
+    "journalCloseError": "Impossible de clôturer la période.",
+    "journalExportCsv": "Exporter CSV",
+    "tabVat": "TVA",
+    "vatTitle": "Déclaration TVA",
+    "vatSubtitle": "TVA collectée, TVA déductible et solde net par période.",
+    "vatCollected": "TVA collectée",
+    "vatDeductible": "TVA déductible",
+    "vatNet": "TVA nette à payer",
+    "vatBase": "Base HT",
+    "vatTax": "Montant TVA",
+    "vatTotal": "Total TTC",
+    "vatRate": "Taux",
+    "vatByRate": "Détail par taux",
+    "vatExport": "Exporter CSV",
+    "vatError": "Impossible de charger la déclaration TVA.",
+    "vatEmpty": "Aucune donnée TVA sur la période.",
+    "chartSystemBadge": "Système"
   },
   "shareAccesses": {
     "title": "Historique des accès",
@@ -3601,7 +3701,18 @@
     "matchError": "Le rapprochement a échoué.",
     "matchDone": "Ligne rapprochée.",
     "loading": "Chargement…",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "importTitle": "Importer un relevé bancaire",
+    "importFile": "Fichier CSV du relevé",
+    "importSubmit": "Importer",
+    "importDone": "Relevé importé : {imported} lignes ({skipped} ignorées).",
+    "importError": "L'import du relevé a échoué.",
+    "autoReconcile": "Rapprochement auto",
+    "autoReconcileDone": "Rapprochement automatique exécuté.",
+    "statusReconciling": "En rapprochement",
+    "createdAt": "Importé le",
+    "exportError": "L'export CSV a échoué.",
+    "view": "Ouvrir le relevé"
   },
   "personal_onboarding": {
     "status_title": "Ma situation personnelle",
@@ -5491,7 +5602,7 @@
   },
   "signupPage": {
     "badge": "Inscription en 2 minutes",
-    "headline": "Testez Leopardo RH sans tunnel complique",
+    "headline": "Testez Leopardo sans tunnel complique",
     "subheadline": "Créez votre espace vous-même : votre e-mail, votre entreprise, un code de vérification — et vous êtes dans l'application. Aucune carte bancaire.",
     "cta": "Créer mon espace d'essai",
     "sideBadge": "Espace disponible immédiatement",
@@ -6024,6 +6135,214 @@
       "faqDesc": "Questions fréquentes",
       "support": "Support",
       "supportDesc": "Contactez notre équipe"
+    }
+  },
+  "commerce": {
+    "section": {
+      "title": "Commerce",
+      "subtitle": "Espace vendeur : produits, stock et caisse de la verticale Commerce."
+    },
+    "loading": "Chargement…",
+    "gate": {
+      "retry": "Réessayer"
+    },
+    "search": {
+      "placeholder": "Rechercher…"
+    },
+    "common": {
+      "status": "Statut"
+    },
+    "table": {
+      "actions": "Actions",
+      "empty": "Aucun élément."
+    },
+    "action": {
+      "create": "Créer",
+      "createTitle": "Créer un élément",
+      "edit": "Modifier",
+      "editTitle": "Modifier",
+      "delete": "Supprimer",
+      "cancel": "Annuler",
+      "save": "Enregistrer"
+    },
+    "form": {
+      "required": "Ce champ est obligatoire.",
+      "saving": "Enregistrement…",
+      "selectPlaceholder": "— Sélectionner —"
+    },
+    "confirm": {
+      "deleteMessage": "Supprimer définitivement cet élément ?"
+    },
+    "error": {
+      "loadFailed": "Impossible de charger les données.",
+      "saveFailed": "Échec de l'enregistrement.",
+      "deleteFailed": "Échec de la suppression.",
+      "actionFailed": "L'action a échoué."
+    },
+    "pagination": {
+      "previous": "Précédent",
+      "next": "Suivant",
+      "page": "Page",
+      "items": "éléments"
+    },
+    "home": {
+      "kpisTitle": "Aperçu rapide",
+      "kpiProducts": "Produits au catalogue",
+      "kpiAlerts": "Alertes de stock bas",
+      "kpiSession": "Caisse",
+      "sessionOpen": "Session ouverte",
+      "sessionClosed": "Aucune session ouverte",
+      "empty": "Aucune donnée disponible.",
+      "open": "Ouvrir",
+      "products": "Produits",
+      "productsDesc": "Catégories, fiches produits, prix et publication.",
+      "stock": "Stock",
+      "stockDesc": "Emplacements, niveaux, mouvements tracés et alertes.",
+      "pos": "Caisse",
+      "posDesc": "Sessions de caisse, ventes, encaissements et tickets."
+    },
+    "tab": {
+      "products": "Produits",
+      "categories": "Catégories",
+      "levels": "Niveaux",
+      "movements": "Mouvements",
+      "locations": "Emplacements",
+      "alerts": "Alertes"
+    },
+    "categories": {
+      "title": "Catégories",
+      "name": "Nom",
+      "slug": "Slug",
+      "position": "Position"
+    },
+    "products": {
+      "pageTitle": "Catalogue produits",
+      "pageSubtitle": "Catégories, fiches produits, prix en devise et publication.",
+      "title": "Produits",
+      "name": "Nom",
+      "category": "Catégorie",
+      "barcode": "Code-barres",
+      "price": "Prix",
+      "currency": "Devise",
+      "cost": "Coût",
+      "unit": "Unité",
+      "description": "Description",
+      "publish": "Publier",
+      "unpublish": "Dépublier",
+      "createTitle": "Créer un produit",
+      "editTitle": "Modifier le produit",
+      "allStatuses": "Tous les statuts",
+      "statusFilter": "Filtrer par statut",
+      "invalidPrice": "Prix invalide.",
+      "invalidCost": "Coût invalide."
+    },
+    "productStatus": {
+      "draft": "Brouillon",
+      "published": "Publié",
+      "archived": "Archivé"
+    },
+    "locations": {
+      "title": "Emplacements",
+      "name": "Nom",
+      "code": "Code",
+      "type": "Type",
+      "active": "Actif"
+    },
+    "locationType": {
+      "store": "Boutique",
+      "warehouse": "Entrepôt"
+    },
+    "stock": {
+      "pageTitle": "Stock",
+      "pageSubtitle": "Emplacements, niveaux, mouvements tracés et alertes de stock bas.",
+      "location": "Emplacement",
+      "product": "Produit",
+      "quantity": "Quantité",
+      "threshold": "Seuil d’alerte",
+      "allLocations": "Tous les emplacements",
+      "allProducts": "Tous les produits",
+      "belowThreshold": "Sous le seuil d’alerte uniquement",
+      "noLevels": "Aucun niveau de stock.",
+      "newMovement": "Enregistrer un mouvement",
+      "reason": "Motif",
+      "note": "Note",
+      "saveMovement": "Enregistrer le mouvement",
+      "movementSaved": "Mouvement enregistré.",
+      "invalidQuantity": "Quantité invalide.",
+      "history": "Historique des mouvements",
+      "date": "Date",
+      "delta": "Delta",
+      "noMovements": "Aucun mouvement enregistré.",
+      "noAlerts": "Aucune alerte de stock bas."
+    },
+    "stockDirection": {
+      "in": "Entrée de stock (quantité ajoutée).",
+      "out": "Sortie de stock (quantité retirée).",
+      "signed": "Ajustement signé : saisissez le delta (+/−)."
+    },
+    "stockReason": {
+      "purchase": "Achat (entrée)",
+      "sale": "Vente (sortie)",
+      "adjustment": "Ajustement",
+      "return": "Retour (entrée)",
+      "transfer_in": "Transfert entrant",
+      "transfer_out": "Transfert sortant",
+      "loss": "Perte / casse"
+    },
+    "pos": {
+      "pageTitle": "Caisse",
+      "pageSubtitle": "Sessions de caisse, ventes, encaissements et tickets.",
+      "openTitle": "Ouvrir une session de caisse",
+      "openHint": "Une seule session ouverte par emplacement.",
+      "openingCash": "Fonds de caisse",
+      "open": "Ouvrir la caisse",
+      "selectLocation": "Sélectionnez un emplacement.",
+      "invalidAmount": "Montant invalide.",
+      "sessionBanner": "Session ouverte",
+      "close": "Clôturer la caisse",
+      "closeTitle": "Clôture de session",
+      "closeHint": "L’attendu et l’écart sont calculés côté serveur (fonds d’ouverture + espèces encaissées).",
+      "countedCash": "Espèces comptées",
+      "expectedCash": "Espèces attendues",
+      "variance": "Écart",
+      "varianceReason": "Motif de l’écart",
+      "confirmClose": "Confirmer la clôture",
+      "closedTitle": "Session clôturée",
+      "catalog": "Catalogue publié",
+      "noProducts": "Aucun produit publié.",
+      "cart": "Commande en cours",
+      "emptyCart": "Aucun article. Cliquez sur un produit pour l’ajouter.",
+      "quantity": "Quantité",
+      "removeLine": "Retirer",
+      "estimatedTotal": "Total estimé (le total final est calculé serveur)",
+      "submitOrder": "Valider la commande",
+      "receipt": "Ticket de caisse",
+      "print": "Imprimer",
+      "item": "Article",
+      "lineTotal": "Total ligne",
+      "total": "Total",
+      "paid": "Payé",
+      "remaining": "Reste à payer",
+      "payment": "Encaissement",
+      "method": "Moyen de paiement",
+      "amount": "Montant",
+      "addPayment": "Encaisser",
+      "completed": "Commande encaissée : le stock a été décrémenté.",
+      "cancelled": "Commande annulée : le stock a été restauré.",
+      "cancelOrder": "Annuler la commande",
+      "cancelConfirm": "Annuler cette commande ?",
+      "newOrder": "Nouvelle vente"
+    },
+    "orderStatus": {
+      "draft": "Brouillon",
+      "completed": "Encaissée",
+      "cancelled": "Annulée"
+    },
+    "paymentMethod": {
+      "cash": "Espèces",
+      "card": "Carte",
+      "mobile": "Mobile money",
+      "online": "En ligne"
     }
   },
   "communicationApp": {

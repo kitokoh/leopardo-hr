@@ -1171,11 +1171,15 @@ CREATE TABLE IF NOT EXISTS public.sync_queue (
     attempt_count integer NOT NULL DEFAULT 0,
     conflict_resolution varchar(50) NULL,
     conflict_note text NULL,
+    -- #7452 — parité avec la migration tenant #6554 : clé de dédup des rejeux
+    -- PushEdgeRecords (insertOrIgnore absorbé par l'unique ci-dessous).
+    dedup_key varchar(64) NULL,
     synced_at timestamptz NULL,
     created_at timestamptz NULL,
     updated_at timestamptz NULL
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS sync_queue_dedup_unique ON public.sync_queue (edge_node_id, dedup_key);
 CREATE INDEX IF NOT EXISTS sync_queue_edge_node_status_idx ON public.sync_queue (edge_node_id, status);
 CREATE INDEX IF NOT EXISTS sync_queue_entity_idx ON public.sync_queue (entity_type, entity_id);
 

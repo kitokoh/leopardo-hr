@@ -9,6 +9,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
+import 'package:leopardo_core/features/attendance/config/attendance_feature_config.dart';
 import 'app.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 
@@ -34,7 +35,18 @@ Future<void> main() async {
         initializer: _bootstrap,
         criticalInitializer: _bootstrapCritical,
         optionalInitializer: _safeGoogleSignInInitialize,
-        child: const ProviderScope(child: LeopardoApp()),
+        child: ProviderScope(
+          // #7652 — différenciation par app via config (plus de fork des
+          // fichiers attendance dans lib/features) : ton self-service pour le
+          // message de pointage hors zone.
+          overrides: [
+            attendanceFeatureConfigProvider.overrideWith(
+              (ref) =>
+                  const AttendanceFeatureConfig(outsideZoneManagerTone: false),
+            ),
+          ],
+          child: const LeopardoApp(),
+        ),
       ),
     ),
   );

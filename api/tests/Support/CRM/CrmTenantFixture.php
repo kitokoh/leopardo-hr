@@ -127,6 +127,26 @@ final class CrmTenantFixture
         $columns = Schema::getColumnListing($table);
         $payload = ['company_id' => $company->id];
 
+        // #7452 — schéma canonique V0 : certaines tables imposent des colonnes
+        // NOT NULL sans défaut (crm_accounts.name, crm_tasks.title, …). Le
+        // seed reste synthétique : une valeur de fixture par colonne connue,
+        // posée uniquement si la table l'expose.
+        foreach ([
+            'name' => 'Fixture CRM',
+            'first_name' => 'Jean',
+            'last_name' => 'Fixture',
+            'title' => 'Fixture CRM',
+            'type' => 'call',
+            'contact_id' => 1,
+            'channel' => 'email',
+            'purpose' => 'marketing',
+            'source' => 'manual',
+        ] as $column => $value) {
+            if (in_array($column, $columns, true)) {
+                $payload[$column] = $value;
+            }
+        }
+
         if (in_array('created_at', $columns, true) && in_array('updated_at', $columns, true)) {
             $now = now()->toDateTimeString();
             $payload['created_at'] = $now;

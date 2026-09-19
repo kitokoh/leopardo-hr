@@ -10,16 +10,11 @@ leopardo_accounting/lib/features/auth/screens/login_screen.dart
 leopardo_employee/lib/features/absences/data/absence_repository.dart
 leopardo_employee/lib/features/absences/providers/absence_provider.dart
 leopardo_employee/lib/features/absences/screens/absence_list_screen.dart
-leopardo_employee/lib/features/attendance/data/attendance_repository.dart
-leopardo_employee/lib/features/attendance/providers/attendance_provider.dart
 leopardo_employee/lib/features/attendance/screens/attendance_screen.dart
-leopardo_employee/lib/features/attendance/screens/history_screen.dart
 leopardo_employee/lib/features/attendance/screens/monthly_summary_screen.dart
 leopardo_employee/lib/features/attendance_geo/data/attendance_geo_repository.dart
 leopardo_employee/lib/features/attendance_geo/data/models/geo_attendance_session.dart
 leopardo_employee/lib/features/attendance_geo/providers/attendance_geo_provider.dart
-leopardo_employee/lib/features/auth/data/auth_repository.dart
-leopardo_employee/lib/features/auth/providers/auth_provider.dart
 leopardo_employee/lib/features/auth/screens/login_screen.dart
 leopardo_employee/lib/features/auth/screens/register_screen.dart
 leopardo_employee/lib/features/auth/screens/welcome_screen.dart

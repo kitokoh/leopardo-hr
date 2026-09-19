@@ -34,6 +34,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `HealthManager` | Verticale santé BC-30 : services médicaux, praticiens, patients, rendez-vous, consultations, hospitalisations, facturation des soins |
 | `Restaurant` | Solutions restaurant publiques BC-25 (enquêtes) |
 | `RestaurantManager` | Verticale restauration BC-25 : commandes, menus, livraisons, fidélité, promotions, kiosque |
+| `Retail` | Module vendeur générique BC-17 : produits, catégories, publication (fondations #7672) |
 | `EdgeSync` | Synchronisation offline/mobile (structure spécialisée, hors squelette DDD standard) |
 | `Expense` | Notes de frais employés |
 | `Fleet` | Véhicules, trajets, affectations |

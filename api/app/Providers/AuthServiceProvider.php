@@ -199,6 +199,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantPurchaseOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantReceiving;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantRefund;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantReservation;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantReview;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantSupplier;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTable;
@@ -223,6 +224,7 @@ use App\Modules\RestaurantManager\Policies\RestaurantPurchaseOrderPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantReceivingPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantRefundPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantReservationPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantReviewPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantStockLevelPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantSupplierPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantTablePolicy;
@@ -230,6 +232,18 @@ use App\Modules\RestaurantManager\Policies\RestaurantTableSessionPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantTaxRatePolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantUnitPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantZonePolicy;
+use App\Modules\Retail\Domain\Models\RetailCategory;
+use App\Modules\Retail\Domain\Models\RetailLocation;
+use App\Modules\Retail\Domain\Models\RetailOrder;
+use App\Modules\Retail\Domain\Models\RetailPosSession;
+use App\Modules\Retail\Domain\Models\RetailProduct;
+use App\Modules\Retail\Domain\Models\RetailStockLevel;
+use App\Modules\Retail\Domain\Policies\RetailCategoryPolicy;
+use App\Modules\Retail\Domain\Policies\RetailLocationPolicy;
+use App\Modules\Retail\Domain\Policies\RetailOrderPolicy;
+use App\Modules\Retail\Domain\Policies\RetailPosSessionPolicy;
+use App\Modules\Retail\Domain\Policies\RetailProductPolicy;
+use App\Modules\Retail\Domain\Policies\RetailStockLevelPolicy;
 use App\Modules\Showcase\Domain\Models\CompanyShowcase;
 use App\Modules\Showcase\Domain\Policies\CompanyShowcasePolicy;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
@@ -246,6 +260,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelRentalBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelRentalVehicle;
 use App\Modules\TravelAgency\Domain\Models\TravelRoundTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelRoute;
+use App\Modules\TravelAgency\Domain\Models\TravelStaffAssignment;
 use App\Modules\TravelAgency\Domain\Models\TravelStation;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
@@ -265,6 +280,7 @@ use App\Modules\TravelAgency\Policies\TravelRentalBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelRentalVehiclePolicy;
 use App\Modules\TravelAgency\Policies\TravelRoundTripPolicy;
 use App\Modules\TravelAgency\Policies\TravelRoutePolicy;
+use App\Modules\TravelAgency\Policies\TravelStaffAssignmentPolicy;
 use App\Modules\TravelAgency\Policies\TravelStationPolicy;
 use App\Modules\TravelAgency\Policies\TravelTicketPolicy;
 use App\Modules\TravelAgency\Policies\TravelTripPolicy;
@@ -455,6 +471,15 @@ class AuthServiceProvider extends ServiceProvider
         // — Catalog (BC-28 #6880 : socle domaine — catégories & produits B2B)
         Gate::policy(CatalogCategory::class, CatalogCategoryPolicy::class);
         Gate::policy(CatalogProduct::class, CatalogProductPolicy::class);
+        // — Retail (BC-17 #7672 : socle domaine — catégories & produits du vendeur générique)
+        Gate::policy(RetailCategory::class, RetailCategoryPolicy::class);
+        Gate::policy(RetailProduct::class, RetailProductPolicy::class);
+        // — Retail (BC-17 #7673 : gestion de stock — emplacements, niveaux, mouvements)
+        Gate::policy(RetailLocation::class, RetailLocationPolicy::class);
+        Gate::policy(RetailStockLevel::class, RetailStockLevelPolicy::class);
+        // — Retail (BC-17 #7674 : POS v1 — sessions de caisse, commandes, paiements)
+        Gate::policy(RetailPosSession::class, RetailPosSessionPolicy::class);
+        Gate::policy(RetailOrder::class, RetailOrderPolicy::class);
         // — Showcase (BC-27 #6865 : socle domaine — vitrine entreprise)
         Gate::policy(CompanyShowcase::class, CompanyShowcasePolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
@@ -512,6 +537,7 @@ class AuthServiceProvider extends ServiceProvider
 
         // — TravelAgency (consolidation BC-25) & RestaurantManager (BC-22)
         Gate::policy(TravelStation::class, TravelStationPolicy::class);
+        Gate::policy(TravelStaffAssignment::class, TravelStaffAssignmentPolicy::class);
         Gate::policy(TravelWebhookSubscription::class, TravelWebhookSubscriptionPolicy::class);
         Gate::policy(TravelOffice::class, TravelOfficePolicy::class);
         Gate::policy(TravelCarrier::class, TravelCarrierPolicy::class);
@@ -554,6 +580,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(RestaurantReceiving::class, RestaurantReceivingPolicy::class);
         Gate::policy(RestaurantInventoryCount::class, RestaurantInventoryCountPolicy::class);
         Gate::policy(RestaurantReservation::class, RestaurantReservationPolicy::class);
+        Gate::policy(RestaurantReview::class, RestaurantReviewPolicy::class);
 
         // Gate definitions
         Gate::define('manage-billing', [BillingPolicy::class, 'manageSubscription']);

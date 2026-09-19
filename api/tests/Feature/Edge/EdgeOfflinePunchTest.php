@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Edge;
 
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -30,7 +30,9 @@ class EdgeOfflinePunchTest extends TestCase
     use CreatesMvpSchema;
 
     private Company $company;
+
     private Employee $employee;
+
     private Schedule $schedule;
 
     protected function setUp(): void
@@ -40,21 +42,21 @@ class EdgeOfflinePunchTest extends TestCase
         $this->createEdgeNodesTable();
 
         $this->company = Company::factory()->create([
-            'schema_name'  => 'shared_tenants',
+            'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
-            'status'       => 'active',
+            'status' => 'active',
         ]);
 
         $this->schedule = Schedule::factory()->create([
             'company_id' => $this->company->id,
-            'name'       => 'Journée standard',
+            'name' => 'Journée standard',
             'start_time' => '08:00:00',
-            'end_time'   => '17:00:00',
+            'end_time' => '17:00:00',
         ]);
 
         $this->employee = Employee::factory()->create([
             'company_id' => $this->company->id,
-            'role'       => 'employee',
+            'role' => 'employee',
             'schedule_id' => $this->schedule->id,
         ]);
     }
@@ -62,6 +64,11 @@ class EdgeOfflinePunchTest extends TestCase
     protected function tearDown(): void
     {
         DB::statement('DROP TABLE IF EXISTS edge_nodes CASCADE');
+        // #7452 — ce tearDown a remplacé edge_nodes par un schéma legacy :
+        // restaurer la table canonique de la fixture (le cache #6928 ne la
+        // rebâtit plus), sinon les classes MVP suivantes échouent en
+        // « relation "edge_nodes" does not exist ».
+        $this->recreateCanonicalEdgeNodesTable();
         $this->tearDownMvpSchema();
         parent::tearDown();
     }
@@ -101,16 +108,16 @@ class EdgeOfflinePunchTest extends TestCase
     private function insertEdgeNode(array $overrides = []): int
     {
         return DB::table('edge_nodes')->insertGetId(array_merge([
-            'company_id'      => $this->company->id,
-            'node_id'         => 'edge-test-001',
-            'name'            => 'Kiosque RDC',
-            'status'          => 'online',
-            'license_valid'   => true,
+            'company_id' => $this->company->id,
+            'node_id' => 'edge-test-001',
+            'name' => 'Kiosque RDC',
+            'status' => 'online',
+            'license_valid' => true,
             'license_expires_at' => Carbon::now()->addDays(30)->toDateTimeString(),
-            'last_seen_at'    => Carbon::now()->toDateTimeString(),
-            'pending_count'   => 0,
-            'created_at'      => Carbon::now(),
-            'updated_at'      => Carbon::now(),
+            'last_seen_at' => Carbon::now()->toDateTimeString(),
+            'pending_count' => 0,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ], $overrides));
     }
 
@@ -128,26 +135,26 @@ class EdgeOfflinePunchTest extends TestCase
         $checkedAt = Carbon::now()->setTime(8, 5, 0);
 
         $log = AttendanceLog::create([
-            'company_id'          => $this->company->id,
-            'employee_id'         => $this->employee->id,
-            'schedule_id'         => $this->schedule->id,
-            'date'                => $checkedAt->toDateString(),
-            'session_number'      => 1,
-            'check_in'            => $checkedAt->toDateTimeString(),
-            'method'              => 'qr_code',
-            'work_type'           => 'presentiel',
-            'biometric_type'      => 'none',
+            'company_id' => $this->company->id,
+            'employee_id' => $this->employee->id,
+            'schedule_id' => $this->schedule->id,
+            'date' => $checkedAt->toDateString(),
+            'session_number' => 1,
+            'check_in' => $checkedAt->toDateTimeString(),
+            'method' => 'qr_code',
+            'work_type' => 'presentiel',
+            'biometric_type' => 'none',
             'synced_from_offline' => false,
-            'status'              => 'present',
-            'hours_worked'        => '0',
-            'overtime_hours'      => '0',
-            'late_minutes'        => 0,
+            'status' => 'present',
+            'hours_worked' => '0',
+            'overtime_hours' => '0',
+            'late_minutes' => 0,
         ]);
 
         $this->assertDatabaseHas('attendance_logs', [
-            'id'                  => $log->id,
-            'employee_id'         => $this->employee->id,
-            'check_in'            => $checkedAt->toDateTimeString(),
+            'id' => $log->id,
+            'employee_id' => $this->employee->id,
+            'check_in' => $checkedAt->toDateTimeString(),
             'synced_from_offline' => false,
         ]);
     }
@@ -161,8 +168,8 @@ class EdgeOfflinePunchTest extends TestCase
         $this->insertEdgeNode();
 
         $employees = Employee::factory()->count(5)->create([
-            'company_id'  => $this->company->id,
-            'role'        => 'employee',
+            'company_id' => $this->company->id,
+            'role' => 'employee',
             'schedule_id' => $this->schedule->id,
         ]);
 
@@ -170,20 +177,20 @@ class EdgeOfflinePunchTest extends TestCase
 
         foreach ($employees as $i => $emp) {
             AttendanceLog::create([
-                'company_id'          => $this->company->id,
-                'employee_id'         => $emp->id,
-                'schedule_id'         => $this->schedule->id,
-                'date'                => $baseTime->toDateString(),
-                'session_number'      => 1,
-                'check_in'            => $baseTime->copy()->addMinutes($i)->toDateTimeString(),
-                'method'              => 'badge',
-                'work_type'           => 'presentiel',
-                'biometric_type'      => 'none',
+                'company_id' => $this->company->id,
+                'employee_id' => $emp->id,
+                'schedule_id' => $this->schedule->id,
+                'date' => $baseTime->toDateString(),
+                'session_number' => 1,
+                'check_in' => $baseTime->copy()->addMinutes($i)->toDateTimeString(),
+                'method' => 'badge',
+                'work_type' => 'presentiel',
+                'biometric_type' => 'none',
                 'synced_from_offline' => false,
-                'status'              => 'present',
-                'hours_worked'        => '0',
-                'overtime_hours'      => '0',
-                'late_minutes'        => 0,
+                'status' => 'present',
+                'hours_worked' => '0',
+                'overtime_hours' => '0',
+                'late_minutes' => 0,
             ]);
         }
 
@@ -214,20 +221,20 @@ class EdgeOfflinePunchTest extends TestCase
         // Simuler 3 pointages non synchronisés
         for ($i = 0; $i < 3; $i++) {
             AttendanceLog::create([
-                'company_id'          => $this->company->id,
-                'employee_id'         => $this->employee->id,
-                'schedule_id'         => $this->schedule->id,
-                'date'                => Carbon::today()->toDateString(),
-                'session_number'      => $i + 1,
-                'check_in'            => Carbon::now()->addMinutes($i * 30)->toDateTimeString(),
-                'method'              => 'qr_code',
-                'work_type'           => 'presentiel',
-                'biometric_type'      => 'none',
+                'company_id' => $this->company->id,
+                'employee_id' => $this->employee->id,
+                'schedule_id' => $this->schedule->id,
+                'date' => Carbon::today()->toDateString(),
+                'session_number' => $i + 1,
+                'check_in' => Carbon::now()->addMinutes($i * 30)->toDateTimeString(),
+                'method' => 'qr_code',
+                'work_type' => 'presentiel',
+                'biometric_type' => 'none',
                 'synced_from_offline' => false,
-                'status'              => 'present',
-                'hours_worked'        => '0',
-                'overtime_hours'      => '0',
-                'late_minutes'        => 0,
+                'status' => 'present',
+                'hours_worked' => '0',
+                'overtime_hours' => '0',
+                'late_minutes' => 0,
             ]);
         }
 
@@ -244,4 +251,3 @@ class EdgeOfflinePunchTest extends TestCase
         $this->assertSame(3, (int) $node->pending_count);
     }
 }
-

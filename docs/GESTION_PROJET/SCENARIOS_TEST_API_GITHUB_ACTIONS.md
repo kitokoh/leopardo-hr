@@ -2232,3 +2232,34 @@ Deux nouvelles routes (module Marketing / module Platform), contrat OpenAPI +2 p
 Couverture : `api/tests/Feature/Marketing/AcquisitionFunnelEventControllerTest.php` et
 `api/tests/Feature/Platform/PlatformAcquisitionFunnelStatsTest.php` (7 cas : secret fail-closed,
 accepté sans secret à la #7301, liste fermée, filtrage PII, agrégats, alerte OTP déclenchée/muette).
+
+## Addendum 2026-09-19 — RESTO-902 : commande publique par slug + avis clients modérés (#7747, épic #7745)
+
+Huit nouvelles opérations (module RestaurantManager), contrat OpenAPI +8 paths (tag Restaurant). Surfaces publiques par slug (pattern #7746 : `throttle:shop-public`, AUCUN middleware tenant/Sanctum, 404 fail-closed, DTO strict sans PII ni `company_id`) — contrôleurs allowlistés avec justification dans `check-vertical-controller-policies.sh` (#7599/#7600, surfaces volontairement publiques).
+
+`POST /api/v1/public/restaurants/{slug}/orders` — commande publique (pipeline RESTO-805 réutilisé, `CreateOnlineOrderAction`, prix + TVA SERVEUR).
+
+| Cas | Attendu |
+|---|---|
+| panier de produits publiés (`is_published_online` ET `is_available` ET actifs) d'une branche publique | 201, référence `RST-…` non énumérable, totaux serveur, `created=true` |
+| produit non publié en ligne | 422, aucune commande |
+| produit d'une autre branche | 422 |
+| branche non publique / société suspendue | **404 fail-closed** (`RestaurantPublicBranchResolver`) |
+| rejeu avec le même `idempotency_key` | 200, MÊME commande (`created=false`) |
+
+`GET /api/v1/public/restaurants/{slug}/orders/{ref}` — suivi par référence : borné à LA branche du slug (référence d'une autre branche → 404), réponse **sans PII** (jamais nom/téléphone client). `POST …/{ref}/pay` : `cash` (alias `cash_on_delivery`) / `mobile_money` acceptés ; carte/PSP → 422 (spec #5272 en attente).
+
+`POST /api/v1/public/restaurants/{slug}/reviews` — dépôt d'avis (throttle strict dédié `restaurant-reviews-public`, 5/min/IP).
+
+| Cas | Attendu |
+|---|---|
+| `order_ref` d'une commande de CETTE branche en statut terminal servi/livré | 201, avis créé en `pending` (jamais publié directement) |
+| commande non terminale | 422 |
+| référence inconnue ou d'une autre branche | 422/404 — jamais de fuite cross-tenant |
+| second avis pour la même commande | 409 (unique tenant + `order_reference`) |
+
+`GET /api/v1/public/restaurants/{slug}/reviews` — publiés uniquement, paginés, DTO strict (author_name, rating, comment, date — jamais l'`order_reference`). Les avis publiés alimentent `rating_avg`/`reviews_count` de l'annuaire et du profil publics (sous-requêtes SQL, pas de compteur dénormalisé ; cache profil purgé à chaque publish/reject).
+
+Modération tenant : `GET /api/v1/restaurant/reviews?status=`, `POST /api/v1/restaurant/reviews/{review}/publish|reject` — `RestaurantReviewPolicy::moderate` (pattern gérant `canManageBranchResource` #7599), listing scopé par succursales accessibles, cross-tenant → 404, non-gérant → 403.
+
+Couverture : `api/tests/Feature/Restaurant/RestaurantPublicSlugOrderTest.php` (8 cas : prix serveur, produit non publié, produit d'une autre branche, 404 branche non publique, idempotence, suivi sans PII, suivi scopé au slug, paiement cash/carte refusée) et `api/tests/Feature/Restaurant/RestaurantReviewTest.php` (8 cas : pending sur commande servie, non-terminale refusée, référence étrangère refusée, doublon 409, listing public DTO strict, publish/reject gérant, RBAC + isolation tenant, moyenne publique).

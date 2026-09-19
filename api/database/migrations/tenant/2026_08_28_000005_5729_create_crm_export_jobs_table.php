@@ -24,7 +24,8 @@ return new class extends Migration
             Schema::create('crm_export_jobs', function (Blueprint $table): void {
                 $table->uuid('id')->primary();
                 $table->uuid('company_id')->index();
-                $table->uuid('user_id')->nullable()->index();
+                // #7452 — user_id reçoit des id d'employés (PK bigint).
+                $table->unsignedBigInteger('user_id')->nullable()->index();
                 $table->string('entity', 30);                       // accounts|contacts|leads|opportunities|activities|tasks
                 $table->string('format', 10)->default('csv');
                 $table->json('filters')->nullable();                // snapshot des filtres demandés

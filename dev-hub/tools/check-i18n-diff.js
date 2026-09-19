@@ -105,7 +105,13 @@ const ignorePathFragments = [
 // Lines that already route text through a translation mechanism — never
 // flagged even if they also contain a literal (e.g. the French fallback
 // key text of a translation catalog entry itself).
-const translationCallPattern = /(context\.l10n\.|AppLocalizations\.of|\bl10n\.|__\(|\$t\(|\bt\(['"]|i18n\.t\(|data-i18n|useTranslation|\bt`|Lang::get\(|trans\(|@lang\(|translate\()/;
+// BC-17 (#7675) : la signature maison du portail Next.js est
+// `t(locale, 'clé.imbriquée', 'Texte de repli FR')` (src/lib/i18n/locale-catalog.ts,
+// utilisée par TOUTES les pages travel/commerce) — le repli FR est le 3e
+// argument d'un appel de catalogue, pas une chaîne hors i18n. Le motif
+// `\bt\(['"]` ne couvrait que `t('clé')` : chaque page gérant était signalée
+// à tort (constat mesuré sur le diff BC-24 #7643, 200 faux positifs).
+const translationCallPattern = /(context\.l10n\.|AppLocalizations\.of|\bl10n\.|__\(|\$t\(|\bt\(['"]|\bt\(\s*locale\s*,\s*['"]|i18n\.t\(|data-i18n|useTranslation|\bt`|Lang::get\(|trans\(|@lang\(|translate\()/;
 
 const devLogLinePattern = /\b(console\.(log|warn|error|info|debug)|debugPrint|print(?:ln)?|Log\.[dewiv]|logger\.(debug|info|warn|error)|dev\.log)\s*\(/i;
 const todoLinePattern = /\/\/\s*TODO|#\s*TODO/i;
@@ -157,6 +163,10 @@ function isTechnicalToken(value) {
   // Imports Next.js alias (« @/modules/... ») — chemin technique, pas une
   // chaîne utilisateur (faux positif signalé sur #6663).
   if (trimmed.startsWith('@/')) return true;
+  // Query string sans espace (« per_page=100 », « status=open&page=2 ») :
+  // paramètres d'API, jamais du texte utilisateur (constat BC-17 #7675 —
+  // `listQuery: 'per_page=100'` des tableaux CRUD config-driven).
+  if (/^[\w.-]+=[\w.%&=-]*$/.test(trimmed)) return true;
   return /^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS|Bearer\s|https?:\/\/|wss?:\/\/|https?:|wss?:|api\/|\/api|[A-Z_]{2,})$/.test(trimmed);
 }
 
@@ -211,6 +221,10 @@ const structuralAttributes = new Set([
   // `<Image … sizes="(min-width: 1024px) 33vw, 100vw" />` était signalé comme
   // « nouvelle chaîne en dur » et poussait à réécrire un appel correct.
   'sizes', 'width', 'height', 'srcset', 'loading', 'decoding', 'fetchpriority',
+  // Filtre de type de fichier d'un <input type="file"> : liste d'extensions/
+  // types MIME (`accept=".csv,text/csv"`), jamais du texte utilisateur
+  // (constat #7776 — import de relevé bancaire de la console admin).
+  'accept', ':accept',
 ]);
 
 // Noms d'attribut : `:class`, `@click`, `v-model`, `#default`, `aria-label`…

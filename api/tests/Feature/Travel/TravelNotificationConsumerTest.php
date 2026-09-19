@@ -75,7 +75,7 @@ class TravelNotificationConsumerTest extends TestCase
     {
         $booking = $this->makeBooking();
 
-        $this->consumer->handle(['booking_reference' => $booking->reference]);
+        $this->consumer->handle('travel.booking.confirmed.v1', ['booking_reference' => $booking->reference]);
 
         Mail::assertNothingSent();
     }
@@ -85,7 +85,7 @@ class TravelNotificationConsumerTest extends TestCase
         $contact = app(TenantManager::class)->withinTenant($this->company, fn (): TravelCustomerContact => TravelCustomerContact::factory()->create());
         $booking = $this->makeBooking(['customer_contact_id' => $contact->id]);
 
-        $this->consumer->handle(['booking_reference' => $booking->reference]);
+        $this->consumer->handle('travel.booking.confirmed.v1', ['booking_reference' => $booking->reference]);
 
         Mail::assertNothingSent();
     }
@@ -95,7 +95,7 @@ class TravelNotificationConsumerTest extends TestCase
         $contact = app(TenantManager::class)->withinTenant($this->company, fn (): TravelCustomerContact => TravelCustomerContact::factory()->withEmailConsent()->create());
         $booking = $this->makeBooking(['customer_contact_id' => $contact->id]);
 
-        $this->consumer->handle(['booking_reference' => $booking->reference]);
+        $this->consumer->handle('travel.booking.confirmed.v1', ['booking_reference' => $booking->reference]);
 
         Mail::assertSent(CommunicationMail::class, fn (CommunicationMail $mail): bool => $mail->hasTo($contact->email));
     }
@@ -115,7 +115,7 @@ class TravelNotificationConsumerTest extends TestCase
 
         $booking = $this->makeBooking(['booked_by_user_id' => $employee->id]);
 
-        $this->consumer->handle(['booking_reference' => $booking->reference]);
+        $this->consumer->handle('travel.booking.confirmed.v1', ['booking_reference' => $booking->reference]);
 
         $this->assertTrue(
             AppNotification::query()->where('user_id', $employee->id)->exists(),
@@ -127,13 +127,13 @@ class TravelNotificationConsumerTest extends TestCase
     {
         $this->expectException(PermanentOutboxException::class);
 
-        $this->consumer->handle(['booking_reference' => 'GV-INCONNU0001']);
+        $this->consumer->handle('travel.booking.confirmed.v1', ['booking_reference' => 'GV-INCONNU0001']);
     }
 
     public function test_missing_reference_is_permanent(): void
     {
         $this->expectException(PermanentOutboxException::class);
 
-        $this->consumer->handle([]);
+        $this->consumer->handle('travel.booking.confirmed.v1', []);
     }
 }
