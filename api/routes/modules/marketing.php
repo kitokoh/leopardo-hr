@@ -19,6 +19,7 @@
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingAiController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingLeadConversionController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\SocialAccountController;
+use App\Modules\Marketing\Interfaces\Api\V1\Controllers\SocialCommentController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\SocialPostController;
 use Illuminate\Support\Facades\Route;
 
@@ -66,6 +67,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::patch('/posts/{socialPost}', [SocialPostController::class, 'update']);
         Route::delete('/posts/{socialPost}', [SocialPostController::class, 'destroy']);
         Route::post('/posts/{socialPost}/publish', [SocialPostController::class, 'publish']);
+
+        // ----------------------------------------------------------------
+        // Interactions sociales (issue #7754) : commentaires des posts
+        // publiés + réponse (+ suggestion IA validée par un humain).
+        // ----------------------------------------------------------------
+        Route::get('/social-posts/{socialPost}/comments', [SocialCommentController::class, 'index']);
+        Route::post('/social-posts/{socialPost}/comments/reply', [SocialCommentController::class, 'reply']);
+        Route::post('/social-posts/{socialPost}/comments/suggest-reply', [SocialCommentController::class, 'suggestReply']);
 
         // ----------------------------------------------------------------
         // IA marketing (issue #7753) : suggestion de contenu (humain dans
