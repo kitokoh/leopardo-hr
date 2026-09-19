@@ -4395,6 +4395,51 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/retail/locations/{location}", options);
     },
 
+    /** Lister les commandes de vente POS (membres du tenant, ordre desc) */
+    getRetailPosOrders(options = {}) {
+      return request("GET", "/retail/pos/orders", options);
+    },
+
+    /** Creer une commande de vente POS (gestion principal/rh) */
+    postRetailPosOrders(options = {}) {
+      return request("POST", "/retail/pos/orders", options);
+    },
+
+    /** Ticket de caisse d'une commande POS (commande + lignes + paiements) */
+    getRetailPosOrdersByOrder(options = {}) {
+      return request("GET", "/retail/pos/orders/{order}", options);
+    },
+
+    /** Annuler une commande POS (gestion principal/rh) */
+    postRetailPosOrdersByOrderCancel(options = {}) {
+      return request("POST", "/retail/pos/orders/{order}/cancel", options);
+    },
+
+    /** Encaisser un paiement sur une commande POS (gestion principal/rh) */
+    postRetailPosOrdersByOrderPayments(options = {}) {
+      return request("POST", "/retail/pos/orders/{order}/payments", options);
+    },
+
+    /** Lister les sessions de caisse POS (membres du tenant, ordre desc) */
+    getRetailPosSessions(options = {}) {
+      return request("GET", "/retail/pos/sessions", options);
+    },
+
+    /** Ouvrir une session de caisse POS (gestion principal/rh) */
+    postRetailPosSessions(options = {}) {
+      return request("POST", "/retail/pos/sessions", options);
+    },
+
+    /** Detail d'une session de caisse POS (membres du tenant) */
+    getRetailPosSessionsBySession(options = {}) {
+      return request("GET", "/retail/pos/sessions/{session}", options);
+    },
+
+    /** Cloturer une session de caisse POS (gestion principal/rh) */
+    postRetailPosSessionsBySessionClose(options = {}) {
+      return request("POST", "/retail/pos/sessions/{session}/close", options);
+    },
+
     /** Lister les produits du module Retail (membres du tenant) */
     getRetailProducts(options = {}) {
       return request("GET", "/retail/products", options);

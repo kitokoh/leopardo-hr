@@ -3536,6 +3536,42 @@ class LeopardoClient:
         """Mettre a jour un emplacement (gestion principal/rh)"""
         return self.request("PUT", "/retail/locations/{location}", **kwargs)
 
+    def get_retail_pos_orders(self, **kwargs):
+        """Lister les commandes de vente POS (membres du tenant, ordre desc)"""
+        return self.request("GET", "/retail/pos/orders", **kwargs)
+
+    def post_retail_pos_orders(self, **kwargs):
+        """Creer une commande de vente POS (gestion principal/rh)"""
+        return self.request("POST", "/retail/pos/orders", **kwargs)
+
+    def get_retail_pos_orders_by_order(self, **kwargs):
+        """Ticket de caisse d'une commande POS (commande + lignes + paiements)"""
+        return self.request("GET", "/retail/pos/orders/{order}", **kwargs)
+
+    def post_retail_pos_orders_by_order_cancel(self, **kwargs):
+        """Annuler une commande POS (gestion principal/rh)"""
+        return self.request("POST", "/retail/pos/orders/{order}/cancel", **kwargs)
+
+    def post_retail_pos_orders_by_order_payments(self, **kwargs):
+        """Encaisser un paiement sur une commande POS (gestion principal/rh)"""
+        return self.request("POST", "/retail/pos/orders/{order}/payments", **kwargs)
+
+    def get_retail_pos_sessions(self, **kwargs):
+        """Lister les sessions de caisse POS (membres du tenant, ordre desc)"""
+        return self.request("GET", "/retail/pos/sessions", **kwargs)
+
+    def post_retail_pos_sessions(self, **kwargs):
+        """Ouvrir une session de caisse POS (gestion principal/rh)"""
+        return self.request("POST", "/retail/pos/sessions", **kwargs)
+
+    def get_retail_pos_sessions_by_session(self, **kwargs):
+        """Detail d'une session de caisse POS (membres du tenant)"""
+        return self.request("GET", "/retail/pos/sessions/{session}", **kwargs)
+
+    def post_retail_pos_sessions_by_session_close(self, **kwargs):
+        """Cloturer une session de caisse POS (gestion principal/rh)"""
+        return self.request("POST", "/retail/pos/sessions/{session}/close", **kwargs)
+
     def get_retail_products(self, **kwargs):
         """Lister les produits du module Retail (membres du tenant)"""
         return self.request("GET", "/retail/products", **kwargs)

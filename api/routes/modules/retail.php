@@ -19,6 +19,8 @@
 
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailCategoryController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailLocationController;
+use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailOrderController;
+use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailPosSessionController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailProductController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailStockController;
 use Illuminate\Support\Facades\Route;
@@ -55,4 +57,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/stock/movements', [RetailStockController::class, 'storeMovement']);
         Route::get('/stock/movements', [RetailStockController::class, 'movements']);
         Route::get('/stock/alerts', [RetailStockController::class, 'alerts']);
+
+        // POS v1 (#7674) : sessions de caisse (une seule session ouverte par
+        // emplacement), commandes de vente, paiements multi-moyens (le
+        // passage à completed décrémente le stock via RetailStockService).
+        Route::get('/pos/sessions', [RetailPosSessionController::class, 'index']);
+        Route::post('/pos/sessions', [RetailPosSessionController::class, 'store']);
+        Route::get('/pos/sessions/{session}', [RetailPosSessionController::class, 'show'])->whereNumber('session');
+        Route::post('/pos/sessions/{session}/close', [RetailPosSessionController::class, 'close'])->whereNumber('session');
+
+        Route::get('/pos/orders', [RetailOrderController::class, 'index']);
+        Route::post('/pos/orders', [RetailOrderController::class, 'store']);
+        Route::get('/pos/orders/{order}', [RetailOrderController::class, 'show'])->whereNumber('order');
+        Route::post('/pos/orders/{order}/payments', [RetailOrderController::class, 'addPayment'])->whereNumber('order');
+        Route::post('/pos/orders/{order}/cancel', [RetailOrderController::class, 'cancel'])->whereNumber('order');
     });
