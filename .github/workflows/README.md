@@ -134,8 +134,7 @@ ci-dessous.
 | `mobile-distribute-main.yml` | Push → main | Distribution Android/iOS sur push main |
 | `onboarding-smoke.yml` | PR/push | Smoke d'onboarding (bootstrap) |
 | `payroll-ci.yml` | PR → api (Payroll) | Tests + qualité du BC Payroll |
-| `queue-supervision.yml` | Schedule | Supervision des files (DB env prod) |
-| `queue-worker-fallback.yml` | Schedule | Fallback worker de files |
+| `queue-supervision.yml` | Schedule | Supervision des files (sonde HTTP `/api/v1/health`, sans credentials — #7694) |
 | `secret-history-scan.yml` | Schedule | Scan d'historique git pour secrets |
 | `web-offline-ci.yml` | PR → front/web-offline | Lint + test + build PWA offline + manifest |
 

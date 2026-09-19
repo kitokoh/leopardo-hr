@@ -100,6 +100,49 @@ class HealthQueuePendingVsScheduledTest extends TestCase
     }
 
     /**
+     * #7694 — la supervision externe (sonde HTTP sans credentials DB) doit
+     * pouvoir détecter un worker mort : `/health` publie l'âge de la plus
+     * vieille réservation, la sonde applique son seuil « stale ».
+     */
+    public function test_oldest_reserved_seconds_reports_the_age_of_the_stalest_reservation(): void
+    {
+        // Deux réservations en cours : le signal doit refléter la PLUS ancienne.
+        $this->insertJob(
+            'pdf',
+            (int) now()->subMinutes(20)->timestamp,
+            (int) now()->subMinutes(15)->timestamp,
+        );
+        $this->insertJob(
+            'default',
+            (int) now()->subMinutes(5)->timestamp,
+            (int) now()->subMinutes(2)->timestamp,
+        );
+
+        $response = $this->getJson('/api/v1/health');
+
+        $response->assertOk();
+
+        $age = $response->json('checks.queue.oldest_reserved_seconds');
+
+        $this->assertIsInt($age);
+        // 15 min = 900 s ; marge pour le temps d'exécution du test.
+        $this->assertGreaterThanOrEqual(890, $age);
+        $this->assertLessThan(1000, $age);
+    }
+
+    public function test_oldest_reserved_seconds_is_null_without_any_reservation(): void
+    {
+        // Un job en attente (non réservé) ne compte pas : `null` = aucune
+        // réservation en cours, pas « zéro seconde ».
+        $this->insertJob('notifications', (int) now()->subMinute()->timestamp, null);
+
+        $response = $this->getJson('/api/v1/health');
+
+        $response->assertOk();
+        $response->assertJsonPath('checks.queue.oldest_reserved_seconds', null);
+    }
+
+    /**
      * Insère un job directement dans la table `jobs` (même convention que
      * `QueueSupervisionDatabaseTest`).
      */
