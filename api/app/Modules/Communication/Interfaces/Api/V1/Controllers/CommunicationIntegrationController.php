@@ -98,6 +98,15 @@ class CommunicationIntegrationController extends Controller
         /** @var Employee $employee */
         $employee = $request->user();
 
+        // R4 (#7689) — activation des relances : le scope `gmail.send` est
+        // demande a la connexion (consentement INCREMENTAL, les scopes deja
+        // accordes restent via include_granted_scopes).
+        $scopes = GoogleGmailOAuthService::DEFAULT_SCOPES;
+
+        if ($request->boolean('with_send')) {
+            $scopes[] = GoogleGmailOAuthService::GMAIL_SEND_SCOPE;
+        }
+
         $state = Str::random(40);
 
         Cache::put(
@@ -111,7 +120,7 @@ class CommunicationIntegrationController extends Controller
 
         return new JsonResponse([
             'data' => [
-                'authorization_url' => $this->google->authorizationUrl($state),
+                'authorization_url' => $this->google->authorizationUrl($state, $scopes),
                 'expires_in' => self::STATE_TTL_MINUTES * 60,
             ],
         ]);

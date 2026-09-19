@@ -334,4 +334,34 @@ return [
         'body_excerpt_bytes' => (int) env('COMMUNICATION_CLASSIFY_BODY_EXCERPT_BYTES', 8000),
         'no_proposal_categories' => ['spam_newsletter'],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relances automatiques (BC-29 COMMUNICATION, R4 #7689)
+    |--------------------------------------------------------------------------
+    |
+    | Garde-fous globaux du moteur de relances (spec §3.4) — les regles et
+    | sequences (max 3 etapes) sont configurees PAR UTILISATEUR via l'API ;
+    | ces bornes-ci s'appliquent a tout le monde et ne sont PAS contournables
+    | par les regles :
+    | - `daily_cap_per_user`    : plafond journalier de relances par boite ;
+    | - `contact_daily_cap`     : plafond journalier par DESTINATAIRE (tous
+    |                             fils/regles confondus) — defaut 1 ;
+    | - `quiet_hours`           : fenetre horaire pendant laquelle AUCUNE
+    |                             relance ne part (les echeances restent
+    |                             `pending` et repartent a la passe suivante).
+    |                             `start` > `end` = fenetre nocturne (20h->8h).
+    |
+    */
+
+    'follow_ups' => [
+        'max_steps' => 3,
+        'daily_cap_per_user' => (int) env('COMMUNICATION_FOLLOW_UP_DAILY_CAP', 25),
+        'contact_daily_cap' => (int) env('COMMUNICATION_FOLLOW_UP_CONTACT_DAILY_CAP', 1),
+        'quiet_hours' => [
+            'start' => (int) env('COMMUNICATION_FOLLOW_UP_QUIET_START', 20),
+            'end' => (int) env('COMMUNICATION_FOLLOW_UP_QUIET_END', 8),
+            'timezone' => env('COMMUNICATION_FOLLOW_UP_TIMEZONE', 'Africa/Algiers'),
+        ],
+    ],
 ];

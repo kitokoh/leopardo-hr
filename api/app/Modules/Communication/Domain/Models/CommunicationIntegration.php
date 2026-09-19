@@ -135,6 +135,20 @@ class CommunicationIntegration extends Model
     }
 
     /**
+     * La boite a-t-elle accorde le scope d'ENVOI Gmail (R4 #7689) ? Les
+     * relances automatiques exigent `gmail.send` — demande a l'activation
+     * via POST /integrations/google `with_send=true` (scopes incrementaux).
+     */
+    public function hasSendScope(): bool
+    {
+        return in_array(
+            'https://www.googleapis.com/auth/gmail.send',
+            $this->scopes ?? [],
+            true
+        );
+    }
+
+    /**
      * L'access token est-il a rafraichir ? Marge de 60 s pour ne jamais
      * presenter a Google un token qui expire pendant l'appel.
      */

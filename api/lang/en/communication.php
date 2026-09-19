@@ -20,4 +20,9 @@ return [
     // BC-29 Communication R3 (#7688) — API messages.
     'category_key_taken' => 'This category key already exists for your company.',
     'proposal_already_decided' => 'This contact proposal has already been decided.',
+
+    // BC-29 Communication R4 (#7689) — follow-up API messages.
+    'follow_up_send_scope_required' => 'Reconnect your Gmail mailbox with the send permission to enable automatic follow-ups.',
+    'follow_up_not_cancellable' => 'This follow-up has already been processed and can no longer be cancelled.',
+    'follow_up_mailbox_not_found' => 'Mailbox not found.',
 ];

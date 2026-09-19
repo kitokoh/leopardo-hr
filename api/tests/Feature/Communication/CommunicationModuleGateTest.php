@@ -91,11 +91,11 @@ class CommunicationModuleGateTest extends TestCase
             ->assertJsonPath('data.module', 'communication')
             ->assertJsonPath('data.enabled', true)
             ->assertJsonPath('data.status', 'active')
-            ->assertJsonPath('data.stage', 'R3')
+            ->assertJsonPath('data.stage', 'R4')
             ->assertJsonPath('data.capabilities.integrations', true)
             ->assertJsonPath('data.capabilities.sync', true)
             ->assertJsonPath('data.capabilities.classification', true)
-            ->assertJsonPath('data.capabilities.follow_ups', false)
+            ->assertJsonPath('data.capabilities.follow_ups', true)
             ->assertJsonPath('data.capabilities.replies', false);
     }
 

@@ -195,4 +195,8 @@ return [
     'login_code_intro' => 'İşte tek kullanımlık giriş kodunuz. Alanınıza erişmek için giriş sayfasında bu kodu girin:',
     'login_code_validity' => 'Bu kod 10 dakika geçerlidir ve tek kullanımlıktır. Bunu talep etmediyseniz, bu e-postayı güvenle yok sayabilirsiniz.',
 
+
+    // BC-29 Communication R4 (#7689) — otomatik takip şablonu.
+    'communication_follow_up_subject' => 'Hatırlatma: :subject',
+    'communication_follow_up_body' => "Merhaba,\n\nHenüz yanıt almayan \":subject\" konulu önceki mesajımla ilgili size tekrar yazıyorum.\n\nİnceleme fırsatınız oldu mu?\n\nSaygılarımla,\n:name",
 ];

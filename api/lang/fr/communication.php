@@ -20,4 +20,9 @@ return [
     // BC-29 Communication R3 (#7688) — messages API.
     'category_key_taken' => 'Cette clé de catégorie existe déjà pour votre entreprise.',
     'proposal_already_decided' => 'Cette proposition de contact a déjà été traitée.',
+
+    // BC-29 Communication R4 (#7689) — messages API relances.
+    'follow_up_send_scope_required' => "Reconnectez votre boîte Gmail avec l'autorisation d'envoi pour activer les relances automatiques.",
+    'follow_up_not_cancellable' => 'Cette relance a déjà été traitée et ne peut plus être annulée.',
+    'follow_up_mailbox_not_found' => 'Boîte mail introuvable.',
 ];

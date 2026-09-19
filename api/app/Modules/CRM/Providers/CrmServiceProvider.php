@@ -28,12 +28,14 @@ use App\Modules\CRM\Infrastructure\Services\CrmChannelService;
 use App\Modules\CRM\Infrastructure\Services\CrmConditionEvaluator;
 use App\Modules\CRM\Infrastructure\Services\CrmContactSegmentSource;
 use App\Modules\CRM\Infrastructure\Services\CrmEmailContactDirectory;
+use App\Modules\CRM\Infrastructure\Services\CrmEmailFollowUpConsentGate;
 use App\Modules\CRM\Infrastructure\Services\CrmImportRowPersister;
 use App\Modules\CRM\Infrastructure\Services\CrmOutboxConsumerRegistry;
 use App\Modules\CRM\Infrastructure\Services\CrmOutboxPublisher;
 use App\Modules\CRM\Infrastructure\Services\LogEmailProvider;
 use App\Modules\CRM\Infrastructure\Services\MailEmailProvider;
 use App\Shared\Contracts\Crm\EmailContactDirectory;
+use App\Shared\Contracts\Crm\EmailFollowUpConsentGate;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
@@ -66,6 +68,11 @@ class CrmServiceProvider extends ServiceProvider
         // Communication (BC-29) consomme l'interface App\Shared, jamais les
         // modèles CRM (isolation #5584).
         $this->app->bind(EmailContactDirectory::class, CrmEmailContactDirectory::class);
+
+        // R4 Communication (#7689) — contrat partagé de consentement email
+        // (suppressions/unsubscribe #5726 + consentements #5722) consommé par
+        // le moteur de relances automatiques, même pattern d'isolation.
+        $this->app->bind(EmailFollowUpConsentGate::class, CrmEmailFollowUpConsentGate::class);
 
         $this->app->singleton(WhatsAppCloudApiClient::class);
         $this->app->singleton(WhatsAppAdapter::class);

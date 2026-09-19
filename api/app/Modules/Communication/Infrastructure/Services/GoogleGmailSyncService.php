@@ -6,6 +6,8 @@ namespace App\Modules\Communication\Infrastructure\Services;
 
 use App\Modules\Communication\Domain\Exceptions\GmailRateLimitedException;
 use App\Modules\Communication\Domain\Exceptions\GmailSyncAuthException;
+use App\Modules\Communication\Domain\Models\CommunicationFollowUpLog;
+use App\Modules\Communication\Domain\Models\CommunicationFollowUpRule;
 use App\Modules\Communication\Domain\Models\CommunicationIntegration;
 use App\Modules\Communication\Domain\Models\CommunicationMessage;
 use App\Modules\Communication\Domain\Models\CommunicationThread;
@@ -105,6 +107,20 @@ class GoogleGmailSyncService
      */
     public function purge(CommunicationIntegration $integration): void
     {
+        // R4 (#7689) — droit a l'effacement etendu aux relances : echeances,
+        // regles (FK cascade) et journal d'audit de la boite.
+        CommunicationFollowUpLog::query()
+            ->withoutGlobalScopes()
+            ->where('company_id', $integration->company_id)
+            ->where('integration_id', $integration->id)
+            ->delete();
+
+        CommunicationFollowUpRule::query()
+            ->withoutGlobalScopes()
+            ->where('company_id', $integration->company_id)
+            ->where('integration_id', $integration->id)
+            ->delete();
+
         CommunicationMessage::query()
             ->withoutGlobalScopes()
             ->where('company_id', $integration->company_id)
@@ -406,6 +422,12 @@ class GoogleGmailSyncService
             )),
             'attachment_refs' => $this->extractAttachmentRefs($part),
             'sent_at' => $sentAt,
+            // R4 (#7689) — garde-fous relances : seuls des BOOLEENS sont
+            // persistes, les headers Auto-Submitted / List-Id eux-memes ne
+            // sont jamais stockes (minimisation R2 conservee).
+            'is_auto_reply' => isset($headers['auto-submitted'])
+                && mb_strtolower(trim($headers['auto-submitted'])) !== 'no',
+            'is_list_message' => isset($headers['list-id']),
         ]);
 
         $message->save();
@@ -490,7 +512,7 @@ class GoogleGmailSyncService
      */
     private function headerMap(array $part): array
     {
-        $wanted = ['from', 'to', 'cc', 'subject', 'message-id', 'in-reply-to'];
+        $wanted = ['from', 'to', 'cc', 'subject', 'message-id', 'in-reply-to', 'auto-submitted', 'list-id'];
         $map = [];
 
         /** @var list<array<string, mixed>> $headers */

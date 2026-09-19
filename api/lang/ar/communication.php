@@ -20,4 +20,9 @@ return [
     // BC-29 Communication R3 (#7688) — رسائل واجهة برمجة التطبيقات.
     'category_key_taken' => 'مفتاح الفئة هذا موجود بالفعل لشركتك.',
     'proposal_already_decided' => 'تم البت في اقتراح جهة الاتصال هذا بالفعل.',
+
+    // BC-29 Communication R4 (#7689) — رسائل واجهة برمجة التطبيقات للمتابعات.
+    'follow_up_send_scope_required' => 'أعد ربط بريد Gmail الخاص بك مع إذن الإرسال لتفعيل المتابعات التلقائية.',
+    'follow_up_not_cancellable' => 'تمت معالجة هذه المتابعة بالفعل ولا يمكن إلغاؤها.',
+    'follow_up_mailbox_not_found' => 'صندوق البريد غير موجود.',
 ];

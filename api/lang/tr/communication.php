@@ -20,4 +20,9 @@ return [
     // BC-29 Communication R3 (#7688) — API mesajları.
     'category_key_taken' => 'Bu kategori anahtarı şirketiniz için zaten mevcut.',
     'proposal_already_decided' => 'Bu kişi önerisi zaten karara bağlandı.',
+
+    // BC-29 Communication R4 (#7689) — takip API mesajları.
+    'follow_up_send_scope_required' => 'Otomatik takipleri etkinleştirmek için Gmail posta kutunuzu gönderme izniyle yeniden bağlayın.',
+    'follow_up_not_cancellable' => 'Bu takip zaten işlendi ve artık iptal edilemez.',
+    'follow_up_mailbox_not_found' => 'Posta kutusu bulunamadı.',
 ];
