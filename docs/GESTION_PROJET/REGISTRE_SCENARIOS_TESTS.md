@@ -2,6 +2,23 @@
 > Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
 > Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
 
+> **MAJ 2026-09-19 — #7737 (épic #7736), API publique MARKETPLACE inter-agences (PR #7750).**
+> Surface **API** : nouvelle surface publique `/api/v1/public/travel/marketplace/*` SANS jeton
+> d'agence (throttle `shop-public`) — villes desservies dédupliquées par identité géographique
+> (`GET /cities`), recherche agrégée CROSS-TENANT bornée aux agences opt-in (jeton boutique
+> actif + feature `travelagency` ; `GET /trips`), détail + plan de sièges résolu PAR TRAJET
+> (`GET /trips/{trip}`, 404 fail-closed hors opt-in), réservation déléguée au flux TRAVEL-1001
+> dans le tenant du trajet (`POST /bookings`, `booking_source=marketplace`), paiement résolu par
+> RÉFÉRENCE (`POST /payments/initiate`, ambiguïté cross-tenant → 404) et alias marketplace de la
+> surface passager #7395 (suivi/annulation/e-billet par référence + code de validation). Contrat
+> documenté dans `api/openapi.yaml` (+8 paths, miroir/SDK régénérés). Scénarios automatisés :
+> `api/tests/Feature/Travel/TravelMarketplaceApiTest.php` (6 cas Feature multi-tenant :
+> agrégation ≥ 2 agences sans jeton, exclusion jeton inactif/feature absente, déduplication des
+> villes, 404 fail-closed sur trajet non opt-in, réservation créée chez la BONNE agence et
+> invisible ailleurs + idempotence, paiement résolu par référence). La boutique mono-agence
+> TRAVEL-1001/1002 est inchangée (non-régression : suites shop/portail passager vertes).
+> Surfaces web/mobile : aucune (le front `front/travel-web` est un lot ultérieur de l'épic).
+
 > **MAJ 2026-09-19 — #7680, dédoublonnage des routes platform (PR de fix RouteCollisionGuard).**
 > Surface **API** : suppression de 5 déclarations dupliquées SANS `platform.permission`
 > (country/subscription/features de `platform/companies/{company}`) qui masquaient les versions
