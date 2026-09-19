@@ -55,6 +55,7 @@ Règle : ces identifiants ne doivent **jamais** apparaître dans une phrase de p
 | # | Surface | Fichiers | Statut |
 |---|---|---|---|
 | 1 | Sources de vérité internes | `docs/REFERENTIEL_PRODUIT/MESSAGE.md`, `TERMES.md`, ce document | ✅ **fait** (cette PR) |
+| 1bis | README + fiche GitHub du dépôt | `README.md`, `package.json` (description), métadonnées GitHub : description, topics, homepage (hors code) | ✅ **fait** (2026-09-19) — pitch canonique EN, carte produit avec les solutions verticales, description GitHub « business suite » |
 | 2 | Vitrine & SEO public | `modules/vitrine/lib/seo.ts` (42 occ.), `data/faq-page.ts` (27), `legal-content.ts` (20), `data/videos.ts` (18), `case-studies.ts` (14), `lib/vitrine-locale.ts`, `app/llms*.txt`, `components/JsonLd.tsx`, `site/gh-pages/index.html`, `app/layout.tsx` (13), `app/manifest/route.ts`, catalogues i18n | ⏳ suivi par issue dédiée (copy marketing → relecture fondateur) |
 | 3 | E-mails transactionnels | `api/lang/{fr,en,tr,ar}/emails.php` (≈21 chacun) + `MAIL_BRAND_NAME` | ⏳ à faire **avec** test d'envoi (le changement de nom expéditeur est visible client) |
 | 4 | Stores & apps | `android:label`, `Info.plist`, libellés de fiches | ⏳ **hors code** : nécessite une publication de version |

@@ -43,7 +43,7 @@ class CabinetShareAccessByTokenTest extends TestCase
 
     public function test_public_token_access_downloads_document_without_auth(): void
     {
-        $document = CabinetDocument::create([
+        $document = CabinetDocument::forceCreate([
             'company_id'    => $this->company->id,
             'employee_id'   => $this->employee->id,
             'name'          => 'contrat.pdf',
@@ -56,7 +56,7 @@ class CabinetShareAccessByTokenTest extends TestCase
 
         Storage::disk('local')->put('cabinet/contrat.pdf', 'PDF-BYTES');
 
-        $share = CabinetShare::create([
+        $share = CabinetShare::forceCreate([
             'company_id'    => $this->company->id,
             'employee_id'   => $this->employee->id,
             'shareable_type' => CabinetDocument::class,
@@ -80,7 +80,7 @@ class CabinetShareAccessByTokenTest extends TestCase
 
     public function test_expired_share_returns_410(): void
     {
-        $document = CabinetDocument::create([
+        $document = CabinetDocument::forceCreate([
             'company_id'    => $this->company->id,
             'employee_id'   => $this->employee->id,
             'name'          => 'a.pdf',
@@ -91,7 +91,7 @@ class CabinetShareAccessByTokenTest extends TestCase
             'path'          => 'cabinet/a.pdf',
         ]);
 
-        CabinetShare::create([
+        CabinetShare::forceCreate([
             'company_id'     => $this->company->id,
             'employee_id'    => $this->employee->id,
             'shareable_type' => CabinetDocument::class,
@@ -108,13 +108,13 @@ class CabinetShareAccessByTokenTest extends TestCase
 
     public function test_folder_share_returns_documents_json(): void
     {
-        $folder = CabinetFolder::create([
+        $folder = CabinetFolder::forceCreate([
             'company_id'  => $this->company->id,
             'employee_id' => $this->employee->id,
             'name'        => 'Dossier partagé',
         ]);
 
-        CabinetDocument::create([
+        CabinetDocument::forceCreate([
             'company_id'    => $this->company->id,
             'employee_id'   => $this->employee->id,
             'name'          => 'doc.pdf',
@@ -126,7 +126,7 @@ class CabinetShareAccessByTokenTest extends TestCase
             'folder_id'     => $folder->id,
         ]);
 
-        CabinetShare::create([
+        CabinetShare::forceCreate([
             'company_id'     => $this->company->id,
             'employee_id'    => $this->employee->id,
             'shareable_type' => CabinetFolder::class,

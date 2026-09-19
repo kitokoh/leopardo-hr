@@ -37,7 +37,18 @@ class CrmChannelConversation extends Model
 
     protected $table = 'crm_channel_conversations';
 
-    protected $guarded = [];
+    // #7646 — allowlist explicite SANS `company_id` : le tenant est posé par
+    // le hook creating de BelongsToCompany, jamais par mass assignment.
+    protected $fillable = [
+        'channel_id',
+        'provider_conversation_id',
+        'contact_ref_type',
+        'contact_ref_id',
+        'last_message_at',
+        'unread_count',
+        'status',
+        'archived_at',
+    ];
 
     protected function casts(): array
     {
