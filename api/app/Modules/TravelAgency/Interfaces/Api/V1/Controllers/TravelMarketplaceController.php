@@ -203,7 +203,7 @@ class TravelMarketplaceController extends Controller
         $booking = $matches->count() === 1 ? $matches->first() : null;
 
         if (! $booking instanceof TravelBooking) {
-            abort(404, 'Réservation marketplace introuvable.');
+            abort(404, __('travel.marketplace.booking_not_found'));
         }
 
         $company = Company::query()->find($booking->company_id);
