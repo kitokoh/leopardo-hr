@@ -744,3 +744,11 @@ restent les gates applicables.
   mobiles ne bougent que par la **synchronisation** du catalogue partagé (`sync-backend`,
   `sync-mobile`) — clés additives `vitrine.notFound.*` / `vitrine.nav.*`, aucun contrat modifié,
   aucun scénario mobile nouveau requis.
+
+## Mise à jour 2026-09-19 — hygiène du dépôt, tranche 2 de #7654 (PR #7692)
+
+- **Surface mobile** : documentation uniquement — les READMEs de `leopardo_employee`,
+  `leopardo_manager` et `leopardo_hr` pointent désormais vers la régénération à la demande
+  des exemples API (`python dev-hub/tools/generate_api_examples.py`) au lieu du dossier
+  versionné `docs/api-mock-data/` (sorti du dépôt). **Aucun code, contrat ni scénario mobile
+  modifié** — aucun scénario nouveau requis.
