@@ -254,7 +254,7 @@ export default function BrandingPage() {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept="image/jpeg,image/png,image/webp"
+                  accept={ACCEPTED_LOGO_TYPES.join(',')}
                   onChange={onLogoChange}
                   className="sr-only"
                   data-testid="branding-logo-input"
@@ -388,7 +388,7 @@ function ColorField({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           maxLength={7}
-          pattern="#[0-9A-Fa-f]{6}"
+          pattern={HEX_PATTERN.source}
           className={inputClassName}
           data-testid={testId}
         />
