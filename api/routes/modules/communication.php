@@ -35,7 +35,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // de l'employe courant ; la revocation passe par la policy.
         Route::get('/integrations', [CommunicationIntegrationController::class, 'index']);
         Route::post('/integrations/google', [CommunicationIntegrationController::class, 'connectGoogle']);
-        Route::delete('/integrations/{integration}', [CommunicationIntegrationController::class, 'destroy']);
+        Route::delete('/integrations/{integration}', [CommunicationIntegrationController::class, 'destroy'])->whereUuid('integration');
     });
 
 // R1 (#7686) — callback OAuth Google : route PUBLIQUE par construction (le
