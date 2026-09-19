@@ -71,4 +71,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/pos/orders/{order}', [RetailOrderController::class, 'show'])->whereNumber('order');
         Route::post('/pos/orders/{order}/payments', [RetailOrderController::class, 'addPayment'])->whereNumber('order');
         Route::post('/pos/orders/{order}/cancel', [RetailOrderController::class, 'cancel'])->whereNumber('order');
+
+        // Reçus & factures (#7813) : ticket de caisse (JSON structuré +
+        // variante PDF 80 mm via ?format=pdf) et facture PDF à numérotation
+        // légale par tenant (FAC-YYYY-NNNNNN, attribué à la première
+        // génération puis stable). `/orders/...` (hors pos/) : la facture
+        // servira aussi les futures commandes web (source online, PR #7817).
+        Route::get('/pos/orders/{order}/receipt', [RetailOrderController::class, 'receipt'])->whereNumber('order');
+        Route::get('/orders/{order}/invoice.pdf', [RetailOrderController::class, 'invoicePdf'])->whereNumber('order');
     });

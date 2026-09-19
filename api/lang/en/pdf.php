@@ -174,4 +174,22 @@ return [
     'payslip_regularization_banner' => 'REGULARIZATION PAYSLIP — corrects run #:run',
     'payslip_regularization_banner_slip' => 'REGULARIZATION PAYSLIP — corrects slip #:slip',
     'contract_legal_clauses_title' => 'Contract legal clauses',
+
+    // Retail — POS receipt and sales invoice (BC-17, #7813)
+    'retail_receipt_title' => 'SALES RECEIPT',
+    'retail_invoice_title' => 'INVOICE',
+    'retail_invoice_number_label' => 'Invoice no.',
+    'retail_order_reference_label' => 'Reference',
+    'retail_date_label' => 'Date',
+    'retail_location_label' => 'Point of sale',
+    'retail_status_label' => 'Status',
+    'retail_column_product' => 'Item',
+    'retail_column_quantity' => 'Qty',
+    'retail_column_unit_price' => 'Unit price',
+    'retail_column_total' => 'Total',
+    'retail_subtotal_label' => 'Subtotal',
+    'retail_discount_label' => 'Discount',
+    'retail_total_label' => 'TOTAL',
+    'retail_payments_title' => 'Payments',
+    'retail_receipt_footer' => 'Thank you for your visit!',
 ];

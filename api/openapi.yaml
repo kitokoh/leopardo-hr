@@ -31062,6 +31062,83 @@ paths:
         '422':
           $ref: '#/components/responses/Validation422'
 
+  /retail/pos/orders/{order}/receipt:
+    get:
+      tags:
+      - Retail
+      summary: Recu de caisse d'une commande POS (JSON structure ou PDF 80 mm)
+      description: 'Ticket structure (commande, lignes, paiements) pour
+        l''affichage et l''impression cote caisse ; `?format=pdf` retourne la
+        variante imprimable PDF (ticket 80 mm, DomPDF — pattern Billing
+        #7763). Lecture membres du tenant, cross-tenant 404 fail-closed
+        (#7813).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: format
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - pdf
+      responses:
+        '200':
+          description: Recu (JSON structure du ticket, ou fichier PDF si format=pdf)
+          content:
+            application/json:
+              schema:
+                type: object
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /retail/orders/{order}/invoice.pdf:
+    get:
+      tags:
+      - Retail
+      summary: Facture PDF d'une commande Retail (numerotation legale par tenant)
+      description: 'Numero legal `FAC-YYYY-NNNNNN` par tenant : sequence
+        dediee (unique company+annee, increment transactionnel verrouille),
+        attribue a la PREMIERE generation puis STABLE. Seules les commandes
+        `completed` sont facturables (422). Concu pour les commandes POS et,
+        des leur arrivee (PR #7817), les commandes web `online` (#7813).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Fichier PDF de la facture
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+
   /communication/integrations:
     get:
       tags:

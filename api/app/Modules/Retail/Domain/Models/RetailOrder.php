@@ -35,6 +35,8 @@ use Illuminate\Support\Carbon;
  * @property RetailOrderSource $source
  * @property string|null $note
  * @property string|null $idempotency_key
+ * @property string|null $invoice_number
+ * @property Carbon|null $invoiced_at
  * @property int $version
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -49,6 +51,9 @@ class RetailOrder extends Model
 
     protected $table = 'retail_orders';
 
+    // `invoice_number` / `invoiced_at` VOLONTAIREMENT hors $fillable :
+    // la numerotation legale est attribuee UNIQUEMENT par
+    // RetailInvoiceService (forceFill sous transaction verrouillee, #7813).
     protected $fillable = [
         'company_id',
         'location_id',
@@ -76,6 +81,7 @@ class RetailOrder extends Model
             'total_minor' => 'integer',
             'status' => RetailOrderStatus::class,
             'source' => RetailOrderSource::class,
+            'invoiced_at' => 'datetime',
             'version' => 'integer',
         ];
     }

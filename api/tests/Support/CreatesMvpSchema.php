@@ -1534,12 +1534,34 @@ trait CreatesMvpSchema
                 $table->string('source', 20)->default('pos');
                 $table->text('note')->nullable();
                 $table->string('idempotency_key', 64)->nullable();
+                $table->string('invoice_number', 40)->nullable();
+                $table->timestamp('invoiced_at')->nullable();
                 $table->unsignedInteger('version')->default(1);
                 $table->timestamps();
 
                 $table->unique(['company_id', 'reference'], 'retail_orders_company_reference_unique');
                 $table->unique(['company_id', 'idempotency_key'], 'retail_orders_company_idempotency_key_unique');
                 $table->index(['company_id', 'location_id', 'status'], 'retail_orders_company_location_status_idx');
+            });
+
+            // Numero de facture legal unique par tenant (miroir de la
+            // migration 2026_09_19_000305_7813, index partiel Postgres).
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement('CREATE UNIQUE INDEX IF NOT EXISTS retail_orders_company_invoice_number_unique ON '.$this->moduleTable('retail_orders').' (company_id, invoice_number) WHERE invoice_number IS NOT NULL');
+            }
+        }
+
+        // BC-17 RETAIL #7813 — sequence de numerotation legale des factures.
+        // Miroir de la migration 2026_09_19_000304_7813 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('retail_invoice_sequences'))) {
+            Schema::create($this->moduleTable('retail_invoice_sequences'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedSmallInteger('year');
+                $table->unsignedBigInteger('next_number')->default(1);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'year'], 'retail_invoice_sequences_company_year_unique');
             });
         }
 

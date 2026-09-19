@@ -5,21 +5,30 @@ declare(strict_types=1);
 namespace App\Modules\Retail\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
+use App\Modules\Retail\Application\Services\RetailInvoiceService;
 use App\Modules\Retail\Application\Services\RetailPosService;
 use App\Modules\Retail\Domain\Enums\RetailPaymentMethod;
 use App\Modules\Retail\Domain\Models\RetailOrder;
 use App\Modules\Retail\Domain\Models\RetailOrderItem;
 use App\Modules\Retail\Domain\Models\RetailOrderPayment;
 use App\Modules\Retail\Domain\Models\RetailPosSession;
+use App\Modules\Retail\Infrastructure\Services\RetailPdfRenderer;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\CancelRetailOrderRequest;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\StoreRetailOrderPaymentRequest;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\StoreRetailOrderRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 /**
  * Commandes de vente POS du module Retail (BC-17 RETAIL, #7674).
+ *
+ * #7813 : recu de caisse (`GET pos/orders/{id}/receipt`, JSON structure ou
+ * PDF 80 mm via `?format=pdf`) et facture PDF a numerotation legale
+ * (`GET orders/{id}/invoice.pdf`, numero FAC-YYYY-NNNNNN attribue a la
+ * premiere generation par RetailInvoiceService puis stable).
  *
  * deny-by-default (RetailOrderPolicy) : lecture membres du tenant,
  * creation/encaissement/annulation reserves principal/rh. Totaux et prix
@@ -30,7 +39,11 @@ use Illuminate\Http\Request;
  */
 class RetailOrderController extends Controller
 {
-    public function __construct(private readonly RetailPosService $posService) {}
+    public function __construct(
+        private readonly RetailPosService $posService,
+        private readonly RetailInvoiceService $invoiceService,
+        private readonly RetailPdfRenderer $pdfRenderer,
+    ) {}
 
     /**
      * Liste des commandes (filtres status / pos_session_id / source, desc).
@@ -122,6 +135,63 @@ class RetailOrderController extends Controller
     }
 
     /**
+     * Recu de caisse (#7813) : JSON structure du ticket par defaut,
+     * variante imprimable PDF 80 mm avec `?format=pdf` (pattern DomPDF du
+     * module Billing, #7763). Lecture membres du tenant (policy `view`),
+     * cross-tenant → 404 fail-closed.
+     */
+    public function receipt(Request $request, RetailOrder $order): JsonResponse|Response
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($order->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('view', $order);
+
+        if ($request->query('format') === 'pdf') {
+            $pdf = $this->pdfRenderer->renderReceipt($order, Company::find($actor->company_id));
+
+            return response($pdf['content'], 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="'.$pdf['filename'].'"',
+            ]);
+        }
+
+        return response()->json(['data' => $this->receiptPayload($order)]);
+    }
+
+    /**
+     * Facture PDF de la commande (#7813) — POS aujourd'hui, commandes web
+     * demain (source `online`, PR #7817) : le service ne depend que de la
+     * commande. Numero LEGAL `FAC-YYYY-NNNNNN` par tenant, attribue a la
+     * PREMIERE generation (sequence transactionnelle verrouillee) puis
+     * STABLE. Seules les commandes `completed` sont facturables (422).
+     */
+    public function invoicePdf(Request $request, RetailOrder $order): Response
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($order->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('view', $order);
+
+        $invoiced = $this->invoiceService->ensureInvoiceNumber($order);
+
+        $pdf = $this->pdfRenderer->renderInvoice($invoiced, Company::find($actor->company_id));
+
+        return response($pdf['content'], 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'.$pdf['filename'].'"',
+        ]);
+    }
+
+    /**
      * Encaisse un paiement ; quand les paiements captures couvrent le total,
      * la commande passe `completed` et le stock est decremente (mouvements
      * `sale` traces — survente : cf. RetailPosService).
@@ -191,6 +261,8 @@ class RetailOrderController extends Controller
             'currency' => $order->currency,
             'source' => $order->source->value,
             'note' => $order->note,
+            'invoice_number' => $order->invoice_number,
+            'invoiced_at' => $order->invoiced_at?->toIso8601String(),
             'version' => $order->version,
             'created_at' => $order->created_at?->toIso8601String(),
             'updated_at' => $order->updated_at?->toIso8601String(),

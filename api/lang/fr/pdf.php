@@ -174,4 +174,22 @@ return [
     'payslip_regularization_banner' => 'BULLETIN DE RÉGULARISATION — corrige le run #:run',
     'payslip_regularization_banner_slip' => 'BULLETIN DE RÉGULARISATION — corrige le bulletin #:slip',
     'contract_legal_clauses_title' => 'Clauses légales du contrat',
+
+    // Retail — reçu de caisse et facture de vente (BC-17, #7813)
+    'retail_receipt_title' => 'REÇU DE CAISSE',
+    'retail_invoice_title' => 'FACTURE',
+    'retail_invoice_number_label' => 'Facture n°',
+    'retail_order_reference_label' => 'Référence',
+    'retail_date_label' => 'Date',
+    'retail_location_label' => 'Point de vente',
+    'retail_status_label' => 'Statut',
+    'retail_column_product' => 'Article',
+    'retail_column_quantity' => 'Qté',
+    'retail_column_unit_price' => 'PU',
+    'retail_column_total' => 'Total',
+    'retail_subtotal_label' => 'Sous-total',
+    'retail_discount_label' => 'Remise',
+    'retail_total_label' => 'TOTAL',
+    'retail_payments_title' => 'Paiements',
+    'retail_receipt_footer' => 'Merci de votre visite !',
 ];
