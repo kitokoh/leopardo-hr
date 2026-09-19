@@ -7,6 +7,7 @@ namespace Tests\Feature\Payroll;
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\TenantManager;
 use App\Jobs\ArchivePaySlipsToCabinetJob;
 use App\Modules\Cabinet\Domain\Models\CabinetDocument;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
@@ -109,8 +110,8 @@ class PaySlipCabinetArchiveTest extends TestCase
         $slipId = PaySlip::query()->where('payroll_run_id', $run->id)->value('id');
 
         // Exécution manuelle du job deux fois → un seul document.
-        (new ArchivePaySlipsToCabinetJob($run->id))->handle(new \App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator);
-        (new ArchivePaySlipsToCabinetJob($run->id))->handle(new \App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator);
+        $this->runArchiveJob($company, (int) $run->id);
+        $this->runArchiveJob($company, (int) $run->id);
 
         $this->assertSame(
             1,
@@ -130,7 +131,7 @@ class PaySlipCabinetArchiveTest extends TestCase
         $run = $this->makeCalculatedRunWithSlips($company);
         $slip = PaySlip::query()->where('payroll_run_id', $run->id)->firstOrFail();
 
-        (new ArchivePaySlipsToCabinetJob($run->id))->handle(new \App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator);
+        $this->runArchiveJob($company, (int) $run->id);
 
         $document = CabinetDocument::query()->where('document_type', 'payslip')->firstOrFail();
 
@@ -158,7 +159,7 @@ class PaySlipCabinetArchiveTest extends TestCase
         // Si l'employé de structure n'est pas celui attendu, on prend le premier bulletin.
         $slip ??= PaySlip::query()->where('payroll_run_id', $run->id)->firstOrFail();
 
-        (new ArchivePaySlipsToCabinetJob($run->id))->handle(new \App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator);
+        $this->runArchiveJob($company, (int) $run->id);
 
         // Propriétaire du bulletin.
         /** @var Employee $owner */
@@ -177,5 +178,18 @@ class PaySlipCabinetArchiveTest extends TestCase
         $outsider = Employee::factory()->create(['company_id' => $otherCompany->id]);
         Sanctum::actingAs($outsider);
         $this->getJson("/api/v1/me/pay-slips/{$slip->id}/document")->assertStatus(404);
+    }
+
+    /**
+     * #7721 : exécute le job d'archivage SOUS contexte tenant, miroir exact du
+     * middleware de queue EnsureTenantContext (depuis #7712, company_id des
+     * modèles Cabinet est délégué au trait BelongsToCompany — une invocation
+     * directe sans contexte crée des documents avec company_id NULL).
+     */
+    private function runArchiveJob(Company $company, int $runId): void
+    {
+        app(TenantManager::class)->withinTenant($company, function () use ($runId): void {
+            (new ArchivePaySlipsToCabinetJob($runId))->handle(new \App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator);
+        });
     }
 }
