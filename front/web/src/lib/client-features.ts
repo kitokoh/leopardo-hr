@@ -535,6 +535,9 @@ const MODULE_ROUTE_ALIASES: Record<string, ClientModuleKey> = {
   '/travel/trips': 'travel',
   '/travel/bookings': 'travel',
   '/travel/reports': 'travel',
+  // BC-24 (#7639) — page Équipe (affectations staff, pont RH #7638).
+  '/travel/staff': 'travel',
+  '/travel/portal': 'travel_portal',
   '/fuel': 'fuel',
   '/edu-manager/campuses': 'edu_manager',
   '/edu-manager/academic-years': 'edu_manager',

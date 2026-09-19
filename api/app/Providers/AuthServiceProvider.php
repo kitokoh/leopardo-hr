@@ -182,6 +182,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelCancellationPolicy;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrierApiKey;
+use App\Modules\TravelAgency\Domain\Models\TravelDistributorKey;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelCurrencyRate;
 use App\Modules\TravelAgency\Domain\Models\TravelHotel;
@@ -192,6 +193,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelRentalBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelRentalVehicle;
 use App\Modules\TravelAgency\Domain\Models\TravelRoundTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelRoute;
+use App\Modules\TravelAgency\Domain\Models\TravelStaffAssignment;
 use App\Modules\TravelAgency\Domain\Models\TravelStation;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
@@ -200,6 +202,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
 use App\Modules\TravelAgency\Policies\TravelBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelCancellationPolicyPolicy;
 use App\Modules\TravelAgency\Policies\TravelCarrierApiKeyPolicy;
+use App\Modules\TravelAgency\Policies\TravelDistributorKeyPolicy;
 use App\Modules\TravelAgency\Policies\TravelCarrierPolicy;
 use App\Modules\TravelAgency\Policies\TravelClassPolicy;
 use App\Modules\TravelAgency\Policies\TravelCurrencyRatePolicy;
@@ -211,6 +214,7 @@ use App\Modules\TravelAgency\Policies\TravelRentalBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelRentalVehiclePolicy;
 use App\Modules\TravelAgency\Policies\TravelRoundTripPolicy;
 use App\Modules\TravelAgency\Policies\TravelRoutePolicy;
+use App\Modules\TravelAgency\Policies\TravelStaffAssignmentPolicy;
 use App\Modules\TravelAgency\Policies\TravelStationPolicy;
 use App\Modules\TravelAgency\Policies\TravelTicketPolicy;
 use App\Modules\TravelAgency\Policies\TravelTripPolicy;
@@ -417,6 +421,7 @@ class AuthServiceProvider extends ServiceProvider
 
         // — TravelAgency (consolidation BC-25) & RestaurantManager (BC-22)
         Gate::policy(TravelStation::class, TravelStationPolicy::class);
+        Gate::policy(TravelStaffAssignment::class, TravelStaffAssignmentPolicy::class);
         Gate::policy(TravelWebhookSubscription::class, TravelWebhookSubscriptionPolicy::class);
         Gate::policy(TravelOffice::class, TravelOfficePolicy::class);
         Gate::policy(TravelCarrier::class, TravelCarrierPolicy::class);
@@ -433,6 +438,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(TravelQuote::class, TravelQuotePolicy::class);
         Gate::policy(TravelCurrencyRate::class, TravelCurrencyRatePolicy::class);
         Gate::policy(TravelCarrierApiKey::class, TravelCarrierApiKeyPolicy::class);
+        // TRAVEL-DISTRIBUTION (#7641) — clés API de lecture distributeurs.
+        Gate::policy(TravelDistributorKey::class, TravelDistributorKeyPolicy::class);
         Gate::policy(TravelCancellationPolicy::class, TravelCancellationPolicyPolicy::class);
         Gate::policy(TravelLoyaltyAccount::class, TravelLoyaltyPolicy::class);
         Gate::policy(RestaurantBranch::class, RestaurantBranchPolicy::class);
