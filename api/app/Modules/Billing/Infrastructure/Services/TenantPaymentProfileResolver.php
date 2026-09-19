@@ -88,4 +88,84 @@ class TenantPaymentProfileResolver implements TenantPaymentProfileResolverInterf
 
         return $secret !== '' ? $secret : null;
     }
+
+    public function stripeCredentialsForCompany(string $companyId): ?array
+    {
+        $profile = $this->activeProfileForCompany($companyId, 'stripe_keys');
+
+        if ($profile === null) {
+            return null;
+        }
+
+        $secrets = $profile->secrets ?? [];
+        $secretKey = $secrets['secret_key'] ?? '';
+
+        if ($secretKey === '') {
+            return null;
+        }
+
+        return [
+            'profile_id' => (int) $profile->id,
+            'secret_key' => $secretKey,
+            'webhook_secret' => $secrets['webhook_secret'] ?? '',
+            'stripe_account_id' => $profile->stripe_account_id,
+        ];
+    }
+
+    public function activeMobileMoneyProfileForCompany(string $companyId): ?array
+    {
+        $profile = $this->activeProfileForCompany($companyId, 'mobile_money');
+
+        if ($profile === null) {
+            return null;
+        }
+
+        $secrets = $profile->secrets ?? [];
+        $details = $profile->details ?? [];
+        $operator = is_string($details['operator'] ?? null) ? $details['operator'] : '';
+        $phoneNumber = $secrets['phone_number'] ?? '';
+
+        if ($operator === '' || $phoneNumber === '') {
+            return null;
+        }
+
+        return [
+            'profile_id' => (int) $profile->id,
+            'operator' => $operator,
+            'phone_number' => $phoneNumber,
+        ];
+    }
+
+    /**
+     * Profil ACTIF d'un type donné pour une compagnie DONNÉE — contexte
+     * public (pas de tenant courant) : requête hors scope global mais
+     * TOUJOURS filtrée explicitement par la compagnie désignée (#7728).
+     */
+    private function activeProfileForCompany(string $companyId, string $type): ?TenantPaymentProfile
+    {
+        if ($companyId === '') {
+            return null;
+        }
+
+        try {
+            /** @var TenantPaymentProfile|null $profile */
+            $profile = TenantPaymentProfile::query()
+                ->withoutGlobalScopes()
+                ->where('company_id', $companyId)
+                ->where('type', $type)
+                ->where('status', 'active')
+                ->orderByDesc('is_default')
+                ->first();
+
+            return $profile;
+        } catch (Throwable $e) {
+            // Table absente (déploiement en cours de migration) : fail-closed
+            // côté appelant (paiement en ligne non configuré), jamais de 500.
+            Log::warning('TenantPaymentProfileResolver: lecture par compagnie impossible', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+    }
 }

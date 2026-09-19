@@ -4611,7 +4611,9 @@
       "colRevenue": "CA du jour",
       "colOrders": "Commandes",
       "colOccupancy": "Rotation tables",
-      "colAlerts": "Alertes stock"
+      "colAlerts": "Alertes stock",
+      "payments": "Encaissement",
+      "paymentsDesc": "Paiement en ligne, profils Stripe & mobile money"
     },
     "crud": {
       "search": "Rechercher...",
@@ -4929,6 +4931,26 @@
       "reviewNotEligible": "L'avis n'est possible qu'après une commande servie ou livrée.",
       "reviewDuplicate": "Un avis a déjà été déposé pour cette commande.",
       "reviewError": "Impossible d'envoyer l'avis. Réessayez."
+    },
+    "payments": {
+      "title": "Encaissement",
+      "desc": "État de la configuration des paiements en ligne (profils d'encaissement)",
+      "loadError": "Impossible de charger l'état de l'encaissement.",
+      "onlineEnabled": "Paiement en ligne actif",
+      "onlineDisabled": "Paiement en ligne non configuré",
+      "onlineDisabledHint": "Vos clients ne peuvent pas payer en ligne : ajoutez un profil d'encaissement (clés Stripe ou mobile money) puis activez-le. Le paiement sur place reste toujours possible.",
+      "cardOnline": "Carte en ligne (Stripe)",
+      "mobileMoney": "Mobile money",
+      "configured": "Configuré",
+      "notConfigured": "Non configuré",
+      "sandbox": "Mode sandbox",
+      "production": "Production",
+      "profileActive": "Profil actif",
+      "profileMissing": "Aucun profil actif",
+      "payOnSite": "Paiement sur place (caisse)",
+      "alwaysAvailable": "Toujours disponible",
+      "manageProfiles": "Gérer les profils d'encaissement",
+      "manageProfilesHint": "Les clés Stripe et les comptes mobile money se gèrent dans Réglages → Encaissements."
     }
   },
   "commonLanguageArabic": "العربية",
