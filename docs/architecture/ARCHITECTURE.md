@@ -1,10 +1,10 @@
-# System Architecture — Leopardo RH
+# System Architecture — Leopardo
 
-Leopardo RH is an enterprise-grade HR management SaaS designed for SMEs and growing organizations. The platform features a robust multi-tenant architecture, modular backend design, and a unified experience across Web, Mobile, and Kiosk interfaces.
+Leopardo is an enterprise-grade business suite designed for SMEs and growing organizations. The platform features a robust multi-tenant architecture, modular backend design, and a unified experience across Web, Mobile, and Kiosk interfaces.
 
 ## 🏗 High-Level Architecture
 
-Leopardo RH follows a **Clean Architecture** approach with a modular monolith backend, ensuring scalability, maintainability, and clear separation of concerns.
+Leopardo follows a **Clean Architecture** approach with a modular monolith backend, ensuring scalability, maintainability, and clear separation of concerns.
 
 ```mermaid
 graph TD
@@ -52,7 +52,7 @@ graph TD
 
 ## 🏰 The Modular Monolith Approach
 
-Leopardo RH is architected as a **Modular Monolith**. This strategy provides the benefits of microservices (clear boundaries, domain isolation) with the operational simplicity of a single deployment unit.
+Leopardo is architected as a **Modular Monolith**. This strategy provides the benefits of microservices (clear boundaries, domain isolation) with the operational simplicity of a single deployment unit.
 
 ### Why Modular Monolith?
 - **Clear Boundaries:** Each business domain is isolated, preventing "spaghetti code."
@@ -99,7 +99,7 @@ Modules communicate via **Events** to maintain loose coupling. Direct cross-modu
 
 ## 🌍 Multi-Tenancy Strategy
 
-Leopardo RH implements a **Hybrid Multi-Tenancy** model:
+Leopardo implements a **Hybrid Multi-Tenancy** model:
 
 - **Standard Isolation:** Logical isolation within the `shared_tenants` schema using `company_id`.
 - **Enterprise Isolation:** Physical isolation using dedicated PostgreSQL schemas per tenant for maximum security and compliance.

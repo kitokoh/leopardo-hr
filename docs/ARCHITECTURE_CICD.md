@@ -1,4 +1,4 @@
-# Architecture CI/CD — Leopardo RH
+# Architecture CI/CD — Leopardo
 
 > Dernière mise à jour : 2026-08-29
 
@@ -51,8 +51,8 @@ PR → merge sur main (push)
 - **Base de données** : PostgreSQL 16 (Render managed, plan starter)
 - **Cache/Session** : Redis interne Render (`leopardo-redis`, plan free, issue #3774)
 - **Queue** : `QUEUE_CONNECTION=database` (table Postgres `jobs`, pas Redis — décision #5578 pour
-  ne pas dépendre d'un quota Redis externe ; drainée par le worker dédié + le fallback GitHub
-  Actions `queue-worker-fallback.yml`)
+  ne pas dépendre d'un quota Redis externe ; drainée par le worker dédié. Le fallback GitHub
+  Actions a été supprimé — #7694, credentials prod en CI)
 
 ### Staging
 - Même architecture, variables `APP_ENV=staging`

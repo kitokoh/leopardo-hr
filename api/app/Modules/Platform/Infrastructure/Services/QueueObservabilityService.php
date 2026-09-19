@@ -194,6 +194,42 @@ class QueueObservabilityService
     }
 
     /**
+     * #7694 — âge (secondes) de la réservation la plus ancienne, toutes
+     * queues surveillées confondues.
+     *
+     * Publié par `/health` (`checks.queue.oldest_reserved_seconds`) pour que
+     * la supervision externe détecte un worker mort (job réservé jamais
+     * relâché) **sans credentials DB** : le seuil « stale » vit chez la sonde
+     * (`queue-supervision.yml`), pas ici. `null` = non mesurable (driver non
+     * `database`, table illisible) ou aucune réservation en cours — on ne
+     * devine pas, même règle que `queueBreakdown()`.
+     */
+    public static function oldestReservedAgeSeconds(): ?int
+    {
+        if ((string) config('queue.default', 'sync') !== 'database') {
+            return null;
+        }
+
+        $table = (string) config('queue.connections.database.table', 'jobs');
+
+        try {
+            $oldest = DB::table($table)
+                ->whereIn('queue', self::QUEUES)
+                ->whereNotNull('reserved_at')
+                ->where('reserved_at', '>', 0)
+                ->min('reserved_at');
+        } catch (Throwable) {
+            return null;
+        }
+
+        if (! is_numeric($oldest)) {
+            return null;
+        }
+
+        return max(0, (int) now()->timestamp - (int) $oldest);
+    }
+
+    /**
      * Un `COUNT(*) GROUP BY queue` sur la table `jobs`, filtré par une borne.
      *
      * @param  list<string>  $queues

@@ -1,4 +1,4 @@
-# Leopardo RH - Plan d'action 30 jours
+# Leopardo - Plan d'action 30 jours
 
 ## Objectif
 
@@ -70,7 +70,7 @@ Colonnes conseillees:
 
 Message de base:
 
-"Bonjour [Prenom], j'aimerais avoir votre retour honnete sur votre usage de Leopardo RH. En 10 minutes, quelle est la chose la plus utile aujourd'hui, et qu'est-ce qui manque encore selon vous ?"
+"Bonjour [Prenom], j'aimerais avoir votre retour honnete sur votre usage de Leopardo. En 10 minutes, quelle est la chose la plus utile aujourd'hui, et qu'est-ce qui manque encore selon vous ?"
 
 4. Faire 10 entretiens courts.
 
@@ -79,7 +79,7 @@ Questions a poser:
 - comment gerez-vous aujourd'hui la presence et la paie ?
 - combien d'heures cela vous prend-il par mois ?
 - quelle erreur ou frustration revient le plus souvent ?
-- qu'est-ce qui vous plait deja dans Leopardo RH ?
+- qu'est-ce qui vous plait deja dans Leopardo ?
 - qu'est-ce qui vous empecherait de payer aujourd'hui ?
 
 5. Noter les phrases exactes des utilisateurs.
@@ -135,7 +135,7 @@ Structure de conversation:
 
 Exemple:
 
-"Vous m'avez dit que la paie et les presences vous prennent environ 6 heures par mois. Leopardo RH vous aide deja sur ce point. On passe maintenant sur une formule payante, et je peux vous proposer l'offre beta a 29 EUR/mois si vous confirmez cette semaine."
+"Vous m'avez dit que la paie et les presences vous prennent environ 6 heures par mois. Leopardo vous aide deja sur ce point. On passe maintenant sur une formule payante, et je peux vous proposer l'offre beta a 29 EUR/mois si vous confirmez cette semaine."
 
 3. Relancer systematiquement.
 
@@ -338,4 +338,4 @@ Ce plan 30 jours ne cherche pas a "faire beaucoup". Il cherche a creer une boucl
 - collecter des preuves
 - reinvestir dans ce qui convertit
 
-Si ce cycle est bien execute, Leopardo RH sortira de la phase beta avec autre chose qu'un document de strategie: un debut de traction reelle.
+Si ce cycle est bien execute, Leopardo sortira de la phase beta avec autre chose qu'un document de strategie: un debut de traction reelle.

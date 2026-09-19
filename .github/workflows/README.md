@@ -35,7 +35,8 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 | `web-marketing-ci.yml` | PR → front/web | Lint + test + E2E Next.js |
 | `mobile-apps-ci.yml` | PR → `front/mobile_apps/**` | Build + lint + tests Flutter (8 apps, matrix) |
 | `architecture-check.yml` | PR → api | Vérifie les règles d'architecture DDD |
-| `openapi-ci.yml` | PR → openapi | Validation spec OpenAPI |
+| `openapi-ci.yml` | PR → openapi | Validation spec OpenAPI + preuve de génération miroir/SDK (#7654 : artefacts non committés) |
+| `repo-hygiene-guard.yml` | PR/push main | Refuse le retour des artefacts générés committés (#7654) |
 | `codeql.yml` | Hebdomadaire + PR | Analyse de sécurité CodeQL |
 | `secret-scan.yml` | Push | Détection de secrets commités |
 | *(Dependabot)* | Automatique | Config `.github/dependabot.yml` — pas un workflow |
@@ -133,8 +134,7 @@ ci-dessous.
 | `mobile-distribute-main.yml` | Push → main | Distribution Android/iOS sur push main |
 | `onboarding-smoke.yml` | PR/push | Smoke d'onboarding (bootstrap) |
 | `payroll-ci.yml` | PR → api (Payroll) | Tests + qualité du BC Payroll |
-| `queue-supervision.yml` | Schedule | Supervision des files (DB env prod) |
-| `queue-worker-fallback.yml` | Schedule | Fallback worker de files |
+| `queue-supervision.yml` | Schedule | Supervision des files (sonde HTTP `/api/v1/health`, sans credentials — #7694) |
 | `secret-history-scan.yml` | Schedule | Scan d'historique git pour secrets |
 | `web-offline-ci.yml` | PR → front/web-offline | Lint + test + build PWA offline + manifest |
 

@@ -1,6 +1,6 @@
-# Authentication & Identity System — Leopardo RH
+# Authentication & Identity System — Leopardo
 
-Leopardo RH uses a secure, modern identity layer designed for omnichannel access (Web, Mobile, Kiosk) and strict multi-tenant isolation.
+Leopardo uses a secure, modern identity layer designed for omnichannel access (Web, Mobile, Kiosk) and strict multi-tenant isolation.
 
 ## 🔑 Authentication Mechanisms
 

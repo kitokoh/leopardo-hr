@@ -33,8 +33,9 @@
 #     laisser recréer par le blueprint (une seule instance gratuite par
 #     workspace).
 #   - QUEUE_CONNECTION=database partout (#5578) : drain mono-conteneur dans
-#     le web service (docker-entrypoint.sh) + drain de secours GitHub Actions
-#     (queue-worker-fallback.yml).
+#     le web service (docker-entrypoint.sh). Le drain de secours GitHub
+#     Actions a été supprimé (#7694 — credentials prod en CI) ; supervision
+#     par sonde HTTP sans credentials (queue-supervision.yml).
 #
 # Modèle de confiance proxy (issue #4494) :
 # Render est l'unique proxy de bord devant l'API (web service
@@ -69,6 +70,15 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
+      # Issue #7647 : tier de déploiement explicite, découplé d'APP_ENV (le
+      # dev tourne en APP_ENV=production — dette de nommage assumée, cf.
+      # en-tête). docker-entrypoint.sh est fail-closed dessus :
+      # RESET_TEST_DB_ONCE exige DEPLOY_TIER=dev explicite, et
+      # FORCE_SUPER_ADMIN_PASSWORD_RESET n'est propagée aux seeders que sur
+      # ce tier. Sans sync blueprint, poser aussi la variable dans le
+      # dashboard Render du service dev.
+      - key: DEPLOY_TIER
+        value: dev
       # Issue #7213 : doc API Blade publique sur le tier dev (QA/démos).
       # Verrouillée en prod (render.prod.yaml, Gate viewApiDocs).
       - key: API_DOCS_PUBLIC
