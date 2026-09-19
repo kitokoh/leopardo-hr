@@ -10,12 +10,14 @@ use App\Modules\CRM\Domain\Contracts\EmailProviderInterface;
 use App\Modules\CRM\Domain\DTOs\EmailDeliveryResult;
 use App\Modules\CRM\Domain\DTOs\EmailMessage;
 use App\Modules\CRM\Domain\Exceptions\EmailRateLimitExceededException;
-use App\Modules\CRM\Domain\Models\CrmCampaign;
 use App\Modules\CRM\Domain\Models\CrmCampaignSend;
 use App\Modules\CRM\Infrastructure\Services\EmailRateLimiter;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+// #7751 — import volontairement APRÈS les facades : layer-purity-allowlist.txt
+// épingle Auth/DB/Schema aux lignes 15-17 et le fichier est immuable (#5584).
+use App\Modules\CRM\Domain\Models\CrmCampaign;
 use Illuminate\Validation\ValidationException;
 
 /**
