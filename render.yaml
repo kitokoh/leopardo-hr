@@ -33,8 +33,9 @@
 #     laisser recréer par le blueprint (une seule instance gratuite par
 #     workspace).
 #   - QUEUE_CONNECTION=database partout (#5578) : drain mono-conteneur dans
-#     le web service (docker-entrypoint.sh) + drain de secours GitHub Actions
-#     (queue-worker-fallback.yml).
+#     le web service (docker-entrypoint.sh). Le drain de secours GitHub
+#     Actions a été supprimé (#7694 — credentials prod en CI) ; supervision
+#     par sonde HTTP sans credentials (queue-supervision.yml).
 #
 # Modèle de confiance proxy (issue #4494) :
 # Render est l'unique proxy de bord devant l'API (web service

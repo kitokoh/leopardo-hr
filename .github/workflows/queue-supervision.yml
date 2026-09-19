@@ -1,19 +1,28 @@
 name: Queue Supervision — prod
 
 # Issue #5282 — DoD : une panne queue est détectée en < 15 min.
-# Le drain `queue-worker-fallback.yml` tourne à */5 ; cette supervision passe
-# 2 min après chaque drain (cron explicite, offset +2 min) et exécute
-# `queue:health-check` avec des seuils : si le drain échoue, que le backlog
-# grossit (pending) ou qu'un job reste réservé trop longtemps (worker mort),
-# le run passe en ÉCHEC visible (onglet Actions + notifications GitHub) et une
-# alerte Slack opt-in part si SLACK_MONITORING_WEBHOOK_URL est configuré.
-# Détection au pire : intervalle 5 min + seuil stale 10 min = 15 min.
+# Issue #7694 — [AUDIT][MAJEUR] : plus AUCUN credential de prod dans ce
+# workflow. L'ancienne version injectait DB_HOST/DB_USERNAME/DB_PASSWORD et
+# APP_KEY de production dans des runners `ubuntu-latest` toutes les 5 min :
+# surface d'exfiltration permanente (toute modification du workflow ou d'une
+# action consommée exécutait du code arbitraire avec les secrets DB prod,
+# 288 fois/jour) et APP_KEY hors du périmètre de prod. La supervision est
+# rétrogradée en sonde HTTP : `GET $APP_URL/api/v1/health` expose
+# `checks.queue` (pending_total, failed_jobs, oldest_reserved_seconds —
+# ajouté par #7694) et les seuils du DoD #5282 sont appliqués ICI, côté
+# sonde. Détection au pire : intervalle 5 min + seuil stale 10 min = 15 min.
+#
+# Le drain `queue-worker-fallback.yml` est SUPPRIMÉ (même audit #7694) : un
+# CI n'est pas le worker de secours d'une prod (#7649). Le drain vit dans le
+# conteneur web Render (`api/docker-entrypoint.sh`) en attendant le worker
+# dédié (#7649, bloqué billing). La garde
+# `dev-hub/tools/check-queue-strategy-coherence.sh` interdit le retour d'un
+# drain CI ou de secrets DB/APP_KEY dans `.github/workflows/`.
 
 on:
   schedule:
-    # Offset +2 min par rapport au drain (*/5) pour ne pas doubler la charge
-    # exactement au même instant.
-    - cron: '2,7,12,17,22,27,32,37,42,47,52,57 * * * *'
+    # Toutes les 5 min (plus d'offset : le drain CI n'existe plus).
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 # Un seul run de supervision à la fois ; un run en retard REMPLACE le
@@ -24,91 +33,84 @@ concurrency:
 
 jobs:
   supervise:
-    name: Supervise queue (database)
+    name: Supervise queue (sonde HTTP, sans credentials)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     if: github.repository == 'kitokoh/leopardo-hr'
-    permissions:
-      contents: read
+    # Aucun checkout, aucun secret sensible : le job ne lit que l'endpoint
+    # public /api/v1/health (throttle 60/1) — permissions vides.
+    permissions: {}
     env:
-      APP_ENV: production
-      APP_KEY: ${{ secrets.APP_KEY }}
       APP_URL: ${{ secrets.APP_URL }}
-      DB_CONNECTION: pgsql
-      DB_HOST: ${{ secrets.DB_HOST }}
-      DB_PORT: ${{ secrets.DB_PORT }}
-      DB_DATABASE: ${{ secrets.DB_DATABASE }}
-      DB_USERNAME: ${{ secrets.DB_USERNAME }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      DB_SEARCH_PATH: shared_tenants,public
-      QUEUE_CONNECTION: database
-      LOG_CHANNEL: stderr
-      # Alerte Slack opt-in (vide = silencieux, comme queue:health-check).
+      # Alerte Slack opt-in (vide = silencieux, comportement conservé).
       SLACK_MONITORING_WEBHOOK_URL: ${{ secrets.SLACK_MONITORING_WEBHOOK_URL }}
+      QUEUE_MAX_PENDING: ${{ vars.QUEUE_MAX_PENDING || '50' }}
+      QUEUE_MAX_FAILED: ${{ vars.QUEUE_MAX_FAILED || '10' }}
+      QUEUE_MAX_STALE_MINUTES: ${{ vars.QUEUE_MAX_STALE_MINUTES || '10' }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
-        with:
-          php-version: "8.4"
-          extensions: pdo, pdo_pgsql, bcmath, mbstring, xml, zip, gd
-          tools: composer:v2
-          coverage: none
-
-      - name: Resolve Composer cache directory
-        id: composer-cache
-        working-directory: ./api
-        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
-
-      - name: Cache Composer dependencies
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: composer-${{ runner.os }}-php84-${{ hashFiles('api/composer.lock') }}
-
-      - name: Install Composer dependencies
-        working-directory: ./api
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
-
-      - name: Vérifier la configuration de supervision
-        id: queue-config
+      - name: Superviser la queue via /api/v1/health (seuils DoD #5282)
         shell: bash
-        env:
-          APP_KEY: ${{ secrets.APP_KEY }}
-          APP_URL: ${{ secrets.APP_URL }}
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          DB_DATABASE: ${{ secrets.DB_DATABASE }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: |
           set -Eeuo pipefail
-          missing=()
-          for name in APP_KEY APP_URL DB_HOST DB_PORT DB_DATABASE DB_USERNAME DB_PASSWORD; do
-            if [[ -z "${!name:-}" ]]; then
-              missing+=("$name")
-            fi
-          done
-          if (( ${#missing[@]} > 0 )); then
-            printf '::notice title=Queue supervision non configurée::Health-check ignoré ; secrets manquants : %s\n' "${missing[*]}"
-            echo 'configured=false' >> "$GITHUB_OUTPUT"
+
+          if [[ -z "${APP_URL:-}" ]]; then
+            printf '::notice title=Queue supervision non configurée::Sonde ignorée ; secret APP_URL manquant (repo Settings → Secrets → Actions).\n'
             exit 0
           fi
-          echo 'configured=true' >> "$GITHUB_OUTPUT"
-          echo 'Configuration présente — supervision opérationnelle.'
 
-      - name: Supervise queue (seuils DoD #5282)
-        if: steps.queue-config.outputs.configured == 'true'
-        working-directory: ./api
-        env:
-          DB_PORT: ${{ secrets.DB_PORT || '5432' }}
-          QUEUE_MAX_PENDING: ${{ vars.QUEUE_MAX_PENDING || '50' }}
-          QUEUE_MAX_FAILED: ${{ vars.QUEUE_MAX_FAILED || '10' }}
-          QUEUE_MAX_STALE_MINUTES: ${{ vars.QUEUE_MAX_STALE_MINUTES || '10' }}
-        run: |
-          php artisan queue:health-check \
-            --max-pending="$QUEUE_MAX_PENDING" \
-            --max-failed="$QUEUE_MAX_FAILED" \
-            --max-stale-minutes="$QUEUE_MAX_STALE_MINUTES"
+          alert() {
+            local message="$1"
+            printf '::error title=Queue supervision::%s\n' "$message"
+            if [[ -n "${SLACK_MONITORING_WEBHOOK_URL:-}" ]]; then
+              curl -fsS --max-time 10 -H 'Content-Type: application/json' \
+                -d "$(jq -cn --arg text "🚨 [queue-supervision] $message" '{text: $text}')" \
+                "$SLACK_MONITORING_WEBHOOK_URL" >/dev/null || true
+            fi
+          }
+
+          # Cold start Render (plan free, veille 15 min) : jusqu'à ~60 s —
+          # retries espacés avant de conclure à une panne.
+          if ! body="$(curl -fsS --max-time 60 --retry 3 --retry-delay 10 --retry-all-errors "${APP_URL%/}/api/v1/health")"; then
+            alert "GET ${APP_URL%/}/api/v1/health injoignable — API down ou réseau : la santé de la queue est INCONNUE."
+            exit 1
+          fi
+
+          if ! jq -e . >/dev/null 2>&1 <<<"$body"; then
+            alert "Réponse /api/v1/health non-JSON — la santé de la queue est INCONNUE."
+            exit 1
+          fi
+
+          # Trace lisible dans le log du run (mêmes signaux que l'ancien
+          # queue:health-check, lus via HTTP au lieu d'un accès SQL direct).
+          jq '.checks.queue' <<<"$body"
+
+          queue_ok="$(jq -r '.checks.queue.ok // false' <<<"$body")"
+          driver="$(jq -r '.checks.queue.driver // "unknown"' <<<"$body")"
+          pending="$(jq -r '.checks.queue.pending_total // 0' <<<"$body")"
+          failed="$(jq -r '.checks.queue.failed_jobs // 0' <<<"$body")"
+          # -1 = aucune réservation en cours (null côté API) : pas de stale.
+          oldest="$(jq -r '.checks.queue.oldest_reserved_seconds // -1' <<<"$body")"
+
+          max_stale_seconds=$(( QUEUE_MAX_STALE_MINUTES * 60 ))
+          violations=()
+
+          if [[ "$queue_ok" != "true" ]]; then
+            violations+=("checks.queue.ok=false (driver: $driver) — la queue ne répond plus")
+          fi
+          if (( pending > QUEUE_MAX_PENDING )); then
+            violations+=("pending_total=$pending > $QUEUE_MAX_PENDING — backlog en croissance (drain KO ?)")
+          fi
+          if (( failed > QUEUE_MAX_FAILED )); then
+            violations+=("failed_jobs=$failed > $QUEUE_MAX_FAILED")
+          fi
+          if (( oldest > max_stale_seconds )); then
+            violations+=("oldest_reserved_seconds=$oldest > $max_stale_seconds — job réservé trop longtemps (worker mort probable)")
+          fi
+
+          if (( ${#violations[@]} > 0 )); then
+            message="$(printf '%s | ' "${violations[@]}")"
+            alert "${message% | }"
+            exit 1
+          fi
+
+          echo "Queue saine (driver: $driver, pending: $pending, failed: $failed)."
