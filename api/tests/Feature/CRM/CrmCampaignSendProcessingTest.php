@@ -16,6 +16,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Testing\PendingCommand;
 use Illuminate\Validation\ValidationException;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -303,7 +304,9 @@ class CrmCampaignSendProcessingTest extends TestCase
             'status' => 'pending',
         ]);
 
-        $this->artisan('crm:process-campaign-sends')->assertSuccessful();
+        $command = $this->artisan('crm:process-campaign-sends');
+        assert($command instanceof PendingCommand);
+        $command->assertSuccessful();
 
         Queue::assertPushed(ProcessCampaignSendsJob::class, 2);
         Queue::assertPushed(ProcessCampaignSendsJob::class, fn (ProcessCampaignSendsJob $job): bool => $job->campaignId === $scheduled->id);

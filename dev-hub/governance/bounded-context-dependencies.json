@@ -697,6 +697,12 @@
       "to": "BC-02",
       "baseline": false,
       "note": "BC-27 → BC-02 — Actions/Controllers Showcase importent App\\Core\\Tenant\\Domain\\Models\\Company (scope tenant vitrine) + App\\Core\\Tenant\\TenantManager (résolution tenant route publique, #6866/#6867)"
+    },
+    {
+      "from": "BC-12",
+      "to": "BC-23",
+      "baseline": false,
+      "note": "BC-12 → BC-23 — MarketingAiService importe App\\AI\\LLMClient (suggestions de posts + bilan hebdo marketing, #7753) : même contrat LLM que BC-04/BC-06/BC-07 → BC-23"
     }
   ]
 }
