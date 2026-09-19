@@ -30,6 +30,11 @@ const PROTECTED_PREFIXES = [
   '/cameras',
   // #7400 — flotte & véhicules de service (zone dashboard).
   '/fleet',
+  // #7663 — CRM, comptabilité, gestion scolaire, stations-service (zone dashboard).
+  '/crm',
+  '/accounting',
+  '/edu-manager',
+  '/fuel',
 ];
 
 function isProtectedPath(url) {

@@ -5756,5 +5756,39 @@
         "desc": "Rendez votre site visible en un clic."
       }
     }
+  },
+  "vitrine": {
+    "notFound": {
+      "kicker": "Erreur 404",
+      "title": "Page introuvable",
+      "body": "Cette page n'existe pas ou a été déplacée. Vérifiez l'adresse, ou reprenez depuis l'accueil.",
+      "ctaHome": "Retour à l'accueil",
+      "ctaPricing": "Voir les tarifs",
+      "ctaContact": "Contacter le support"
+    },
+    "nav": {
+      "pricing": "Tarifs",
+      "resources": "Ressources",
+      "guides": "Guides",
+      "guidesDesc": "Bonnes pratiques RH et tutoriels",
+      "insights": "Insights RH",
+      "insightsDesc": "Analyses, cas pratiques et idées de croissance",
+      "apiDocs": "Docs API",
+      "apiDocsDesc": "Guides techniques et intégration",
+      "changelog": "Changelog",
+      "changelogDesc": "Dernières mises à jour produit",
+      "contact": "Contact",
+      "install": "Installer Leopardo",
+      "windowsDesc": "Client desktop pour ZKTeco et synchronisation",
+      "macosDesc": "Espace bureau pour les équipes terrain",
+      "androidDesc": "Pointage mobile et self-service employé",
+      "iosDesc": "Application mobile iOS pour employés et managers",
+      "community": "Communauté",
+      "communityDesc": "Échangez avec la communauté",
+      "faq": "FAQ",
+      "faqDesc": "Questions fréquentes",
+      "support": "Support",
+      "supportDesc": "Contactez notre équipe"
+    }
   }
 }

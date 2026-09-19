@@ -44,6 +44,13 @@ export const PROTECTED_PREFIXES = [
   '/cameras',
   // #7400 — flotte & véhicules de service (module horizontal).
   '/fleet',
+  // #7663 — zones applicatives (dashboard) servies sans session et absentes
+  // de robots.txt : CRM, comptabilité (la vitrine publique vit sur
+  // /comptabilite), gestion scolaire et stations-service.
+  '/crm',
+  '/accounting',
+  '/edu-manager',
+  '/fuel',
 ] as const;
 
 /**

@@ -58,6 +58,12 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/cameras',
   // #7400 — flotte & véhicules de service (module horizontal).
   '/fleet',
+  // #7663 — CRM, comptabilité applicative (vitrine = /comptabilite),
+  // gestion scolaire, stations-service : servis sans session jusqu'ici.
+  '/crm',
+  '/accounting',
+  '/edu-manager',
+  '/fuel',
 ];
 
 export function proxy(request: NextRequest) {
@@ -168,6 +174,10 @@ export const config = {
     '/showcase/:path*', // BC-27 site vitrine tenant (management) — gate session
     '/cameras/:path*', // BC-19 mur de caméras + détail (#7425) — gate session
     '/fleet/:path*', // #7400 flotte & véhicules de service (module horizontal)
+    '/crm/:path*', // #7663 CRM — gate session (source unique #3377)
+    '/accounting/:path*', // #7663 comptabilité applicative (vitrine = /comptabilite)
+    '/edu-manager/:path*', // #7663 gestion scolaire — gate session
+    '/fuel/:path*', // #7663 stations-service — gate session
     // Vitrine landing — ?lang= → en-tête x-vitrine-lang (issue #4004).
     // Routes statiques (exactes) + préfixes dynamiques (source
     // VITRINE_LANG_PREFIXES, garde protected-prefixes.test.ts).
