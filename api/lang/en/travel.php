@@ -23,4 +23,7 @@ return [
         'expire_adverts_tenant_summary' => 'Tenant :company: :expired expired, :archived archived.',
         'expire_adverts_total' => 'Total: :expired advert(s) expired, :archived archived.',
     ],
+    'marketplace' => [
+        'booking_not_found' => 'Marketplace booking not found.',
+    ],
 ];

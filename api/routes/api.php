@@ -82,6 +82,7 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantKioskC
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierSyncController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelMarketplaceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
 use Illuminate\Support\Facades\Route;
@@ -233,6 +234,27 @@ Route::prefix('v1')->group(function (): void {
         // TRAVEL-1002 (#6115) — tunnel complet : paiement en ligne + e-billet.
         Route::post('/public/travel/payments/initiate', [TravelPublicShopController::class, 'initiatePayment']);
         Route::get('/public/travel/tickets/{ticket}/pdf', [TravelPublicShopController::class, 'ticketPdf']);
+        // #7737 — alias marketplace du suivi/annulation/e-billet : même
+        // surface passager #7395 (référence + code de validation, tenant
+        // résolu par la ressource — aucun jeton boutique requis sur ces
+        // routes bornées), exposée sous le préfixe marketplace pour le
+        // front `travel-web` (épic #7736).
+        Route::get('/public/travel/marketplace/bookings/{reference}', [TravelPublicShopController::class, 'track']);
+        Route::post('/public/travel/marketplace/bookings/{reference}/cancel', [TravelPublicShopController::class, 'cancel']);
+        Route::get('/public/travel/marketplace/tickets/{ticket}/pdf', [TravelPublicShopController::class, 'ticketPdf']);
+    });
+
+    // #7737 — MARKETPLACE inter-agences (épic #7736) : recherche agrégée
+    // cross-tenant des trajets publiés des agences OPT-IN (jeton boutique
+    // actif + feature `travelagency`) et tunnel d'achat SANS jeton d'agence.
+    // Le tenant est résolu par trajet (détail/réservation) ou par référence
+    // (paiement) dans le contrôleur — throttling `shop-public` uniquement.
+    Route::middleware(['throttle:shop-public'])->group(function (): void {
+        Route::get('/public/travel/marketplace/cities', [TravelMarketplaceController::class, 'cities']);
+        Route::get('/public/travel/marketplace/trips', [TravelMarketplaceController::class, 'search']);
+        Route::get('/public/travel/marketplace/trips/{trip}', [TravelMarketplaceController::class, 'show'])->whereNumber('trip');
+        Route::post('/public/travel/marketplace/bookings', [TravelMarketplaceController::class, 'storeBooking']);
+        Route::post('/public/travel/marketplace/payments/initiate', [TravelMarketplaceController::class, 'initiatePayment']);
     });
 
     Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {
