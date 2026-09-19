@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-30T15:05:00Z",
+  "_updated_at": "2026-09-21T09:00:00Z",
   "_locale": "tr",
   "app": {
     "title": "Leopardo — İşletme Yönetimi Paketi"
@@ -6343,6 +6343,87 @@
       "card": "Kart",
       "mobile": "Mobil ödeme",
       "online": "Çevrimiçi"
+    },
+    "shop": {
+      "tileTitle": "Çevrimiçi mağaza",
+      "tileDesc": "Pazaryeri ayarları, ürün yayını ve web siparişleri.",
+      "pageTitle": "Çevrimiçi mağaza",
+      "pageSubtitle": "Pazaryeri mağazanızı etkinleştirin, ürünlerinizi yayınlayın ve web siparişlerini yönetin.",
+      "tab": {
+        "settings": "Ayarlar",
+        "products": "Çevrimiçi ürünler",
+        "orders": "Web siparişleri"
+      },
+      "settings": {
+        "title": "Mağaza ayarları",
+        "enabled": "Mağaza pazaryerinde etkin",
+        "enabledBadge": "Etkin",
+        "disabledBadge": "Devre dışı",
+        "enabledHint": "Mağaza devre dışıyken hiçbir ürününüz pazaryerinde görünmez.",
+        "name": "Mağaza adı",
+        "description": "Açıklama",
+        "city": "Şehir",
+        "phone": "İletişim telefonu",
+        "email": "İletişim e-postası",
+        "currency": "Para birimi",
+        "saved": "Ayarlar kaydedildi."
+      },
+      "products": {
+        "title": "Yayındaki ürünler",
+        "hint": "Bir ürün yalnızca yayındaysa, çevrimiçine alındıysa ve mağaza etkinse pazaryerinde görünür.",
+        "online": "Çevrimiçi",
+        "offline": "Çevrimdışı",
+        "putOnline": "Çevrimiçine al",
+        "takeOffline": "Çevrimdışına al",
+        "empty": "Yayında ürün yok."
+      },
+      "orders": {
+        "title": "Web siparişleri",
+        "reference": "Referans",
+        "customer": "Müşteri",
+        "city": "Şehir",
+        "total": "Toplam",
+        "date": "Tarih",
+        "fulfillment": "Sipariş durumu",
+        "allStatuses": "Tüm durumlar",
+        "statusFilter": "Sipariş durumuna göre filtrele",
+        "detail": "Detay",
+        "detailTitle": "Sipariş",
+        "items": "Kalemler",
+        "quantity": "Miktar",
+        "unitPrice": "Birim fiyat",
+        "lineTotal": "Satır toplamı",
+        "deliveryTitle": "Teslimat",
+        "address": "Adres",
+        "notes": "Notlar",
+        "phone": "Telefon",
+        "email": "E-posta",
+        "empty": "Web siparişi yok.",
+        "invalidTransition": "Geçersiz geçiş: siparişin durumu zaten değişti. Liste yenilendi.",
+        "close": "Kapat"
+      },
+      "action": {
+        "confirm": "Onayla",
+        "ready": "Hazır olarak işaretle",
+        "ship": "Kargoya ver",
+        "deliver": "Teslim edildi olarak işaretle",
+        "cancel": "Siparişi iptal et"
+      },
+      "confirmPrompt": {
+        "confirm": "Bu sipariş onaylansın mı? Stok düşülecek.",
+        "ready": "Bu sipariş hazır olarak işaretlensin mi?",
+        "ship": "Bu sipariş kargoya verildi olarak işaretlensin mi?",
+        "deliver": "Bu sipariş teslim edildi olarak işaretlensin mi?",
+        "cancel": "Bu sipariş iptal edilsin mi? Sipariş onaylanmışsa stok geri yüklenecek."
+      },
+      "status": {
+        "pending": "Beklemede",
+        "confirmed": "Onaylandı",
+        "ready": "Hazır",
+        "shipped": "Kargoda",
+        "delivered": "Teslim edildi",
+        "cancelled": "İptal edildi"
+      }
     }
   },
   "communicationApp": {

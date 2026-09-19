@@ -461,6 +461,8 @@ Route::prefix('v1')->group(function (): void {
 
     // C-PUBLIC #6882 — catalogue public (routes isolées, sans auth)
     require __DIR__.'/modules/catalog_public.php';
+    // BC-17 #7807/#7808 — marketplace publique Leopardo Marché (routes isolées, sans auth)
+    require __DIR__.'/modules/market_public.php';
     require __DIR__.'/modules/solutions.php';
 
     // Multi-App dedicated route modules
