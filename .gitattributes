@@ -40,6 +40,10 @@ front/web/public/*.png          !filter !diff !merge -text
 front/web/public/og/*.png       !filter !diff !merge -text
 front/web/public/screenshots/*.png !filter !diff !merge -text
 front/web/public/videos/*       !filter !diff !merge -text
+# Mascotte Leo (#7682) : webp vitrine commités en binaires réels — même
+# exception que front/web/public/*.png (Vercel ne résout pas LFS, et le
+# filtre lfs ferait rougir validate-and-sync via git diff --exit-code).
+front/web/public/brand/*.webp   !filter !diff !merge -text
 front/web-offline/public/*.png  !filter !diff !merge -text
 front/mobile_apps/**/*.png        !filter !diff !merge -text
 # site/gh-pages (Pages #6827) : images commitées en binaire — même exception
