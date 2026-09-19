@@ -242,7 +242,9 @@ class RestaurantPublicDirectoryTest extends TestCase
             ->assertJsonPath('data.menu.0.products.0.currency', 'XAF');
 
         // Seul le produit publié ET disponible figure au menu public.
-        $names = collect($response->json('data.menu.0.products'))->pluck('name')->all();
+        /** @var array<int, array{name: string}> $products */
+        $products = $response->json('data.menu.0.products');
+        $names = array_column($products, 'name');
         $this->assertSame(['Poulet DG'], $names);
 
         // Aucune donnée interne dans le profil public.
