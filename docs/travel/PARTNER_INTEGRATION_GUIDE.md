@@ -99,6 +99,43 @@ L'agence notifie les transporteurs des événements de vente :
   arrival_at, class, price_minor, currency, total_seats }`.
 - **Idempotent** : rejeu d'un même `trip_code` met à jour sans dupliquer.
 
+### 5.2 Clés API de lecture distributeurs (TRAVEL-DISTRIBUTION — #7641)
+
+Les `partner-keys` (§5.1) sont **entrantes** (le transporteur pousse ses
+trajets) ; les clés **distributeurs** sont l'inverse : un accès de **lecture
+seule**, distinct, révocable et tracé par plateforme de distribution (OTA,
+agrégateur, revendeur) — contrairement au jeton boutique unique par tenant
+(`X-Travel-Shop-Token`, §4).
+
+### Gestion des clés (côté gérant, Bearer Sanctum, principal/rh)
+
+| Endpoint | Méthode | Description |
+|---|---|---|
+| `/travel/distributor-keys` | GET | Liste + stats d'usage (`usage_count`, `last_used_at`) — jamais le token ni le hash |
+| `/travel/distributor-keys` | POST | Émission : `{ name, scopes }` → token `dsk_…` affiché **une seule fois** |
+| `/travel/distributor-keys/{key}/rotate` | POST | Rotation : nouveau token affiché une fois, l'ancien **immédiatement invalide** |
+| `/travel/distributor-keys/{key}/revoke` | POST | Révocation idempotente : la clé cesse d'authentifier, la ligne reste (traçabilité) |
+
+- **Scopes** (allowlist fermée, un scope inconnu → 422) :
+  - `catalog.read` — catalogue des voyages **publiés** + tarifs par classe ;
+  - `bookings.read` — suivi d'une réservation par référence (extrait minimal, sans PII).
+- Le token n'est **jamais stocké en clair** (hash SHA-256 au repos, pattern §5.1).
+
+### Surface de lecture (côté distributeur, header `X-Distributor-Key`)
+
+| Endpoint | Méthode | Scope requis | Description |
+|---|---|---|---|
+| `/travel/distributor/catalog` | GET | `catalog.read` | Voyages publiés paginés (filtres `origin_city_id`, `destination_city_id`, `date_from`, `date_to`, `per_page` ≤ 100) |
+| `/travel/distributor/bookings/{reference}` | GET | `bookings.read` | Statut, paiement, nombre de passagers, trajet — jamais de PII passager |
+
+- **Auth** : clé dans le header `X-Distributor-Key` ; clé manquante/inconnue/révoquée → `401`,
+  scope absent → `403` (fail-closed).
+- **Isolation tenant** : le tenant est résolu par la clé — le catalogue et les
+  réservations d'un autre tenant sont invisibles (testé, `TravelDistributorKeyTest`).
+- **Rate limit** : 60 requêtes/min par IP (throttle dédié).
+- **Rotation recommandée** : trimestrielle, ou immédiate en cas de fuite — la
+  rotation est atomique (aucune fenêtre à deux tokens valides).
+
 ## 6. Erreurs & conventions
 
 - Enveloppe Laravel : succès `{ "data": ... }`, pagination `{ "data": [...],

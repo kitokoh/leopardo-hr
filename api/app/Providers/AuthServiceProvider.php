@@ -216,6 +216,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelCancellationPolicy;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrierApiKey;
+use App\Modules\TravelAgency\Domain\Models\TravelDistributorKey;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelCurrencyRate;
 use App\Modules\TravelAgency\Domain\Models\TravelHotel;
@@ -235,6 +236,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
 use App\Modules\TravelAgency\Policies\TravelBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelCancellationPolicyPolicy;
 use App\Modules\TravelAgency\Policies\TravelCarrierApiKeyPolicy;
+use App\Modules\TravelAgency\Policies\TravelDistributorKeyPolicy;
 use App\Modules\TravelAgency\Policies\TravelCarrierPolicy;
 use App\Modules\TravelAgency\Policies\TravelClassPolicy;
 use App\Modules\TravelAgency\Policies\TravelCurrencyRatePolicy;
@@ -502,6 +504,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(TravelQuote::class, TravelQuotePolicy::class);
         Gate::policy(TravelCurrencyRate::class, TravelCurrencyRatePolicy::class);
         Gate::policy(TravelCarrierApiKey::class, TravelCarrierApiKeyPolicy::class);
+        // TRAVEL-DISTRIBUTION (#7641) — clés API de lecture distributeurs.
+        Gate::policy(TravelDistributorKey::class, TravelDistributorKeyPolicy::class);
         Gate::policy(TravelCancellationPolicy::class, TravelCancellationPolicyPolicy::class);
         Gate::policy(TravelLoyaltyAccount::class, TravelLoyaltyPolicy::class);
         Gate::policy(RestaurantBranch::class, RestaurantBranchPolicy::class);
