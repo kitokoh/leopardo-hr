@@ -64,6 +64,61 @@
             :data-nav-pending="item.name"
           ></div>
 
+          <!-- #7725 — UN niveau de sous-menu (Comptabilité, Stations-service) :
+               le parent est un déclencheur repliable (état persisté
+               `admin.nav.openSubmenus`), les enfants sont les liens. -->
+          <template v-else-if="item.type === 'submenu'">
+            <button
+              v-show="!item.group || isGroupOpen(item.group)"
+              type="button"
+              :class="[
+                'group flex w-full items-center rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200',
+                isSubmenuActive(item)
+                  ? 'bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+              ]"
+              :aria-expanded="isSubmenuOpen(item.name)"
+              :data-nav-submenu="item.name"
+              @click="toggleSubmenu(item.name)"
+            >
+              <component
+                :is="item.icon"
+                class="mr-3 h-5 w-5 flex-shrink-0 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300"
+              />
+              {{ item.title }}
+              <ChevronDownIcon
+                :class="[
+                  'ml-auto h-4 w-4 flex-shrink-0 transition-transform duration-200',
+                  isSubmenuOpen(item.name) ? 'rotate-180' : ''
+                ]"
+              />
+            </button>
+            <router-link
+              v-for="child in item.children"
+              v-show="(!item.group || isGroupOpen(item.group)) && isSubmenuOpen(item.name)"
+              :key="child.name"
+              :to="child.path"
+              :class="[
+                'group ml-6 flex items-center rounded-xl border-l border-slate-200 dark:border-slate-700 px-3 py-2 text-sm font-medium transition-all duration-200',
+                $route.name === child.name
+                  ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/25'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+              ]"
+              @click="$emit('close')"
+            >
+              <component
+                :is="child.icon"
+                :class="[
+                  'mr-3 h-4 w-4 flex-shrink-0 transition-colors',
+                  $route.name === child.name
+                    ? 'text-white'
+                    : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300'
+                ]"
+              />
+              {{ child.title }}
+            </router-link>
+          </template>
+
           <router-link
             v-else
             v-show="!item.group || isGroupOpen(item.group)"
@@ -243,6 +298,46 @@ function toggleGroup(group) {
 }
 
 /**
+ * #7725 — état replié/déplié des SOUS-MENUS (un niveau : Comptabilité,
+ * Stations-service), persisté comme celui des groupes. Ouvert par défaut :
+ * un sous-menu replié par défaut masquerait des écrans existants (même règle
+ * que les sections, cf. specs e2e sidebar-unique-entries).
+ */
+const OPEN_SUBMENUS_KEY = 'admin.nav.openSubmenus'
+
+function readOpenSubmenus() {
+  try {
+    const raw = window.localStorage.getItem(OPEN_SUBMENUS_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    if (!parsed || typeof parsed !== 'object') return null
+    return parsed
+  } catch {
+    return null
+  }
+}
+
+const openSubmenus = ref({ ...(readOpenSubmenus() || {}) })
+
+function isSubmenuOpen(name) {
+  return openSubmenus.value[name] !== false
+}
+
+function toggleSubmenu(name) {
+  openSubmenus.value = { ...openSubmenus.value, [name]: !isSubmenuOpen(name) }
+  try {
+    window.localStorage.setItem(OPEN_SUBMENUS_KEY, JSON.stringify(openSubmenus.value))
+  } catch {
+    /* stockage indisponible : l'état reste en mémoire */
+  }
+}
+
+/** Le parent d'un sous-menu est surligné quand l'écran courant est un enfant. */
+function isSubmenuActive(item) {
+  return (item.children || []).some((child) => child.name === route.name)
+}
+
+/**
  * TRAVEL-601 (#6078) — l'entrée « Agence de voyage » n'est proposée que si le
  * flag `travelagency` est ACTIF pour le contexte courant (sondé via le contrat
  * réel GET /travel/ping : 200 = actif, 403 FEATURE_NOT_ENABLED = absent,
@@ -312,6 +407,31 @@ const navigation = computed(() => {
     })
 
     for (const entry of entries) {
+      // #7725 — entrée à sous-menu : le parent devient un déclencheur et ses
+      // enfants visibles sont résolus ici (libellé court `menuTitleKey` dans
+      // le menu, `titleKey` complet ailleurs — palette, recherche, titres).
+      if (Array.isArray(entry.children) && entry.children.length > 0) {
+        const children = entry.children
+          .filter((child) => navEntryState(child, capabilities) !== NAV_STATE_HIDDEN)
+          .map((child) => ({
+            ...child,
+            title: t(child.menuTitleKey || child.titleKey),
+            state: navEntryState(child, capabilities),
+          }))
+
+        if (children.length === 0) continue
+
+        items.push({
+          ...entry,
+          type: 'submenu',
+          title: t(entry.titleKey),
+          state: navEntryState(entry, capabilities),
+          children,
+          badge: 0,
+        })
+        continue
+      }
+
       items.push({
         ...entry,
         title: t(entry.titleKey),
@@ -327,14 +447,21 @@ const navigation = computed(() => {
 /**
  * #7329 — la section contenant l'écran courant est toujours dépliée : sinon le
  * repli mémorisé masquerait du menu la page qu'on est en train de consulter.
+ * #7725 — même règle pour un sous-menu dont un enfant est l'écran courant.
  */
 watch(
   () => route.name,
   (name) => {
     if (!name) return
-    const active = navigation.value.find((item) => item.name === name)
-    if (active?.group && !isGroupOpen(active.group)) {
+    const active = navigation.value.find(
+      (item) => item.name === name || (item.children || []).some((child) => child.name === name),
+    )
+    if (!active) return
+    if (active.group && !isGroupOpen(active.group)) {
       openGroups.value = { ...openGroups.value, [active.group]: true }
+    }
+    if (active.type === 'submenu' && active.name !== name && !isSubmenuOpen(active.name)) {
+      openSubmenus.value = { ...openSubmenus.value, [active.name]: true }
     }
   },
   { immediate: true }

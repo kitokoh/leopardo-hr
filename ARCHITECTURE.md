@@ -1,10 +1,10 @@
-# Architecture — Leopardo HR
+# Architecture — Leopardo
 
 > Ce document est la référence d'onboarding pour la structure du monorepo.
 
 ## Vue d'ensemble
 
-Leopardo HR est un monorepo multi-stack couvrant :
+Leopardo est un monorepo multi-stack couvrant :
 
 ```
 leopardo-hr/
@@ -62,7 +62,7 @@ Modules/<Name>/
 ```
 
 
-Modules actifs (27, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `Catalog`, `CRM`, `Delivery`, `EdgeSync`, `EduManager`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `Restaurant`, `RestaurantManager`, `Showcase`, `TravelAgency` (ordre alphabétique, vérifié `ls api/app/Modules`) + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`, qui contient aussi `AI`, `Http`, `Notifications`, `Privacy`, `Seed`, `Solutions`).
+Modules actifs (28, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `Catalog`, `Communication`, `CRM`, `Delivery`, `EdgeSync`, `EduManager`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `Restaurant`, `RestaurantManager`, `Showcase`, `TravelAgency` (ordre alphabétique, vérifié `ls api/app/Modules`) + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`, qui contient aussi `AI`, `Http`, `Notifications`, `Privacy`, `Seed`, `Solutions`).
 
 > Décompte vérifié via `ls api/app/Modules | wc -l`. Voir `docs/ARCHITECTURE_STATUS.md` pour l'état couche-par-couche (Domain/Application/Infrastructure/Interfaces/Providers/Tests) de chaque module.
 
@@ -150,10 +150,10 @@ Les pipelines principaux :
 > Décisions 2026-08-21 (#5204/#5205/#5206/#5207) — fournisseurs : Upstash (Redis),
 > Neon (PostgreSQL), GitHub Actions (worker de secours), Render/Vercel/Cloudflare Pages (hosting).
 
-- **Queue** : driver `database` (table `jobs` en PostgreSQL) — zéro quota. Deux consommateurs :
-  le worker en arrière-plan du conteneur web Render (latence) et le drain GitHub Actions
-  (`queue-worker-fallback.yml`, cron `*/5`, repo public = minutes illimitées). Pas de
-  split-brain : chaque job est verrouillé par PostgreSQL (`SELECT FOR UPDATE SKIP LOCKED`).
+- **Queue** : driver `database` (table `jobs` en PostgreSQL) — zéro quota. Consommateur :
+  le worker en arrière-plan du conteneur web Render. Le drain de secours GitHub Actions a été
+  **supprimé** (#7694 — il injectait les credentials DB de prod dans des runners CI toutes les
+  5 min) ; la supervision (`queue-supervision.yml`) est une sonde HTTP sans credentials.
 - **Cache / Session** : commande `infra:probe-availability` (ping Redis) exécutée par
   `api/docker-entrypoint.sh` **avant** `config:cache` → `redis` si Upstash répond, sinon `file`
   (fallback sans quota). Retour automatique sur Redis au redéploiement.

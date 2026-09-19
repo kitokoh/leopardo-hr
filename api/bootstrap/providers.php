@@ -7,6 +7,7 @@ use App\Modules\Billing\Providers\BillingServiceProvider;
 use App\Modules\Cabinet\Providers\CabinetServiceProvider;
 use App\Modules\Cameras\Providers\CamerasServiceProvider;
 use App\Modules\Catalog\Providers\CatalogServiceProvider;
+use App\Modules\Communication\Providers\CommunicationServiceProvider;
 use App\Modules\CRM\Providers\CrmServiceProvider;
 use App\Modules\Delivery\Providers\DeliveryServiceProvider;
 use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
@@ -69,4 +70,5 @@ return [
     RestaurantManagerServiceProvider::class,
     CatalogServiceProvider::class,
     ShowcaseServiceProvider::class,
+    CommunicationServiceProvider::class,
 ];

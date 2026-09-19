@@ -1,6 +1,6 @@
 # Kiosk & Hardware Integration
 
-Leopardo RH supports dedicated attendance hardware to ensure reliable tracking in physical workspaces.
+Leopardo supports dedicated attendance hardware to ensure reliable tracking in physical workspaces.
 
 ## 📟 Supported Hardware
 - **ZKTeco Devices:** Native integration for K40 and similar models.

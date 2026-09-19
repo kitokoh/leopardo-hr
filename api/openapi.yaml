@@ -105,6 +105,8 @@ tags:
   description: 'BC-24 TRAVEL — boutique, tunnel public et espace voyageur (suivi par reference + code de controle du billet).'
 - name: Restaurant
   description: 'BC-25 RESTAURANT — verticale RestaurantManager : profil public par branche et annuaire public des restaurants (RESTO-901).'
+- name: Communication
+  description: 'BC-29 COMMUNICATION — boite mail connectee + IA (OAuth Gmail serveur, sync, classification, relances) ; squelette R0 (#7685).'
 paths:
   /attendance/config:
     get:
@@ -785,6 +787,98 @@ paths:
           description: Manager principal du tenant requis
         '422':
           description: Type de ressource inconnu, niveau invalide, ou ressource inexistante dans cette entreprise (RESOURCE_TYPE_UNKNOWN / RESOURCE_NOT_FOUND)
+  /employees/{employee}/module-grants:
+    get:
+      tags:
+      - HR
+      summary: 'Modules délégués à un collaborateur (issue #7761)'
+      description: 'Grants de modules composables (registre fermé : marketing, accounting, support, crm, showcase, hr, billing_view) explicitement accordés au collaborateur par le responsable du tenant. Réservé au manager principal ; isolé par tenant.'
+      parameters:
+      - name: employee
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Modules délégués au collaborateur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      module_keys:
+                        type: array
+                        items:
+                          type: string
+                          enum:
+                          - marketing
+                          - accounting
+                          - support
+                          - crm
+                          - showcase
+                          - hr
+                          - billing_view
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Manager principal du tenant requis
+    put:
+      tags:
+      - HR
+      summary: 'Remplacer les modules délégués à un collaborateur'
+      description: 'Remplace le jeu COMPLET des grants : ce qui n''est pas envoyé est révoqué. Une clé hors registre fermé est refusée (fail-closed, 422). Chaque pose et révocation est auditée (audit_logs). L''enforcement côté middleware accepte manager_role autorisé OU grant explicite ; le principal a implicitement tout.'
+      parameters:
+      - name: employee
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - module_keys
+              properties:
+                module_keys:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                    - marketing
+                    - accounting
+                    - support
+                    - crm
+                    - showcase
+                    - hr
+                    - billing_view
+      responses:
+        '200':
+          description: Nouveau jeu de modules délégués
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      module_keys:
+                        type: array
+                        items:
+                          type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Manager principal du tenant requis
+        '422':
+          description: Clé de module hors registre fermé (MODULE_KEY_UNKNOWN)
   /resources/{type}:
     get:
       tags:
@@ -1204,6 +1298,26 @@ paths:
                 type: string
         '404':
           description: Manifeste introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /edge/download/sha256.txt.sig:
+    get:
+      tags:
+      - Health
+      summary: Signature RS256 du manifeste sha256.txt (public)
+      description: 'Signature SHA256-RSA (base64) des octets exacts du manifeste sha256.txt, produite avec la cle privee de licence Edge. Verifiee par install.sh avec la cle publique embarquee/epinglee, fail-closed (issue #7653).'
+      security: []
+      responses:
+        '200':
+          description: Signature base64 du manifeste
+          content:
+            text/plain:
+              schema:
+                type: string
+        '503':
+          description: Cle de signature non configuree ou assets manquants
           content:
             application/json:
               schema:
@@ -9418,6 +9532,41 @@ paths:
                         type: string
                         format: email
                       resent_at:
+                        type: string
+                        format: date-time
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '410':
+          description: Invitation deja acceptee
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /invitations/{invitation}:
+    delete:
+      tags:
+      - Invitations
+      summary: 'Révoquer une invitation en attente (issue #7762)'
+      description: 'Supprime l''invitation : son token devient inutilisable immédiatement (l''activation répond 404). Une invitation déjà acceptée n''est pas révocable (410) — le compte existe, c''est l''archivage de l''employé qui retire l''accès. Réservé aux managers principal/rh (gate manageInvitations), isolé par tenant.'
+      parameters:
+      - $ref: '#/components/parameters/InvitationId'
+      responses:
+        '200':
+          description: Invitation révoquée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      revoked_at:
                         type: string
                         format: date-time
         '403':
@@ -29589,6 +29738,1209 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
 
+  /communication/status:
+    get:
+      tags:
+      - Communication
+      summary: Etat du module Communication pour le tenant courant
+      description: 'Sonde d''activation du module Communication (BC-29, #7685) : la route est gardee par le feature flag tenant `communication` (403 FEATURE_NOT_ENABLED si le module est inactif). Renvoie le jalon livre (stage R5 depuis #7690 : capacites `integrations`, `sync`, `classification`, `follow_ups` et `replies` toutes actives).'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Module actif pour le tenant courant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      module:
+                        type: string
+                        example: communication
+                      enabled:
+                        type: boolean
+                        example: true
+                      status:
+                        type: string
+                        example: active
+                      stage:
+                        type: string
+                        example: R2
+                      capabilities:
+                        type: object
+                        properties:
+                          integrations:
+                            type: boolean
+                            example: true
+                          sync:
+                            type: boolean
+                          classification:
+                            type: boolean
+                          follow_ups:
+                            type: boolean
+                          replies:
+                            type: boolean
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+
+  /communication/integrations:
+    get:
+      tags:
+      - Communication
+      summary: Boites mail connectees de l'employe courant (Communication R1)
+      description: 'Liste les integrations OAuth de l''employe COURANT uniquement (#7686) : la boite est personnelle, aucune boite d''un autre employe n''apparait. Les tokens (chiffres au repos) ne sortent JAMAIS de l''API. Route gardee par le feature flag tenant `communication`.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Integrations de l'employe courant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CommunicationIntegration'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+
+  /communication/integrations/google:
+    post:
+      tags:
+      - Communication
+      summary: Demarre la connexion Google de l'employe courant (OAuth serveur)
+      description: 'Flow OAuth 2.0 cote serveur (#7686) : pose un state anti-CSRF a usage unique (10 min) et renvoie l''URL de consentement Google (access_type=offline, prompt=consent, scopes minimaux openid email gmail.readonly). `with_send=true` (R4 #7689, R5 #7690) ajoute les scopes gmail.send et gmail.compose (consentement incremental) requis pour activer les relances automatiques et les reponses assistees (envoi + brouillons). Le client redirige le navigateur vers cette URL ; Google rappelle ensuite /communication/integrations/google/callback. 503 GOOGLE_OAUTH_UNAVAILABLE si le serveur n''a pas ses variables d''env Google (GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET / GOOGLE_COMMUNICATION_REDIRECT_URL).'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                with_send:
+                  type: boolean
+                  default: false
+                  description: Demander aussi le scope gmail.send (relances R4)
+      responses:
+        '200':
+          description: URL de consentement Google prete
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      authorization_url:
+                        type: string
+                        example: 'https://accounts.google.com/o/oauth2/v2/auth?client_id=...&access_type=offline&prompt=consent&state=...'
+                      expires_in:
+                        type: integer
+                        description: Duree de vie du state en secondes
+                        example: 600
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '503':
+          description: OAuth Google non configure cote serveur (GOOGLE_OAUTH_UNAVAILABLE)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /communication/integrations/google/callback:
+    get:
+      tags:
+      - Communication
+      summary: Callback OAuth Google du module Communication (route publique)
+      description: 'Retour de l''ecran de consentement Google (#7686). Route publique par construction (le navigateur revient sans bearer token) : le state anti-CSRF a usage unique est la seule preuve d''identite (state inconnu, expire ou rejoue = 400 OAUTH_STATE_INVALID). Le feature flag du tenant est re-verifie (fail-closed, 403 FEATURE_NOT_ENABLED). Echange le code contre les tokens, stocke access/refresh tokens CHIFFRES (jamais en clair en base) et l''adresse de la boite (userinfo, scope email seul - minimisation).'
+      security: []
+      parameters:
+      - name: state
+        in: query
+        required: true
+        schema:
+          type: string
+        description: State anti-CSRF a usage unique pose par POST /communication/integrations/google
+      - name: code
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Code d'autorisation renvoye par Google
+      - name: error
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Code d'erreur Google (ex. access_denied si l'utilisateur refuse)
+      responses:
+        '200':
+          description: Boite connectee, tokens stockes chiffres
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: active
+                      provider:
+                        type: string
+                        example: google
+                      email:
+                        type: string
+                        nullable: true
+                        example: user@gmail.com
+        '400':
+          description: State invalide/rejoue (OAUTH_STATE_INVALID), consentement refuse (OAUTH_CONSENT_DENIED) ou code manquant (OAUTH_CODE_MISSING)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '502':
+          description: Google a rejete l'echange du code (OAUTH_EXCHANGE_FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /communication/integrations/{integration}:
+    delete:
+      tags:
+      - Communication
+      summary: Deconnecte une boite mail (revocation Google + purge des tokens)
+      description: 'Deconnexion PROPRE (#7686, purge R2 #7687) : revocation du token aupres de Google (best effort - un token deja invalide ne bloque pas la deconnexion), purge locale inconditionnelle des deux tokens (statut `revoked`) puis PURGE COMPLETE des fils/messages synchronises (plus aucun corps de message en base) et des curseurs de sync. Policy : le proprietaire de la boite, ou principal/rh (offboarding, incident). Une integration d''un autre tenant est un 404 (isolation tenant).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: integration
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Boite deconnectee, tokens purges
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationIntegration'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+
+  /communication/threads:
+    get:
+      tags:
+      - Communication
+      summary: Fils Gmail synchronises des boites de l'employe courant (Communication R2)
+      description: 'Liste paginee des fils synchronises (#7687), bornee aux boites de l''employe COURANT (boite personnelle - aucun fil d''un autre employe), du plus recent au plus ancien : les 50 derniers fils tiennent sur la premiere page. Metadonnees + snippet uniquement, jamais de corps. Filtre optionnel ?integration={uuid}. Route gardee par le feature flag tenant `communication`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: integration
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: Restreindre a une boite connectee precise
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+          maximum: 100
+      responses:
+        '200':
+          description: Fils des boites de l'employe courant (metadonnees + snippet)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CommunicationThread'
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      last_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+
+  /communication/threads/{thread}/messages:
+    get:
+      tags:
+      - Communication
+      summary: Messages d'un fil Gmail synchronise (proprietaire de la boite uniquement)
+      description: 'Messages du fil, tries chronologiquement (#7687). Seul endpoint qui expose le corps (text/plain borne, chiffre au repos, dechiffre a la lecture) - reserve au PROPRIETAIRE de la boite : collegue (meme principal/rh) = 403, autre tenant = 404. Pieces jointes : references Gmail seulement, jamais le contenu.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: thread
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Fil + messages (corps dechiffre pour le proprietaire)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      thread:
+                        $ref: '#/components/schemas/CommunicationThread'
+                      messages:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/CommunicationMessage'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+
+  /communication/categories:
+    get:
+      tags:
+      - Communication
+      summary: Taxonomie email du tenant (Communication R3)
+      description: 'Categories de classification du tenant (#7688) : defauts i18n FR/EN/AR/TR materialises au premier appel (is_system), plus les categories propres du tenant. Lisible par tout employe du tenant (les categories s''affichent sur ses messages). Route gardee par le feature flag tenant `communication`.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Categories du tenant (actives et inactives)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CommunicationCategory'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Communication
+      summary: Ajouter une categorie a la taxonomie (principal/rh)
+      description: 'Cree une categorie PROPRE au tenant (#7688) - la classification IA la propose ensuite comme n''importe quel defaut. Reserve aux managers principal/rh (CommunicationCategoryPolicy). 422 CATEGORY_KEY_TAKEN si la cle existe deja.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [key]
+              properties:
+                key:
+                  type: string
+                  pattern: '^[a-z][a-z0-9_]{1,63}$'
+                label:
+                  type: string
+                  nullable: true
+                  maxLength: 128
+      responses:
+        '201':
+          description: Categorie creee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationCategory'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /communication/categories/{category}:
+    patch:
+      tags:
+      - Communication
+      summary: Renommer / activer / desactiver une categorie (principal/rh)
+      description: 'Met a jour le libelle (surcharge des defauts i18n) ou l''etat actif d''une categorie (#7688). Une categorie inactive n''est plus proposee au LLM. Reserve aux managers principal/rh ; autre tenant = 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: category
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                label:
+                  type: string
+                  nullable: true
+                  maxLength: 128
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Categorie mise a jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationCategory'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    delete:
+      tags:
+      - Communication
+      summary: Supprimer une categorie NON systeme (principal/rh)
+      description: 'Supprime une categorie propre au tenant (#7688). Les categories systeme (defauts) ne se suppriment pas - elles se desactivent (la classification historique reste lisible). Reserve aux managers principal/rh.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: category
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: Categorie supprimee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+
+  /communication/messages/{message}/classify:
+    post:
+      tags:
+      - Communication
+      summary: Re-classification manuelle d'un message (proprietaire de la boite)
+      description: 'Replanifie la classification IA du message sur la queue `communication` (#7688), en forcant le retraitement meme si une classification existe. Pipeline identique a la classification a la sync : tool email_classify (LLM via l''abstraction du serveur, sortie JSON validee contre la taxonomie du tenant, contenu email traite comme donnee hostile), liaison CRM par correspondance d''email. Reserve au PROPRIETAIRE de la boite : collegue (meme principal/rh) = 403, autre tenant = 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: message
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '202':
+          description: Classification replanifiee (resultat asynchrone)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      message_id:
+                        type: string
+                        format: uuid
+                      classification_status:
+                        type: string
+                        enum: [pending, classified, failed]
+                      queued:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+
+  /communication/contact-proposals:
+    get:
+      tags:
+      - Communication
+      summary: Propositions de contact CRM des boites de l'employe courant (Communication R3)
+      description: 'Expediteurs inconnus du CRM detectes par la classification (#7688) - la creation du contact n''est JAMAIS silencieuse : le proprietaire de la boite decide. Liste bornee aux boites de l''appelant, propositions en attente d''abord. Filtre optionnel ?status=proposed|accepted|dismissed.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [proposed, accepted, dismissed]
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+          maximum: 100
+      responses:
+        '200':
+          description: Propositions des boites de l'appelant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CommunicationContactProposal'
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      last_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+
+  /communication/contact-proposals/{proposal}/accept:
+    post:
+      tags:
+      - Communication
+      summary: Accepter une proposition (creation EXPLICITE du contact CRM)
+      description: 'Cree le contact CRM via le contrat partage BC-11 (#7688), lie retroactivement les messages de cet expediteur (crm_contact_id) et journalise une activite email dans la timeline CRM. Reserve au proprietaire de la boite ; 409 PROPOSAL_ALREADY_DECIDED si deja traitee.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: proposal
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                suggested_name:
+                  type: string
+                  nullable: true
+                  maxLength: 128
+      responses:
+        '200':
+          description: Contact cree et messages lies
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationContactProposal'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+
+  /communication/contact-proposals/{proposal}/dismiss:
+    post:
+      tags:
+      - Communication
+      summary: Ecarter une proposition de contact
+      description: 'Marque la proposition comme ecartee (#7688) : l''expediteur ne sera plus re-propose pour cette boite. Aucun contact CRM n''est cree. Reserve au proprietaire de la boite ; 409 si deja traitee.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: proposal
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Proposition ecartee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationContactProposal'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+
+
+  /communication/follow-up-rules:
+    get:
+      tags:
+      - Communication
+      summary: Regles de relance de l'employe courant
+      description: 'Liste les regles de relance automatique (#7689) des boites de l''employe COURANT uniquement (regle personnelle - les relances partent de son Gmail). Route gardee par le feature flag tenant `communication`.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Regles de relance du proprietaire
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CommunicationFollowUpRule'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Communication
+      summary: Creer une regle de relance (sequence max 3 etapes)
+      description: 'Cree une regle de relance automatique (#7689) sur une boite de l''employe courant : sequence de 1 a 3 etapes (delais en jours, gabarit EmailTemplateRegistry). La boite doit avoir accorde le scope gmail.send pour une regle active (422 GMAIL_SEND_SCOPE_REQUIRED sinon - reconnexion via POST /communication/integrations/google avec with_send=true). Boite d''un autre employe = 404 (existence non revelee).'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [integration_id, name, steps]
+              properties:
+                integration_id:
+                  type: string
+                  format: uuid
+                name:
+                  type: string
+                  maxLength: 128
+                active:
+                  type: boolean
+                  default: true
+                steps:
+                  type: array
+                  minItems: 1
+                  maxItems: 3
+                  items:
+                    type: object
+                    required: [delay_days]
+                    properties:
+                      delay_days:
+                        type: integer
+                        minimum: 1
+                        maximum: 90
+                      template_key:
+                        type: string
+                        enum: [communication_follow_up]
+      responses:
+        '201':
+          description: Regle creee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationFollowUpRule'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /communication/follow-up-rules/{rule}:
+    patch:
+      tags:
+      - Communication
+      summary: Modifier une regle de relance
+      description: 'Met a jour nom, activation et/ou sequence (#7689). PROPRIETAIRE de la boite uniquement (collegue et meme principal/rh = 403), autre tenant = 404. Reactiver une regle exige toujours le scope gmail.send (422 GMAIL_SEND_SCOPE_REQUIRED).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: rule
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 128
+                active:
+                  type: boolean
+                steps:
+                  type: array
+                  minItems: 1
+                  maxItems: 3
+                  items:
+                    type: object
+                    required: [delay_days]
+                    properties:
+                      delay_days:
+                        type: integer
+                        minimum: 1
+                        maximum: 90
+                      template_key:
+                        type: string
+                        enum: [communication_follow_up]
+      responses:
+        '200':
+          description: Regle mise a jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationFollowUpRule'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - Communication
+      summary: Supprimer une regle de relance
+      description: 'Supprime la regle, sa sequence et ses echeances (#7689) - le journal d''audit des envois est conserve. Proprietaire uniquement, autre tenant = 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: rule
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: Regle supprimee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+
+  /communication/follow-ups:
+    get:
+      tags:
+      - Communication
+      summary: File d'attente des relances de l'employe courant
+      description: 'Liste paginee des echeances de relance (#7689) des boites de l''employe COURANT uniquement, de la plus recente a la plus ancienne. Chaque echeance porte son statut (pending/sent/skipped/failed/cancelled) et le code machine du garde-fou qui l''a arretee (replied, opted_out, consent_blocked, mailing_list, missing_send_scope...). Filtre optionnel ?status=.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [pending, sent, skipped, failed, cancelled]
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Echeances de relance du proprietaire
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CommunicationFollowUp'
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      last_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /communication/follow-ups/{followUp}/cancel:
+    post:
+      tags:
+      - Communication
+      summary: Annuler une relance en attente
+      description: 'Annule une echeance encore `pending` (#7689) - decision auditee (cancelled_by_owner), l''echeance ne repartira jamais (deduplication). PROPRIETAIRE de la boite uniquement, autre tenant = 404, deja traitee = 409.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: followUp
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Relance annulee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationFollowUp'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+
+  /communication/follow-up-opt-outs:
+    get:
+      tags:
+      - Communication
+      summary: Opt-outs de relance du tenant
+      description: 'Liste les destinataires exclus des relances automatiques (#7689), a l''echelle du tenant. Lisible par tout employe.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Opt-outs du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CommunicationFollowUpOptOut'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Communication
+      summary: Exclure un destinataire des relances
+      description: 'Ajoute une exclusion (#7689) - garde-fou protecteur ouvert a tout employe du tenant, idempotent (200 si l''adresse est deja exclue, 201 sinon). L''adresse est normalisee en minuscules.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '201':
+          description: Opt-out cree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationFollowUpOptOut'
+        '200':
+          description: Opt-out deja en place (idempotent)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationFollowUpOptOut'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /communication/follow-up-opt-outs/{optOut}:
+    delete:
+      tags:
+      - Communication
+      summary: Retirer un opt-out de relance
+      description: 'Supprime l''exclusion et re-autorise les relances vers cette adresse (#7689) - reserve aux managers principal/rh, autre tenant = 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: optOut
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: Opt-out supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+
+  /communication/reply-policies:
+    get:
+      tags:
+      - Communication
+      summary: Politiques de reponse assistee de l'employe courant
+      description: 'Liste les politiques de reponse assistee (#7690, spec 3.5) des boites de l''employe COURANT uniquement - une ligne par boite x categorie de la taxonomie (aucune ligne = off). La boite est personnelle : les politiques des autres employes n''apparaissent jamais.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Politiques de reponse du proprietaire
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CommunicationReplyPolicy'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Communication
+      summary: Definir la politique de reponse d'une boite pour une categorie
+      description: 'Upsert de LA politique (#7690) d''une boite de l''employe courant pour une categorie de la taxonomie : off (defaut, rien), draft (brouillon depose dans le Gmail), confirm (file Pending, envoi apres validation humaine), auto (envoi direct sous garde-fous R4, OPT-IN explicite). Garde-fous : auto est REFUSE sur les categories finance/RH/juridique (liste bloquee en dur, 422 REPLY_AUTO_CATEGORY_BLOCKED) ; confirm/auto exigent le scope gmail.send (422 GMAIL_SEND_SCOPE_REQUIRED) et draft le scope gmail.compose (422 GMAIL_COMPOSE_SCOPE_REQUIRED) - reconnexion via POST /communication/integrations/google avec with_send=true. Categorie inconnue = 422 REPLY_CATEGORY_UNKNOWN ; boite d''un autre employe = 404 (existence non revelee).'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [integration_id, category_key, policy]
+              properties:
+                integration_id:
+                  type: string
+                  format: uuid
+                category_key:
+                  type: string
+                  maxLength: 64
+                policy:
+                  type: string
+                  enum: [off, draft, confirm, auto]
+      responses:
+        '200':
+          description: Politique mise a jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationReplyPolicy'
+        '201':
+          description: Politique creee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationReplyPolicy'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /communication/pending-replies:
+    get:
+      tags:
+      - Communication
+      summary: File Pending des reponses assistees de l'employe courant
+      description: 'Liste paginee des propositions de reponse generees par l''IA (#7690) pour les boites de l''employe COURANT uniquement, de la plus recente a la plus ancienne. Chaque proposition porte sa politique snapshotee (draft/confirm/auto), son statut (pending/drafted/sent/rejected/skipped/failed) et le code machine du garde-fou qui l''a arretee (opted_out, consent_blocked, quiet_hours, missing_send_scope, missing_compose_scope...). Filtre optionnel ?status=. En mode confirm, AUCUN envoi ne part sans approbation explicite du proprietaire.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [pending, drafted, sent, rejected, skipped, failed]
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Propositions de reponse du proprietaire
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CommunicationPendingReply'
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      last_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /communication/pending-replies/{pendingReply}:
+    patch:
+      tags:
+      - Communication
+      summary: Editer le brouillon d'une proposition en attente
+      description: 'Edite le sujet et/ou le corps d''une proposition encore `pending` (#7690) AVANT approbation - le texte envoye est toujours celui que l''humain a valide (edition auditee). PROPRIETAIRE de la boite uniquement (meme principal/rh = 403), autre tenant = 404, deja traitee = 409 PENDING_REPLY_NOT_PENDING.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: pendingReply
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subject:
+                  type: string
+                  maxLength: 255
+                body:
+                  type: string
+                  maxLength: 10000
+      responses:
+        '200':
+          description: Proposition editee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationPendingReply'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /communication/pending-replies/{pendingReply}/approve:
+    post:
+      tags:
+      - Communication
+      summary: Approuver une proposition (envoi reel)
+      description: 'VALIDATION HUMAINE du mode confirm (#7690) : approuve une proposition `pending` et l''envoie immediatement depuis le Gmail du proprietaire (meme fil, threading RFC 5322, tokens R1) - c''est l''UNIQUE chemin d''envoi de la file Pending. Les garde-fous terminaux sont re-evalues juste avant l''envoi : opt-out ou consentement CRM retire = 422 REPLY_BLOCKED (une approbation n''outrepasse jamais un refus de consentement), scope gmail.send manquant = 422 GMAIL_SEND_SCOPE_REQUIRED. Quota Gmail = 429 (la proposition reste pending), echec d''envoi = 502 REPLY_SEND_FAILED. PROPRIETAIRE de la boite uniquement, autre tenant = 404, deja traitee = 409.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: pendingReply
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Reponse envoyee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationPendingReply'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '502':
+          description: Echec d'envoi Gmail (proposition marquee failed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /communication/pending-replies/{pendingReply}/reject:
+    post:
+      tags:
+      - Communication
+      summary: Rejeter une proposition de reponse
+      description: 'Rejette une proposition encore `pending` (#7690) - rien ne part, la proposition est fermee et la decision auditee (rejected_by_owner). La deduplication garantit qu''un message rejete ne sera jamais re-propose. PROPRIETAIRE de la boite uniquement, autre tenant = 404, deja traitee = 409.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: pendingReply
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Proposition rejetee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CommunicationPendingReply'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+
   /public/catalog/sitemap.xml:
     get:
       tags:
@@ -31369,6 +32721,391 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    CommunicationIntegration:
+      type: object
+      description: 'Boite mail connectee d''un employe (Communication R1, #7686). Les tokens OAuth sont chiffres au repos et n''apparaissent JAMAIS dans ce schema (minimisation des donnees).'
+      properties:
+        id:
+          type: string
+          format: uuid
+        provider:
+          type: string
+          example: google
+        email:
+          type: string
+          nullable: true
+          description: Adresse de la boite connectee (seule donnee de profil conservee)
+        scopes:
+          type: array
+          items:
+            type: string
+          example:
+          - openid
+          - email
+          - https://www.googleapis.com/auth/gmail.readonly
+        status:
+          type: string
+          enum:
+          - active
+          - revoked
+          - error
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        connected_at:
+          type: string
+          format: date-time
+          nullable: true
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+    CommunicationThread:
+      type: object
+      description: 'Fil Gmail synchronise (Communication R2, #7687). METADONNEES uniquement : sujet, snippet, compteur, date du dernier message - le corps chiffre vit sur les messages, les pieces jointes ne sont jamais stockees.'
+      properties:
+        id:
+          type: string
+          format: uuid
+        integration_id:
+          type: string
+          format: uuid
+        gmail_thread_id:
+          type: string
+          example: 18c2f9a7b3d4e5f6
+        subject:
+          type: string
+          nullable: true
+        snippet:
+          type: string
+          nullable: true
+          description: Extrait Gmail du message le plus recent (jamais le corps complet)
+        message_count:
+          type: integer
+        last_message_at:
+          type: string
+          format: date-time
+          nullable: true
+    CommunicationMessage:
+      type: object
+      description: 'Message Gmail synchronise (Communication R2, #7687). Minimisation : headers utiles (From/To/Cc/Subject), references RFC 5322 (Message-ID/In-Reply-To), snippet, labels, corps text/plain borne (chiffre au repos, dechiffre a la lecture pour le proprietaire seul) et REFERENCES de pieces jointes (le contenu n''est jamais stocke).'
+      properties:
+        id:
+          type: string
+          format: uuid
+        gmail_message_id:
+          type: string
+        internet_message_id:
+          type: string
+          nullable: true
+          description: Header Message-ID RFC 5322 (threading, relances R4)
+        in_reply_to:
+          type: string
+          nullable: true
+        from_email:
+          type: string
+          nullable: true
+        to_emails:
+          type: array
+          items:
+            type: string
+        cc_emails:
+          type: array
+          items:
+            type: string
+        subject:
+          type: string
+          nullable: true
+        snippet:
+          type: string
+          nullable: true
+        body:
+          type: string
+          nullable: true
+          description: Corps text/plain borne, chiffre au repos - visible du proprietaire de la boite uniquement
+        labels:
+          type: array
+          items:
+            type: string
+          example:
+          - INBOX
+          - UNREAD
+        attachment_refs:
+          type: array
+          description: References Gmail des pieces jointes (attachment_id, filename, mime_type, size) - contenu jamais stocke
+          items:
+            type: object
+            properties:
+              attachment_id:
+                type: string
+              filename:
+                type: string
+              mime_type:
+                type: string
+                nullable: true
+              size:
+                type: integer
+                nullable: true
+        sent_at:
+          type: string
+          format: date-time
+          nullable: true
+        ai_category:
+          type: string
+          nullable: true
+          description: Cle de categorie (taxonomie du tenant) posee par la classification IA (R3, #7688)
+        ai_language:
+          type: string
+          nullable: true
+          description: Code ISO 639-1 detecte
+        ai_sentiment:
+          type: string
+          nullable: true
+          enum: [positive, neutral, negative, null]
+        ai_action:
+          type: string
+          nullable: true
+          enum: [reply, follow_up, schedule, task, payment, none, null]
+        ai_confidence:
+          type: integer
+          nullable: true
+          minimum: 0
+          maximum: 100
+        classification_status:
+          type: string
+          enum: [pending, classified, failed]
+        classification_error:
+          type: string
+          nullable: true
+          description: Code machine (jamais de payload LLM)
+        classified_at:
+          type: string
+          format: date-time
+          nullable: true
+        crm_contact_id:
+          type: integer
+          nullable: true
+          description: Contact CRM rattache par correspondance d'email (R3, #7688)
+        contact_link_status:
+          type: string
+          nullable: true
+          enum: [linked, proposed, none, null]
+    CommunicationCategory:
+      type: object
+      description: Categorie de la taxonomie email du tenant (Communication R3, #7688). Les defauts (is_system) sont fournis en FR/EN/AR/TR ; le tenant renomme, desactive ou ajoute ses categories.
+      properties:
+        id:
+          type: string
+          format: uuid
+        key:
+          type: string
+          description: Cle stable (snake_case) - la valeur validee en sortie du LLM
+        label:
+          type: string
+          description: Libelle affiche (surcharge tenant sinon defaut i18n)
+        custom_label:
+          type: string
+          nullable: true
+          description: Surcharge de libelle posee par le tenant (null = defaut i18n)
+        is_system:
+          type: boolean
+        active:
+          type: boolean
+    CommunicationContactProposal:
+      type: object
+      description: Proposition de creation de contact CRM (Communication R3, #7688) - un expediteur inconnu n'est JAMAIS cree silencieusement, le proprietaire de la boite accepte ou ecarte.
+      properties:
+        id:
+          type: string
+          format: uuid
+        integration_id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        suggested_name:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [proposed, accepted, dismissed]
+        message_count:
+          type: integer
+        crm_contact_id:
+          type: integer
+          nullable: true
+          description: Pose a l'acceptation (contact cree via le contrat partage CRM)
+        decided_at:
+          type: string
+          format: date-time
+          nullable: true
+    CommunicationFollowUpRule:
+      type: object
+      description: Regle de relance automatique d'une boite connectee (Communication R4, #7689) - personnelle au proprietaire, sequence de 1 a 3 etapes.
+      properties:
+        id:
+          type: string
+          format: uuid
+        integration_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        active:
+          type: boolean
+        steps:
+          type: array
+          items:
+            type: object
+            properties:
+              position:
+                type: integer
+              delay_days:
+                type: integer
+              template_key:
+                type: string
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+    CommunicationFollowUp:
+      type: object
+      description: Echeance de relance materialisee (Communication R4, #7689) - file d'attente ET table de deduplication (une relance par echeance).
+      properties:
+        id:
+          type: string
+          format: uuid
+        rule_id:
+          type: string
+          format: uuid
+        integration_id:
+          type: string
+          format: uuid
+        thread_id:
+          type: string
+          format: uuid
+        step_position:
+          type: integer
+        contact_email:
+          type: string
+        scheduled_for:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [pending, sent, skipped, failed, cancelled]
+        skip_reason:
+          type: string
+          nullable: true
+          description: Code machine du garde-fou (replied, opted_out, consent_blocked, mailing_list, auto_reply, missing_send_scope, cancelled_by_owner, send_failed...)
+        sent_at:
+          type: string
+          format: date-time
+          nullable: true
+    CommunicationFollowUpOptOut:
+      type: object
+      description: Destinataire exclu des relances automatiques (Communication R4, #7689) - exclusion a l'echelle du tenant, en plus du consentement/unsubscribe CRM.
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        source:
+          type: string
+          enum: [manual, unsubscribe]
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+    CommunicationReplyPolicy:
+      type: object
+      description: Politique de reponse assistee d'une boite pour une categorie (Communication R5, #7690) - off (defaut), draft (brouillon Gmail), confirm (file Pending, validation humaine), auto (opt-in explicite, jamais sur finance/RH/juridique).
+      properties:
+        id:
+          type: string
+          format: uuid
+        integration_id:
+          type: string
+          format: uuid
+        category_key:
+          type: string
+        policy:
+          type: string
+          enum: [off, draft, confirm, auto]
+        auto_blocked:
+          type: boolean
+          description: true si la categorie est interdite en mode auto (liste finance/RH/juridique bloquee en dur).
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+    CommunicationPendingReply:
+      type: object
+      description: Proposition de reponse IA en file Pending (Communication R5, #7690) - deduplication par message entrant, corps genere chiffre au repos, envoi uniquement apres validation humaine (confirm) ou sous garde-fous R4 (auto opt-in).
+      properties:
+        id:
+          type: string
+          format: uuid
+        integration_id:
+          type: string
+          format: uuid
+        thread_id:
+          type: string
+          format: uuid
+        message_id:
+          type: string
+          format: uuid
+          description: Message ENTRANT auquel la proposition repond.
+        category_key:
+          type: string
+        mode:
+          type: string
+          enum: [draft, confirm, auto]
+          description: Politique appliquee au moment de la proposition (snapshot).
+        to_email:
+          type: string
+        subject:
+          type: string
+          nullable: true
+        body:
+          type: string
+          nullable: true
+          description: Corps text/plain genere par l'IA (borne, valide) - jamais envoye sans validation humaine en mode confirm.
+        ai_language:
+          type: string
+          nullable: true
+        ai_confidence:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum: [pending, drafted, sent, rejected, skipped, failed]
+        skip_reason:
+          type: string
+          nullable: true
+          description: Code machine du garde-fou ou de la decision (opted_out, consent_blocked, quiet_hours, auto_daily_cap_reached, missing_send_scope, missing_compose_scope, rejected_by_owner, gmail_send_failed...)
+        edited_at:
+          type: string
+          format: date-time
+          nullable: true
+        decided_at:
+          type: string
+          format: date-time
+          nullable: true
+        sent_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
     EduFeeCharge:
       type: object
       description: Facturation d'un frais scolaire à un élève (EDU-016, #5832).

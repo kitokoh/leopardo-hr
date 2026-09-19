@@ -218,6 +218,53 @@
               ]"
             />
           </button>
+
+          <!-- #7725 — menu utilisateur : « Mon compte » et « Déconnexion »
+               vivent ici, plus dans la sidebar. -->
+          <div class="relative">
+            <button
+              data-testid="admin-user-menu-toggle"
+              class="flex items-center rounded-full p-1 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
+              :aria-label="t('navigation.account', 'Mon compte')"
+              :aria-expanded="showUserMenu"
+              aria-haspopup="menu"
+              @click="showUserMenu = !showUserMenu"
+            >
+              <UserCircleIcon class="h-7 w-7" />
+            </button>
+
+            <div
+              v-if="showUserMenu"
+              role="menu"
+              data-testid="admin-user-menu"
+              class="absolute right-0 z-10 mt-2 w-64 origin-top-right rounded-xl glass-effect py-1 shadow-glass focus:outline-none"
+              @click.stop
+            >
+              <div class="border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+                <p class="truncate text-sm font-medium text-gray-900 dark:text-white">{{ authStore.user?.name || '' }}</p>
+                <p class="truncate text-xs text-gray-500 dark:text-gray-400">{{ authStore.user?.email || '' }}</p>
+              </div>
+              <router-link
+                to="/settings"
+                role="menuitem"
+                class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                @click="showUserMenu = false"
+              >
+                <UserCircleIcon class="h-5 w-5 text-gray-400" />
+                {{ t('navigation.account', 'Mon compte') }}
+              </router-link>
+              <router-link
+                to="/logout"
+                role="menuitem"
+                data-testid="admin-user-menu-logout"
+                class="flex items-center gap-3 border-t border-gray-100 dark:border-gray-700 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                @click="showUserMenu = false"
+              >
+                <ArrowRightOnRectangleIcon class="h-5 w-5" />
+                {{ t('navigation.logout', 'Déconnexion') }}
+              </router-link>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -235,6 +282,13 @@
       class="fixed inset-0 z-0"
       @click="showAlerts = false"
     ></div>
+
+    <!-- Click outside to close user menu (#7725) -->
+    <div
+      v-if="showUserMenu"
+      class="fixed inset-0 z-0"
+      @click="showUserMenu = false"
+    ></div>
   </header>
 </template>
 
@@ -251,6 +305,8 @@ import {
   ArrowPathIcon,
   SunIcon,
   MoonIcon,
+  UserCircleIcon,
+  ArrowRightOnRectangleIcon,
 } from '@heroicons/vue/24/outline'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useRealtimeStore } from '@/stores/realtime'
@@ -287,6 +343,7 @@ const languageLabels = {
 const searchQuery = ref('')
 const showNotifications = ref(false)
 const showAlerts = ref(false)
+const showUserMenu = ref(false)
 const isRefreshing = ref(false)
 
 // Auto-refresh interval

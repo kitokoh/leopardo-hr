@@ -20,7 +20,7 @@ C'est un document de:
 
 ## Vue d'ensemble du produit
 
-Leopardo RH est actuellement structure comme un monorepo contenant:
+Leopardo est actuellement structure comme un monorepo contenant:
 
 - une API Laravel multitenant dans `api/`
 - une interface web manager incluse dans l'application Laravel

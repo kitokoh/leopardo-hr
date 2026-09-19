@@ -57,7 +57,8 @@ const routes = [
       },
       {
         path: '/solutions/survey-stats',
-        name: 'solutionSurveyStats',
+        // #7725 — nom normalisé kebab-case (ex-`solutionSurveyStats`).
+        name: 'solution-survey-stats',
         component: () => import('@/views/solutions/SolutionSurveyStatsView.vue'),
         meta: {
           title: 'navigation.surveyStats',
@@ -112,20 +113,21 @@ const routes = [
       {
         path: '/support',
         name: 'support',
-        component: () => import('@/views/support/SupportView.vue'),
+        // #7725 — vue fusionnée (demandes + centre de tickets en onglets).
+        component: () => import('@/views/support/SupportCenterView.vue'),
         meta: {
           title: 'navigation.support',
-          icon: 'ChatBubbleLeftRightIcon'
+          icon: 'LifebuoyIcon'
         }
       },
       {
+        // #7725 — fusion Support : l'ancien « Centre support client »
+        // (`/support-tickets`) redirige vers l'onglet tickets de l'entrée
+        // Support unique. La query (`company_id`…, cf. CompanyDetailView)
+        // est conservée par la redirection vue-router.
         path: '/support-tickets',
         name: 'support-tickets',
-        component: () => import('@/views/support/SupportTicketsView.vue'),
-        meta: {
-          title: 'navigation.supportTickets',
-          icon: 'LifebuoyIcon'
-        }
+        redirect: (to) => ({ path: '/support', query: { ...to.query, tab: 'tickets' } }),
       },
       {
         path: '/crm/pipeline',
@@ -192,7 +194,8 @@ const routes = [
         component: () => import('@/views/settings/TaxRatesView.vue'),
         meta: {
           title: 'navigation.legalRates',
-          icon: 'ScaleIcon'
+          // #7725 — icône unique (ScaleIcon reste aux barèmes fiscaux).
+          icon: 'ReceiptPercentIcon'
         }
       },
       {
@@ -258,7 +261,8 @@ const routes = [
       },
       {
         path: '/fuel-station',
-        name: 'fuelStation',
+        // #7725 — nom normalisé kebab-case (ex-`fuelStation`).
+        name: 'fuel-station',
         component: FuelManagerView,
         meta: {
           title: 'navigation.fuelStation',
@@ -321,7 +325,9 @@ const routes = [
         name: 'travel',
         component: () => import('../views/travel/TravelHomeView.vue'),
         meta: {
-          title: 'navigation.travel',
+          // #7725 — clé réconciliée avec le menu (`navigation.travelAgency`,
+          // même libellé partout ; `navigation.travel` divergeait).
+          title: 'navigation.travelAgency',
           icon: 'PaperAirplaneIcon'
         }
       },
@@ -404,6 +410,17 @@ const routes = [
         meta: {
           title: 'marketing.oauth.nav_title',
           icon: 'MegaphoneIcon'
+        }
+      },
+      {
+        // BC-29 COMMUNICATION — R6 (#7691) : boîte connectée, file de
+        // confirmations et réglages (politiques R5 + relances R4).
+        path: '/communication',
+        name: 'communication',
+        component: () => import('@/views/communication/CommunicationView.vue'),
+        meta: {
+          title: 'communicationApp.moduleTitle',
+          icon: 'EnvelopeIcon'
         }
       },
       {
@@ -518,7 +535,7 @@ router.beforeEach(async (to) => {
   if (to.meta.title) {
     const localeStore = useLocaleStore()
     const title = translate(localeStore.current, to.meta.title, to.meta.title)
-    document.title = `${title} - Leopardo RH Admin`
+    document.title = `${title} - Leopardo Admin`
   }
 
   return true
