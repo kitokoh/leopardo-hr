@@ -44,8 +44,9 @@ jobs:
             'CHANGELOG_ARCHIVE.md'            # journal d'agent 4,3 MB (tranche 2)
             'docs/api-mock-data/*'            # exemples API générés (tranche 2)
             '*/build/test_cache/*'            # cache de build Flutter (52,7 MB/blob)
+            'front/mobile_apps/*/build/*'     # tout répertoire build/ d'app mobile
             '*.dill'                          # blobs de compilation Dart
-            '*composer.phar'                  # outillage vendored
+            '*.phar'                          # outillage vendored (composer, php-cs-fixer…)
             'ci_log*.txt'                     # logs CI committés
             '*/ci_log*.txt'
             'dev-hub/openapi/v1.yaml'         # miroir OpenAPI généré (tranche 3)
