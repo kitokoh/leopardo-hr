@@ -50,6 +50,7 @@ export type ClientModuleKey =
   | 'fuel'
   | 'fleet'
   | 'cameras'
+  | 'communication'
   | 'showcase';
 export type FeatureState = 'available' | 'trial' | 'locked';
 
@@ -404,6 +405,20 @@ export const CLIENT_MODULES: ClientModule[] = [
     scope: 'business',
     vertical: 'restaurant',
   },
+  // BC-29 COMMUNICATION (#7691, R6) — boîte mail connectée + IA. La boîte est
+  // PERSONNELLE (chaque employé connecte la sienne, contrat R1 #7686) : le
+  // module est donc ouvert à tous les rôles authentifiés, la garde réelle est
+  // le feature flag tenant `communication` (`module.communication` côté API).
+  {
+    key: 'communication',
+    href: '/communication',
+    label: 'Communication',
+    group: 'general',
+    capabilityKeys: ['communication', 'can_view_communication'],
+    featureKeys: ['communication'],
+    allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
+    upgradeLabel: 'Communication (boîte mail + IA)',
+  },
   {
     key: 'restaurant_kitchen',
     href: '/restaurant/kitchen',
@@ -525,6 +540,10 @@ export function isSelfActivable(module: Pick<ClientModule, 'key'>): boolean {
 const MODULE_ROUTE_ALIASES: Record<string, ClientModuleKey> = {
   // Alias historique du module marketing.
   '/social': 'marketing',
+  // BC-29 COMMUNICATION (#7691, R6) — sous-routes de la boîte connectée
+  // (la route principale `/communication` est dérivée du catalogue).
+  '/communication/replies': 'communication',
+  '/communication/settings': 'communication',
   '/crm/accounts': 'crm',
   '/crm/contacts': 'crm',
   '/crm/leads': 'crm',
