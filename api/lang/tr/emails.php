@@ -195,6 +195,22 @@ return [
     'login_code_intro' => 'İşte tek kullanımlık giriş kodunuz. Alanınıza erişmek için giriş sayfasında bu kodu girin:',
     'login_code_validity' => 'Bu kod 10 dakika geçerlidir ve tek kullanımlıktır. Bunu talep etmediyseniz, bu e-postayı güvenle yok sayabilirsiniz.',
 
+
+    // #7760 — destek bileti e-posta bildirimleri (müşteri ↔ platform).
+    'support_ticket_opened_subject' => '[Bilet #:ticket] Yeni destek bileti — :subject',
+    'support_ticket_opened_title' => 'Yeni destek bileti',
+    'support_ticket_opened_intro' => ':company şirketi #:ticket numaralı bileti açtı («:subject», kategori :category, öncelik :priority).',
+    'support_ticket_opened_footer' => 'Mesajı okumak ve yanıtlamak için platform konsoluna giriş yapın.',
+    'support_ticket_platform_reply_subject' => '[Bilet #:ticket] Destek size yanıt verdi — :subject',
+    'support_ticket_platform_reply_title' => 'Destek size yanıt verdi',
+    'support_ticket_platform_reply_greeting' => 'Merhaba :name,',
+    'support_ticket_platform_reply_intro' => 'Destek ekibi #:ticket numaralı biletinize yanıt verdi («:subject»).',
+    'support_ticket_platform_reply_footer' => 'Yanıtı okumak ve görüşmeye devam etmek için müşteri alanınıza (Destek sayfası) giriş yapın.',
+    'support_ticket_tenant_reply_subject' => '[Bilet #:ticket] Müşteri yanıt verdi — :subject',
+    'support_ticket_tenant_reply_title' => 'Müşteri yanıt verdi',
+    'support_ticket_tenant_reply_intro' => ':company şirketi #:ticket numaralı bilete yanıt verdi («:subject»).',
+    'support_ticket_tenant_reply_footer' => 'Yanıtı okumak için platform konsoluna giriş yapın.',
+
     // BC-29 Communication R4 (#7689) — otomatik takip şablonu.
     'communication_follow_up_subject' => 'Hatırlatma: :subject',
     'communication_follow_up_body' => "Merhaba,\n\nHenüz yanıt almayan \":subject\" konulu önceki mesajımla ilgili size tekrar yazıyorum.\n\nİnceleme fırsatınız oldu mu?\n\nSaygılarımla,\n:name",

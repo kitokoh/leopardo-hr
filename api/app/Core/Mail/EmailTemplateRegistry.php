@@ -80,6 +80,30 @@ final class EmailTemplateRegistry
             'cta_label' => 'emails.onboarding_reminder_cta',
             'variables' => [':name', ':company', ':brand'],
         ],
+        // #7760 — notifications e-mail des tickets support client ↔ plateforme.
+        // Le corps ne recopie jamais le message du ticket : la conversation se
+        // lit dans l'espace client / la console plateforme.
+        'support_ticket_opened' => [
+            'subject' => 'emails.support_ticket_opened_subject',
+            'heading' => 'emails.support_ticket_opened_title',
+            'body' => ['emails.support_ticket_opened_intro'],
+            'cta_label' => null,
+            'variables' => [':ticket', ':company', ':subject', ':category', ':priority', ':brand'],
+        ],
+        'support_ticket_platform_reply' => [
+            'subject' => 'emails.support_ticket_platform_reply_subject',
+            'heading' => 'emails.support_ticket_platform_reply_title',
+            'body' => ['emails.support_ticket_platform_reply_intro'],
+            'cta_label' => null,
+            'variables' => [':ticket', ':subject', ':name', ':brand'],
+        ],
+        'support_ticket_tenant_reply' => [
+            'subject' => 'emails.support_ticket_tenant_reply_subject',
+            'heading' => 'emails.support_ticket_tenant_reply_title',
+            'body' => ['emails.support_ticket_tenant_reply_intro'],
+            'cta_label' => null,
+            'variables' => [':ticket', ':company', ':subject', ':brand'],
+        ],
         // BC-29 Communication R4 (#7689) — relance automatique envoyee via
         // le Gmail de l'utilisateur (spec §3.4 : « gabarits via
         // EmailTemplateRegistry », surcharge par locale dans l'admin).
