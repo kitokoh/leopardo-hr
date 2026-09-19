@@ -23,4 +23,7 @@ return [
         'expire_adverts_tenant_summary' => 'المستأجر :company: :expired منتهية، :archived مؤرشفة.',
         'expire_adverts_total' => 'الإجمالي: :expired إعلانًا منتهيًا، :archived مؤرشفة.',
     ],
+    'marketplace' => [
+        'booking_not_found' => 'حجز السوق غير موجود.',
+    ],
 ];
