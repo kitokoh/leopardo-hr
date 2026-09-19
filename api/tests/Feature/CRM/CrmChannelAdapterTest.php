@@ -96,7 +96,7 @@ class CrmChannelAdapterTest extends TestCase
         config()->set('crm.channels.consent_fallback', 'allow');
         Sanctum::actingAs($this->manager());
 
-        $channel = CrmChannel::query()->create([
+        $channel = CrmChannel::query()->forceCreate([
             'company_id' => $this->company->id,
             'type' => 'sms',
             'provider' => 'sms_audit',
@@ -125,7 +125,7 @@ class CrmChannelAdapterTest extends TestCase
         config()->set('crm.channels.consent_fallback', 'deny');
         Sanctum::actingAs($this->manager());
 
-        $channel = CrmChannel::query()->create([
+        $channel = CrmChannel::query()->forceCreate([
             'company_id' => $this->company->id,
             'type' => 'sms',
             'provider' => 'sms_audit',
@@ -158,7 +158,7 @@ class CrmChannelAdapterTest extends TestCase
     {
         Sanctum::actingAs($this->manager());
 
-        $channel = CrmChannel::query()->create([
+        $channel = CrmChannel::query()->forceCreate([
             'company_id' => $this->company->id,
             'type' => 'whatsapp',
             'provider' => 'whatsapp_cloud_api',
@@ -166,7 +166,7 @@ class CrmChannelAdapterTest extends TestCase
             'is_configured' => true,
         ]);
 
-        CrmChannelMessage::query()->create([
+        CrmChannelMessage::query()->forceCreate([
             'company_id' => $this->company->id,
             'channel_id' => $channel->id,
             'provider' => 'whatsapp_cloud_api',
@@ -174,7 +174,7 @@ class CrmChannelAdapterTest extends TestCase
             'status' => 'sent',
             'cost' => 0.25,
         ]);
-        CrmChannelMessage::query()->create([
+        CrmChannelMessage::query()->forceCreate([
             'company_id' => $this->company->id,
             'channel_id' => $channel->id,
             'provider' => 'whatsapp_cloud_api',
@@ -199,7 +199,7 @@ class CrmChannelAdapterTest extends TestCase
 
         /** @var \App\Core\Tenant\Domain\Models\Company $otherCompany */
         $otherCompany = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD']);
-        $channel = CrmChannel::query()->create([
+        $channel = CrmChannel::query()->forceCreate([
             'company_id' => $otherCompany->id,
             'type' => 'sms',
             'provider' => 'sms_audit',

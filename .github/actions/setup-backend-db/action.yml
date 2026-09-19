@@ -170,16 +170,20 @@ runs:
         // Timeouts posés au niveau du RÔLE : ils s'appliquent aussi aux bases
         // par worker `leopardo_test_test_{token}` créées par paratest.
         //
-        // Issue #7683 — le réglage initial de #7660 (lock_timeout 30s,
-        // idle_in_transaction_session_timeout 120s) échangeait les blocages
-        // contre des échecs en masse : les zombies n'étaient réapés qu'à
-        // 120s alors que les waiters abandonnaient à 30s (60 × SQLSTATE
-        // 55P03 par run observés sur main le 2026-09-19). Le reaper doit
-        // agir AVANT l'expiration des attentes : idle 15s < lock 45s — le
-        // waiter survit au réap du zombie et acquiert le verrou.
+        // Issue #7683 (2e itération) — le réglage initial de #7660
+        // (lock 30s < idle 120s) faisait échouer les waiters AVANT le réap
+        // des zombies (60 × 55P03/run) ; la 1re correction (#7684,
+        // idle 15s < lock 45s) réglait l'ordre mais le reaper à 15s tuait
+        // des transactions LÉGITIMES pendant les migrations paratest
+        // (workers CPU-starved > 15s idle mid-transaction → bases à moitié
+        // migrées, 567 échecs). La bonne relation garde des valeurs
+        // conservatrices en inversant seulement l'ordre :
+        // idle 120s (réap des zombies, valeur éprouvée de #7661)
+        // < lock 150s (le waiter survit au réap et acquiert le verrou).
+        // Pire cas par verrou : ~2 min d'attente au lieu d'un échec.
         $pdo->exec(<<<'SQL'
-        ALTER ROLE CURRENT_USER SET lock_timeout = '45s';
-        ALTER ROLE CURRENT_USER SET idle_in_transaction_session_timeout = '15s';
+        ALTER ROLE CURRENT_USER SET lock_timeout = '150s';
+        ALTER ROLE CURRENT_USER SET idle_in_transaction_session_timeout = '120s';
         ALTER ROLE CURRENT_USER SET statement_timeout = '300s';
         SQL);
 
