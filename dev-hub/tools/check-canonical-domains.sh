@@ -67,7 +67,6 @@ mapfile -t FILES < <(
     -not -path '*/.next/*' \
     -not -name 'package-lock.json' \
     -not -name 'composer.lock' \
-    -not -name 'CHANGELOG_ARCHIVE.md' \
     -not -name '.secrets.baseline' \
     -not -name '*.png' -not -name '*.jpg' -not -name '*.jpeg' \
     -not -name '*.gif' -not -name '*.webp' -not -name '*.ico' \
