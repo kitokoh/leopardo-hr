@@ -516,11 +516,11 @@
    "responsibility": "Produits, magasins, caisse, tickets, stocks et synchronisation POS.",
    "owner": "Agent 17 — BC-RETAIL",
    "priority": "P3",
-   "status": "planned",
+   "status": "active",
    "paths": [
     {
-     "path": "api/app/Solutions/Retail",
-     "status": "planned"
+     "path": "api/app/Modules/Retail",
+     "status": "active"
     }
    ],
    "routes": [],
@@ -528,7 +528,7 @@
     "api/database/migrations/tenant"
    ],
    "events": [
-    "App\\Solutions\\Retail\\Domain\\Events"
+    "App\\Modules\\Retail\\Domain\\Events"
    ],
    "dependencies": [
     "BC-02",

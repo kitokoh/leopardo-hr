@@ -4345,6 +4345,66 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/resources/{type}/{resourceId}/access", options);
     },
 
+    /** Lister les categories du module Retail (membres du tenant) */
+    getRetailCategories(options = {}) {
+      return request("GET", "/retail/categories", options);
+    },
+
+    /** Creer une categorie (gestion principal/rh) */
+    postRetailCategories(options = {}) {
+      return request("POST", "/retail/categories", options);
+    },
+
+    /** Supprimer une categorie (gestion principal/rh) */
+    deleteRetailCategoriesByCategory(options = {}) {
+      return request("DELETE", "/retail/categories/{category}", options);
+    },
+
+    /** Detail d'une categorie (membres du tenant) */
+    getRetailCategoriesByCategory(options = {}) {
+      return request("GET", "/retail/categories/{category}", options);
+    },
+
+    /** Mettre a jour une categorie (gestion principal/rh) */
+    putRetailCategoriesByCategory(options = {}) {
+      return request("PUT", "/retail/categories/{category}", options);
+    },
+
+    /** Lister les produits du module Retail (membres du tenant) */
+    getRetailProducts(options = {}) {
+      return request("GET", "/retail/products", options);
+    },
+
+    /** Creer un produit (gestion principal/rh) */
+    postRetailProducts(options = {}) {
+      return request("POST", "/retail/products", options);
+    },
+
+    /** Supprimer un produit (gestion principal/rh) */
+    deleteRetailProductsByProduct(options = {}) {
+      return request("DELETE", "/retail/products/{product}", options);
+    },
+
+    /** Detail d'un produit (membres du tenant) */
+    getRetailProductsByProduct(options = {}) {
+      return request("GET", "/retail/products/{product}", options);
+    },
+
+    /** Mettre a jour un produit (gestion principal/rh) */
+    putRetailProductsByProduct(options = {}) {
+      return request("PUT", "/retail/products/{product}", options);
+    },
+
+    /** Publier un produit (statut published) */
+    postRetailProductsByProductPublish(options = {}) {
+      return request("POST", "/retail/products/{product}/publish", options);
+    },
+
+    /** Depublier un produit (statut draft) */
+    postRetailProductsByProductUnpublish(options = {}) {
+      return request("POST", "/retail/products/{product}/unpublish", options);
+    },
+
     /** Lister les avances sur salaire */
     getSalaryAdvances(options = {}) {
       return request("GET", "/salary-advances", options);

@@ -112,6 +112,8 @@ tags:
   description: 'Administration super-admin : gestion tenants, plans, metriques globales.'
 - name: Catalog
   description: 'BC-28 CATALOG — gestion du catalogue produits B2B des tenants (categories, produits, publication).'
+- name: Retail
+  description: 'BC-17 RETAIL — module vendeur generique des tenants : gestion des produits & categories (fondations backend #7672).'
 - name: Travel
   description: 'BC-24 TRAVEL — boutique, tunnel public et espace voyageur (suivi par reference + code de controle du billet).'
 paths:
@@ -29598,6 +29600,420 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
 
+  /retail/categories:
+    get:
+      tags:
+      - Retail
+      summary: Lister les categories du module Retail (membres du tenant)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: q
+        in: query
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginee des categories
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Retail
+      summary: Creer une categorie (gestion principal/rh)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                slug:
+                  type: string
+                  nullable: true
+                parent_id:
+                  type: integer
+                  nullable: true
+                position:
+                  type: integer
+                  nullable: true
+      responses:
+        '201':
+          description: Categorie creee (slug auto-unique par tenant)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/categories/{category}:
+    get:
+      tags:
+      - Retail
+      summary: Detail d'une categorie (membres du tenant)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: category
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Categorie
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - Retail
+      summary: Mettre a jour une categorie (gestion principal/rh)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                slug:
+                  type: string
+                  nullable: true
+                parent_id:
+                  type: integer
+                  nullable: true
+                position:
+                  type: integer
+                  nullable: true
+      parameters:
+      - name: category
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Categorie mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    delete:
+      tags:
+      - Retail
+      summary: Supprimer une categorie (gestion principal/rh)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: category
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Categorie supprimee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /retail/products:
+    get:
+      tags:
+      - Retail
+      summary: Lister les produits du module Retail (membres du tenant)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: q
+        in: query
+        schema:
+          type: string
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - draft
+          - published
+          - archived
+      - name: category_id
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginee des produits
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Retail
+      summary: Creer un produit (gestion principal/rh)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - sku
+              - price_minor
+              properties:
+                name:
+                  type: string
+                  maxLength: 200
+                slug:
+                  type: string
+                  nullable: true
+                sku:
+                  type: string
+                  maxLength: 64
+                  description: Reference interne, unique par tenant
+                barcode:
+                  type: string
+                  nullable: true
+                  maxLength: 64
+                category_id:
+                  type: integer
+                  nullable: true
+                description:
+                  type: string
+                  nullable: true
+                price_minor:
+                  type: integer
+                  minimum: 0
+                  description: Prix de vente en minor units (jamais de flottants)
+                cost_minor:
+                  type: integer
+                  nullable: true
+                  minimum: 0
+                  description: Cout d'achat en minor units
+                currency:
+                  type: string
+                  pattern: '^[A-Z]{3}$'
+                  description: Devise ISO 4217
+                unit:
+                  type: string
+                  nullable: true
+                  description: Unite libre (piece, kg, m...)
+                status:
+                  type: string
+                  enum:
+                  - draft
+                  - published
+                  - archived
+                meta:
+                  type: object
+                  nullable: true
+      responses:
+        '201':
+          description: Produit cree (statut par defaut draft)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/products/{product}:
+    get:
+      tags:
+      - Retail
+      summary: Detail d'un produit (membres du tenant)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - Retail
+      summary: Mettre a jour un produit (gestion principal/rh)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - price_minor
+              properties:
+                name:
+                  type: string
+                  maxLength: 200
+                slug:
+                  type: string
+                  nullable: true
+                sku:
+                  type: string
+                  maxLength: 64
+                barcode:
+                  type: string
+                  nullable: true
+                  maxLength: 64
+                category_id:
+                  type: integer
+                  nullable: true
+                description:
+                  type: string
+                  nullable: true
+                price_minor:
+                  type: integer
+                  minimum: 0
+                cost_minor:
+                  type: integer
+                  nullable: true
+                  minimum: 0
+                currency:
+                  type: string
+                  pattern: '^[A-Z]{3}$'
+                unit:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum:
+                  - draft
+                  - published
+                  - archived
+                meta:
+                  type: object
+                  nullable: true
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    delete:
+      tags:
+      - Retail
+      summary: Supprimer un produit (gestion principal/rh)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /retail/products/{product}/publish:
+    post:
+      tags:
+      - Retail
+      summary: Publier un produit (statut published)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit publie
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /retail/products/{product}/unpublish:
+    post:
+      tags:
+      - Retail
+      summary: Depublier un produit (statut draft)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit depublie
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /public/catalog/sitemap.xml:
     get:
       tags:

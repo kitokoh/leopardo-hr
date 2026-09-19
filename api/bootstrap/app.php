@@ -202,6 +202,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.delivery' => EnsureDeliveryModuleMiddleware::class,
             // BC-28 CATALOG — gate feature flag b2b_catalog (#6881).
             'module.catalog' => \App\Http\Middleware\Catalog\EnsureCatalogModuleMiddleware::class,
+            // BC-17 RETAIL — gate feature flag retail (#7672).
+            'module.retail' => \App\Http\Middleware\Retail\EnsureRetailModuleMiddleware::class,
             // C-PUBLIC #6882 — accès public par slug (catalogue vitrine).
             'catalog.public' => \App\Http\Middleware\Catalog\EnsureCatalogPublicAccess::class,
             'delivery.permission' => \App\Http\Middleware\Delivery\EnsureDeliveryPermissionMiddleware::class,

@@ -3496,6 +3496,54 @@ class LeopardoClient:
         """Qui a accès à cette ressource ? (vue inverse, R4 #7601)"""
         return self.request("GET", "/resources/{type}/{resourceId}/access", **kwargs)
 
+    def get_retail_categories(self, **kwargs):
+        """Lister les categories du module Retail (membres du tenant)"""
+        return self.request("GET", "/retail/categories", **kwargs)
+
+    def post_retail_categories(self, **kwargs):
+        """Creer une categorie (gestion principal/rh)"""
+        return self.request("POST", "/retail/categories", **kwargs)
+
+    def delete_retail_categories_by_category(self, **kwargs):
+        """Supprimer une categorie (gestion principal/rh)"""
+        return self.request("DELETE", "/retail/categories/{category}", **kwargs)
+
+    def get_retail_categories_by_category(self, **kwargs):
+        """Detail d'une categorie (membres du tenant)"""
+        return self.request("GET", "/retail/categories/{category}", **kwargs)
+
+    def put_retail_categories_by_category(self, **kwargs):
+        """Mettre a jour une categorie (gestion principal/rh)"""
+        return self.request("PUT", "/retail/categories/{category}", **kwargs)
+
+    def get_retail_products(self, **kwargs):
+        """Lister les produits du module Retail (membres du tenant)"""
+        return self.request("GET", "/retail/products", **kwargs)
+
+    def post_retail_products(self, **kwargs):
+        """Creer un produit (gestion principal/rh)"""
+        return self.request("POST", "/retail/products", **kwargs)
+
+    def delete_retail_products_by_product(self, **kwargs):
+        """Supprimer un produit (gestion principal/rh)"""
+        return self.request("DELETE", "/retail/products/{product}", **kwargs)
+
+    def get_retail_products_by_product(self, **kwargs):
+        """Detail d'un produit (membres du tenant)"""
+        return self.request("GET", "/retail/products/{product}", **kwargs)
+
+    def put_retail_products_by_product(self, **kwargs):
+        """Mettre a jour un produit (gestion principal/rh)"""
+        return self.request("PUT", "/retail/products/{product}", **kwargs)
+
+    def post_retail_products_by_product_publish(self, **kwargs):
+        """Publier un produit (statut published)"""
+        return self.request("POST", "/retail/products/{product}/publish", **kwargs)
+
+    def post_retail_products_by_product_unpublish(self, **kwargs):
+        """Depublier un produit (statut draft)"""
+        return self.request("POST", "/retail/products/{product}/unpublish", **kwargs)
+
     def get_salary_advances(self, **kwargs):
         """Lister les avances sur salaire"""
         return self.request("GET", "/salary-advances", **kwargs)

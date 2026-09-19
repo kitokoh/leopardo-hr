@@ -681,6 +681,12 @@
       "note": "BC-28 → BC-03 — policies Catalog importent App\\Core\\Auth\\Domain\\Models\\Employee (RBAC, #6880)"
     },
     {
+      "from": "BC-17",
+      "to": "BC-03",
+      "baseline": false,
+      "note": "BC-17 → BC-03 — policies/contrôleurs Retail importent App\\Core\\Auth\\Domain\\Models\\Employee (RBAC, #7672 — même patron que BC-28/#6880)"
+    },
+    {
       "from": "BC-27",
       "to": "BC-03",
       "baseline": true,

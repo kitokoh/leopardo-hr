@@ -1394,6 +1394,47 @@ trait CreatesMvpSchema
             });
         }
 
+        // BC-17 RETAIL #7672 — fondations du module vendeur generique.
+        // Miroir de la migration 2026_09_19_000001_7672 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('retail_categories'))) {
+            Schema::create($this->moduleTable('retail_categories'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 160);
+                $table->string('slug', 180);
+                $table->unsignedBigInteger('parent_id')->nullable();
+                $table->unsignedSmallInteger('position')->default(0);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'slug'], 'retail_categories_company_slug_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('retail_products'))) {
+            Schema::create($this->moduleTable('retail_products'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('category_id')->nullable();
+                $table->string('name', 200);
+                $table->string('slug', 220);
+                $table->string('sku', 64);
+                $table->string('barcode', 64)->nullable();
+                $table->text('description')->nullable();
+                $table->unsignedBigInteger('price_minor')->default(0);
+                $table->unsignedBigInteger('cost_minor')->nullable();
+                $table->char('currency', 3)->default('XOF');
+                $table->string('unit', 30)->nullable();
+                $table->string('status', 20)->default('draft');
+                $table->json('meta')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'slug'], 'retail_products_company_slug_unique');
+                $table->unique(['company_id', 'sku'], 'retail_products_company_sku_unique');
+                $table->index(['company_id', 'status'], 'retail_products_company_status_idx');
+                $table->index(['company_id', 'barcode'], 'retail_products_company_barcode_idx');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('catalog_inquiries'))) {
             Schema::create($this->moduleTable('catalog_inquiries'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
