@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
+use Tests\Support\SwitchesTenantContext;
 use Tests\TestCase;
 
 /**
@@ -25,6 +26,7 @@ use Tests\TestCase;
 class ShareAccessAuditTest extends TestCase
 {
     use RefreshTenantDatabase;
+    use SwitchesTenantContext;
 
     private Company $companyA;
 
@@ -69,34 +71,40 @@ class ShareAccessAuditTest extends TestCase
     /** @return array{0: AccountingDocument, 1: string} */
     private function sharedDocument(Company $company, string $suffix): array
     {
-        app()->instance('current_company', $company);
+        // #7646 — depuis le durcissement de BelongsToCompany, company_id est
+        // forcé depuis le tenant actif : la fixture du tenant B doit être
+        // créée sous SON contexte, puis le contexte précédent est restauré
+        // (sinon le « manager du tenant A » créé ensuite serait lui aussi
+        // forcé dans le tenant B — le test cross-tenant verrait 200 au lieu
+        // de 404).
+        return $this->withTenantContext($company, function () use ($company, $suffix): array {
+            /** @var AccountingContact $contact */
+            $contact = AccountingContact::query()->create([
+                'company_id' => $company->id,
+                'type' => 'customer',
+                'name' => 'Client '.$suffix,
+                'email' => 'client-'.$suffix.'@exemple.dz',
+            ]);
 
-        /** @var AccountingContact $contact */
-        $contact = AccountingContact::query()->create([
-            'company_id' => $company->id,
-            'type' => 'customer',
-            'name' => 'Client '.$suffix,
-            'email' => 'client-'.$suffix.'@exemple.dz',
-        ]);
+            /** @var AccountingDocument $document */
+            $document = AccountingDocument::query()->create([
+                'company_id' => $company->id,
+                'type' => 'invoice',
+                'number' => 'FAC-5522-'.$suffix,
+                'status' => 'draft',
+                'contact_id' => $contact->id,
+                'issue_date' => '2026-08-01',
+                'currency' => 'DZD',
+                'subtotal_ht' => 1900,
+                'tax_amount' => 361,
+                'total_ttc' => 2261,
+                'tva_rate' => 19,
+            ]);
 
-        /** @var AccountingDocument $document */
-        $document = AccountingDocument::query()->create([
-            'company_id' => $company->id,
-            'type' => 'invoice',
-            'number' => 'FAC-5522-'.$suffix,
-            'status' => 'draft',
-            'contact_id' => $contact->id,
-            'issue_date' => '2026-08-01',
-            'currency' => 'DZD',
-            'subtotal_ht' => 1900,
-            'tax_amount' => 361,
-            'total_ttc' => 2261,
-            'tva_rate' => 19,
-        ]);
+            $token = app(SendDocumentEmail::class)->handle($document, 'client-'.$suffix.'@exemple.dz');
 
-        $token = app(SendDocumentEmail::class)->handle($document, 'client-'.$suffix.'@exemple.dz');
-
-        return [$document, $token];
+            return [$document, $token];
+        });
     }
 
     public function test_principal_lists_share_accesses_for_document(): void
