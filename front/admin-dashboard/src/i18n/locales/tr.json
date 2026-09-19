@@ -3710,7 +3710,16 @@
       }
     },
     "socialExamplePlaceholder": "Örn: Leopardo — Sosyal medya",
-    "postContentPlaceholder": "Gönderi içeriği..."
+    "postContentPlaceholder": "Gönderi içeriği...",
+    "publishNow": "Şimdi yayınla",
+    "commentsLoadError": "Yorumlar yüklenemedi.",
+    "aiSuggestUnavailable": "Yapay zekâ önerisi şu anda kullanılamıyor.",
+    "replySendError": "Yanıt gönderilemedi.",
+    "suggestReply": "Yanıt öner (YZ)",
+    "replyPlaceholder": "Yanıtınız (göndermeden önce siz onaylarsınız)...",
+    "weeklyReportLoadError": "Haftalık rapor yüklenemedi.",
+    "aiSummary": "YZ özeti",
+    "autoSummary": "Otomatik özet"
   },
   "attendanceCorrectionEditDateTitle": "{date} düzenle",
   "attendanceSaving": "Kaydediliyor...",

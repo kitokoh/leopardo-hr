@@ -3710,7 +3710,16 @@
       }
     },
     "socialExamplePlaceholder": "Ex: Leopardo — Reseaux sociaux",
-    "postContentPlaceholder": "Contenu de la publication..."
+    "postContentPlaceholder": "Contenu de la publication...",
+    "publishNow": "Publier maintenant",
+    "commentsLoadError": "Impossible de charger les commentaires.",
+    "aiSuggestUnavailable": "Suggestion IA indisponible pour le moment.",
+    "replySendError": "Impossible d'envoyer la réponse.",
+    "suggestReply": "Suggérer une réponse (IA)",
+    "replyPlaceholder": "Votre réponse (validée par vous avant envoi)...",
+    "weeklyReportLoadError": "Impossible de charger le bilan hebdomadaire.",
+    "aiSummary": "Synthèse IA",
+    "autoSummary": "Synthèse automatique"
   },
   "attendanceCorrectionEditDateTitle": "Modifier le {date}",
   "attendanceSaving": "Enregistrement en cours...",
