@@ -13,6 +13,9 @@ enum BookingSource: string
     case OFFICE = 'office';
     case PHONE = 'phone';
     case PARTNER = 'partner';
+    // #7737 — achat via la marketplace publique inter-agences (tenant résolu
+    // par trajet, sans jeton boutique d'agence).
+    case MARKETPLACE = 'marketplace';
 
     public function label(): string
     {
@@ -21,6 +24,7 @@ enum BookingSource: string
             self::OFFICE => 'Guichet',
             self::PHONE => 'Téléphone',
             self::PARTNER => 'Partenaire',
+            self::MARKETPLACE => 'Marketplace',
         };
     }
 }
