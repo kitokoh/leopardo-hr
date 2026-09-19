@@ -15,7 +15,7 @@ return [
         'story' => [
             'clarity' => [
                 'title' => 'Une home qui vous parle avant de vous noyer',
-                'body' => 'Leopardo RH commence par quelques actions claires: pointer, suivre le mois et retrouver les informations qui comptent.',
+                'body' => 'Leopardo commence par quelques actions claires: pointer, suivre le mois et retrouver les informations qui comptent.',
             ],
             'field' => [
                 'title' => 'Mobile-first pour le terrain',
