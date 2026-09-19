@@ -44,7 +44,7 @@
     "story": {
       "clarity": {
         "title": "A home screen that speaks before it overwhelms",
-        "body": "Leopardo HR starts with a few clear actions: clock in, follow the month, and find the information that matters."
+        "body": "Leopardo starts with a few clear actions: clock in, follow the month, and find the information that matters."
       },
       "field": {
         "title": "Mobile-first for field teams",
@@ -504,7 +504,7 @@
         "placeholder_uri": "https://example.com/oauth/callback"
       }
     },
-    "socialExamplePlaceholder": "Ex: Leopardo RH — Social media",
+    "socialExamplePlaceholder": "Ex: Leopardo — Social media",
     "postContentPlaceholder": "Post content..."
   },
   "attendance": {
@@ -1555,7 +1555,7 @@
       "description": "Transparent pricing: Free plan, Pilot €29/month, Operations €99/month, Enterprise on quote. 14-day free trial."
     },
     "llms": {
-      "summary": "Leopardo HR is a SaaS workforce management platform for field SMBs. It centralizes attendance, leave, schedules, multi-country payroll, HR documents and reporting in a single application, from mobile to kiosk.",
+      "summary": "Leopardo is the business suite for field-based companies — HR & payroll, attendance, leave, CRM, accounting and operations, on web, mobile and kiosks. The suite centralizes attendance, leave, schedules, multi-country payroll, HR documents and reporting in a single application, from mobile to kiosk.",
       "factsLabel": "Key facts",
       "factCountries": "countries covered in the payroll catalog",
       "factLanguages": "product languages (FR/EN/TR/AR)",
@@ -1893,7 +1893,7 @@
     "applyErrorPrefix": "Error while applying: ",
     "notApplied": {
       "title": "Become a Partner",
-      "subtitle": "Join the Leopardo RH ecosystem and earn commissions on every company you refer. Up to 20% recurring commission.",
+      "subtitle": "Join the Leopardo ecosystem and earn commissions on every company you refer. Up to 20% recurring commission.",
       "individual": "Apply as an Individual",
       "agency": "Apply as an Agency"
     },
@@ -1903,7 +1903,7 @@
     },
     "dashboard": {
       "title": "Partner Dashboard",
-      "subtitle": "Track your Leopardo RH conversions and commissions — active partner status."
+      "subtitle": "Track your Leopardo conversions and commissions — active partner status."
     },
     "metrics": {
       "conversions": "Conversions",
@@ -2055,7 +2055,7 @@
     "retry": "Retry",
     "serviceUnreachable": "service unreachable",
     "statsLoadError": "Error loading system stats",
-    "subtitle": "Monitoring, configuration and automation of the Leopardo RH platform.",
+    "subtitle": "Monitoring, configuration and automation of the Leopardo platform.",
     "title": "System Administration"
   },
   "billing": {
@@ -5507,7 +5507,7 @@
   },
   "signupPage": {
     "badge": "Sign up in 2 minutes",
-    "headline": "Try Leopardo RH without a heavy signup flow",
+    "headline": "Try Leopardo without a heavy signup flow",
     "subheadline": "Create your workspace yourself: your email, your company, a verification code — and you are in the app. No credit card.",
     "cta": "Create my trial workspace",
     "sideBadge": "Workspace available immediately",
