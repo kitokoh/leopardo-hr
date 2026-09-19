@@ -11,9 +11,9 @@ interface JsonLdProps {
 // NEXT_PUBLIC_SITE_URL → DEFAULT_SITE_URL (marque) → localhost en dev.
 // Migration cible : leopardo-rh.com (#3452). (Closes #3852)
 import { getSiteUrl } from '@/lib/site-url';
-// #AI-SEO : nom de marque canonique + alias — une seule entité pour les
-// moteurs et les assistants IA (avant : « Leopardo RH » figé en dur alors que
-// les <title> alternent RH/HR/İK/ليوباردو).
+// #AI-SEO : nom de marque canonique + alias historiques — une seule entité
+// pour les moteurs et les assistants IA (#7708 : la marque affichée est
+// « Leopardo » seul, les anciennes variantes RH/HR/İK restent des alias).
 import { BRAND_ALTERNATE_NAMES, BRAND_NAME } from '@/modules/vitrine/lib/seo';
 
 const SITE_URL = getSiteUrl();
@@ -218,11 +218,13 @@ export function VideoObjectJsonLd({
 // que les plans à prix machine (Free/Pilot/Operations). Le prix 0 du plan
 // Free est conservé (offre gratuite réelle).
 // #4707 : description Organisation localisée ×4 (avant : FR pour toutes les locales).
+// #7708 : phrases canoniques « suite métier / business suite »
+// (POSITIONNEMENT_SUITE_METIER.md §2) — la catégorie n'est plus « RH ».
 const organizationDescription: Record<string, string> = {
-  fr: 'Plateforme SaaS de gestion RH pour PME : paie multi-pays, pointage, absences, formations, recrutement.',
-  en: 'SaaS HR platform for SMBs: multi-country payroll, time tracking, leave, training and recruiting.',
-  tr: "KOBİ'ler için SaaS İK platformu: çok ülkeli bordro, yoklama, izin, eğitim ve işe alım.",
-  ar: 'منصة موارد بشرية سحابية للشركات الصغيرة والمتوسطة: رواتب متعددة البلدان، حضور، إجازات، تدريب وتوظيف.',
+  fr: 'Leopardo est la suite métier des entreprises de terrain — RH & paie, pointage, absences, CRM, comptabilité et opérations, sur web, mobile et bornes.',
+  en: 'Leopardo is the business suite for field-based companies — HR & payroll, attendance, leave, CRM, accounting and operations, on web, mobile and kiosks.',
+  tr: 'Leopardo, saha ekipleri için işletme yönetimi paketidir — İK ve bordro, yoklama, izin, CRM, muhasebe ve saha operasyonları; web, mobil ve kiosk üzerinde.',
+  ar: 'ليوباردو حزمة الأعمال للشركات الميدانية — الموارد البشرية والرواتب، الحضور، الإجازات، إدارة العملاء، المحاسبة والعمليات الميدانية، عبر الويب والجوال وأجهزة الحضور.',
 };
 
 export function OrganizationJsonLd({ locale = 'fr' }: { locale?: string }) {

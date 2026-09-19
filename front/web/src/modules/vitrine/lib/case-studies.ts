@@ -91,12 +91,12 @@ const caseStudySeoByLocale: Record<AppLocale, Record<string, CaseStudySeo>> = {
     startup: {
       title: 'Logiciel RH pour startup en croissance : étude de cas',
       description:
-        "Comment une startup technologique a structuré pointage, absences et paie de 5 à 50 employés avec Leopardo RH, sans recruter de profil RH dédié.",
+        "Comment une startup technologique a structuré pointage, absences et paie de 5 à 50 employés avec Leopardo, sans recruter de profil RH dédié.",
     },
     retail: {
       title: 'Pointage centralisé pour une chaîne de 50 magasins',
       description:
-        'Une chaîne de 50 points de vente centralise le pointage de 500 employés, réduit les écarts de paie et fiabilise ses plannings avec Leopardo RH.',
+        'Une chaîne de 50 points de vente centralise le pointage de 500 employés, réduit les écarts de paie et fiabilise ses plannings avec Leopardo.',
     },
     factory: {
       title: 'Pointage biométrique pour une usine de 200 salariés',
@@ -106,7 +106,7 @@ const caseStudySeoByLocale: Record<AppLocale, Record<string, CaseStudySeo>> = {
     'law-firm': {
       title: "Dossiers clients sécurisés dans un cabinet d'avocats",
       description:
-        "Un cabinet d'avocats centralise ses dossiers RH confidentiels, contrôle les accès et trace chaque consultation pour ses audits avec Leopardo RH.",
+        "Un cabinet d'avocats centralise ses dossiers RH confidentiels, contrôle les accès et trace chaque consultation pour ses audits avec Leopardo.",
     },
     'hr-files': {
       title: 'Dossiers employés : centralisation et conformité RH',
@@ -121,7 +121,7 @@ const caseStudySeoByLocale: Record<AppLocale, Record<string, CaseStudySeo>> = {
     'sme-payroll': {
       title: 'PME de 50 salariés : paie mensuelle automatisée',
       description:
-        'Une PME en croissance passe de trois jours à deux heures de paie mensuelle et supprime les erreurs de calcul sur deux pays grâce à Leopardo RH.',
+        'Une PME en croissance passe de trois jours à deux heures de paie mensuelle et supprime les erreurs de calcul sur deux pays grâce à Leopardo.',
     },
     'startup-advances': {
       title: 'Avances sur salaire : workflow automatisé en startup',
@@ -153,12 +153,12 @@ const caseStudySeoByLocale: Record<AppLocale, Record<string, CaseStudySeo>> = {
     startup: {
       title: 'HR software for a fast-growing startup: case study',
       description:
-        'How a technology startup structured attendance, leave and payroll while scaling from 5 to 50 employees with Leopardo HR, without a dedicated HR hire.',
+        'How a technology startup structured attendance, leave and payroll while scaling from 5 to 50 employees with Leopardo, without a dedicated HR hire.',
     },
     retail: {
       title: 'Centralized time tracking for a 50-store retail chain',
       description:
-        'A 50-store retail chain centralizes attendance for 500 employees, cuts payroll discrepancies and makes shift planning reliable with Leopardo HR.',
+        'A 50-store retail chain centralizes attendance for 500 employees, cuts payroll discrepancies and makes shift planning reliable with Leopardo.',
     },
     factory: {
       title: 'Biometric time tracking for a 200-employee factory',
@@ -168,7 +168,7 @@ const caseStudySeoByLocale: Record<AppLocale, Record<string, CaseStudySeo>> = {
     'law-firm': {
       title: 'Secure client files in a law firm: HR case study',
       description:
-        'A law firm centralizes its confidential HR files, controls access and traces every consultation for compliance audits with Leopardo HR.',
+        'A law firm centralizes its confidential HR files, controls access and traces every consultation for compliance audits with Leopardo.',
     },
     'hr-files': {
       title: 'Employee records: centralization and HR compliance',
@@ -183,7 +183,7 @@ const caseStudySeoByLocale: Record<AppLocale, Record<string, CaseStudySeo>> = {
     'sme-payroll': {
       title: 'Automated monthly payroll for a 50-employee SMB',
       description:
-        'A growing SMB cuts monthly payroll from three days to two hours and removes payroll calculation errors across two countries with Leopardo HR.',
+        'A growing SMB cuts monthly payroll from three days to two hours and removes payroll calculation errors across two countries with Leopardo.',
     },
     'startup-advances': {
       title: 'Salary advances: an automated workflow for startups',
