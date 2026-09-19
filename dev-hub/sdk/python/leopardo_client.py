@@ -3356,6 +3356,38 @@ class LeopardoClient:
         """Sitemap des produits publies (BC-28 C-SEO #6888)"""
         return self.request("GET", "/public/catalog/sitemap.xml", **kwargs)
 
+    def post_public_travel_marketplace_bookings(self, **kwargs):
+        """Marketplace : création d'une réservation (tenant résolu par trajet)"""
+        return self.request("POST", "/public/travel/marketplace/bookings", **kwargs)
+
+    def get_public_travel_marketplace_bookings_by_reference(self, **kwargs):
+        """Marketplace : suivi d'une réservation (référence + code de validation)"""
+        return self.request("GET", "/public/travel/marketplace/bookings/{reference}", **kwargs)
+
+    def post_public_travel_marketplace_bookings_by_reference_cancel(self, **kwargs):
+        """Marketplace : annulation en ligne par le passager"""
+        return self.request("POST", "/public/travel/marketplace/bookings/{reference}/cancel", **kwargs)
+
+    def get_public_travel_marketplace_cities(self, **kwargs):
+        """Marketplace inter-agences : villes desservies (autocomplete)"""
+        return self.request("GET", "/public/travel/marketplace/cities", **kwargs)
+
+    def post_public_travel_marketplace_payments_initiate(self, **kwargs):
+        """Marketplace : initiation de paiement d'une réservation marketplace"""
+        return self.request("POST", "/public/travel/marketplace/payments/initiate", **kwargs)
+
+    def get_public_travel_marketplace_tickets_by_ticket_pdf(self, **kwargs):
+        """Marketplace : e-billet PDF (code de validation requis)"""
+        return self.request("GET", "/public/travel/marketplace/tickets/{ticket}/pdf", **kwargs)
+
+    def get_public_travel_marketplace_trips(self, **kwargs):
+        """Marketplace inter-agences : recherche agrégée de trajets publiés"""
+        return self.request("GET", "/public/travel/marketplace/trips", **kwargs)
+
+    def get_public_travel_marketplace_trips_by_trip(self, **kwargs):
+        """Marketplace : détail d'un trajet + plan de sièges libres"""
+        return self.request("GET", "/public/travel/marketplace/trips/{trip}", **kwargs)
+
     def post_public_travel_shop_bookings_by_reference_cancel(self, **kwargs):
         """Annulation en ligne d'une réservation par le passager (espace voyageur)"""
         return self.request("POST", "/public/travel/shop/bookings/{reference}/cancel", **kwargs)

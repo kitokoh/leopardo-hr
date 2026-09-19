@@ -29888,6 +29888,277 @@ paths:
         '422':
           $ref: '#/components/responses/Error422'
 
+  /public/travel/marketplace/cities:
+    get:
+      tags:
+      - Travel
+      summary: "Marketplace inter-agences : villes desservies (autocomplete)"
+      description: >-
+        BC-24 TRAVEL (#7737, épic #7736) — surface PUBLIQUE sans jeton
+        d'agence (throttle shop-public). Origines et destinations des trajets
+        publiés à venir des agences OPT-IN (jeton boutique actif + feature
+        travelagency), dédupliquées par identité géographique (nom + pays
+        ISO2). L'id retourné est un représentant utilisable comme
+        origin_city_id / destination_city_id de la recherche.
+      responses:
+        '200':
+          description: Villes desservies (id, name, country_iso2, region)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /public/travel/marketplace/trips:
+    get:
+      tags:
+      - Travel
+      summary: "Marketplace inter-agences : recherche agrégée de trajets publiés"
+      description: >-
+        BC-24 TRAVEL (#7737) — recherche CROSS-TENANT bornée aux agences
+        opt-in : trajets publiés avec prix (unités mineures), sièges
+        disponibles, villes et NOM PUBLIC de l'agence (jamais d'identifiant
+        tenant). Le filtre ville matche par identité géographique (nom +
+        pays) : les trajets de toutes les agences desservant la ville sont
+        retournés. Sans date, seuls les départs à venir sont listés.
+      parameters:
+      - name: origin_city_id
+        in: query
+        schema:
+          type: integer
+      - name: destination_city_id
+        in: query
+        schema:
+          type: integer
+      - name: date
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+      responses:
+        '200':
+          description: Trajets paginés (data + meta), agrégés multi-agences
+        '422':
+          $ref: '#/components/responses/Error422'
+  /public/travel/marketplace/trips/{trip}:
+    get:
+      tags:
+      - Travel
+      summary: "Marketplace : détail d'un trajet + plan de sièges libres"
+      description: >-
+        BC-24 TRAVEL (#7737) — le tenant est résolu PAR TRAJET. Un trajet
+        inconnu, non publié ou d'une agence non opt-in répond 404
+        (fail-closed, aucune fuite cross-tenant).
+      parameters:
+      - name: trip
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail du trajet (prix, sièges libres, agence)
+        '404':
+          $ref: '#/components/responses/Error404'
+  /public/travel/marketplace/bookings:
+    post:
+      tags:
+      - Travel
+      summary: "Marketplace : création d'une réservation (tenant résolu par trajet)"
+      description: >-
+        BC-24 TRAVEL (#7737) — délègue au flux TRAVEL-1001 existant
+        (CreateBookingAction, verrouillage des sièges, montant calculé
+        serveur, idempotency_key rejouable) dans le contexte du tenant du
+        trajet, avec booking_source=marketplace. La réservation expire
+        au-delà du délai de paiement (statut pending, expires_at).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [trip_id, idempotency_key, passengers]
+              properties:
+                trip_id:
+                  type: integer
+                idempotency_key:
+                  type: string
+                  maxLength: 255
+                contact_email:
+                  type: string
+                  format: email
+                contact_phone:
+                  type: string
+                  maxLength: 40
+                notify_consent:
+                  type: boolean
+                passengers:
+                  type: array
+                  minItems: 1
+                  maxItems: 20
+                  items:
+                    type: object
+                    required: [full_name, age_category, class_id]
+                    properties:
+                      full_name:
+                        type: string
+                        maxLength: 160
+                      birth_date:
+                        type: string
+                        format: date
+                      document_type:
+                        type: string
+                      document_number:
+                        type: string
+                        maxLength: 40
+                      age_category:
+                        type: string
+                      class_id:
+                        type: integer
+                      seat_number:
+                        type: integer
+                        minimum: 1
+      responses:
+        '201':
+          description: Réservation créée chez l'agence du trajet (référence, montant, expiration)
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /public/travel/marketplace/bookings/{reference}:
+    get:
+      tags:
+      - Travel
+      summary: "Marketplace : suivi d'une réservation (référence + code de validation)"
+      description: >-
+        BC-24 TRAVEL (#7737) — alias marketplace de la surface passager #7395
+        (GET /public/travel/shop/bookings/{reference}) : tenant résolu par la
+        référence, code de validation d'un billet exigé, réponse minimisée
+        sans PII.
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: code
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Statut public de la réservation
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /public/travel/marketplace/bookings/{reference}/cancel:
+    post:
+      tags:
+      - Travel
+      summary: "Marketplace : annulation en ligne par le passager"
+      description: >-
+        BC-24 TRAVEL (#7737) — alias marketplace de l'annulation passager
+        #7395 : référence + code de validation d'un billet + motif
+        obligatoire ; départ futur uniquement, sièges libérés.
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, reason]
+              properties:
+                code:
+                  type: string
+                reason:
+                  type: string
+                  minLength: 5
+                  maxLength: 500
+      responses:
+        '200':
+          description: Réservation annulée
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /public/travel/marketplace/tickets/{ticket}/pdf:
+    get:
+      tags:
+      - Travel
+      summary: "Marketplace : e-billet PDF (code de validation requis)"
+      description: >-
+        BC-24 TRAVEL (#7737) — alias marketplace de l'e-billet public
+        TRAVEL-1002 : tenant résolu par le billet, accès par code de
+        validation, lien signé temporaire (30 min).
+      parameters:
+      - name: ticket
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: code
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: URL signée temporaire du PDF
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '410':
+          description: Billet révoqué
+  /public/travel/marketplace/payments/initiate:
+    post:
+      tags:
+      - Travel
+      summary: "Marketplace : initiation de paiement d'une réservation marketplace"
+      description: >-
+        BC-24 TRAVEL (#7737) — tenant résolu par la RÉFÉRENCE de réservation
+        (unique par tenant ; une référence ambiguë cross-tenant est un 404
+        fail-closed). Même contrat idempotent que la boutique TRAVEL-1002 ;
+        seules les réservations booking_source=marketplace sont acceptées.
+        La confirmation reste portée par le callback signé HMAC TRAVEL-409.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [booking_reference, provider_code, idempotency_key]
+              properties:
+                booking_reference:
+                  type: string
+                  maxLength: 40
+                provider_code:
+                  type: string
+                  enum: [cash, pvit, momo, card]
+                idempotency_key:
+                  type: string
+                  maxLength: 255
+      responses:
+        '201':
+          description: Paiement initié (référence, référence provider, statut)
+        '200':
+          description: Rejeu idempotent (paiement existant)
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+
   /edu-manager/fee-charges:
     post:
       tags:

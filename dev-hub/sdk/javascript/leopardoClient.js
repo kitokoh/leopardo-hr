@@ -4170,6 +4170,46 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/public/catalog/sitemap.xml", options);
     },
 
+    /** Marketplace : création d'une réservation (tenant résolu par trajet) */
+    postPublicTravelMarketplaceBookings(options = {}) {
+      return request("POST", "/public/travel/marketplace/bookings", options);
+    },
+
+    /** Marketplace : suivi d'une réservation (référence + code de validation) */
+    getPublicTravelMarketplaceBookingsByReference(options = {}) {
+      return request("GET", "/public/travel/marketplace/bookings/{reference}", options);
+    },
+
+    /** Marketplace : annulation en ligne par le passager */
+    postPublicTravelMarketplaceBookingsByReferenceCancel(options = {}) {
+      return request("POST", "/public/travel/marketplace/bookings/{reference}/cancel", options);
+    },
+
+    /** Marketplace inter-agences : villes desservies (autocomplete) */
+    getPublicTravelMarketplaceCities(options = {}) {
+      return request("GET", "/public/travel/marketplace/cities", options);
+    },
+
+    /** Marketplace : initiation de paiement d'une réservation marketplace */
+    postPublicTravelMarketplacePaymentsInitiate(options = {}) {
+      return request("POST", "/public/travel/marketplace/payments/initiate", options);
+    },
+
+    /** Marketplace : e-billet PDF (code de validation requis) */
+    getPublicTravelMarketplaceTicketsByTicketPdf(options = {}) {
+      return request("GET", "/public/travel/marketplace/tickets/{ticket}/pdf", options);
+    },
+
+    /** Marketplace inter-agences : recherche agrégée de trajets publiés */
+    getPublicTravelMarketplaceTrips(options = {}) {
+      return request("GET", "/public/travel/marketplace/trips", options);
+    },
+
+    /** Marketplace : détail d'un trajet + plan de sièges libres */
+    getPublicTravelMarketplaceTripsByTrip(options = {}) {
+      return request("GET", "/public/travel/marketplace/trips/{trip}", options);
+    },
+
     /** Annulation en ligne d'une réservation par le passager (espace voyageur) */
     postPublicTravelShopBookingsByReferenceCancel(options = {}) {
       return request("POST", "/public/travel/shop/bookings/{reference}/cancel", options);
