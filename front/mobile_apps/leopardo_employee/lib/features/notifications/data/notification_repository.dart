@@ -1,55 +1,6 @@
-import 'package:leopardo_core/core/api/api_client.dart';
-import 'package:leopardo_core/core/api/api_payload.dart';
-import 'package:leopardo_core/models/notification.dart';
-
-class NotificationRepository {
-  final ApiClient apiClient;
-
-  NotificationRepository(this.apiClient);
-
-  Future<List<AppNotification>> getMyNotifications({
-    bool unreadOnly = false,
-    int perPage = 30,
-  }) async {
-    final response = await apiClient.requestWithRetry<Map<String, dynamic>>(
-      '/notifications',
-      queryParameters: {'unread': unreadOnly, 'per_page': perPage},
-      timeoutOverride: const Duration(seconds: 12),
-    );
-
-    return _decodeNotifications(response.data);
-  }
-
-  Future<void> markAllAsRead() async {
-    await apiClient.requestWithRetry<void>(
-      '/notifications/read-all',
-      method: 'POST',
-      timeoutOverride: const Duration(seconds: 12),
-    );
-  }
-
-  Future<void> markAsRead(int id) async {
-    await apiClient.requestWithRetry<void>(
-      '/notifications/$id/read',
-      method: 'PATCH',
-      timeoutOverride: const Duration(seconds: 12),
-    );
-  }
-
-  Future<void> deleteNotification(int id) async {
-    await apiClient.requestWithRetry<void>(
-      '/notifications/$id',
-      method: 'DELETE',
-      timeoutOverride: const Duration(seconds: 12),
-    );
-  }
-
-  List<AppNotification> _decodeNotifications(dynamic payload) {
-    final rawItems = extractDataList(payload);
-
-    return rawItems
-        .whereType<Map>()
-        .map((item) => AppNotification.fromJson(item.cast<String, dynamic>()))
-        .toList(growable: false);
-  }
-}
+// Leopardo employee — passerelle vers l'implémentation partagée de
+// leopardo_core (dé-duplication core<->apps, issue #7652). Le fichier local
+// était byte-identique à la copie core ; l'app ré-exporte le package partagé
+// — aucune duplication locale (pattern #5279, garde
+// dev-hub/tools/check-mobile-core-duplication.py).
+export 'package:leopardo_core/features/notifications/data/notification_repository.dart';
