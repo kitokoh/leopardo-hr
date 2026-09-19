@@ -1,4 +1,4 @@
-# Politique de versioning API — Leopardo RH
+# Politique de versioning API — Leopardo
 
 > Derniere mise a jour : 2026-05-15
 
@@ -6,7 +6,7 @@
 
 ## 1. Schema de versioning
 
-L'API Leopardo RH suit un versioning par **prefixe URL** :
+L'API Leopardo suit un versioning par **prefixe URL** :
 
 ```
 /api/v1/employees
@@ -116,7 +116,7 @@ Les evenements webhook sortants suivent un contrat **additif et versionne**
 
 Regles :
 
-1. **`event`** est un nom stable `^[a-z]+\.[a-z_]+# Politique de versioning API — Leopardo RH
+1. **`event`** est un nom stable `^[a-z]+\.[a-z_]+# Politique de versioning API — Leopardo
 
 > Derniere mise a jour : 2026-05-15
 
@@ -124,7 +124,7 @@ Regles :
 
 ## 1. Schema de versioning
 
-L'API Leopardo RH suit un versioning par **prefixe URL** :
+L'API Leopardo suit un versioning par **prefixe URL** :
 
 ```
 /api/v1/employees
@@ -231,7 +231,7 @@ Link: </api/v2/employees>; rel="successor-version"
 
 ## 6. Versioning semantique du produit
 
-Le produit Leopardo RH suit SemVer dans `CHANGELOG.md` :
+Le produit Leopardo suit SemVer dans `CHANGELOG.md` :
 
 ```
 MAJOR.MINOR.PATCH (ex: 4.16.51)

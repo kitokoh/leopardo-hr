@@ -1,6 +1,6 @@
-# Scalability & High Availability — Leopardo RH
+# Scalability & High Availability — Leopardo
 
-Leopardo RH is designed to scale with your business, from a handful of employees to enterprise-level workforce management.
+Leopardo is designed to scale with your business, from a handful of employees to enterprise-level workforce management.
 
 ## 📈 Scalability Strategy
 

@@ -1,4 +1,4 @@
-# FAQ — Leopardo RH (F-25)
+# FAQ — Leopardo (F-25)
 
 > Programme FOCUS — foire aux questions clients (RH, paie, employés, sécurité/RGPD).
 > Complément des guides : [Guide RH](GUIDE_RH.md), [Guide paie](GUIDE_PAIE.md), [Guide employé](GUIDE_EMPLOYE.md).

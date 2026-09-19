@@ -1,4 +1,4 @@
-# Architecture CI/CD — Leopardo RH
+# Architecture CI/CD — Leopardo
 
 > Dernière mise à jour : 2026-08-29
 

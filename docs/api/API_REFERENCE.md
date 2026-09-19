@@ -1,6 +1,6 @@
-# API Reference — Leopardo RH
+# API Reference — Leopardo
 
-Leopardo RH is an **API-First Platform**. Every feature available in our mobile and web apps is powered by our RESTful API.
+Leopardo is an **API-First Platform**. Every feature available in our mobile and web apps is powered by our RESTful API.
 
 ## 🚀 Getting Started
 
@@ -71,7 +71,7 @@ We provide official SDKs and integration examples to accelerate your development
 
 ## 📡 Webhooks (Roadmap)
 
-Integrate Leopardo RH into your existing workflows using webhooks.
+Integrate Leopardo into your existing workflows using webhooks.
 -   `employee.created`
 -   `attendance.anomaly_detected`
 -   `payroll.finalized`

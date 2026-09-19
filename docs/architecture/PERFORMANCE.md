@@ -1,6 +1,6 @@
-# Performance Optimization & Strategy — Leopardo RH
+# Performance Optimization & Strategy — Leopardo
 
-High performance is a core requirement for Leopardo RH, especially for large enterprise tenants with thousands of employees.
+High performance is a core requirement for Leopardo, especially for large enterprise tenants with thousands of employees.
 
 ## 🚀 Optimization Pillars
 
