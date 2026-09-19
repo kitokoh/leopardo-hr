@@ -108,6 +108,13 @@ class EmployeeResource extends JsonResource
             'language' => $resolvedLanguage,
             'is_rtl' => Language::isRtl($resolvedLanguage),
             'capabilities' => $this->capabilities(),
+            // #7761 — grants de MODULES délégués (contrat de session `/auth/me`) :
+            // exposé uniquement pour SA PROPRE fiche (le front compose menu et
+            // refus par défaut avec) — jamais sur les listes (évite un N+1 ;
+            // la composition d'autrui se lit via GET /employees/{id}/module-grants).
+            'module_grants' => $viewer instanceof Employee && (int) $viewer->id === (int) $employee->id
+                ? $employee->grantedModuleKeys()
+                : null,
             'features' => FeatureFlag::for($company),
             'mobile_experience' => app(MobileExperienceService::class)->for($employee),
             'suggested_home_route' => $this->homeRoute(),
