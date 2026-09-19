@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Planning\Domain\Models;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,12 +28,17 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Company|null $company
  * @property-read Employee|null $employee
+ *
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class ClientEvent extends Model
 {
+    // Issue #7711 (suite #7646) — table `client_events` du schéma partagé
+    // shared_tenants (analytics produit côté client, route sous middleware
+    // tenant) : company_id est l'unique frontière d'isolation.
+    use BelongsToCompany;
+
     protected $fillable = [
-        'company_id',
         'employee_id',
         'event_name',
         'surface',
@@ -71,4 +77,3 @@ class ClientEvent extends Model
         return $query->where('company_id', $companyId);
     }
 }
-

@@ -232,7 +232,7 @@ class EmployeeLoanControllerTest extends TestCase
             'start_date' => now()->addMonth(),
             'status' => 'pending_approval',
         ]);
-        LoanRepayment::create([
+        LoanRepayment::forceCreate([
             'employee_loan_id' => $loan->id,
             'company_id' => $company->id,
             'due_date' => now()->addMonth()->toDateString(),

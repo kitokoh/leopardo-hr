@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\EdgeSync\Domain\Models;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -37,7 +38,15 @@ use Illuminate\Support\Carbon;
  */
 class EdgeLicense extends Model
 {
+    // Issue #7711 (suite #7646) — table `edge_licenses` du schéma partagé
+    // shared_tenants : company_id est l'unique frontière d'isolation.
+    // Flux machine pré-tenant (heartbeat /edge-node/{id}, validate-license) :
+    // pas de middleware tenant sur ces routes → pas de current_company → le
+    // scope global est neutre, le comportement est inchangé. L'émission de
+    // licence (issueLicense) passe par forceFill — voir EdgeLicenseService.
+    use BelongsToCompany;
     use HasFactory;
+
     use HasUuids;
 
     protected $table = 'edge_licenses';
@@ -57,7 +66,7 @@ class EdgeLicense extends Model
     ];
 
     protected $fillable = [
-        'company_id', 'edge_node_id', 'license_key', 'signed_payload',
+        'edge_node_id', 'license_key', 'signed_payload',
         'allowed_features', 'max_employees',
         'issued_at', 'expires_at', 'last_validated_at', 'validation_status',
     ];

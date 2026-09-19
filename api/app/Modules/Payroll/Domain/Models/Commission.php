@@ -23,10 +23,22 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $paid_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class Commission extends Model
 {
+    // Issue #7711 — DÉCISION : PLATEFORME, pas de trait BelongsToCompany.
+    // La table `commissions` vit dans le schéma PUBLIC (migrations
+    // database/migrations/public/, module Growth), pas dans shared_tenants.
+    // company_id désigne la société PARRAINÉE qui génère la commission ; les
+    // lecteurs légitimes agrègent CROSS-tenant : PartnerDashboardController
+    // (un partenaire voit ses commissions sur TOUTES ses sociétés filleules,
+    // route pourtant sous middleware tenant — un scope global viderait le
+    // dashboard) et GrowthAdminController (super-admin). L'écriture est
+    // interne (CommissionService sur webhook de paiement), jamais depuis un
+    // payload utilisateur.
+
     protected $fillable = [
         'partner_id',
         'company_id',

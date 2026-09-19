@@ -35,8 +35,8 @@ class SetEmployeeAttendanceMode
         ]);
 
         $pref->fill([
+            // #7711 : company_id délégué au trait BelongsToCompany (tenant actif).
             'employee_id' => $employee->id,
-            'company_id' => $employee->company_id,
             'preferred_mode' => $preferredMode,
         ]);
 
