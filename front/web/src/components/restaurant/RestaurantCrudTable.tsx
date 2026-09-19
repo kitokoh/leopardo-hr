@@ -33,6 +33,15 @@ export type CrudConfig = {
   canCreate?: boolean;
   canDelete?: boolean;
   defaultSort?: string;
+  /**
+   * RESTO-904 (#7749) — hooks optionnels pour les champs portés par un
+   * endpoint annexe (ex. `establishment_type` des branches, persisté via
+   * `PUT /restaurant/branches/{id}/public-profile`) :
+   * `prepareEdit` complète les valeurs du formulaire avant édition,
+   * `afterSave` est appelé après le POST/PUT principal réussi.
+   */
+  prepareEdit?: (row: Record<string, unknown>) => Promise<Record<string, unknown>>;
+  afterSave?: (row: Record<string, unknown>, formData: Record<string, unknown>) => Promise<void>;
 };
 
 function valueOf(row: Record<string, unknown>, key: string): unknown {
@@ -93,11 +102,21 @@ export function RestaurantCrudTable({ config }: { config: CrudConfig }) {
     setShowForm(true);
   };
 
-  const openEdit = (row: Record<string, unknown>) => {
+  const openEdit = async (row: Record<string, unknown>) => {
     setEditing(row);
     const initial: Record<string, unknown> = {};
     for (const f of config.fields) {
       initial[f.name] = row[f.name] ?? (f.type === 'number' ? 0 : '');
+    }
+    if (config.prepareEdit) {
+      try {
+        const extra = await config.prepareEdit(row);
+        for (const f of config.fields) {
+          if (extra[f.name] !== undefined && extra[f.name] !== null) initial[f.name] = extra[f.name];
+        }
+      } catch {
+        // valeurs de la ligne conservées — l'endpoint annexe est indisponible
+      }
     }
     setFormData(initial);
     setFormError('');
@@ -117,6 +136,10 @@ export function RestaurantCrudTable({ config }: { config: CrudConfig }) {
         const payload = await res.json().catch(() => ({}));
         const msg = (payload as { message?: string }).message;
         throw new Error(msg || `HTTP ${res.status}`);
+      }
+      if (config.afterSave) {
+        const payload = (await res.json().catch(() => ({}))) as { data?: Record<string, unknown> };
+        await config.afterSave(payload.data ?? editing ?? {}, formData);
       }
       setShowForm(false);
       await load();
@@ -207,7 +230,7 @@ export function RestaurantCrudTable({ config }: { config: CrudConfig }) {
                       <button
                         type="button"
                         className="font-medium text-emerald-700 hover:text-emerald-800"
-                        onClick={() => openEdit(row)}
+                        onClick={() => void openEdit(row)}
                       >
                         {t(locale, 'restaurant.crud.edit', 'Modifier')}
                       </button>
