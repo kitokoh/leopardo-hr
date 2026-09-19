@@ -56,6 +56,7 @@
 |---|---|---|
 | `validate-mobile-apps-split.ps1` (+ 10 `validate-mobile-*`) | convergence F-27 : tout partage dans `leopardo_core`, zéro copie | bloque |
 | `check-mobile-duplicated-drift.sh` | fichiers dupliqués entre apps | bloque |
+| `check-mobile-core-duplication.py` + `mobile-core-duplication-guard.yml` | aucune NOUVELLE copie `leopardo_core` → app (dette #7652 figée en baseline, shims de ré-export #5279 acceptés) | bloque |
 | `validate-mobile-color-tokens.ps1` | hex hors palette mobile | bloque |
 | `check-mobile-l10n-sync.sh`, `check-mobile-manifest-routes.sh`, `check-mobile-number-locale.sh` | i18n, routes, locales | bloque |
 | `mobile-apps-ci.yml` | analyze + build APK debug | bloque |

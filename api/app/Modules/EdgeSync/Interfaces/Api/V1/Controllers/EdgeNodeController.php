@@ -7,12 +7,12 @@ namespace App\Modules\EdgeSync\Interfaces\Api\V1\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\EdgeSync\Application\Actions\PushEdgeRecords;
 use App\Modules\EdgeSync\Application\Actions\RegisterEdgeNode;
-use App\Modules\EdgeSync\Infrastructure\Services\CloudDeltaBuilder;
-use App\Modules\EdgeSync\Infrastructure\Services\EdgeLicenseService;
-use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
 use App\Modules\EdgeSync\Domain\Models\EdgeLicense;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
+use App\Modules\EdgeSync\Infrastructure\Services\CloudDeltaBuilder;
+use App\Modules\EdgeSync\Infrastructure\Services\EdgeLicenseService;
+use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
 use App\Modules\EdgeSync\Interfaces\Api\V1\Requests\EdgeNodeActionRequest;
 use App\Modules\EdgeSync\Interfaces\Api\V1\Requests\IssueLicenseRequest;
 use Illuminate\Http\JsonResponse;
@@ -73,11 +73,13 @@ class EdgeNodeController extends Controller
             // l'enregistrement est LE moment légitime d'exposition unique.
             'license' => $result['license']->makeVisible(['license_key', 'signed_payload']),
             'edge_token' => $result['edge_token'], // shown only once at registration
+            // #7653 : le jeton ne passe JAMAIS en argv (visible dans ps/history)
+            // — install.sh le lit depuis l'environnement (EDGE_TOKEN).
             'install_command' => sprintf(
-                'sudo bash <(curl -fsSL %s/edge/install.sh) --node-id %s --token %s',
+                'curl -fsSL %s/api/v1/edge/install.sh -o install.sh && EDGE_TOKEN=%s sudo --preserve-env=EDGE_TOKEN bash install.sh --node-id %s',
                 config('app.url'),
-                $result['node']->id,
-                $result['edge_token']
+                $result['edge_token'],
+                $result['node']->id
             ),
         ], 201);
     }
@@ -156,7 +158,7 @@ class EdgeNodeController extends Controller
         $queued = $this->pushEdgeRecords->execute($node, $validated['records']);
 
         return response()->json([
-            'queued'  => $queued['queued'],
+            'queued' => $queued['queued'],
             'results' => $queued['results'],
         ]);
     }

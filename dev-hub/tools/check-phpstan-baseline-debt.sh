@@ -158,6 +158,25 @@ do_guard() {
   fi
 
   local violations=0
+  # #7655 — suivi chiffré + cliquet global sur le total d'occurrences.
+  local grand_base_total=0
+  local grand_head_total=0
+  local tolerated_occ_total=0
+  local summary_rows=""
+
+  # #7655 — trou comblé : un NOUVEAU fichier baseline (ex. api/phpstan-<x>-baseline.neon)
+  # échappait totalement au cliquet (liste BASELINE_FILES codée en dur). Tout
+  # fichier *baseline*.neon sous api/ non répertorié ici est désormais bloquant.
+  local unknown_baselines
+  unknown_baselines="$(git ls-tree -r --name-only "${head_sha}" -- "${api_dir}" 2>/dev/null \
+    | grep -Ei '(^|/)[^/]*baseline[^/]*\.neon$' \
+    | grep -vF -e "${api_dir}/phpstan-strict-baseline.neon" -e "${api_dir}/phpstan-baseline.neon" -e "${api_dir}/phpstan-modules-baseline.neon" || true)"
+  if [ -n "$unknown_baselines" ]; then
+    echo "❌ #7655 : fichier(s) baseline non répertorié(s) détecté(s) — le cliquet ne les couvre pas :"
+    echo "$unknown_baselines" | sed 's/^/    - /'
+    echo "    Ajoutez-les à BASELINE_FILES dans dev-hub/tools/check-phpstan-baseline-debt.sh (et check-phpstan-baseline-delta.sh) ou supprimez-les."
+    violations=$((violations + 1))
+  fi
 
   for bf in "${BASELINE_FILES[@]}"; do
     local base_entries head_entries
@@ -244,6 +263,7 @@ PYEOF
         if [ -n "$window" ]; then
           echo "⚠️  $bf : NOUVELLE entrée tolérée (fenêtre consolidation #6818, jusqu'au ${window}) — $path ($identifier, count $count). Dette visible, suivie par #6528."
           new_entries_tolerated=$((new_entries_tolerated + 1))
+          tolerated_occ_total=$((tolerated_occ_total + count))
           continue
         fi
         echo "❌ $bf : NOUVELLE entrée baseline — $path ($identifier, count $count)"
@@ -254,16 +274,52 @@ PYEOF
       fi
     done < "$head_entries"
 
+    # #7655 — totaux toujours calculés (avant : seulement quand 0 violation)
+    # pour alimenter le suivi chiffré et le cliquet global sur le total.
+    local base_total head_total
+    base_total="$(awk -F'\t' '{s+=$3} END {print s+0}' "$base_entries")"
+    head_total="$(awk -F'\t' '{s+=$3} END {print s+0}' "$head_entries")"
+    grand_base_total=$((grand_base_total + base_total))
+    grand_head_total=$((grand_head_total + head_total))
+    summary_rows="${summary_rows}| \`${bf}\` | ${base_total} | ${head_total} | $((head_total - base_total)) |\n"
+
     if [ "$file_violations" -eq 0 ]; then
-      local base_total head_total
-      base_total="$(awk -F'\t' '{s+=$3} END {print s+0}' "$base_entries")"
-      head_total="$(awk -F'\t' '{s+=$3} END {print s+0}' "$head_entries")"
       echo "✅ $bf : 0 nouvelle entrée (occurrences $base_total → $head_total)"
     fi
 
     violations=$((violations + file_violations))
     rm -f "$base_entries" "$head_entries"
   done
+
+  # #7655 — cliquet sur le TOTAL : le total global d'occurrences ne peut pas
+  # augmenter au-delà des nouvelles entrées explicitement tolérées par une
+  # fenêtre de gouvernance datée. Ceinture + bretelles par rapport au cliquet
+  # par entrée : couvre toute évolution future du parsing ou des exceptions.
+  local allowed_head_total=$((grand_base_total + tolerated_occ_total))
+  local total_verdict="✅ stable ou en baisse"
+  if [ "$grand_head_total" -gt "$allowed_head_total" ]; then
+    echo "❌ Cliquet total (#7655) : occurrences baselines ${grand_base_total} → ${grand_head_total} (tolérées: ${tolerated_occ_total}) — toute hausse du total est interdite."
+    violations=$((violations + 1))
+    total_verdict="❌ hausse interdite"
+  elif [ "$tolerated_occ_total" -gt 0 ]; then
+    total_verdict="⚠️ hausse tolérée (fenêtre datée)"
+  fi
+
+  echo ""
+  echo "== Suivi chiffré (#7655) : occurrences baselines ${grand_base_total} → ${grand_head_total} (delta $((grand_head_total - grand_base_total)), tolérées ${tolerated_occ_total}) — ${total_verdict} =="
+
+  if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+    {
+      echo "## Dette baselines PHPStan (#7655 — cliquet chiffré)"
+      echo ""
+      echo "| Baseline | Occurrences (base) | Occurrences (head) | Delta |"
+      echo "|---|---:|---:|---:|"
+      printf '%b' "$summary_rows"
+      echo "| **Total** | **${grand_base_total}** | **${grand_head_total}** | **$((grand_head_total - grand_base_total))** |"
+      echo ""
+      echo "Verdict total : ${total_verdict} (nouvelles entrées tolérées : ${tolerated_occ_total} occ). Cartographie : \`docs/qualite/DETTE_PHPSTAN_7655.md\`."
+    } >> "$GITHUB_STEP_SUMMARY"
+  fi
 
   echo ""
   if [ "$violations" -gt 0 ]; then
