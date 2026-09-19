@@ -108,3 +108,6 @@ docs/validation/I18N_DEBT_REPORT_2026_08_09.md
 *.g.dart
 *.freezed.dart
 **/lib/l10n/generated/
+
+# #7654 — exemples API générés depuis api/openapi.yaml (dev-hub/tools/generate_api_examples.py)
+docs/api-mock-data/
