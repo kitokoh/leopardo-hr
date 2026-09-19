@@ -1395,7 +1395,7 @@ trait CreatesMvpSchema
         }
 
         // BC-17 RETAIL #7672 — fondations du module vendeur generique.
-        // Miroir de la migration 2026_09_19_000001_7672 (garde #5443).
+        // Miroir de la migration 2026_09_19_000301_7672 (garde #5443).
         if (! Schema::hasTable($this->moduleTable('retail_categories'))) {
             Schema::create($this->moduleTable('retail_categories'), function (Blueprint $table): void {
                 $table->id();
@@ -1436,7 +1436,7 @@ trait CreatesMvpSchema
         }
 
         // BC-17 RETAIL #7673 — gestion de stock du module vendeur generique.
-        // Miroir de la migration 2026_09_19_000002_7673 (garde #5443).
+        // Miroir de la migration 2026_09_19_000302_7673 (garde #5443).
         if (! Schema::hasTable($this->moduleTable('retail_locations'))) {
             Schema::create($this->moduleTable('retail_locations'), function (Blueprint $table): void {
                 $table->id();
@@ -1489,7 +1489,7 @@ trait CreatesMvpSchema
         }
 
         // BC-17 RETAIL #7674 — POS v1 du module vendeur generique.
-        // Miroir de la migration 2026_09_19_000003_7674 (garde #5443).
+        // Miroir de la migration 2026_09_19_000303_7674 (garde #5443).
         if (! Schema::hasTable($this->moduleTable('retail_pos_sessions'))) {
             Schema::create($this->moduleTable('retail_pos_sessions'), function (Blueprint $table): void {
                 $table->id();
