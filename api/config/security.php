@@ -12,6 +12,8 @@ return [
         'client_analytics_per_minute' => (int) env('RATE_LIMIT_CLIENT_ANALYTICS_PER_MINUTE', 120),
         'webhooks_inbound_per_minute' => (int) env('RATE_LIMIT_WEBHOOKS_INBOUND_PER_MINUTE', 60),
         'restaurant_shop_public_per_minute' => (int) env('RATE_LIMIT_RESTAURANT_SHOP_PUBLIC_PER_MINUTE', 30),
+        // RESTO-902 #7747 — soumission d'avis clients publics (anti-spam, throttle strict dédié).
+        'restaurant_reviews_public_per_minute' => (int) env('RATE_LIMIT_RESTAURANT_REVIEWS_PUBLIC_PER_MINUTE', 5),
         // Audit fiabilité #6555 — bucket ZKTeco par device (serial_number + IP).
         'zkteco_device_per_minute' => (int) env('RATE_LIMIT_ZKTECO_DEVICE_PER_MINUTE', 120),
         // #6557 — durée du verrou anti-course de l'idempotence (RTMX #5277) :

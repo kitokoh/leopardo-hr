@@ -30,9 +30,12 @@ return new class extends Migration
             Schema::create('crm_opportunities', function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
-                $table->uuid('pipeline_id')->nullable();
-                $table->uuid('lead_id')->nullable();
-                $table->uuid('owner_id')->nullable();
+                // #7452 — les PK cibles (crm_pipelines.id, crm_leads.id,
+                // employees.id) sont bigint : les liaisons uuid de la
+                // génération swarm rendaient toute écriture impossible (22P02).
+                $table->unsignedBigInteger('pipeline_id')->nullable();
+                $table->unsignedBigInteger('lead_id')->nullable();
+                $table->unsignedBigInteger('owner_id')->nullable();
                 $table->string('name', 255);
                 $table->string('stage', 80)->default('prospecting');
                 $table->decimal('amount', 14, 2)->nullable();
