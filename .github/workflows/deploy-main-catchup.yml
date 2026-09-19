@@ -97,7 +97,7 @@ jobs:
           HEAD_SHA: ${{ steps.compare.outputs.head_sha }}
         run: |
           set -euo pipefail
-          # Poll borné (≤ 6 min) : conclusion du run push « Tests - Leopardo RH »
+          # Poll borné (≤ 6 min) : conclusion du run push « Tests - Leopardo »
           # pour le HEAD. Vert → on dispatche ; sinon on renonce (prochaine heure).
           ok=""
           for attempt in {1..12}; do
@@ -105,7 +105,7 @@ jobs:
               "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?branch=main&event=push&per_page=50")"
             conclusion="$(echo "${runs}" | jq -r --arg sha "${HEAD_SHA}" '
               .workflow_runs[]
-              | select(.head_sha == $sha and .name == "Tests - Leopardo RH")
+              | select(.head_sha == $sha and .name == "Tests - Leopardo")
               | (.conclusion // .status)' 2>/dev/null | head -n 1)"
             echo "  [${attempt}/12] Tests sur ${HEAD_SHA:0:7} : ${conclusion:-introuvable}"
             if [[ "${conclusion}" == "success" || "${conclusion}" == "skipped" ]]; then
