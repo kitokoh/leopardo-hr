@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 import { apiFetch } from '@/lib/api-client';
+import { LeoMascot } from '@/components/ui/LeoMascot';
 import { type AppLocale, type StoredAuthUser } from '@/lib/i18n';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 
@@ -120,34 +121,42 @@ export function WelcomeScreen({ locale, onAcknowledged }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="first-login-welcome-title"
-        className="w-full max-w-lg rounded-3xl bg-white p-8 shadow-2xl"
+        className="w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-900 dark:ring-1 dark:ring-slate-800"
       >
-        <h2
-          id="first-login-welcome-title"
-          className="text-2xl font-bold text-slate-900"
-        >
-          {labels.title}
-        </h2>
+        {/* Bandeau d'accueil : Leo salue le nouvel arrivant. Décoratif
+            (aria-hidden dans LeoMascot), la copie reste la seule information. */}
+        <div className="relative flex items-end justify-center bg-gradient-to-b from-emerald-500/15 via-cyan-500/10 to-transparent pt-8 dark:from-emerald-500/10 dark:via-cyan-500/5">
+          <LeoMascot variant="wave" size={132} float />
+        </div>
 
-        <p className="mt-4 text-sm leading-relaxed text-slate-600">{labels.body}</p>
+        <div className="p-8 pt-5 text-center">
+          <h2
+            id="first-login-welcome-title"
+            className="text-2xl font-black tracking-tight text-slate-900 dark:text-white"
+          >
+            {labels.title}
+          </h2>
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <button
-            type="button"
-            disabled={pending}
-            onClick={() => void acknowledge('set_password')}
-            className="inline-flex flex-1 items-center justify-center rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-60"
-          >
-            {labels.ctaStart}
-          </button>
-          <button
-            type="button"
-            disabled={pending}
-            onClick={() => void acknowledge('later')}
-            className="inline-flex flex-1 items-center justify-center rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
-          >
-            {labels.ctaLater}
-          </button>
+          <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-slate-600 dark:text-slate-400">{labels.body}</p>
+
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <button
+              type="button"
+              disabled={pending}
+              onClick={() => void acknowledge('set_password')}
+              className="inline-flex flex-1 items-center justify-center rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-700 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-600/20 transition hover:from-emerald-700 hover:to-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 disabled:opacity-60"
+            >
+              {labels.ctaStart}
+            </button>
+            <button
+              type="button"
+              disabled={pending}
+              onClick={() => void acknowledge('later')}
+              className="inline-flex flex-1 items-center justify-center rounded-2xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-emerald-300 hover:bg-emerald-50/50 disabled:opacity-60 dark:border-slate-700 dark:text-slate-300 dark:hover:border-emerald-800 dark:hover:bg-emerald-900/20"
+            >
+              {labels.ctaLater}
+            </button>
+          </div>
         </div>
       </div>
     </div>
