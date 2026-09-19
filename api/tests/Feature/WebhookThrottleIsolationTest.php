@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Modules\Attendance\Domain\Models\ZktecoDevice;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\ZktecoDevice;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 

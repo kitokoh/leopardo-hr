@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Web;
 
-use App\Modules\Attendance\Domain\Models\AttendanceCorrectionRequest;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceCorrectionRequest;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Tests\RefreshTenantDatabase;

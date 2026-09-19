@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Contracts;
 
-use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\KioskAnnouncement;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -397,4 +397,3 @@ class FrontendJsonContractTest extends TestCase
         }
     }
 }
-

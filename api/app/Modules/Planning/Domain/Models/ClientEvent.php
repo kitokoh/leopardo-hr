@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Planning\Domain\Models;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -28,6 +28,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Company|null $company
  * @property-read Employee|null $employee
+ *
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class ClientEvent extends Model
@@ -76,4 +77,3 @@ class ClientEvent extends Model
         return $query->where('company_id', $companyId);
     }
 }
-

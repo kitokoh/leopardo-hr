@@ -40,4 +40,3 @@ class ApprovalWorkflow extends Model
         'active' => 'boolean',
     ];
 }
-

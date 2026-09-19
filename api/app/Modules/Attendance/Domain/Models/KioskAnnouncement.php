@@ -29,9 +29,8 @@ class KioskAnnouncement extends Model
     ];
 
     protected $casts = [
-        'is_active'  => 'boolean',
-        'starts_at'  => 'datetime',
+        'is_active' => 'boolean',
+        'starts_at' => 'datetime',
         'expires_at' => 'datetime',
     ];
 }
-

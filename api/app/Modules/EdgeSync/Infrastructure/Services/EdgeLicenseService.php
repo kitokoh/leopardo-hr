@@ -24,15 +24,15 @@ class EdgeLicenseService
     public function issueLicense(EdgeNode $node, int $validDays = 30): EdgeLicense
     {
         $payload = [
-            'iss'              => config('app.url'),
-            'sub'              => $node->id,
-            'company_id'       => $node->company_id,
-            'edge_node_id'     => $node->id,
+            'iss' => config('app.url'),
+            'sub' => $node->id,
+            'company_id' => $node->company_id,
+            'edge_node_id' => $node->id,
             'allowed_features' => $node->capabilities['features'] ?? [],
-            'max_employees'    => $node->capabilities['max_employees'] ?? 50,
-            'iat'              => now()->timestamp,
-            'exp'              => now()->addDays($validDays)->timestamp,
-            'jti'              => Str::uuid()->toString(),
+            'max_employees' => $node->capabilities['max_employees'] ?? 50,
+            'iat' => now()->timestamp,
+            'exp' => now()->addDays($validDays)->timestamp,
+            'jti' => Str::uuid()->toString(),
         ];
 
         $signed = $this->sign($payload);
@@ -45,13 +45,13 @@ class EdgeLicenseService
         /** @var EdgeLicense $license */
         $license = EdgeLicense::query()->firstOrNew(['edge_node_id' => $node->id]);
         $license->forceFill([
-            'company_id'        => $node->company_id,
-            'license_key'       => Str::uuid()->toString(),
-            'signed_payload'    => $signed,
-            'allowed_features'  => $payload['allowed_features'],
-            'max_employees'     => $payload['max_employees'],
-            'issued_at'         => now(),
-            'expires_at'        => now()->addDays($validDays),
+            'company_id' => $node->company_id,
+            'license_key' => Str::uuid()->toString(),
+            'signed_payload' => $signed,
+            'allowed_features' => $payload['allowed_features'],
+            'max_employees' => $payload['max_employees'],
+            'issued_at' => now(),
+            'expires_at' => now()->addDays($validDays),
             'last_validated_at' => now(),
             'validation_status' => 'valid',
         ])->save();
@@ -70,7 +70,7 @@ class EdgeLicenseService
             $decoded = $this->decode($signedPayload);
 
             return [
-                'valid'   => true,
+                'valid' => true,
                 'payload' => $decoded,
                 'expires' => \Carbon\Carbon::createFromTimestamp($decoded['exp'])->toIso8601String(),
             ];
@@ -119,9 +119,9 @@ class EdgeLicenseService
         }
 
         // Dev/test fallback — HS256 with app key
-        $header  = base64url_encode(json_encode(['typ' => 'JWT', 'alg' => 'HS256']) ?: '');
-        $body    = base64url_encode(json_encode($payload) ?: '');
-        $sig     = base64url_encode(hash_hmac('sha256', "$header.$body", config('app.key'), true));
+        $header = base64url_encode(json_encode(['typ' => 'JWT', 'alg' => 'HS256']) ?: '');
+        $body = base64url_encode(json_encode($payload) ?: '');
+        $sig = base64url_encode(hash_hmac('sha256', "$header.$body", config('app.key'), true));
 
         return "$header.$body.$sig";
     }
@@ -151,7 +151,7 @@ class EdgeLicenseService
         }
 
         // Dev/test fallback — decode without verification
-        $parts   = explode('.', $token);
+        $parts = explode('.', $token);
         if (count($parts) < 2) {
             throw new \RuntimeException('Invalid JWT structure');
         }

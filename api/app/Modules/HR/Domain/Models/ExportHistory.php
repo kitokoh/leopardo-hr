@@ -21,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $ip_address
  * @property string|null $user_agent
  * @property Carbon $created_at
+ *
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class ExportHistory extends Model

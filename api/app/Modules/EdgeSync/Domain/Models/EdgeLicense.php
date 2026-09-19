@@ -38,9 +38,6 @@ use Illuminate\Support\Carbon;
  */
 class EdgeLicense extends Model
 {
-    use HasFactory;
-    use HasUuids;
-
     // Issue #7711 (suite #7646) — table `edge_licenses` du schéma partagé
     // shared_tenants : company_id est l'unique frontière d'isolation.
     // Flux machine pré-tenant (heartbeat /edge-node/{id}, validate-license) :
@@ -48,6 +45,9 @@ class EdgeLicense extends Model
     // scope global est neutre, le comportement est inchangé. L'émission de
     // licence (issueLicense) passe par forceFill — voir EdgeLicenseService.
     use BelongsToCompany;
+    use HasFactory;
+
+    use HasUuids;
 
     protected $table = 'edge_licenses';
 
