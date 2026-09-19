@@ -33576,6 +33576,355 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           description: Transition de statut invalide (HEALTH_INVALID_STATUS_TRANSITION)
+  /health-manager/consultations:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les consultations (dossier medical)
+      description: 'HC-005 (#7789, BC-30). CONTENU MÉDICAL : praticiens actifs et direction uniquement — la réception n''y accède JAMAIS (403). Filtres patient_id (historique) et practitioner_id. Liste paginée (data, meta), triée par date décroissante.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: patient_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: practitioner_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Consultations du tenant (paginées)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        patient_id:
+                          type: integer
+                        practitioner_id:
+                          type: integer
+                        appointment_id:
+                          type: integer
+                          nullable: true
+                        consulted_at:
+                          type: string
+                          format: date-time
+                        reason:
+                          type: string
+                        clinical_exam:
+                          type: string
+                          nullable: true
+                          description: Contenu médical — chiffré au repos
+                        diagnosis:
+                          type: string
+                          nullable: true
+                          description: Contenu médical — chiffré au repos
+                        weight_kg:
+                          type: string
+                          nullable: true
+                        height_cm:
+                          type: string
+                          nullable: true
+                        blood_pressure:
+                          type: string
+                          nullable: true
+                        temperature_c:
+                          type: string
+                          nullable: true
+                        pulse_bpm:
+                          type: integer
+                          nullable: true
+                        notes:
+                          type: string
+                          nullable: true
+                          description: Contenu médical — chiffré au repos
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Documenter une consultation
+      description: 'Praticien actif (auteur implicite) ou direction (practitioner_id requis, praticien ACTIF du tenant). Patient et rendez-vous du MÊME tenant (422 sinon). Examen clinique, diagnostic et notes chiffrés au repos.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - patient_id
+              - consulted_at
+              - reason
+              properties:
+                patient_id:
+                  type: integer
+                practitioner_id:
+                  type: integer
+                  nullable: true
+                  description: Ignoré pour un praticien (auteur implicite) ; requis pour la direction non praticienne
+                appointment_id:
+                  type: integer
+                  nullable: true
+                consulted_at:
+                  type: string
+                  format: date-time
+                reason:
+                  type: string
+                  maxLength: 255
+                clinical_exam:
+                  type: string
+                  nullable: true
+                diagnosis:
+                  type: string
+                  nullable: true
+                weight_kg:
+                  type: number
+                  nullable: true
+                height_cm:
+                  type: number
+                  nullable: true
+                blood_pressure:
+                  type: string
+                  maxLength: 20
+                  nullable: true
+                temperature_c:
+                  type: number
+                  nullable: true
+                pulse_bpm:
+                  type: integer
+                  nullable: true
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Consultation documentée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/consultations/{consultation}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter un dossier de consultation
+      description: 'Praticiens actifs et direction. Consultation d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: consultation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Consultation
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - HealthManager
+      summary: Mettre à jour une consultation
+      description: 'Seul le praticien AUTEUR — ou la direction — modifie une consultation (403 pour un autre praticien). Patient, praticien et rendez-vous ne changent JAMAIS après coup. Consultation d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: consultation
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                consulted_at:
+                  type: string
+                  format: date-time
+                reason:
+                  type: string
+                  maxLength: 255
+                clinical_exam:
+                  type: string
+                  nullable: true
+                diagnosis:
+                  type: string
+                  nullable: true
+                weight_kg:
+                  type: number
+                  nullable: true
+                height_cm:
+                  type: number
+                  nullable: true
+                blood_pressure:
+                  type: string
+                  maxLength: 20
+                  nullable: true
+                temperature_c:
+                  type: number
+                  nullable: true
+                pulse_bpm:
+                  type: integer
+                  nullable: true
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Consultation mise à jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/prescriptions:
+    get:
+      tags:
+      - HealthManager
+      summary: Historique des ordonnances
+      description: 'HC-005 (#7789). CONTENU MÉDICAL (réception → 403). Historique PAR PATIENT via patient_id, ou par consultation via consultation_id. Lignes de médicaments incluses. Liste paginée (data, meta).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: patient_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: consultation_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ordonnances (paginées, avec lignes)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Émettre une ordonnance
+      description: 'Praticien AUTEUR de la consultation (ou direction) uniquement. Consultation du MÊME tenant (422 sinon), AU MOINS UNE ligne de médicament (422 sinon) — ordonnance et lignes créées dans une transaction. Patient et praticien dérivés de la consultation côté serveur. Immuable après émission.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - consultation_id
+              - items
+              properties:
+                consultation_id:
+                  type: integer
+                prescribed_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                notes:
+                  type: string
+                  nullable: true
+                items:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required:
+                    - medication
+                    - dosage
+                    - frequency
+                    - duration
+                    properties:
+                      medication:
+                        type: string
+                        maxLength: 191
+                      dosage:
+                        type: string
+                        maxLength: 100
+                      frequency:
+                        type: string
+                        maxLength: 100
+                      duration:
+                        type: string
+                        maxLength: 100
+                      instructions:
+                        type: string
+                        maxLength: 255
+                        nullable: true
+      responses:
+        '201':
+          description: Ordonnance émise (avec lignes)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/prescriptions/{prescription}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter une ordonnance
+      description: 'Praticiens actifs et direction. Ordonnance d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: prescription
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ordonnance (avec lignes)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /edu-manager/fee-charges:
     post:
       tags:

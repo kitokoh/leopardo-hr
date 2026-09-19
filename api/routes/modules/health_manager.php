@@ -17,9 +17,11 @@ declare(strict_types=1);
 
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthAppointmentController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthBedController;
+use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthConsultationController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthDepartmentController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthPatientController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthPractitionerController;
+use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthPrescriptionController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthRoomController;
 use App\Modules\HealthManager\Interfaces\Api\V1\Controllers\HealthSpecialtyController;
 use Illuminate\Support\Facades\Route;
@@ -80,4 +82,19 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::put('/health-manager/appointments/{appointment}', [HealthAppointmentController::class, 'update'])->whereNumber('appointment');
     Route::post('/health-manager/appointments/{appointment}/status', [HealthAppointmentController::class, 'updateStatus'])->whereNumber('appointment');
     Route::delete('/health-manager/appointments/{appointment}', [HealthAppointmentController::class, 'destroy'])->whereNumber('appointment');
+
+    // HC-005 (#7789) — consultations & ordonnances : CONTENU MÉDICAL.
+    // Praticiens actifs et direction lisent ; seul le praticien AUTEUR (ou
+    // la direction) modifie SA consultation ; la réception n'accède JAMAIS
+    // (403). Pas de suppression : un dossier médical ne s'efface pas.
+    Route::get('/health-manager/consultations', [HealthConsultationController::class, 'index']);
+    Route::post('/health-manager/consultations', [HealthConsultationController::class, 'store']);
+    Route::get('/health-manager/consultations/{consultation}', [HealthConsultationController::class, 'show'])->whereNumber('consultation');
+    Route::put('/health-manager/consultations/{consultation}', [HealthConsultationController::class, 'update'])->whereNumber('consultation');
+
+    // HC-005 (#7789) — ordonnances (≥ 1 ligne, transaction) ; historique
+    // par patient (?patient_id=). Immuables après émission.
+    Route::get('/health-manager/prescriptions', [HealthPrescriptionController::class, 'index']);
+    Route::post('/health-manager/prescriptions', [HealthPrescriptionController::class, 'store']);
+    Route::get('/health-manager/prescriptions/{prescription}', [HealthPrescriptionController::class, 'show'])->whereNumber('prescription');
 });

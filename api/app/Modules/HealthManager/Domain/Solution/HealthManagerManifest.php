@@ -76,6 +76,8 @@ final class HealthManagerManifest implements SolutionManifest
             'personne à prévenir (PII de tiers)',
             'praticiens et spécialités (données professionnelles de santé)',
             'rendez-vous médicaux (lien patient ↔ praticien, motif de consultation, présence — données de santé)',
+            'consultations médicales (examen clinique, diagnostic, constantes vitales — données de santé art. 9 RGPD, chiffrées au repos)',
+            'ordonnances et lignes de médicaments (posologie — données de santé)',
             'occupation des lits (donnée de séjour — santé)',
         ];
     }

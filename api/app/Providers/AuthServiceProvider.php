@@ -129,16 +129,20 @@ use App\Modules\FuelStation\Domain\Policies\FuelStockEntryPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelStockPolicy;
 use App\Modules\HealthManager\Domain\Models\HealthAppointment;
 use App\Modules\HealthManager\Domain\Models\HealthBed;
+use App\Modules\HealthManager\Domain\Models\HealthConsultation;
 use App\Modules\HealthManager\Domain\Models\HealthDepartment;
 use App\Modules\HealthManager\Domain\Models\HealthPatient;
 use App\Modules\HealthManager\Domain\Models\HealthPractitioner;
+use App\Modules\HealthManager\Domain\Models\HealthPrescription;
 use App\Modules\HealthManager\Domain\Models\HealthRoom;
 use App\Modules\HealthManager\Domain\Models\HealthSpecialty;
 use App\Modules\HealthManager\Domain\Policies\HealthAppointmentPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthBedPolicy;
+use App\Modules\HealthManager\Domain\Policies\HealthConsultationPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthDepartmentPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthPatientPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthPractitionerPolicy;
+use App\Modules\HealthManager\Domain\Policies\HealthPrescriptionPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthRoomPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthSpecialtyPolicy;
 use App\Modules\HR\Domain\Models\Contract;
@@ -354,6 +358,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(HealthPatient::class, HealthPatientPolicy::class);
         // — HealthManager rendez-vous & agenda praticiens (HC-004, #7788)
         Gate::policy(HealthAppointment::class, HealthAppointmentPolicy::class);
+        // — HealthManager dossier médical (HC-005, #7789) — réception exclue
+        Gate::policy(HealthConsultation::class, HealthConsultationPolicy::class);
+        Gate::policy(HealthPrescription::class, HealthPrescriptionPolicy::class);
         Gate::policy(EduCourseSlot::class, EduCourseSlotPolicy::class);
         Gate::policy(EduAssessment::class, EduAssessmentPolicy::class);
         Gate::policy(EduGrade::class, EduGradePolicy::class);
