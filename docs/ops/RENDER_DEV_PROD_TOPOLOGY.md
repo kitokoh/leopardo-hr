@@ -19,7 +19,7 @@ qui a permis de le requalifier sans opération de bascule à chaud.
 
 | Tier | Déclencheur | Fichier | Workflow | Surfaces | Coût |
 |------|-------------|---------|----------|----------|------|
-| **dev** (continu) | push sur `main` | `render.yaml` | `deploy-main.yml` | API Render `gestionemployerbackend` + web Vercel `leopardo` (intégration Git) + admin CF Pages `leo-admin` | Plan existant (Starter), inchangé |
+| **dev** (continu) | push sur `main` | `render.yaml` | `deploy-main.yml` | API Render `gestionemployerbackend` + web Vercel `leopardo` (intégration Git) + admin CF Pages `leo-admin` | Plan **free** (réalité API Render vérifiée 2026-09-19, #7648 — upgrade = décision billing #7649) |
 | **prod** (stable) | **GitHub Release publiée** (tag `vX.Y.Z` poussé → `release.yml` crée la Release → `deploy-prod.yml` sur `release: published`) | `render.prod.yaml` | `deploy-prod.yml` | API Render `leopardo-prod` + Neon + web Vercel `leopardo-prod` + admin CF Pages `leo-admin-prod` | Phase 1 : tier gratuit (web + Key Value) + Neon Postgres |
 
 > Le déclencheur « Release publiée » (au lieu du push de tag brut) rend la
@@ -125,10 +125,13 @@ en tête de fichier.
 
 ### DEPLOY_TIER — identité de tier explicite (issue #7647)
 
-`APP_ENV=production` étant posé sur les DEUX tiers (dette de nommage
-assumée, cf. ci-dessus), aucun garde basé sur APP_ENV ne peut distinguer
-dev et prod. Les blueprints posent donc une variable de tier explicite :
-`DEPLOY_TIER=dev` (`render.yaml`) et `DEPLOY_TIER=prod`
+`APP_ENV=production` était posé sur les DEUX tiers (dette de nommage
+assumée — **soldée par #7648** : le tier dev est désormais en
+`APP_ENV=staging`, voir la section #7648 ci-dessous) : un garde basé sur
+APP_ENV ne pouvait pas distinguer dev et prod, et ne doit plus servir à
+ça. Les blueprints posent une variable de tier explicite :
+`DEPLOY_TIER=dev` (`render.yaml`, sur les trois services depuis #7648) et
+`DEPLOY_TIER=prod`
 (`render.prod.yaml`). `api/docker-entrypoint.sh` est **fail-closed**
 dessus :
 
@@ -143,6 +146,116 @@ dessus :
 automatiquement, poser `DEPLOY_TIER=dev` dans le dashboard Render du
 service dev AVANT le prochain usage de `RESET_TEST_DB_ONCE` (sinon le
 refus fail-closed est le comportement voulu).
+
+### #7648 — Topologie honnête : APP_ENV=staging sur le tier dev, blueprint aligné, écart prod visible
+
+**Constats de l'audit 2026-09-19 (API Render, les deux workspaces)** :
+
+1. Le service dev `gestionemployerbackend` tournait en `APP_ENV=production`
+   (dette de nommage assumée depuis le chantier initial) — tous les gardes
+   `APP_ENV=production` traitaient le dev comme la prod, d'où l'empilement
+   de flags compensatoires (`ALLOW_DEMO_SEEDING`, `DISABLE_DEMO_SEEDING`,
+   `RESET_TEST_DB_LOCK_KEY`…).
+2. `render.yaml` déclarait `plan: starter` alors que l'API Render montre le
+   service dev en plan **free** — le blueprint « source de vérité
+   déclarative » mentait. (La prod `leopardo-prod` est aussi en free,
+   conforme à `render.prod.yaml` Phase 1.)
+3. La prod servait un déploiement du **2026-09-14** alors que le dev était
+   au 2026-09-18 : 5 jours / des dizaines de PR derrière `main`, sans
+   aucune visibilité.
+
+**Décisions (volet repo, PR #7648)** :
+
+- **`render.yaml` dit la vérité** : `plan: free` sur le web service
+  (upgrade = décision billing propriétaire, voir #7649). Les deux workers
+  déclarés mais **non provisionnés** gardent `plan: starter` : les
+  Background Workers sont inéligibles au tier gratuit — c'est le plan
+  minimal de leur provisionnement futur, pas la description d'un service
+  existant (le ⚠️ « n'existe pas encore » reste en tête de bloc).
+- **Le tier dev passe en `APP_ENV=staging`** (web + worker + scheduler),
+  avec `DEPLOY_TIER=dev` (#7647) désormais posé sur les trois services.
+  Règle d'or : **APP_ENV décrit le comportement applicatif, DEPLOY_TIER
+  identifie le tier** — aucun garde ne doit plus utiliser
+  `APP_ENV=production` pour dire « je suis la prod ».
+- **La sémantique prod est inchangée** : `render.prod.yaml` reste
+  `APP_ENV=production` + `DEPLOY_TIER=prod`. Les gardes APP_ENV existantes
+  sont conservées ; les conversions vers DEPLOY_TIER sont **additives**
+  (voir ci-dessous).
+
+**Gardes converties / durcies (additives, prod inchangée)** :
+
+| Surface | Avant | Après (#7648) |
+|---|---|---|
+| `docker-entrypoint.sh` — seed démo (`DemoCompanyOnceSeeder`) | sauté si `APP_ENV=production` (donc sauté sur dev) | sauté si `APP_ENV=production` **ou** `DEPLOY_TIER=prod` ; tourne sur le tier dev, verrouillé par les flags (voir ci-dessous) |
+| `docker-entrypoint.sh` — warning `SUPER_ADMIN_PASSWORD` absent | seulement si `APP_ENV=production` (le dev l'aurait perdu) | si `APP_ENV=production` **ou** `DEPLOY_TIER` posée (tout tier hébergé) |
+| `DemoCompanyOnceSeeder` (`$isProduction`) | `environment('production')` | `environment('production')` **ou** `DEPLOY_TIER=prod` |
+| `GuardsPilotSeeding` (seeds pilotes) | refus hors env autorisés, contournable par `ALLOW_PILOT_SEEDING` | refus **catégorique** sur `DEPLOY_TIER=prod`, non contournable |
+| Gardes `RESET_TEST_DB_ONCE` (#6537/#7647) | — | inchangées : APP_ENV=production refuse toujours, et `DEPLOY_TIER=dev` explicite reste exigé |
+
+**Flags compensatoires : conservés délibérément (pas supprimés)**. Sous
+`APP_ENV=staging`, ce sont eux qui verrouillent la démo sur le tier dev,
+et c'est prouvé par lecture du code :
+
+- `DISABLE_DEMO_SEEDING=true` → `DemoCompanyOnceSeeder` ne crée aucune
+  société démo (seuls les backfills non destructifs des démos existantes
+  tournent) ;
+- `DEMO_MODE_ENABLED=false` → `syncDemoSuperAdmin()` retourne immédiatement
+  (le hash super-admin n'est PAS remplacé par le mot de passe démo) ;
+- `DEMO_PASSWORD` non posée (#7696) → même si le mode démo était activé,
+  aucun mot de passe publiable n'existe (seeder no-op, `/demo-users` 503).
+
+Les retirer est une décision produit (« activer la démo sur le tier dev »),
+hors périmètre #7648.
+
+**Deltas de comportement ACCEPTÉS sur le tier dev** (conséquence de
+`staging` — aucun changement côté prod) :
+
+- Sentry rapporte `environment=staging` (enfin distinguable de la prod) ;
+- `AuthService` : le sweep multi-tenant à la connexion (résilience démo,
+  #6563) se réactive sur dev — c'était son intention d'origine ;
+- `EdgeLicenseService` / `CameraStreamTokenService` : les fallbacks
+  « dev/test » (HS256/APP_KEY) redeviennent possibles sur dev (documented
+  by design #6560 — la prod reste fail-closed) ;
+- `EnsureApiDocsAuthorized` : la doc API dev reste publique (c'était déjà
+  le cas via `API_DOCS_PUBLIC=true`) ;
+- `config/ai.php` : sans `AI_LLM_DRIVER` explicite, le défaut sur staging
+  est `fake` (et non groq/openai) — voir action propriétaire n°4 ;
+- `config/queue.php`, `APP_DEBUG`, `LOG_LEVEL` : sans effet (valeurs
+  explicites dans le blueprint).
+
+**Plan de migration (ordre recommandé)** :
+
+1. Merger la PR #7656 (#7647, base de celle-ci) puis la PR #7648.
+2. Dashboard Render, service dev (le blueprint n'est PAS synchronisé
+   automatiquement — cf. en-tête de `render.yaml`) : poser
+   `APP_ENV=staging` + `DEPLOY_TIER=dev`. `config:cache` tourne au boot
+   depuis l'env (`docker-entrypoint.sh`) : la valeur est prise en compte au
+   déploiement suivant, pas besoin d'opération manuelle de cache. Risque
+   principal : oublier UNE des deux variables — `DEPLOY_TIER` absente +
+   `RESET_TEST_DB_ONCE=true` refuse de démarrer (fail-closed voulu, #7647).
+3. Redéployer le dev (push `api/**` ou deploy manuel) et vérifier
+   `/api/v1/health` (`environment: staging`) + un login QA.
+4. Si l'IA réelle est voulue sur dev : poser `AI_LLM_DRIVER` explicitement
+   (groq/openai) dans le dashboard — sinon le driver retombe sur `fake`.
+
+**Écart prod ↔ main désormais visible** : `deploy-drift-guard.yml` publie à
+chaque run planifié (2×/heure) un rapport « Écart prod ↔ main (#7648) »
+(résumé de job + `::warning`) : version servie par la prod, nombre de
+commits de `main` non déployés, âge du commit déployé. Report-only (une
+release est une décision propriétaire) et sans secret supplémentaire
+(healthcheck public + `github.token` — `RENDER_API_KEY` inutile).
+
+**Actions restées côté propriétaire (hors dépôt)** :
+
+1. Upgrade des plans Render (dev et/ou prod free → starter+) : décision
+   billing, suivie dans #7649 — le blueprint sera réaligné à ce moment-là.
+2. Poser `APP_ENV=staging` + `DEPLOY_TIER=dev` dans le dashboard Render du
+   service dev (étape 2 ci-dessus).
+3. Rattraper la prod : publier une Release sur la HEAD de `main` pour
+   déclencher `deploy-prod.yml` (le rapport de drift le rappellera tant que
+   l'écart persiste).
+4. Optionnel : `AI_LLM_DRIVER` explicite sur le service dev (voir plan de
+   migration, étape 4).
 
 ### Phase 1 — tier gratuit pour `render.prod.yaml`
 
