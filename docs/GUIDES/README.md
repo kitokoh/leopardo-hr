@@ -1,4 +1,4 @@
-# Guides utilisateurs — Leopardo RH
+# Guides utilisateurs — Leopardo
 
 Documentation fonctionnelle orientee **usage quotidien**, par role.
 

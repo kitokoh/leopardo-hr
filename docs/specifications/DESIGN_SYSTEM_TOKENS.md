@@ -1,8 +1,8 @@
-# Design System Leopardo RH
+# Design System Leopardo
 
 ## Brand & Style
 
-The design system is engineered for a high-end HR SaaS environment, focusing on clarity, transparency, and a premium "executive" feel. The brand personality is professional yet innovative, positioning human resources as a forward-thinking strategic partner rather than a purely administrative function.
+The design system is engineered for a high-end business suite environment, focusing on clarity, transparency, and a premium "executive" feel. The brand personality is professional yet innovative, positioning human resources as a forward-thinking strategic partner rather than a purely administrative function.
 
 The visual style is **Glassmorphism**. It utilizes multi-layered translucent surfaces, backdrop blurs, and subtle inner glows to create a sense of depth and lightness. This approach avoids the heaviness of traditional enterprise software, favoring a spacious, airy interface that reduces cognitive load for HR professionals managing complex data.
 

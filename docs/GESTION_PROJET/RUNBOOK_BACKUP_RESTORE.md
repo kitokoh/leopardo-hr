@@ -4,7 +4,7 @@ Version 4.16.39 | 2026-05-14
 
 ## 0. Procedure minimale a appliquer
 
-Pour Leopardo RH, la procedure minimale obligatoire combine automatisation et fallback manuel :
+Pour Leopardo, la procedure minimale obligatoire combine automatisation et fallback manuel :
 
 - **Backup automatise quotidien** de la base PostgreSQL de production vers S3/R2
 - **Verification de restore mensuelle** sur une base scratch isolee
@@ -15,7 +15,7 @@ Si l'equipe n'active pas ou ne maintient pas le drill automatise, cette procedur
 
 ## 1. Perimetre
 
-Sauvegarde et verification de restauration de la base PostgreSQL Leopardo RH
+Sauvegarde et verification de restauration de la base PostgreSQL Leopardo
 (Neon en production, Postgres 16 auto-herberge en pre-prod).
 
 Le "drill" (exercice de reprise) se fait sur une base **scratch isolee**,

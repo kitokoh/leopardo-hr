@@ -1,6 +1,6 @@
 # Architecture et Stratégie Go-To-Market (GTM)
 
-Ce document décrit comment Leopardo RH acquiert, convertit et fidélise ses clients (tenants). Il sert de référence pour toutes les évolutions techniques liées à la commercialisation.
+Ce document décrit comment Leopardo acquiert, convertit et fidélise ses clients (tenants). Il sert de référence pour toutes les évolutions techniques liées à la commercialisation.
 
 ## 1. Moteur d'Acquisition (Comment on trouve des clients)
 
@@ -10,7 +10,7 @@ Ce document décrit comment Leopardo RH acquiert, convertit et fidélise ses cli
 **Implémentation Technique :**
 - Les pages doivent être statiques (SSG) ou Server-Side Rendered (SSR) pour un SEO parfait.
 - Le blog (`/blog`) et les guides (`/guides`) sont les portes d'entrée organiques.
-- Le portail carrières public (`[companySlug]/careers`) sert aussi de vecteur de visibilité : chaque candidat qui postule chez un client Leopardo découvre la marque Leopardo RH.
+- Le portail carrières public (`[companySlug]/careers`) sert aussi de vecteur de visibilité : chaque candidat qui postule chez un client Leopardo découvre la marque Leopardo.
 
 ### B. Outbound (Réseaux Sociaux)
 **Outil :** Application Mobile `leopardo_marketing`
