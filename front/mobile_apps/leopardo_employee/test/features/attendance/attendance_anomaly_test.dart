@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_employee/features/attendance/models/attendance_anomaly.dart';
+import 'package:leopardo_core/features/attendance/models/attendance_anomaly.dart';
 
 /// Tests critiques (issue #1560) — parsing des anomalies de pointage
 /// (modèle pur, aucune dépendance plugin).

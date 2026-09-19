@@ -174,4 +174,48 @@ Ordre du moins risqué au plus risqué ; chaque étape = une PR verte sur
 6. **Clôture** : baseline vide → basculer la garde en zéro tolérance (interdire tout
    chemin partagé non-shim, plus besoin de baseline) et fermer #7652.
 
-_Audit et tranche 1 — session Zentor 2026-09-19, issue #7652._
+## 6. Tranche 2 — réconciliation attendance (data + provider) et couche d'état auth (employee)
+
+Livrée sans compilateur (toujours pas de `flutter`/`dart` en sandbox), donc
+limitée aux fusions dont la sûreté est démontrable par analyse statique :
+
+1. **`attendance` — la « divergence croisée » du §2 est fusionnée dans le core**
+   (étape 5 du plan, volets data/provider) :
+   - `leopardo_core/.../attendance/data/attendance_repository.dart` devient le
+     **superset canonique** : apports employee (`work_type`/`punch_note` dans les
+     payloads de pointage, règle F-21 « 1er pointage gagne » sur la file hors-ligne,
+     `sessions`/`summary`/`session_number` dans `decodeTodayResponse`,
+     `getMyAnomalies`, `getTodayTasks`, `completeTask`) + acquis core conservés
+     (garde payload #3406, détection hors-ligne #5407, endpoints manager
+     anomalies/corrections/day-detail).
+   - `attendance_provider.dart` core = état superset (`todaySessions`,
+     `daySummary`, upsert de session) + notices `overtime`/`break`.
+   - Le modèle `attendance_anomaly.dart` (employee-only) remonte dans
+     `leopardo_core/lib/features/attendance/models/`.
+   - **Différence par app exprimée en config, pas par fork** (case 2 de l'issue) :
+     `AttendanceFeatureConfig` (`.../attendance/config/attendance_feature_config.dart`),
+     défaut manager/RH ; `leopardo_employee/lib/main.dart` surcharge
+     `attendanceFeatureConfigProvider` via `ProviderScope(overrides: [...])`
+     (ton self-service du message hors-zone).
+   - Côté employee : `attendance/data` + `attendance/providers` deviennent des
+     shims de ré-export (les validateurs `validate-mobile-location-readiness.ps1` /
+     `validate-mobile-notification-production-proof.ps1` exigent l'existence des
+     chemins) ; `history_screen.dart` (12 lignes de diff cosmétiques) est supprimé,
+     l'app route sur l'écran core.
+2. **`auth` (employee), couche d'état** : le diff `auth_provider.dart` /
+   `auth_repository.dart` core↔employee était **exclusivement commentaires +
+   formatage** (vérifié par diff normalisé sans commentaires/espaces) — fork
+   résiduel sans delta fonctionnel. Le provider employee devient un shim, le
+   repository local est supprimé, `core_providers.dart` cesse de shadow-déclarer
+   `authRepositoryProvider`/`attendanceRepositoryProvider` (une seule instance
+   Riverpod pour toute l'app, celle du core — le logout 401 du notifier attendance
+   agit désormais sur le MÊME `authProvider` que le routeur).
+3. **Baseline** : 48 → 43 entrées (`--update-baseline`).
+
+Restent divergents (baseline, étapes 3–5 du plan) : les écrans
+`attendance_screen.dart` (2 432 L, sessions/tâches/biométrie) et
+`monthly_summary_screen.dart` côté employee (réécriture UI — fusion d'écran
+injustifiable sans `flutter analyze`/tests), les écrans `auth` brandés par app,
+`absences`, `settings`, `attendance_geo` et les forks `auth` des apps satellites.
+
+_Audit et tranche 1 — session Zentor 2026-09-19, issue #7652. Tranche 2 (même session) : fusion attendance data/provider + auth state layer._
