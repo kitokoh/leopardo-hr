@@ -16,6 +16,22 @@
 > 403 non-principal, isolation cross-tenant, routage checkout tenant + fallback plateforme).
 > Surfaces web : écran admin Vue « Passerelles de paiement » et page client « Encaissements »
 > (couverts par ESLint/tsc/Jest du lot). Surface mobile : aucune.
+
+> **MAJ 2026-09-19 — lot BC-17 RETAIL #7672–#7675 (PR #7718), le module vendeur devient actif.**
+> Surface **API** : nouveau préfixe `/v1/retail` (flag tenant `retail`, middleware `module.retail`,
+> fail-closed) — produits/catégories (CRUD + publish/unpublish, SKU/slug uniques par tenant),
+> stock (emplacements, niveaux, mouvements tracés, alertes ; toute quantité ne bouge que par
+> `RetailStockService::applyMovement`), POS (sessions de caisse à index unique partiel
+> `WHERE status='open'`, ventes, paiements idempotents cash|card|mobile — `online` réservé
+> e-commerce —, décrément stock à la complétion, contre-mouvements à l'annulation, reçu).
+> Scénarios automatisés : `api/tests/Feature/Retail/{RetailApiTest,RetailStockApiTest,
+> RetailPosApiTest}.php` — 27 tests / 321 assertions (flag off 403, RBAC écriture, isolation
+> tenant 404, SKU dupliqué 422, survente tracée, idempotence paiement, variance de clôture,
+> deux sessions fermées coexistent). Surface **web** : espace vendeur `/commerce{,/products,
+> /stock,/pos}` gaté par le flag `retail` (Jest + tsc + eslint verts ; helpers monétaires testés
+> `commerce-format.test.ts`). Surface **mobile** : aucune — propagation i18n des catalogues
+> uniquement (clés `commerce.*` ×4, `sync-mobile.js`).
+
 > **MAJ 2026-09-19 — #7737 (épic #7736), API publique MARKETPLACE inter-agences (PR #7750).**
 > Surface **API** : nouvelle surface publique `/api/v1/public/travel/marketplace/*` SANS jeton
 > d'agence (throttle `shop-public`) — villes desservies dédupliquées par identité géographique
