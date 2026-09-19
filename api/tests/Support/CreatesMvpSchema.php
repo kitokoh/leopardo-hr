@@ -1744,6 +1744,79 @@ trait CreatesMvpSchema
             });
         }
 
+        // R4 Communication (#7689) — parité fixture ↔ migration tenant
+        // 2026_09_21_000001 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('communication_follow_up_rules'))) {
+            Schema::create($this->moduleTable('communication_follow_up_rules'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('integration_id')->index();
+                $table->string('name', 128);
+                $table->boolean('active')->default(true);
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('communication_follow_up_steps'))) {
+            Schema::create($this->moduleTable('communication_follow_up_steps'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('rule_id')->index();
+                $table->unsignedSmallInteger('position');
+                $table->unsignedSmallInteger('delay_days');
+                $table->string('template_key', 64)->default('communication_follow_up');
+                $table->timestamps();
+                $table->unique(['rule_id', 'position'], 'communication_follow_up_steps_rule_position_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('communication_follow_ups'))) {
+            Schema::create($this->moduleTable('communication_follow_ups'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('rule_id')->index();
+                $table->uuid('integration_id')->index();
+                $table->uuid('thread_id')->index();
+                $table->uuid('message_id')->nullable();
+                $table->unsignedSmallInteger('step_position');
+                $table->string('contact_email');
+                $table->timestamp('scheduled_for')->index();
+                $table->string('status', 20)->default('pending')->index();
+                $table->string('skip_reason', 64)->nullable();
+                $table->timestamp('sent_at')->nullable();
+                $table->string('sent_gmail_message_id')->nullable();
+                $table->timestamps();
+                $table->unique(['rule_id', 'thread_id', 'step_position'], 'communication_follow_ups_rule_thread_step_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('communication_follow_up_opt_outs'))) {
+            Schema::create($this->moduleTable('communication_follow_up_opt_outs'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->string('email');
+                $table->string('source', 20)->default('manual');
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'email'], 'communication_follow_up_opt_outs_company_email_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('communication_follow_up_logs'))) {
+            Schema::create($this->moduleTable('communication_follow_up_logs'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('follow_up_id')->nullable()->index();
+                $table->uuid('integration_id')->index();
+                $table->uuid('thread_id')->nullable();
+                $table->unsignedSmallInteger('step_position')->nullable();
+                $table->string('contact_email')->nullable();
+                $table->string('action', 20)->index();
+                $table->string('reason', 64)->nullable();
+                $table->timestamps();
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('export_history'))) {
             Schema::create($this->moduleTable('export_history'), function (Blueprint $table): void {
                 $table->id();
@@ -4187,6 +4260,11 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "conversation_messages"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "conversation_threads"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "communication_events"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_follow_up_rules"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_follow_up_steps"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_follow_ups"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_follow_up_opt_outs"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_follow_up_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "communication_categories"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "communication_contact_proposals"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "communication_threads"'.$cascade);
