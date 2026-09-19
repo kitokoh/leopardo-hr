@@ -80,9 +80,8 @@ class ImpersonationService
                 expiresAt: $expiresAt,
             );
 
-            $session = PlatformImpersonationSession::create([
+            $session = new PlatformImpersonationSession([
                 'super_admin_id' => $superAdmin->id,
-                'company_id' => $company->id,
                 'employee_id' => $employee->id,
                 'personal_access_token_id' => $tokenResult->accessToken->id,
                 'company_name' => $company->name,
@@ -92,6 +91,9 @@ class ImpersonationService
                 'ip_address' => $ipAddress,
                 'expires_at' => $expiresAt,
             ]);
+            // #7711 : company_id n'est plus mass-assignable — société cible
+            // résolue côté serveur, posée en forceFill.
+            $session->forceFill(['company_id' => $company->id])->save();
 
             // The ability needs the session id, which only exists once the
             // session row is created; the token itself was minted first so

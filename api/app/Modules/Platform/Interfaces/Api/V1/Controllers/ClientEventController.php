@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\HR\Interfaces\Api\V1\Requests\StoreClientEventRequest;
 use App\Modules\Planning\Domain\Models\ClientEvent;
-use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\JsonResponse;
 
 class ClientEventController extends Controller
@@ -25,7 +25,7 @@ class ClientEventController extends Controller
         $validated = $request->validated();
 
         $event = ClientEvent::create([
-            'company_id' => $employee->company_id,
+            // #7711 : company_id délégué au trait BelongsToCompany (tenant actif).
             'employee_id' => $employee->id,
             'event_name' => $validated['name'],
             'surface' => $validated['surface'] ?? 'web',
@@ -95,4 +95,3 @@ class ClientEventController extends Controller
         return is_numeric($duration) ? max(0, min(600000, (int) $duration)) : null;
     }
 }
-

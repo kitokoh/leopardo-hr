@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Domain\Models;
 
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,6 +32,21 @@ use Illuminate\Support\Carbon;
  */
 class AuditLog extends Model
 {
+    // Issue #7711 (suite #7646) — table `audit_logs` du schéma partagé
+    // shared_tenants. Le trait apporte l'isolation en LECTURE sur la surface
+    // tenant (un tenant ne lit plus le journal d'un autre) et neutralise le
+    // spoof de company_id sous tenant actif (hooks creating/updating).
+    //
+    // ⚠️ DÉROGATION au pattern #7678 : `company_id` RESTE dans $fillable.
+    // Ce journal a 30+ writers PLATEFORME (PlatformUserController,
+    // PlatformTeamController, consumers Platform*, actions Showcase,
+    // BiometricPurgeExpiredCommand…) qui créent via create() HORS contexte
+    // tenant, où le trait ne peut pas remplir company_id (nullable par design :
+    // NULL = événement plateforme). Retirer company_id du $fillable les ferait
+    // écrire des logs orphelins silencieusement. Sous tenant actif, les hooks
+    // du trait écrasent de toute façon toute valeur mass-assignée.
+    use BelongsToCompany;
+
     public $timestamps = false;
 
     protected $table = 'audit_logs';

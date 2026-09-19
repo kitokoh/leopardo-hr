@@ -91,8 +91,8 @@ class EmployeeLoanController extends Controller
 
             for ($i = 0; $i < $validated['installments']; $i++) {
                 LoanRepayment::create([
+                    // #7711 : company_id délégué au trait BelongsToCompany (tenant actif).
                     'employee_loan_id' => $loan->id,
-                    'company_id' => $actor->company_id,
                     'due_date' => $startDate->copy()->addMonths($i + 1)->toDateString(),
                     'amount' => $installmentAmount,
                     'principal' => $principalPerInstallment,

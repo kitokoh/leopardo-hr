@@ -23,7 +23,11 @@ class DemoCompanyOnceSeeder extends Seeder
     public function run(): void
     {
         $disabled = filter_var(env('DISABLE_DEMO_SEEDING', false), FILTER_VALIDATE_BOOLEAN);
-        $isProduction = app()->environment('production');
+        // #7648 : le tier dev Render est passé en APP_ENV=staging — le critère
+        // « jamais de démo en prod » est désormais aussi porté par le TIER
+        // (DEPLOY_TIER=prod, #7647), en PLUS d'APP_ENV=production (conservé,
+        // additive : protège la prod même si son APP_ENV changeait un jour).
+        $isProduction = app()->environment('production') || env('DEPLOY_TIER') === 'prod';
 
         DB::statement('SET search_path TO public');
 
@@ -56,7 +60,7 @@ class DemoCompanyOnceSeeder extends Seeder
         }
 
         if ($isProduction) {
-            $this->command?->warn('DemoCompanyOnceSeeder skipped (APP_ENV=production).');
+            $this->command?->warn('DemoCompanyOnceSeeder skipped (production : APP_ENV=production ou DEPLOY_TIER=prod).');
 
             return;
         }
