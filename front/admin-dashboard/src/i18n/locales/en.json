@@ -7081,6 +7081,18 @@
       "publish_showcase": {
         "title": "Publish your showcase website",
         "desc": "Make your site visible in one click."
+      },
+      "travel_setup_network": {
+        "title": "Create your network (stations, offices, routes)",
+        "desc": "Declare your stations, sales offices and city-to-city routes."
+      },
+      "travel_first_trip": {
+        "title": "Schedule your first trip",
+        "desc": "Create a dated trip with class fares, then publish it."
+      },
+      "travel_first_sale": {
+        "title": "Record your first sale",
+        "desc": "Sell a first ticket at the counter or online."
       }
     }
   },

@@ -5786,6 +5786,18 @@
       "publish_showcase": {
         "title": "Vitrin sitenizi yayınlayın",
         "desc": "Sitenizi tek tıkla görünür yapın."
+      },
+      "travel_setup_network": {
+        "title": "Ağınızı oluşturun (istasyonlar, ofisler, hatlar)",
+        "desc": "İstasyonlarınızı, satış ofislerinizi ve şehirlerarası hatlarınızı tanımlayın."
+      },
+      "travel_first_trip": {
+        "title": "İlk seferinizi planlayın",
+        "desc": "Tarihli bir sefer ve sınıf tarifelerini oluşturup yayınlayın."
+      },
+      "travel_first_sale": {
+        "title": "İlk satışınızı kaydedin",
+        "desc": "Gişeden veya çevrimiçi ilk biletinizi satın."
       }
     }
   },

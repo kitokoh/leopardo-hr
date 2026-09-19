@@ -7087,6 +7087,18 @@
       "publish_showcase": {
         "title": "Publier votre site vitrine",
         "desc": "Rendez votre site visible en un clic."
+      },
+      "travel_setup_network": {
+        "title": "Créer votre réseau (gares, bureaux, lignes)",
+        "desc": "Déclarez vos gares, bureaux de vente et lignes ville→ville."
+      },
+      "travel_first_trip": {
+        "title": "Programmer votre premier voyage",
+        "desc": "Créez un trajet daté, ses tarifs par classe, puis publiez-le."
+      },
+      "travel_first_sale": {
+        "title": "Enregistrer votre première vente",
+        "desc": "Vendez un premier billet au guichet ou en ligne."
       }
     }
   },
