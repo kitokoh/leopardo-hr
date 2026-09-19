@@ -135,7 +135,7 @@ class CrmChannelCrudTest extends TestCase
 
     public function test_other_tenant_channel_is_not_visible(): void
     {
-        $channel = CrmChannel::query()->create([
+        $channel = CrmChannel::query()->forceCreate([
             'company_id' => $this->companyB->id,
             'type' => 'whatsapp',
             'provider' => 'whatsapp_cloud_api',
@@ -154,7 +154,7 @@ class CrmChannelCrudTest extends TestCase
     {
         Sanctum::actingAs($this->manager($this->companyA));
 
-        $channel = CrmChannel::query()->create([
+        $channel = CrmChannel::query()->forceCreate([
             'company_id' => $this->companyA->id,
             'type' => 'whatsapp',
             'provider' => 'whatsapp_cloud_api',
@@ -162,7 +162,7 @@ class CrmChannelCrudTest extends TestCase
             'is_configured' => true,
         ]);
 
-        CrmChannelMessage::query()->create([
+        CrmChannelMessage::query()->forceCreate([
             'channel_id' => $channel->id,
             'company_id' => $this->companyA->id,
             'provider' => 'whatsapp_cloud_api',
@@ -186,7 +186,7 @@ class CrmChannelCrudTest extends TestCase
     {
         Sanctum::actingAs($this->manager($this->companyA));
 
-        $channel = CrmChannel::query()->create([
+        $channel = CrmChannel::query()->forceCreate([
             'company_id' => $this->companyA->id,
             'type' => 'whatsapp',
             'provider' => 'whatsapp_cloud_api',
@@ -194,7 +194,7 @@ class CrmChannelCrudTest extends TestCase
             'is_configured' => true,
         ]);
 
-        CrmChannelConversation::query()->create([
+        CrmChannelConversation::query()->forceCreate([
             'channel_id' => $channel->id,
             'company_id' => $this->companyA->id,
             'provider_conversation_id' => 'conv-a',

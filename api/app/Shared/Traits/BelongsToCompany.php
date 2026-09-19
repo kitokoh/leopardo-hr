@@ -8,6 +8,7 @@ use App\Core\Tenant\Domain\Exceptions\TenantContextMissingException;
 use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Trait BelongsToCompany
@@ -57,12 +58,64 @@ trait BelongsToCompany
                     throw new TenantContextMissingException;
                 }
 
+                // Hors contexte tenant (console, jobs, seeders, fixtures de
+                // test) : comportement permissif inchangé — une valeur
+                // `company_id` fournie explicitement est conservée (#7646).
                 return;
             }
 
-            if (empty($model->getAttribute('company_id'))) {
-                $model->setAttribute('company_id', $currentCompany->id);
+            // Issue #7646 — écriture cross-tenant : quand un tenant est actif,
+            // `company_id` est TOUJOURS forcé depuis le tenant courant.
+            // `company_id` figure dans le $fillable de la plupart des modèles
+            // du dépôt : tout endpoint laissant passer `company_id` dans un
+            // payload permettait d'écrire dans un autre tenant. Une écriture
+            // inter-tenant légitime passe par TenantManager::withinTenant()
+            // du tenant CIBLE — jamais par un `company_id` mass-assigné.
+            $provided = $model->getAttribute('company_id');
+
+            if (is_scalar($provided)
+                && (string) $provided !== ''
+                && (string) $provided !== $currentCompany->id) {
+                // Valeur différente fournie = tentative de spoof (ou bug
+                // appelant) : on écrase et on journalise (#7646).
+                Log::warning('BelongsToCompany: company_id fourni différent du tenant actif — valeur écrasée (tentative de spoof cross-tenant, #7646)', [
+                    'model' => $model::class,
+                    'provided_company_id' => (string) $provided,
+                    'tenant_company_id' => $currentCompany->id,
+                ]);
             }
+
+            $model->setAttribute('company_id', $currentCompany->id);
+        });
+
+        static::updating(function (Model $model): void {
+            // Issue #7646 (suite) — le chemin `updating` était resté ouvert :
+            // `company_id` mass-assignable permettait de DÉPLACER un
+            // enregistrement existant vers un autre tenant via un payload
+            // d'update validé. Même contrat que `creating` : sous tenant
+            // actif, `company_id` ne change jamais — toute tentative est
+            // écrasée et journalisée. Hors contexte tenant (console, jobs
+            // de maintenance), le comportement permissif est conservé.
+            if (! $model->isDirty('company_id')) {
+                return;
+            }
+
+            $currentCompany = app()->bound('current_company') ? currentCompany() : null;
+
+            if (! $currentCompany instanceof Company) {
+                return;
+            }
+
+            $original = $model->getRawOriginal('company_id');
+
+            Log::warning('BelongsToCompany: tentative de modification de company_id sous tenant actif — valeur restaurée (spoof cross-tenant sur update, #7646)', [
+                'model' => $model::class,
+                'original_company_id' => (string) $original,
+                'attempted_company_id' => (string) $model->getAttribute('company_id'),
+                'tenant_company_id' => $currentCompany->id,
+            ]);
+
+            $model->setAttribute('company_id', $original);
         });
     }
 }
