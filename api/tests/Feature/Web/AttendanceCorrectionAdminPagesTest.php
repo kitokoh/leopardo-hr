@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Web;
 
-use App\Modules\Attendance\Domain\Models\AttendanceCorrectionRequest;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceCorrectionRequest;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Tests\RefreshTenantDatabase;
@@ -18,7 +18,7 @@ class AttendanceCorrectionAdminPagesTest extends TestCase
     {
         [$company, $manager, $employee] = $this->makeCompanyWithUsers();
 
-        $correction = AttendanceCorrectionRequest::query()->create([
+        $correction = AttendanceCorrectionRequest::query()->forceCreate([
             'company_id' => $company->id,
             'employee_id' => $employee->id,
             'date' => '2026-05-27',
@@ -57,7 +57,7 @@ class AttendanceCorrectionAdminPagesTest extends TestCase
     {
         [, $manager, $employee] = $this->makeCompanyWithUsers();
 
-        $correction = AttendanceCorrectionRequest::query()->create([
+        $correction = AttendanceCorrectionRequest::query()->forceCreate([
             'company_id' => $manager->company_id,
             'employee_id' => $employee->id,
             'date' => '2026-05-27',
@@ -92,7 +92,7 @@ class AttendanceCorrectionAdminPagesTest extends TestCase
         [, $manager] = $this->makeCompanyWithUsers();
         [$otherCompany, , $otherEmployee] = $this->makeCompanyWithUsers('company-b', 'b.test');
 
-        $correction = AttendanceCorrectionRequest::query()->create([
+        $correction = AttendanceCorrectionRequest::query()->forceCreate([
             'company_id' => $otherCompany->id,
             'employee_id' => $otherEmployee->id,
             'date' => '2026-05-27',

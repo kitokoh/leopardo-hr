@@ -19,10 +19,11 @@ class ZktecoIntegrationService
     /**
      * @param  array<string, mixed>  $data
      */
-    public function registerDevice(string $companyId, array $data): ZktecoDevice
+    public function registerDevice(array $data): ZktecoDevice
     {
         return ZktecoDevice::query()->create([
-            'company_id' => $companyId,
+            // #7711 : company_id délégué au trait BelongsToCompany — seul
+            // appelant : ZktecoController::store (surface tenant).
             'serial_number' => $data['serial_number'],
             'name' => $data['name'],
             'ip_address' => $data['ip_address'] ?? null,
