@@ -63,8 +63,8 @@ le login ? »** — si oui en prod → P1 minimum.
 
 ### I2 — Queue non drainée / worker mort (P1, DoD #5282)
 - **Symptômes** : run `queue-supervision` rouge (`stale_reserved_jobs > 0` ou `pending_jobs` en croissance), trials bloqués, emails/PDF/paiements en retard.
-- **Causes** : worker Render éteint (veille/quota 750 h), drain GH Actions KO, jobs qui plantent en boucle.
-- **Actions** : 1) lire le JSON du run rouge (queues, stale, failed) ; 2) vérifier le dernier run `queue-worker-fallback` ; 3) re-déclencher le drain (`workflow_dispatch`) ; 4) libérer les réservations orphelines (worker mort) :
+- **Causes** : drain mono-conteneur Render éteint (veille/quota 750 h, redéploiement), jobs qui plantent en boucle.
+- **Actions** : 1) lire le `checks.queue` du run rouge (pending, failed, oldest_reserved_seconds) ou `curl /api/v1/health | jq '.checks.queue'` ; 2) vérifier que le conteneur web Render draine (logs Render — le drain CI a été supprimé par #7694, un redéploiement Render relance le drain mono-conteneur) ; 3) libérer les réservations orphelines (worker mort) :
   ```bash
   UPDATE jobs SET reserved_at = NULL
   WHERE reserved_at IS NOT NULL AND reserved_at < extract(epoch from now() - interval '10 minutes');
@@ -143,8 +143,8 @@ Détails : `docs/ALERTS_CONFIGURATION.md` (v2.0, config réelle).
 
 ## 9. Références
 
-- Supervision queue : `.github/workflows/queue-supervision.yml` + `php artisan queue:health-check` (`api/app/Console/Commands/QueueHealthCheck.php`) — #5282
-- Drain de secours : `.github/workflows/queue-worker-fallback.yml` (#5204/#5205)
+- Supervision queue : `.github/workflows/queue-supervision.yml` — sonde HTTP `GET /api/v1/health` sans credentials (#7694), seuils DoD #5282 ; `php artisan queue:health-check` reste disponible côté serveur (scheduler)
+- Drain de secours CI : **supprimé** (#7694 — un CI n'est pas un worker de prod) ; drain = mono-conteneur Render, worker dédié à provisionner (#7649)
 - Smoke surfaces : `.github/workflows/launch-observability-smoke.yml` (#3968/#4720)
 - Santé API : `HealthController` (`/api/v1/health`, `/live`, `/ready`) — expose `failed_jobs` (#5282)
 - SLA pilotes : `docs/ops/SLA_PILOTES.md` (#5155) · DR : `docs/ops/DR.md` (#5283) · Alerting : `docs/ALERTS_CONFIGURATION.md`

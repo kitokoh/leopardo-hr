@@ -23,7 +23,11 @@ export interface HealthCheckResult {
 export const HEALTH_TIMEOUT_MS = 4_000;
 export const HEALTH_POLL_INTERVAL_MS = 30_000;
 
-export const EDGE_API_DEFAULT = 'http://leopardo.local:7878';
+// #7653 : le LAN est servi en TLS par le proxy Caddy, qui expose l'API en
+// same-origin (`/api/*`) sur CHAQUE origine UI (443, 7879). Le défaut est
+// donc relatif — plus jamais d'URL http:// en dur (mixed content bloqué
+// par le navigateur sous HTTPS).
+export const EDGE_API_DEFAULT = '';
 
 /**
  * Interroge `/api/v1/edge/health` sur le node Edge.
