@@ -73,11 +73,13 @@ class EdgeNodeController extends Controller
             // l'enregistrement est LE moment légitime d'exposition unique.
             'license' => $result['license']->makeVisible(['license_key', 'signed_payload']),
             'edge_token' => $result['edge_token'], // shown only once at registration
+            // #7653 : le jeton ne passe JAMAIS en argv (visible dans ps/history)
+            // — install.sh le lit depuis l'environnement (EDGE_TOKEN).
             'install_command' => sprintf(
-                'sudo bash <(curl -fsSL %s/edge/install.sh) --node-id %s --token %s',
+                'curl -fsSL %s/api/v1/edge/install.sh -o install.sh && EDGE_TOKEN=%s sudo --preserve-env=EDGE_TOKEN bash install.sh --node-id %s',
                 config('app.url'),
-                $result['node']->id,
-                $result['edge_token']
+                $result['edge_token'],
+                $result['node']->id
             ),
         ], 201);
     }
