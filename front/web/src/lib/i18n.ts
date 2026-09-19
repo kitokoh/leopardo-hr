@@ -155,6 +155,9 @@ export type CopyTree = {
       reports: string; partner: string; billing: string; integrations: string;
       marketing: string; accounting: string; crm: string; restaurant: string;
       restaurant_kitchen: string; edu_manager: string; travel: string; travel_portal: string; fuel: string; fleet: string; showcase: string;
+      /** BC-30 HEALTH (HC-008, #7792) — espace clinique et ses sous-écrans */
+      health_manager: string; health_patients: string; health_appointments: string;
+      health_admissions: string; health_billing: string; health_referential: string;
       /** BC-19 (#7425) — mur de caméras (libellé localisé du menu) */
       cameras: string;
       /** BC-29 (#7691) — module Communication (boîte mail + IA) */
@@ -813,6 +816,12 @@ const copy: Record<AppLocale, CopyTree> = {
         restaurant: 'Restaurant',
         restaurant_kitchen: 'Cuisine',
         edu_manager: 'Scolarité',
+        health_manager: 'Clinique',
+        health_patients: 'Patients',
+        health_appointments: 'Rendez-vous',
+        health_admissions: 'Hospitalisations',
+        health_billing: 'Facturation des soins',
+        health_referential: 'Référentiel clinique',
         travel: 'Agence de voyage',
         travel_portal: 'Portail voyageur',
         fuel: 'Station-service',
@@ -1503,6 +1512,12 @@ const copy: Record<AppLocale, CopyTree> = {
         restaurant: 'مطعم',
         restaurant_kitchen: 'المطبخ',
         edu_manager: 'الإدارة المدرسية',
+        health_manager: 'العيادة',
+        health_patients: 'المرضى',
+        health_appointments: 'المواعيد',
+        health_admissions: 'حالات الاستشفاء',
+        health_billing: 'فوترة الرعاية',
+        health_referential: 'المرجع السريري',
         travel: 'وكالة سفر',
         travel_portal: 'بوابة المسافر',
         fuel: 'محطة وقود',
@@ -2189,6 +2204,12 @@ const copy: Record<AppLocale, CopyTree> = {
         restaurant: 'Restoran',
         restaurant_kitchen: 'Mutfak',
         edu_manager: 'Okul yönetimi',
+        health_manager: 'Klinik',
+        health_patients: 'Hastalar',
+        health_appointments: 'Randevular',
+        health_admissions: 'Yatışlar',
+        health_billing: 'Bakım faturalaması',
+        health_referential: 'Klinik referans verileri',
         travel: 'Seyahat acentesi',
         travel_portal: 'Yolcu portalı',
         fuel: 'Akaryakıt istasyonu',
@@ -2875,6 +2896,12 @@ const copy: Record<AppLocale, CopyTree> = {
         restaurant: 'Restaurant',
         restaurant_kitchen: 'Kitchen',
         edu_manager: 'School management',
+        health_manager: 'Clinic',
+        health_patients: 'Patients',
+        health_appointments: 'Appointments',
+        health_admissions: 'Admissions',
+        health_billing: 'Care billing',
+        health_referential: 'Clinical referential',
         travel: 'Travel agency',
         travel_portal: 'Traveller portal',
         fuel: 'Fuel station',

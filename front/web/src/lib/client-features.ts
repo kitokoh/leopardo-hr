@@ -12,6 +12,7 @@ import {
   Fuel,
   GraduationCap,
   Handshake,
+  HeartPulse,
   LayoutDashboard,
   MapPin,
   Megaphone,
@@ -46,6 +47,12 @@ export type ClientModuleKey =
   | 'restaurant'
   | 'restaurant_kitchen'
   | 'edu_manager'
+  | 'health_manager'
+  | 'health_patients'
+  | 'health_appointments'
+  | 'health_admissions'
+  | 'health_billing'
+  | 'health_referential'
   | 'travel'
   | 'travel_portal'
   | 'fuel'
@@ -61,7 +68,7 @@ export type FeatureState = 'available' | 'trial' | 'locked';
  * (#7225 — audit 2026-09-10 : le menu listait « Restaurant » à une agence de
  * voyage car les modules métier étaient rangés dans les groupes transverses.)
  */
-export type BusinessVertical = 'restaurant' | 'travel' | 'education' | 'fuel';
+export type BusinessVertical = 'restaurant' | 'travel' | 'education' | 'fuel' | 'health';
 
 /**
  * Portée d'un module :
@@ -500,6 +507,95 @@ export const CLIENT_MODULES: ClientModule[] = [
     scope: 'business',
     vertical: 'education',
   },
+  // BC-30 HEALTH — HealthManager (HC-008, #7792). Verticale hôpitaux &
+  // cliniques privées, portée par la feature flag tenant `healthmanager`
+  // (HC-001 #7785, non auto-activable — les verticales passent par l'admin
+  // plateforme). Nav dérivée du catalogue : la carte principale `/health`
+  // porte 5 sous-écrans (`parentKey`, pattern #7724) — patients,
+  // rendez-vous, hospitalisations, facturation, référentiel.
+  {
+    key: 'health_manager',
+    href: '/health',
+    label: 'Clinique',
+    group: 'general',
+    icon: HeartPulse,
+    capabilityKeys: ['healthmanager', 'can_view_healthmanager'],
+    featureKeys: ['healthmanager'],
+    allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
+    upgradeLabel: 'HealthManager',
+    scope: 'business',
+    vertical: 'health',
+  },
+  {
+    key: 'health_patients',
+    href: '/health/patients',
+    label: 'Patients',
+    group: 'general',
+    icon: Users,
+    parentKey: 'health_manager',
+    capabilityKeys: ['healthmanager', 'can_view_healthmanager'],
+    featureKeys: ['healthmanager'],
+    allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
+    upgradeLabel: 'HealthManager (registre patients)',
+    scope: 'business',
+    vertical: 'health',
+  },
+  {
+    key: 'health_appointments',
+    href: '/health/appointments',
+    label: 'Rendez-vous',
+    group: 'general',
+    icon: CalendarX,
+    parentKey: 'health_manager',
+    capabilityKeys: ['healthmanager', 'can_view_healthmanager'],
+    featureKeys: ['healthmanager'],
+    allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
+    upgradeLabel: 'HealthManager (rendez-vous)',
+    scope: 'business',
+    vertical: 'health',
+  },
+  {
+    key: 'health_admissions',
+    href: '/health/admissions',
+    label: 'Hospitalisations',
+    group: 'general',
+    icon: Building2,
+    parentKey: 'health_manager',
+    capabilityKeys: ['healthmanager', 'can_view_healthmanager'],
+    featureKeys: ['healthmanager'],
+    allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
+    upgradeLabel: 'HealthManager (hospitalisations)',
+    scope: 'business',
+    vertical: 'health',
+  },
+  {
+    key: 'health_billing',
+    href: '/health/billing',
+    label: 'Facturation des soins',
+    group: 'general',
+    icon: Wallet,
+    parentKey: 'health_manager',
+    capabilityKeys: ['healthmanager', 'can_view_healthmanager'],
+    featureKeys: ['healthmanager'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'HealthManager (facturation des soins)',
+    scope: 'business',
+    vertical: 'health',
+  },
+  {
+    key: 'health_referential',
+    href: '/health/referential',
+    label: 'Référentiel clinique',
+    group: 'general',
+    icon: FileText,
+    parentKey: 'health_manager',
+    capabilityKeys: ['healthmanager', 'can_view_healthmanager'],
+    featureKeys: ['healthmanager'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'HealthManager (référentiel clinique)',
+    scope: 'business',
+    vertical: 'health',
+  },
 ];
 
 /**
@@ -667,6 +763,17 @@ const MANAGER_MODULE_ROLES: Partial<Record<ClientModuleKey, 'any' | string[]>> =
   showcase: ['principal', 'rh'],
   // Direction scolaire : principal/rh ou manager sans sous-rôle (propriétaire).
   edu_manager: ['', 'principal', 'rh'],
+  // BC-30 HEALTH (HC-008, #7792) : miroir du RBAC serveur `HealthAccess` —
+  // direction (principal/rh/propriétaire), accueil (superviseur/dept),
+  // facturation (comptable). Les sous-écrans reflètent les policies : la
+  // réception ne facture pas, seul health.billing/health.admin voit la
+  // facturation ; le référentiel clinique est direction uniquement.
+  health_manager: ['', 'principal', 'rh', 'superviseur', 'dept', 'comptable'],
+  health_patients: ['', 'principal', 'rh', 'superviseur', 'dept', 'comptable'],
+  health_appointments: ['', 'principal', 'rh', 'superviseur', 'dept'],
+  health_admissions: ['', 'principal', 'rh', 'superviseur', 'dept'],
+  health_billing: ['', 'principal', 'rh', 'comptable'],
+  health_referential: ['', 'principal', 'rh'],
   // BC-19 (#7425) : `api.manager:principal,rh` sur `/cameras` — même miroir.
   cameras: ['principal', 'rh'],
 };

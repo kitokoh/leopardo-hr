@@ -51,6 +51,10 @@ export const PROTECTED_PREFIXES = [
   '/accounting',
   '/edu-manager',
   '/fuel',
+  // BC-30 HEALTH (HC-008, #7792) — espace web clinique (zone dashboard) :
+  // patients, rendez-vous, hospitalisations, facturation, référentiel —
+  // jamais servis sans session (données de santé, la garde réelle reste l'API).
+  '/health',
   // #7759 — tickets support côté client (zone dashboard) : conversations
   // support du tenant, jamais servies sans session.
   '/support',

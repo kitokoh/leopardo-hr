@@ -4818,6 +4818,100 @@
       "deleteConfirm": "Delete this item?"
     }
   },
+  "health": {
+    "common": {
+      "loading": "Loading…",
+      "error": "Something went wrong.",
+      "retry": "Retry",
+      "noData": "No data.",
+      "search": "Search"
+    },
+    "home": {
+      "title": "HealthManager",
+      "subtitle": "Clinic overview: patients, appointments, admissions, care billing and referential.",
+      "todayAppointments": "Today's appointments",
+      "occupancyRate": "Bed occupancy",
+      "monthRevenue": "Month revenue",
+      "recentPatients": "Recent patients",
+      "recentPatientsEmpty": "No patients registered yet.",
+      "quickLinks": "Quick links",
+      "managePatients": "Patient registry",
+      "manageAppointments": "Appointments & agenda",
+      "manageAdmissions": "Admissions & beds",
+      "manageBilling": "Care billing",
+      "manageReferential": "Clinical referential"
+    },
+    "patients": {
+      "title": "Patients",
+      "subtitle": "Facility patient registry (administrative records).",
+      "empty": "No patients.",
+      "searchPlaceholder": "Name, record number or phone…",
+      "mrn": "Record no.",
+      "name": "Patient",
+      "phone": "Phone",
+      "status": "Status"
+    },
+    "appointments": {
+      "title": "Appointments",
+      "subtitle": "Patient ↔ practitioner appointment scheduling.",
+      "empty": "No appointments.",
+      "patient": "Patient",
+      "practitioner": "Practitioner",
+      "startsAt": "Start",
+      "endsAt": "End",
+      "reason": "Reason",
+      "status": "Status",
+      "todayOnly": "Today",
+      "all": "All"
+    },
+    "admissions": {
+      "title": "Admissions",
+      "subtitle": "Ongoing and discharged stays, bed occupancy by department.",
+      "empty": "No admissions.",
+      "patient": "Patient",
+      "bed": "Bed",
+      "department": "Department",
+      "admittedAt": "Admitted on",
+      "status": "Status",
+      "occupancyTitle": "Bed occupancy",
+      "occupancySubtitle": "Actual bed state by department.",
+      "totalBeds": "Beds",
+      "occupiedBeds": "Occupied",
+      "freeBeds": "Free",
+      "maintenanceBeds": "Maintenance",
+      "rate": "Rate"
+    },
+    "billing": {
+      "title": "Care billing",
+      "subtitle": "Care invoices, payments and indicators (billing & management only).",
+      "empty": "No invoices.",
+      "number": "No.",
+      "draft": "Draft",
+      "patient": "Patient",
+      "total": "Total",
+      "paid": "Paid",
+      "balance": "Balance",
+      "status": "Status",
+      "statsTitle": "Indicators",
+      "monthRevenue": "Collected revenue (month)",
+      "outstandingTotal": "Outstanding",
+      "outstandingCount": "Open invoices",
+      "forbidden": "Restricted to billing and management."
+    },
+    "referential": {
+      "title": "Clinical referential",
+      "subtitle": "Medical departments, rooms, beds, specialties and practitioners.",
+      "departments": "Medical departments",
+      "rooms": "Rooms",
+      "beds": "Beds",
+      "specialties": "Specialties",
+      "practitioners": "Practitioners",
+      "empty": "No items.",
+      "name": "Name",
+      "code": "Code",
+      "status": "Status"
+    }
+  },
   "travel": {
     "travel.ageCategory.adult": "Adult",
     "travel.ageCategory.child": "Child",

@@ -4818,6 +4818,100 @@
       "deleteConfirm": "حذف هذا العنصر؟"
     }
   },
+  "health": {
+    "common": {
+      "loading": "جارٍ التحميل…",
+      "error": "حدث خطأ ما.",
+      "retry": "إعادة المحاولة",
+      "noData": "لا توجد بيانات.",
+      "search": "بحث"
+    },
+    "home": {
+      "title": "هيلث ماناجر (HealthManager)",
+      "subtitle": "إدارة العيادة: المرضى، المواعيد، حالات الاستشفاء، فوترة الرعاية والمرجع السريري.",
+      "todayAppointments": "مواعيد اليوم",
+      "occupancyRate": "إشغال الأسرّة",
+      "monthRevenue": "إيرادات الشهر",
+      "recentPatients": "أحدث المرضى",
+      "recentPatientsEmpty": "لا يوجد مرضى مسجلون بعد.",
+      "quickLinks": "روابط سريعة",
+      "managePatients": "سجل المرضى",
+      "manageAppointments": "المواعيد والأجندة",
+      "manageAdmissions": "حالات الاستشفاء والأسرّة",
+      "manageBilling": "فوترة الرعاية",
+      "manageReferential": "المرجع السريري"
+    },
+    "patients": {
+      "title": "المرضى",
+      "subtitle": "سجل مرضى المنشأة (الملف الإداري).",
+      "empty": "لا يوجد مرضى.",
+      "searchPlaceholder": "الاسم أو رقم الملف أو الهاتف…",
+      "mrn": "رقم الملف",
+      "name": "المريض",
+      "phone": "الهاتف",
+      "status": "الحالة"
+    },
+    "appointments": {
+      "title": "المواعيد",
+      "subtitle": "جدولة المواعيد بين المريض والطبيب.",
+      "empty": "لا توجد مواعيد.",
+      "patient": "المريض",
+      "practitioner": "الطبيب",
+      "startsAt": "البداية",
+      "endsAt": "النهاية",
+      "reason": "السبب",
+      "status": "الحالة",
+      "todayOnly": "اليوم",
+      "all": "الكل"
+    },
+    "admissions": {
+      "title": "حالات الاستشفاء",
+      "subtitle": "الإقامات الجارية والمنتهية، وإشغال الأسرّة حسب القسم.",
+      "empty": "لا توجد حالات استشفاء.",
+      "patient": "المريض",
+      "bed": "السرير",
+      "department": "القسم",
+      "admittedAt": "تاريخ الدخول",
+      "status": "الحالة",
+      "occupancyTitle": "إشغال الأسرّة",
+      "occupancySubtitle": "الحالة الفعلية للأسرّة حسب القسم.",
+      "totalBeds": "الأسرّة",
+      "occupiedBeds": "مشغولة",
+      "freeBeds": "شاغرة",
+      "maintenanceBeds": "قيد الصيانة",
+      "rate": "النسبة"
+    },
+    "billing": {
+      "title": "فوترة الرعاية",
+      "subtitle": "فواتير الرعاية والمدفوعات والمؤشرات (مقتصرة على الفوترة والإدارة).",
+      "empty": "لا توجد فواتير.",
+      "number": "الرقم",
+      "draft": "مسودة",
+      "patient": "المريض",
+      "total": "الإجمالي",
+      "paid": "المحصّل",
+      "balance": "الرصيد",
+      "status": "الحالة",
+      "statsTitle": "المؤشرات",
+      "monthRevenue": "الإيرادات المحصّلة (الشهر)",
+      "outstandingTotal": "غير المسدد",
+      "outstandingCount": "فواتير مفتوحة",
+      "forbidden": "الوصول مقتصر على الفوترة والإدارة."
+    },
+    "referential": {
+      "title": "المرجع السريري",
+      "subtitle": "الأقسام الطبية والغرف والأسرّة والتخصصات والأطباء.",
+      "departments": "الأقسام الطبية",
+      "rooms": "الغرف",
+      "beds": "الأسرّة",
+      "specialties": "التخصصات",
+      "practitioners": "الأطباء",
+      "empty": "لا توجد عناصر.",
+      "name": "الاسم",
+      "code": "الرمز",
+      "status": "الحالة"
+    }
+  },
   "travel": {
     "travel.ageCategory.adult": "بالغ",
     "travel.ageCategory.child": "طفل",

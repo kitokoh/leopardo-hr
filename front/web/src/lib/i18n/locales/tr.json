@@ -4818,6 +4818,100 @@
       "deleteConfirm": "Bu öğe silinsin mi?"
     }
   },
+  "health": {
+    "common": {
+      "loading": "Yükleniyor…",
+      "error": "Bir hata oluştu.",
+      "retry": "Tekrar dene",
+      "noData": "Veri yok.",
+      "search": "Ara"
+    },
+    "home": {
+      "title": "HealthManager",
+      "subtitle": "Klinik yönetimi: hastalar, randevular, yatışlar, bakım faturalaması ve referans verileri.",
+      "todayAppointments": "Bugünkü randevular",
+      "occupancyRate": "Yatak doluluğu",
+      "monthRevenue": "Aylık ciro",
+      "recentPatients": "Son hastalar",
+      "recentPatientsEmpty": "Henüz kayıtlı hasta yok.",
+      "quickLinks": "Hızlı erişim",
+      "managePatients": "Hasta kayıtları",
+      "manageAppointments": "Randevular ve ajanda",
+      "manageAdmissions": "Yatışlar ve yataklar",
+      "manageBilling": "Bakım faturalaması",
+      "manageReferential": "Klinik referans verileri"
+    },
+    "patients": {
+      "title": "Hastalar",
+      "subtitle": "Kurumun hasta kayıtları (idari dosya).",
+      "empty": "Hasta yok.",
+      "searchPlaceholder": "Ad, dosya no veya telefon…",
+      "mrn": "Dosya no",
+      "name": "Hasta",
+      "phone": "Telefon",
+      "status": "Durum"
+    },
+    "appointments": {
+      "title": "Randevular",
+      "subtitle": "Hasta ↔ hekim randevu planlaması.",
+      "empty": "Randevu yok.",
+      "patient": "Hasta",
+      "practitioner": "Hekim",
+      "startsAt": "Başlangıç",
+      "endsAt": "Bitiş",
+      "reason": "Neden",
+      "status": "Durum",
+      "todayOnly": "Bugün",
+      "all": "Tümü"
+    },
+    "admissions": {
+      "title": "Yatışlar",
+      "subtitle": "Devam eden ve taburcu edilen yatışlar, servise göre yatak doluluğu.",
+      "empty": "Yatış yok.",
+      "patient": "Hasta",
+      "bed": "Yatak",
+      "department": "Servis",
+      "admittedAt": "Yatış tarihi",
+      "status": "Durum",
+      "occupancyTitle": "Yatak doluluğu",
+      "occupancySubtitle": "Servise göre gerçek yatak durumu.",
+      "totalBeds": "Yatak",
+      "occupiedBeds": "Dolu",
+      "freeBeds": "Boş",
+      "maintenanceBeds": "Bakımda",
+      "rate": "Oran"
+    },
+    "billing": {
+      "title": "Bakım faturalaması",
+      "subtitle": "Bakım faturaları, ödemeler ve göstergeler (yalnızca faturalama ve yönetim).",
+      "empty": "Fatura yok.",
+      "number": "No",
+      "draft": "Taslak",
+      "patient": "Hasta",
+      "total": "Toplam",
+      "paid": "Tahsil edilen",
+      "balance": "Bakiye",
+      "status": "Durum",
+      "statsTitle": "Göstergeler",
+      "monthRevenue": "Tahsil edilen ciro (ay)",
+      "outstandingTotal": "Tahsil edilmemiş",
+      "outstandingCount": "Açık faturalar",
+      "forbidden": "Yalnızca faturalama ve yönetime açıktır."
+    },
+    "referential": {
+      "title": "Klinik referans verileri",
+      "subtitle": "Tıbbi servisler, odalar, yataklar, uzmanlıklar ve hekimler.",
+      "departments": "Tıbbi servisler",
+      "rooms": "Odalar",
+      "beds": "Yataklar",
+      "specialties": "Uzmanlıklar",
+      "practitioners": "Hekimler",
+      "empty": "Öğe yok.",
+      "name": "Ad",
+      "code": "Kod",
+      "status": "Durum"
+    }
+  },
   "travel": {
     "travel.ageCategory.adult": "Yetişkin",
     "travel.ageCategory.child": "Çocuk",

@@ -7685,5 +7685,99 @@
         "unsubscribe": "Désinscription"
       }
     }
+  },
+  "health": {
+    "common": {
+      "loading": "Chargement…",
+      "error": "Une erreur est survenue.",
+      "retry": "Réessayer",
+      "noData": "Aucune donnée.",
+      "search": "Rechercher"
+    },
+    "home": {
+      "title": "HealthManager",
+      "subtitle": "Pilotage de la clinique : patients, rendez-vous, hospitalisations, facturation des soins et référentiel.",
+      "todayAppointments": "RDV du jour",
+      "occupancyRate": "Taux d'occupation",
+      "monthRevenue": "CA du mois",
+      "recentPatients": "Patients récents",
+      "recentPatientsEmpty": "Aucun patient enregistré pour le moment.",
+      "quickLinks": "Accès rapides",
+      "managePatients": "Registre patients",
+      "manageAppointments": "Rendez-vous & agenda",
+      "manageAdmissions": "Hospitalisations & lits",
+      "manageBilling": "Facturation des soins",
+      "manageReferential": "Référentiel clinique"
+    },
+    "patients": {
+      "title": "Patients",
+      "subtitle": "Registre des patients de l'établissement (dossier administratif).",
+      "empty": "Aucun patient.",
+      "searchPlaceholder": "Nom, n° de dossier ou téléphone…",
+      "mrn": "N° de dossier",
+      "name": "Patient",
+      "phone": "Téléphone",
+      "status": "Statut"
+    },
+    "appointments": {
+      "title": "Rendez-vous",
+      "subtitle": "Planification des rendez-vous patient ↔ praticien.",
+      "empty": "Aucun rendez-vous.",
+      "patient": "Patient",
+      "practitioner": "Praticien",
+      "startsAt": "Début",
+      "endsAt": "Fin",
+      "reason": "Motif",
+      "status": "Statut",
+      "todayOnly": "Aujourd'hui",
+      "all": "Tous"
+    },
+    "admissions": {
+      "title": "Hospitalisations",
+      "subtitle": "Séjours en cours et sortis, occupation des lits par service.",
+      "empty": "Aucune hospitalisation.",
+      "patient": "Patient",
+      "bed": "Lit",
+      "department": "Service",
+      "admittedAt": "Admis le",
+      "status": "Statut",
+      "occupancyTitle": "Occupation des lits",
+      "occupancySubtitle": "État réel des lits par service.",
+      "totalBeds": "Lits",
+      "occupiedBeds": "Occupés",
+      "freeBeds": "Libres",
+      "maintenanceBeds": "Maintenance",
+      "rate": "Taux"
+    },
+    "billing": {
+      "title": "Facturation des soins",
+      "subtitle": "Factures de soins, paiements et indicateurs (réservé facturation & direction).",
+      "empty": "Aucune facture.",
+      "number": "N°",
+      "draft": "Brouillon",
+      "patient": "Patient",
+      "total": "Total",
+      "paid": "Encaissé",
+      "balance": "Solde",
+      "status": "Statut",
+      "statsTitle": "Indicateurs",
+      "monthRevenue": "CA encaissé (mois)",
+      "outstandingTotal": "Impayés",
+      "outstandingCount": "Factures en attente",
+      "forbidden": "Accès réservé à la facturation et à la direction."
+    },
+    "referential": {
+      "title": "Référentiel clinique",
+      "subtitle": "Services médicaux, salles, lits, spécialités et praticiens.",
+      "departments": "Services médicaux",
+      "rooms": "Salles",
+      "beds": "Lits",
+      "specialties": "Spécialités",
+      "practitioners": "Praticiens",
+      "empty": "Aucun élément.",
+      "name": "Nom",
+      "code": "Code",
+      "status": "Statut"
+    }
   }
 }
