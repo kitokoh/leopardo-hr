@@ -41,6 +41,7 @@ ALLOWLIST=(
   RestaurantHealthController.php               # sonde de santé
   RestaurantPublicOrderController.php          # surface publique (token boutique)
   RestaurantPublicShopController.php           # surface publique (token boutique)
+  RestaurantPublicDirectoryController.php      # annuaire public opt-in is_public (#7746, lecture seule sans acteur tenant)
   RestaurantKioskController.php                # kiosque : auth locale dédiée
   RestaurantMobileServerController.php         # autorisation dans RestaurantMobileServerService
   RestaurantMobileManagerController.php        # autorisation dans RestaurantMobileManagerService

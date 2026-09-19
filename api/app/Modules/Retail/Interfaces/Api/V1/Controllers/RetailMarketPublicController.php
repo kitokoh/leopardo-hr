@@ -79,7 +79,7 @@ class RetailMarketPublicController extends Controller
         $categories = $this->categoriesById($eligible, $items);
 
         return response()->json([
-            'data' => array_values(array_map(
+            'data' => array_map(
                 fn (RetailProduct $product): array => $this->productPayload(
                     $product,
                     $settings[(string) $product->company_id] ?? null,
@@ -88,7 +88,7 @@ class RetailMarketPublicController extends Controller
                     in_array((int) $product->id, $available, true),
                 ),
                 $items,
-            )),
+            ),
             'meta' => [
                 'current_page' => $products->currentPage(),
                 'per_page' => $products->perPage(),

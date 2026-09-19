@@ -1426,6 +1426,8 @@ trait CreatesMvpSchema
                 $table->char('currency', 3)->default('XOF');
                 $table->string('unit', 30)->nullable();
                 $table->string('status', 20)->default('draft');
+                $table->boolean('online_visible')->default(false);
+                $table->string('image_url', 500)->nullable();
                 $table->json('meta')->nullable();
                 $table->timestamps();
 
@@ -1433,6 +1435,7 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'sku'], 'retail_products_company_sku_unique');
                 $table->index(['company_id', 'status'], 'retail_products_company_status_idx');
                 $table->index(['company_id', 'barcode'], 'retail_products_company_barcode_idx');
+                $table->index(['company_id', 'online_visible'], 'retail_products_company_online_visible_idx');
             });
         }
 
@@ -1534,12 +1537,25 @@ trait CreatesMvpSchema
                 $table->string('source', 20)->default('pos');
                 $table->text('note')->nullable();
                 $table->string('idempotency_key', 64)->nullable();
+                $table->string('customer_name', 160)->nullable();
+                $table->string('customer_phone', 40)->nullable();
+                $table->string('customer_email', 160)->nullable();
+                $table->string('delivery_address', 255)->nullable();
+                $table->string('delivery_city', 120)->nullable();
+                $table->text('delivery_notes')->nullable();
+                $table->string('fulfillment_status', 20)->nullable();
+                $table->string('tracking_token', 64)->nullable();
+                $table->timestamp('confirmed_at')->nullable();
+                $table->timestamp('shipped_at')->nullable();
+                $table->timestamp('delivered_at')->nullable();
                 $table->unsignedInteger('version')->default(1);
                 $table->timestamps();
 
                 $table->unique(['company_id', 'reference'], 'retail_orders_company_reference_unique');
                 $table->unique(['company_id', 'idempotency_key'], 'retail_orders_company_idempotency_key_unique');
+                $table->unique(['company_id', 'tracking_token'], 'retail_orders_company_tracking_token_unique');
                 $table->index(['company_id', 'location_id', 'status'], 'retail_orders_company_location_status_idx');
+                $table->index(['company_id', 'fulfillment_status'], 'retail_orders_company_fulfillment_status_idx');
             });
         }
 
@@ -1578,6 +1594,27 @@ trait CreatesMvpSchema
 
                 $table->unique(['company_id', 'idempotency_key'], 'retail_order_payments_company_idempotency_key_unique');
                 $table->index(['company_id', 'order_id'], 'retail_order_payments_company_order_idx');
+            });
+        }
+
+        // BC-17 RETAIL #7807 — reglages boutique en ligne Leopardo Marche.
+        // Miroir de la migration 2026_09_19_000401_7807 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('retail_online_settings'))) {
+            Schema::create($this->moduleTable('retail_online_settings'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id');
+                $table->boolean('enabled')->default(false);
+                $table->string('shop_name', 160);
+                $table->text('shop_description')->nullable();
+                $table->string('city', 120)->nullable();
+                $table->string('contact_phone', 40)->nullable();
+                $table->string('contact_email', 160)->nullable();
+                $table->char('currency', 3)->default('DZD');
+                $table->unsignedInteger('version')->default(1);
+                $table->timestamps();
+
+                $table->unique(['company_id'], 'retail_online_settings_company_unique');
+                $table->index(['enabled'], 'retail_online_settings_enabled_idx');
             });
         }
 
