@@ -17,6 +17,7 @@ import {
   LayoutGrid,
   Map,
   Ticket,
+  UsersRound,
 } from 'lucide-react';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { apiFetch } from '@/lib/api-client';
@@ -96,6 +97,13 @@ export default function TravelHomePage() {
       title: t(locale, 'travel.bookings.title', 'Réservations'),
       description: t(locale, 'travel.home.bookingsDesc', 'Ventes au guichet, confirmation, annulation, remboursement et billets.'),
       accent: 'from-amber-500 to-orange-600',
+    },
+    {
+      href: '/travel/staff',
+      icon: UsersRound,
+      title: t(locale, 'travel.staff.title', 'Équipe'),
+      description: t(locale, 'travel.home.staffDesc', 'Affectations chauffeur, guichetier, contrôleur et chef de bureau.'),
+      accent: 'from-violet-500 to-purple-600',
     },
     {
       href: '/travel/reports',
