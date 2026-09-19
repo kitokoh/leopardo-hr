@@ -1,9 +1,12 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { buildCspDirectives, cspHeaderName, generateCspNonce } from '@/lib/csp';
 import { isSupportedLocale, resolveSsrVitrineLang } from '@/lib/i18n';
 
 /**
  * Proxy (ex-`middleware`) : protection serveur de la zone dashboard (QA wave
- * 2026-08-14, T012, issue #2236) + normalisation `?lang=` vitrine (#4004).
+ * 2026-08-14, T012, issue #2236) + normalisation `?lang=` vitrine (#4004)
+ * + émission de la Content-Security-Policy ENFORCE avec nonce par requête
+ * (#7650 — source unique des directives : `src/lib/csp.ts`).
  *
  * #7305 — Next 16 a renommé la convention `middleware` en `proxy` (l'ancien nom
  * émet un avertissement de dépréciation à chaque build/dev). Migration
@@ -146,7 +149,22 @@ export function proxy(request: NextRequest) {
   const lang = urlLang && isSupportedLocale(urlLang)
     ? urlLang
     : resolveSsrVitrineLang(null, request.headers.get('accept-language'));
-  const response = NextResponse.next();
+  // #7650 — CSP enforce avec nonce par requête. Le nonce est posé sur les
+  // EN-TÊTES DE LA REQUÊTE : Next le lit dans `content-security-policy`
+  // (cf. `parseRequestHeaders`) et l'appose sur ses propres scripts inline
+  // (bootstrap, flight data) et preloads — possible parce que TOUTES les
+  // routes HTML sont rendues dynamiquement (le root layout lit `headers()`,
+  // #3807). `x-nonce` sert aux composants serveur qui rendent un script
+  // inline explicite (le Consent Mode par défaut de `layout.tsx`).
+  const nonce = generateCspNonce();
+  const csp = buildCspDirectives({ nonce });
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-nonce', nonce);
+  requestHeaders.set('content-security-policy', csp);
+
+  const response = NextResponse.next({ request: { headers: requestHeaders } });
+  // Enforce par défaut ; `CSP_REPORT_ONLY=true` = levier de rollback (#7650).
+  response.headers.set(cspHeaderName(), csp);
   response.headers.set('x-vitrine-lang', lang);
 
   return response;
@@ -210,5 +228,13 @@ export const config = {
     '/guides/:path*',
     '/case-studies/:path*',
     '/checkout/:path*',
+    // #7650 — CSP enforce + nonce : le proxy doit voir TOUTES les routes HTML
+    // (auth, shop, kiosk, order, portails publics…), pas seulement la zone
+    // dashboard et la vitrine. Exclusions : routes API Next (`/api/*`, pas de
+    // document HTML), assets `/_next/*` et tout chemin de fichier (contient un
+    // point : sw.js, sitemap.xml, robots.txt, llms.txt, images…). Les entrées
+    // littérales ci-dessus restent la source lisible des zones gardées
+    // (tests protected-prefixes) ; ce motif n'ajoute que les en-têtes.
+    '/((?!api/|_next/|.*\\..*).*)',
   ],
 };

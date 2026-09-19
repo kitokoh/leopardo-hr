@@ -612,3 +612,39 @@ propagation i18n du 2026-09-14 (PR #7350).
 > (`dev-hub/tools/check-governance.ps1`) exige qu'une modification de
 > `front/admin-dashboard/src/**` soit accompagnee de la mise a jour de ce fichier **ou** de
 > `docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS.md`.
+
+## Scenario — securite session : token super-admin en memoire volatile + CSP durcie du build (#7695, 2026-09-19)
+
+### Ce qui change
+
+- Le bearer super-admin ne vit plus en `sessionStorage` pendant la session active : il est tenu
+  en **memoire volatile** par `front/admin-dashboard/src/services/token-storage.js`.
+  `sessionStorage` n'est plus qu'un hand-off ephemere de rechargement (consomme — lu puis
+  supprime — au boot du module et au retour bfcache `pageshow`, reecrit uniquement a
+  `pagehide`/`beforeunload`).
+- La CSP de `dist/_headers` est **generee au build** (`scripts/csp.mjs` + plugin `csp-headers`
+  de `vite.config.js`) : `script-src 'self'` sans `'unsafe-inline'`, `connect-src` explicite
+  derive de `VITE_API_URL`/`VITE_WEBSOCKET_URL` (fin du wildcard `https:`/`wss:` nu).
+
+### Scenario de recette
+
+1. Se connecter au dashboard, puis dans la console DevTools executer
+   `sessionStorage.getItem('admin_token')` : le resultat doit etre **null** (le token n'est
+   plus lisible par un script injecte en cours de session).
+2. Recharger la page (F5) : la session **survit** (hand-off pagehide → boot) et, une fois
+   l'app chargee, `sessionStorage.getItem('admin_token')` est de nouveau **null**.
+3. Se deconnecter : plus aucun appel API ne porte d'`Authorization`, et aucun residu
+   `admin_token` ne subsiste en sessionStorage.
+4. Sur le build deploye, verifier le header `Content-Security-Policy` servi :
+   `script-src 'self'` (sans `unsafe-inline`) et `connect-src` limite a `'self'` + l'origine
+   API (+ l'origine websocket si `VITE_WEBSOCKET_URL` est configuree) ; la SPA charge sans
+   violation CSP en console.
+
+### Verification automatique
+
+- Test de garde `front/admin-dashboard/scripts/check-csp-guard.mjs` chaine a `npm run build`
+  (execute par `web-ci.yml` et `deploy-admin-dashboard.yml`) : echec si la CSP du build
+  contient `'unsafe-inline'` dans script-src, un scheme nu (`https:`, `wss:`, `http:`, `ws:`)
+  ou `*` dans connect-src, ou le placeholder non remplace.
+- Les specs Playwright existantes restent la non-regression fonctionnelle : elles sement le
+  token via `addInitScript` (avant le boot de l'app), chemin identique a un rechargement.
