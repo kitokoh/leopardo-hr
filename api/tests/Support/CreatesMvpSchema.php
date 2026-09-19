@@ -1712,6 +1712,171 @@ trait CreatesMvpSchema
             });
         }
 
+        // R2 Communication (#7687) — parité fixture ↔ migration tenant
+        // 2026_09_19_000001 (garde #5443). FKs volontairement omises : la
+        // fixture ne crée pas communication_integrations (couverte par
+        // RefreshTenantDatabase dans les tests Communication).
+        if (! Schema::hasTable($this->moduleTable('communication_threads'))) {
+            Schema::create($this->moduleTable('communication_threads'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('integration_id');
+                $table->string('gmail_thread_id', 32);
+                $table->string('subject', 998)->nullable();
+                $table->string('snippet', 500)->nullable();
+                $table->unsignedInteger('message_count')->default(0);
+                $table->timestamp('last_message_at')->nullable()->index();
+                $table->timestamps();
+                $table->unique(['company_id', 'integration_id', 'gmail_thread_id'], 'communication_threads_unique');
+            });
+        }
+
+        // R3 Communication (#7688) — parité fixture ↔ migrations tenant
+        // 2026_09_20_000002/000003 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('communication_categories'))) {
+            Schema::create($this->moduleTable('communication_categories'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->string('key', 64);
+                $table->string('label', 128)->nullable();
+                $table->boolean('is_system')->default(false);
+                $table->boolean('active')->default(true);
+                $table->timestamps();
+                $table->unique(['company_id', 'key'], 'communication_categories_company_key_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('communication_contact_proposals'))) {
+            Schema::create($this->moduleTable('communication_contact_proposals'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('integration_id');
+                $table->string('email', 320);
+                $table->string('suggested_name', 128)->nullable();
+                $table->string('status', 16)->default('proposed')->index();
+                $table->unsignedInteger('message_count')->default(1);
+                $table->unsignedBigInteger('crm_contact_id')->nullable();
+                $table->timestamp('decided_at')->nullable();
+                $table->unsignedInteger('decided_by')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'integration_id', 'email'], 'communication_contact_proposals_unique');
+            });
+        }
+
+        // R4 Communication (#7689) — parité fixture ↔ migration tenant
+        // 2026_09_21_000001 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('communication_follow_up_rules'))) {
+            Schema::create($this->moduleTable('communication_follow_up_rules'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('integration_id')->index();
+                $table->string('name', 128);
+                $table->boolean('active')->default(true);
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('communication_follow_up_steps'))) {
+            Schema::create($this->moduleTable('communication_follow_up_steps'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('rule_id')->index();
+                $table->unsignedSmallInteger('position');
+                $table->unsignedSmallInteger('delay_days');
+                $table->string('template_key', 64)->default('communication_follow_up');
+                $table->timestamps();
+                $table->unique(['rule_id', 'position'], 'communication_follow_up_steps_rule_position_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('communication_follow_ups'))) {
+            Schema::create($this->moduleTable('communication_follow_ups'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('rule_id')->index();
+                $table->uuid('integration_id')->index();
+                $table->uuid('thread_id')->index();
+                $table->uuid('message_id')->nullable();
+                $table->unsignedSmallInteger('step_position');
+                $table->string('contact_email');
+                $table->timestamp('scheduled_for')->index();
+                $table->string('status', 20)->default('pending')->index();
+                $table->string('skip_reason', 64)->nullable();
+                $table->timestamp('sent_at')->nullable();
+                $table->string('sent_gmail_message_id')->nullable();
+                $table->timestamps();
+                $table->unique(['rule_id', 'thread_id', 'step_position'], 'communication_follow_ups_rule_thread_step_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('communication_follow_up_opt_outs'))) {
+            Schema::create($this->moduleTable('communication_follow_up_opt_outs'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->string('email');
+                $table->string('source', 20)->default('manual');
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'email'], 'communication_follow_up_opt_outs_company_email_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('communication_follow_up_logs'))) {
+            Schema::create($this->moduleTable('communication_follow_up_logs'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('follow_up_id')->nullable()->index();
+                $table->uuid('integration_id')->index();
+                $table->uuid('thread_id')->nullable();
+                $table->unsignedSmallInteger('step_position')->nullable();
+                $table->string('contact_email')->nullable();
+                $table->string('action', 20)->index();
+                $table->string('reason', 64)->nullable();
+                $table->timestamps();
+            });
+        }
+
+        // R5 Communication (#7690) — parité fixture ↔ migration tenant
+        // 2026_09_22_000001 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('communication_reply_policies'))) {
+            Schema::create($this->moduleTable('communication_reply_policies'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('integration_id')->index();
+                $table->string('category_key', 64);
+                $table->string('policy', 10)->default('off');
+                $table->timestamps();
+                $table->unique(['company_id', 'integration_id', 'category_key'], 'communication_reply_policies_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('communication_pending_replies'))) {
+            Schema::create($this->moduleTable('communication_pending_replies'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('integration_id')->index();
+                $table->uuid('thread_id')->index();
+                $table->uuid('message_id');
+                $table->string('category_key', 64);
+                $table->string('mode', 10);
+                $table->string('to_email');
+                $table->string('subject', 998)->nullable();
+                $table->text('body')->nullable();
+                $table->string('ai_language', 8)->nullable();
+                $table->unsignedSmallInteger('ai_confidence')->nullable();
+                $table->string('status', 20)->default('pending')->index();
+                $table->string('skip_reason', 64)->nullable();
+                $table->timestamp('edited_at')->nullable();
+                $table->unsignedBigInteger('decided_by')->nullable();
+                $table->timestamp('decided_at')->nullable();
+                $table->string('gmail_draft_id')->nullable();
+                $table->string('sent_gmail_message_id')->nullable();
+                $table->timestamp('sent_at')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'message_id', 'mode'], 'communication_pending_replies_unique');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('export_history'))) {
             Schema::create($this->moduleTable('export_history'), function (Blueprint $table): void {
                 $table->id();
@@ -4165,6 +4330,16 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "conversation_messages"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "conversation_threads"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "communication_events"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_reply_policies"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_pending_replies"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_follow_up_rules"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_follow_up_steps"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_follow_ups"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_follow_up_opt_outs"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_follow_up_logs"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_categories"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_contact_proposals"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_threads"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "notification_preferences"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "crm_imports"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "crm_outbox_events"'.$cascade);
