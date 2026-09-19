@@ -142,6 +142,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     // ── Invitations ───────────────────────────────────────────────────────────
     Route::get('/invitations', [InvitationController::class, 'index']);
     Route::post('/invitations/{invitation}/resend', [InvitationController::class, 'resend']);
+    // #7762 — révocation d'une invitation en attente (gate manageInvitations) :
+    // suppression de la ligne → token inutilisable immédiatement (accept 404).
+    Route::delete('/invitations/{invitation}', [InvitationController::class, 'destroy']);
 
     // ── Biometrics & Kiosks ───────────────────────────────────────────────────
     Route::get('/biometric-enrollment-requests', [BiometricEnrollmentController::class, 'index']);

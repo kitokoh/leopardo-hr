@@ -9520,6 +9520,41 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /invitations/{invitation}:
+    delete:
+      tags:
+      - Invitations
+      summary: 'Révoquer une invitation en attente (issue #7762)'
+      description: 'Supprime l''invitation : son token devient inutilisable immédiatement (l''activation répond 404). Une invitation déjà acceptée n''est pas révocable (410) — le compte existe, c''est l''archivage de l''employé qui retire l''accès. Réservé aux managers principal/rh (gate manageInvitations), isolé par tenant.'
+      parameters:
+      - $ref: '#/components/parameters/InvitationId'
+      responses:
+        '200':
+          description: Invitation révoquée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      revoked_at:
+                        type: string
+                        format: date-time
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '410':
+          description: Invitation deja acceptee
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /biometric-enrollment-requests:
     get:
       tags:

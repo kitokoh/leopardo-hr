@@ -1,10 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
-import { Archive, RefreshCw, Search, UserPlus, Users, X } from 'lucide-react';
+import { Archive, LayoutGrid, RefreshCw, Search, Trash2, UserPlus, Users, X } from 'lucide-react';
 
 import { apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { MODULE_GRANT_KEYS, type ModuleGrantKey } from '@/lib/client-features';
 import { getPreferredLocale, getStoredUser, toIntlLocale, type AppLocale, type StoredAuthUser } from '@/lib/i18n';
 import { interpolate } from '@/lib/i18n/locale-catalog';
 import {
@@ -58,6 +59,22 @@ type InvitationsPayload = {
 type DepartmentRecord = { id: number; name: string };
 
 type DepartmentsPayload = { data?: DepartmentRecord[] };
+
+type ModuleGrantsPayload = { data?: { module_keys?: string[] } };
+
+/**
+ * #7762 — libellés des modules délégables (registre fermé ModuleKey, miroir de
+ * `MODULE_GRANT_KEYS` — la parité est vérifiée par le test de la page).
+ */
+const MODULE_GRANT_LABEL_KEYS: Record<ModuleGrantKey, TeamRolesKey> = {
+  marketing: 'moduleMarketing',
+  accounting: 'moduleAccounting',
+  support: 'moduleSupport',
+  crm: 'moduleCrm',
+  showcase: 'moduleShowcase',
+  hr: 'moduleHr',
+  billing_view: 'moduleBillingView',
+};
 
 const PAGE_SIZE = 12;
 
@@ -127,6 +144,17 @@ export default function TeamSettingsPage() {
   const [busyEmployeeId, setBusyEmployeeId] = useState<number | null>(null);
   const [busyInvitationId, setBusyInvitationId] = useState<string | number | null>(null);
   const [confirmArchiveId, setConfirmArchiveId] = useState<number | null>(null);
+  const [confirmRevokeId, setConfirmRevokeId] = useState<string | number | null>(null);
+
+  // ── Modules délégués (#7762) — panneau par collaborateur, principal only ─
+  const [grantsOpenId, setGrantsOpenId] = useState<number | null>(null);
+  const [grantDraft, setGrantDraft] = useState<string[]>([]);
+  const [grantsLoading, setGrantsLoading] = useState(false);
+  const [grantsSaving, setGrantsSaving] = useState(false);
+
+  const isPrincipalViewer =
+    (user?.role ?? '').toLowerCase() === 'manager'
+    && (user?.manager_role ?? '').toLowerCase() === 'principal';
 
   const viewerId = user?.id !== undefined && user?.id !== null ? String(user.id) : '';
   const roleOptions = useMemo(() => teamRoleOptions(locale), [locale]);
@@ -351,6 +379,80 @@ export default function TeamSettingsPage() {
       setError(teamRolesErrorMessage(locale, err));
     } finally {
       setBusyInvitationId(null);
+    }
+  };
+
+  /**
+   * #7762 — révocation d'une invitation en attente (après confirmation
+   * inline, même patron que l'archivage) : DELETE /invitations/{id}, le lien
+   * reçu par email devient inutilisable immédiatement.
+   */
+  const handleRevoke = async (invitation: InvitationRecord) => {
+    setError(null);
+    setNotice(null);
+    setBusyInvitationId(invitation.id);
+
+    try {
+      await apiFetch(`/invitations/${invitation.id}`, { method: 'DELETE' });
+      setConfirmRevokeId(null);
+      setNotice(teamRolesT(locale, 'revokeSuccess'));
+      await loadInvitations();
+    } catch (err) {
+      setError(teamRolesErrorMessage(locale, err));
+    } finally {
+      setBusyInvitationId(null);
+    }
+  };
+
+  /** #7762 — ouvre/ferme le panneau des modules délégués d'un collaborateur. */
+  const handleGrantsToggle = async (employee: EmployeeRecord) => {
+    setError(null);
+    setNotice(null);
+
+    if (grantsOpenId === employee.id) {
+      setGrantsOpenId(null);
+      return;
+    }
+
+    setGrantsOpenId(employee.id);
+    setGrantDraft([]);
+    setGrantsLoading(true);
+
+    try {
+      const response = await apiFetch(`/employees/${employee.id}/module-grants`, { _cacheBust: true });
+      const payload = (await response.json()) as ModuleGrantsPayload;
+      setGrantDraft(Array.isArray(payload.data?.module_keys) ? payload.data.module_keys : []);
+    } catch (err) {
+      setGrantsOpenId(null);
+      setError(teamRolesErrorMessage(locale, err, 'modulesLoadError'));
+    } finally {
+      setGrantsLoading(false);
+    }
+  };
+
+  const toggleGrantDraft = (key: string) => {
+    setGrantDraft((draft) =>
+      draft.includes(key) ? draft.filter((entry) => entry !== key) : [...draft, key],
+    );
+  };
+
+  /** #7762 — PUT du jeu COMPLET (ce qui n'est pas coché est révoqué). */
+  const handleGrantsSave = async (employee: EmployeeRecord) => {
+    setError(null);
+    setNotice(null);
+    setGrantsSaving(true);
+
+    try {
+      await apiFetch(`/employees/${employee.id}/module-grants`, {
+        method: 'PUT',
+        body: JSON.stringify({ module_keys: grantDraft }),
+      });
+      setGrantsOpenId(null);
+      setNotice(teamRolesT(locale, 'modulesSaved'));
+    } catch (err) {
+      setError(teamRolesErrorMessage(locale, err));
+    } finally {
+      setGrantsSaving(false);
     }
   };
 
@@ -657,16 +759,55 @@ export default function TeamSettingsPage() {
                           </span>
                         ) : null}
                         {invitation.status !== 'accepted' ? (
-                          <button
-                            type="button"
-                            onClick={() => void handleResend(invitation)}
-                            disabled={busyInvitationId === invitation.id}
-                            data-testid={`team-resend-${employee.id}`}
-                            className="inline-flex items-center gap-1.5 rounded-xl border border-app-border px-3 py-1.5 text-[11px] font-bold text-slate-700 transition hover:bg-slate-100 disabled:opacity-60"
-                          >
-                            <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
-                            {teamRolesT(locale, 'resend')}
-                          </button>
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => void handleResend(invitation)}
+                              disabled={busyInvitationId === invitation.id}
+                              data-testid={`team-resend-${employee.id}`}
+                              className="inline-flex items-center gap-1.5 rounded-xl border border-app-border px-3 py-1.5 text-[11px] font-bold text-slate-700 transition hover:bg-slate-100 disabled:opacity-60"
+                            >
+                              <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
+                              {teamRolesT(locale, 'resend')}
+                            </button>
+                            {confirmRevokeId === invitation.id ? (
+                              <>
+                                <span className="text-[11px] font-bold text-slate-600">
+                                  {teamRolesT(locale, 'revokeTitle')}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => void handleRevoke(invitation)}
+                                  disabled={busyInvitationId === invitation.id}
+                                  data-testid={`team-revoke-confirm-${employee.id}`}
+                                  className="rounded-xl bg-red-600 px-3 py-1.5 text-[11px] font-bold text-white transition hover:bg-red-700 disabled:opacity-60"
+                                >
+                                  {teamRolesT(locale, 'revokeConfirm')}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setConfirmRevokeId(null)}
+                                  className="rounded-xl border border-app-border px-3 py-1.5 text-[11px] font-bold text-slate-600 transition hover:bg-slate-100"
+                                >
+                                  {teamRolesT(locale, 'cancel')}
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setConfirmRevokeId(invitation.id);
+                                  setError(null);
+                                  setNotice(null);
+                                }}
+                                data-testid={`team-revoke-${employee.id}`}
+                                className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 px-3 py-1.5 text-[11px] font-bold text-red-600 transition hover:bg-red-50"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                                {teamRolesT(locale, 'revoke')}
+                              </button>
+                            )}
+                          </>
                         ) : null}
                       </>
                     ) : (
@@ -677,6 +818,17 @@ export default function TeamSettingsPage() {
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2">
+                    {isPrincipalViewer && !isSelf ? (
+                      <button
+                        type="button"
+                        onClick={() => void handleGrantsToggle(employee)}
+                        data-testid={`team-grants-toggle-${employee.id}`}
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-app-border px-3 py-1.5 text-[11px] font-bold text-slate-600 transition hover:bg-slate-100"
+                      >
+                        <LayoutGrid className="h-3.5 w-3.5" aria-hidden="true" />
+                        {teamRolesT(locale, 'modulesToggle')}
+                      </button>
+                    ) : null}
                     {confirmArchiveId === employee.id ? (
                       <>
                         <span className="text-[11px] font-bold text-slate-600">
@@ -715,6 +867,59 @@ export default function TeamSettingsPage() {
                       </button>
                     )}
                   </div>
+
+                  {grantsOpenId === employee.id ? (
+                    <div
+                      data-testid={`team-grants-panel-${employee.id}`}
+                      className="rounded-2xl border border-app-border bg-slate-50 p-4 md:col-span-4"
+                    >
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                        {teamRolesT(locale, 'modulesTitle')}
+                      </p>
+                      <p className="mt-1 text-[11px] text-slate-500">{teamRolesT(locale, 'modulesHint')}</p>
+                      {grantsLoading ? (
+                        <p className="mt-3 text-xs text-slate-500">{teamRolesT(locale, 'loading')}</p>
+                      ) : (
+                        <>
+                          <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                            {MODULE_GRANT_KEYS.map((moduleKey) => (
+                              <label
+                                key={moduleKey}
+                                className="flex items-center gap-2 rounded-xl border border-app-border bg-white px-3 py-2 text-xs font-medium text-slate-700"
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={grantDraft.includes(moduleKey)}
+                                  onChange={() => toggleGrantDraft(moduleKey)}
+                                  data-testid={`team-grant-${employee.id}-${moduleKey}`}
+                                  className="h-4 w-4 rounded border-app-border text-brand-700 focus:ring-brand-500"
+                                />
+                                {teamRolesT(locale, MODULE_GRANT_LABEL_KEYS[moduleKey])}
+                              </label>
+                            ))}
+                          </div>
+                          <div className="mt-3 flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => void handleGrantsSave(employee)}
+                              disabled={grantsSaving}
+                              data-testid={`team-grants-save-${employee.id}`}
+                              className="rounded-xl bg-brand-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-brand-800 disabled:opacity-60"
+                            >
+                              {teamRolesT(locale, 'modulesSave')}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setGrantsOpenId(null)}
+                              className="rounded-xl border border-app-border px-4 py-2 text-xs font-bold text-slate-600 transition hover:bg-slate-100"
+                            >
+                              {teamRolesT(locale, 'cancel')}
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ) : null}
                 </div>
               );
             })}

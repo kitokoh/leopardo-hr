@@ -486,35 +486,121 @@ function normalizedRole(user?: StoredAuthUser | null): string {
   }
   return user.role.toLowerCase();
 }
+/**
+ * #7761/#7762 — registre FERMÉ des modules délégables par le principal
+ * (miroir strict de `App\Core\Auth\Domain\Enums\ModuleKey` côté API : toute
+ * clé hors registre est refusée en 422 par `PUT /employees/{id}/module-grants`).
+ */
+export const MODULE_GRANT_KEYS = [
+  'marketing',
+  'accounting',
+  'support',
+  'crm',
+  'showcase',
+  'hr',
+  'billing_view',
+] as const;
+export type ModuleGrantKey = (typeof MODULE_GRANT_KEYS)[number];
+/**
+ * #7762 — quel grant (module_key API) ouvre quel(s) module(s) de navigation.
+ * `hr` couvre le socle RH complet (c'est UN module délégable, pas huit) ;
+ * `support` est réservé à la page tickets (lot §3.2, pas encore de ClientModule).
+ */
+const GRANT_TO_MODULE_KEYS: Record<ModuleGrantKey, ClientModuleKey[]> = {
+  marketing: ['marketing'],
+  accounting: ['accounting'],
+  support: [],
+  crm: ['crm'],
+  showcase: ['showcase'],
+  hr: [
+    'employees',
+    'attendance',
+    'attendance_geo',
+    'absences',
+    'contracts',
+    'payroll',
+    'training',
+    'reports',
+  ],
+  billing_view: ['billing'],
+};
+/**
+ * #7762 — REFUS PAR DÉFAUT : matrice EXPLICITE des `manager_role` autorisés
+ * par module (le fallback historique `return true` pour tout manager
+ * disparaît). Chaque entrée `'any'` reproduit à l'identique un accès
+ * historique réellement ouvert à tout manager côté API (`api.manager` sans
+ * rôle) ; les listes explicites sont le miroir du RBAC serveur
+ * (`api.manager:<roles>` des fichiers de routes). Seul changement assumé vs
+ * l'ancien fallback : `accounting` — le front l'affichait à TOUT manager
+ * alors que l'API répond 403 hors comptable/principal (même logique de miroir
+ * que crm/showcase/cameras) ; le grant `accounting` rétablit l'accès délégué.
+ * Un module ABSENT de la matrice est fermé à tout manager non-principal sans
+ * grant — c'est le refus par défaut.
+ */
+const MANAGER_MODULE_ROLES: Partial<Record<ClientModuleKey, 'any' | string[]>> = {
+  dashboard: 'any',
+  employees: 'any',
+  attendance: 'any',
+  attendance_geo: 'any',
+  absences: 'any',
+  contracts: 'any',
+  payroll: 'any',
+  training: 'any',
+  reports: 'any',
+  partner: 'any',
+  restaurant: 'any',
+  restaurant_kitchen: 'any',
+  travel: 'any',
+  travel_portal: 'any',
+  fuel: 'any',
+  fleet: 'any',
+  billing: ['principal'],
+  integrations: ['principal'],
+  marketing: ['principal', 'marketing'],
+  accounting: ['principal', 'comptable'],
+  crm: ['principal', 'rh'],
+  // BC-27 : l'API réserve la vitrine au responsable (`api.manager:principal,rh`).
+  showcase: ['principal', 'rh'],
+  // Direction scolaire : principal/rh ou manager sans sous-rôle (propriétaire).
+  edu_manager: ['', 'principal', 'rh'],
+  // BC-19 (#7425) : `api.manager:principal,rh` sur `/cameras` — même miroir.
+  cameras: ['principal', 'rh'],
+};
+/** Grants de session normalisés (payload `/auth/me` → `module_grants`). */
+function sessionGrants(user?: StoredAuthUser | null): string[] {
+  const raw = user?.module_grants;
+  if (!Array.isArray(raw)) {
+    return [];
+  }
+  return raw.map((key) => String(key).toLowerCase());
+}
+function grantOpensModule(moduleKey: ClientModuleKey, grants: string[]): boolean {
+  return grants.some((grant) =>
+    (GRANT_TO_MODULE_KEYS[grant as ModuleGrantKey] ?? []).includes(moduleKey),
+  );
+}
 function hasRoleAccess(module: ClientModule, user?: StoredAuthUser | null): boolean {
+  // #7762 — un grant explicite du principal ouvre le module quel que soit le
+  // rôle du collaborateur (y compris non-manager) : c'est la délégation.
+  if (grantOpensModule(module.key, sessionGrants(user))) {
+    return true;
+  }
   const role = normalizedRole(user);
   if (role === 'manager') {
     const managerRole = (user?.manager_role ?? '').toLowerCase();
-    if (module.key === 'billing' || module.key === 'integrations') {
-      return managerRole === 'principal';
+    // Le principal voit tout (il a implicitement tous les grants, spec §3.1).
+    if (managerRole === 'principal') {
+      return true;
     }
-    if (module.key === 'marketing') {
-      return ['principal', 'marketing'].includes(managerRole);
+    const allowed = MANAGER_MODULE_ROLES[module.key];
+    if (allowed === 'any') {
+      return true;
     }
-    if (module.key === 'crm') {
-      return ['principal', 'rh'].includes(managerRole);
+    if (Array.isArray(allowed)) {
+      return allowed.includes(managerRole);
     }
-    if (module.key === 'showcase') {
-      // BC-27 : l'API réserve la gestion de la vitrine au responsable du
-      // tenant (`api.manager:principal,rh`). On rejoue la même règle côté
-      // navigation pour ne jamais exposer un module qui répondrait 403.
-      return ['principal', 'rh'].includes(managerRole);
-    }
-    if (module.key === 'edu_manager') {
-      // Direction scolaire : principal/rh ou manager sans sous-rôle (propriétaire).
-      return managerRole === '' || managerRole === 'principal' || managerRole === 'rh';
-    }
-    if (module.key === 'cameras') {
-      // BC-19 (#7425) : l'API réserve tout `/cameras` au responsable du tenant
-      // (`api.manager:principal,rh`) — même miroir que `showcase`.
-      return ['principal', 'rh'].includes(managerRole);
-    }
-    return true;
+    // REFUS PAR DÉFAUT (#7762) : module non listé → principal + grant seulement.
+    return false;
   }
   return module.allowedRoles.includes(role);
 }
@@ -714,6 +800,9 @@ export function sessionModuleSignature(user?: StoredAuthUser | null): string {
     user.company?.features ?? null,
     user.company?.modules ?? null,
     user.plan?.features ?? null,
+    // #7762 — les grants font partie de la surface modules : une délégation
+    // posée/révoquée par le principal doit rafraîchir le menu de la session.
+    user.module_grants ?? null,
   ]);
 }
 
@@ -762,6 +851,8 @@ export function mergeActivationSurface(
     ...current,
     features: fresh.features ?? current.features ?? null,
     capabilities: fresh.capabilities ?? current.capabilities ?? null,
+    // #7762 — les grants suivent la même mécanique de rafraîchissement.
+    module_grants: fresh.module_grants ?? current.module_grants ?? null,
     company,
   };
 }
