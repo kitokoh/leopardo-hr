@@ -709,6 +709,12 @@
       "to": "BC-02",
       "baseline": false,
       "note": "BC-29 → BC-02 — le callback OAuth (route publique, hors middleware tenant) recharge App\\Core\\Tenant\\Domain\\Models\\Company pour re-vérifier le feature flag `communication` fail-closed (pattern BC-27/BC-28) — R1 #7686"
+    },
+    {
+      "from": "BC-29",
+      "to": "BC-14",
+      "baseline": false,
+      "note": "BC-29 → BC-14 — SyncGmailMailboxJob importe App\\Contracts\\Queue\\TenantScopedJob + App\\Jobs\\Middleware\\EnsureTenantContext (job de sync Gmail tenant-scoped sur queue `communication`, pattern ReconcileFuelStockJob/BC-08) — R2 #7687"
     }
   ]
 }
