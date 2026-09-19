@@ -5756,5 +5756,15 @@
         "desc": "Make your site visible in one click."
       }
     }
+  },
+  "vitrine": {
+    "notFound": {
+      "kicker": "Error 404",
+      "title": "Page not found",
+      "body": "This page does not exist or has been moved. Check the address, or start again from the home page.",
+      "ctaHome": "Back to home",
+      "ctaPricing": "See pricing",
+      "ctaContact": "Contact support"
+    }
   }
 }

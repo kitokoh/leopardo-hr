@@ -7230,5 +7230,15 @@
     "errorTooMany": "Çok fazla deneme. Yeni bir kod isteyin.",
     "errorPasswordRequired": "Bu hesap parola ile giriş gerektirir.",
     "errorGeneric": "Giriş yapılamadı. Birkaç dakika sonra tekrar deneyin."
+  },
+  "vitrine": {
+    "notFound": {
+      "kicker": "Hata 404",
+      "title": "Sayfa bulunamadı",
+      "body": "Bu sayfa mevcut değil veya taşınmış. Adresi kontrol edin ya da ana sayfadan devam edin.",
+      "ctaHome": "Ana sayfaya dön",
+      "ctaPricing": "Fiyatları görün",
+      "ctaContact": "Destek ile iletişime geçin"
+    }
   }
 }

@@ -4455,5 +4455,11 @@
   "nextstepsStepsCustomizeShowcaseTitle": "Customize your showcase website",
   "nextstepsStepsCustomizeShowcaseDesc": "Pick your colors, texts and images.",
   "nextstepsStepsPublishShowcaseTitle": "Publish your showcase website",
-  "nextstepsStepsPublishShowcaseDesc": "Make your site visible in one click."
+  "nextstepsStepsPublishShowcaseDesc": "Make your site visible in one click.",
+  "vitrineNotfoundKicker": "Error 404",
+  "vitrineNotfoundTitle": "Page not found",
+  "vitrineNotfoundBody": "This page does not exist or has been moved. Check the address, or start again from the home page.",
+  "vitrineNotfoundCtahome": "Back to home",
+  "vitrineNotfoundCtapricing": "See pricing",
+  "vitrineNotfoundCtacontact": "Contact support"
 }

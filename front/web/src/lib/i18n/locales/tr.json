@@ -5756,5 +5756,15 @@
         "desc": "Sitenizi tek tıkla görünür yapın."
       }
     }
+  },
+  "vitrine": {
+    "notFound": {
+      "kicker": "Hata 404",
+      "title": "Sayfa bulunamadı",
+      "body": "Bu sayfa mevcut değil veya taşınmış. Adresi kontrol edin ya da ana sayfadan devam edin.",
+      "ctaHome": "Ana sayfaya dön",
+      "ctaPricing": "Fiyatları görün",
+      "ctaContact": "Destek ile iletişime geçin"
+    }
   }
 }

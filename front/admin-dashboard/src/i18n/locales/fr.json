@@ -7097,5 +7097,15 @@
     "errorTooMany": "Trop de tentatives. Demandez un nouveau code.",
     "errorPasswordRequired": "Ce compte requiert une connexion par mot de passe.",
     "errorGeneric": "Impossible de vous connecter. Réessayez dans quelques instants."
+  },
+  "vitrine": {
+    "notFound": {
+      "kicker": "Erreur 404",
+      "title": "Page introuvable",
+      "body": "Cette page n'existe pas ou a été déplacée. Vérifiez l'adresse, ou reprenez depuis l'accueil.",
+      "ctaHome": "Retour à l'accueil",
+      "ctaPricing": "Voir les tarifs",
+      "ctaContact": "Contacter le support"
+    }
   }
 }

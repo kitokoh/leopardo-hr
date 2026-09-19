@@ -7091,5 +7091,15 @@
     "errorTooMany": "Too many attempts. Request a new code.",
     "errorPasswordRequired": "This account requires a password sign-in.",
     "errorGeneric": "Could not log you in. Try again in a few moments."
+  },
+  "vitrine": {
+    "notFound": {
+      "kicker": "Error 404",
+      "title": "Page not found",
+      "body": "This page does not exist or has been moved. Check the address, or start again from the home page.",
+      "ctaHome": "Back to home",
+      "ctaPricing": "See pricing",
+      "ctaContact": "Contact support"
+    }
   }
 }

@@ -4455,5 +4455,11 @@
   "nextstepsStepsCustomizeShowcaseTitle": "تخصيص موقعك التعريفي",
   "nextstepsStepsCustomizeShowcaseDesc": "اختر ألوانك ونصوصك وصورك.",
   "nextstepsStepsPublishShowcaseTitle": "نشر موقعك التعريفي",
-  "nextstepsStepsPublishShowcaseDesc": "اجعل موقعك مرئيًا بنقرة واحدة."
+  "nextstepsStepsPublishShowcaseDesc": "اجعل موقعك مرئيًا بنقرة واحدة.",
+  "vitrineNotfoundKicker": "خطأ 404",
+  "vitrineNotfoundTitle": "الصفحة غير موجودة",
+  "vitrineNotfoundBody": "هذه الصفحة غير موجودة أو تم نقلها. تحقق من العنوان، أو عد إلى الصفحة الرئيسية.",
+  "vitrineNotfoundCtahome": "العودة إلى الصفحة الرئيسية",
+  "vitrineNotfoundCtapricing": "عرض الأسعار",
+  "vitrineNotfoundCtacontact": "التواصل مع الدعم"
 }

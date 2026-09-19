@@ -4455,5 +4455,11 @@
   "nextstepsStepsCustomizeShowcaseTitle": "Personnaliser votre site vitrine",
   "nextstepsStepsCustomizeShowcaseDesc": "Choisissez vos couleurs, textes et images.",
   "nextstepsStepsPublishShowcaseTitle": "Publier votre site vitrine",
-  "nextstepsStepsPublishShowcaseDesc": "Rendez votre site visible en un clic."
+  "nextstepsStepsPublishShowcaseDesc": "Rendez votre site visible en un clic.",
+  "vitrineNotfoundKicker": "Erreur 404",
+  "vitrineNotfoundTitle": "Page introuvable",
+  "vitrineNotfoundBody": "Cette page n'existe pas ou a été déplacée. Vérifiez l'adresse, ou reprenez depuis l'accueil.",
+  "vitrineNotfoundCtahome": "Retour à l'accueil",
+  "vitrineNotfoundCtapricing": "Voir les tarifs",
+  "vitrineNotfoundCtacontact": "Contacter le support"
 }

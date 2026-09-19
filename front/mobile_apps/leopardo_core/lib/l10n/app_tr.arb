@@ -4455,5 +4455,11 @@
   "nextstepsStepsCustomizeShowcaseTitle": "Vitrin sitenizi kişiselleştirin",
   "nextstepsStepsCustomizeShowcaseDesc": "Renklerinizi, metinlerinizi ve görsellerinizi seçin.",
   "nextstepsStepsPublishShowcaseTitle": "Vitrin sitenizi yayınlayın",
-  "nextstepsStepsPublishShowcaseDesc": "Sitenizi tek tıkla görünür yapın."
+  "nextstepsStepsPublishShowcaseDesc": "Sitenizi tek tıkla görünür yapın.",
+  "vitrineNotfoundKicker": "Hata 404",
+  "vitrineNotfoundTitle": "Sayfa bulunamadı",
+  "vitrineNotfoundBody": "Bu sayfa mevcut değil veya taşınmış. Adresi kontrol edin ya da ana sayfadan devam edin.",
+  "vitrineNotfoundCtahome": "Ana sayfaya dön",
+  "vitrineNotfoundCtapricing": "Fiyatları görün",
+  "vitrineNotfoundCtacontact": "Destek ile iletişime geçin"
 }

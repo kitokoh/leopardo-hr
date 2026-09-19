@@ -5756,5 +5756,15 @@
         "desc": "Rendez votre site visible en un clic."
       }
     }
+  },
+  "vitrine": {
+    "notFound": {
+      "kicker": "Erreur 404",
+      "title": "Page introuvable",
+      "body": "Cette page n'existe pas ou a été déplacée. Vérifiez l'adresse, ou reprenez depuis l'accueil.",
+      "ctaHome": "Retour à l'accueil",
+      "ctaPricing": "Voir les tarifs",
+      "ctaContact": "Contacter le support"
+    }
   }
 }
