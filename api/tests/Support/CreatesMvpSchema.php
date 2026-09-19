@@ -3607,6 +3607,27 @@ trait CreatesMvpSchema
             });
         }
 
+        // #7747 (RESTO-902) — avis clients publics : colonnes réelles (et pas un
+        // stub minimal) car RestaurantPublicDirectoryController sous-requête
+        // branch_id/company_id/status/rating sur cette table.
+        if (! Schema::hasTable($this->moduleTable('restaurant_reviews'))) {
+            Schema::create($this->moduleTable('restaurant_reviews'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('branch_id');
+                $table->string('order_reference', 40);
+                $table->unsignedTinyInteger('rating');
+                $table->text('comment')->nullable();
+                $table->string('author_name', 120);
+                $table->string('status', 20)->default('pending');
+                $table->timestamps();
+
+                $table->unique(['company_id', 'order_reference']);
+                $table->index(['branch_id', 'status']);
+                $table->index(['company_id', 'status']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('travel_advert_positions'))) {
             Schema::create($this->moduleTable('travel_advert_positions'), function (Blueprint $table): void {
                 $table->bigIncrements('id');

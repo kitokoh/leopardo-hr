@@ -31575,7 +31575,8 @@ paths:
                         maxLength: 80
                       quantity:
                         type: number
-                        exclusiveMinimum: 0
+                        minimum: 0
+                        exclusiveMinimum: true
                         maximum: 999
                       note:
                         type: string
