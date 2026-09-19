@@ -1693,6 +1693,25 @@ trait CreatesMvpSchema
             });
         }
 
+        // R2 Communication (#7687) — parité fixture ↔ migration tenant
+        // 2026_09_19_000001 (garde #5443). FKs volontairement omises : la
+        // fixture ne crée pas communication_integrations (couverte par
+        // RefreshTenantDatabase dans les tests Communication).
+        if (! Schema::hasTable($this->moduleTable('communication_threads'))) {
+            Schema::create($this->moduleTable('communication_threads'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('integration_id');
+                $table->string('gmail_thread_id', 32);
+                $table->string('subject', 998)->nullable();
+                $table->string('snippet', 500)->nullable();
+                $table->unsignedInteger('message_count')->default(0);
+                $table->timestamp('last_message_at')->nullable()->index();
+                $table->timestamps();
+                $table->unique(['company_id', 'integration_id', 'gmail_thread_id'], 'communication_threads_unique');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('export_history'))) {
             Schema::create($this->moduleTable('export_history'), function (Blueprint $table): void {
                 $table->id();
@@ -4136,6 +4155,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "conversation_messages"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "conversation_threads"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "communication_events"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_threads"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "notification_preferences"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "crm_imports"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "crm_outbox_events"'.$cascade);
