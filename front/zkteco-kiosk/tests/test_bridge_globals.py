@@ -1,10 +1,14 @@
 """Test du bridge local ZKTeco — injection des globals cloud (issue #2750).
 
 Le bridge sert les pages HTML brutes : `app.js` lit
-`window.__KIOSK_API_BASE / __KIOSK_DEVICE_CODE / __KIOSK_TOKEN` mais rien ne
-les définissait → device code vide → `/api/v1/kiosks//…` → 404 pour toutes
+`window.__KIOSK_API_BASE / __KIOSK_DEVICE_CODE` mais rien ne
+les définissait → device code vide → état « non configuré » pour toutes
 les fonctions cloud. Ce test vérifie que les globals sont injectés dans
 index.html servie par le bridge.
+
+#7651 — le token cloud (`__KIOSK_TOKEN`) n'est PLUS injecté : il reste côté
+Python et les appels cloud passent par le proxy /local/cloud/*. admin.html ne
+reçoit plus aucun global (ni token de session, ni config cloud).
 """
 
 from __future__ import annotations
@@ -53,11 +57,22 @@ class BridgeGlobalsInjectionTest(unittest.TestCase):
 
         self.assertIn("window.__KIOSK_API_BASE = \"https://example.test/api/v1\"", html)
         self.assertIn("window.__KIOSK_DEVICE_CODE = \"KIOSK-TEST-001\"", html)
-        self.assertIn("window.__KIOSK_TOKEN = \"token-test-123\"", html)
+        # #7651 — le token cloud ne doit JAMAIS apparaître dans le DOM.
+        self.assertNotIn("__KIOSK_TOKEN", html)
+        self.assertNotIn("token-test-123", html)
         # #5619 — demoMode absent de la config de test → false injecté par défaut.
         self.assertIn("window.__KIOSK_DEMO_MODE = false", html)
         # Injection placée dans le <head> (avant le body)
         self.assertLess(html.index("window.__KIOSK_"), html.index("</head>"))
+
+    def test_admin_html_receives_no_injected_globals(self) -> None:
+        # #7651 — admin.html s'authentifie par PIN : aucun secret ni global
+        # injecté dans la page (ni token cloud, ni token de session locale).
+        with urlopen(f"http://127.0.0.1:{self.port}/admin.html", timeout=10) as response:
+            html = response.read().decode("utf-8")
+        self.assertNotIn("window.__KIOSK_", html)
+        self.assertNotIn("__LOCAL_BRIDGE_TOKEN", html)
+        self.assertNotIn("token-test-123", html)
 
     def test_root_serves_index_with_globals(self) -> None:
         with urlopen(f"http://127.0.0.1:{self.port}/", timeout=10) as response:
