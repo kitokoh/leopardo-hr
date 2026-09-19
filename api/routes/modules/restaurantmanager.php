@@ -19,6 +19,7 @@
 
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantBillController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantBranchController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantBranchPublicProfileController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantCancellationPolicyController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantCategoryController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantCogsController;
@@ -46,7 +47,9 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymen
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPosSessionController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductIngredientController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductPublicationController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPromotionController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicDirectoryController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicMenuLinkController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicOrderController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
@@ -88,6 +91,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // fichier (middleware `signed`).
         Route::post('/branches/{restaurantBranch}/public-menu-link', [RestaurantPublicMenuLinkController::class, 'store']);
 
+        // ── Profil public par branche (RESTO-901/#7746) ───────────────────
+        // Gestion (opt-in annuaire public) : lecture + mise à jour du profil
+        // (slug public global, type, cuisines, géoloc). L'annuaire public
+        // correspondant est déclaré plus bas (groupe throttle:shop-public).
+        Route::get('/branches/{restaurantBranch}/public-profile', [RestaurantBranchPublicProfileController::class, 'show']);
+        Route::put('/branches/{restaurantBranch}/public-profile', [RestaurantBranchPublicProfileController::class, 'update']);
+
         Route::get('/zones', [RestaurantZoneController::class, 'index']);
         Route::post('/zones', [RestaurantZoneController::class, 'store']);
         Route::get('/zones/{restaurantZone}', [RestaurantZoneController::class, 'show']);
@@ -115,6 +125,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/products/{restaurantProduct}/ingredients', [RestaurantProductIngredientController::class, 'index']);
         Route::post('/products/{restaurantProduct}/ingredients', [RestaurantProductIngredientController::class, 'store']);
         Route::delete('/products/{restaurantProduct}/ingredients/{restaurantProductIngredient}', [RestaurantProductIngredientController::class, 'destroy']);
+
+        // ── Publication en ligne d'un produit (RESTO-901/#7746) ────────────
+        Route::patch('/products/{restaurantProduct}/publication', [RestaurantProductPublicationController::class, 'update']);
 
         // Référentiel — matières & fiscalité (RESTO-303/#6184).
         Route::get('/ingredients', [RestaurantIngredientController::class, 'index']);
@@ -350,3 +363,20 @@ Route::post('/restaurant/public/orders/{order}/pay', [RestaurantPublicOrderContr
 // signature HMAC provider + idempotence par event_id.
 Route::post('/restaurant/marketplace/{provider}/webhooks', [RestaurantMarketplaceWebhookController::class, 'handle'])
     ->middleware('throttle:webhooks-inbound');
+
+/**
+ * RESTO-901 (#7746) — annuaire PUBLIC des restaurants + profil public par
+ * slug. Groupe isolé `throttle:shop-public` (pattern BC-27/BC-28) : PAS
+ * d'auth Sanctum ni de middleware tenant — seules les branches opt-in
+ * (`is_public = true`) de sociétés actives sont exposées, via un DTO public
+ * strict (aucun ID interne, 404 fail-closed).
+ */
+Route::middleware(['throttle:shop-public'])
+    ->prefix('public/restaurants')
+    ->group(function (): void {
+        Route::get('/', [RestaurantPublicDirectoryController::class, 'index'])
+            ->name('restaurant.public.directory.index');
+        Route::get('/{slug}', [RestaurantPublicDirectoryController::class, 'show'])
+            ->where('slug', '[a-z0-9][a-z0-9\-]{0,159}')
+            ->name('restaurant.public.directory.show');
+    });

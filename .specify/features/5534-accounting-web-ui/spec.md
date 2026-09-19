@@ -1,8 +1,8 @@
 # Feature Specification: Module Comptabilité — interface web du rôle comptable (Closes #5534)
 
-**Feature Branch**: `fix/5534-accounting-web-ui`
-**Created**: 2026-08-25 | **Status**: In progress
-**Issue**: #5534 (P1, web, ux, backend)
+**Feature Branch**: `bc/bc10-accounting-web-ui` (reprise #7776 — branche initiale `fix/5534-accounting-web-ui`)
+**Created**: 2026-08-25 | **Status**: Delivered (2026-09-19, #7776 — console admin Vue `front/admin-dashboard`)
+**Issue**: #5534 (P1, web, ux, backend) — rouverte par #7776 (ghost close)
 **Spec**: `.specify/features/5534-accounting-web-ui/spec.md`
 **Anti-collision**: backend #5422/#5525 livré (13 routes, 0 UI) ; complète #5539 (wizard) ; la page partages (#5522) sera intégrée dans la section document.
 
@@ -50,7 +50,7 @@ Given rôle principal/comptable, When GET `/accounting`, Then hub de navigation 
 
 ## DoD
 
-- [ ] Le comptable fait le cycle mensuel (clôture exercice, lettrage, FEC) sans l'API
-- [ ] i18n ×4
-- [ ] Tests Jest
-- [ ] CHANGELOG + spec
+- [x] Le comptable fait le cycle mensuel (clôture exercice, lettrage, FEC) sans l'API — 7 écrans livrés dans `front/admin-dashboard/src/views/accounting/` (#7776) : documents/factures, plan comptable, grand livre/journal (+ balance + FEC), lettrage, exercices & clôture, banque/rapprochement, TVA & états financiers
+- [x] i18n ×4 — clés `accountingModule.*` (106 existantes + ≈105 nouvelles : documents, journal, TVA, import bancaire) et `bankRecon.*`, propagées par les synchroniseurs
+- [ ] Tests Jest — pas de harnais Jest/Vitest sur `front/admin-dashboard` (main) ; à livrer avec le harnais (`bc/bc01-admin-web-plateforme`)
+- [x] CHANGELOG + spec
