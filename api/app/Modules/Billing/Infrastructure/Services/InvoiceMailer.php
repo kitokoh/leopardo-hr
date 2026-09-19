@@ -55,7 +55,7 @@ class InvoiceMailer
 
         $principal = $this->resolvePrincipal($company);
 
-        if (! $principal instanceof Employee || ! is_string($principal->email) || $principal->email === '') {
+        if (! $principal instanceof Employee || $principal->email === '') {
             Log::warning('Billing: email de facture non envoyé — aucun principal avec email', [
                 'invoice_id' => $invoice->id,
                 'company_id' => $company->id,
