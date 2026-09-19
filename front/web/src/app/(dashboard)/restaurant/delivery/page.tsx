@@ -9,6 +9,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Bike } from 'lucide-react';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { useRestaurantBranches } from '@/components/restaurant/BranchSelect';
 import { apiFetch } from '@/lib/api-client';
 import { getPreferredLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
@@ -17,6 +18,10 @@ type Delivery = { id: number; order_id: number; rider_id: number | null; status:
 
 export default function RestaurantDeliveryPage() {
   const locale = getPreferredLocale();
+  // RESTO-904 (#7749) : noms de branches résolus via la liste partagée
+  // (plus d'ID brut affiché), et suppression du champ branch_id mort du
+  // formulaire de création (l'API livraisons ne l'accepte pas).
+  const { branches } = useRestaurantBranches();
   const [tab, setTab] = useState<'zones' | 'riders' | 'deliveries' | 'loyalty' | 'promotions'>('zones');
   const [zones, setZones] = useState<unknown[]>([]);
   const [riders, setRiders] = useState<unknown[]>([]);
@@ -25,7 +30,7 @@ export default function RestaurantDeliveryPage() {
   const [promotions, setPromotions] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [form, setForm] = useState({ branch_id: '', order_id: '', fee_minor: '' });
+  const [form, setForm] = useState({ order_id: '', fee_minor: '' });
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -67,7 +72,7 @@ export default function RestaurantDeliveryPage() {
         const payload = await res.json().catch(() => ({}));
         throw new Error((payload as { message?: string }).message ?? `HTTP ${res.status}`);
       }
-      setForm({ branch_id: '', order_id: '', fee_minor: '' });
+      setForm({ order_id: '', fee_minor: '' });
       await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : t(locale, 'restaurant.del.createError'));
@@ -121,10 +126,11 @@ export default function RestaurantDeliveryPage() {
             <tbody className="divide-y divide-slate-100">
               {zones.map((z) => {
                 const row = z as { id: number; name: string; branch_id: number; fee_minor: number; min_order_minor: number | null; status: string };
+                const branchName = branches.find((b) => b.id === row.branch_id)?.name ?? `#${row.branch_id}`;
                 return (
                   <tr key={row.id} className="hover:bg-slate-50">
                     <td className="px-4 py-3 font-medium text-slate-900">{row.name}</td>
-                    <td className="px-4 py-3">{row.branch_id}</td>
+                    <td className="px-4 py-3">{branchName}</td>
                     <td className="px-4 py-3">{t(locale, 'restaurant.del.fee', 'Frais')}: {row.fee_minor} · min {row.min_order_minor ?? '—'} · {row.status}</td>
                   </tr>
                 );
