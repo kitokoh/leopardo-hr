@@ -211,6 +211,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'platform.permission' => \App\Http\Middleware\EnsurePlatformPermissionMiddleware::class,
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
+            // #7761 — grant de module OU manager (ex. tickets support délégables).
+            'api.module.grant' => \App\Http\Middleware\EnsureModuleGrantMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,
             'token.refresh' => TokenAutoRefreshMiddleware::class,
             // MULTI-PAYS (#1867) : pays légal du tenant obligatoire et supporté

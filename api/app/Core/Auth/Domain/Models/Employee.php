@@ -505,6 +505,68 @@ class Employee extends Authenticatable implements HasApiTokensContract
     }
 
     /**
+     * Issue #7761 — grants de MODULES composables posés par le responsable du
+     * tenant (« Moussa → marketing + comptabilité + tickets »). Complément du
+     * RBAC historique par `manager_role` : le middleware `api.manager` accepte
+     * « rôle autorisé OU grant explicite ».
+     *
+     * @return HasMany<\App\Core\Tenant\Domain\Models\EmployeeModuleGrant, $this>
+     */
+    public function moduleGrants(): HasMany
+    {
+        // FQCN volontaire (pas de nouvel import) : la garde layer-purity
+        // (#6568) allowliste les facades DB/Schema de ce fichier PAR NUMÉRO DE
+        // LIGNE — ajouter un `use` en tête décalerait ces lignes et la ferait
+        // échouer dans les deux sens (allowlist immuable, pattern #5584).
+        return $this->hasMany(\App\Core\Tenant\Domain\Models\EmployeeModuleGrant::class, 'employee_id');
+    }
+
+    /**
+     * Ce collaborateur a-t-il un grant explicite pour ce module ?
+     *
+     * Le `principal` a implicitement TOUT (spec §3.1) — sans ligne en base.
+     * Toute autre réponse vient d'un grant explicite du même tenant
+     * (fail-closed : pas de grant → false, le RBAC historique décide seul).
+     */
+    public function hasModuleGrant(string $moduleKey): bool
+    {
+        if ($this->isPrincipal()) {
+            return true;
+        }
+
+        if ($moduleKey === '' || $this->company_id === null) {
+            return false;
+        }
+
+        return $this->moduleGrants()
+            ->where('company_id', $this->company_id)
+            ->where('module_key', $moduleKey)
+            ->exists();
+    }
+
+    /**
+     * Clés de modules explicitement accordées à ce collaborateur (contrat de
+     * session `/auth/me` — le front compose menu et refus par défaut avec).
+     *
+     * @return list<string>
+     */
+    public function grantedModuleKeys(): array
+    {
+        if ($this->company_id === null) {
+            return [];
+        }
+
+        /** @var list<string> $keys */
+        $keys = $this->moduleGrants()
+            ->where('company_id', $this->company_id)
+            ->orderBy('module_key')
+            ->pluck('module_key')
+            ->all();
+
+        return $keys;
+    }
+
+    /**
      * Le collaborateur peut-il agir sur CETTE ressource au niveau `$min` ?
      *
      * Règles (issue #7598) :
