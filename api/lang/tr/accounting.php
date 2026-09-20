@@ -115,6 +115,10 @@ return [
     'tva_label_sales_tax' => 'Satış vergisi',
     'tva_label_gst' => 'GST',
     'tva_label_reduced' => 'İndirimli KDV',
+    'tva_label_super_reduced' => 'Süper indirimli KDV',
+    'tva_label_hst' => 'HST',
+    'tva_label_pst' => 'PST',
+    'tva_label_qst' => 'QST',
 
     // Profondeur comptable (issue #5422)
     'chart_system_account_not_deletable' => 'Sistem hesapları (sağlanan) silinemez — gerekirse devre dışı bırakın.',

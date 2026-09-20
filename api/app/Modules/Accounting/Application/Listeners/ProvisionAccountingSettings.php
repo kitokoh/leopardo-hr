@@ -6,8 +6,8 @@ namespace App\Modules\Accounting\Application\Listeners;
 
 use App\Core\Tenant\TenantManager;
 use App\Events\CompanyCreated;
-use App\Modules\Accounting\Infrastructure\Services\AccountingSettingsDefaults;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;
+use App\Modules\Accounting\Infrastructure\Services\AccountingSettingsDefaults;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -37,7 +37,12 @@ class ProvisionAccountingSettings
             $tenantManager->withinTenant($event->company, function () use ($event): void {
                 AccountingSettings::query()->firstOrCreate(
                     ['company_id' => $event->company->id],
-                    AccountingSettingsDefaults::for($event->company->country),
+                    AccountingSettingsDefaults::for(
+                        $event->company->country,
+                        // Province canadienne (ISO 3166-2:CA) — convention
+                        // metadata plate (comme siret/company_iban), #7926.
+                        self::metadataProvince($event->company->metadata),
+                    ),
                 );
             });
         } catch (Throwable $exception) {
@@ -46,5 +51,15 @@ class ProvisionAccountingSettings
                 'error' => $exception->getMessage(),
             ]);
         }
+    }
+
+    /**
+     * @param  array<mixed>|null  $metadata
+     */
+    private static function metadataProvince(?array $metadata): ?string
+    {
+        $province = $metadata['province'] ?? null;
+
+        return is_string($province) && trim($province) !== '' ? $province : null;
     }
 }

@@ -115,6 +115,10 @@ return [
     'tva_label_sales_tax' => 'Sales tax',
     'tva_label_gst' => 'GST',
     'tva_label_reduced' => 'Reduced VAT',
+    'tva_label_super_reduced' => 'Super-reduced VAT',
+    'tva_label_hst' => 'HST',
+    'tva_label_pst' => 'PST',
+    'tva_label_qst' => 'QST',
 
     // Profondeur comptable (issue #5422)
     'chart_system_account_not_deletable' => 'System accounts (provisioned) cannot be deleted — deactivate them if needed.',

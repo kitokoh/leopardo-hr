@@ -111,7 +111,7 @@ class AccountingSettingsController extends Controller
 
             // Seuls les label_key connus sont traduits ; une valeur inconnue
             // (données legacy) retombe sur le label stocké (issue #5227).
-            $knownLabelKeys = ['standard', 'reduced', 'sales_tax', 'gst'];
+            $knownLabelKeys = ['standard', 'reduced', 'super_reduced', 'sales_tax', 'gst', 'hst', 'pst', 'qst'];
 
             $out[] = [
                 'label' => $labelKey !== null && in_array($labelKey, $knownLabelKeys, true)

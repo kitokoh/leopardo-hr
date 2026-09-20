@@ -116,6 +116,10 @@ return [
     'tva_label_sales_tax' => 'Taxe de vente',
     'tva_label_gst' => 'TPS',
     'tva_label_reduced' => 'TVA réduite',
+    'tva_label_super_reduced' => 'TVA super réduite',
+    'tva_label_hst' => 'TVH',
+    'tva_label_pst' => 'TVP',
+    'tva_label_qst' => 'TVQ',
 
     // Profondeur comptable (issue #5422)
     'chart_system_account_not_deletable' => 'Les comptes système (provisionnés) ne peuvent pas être supprimés — désactivez-les si nécessaire.',

@@ -115,6 +115,10 @@ return [
     'tva_label_sales_tax' => 'ضريبة المبيعات',
     'tva_label_gst' => 'ضريبة السلع والخدمات',
     'tva_label_reduced' => 'الضريبة المخفضة',
+    'tva_label_super_reduced' => 'الضريبة المخفضة جداً',
+    'tva_label_hst' => 'الضريبة المنسقة (HST)',
+    'tva_label_pst' => 'ضريبة المبيعات الإقليمية (PST)',
+    'tva_label_qst' => 'ضريبة مبيعات كيبيك (QST)',
 
     // Profondeur comptable (issue #5422)
     'chart_system_account_not_deletable' => 'لا يمكن حذف الحسابات النظامية (المجهزة) — يمكن تعطيلها إذا لزم الأمر.',
