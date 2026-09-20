@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Providers;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Solutions\Contracts\DemoDataKit;
+use App\Core\Solutions\DemoDataRegistry;
 use App\Core\Solutions\SolutionCatalogue;
 use App\Events\SolutionActivated;
 use App\Modules\TravelAgency\Application\Actions\ActivateTravelAgencyAction;
@@ -16,6 +18,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelCustomerAccount;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\CashPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PvitPaymentGateway;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelDemoSeederService;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
 use App\Modules\TravelAgency\Policies\TravelReportPolicy;
 use Illuminate\Auth\EloquentUserProvider;
@@ -64,6 +67,18 @@ class TravelAgencyServiceProvider extends ServiceProvider
 
         $this->app->resolving(SolutionCatalogue::class, function (SolutionCatalogue $catalogue): void {
             $catalogue->register(TravelAgencyManifest::CODE, static fn (): TravelAgencyManifest => new TravelAgencyManifest);
+        });
+
+        // #7865 — kit de données de démonstration de la verticale
+        // (TRAVEL-107) : même pattern de registre partagé que le catalogue
+        // ci-dessus (garde `bound()` + `resolving()`, factory paresseuse —
+        // le seeder n'est instancié qu'à l'import effectif).
+        if (! $this->app->bound(DemoDataRegistry::class)) {
+            $this->app->singleton(DemoDataRegistry::class, static fn (): DemoDataRegistry => new DemoDataRegistry);
+        }
+
+        $this->app->resolving(DemoDataRegistry::class, function (DemoDataRegistry $registry): void {
+            $registry->register(TravelAgencyManifest::CODE, fn (): DemoDataKit => $this->app->make(TravelDemoSeederService::class));
         });
 
         // Passerelles de paiement (TRAVEL-405..407) — registre par code.

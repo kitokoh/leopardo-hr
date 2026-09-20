@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Infrastructure\Services;
 
+use App\Core\Solutions\Contracts\DemoDataKit;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Enums\OrderItemStatus;
@@ -34,8 +35,12 @@ use Illuminate\Support\Facades\DB;
  * articles + paiement) est ancré sur la référence de commande
  * `RST-DEMO0001` — rejouer le seed ne crée jamais de doublon et laisse
  * l'état identique.
+ *
+ * #7865 — le service implémente `DemoDataKit` : le client (principal/rh)
+ * peut installer ce jeu à la demande via `POST /demo-data/restaurant/import`
+ * (registre `DemoDataRegistry`, enregistré par le provider du module).
  */
-final class RestaurantDemoSeederService
+final class RestaurantDemoSeederService implements DemoDataKit
 {
     /** Référence de la commande de démonstration (ancre d'idempotence). */
     private const DEMO_ORDER_REFERENCE = 'RST-DEMO0001';
