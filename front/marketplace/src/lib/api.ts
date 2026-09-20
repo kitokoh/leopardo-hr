@@ -36,6 +36,8 @@ export interface PublicProduct {
   category: PublicCategory | null;
   seller: PublicSellerRef;
   available: boolean;
+  rating_avg?: number | null;
+  rating_count?: number;
 }
 
 export interface PublicSeller {
@@ -142,14 +144,16 @@ export class ApiError extends Error {
 }
 
 interface RequestOptions {
-  method?: "GET" | "POST";
+  method?: "GET" | "POST" | "DELETE";
   body?: unknown;
   query?: Record<string, string | number | undefined>;
   timeoutMs?: number;
+  /** Jeton compte acheteur (#7814) — ajoute `Authorization: Bearer …`. */
+  token?: string;
 }
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { method = "GET", body, query, timeoutMs = 12_000 } = options;
+  const { method = "GET", body, query, timeoutMs = 12_000, token } = options;
 
   const url = new URL(`${apiBase()}${path}`);
   if (query) {
@@ -170,6 +174,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
       headers: {
         Accept: "application/json",
         ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
+        ...(token !== undefined && token.length > 0 ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
       cache: "no-store",
@@ -205,6 +210,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 }
 
 function defaultErrorMessage(status: number): string {
+  if (status === 401) return "Session expirée ou identifiants invalides. Veuillez vous reconnecter.";
   if (status === 404) return "Ressource introuvable.";
   if (status === 422) return "Les informations envoyées sont invalides.";
   if (status === 429) return "Trop de requêtes. Merci de patienter un instant.";
@@ -295,11 +301,14 @@ export async function fetchSeller(slug: string): Promise<PublicSeller> {
   return normalizeSeller(raw);
 }
 
-export async function createOrder(payload: OrderPayload): Promise<OrderCreated> {
+export async function createOrder(payload: OrderPayload, buyerToken?: string): Promise<OrderCreated> {
   const response = await request<unknown>("/public/market/orders", {
     method: "POST",
     body: payload,
     timeoutMs: 20_000,
+    // #7814 — jeton buyer OPTIONNEL : si valide, la commande est liée au
+    // compte (historique + avis vérifiés) ; sinon checkout invité inchangé.
+    ...(buyerToken !== undefined && buyerToken.length > 0 ? { token: buyerToken } : {}),
   });
   const raw = isRecord(response) && isRecord(response.data) ? response.data : response;
   return raw as OrderCreated;
@@ -389,5 +398,155 @@ export async function fetchOrderTracking(reference: string, token: string): Prom
         ? record.seller
         : undefined,
     delivery: normalizeDelivery(record.delivery),
+  };
+}
+
+/* ── Compte acheteur (#7814) ────────────────────────────────────────────── */
+
+export interface BuyerProfile {
+  name: string;
+  email: string;
+  phone: string | null;
+  created_at: string | null;
+}
+
+export interface BuyerSession {
+  token: string;
+  buyer: BuyerProfile;
+}
+
+export interface AccountOrderItem {
+  product_id: number;
+  product_name: string;
+  quantity: number;
+  unit_price_minor: number;
+  line_total_minor: number;
+}
+
+export interface AccountOrder {
+  reference: string;
+  seller: PublicSellerRef;
+  total_minor: number;
+  currency: string;
+  fulfillment_status: FulfillmentStatus;
+  created_at: string | null;
+  tracking_token: string;
+  items: AccountOrderItem[];
+}
+
+export interface PublicReview {
+  rating: number;
+  comment: string | null;
+  buyer_name: string;
+  created_at: string | null;
+}
+
+export interface ProductReviews {
+  reviews: Paginated<PublicReview>;
+  ratingAvg: number | null;
+  ratingCount: number;
+}
+
+function normalizeBuyerSession(payload: unknown): BuyerSession {
+  const raw = isRecord(payload) && isRecord(payload.data) ? payload.data : {};
+  const buyer = isRecord(raw.buyer) ? raw.buyer : {};
+  return {
+    token: typeof raw.token === "string" ? raw.token : "",
+    buyer: {
+      name: typeof buyer.name === "string" ? buyer.name : "",
+      email: typeof buyer.email === "string" ? buyer.email : "",
+      phone: typeof buyer.phone === "string" ? buyer.phone : null,
+      created_at: typeof buyer.created_at === "string" ? buyer.created_at : null,
+    },
+  };
+}
+
+export async function registerBuyer(payload: {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string;
+}): Promise<BuyerSession> {
+  const response = await request<unknown>("/public/market/account/register", {
+    method: "POST",
+    body: payload,
+  });
+  return normalizeBuyerSession(response);
+}
+
+export async function loginBuyer(payload: { email: string; password: string }): Promise<BuyerSession> {
+  const response = await request<unknown>("/public/market/account/login", {
+    method: "POST",
+    body: payload,
+  });
+  return normalizeBuyerSession(response);
+}
+
+export async function logoutBuyer(token: string): Promise<void> {
+  await request<unknown>("/public/market/account/logout", { method: "POST", token });
+}
+
+export async function fetchBuyerProfile(token: string): Promise<BuyerProfile> {
+  const payload = await request<unknown>("/public/market/account/me", { token });
+  const raw = isRecord(payload) && isRecord(payload.data) ? payload.data : {};
+  return {
+    name: typeof raw.name === "string" ? raw.name : "",
+    email: typeof raw.email === "string" ? raw.email : "",
+    phone: typeof raw.phone === "string" ? raw.phone : null,
+    created_at: typeof raw.created_at === "string" ? raw.created_at : null,
+  };
+}
+
+export async function fetchBuyerOrders(token: string, page = 1): Promise<Paginated<AccountOrder>> {
+  const payload = await request<unknown>("/public/market/account/orders", {
+    token,
+    query: { page },
+  });
+  return normalizePaginated<AccountOrder>(payload);
+}
+
+export async function fetchFavorites(token: string): Promise<PublicProduct[]> {
+  const payload = await request<unknown>("/public/market/account/favorites", { token });
+  return isRecord(payload) && Array.isArray(payload.data) ? (payload.data as PublicProduct[]) : [];
+}
+
+export async function addFavorite(token: string, productId: number): Promise<void> {
+  await request<unknown>("/public/market/account/favorites", {
+    method: "POST",
+    body: { product_id: productId },
+    token,
+  });
+}
+
+export async function removeFavorite(token: string, productId: number): Promise<void> {
+  await request<unknown>(`/public/market/account/favorites/${productId}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
+export async function submitReview(
+  token: string,
+  payload: { order_reference: string; product_id: number; rating: number; comment?: string },
+): Promise<void> {
+  await request<unknown>("/public/market/account/reviews", {
+    method: "POST",
+    body: payload,
+    token,
+  });
+}
+
+export async function fetchProductReviews(
+  productId: number | string,
+  page = 1,
+): Promise<ProductReviews> {
+  const payload = await request<unknown>(`/public/market/products/${productId}/reviews`, {
+    query: { page },
+  });
+  const meta = isRecord(payload) && isRecord(payload.meta) ? payload.meta : {};
+  return {
+    reviews: normalizePaginated<PublicReview>(payload),
+    ratingAvg: typeof meta.rating_avg === "number" ? meta.rating_avg : null,
+    ratingCount: toNumber(meta.rating_count, 0),
   };
 }

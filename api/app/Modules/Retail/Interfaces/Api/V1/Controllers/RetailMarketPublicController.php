@@ -76,6 +76,7 @@ class RetailMarketPublicController extends Controller
         $settings = $this->marketplace->settingsByCompanyId($companyIds);
         $companies = $this->marketplace->companiesById($companyIds);
         $available = $this->marketplace->availableProductIds($eligible, $productIds);
+        $ratings = $this->marketplace->productRatings($productIds);
         $categories = $this->categoriesById($eligible, $items);
 
         return response()->json([
@@ -86,6 +87,7 @@ class RetailMarketPublicController extends Controller
                     $companies[(string) $product->company_id] ?? null,
                     $categories,
                     in_array((int) $product->id, $available, true),
+                    $ratings[(int) $product->id] ?? null,
                 ),
                 $items,
             ),
@@ -119,6 +121,7 @@ class RetailMarketPublicController extends Controller
         $settings = $this->marketplace->settingsByCompanyId([$companyId]);
         $companies = $this->marketplace->companiesById([$companyId]);
         $available = $this->marketplace->availableProductIds($eligible, [(int) $product->id]);
+        $ratings = $this->marketplace->productRatings([(int) $product->id]);
         $categories = $this->categoriesById($eligible, [$product]);
 
         return response()->json([
@@ -128,6 +131,7 @@ class RetailMarketPublicController extends Controller
                 $companies[$companyId] ?? null,
                 $categories,
                 in_array((int) $product->id, $available, true),
+                $ratings[(int) $product->id] ?? null,
             ),
         ]);
     }
@@ -142,6 +146,7 @@ class RetailMarketPublicController extends Controller
 
         $settings = $this->marketplace->settingsByCompanyId($eligible);
         $companies = $this->marketplace->companiesById($eligible);
+        $shopRatings = $this->marketplace->sellerRatings($eligible);
 
         $counts = [];
 
@@ -179,6 +184,8 @@ class RetailMarketPublicController extends Controller
                 'city' => $sellerSettings->city,
                 'description' => $sellerSettings->shop_description,
                 'products_count' => $counts[$companyId] ?? 0,
+                'rating_avg' => isset($shopRatings[$companyId]) ? $shopRatings[$companyId]['rating_avg'] : null,
+                'rating_count' => isset($shopRatings[$companyId]) ? $shopRatings[$companyId]['rating_count'] : 0,
             ];
         }
 
@@ -226,6 +233,8 @@ class RetailMarketPublicController extends Controller
             ->values()
             ->all();
 
+        $shopRating = $this->marketplace->sellerRatings([(string) $company->id])[(string) $company->id] ?? null;
+
         return response()->json([
             'data' => [
                 'name' => $settings->shop_name,
@@ -236,6 +245,8 @@ class RetailMarketPublicController extends Controller
                 'contact_email' => $settings->contact_email,
                 'currency' => $settings->currency,
                 'products_count' => $products->count(),
+                'rating_avg' => $shopRating !== null ? $shopRating['rating_avg'] : null,
+                'rating_count' => $shopRating !== null ? $shopRating['rating_count'] : 0,
                 'categories' => $categories,
             ],
         ]);
@@ -270,9 +281,11 @@ class RetailMarketPublicController extends Controller
     }
 
     /**
-     * DTO produit public — AUCUNE donnee interne (spec §3.1).
+     * DTO produit public — AUCUNE donnee interne (spec §3.1) + agregats
+     * de notation publics (#7814 : avis approuves uniquement).
      *
      * @param  array<int, RetailCategory>  $categories
+     * @param  array{rating_avg: float, rating_count: int}|null  $rating
      * @return array<string, mixed>
      */
     private function productPayload(
@@ -281,6 +294,7 @@ class RetailMarketPublicController extends Controller
         ?Company $company,
         array $categories,
         bool $available,
+        ?array $rating,
     ): array {
         $category = $product->category_id !== null
             ? ($categories[(int) $product->category_id] ?? null)
@@ -302,6 +316,8 @@ class RetailMarketPublicController extends Controller
                 'city' => $settings?->city,
             ],
             'available' => $available,
+            'rating_avg' => $rating !== null ? $rating['rating_avg'] : null,
+            'rating_count' => $rating !== null ? $rating['rating_count'] : 0,
         ];
     }
 }

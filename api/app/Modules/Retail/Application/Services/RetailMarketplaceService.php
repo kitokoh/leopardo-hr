@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Retail\Application\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Retail\Domain\Enums\MarketplaceReviewStatus;
 use App\Modules\Retail\Domain\Enums\RetailProductStatus;
+use App\Modules\Retail\Domain\Models\MarketplaceReview;
 use App\Modules\Retail\Domain\Models\RetailOnlineSettings;
 use App\Modules\Retail\Domain\Models\RetailProduct;
 use App\Modules\Retail\Domain\Models\RetailStockLevel;
@@ -245,5 +247,75 @@ final class RetailMarketplaceService
         $company = $this->eligibleCompanyForSlug($eligible, $slug);
 
         return $company instanceof Company ? (string) $company->id : null;
+    }
+
+    /**
+     * Agregats de notation PRODUIT (avis approuves uniquement, #7814) :
+     * moyenne arrondie a 1 decimale + nombre d'avis, indexes par
+     * product_id. Calcul a la volee, borne aux produits demandes.
+     *
+     * @param  list<int>  $productIds
+     * @return array<int, array{rating_avg: float, rating_count: int}>
+     */
+    public function productRatings(array $productIds): array
+    {
+        if ($productIds === []) {
+            return [];
+        }
+
+        $ratings = [];
+
+        /** @var list<object{product_id: int|string, rating_avg: string|float|null, rating_count: int|string}> $rows */
+        $rows = MarketplaceReview::query()
+            ->whereIn('product_id', $productIds)
+            ->where('status', MarketplaceReviewStatus::Approved->value)
+            ->selectRaw('product_id, AVG(rating) AS rating_avg, COUNT(*) AS rating_count')
+            ->groupBy('product_id')
+            ->get()
+            ->all();
+
+        foreach ($rows as $row) {
+            $ratings[(int) $row->product_id] = [
+                'rating_avg' => round((float) $row->rating_avg, 1),
+                'rating_count' => (int) $row->rating_count,
+            ];
+        }
+
+        return $ratings;
+    }
+
+    /**
+     * Agregats de notation BOUTIQUE (avis approuves uniquement, #7814) :
+     * moyenne arrondie a 1 decimale + nombre d'avis, indexes par
+     * company_id (identifiant INTERNE — jamais expose dans les DTO).
+     *
+     * @param  list<string>  $companyIds
+     * @return array<string, array{rating_avg: float, rating_count: int}>
+     */
+    public function sellerRatings(array $companyIds): array
+    {
+        if ($companyIds === []) {
+            return [];
+        }
+
+        $ratings = [];
+
+        /** @var list<object{company_id: string, rating_avg: string|float|null, rating_count: int|string}> $rows */
+        $rows = MarketplaceReview::query()
+            ->whereIn('company_id', $companyIds)
+            ->where('status', MarketplaceReviewStatus::Approved->value)
+            ->selectRaw('company_id, AVG(rating) AS rating_avg, COUNT(*) AS rating_count')
+            ->groupBy('company_id')
+            ->get()
+            ->all();
+
+        foreach ($rows as $row) {
+            $ratings[(string) $row->company_id] = [
+                'rating_avg' => round((float) $row->rating_avg, 1),
+                'rating_count' => (int) $row->rating_count,
+            ];
+        }
+
+        return $ratings;
     }
 }

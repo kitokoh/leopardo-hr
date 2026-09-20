@@ -7,6 +7,7 @@ namespace App\Modules\Retail\Interfaces\Api\V1\Controllers;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
+use App\Modules\Retail\Application\Services\RetailBuyerAccountService;
 use App\Modules\Retail\Application\Services\RetailMarketplaceService;
 use App\Modules\Retail\Application\Services\RetailOnlineOrderService;
 use App\Modules\Retail\Domain\Models\RetailOrder;
@@ -40,6 +41,7 @@ class RetailMarketOrderPublicController extends Controller
         private readonly RetailOnlineOrderService $orders,
         private readonly TenantManager $tenants,
         private readonly PublicDeliveryStatusProvider $deliveryStatus,
+        private readonly RetailBuyerAccountService $accounts,
     ) {}
 
     /**
@@ -69,6 +71,12 @@ class RetailMarketOrderPublicController extends Controller
             (array) $request->input('items'),
         );
 
+        // #7814 — rattachement OPTIONNEL a un compte acheteur : si la
+        // requete porte un jeton buyer VALIDE, la commande est liee au
+        // compte (historique cross-tenant + avis verifies). Jeton absent ou
+        // invalide → checkout invite inchange (jamais bloquant).
+        $buyer = $this->accounts->buyerForBearerToken($request->bearerToken());
+
         app()->instance('tenant_scope_required', true);
 
         try {
@@ -89,6 +97,7 @@ class RetailMarketOrderPublicController extends Controller
                         'notes' => $request->filled('delivery.notes') ? (string) $request->input('delivery.notes') : null,
                     ],
                     idempotencyKey: (string) $request->input('idempotency_key'),
+                    buyerId: $buyer !== null ? (int) $buyer->id : null,
                 ),
             );
         } finally {
