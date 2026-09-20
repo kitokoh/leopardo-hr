@@ -30,6 +30,9 @@ import { TrialBanner } from '@/components/TrialBanner';
 // dashboard la remplacent.
 import { SetupInterview, shouldShowSetupInterview, type SetupInterviewCloseReason } from '@/modules/onboarding/components/SetupInterview';
 import { WelcomeScreen, shouldShowFirstLoginWelcome, type WelcomeScreenAction } from '@/modules/onboarding/components/WelcomeScreen';
+// #7866 — invite d'import du jeu de données de démonstration (API #7865),
+// séquencée APRÈS l'écran de bienvenue et l'entretien de préparation.
+import { DemoDataPrompt, shouldShowDemoDataPrompt, type DemoDataPromptCloseReason } from '@/modules/onboarding/components/DemoDataPrompt';
 
 /**
  * Breakpoint Tailwind `md` (768 px) — valeur technique, pas une chaîne
@@ -732,6 +735,39 @@ export default function DashboardLayout({
       }
 
       if (reason === 'completed') {
+        void (async () => {
+          try {
+            const me = await apiFetch('/auth/me');
+            if (!me.ok) return;
+            const payload = (await me.json()) as { data?: StoredAuthUser };
+            const latest = userRef.current;
+            if (payload.data && latest) {
+              const refreshed = mergeActivationSurface(latest, payload.data);
+              storeAuthSession(null, refreshed);
+              setUserOverride(refreshed);
+            }
+          } catch {
+            // Non bloquant : la navigation se resynchronisera au prochain focus.
+          }
+        })();
+      }
+    },
+    [],
+  );
+
+  // #7866 — invite d'import des données de démonstration : fermée pour LA
+  // session quelle que soit l'issue (« Plus tard » ne persiste RIEN — ni
+  // serveur, ni localStorage : l'invite reviendra à la prochaine entrée ;
+  // « imported »/« dismissed » sont persistés côté serveur par le composant
+  // dans `company.metadata.demo_data`, relus au prochain `/auth/me`). À
+  // l'import, la surface d'activation est rechargée comme à la complétion de
+  // l'entretien (#7245/#7322) pour refléter les données installées.
+  const [demoPromptClosed, setDemoPromptClosed] = useState(false);
+  const handleDemoPromptClose = useCallback(
+    (reason: DemoDataPromptCloseReason) => {
+      setDemoPromptClosed(true);
+
+      if (reason === 'imported') {
         void (async () => {
           try {
             const me = await apiFetch('/auth/me');
@@ -1495,6 +1531,18 @@ export default function DashboardLayout({
         {showInterview && user && !welcomePending && (
           <SetupInterview locale={locale} onClose={handleInterviewClose} />
         )}
+        {/* #7866 — invite d'import du jeu de données de démonstration : après
+            l’écran de bienvenue ET l’entretien de préparation (ni affiché, ni
+            en attente). Le composant re-vérifie auprès du serveur
+            (`GET /demo-data`) et ne rend rien sans kit proposable. */}
+        {user &&
+          !welcomePending &&
+          !showInterview &&
+          !shouldShowSetupInterview(user) &&
+          !demoPromptClosed &&
+          shouldShowDemoDataPrompt(user) && (
+            <DemoDataPrompt locale={locale} onClose={handleDemoPromptClose} />
+          )}
       </div>
     </div>
   );

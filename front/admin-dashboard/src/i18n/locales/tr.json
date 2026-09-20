@@ -8302,5 +8302,17 @@
         "webhook_secret": "Webhook secret"
       }
     }
+  },
+  "demoDataPrompt": {
+    "title": "Çalışma alanınızı örnek verilerle keşfetmek ister misiniz?",
+    "body": "Alanınızı özgürce keşfedebilmeniz için örnek bir veri seti (menüler, siparişler, ekipler…) yükleyeceğiz. Her şeyi istediğiniz zaman düzenleyebilir veya silebilirsiniz.",
+    "import": "Örnek verileri içe aktar",
+    "importing": "İçe aktarılıyor…",
+    "later": "Daha sonra",
+    "dismiss": "Hayır, teşekkürler",
+    "error": "Şu anda içe aktarılamadı. Lütfen birazdan tekrar deneyin.",
+    "successTitle": "Örnek verileriniz hazır",
+    "successBody": "Özgürce keşfedin: her şey düzenlenebilir veya silinebilir, hiçbir ücret alınmaz.",
+    "successCta": "Verilerimi keşfet"
   }
 }
