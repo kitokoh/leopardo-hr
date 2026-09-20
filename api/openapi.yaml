@@ -32561,6 +32561,36 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Validation422'
+  /retail/online/orders/{order}/refund:
+    post:
+      tags:
+      - Retail
+      summary: Rembourser une commande en ligne payee (gestion principal/rh)
+      description: 'BC-17 #7812 : remboursement via le provider de paiement
+        (meme portee que l''encaissement POS), UNIQUEMENT si la commande
+        porte un intent succeeded - sinon 422 PAYMENT_NOT_REFUNDABLE.
+        Appelle provider->refund puis bascule intent + commande + trace
+        RetailOrderPayment en refunded (auditable). Commande d''un autre
+        tenant ou hors canal online = 404 fail-closed.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande remboursee (detail + intent refunded)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
 
   /communication/integrations:
     get:
@@ -34064,6 +34094,301 @@ paths:
           description: Suivi public (statut + timeline + lignes + total)
         '404':
           $ref: '#/components/responses/Error404'
+  /public/market/products/{id}/reviews:
+    get:
+      tags:
+      - Retail
+      summary: Avis approuves d'un produit Leopardo Marche (sans auth)
+      description: 'BC-17 #7814 - avis verifies, pagines (tri
+        anti-chronologique), statut approved uniquement. DTO public strict :
+        note, commentaire, prenom public du buyer, date - jamais d''email ni
+        de company_id. 404 fail-closed si le produit n''est pas public
+        (vendeur non opt-in, produit non publie/visible).'
+      security: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: page
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 50
+      responses:
+        '200':
+          description: Avis approuves pagines (+ rating_avg / rating_count en meta)
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /public/market/payments/webhook/{provider}:
+    post:
+      tags:
+      - Retail
+      summary: Webhook des providers de paiement Leopardo Marche (signature obligatoire, sans auth)
+      description: 'BC-17 #7812 - verification de signature OBLIGATOIRE
+        fail-closed sur le corps brut (HMAC-SHA256, header signature) AVANT
+        tout parsing : invalide ou secret absent = 401 sans effet. Provider
+        inconnu = 404, payload illisible = 400. Evenement inconnu, deja
+        applique (rejeu) ou ignore = 200 SANS double effet (idempotent).'
+      security: []
+      parameters:
+      - name: provider
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: Payload brut du provider (signe HMAC, header signature)
+      responses:
+        '200':
+          description: Evenement traite ou ignore sans double effet (applied bool)
+        '400':
+          description: Payload illisible
+        '401':
+          description: Signature absente, invalide ou secret non configure (aucun effet)
+        '404':
+          $ref: '#/components/responses/Error404'
+  /public/market/account/register:
+    post:
+      tags:
+      - Retail
+      summary: Inscription d'un compte acheteur Leopardo Marche (sans auth)
+      description: 'BC-17 #7814 - compte PLATEFORME (tables centrales,
+        cross-tenant), jeton opaque hashe (mkb_ + 64 hex). Throttle strict
+        dedie market-account-public (anti-bruteforce par IP) en plus de
+        shop-public. DTO public strict : jamais de company_id.'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                email:
+                  type: string
+                  format: email
+                  maxLength: 160
+                password:
+                  type: string
+                  minLength: 8
+                  maxLength: 100
+                phone:
+                  type: string
+                  maxLength: 40
+                  nullable: true
+      responses:
+        '201':
+          description: Compte cree (token + buyer public)
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /public/market/account/login:
+    post:
+      tags:
+      - Retail
+      summary: Connexion d'un compte acheteur Leopardo Marche (sans auth)
+      description: 'BC-17 #7814 - 401 uniforme INVALID_CREDENTIALS si
+        identifiants invalides (jamais de distinction email/mot de passe).
+        Throttle strict dedie market-account-public (anti-bruteforce).'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  maxLength: 160
+                password:
+                  type: string
+                  maxLength: 100
+      responses:
+        '200':
+          description: Connexion reussie (token + buyer public)
+        '401':
+          description: Identifiants invalides (message uniforme)
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /public/market/account/logout:
+    post:
+      tags:
+      - Retail
+      summary: Deconnexion du compte acheteur Leopardo Marche (auth buyer)
+      description: 'BC-17 #7814 - revoque le jeton courant (idempotent).
+        Auth par jeton buyer (middleware market.buyer, 401 fail-closed) -
+        PAS de Sanctum tenant.'
+      security: []
+      responses:
+        '200':
+          description: Jeton revoque (logged_out true)
+        '401':
+          description: Jeton buyer absent ou invalide
+  /public/market/account/me:
+    get:
+      tags:
+      - Retail
+      summary: Profil du compte acheteur Leopardo Marche (auth buyer)
+      description: 'BC-17 #7814 - DTO public strict (nom, email, telephone,
+        date de creation) - jamais de mot de passe ni de donnee interne.
+        Auth par jeton buyer (middleware market.buyer, 401 fail-closed).'
+      security: []
+      responses:
+        '200':
+          description: Profil public du buyer authentifie
+        '401':
+          description: Jeton buyer absent ou invalide
+  /public/market/account/orders:
+    get:
+      tags:
+      - Retail
+      summary: Historique des commandes du compte acheteur Leopardo Marche (auth buyer)
+      description: 'BC-17 #7814 - commandes en ligne cross-tenant liees au
+        compte (les commandes invitees non liees restent accessibles par
+        reference + jeton de suivi uniquement). DTO public strict :
+        reference, vendeur public, totaux minor units, statut logistique,
+        tracking_token, lignes - jamais de company_id.'
+      security: []
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 50
+      responses:
+        '200':
+          description: Commandes du buyer paginees (DTO public strict)
+        '401':
+          description: Jeton buyer absent ou invalide
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /public/market/account/favorites:
+    get:
+      tags:
+      - Retail
+      summary: Favoris du compte acheteur Leopardo Marche (auth buyer)
+      description: 'BC-17 #7814 - DTO produits publics uniquement. Fail-closed :
+        un favori dont le produit n''est plus public (vendeur non opt-in,
+        produit depublie) est filtre. La reference interne (company_id
+        vendeur) n''est JAMAIS exposee.'
+      security: []
+      responses:
+        '200':
+          description: Produits favoris encore publics (DTO strict)
+        '401':
+          description: Jeton buyer absent ou invalide
+    post:
+      tags:
+      - Retail
+      summary: Ajouter un produit aux favoris du compte acheteur (auth buyer)
+      description: 'BC-17 #7814 - le produit doit etre public et eligible
+        (vendeur opt-in) sinon 404 fail-closed. La reference interne est
+        resolue cote serveur, idempotent (re-ajout sans doublon).'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [product_id]
+              properties:
+                product_id:
+                  type: integer
+                  minimum: 1
+      responses:
+        '201':
+          description: Favori ajoute
+        '200':
+          description: Favori deja present (idempotent)
+        '401':
+          description: Jeton buyer absent ou invalide
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /public/market/account/favorites/{productId}:
+    delete:
+      tags:
+      - Retail
+      summary: Retirer un produit des favoris du compte acheteur (auth buyer)
+      description: 'BC-17 #7814 - retrait idempotent (favori absent = 200
+        sans effet).'
+      security: []
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Favori retire (idempotent)
+        '401':
+          description: Jeton buyer absent ou invalide
+  /public/market/account/reviews:
+    post:
+      tags:
+      - Retail
+      summary: Soumettre un avis verifie Leopardo Marche (auth buyer)
+      description: 'BC-17 #7814 - avis VERIFIE : la commande du buyer doit
+        contenir le produit ET etre delivered, sinon 422. Throttle strict
+        dedie market-reviews-public (anti-spam) en plus de shop-public.
+        L''avis est cree en attente de moderation (status pending).'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [order_reference, product_id, rating]
+              properties:
+                order_reference:
+                  type: string
+                  maxLength: 64
+                product_id:
+                  type: integer
+                  minimum: 1
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                comment:
+                  type: string
+                  maxLength: 1000
+                  nullable: true
+      responses:
+        '201':
+          description: Avis soumis (statut de moderation dans la reponse)
+        '401':
+          description: Jeton buyer absent ou invalide
+        '422':
+          $ref: '#/components/responses/Validation422'
 
   /restaurant/branches/{restaurantBranch}/public-profile:
     get:
