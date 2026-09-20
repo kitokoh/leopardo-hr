@@ -90,7 +90,7 @@ class DemoDataControllerTest extends TestCase
         $table = DB::getDriverName() === 'pgsql' ? 'public.companies' : 'companies';
         $row = DB::table($table)->where('id', $company->id)->first();
 
-        $decoded = json_decode((string) ($row?->metadata ?? '{}'), true);
+        $decoded = json_decode((string) ($row->metadata ?? '{}'), true);
 
         return is_array($decoded) ? $decoded : [];
     }
