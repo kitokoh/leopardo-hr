@@ -2,24 +2,23 @@ import { expect, installAuthenticatedSession, test, type AuthenticatedUser } fro
 import type { Locator, Page } from '@playwright/test';
 
 /**
- * #7556 — ergonomie du menu mobile du dashboard client.
+ * #7556/#7908 — ergonomie du menu mobile du dashboard client.
  *
- * Sous `md` (768 px), le dashboard exposait DEUX boutons hamburger identiques
- * (rail métier + dropdown de modules), aucun accès direct aux réglages et des
- * panneaux déroulants (notifications, compte, modules) qui ne se fermaient
- * qu'en recliquant leur bouton.
+ * Depuis la refonte #7908, la navigation vit dans une SIDEBAR gauche unifiée
+ * (`dashboard-sidebar`), toujours rendue : colonne fixe sur desktop, tiroir
+ * sous `md` piloté par le hamburger de la topbar (`dashboard-nav-toggle`).
  *
  * Contrats couverts ici :
- *  - un SEUL point d'entrée de navigation sous `md` : le tiroir
- *    (`dashboard-nav-toggle`), qui porte le rail métier, les modules
- *    entreprise/horizontaux et les liens compte/paramètres ;
- *  - entre `md` et `lg`, le panneau de modules (`dashboard-modules-nav-toggle`)
- *    reste le seul accès aux modules (la nav horizontale est `lg:flex`) ;
- *  - voile + verrouillage du scroll + fermeture par Échap + clic extérieur sur
- *    les panneaux de la barre, avec une hauteur bornée et défilante.
+ *  - un SEUL point d'entrée de navigation sous `md` : le tiroir, qui porte le
+ *    rail métier, les groupes Entreprise en accordéons, la section Plateforme
+ *    et le bloc « Mon compte » (menu vers le haut, langue en sous-menu) ;
+ *  - au-dessus de `md`, la sidebar est une colonne permanente (pas de burger)
+ *    et les accordéons Entreprise s'ouvrent/se referment au clic ;
+ *  - voile + verrouillage du scroll + fermeture par Échap + clic extérieur
+ *    sur le panneau de notifications de la topbar, hauteur bornée défilante.
  *
  * Le compte démo standard n'a aucune verticale activée : la session mockée
- * active `restaurant` pour que le tiroir (et son rail métier) existent.
+ * active `restaurant` pour que le rail métier existe.
  */
 
 test.use({ viewport: { width: 390, height: 844 } });
@@ -72,10 +71,7 @@ async function seedManagerSession(page: Page) {
 }
 
 const drawerToggle = (page: Page) => page.getByTestId('dashboard-nav-toggle');
-const rail = (page: Page) => page.getByTestId('business-rail');
-const drawerAccount = (page: Page) => page.getByTestId('dashboard-drawer-account');
-const modulesToggle = (page: Page) => page.getByTestId('dashboard-modules-nav-toggle');
-const modulesPanel = (page: Page) => page.getByTestId('dashboard-modules-panel');
+const sidebar = (page: Page) => page.getByTestId('dashboard-sidebar');
 const notificationsToggle = (page: Page) => page.getByTestId('dashboard-notifications-toggle');
 const notificationsPanel = (page: Page) => page.getByTestId('dashboard-notifications-panel');
 const userMenuToggle = (page: Page) => page.getByTestId('user-menu-toggle');
@@ -91,45 +87,42 @@ async function panelBox(locator: Locator) {
   });
 }
 
-test.describe('Dashboard — tiroir mobile unique (#7556)', () => {
-  test('un seul point d\'entrée sous md : le tiroir porte rail, modules et compte', async ({ page }) => {
+test.describe('Dashboard — tiroir mobile unique (#7556/#7908)', () => {
+  test('un seul point d\'entrée sous md : le tiroir porte rail, entreprise, plateforme et compte', async ({ page }) => {
     await seedBusinessSession(page);
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
 
     await expect(drawerToggle(page)).toBeVisible();
-    // Un seul hamburger sous `md` : le panneau de modules est réservé à md–lg.
-    await expect(modulesToggle(page)).toBeHidden();
 
     await drawerToggle(page).click();
-    await expect(rail(page)).toBeInViewport();
+    await expect(sidebar(page)).toBeInViewport();
 
-    // Modules entreprise/horizontaux dans le tiroir.
-    await expect(rail(page).locator('a[href="/dashboard"]').first()).toBeVisible();
+    // Rail métier dans le tiroir.
+    await expect(page.getByTestId('business-rail')).toBeVisible();
 
-    // Liens compte/paramètres dans le tiroir.
-    await expect(drawerAccount(page)).toBeVisible();
-    await expect(drawerAccount(page).locator('a[href="/settings/account"]')).toBeVisible();
-    await expect(drawerAccount(page).locator('a[href="/settings/team"]')).toBeVisible();
-    await expect(drawerAccount(page).locator('a[href="/settings/security/2fa"]')).toBeVisible();
-    await expect(drawerAccount(page).locator('a[href="/settings/notifications"]')).toBeVisible();
-    await expect(page.getByTestId('dashboard-drawer-logout')).toBeVisible();
-  });
+    // Modules entreprise (lien direct « Tableau de bord ») dans le tiroir.
+    await expect(sidebar(page).locator('a[href="/dashboard"]').first()).toBeVisible();
 
-  test('entre md et lg, le panneau de modules reste accessible (Échap le referme)', async ({ page }) => {
-    await page.setViewportSize({ width: 900, height: 800 });
-    await seedBusinessSession(page);
-    await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
+    // Section Plateforme : Modules / Abonnement & factures / Intégrations.
+    await expect(page.getByTestId('sidebar-modules-link')).toBeVisible();
+    await expect(page.getByTestId('sidebar-billing-link')).toBeVisible();
+    await expect(page.getByTestId('sidebar-integrations-link')).toBeVisible();
 
-    await expect(drawerToggle(page)).toBeHidden();
-    await expect(modulesToggle(page)).toBeVisible();
+    // Bloc « Mon compte » (menu vers le haut) dans le pied du tiroir.
+    await userMenuToggle(page).click();
+    await expect(userMenu(page)).toBeVisible();
+    await expect(userMenu(page).locator('a[href="/settings/account"]')).toBeVisible();
+    await expect(userMenu(page).locator('a[href="/settings/encaissements"]')).toBeVisible();
+    await expect(userMenu(page).locator('a[href="/settings/branding"]')).toBeVisible();
+    await expect(page.getByTestId('user-menu-support')).toBeVisible();
+    await expect(page.getByTestId('user-menu-logout')).toBeVisible();
 
-    await modulesToggle(page).click();
-    await expect(modulesPanel(page)).toBeVisible();
-    expect((await panelBox(modulesPanel(page))).maxHeight).not.toBe('none');
-
-    await page.keyboard.press('Escape');
-    await expect(modulesPanel(page)).toHaveCount(0);
-    await expect(modulesToggle(page)).toHaveAttribute('aria-expanded', 'false');
+    // Langue : sous-menu du bloc compte (fr/en/tr/ar).
+    await page.getByTestId('user-menu-language-toggle').click();
+    await expect(page.getByTestId('user-menu-language-panel')).toBeVisible();
+    for (const code of ['fr', 'en', 'tr', 'ar']) {
+      await expect(page.getByTestId(`user-menu-language-${code}`)).toBeVisible();
+    }
   });
 
   test('Échap referme le panneau des notifications et restitue le scroll', async ({ page }) => {
@@ -151,26 +144,30 @@ test.describe('Dashboard — tiroir mobile unique (#7556)', () => {
     expect(await overflowOfBody(page)).not.toBe('hidden');
   });
 
-  test('le clic extérieur referme le panneau du compte', async ({ page }) => {
+  test('Échap referme le menu du compte', async ({ page }) => {
     await seedBusinessSession(page);
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
 
+    await drawerToggle(page).click();
     await userMenuToggle(page).click();
     await expect(userMenu(page)).toBeVisible();
     expect((await panelBox(userMenu(page))).maxHeight).not.toBe('none');
 
-    await panelBackdrop(page).click();
+    await page.keyboard.press('Escape');
     await expect(userMenu(page)).toHaveCount(0);
     await expect(userMenuToggle(page)).toHaveAttribute('aria-expanded', 'false');
-    await expect(panelBackdrop(page)).toHaveCount(0);
   });
 });
 
-test.describe('Dashboard — panneaux de la barre (#7556)', () => {
-  test('le sous-menu RH se referme au clic extérieur', async ({ page }) => {
+test.describe('Dashboard — sidebar desktop (#7908)', () => {
+  test('les accordéons Entreprise s\'ouvrent et se referment au clic (état persisté)', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await seedManagerSession(page);
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
+
+    // Sidebar en colonne permanente : pas de burger.
+    await expect(drawerToggle(page)).toBeHidden();
+    await expect(sidebar(page)).toBeVisible();
 
     const hrToggle = page.getByTestId('dashboard-hr-menu');
     await expect(hrToggle).toBeVisible();
@@ -178,13 +175,18 @@ test.describe('Dashboard — panneaux de la barre (#7556)', () => {
 
     const hrPanel = page.getByTestId('dashboard-hr-menu-panel');
     await expect(hrPanel).toBeVisible();
-    expect((await panelBox(hrPanel)).maxHeight).not.toBe('none');
+    await expect(hrToggle).toHaveAttribute('aria-expanded', 'true');
 
-    await panelBackdrop(page).click();
+    // L'état ouvert est persisté en localStorage (#7908).
+    expect(await page.evaluate(() => window.localStorage.getItem('dashboard_sidebar_groups'))).toContain('"hr":true');
+
+    await hrToggle.click();
     await expect(hrPanel).toHaveCount(0);
+    await expect(hrToggle).toHaveAttribute('aria-expanded', 'false');
   });
 
-  test('ouvrir un panneau referme le précédent (un seul voile)', async ({ page }) => {
+  test('le clic extérieur referme le panneau des notifications (voile unique)', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
     await seedManagerSession(page);
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
 
@@ -192,9 +194,8 @@ test.describe('Dashboard — panneaux de la barre (#7556)', () => {
     await expect(notificationsPanel(page)).toBeVisible();
     await expect(panelBackdrop(page)).toHaveCount(1);
 
-    await userMenuToggle(page).click();
-    await expect(userMenu(page)).toBeVisible();
+    await panelBackdrop(page).click();
     await expect(notificationsPanel(page)).toHaveCount(0);
-    await expect(panelBackdrop(page)).toHaveCount(1);
+    await expect(panelBackdrop(page)).toHaveCount(0);
   });
 });
