@@ -105,37 +105,33 @@ function sleep(ms) {
 
 // QA 2026-08-15 (#2659) : tout build sans VITE_API_URL embarquait localhost
 // (déploiement GitHub Actions cassé, dev silencieusement pointé ailleurs).
-// #7842 (audit sécurité 2026-09-20) : le défaut silencieux vers l'API Render
-// de DEV est retiré en production — un build prod sans VITE_API_URL échoue
-// explicitement au chargement au lieu d'envoyer des données réelles vers
-// l'environnement de dev. En dev local, le fallback reste utilisable avec
-// un warning console ; localhost reste configurable via VITE_API_URL.
-const DEV_FALLBACK_API_URL = 'https://gestionemployerbackend.onrender.com/api/v1'
+// Durcissement #7842 : le repli silencieux vers l'API dev Render est retiré
+// en production — un build prod (`import.meta.env.PROD`) sans VITE_API_URL
+// lève désormais une erreur explicite au chargement. En dev/test, le repli
+// vers l'API dev est conservé mais signalé par un console.warn ; localhost
+// reste utilisable explicitement via VITE_API_URL.
+const DEV_FALLBACK_API_BASE_URL = 'https://gestionemployerbackend.onrender.com/api/v1'
 
-function resolveApiBaseURL() {
+function resolveApiBaseUrl() {
   const configured = import.meta.env.VITE_API_URL
-
   if (configured) {
     return configured
   }
-
   if (import.meta.env.PROD) {
+    // Developer-facing technical diagnostic (not UI copy — kept out of the
+    // i18n catalogs on purpose; the '[admin-dashboard]' tag prefix is the
+    // repo convention recognised by the PA2-I18N-014 guard, see #7842).
     throw new Error(
-      '[admin-dashboard] VITE_API_URL absente dans un build de production — '
-        + "poser la variable dans l'environnement de build (CI/Cloudflare) ; "
-        + "le fallback silencieux vers l'API de dev a été retiré (audit #7842).",
+      '[admin-dashboard] VITE_API_URL is not set in a production build. Define VITE_API_URL (e.g. https://api.example.com/api/v1) in the build environment. The silent fallback to the onrender.com dev API was removed (#7842).',
     )
   }
-
-  // eslint-disable-next-line no-console
   console.warn(
-    `[admin-dashboard] VITE_API_URL absente — fallback DEV vers ${DEV_FALLBACK_API_URL}. Toléré uniquement en dev (audit #7842).`,
+    `[admin-dashboard] VITE_API_URL is not set — falling back to the dev API ${DEV_FALLBACK_API_BASE_URL} (dev/test only, forbidden in production, #7842).`,
   )
-
-  return DEV_FALLBACK_API_URL
+  return DEV_FALLBACK_API_BASE_URL
 }
 
-const apiBaseURL = resolveApiBaseURL()
+const apiBaseURL = resolveApiBaseUrl()
 
 function baseEndsWithV1(baseURL) {
   return /\/api\/v1\/?$/.test(baseURL || '')
