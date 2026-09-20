@@ -34916,15 +34916,44 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
-    PharmacyProduct:
-      type: object
-      description: Produit d'officine (PHARMA-002, #7799) — verticale PharmaManager.
     TravelDistributorKey:
       type: object
       description: >-
         Cle API de lecture d'un distributeur (TRAVEL-DISTRIBUTION, #7641) —
         acces de lecture distinct, revocable et trace par plateforme de
         distribution ; hash SHA-256 au repos, jamais expose.
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        scopes:
+          type: array
+          items:
+            type: string
+            enum: [catalog.read, bookings.read]
+        enabled:
+          type: boolean
+        last_used_at:
+          type: string
+          format: date-time
+          nullable: true
+        usage_count:
+          type: integer
+        rotated_at:
+          type: string
+          format: date-time
+          nullable: true
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+    PharmacyProduct:
+      type: object
+      description: Produit d'officine (PHARMA-002, #7799) — verticale PharmaManager.
       properties:
         id:
           type: integer
@@ -34965,30 +34994,6 @@ components:
         status:
           type: string
           enum: [active, archived]
-        scopes:
-          type: array
-          items:
-            type: string
-            enum: [catalog.read, bookings.read]
-        enabled:
-          type: boolean
-        last_used_at:
-          type: string
-          format: date-time
-          nullable: true
-        usage_count:
-          type: integer
-        rotated_at:
-          type: string
-          format: date-time
-          nullable: true
-        revoked_at:
-          type: string
-          format: date-time
-          nullable: true
-        created_at:
-          type: string
-          format: date-time
     TravelStaffAssignment:
       type: object
       description: >-
