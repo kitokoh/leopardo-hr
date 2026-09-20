@@ -183,6 +183,8 @@ export type CopyTree = {
     platformModules: string;
     /** #7908 — sous-titre de la page /modules */
     modulesPageSubtitle: string;
+    /** #7908 — état « non lue » d'une notification (aria-label de la pastille) */
+    notificationUnread: string;
   };
   passwordReset: {
     title: string;
@@ -851,6 +853,7 @@ const copy: Record<AppLocale, CopyTree> = {
       sectionPlatform: 'Plateforme',
       platformModules: 'Modules',
       modulesPageSubtitle: 'Gérez les modules de votre espace : statut, activation en autonomie et découverte des métiers.',
+      notificationUnread: 'Non lue',
     },
     passwordReset: {
       title: 'Mot de passe oublié',
@@ -1552,6 +1555,7 @@ const copy: Record<AppLocale, CopyTree> = {
       sectionPlatform: 'المنصة',
       platformModules: 'الوحدات',
       modulesPageSubtitle: 'أدر وحدات مساحتك: الحالة والتفعيل الذاتي واكتشاف القطاعات.',
+      notificationUnread: 'غير مقروءة',
     },
     passwordReset: {
       title: 'نسيت كلمة المرور؟',
@@ -2249,6 +2253,7 @@ const copy: Record<AppLocale, CopyTree> = {
       sectionPlatform: 'Platform',
       platformModules: 'Modüller',
       modulesPageSubtitle: 'Alanınızın modüllerini yönetin: durum, kendi kendine etkinleştirme ve sektörleri keşfetme.',
+      notificationUnread: 'Okunmadı',
     },
     passwordReset: {
       title: 'Şifrenizi mi unuttunuz?',
@@ -2946,6 +2951,7 @@ const copy: Record<AppLocale, CopyTree> = {
       sectionPlatform: 'Platform',
       platformModules: 'Modules',
       modulesPageSubtitle: 'Manage the modules of your workspace: status, self-service activation and business discovery.',
+      notificationUnread: 'Unread',
     },
     passwordReset: {
       title: 'Forgot your password?',

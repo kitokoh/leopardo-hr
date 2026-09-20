@@ -660,7 +660,7 @@ export default function DashboardLayout({
                         >
                           <div className="flex items-start justify-between gap-2">
                             <p className="text-sm font-bold text-slate-900">{notification.title}</p>
-                            {!notification.is_read ? <span className="mt-1 h-2 w-2 rounded-full bg-emerald-500" aria-label="Non lue" /> : null}
+                            {!notification.is_read ? <span className="mt-1 h-2 w-2 rounded-full bg-emerald-500" aria-label={labels.dashboard.notificationUnread} /> : null}
                           </div>
                           <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-600">{notification.body}</p>
                           <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">{notification.type}</p>
