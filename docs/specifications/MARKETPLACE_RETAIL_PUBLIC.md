@@ -158,12 +158,14 @@ annuler). i18n 4 locales (fr/en/ar/tr) via les registres partagés, patterns #76
 
 ## 6. Hors périmètre v1 (issues backlog dédiées)
 - Handoff **BC-26 Delivery** automatique (`RetailOnlineOrderConfirmed` → création de livraison + tracking partagé) ;
-- **Paiement en ligne réel** (mobile money / PSP, BC-21) — v1 = COD ;
 - ~~Comptes acheteurs, favoris, avis & notations~~ — **livré par #7814** (voir §3.2bis) ;
   reste en backlog : modération des avis (v1 = auto-approve, champ statut déjà présent),
   réinitialisation de mot de passe, fusion de l'historique invité ;
 - Reçus/factures PDF (POS + web) ;
 - Recherche à facettes/geo, promotions, frais de livraison paramétrables.
+
+> Le **paiement en ligne réel** (mobile money / PSP), initialement hors périmètre, est livré par
+> l'issue #7812 — voir §8.
 
 ## 7. Sécurité & conformité
 - Public : throttle `shop-public`, DTO fail-closed, jeton de suivi obligatoire, 404 par défaut ;
@@ -171,3 +173,49 @@ annuler). i18n 4 locales (fr/en/ar/tr) via les registres partagés, patterns #76
 - RGPD : données client minimales, pas d'email obligatoire, mentions sur la page checkout ;
 - Tests Feature obligatoires par endpoint : parcours nominal, isolation tenant, opt-in respecté,
   transitions d'états, idempotence, jeton invalide.
+
+## 8. Paiement en ligne (BC-21 pragmatique — issue #7812)
+
+Le checkout public accepte `payment_method: "cash" | "online"` — **COD (`cash`) reste le défaut**.
+
+### 8.1 Modèle de données
+- **`retail_online_payment_intents`** (tenant, sans FK, idempotente) : `company_id`, `order_id`,
+  `intent_reference` (64 hex, unique par tenant — aléatoire 256 bits, résolution cross-tenant du
+  webhook), `provider` (`chargily|mock`), `amount_minor`, `currency`, `status`
+  (`pending|processing|succeeded|failed|expired|refunded`), `checkout_url` nullable,
+  `provider_payload` json nullable (trace auditable), `idempotency_key`, timestamps ;
+- **`retail_orders`** (ALTER idempotent) : `payment_method` (`cash|online`), `payment_status`
+  (`pending|paid|refunded`), `paid_at`. Au succès, une trace d'encaissement `RetailOrderPayment`
+  (`method = online`, `status = captured`) est enregistrée — cohérence avec le POS #7674.
+
+### 8.2 Abstraction provider (locale au module Retail)
+`Domain/Contracts/RetailPaymentProviderInterface` (`createIntent`, `verifyWebhookSignature`,
+`parseWebhookEvent`, `verifyIntent`, `refund`) + `Infrastructure/Payments/` : **ChargilyProvider**
+(Chargily Pay v2 — mobile money EDAHABIA / carte CIB, `POST /api/v2/checkouts`, webhook HMAC-SHA256
+header `signature`, même intégration que Accounting #5272) et **MockProvider** (tests/dev).
+Sélection par `config('retail.payments.provider')` + credentials env (`RETAIL_PAY_CHARGILY_SECRET`,
+`RETAIL_PAY_CHARGILY_WEBHOOK_SECRET`, `RETAIL_PAY_MOCK_WEBHOOK_SECRET`) — **aucun secret en dur**.
+⚠️ Les profils de paiement tenant **BC-21** (PR #7732) ne sont PAS mergés : cette config env est le
+fallback prévu, la résolution par tenant se branchera dans `RetailPaymentProviderRegistry` sans
+changer les appelants.
+
+### 8.3 Contrat API
+| Méthode | Route | Description |
+|---|---|---|
+| POST | `/public/market/orders` | `payment_method: cash\|online`. Si `online` : réponse enrichie `payment: { method, intent_reference, status, checkout_url }` (rejeu idempotent → même intent). Provider indisponible → 422 `PAYMENT_PROVIDER_UNAVAILABLE` (la commande existe, rejeu possible). |
+| POST | `/public/market/payments/webhook/{provider}` | Webhook signé **fail-closed** : signature HMAC obligatoire sur le corps brut (invalide/secret absent → 401, provider inconnu → 404), idempotent (rejeu → 200 sans double effet). `succeeded` → intent + commande payée (`paid_at`, trace RetailOrderPayment) ; `failed`/`expired` → statut correspondant, commande **non payée**. Contrôle anti-fraude du montant notifié. |
+| GET | `/public/market/orders/{reference}` | Suivi public : expose en plus `payment: { method, status }` — fail-closed, rien d'autre. |
+| POST | `/retail/online/orders/{id}/refund` | Vendeur (RetailOrderPolicy@pay, principal/rh) : uniquement si intent `succeeded` (422 `PAYMENT_NOT_REFUNDABLE` sinon), appelle `provider->refund`, statut `refunded` + trace auditable. |
+
+### 8.4 Réconciliation
+`php artisan retail:payments:reconcile [--minutes=30]` : re-vérifie auprès du provider les intents
+`pending|processing` plus vieux que X minutes (défaut `RETAIL_PAY_RECONCILE_AFTER_MINUTES`) et
+applique les **mêmes transitions** que le webhook (voie unique `RetailPaymentService::applyStatus`,
+transactionnelle + verrou de ligne). À planifier toutes les 15–30 minutes.
+
+### 8.5 Web client (`front/marketplace`)
+Checkout : choix « Paiement à la livraison » / « Paiement en ligne » ; en ligne, une seule boutique
+→ redirection vers la `checkout_url` du PSP, plusieurs boutiques → bouton « Payer en ligne » par
+commande sur `/confirmation`. Page **`/paiement/retour?reference=`** : le jeton de suivi est relu en
+localStorage (jamais transmis au PSP), poll du statut de paiement (payé/en attente/remboursé/erreur),
+FR, mobile-first. `/suivi` affiche l'état du paiement.

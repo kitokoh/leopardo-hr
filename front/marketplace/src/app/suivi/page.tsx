@@ -144,6 +144,28 @@ function TrackingContent() {
             <div>
               <p className="font-mono text-sm font-semibold text-stone-900">{tracking.reference}</p>
               {sellerName ? <p className="text-xs text-stone-500">Boutique : {sellerName}</p> : null}
+              {tracking.payment ? (
+                <p className="mt-1 text-xs text-stone-500">
+                  Paiement :{" "}
+                  <span
+                    className={`font-medium ${
+                      tracking.payment.status === "paid"
+                        ? "text-emerald-700"
+                        : tracking.payment.status === "refunded"
+                          ? "text-stone-600"
+                          : "text-amber-700"
+                    }`}
+                  >
+                    {tracking.payment.status === "paid"
+                      ? "payé en ligne"
+                      : tracking.payment.status === "refunded"
+                        ? "remboursé"
+                        : tracking.payment.method === "online"
+                          ? "en attente de paiement en ligne"
+                          : "à la livraison"}
+                  </span>
+                </p>
+              ) : null}
             </div>
             <Price
               priceMinor={tracking.total_minor}
