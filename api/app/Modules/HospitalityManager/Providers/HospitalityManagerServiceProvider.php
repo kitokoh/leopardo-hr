@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\HospitalityManager\Providers;
 
 use App\Core\Solutions\SolutionCatalogue;
+use App\Modules\HospitalityManager\Console\Commands\HospitalityExpirePendingReservationsCommand;
 use App\Modules\HospitalityManager\Domain\Solution\HospitalityManagerManifest;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,5 +27,14 @@ class HospitalityManagerServiceProvider extends ServiceProvider
         $this->app->resolving(SolutionCatalogue::class, function (SolutionCatalogue $catalogue): void {
             $catalogue->register('hospitality', static fn (): HospitalityManagerManifest => new HospitalityManagerManifest);
         });
+    }
+
+    public function boot(): void
+    {
+        // Commandes artisan du module (enregistrement explicite, pattern CRM
+        // #5729 / TravelAgency) : consommée par le scheduler (routes/console.php).
+        $this->commands([
+            HospitalityExpirePendingReservationsCommand::class,
+        ]);
     }
 }

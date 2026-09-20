@@ -108,8 +108,8 @@ class HospitalityModuleStatusTest extends TestCase
             ->assertJsonPath('data.module', 'hospitality')
             ->assertJsonPath('data.enabled', true)
             ->assertJsonPath('data.status', 'active')
-            ->assertJsonPath('data.stage', 'HOSP-003')
+            ->assertJsonPath('data.stage', 'HOSP-004')
             ->assertJsonPath('data.capabilities.properties', true)
-            ->assertJsonPath('data.capabilities.reservations', false);
+            ->assertJsonPath('data.capabilities.reservations', true);
     }
 }

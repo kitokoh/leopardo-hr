@@ -41110,6 +41110,453 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+  /hospitality/reservations:
+    get:
+      tags:
+      - Hospitality
+      summary: Lister les réservations du tenant
+      description: 'Liste paginée (filtres `property_id`, `status`, `from`, `to` — chevauchement d''intervalle). Solution inactive → 403 `HOSPITALITY_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - pending
+          - confirmed
+          - checked_in
+          - checked_out
+          - cancelled
+          - no_show
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+      responses:
+        '200':
+          description: Page de réservations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HospitalityReservation'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Hospitality
+      summary: Créer une réservation au guichet
+      description: 'Création anti-overbooking TRANSACTIONNELLE (verrou du type de chambre + comptage sur l''intervalle [check_in, check_out)) : capacité atteinte → 409 `HOSPITALITY_NO_AVAILABILITY`. Idempotente sur `idempotency_key` (rejeu → 200 avec l''existant). `check_out > check_in` exigé (422). Geste opérationnel `operate` sur l''établissement.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HospitalityReservationInput'
+      responses:
+        '201':
+          description: Réservation créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityReservation'
+        '200':
+          description: Rejeu idempotent — réservation existante retournée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityReservation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '409':
+          description: Aucune disponibilité sur l''intervalle (HOSPITALITY_NO_AVAILABILITY)
+        '422':
+          $ref: '#/components/responses/Error422'
+  /hospitality/reservations/{reservation}:
+    get:
+      tags:
+      - Hospitality
+      summary: Consulter une réservation
+      description: 'Détail d''une réservation du tenant (cross-tenant → 404 fail-closed). `allowed_transitions` reflète la machine à états.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: reservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ressource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityReservation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    patch:
+      tags:
+      - Hospitality
+      summary: Mettre à jour une réservation
+      description: 'Champs éditables uniquement (le statut ne change QUE par les transitions). Interdite sur état terminal (409 `INVALID_RESERVATION_TRANSITION`) ; tout changement d''intervalle ou de type re-vérifie la disponibilité (409 `HOSPITALITY_NO_AVAILABILITY`). Geste `manage`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: reservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HospitalityReservationUpdateInput'
+      responses:
+        '200':
+          description: Réservation mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityReservation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition interdite (état terminal) ou aucune disponibilité
+        '422':
+          $ref: '#/components/responses/Error422'
+  /hospitality/reservations/{reservation}/confirm:
+    post:
+      tags:
+      - Hospitality
+      summary: Confirmer une réservation (pending → confirmed)
+      description: 'Transition gardée par la machine à états (409 `INVALID_RESERVATION_TRANSITION`) ; la disponibilité est re-vérifiée (409 `HOSPITALITY_NO_AVAILABILITY`). Geste opérationnel `operate`. Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: reservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Réservation confirmée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityReservation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition invalide ou aucune disponibilité
+  /hospitality/reservations/{reservation}/check-in:
+    post:
+      tags:
+      - Hospitality
+      summary: Enregistrer l''arrivée (confirmed → checked_in)
+      description: 'Transition gardée (409 `INVALID_RESERVATION_TRANSITION`) ; l''unité affectée passe `occupied`. Geste opérationnel `operate`. Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: reservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Arrivée enregistrée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityReservation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition invalide
+  /hospitality/reservations/{reservation}/check-out:
+    post:
+      tags:
+      - Hospitality
+      summary: Enregistrer le départ (checked_in → checked_out)
+      description: 'Transition gardée (409 `INVALID_RESERVATION_TRANSITION`) ; l''unité affectée repasse `available`. Geste opérationnel `operate`. Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: reservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Départ enregistré
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityReservation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition invalide
+  /hospitality/reservations/{reservation}/cancel:
+    post:
+      tags:
+      - Hospitality
+      summary: Annuler une réservation (pending|confirmed → cancelled)
+      description: 'Transition gardée (409 `INVALID_RESERVATION_TRANSITION`). Geste opérationnel `operate`. Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: reservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Réservation annulée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityReservation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition invalide
+  /hospitality/reservations/{reservation}/no-show:
+    post:
+      tags:
+      - Hospitality
+      summary: Marquer en no-show (confirmed → no_show)
+      description: 'Transition gardée (409 `INVALID_RESERVATION_TRANSITION`). Geste opérationnel `operate`. Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: reservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Réservation marquée no-show
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityReservation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition invalide
+  /hospitality/properties/{property}/availability:
+    get:
+      tags:
+      - Hospitality
+      summary: Disponibilités d''un établissement par type de chambre
+      description: 'Capacité opérationnelle (unités hors maintenance/hors service), immobilisations sur l''intervalle [from, to) (pending non expirées + confirmed + checked_in) et disponibilité nette, par type de chambre actif. Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: from
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Disponibilités par type
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      property_id:
+                        type: integer
+                      from:
+                        type: string
+                        format: date
+                      to:
+                        type: string
+                        format: date
+                      room_types:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            room_type_id:
+                              type: integer
+                            code:
+                              type: string
+                            name:
+                              type: string
+                            capacity:
+                              type: integer
+                            held:
+                              type: integer
+                            available:
+                              type: integer
+                            base_price_minor:
+                              type: integer
+                            currency:
+                              type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /hospitality/dashboard/kpis:
+    get:
+      tags:
+      - Hospitality
+      summary: KPIs du tableau de bord Hospitality
+      description: 'Occupation du jour (unités opérationnelles / occupées / taux), arrivées et départs du jour, réservations en ligne en attente (pending non expirées). Les KPIs locatifs arrivent avec HOSP-005.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Indicateurs du jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      date:
+                        type: string
+                        format: date
+                      occupancy:
+                        type: object
+                        properties:
+                          operational_units:
+                            type: integer
+                          occupied_units:
+                            type: integer
+                          rate:
+                            type: number
+                            nullable: true
+                      arrivals_today:
+                        type: integer
+                      departures_today:
+                        type: integer
+                      pending_online:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
 components:
   securitySchemes:
     BearerAuth:
@@ -50813,6 +51260,190 @@ components:
           maxLength: 80
           nullable: true
       description: Entrée affectation staff (HOSP-003).
+    HospitalityReservation:
+      type: object
+      required:
+      - id
+      - reference
+      - property_id
+      - room_type_id
+      - guest_name
+      - check_in
+      - check_out
+      - status
+      - source
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+          example: HRS-2026-X7K2P9
+        property_id:
+          type: integer
+        room_type_id:
+          type: integer
+        unit_id:
+          type: integer
+          nullable: true
+        guest_name:
+          type: string
+        contact_email:
+          type: string
+          nullable: true
+        contact_phone:
+          type: string
+          nullable: true
+        check_in:
+          type: string
+          format: date
+        check_out:
+          type: string
+          format: date
+        adults:
+          type: integer
+        children:
+          type: integer
+        status:
+          type: string
+          enum:
+          - pending
+          - confirmed
+          - checked_in
+          - checked_out
+          - cancelled
+          - no_show
+        total_amount_minor:
+          type: integer
+          nullable: true
+        currency:
+          type: string
+          nullable: true
+        source:
+          type: string
+          enum:
+          - desk
+          - online
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        version:
+          type: integer
+        allowed_transitions:
+          type: array
+          items:
+            type: string
+          description: Transitions autorisées depuis le statut courant (machine à états).
+      description: 'Réservation guichet ou en ligne (HOSP-004 #7946).'
+    HospitalityReservationInput:
+      type: object
+      required:
+      - property_id
+      - room_type_id
+      - guest_name
+      - check_in
+      - check_out
+      properties:
+        property_id:
+          type: integer
+        room_type_id:
+          type: integer
+          description: Doit appartenir à l''établissement (sinon 422).
+        unit_id:
+          type: integer
+          nullable: true
+        guest_name:
+          type: string
+          maxLength: 150
+        contact_email:
+          type: string
+          format: email
+          maxLength: 190
+        contact_phone:
+          type: string
+          maxLength: 40
+        check_in:
+          type: string
+          format: date
+        check_out:
+          type: string
+          format: date
+          description: Strictement postérieure à check_in.
+        adults:
+          type: integer
+          minimum: 1
+          maximum: 30
+        children:
+          type: integer
+          minimum: 0
+          maximum: 30
+        status:
+          type: string
+          enum:
+          - pending
+          - confirmed
+          default: pending
+        total_amount_minor:
+          type: integer
+          minimum: 0
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        idempotency_key:
+          type: string
+          maxLength: 80
+          description: Rejeu idempotent — la même clé retourne l''existant (200).
+        notes:
+          type: string
+          maxLength: 2000
+      description: Entrée création d''une réservation au guichet (HOSP-004).
+    HospitalityReservationUpdateInput:
+      type: object
+      properties:
+        room_type_id:
+          type: integer
+        unit_id:
+          type: integer
+          nullable: true
+        guest_name:
+          type: string
+          maxLength: 150
+        contact_email:
+          type: string
+          format: email
+          maxLength: 190
+        contact_phone:
+          type: string
+          maxLength: 40
+        check_in:
+          type: string
+          format: date
+        check_out:
+          type: string
+          format: date
+        adults:
+          type: integer
+          minimum: 1
+          maximum: 30
+        children:
+          type: integer
+          minimum: 0
+          maximum: 30
+        total_amount_minor:
+          type: integer
+          minimum: 0
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        notes:
+          type: string
+          maxLength: 2000
+      description: Entrée mise à jour d''une réservation (HOSP-004 — statut via transitions uniquement).
     HealthDepartment:
       type: object
       required:

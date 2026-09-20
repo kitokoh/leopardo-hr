@@ -22,9 +22,12 @@ declare(strict_types=1);
  * docs/specifications/SOLUTION_HOSPITALITY.md.
  */
 
+use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityAvailabilityController;
+use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityDashboardController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityModuleStatusController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityPropertyController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityPropertyStaffController;
+use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityReservationController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityRoomTypeController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityUnitController;
 use Illuminate\Support\Facades\Route;
@@ -61,4 +64,21 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/properties/{property}/staff', [HospitalityPropertyStaffController::class, 'store'])->whereNumber('property');
         Route::patch('/properties/{property}/staff/{assignment}', [HospitalityPropertyStaffController::class, 'update'])->whereNumber('property')->whereNumber('assignment');
         Route::delete('/properties/{property}/staff/{assignment}', [HospitalityPropertyStaffController::class, 'destroy'])->whereNumber('property')->whereNumber('assignment');
+
+        // ── Disponibilités (HOSP-004 #7946) ───────────────────────────
+        Route::get('/properties/{property}/availability', [HospitalityAvailabilityController::class, 'show'])->whereNumber('property');
+
+        // ── Réservations au guichet (HOSP-004 #7946) ──────────────────
+        Route::get('/reservations', [HospitalityReservationController::class, 'index']);
+        Route::post('/reservations', [HospitalityReservationController::class, 'store']);
+        Route::get('/reservations/{reservation}', [HospitalityReservationController::class, 'show'])->whereNumber('reservation');
+        Route::patch('/reservations/{reservation}', [HospitalityReservationController::class, 'update'])->whereNumber('reservation');
+        Route::post('/reservations/{reservation}/confirm', [HospitalityReservationController::class, 'confirm'])->whereNumber('reservation');
+        Route::post('/reservations/{reservation}/check-in', [HospitalityReservationController::class, 'checkIn'])->whereNumber('reservation');
+        Route::post('/reservations/{reservation}/check-out', [HospitalityReservationController::class, 'checkOut'])->whereNumber('reservation');
+        Route::post('/reservations/{reservation}/cancel', [HospitalityReservationController::class, 'cancel'])->whereNumber('reservation');
+        Route::post('/reservations/{reservation}/no-show', [HospitalityReservationController::class, 'noShow'])->whereNumber('reservation');
+
+        // ── Tableau de bord (HOSP-004 #7946) ──────────────────────────
+        Route::get('/dashboard/kpis', [HospitalityDashboardController::class, 'kpis']);
     });

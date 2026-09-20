@@ -31,12 +31,12 @@ class HospitalityModuleStatusController extends Controller
                 'enabled' => true,
                 'status' => 'active',
                 // Jalon livré du programme HOSP-001→008 (spec SOLUTION_HOSPITALITY.md).
-                'stage' => 'HOSP-003',
+                'stage' => 'HOSP-004',
                 'capabilities' => [
                     'properties' => true,    // HOSP-002 (#7944) — référentiel établissements livré
                     'inventory' => true,     // HOSP-002 (#7944) — types de chambres & unités livrés
                     'team' => true,          // HOSP-003 (#7945) — équipe par établissement + RBAC scopé livrés
-                    'reservations' => false, // HOSP-004 (#7946) — réservations & disponibilité
+                    'reservations' => true,  // HOSP-004 (#7946) — réservations, disponibilité, KPIs livrés
                     'rentals' => false,      // HOSP-005 (#7947) — baux & loyers
                     'public_api' => false,   // HOSP-006 (#7948) — vitrine publique API
                 ],
