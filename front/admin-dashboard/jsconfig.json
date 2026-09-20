@@ -1,9 +1,4 @@
 {
-  // Phase 0 de l'ADR 0023 (issue #7849) — socle NON-BLOQUANT :
-  // - checkJs: false → aucune erreur imposée ; l'opt-in par fichier se fait
-  //   via `// @ts-check` (phases 1-2), puis checkJs: true (phase 3).
-  // - Sert l'IntelliSense éditeur (alias @/, libs DOM/ESNext).
-  // Ce fichier n'affecte ni `vite build` ni `eslint`.
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
