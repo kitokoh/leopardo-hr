@@ -20,6 +20,7 @@
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantBillController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantBranchController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantBranchPublicProfileController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantBranchStaffController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantCancellationPolicyController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantCategoryController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantCogsController;
@@ -88,6 +89,15 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::put('/branches/{restaurantBranch}', [RestaurantBranchController::class, 'update']);
         Route::delete('/branches/{restaurantBranch}', [RestaurantBranchController::class, 'destroy']);
         Route::get('/branches/{restaurantBranch}/zones', [RestaurantZoneController::class, 'indexForBranch']);
+
+        // ── Équipe d'une succursale (#7909) ──────────────────────────────────
+        // Affectations staff ↔ branche : liste paginée (employé embarqué),
+        // affectation (409 doublon actif, 422 employé hors tenant), mise à
+        // jour du rôle, retrait en soft delete.
+        Route::get('/branches/{restaurantBranch}/staff', [RestaurantBranchStaffController::class, 'index']);
+        Route::post('/branches/{restaurantBranch}/staff', [RestaurantBranchStaffController::class, 'store']);
+        Route::patch('/branches/{restaurantBranch}/staff/{restaurantBranchStaff}', [RestaurantBranchStaffController::class, 'update']);
+        Route::delete('/branches/{restaurantBranch}/staff/{restaurantBranchStaff}', [RestaurantBranchStaffController::class, 'destroy']);
 
         // ── Commande en ligne publique (RESTO-805/#6226) — lien signé ──────
         // Génère le lien public signé (menu + commande) d'une branche ; les

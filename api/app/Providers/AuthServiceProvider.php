@@ -183,6 +183,7 @@ use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\Recruitment\Domain\Models\Applicant;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantBranchStaff;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantCategory;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantHour;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantIngredient;
@@ -208,6 +209,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantTaxRate;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantUnit;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantZone;
 use App\Modules\RestaurantManager\Policies\RestaurantBranchPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantBranchStaffPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantCategoryPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantHourPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantIngredientPolicy;
@@ -565,6 +567,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(TravelCancellationPolicy::class, TravelCancellationPolicyPolicy::class);
         Gate::policy(TravelLoyaltyAccount::class, TravelLoyaltyPolicy::class);
         Gate::policy(RestaurantBranch::class, RestaurantBranchPolicy::class);
+        // #7909 — affectations staff ↔ succursale restaurant.
+        Gate::policy(RestaurantBranchStaff::class, RestaurantBranchStaffPolicy::class);
         Gate::policy(RestaurantZone::class, RestaurantZonePolicy::class);
         Gate::policy(RestaurantTable::class, RestaurantTablePolicy::class);
         Gate::policy(RestaurantCategory::class, RestaurantCategoryPolicy::class);
