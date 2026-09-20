@@ -32,8 +32,9 @@ et le projet vise l'adhésion au [Semantic Versioning](https://semver.org/lang/f
 - **Espace client web** : page « Employés » unifiée (rôles, grants de modules, invitations, ressources) avec redirection depuis `settings/team` (#7862/#7884) ; page « Mon compte » refondue (profil éditable, mot de passe & 2FA intégrés, carte abonnement) (#7861/#7883) ; shell client modernisé (header compact, menus au survol, avatar standard, branding réactif) (#7860/#7882).
 - **Growth** : stratégie d'acquisition 2026 T4 documentée + pages SEO « Alternative à X » lot 1 sur la vitrine (#7869/#7887).
 - **Encaissements** : type « cash » (encaissement au local) + enregistrement manuel des encaissements avec page front dédiée et routes `/billing/collections` (#7863/#7885).
-- **Onboarding** : pop-up d'import du jeu de données de démonstration à la première entrée dans l'espace (Importer / Plus tard / Non merci) (#7866/#7891).
+- **Onboarding** : pop-up d'import du jeu de données de démonstration à la première entrée dans l'espace (Importer / Plus tard / Non merci) (#7866/#7891), adossée à l'API demo-data par verticale (registre de kits, import idempotent, statuts persistés) (#7865/#7890).
 - **Admin plateforme** : groupe « RH & Paie » unifié dans la navigation (#7898).
+- **Vitrine** : Leo la pieuvre en visuel d'entrée du héro + pile 3D des solutions en section dédiée (#7851/#7894).
 
 ### Changed
 

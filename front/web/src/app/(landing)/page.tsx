@@ -14,7 +14,8 @@ import {
   ProductDemoVideo,
   // Phase-3 sections — no more Legacy prefixes
   HeroSection,
-  SolutionStack,
+  LeoHeroVisual,
+  SolutionStackSection,
   FAQSection,
   CTASection,
   ProblemSection,
@@ -83,7 +84,7 @@ export default function LandingPage() {
             <QuickTrialEmailForm locale={locale} copy={copy.heroQuickTrial} />
           }
           layout="split"
-          visual={<SolutionStack locale={locale} />}
+          visual={<LeoHeroVisual locale={locale} />}
         />
 
         {/* ─── PROBLEM / SOLUTION ─── */}
@@ -101,6 +102,9 @@ export default function LandingPage() {
           description={copy.solution.description}
           features={copy.solution.features}
         />
+
+        {/* ─── PILE LEOPARDO ─── architecture de l'offre, ex-visuel héro (#7851) */}
+        <SolutionStackSection locale={locale} />
 
         {/* ─── SOCIAL PROOF ─── */}
         <TrustedBrands locale={locale} />

@@ -16,4 +16,6 @@ return [
     'step_travel_first_trip' => 'İlk seferinizi planlayın',
     'step_travel_first_sale' => 'İlk satışınızı kaydedin',
     'interview_invalid_answer' => 'Geçersiz yanıt: :question',
+    'demo_data_vertical_inactive' => ':code çözümü çalışma alanınızda etkin değil.',
+    'demo_data_kit_unavailable' => ':code çözümü için demo veri seti mevcut değil.',
 ];
