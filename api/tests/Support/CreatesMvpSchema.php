@@ -3607,6 +3607,18 @@ trait CreatesMvpSchema
             });
         }
 
+        // Travel (#7734) — travel_distributor_keys manquait à la fixture (guard
+        // #5443 rouge sur main, réparé au passage par #7818).
+        if (! Schema::hasTable($this->moduleTable('travel_distributor_keys'))) {
+            Schema::create($this->moduleTable('travel_distributor_keys'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
         // HealthManager (BC-30, #7786..#7791) — parité fixture ↔ migrations tenant (#5443).
         if (! Schema::hasTable($this->moduleTable('health_departments'))) {
             Schema::create($this->moduleTable('health_departments'), function (Blueprint $table): void {
