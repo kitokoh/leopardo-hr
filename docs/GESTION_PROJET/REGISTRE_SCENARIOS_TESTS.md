@@ -914,3 +914,17 @@ restent les gates applicables.
   ARB par `sync-mobile.js` (« Barèmes fiscaux »/« Taux légaux », régression #7725) — aucun
   contrat ni écran mobile modifié, aucun scénario mobile nouveau requis.
 - **Surface API** : aucun changement de code backend, aucun scénario nouveau requis.
+## Mise à jour 2026-09-20 — affectation d'employés aux succursales restaurant (PR #7919, issue #7909)
+
+- **Surface API** : nouveaux endpoints `GET/POST /restaurant/branches/{branch}/staff` et
+  `PATCH/DELETE /restaurant/branches/{branch}/staff/{assignment}` (module RestaurantManager,
+  table `restaurant_branch_staff`). Scénarios PHPUnit : suite `RestaurantBranchStaffTest`
+  (CRUD complet, 409 doublon + restauration d'une affectation soft-deleted, 422 employé
+  cross-tenant, 404 branche d'un autre tenant, 403 RBAC ressource-scopée
+  `restaurant_branch`).
+- **Surface web** : page `/restaurant/team` (BranchSelect partagé, affectation, changement de
+  rôle, retrait) — suite Jest `restaurant/team/__tests__` + tuile « Équipe » du hub
+  restaurant ; préfixe protégé inchangé (`/restaurant`). Scénario e2e Playwright dédié dans
+  `client-business-flows` (parcours affecter → renommer rôle → retirer).
+- **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
+  `restaurant.team.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.

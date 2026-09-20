@@ -1870,6 +1870,30 @@ trait CreatesMvpSchema
             });
         }
 
+        // BC-17 RETAIL #7812 — intents de paiement en ligne du checkout
+        // marketplace. Miroir de la migration 2026_09_19_000501_7812
+        // (parité garde #5443, gap constaté en passant sur #7909).
+        if (! Schema::hasTable($this->moduleTable('retail_online_payment_intents'))) {
+            Schema::create($this->moduleTable('retail_online_payment_intents'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('order_id');
+                $table->string('intent_reference', 64);
+                $table->string('provider', 40);
+                $table->unsignedBigInteger('amount_minor');
+                $table->char('currency', 3)->default('DZD');
+                $table->string('status', 20)->default('pending');
+                $table->text('checkout_url')->nullable();
+                $table->json('provider_payload')->nullable();
+                $table->string('idempotency_key', 80)->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'order_id'], 'retail_payment_intents_company_order_idx');
+                $table->index(['company_id', 'status'], 'retail_payment_intents_company_status_idx');
+                $table->unique(['company_id', 'intent_reference'], 'retail_payment_intents_company_reference_unique');
+            });
+        }
+
         // Issue #7761 — grants de modules composables par collaborateur.
         // Miroir de la migration 2026_09_19_001401_7761 (garde #5443).
         if (! Schema::hasTable($this->moduleTable('employee_module_grants'))) {
@@ -4321,6 +4345,24 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'order_reference']);
                 $table->index(['branch_id', 'status']);
                 $table->index(['company_id', 'status']);
+            });
+        }
+
+        // #7909 — affectations staff ↔ succursale restaurant : colonnes réelles
+        // (unicité + soft delete portées par le service d'affectation).
+        if (! Schema::hasTable($this->moduleTable('restaurant_branch_staff'))) {
+            Schema::create($this->moduleTable('restaurant_branch_staff'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('branch_id');
+                $table->unsignedBigInteger('employee_id');
+                $table->string('role', 80)->nullable();
+                $table->timestamp('assigned_at')->nullable();
+                $table->timestamps();
+                $table->softDeletes();
+
+                $table->index(['company_id', 'branch_id']);
+                $table->unique(['company_id', 'branch_id', 'employee_id']);
             });
         }
 

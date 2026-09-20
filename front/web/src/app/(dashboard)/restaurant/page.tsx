@@ -7,7 +7,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { LayoutGrid, BookOpen, CalendarCheck, PackageSearch, Bike, ChartColumn, UtensilsCrossed, Globe, Wallet } from 'lucide-react';
+import { LayoutGrid, BookOpen, CalendarCheck, PackageSearch, Bike, ChartColumn, UtensilsCrossed, Globe, Wallet, UsersRound } from 'lucide-react';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { useRestaurantBranches, type RestaurantBranch } from '@/components/restaurant/BranchSelect';
 import { apiFetch } from '@/lib/api-client';
@@ -92,6 +92,8 @@ export default function RestaurantHomePage() {
     { href: '/restaurant/reports', icon: ChartColumn, title: t(locale, 'restaurant.home.reports', 'Rapports'), description: t(locale, 'restaurant.home.reportsDesc', 'Ventes, occupation, produits, COGS, export CSV'), accent: 'from-rose-500 to-pink-600' },
     // #7728 — état de l'encaissement (profils de paiement tenant).
     { href: '/restaurant/payments', icon: Wallet, title: t(locale, 'restaurant.home.payments', 'Encaissement'), description: t(locale, 'restaurant.home.paymentsDesc', 'Paiement en ligne, profils Stripe & mobile money'), accent: 'from-lime-500 to-emerald-600' },
+    // #7909 — affectations des employés aux succursales.
+    { href: '/restaurant/team', icon: UsersRound, title: t(locale, 'restaurant.home.team', 'Équipe'), description: t(locale, 'restaurant.home.teamDesc', 'Affectations des employés aux succursales, rôles'), accent: 'from-fuchsia-500 to-purple-600' },
   ];
 
   return (
