@@ -755,7 +755,7 @@
       "from": "BC-30",
       "to": "BC-03",
       "baseline": false,
-      "note": "PHARMACY → IDENTITY — Employee acteur des ventes/mouvements, RBAC policies (PHARMA-001/#7798).
+      "note": "PHARMACY → IDENTITY — Employee acteur des ventes/mouvements, RBAC policies (PHARMA-001/#7798)."
     }
   ]
 }
