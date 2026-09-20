@@ -26,6 +26,8 @@ use Illuminate\Support\Carbon;
  * @property QuizStatus $status
  *
  * @mixin Builder<static>
+ *
+ * @property int $bonus_points
  */
 class TravelQuiz extends Model
 {

@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 
 /**
  * Participation à un quiz (TRAVEL-904, issue #6107).
@@ -30,6 +29,8 @@ use Illuminate\Support\Carbon;
  * @property string $status
  *
  * @mixin Builder<static>
+ *
+ * @property \Illuminate\Support\Carbon|null $created_at
  */
 class TravelQuizParticipation extends Model
 {
@@ -65,6 +66,4 @@ class TravelQuizParticipation extends Model
     {
         return $this->belongsTo(TravelQuiz::class, 'quiz_id');
     }
-
-
 }

@@ -17,6 +17,21 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  *
  * `owner_carrier_id` nullable : un véhicule de location peut appartenir à
  * l'agence elle-même, sans compagnie tierce propriétaire.
+ *
+ * @property \Illuminate\Support\Carbon|null $available_from
+ * @property \Illuminate\Support\Carbon|null $available_until
+ * @property int $city_id
+ * @property string $code
+ * @property string $company_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property string $currency
+ * @property int $id
+ * @property string|null $notes
+ * @property int|null $owner_carrier_id
+ * @property int $price_per_day_minor
+ * @property \App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus $status
+ * @property string $title
+ * @property \Illuminate\Support\Carbon|null $updated_at
  */
 class TravelRentalVehicle extends Model
 {

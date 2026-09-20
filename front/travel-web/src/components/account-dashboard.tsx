@@ -17,7 +17,7 @@ import type { CustomerBooking } from "@/lib/types";
  */
 export function AccountDashboard() {
   const { dict, locale } = useLocale();
-  const { ready, account, token, logout } = useAccount();
+  const { ready, account, logout } = useAccount();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -36,10 +36,10 @@ export function AccountDashboard() {
   }, [ready, account, router]);
 
   useEffect(() => {
-    if (!token) return;
+    if (!account) return;
 
     let cancelled = false;
-    fetchMyBookings(token)
+    fetchMyBookings()
       .then((payload) => {
         if (!cancelled) setBookings(payload.data);
       })
@@ -50,7 +50,7 @@ export function AccountDashboard() {
     return () => {
       cancelled = true;
     };
-  }, [token, dict.account.loadError]);
+  }, [account, dict.account.loadError]);
 
   if (!ready || !account) {
     return (

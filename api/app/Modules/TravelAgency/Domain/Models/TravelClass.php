@@ -16,6 +16,16 @@ use Illuminate\Database\Eloquent\Model;
  * Référentiel tenant-scoped (ex. Économique/Business) — code unique par
  * tenant, priorité d'affichage. Consommée par `travel_trip_prices`
  * (tarif par trajet/classe).
+ *
+ * @property string $code
+ * @property string|null $color
+ * @property string $company_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property int $id
+ * @property string $label
+ * @property int $priority
+ * @property \App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus $status
+ * @property \Illuminate\Support\Carbon|null $updated_at
  */
 class TravelClass extends Model
 {

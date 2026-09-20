@@ -8,6 +8,7 @@ import { ModulePageShell } from '@/components/module-page-shell';
 import { Button } from '@/components/ui/Button';
 import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
+import { storeTenantBranding } from '@/lib/tenant-branding';
 
 const inputClassName =
   'w-full rounded-xl border border-app-border bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10';
@@ -174,6 +175,10 @@ export default function BrandingPage() {
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
+        // #7860 — propage le nouveau branding au shell SANS rechargement :
+        // cache localStorage + CustomEvent `tenant-branding-updated`, écouté
+        // par le layout (couleurs/logo mis à jour immédiatement).
+        storeTenantBranding(payload.data.branding);
       }
       setNotice(i18nT(locale, 'brandingPage.saved'));
     } catch (err) {

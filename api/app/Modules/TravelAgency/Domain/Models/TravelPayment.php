@@ -19,6 +19,12 @@ use Illuminate\Support\Str;
  * `callback_payload_redacted` : payload webhook provider expurgé de tout
  * secret/token avant persistance (jamais de credential en clair, cf.
  * pattern Accounting/Billing HMAC). `idempotency_key` unique par tenant.
+ *
+ * @property int $amount_minor
+ * @property string $currency
+ * @property string $idempotency_key
+ * @property string $reference
+ * @property \App\Modules\TravelAgency\Domain\Enums\PaymentStatus $status
  */
 class TravelPayment extends Model
 {

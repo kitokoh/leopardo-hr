@@ -15,6 +15,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * Spécificité décroissante : (trajet, classe) > (classe) > (trajet) >
  * défaut tenant. Consommée par TravelRefundPolicyResolver (TRAVEL-808).
+ *
+ * @property int|null $cancel_before_hours
+ * @property string $company_id
+ * @property string|null $description
+ * @property int|null $hours_before_departure
+ * @property bool $is_active
+ * @property int $penalty_percent
+ * @property bool $refundable
  */
 class TravelCancellationPolicy extends Model
 {

@@ -16,6 +16,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Montants en unités mineures (minor units, ex. centimes) — jamais de
  * flottant. Un seul prix par (trip, classe) : contrainte DB
  * `travel_trip_prices_company_trip_class_unique`.
+ *
+ * @property int $adult_price_minor
+ * @property int|null $child_price_minor
+ * @property int $class_id
+ * @property string $company_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property string $currency
+ * @property int $id
+ * @property int $trip_id
+ * @property \Illuminate\Support\Carbon|null $updated_at
  */
 class TravelTripPrice extends Model
 {

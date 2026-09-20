@@ -17,6 +17,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * `carrier_id` nullable : un véhicule propre à l'agence n'appartient à
  * aucune compagnie tierce (`travel_carriers`), il peut aussi être rattaché
  * à un transporteur si l'agence opère pour son compte.
+ *
+ * @property int|null $carrier_id
+ * @property string $code
+ * @property string $company_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property int $id
+ * @property string|null $notes
+ * @property string|null $registration_number
+ * @property int $seat_capacity
+ * @property \App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus $status
+ * @property \Illuminate\Support\Carbon|null $updated_at
  */
 class TravelVehicle extends Model
 {
