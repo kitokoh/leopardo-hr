@@ -74,13 +74,23 @@ export type FulfillmentStatus =
   | "delivered"
   | "cancelled";
 
+export type PaymentMethod = "cash" | "online";
+
 export interface OrderPayload {
   seller: string;
   items: { product_id: number; quantity: number }[];
   customer: { name: string; phone: string; email?: string };
   delivery: { address: string; city: string; notes?: string };
-  payment_method: "cash";
+  payment_method: PaymentMethod;
   idempotency_key: string;
+}
+
+/** Bloc paiement du checkout (#7812) — renseigné quand payment_method = online. */
+export interface OrderPaymentInfo {
+  method: string;
+  intent_reference: string | null;
+  status: string | null;
+  checkout_url: string | null;
 }
 
 export interface OrderCreated {
@@ -89,6 +99,7 @@ export interface OrderCreated {
   total_minor: number;
   currency: string;
   seller: string;
+  payment?: OrderPaymentInfo;
 }
 
 export interface TimelineEntry {
@@ -111,6 +122,8 @@ export interface OrderTracking {
   total_minor: number;
   currency: string;
   seller?: PublicSellerRef | string;
+  /** Paiement (#7812) : méthode (cash|online) + statut (pending|paid|refunded). */
+  payment?: { method: string; status: string };
 }
 
 /* ── Erreurs & fetch ────────────────────────────────────────────────────── */
@@ -362,5 +375,11 @@ export async function fetchOrderTracking(reference: string, token: string): Prom
       : typeof record.seller === "string"
         ? record.seller
         : undefined,
+    payment: isRecord(record.payment)
+      ? {
+          method: typeof record.payment.method === "string" ? record.payment.method : "cash",
+          status: typeof record.payment.status === "string" ? record.payment.status : "pending",
+        }
+      : undefined,
   };
 }
