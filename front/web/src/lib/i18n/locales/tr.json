@@ -4396,7 +4396,9 @@
       "colOccupancy": "Masa rotasyonu",
       "colAlerts": "Stok uyarıları",
       "payments": "Tahsilat",
-      "paymentsDesc": "Çevrimiçi ödeme, Stripe ve mobil para profilleri"
+      "paymentsDesc": "Çevrimiçi ödeme, Stripe ve mobil para profilleri",
+      "team": "Ekip",
+      "teamDesc": "Çalışanların şubelere atanması, roller"
     },
     "crud": {
       "search": "Ara...",
@@ -4734,6 +4736,29 @@
       "alwaysAvailable": "Her zaman kullanılabilir",
       "manageProfiles": "Ödeme profillerini yönet",
       "manageProfilesHint": "Stripe anahtarları ve mobil para hesapları Ayarlar → Tahsilatlar bölümünde yönetilir."
+    },
+    "team": {
+      "title": "Ekip",
+      "subtitle": "Çalışanlarınızı restoran şubelerine atayın, rollerini yönetin ve iki tıkla kaldırın.",
+      "assignTitle": "Çalışan ata",
+      "employee": "Çalışan",
+      "role": "Rol",
+      "rolePlaceholder": "Garson, aşçı, yönetici…",
+      "assignedAt": "Atama tarihi",
+      "assign": "Ata",
+      "empty": "Bu şubeye atanmış çalışan yok.",
+      "loadError": "Atamalar yüklenemedi.",
+      "assignFailed": "Atama başarısız oldu.",
+      "updateFailed": "Rol güncellemesi başarısız oldu.",
+      "removeFailed": "Kaldırma başarısız oldu.",
+      "remove": "Kaldır",
+      "confirmRemove": "Bu çalışan şubeden kaldırılsın mı?",
+      "editRole": "Rolü düzenle",
+      "save": "Kaydet",
+      "cancel": "İptal",
+      "selectPlaceholder": "Seçin…",
+      "formIncomplete": "Bir çalışan seçin.",
+      "saving": "Kaydediliyor…"
     }
   },
   "edu": {

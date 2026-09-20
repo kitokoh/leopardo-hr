@@ -4396,7 +4396,9 @@
       "colOccupancy": "Rotation tables",
       "colAlerts": "Alertes stock",
       "payments": "Encaissement",
-      "paymentsDesc": "Paiement en ligne, profils Stripe & mobile money"
+      "paymentsDesc": "Paiement en ligne, profils Stripe & mobile money",
+      "team": "Équipe",
+      "teamDesc": "Affectations des employés aux succursales, rôles"
     },
     "crud": {
       "search": "Rechercher...",
@@ -4734,6 +4736,29 @@
       "alwaysAvailable": "Toujours disponible",
       "manageProfiles": "Gérer les profils d'encaissement",
       "manageProfilesHint": "Les clés Stripe et les comptes mobile money se gèrent dans Réglages → Encaissements."
+    },
+    "team": {
+      "title": "Équipe",
+      "subtitle": "Affectez vos employés aux succursales du restaurant, gérez leur rôle et retirez-les en deux clics.",
+      "assignTitle": "Affecter un employé",
+      "employee": "Employé",
+      "role": "Rôle",
+      "rolePlaceholder": "Serveur, cuisinier, gérant…",
+      "assignedAt": "Affecté le",
+      "assign": "Affecter",
+      "empty": "Aucun employé affecté à cette succursale.",
+      "loadError": "Impossible de charger les affectations.",
+      "assignFailed": "L'affectation a échoué.",
+      "updateFailed": "La mise à jour du rôle a échoué.",
+      "removeFailed": "Le retrait a échoué.",
+      "remove": "Retirer",
+      "confirmRemove": "Retirer cet employé de la succursale ?",
+      "editRole": "Modifier le rôle",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "selectPlaceholder": "Sélectionner…",
+      "formIncomplete": "Choisissez un employé.",
+      "saving": "Enregistrement…"
     }
   },
   "edu": {

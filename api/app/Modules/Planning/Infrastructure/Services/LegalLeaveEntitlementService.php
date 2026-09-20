@@ -25,7 +25,12 @@ use Illuminate\Support\Carbon;
  *    service complets) ;
  *  - les mois sont bornés à l'année civile cible (pas de mois avant le
  *    1er janvier de l'année) ;
- *  - le résultat est plafonné au droit annuel légal et arrondi à 2 décimales.
+ *  - le résultat est plafonné au droit annuel légal et arrondi à 2 décimales ;
+ *  - pays à barème d'ancienneté (issue #7931 : TR m.53, CA CLC art. 184.01) :
+ *    le droit annuel est résolu via `legalAnnualDaysForSeniority()` avec
+ *    l'ancienneté au 1er janvier de l'année cible (années de service révolues
+ *    AVANT l'année de prise) — pour les pays sans barème, strictement
+ *    identique au calcul historique (droit annuel de base / 12).
  */
 final class LegalLeaveEntitlementService
 {
@@ -63,6 +68,27 @@ final class LegalLeaveEntitlementService
     }
 
     /**
+     * Ancienneté (années de service, fraction conservée) au 1er janvier de
+     * l'année cible — convention #7931 : le barème d'ancienneté (TR/CA)
+     * s'applique sur les années révolues AVANT l'année de prise du congé.
+     */
+    public function seniorityYearsAtYearStart(Employee $employee, int $year): float
+    {
+        if ($employee->contract_start === null) {
+            return 0.0;
+        }
+
+        $anchor = Carbon::parse($employee->contract_start)->startOfDay();
+        $yearStart = Carbon::createFromDate($year, 1, 1)->startOfDay();
+
+        if ($anchor->greaterThanOrEqualTo($yearStart)) {
+            return 0.0;
+        }
+
+        return round((float) $anchor->diffInYears($yearStart, true), 4);
+    }
+
+    /**
      * Droit légal projeté (jours) pour l'année cible, plafonné au droit annuel.
      *
      * @param  string|null  $countryCode  code pays ISO ; null → pays de l'entreprise
@@ -72,6 +98,12 @@ final class LegalLeaveEntitlementService
         $resolvedRule = $rule ?? LegalLeaveRulesRegistry::resolve($countryCode ?? '');
         $months = $this->monthsWorkedInYear($employee, $year);
 
-        return round(min($months * $resolvedRule->accrualDaysPerMonth(), $resolvedRule->legalAnnualDays()), 2);
+        // Barème d'ancienneté (#7931) : droit annuel résolu par l'ancienneté au
+        // 1er janvier ; pays sans barème → droit annuel de base (aucun écart
+        // avec le calcul historique : accrualDaysPerMonth = annuel / 12).
+        $annualDays = $resolvedRule->legalAnnualDaysForSeniority($this->seniorityYearsAtYearStart($employee, $year));
+        $monthlyAccrual = round($annualDays / 12, 4);
+
+        return round(min($months * $monthlyAccrual, $annualDays), 2);
     }
 }

@@ -34423,6 +34423,165 @@ paths:
         '422':
           $ref: '#/components/responses/Error422'
 
+  /restaurant/branches/{restaurantBranch}/staff:
+    get:
+      tags:
+      - Restaurant
+      summary: Lister les affectations d'employes d'une succursale
+      description: >-
+        #7909 - liste paginee des affectations staff de la succursale, employe
+        embarque (id, prenom, nom) + role + date d'affectation. Pile tenant
+        (Sanctum + tenant + module.restaurantmanager) ; branche d'un autre
+        tenant → 404 (jamais 403).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantBranch
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 50
+      responses:
+        '200':
+          description: Liste paginee des affectations de la succursale
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      tags:
+      - Restaurant
+      summary: Affecter un employe a une succursale
+      description: >-
+        #7909 - affecte un employe RH du tenant a la succursale (role libre
+        optionnel). 409 si l'employe est deja affecte (ligne non supprimee) ;
+        422 si l'employe appartient a un autre tenant (validation stricte
+        cote service, pattern FuelShiftService::assign()). Reserve aux
+        gerants de la branche (RestaurantBranchStaffPolicy, RBAC
+        ressource-scope #7599).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantBranch
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [employee_id]
+              properties:
+                employee_id:
+                  type: integer
+                  minimum: 1
+                role:
+                  type: string
+                  nullable: true
+                  maxLength: 80
+      responses:
+        '201':
+          description: Affectation creee (ou restauree apres un retrait)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Employe deja affecte a cette succursale
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /restaurant/branches/{restaurantBranch}/staff/{restaurantBranchStaff}:
+    patch:
+      tags:
+      - Restaurant
+      summary: Modifier le role d'une affectation staff
+      description: >-
+        #7909 - met a jour le role (libre, nullable) d'une affectation de la
+        succursale. Affectation d'un autre tenant ou d'une autre branche →
+        404 (jamais 403).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantBranch
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: restaurantBranchStaff
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties:
+                role:
+                  type: string
+                  nullable: true
+                  maxLength: 80
+      responses:
+        '200':
+          description: Affectation mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - Restaurant
+      summary: Retirer un employe d'une succursale
+      description: >-
+        #7909 - retrait en soft delete (historique conserve) ; une nouvelle
+        affectation du meme employe restaure la ligne. Affectation d'un autre
+        tenant ou d'une autre branche → 404.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantBranch
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: restaurantBranchStaff
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Affectation retiree (soft delete)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+
   /restaurant/products/{restaurantProduct}/publication:
     patch:
       tags:

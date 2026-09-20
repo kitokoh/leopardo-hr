@@ -4396,7 +4396,9 @@
       "colOccupancy": "Table rotation",
       "colAlerts": "Stock alerts",
       "payments": "Payments",
-      "paymentsDesc": "Online payment, Stripe & mobile money profiles"
+      "paymentsDesc": "Online payment, Stripe & mobile money profiles",
+      "team": "Team",
+      "teamDesc": "Employee assignments to branches, roles"
     },
     "crud": {
       "search": "Search...",
@@ -4734,6 +4736,29 @@
       "alwaysAvailable": "Always available",
       "manageProfiles": "Manage payment profiles",
       "manageProfilesHint": "Stripe keys and mobile money accounts are managed in Settings → Payments."
+    },
+    "team": {
+      "title": "Team",
+      "subtitle": "Assign your employees to restaurant branches, manage their role and remove them in two clicks.",
+      "assignTitle": "Assign an employee",
+      "employee": "Employee",
+      "role": "Role",
+      "rolePlaceholder": "Waiter, cook, manager…",
+      "assignedAt": "Assigned on",
+      "assign": "Assign",
+      "empty": "No employee assigned to this branch.",
+      "loadError": "Unable to load assignments.",
+      "assignFailed": "The assignment failed.",
+      "updateFailed": "The role update failed.",
+      "removeFailed": "The removal failed.",
+      "remove": "Remove",
+      "confirmRemove": "Remove this employee from the branch?",
+      "editRole": "Edit role",
+      "save": "Save",
+      "cancel": "Cancel",
+      "selectPlaceholder": "Select…",
+      "formIncomplete": "Choose an employee.",
+      "saving": "Saving…"
     }
   },
   "edu": {

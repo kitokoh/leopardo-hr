@@ -154,4 +154,14 @@ class RestaurantBranch extends Model
     {
         return $this->hasMany(RestaurantDeliveryRider::class, 'branch_id');
     }
+
+    /**
+     * Affectations d'employés de la succursale (#7909).
+     *
+     * @return HasMany<RestaurantBranchStaff, $this>
+     */
+    public function staff(): HasMany
+    {
+        return $this->hasMany(RestaurantBranchStaff::class, 'branch_id');
+    }
 }

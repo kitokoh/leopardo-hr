@@ -23,6 +23,22 @@ interface LegalLeaveCountryRuleInterface
     /** Droit légal annuel en jours (ex. 30 pour la DZ). */
     public function legalAnnualDays(): float;
 
+    /**
+     * Droit légal annuel en jours selon l'ancienneté (années de service
+     * révolues). Défaut : le droit annuel de base — seuls les pays à barème
+     * d'ancienneté (issue #7931 : TR m.53 İş Kanunu, CA CLC art. 184.01)
+     * surchargent. Peut retourner 0 si la loi n'ouvre aucun droit avant un
+     * seuil d'ancienneté (TR : 1 an minimum).
+     */
+    public function legalAnnualDaysForSeniority(float $seniorityYears): float;
+
+    /**
+     * Taux légal d'indemnité de congés (% du salaire brut) selon l'ancienneté,
+     * quand la loi l'exprime ainsi (issue #7931 : CA CLC art. 183 — 4/6/8 %).
+     * null = pas de taux légal exprimé en pourcentage pour ce pays.
+     */
+    public function vacationPayRatePercent(float $seniorityYears): ?float;
+
     /** Acquisition mensuelle légale en jours (droit annuel / 12). */
     public function accrualDaysPerMonth(): float;
 
