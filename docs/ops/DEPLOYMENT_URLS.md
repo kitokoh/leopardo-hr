@@ -37,6 +37,19 @@
   parle jamais au backend directement (proxy same-origin allowlist `public/travel/*`).
 - Déploiement initial 2026-09-19 via Vercel CLI depuis `front/travel-web` (contenu PR #7781).
   Intégration au pipeline `deploy-prod.yml` : suivi hors périmètre immédiat (voir issue #7740).
+- Configuration projets Vercel (2026-09-19, via API) : `framework=nextjs` +
+  `rootDirectory=front/travel-web` posés sur les DEUX projets. Le projet **prod**
+  `leopardo-travel-prod` est lié au repo GitHub `kitokoh/leopardo-hr` (branche de
+  production `main` — les pushes sur `main` déclenchent un déploiement production
+  automatique). Le projet **dev** `leopardo-travel` n'a PAS pu être lié via API :
+  le compte Vercel africanovatech n'a pas de « Login Connection » GitHub (action
+  propriétaire — la lier depuis les settings du compte Vercel) ; en attendant, le
+  déploiement dev se fait via Vercel CLI (`vercel deploy --prod` depuis
+  `front/travel-web` d'un clone de `main`, project id épinglé localement dans
+  `.vercel/project.json`, fichier volontairement NON committé et gitignoré).
+- Note de suivi : l'intégration de ces déploiements au workflow `deploy-prod.yml`
+  (job Vercel travel-web avec tokens en secrets GitHub) reste hors périmètre de
+  cette PR — tracée dans l'issue #7740 / épic #7736.
 - Les endpoints `public/travel/marketplace/*` répondent 404 tant que le backend (#7737/#7781)
   n'est pas mergé et redéployé sur Render — attendu, proxy vérifié fonctionnel.
 
