@@ -928,3 +928,13 @@ restent les gates applicables.
   `client-business-flows` (parcours affecter → renommer rôle → retirer).
 - **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
   `restaurant.team.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+## Mise à jour 2026-09-20 — garde d'environnement sur `leopardo:migrate --fresh` (issue #7974)
+
+- **Surface API** : aucun endpoint HTTP modifié — changement limité à la commande console
+  `leopardo:migrate` (`api/routes/console.php`) : refus sec de `--fresh` en environnement
+  `production` (quelles que soient les options, `--force` compris), confirmation interactive
+  rappelant la base cible hors production (contournable par la nouvelle option `--force`).
+  Scénarios PHPUnit : nouvelle suite `LeopardoMigrateFreshGuardTest`
+  (`tests/Feature/Console/`) — refus en prod, refus en prod même avec `--force`, abandon si
+  la confirmation est refusée (la commande s'arrête avant tout `DROP SCHEMA`).
+- **Surface web / mobile** : aucun changement, aucun scénario nouveau requis.
