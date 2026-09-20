@@ -48,7 +48,7 @@ const blogCopy: Record<AppLocale, {
     newsletter: {
       badge: 'Newsletter',
       title: 'Recevez nos conseils hebdomadaires',
-      description: 'Articles, guides et retours terrain pour lancer une plateforme RH plus solide.',
+      description: 'Articles, guides et retours terrain pour piloter vos RH avec une suite métier plus solide.',
       note: 'Pas de spam, uniquement des conseils utiles. Desinscription facile.',
       placeholder: 'Votre email',
       submit: "S'inscrire",
@@ -84,7 +84,7 @@ const blogCopy: Record<AppLocale, {
     newsletter: {
       badge: 'Newsletter',
       title: 'Get weekly HR insights',
-      description: 'Articles, guides and field notes to build a stronger HR platform.',
+      description: 'Articles, guides and field notes to run your HR on a stronger business suite.',
       note: 'No spam, only useful advice. Unsubscribe anytime.',
       placeholder: 'Your email',
       submit: 'Subscribe',
@@ -120,7 +120,7 @@ const blogCopy: Record<AppLocale, {
     newsletter: {
       badge: 'Bulten',
       title: 'Haftalik IK onerileri alin',
-      description: 'Daha saglam bir IK platformu kurmak icin yazilar, rehberler ve saha notlari.',
+      description: 'IK surecinizi daha saglam bir isletme paketiyle yonetmek icin yazilar, rehberler ve saha notlari.',
       note: 'Spam yok, sadece faydali icerik. Isteyen herkes kolayca ayrilabilir.',
       placeholder: 'E-posta adresiniz',
       submit: 'Kaydol',
@@ -156,7 +156,7 @@ const blogCopy: Record<AppLocale, {
     newsletter: {
       badge: 'النشرة البريدية',
       title: 'استلم نصائح أسبوعية للموارد البشرية',
-      description: 'مقالات وأدلة وتجارب عملية لبناء منصة موارد بشرية أقوى.',
+      description: 'مقالات وأدلة وتجارب عملية لإدارة الموارد البشرية عبر حزمة أعمال أقوى.',
       note: 'بدون رسائل مزعجة، فقط نصائح مفيدة. يمكنك إلغاء الاشتراك بسهولة.',
       placeholder: 'بريدك الإلكتروني',
       submit: 'اشترك',
