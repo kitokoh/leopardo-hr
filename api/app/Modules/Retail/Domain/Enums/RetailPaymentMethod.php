@@ -10,8 +10,9 @@ namespace App\Modules\Retail\Domain\Enums;
  * - `cash`   : especes (compte dans l'attendu de cloture de session) ;
  * - `card`   : carte bancaire (TPE externe, aucun flux integre) ;
  * - `mobile` : mobile money (Wave, Orange Money... — aucun flux integre) ;
- * - `online` : RESERVE a la future boutique e-commerce — valeur acceptee,
- *              AUCUNE integration passerelle en v1 (#7674).
+ * - `online` : paiement en ligne de la marketplace Leopardo Marche
+ *              (#7812) — intent de paiement + provider PSP (chargily|mock),
+ *              webhook signe et reconciliation via RetailPaymentService.
  */
 enum RetailPaymentMethod: string
 {
