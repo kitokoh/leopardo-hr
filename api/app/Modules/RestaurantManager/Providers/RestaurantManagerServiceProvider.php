@@ -7,6 +7,8 @@ namespace App\Modules\RestaurantManager\Providers;
 use App\Contracts\Communication\CommunicationServiceInterface;
 use App\Core\Solutions\Contracts\DemoDataKit;
 use App\Core\Solutions\DemoDataRegistry;
+use App\Events\SolutionActivated;
+use App\Modules\RestaurantManager\Application\Actions\ActivateRestaurantManagerAction;
 use App\Modules\RestaurantManager\Application\Consumers\KitchenOrderNotificationConsumer;
 use App\Modules\RestaurantManager\Application\Consumers\ServiceOrderNotificationConsumer;
 use App\Modules\RestaurantManager\Application\Observers\RestaurantOrderObserver;
@@ -43,6 +45,7 @@ use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDemoSeederSe
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxConsumerRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use App\Modules\RestaurantManager\Infrastructure\Services\StockMovementService;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -174,6 +177,23 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         // `restaurant.order.ready.v1` quand une commande passe à ready
         // (notifications équipe de service, découplé du flux POS).
         RestaurantOrder::observe(RestaurantOrderObserver::class);
+
+        // #7976 — l'activation standard d'une verticale passe par
+        // `SolutionActivator` avec le code de solution `restaurant`
+        // (RestaurantManifest), qui ne pose QUE le flag `restaurant` : les
+        // routes gatées par `module.restaurantmanager` restaient donc en 403.
+        // Même pattern d'isolation que TravelAgency : le module écoute
+        // `SolutionActivated` et pose son flag opérationnel + amorce son
+        // référentiel via `ActivateRestaurantManagerAction` (idempotent :
+        // setFeature + insertOrIgnore), sans couplage core → module.
+        Event::listen(SolutionActivated::class, static function (SolutionActivated $event): void {
+            if ($event->solution !== 'restaurant') {
+                return;
+            }
+
+            app(ActivateRestaurantManagerAction::class)->execute($event->company);
+        });
+
         // Policies du référentiel branches/zones/tables (RESTO-301, #6182) :
         // enregistrement explicite des modèles métier vers leurs policies,
         // même pattern que TravelAgencyServiceProvider::boot().
