@@ -54,6 +54,7 @@ use Illuminate\Support\Carbon;
  * @property RetailPaymentMethod|null $payment_method
  * @property string|null $payment_status
  * @property Carbon|null $paid_at
+ * @property int|null $buyer_id
  * @property Carbon|null $confirmed_at
  * @property Carbon|null $shipped_at
  * @property Carbon|null $delivered_at
@@ -95,6 +96,7 @@ class RetailOrder extends Model
         'payment_method',
         'payment_status',
         'paid_at',
+        'buyer_id',
         'confirmed_at',
         'shipped_at',
         'delivered_at',
@@ -115,6 +117,7 @@ class RetailOrder extends Model
             'fulfillment_status' => RetailFulfillmentStatus::class,
             'payment_method' => RetailPaymentMethod::class,
             'paid_at' => 'datetime',
+            'buyer_id' => 'integer',
             'confirmed_at' => 'datetime',
             'shipped_at' => 'datetime',
             'delivered_at' => 'datetime',

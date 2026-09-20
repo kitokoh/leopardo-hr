@@ -365,6 +365,22 @@ class AppServiceProvider extends ServiceProvider
                 ->by('shop-public:'.$request->ip());
         });
 
+        // BC-17 #7814 — comptes acheteurs marketplace : register/login sont
+        // des surfaces d'attaque credentials (bruteforce/enumeration) →
+        // bucket STRICT dedie par IP, en plus du shop-public du groupe.
+        RateLimiter::for('market-account-public', function (Request $request) {
+            return Limit::perMinute((int) config('security.rate_limits.market_account_per_minute', 10))
+                ->by('market-account-public:'.$request->ip());
+        });
+
+        // BC-17 #7814 — soumission d'avis acheteurs : throttle strict
+        // anti-spam (pattern restaurant-reviews-public RESTO-902/#7747),
+        // en plus de la preuve d'achat (commande delivered du buyer).
+        RateLimiter::for('market-reviews-public', function (Request $request) {
+            return Limit::perMinute((int) config('security.rate_limits.market_reviews_public_per_minute', 5))
+                ->by('market-reviews-public:'.$request->ip());
+        });
+
         // PA2-API-005 — Session-based web login forms (employee login, super-admin
         // platform login) are not covered by the API 'auth-sensitive' limiter
         // above, which only guards the Sanctum token endpoints. Keyed by e-mail +

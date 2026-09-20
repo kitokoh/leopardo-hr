@@ -72,11 +72,13 @@ Machine d'états en ligne (le statut historique `RetailOrderStatus` reste la sou
 | GET | `/public/market/products/{id}` | Fiche produit publique (DTO public + vendeur). |
 | GET | `/public/market/sellers` | Boutiques activées (nom, slug, ville, description, nb produits). |
 | GET | `/public/market/sellers/{slug}` | Boutique + ses catégories publiques. |
-| POST | `/public/market/orders` | Checkout invité — voir 3.2. |
+| POST | `/public/market/orders` | Checkout invité — voir 3.2. Si un jeton acheteur valide est fourni (`Authorization: Bearer`), la commande est liée au compte (#7814). |
 | GET | `/public/market/orders/{reference}` | Suivi public — exige `?token={tracking_token}` (404 fail-closed sinon). |
+| GET | `/public/market/products/{id}/reviews` | Avis approuvés d'un produit public, paginés (`meta.rating_avg`, `meta.rating_count`) — #7814. |
 
-DTO produit public : `id, name, description, price_minor, currency, image_url, category, seller{name, slug, city}`.
+DTO produit public : `id, name, description, price_minor, currency, image_url, category, seller{name, slug, city}, rating_avg, rating_count`.
 Aucune quantité de stock exposée — seulement `available: bool` (niveau > 0 sur au moins un emplacement).
+Les DTO boutiques exposent aussi `rating_avg` / `rating_count` (avis approuvés, agrégés par vendeur — #7814).
 
 ### 3.2 Checkout invité — `POST /public/market/orders`
 ```jsonc
@@ -93,6 +95,30 @@ Règles serveur : produits du vendeur uniquement, publiés + visibles en ligne, 
 prix relus en base (jamais confiance client), totaux serveur, `source = online`,
 `fulfillment_status = pending`, `reference` générée (préfixe `WEB-`), `tracking_token` aléatoire (64 hex).
 Réponse 201 : `{ reference, tracking_token, total_minor, currency, seller }`. Rejeu idempotent → 200 même payload.
+
+### 3.2bis Comptes acheteurs, favoris & avis — `/public/market/account/*` (#7814, livré)
+
+Comptes **PLATEFORME** (tables centrales du schéma `public` : `marketplace_buyers`,
+`marketplace_buyer_tokens`, `marketplace_favorites`, `marketplace_reviews`) : la marketplace est
+cross-tenant, un acheteur n'appartient à aucun vendeur. Authentification par **jeton opaque**
+(`mkb_` + 64 hex, hash SHA-256 en base, TTL 30 j) — pas de Sanctum tenant. Toutes les routes
+portent `throttle:shop-public` ; register/login un throttle strict dédié (`market-account-public`,
+10/min/IP) et la soumission d'avis un throttle anti-spam (`market-reviews-public`, 5/min/IP).
+
+| Méthode | Route | Description |
+|---|---|---|
+| POST | `/public/market/account/register` | Inscription légère : `name`, `email` (unique), `password` (≥ 8), `phone` optionnel → 201 `{ token, buyer }`. |
+| POST | `/public/market/account/login` | Connexion → `{ token, buyer }` ; identifiants invalides → 401 uniforme. |
+| POST | `/public/market/account/logout` | Révoque le jeton courant (idempotent). Auth buyer. |
+| GET | `/public/market/account/me` | Profil public (`name`, `email`, `phone`, `created_at`). Auth buyer. |
+| GET | `/public/market/account/orders` | Historique cross-tenant des commandes liées : `reference, seller{name,slug,city}, total_minor, currency, fulfillment_status, created_at, tracking_token, items[]`. Paginé. |
+| GET | `/public/market/account/favorites` | Favoris → DTO produits publics (produits dépubliés filtrés fail-closed). |
+| POST | `/public/market/account/favorites` | Ajout `{ product_id }` (produit public éligible, sinon 404) — idempotent. |
+| DELETE | `/public/market/account/favorites/{productId}` | Retrait idempotent. |
+| POST | `/public/market/account/reviews` | Avis vérifié `{ order_reference, product_id, rating 1..5, comment ≤ 1000 }` — autorisé UNIQUEMENT si la commande du buyer contient le produit ET est `delivered`. 1 avis par (buyer, commande, produit). Modération `pending|approved|rejected` (auto-approve v1). |
+
+Liaison commande : `retail_orders.buyer_id` (nullable, sans FK — cross-schema). Le checkout
+invité reste la norme ; un jeton invalide n'est jamais bloquant (la commande part en invité).
 
 ### 3.3 Vendeur — `/api/v1/retail/online/*` (middleware groupe retail existant)
 | Méthode | Route | Description |
@@ -116,6 +142,11 @@ Pages v1 : accueil (héros + nouveautés + boutiques), `/produits` (recherche/fi
 `/produits/[id]`, `/boutiques`, `/boutiques/[slug]`, `/panier` (localStorage, groupé par boutique),
 `/commande` (checkout invité, 1 commande créée par boutique), `/confirmation`, `/suivi` (référence + jeton).
 
+Compte acheteur (#7814, livré) : `/compte` (inscription/connexion, jeton en localStorage),
+`/compte/commandes` (historique + formulaire d'avis quand la commande est livrée),
+`/compte/favoris` ; bouton favori sur les cartes produit et la fiche ; note moyenne + section
+avis vérifiés sur `/produits/[id]`.
+
 Exigences : FR par défaut, mobile-first, SEO (metadata + OG), design soigné (Tailwind 4), états
 vides/erreurs/chargement traités, accessibilité (focus visibles, aria), zéro dépendance lourde.
 
@@ -127,7 +158,9 @@ annuler). i18n 4 locales (fr/en/ar/tr) via les registres partagés, patterns #76
 
 ## 6. Hors périmètre v1 (issues backlog dédiées)
 - Handoff **BC-26 Delivery** automatique (`RetailOnlineOrderConfirmed` → création de livraison + tracking partagé) ;
-- Comptes acheteurs, favoris, avis & notations ;
+- ~~Comptes acheteurs, favoris, avis & notations~~ — **livré par #7814** (voir §3.2bis) ;
+  reste en backlog : modération des avis (v1 = auto-approve, champ statut déjà présent),
+  réinitialisation de mot de passe, fusion de l'historique invité ;
 - Reçus/factures PDF (POS + web) ;
 - Recherche à facettes/geo, promotions, frais de livraison paramétrables.
 
