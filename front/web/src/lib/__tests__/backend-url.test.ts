@@ -1,20 +1,22 @@
 /**
  * @jest-environment node
  *
- * Issue #7842 — fail-fast en production sur URL backend manquante.
+ * Issues #7842/#7963 — fail-fast sur URL backend manquante.
  * Verrouille le comportement de `src/lib/backend-url.ts` (copie synchronisée
  * manuellement avec `front/travel-web/src/lib/backend-url.ts`) :
- *   - dev/test : repli sur l'API dev onrender.com + console.warn ;
+ *   - dev/test : repli sur le backend LOCAL http://localhost:8000/api/v1 +
+ *     console.warn (plus aucune URL distante en dur, #7963) ;
  *   - production (NODE_ENV/VERCEL_ENV) : erreur actionnable nommant les
- *     variables attendues, plus AUCUN repli silencieux ;
- *   - phase de build Next (`NEXT_PHASE === PHASE_PRODUCTION_BUILD`, cas du
- *     job CI lighthouse qui build sans secrets backend) : JAMAIS de throw,
- *     repli + console.warn — le fail-fast est un contrat de RUNTIME.
+ *     variables attendues, plus AUCUN repli silencieux (#7842) ;
+ *   - phase de build Next (`NEXT_PHASE === PHASE_PRODUCTION_BUILD`) : erreur
+ *     explicite AUSSI (#7963 — renverse l'exception build de #7842 ; les
+ *     workflows CI, lighthouse inclus, définissent désormais
+ *     NEXT_PUBLIC_API_URL explicitement).
  */
 
 import { PHASE_PRODUCTION_BUILD } from 'next/constants';
 
-const DEV_FALLBACK = 'https://gestionemployerbackend.onrender.com/api/v1';
+const DEV_FALLBACK = 'http://localhost:8000/api/v1';
 
 type BackendUrlModule = typeof import('@/lib/backend-url');
 
@@ -26,7 +28,7 @@ function loadModule(): BackendUrlModule {
   return mod as BackendUrlModule;
 }
 
-describe('backend-url — fail-fast production (#7842)', () => {
+describe('backend-url — fail-fast production + build (#7842/#7963)', () => {
   const ORIGINAL_ENV = { ...process.env };
   let warnSpy: jest.SpyInstance;
 
@@ -54,10 +56,10 @@ describe('backend-url — fail-fast production (#7842)', () => {
       expect(loadModule().resolveBackendBaseUrl()).toBe('https://backend.example.com/api/v1');
     });
 
-    it('en dev/test sans variable : repli dev conservé + console.warn explicite', () => {
+    it('en dev/test sans variable : repli backend local conservé + console.warn explicite', () => {
       const mod = loadModule();
       expect(mod.resolveBackendBaseUrl()).toBe(DEV_FALLBACK);
-      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('#7842'));
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('#7963'));
     });
 
     it('en production (VERCEL_ENV) sans variable : erreur actionnable nommant les variables', () => {
@@ -76,12 +78,20 @@ describe('backend-url — fail-fast production (#7842)', () => {
       expect(warnSpy).not.toHaveBeenCalled();
     });
 
-    it('pendant `next build` (NEXT_PHASE) sans variable : PAS de throw, repli + console.warn (CI lighthouse)', () => {
+    it('pendant `next build` (NEXT_PHASE) sans variable : erreur explicite (#7963, fail-fast build)', () => {
       process.env.VERCEL_ENV = 'production';
       process.env.NEXT_PHASE = PHASE_PRODUCTION_BUILD;
       const mod = loadModule();
-      expect(mod.resolveBackendBaseUrl()).toBe(DEV_FALLBACK);
-      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('#7842'));
+      expect(() => mod.resolveBackendBaseUrl()).toThrow(/#7963/);
+      expect(() => mod.resolveBackendBaseUrl()).toThrow(/API_PROXY_TARGET/);
+      expect(() => mod.resolveBackendBaseUrl()).toThrow(/NEXT_PUBLIC_API_URL/);
+    });
+
+    it('pendant `next build` (NEXT_PHASE) avec variable posée : aucune erreur (workflows CI)', () => {
+      process.env.NEXT_PHASE = PHASE_PRODUCTION_BUILD;
+      process.env.NEXT_PUBLIC_API_URL = 'http://localhost:8000/api/v1';
+      expect(loadModule().resolveBackendBaseUrl()).toBe('http://localhost:8000/api/v1');
+      expect(warnSpy).not.toHaveBeenCalled();
     });
 
     it('le throw runtime prod reste intact hors phase de build (NEXT_PHASE absent)', () => {
@@ -110,12 +120,12 @@ describe('backend-url — fail-fast production (#7842)', () => {
       expect(loadModule().getApiBaseUrl()).toBe('https://api.leopardo-rh.com/api/v1');
     });
 
-    it('pendant `next build` (NEXT_PHASE) sans variable : PAS de throw, repli + console.warn', () => {
+    it('pendant `next build` (NEXT_PHASE) sans variable : erreur explicite (#7963, fail-fast build)', () => {
       process.env.VERCEL_ENV = 'production';
       process.env.NEXT_PHASE = PHASE_PRODUCTION_BUILD;
       const mod = loadModule();
-      expect(mod.getApiBaseUrl()).toBe(DEV_FALLBACK);
-      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('NEXT_PUBLIC_API_URL'));
+      expect(() => mod.getApiBaseUrl()).toThrow(/NEXT_PUBLIC_API_URL/);
+      expect(() => mod.getApiBaseUrl()).toThrow(/#7963/);
     });
   });
 });

@@ -202,8 +202,9 @@ fi
 verify_download "docker-compose.yml" "docker-compose.yml"
 
 # Caddyfile.edge (bind-mounté par edge-proxy ; vérifié par hash + contenu)
+# #7966 : edge-api écoute désormais en :8080 non privilégié (image non-root).
 curl -fsSL "$CLOUD_URL/api/v1/edge/download/Caddyfile.edge" -o Caddyfile.edge
-if [[ ! -s Caddyfile.edge ]] || ! grep -q 'reverse_proxy edge-api:80' Caddyfile.edge || ! grep -q 'reverse_proxy edge-ui:3000' Caddyfile.edge; then
+if [[ ! -s Caddyfile.edge ]] || ! grep -q 'reverse_proxy edge-api:8080' Caddyfile.edge || ! grep -q 'reverse_proxy edge-ui:3000' Caddyfile.edge; then
     echo "Echec du telechargement ou de la verification de Caddyfile.edge depuis $CLOUD_URL" >&2
     exit 1
 fi

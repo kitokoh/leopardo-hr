@@ -322,7 +322,7 @@ final class KioskOfflineSyncReliabilityTest extends TestCase
         ]);
     }
 
-    public function test_offline_sync_preserves_face_method_fidelity(): void
+    public function test_offline_sync_downgrades_face_without_device_proof_to_manual(): void
     {
         // Employé avec visage enrôlé (flag posé comme après une activation).
         $this->employee->forceFill(['biometric_face_enabled' => true])->save();
@@ -343,10 +343,59 @@ final class KioskOfflineSyncReliabilityTest extends TestCase
             ->assertJsonPath('data.processed_count', 1);
 
         DB::statement('SET search_path TO shared_tenants,public');
+        // #7958 : biométrie hors-ligne SANS preuve device → persistée `manual`
+        // (jamais `face`), avec audit `unverified` portant la méthode réclamée.
         $this->assertDatabaseHas('attendance_logs', [
+            'employee_id' => $this->employee->id,
+            'method' => 'manual',
+            'external_event_id' => 'dev-evt-face-001',
+        ]);
+        $this->assertDatabaseMissing('attendance_logs', [
             'employee_id' => $this->employee->id,
             'method' => 'face',
             'external_event_id' => 'dev-evt-face-001',
+        ]);
+        $this->assertDatabaseHas('biometric_audit_logs', [
+            'employee_id' => $this->employee->id,
+            'event' => 'kiosk.punch.unverified',
+            'method' => 'manual',
+            'result_code' => 'UNVERIFIED_IDENTITY',
+            'correlation_id' => 'dev-evt-face-001',
+        ]);
+    }
+
+    public function test_offline_sync_marks_bridge_declared_unverified_pin_in_audit(): void
+    {
+        [$deviceCode, $syncToken] = $this->registerKiosk($this->manager, ['pin', 'fingerprint']);
+
+        // #7958 : le bridge marque les PIN hors-ligne (`unverified`) — la
+        // méthode `pin` est préservée mais tracée en audit comme non vérifiée.
+        $this->withHeader('X-Kiosk-Token', $syncToken)
+            ->postJson('/api/v1/kiosks/'.$deviceCode.'/sync', [
+                'events' => [[
+                    'identifier' => 'FP-001',
+                    'action' => 'check_in',
+                    'occurred_at' => Carbon::now('UTC')->subMinutes(3)->toIso8601String(),
+                    'device_event_id' => 'dev-evt-pin-unverified-001',
+                    'method' => 'pin',
+                    'unverified' => true,
+                ]],
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.processed_count', 1);
+
+        DB::statement('SET search_path TO shared_tenants,public');
+        $this->assertDatabaseHas('attendance_logs', [
+            'employee_id' => $this->employee->id,
+            'method' => 'pin',
+            'external_event_id' => 'dev-evt-pin-unverified-001',
+        ]);
+        $this->assertDatabaseHas('biometric_audit_logs', [
+            'employee_id' => $this->employee->id,
+            'event' => 'kiosk.punch.unverified',
+            'method' => 'pin',
+            'result_code' => 'UNVERIFIED_IDENTITY',
+            'correlation_id' => 'dev-evt-pin-unverified-001',
         ]);
     }
 

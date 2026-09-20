@@ -126,13 +126,16 @@ This directory has three Dockerfiles with distinct roles — do not assume they 
 
 | File                  | Used by                          | Purpose                                                        |
 |-----------------------|-----------------------------------|-----------------------------------------------------------------|
-| `Dockerfile.edge`     | edge-api + edge-sync                | Image PHP 8.4 Alpine + SQLite — buildé par `docker compose up --build` (#6604) |
+| `Dockerfile.edge`     | edge-api + edge-sync                | Image PHP 8.4 Alpine + SQLite — buildé par `docker compose up --build` (#6604). 100% non-root : `USER www-data`, nginx en :8080 (#7966) |
 | `front/web-offline/Dockerfile` | edge-ui            | PWA Next.js static export — buildé localement par le compose (#6604) |
-| `Dockerfile.publish`  | `edge/publish.sh`                 | Production image published to Docker Hub as `leopardo/edge-api` |
+| `Dockerfile.publish`  | `edge/publish.sh`                 | Production image published to Docker Hub as `leopardo/edge-api`. 100% non-root : `USER www-data`, nginx en :8080 (#7966) |
 | `Dockerfile`          | *(not currently wired in)*        | Standalone FrankenPHP + embedded PWA reference image; build manually if needed |
 
 ## Sécurité
 
+- Images Edge 100% non-root (#7966) : `USER www-data` — supervisord (PID 1),
+  nginx (master, port non privilégié :8080), php-fpm et migrations ne tournent
+  jamais en root ; aucune capabilité `NET_BIND_SERVICE` requise
 - TLS interne par défaut sur le LAN (CA locale Caddy, #7653) — aucun trafic applicatif en clair
 - Manifeste d'intégrité `sha256.txt` signé RS256, vérifié fail-closed par `install.sh` (#7653)
 - Jeton d'enrôlement jamais en argv : env `EDGE_TOKEN`, `--token-file` ou saisie masquée (#7653)

@@ -11,8 +11,9 @@
  * garde post-build (scripts/check-csp-guard.mjs).
  */
 
-// Doit rester aligné sur le fallback de src/services/api.js (#2659).
-export const DEFAULT_API_URL = 'https://gestionemployerbackend.onrender.com/api/v1'
+// Doit rester aligné sur le fallback de src/services/api.js (#2659) —
+// backend LOCAL uniquement, plus aucune URL distante en dur (#7963).
+export const DEFAULT_API_URL = 'http://localhost:8000/api/v1'
 
 export const CSP_PLACEHOLDER = '__CSP_BUILD_PLACEHOLDER__'
 

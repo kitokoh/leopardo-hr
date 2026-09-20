@@ -5,7 +5,7 @@
  * 2026-08-09 (#1607) la maintenait en Report-Only faute de câblage
  * nonce/hash — et elle vivait en TROIS copies divergentes : `next.config.ts`
  * (connect-src paramétré), `vercel.json` (connect-src FIGÉ sur l'API dev
- * `gestionemployerbackend.onrender.com`) et nulle part en enforce. L'audit
+ * Render historique) et nulle part en enforce. L'audit
  * #7650 acte la bascule : **la CSP est désormais construite ICI, émise par le
  * proxy (`src/proxy.ts`) en mode enforce, avec un nonce par requête** —
  * `next.config.ts` et `vercel.json` n'émettent plus de CSP.
@@ -37,23 +37,31 @@
 
 import { PHASE_PRODUCTION_BUILD } from "next/constants";
 
-const DEFAULT_API_ORIGIN = "https://gestionemployerbackend.onrender.com";
+// Repli dev/test UNIQUEMENT (#7963) : origine du backend Laravel local
+// (`php artisan serve`, port 8000). Plus aucune origine distante en dur.
+const DEFAULT_API_ORIGIN = "http://localhost:8000";
 
 /**
  * connect-src par ENVIRONNEMENT (#7650, durci par #7842) : l'origine API
  * vient de `NEXT_PUBLIC_API_URL` (posée par environnement Vercel/Render),
  * plus aucun hardcode du service dev dans un fichier statique.
  *
- * Fail-fast (#7842) : en PRODUCTION (`NODE_ENV === 'production'` ou
- * `VERCEL_ENV === 'production'`), variable absente ou invalide → erreur
- * explicite. Le repli sur l'API dev n'existe plus qu'en dev/test (poste
- * local sans `.env`), signalé par un `console.warn`.
+ * Fail-fast (#7842, étendu au build par #7963) : en PRODUCTION
+ * (`NODE_ENV === 'production'` ou `VERCEL_ENV === 'production'`), variable
+ * absente ou invalide → erreur explicite. Le repli n'existe plus qu'en
+ * dev/test (poste local sans `.env`) : origine du backend LOCAL
+ * `http://localhost:8000`, signalée par un `console.warn` — plus aucune
+ * origine distante codée en dur (#7963).
  *
- * EXCEPTION — phase de build Next (#7842, correctif CI lighthouse) : pendant
- * `next build` (`NEXT_PHASE === PHASE_PRODUCTION_BUILD`), on ne throw
- * JAMAIS — un build CI sans secrets backend doit passer. Le fail-fast
- * s'applique au RUNTIME (le proxy émet la CSP par requête, `NEXT_PHASE`
- * n'est alors plus posé). Même détection que `backend-url.ts`/`site-url.ts`.
+ * Build Next (#7963) : pendant `next build` (`NEXT_PHASE ===
+ * PHASE_PRODUCTION_BUILD`), variable absente ou invalide → erreur explicite
+ * AUSSI : un build sans URL API configurée doit ÉCHOUER plutôt que de figer
+ * un connect-src de repli. (Historique : #7842 avait introduit l'exception
+ * inverse — jamais de throw au build — pour la CI lighthouse ; #7963 la
+ * renverse, les workflows CI définissent désormais NEXT_PUBLIC_API_URL
+ * explicitement.) Le fail-fast RUNTIME reste appliqué par le proxy, qui
+ * émet la CSP par requête (`NEXT_PHASE` n'est alors plus posé). Même
+ * détection que `backend-url.ts`/`site-url.ts`.
  */
 function isNextBuildPhase(): boolean {
   return process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD;
@@ -70,19 +78,29 @@ function isProductionRuntime(): boolean {
 let warnedCspFallback = false;
 
 function devFallbackApiOrigin(reason: string): string {
+  if (isNextBuildPhase()) {
+    throw new Error(
+      `[csp] ${reason} pendant \`next build\`. Définissez NEXT_PUBLIC_API_URL ` +
+        "(ex. http://localhost:8000/api/v1 en CI, l'URL réelle de l'API en " +
+        "déploiement) — le build échoue explicitement plutôt que de figer " +
+        "un connect-src de repli (#7963).",
+    );
+  }
   if (isProductionRuntime()) {
     throw new Error(
       `[csp] ${reason} en production. Définissez NEXT_PUBLIC_API_URL ` +
         "(ex. https://api.exemple.com/api/v1) dans l'environnement de " +
         "déploiement. Le repli silencieux du connect-src vers l'API dev " +
-        "onrender.com a été retiré (#7842).",
+        "onrender.com a été retiré (#7842) et plus aucune origine distante " +
+        "n'est codée en dur (#7963).",
     );
   }
   if (!warnedCspFallback) {
     warnedCspFallback = true;
     console.warn(
       `[csp] ${reason} — connect-src replié en dev/test sur ` +
-        `${DEFAULT_API_ORIGIN} (interdit en production, #7842).`,
+        `${DEFAULT_API_ORIGIN} (backend local ; interdit au build et au ` +
+        "runtime de production, #7842/#7963).",
     );
   }
   return DEFAULT_API_ORIGIN;

@@ -115,7 +115,15 @@ class KioskController extends Controller
             method: $request->validated('method') !== null ? (string) $request->validated('method') : null,
             managerEmployeeId: $request->validated('manager_employee_id') !== null ? (int) $request->validated('manager_employee_id') : null,
             deviceEventId: $request->validated('device_event_id') !== null ? (string) $request->validated('device_event_id') : null,
+            biometricProof: $request->validated('biometric_proof') !== null ? (string) $request->validated('biometric_proof') : null,
         );
+
+        // #7958 : une biométrie réclamée persistée `manual` = identité non
+        // vérifiée (pas de preuve device) — signalé explicitement au client.
+        $requestedMethod = $request->validated('method');
+        $unverified = is_string($requestedMethod)
+            && in_array($requestedMethod, ['fingerprint', 'face'], true)
+            && $log->method === 'manual';
 
         // REST convention: 201 Created for check_in, 200 OK for check_out
         $action = $request->validated('action') ?? 'check_in';
@@ -131,6 +139,9 @@ class KioskController extends Controller
                 'work_type' => $log->work_type,
                 'session_number' => $log->session_number,
                 'status' => $log->status,
+                // #7958 : true quand la méthode réclamée (fingerprint/face)
+                // a été dégradée en `manual` faute de preuve device.
+                'unverified' => $unverified,
                 // BIO-007 (#6772) : rejeu idempotent signalé au client.
                 'replayed' => $log->external_event_id !== null
                     && $request->validated('device_event_id') !== null

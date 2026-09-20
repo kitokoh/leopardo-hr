@@ -12,7 +12,7 @@ import { buildCsp, assertCspHardened, CSP_PLACEHOLDER } from './scripts/csp.mjs'
 if (process.env.NODE_ENV === 'production' && !process.env.VITE_API_URL) {
   throw new Error(
     'VITE_API_URL manquant : le build production exige VITE_API_URL ' +
-      '(issue #4715) — ex. https://gestionemployerbackend.onrender.com/api/v1'
+      '(issue #4715) — ex. https://api.example.com/api/v1'
   )
 }
 

@@ -48,7 +48,8 @@ services:
     healthcheck:
       # #3908 : /api/edge/health n'existe pas — le health endpoint réel de
       # l'Edge API est versionné : GET /api/v1/edge/health (EdgeController).
-      test: ["CMD", "curl", "-f", "http://localhost/api/v1/edge/readiness"]
+      # #7966 : nginx écoute en :8080 (non privilégié) dans le conteneur.
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/edge/readiness"]
       interval: 30s
       timeout: 10s
       retries: 3
