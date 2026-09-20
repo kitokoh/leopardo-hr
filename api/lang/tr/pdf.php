@@ -184,4 +184,5 @@ return [
     'retail_status_paid' => 'Ödendi',
     'retail_status_unpaid' => 'Ödenecek tutar',
     'retail_invoice_seller' => 'Satıcı',
+    'retail_datetime_format' => 'Y-m-d H:i',
 ];

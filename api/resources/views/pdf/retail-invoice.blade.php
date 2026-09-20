@@ -100,7 +100,7 @@
         <table>
             @foreach($payments as $payment)
             <tr>
-                <td class="muted">{{ $payment->method->value }} — {{ $payment->paid_at?->format('Y-m-d H:i') }}</td>
+                <td class="muted">{{ $payment->method->value }} — {{ $payment->paid_at?->format(__('pdf.retail_datetime_format')) }}</td>
                 <td class="amount">{{ number_format($payment->amount_minor / 100, 2) }} {{ $payment->currency }}</td>
             </tr>
             @endforeach

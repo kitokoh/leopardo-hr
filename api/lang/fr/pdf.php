@@ -184,4 +184,5 @@ return [
     'retail_status_paid' => 'Payée',
     'retail_status_unpaid' => 'À encaisser',
     'retail_invoice_seller' => 'Vendeur',
+    'retail_datetime_format' => 'Y-m-d H:i',
 ];

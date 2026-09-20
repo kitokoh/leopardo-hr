@@ -184,4 +184,5 @@ return [
     'retail_status_paid' => 'مدفوعة',
     'retail_status_unpaid' => 'مبلغ مستحق',
     'retail_invoice_seller' => 'البائع',
+    'retail_datetime_format' => 'Y-m-d H:i',
 ];
