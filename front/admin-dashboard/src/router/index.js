@@ -529,6 +529,18 @@ const routes = [
         }
       },
       {
+        // #7726 — « Passerelles de paiement » : configuration Stripe/Chargily
+        // de la plateforme (clés chiffrées en BDD, fallback env, test de
+        // connexion). Même groupe que « Offres & tarifs » (#7430).
+        path: '/settings/payment-gateways',
+        name: 'settings-payment-gateways',
+        component: () => import('@/views/settings/PaymentGatewaysView.vue'),
+        meta: {
+          title: 'paymentGateways.nav',
+          icon: 'CreditCardIcon'
+        }
+      },
+      {
         // #7384/#7385 — assistant IA : réglages éditables + suivi (Paramètres › Assistant IA).
         path: '/settings/ai',
         name: 'settings-ai-assistant',

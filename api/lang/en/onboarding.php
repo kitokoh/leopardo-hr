@@ -12,5 +12,8 @@ return [
     'step_activate_geofence' => 'Enable geofencing',
     'step_customize_showcase' => 'Customize your showcase website',
     'step_publish_showcase' => 'Publish your showcase website',
+    'step_travel_setup_network' => 'Create your network (stations, offices, routes)',
+    'step_travel_first_trip' => 'Schedule your first trip',
+    'step_travel_first_sale' => 'Record your first sale',
     'interview_invalid_answer' => 'Invalid answer: :question',
 ];

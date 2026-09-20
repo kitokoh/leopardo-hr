@@ -489,6 +489,13 @@ fi
 # éviter un spin sur erreur fatale persistante. Le worker dédié prod
 # (`render.prod.yaml`, leopardo-queue-worker) passe par `exec "$@"` ci-dessous
 # et n'est PAS concerné par cette boucle.
+# Issue #7649 : le drain intérim du conteneur web est gaté par WEB_QUEUE_DRAIN.
+# Défaut « true » (comportement conservé) tant qu'aucun worker dédié n'existe
+# (provisionnement bloqué billing : 402 API Render, 2026-09-19). Dès que le
+# worker leopardo-queue-worker(-prod) est provisionné, poser
+# WEB_QUEUE_DRAIN=false sur le web service — sinon deux consommateurs
+# concurrents pollent la même table jobs (verrous inutiles sur l'OLTP).
+if [ "${WEB_QUEUE_DRAIN:-true}" = "true" ]; then
 echo "Starting background queue worker (web container, respawn loop)..."
 (
     while true; do
@@ -509,6 +516,9 @@ echo "Starting background queue worker (web container, respawn loop)..."
         sleep 2
     done
 ) &
+else
+    echo "[entrypoint] WEB_QUEUE_DRAIN=false : drain queue désactivé (worker dédié attendu, #7649)." >&2
+fi
 
 # Issue #7649 (intérim) : `php artisan schedule:run` ne tournait NULLE PART
 # (ni worker ni cron dans les workspaces Render — vérifié API 2026-09-19) :
@@ -525,6 +535,10 @@ echo "Starting background queue worker (web container, respawn loop)..."
 #     expression) : aucun risque de double exécution tant qu'UN seul conteneur
 #     web tourne (plan free = 1 instance). À retirer du web dès que le
 #     service scheduler dédié existe (`onOneServer()` requis à ce moment-là).
+# Gate WEB_SCHEDULER_LOOP (défaut true) : à passer à false dès que le worker
+# dédié (qui lance `schedule:work`) est provisionné — sinon double
+# exécution web+worker des tâches planifiées non `onOneServer()`.
+if [ "${WEB_SCHEDULER_LOOP:-true}" = "true" ]; then
 echo "Starting background scheduler loop (web container, interim #7649)..."
 (
     while true; do
@@ -533,5 +547,8 @@ echo "Starting background scheduler loop (web container, interim #7649)..."
         sleep 60
     done
 ) &
+else
+    echo "[entrypoint] WEB_SCHEDULER_LOOP=false : scheduler web désactivé (worker dédié attendu, #7649)." >&2
+fi
 
 exec frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile

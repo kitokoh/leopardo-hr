@@ -12,6 +12,7 @@ use App\Modules\TravelAgency\Domain\Enums\BookingSource;
 use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;
 use App\Modules\TravelAgency\Domain\Enums\SeatStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
+use App\Modules\TravelAgency\Domain\Models\TravelCustomerAccount;
 use App\Modules\TravelAgency\Domain\Models\TravelPayment;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
@@ -158,16 +159,33 @@ class TravelMarketplaceController extends Controller
         /** @var list<array{full_name: string, birth_date?: string|null, document_type?: string|null, document_number?: string|null, age_category: string, class_id: int, seat_number?: int|null}> $passengers */
         $passengers = $request->validated('passengers');
 
-        $booking = $this->withinTenantScoped($company, fn (): TravelBooking => app(CreateBookingAction::class)->execute(
-            trip: $trip,
-            passengers: $passengers,
-            source: BookingSource::MARKETPLACE,
-            actor: null,
-            idempotencyKey: (string) $request->validated('idempotency_key'),
-            contactEmail: $request->validated('contact_email'),
-            contactPhone: $request->validated('contact_phone'),
-            notifyConsent: (bool) $request->validated('notify_consent', false),
-        ));
+        // #7739 — rattachement « à la création » : si un client marketplace
+        // est connecté (guard Sanctum DÉDIÉ `travel_customer`, jamais le
+        // guard employés), la réservation lui est rattachée — le checkout
+        // invité reste possible (compte optionnel).
+        $customer = $request->user('travel_customer');
+        $customerAccountId = $customer instanceof TravelCustomerAccount ? $customer->id : null;
+
+        $booking = $this->withinTenantScoped($company, function () use ($request, $trip, $passengers, $customerAccountId): TravelBooking {
+            $booking = app(CreateBookingAction::class)->execute(
+                trip: $trip,
+                passengers: $passengers,
+                source: BookingSource::MARKETPLACE,
+                actor: null,
+                idempotencyKey: (string) $request->validated('idempotency_key'),
+                contactEmail: $request->validated('contact_email'),
+                contactPhone: $request->validated('contact_phone'),
+                notifyConsent: (bool) $request->validated('notify_consent', false),
+            );
+
+            // getAttribute() : la colonne n'est pas annotée @property sur le
+            // modèle (accès magique) — évite property.notFound en strict.
+            if ($customerAccountId !== null && $booking->getAttribute('customer_account_id') === null) {
+                $booking->forceFill(['customer_account_id' => $customerAccountId])->save();
+            }
+
+            return $booking;
+        });
 
         return (new TravelBookingResource($booking))
             ->additional(['agency' => ['name' => $company->name]])

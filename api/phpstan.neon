@@ -1,5 +1,6 @@
 includes:
     - phpstan-baseline.neon
+    - phpstan-flags.neon
     - vendor/larastan/larastan/extension.neon
 
 parameters:

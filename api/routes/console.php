@@ -153,6 +153,14 @@ Schedule::command('marketing:publish-scheduled-posts')
     ->withoutOverlapping()
     ->onOneServer();
 
+// Module CRM — campagnes email (#7751) : auto-start des campagnes planifiees
+// dues + drainage des envois pending des campagnes running (filet de securite
+// du listener CampaignStarted -> ProcessCampaignSendsJob).
+Schedule::command('crm:process-campaign-sends')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->onOneServer();
+
 // PA2-COMM-011 — publish scheduled company announcements that are due
 Schedule::command('announcements:publish-scheduled')
     ->everyMinute()
