@@ -28,6 +28,12 @@ $DC up -d
 echo "Waiting for database..."
 sleep 5
 
+# Install Composer dependencies — le volume ./api masque le vendor/ de l'image :
+# sans cette étape le conteneur boucle sur « Waiting for composer install » et
+# key:generate/migrate échouent à froid (vendor/autoload.php absent) — #7978.
+echo "Installing Composer dependencies..."
+docker exec leopardo-api composer install --no-interaction --prefer-dist
+
 # Run migrations and seeders
 echo "Running migrations and seeds..."
 docker exec leopardo-api php artisan key:generate --force
