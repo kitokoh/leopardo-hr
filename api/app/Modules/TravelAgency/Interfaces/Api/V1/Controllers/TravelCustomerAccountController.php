@@ -136,6 +136,10 @@ class TravelCustomerAccountController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
+        // Le PHPDoc Sanctum annonce un PersonalAccessToken non nul, mais le
+        // runtime peut renvoyer null (pas de token) ou un TransientToken
+        // (session) : on élargit le type avant le garde-fou instanceof.
+        /** @var \Laravel\Sanctum\Contracts\HasAbilities|null $token */
         $token = $this->authenticated($request)->currentAccessToken();
 
         if ($token instanceof PersonalAccessToken) {
