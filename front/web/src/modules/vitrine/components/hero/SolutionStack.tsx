@@ -17,7 +17,6 @@
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Layers, LayoutGrid, Blocks } from 'lucide-react';
-import { LeoMascot } from '@/components/ui/LeoMascot';
 import type { AppLocale } from '@/lib/i18n';
 import {
   EXTRA_MODULE_LABELS,
@@ -147,13 +146,9 @@ export function SolutionStack({ locale }: SolutionStackProps) {
         </p>
       </div>
 
-      {/* Canvas — enveloppé dans un conteneur relatif pour laisser Leo, la
-          mascotte pieuvre, émerger au-dessus du coin de la pile 3D sans être
-          rognée par l'`overflow-hidden` du canvas. */}
+      {/* Canvas. Leo, la mascotte, vit désormais en visuel d'entrée du héro
+          (`LeoHeroVisual`, #7851) — plus de doublon décoratif ici. */}
       <div className="relative mx-auto w-full max-w-4xl">
-        <div className="absolute -top-12 right-6 z-10 hidden sm:block" aria-hidden="true">
-          <LeoMascot size={92} float />
-        </div>
         <div
           role="img"
           aria-label={copy.canvasAlt}
