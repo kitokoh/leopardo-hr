@@ -16,7 +16,7 @@ class HealthBedOccupiedException extends DomainException
     public function __construct()
     {
         parent::__construct(
-            'Le lit demandé est déjà occupé.',
+            'Ce lit n\'est pas disponible.',
             409,
             'HEALTH_BED_OCCUPIED'
         );

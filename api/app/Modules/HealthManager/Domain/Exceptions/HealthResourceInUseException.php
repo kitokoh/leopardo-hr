@@ -16,7 +16,7 @@ class HealthResourceInUseException extends DomainException
     public function __construct()
     {
         parent::__construct(
-            'Cette ressource est encore utilisée et ne peut pas être supprimée.',
+            'Suppression impossible : la ressource est encore en usage.',
             422,
             'HEALTH_RESOURCE_IN_USE'
         );

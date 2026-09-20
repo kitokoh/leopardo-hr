@@ -16,7 +16,7 @@ class HealthAppointmentConflictException extends DomainException
     public function __construct()
     {
         parent::__construct(
-            'Le praticien a déjà un rendez-vous sur ce créneau.',
+            'Un autre rendez-vous du praticien chevauche cette plage horaire.',
             409,
             'HEALTH_APPOINTMENT_CONFLICT'
         );

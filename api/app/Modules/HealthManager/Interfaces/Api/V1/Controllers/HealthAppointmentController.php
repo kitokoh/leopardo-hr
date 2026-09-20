@@ -181,7 +181,7 @@ class HealthAppointmentController extends Controller
 
         // Cohérence temporelle re-vérifiée sur l'état FUSIONNÉ (un seul des
         // deux champs peut bouger) → 422.
-        abort_if($endsAt->lessThanOrEqualTo($startsAt), 422, 'ends_at doit être postérieur à starts_at.');
+        abort_if($endsAt->lessThanOrEqualTo($startsAt), 422, 'HEALTH_INVALID_TIME_RANGE: ends_at must be after starts_at.');
 
         $practitionerId = isset($payload['practitioner_id'])
             ? (int) $payload['practitioner_id']
