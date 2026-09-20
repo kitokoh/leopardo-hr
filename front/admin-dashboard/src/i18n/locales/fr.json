@@ -8428,5 +8428,17 @@
         "billing": "Facturation"
       }
     }
+  },
+  "demoDataPrompt": {
+    "title": "Voulez-vous découvrir votre espace avec des données de démonstration ?",
+    "body": "Nous installons un jeu d’exemple (menus, commandes, équipes…) pour explorer votre espace librement. Vous pourrez tout modifier ou supprimer à tout moment.",
+    "import": "Importer les données de démonstration",
+    "importing": "Import en cours…",
+    "later": "Plus tard",
+    "dismiss": "Non merci",
+    "error": "Impossible d’importer pour le moment. Réessayez dans un instant.",
+    "successTitle": "Vos données de démonstration sont prêtes",
+    "successBody": "Explorez librement : tout peut être modifié ou supprimé, rien n’est facturé.",
+    "successCta": "Découvrir mes données"
   }
 }

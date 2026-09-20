@@ -85,6 +85,12 @@ return [
     | to point activation/reset links at the product UI instead of this API.
     | Falls back to APP_URL when not set (dev phase).
     |
+    | #7864 (D2): FRONTEND_URL is now declared in render.yaml and
+    | render.prod.yaml. The hard-coded fallback below is KEPT on purpose so
+    | existing environments without the variable keep working — but it points
+    | at the DEV web deployment: production MUST set FRONTEND_URL explicitly
+    | (render.prod.yaml → https://leopardo-prod.vercel.app).
+    |
     */
 
     'frontend_url' => env('FRONTEND_URL', 'https://gestionemployer-backend.vercel.app'),
