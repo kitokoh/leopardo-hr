@@ -165,6 +165,27 @@ export function restaurantJsonLd(name: string) {
 TSX
 git -C "$REPO_TECH" add -A
 git -C "$REPO_TECH" commit -q -m "clés JSON-LD schema.org (#7748)"
+# Cas 1sexies — diagnostics développeur préfixés « [composant]… » (#7842) :
+# les messages de console/exception destinés aux développeurs/opérateurs
+# (fail-fast VITE_API_URL du dashboard) ne sont pas du texte utilisateur —
+# seules les lignes portant `console.warn(` étaient exemptées, pas le throw
+# ni les lignes de continuation.
+mkdir -p "$REPO_TECH/front/admin-dashboard/src/services"
+cat > "$REPO_TECH/front/admin-dashboard/src/services/failfast.js" <<'JS'
+function resolveApiBaseUrl() {
+  if (import.meta.env.PROD) {
+    throw new Error(
+      '[admin-dashboard] VITE_API_URL is not set in a production build. Define VITE_API_URL (e.g. https://api.example.com/api/v1) in the build environment (#7842).',
+    )
+  }
+  console.warn(
+    `[admin-dashboard] VITE_API_URL is not set — falling back to the dev API (dev/test only, forbidden in production, #7842).`,
+  )
+  return 'https://dev.example.com/api/v1'
+}
+JS
+git -C "$REPO_TECH" add -A
+git -C "$REPO_TECH" commit -q -m "diagnostics développeur préfixés [composant] (#7842)"
 run_guard "$REPO_TECH"
 if [[ "$GUARD_STATUS" -ne 0 ]]; then
   printf '%s\n' "$OUT" >&2
@@ -181,6 +202,7 @@ expect_clean 'per_page=100' "query string d'API (listQuery) — cas #7675"
 expect_clean '.csv,text/csv' "filtre de type de fichier (input accept) — #7776"
 expect_clean 'Acces administrateur' "valeur du catalogue i18n kiosk (#7651)"
 expect_clean 'PIN invalide.' "valeur du catalogue i18n kiosk (#7651)"
+expect_clean '[admin-dashboard] VITE_API_URL is not set' "diagnostic développeur préfixé [composant] (#7842)"
 
 # ── Cas 2 : code technique + vrais textes utilisateur → ROUGE ────────────────
 REPO_TEXT="$(new_repo mixte)"
