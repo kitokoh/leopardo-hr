@@ -109,6 +109,8 @@ tags:
   description: 'BC-25 RESTAURANT — verticale RestaurantManager : profil public par branche et annuaire public des restaurants (RESTO-901).'
 - name: Communication
   description: 'BC-29 COMMUNICATION — boite mail connectee + IA (OAuth Gmail serveur, sync, classification, relances) ; squelette R0 (#7685).'
+- name: Pharmacy
+  description: 'BC-30 PHARMACY — verticale PharmaManager : referentiel produits d''officine, stock par lots FEFO, achats fournisseurs, ventes comptoir, ordonnancier des produits controles, dashboard fondateur (PHARMA-001..007, #7798-#7804).'
 paths:
   /travel/distributor-keys:
     get:
@@ -34581,6 +34583,136 @@ paths:
           description: Rejeu idempotent (paiement existant)
         '404':
           $ref: '#/components/responses/Error404'
+  /public/travel/marketplace/account/register:
+    post:
+      tags:
+      - Travel
+      summary: "Marketplace : inscription d'un compte client grand public"
+      description: >-
+        BC-24 TRAVEL (#7739, épic #7736) — création d'un compte client
+        PLATEFORME (hors tenant, table publique travel_customer_accounts).
+        Mot de passe hashé (min 12 caractères + chiffre), throttle
+        auth-sensitive (e-mail + IP). Les réservations marketplace
+        existantes portant le même e-mail de contact sont rattachées au
+        compte à la création (claimed_bookings). Retourne un token Sanctum
+        du guard DÉDIÉ travel_customer (jamais le guard employés).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                  maxLength: 40
+                password:
+                  type: string
+                  minLength: 12
+      responses:
+        '201':
+          description: Compte créé (profil, token, nombre de réservations rattachées)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /public/travel/marketplace/account/login:
+    post:
+      tags:
+      - Travel
+      summary: "Marketplace : connexion d'un client grand public"
+      description: >-
+        BC-24 TRAVEL (#7739) — throttle auth-sensitive (e-mail + IP) +
+        verrouillage 15 min après 5 échecs (pattern #6563). Réponse 401
+        indifférenciée (compte inconnu / mot de passe faux). Retourne un
+        token Sanctum du guard dédié travel_customer.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Connexion réussie (profil + token)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '423':
+          description: Compte temporairement verrouillé (trop d'échecs)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /public/travel/marketplace/account/logout:
+    post:
+      tags:
+      - Travel
+      summary: "Marketplace : déconnexion du client (révocation du token courant)"
+      description: >-
+        BC-24 TRAVEL (#7739) — révoque le SEUL token Sanctum courant du
+        guard travel_customer (les autres appareils restent connectés).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Déconnexion effectuée
+        '401':
+          $ref: '#/components/responses/Error401'
+  /public/travel/marketplace/account/me:
+    get:
+      tags:
+      - Travel
+      summary: "Marketplace : profil du client connecté"
+      description: >-
+        BC-24 TRAVEL (#7739) — profil du compte client authentifié (guard
+        dédié travel_customer) : nom, e-mail, téléphone. Aucune donnée
+        d'agence.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Profil du client
+        '401':
+          $ref: '#/components/responses/Error401'
+  /public/travel/marketplace/account/bookings:
+    get:
+      tags:
+      - Travel
+      summary: "Marketplace : mes réservations cross-agences du client connecté"
+      description: >-
+        BC-24 TRAVEL (#7739) — liste paginée des réservations du compte,
+        toutes agences confondues, STRICTEMENT bornée par
+        customer_account_id (un client ne voit que ses propres
+        réservations). Charge utile publique : référence, statut, trajet,
+        numéros de billets (jamais le code de validation) et NOM PUBLIC de
+        l'agence — aucun identifiant tenant ni donnée interne d'agence.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+      responses:
+        '200':
+          description: Réservations paginées du client (data + meta)
+        '401':
+          $ref: '#/components/responses/Error401'
         '422':
           $ref: '#/components/responses/Error422'
 
@@ -35316,6 +35448,1086 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+  /pharmacy/products:
+    get:
+      tags:
+      - Pharmacy
+      summary: Liste paginee du referentiel produits d'officine
+      description: >-
+        BC-30 PHARMACY (#7799) — recherche nom/DCI/code-barres/code interne,
+        filtres category/status/prescription_required, pagination per_page
+        (1..100). Solution `pharmacy` requise (403 PHARMACY_SOLUTION_INACTIVE
+        sinon), lecture pour tout employe du tenant.
+      parameters:
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: category
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [medicament, parapharmacie, dispositif, autre]
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [active, archived]
+      - name: prescription_required
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produits pagines
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PharmacyProduct'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Pharmacy
+      summary: Creer un produit d'officine
+      description: >-
+        BC-30 PHARMACY (#7799) — code-barres et code interne uniques PAR
+        TENANT (422 sinon), prix en decimal. Reserve manager.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PharmacyProductInput'
+      responses:
+        '201':
+          description: Produit cree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacyProduct'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/products/{product}:
+    get:
+      tags:
+      - Pharmacy
+      summary: Detail d'un produit d'officine
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacyProduct'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - Pharmacy
+      summary: Mettre a jour un produit d'officine
+      description: BC-30 PHARMACY (#7799) — reserve manager, tenant-scope (404 cross-tenant).
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PharmacyProductInput'
+      responses:
+        '200':
+          description: Produit mis a jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacyProduct'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/products/{product}/archive:
+    patch:
+      tags:
+      - Pharmacy
+      summary: Archiver un produit d'officine
+      description: >-
+        BC-30 PHARMACY (#7799) — jamais de suppression (le produit reste
+        reference par lots/ventes/commandes, tracabilite reglementaire).
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit archive
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /pharmacy/stock:
+    get:
+      tags:
+      - Pharmacy
+      summary: Niveaux de stock par produit (lots non perimes)
+      description: >-
+        BC-30 PHARMACY (#7800) — disponible = somme des lots NON perimes ;
+        quantite perimee et indicateur sous-seuil par produit.
+      parameters:
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Niveaux pagines
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /pharmacy/stock/products/{product}/batches:
+    get:
+      tags:
+      - Pharmacy
+      summary: Lots d'un produit (ordre FEFO)
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Lots du produit
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PharmacyBatch'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /pharmacy/stock/movements:
+    get:
+      tags:
+      - Pharmacy
+      summary: Journal immuable des mouvements de stock
+      description: >-
+        BC-30 PHARMACY (#7800) — journal append-only (receipt, sale,
+        adjustment, expiry_writeoff, return), filtres product_id/type.
+      parameters:
+      - name: product_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [receipt, sale, adjustment, expiry_writeoff, return]
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Mouvements pagines
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PharmacyStockMovement'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /pharmacy/stock/adjustments:
+    post:
+      tags:
+      - Pharmacy
+      summary: Ajustement d'inventaire sur un lot
+      description: >-
+        BC-30 PHARMACY (#7800) — delta signe non nul, raison OBLIGATOIRE,
+        jamais de lot negatif (422 PHARMACY_INSUFFICIENT_STOCK). Reserve
+        manager ; type adjustment ou expiry_writeoff.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [batch_id, quantity_delta, reason]
+              properties:
+                batch_id:
+                  type: integer
+                quantity_delta:
+                  type: integer
+                reason:
+                  type: string
+                type:
+                  type: string
+                  enum: [adjustment, expiry_writeoff]
+      responses:
+        '201':
+          description: Lot ajuste (mouvement trace)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/alerts:
+    get:
+      tags:
+      - Pharmacy
+      summary: Alertes de stock (sous seuil, perimant, perimes)
+      description: >-
+        BC-30 PHARMACY (#7800) — produits sous min_stock_level, lots perimant
+        sous N jours (?days=, defaut 90), lots perimes a retirer.
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Alertes tenant-scopees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /pharmacy/suppliers:
+    get:
+      tags:
+      - Pharmacy
+      summary: Liste des fournisseurs d'officine
+      parameters:
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [wholesaler, laboratory, other]
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [active, archived]
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Fournisseurs pagines
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PharmacySupplier'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Pharmacy
+      summary: Creer un fournisseur (grossiste, laboratoire)
+      description: BC-30 PHARMACY (#7801) — reserve manager.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PharmacySupplierInput'
+      responses:
+        '201':
+          description: Fournisseur cree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/suppliers/{supplier}:
+    get:
+      tags:
+      - Pharmacy
+      summary: Detail d'un fournisseur
+      parameters:
+      - name: supplier
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Fournisseur
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - Pharmacy
+      summary: Mettre a jour un fournisseur
+      description: BC-30 PHARMACY (#7801) — reserve manager (archivage via status, jamais de suppression).
+      parameters:
+      - name: supplier
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PharmacySupplierInput'
+      responses:
+        '200':
+          description: Fournisseur mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/purchase-orders:
+    get:
+      tags:
+      - Pharmacy
+      summary: Liste des commandes d'achat
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [draft, ordered, partially_received, received, cancelled]
+      - name: supplier_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commandes paginees
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PharmacyPurchaseOrder'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Pharmacy
+      summary: Creer une commande d'achat (brouillon)
+      description: >-
+        BC-30 PHARMACY (#7801) — numero PO-YYYY-XXXX sequence PAR TENANT,
+        fournisseur du tenant obligatoire (404 sinon). Reserve manager.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [supplier_id, lines]
+              properties:
+                supplier_id:
+                  type: integer
+                notes:
+                  type: string
+                  nullable: true
+                lines:
+                  type: array
+                  items:
+                    type: object
+                    required: [product_id, quantity_ordered]
+                    properties:
+                      product_id:
+                        type: integer
+                      quantity_ordered:
+                        type: integer
+                      unit_price:
+                        type: string
+      responses:
+        '201':
+          description: Commande creee (draft)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/purchase-orders/{purchaseOrder}:
+    get:
+      tags:
+      - Pharmacy
+      summary: Detail d'une commande d'achat (lignes incluses)
+      parameters:
+      - name: purchaseOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /pharmacy/purchase-orders/{purchaseOrder}/place:
+    post:
+      tags:
+      - Pharmacy
+      summary: Passer la commande (draft vers ordered)
+      description: BC-30 PHARMACY (#7801) — transition invalide → 422 PHARMACY_INVALID_TRANSITION.
+      parameters:
+      - name: purchaseOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande passee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/purchase-orders/{purchaseOrder}/cancel:
+    post:
+      tags:
+      - Pharmacy
+      summary: Annuler une commande (draft ou ordered uniquement)
+      parameters:
+      - name: purchaseOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande annulee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/purchase-orders/{purchaseOrder}/receive:
+    post:
+      tags:
+      - Pharmacy
+      summary: Receptionner une commande (partielle ou totale)
+      description: >-
+        BC-30 PHARMACY (#7801) — chaque ligne recue (quantite, n° de lot,
+        peremption, cout) cree/incremente un lot + mouvement receipt via
+        PharmacyStockService. Sur-reception refusee (422
+        PHARMACY_OVER_RECEIPT) ; partielle → partially_received, totale →
+        received.
+      parameters:
+      - name: purchaseOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [lines]
+              properties:
+                lines:
+                  type: array
+                  items:
+                    type: object
+                    required: [line_id, quantity, batch_number, expiry_date]
+                    properties:
+                      line_id:
+                        type: integer
+                      quantity:
+                        type: integer
+                      batch_number:
+                        type: string
+                      expiry_date:
+                        type: string
+                        format: date
+                      unit_cost:
+                        type: string
+      responses:
+        '200':
+          description: Reception enregistree (lots + mouvements crees)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/sales:
+    get:
+      tags:
+      - Pharmacy
+      summary: Liste des ventes comptoir
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [completed, voided]
+      - name: payment_method
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [cash, card, mobile, insurance]
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ventes paginees
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PharmacySale'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Pharmacy
+      summary: Encaisser une vente comptoir (POS)
+      description: >-
+        BC-30 PHARMACY (#7802) — numero VT-YYYY-XXXXX sequence PAR TENANT,
+        delivrance FEFO, totaux calcules SERVEUR (prix figes), ordonnance
+        exigee si produit prescription_required ou is_controlled (422
+        PHARMACY_PRESCRIPTION_REQUIRED), stock insuffisant → 422 sans effet
+        partiel. Tout employe du tenant.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [payment_method, lines]
+              properties:
+                payment_method:
+                  type: string
+                  enum: [cash, card, mobile, insurance]
+                customer_name:
+                  type: string
+                  nullable: true
+                prescription_id:
+                  type: integer
+                  nullable: true
+                lines:
+                  type: array
+                  items:
+                    type: object
+                    required: [product_id, quantity]
+                    properties:
+                      product_id:
+                        type: integer
+                      quantity:
+                        type: integer
+      responses:
+        '201':
+          description: Vente enregistree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PharmacySale'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/sales/{sale}:
+    get:
+      tags:
+      - Pharmacy
+      summary: Detail d'une vente comptoir (lignes incluses)
+      parameters:
+      - name: sale
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Vente
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /pharmacy/sales/{sale}/void:
+    post:
+      tags:
+      - Pharmacy
+      summary: Annuler une vente (contre-passation, jamais de suppression)
+      description: >-
+        BC-30 PHARMACY (#7802) — raison OBLIGATOIRE, reserve manager : la
+        vente passe en voided (CONSERVEE) et le stock des lots d'ORIGINE est
+        re-credite par mouvements return. Double void → 422.
+      parameters:
+      - name: sale
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Vente annulee, stock re-credite
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/prescribers:
+    get:
+      tags:
+      - Pharmacy
+      summary: Liste des prescripteurs
+      parameters:
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [active, archived]
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Prescripteurs pagines
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Pharmacy
+      summary: Creer un prescripteur
+      description: BC-30 PHARMACY (#7803) — reserve manager.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PharmacyPrescriberInput'
+      responses:
+        '201':
+          description: Prescripteur cree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/prescribers/{prescriber}:
+    get:
+      tags:
+      - Pharmacy
+      summary: Detail d'un prescripteur
+      parameters:
+      - name: prescriber
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Prescripteur
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - Pharmacy
+      summary: Mettre a jour un prescripteur
+      parameters:
+      - name: prescriber
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PharmacyPrescriberInput'
+      responses:
+        '200':
+          description: Prescripteur mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/prescriptions:
+    get:
+      tags:
+      - Pharmacy
+      summary: Liste des ordonnances (PII sante tenant-scopees)
+      parameters:
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: prescriber_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ordonnances paginees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Pharmacy
+      summary: Saisir une ordonnance
+      description: >-
+        BC-30 PHARMACY (#7803) — reference unique PAR TENANT (422 sinon),
+        prescripteur du tenant obligatoire (404 sinon). Saisie par tout
+        employe du comptoir.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PharmacyPrescriptionInput'
+      responses:
+        '201':
+          description: Ordonnance creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/prescriptions/{prescription}:
+    get:
+      tags:
+      - Pharmacy
+      summary: Detail d'une ordonnance
+      parameters:
+      - name: prescription
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ordonnance
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - Pharmacy
+      summary: Mettre a jour une ordonnance (reference non modifiable)
+      description: BC-30 PHARMACY (#7803) — reserve manager (piece reglementaire).
+      parameters:
+      - name: prescription
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prescriber_id:
+                  type: integer
+                patient_name:
+                  type: string
+                patient_contact:
+                  type: string
+                  nullable: true
+                prescribed_at:
+                  type: string
+                  format: date
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Ordonnance mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /pharmacy/controlled-register:
+    get:
+      tags:
+      - Pharmacy
+      summary: Ordonnancier des produits controles (lecture seule)
+      description: >-
+        BC-30 PHARMACY (#7803) — registre chronologique DERIVE du journal
+        immuable des mouvements sale/return des produits is_controlled
+        (date, produit, lot, quantite, n° de vente, ordonnance, prescripteur,
+        patient, delivreur — annulations en contre-passation, jamais
+        d'effacement). AUCUNE route de mutation. Acces manager. Export CSV
+        via ?format=csv borne a la periode from/to.
+      parameters:
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: format
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [csv]
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Registre pagine (JSON) ou export CSV
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /pharmacy/dashboard:
+    get:
+      tags:
+      - Pharmacy
+      summary: Tableau de bord fondateur de l'officine
+      description: >-
+        BC-30 PHARMACY (#7804) — CA jour/7j/30j, nb ventes du jour, panier
+        moyen 30j, repartition par paiement (ventes voided EXCLUES),
+        valorisation du stock (lots non perimes), produits sous seuil, lots
+        perimant sous 90 jours, lots perimes, top 5 produits 30j, commandes
+        fournisseurs en cours, delivrances controlees 30j. Montants en
+        decimal string. Reserve manager.
+      responses:
+        '200':
+          description: KPIs tenant-scopes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
 components:
   securitySchemes:
     BearerAuth:
@@ -35499,6 +36711,326 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    PharmacyProduct:
+      type: object
+      description: Produit d'officine (BC-30 PHARMACY, #7799) — DCI, forme, dosage, regulation, prix decimal.
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        dci:
+          type: string
+          nullable: true
+        form:
+          type: string
+          nullable: true
+        dosage:
+          type: string
+          nullable: true
+        barcode:
+          type: string
+          nullable: true
+        internal_code:
+          type: string
+          nullable: true
+        category:
+          type: string
+          enum: [medicament, parapharmacie, dispositif, autre]
+        unit:
+          type: string
+        prescription_required:
+          type: boolean
+        is_controlled:
+          type: boolean
+        purchase_price:
+          type: string
+        sale_price:
+          type: string
+        tax_rate:
+          type: string
+        min_stock_level:
+          type: integer
+        status:
+          type: string
+          enum: [active, archived]
+    PharmacyProductInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        dci:
+          type: string
+          nullable: true
+        form:
+          type: string
+          nullable: true
+        dosage:
+          type: string
+          nullable: true
+        barcode:
+          type: string
+          nullable: true
+        internal_code:
+          type: string
+          nullable: true
+        category:
+          type: string
+          enum: [medicament, parapharmacie, dispositif, autre]
+        unit:
+          type: string
+        prescription_required:
+          type: boolean
+        is_controlled:
+          type: boolean
+        purchase_price:
+          type: number
+        sale_price:
+          type: number
+        tax_rate:
+          type: number
+        min_stock_level:
+          type: integer
+        status:
+          type: string
+          enum: [active, archived]
+    PharmacyBatch:
+      type: object
+      description: Lot physique d'un produit d'officine (BC-30 PHARMACY, #7800).
+      properties:
+        id:
+          type: integer
+        batch_number:
+          type: string
+        expiry_date:
+          type: string
+          format: date
+        quantity:
+          type: integer
+        unit_cost:
+          type: string
+        supplier_id:
+          type: integer
+          nullable: true
+        received_at:
+          type: string
+          format: date-time
+          nullable: true
+        expired:
+          type: boolean
+    PharmacyStockMovement:
+      type: object
+      description: Mouvement du journal immuable de stock (BC-30 PHARMACY, #7800) — append-only.
+      properties:
+        id:
+          type: integer
+        product_id:
+          type: integer
+        batch_id:
+          type: integer
+          nullable: true
+        type:
+          type: string
+          enum: [receipt, sale, adjustment, expiry_writeoff, return]
+        quantity_delta:
+          type: integer
+        reason:
+          type: string
+          nullable: true
+        reference_type:
+          type: string
+          nullable: true
+        reference_id:
+          type: integer
+          nullable: true
+        created_by_employee_id:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+    PharmacySupplier:
+      type: object
+      description: Fournisseur d'officine (BC-30 PHARMACY, #7801).
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+          enum: [wholesaler, laboratory, other]
+        contact_name:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, archived]
+    PharmacySupplierInput:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [wholesaler, laboratory, other]
+        contact_name:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, archived]
+    PharmacyPurchaseOrder:
+      type: object
+      description: Commande d'achat d'officine (BC-30 PHARMACY, #7801) — cycle draft→ordered→partially_received→received|cancelled, numero PO-YYYY-XXXX sequence par tenant.
+      properties:
+        id:
+          type: integer
+        number:
+          type: string
+        supplier_id:
+          type: integer
+        status:
+          type: string
+          enum: [draft, ordered, partially_received, received, cancelled]
+        ordered_at:
+          type: string
+          format: date-time
+          nullable: true
+        received_at:
+          type: string
+          format: date-time
+          nullable: true
+        cancelled_at:
+          type: string
+          format: date-time
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        lines:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              product_id:
+                type: integer
+              quantity_ordered:
+                type: integer
+              quantity_received:
+                type: integer
+              unit_price:
+                type: string
+    PharmacySale:
+      type: object
+      description: Vente comptoir (BC-30 PHARMACY, #7802) — numero VT-YYYY-XXXXX sequence par tenant, prix figes, totaux serveur.
+      properties:
+        id:
+          type: integer
+        number:
+          type: string
+        sold_at:
+          type: string
+          format: date-time
+        customer_name:
+          type: string
+          nullable: true
+        prescription_id:
+          type: integer
+          nullable: true
+        payment_method:
+          type: string
+          enum: [cash, card, mobile, insurance]
+        total_amount:
+          type: string
+        status:
+          type: string
+          enum: [completed, voided]
+        void_reason:
+          type: string
+          nullable: true
+        voided_at:
+          type: string
+          format: date-time
+          nullable: true
+        sold_by_employee_id:
+          type: integer
+          nullable: true
+        lines:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              product_id:
+                type: integer
+              quantity:
+                type: integer
+              unit_price:
+                type: string
+              tax_rate:
+                type: string
+              line_total:
+                type: string
+    PharmacyPrescriberInput:
+      type: object
+      properties:
+        full_name:
+          type: string
+        registration_number:
+          type: string
+          nullable: true
+        specialty:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, archived]
+    PharmacyPrescriptionInput:
+      type: object
+      required: [prescriber_id, patient_name, prescribed_at, reference]
+      properties:
+        prescriber_id:
+          type: integer
+        patient_name:
+          type: string
+        patient_contact:
+          type: string
+          nullable: true
+        prescribed_at:
+          type: string
+          format: date
+        reference:
+          type: string
+        notes:
+          type: string
+          nullable: true
     TravelDistributorKey:
       type: object
       description: >-

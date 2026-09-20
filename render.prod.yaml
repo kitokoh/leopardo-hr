@@ -161,80 +161,80 @@ services:
         value: "false"
 
   # ──────────────────────────────────────────────────────────────────────────
-  # Background Worker — Laravel Queue Worker (DÉSACTIVÉ, Phase 1 gratuite)
-  # Les Background Workers ne sont pas éligibles au tier gratuit Render.
-  # Décommenter et passer `plan: starter` (~7 $/mois) une fois le budget
-  # validé — voir docs/ops/RENDER_DEV_PROD_TOPOLOGY.md "Suite recommandée".
-  # - type: worker
-  #   name: leopardo-queue-worker-prod
-  #   runtime: docker
-  #   dockerfilePath: api/Dockerfile.prod
-  #   dockerContext: .
-  #   region: frankfurt
-  #   plan: starter
-  #   autoDeploy: false
-  #   dockerCommand: >-
-  #     php artisan queue:work
-  #     --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default
-  #     --tries=3
-  #     --timeout=300
-  #     --sleep=3
-  #     --max-jobs=500
-  #     --max-time=3600
-  #   envVars:
-  #     - key: APP_ENV
-  #       value: production
-  #     - key: APP_URL
-  #       fromService:
-  #         name: leopardo-prod
-  #         type: web
-  #         property: host
-  #     - key: DB_CONNECTION
-  #       value: pgsql
-  #     - key: DB_URL
-  #       sync: false
-  #     - key: DB_SEARCH_PATH
-  #       value: shared_tenants,public
-  #     - key: QUEUE_CONNECTION
-  #       value: database
-  #     - key: APP_KEY
-  #       fromService:
-  #         name: leopardo-prod
-  #         type: web
-  #         envVarKey: APP_KEY
-  #
+  # Background Worker — Queue + Scheduler (issue #7649)
   # ──────────────────────────────────────────────────────────────────────────
-  # Background Worker — Scheduled tasks (DÉSACTIVÉ, Phase 1 gratuite)
-  # Même contrainte tier gratuit que le worker ci-dessus.
-  # - type: worker
-  #   name: leopardo-scheduler-prod
-  #   runtime: docker
-  #   dockerfilePath: api/Dockerfile.prod
-  #   dockerContext: .
-  #   region: frankfurt
-  #   plan: starter
-  #   autoDeploy: false
-  #   dockerCommand: >-
-  #     sh -c "while true; do php artisan schedule:run --no-interaction; sleep 60; done"
-  #   envVars:
-  #     - key: APP_ENV
-  #       value: production
-  #     - key: APP_URL
-  #       fromService:
-  #         name: leopardo-prod
-  #         type: web
-  #         property: host
-  #     - key: DB_CONNECTION
-  #       value: pgsql
-  #     - key: DB_URL
-  #       sync: false
-  #     - key: DB_SEARCH_PATH
-  #       value: shared_tenants,public
-  #     - key: APP_KEY
-  #       fromService:
-  #         name: leopardo-prod
-  #         type: web
-  #         envVarKey: APP_KEY
+  # ⚠️ Issue #7649 — provisionnement TENTÉ via l'API Render le 2026-09-19
+  # (POST /v1/services, type background_worker, plan starter) : refus 402
+  # « Payment information is required » — le workspace prod n'a AUCUN moyen
+  # de paiement et les Background Workers sont inéligibles au tier gratuit.
+  # En attendant, la queue ET le scheduler tournent en intérim dans le
+  # conteneur web (api/docker-entrypoint.sh, gates WEB_QUEUE_DRAIN /
+  # WEB_SCHEDULER_LOOP, défaut on). Dès qu'une carte est ajoutée sur le
+  # workspace : provisionner via blueprint sync (ou API), puis passer
+  # WEB_QUEUE_DRAIN=false et WEB_SCHEDULER_LOOP=false sur leopardo-prod.
+  # Un SEUL worker starter (~7 $/mois) porte queue:work ET schedule:work —
+  # l'ancien second service « leopardo-scheduler-prod » est fusionné ici.
+  - type: worker
+    name: leopardo-queue-worker-prod
+    runtime: docker
+    dockerfilePath: api/Dockerfile.prod
+    dockerContext: .
+    region: frankfurt
+    # starter = plan minimal des Background Workers (pas de tier gratuit).
+    plan: starter
+    # Pas de hook Render dédié pour les workers → autoDeploy:false (#6700).
+    autoDeploy: false
+    # exec sur queue:work : sa sortie (max-time 1 h ou crash) termine le
+    # conteneur, Render le redémarre → les DEUX processus repartent.
+    dockerCommand: >-
+      sh -c 'php artisan schedule:work >&2 &
+      exec php artisan queue:work
+      --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default
+      --tries=3
+      --timeout=300
+      --sleep=3
+      --max-jobs=500
+      --max-time=3600'
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DEPLOY_TIER
+        value: prod
+      - key: APP_DEBUG
+        value: false
+      - key: DISABLE_DEMO_SEEDING
+        value: "true"
+      # #6558 : migrations UNIQUEMENT sur le service web — jamais au boot
+      # des workers (course de migrations à chaque redémarrage).
+      - key: RUN_MIGRATIONS
+        value: "false"
+      - key: APP_URL
+        fromService:
+          name: leopardo-prod
+          type: web
+          property: host
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: info
+      # Database — Neon (DB_URL sync: false, cf. web service).
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
+        sync: false
+      - key: DB_SEARCH_PATH
+        value: shared_tenants,public
+      # #3907 : APP_KEY référencé depuis le web service — une clé
+      # indépendante rendrait indéchiffrables les payloads chiffrés partagés.
+      - key: APP_KEY
+        fromService:
+          name: leopardo-prod
+          type: web
+          envVarKey: APP_KEY
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: CACHE_STORE
+        value: file
 
 databases:
   # Pas de Postgres Render : la base de données est Neon (projet

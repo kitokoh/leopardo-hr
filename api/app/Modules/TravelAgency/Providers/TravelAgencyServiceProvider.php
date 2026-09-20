@@ -12,11 +12,14 @@ use App\Modules\TravelAgency\Console\Commands\TravelExpireAdvertsCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelOutboxDispatchCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelWebhookDispatchCommand;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
+use App\Modules\TravelAgency\Domain\Models\TravelCustomerAccount;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\CashPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PvitPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
 use App\Modules\TravelAgency\Policies\TravelReportPolicy;
+use Illuminate\Auth\EloquentUserProvider;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -97,6 +100,36 @@ class TravelAgencyServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // #7739 — provider d'auth des clients GRAND PUBLIC marketplace
+        // (guard Sanctum dédié `travel_customer`). Enregistré comme DRIVER
+        // custom plutôt que par une clé `model` statique dans
+        // `config/auth.php` : Larastan ajoute chaque `auth.providers.*.model`
+        // à l'union de type de `request->user()`/`Auth::user()` sur TOUTE
+        // l'app — la clé statique invalidait ~70 entrées de la baseline
+        // strict (dérive de message) hors de la verticale. Runtime identique
+        // (EloquentUserProvider standard sur TravelCustomerAccount).
+        Auth::provider(
+            'travel_customer_accounts',
+            static fn ($app): EloquentUserProvider => new EloquentUserProvider($app['hash'], TravelCustomerAccount::class),
+        );
+
+        // #7739/#7781 — la clé `model` du provider est INDISPENSABLE au
+        // runtime : `Sanctum\Guard::hasValidProvider()` lit
+        // `auth.providers.travel_customers.model` et un provider sans cette
+        // clé fatale en `instanceof null` (« Class name must be a valid
+        // object or a string », Guard.php:153) à CHAQUE requête authentifiée
+        // du guard — me/logout/bookings 500 (reproduit par
+        // TravelCustomerAccountApiTest en local). Elle est posée ici au
+        // RUNTIME, jamais statiquement dans config/auth.php : sous analyse
+        // (LEOPARDO_STATIC_ANALYSIS) le guard `travel_customer` est masqué,
+        // et Larastan ne parcourt que les providers RÉFÉRENCÉS par un guard
+        // — un provider sans guard n'entre pas dans l'union de
+        // `request->user()`/`Auth::user()` ni ne fait dériver la baseline.
+        config()->set(
+            'auth.providers.travel_customers.model',
+            TravelCustomerAccount::class,
+        );
+
         // Audit 2026-09-14 — amorçage de la verticale à l'ACTIVATION.
         //
         // `SolutionActivator` ne posait que le feature flag : un tenant agence

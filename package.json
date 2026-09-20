@@ -10,6 +10,10 @@
     "web:lint":      "npm run lint     --prefix front/web",
     "web:e2e":       "npm run test:e2e --prefix front/web",
 
+    "travel:dev":    "npm run dev       --prefix front/travel-web",
+    "travel:build":  "npm run build     --prefix front/travel-web",
+    "travel:lint":   "npm run lint      --prefix front/travel-web",
+
     "admin:dev":     "npm run dev      --prefix front/admin-dashboard",
     "admin:build":   "npm run build    --prefix front/admin-dashboard",
     "admin:lint":    "npm run lint     --prefix front/admin-dashboard",

@@ -82,6 +82,7 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantKioskC
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierSyncController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCustomerAccountController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelMarketplaceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
@@ -255,6 +256,23 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/public/travel/marketplace/trips/{trip}', [TravelMarketplaceController::class, 'show'])->whereNumber('trip');
         Route::post('/public/travel/marketplace/bookings', [TravelMarketplaceController::class, 'storeBooking']);
         Route::post('/public/travel/marketplace/payments/initiate', [TravelMarketplaceController::class, 'initiatePayment']);
+    });
+
+    // #7739 — comptes clients GRAND PUBLIC de la marketplace (épic #7736) :
+    // guard Sanctum DÉDIÉ `travel_customer` (jamais le guard employés).
+    // Inscription/connexion sous `auth-sensitive` (e-mail + IP, même
+    // politique que /auth/login) ; surface connectée (profil, déconnexion,
+    // « mes réservations » cross-agences bornées au compte) sous
+    // `shop-public` + auth du guard dédié.
+    Route::middleware(['throttle:auth-sensitive'])->group(function (): void {
+        Route::post('/public/travel/marketplace/account/register', [TravelCustomerAccountController::class, 'register']);
+        Route::post('/public/travel/marketplace/account/login', [TravelCustomerAccountController::class, 'login']);
+    });
+
+    Route::middleware(['throttle:shop-public', 'auth:travel_customer'])->group(function (): void {
+        Route::post('/public/travel/marketplace/account/logout', [TravelCustomerAccountController::class, 'logout']);
+        Route::get('/public/travel/marketplace/account/me', [TravelCustomerAccountController::class, 'me']);
+        Route::get('/public/travel/marketplace/account/bookings', [TravelCustomerAccountController::class, 'bookings']);
     });
 
     Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {
@@ -452,6 +470,10 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/showcase.php';
     require __DIR__.'/modules/fuel_station.php';
     require __DIR__.'/modules/edu_manager.php';
+
+    // PHARMA-001 (#7798) — verticale PharmaManager (officines de pharmacie) :
+    // routes tenant-scoped derrière le feature flag `pharmacy` (fail-closed).
+    require __DIR__.'/modules/pharmacy.php';
     require __DIR__.'/modules/catalog.php';
 
     // BC-17 RETAIL #7672 — module vendeur générique (produits & catégories)
