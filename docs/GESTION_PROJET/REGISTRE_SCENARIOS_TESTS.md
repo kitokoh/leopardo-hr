@@ -794,3 +794,22 @@ restent les gates applicables.
   des exemples API (`python dev-hub/tools/generate_api_examples.py`) au lieu du dossier
   versionné `docs/api-mock-data/` (sorti du dépôt). **Aucun code, contrat ni scénario mobile
   modifié** — aucun scénario nouveau requis.
+
+## Mise à jour 2026-09-20 — marketplace publique Retail (PR #7826, issues #7807/#7808)
+
+- **Surface API (BC-17 RETAIL)** : nouvelle surface publique `/api/v1/public/market/*`
+  (sans auth, `throttle:shop-public`) — découverte cross-tenant des produits/boutiques
+  opt-in (#7807 : `GET products`, `GET products/{id}`, `GET sellers`, `GET sellers/{slug}`),
+  checkout invité et suivi par référence + jeton (#7808 : `POST orders`,
+  `GET orders/{reference}?token=`) ; surface vendeur `/api/v1/retail/online/*`
+  (settings, commandes web, transitions confirm/ready/ship/deliver/cancel) et
+  `publish-online`/`unpublish-online` par produit. Scénarios automatisés :
+  `api/tests/Feature/Retail/RetailMarketplacePublicApiTest.php` (9 cas — visibilité
+  opt-in + kill switch feature, isolation tenant, filtres/tri/plafond `per_page`,
+  DTO public fail-closed sans donnée interne, annuaire, 404 fail-closed) et
+  `api/tests/Feature/Retail/RetailOnlineOrdersApiTest.php` (11 cas — checkout nominal,
+  prix client ignorés, idempotence par clé, jeton invalide 404, cycle de vie complet,
+  `INVALID_TRANSITION` 422, stock insuffisant refusé au confirm, restock à l'annulation,
+  RBAC 403, isolation tenant 404, slug global 422).
+- **Surface web / mobile** : aucun changement — API backend uniquement, aucun contrat
+  front modifié, aucun scénario web/mobile nouveau requis.

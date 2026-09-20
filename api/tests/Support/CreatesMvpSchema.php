@@ -1618,6 +1618,29 @@ trait CreatesMvpSchema
             });
         }
 
+        // TRAVEL-DISTRIBUTION #7641 — clés API de lecture des distributeurs.
+        // Miroir de la migration 2026_09_20_000200_7641 (garde #5443 — table
+        // arrivée sur main sans son miroir fixture, réparé ici).
+        if (! Schema::hasTable($this->moduleTable('travel_distributor_keys'))) {
+            Schema::create($this->moduleTable('travel_distributor_keys'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 120);
+                $table->string('api_key_hash', 64);
+                $table->json('scopes');
+                $table->boolean('enabled')->default(true);
+                $table->timestamp('last_used_at')->nullable();
+                $table->unsignedBigInteger('usage_count')->default(0);
+                $table->timestamp('rotated_at')->nullable();
+                $table->timestamp('revoked_at')->nullable();
+                $table->unsignedBigInteger('created_by_user_id')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'api_key_hash'], 'travel_distributor_keys_company_hash_unique');
+                $table->index(['company_id', 'enabled'], 'travel_distributor_keys_company_enabled_idx');
+            });
+        }
+
         // Issue #7761 — grants de modules composables par collaborateur.
         // Miroir de la migration 2026_09_19_001401_7761 (garde #5443).
         if (! Schema::hasTable($this->moduleTable('employee_module_grants'))) {
