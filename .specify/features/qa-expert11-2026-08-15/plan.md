@@ -33,4 +33,4 @@
 ## Phase D — Clôture
 
 - Issues fermées avec preuve code (commentaire + état closed).
-- Entrée CHANGELOG + session docs (`docs/qa-expert11-session-2026-08-15.md`).
+- Entrée CHANGELOG + session docs (`docs/qa/qa-expert11-session-2026-08-15.md`).

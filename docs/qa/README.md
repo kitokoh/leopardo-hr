@@ -26,4 +26,4 @@ par vague, avec versioning `-vN` réservé aux corrections).
 - `QA_SESSION_2026-08-16-*` — audit 360° multi-experts (agent360, swe-qa, qa360…) — à consolider.
 - `audit-expert5-2026-08-15/` — audits par surface (admin, api, mobile, web).
 
-Rapports consolidés : `docs/audits/`, `docs/qa-expert-audit-360-2026-08-15.md`.
+Rapports consolidés : `docs/audits/`, `docs/qa/qa-expert-audit-360-2026-08-15.md`.

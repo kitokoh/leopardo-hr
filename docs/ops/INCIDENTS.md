@@ -2,7 +2,7 @@
 
 **Version** : 2.0 · **Date** : 2026-08-22 · **Périmètre** : prod 0 € (Render free
 tier + Vercel free + GitHub Actions illimité) — voir `docs/ops/DEPLOYMENT_URLS.md`,
-`docs/ALERTS_CONFIGURATION.md`, `docs/ops/SLA_PILOTES.md` (#5155).
+`docs/ops/ALERTS_CONFIGURATION.md`, `docs/ops/SLA_PILOTES.md` (#5155).
 
 **Objectif** : détecter une panne (< 15 min pour la queue — DoD #5282), trier,
 escalader et réparer sans improvisation. Document fusionné (2026-08-22) des
@@ -17,7 +17,7 @@ travaux #5282 : runbook structurel (niveaux P0-P3, runbooks I1-I6, post-mortem)
 |---|---|---|---|
 | **Queue bloquée / worker mort** | `.github/workflows/queue-supervision.yml` : `php artisan queue:health-check` avec seuils (`--max-pending=50`, `--max-failed=10`, `--max-stale-minutes=10`) contre la prod (DB) | **cron 5 min** (offset +2 min du drain) | Run rouge + Slack opt-in (`SLACK_MONITORING_WEBHOOK_URL`) — **détection ≤ 15 min (DoD #5282, exercice §7)** |
 | **Surfaces API/web/admin** | `launch-observability-smoke.yml` (probes HTTP, latence max 10 s, fail-closed #4720) | toutes les 30 min | Run rouge = surface KO / cold start anormal |
-| **Uptime API (externe, optionnel)** | UptimeRobot/BetterStack free → `GET https://gestionemployerbackend.onrender.com/api/v1/health/live` (+ `/ready`) | 5 min, 2 échecs → notif | À activer (voir `docs/ALERTS_CONFIGURATION.md` §2) |
+| **Uptime API (externe, optionnel)** | UptimeRobot/BetterStack free → `GET https://gestionemployerbackend.onrender.com/api/v1/health/live` (+ `/ready`) | 5 min, 2 échecs → notif | À activer (voir `docs/ops/ALERTS_CONFIGURATION.md` §2) |
 | **E2E prod** | `e2e-isolated.yml` / `e2e-staging.yml` (Playwright) | par PR + smoke | Scénario critique rouge en prod |
 | **Erreurs applicatives** | Sentry (`sentry-laravel ^4.0`, `SENTRY_LARAVEL_DSN`) + StructuredLogging + handler jobs failed | temps réel | Pic d'erreurs / 5xx, job en `failed` |
 | **Sécurité** | TruffleHog + secret-history scan, OWASP ZAP, Semgrep, CodeQL, Dependabot | par PR + cron | Scan rouge, alerte Dependabot |
@@ -109,7 +109,7 @@ Fichier : `docs/qa/POST_MORTEM_<date>.md` — sections : **Symptôme** → **Cau
 | Uptime API | UptimeRobot/BetterStack (gratuit) | 5 min, 2 échecs → notif email | `https://gestionemployerbackend.onrender.com/api/v1/health/live` |
 | Erreurs app | Sentry | taux > 5 % / 5 min, spikes 5xx | `SENTRY_LARAVEL_DSN`, `SENTRY_TRACES_SAMPLE_RATE=0.2` |
 
-Détails : `docs/ALERTS_CONFIGURATION.md` (v2.0, config réelle).
+Détails : `docs/ops/ALERTS_CONFIGURATION.md` (v2.0, config réelle).
 
 ---
 
@@ -147,7 +147,7 @@ Détails : `docs/ALERTS_CONFIGURATION.md` (v2.0, config réelle).
 - Drain de secours CI : **supprimé** (#7694 — un CI n'est pas un worker de prod) ; drain = mono-conteneur Render, worker dédié à provisionner (#7649)
 - Smoke surfaces : `.github/workflows/launch-observability-smoke.yml` (#3968/#4720)
 - Santé API : `HealthController` (`/api/v1/health`, `/live`, `/ready`) — expose `failed_jobs` (#5282)
-- SLA pilotes : `docs/ops/SLA_PILOTES.md` (#5155) · DR : `docs/ops/DR.md` (#5283) · Alerting : `docs/ALERTS_CONFIGURATION.md`
+- SLA pilotes : `docs/ops/SLA_PILOTES.md` (#5155) · DR : `docs/ops/DR.md` (#5283) · Alerting : `docs/ops/ALERTS_CONFIGURATION.md`
 - Backup : `docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md` · Sécurité : purge #1472/#1601
 
 *À mettre à jour à chaque incident P0/P1.*

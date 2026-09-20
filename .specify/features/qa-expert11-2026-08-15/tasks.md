@@ -17,4 +17,4 @@
 - [ ] T008 Job `hygiene-guards` dans `architecture-check.yml` : `check-app-version-sync.sh`, `check-env-example-parity.sh`, `check-canonical-domains.sh`
 
 ## Clôture
-- [ ] T009 CHANGELOG + `docs/qa-expert11-session-2026-08-15.md` + PR(s) `Closes #...` ; issues fermées avec preuve code
+- [ ] T009 CHANGELOG + `docs/qa/qa-expert11-session-2026-08-15.md` + PR(s) `Closes #...` ; issues fermées avec preuve code

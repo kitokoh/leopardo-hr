@@ -116,7 +116,7 @@ CI verte (#5201), i18n mobile (#2755 suite), dedup mobile (#2601 suite), RTMX (P
 |---|---|---|
 | #5280 OpenAPI | ✅ **MERGÉ (PR #5319)** — contrat vérifié à chaque PR | Audit de complétude restant |
 | #5281 Sécurité | ✅ OWASP ZAP baseline (workflow actif), TruffleHog + secret-history scan, Semgrep, CodeQL, Dependabot | Pen-test basique + rapport consolidé |
-| #5282 Monitoring | 🟡 `ALERTS_CONFIGURATION.md` (guide, cibles aspirationnelles à adapter), launch-observability-smoke | Mise en œuvre réelle (uptime externe, Sentry alertes seuils), runbook `docs/ops/INCIDENTS.md` + exercice |
+| #5282 Monitoring | 🟡 `docs/ops/ALERTS_CONFIGURATION.md` (guide, cibles aspirationnelles à adapter), launch-observability-smoke | Mise en œuvre réelle (uptime externe, Sentry alertes seuils), runbook `docs/ops/INCIDENTS.md` + exercice |
 | #5283 Backup/DR | ✅ **MERGÉ (PR #5305)** — DR.md (RPO ≤ 24 h / RTO ≤ 4 h), **restauration réelle réussie** (6/6 tables), fix `CREATE SCHEMA public` | — |
 | #5285 E2E critiques | ✅ **MERGÉ (PR #5312)** — `CriticalFunnelPayrollE2ETest` (signup → provision → employé → run → calculate → validate → bulletin %PDF) | Parcours facture bloqué Comptabilité (pas de faux vert) |
 | #5286 Tracker | ✅ Ce document (livré) | Rituel hebdo |
