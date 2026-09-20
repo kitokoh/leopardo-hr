@@ -22,9 +22,7 @@ use Illuminate\Support\Facades\DB;
  */
 class PharmacyPurchaseOrderService
 {
-    public function __construct(private readonly PharmacyStockService $stock)
-    {
-    }
+    public function __construct(private readonly PharmacyStockService $stock) {}
 
     /**
      * @param  list<array{product_id: int, quantity_ordered: int, unit_price?: string|numeric}>  $lines
@@ -32,7 +30,7 @@ class PharmacyPurchaseOrderService
     public function create(string $companyId, int $supplierId, array $lines, ?string $notes = null, ?int $employeeId = null): PharmacyPurchaseOrder
     {
         if ($lines === []) {
-            throw new DomainException('Une commande doit contenir au moins une ligne.', 422, 'PHARMACY_EMPTY_ORDER');
+            throw new DomainException((string) __('pharmacy.empty_order'), 422, 'PHARMACY_EMPTY_ORDER');
         }
 
         return DB::transaction(function () use ($companyId, $supplierId, $lines, $notes, $employeeId): PharmacyPurchaseOrder {
@@ -101,7 +99,7 @@ class PharmacyPurchaseOrderService
         }
 
         if ($receivedLines === []) {
-            throw new DomainException('Aucune ligne à réceptionner.', 422, 'PHARMACY_EMPTY_RECEIPT');
+            throw new DomainException((string) __('pharmacy.empty_receipt'), 422, 'PHARMACY_EMPTY_RECEIPT');
         }
 
         $companyId = (string) $order->company_id;
@@ -109,7 +107,7 @@ class PharmacyPurchaseOrderService
         return DB::transaction(function () use ($order, $receivedLines, $employeeId, $companyId): PharmacyPurchaseOrder {
             foreach ($receivedLines as $received) {
                 if ($received['quantity'] <= 0) {
-                    throw new DomainException('La quantité reçue doit être strictement positive.', 422, 'PHARMACY_INVALID_QUANTITY');
+                    throw new DomainException((string) __('pharmacy.quantity_received_positive'), 422, 'PHARMACY_INVALID_QUANTITY');
                 }
 
                 /** @var PharmacyPurchaseOrderLine|null $line */
@@ -121,19 +119,18 @@ class PharmacyPurchaseOrderService
                     ->first();
 
                 if ($line === null) {
-                    throw new DomainException('Ligne de commande introuvable.', 404, 'PHARMACY_ORDER_LINE_NOT_FOUND');
+                    throw new DomainException((string) __('pharmacy.order_line_not_found'), 404, 'PHARMACY_ORDER_LINE_NOT_FOUND');
                 }
 
                 // Sur-réception refusée : reçu cumulé ≤ commandé.
                 if ($line->quantity_received + $received['quantity'] > $line->quantity_ordered) {
                     throw new DomainException(
-                        sprintf(
-                            'Sur-réception refusée sur la ligne #%d : %d commandé, %d déjà reçu, %d proposé.',
-                            $line->id,
-                            $line->quantity_ordered,
-                            $line->quantity_received,
-                            $received['quantity']
-                        ),
+                        (string) __('pharmacy.over_receipt', [
+                            'line' => (int) $line->id,
+                            'ordered' => $line->quantity_ordered,
+                            'received' => $line->quantity_received,
+                            'proposed' => $received['quantity'],
+                        ]),
                         422,
                         'PHARMACY_OVER_RECEIPT'
                     );

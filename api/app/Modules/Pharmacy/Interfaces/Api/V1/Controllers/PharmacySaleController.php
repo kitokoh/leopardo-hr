@@ -26,9 +26,7 @@ class PharmacySaleController extends Controller
 {
     use ChecksPharmacySolution;
 
-    public function __construct(private readonly PharmacySaleService $sales)
-    {
-    }
+    public function __construct(private readonly PharmacySaleService $sales) {}
 
     public function index(Request $request): JsonResponse
     {

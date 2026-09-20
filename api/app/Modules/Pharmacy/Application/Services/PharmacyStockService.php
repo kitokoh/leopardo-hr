@@ -44,7 +44,7 @@ class PharmacyStockService
         ?int $referenceId = null,
     ): PharmacyBatch {
         if ($quantity <= 0) {
-            throw new DomainException('La quantité reçue doit être strictement positive.', 422, 'PHARMACY_INVALID_QUANTITY');
+            throw new DomainException((string) __('pharmacy.quantity_received_positive'), 422, 'PHARMACY_INVALID_QUANTITY');
         }
 
         return DB::transaction(function () use ($companyId, $productId, $batchNumber, $expiryDate, $quantity, $unitCost, $supplierId, $employeeId, $referenceType, $referenceId): PharmacyBatch {
@@ -96,15 +96,15 @@ class PharmacyStockService
         string $type = 'adjustment',
     ): PharmacyBatch {
         if ($quantityDelta === 0) {
-            throw new DomainException('Le delta d\'ajustement ne peut pas être nul.', 422, 'PHARMACY_INVALID_QUANTITY');
+            throw new DomainException((string) __('pharmacy.adjustment_delta_nonzero'), 422, 'PHARMACY_INVALID_QUANTITY');
         }
 
         if (trim($reason) === '') {
-            throw new DomainException('La raison de l\'ajustement est obligatoire.', 422, 'PHARMACY_REASON_REQUIRED');
+            throw new DomainException((string) __('pharmacy.adjustment_reason_required'), 422, 'PHARMACY_REASON_REQUIRED');
         }
 
         if (! in_array($type, ['adjustment', 'expiry_writeoff'], true)) {
-            throw new DomainException('Type d\'ajustement invalide.', 422, 'PHARMACY_INVALID_MOVEMENT_TYPE');
+            throw new DomainException((string) __('pharmacy.invalid_adjustment_type'), 422, 'PHARMACY_INVALID_MOVEMENT_TYPE');
         }
 
         return DB::transaction(function () use ($companyId, $batchId, $quantityDelta, $reason, $employeeId, $type): PharmacyBatch {
@@ -116,7 +116,7 @@ class PharmacyStockService
                 ->first();
 
             if ($batch === null) {
-                throw new DomainException('Lot introuvable.', 404, 'PHARMACY_BATCH_NOT_FOUND');
+                throw new DomainException((string) __('pharmacy.batch_not_found'), 404, 'PHARMACY_BATCH_NOT_FOUND');
             }
 
             $newQuantity = $batch->quantity + $quantityDelta;
@@ -152,11 +152,11 @@ class PharmacyStockService
         string $type = 'sale',
     ): array {
         if ($quantity <= 0) {
-            throw new DomainException('La quantité délivrée doit être strictement positive.', 422, 'PHARMACY_INVALID_QUANTITY');
+            throw new DomainException((string) __('pharmacy.quantity_dispensed_positive'), 422, 'PHARMACY_INVALID_QUANTITY');
         }
 
         if (! in_array($type, ['sale', 'adjustment'], true)) {
-            throw new DomainException('Type de délivrance invalide.', 422, 'PHARMACY_INVALID_MOVEMENT_TYPE');
+            throw new DomainException((string) __('pharmacy.invalid_dispense_type'), 422, 'PHARMACY_INVALID_MOVEMENT_TYPE');
         }
 
         return DB::transaction(function () use ($companyId, $productId, $quantity, $employeeId, $referenceType, $referenceId, $type): array {
@@ -231,7 +231,7 @@ class PharmacyStockService
                     ->first();
 
                 if ($batch === null) {
-                    throw new DomainException('Lot introuvable pour la contre-passation.', 404, 'PHARMACY_BATCH_NOT_FOUND');
+                    throw new DomainException((string) __('pharmacy.batch_not_found_return'), 404, 'PHARMACY_BATCH_NOT_FOUND');
                 }
 
                 $batch->quantity += $line['quantity'];

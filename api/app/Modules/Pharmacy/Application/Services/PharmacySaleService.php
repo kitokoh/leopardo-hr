@@ -31,9 +31,7 @@ class PharmacySaleService
 {
     public const REFERENCE_TYPE = 'pharmacy_sale';
 
-    public function __construct(private readonly PharmacyStockService $stock)
-    {
-    }
+    public function __construct(private readonly PharmacyStockService $stock) {}
 
     /**
      * @param  list<array{product_id: int, quantity: int}>  $lines
@@ -47,7 +45,7 @@ class PharmacySaleService
         ?int $employeeId = null,
     ): PharmacySale {
         if ($lines === []) {
-            throw new DomainException('Une vente doit contenir au moins une ligne.', 422, 'PHARMACY_EMPTY_SALE');
+            throw new DomainException((string) __('pharmacy.empty_sale'), 422, 'PHARMACY_EMPTY_SALE');
         }
 
         return DB::transaction(function () use ($companyId, $lines, $paymentMethod, $customerName, $prescriptionId, $employeeId): PharmacySale {
@@ -60,7 +58,7 @@ class PharmacySaleService
                     ->exists();
 
                 if (! $prescriptionExists) {
-                    throw new DomainException('Ordonnance introuvable.', 422, 'PHARMACY_PRESCRIPTION_NOT_FOUND');
+                    throw new DomainException((string) __('pharmacy.prescription_not_found'), 422, 'PHARMACY_PRESCRIPTION_NOT_FOUND');
                 }
             }
 
@@ -75,7 +73,7 @@ class PharmacySaleService
                     ->first();
 
                 if ($product === null) {
-                    throw new DomainException('Produit introuvable.', 404, 'PHARMACY_PRODUCT_NOT_FOUND');
+                    throw new DomainException((string) __('pharmacy.product_not_found'), 404, 'PHARMACY_PRODUCT_NOT_FOUND');
                 }
 
                 // Ordonnance exigée : produit sous prescription OU contrôlé
@@ -151,7 +149,7 @@ class PharmacySaleService
         }
 
         if (trim($reason) === '') {
-            throw new DomainException('La raison de l\'annulation est obligatoire.', 422, 'PHARMACY_REASON_REQUIRED');
+            throw new DomainException((string) __('pharmacy.void_reason_required'), 422, 'PHARMACY_REASON_REQUIRED');
         }
 
         $companyId = (string) $sale->company_id;

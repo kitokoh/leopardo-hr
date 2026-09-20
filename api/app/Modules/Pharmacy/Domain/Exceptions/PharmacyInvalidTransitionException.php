@@ -15,7 +15,7 @@ class PharmacyInvalidTransitionException extends DomainException
     public function __construct(string $from, string $to)
     {
         parent::__construct(
-            sprintf('Transition invalide : %s → %s.', $from, $to),
+            (string) __('pharmacy.invalid_transition', ['from' => $from, 'to' => $to]),
             422,
             'PHARMACY_INVALID_TRANSITION'
         );

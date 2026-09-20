@@ -16,7 +16,7 @@ class PharmacySolutionInactiveException extends DomainException
     public function __construct()
     {
         parent::__construct(
-            'La solution PharmaManager n\'est pas active pour ce tenant.',
+            (string) __('pharmacy.solution_inactive'),
             403,
             'PHARMACY_SOLUTION_INACTIVE'
         );

@@ -21,9 +21,7 @@ class PharmacyDashboardController extends Controller
 {
     use ChecksPharmacySolution;
 
-    public function __construct(private readonly PharmacyDashboardService $dashboard)
-    {
-    }
+    public function __construct(private readonly PharmacyDashboardService $dashboard) {}
 
     public function index(Request $request): JsonResponse
     {

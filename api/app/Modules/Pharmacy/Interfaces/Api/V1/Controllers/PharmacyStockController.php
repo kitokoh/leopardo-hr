@@ -27,9 +27,7 @@ class PharmacyStockController extends Controller
 {
     use ChecksPharmacySolution;
 
-    public function __construct(private readonly PharmacyStockService $stock)
-    {
-    }
+    public function __construct(private readonly PharmacyStockService $stock) {}
 
     /**
      * Niveaux de stock par produit : disponible = somme des lots non périmés.

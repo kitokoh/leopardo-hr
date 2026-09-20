@@ -16,7 +16,7 @@ class PharmacyPrescriptionRequiredException extends DomainException
     public function __construct(string $productName)
     {
         parent::__construct(
-            sprintf('Le produit « %s » exige une ordonnance : fournir prescription_id.', $productName),
+            (string) __('pharmacy.prescription_required', ['product' => $productName]),
             422,
             'PHARMACY_PRESCRIPTION_REQUIRED'
         );
