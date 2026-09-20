@@ -10,9 +10,9 @@ use App\Modules\HospitalityManager\Infrastructure\Services\HospitalityReservatio
 use Illuminate\Console\Command;
 
 /**
- * HOSP-004 (#7946) — Expiration des réservations `pending` dépassées.
+ * HOSP-004 (#7946) — Expiration des reservations `pending` dépassées.
  *
- * Les réservations EN LIGNE (vitrine publique HOSP-006) naissent `pending`
+ * Les reservations EN LIGNE (vitrine publique HOSP-006) naissent `pending`
  * avec `expires_at = +30 min` : passé ce délai sans confirmation par
  * l'établissement, elles sont annulées et l'inventaire est libéré.
  * Idempotent (re-vérification sous verrou par réservation ; pattern
@@ -21,10 +21,10 @@ use Illuminate\Console\Command;
 class HospitalityExpirePendingReservationsCommand extends Command
 {
     protected $signature = 'hospitality:expire-pending-reservations
-        {--company= : Cibler un tenant précis}
-        {--limit=500 : nombre max de réservations par passe (défaut 500)}';
+        {--company= : Cibler un tenant precis}
+        {--limit=500 : nombre max de reservations par passe (defaut 500)}';
 
-    protected $description = 'Expire les réservations hospitality pending dépassées : annulation + libération inventaire (HOSP-004/#7946).';
+    protected $description = 'Expire les reservations hospitality pending depassees : annulation + liberation inventaire (HOSP-004/#7946).';
 
     public function __construct(private readonly HospitalityReservationService $reservations)
     {
@@ -40,7 +40,7 @@ class HospitalityExpirePendingReservationsCommand extends Command
             ->get();
 
         if ($companies->isEmpty()) {
-            $this->warn('Aucun tenant actif — rien à expirer.');
+            $this->warn('Aucun tenant actif — rien a expirer.');
 
             return self::SUCCESS;
         }
@@ -55,13 +55,13 @@ class HospitalityExpirePendingReservationsCommand extends Command
             );
 
             if ($count > 0) {
-                $this->info("Tenant {$company->id} : {$count} réservation(s) hospitality expirée(s).");
+                $this->info("Tenant {$company->id} : {$count} reservation(s) hospitality expiree(s).");
             }
 
             $total += $count;
         }
 
-        $this->info("Total : {$total} réservation(s) hospitality expirée(s).");
+        $this->info("Total : {$total} reservation(s) hospitality expiree(s).");
 
         return self::SUCCESS;
     }
