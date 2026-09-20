@@ -120,8 +120,32 @@ final class AccountingSettingsDefaults
     ];
 
     /**
-     * Mentions légales par défaut par pays (issue #5271) — exemples types,
-     * modifiables par l'entreprise. Un pays absent → aucune mention (null).
+     * Mentions légales par défaut par pays (issues #5271 et #7928) —
+     * exemples types, modifiables par l'entreprise. Un pays absent → aucune
+     * mention (null — pas de mention devinée pour un pays non supporté).
+     *
+     * Identifiants vérifiés le 2026-09-20 (issue #7928) :
+     *   - RCCM : registre du commerce et du crédit mobilier, commun à tous
+     *     les États OHADA (AUDCG révisé, art. 34 ss.).
+     *   - CM : NIU — numéro d'identifiant unique DGI Cameroun
+     *     (teledeclaration-dgi.cm ; org-id.guide/list/CM-NIU).
+     *   - GA : NIF — numéro d'identification fiscale, DGI Gabon.
+     *   - CG : NIU — numéro d'identification unique, DGID Congo (niu.cg).
+     *   - TD / CF / GQ : NIF — numéro d'identification fiscale (DGI Tchad,
+     *     DGID RCA, Dirección General de Tributos GQ).
+     *   - BF : IFU — identifiant financier unique, DGI Burkina (dgi.bf).
+     *   - ML : NIF — numéro d'identification fiscale, DGI Mali
+     *     (dgi.gouv.ml).
+     *   - TG : NIF — numéro d'identification fiscale, OTR (nif.otr.tg).
+     *   - BJ : IFU — identifiant fiscal unique, DGI Bénin (ifu.impots.bj).
+     *   - NE : NIF — numéro d'identification fiscale, DGI Niger.
+     *   - CA : BN — business number ARC + n° d'inscription TPS/TVH
+     *     (canada.ca/…/gst-hst-businesses) ; mention TVQ (Revenu Québec)
+     *     pour les inscrits au Québec.
+     *   - GB : company number (Companies House) + VAT registration number
+     *     (HMRC, VAT Regulations 1995 — invoice requirements).
+     *   - US : EIN — employer identification number (IRS) ; pas de TVA
+     *     fédérale.
      *
      * @var array<string, string>
      */
@@ -133,7 +157,35 @@ final class AccountingSettingsDefaults
         'CI' => 'RCCM {rccm} — NIF {nif} — Capital social : {capital} XOF',
         'FR' => 'SIRET {siret} — TVA intracommunautaire : {tva_intra} — Capital social : {capital} EUR',
         'TR' => 'Vergi No {vergi_no} — Ticaret Sicil No {sicil_no} — Sermaye : {capital} TRY',
+        // ── CEMAC (#7928) ────────────────────────────────────────
+        'CM' => 'RCCM {rccm} — NIU {niu} — Capital social : {capital} XAF',
+        'GA' => 'RCCM {rccm} — NIF {nif} — Capital social : {capital} XAF',
+        'CG' => 'RCCM {rccm} — NIU {niu} — Capital social : {capital} XAF',
+        'TD' => 'RCCM {rccm} — NIF {nif} — Capital social : {capital} XAF',
+        'CF' => 'RCCM {rccm} — NIF {nif} — Capital social : {capital} XAF',
+        'GQ' => 'RCCM {rccm} — NIF {nif} — Capital social : {capital} XAF',
+        // ── CEDEAO/UEMOA (#7928) ──────────────────────────────────
+        'BF' => 'RCCM {rccm} — IFU {ifu} — Capital social : {capital} XOF',
+        'ML' => 'RCCM {rccm} — NIF {nif} — Capital social : {capital} XOF',
+        'TG' => 'RCCM {rccm} — NIF {nif} — Capital social : {capital} XOF',
+        'BJ' => 'RCCM {rccm} — IFU {ifu} — Capital social : {capital} XOF',
+        'NE' => 'RCCM {rccm} — NIF {nif} — Capital social : {capital} XOF',
+        // ── Amérique du Nord + Royaume-Uni (#7928) ─────────────────────
+        'CA' => 'BN {bn} — N° TPS/TVH {gst_hst} — N° TVQ {tvq} (si inscrit au Québec)',
+        'GB' => 'Company No {company_no} — VAT Registration No {vat_no}',
+        'US' => 'EIN {ein}',
     ];
+
+    /**
+     * Pays couverts par une mention légale par défaut (#7928) — exposé pour
+     * les tests de couverture.
+     *
+     * @return list<string>
+     */
+    public static function legalMentionCountries(): array
+    {
+        return array_keys(self::LEGAL_MENTIONS_BY_COUNTRY);
+    }
 
     /**
      * Séries de numérotation par défaut (préfixe par type de document).
