@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Restaurant;
 
+use App\Core\Solutions\SolutionActivator;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Application\Actions\ActivateRestaurantManagerAction;
@@ -60,6 +61,33 @@ class RestaurantActivationTest extends TestCase
             $this->assertSame(2, RestaurantTaxRate::query()->count());
             $this->assertSame(4, RestaurantCategory::query()->count());
         });
+    }
+
+    /**
+     * #7976 — l'activation STANDARD d'une verticale passe par
+     * `SolutionActivator` avec le code de solution `restaurant`, qui ne pose
+     * que le flag `restaurant` : sans le listener `SolutionActivated` du
+     * module, les 210 routes gatées par `module.restaurantmanager` restaient
+     * en 403. Contrat : l'activation standard pose AUSSI `restaurantmanager`.
+     */
+    public function test_standard_solution_activation_also_enables_restaurantmanager_flag(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+
+        foreach (['rh', 'attendance', 'documents', 'notifications'] as $module) {
+            $company->setFeature($module, true);
+        }
+        $company->save();
+
+        app(SolutionActivator::class)->activate($company, 'restaurant');
+
+        $company->refresh();
+        $this->assertTrue($company->hasFeature('restaurant'));
+        $this->assertTrue(
+            $company->hasFeature('restaurantmanager'),
+            'L\'activation standard de la solution restaurant doit aussi poser le flag restaurantmanager (#7976).',
+        );
     }
 
     public function test_activate_command_resolves_company_by_slug(): void
