@@ -106,6 +106,11 @@ export const TEAM_ROLES_FR = {
     'La promotion en manager principal est réservée au super administrateur.',
   errorInvitationAccepted: 'Cette invitation a déjà été acceptée.',
   errorActionFailed: "L'action a échoué. Réessayez.",
+  // #7862 — fusion « Collaborateurs et rôles » dans la page Équipe (/employees) :
+  // panneau de détails par collaborateur + statut synthétique de la liste.
+  detailsOpen: 'Détails',
+  detailsClose: 'Fermer les détails',
+  statusActive: 'Actif',
 } as const;
 
 export type TeamRolesKey = keyof typeof TEAM_ROLES_FR;
