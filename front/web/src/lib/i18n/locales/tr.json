@@ -6155,6 +6155,10 @@
     "resume": "Alanımın kurulumunu tamamla",
     "error": "Şu anda kaydedilemedi. Lütfen birazdan tekrar deneyin.",
     "questions": {
+      "company_name": {
+        "label": "Şirketinizin adı nedir?",
+        "placeholder": "Örn. El Amel Fırını"
+      },
       "company_type": {
         "label": "Tek başınıza mı yoksa bir ekiple mi çalışıyorsunuz?",
         "options": {
@@ -6230,7 +6234,8 @@
       "training": "Eğitim merkezi",
       "reports": "Raporlar",
       "marketing": "Pazarlama"
-    }
+    },
+    "continue": "Devam et"
   },
   "nextSteps": {
     "title": "Sonraki adımlar",

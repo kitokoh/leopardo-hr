@@ -132,6 +132,59 @@ class RequestTrialSignup
     }
 
     /**
+     * #7853 — inscription par e-mail seul : le nom d'entreprise n'est plus
+     * obligatoire au signup. Résolution déterministe :
+     *
+     *  1. valeur fournie (déjà validée 2..120) → telle quelle (trim) ;
+     *  2. sinon, nom PROVISOIRE dérivé de la partie locale de l'e-mail
+     *     (`jean.dupont@x.com` → « Jean Dupont », capitalisé) ;
+     *  3. sinon (partie locale inexploitable, ex. `x@y.com`), repli localisé
+     *     « Mon entreprise » selon la langue choisie (sinon langue du pays).
+     *
+     * Le nom définitif est demandé ensuite dans l'entretien de préparation
+     * (#7493, question `company_name`) — la génération de slug race-safe en
+     * aval (VerifyTrialSignup / ProvisionGuidedTrial) reste inchangée.
+     *
+     * @param  array<string, mixed>  $validated
+     */
+    public function resolveCompanyName(array $validated, string $email): string
+    {
+        $provided = trim((string) ($validated['company'] ?? ''));
+        if ($provided !== '') {
+            return mb_substr($provided, 0, 120);
+        }
+
+        $localPart = explode('@', $email)[0] ?? '';
+        $parts = preg_split('/[._\-+]+/', $localPart) ?: [];
+        $words = [];
+        foreach ($parts as $part) {
+            $part = trim($part);
+            // Les segments purement numériques (jean.dupont+42, contact123…)
+            // ne font pas un nom présentable.
+            if ($part === '' || preg_match('/^\d+$/', $part) === 1) {
+                continue;
+            }
+            $words[] = mb_convert_case(mb_strtolower($part), MB_CASE_TITLE, 'UTF-8');
+        }
+
+        $derived = trim(implode(' ', $words));
+        if (mb_strlen($derived) >= 2) {
+            return mb_substr($derived, 0, 120);
+        }
+
+        // Repli localisé : langue d'interface choisie, sinon langue par défaut
+        // du pays validé (jamais de régression dure).
+        $locale = strtolower(trim((string) ($validated['locale'] ?? '')));
+        if (! in_array($locale, ['fr', 'en', 'ar', 'tr'], true)) {
+            $country = strtoupper(trim((string) ($validated['country'] ?? '')));
+            $defaults = CountryDefaults::find($country);
+            $locale = is_array($defaults) ? strtolower((string) $defaults['language']) : 'fr';
+        }
+
+        return __('billing.trial_company_fallback', [], $locale);
+    }
+
+    /**
      * @param  array<string, mixed>  $validated
      */
     private function managerNameForCompanyRequest(array $validated, string $email): string
@@ -174,7 +227,9 @@ class RequestTrialSignup
             }
 
             CompanyRequest::query()->create([
-                'company_name' => trim($validated['company']),
+                // #7853 — le nom peut avoir été dérivé de l'e-mail (company
+                // absent au signup) : résolution centralisée, jamais vide.
+                'company_name' => $this->resolveCompanyName($validated, $email),
                 'sector' => $this->mapRoleToSector($validated['role'] ?? null),
                 'country' => strtoupper(trim($validated['country'])),
                 'city' => 'Non précisé',

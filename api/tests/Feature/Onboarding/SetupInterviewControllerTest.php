@@ -195,6 +195,64 @@ class SetupInterviewControllerTest extends TestCase
         $this->assertSame([], $response->json('data.activated.solutions'));
     }
 
+    /**
+     * #7853 — le nom d'entreprise n'est plus demandé à l'inscription : la
+     * question `company_name` de l'entretien (texte libre, zappable) renomme
+     * la société à la clôture — champ `name` uniquement, le SLUG existant
+     * n'est JAMAIS réécrit (il porte des URLs déjà distribuées).
+     */
+    public function test_complete_renames_company_from_interview_answer_without_touching_slug(): void
+    {
+        $company = $this->company();
+        $originalSlug = $company->slug;
+        $this->actingAsRole($company, 'manager', 'principal');
+
+        $this->patchJson('/api/v1/setup-interview/answers', [
+            'answers' => ['company_name' => 'Boulangerie El Amel', 'sector' => 'commerce'],
+        ])->assertOk();
+
+        $this->postJson('/api/v1/setup-interview/complete')->assertOk();
+
+        $table = DB::getDriverName() === 'pgsql' ? 'public.companies' : 'companies';
+        $row = DB::table($table)->where('id', $company->id)->first();
+
+        $this->assertSame('Boulangerie El Amel', $row->name);
+        $this->assertSame($originalSlug, $row->slug);
+    }
+
+    public function test_complete_without_company_name_keeps_existing_name(): void
+    {
+        $company = $this->company();
+        $originalName = $company->name;
+        $this->actingAsRole($company, 'manager', 'principal');
+
+        // Question sautée (`null`) : aucun renommage.
+        $this->patchJson('/api/v1/setup-interview/answers', [
+            'answers' => ['company_name' => null, 'sector' => 'commerce'],
+        ])->assertOk();
+
+        $this->postJson('/api/v1/setup-interview/complete')->assertOk();
+
+        $table = DB::getDriverName() === 'pgsql' ? 'public.companies' : 'companies';
+        $row = DB::table($table)->where('id', $company->id)->first();
+
+        $this->assertSame($originalName, $row->name);
+    }
+
+    public function test_company_name_answer_is_rejected_when_out_of_bounds(): void
+    {
+        $company = $this->company();
+        $this->actingAsRole($company, 'manager', 'principal');
+
+        // Fail-closed : hors bornes (1 caractère) → 422, aucune écriture.
+        $this->patchJson('/api/v1/setup-interview/answers', [
+            'answers' => ['company_name' => 'A'],
+        ])->assertStatus(422);
+
+        $persisted = $this->persistedCompany($company);
+        $this->assertArrayNotHasKey('setup_interview', $persisted['metadata']);
+    }
+
     public function test_dismiss_persists_soft_state_and_never_reopens_completed(): void
     {
         $company = $this->company();

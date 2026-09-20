@@ -66,6 +66,101 @@ class SelfServiceTrialTest extends TestCase
         });
     }
 
+    /**
+     * #7853 — inscription self-service par e-mail SEUL : `company` est devenu
+     * optionnel. Un nom provisoire est dérivé de la partie locale de l'e-mail
+     * (jean.dupont → « Jean Dupont ») ; le nom définitif est demandé dans
+     * l'entretien de préparation (#7493).
+     */
+    public function test_signup_without_company_derives_provisional_name_from_email()
+    {
+        Mail::fake();
+
+        $response = $this->postJson('/api/v1/trial/signup', [
+            'email' => 'jean.dupont@exemple.dz',
+            'country' => 'DZ',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'email' => 'jean.dupont@exemple.dz',
+                    'status' => 'pending_verification',
+                ],
+            ]);
+
+        $this->assertDatabaseHas('company_requests', [
+            'email' => 'jean.dupont@exemple.dz',
+            'company_name' => 'Jean Dupont',
+            'status' => 'pending',
+        ]);
+
+        Mail::assertSent(TrialVerificationMail::class, fn ($mail) => $mail->hasTo('jean.dupont@exemple.dz'));
+    }
+
+    /**
+     * #7853 — partie locale inexploitable (1 caractère) : repli localisé
+     * « Mon entreprise » (langue par défaut du pays, DZ → fr).
+     */
+    public function test_signup_without_company_falls_back_to_localized_placeholder()
+    {
+        Mail::fake();
+
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'x@exemple.dz',
+            'country' => 'DZ',
+        ])->assertStatus(200);
+
+        $this->assertDatabaseHas('company_requests', [
+            'email' => 'x@exemple.dz',
+            'company_name' => 'Mon entreprise',
+            'status' => 'pending',
+        ]);
+    }
+
+    /**
+     * #7853 — contrat conservé quand `company` est fourni : 2..120.
+     */
+    public function test_signup_with_too_short_company_is_still_rejected()
+    {
+        Mail::fake();
+
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'founder@newtech.dz',
+            'company' => 'A',
+            'country' => 'DZ',
+        ])->assertStatus(422)->assertJsonValidationErrors(['company']);
+    }
+
+    /**
+     * #7853 — parcours complet e-mail seul : la vérification OTP provisionne
+     * le tenant avec le nom provisoire dérivé (slug race-safe inchangé).
+     */
+    public function test_can_verify_and_provision_trial_without_company()
+    {
+        Mail::fake();
+
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'sofia.mansouri@startup.dz',
+            'country' => 'DZ',
+        ])->assertStatus(200);
+
+        $companyRequest = CompanyRequest::where('email', 'sofia.mansouri@startup.dz')
+            ->where('status', 'pending')
+            ->first();
+        $this->assertNotNull($companyRequest);
+
+        $response = $this->postJson('/api/v1/trial/verify', [
+            'email' => 'sofia.mansouri@startup.dz',
+            'code' => $companyRequest->verification_token,
+        ]);
+
+        $response->assertStatus(201);
+        $this->assertSame('Sofia Mansouri', $response->json('data.company.name'));
+        $this->assertSame('sofia-mansouri', $response->json('data.company.slug'));
+    }
+
     public function test_can_verify_otp_and_provision_trial_tenant()
     {
         Mail::fake();
@@ -318,8 +413,11 @@ class SelfServiceTrialTest extends TestCase
     {
         $response = $this->postJson('/api/v1/trial/signup', []);
 
+        // #7853 — `company` n'est plus obligatoire (inscription par e-mail
+        // seul) : seuls l'e-mail et le pays restent requis.
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['email', 'company']);
+            ->assertJsonValidationErrors(['email', 'country'])
+            ->assertJsonMissingValidationErrors(['company']);
     }
 
     public function test_second_verify_with_same_otp_does_not_double_provision()

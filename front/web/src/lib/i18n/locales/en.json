@@ -6155,6 +6155,10 @@
     "resume": "Finish setting up my workspace",
     "error": "Could not save right now. Please try again in a moment.",
     "questions": {
+      "company_name": {
+        "label": "What is your company name?",
+        "placeholder": "E.g. Acme Bakery"
+      },
       "company_type": {
         "label": "Do you work alone or with a team?",
         "options": {
@@ -6230,7 +6234,8 @@
       "training": "Training",
       "reports": "Reports",
       "marketing": "Marketing"
-    }
+    },
+    "continue": "Continue"
   },
   "nextSteps": {
     "title": "Next steps",

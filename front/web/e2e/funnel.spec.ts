@@ -132,19 +132,19 @@ async function pollTrialUntilReady(
  * sessionStorage `lp_trial_provisioning_token` n'existe que depuis #2469,
  * un build antérieur ne la pose pas).
  */
-async function guidedSignupViaVitrine(page: Page, email: string, company: string): Promise<string> {
+async function guidedSignupViaVitrine(page: Page, email: string, _company: string): Promise<string> {
   await page.goto('/signup?plan=pilot', { waitUntil: 'domcontentloaded' });
 
   // #7249 — le tunnel s'ouvre directement sur le formulaire (l'écran
-  // interstitiel « profil » a été remplacé par deux pastilles) et ne demande
-  // plus que l'e-mail, l'entreprise et les CGU : le rôle (le créateur EST le
-  // fondateur), la taille d'équipe et le pays (résolu côté serveur par
-  // géolocalisation — le champ n'apparaît qu'en repli, si elle échoue) ont été
-  // retirés du parcours. Ce spec s'alignait encore sur l'ancien tunnel à
-  // 5 champs et échouait donc sur des sélecteurs inexistants.
+  // interstitiel « profil » a été remplacé par deux pastilles).
+  // #7853 — inscription par e-mail SEUL : le nom d'entreprise n'est plus
+  // demandé (nom provisoire dérivé de l'e-mail côté serveur, nom définitif
+  // posé dans l'entretien de préparation #7493). Il ne reste que l'e-mail
+  // et les CGU : le rôle (le créateur EST le fondateur), la taille d'équipe
+  // et le pays (résolu côté serveur par géolocalisation — le champ
+  // n'apparaît qu'en repli, si elle échoue) ont été retirés du parcours.
   await expect(page.locator('input[name="email"]')).toBeVisible({ timeout: 15_000 });
   await page.locator('input[name="email"]').fill(email);
-  await page.locator('input[name="company"]').fill(company);
   await page.locator('#agreeToTerms').check();
 
   // Capture de la réponse AVANT le clic (waitForResponse concurrent) :

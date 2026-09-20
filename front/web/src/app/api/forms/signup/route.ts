@@ -9,7 +9,11 @@ const rateLimiter = new RateLimiter(5, 15 * 60 * 1000);
 
 const signupSchema = z.object({
   email: z.string().email().max(255),
-  company: z.string().min(2).max(120),
+  // #7853 — inscription par e-mail seul : `company` devient optionnel. S'il
+  // est fourni (appelants historiques), le contrat 2..120 reste appliqué ; en
+  // son absence, le backend dérive un nom provisoire depuis l'e-mail et le
+  // nom définitif est demandé dans l'entretien de préparation (#7493).
+  company: z.string().min(2).max(120).optional().or(z.literal('')),
   first_name: z.string().max(80).optional().or(z.literal('')),
   last_name: z.string().max(80).optional().or(z.literal('')),
   role: z.enum(['founder', 'manager', 'hr', 'operations', 'other']).optional(),
@@ -65,7 +69,7 @@ export async function POST(request: NextRequest) {
 
     const validatedData = signupSchema.parse(rawBody);
     const email = sanitizeEmail(validatedData.email);
-    const company = sanitizeInput(validatedData.company);
+    const company = validatedData.company ? sanitizeInput(validatedData.company) : undefined;
     const phone = validatedData.phone ? sanitizeInput(validatedData.phone) : undefined;
 
     // Issue #6680 : le champ `country` est OBLIGATOIRE côté backend (#1867 —
@@ -173,7 +177,9 @@ export async function POST(request: NextRequest) {
         },
         body: JSON.stringify({
           email,
-          company,
+          // #7853 — transmis uniquement s'il a été fourni : l'API accepte
+          // désormais un signup sans nom d'entreprise.
+          company: company || undefined,
           first_name: validatedData.first_name || undefined,
           last_name: validatedData.last_name || undefined,
           role: validatedData.role,

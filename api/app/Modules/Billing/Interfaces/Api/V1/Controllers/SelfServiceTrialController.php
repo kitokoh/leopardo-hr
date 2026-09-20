@@ -69,7 +69,10 @@ class SelfServiceTrialController extends Controller
 
         $validated = $request->validate([
             'email' => ['required', 'email', 'max:255'],
-            'company' => ['required', 'string', 'min:2', 'max:120'],
+            // #7853 — inscription par e-mail SEUL : le nom d'entreprise devient
+            // optionnel (il migre vers l'entretien de préparation #7493). S'il
+            // est fourni, le contrat historique (2..120) reste appliqué.
+            'company' => ['nullable', 'string', 'min:2', 'max:120'],
             'first_name' => ['nullable', 'string', 'max:80'],
             'last_name' => ['nullable', 'string', 'max:80'],
             'role' => ['nullable', 'string', 'in:founder,manager,hr,operations,other'],
@@ -125,8 +128,16 @@ class SelfServiceTrialController extends Controller
             'modules.*' => ['string', 'max:40', 'distinct', Rule::in(Company::HORIZONTAL_TOOLS)],
         ]);
 
-        /** @var array{email: string, company: string, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null, solutions?: list<string>|null, solution?: string|null, company_type?: string|null, modules?: list<string>|null, locale?: string|null} $validated */
+        /** @var array{email: string, company?: string|null, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null, solutions?: list<string>|null, solution?: string|null, company_type?: string|null, modules?: list<string>|null, locale?: string|null} $validated */
         $email = strtolower(trim($validated['email']));
+
+        // #7853 — nom d'entreprise résolu UNE fois pour les deux parcours
+        // (guidé et self-service) : valeur fournie, sinon nom provisoire
+        // dérivé de la partie locale de l'e-mail (jean.dupont → « Jean
+        // Dupont »), sinon repli localisé « Mon entreprise ». Le nom définitif
+        // est demandé dans l'entretien de préparation (#7493).
+        $companyName = $this->requestTrialSignup->resolveCompanyName($validated, $email);
+        $validated['company'] = $companyName;
 
         // Anti-énumération (#3945) : la réponse de signup est UNIFORME que
         // l'email ait déjà un compte manager ou non — la détection
@@ -235,7 +246,7 @@ class SelfServiceTrialController extends Controller
 
             ProvisionDemoTenantJob::dispatch(
                 $email,
-                $validated['company'],
+                $companyName,
                 $validated['country'],
                 $provisioningToken,
                 $validated['solutions'] ?? [],

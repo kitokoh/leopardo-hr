@@ -24,17 +24,26 @@ final class CompanyActivationSurfaceWriter
     /**
      * @param  array<string, mixed>  $metadata
      * @param  array<string, mixed>  $features
+     * @param  string|null  $name  #7853 — nouveau nom de la société (renommage
+     *                             issu de l'entretien) ; `null` = inchangé.
+     *                             Le SLUG n'est jamais réécrit ici (URLs).
      */
-    public function persist(string $companyId, array $metadata, array $features): void
+    public function persist(string $companyId, array $metadata, array $features, ?string $name = null): void
     {
         $table = DB::getDriverName() === 'pgsql' ? 'public.companies' : 'companies';
 
+        $update = [
+            'metadata' => json_encode($metadata, JSON_THROW_ON_ERROR),
+            'features' => json_encode($features, JSON_THROW_ON_ERROR),
+            'updated_at' => now(),
+        ];
+
+        if ($name !== null && trim($name) !== '') {
+            $update['name'] = trim($name);
+        }
+
         DB::table($table)
             ->where('id', $companyId)
-            ->update([
-                'metadata' => json_encode($metadata, JSON_THROW_ON_ERROR),
-                'features' => json_encode($features, JSON_THROW_ON_ERROR),
-                'updated_at' => now(),
-            ]);
+            ->update($update);
     }
 }

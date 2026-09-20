@@ -175,9 +175,12 @@ describe('SignupForm Component', () => {
       expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument();
     });
 
-    it('should render company input', () => {
+    // #7853 — inscription par e-mail seul : le nom d'entreprise n'est plus
+    // demandé (nom provisoire dérivé côté serveur, affiné dans l'entretien
+    // de préparation #7493).
+    it('ne demande plus le nom d’entreprise', () => {
       renderAtFormStep();
-      expect(screen.getByRole('textbox', { name: /entreprise/i })).toBeInTheDocument();
+      expect(screen.queryByRole('textbox', { name: /entreprise/i })).not.toBeInTheDocument();
     });
 
     it('should render submit button', () => {
@@ -206,16 +209,6 @@ describe('SignupForm Component', () => {
       });
     });
 
-    it('should show error for empty company', async () => {
-      renderAtFormStep();
-      await fillField(/email/i, 'test@example.com');
-      submitForm();
-      
-      await waitFor(() => {
-        expect(screen.getByText(/entreprise doit contenir/i)).toBeInTheDocument();
-      });
-    });
-
     // Le pays n'est plus demandé : il est résolu côté serveur par
     // géolocalisation (`request.geo`) dans /api/forms/signup, et reste
     // modifiable ensuite dans les paramètres de l'entreprise.
@@ -236,7 +229,6 @@ describe('SignupForm Component', () => {
       renderAtFormStep();
       const emailInput = screen.getByRole('textbox', { name: /email/i });
       await userEvent.type(emailInput, 'test@example.com');
-      await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
 
       const submitButton = screen.getByRole('button', { name: /créer mon espace/i });
       expect(submitButton).not.toBeDisabled();
@@ -274,7 +266,6 @@ describe('SignupForm Component', () => {
 
     async function fillValidForm() {
       await fillField(/email/i, 'test@example.com');
-      await fillField(/entreprise/i, 'Acme Corp');
       // Formulaire simplifié : plus de rôle, de taille d'équipe, de pays
       // (détecté côté serveur) ni de téléphone — e-mail + entreprise + CGU.
       fireEvent.click(screen.getByRole('checkbox'));
@@ -326,7 +317,6 @@ describe('SignupForm Component', () => {
 
     async function fillValidForm() {
       await fillField(/email/i, 'test@example.com');
-      await fillField(/entreprise/i, 'Acme Corp');
       // Formulaire simplifié : plus de rôle, de taille d'équipe, de pays
       // (détecté côté serveur) ni de téléphone — e-mail + entreprise + CGU.
       fireEvent.click(screen.getByRole('checkbox'));
@@ -416,8 +406,7 @@ describe('SignupForm Component', () => {
 
         renderAtFormStep();
         await fillField(/email/i, 'test@example.com');
-        await fillField(/entreprise/i, 'Acme Corp');
-        // Formulaire simplifié : e-mail + entreprise + CGU uniquement.
+          // Formulaire simplifié : e-mail + entreprise + CGU uniquement.
         fireEvent.click(screen.getByRole('checkbox'));
         submitForm();
 
@@ -455,8 +444,7 @@ describe('SignupForm Component', () => {
 
         renderAtFormStep();
         await fillField(/email/i, 'test@example.com');
-        await fillField(/entreprise/i, 'Acme Corp');
-        // Formulaire simplifié : plus de sélecteurs rôle / taille / pays.
+          // Formulaire simplifié : plus de sélecteurs rôle / taille / pays.
         // fireEvent (et non user.click) : avec jest.useFakeTimers() actif au
         // milieu de la suite, les clicks userEvent sont intermittemment avalés
         // (désynchronisation pointerup/click par l'avancement des timers) —
@@ -554,7 +542,6 @@ describe('SignupForm Component', () => {
 
       renderAtFormStep();
       await fillField(/email/i, 'resend@example.com');
-      await fillField(/entreprise/i, 'Acme Corp');
       fireEvent.click(screen.getByRole('checkbox'));
       submitForm();
 
@@ -586,7 +573,6 @@ describe('SignupForm Component', () => {
 
       renderAtFormStep();
       await fillField(/email/i, 'resend-fail@example.com');
-      await fillField(/entreprise/i, 'Acme Corp');
       fireEvent.click(screen.getByRole('checkbox'));
       submitForm();
 
@@ -612,7 +598,6 @@ describe('SignupForm Component', () => {
       });
       renderAtFormStep();
       await fillField(/email/i, 'test@example.com');
-      await fillField(/entreprise/i, 'Acme Corp');
       // Formulaire simplifié : e-mail + entreprise + CGU uniquement.
       fireEvent.click(screen.getByRole('checkbox'));
       submitForm();
@@ -622,8 +607,11 @@ describe('SignupForm Component', () => {
       });
       const [payload] = mockedSubmitSignupForm.mock.calls[0] as [Record<string, unknown>, unknown];
       expect(payload).toEqual(
-        expect.objectContaining({ email: 'test@example.com', company: 'Acme Corp' })
+        expect.objectContaining({ email: 'test@example.com' })
       );
+      // #7853 — aucun nom d'entreprise transmis : le serveur dérive un nom
+      // provisoire depuis l'e-mail.
+      expect(payload.company).toBeUndefined();
       // Le créateur du compte EST le fondateur : le rôle est implicite.
       expect(payload.role).toBe('founder');
       // Le pays n'est plus transmis par le formulaire (détecté côté serveur).
@@ -654,7 +642,6 @@ describe('SignupForm Component', () => {
       });
 
       await fillField(/email/i, 'test@example.com');
-      await fillField(/entreprise/i, 'Acme Corp');
       fireEvent.click(screen.getByRole('checkbox'));
       submitForm();
 

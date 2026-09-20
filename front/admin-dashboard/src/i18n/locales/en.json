@@ -7481,6 +7481,10 @@
           "yes": "Yes",
           "no": "No"
         }
+      },
+      "company_name": {
+        "label": "What is your company name?",
+        "placeholder": "E.g. Acme Bakery"
       }
     },
     "modules": {
@@ -7500,7 +7504,8 @@
       "training": "Training",
       "reports": "Reports",
       "marketing": "Marketing"
-    }
+    },
+    "continue": "Continue"
   },
   "nextSteps": {
     "title": "Next steps",

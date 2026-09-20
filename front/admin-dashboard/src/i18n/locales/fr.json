@@ -7487,6 +7487,10 @@
           "yes": "Oui",
           "no": "Non"
         }
+      },
+      "company_name": {
+        "label": "Quel est le nom de votre entreprise ?",
+        "placeholder": "Ex. Boulangerie El Amel"
       }
     },
     "modules": {
@@ -7506,7 +7510,8 @@
       "training": "Formation",
       "reports": "Rapports",
       "marketing": "Marketing"
-    }
+    },
+    "continue": "Continuer"
   },
   "nextSteps": {
     "title": "Prochaines étapes",

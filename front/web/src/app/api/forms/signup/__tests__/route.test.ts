@@ -162,6 +162,18 @@ describe('POST /api/forms/signup — contrat de la demande d’essai', () => {
     expect(payload.data.status).toBe('pending_verification');
   });
 
+  // #7853 — inscription par e-mail seul : `company` n'est plus exigé ni
+  // transmis au backend quand il est absent (le serveur API dérive un nom
+  // provisoire depuis l'e-mail).
+  it('#7853 — accepte un signup sans nom d’entreprise et ne le transmet pas', async () => {
+    const response = await POST(
+      makeRequest({ email: 'jean.dupont@exemple.dz', country: 'DZ', locale: 'fr' }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(lastBackendBody(fetchMock).company).toBeUndefined();
+  });
+
   it('#7301 — expose l’état réel de persistance du lead (jamais un succès muet)', async () => {
     mockedLeadCapture.captureMarketingLead.mockResolvedValueOnce({
       id: 'signup_pending',

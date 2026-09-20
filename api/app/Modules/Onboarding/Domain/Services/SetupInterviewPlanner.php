@@ -29,10 +29,14 @@ final class SetupInterviewPlanner
     /**
      * Allowlist des questions et de leurs réponses possibles. `null` reste
      * accepté partout (question sautée). `priorities` est multi-choix.
+     * `company_name` (#7853) est en TEXTE LIBRE (liste d'options vide,
+     * voir FREE_TEXT) : c'est la première question de l'entretien depuis que
+     * le nom d'entreprise n'est plus demandé à l'inscription.
      *
      * @var array<string, list<string>>
      */
     public const QUESTIONS = [
+        'company_name' => [],
         'company_type' => ['solo', 'team'],
         'team_size' => ['1-10', '11-50', '51-200', '201-500', '500+'],
         'sector' => ['restaurant', 'fuel_station', 'education', 'commerce', 'services', 'travel', 'other'],
@@ -43,6 +47,19 @@ final class SetupInterviewPlanner
 
     /** @var list<string> */
     public const MULTI_CHOICE = ['priorities'];
+
+    /**
+     * #7853 — questions à réponse en texte libre (optionnelles/zappables).
+     * L'allowlist reste fail-closed : la CLÉ doit exister dans QUESTIONS et
+     * la valeur doit être une chaîne bornée (2..120 après trim) — aucune
+     * valeur libre ne produit d'activation (plan() ne lit jamais ces clés).
+     *
+     * @var list<string>
+     */
+    public const FREE_TEXT = ['company_name'];
+
+    /** Longueur maximale d'une réponse en texte libre (miroir signup 2..120). */
+    public const FREE_TEXT_MAX = 120;
 
     /**
      * Secteur déclaré → code de solution verticale (`SolutionCatalogue`).
@@ -93,6 +110,27 @@ final class SetupInterviewPlanner
 
             if ($value === null) {
                 $answers[$question] = null; // question explicitement sautée
+
+                continue;
+            }
+
+            // #7853 — texte libre borné (fail-closed : non-chaîne, trop court
+            // ou trop long → rejeté, aucune écriture partielle).
+            if (in_array($question, self::FREE_TEXT, true)) {
+                if (! is_string($value)) {
+                    $rejected[] = $question;
+
+                    continue;
+                }
+
+                $trimmed = trim($value);
+                if (mb_strlen($trimmed) < 2 || mb_strlen($trimmed) > self::FREE_TEXT_MAX) {
+                    $rejected[] = $question;
+
+                    continue;
+                }
+
+                $answers[$question] = $trimmed;
 
                 continue;
             }

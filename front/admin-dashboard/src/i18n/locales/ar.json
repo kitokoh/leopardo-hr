@@ -7614,6 +7614,10 @@
           "yes": "نعم",
           "no": "لا"
         }
+      },
+      "company_name": {
+        "label": "ما اسم شركتك؟",
+        "placeholder": "مثال: مخبزة الأمل"
       }
     },
     "modules": {
@@ -7633,7 +7637,8 @@
       "training": "التدريب",
       "reports": "التقارير",
       "marketing": "التسويق"
-    }
+    },
+    "continue": "متابعة"
   },
   "nextSteps": {
     "title": "الخطوات التالية",

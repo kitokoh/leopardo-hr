@@ -40,10 +40,29 @@ describe('Form Validation Schemas', () => {
       expect(() => signupFormSchema('fr').parse(data)).toThrow();
     });
 
-    it('should reject empty company', () => {
+    // #7853 — inscription par e-mail seul : `company` est devenu optionnel
+    // (chaîne vide ou absente acceptée) ; le contrat 2..120 ne s'applique
+    // que lorsqu'un nom est réellement fourni.
+    it('accepts an empty or missing company (#7853)', () => {
+      expect(() =>
+        signupFormSchema('fr').parse({
+          email: 'test@example.com',
+          company: '',
+          agreeToTerms: true,
+        }),
+      ).not.toThrow();
+      expect(() =>
+        signupFormSchema('fr').parse({
+          email: 'test@example.com',
+          agreeToTerms: true,
+        }),
+      ).not.toThrow();
+    });
+
+    it('still rejects a too short company when provided (#7853)', () => {
       const data = {
         email: 'test@example.com',
-        company: '',
+        company: 'A',
         agreeToTerms: true,
       };
       expect(() => signupFormSchema('fr').parse(data)).toThrow();
