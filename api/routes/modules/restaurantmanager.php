@@ -43,6 +43,7 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMobile
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderItemController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderTransitionController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentConfigurationController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPosSessionController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductController;
@@ -199,6 +200,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // ── Paiements & remboursements (RESTO-407/408, #6194/#6195) ─────────
         Route::post('/orders/{restaurantOrder}/pay', [RestaurantPaymentController::class, 'pay']);
         Route::post('/orders/{restaurantOrder}/refund', [RestaurantRefundController::class, 'store']);
+        // #7728 — état de configuration de l'encaissement (profils de paiement
+        // tenant #7727) pour l'écran restaurateur — aucun secret exposé.
+        Route::get('/payments/configuration', [RestaurantPaymentConfigurationController::class, 'show']);
 
         // ── Occupation des tables (RESTO-409/#6196) ─────────────────────────
         Route::post('/tables/{restaurantTable}/open', [RestaurantTableSessionController::class, 'open']);

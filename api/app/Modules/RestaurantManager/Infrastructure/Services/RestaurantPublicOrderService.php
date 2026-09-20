@@ -11,6 +11,7 @@ use App\Modules\RestaurantManager\Domain\Enums\OrderSource;
 use App\Modules\RestaurantManager\Domain\Enums\OrderStatus;
 use App\Modules\RestaurantManager\Domain\Enums\PaymentStatus;
 use App\Modules\RestaurantManager\Domain\Enums\RestaurantRecordStatus;
+use App\Modules\RestaurantManager\Domain\Exceptions\PaymentGatewayException;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantMenu;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantMenuItem;
@@ -43,8 +44,8 @@ final class RestaurantPublicOrderService
         private readonly StockDecrementer $stockDecrementer,
         private readonly RestaurantOutboxPublisher $outbox,
         private readonly PaymentGatewayRegistry $gateways,
-    ) {
-    }
+        private readonly RestaurantPaymentConfigurationService $paymentConfiguration,
+    ) {}
 
     /**
      * Menu public d'un tenant (branches → menus → articles).
@@ -61,6 +62,14 @@ final class RestaurantPublicOrderService
 
         return [
             'currency' => $branches->first()?->currency,
+            // #7728 — état de l'encaissement en ligne du restaurateur (profils
+            // de paiement tenant) : la page publique sait AVANT le paiement si
+            // le checkout en ligne est possible ou s'il faut proposer le
+            // paiement sur place (aucun secret exposé).
+            'payments' => [
+                'online_providers' => $this->paymentConfiguration->onlineProviders($companyId),
+                'pay_on_site' => true,
+            ],
             'branches' => $branches->map(fn (RestaurantBranch $branch): array => [
                 'branch_id' => (int) $branch->getAttribute('id'),
                 'name' => $branch->name,
@@ -151,11 +160,20 @@ final class RestaurantPublicOrderService
     }
 
     /**
-     * Initiation du paiement en ligne (mobile money par défaut).
+     * Initiation du paiement EN LIGNE d'une commande publique (#7728).
      *
-     * @param  array{provider_code?: string, idempotency_key?: string|null}  $data
+     * Le provider est branché sur les PROFILS DE PAIEMENT du tenant :
+     * `card_online` (checkout Stripe sur les clés du restaurateur) prioritaire,
+     * sinon `mobile_money`. Sans profil actif : fail-closed propre
+     * (`online_payment_not_configured`, converti en 422 message utilisateur
+     * par le contrôleur — jamais un 500) ; le paiement sur place reste le
+     * fallback. Seuls les providers EN LIGNE sont acceptés ici (cash/carte
+     * terminal = guichet authentifié uniquement).
+     *
+     * @param  array{provider_code?: string|null, idempotency_key?: string|null}  $data
+     * @return array{payment: RestaurantOrderPayment, checkout_url: string|null, message: string|null}
      */
-    public function pay(string $companyId, RestaurantOrder $order, array $data): RestaurantOrderPayment
+    public function pay(string $companyId, RestaurantOrder $order, array $data): array
     {
         if ($order->company_id !== $companyId) {
             abort(404);
@@ -165,8 +183,29 @@ final class RestaurantPublicOrderService
             abort(409, sprintf('Order cannot be paid from status "%s".', $order->status->value));
         }
 
-        $providerCode = $data['provider_code'] ?? 'mobile_money';
-        abort_if(! $this->gateways->has($providerCode), 422, 'Unsupported payment provider.');
+        $providerCode = $data['provider_code'] ?? null;
+
+        if ($providerCode === null || $providerCode === '') {
+            // Provider par défaut selon la configuration du restaurateur
+            // (carte en ligne prioritaire) — fail-closed sans profil actif.
+            $providerCode = $this->paymentConfiguration->onlineProviders($companyId)[0] ?? null;
+
+            if ($providerCode === null) {
+                throw new PaymentGatewayException(
+                    'Online payment is not configured for this restaurant.',
+                    'online_payment_not_configured',
+                );
+            }
+        }
+
+        abort_if(! $this->paymentConfiguration->isOnlineProvider($providerCode) || ! $this->gateways->has($providerCode), 422, 'Unsupported payment provider.');
+
+        if (! $this->paymentConfiguration->providerConfigured($companyId, $providerCode)) {
+            throw new PaymentGatewayException(
+                'Online payment is not configured for this restaurant.',
+                'online_payment_not_configured',
+            );
+        }
 
         if (! empty($data['idempotency_key'])) {
             $existing = RestaurantOrderPayment::query()
@@ -175,7 +214,7 @@ final class RestaurantPublicOrderService
                 ->first();
 
             if ($existing instanceof RestaurantOrderPayment) {
-                return $existing;
+                return ['payment' => $existing, 'checkout_url' => null, 'message' => null];
             }
         }
 
@@ -196,17 +235,30 @@ final class RestaurantPublicOrderService
             'idempotency_key' => $data['idempotency_key'] ?? null,
         ]);
 
-        $init = $gateway->initiate(new InitiatePaymentRequest(
-            companyId: $companyId,
-            amountMinor: (int) $payment->amount_minor,
-            currency: $order->currency,
-            reference: (string) $order->reference,
-            idempotencyKey: (string) $payment->idempotency_key,
-        ));
+        try {
+            $init = $gateway->initiate(new InitiatePaymentRequest(
+                companyId: $companyId,
+                amountMinor: (int) $payment->amount_minor,
+                currency: $order->currency,
+                reference: (string) $order->reference,
+                idempotencyKey: (string) $payment->idempotency_key,
+            ));
+        } catch (PaymentGatewayException $exception) {
+            // Fail-closed propre : le paiement avorté est tracé `failed`
+            // (jamais de pending fantôme), l'erreur normalisée remonte au
+            // contrôleur qui la convertit en message utilisateur.
+            $payment->forceFill(['status' => PaymentStatus::FAILED->value])->save();
+
+            throw $exception;
+        }
 
         $payment->forceFill(['provider_reference' => $init->providerReference])->save();
 
-        return $payment->refresh();
+        return [
+            'payment' => $payment->refresh(),
+            'checkout_url' => $init->checkoutUrl,
+            'message' => $init->message,
+        ];
     }
 
     private function remainingDue(RestaurantOrder $order): int

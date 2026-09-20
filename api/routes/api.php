@@ -13,6 +13,7 @@ use App\Modules\Attendance\Interfaces\Api\V1\Controllers\BiometricEnrollmentCont
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\CompanyRequestController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\PaymentWebhookController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\PlatformCompanySubscriptionController;
+use App\Modules\Billing\Interfaces\Api\V1\Controllers\PlatformPaymentGatewayController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\PlatformPlanAdminController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\PlatformPlanController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\SelfServiceTrialController;
@@ -541,6 +542,15 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('/companies/{company}/country', [PlatformCompanyController::class, 'updateCountry'])->middleware('platform.permission:companies.manage');
         Route::get('/companies/{company}/subscription', [PlatformCompanySubscriptionController::class, 'show'])->middleware('platform.permission:billing.view');
         Route::patch('/companies/{company}/subscription', [PlatformCompanySubscriptionController::class, 'update'])->middleware('platform.permission:billing.manage');
+
+        // #7726 (BC-21 BILLING) — configuration des passerelles de paiement
+        // (Stripe/Chargily) depuis l'admin : stockage chiffré en BDD,
+        // précédence BDD → fallback env, secrets write-only jamais renvoyés
+        // en clair (masque), test de connexion. Permission `billing.manage`.
+        Route::get('/billing/gateways', [PlatformPaymentGatewayController::class, 'index'])->middleware('platform.permission:billing.manage');
+        Route::put('/billing/gateways', [PlatformPaymentGatewayController::class, 'update'])->middleware('platform.permission:billing.manage');
+        Route::post('/billing/gateways/{gateway}/test', [PlatformPaymentGatewayController::class, 'test'])
+            ->where('gateway', '[a-z]+')->middleware('platform.permission:billing.manage');
         Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show'])->middleware('platform.permission:companies.view');
         Route::patch('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'update'])->middleware('platform.permission:companies.manage');
 

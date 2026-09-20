@@ -7,7 +7,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { LayoutGrid, BookOpen, CalendarCheck, PackageSearch, Bike, ChartColumn, UtensilsCrossed, Globe } from 'lucide-react';
+import { LayoutGrid, BookOpen, CalendarCheck, PackageSearch, Bike, ChartColumn, UtensilsCrossed, Globe, Wallet } from 'lucide-react';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { useRestaurantBranches, type RestaurantBranch } from '@/components/restaurant/BranchSelect';
 import { apiFetch } from '@/lib/api-client';
@@ -90,6 +90,8 @@ export default function RestaurantHomePage() {
     { href: '/restaurant/stock', icon: PackageSearch, title: t(locale, 'restaurant.home.stock', 'Stock & achats'), description: t(locale, 'restaurant.home.stockDesc'), accent: 'from-amber-500 to-orange-600' },
     { href: '/restaurant/delivery', icon: Bike, title: t(locale, 'restaurant.home.delivery'), description: t(locale, 'restaurant.home.deliveryDesc'), accent: 'from-violet-500 to-purple-600' },
     { href: '/restaurant/reports', icon: ChartColumn, title: t(locale, 'restaurant.home.reports', 'Rapports'), description: t(locale, 'restaurant.home.reportsDesc', 'Ventes, occupation, produits, COGS, export CSV'), accent: 'from-rose-500 to-pink-600' },
+    // #7728 — état de l'encaissement (profils de paiement tenant).
+    { href: '/restaurant/payments', icon: Wallet, title: t(locale, 'restaurant.home.payments', 'Encaissement'), description: t(locale, 'restaurant.home.paymentsDesc', 'Paiement en ligne, profils Stripe & mobile money'), accent: 'from-lime-500 to-emerald-600' },
   ];
 
   return (

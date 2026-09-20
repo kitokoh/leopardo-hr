@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Billing\Infrastructure\Services;
 
+use App\Shared\Contracts\Payments\PaymentGatewayConfigProviderInterface;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -16,9 +17,12 @@ class ChargilyService
 {
     private string $webhookSecret;
 
-    public function __construct()
+    public function __construct(?PaymentGatewayConfigProviderInterface $gatewayConfig = null)
     {
-        $this->webhookSecret = (string) config('services.chargily.webhook_secret');
+        // #7726 : précédence BDD (admin plateforme) → fallback env. Paramètre
+        // optionnel : les appels historiques `new ChargilyService` restent valides.
+        $gatewayConfig ??= app(PaymentGatewayConfigProviderInterface::class);
+        $this->webhookSecret = $gatewayConfig->resolve('chargily')['webhook_secret'] ?? '';
     }
 
     /**
