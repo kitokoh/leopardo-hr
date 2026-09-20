@@ -2,9 +2,27 @@
 # https://render.com/docs/infrastructure-as-code
 #
 # ⚠️ RÔLE DE CE BLUEPRINT (chantier CI/CD dev/prod) :
-# Tier CONTINU dev/test. Ce fichier est la **source de vérité déclarative**
-# du workspace Render dev (« africanovatech ») : il décrit ce qui DOIT
-# exister, mais les déploiements réels sont pilotés par les workflows
+# Tier CONTINU dev/test. Ce fichier décrit l'**état provisionné** du
+# workspace Render dev (« africanovatech ») — services actifs uniquement.
+# L'état CIBLE non provisionné (workers, bloqué billing) est conservé en
+# blocs COMMENTÉS plus bas : ce blueprint n'est PAS une « source de vérité
+# déclarative » d'un état qui n'existe pas (audit #7845, IaC non fiable).
+#
+# ⚠️ #7845 — Services DÉCLARÉS (actifs) vs RÉELS (API Render, 2026-09-20) :
+#   | Service                | Blueprint        | Réel (workspace dev)     |
+#   |------------------------|------------------|--------------------------|
+#   | gestionemployerbackend | web, free        | ✅ gestionemployerBackend |
+#   |                        |                  |    (web, free, frankfurt) |
+#   | leopardo-queue-worker  | commenté (cible) | ❌ absent — 402 billing   |
+#   | leopardo-scheduler     | supprimé #7845   | ❌ absent (redondant)     |
+#   | Key Value « leopardoai » | hors blueprint | ✅ redis free, frankfurt  |
+# Bloquant unique pour la cible : moyen de paiement absent du workspace
+# (Background Workers inéligibles au tier gratuit, #7649). En intérim, la
+# queue ET le scheduler tournent dans le conteneur web (docker-entrypoint.sh,
+# gates WEB_QUEUE_DRAIN / WEB_SCHEDULER_LOOP, défaut on) — perdus à chaque
+# spin-down free-tier. Détail : docs/infra/RENDER_TOPOLOGIE_REELLE.md.
+#
+# Les déploiements réels sont pilotés par les workflows
 # GitHub Actions (deploy-main.yml via RENDER_DEPLOY_HOOK_URL, gate tests +
 # filtre api/**) — il n'y a PAS de sync automatique du blueprint à chaque
 # push. Toute sync manuelle (dashboard Render → « New + » / Blueprint) doit
@@ -250,235 +268,154 @@ services:
   # gates WEB_QUEUE_DRAIN / WEB_SCHEDULER_LOOP, défaut on). Dès qu'une carte
   # est ajoutée : provisionner via blueprint sync (ou API), puis passer
   # WEB_QUEUE_DRAIN=false et WEB_SCHEDULER_LOOP=false sur le web service.
-  - type: worker
-    name: leopardo-queue-worker
-    runtime: docker
-    dockerfilePath: api/Dockerfile.prod
-    dockerContext: .
-    region: frankfurt
-    # #7648/#7649 : starter = plan minimal des Background Workers (pas de
-    # tier gratuit) — provisionnement bloqué billing, cf. ⚠️ ci-dessus.
-    plan: starter
-    # #6700 : pas de hook Render dédié pour les workers → autoDeploy:false
-    # (déploiement manuel / blueprint sync assumé ; un autoDeploy:true sur
-    # dockerContext racine rebuildait à CHAQUE push main).
-    autoDeploy: false
-    # Issue #5578 : la queue est sur database — le worker consomme la
-    # connexion par défaut (aligné sur le probe et la sonde queue-supervision).
-    # Issue #7649 : un seul worker starter porte queue:work ET le scheduler
-    # (schedule:work en arrière-plan) — évite un second service payant.
-    # exec sur queue:work : sa sortie (max-time 1 h ou crash) termine le
-    # conteneur, Render le redémarre → les DEUX processus repartent.
-    dockerCommand: >-
-      sh -c 'php artisan schedule:work >&2 &
-      exec php artisan queue:work
-      --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default
-      --tries=3
-      --timeout=300
-      --sleep=3
-      --max-jobs=500
-      --max-time=3600'
-    envVars:
-      # #7648 : aligné sur le web service (tier dev = staging + DEPLOY_TIER).
-      - key: APP_ENV
-        value: staging
-      - key: DEPLOY_TIER
-        value: dev
-      - key: APP_DEBUG
-        value: false
-      # Audit #1697 : ne jamais créer les sociétés démo / reset le mot de
-      # passe super-admin sur ce service (cf. note #7648 du web service).
-      - key: DISABLE_DEMO_SEEDING
-        value: "true"
-      # #6558 (audit ops M-3) : migrations + seed UNIQUEMENT sur le service
-      # web (RUN_MIGRATIONS hérité du Dockerfile sinon) — jamais au boot des
-      # workers/scheduler (course de migrations + seed non idempotent à
-      # chaque redémarrage).
-      - key: RUN_MIGRATIONS
-        value: "false"
-      # Audit #4412 : les workers génèrent des URLs absolues (reset password,
-      # notifications, liens bulletins) — APP_URL requis sur tous les services.
-      - key: APP_URL
-        fromService:
-          name: gestionemployerbackend
-          type: web
-          property: host
-      - key: LOG_CHANNEL
-        value: stderr
-      # Issue #5586 : LOG_LEVEL=info (StructuredLogging + Sentry effectifs).
-      - key: LOG_LEVEL
-        value: info
-      # Issue #5586 : Sentry DSN partagé depuis le web service (même clé).
-      - key: SENTRY_LARAVEL_DSN
-        fromService:
-          name: gestionemployerbackend
-          type: web
-          envVarKey: SENTRY_LARAVEL_DSN
-      # Database — Neon (DB_URL sync: false, cf. web service).
-      - key: DB_CONNECTION
-        value: pgsql
-      - key: DB_URL
-        sync: false
-      - key: DB_SEARCH_PATH
-        value: shared_tenants,public
-      # Redis — Key Value du workspace branchée dans le dashboard.
-      - key: REDIS_CLIENT
-        value: predis
-      - key: REDIS_URL
-        sync: false
-      - key: REDIS_PASSWORD
-        sync: false
-      # #3907 : APP_KEY référencé depuis le web service (envVarKey) — un
-      # generateValue indépendant donnerait une clé différente → sessions/
-      # files chiffrées indéchiffrables entre services au provisionnement frais.
-      - key: APP_KEY
-        fromService:
-          name: gestionemployerbackend
-          type: web
-          envVarKey: APP_KEY
-      - key: QUEUE_CONNECTION
-        value: database
-      # CACHE_STORE : file par défaut (probe d'entrypoint, cf. en-tête).
-      - key: CACHE_STORE
-        value: file
-      # Issue #5586 : Sentry sur le worker aussi (erreurs de jobs queue :
-      # PDF, paie, webhooks — cf. #4340).
-      - key: SENTRY_TRACES_SAMPLE_RATE
-        value: "0.1"
-      - key: FIREBASE_PROJECT_ID
-        sync: false
-      - key: FIREBASE_SERVICE_ACCOUNT_JSON
-        sync: false
-      - key: MAIL_MAILER
-        value: resend
-      - key: MAIL_HOST
-        sync: false
-      - key: MAIL_PORT
-        value: 587
-      - key: MAIL_USERNAME
-        sync: false
-      - key: MAIL_PASSWORD
-        sync: false
-      # Transport HTTP Resend (#5139 : le SMTP sortant est bloqué par Render).
-      - key: RESEND_KEY
-        sync: false
-      - key: MAIL_ENCRYPTION
-        value: tls
-      - key: MAIL_FROM_ADDRESS
-        value: noreply@hurkonsan.com
-      - key: MAIL_FROM_NAME
-        value: "Leopardo RH"
-      - key: STRIPE_SECRET_KEY
-        sync: false
-      - key: CHARGILY_API_KEY
-        sync: false
-      # ADMIN_DASHBOARD_URL : utilisé dans les emails envoyés aux managers
-      # depuis les jobs (liens vers le cockpit admin). sync: false → dashboard.
-      - key: ADMIN_DASHBOARD_URL
-        sync: false
+  # ⚠️ #7845 (audit 2026-09-20, vérifié via API Render) : ce worker n'a JAMAIS
+  # été provisionné (refus 402 billing, cf. #7649 ci-dessus). Le déclarer comme
+  # un service actif faisait passer le blueprint pour l'état réel alors qu'il
+  # décrit une CIBLE. Bloc conservé ci-dessous en COMMENTAIRE (état cible) :
+  # dé-commenter tel quel dès qu'un moyen de paiement est ajouté au workspace,
+  # puis passer WEB_QUEUE_DRAIN=false et WEB_SCHEDULER_LOOP=false sur le web.
+  # NB : ce worker fusionné (queue:work + schedule:work) est LA topologie cible
+  # commune dev/prod — l'ancien service séparé « leopardo-scheduler » a été
+  # retiré (doublon du schedule:work déjà porté ici, drift dev/prod #7845).
+  #
+#   - type: worker
+#     name: leopardo-queue-worker
+#     runtime: docker
+#     dockerfilePath: api/Dockerfile.prod
+#     dockerContext: .
+#     region: frankfurt
+#     # #7648/#7649 : starter = plan minimal des Background Workers (pas de
+#     # tier gratuit) — provisionnement bloqué billing, cf. ⚠️ ci-dessus.
+#     plan: starter
+#     # #6700 : pas de hook Render dédié pour les workers → autoDeploy:false
+#     # (déploiement manuel / blueprint sync assumé ; un autoDeploy:true sur
+#     # dockerContext racine rebuildait à CHAQUE push main).
+#     autoDeploy: false
+#     # Issue #5578 : la queue est sur database — le worker consomme la
+#     # connexion par défaut (aligné sur le probe et la sonde queue-supervision).
+#     # Issue #7649 : un seul worker starter porte queue:work ET le scheduler
+#     # (schedule:work en arrière-plan) — évite un second service payant.
+#     # exec sur queue:work : sa sortie (max-time 1 h ou crash) termine le
+#     # conteneur, Render le redémarre → les DEUX processus repartent.
+#     dockerCommand: >-
+#       sh -c 'php artisan schedule:work >&2 &
+#       exec php artisan queue:work
+#       --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default
+#       --tries=3
+#       --timeout=300
+#       --sleep=3
+#       --max-jobs=500
+#       --max-time=3600'
+#     envVars:
+#       # #7648 : aligné sur le web service (tier dev = staging + DEPLOY_TIER).
+#       - key: APP_ENV
+#         value: staging
+#       - key: DEPLOY_TIER
+#         value: dev
+#       - key: APP_DEBUG
+#         value: false
+#       # Audit #1697 : ne jamais créer les sociétés démo / reset le mot de
+#       # passe super-admin sur ce service (cf. note #7648 du web service).
+#       - key: DISABLE_DEMO_SEEDING
+#         value: "true"
+#       # #6558 (audit ops M-3) : migrations + seed UNIQUEMENT sur le service
+#       # web (RUN_MIGRATIONS hérité du Dockerfile sinon) — jamais au boot des
+#       # workers/scheduler (course de migrations + seed non idempotent à
+#       # chaque redémarrage).
+#       - key: RUN_MIGRATIONS
+#         value: "false"
+#       # Audit #4412 : les workers génèrent des URLs absolues (reset password,
+#       # notifications, liens bulletins) — APP_URL requis sur tous les services.
+#       - key: APP_URL
+#         fromService:
+#           name: gestionemployerbackend
+#           type: web
+#           property: host
+#       - key: LOG_CHANNEL
+#         value: stderr
+#       # Issue #5586 : LOG_LEVEL=info (StructuredLogging + Sentry effectifs).
+#       - key: LOG_LEVEL
+#         value: info
+#       # Issue #5586 : Sentry DSN partagé depuis le web service (même clé).
+#       - key: SENTRY_LARAVEL_DSN
+#         fromService:
+#           name: gestionemployerbackend
+#           type: web
+#           envVarKey: SENTRY_LARAVEL_DSN
+#       # Database — Neon (DB_URL sync: false, cf. web service).
+#       - key: DB_CONNECTION
+#         value: pgsql
+#       - key: DB_URL
+#         sync: false
+#       - key: DB_SEARCH_PATH
+#         value: shared_tenants,public
+#       # Redis — Key Value du workspace branchée dans le dashboard.
+#       - key: REDIS_CLIENT
+#         value: predis
+#       - key: REDIS_URL
+#         sync: false
+#       - key: REDIS_PASSWORD
+#         sync: false
+#       # #3907 : APP_KEY référencé depuis le web service (envVarKey) — un
+#       # generateValue indépendant donnerait une clé différente → sessions/
+#       # files chiffrées indéchiffrables entre services au provisionnement frais.
+#       - key: APP_KEY
+#         fromService:
+#           name: gestionemployerbackend
+#           type: web
+#           envVarKey: APP_KEY
+#       - key: QUEUE_CONNECTION
+#         value: database
+#       # CACHE_STORE : file par défaut (probe d'entrypoint, cf. en-tête).
+#       - key: CACHE_STORE
+#         value: file
+#       # Issue #5586 : Sentry sur le worker aussi (erreurs de jobs queue :
+#       # PDF, paie, webhooks — cf. #4340).
+#       - key: SENTRY_TRACES_SAMPLE_RATE
+#         value: "0.1"
+#       - key: FIREBASE_PROJECT_ID
+#         sync: false
+#       - key: FIREBASE_SERVICE_ACCOUNT_JSON
+#         sync: false
+#       - key: MAIL_MAILER
+#         value: resend
+#       - key: MAIL_HOST
+#         sync: false
+#       - key: MAIL_PORT
+#         value: 587
+#       - key: MAIL_USERNAME
+#         sync: false
+#       - key: MAIL_PASSWORD
+#         sync: false
+#       # Transport HTTP Resend (#5139 : le SMTP sortant est bloqué par Render).
+#       - key: RESEND_KEY
+#         sync: false
+#       - key: MAIL_ENCRYPTION
+#         value: tls
+#       - key: MAIL_FROM_ADDRESS
+#         value: noreply@hurkonsan.com
+#       - key: MAIL_FROM_NAME
+#         value: "Leopardo RH"
+#       - key: STRIPE_SECRET_KEY
+#         sync: false
+#       - key: CHARGILY_API_KEY
+#         sync: false
+#       # ADMIN_DASHBOARD_URL : utilisé dans les emails envoyés aux managers
+#       # depuis les jobs (liens vers le cockpit admin). sync: false → dashboard.
+#       - key: ADMIN_DASHBOARD_URL
+#         sync: false
+#
 
   # ──────────────────────────────────────────────────────────────────────────
-  # Background Worker — Scheduled tasks (scheduler)
-  # Runs php artisan schedule:run every minute
+  # (supprimé #7845) Background Worker — leopardo-scheduler
   # ──────────────────────────────────────────────────────────────────────────
-  # ⚠️ Constat 2026-09-04 : ce service n'existe PAS (encore) dans le
-  # workspace dev — les tâches planifiées (schedule:run) ne sont PAS exécutées
-  # par le conteneur web (contrairement au drain de queue). À provisionner dès
-  # que les tâches planifiées doivent tourner (accrual congés, relances
-  # contrat/billing, réconciliation recouvrement…).
-  - type: worker
-    name: leopardo-scheduler
-    runtime: docker
-    dockerfilePath: api/Dockerfile.prod
-    dockerContext: .
-    region: frankfurt
-    # #7648 : starter CONSERVÉ — service non provisionné (cf. ⚠️ ci-dessus),
-    # Background Workers inéligibles au tier gratuit (décision billing : #7649).
-    plan: starter
-    autoDeploy: false
-    dockerCommand: >-
-      sh -c "while true; do php artisan schedule:run --no-interaction; sleep 60; done"
-    envVars:
-      # #7648 : aligné sur le web service (tier dev = staging + DEPLOY_TIER).
-      - key: APP_ENV
-        value: staging
-      - key: DEPLOY_TIER
-        value: dev
-      - key: APP_DEBUG
-        value: false
-      # Audit #1697 : ne jamais créer les sociétés démo / reset le mot de
-      # passe super-admin sur ce service (cf. note #7648 du web service).
-      - key: DISABLE_DEMO_SEEDING
-        value: "true"
-      # #6558 (audit ops M-3) : migrations + seed UNIQUEMENT sur le service
-      # web (RUN_MIGRATIONS hérité du Dockerfile sinon) — jamais au boot des
-      # workers/scheduler (course de migrations + seed non idempotent à
-      # chaque redémarrage).
-      - key: RUN_MIGRATIONS
-        value: "false"
-      # Audit #4412 : les workers génèrent des URLs absolues (reset password,
-      # notifications, liens bulletins) — APP_URL requis sur tous les services.
-      - key: APP_URL
-        fromService:
-          name: gestionemployerbackend
-          type: web
-          property: host
-      - key: LOG_CHANNEL
-        value: stderr
-      # Issue #5586 : LOG_LEVEL=info (cohérence web/worker/scheduler).
-      - key: LOG_LEVEL
-        value: info
-      # Issue #5586 : Sentry DSN partagé depuis le web service.
-      - key: SENTRY_LARAVEL_DSN
-        fromService:
-          name: gestionemployerbackend
-          type: web
-          envVarKey: SENTRY_LARAVEL_DSN
-      # Database — Neon (DB_URL sync: false, cf. web service).
-      - key: DB_CONNECTION
-        value: pgsql
-      - key: DB_URL
-        sync: false
-      - key: DB_SEARCH_PATH
-        value: shared_tenants,public
-      # Redis — Key Value du workspace branchée dans le dashboard.
-      - key: REDIS_URL
-        sync: false
-      - key: REDIS_PASSWORD
-        sync: false
-      # #3907 : APP_KEY partagé avec le web service (envVarKey) — clé unique
-      # requise pour déchiffrer sessions/files (cf. worker).
-      - key: APP_KEY
-        fromService:
-          name: gestionemployerbackend
-          type: web
-          envVarKey: APP_KEY
-      # Issue #5578 : la queue est sur database (le scheduler soumet des jobs).
-      - key: QUEUE_CONNECTION
-        value: database
-      # Mail (issue #3594) : le scheduler envoie des emails synchrones (rappels,
-      # alertes, notifications planifiées). Sans MAIL_* il retombe sur
-      # config/mail.php 'host' => 127.0.0.1:25 et tout envoi échoue en silence.
-      # Bloc aligné sur le web service (mêmes valeurs/sync: false).
-      - key: MAIL_MAILER
-        value: resend
-      - key: MAIL_HOST
-        sync: false
-      - key: MAIL_PORT
-        value: 587
-      - key: MAIL_USERNAME
-        sync: false
-      - key: MAIL_PASSWORD
-        sync: false
-      # Transport HTTP Resend (#5139 : le SMTP sortant est bloqué par Render).
-      - key: RESEND_KEY
-        sync: false
-      - key: MAIL_ENCRYPTION
-        value: tls
-      - key: MAIL_FROM_ADDRESS
-        value: noreply@hurkonsan.com
-      - key: MAIL_FROM_NAME
-        value: "Leopardo RH"
+  # Service jamais provisionné (aucune trace via l'API Render, audit
+  # 2026-09-20) ET redondant : le worker fusionné « leopardo-queue-worker »
+  # ci-dessus lance déjà schedule:work en arrière-plan (topologie alignée sur
+  # render.prod.yaml / leopardo-queue-worker-prod). Déclarer deux workers ici
+  # créait un drift dev/prod artificiel et doublait le coût cible (2× starter).
+  # En intérim, le scheduler dev tourne dans le conteneur web
+  # (docker-entrypoint.sh, gate WEB_SCHEDULER_LOOP, défaut on — #7649).
 
 # Aucune base de données Render provisionnée par ce blueprint.
 # - Postgres : la base réelle (dev comme prod) est **Neon Postgres**,
