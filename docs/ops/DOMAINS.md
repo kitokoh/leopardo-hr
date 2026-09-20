@@ -74,12 +74,12 @@ propre sous-domaine Vercel (décision fondateur 2026-09-06, #6918). Pattern :
 | Domaine | Statut | Note |
 |---|---|---|
 | `leopardo-resto.vercel.app` | `live` | Verticale Restaurant — dev, projet `prj_i8rEi8fCwkkC4TEfAjIXue0fTNKP` ; page de validation, vraie app #6920.  vérifié 2026-09-09. |
-| `leopardo-travel.vercel.app` | `live` | Verticale Travel — dev, projet `prj_9zeAXtwVQXgLoVcEurVzJnuVFQZr` ; app `front/travel-web` (site public de réservation, #7738) à raccorder au projet Vercel. |
+| `leopardo-travel.vercel.app` | `live` | Verticale Travel — dev, projet `prj_9zeAXtwVQXgLoVcEurVzJnuVFQZr` ; **vraie app `front/travel-web`** (#7738/#7740), backend `gestionemployerbackend.onrender.com` via proxy same-origin.  vérifié 2026-09-19. |
 | `leopardo-fuel.vercel.app` | `live` | Verticale Fuel — dev, projet `prj_Tbnb0Grlsdqw3Ce3vkxIrmiKfl4u` ; page de validation.  vérifié 2026-09-09. |
 | `leopardo-edu.vercel.app` | `live` | Verticale Edu — dev, projet `prj_fKKFiaiSAMhymCo5BvHW0wD75mb3` ; page de validation.  vérifié 2026-09-09. |
 | `leopardo-delivery.vercel.app` | `live` | Verticale Delivery — dev, projet `prj_SUTHkL4joPdi5REZc5chw7ugX86i` ; page de validation.  vérifié 2026-09-09. |
 | `leopardo-resto-prod.vercel.app` | `live` | Verticale Restaurant — prod, projet `prj_YMFmR1mJlS1ZjzBQ7Dx8GAzRdgx3` ; page de validation.  vérifié 2026-09-09. |
-| `leopardo-travel-prod.vercel.app` | `live` | Verticale Travel — prod, projet `prj_1Y1rr2syuPjMFZWh9EWEK5UOnZOJ` ; app `front/travel-web` (#7738) à raccorder au projet Vercel prod. |
+| `leopardo-travel-prod.vercel.app` | `live` | Verticale Travel — prod, projet `prj_1Y1rr2syuPjMFZWh9EWEK5UOnZOJ` ; **vraie app `front/travel-web`** (#7738/#7740), backend `leopardo-prod.onrender.com` via proxy same-origin.  vérifié 2026-09-19. |
 | `leopardo-fuel-prod.vercel.app` | `live` | Verticale Fuel — prod, projet `prj_qB0D9JbcoFXeGCx1PuA1gydCfPk9` ; page de validation.  vérifié 2026-09-09. |
 | `leopardo-edu-prod.vercel.app` | `live` | Verticale Edu — prod, projet `prj_unI8uJqhyGoHXVL8zkXvu4DiY1cS` ; page de validation.  vérifié 2026-09-09. |
 | `leopardo-delivery-prod.vercel.app` | `live` | Verticale Delivery — prod, projet `prj_nkmn7sTTn0wtoZ2FS7uY1LaszLyw` ; page de validation.  vérifié 2026-09-09. |
