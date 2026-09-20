@@ -2,7 +2,7 @@
 
 > Mis à jour le 2026-09-05 (audit vérité docs) | Phase 5 terminée — nettoyage legacy (PR #824)
 
-## 1. Tableau de l'état DDD — 29 modules actifs
+## 1. Tableau de l'état DDD — 30 modules actifs
 
 | Module          | Domain | Contracts | Exceptions | Application | DTOs | Infra | Interfaces | Providers | Tests |
 |-----------------|:------:|:---------:|:----------:|:-----------:|:----:|:-----:|:----------:|:---------:|:-----:|
@@ -27,6 +27,7 @@
 | **Notification** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Onboarding** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Payroll** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **Pharmacy** | ✅ | — | ✅ | ✅ | — | — | ✅ | ✅ | ✅ |
 | **Planning** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ⚠️ |
 | **Platform** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Recruitment** | ✅ | ✅ | ✅ | — | — | ✅ | ✅ | ✅ | ⚠️ |

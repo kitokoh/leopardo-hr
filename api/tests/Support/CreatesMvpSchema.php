@@ -1369,6 +1369,197 @@ trait CreatesMvpSchema
 
     private function createPostSprintModuleTables(): void
     {
+        // Issue #7641 (ménage garde #5443, régression amont mergee sur main) —
+        // clés API distributeur travel : miroir migration 7641.
+        if (! Schema::hasTable($this->moduleTable('travel_distributor_keys'))) {
+            Schema::create($this->moduleTable('travel_distributor_keys'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 120);
+                $table->string('api_key_hash', 64);
+                $table->json('scopes');
+                $table->boolean('enabled')->default(true);
+                $table->timestamp('last_used_at')->nullable();
+                $table->unsignedBigInteger('usage_count')->default(0);
+                $table->timestamp('rotated_at')->nullable();
+                $table->timestamp('revoked_at')->nullable();
+                $table->unsignedBigInteger('created_by_user_id')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'api_key_hash'], 'travel_distributor_keys_company_hash_unique');
+            });
+        }
+
+        // Issues #7799-#7803 — verticale Pharmacy (BC-30) : miroir des
+        // migrations tenant 2026_09_22_100001..100005 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('pharmacy_products'))) {
+            Schema::create($this->moduleTable('pharmacy_products'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 191);
+                $table->string('dci', 191)->nullable();
+                $table->string('form', 100)->nullable();
+                $table->string('dosage', 100)->nullable();
+                $table->string('barcode', 64)->nullable();
+                $table->string('internal_code', 64)->nullable();
+                $table->string('category', 30)->default('medicament');
+                $table->string('unit', 30)->default('unite');
+                $table->boolean('prescription_required')->default(false);
+                $table->boolean('is_controlled')->default(false);
+                $table->decimal('purchase_price', 12, 2)->default(0);
+                $table->decimal('sale_price', 12, 2)->default(0);
+                $table->decimal('tax_rate', 5, 2)->default(0);
+                $table->unsignedInteger('min_stock_level')->default(0);
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+
+                $table->unique(['company_id', 'barcode'], 'pharmacy_products_company_barcode_unique');
+                $table->unique(['company_id', 'internal_code'], 'pharmacy_products_company_internal_code_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('pharmacy_batches'))) {
+            Schema::create($this->moduleTable('pharmacy_batches'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('product_id');
+                $table->string('batch_number', 64);
+                $table->date('expiry_date');
+                $table->integer('quantity')->default(0);
+                $table->decimal('unit_cost', 12, 2)->default(0);
+                $table->unsignedBigInteger('supplier_id')->nullable();
+                $table->timestamp('received_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'product_id', 'batch_number'], 'pharmacy_batches_company_product_batch_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('pharmacy_stock_movements'))) {
+            Schema::create($this->moduleTable('pharmacy_stock_movements'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('product_id');
+                $table->unsignedBigInteger('batch_id')->nullable();
+                $table->string('type', 30);
+                $table->integer('quantity_delta');
+                $table->string('reason', 255)->nullable();
+                $table->string('reference_type', 100)->nullable();
+                $table->unsignedBigInteger('reference_id')->nullable();
+                $table->unsignedBigInteger('created_by_employee_id')->nullable();
+                $table->timestamp('created_at')->useCurrent();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('pharmacy_suppliers'))) {
+            Schema::create($this->moduleTable('pharmacy_suppliers'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 191);
+                $table->string('type', 30)->default('wholesaler');
+                $table->string('contact_name', 191)->nullable();
+                $table->string('phone', 50)->nullable();
+                $table->string('email', 191)->nullable();
+                $table->string('address', 255)->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('pharmacy_purchase_orders'))) {
+            Schema::create($this->moduleTable('pharmacy_purchase_orders'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('supplier_id');
+                $table->string('number', 20);
+                $table->string('status', 30)->default('draft');
+                $table->timestamp('ordered_at')->nullable();
+                $table->timestamp('received_at')->nullable();
+                $table->timestamp('cancelled_at')->nullable();
+                $table->string('notes', 500)->nullable();
+                $table->unsignedBigInteger('created_by_employee_id')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'number'], 'pharmacy_po_company_number_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('pharmacy_purchase_order_lines'))) {
+            Schema::create($this->moduleTable('pharmacy_purchase_order_lines'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('purchase_order_id');
+                $table->unsignedBigInteger('product_id');
+                $table->unsignedInteger('quantity_ordered');
+                $table->unsignedInteger('quantity_received')->default(0);
+                $table->decimal('unit_price', 12, 2)->default(0);
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('pharmacy_sales'))) {
+            Schema::create($this->moduleTable('pharmacy_sales'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('number', 20);
+                $table->timestamp('sold_at');
+                $table->string('customer_name', 191)->nullable();
+                $table->unsignedBigInteger('prescription_id')->nullable();
+                $table->string('payment_method', 20)->default('cash');
+                $table->decimal('total_amount', 12, 2)->default(0);
+                $table->string('status', 20)->default('completed');
+                $table->string('void_reason', 255)->nullable();
+                $table->timestamp('voided_at')->nullable();
+                $table->unsignedBigInteger('sold_by_employee_id')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'number'], 'pharmacy_sales_company_number_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('pharmacy_sale_lines'))) {
+            Schema::create($this->moduleTable('pharmacy_sale_lines'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('sale_id');
+                $table->unsignedBigInteger('product_id');
+                $table->unsignedInteger('quantity');
+                $table->decimal('unit_price', 12, 2);
+                $table->decimal('tax_rate', 5, 2)->default(0);
+                $table->decimal('line_total', 12, 2);
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('pharmacy_prescribers'))) {
+            Schema::create($this->moduleTable('pharmacy_prescribers'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('full_name', 191);
+                $table->string('registration_number', 100)->nullable();
+                $table->string('specialty', 100)->nullable();
+                $table->string('phone', 50)->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('pharmacy_prescriptions'))) {
+            Schema::create($this->moduleTable('pharmacy_prescriptions'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('prescriber_id');
+                $table->string('patient_name', 191);
+                $table->string('patient_contact', 191)->nullable();
+                $table->date('prescribed_at');
+                $table->string('reference', 100);
+                $table->string('notes', 500)->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'reference'], 'pharmacy_prescriptions_company_reference_unique');
+            });
+        }
+
         // Issue #7764 — crédits IA : ledger et compteurs mensuels.
         // Miroir des migrations 2026_09_19_001501/001502_7764 (garde #5443).
         if (! Schema::hasTable($this->moduleTable('ai_credit_ledger'))) {
@@ -4063,6 +4254,30 @@ trait CreatesMvpSchema
                 $table->timestamps();
 
                 $table->index(['company_id', 'id']);
+            });
+        }
+
+        // #7641 — clés API de lecture des distributeurs (TRAVEL-DISTRIBUTION) :
+        // miroir des colonnes réelles de la migration tenant 2026_09_20_000200.
+        if (! Schema::hasTable($this->moduleTable('travel_distributor_keys'))) {
+            Schema::create($this->moduleTable('travel_distributor_keys'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+
+                $table->string('name', 120);
+                $table->string('api_key_hash', 64);
+                $table->json('scopes');
+                $table->boolean('enabled')->default(true);
+                $table->timestamp('last_used_at')->nullable();
+                $table->unsignedBigInteger('usage_count')->default(0);
+                $table->timestamp('rotated_at')->nullable();
+                $table->timestamp('revoked_at')->nullable();
+                $table->unsignedBigInteger('created_by_user_id')->nullable();
+
+                $table->timestamps();
+
+                $table->unique(['company_id', 'api_key_hash']);
+                $table->index(['company_id', 'enabled']);
             });
         }
 

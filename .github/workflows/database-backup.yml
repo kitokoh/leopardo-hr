@@ -54,7 +54,20 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y postgresql-client age
+          # #7657 — le serveur (Neon) est en PostgreSQL 18 : le paquet
+          # `postgresql-client` d'Ubuntu 24.04 fournit pg_dump 16, qui refuse
+          # de dumper un serveur plus récent (« server version mismatch »,
+          # constat drill 2026-09-20). On installe le client 18 depuis PGDG.
+          sudo apt-get install -y postgresql-common age
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y postgresql-client-18
+          # #7657 — /usr/bin/pg_dump est le wrapper pg_wrapper de
+          # postgresql-common : il sélectionne le cluster 16 préinstallé sur
+          # l'image du runner, PAS la version la plus récente (constat drill
+          # 2026-09-20, run 35487411111 : client 18 installé, pg_dump --version
+          # toujours 16.15). On préfixe le PATH avec les binaires 18.
+          echo "/usr/lib/postgresql/18/bin" >> "$GITHUB_PATH"
+          /usr/lib/postgresql/18/bin/pg_dump --version
           if ! command -v aws >/dev/null 2>&1; then
             python3 -m pip install --user --break-system-packages awscli
             echo "$HOME/.local/bin" >> "$GITHUB_PATH"
@@ -250,7 +263,16 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y postgresql-client age
+          # #7657 — même règle que le backup : client PostgreSQL 18 (PGDG),
+          # le pg_dump 16 d'Ubuntu 24.04 refuse le serveur 18 (drill 2026-09-20).
+          sudo apt-get install -y postgresql-common age
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y postgresql-client-18
+          # #7657 — même contournement que le backup : pg_wrapper sélectionne
+          # le cluster 16 de l'image runner, on préfixe le PATH avec les
+          # binaires 18 (run 35487411111).
+          echo "/usr/lib/postgresql/18/bin" >> "$GITHUB_PATH"
+          /usr/lib/postgresql/18/bin/pg_dump --version
           if ! command -v aws >/dev/null 2>&1; then
             python3 -m pip install --user --break-system-packages awscli
             echo "$HOME/.local/bin" >> "$GITHUB_PATH"

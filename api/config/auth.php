@@ -69,7 +69,25 @@ return [
             'driver' => 'sanctum',
             'provider' => 'market_customers',
         ],
-    ],
+        // #7739 — clients GRAND PUBLIC de la marketplace travel : guard
+        // Sanctum DÉDIÉ (jamais le guard employés), provider plateforme
+        // `travel_customer_accounts` (schéma public, hors tenant).
+        //
+        // Masqué pendant l'analyse statique (constante définie par
+        // phpstan-flags.php, jamais au runtime) : Larastan calcule le type de
+        // `$request->user()` / `auth()->user()` comme l'union des modèles de TOUS
+        // les providers. Or ce guard dédié ne sert que les routes
+        // `auth:travel_customer` — injecter TravelCustomerAccount dans l'union
+        // globale serait un typage FAUX pour tout le reste de l'app (middlewares,
+        // FormRequests employés) et invalide les messages exacts des baselines
+        // PHPStan gelées. Les contrôleurs travel narrowent explicitement via
+        // `instanceof TravelCustomerAccount` et restent donc sûrs.
+    ] + (defined('LEOPARDO_STATIC_ANALYSIS') ? [] : [
+        'travel_customer' => [
+            'driver' => 'sanctum',
+            'provider' => 'travel_customers',
+        ],
+    ]),
 
     /*
     |--------------------------------------------------------------------------
@@ -108,7 +126,19 @@ return [
             'driver' => 'eloquent',
             'model' => MarketCustomerAccount::class,
         ],
-    ],
+        // #7739 — voir le commentaire du guard `travel_customer` ci-dessus :
+        // provider masqué pendant l'analyse statique uniquement.
+    ] + (defined('LEOPARDO_STATIC_ANALYSIS') ? [] : [
+        'travel_customers' => [
+            // #7739 — driver CUSTOM enregistré par
+            // TravelAgencyServiceProvider::boot() (EloquentUserProvider sur
+            // TravelCustomerAccount). Pas de clé `model` ici : Larastan
+            // ajoute chaque `providers.*.model` à l'union de type de
+            // request->user() sur toute l'app, ce qui invalidait ~70 entrées
+            // de baseline strict hors verticale. Runtime identique.
+            'driver' => 'travel_customer_accounts',
+        ],
+    ]),
 
     /*
     |--------------------------------------------------------------------------

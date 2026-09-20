@@ -739,6 +739,24 @@
       "to": "BC-02",
       "baseline": false,
       "note": "BC-17 → BC-02 — contrôleurs/services marketplace publics Retail importent App\\Core\\Tenant (Company, TenantManager) pour résoudre le tenant vendeur côté vitrine (#7809/#7814, même patron que BC-24 travel public #7737)"
+    },
+    {
+      "from": "BC-30",
+      "to": "BC-01",
+      "baseline": false,
+      "note": "PHARMACY → PLATFORM — feature flag `pharmacy` (Core/Feature FeatureFlag), garde de solution fail-closed (PHARMA-001/#7798)."
+    },
+    {
+      "from": "BC-30",
+      "to": "BC-02",
+      "baseline": false,
+      "note": "PHARMACY → TENANT — Company (flag tenant, currentCompany), isolation par tenant (PHARMA-001/#7798)."
+    },
+    {
+      "from": "BC-30",
+      "to": "BC-03",
+      "baseline": false,
+      "note": "PHARMACY → IDENTITY — Employee acteur des ventes/mouvements, RBAC policies (PHARMA-001/#7798)."
     }
   ]
 }
