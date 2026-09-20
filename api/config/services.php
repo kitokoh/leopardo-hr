@@ -66,16 +66,6 @@ return [
         'mode' => env('CHARGILY_MODE', 'live'), // 'test' | 'live'
     ],
 
-    'retail_market' => [
-        // #7812 (BC-17 RETAIL / BC-21 PAYMENTS) : webhook PSP du paiement en
-        // ligne marketplace. Secret HMAC-SHA256 fail-closed (vide = webhook
-        // rejeté, pattern Chargily #2615) ; checkout_base_url optionnelle
-        // (page de paiement hebergée du PSP — seam tant que BC-21 n'est pas
-        // mergé).
-        'webhook_secret' => env('RETAIL_MARKET_WEBHOOK_SECRET'),
-        'checkout_base_url' => env('RETAIL_MARKET_CHECKOUT_BASE_URL'),
-    ],
-
     'whatsapp' => [
         // Meta WhatsApp Business Cloud API. When either secret is missing,
         // `CommunicationService::providerFor('whatsapp')` falls back to the
