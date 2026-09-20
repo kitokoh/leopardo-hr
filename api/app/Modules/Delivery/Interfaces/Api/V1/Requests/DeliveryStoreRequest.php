@@ -21,13 +21,14 @@ final class DeliveryStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'source' => ['required', 'string', 'in:manual,restaurant,retail,ecommerce,crm,field'],
-            'source_reference' => ['nullable', 'string', 'max:120', 'required_if:source,restaurant,retail,ecommerce,crm,field'],
+            'source' => ['required', 'string', 'in:manual,restaurant,retail,retail_online,ecommerce,crm,field'],
+            'source_reference' => ['nullable', 'string', 'max:120', 'required_if:source,restaurant,retail,retail_online,ecommerce,crm,field'],
             'type' => ['required', 'string', 'in:parcel,order,food,grocery,medication,document'],
             'weight_grams' => ['nullable', 'integer', 'min:0', 'max:1000000'],
             'volume_cm3' => ['nullable', 'integer', 'min:0', 'max:100000000'],
             'declared_value_minor' => ['nullable', 'integer', 'min:0'],
             'cod_amount_minor' => ['nullable', 'integer', 'min:0'],
+            'cod_currency' => ['nullable', 'string', 'size:3', 'regex:/^[A-Z]{3}$/'],
             'pickup_contact' => ['nullable', 'string', 'max:150'],
             'pickup_address' => ['nullable', 'string', 'max:2000'],
             'dropoff_contact' => ['required', 'string', 'max:150'],

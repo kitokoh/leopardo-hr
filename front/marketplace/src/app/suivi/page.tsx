@@ -10,6 +10,7 @@ import { Loader2, PackageSearch } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useState, type FormEvent } from "react";
 
+import { DeliveryStatusCard } from "@/components/DeliveryStatusCard";
 import { Price } from "@/components/Price";
 import { StatusTimeline } from "@/components/StatusTimeline";
 import { ApiError, fetchOrderTracking, type OrderTracking } from "@/lib/api";
@@ -174,6 +175,8 @@ function TrackingContent() {
           </header>
 
           <StatusTimeline status={tracking.fulfillment_status} timeline={tracking.timeline} />
+
+          {tracking.delivery ? <DeliveryStatusCard delivery={tracking.delivery} /> : null}
 
           {tracking.items.length > 0 ? (
             <div>
