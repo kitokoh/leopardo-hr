@@ -519,11 +519,17 @@ class PayrollCountryRulesTest extends TestCase
         }
     }
 
-    public function test_canada_for_province_ignores_unknown_codes_and_resets_with_null(): void
+    public function test_canada_for_province_rejects_unknown_codes_and_resets_with_null(): void
     {
-        $rules = (new CanadaPayrollRules)->forProvince('XX');
-        self::assertSame('America/Toronto', $rules->timezone());
-        self::assertSame(44.0, $rules->overtimeThresholdWeeklyHours());
+        // #7933 — plus de fallback silencieux : code de province inconnu =
+        // InvalidArgumentException (un fallback fédéral silencieux
+        // sous-retiendrait l'impôt provincial QC/ON).
+        try {
+            (new CanadaPayrollRules)->forProvince('XX');
+            self::fail('Expected InvalidArgumentException for unknown province code');
+        } catch (\InvalidArgumentException $exception) {
+            self::assertStringContainsString('Unknown Canadian province/territory code [XX]', $exception->getMessage());
+        }
 
         $scoped = (new CanadaPayrollRules)->forProvince('BC');
         self::assertSame('America/Vancouver', $scoped->timezone());
