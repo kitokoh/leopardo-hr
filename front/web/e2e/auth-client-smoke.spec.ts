@@ -259,7 +259,9 @@ test.describe('Client web auth smoke', () => {
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
 
     await expect(page).toHaveURL(/\/auth\/login$/);
-    await expect(page.locator('body')).toContainText(/Connexion a Leopardo RH|Sign in to Leopardo RH/);
+    // #7860/#7882 — copie du titre de connexion renommée : « Sign in to
+    // Leopardo RH » → « Sign in to Leopardo » (fr : « Connexion à Leopardo »).
+    await expect(page.locator('body')).toContainText(/Connexion à Leopardo|Sign in to Leopardo/);
     expect(await page.evaluate(() => window.localStorage.getItem('auth_token'))).toBeNull();
   });
 

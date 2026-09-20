@@ -40,6 +40,8 @@ export type AuthenticatedSessionOptions = {
   mockLogout?: boolean;
   mockAnnouncements?: boolean;
   mockNotifications?: boolean;
+  mockBranding?: boolean;
+  mockInvitations?: boolean;
 };
 
 export type AuthenticatedPage = Page & {
@@ -189,6 +191,32 @@ export async function installAuthenticatedSession(
 
   await page.route('**/api/v1/announcements**', async (route) => {
     if (options.mockAnnouncements === false) {
+      await route.fallback();
+      return;
+    }
+
+    await fulfillJson(route, { data: [], meta: { total: 0 } });
+  });
+
+  // #7860/#7882 — le shell (dashboard layout) recharge l'image de marque du
+  // tenant à chaque montage. Non mocké, ce GET part vers le vrai backend avec
+  // le jeton e2e factice → 401 → apiFetch purge la session et redirige vers
+  // /auth/login au milieu du test. Repli neutre : thème par défaut.
+  await page.route('**/api/v1/company/branding**', async (route) => {
+    if (options.mockBranding === false) {
+      await route.fallback();
+      return;
+    }
+
+    await fulfillJson(route, { data: { branding: null } });
+  });
+
+  // #7862/#7884 — /employees est devenu la page unique de gestion d'équipe et
+  // fusionne l'état des invitations sur chaque ligne. Même risque de 401
+  // réel que le branding : mock neutre par défaut, surchargeable par spec
+  // (route enregistrée après = prioritaire) ou désactivable via l'option.
+  await page.route('**/api/v1/invitations**', async (route) => {
+    if (options.mockInvitations === false) {
       await route.fallback();
       return;
     }
