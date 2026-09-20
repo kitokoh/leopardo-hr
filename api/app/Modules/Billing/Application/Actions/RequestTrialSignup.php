@@ -154,7 +154,7 @@ class RequestTrialSignup
             return mb_substr($provided, 0, 120);
         }
 
-        $localPart = explode('@', $email)[0] ?? '';
+        $localPart = explode('@', $email)[0];
         $parts = preg_split('/[._\-+]+/', $localPart) ?: [];
         $words = [];
         foreach ($parts as $part) {

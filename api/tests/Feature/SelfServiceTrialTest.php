@@ -72,7 +72,7 @@ class SelfServiceTrialTest extends TestCase
      * (jean.dupont → « Jean Dupont ») ; le nom définitif est demandé dans
      * l'entretien de préparation (#7493).
      */
-    public function test_signup_without_company_derives_provisional_name_from_email()
+    public function test_signup_without_company_derives_provisional_name_from_email(): void
     {
         Mail::fake();
 
@@ -103,7 +103,7 @@ class SelfServiceTrialTest extends TestCase
      * #7853 — partie locale inexploitable (1 caractère) : repli localisé
      * « Mon entreprise » (langue par défaut du pays, DZ → fr).
      */
-    public function test_signup_without_company_falls_back_to_localized_placeholder()
+    public function test_signup_without_company_falls_back_to_localized_placeholder(): void
     {
         Mail::fake();
 
@@ -122,7 +122,7 @@ class SelfServiceTrialTest extends TestCase
     /**
      * #7853 — contrat conservé quand `company` est fourni : 2..120.
      */
-    public function test_signup_with_too_short_company_is_still_rejected()
+    public function test_signup_with_too_short_company_is_still_rejected(): void
     {
         Mail::fake();
 
@@ -137,7 +137,7 @@ class SelfServiceTrialTest extends TestCase
      * #7853 — parcours complet e-mail seul : la vérification OTP provisionne
      * le tenant avec le nom provisoire dérivé (slug race-safe inchangé).
      */
-    public function test_can_verify_and_provision_trial_without_company()
+    public function test_can_verify_and_provision_trial_without_company(): void
     {
         Mail::fake();
 

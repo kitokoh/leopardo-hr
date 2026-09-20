@@ -215,6 +215,7 @@ class SetupInterviewControllerTest extends TestCase
 
         $table = DB::getDriverName() === 'pgsql' ? 'public.companies' : 'companies';
         $row = DB::table($table)->where('id', $company->id)->first();
+        $this->assertNotNull($row);
 
         $this->assertSame('Boulangerie El Amel', $row->name);
         $this->assertSame($originalSlug, $row->slug);
@@ -235,6 +236,7 @@ class SetupInterviewControllerTest extends TestCase
 
         $table = DB::getDriverName() === 'pgsql' ? 'public.companies' : 'companies';
         $row = DB::table($table)->where('id', $company->id)->first();
+        $this->assertNotNull($row);
 
         $this->assertSame($originalName, $row->name);
     }
