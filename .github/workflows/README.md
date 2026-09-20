@@ -83,7 +83,7 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 
 Le processus interne multi-agents issu de `docs/PLAN_ACTION2` (issue #1731) est clos depuis le
 2026-07-26 — la gestion de projet active passe exclusivement par **GitHub Issues et GitHub
-Projects** (`docs/PLAN_ACTION2/` est un redirect vers l'archive — voir
+Projects** (le dossier racine `docs/PLAN_ACTION2/` a été supprimé le 2026-09-20, #7843 — archive :
 `docs/archive/PLAN_ACTION2/`). Les 4 workflows `plan-action2-*.yml` qui existaient encore ont
 été nettoyés (2026-08-29) : ce qui restait spécifique au backlog PA2-* (collision de claim
 multi-agent, signalement d'ID PA2-*, rapport de backlog, sync GitHub Projects) a été supprimé ;

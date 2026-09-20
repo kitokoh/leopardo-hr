@@ -26,7 +26,7 @@ GET https://gestionemployerbackend.onrender.com/api/v1/demo-users
 >
 > The credentials below reflect the same seeded personas (see
 > `api/database/seeders/DemoCompanyOnceSeeder.php`) used by the API response and
-> by `docs/DEMARRAGE_RAPIDE.md`, so this table stays useful for local/staging
+> by `docs/archive/DEMARRAGE_RAPIDE.md` (archived), so this table stays useful for local/staging
 > environments where `DEMO_MODE_ENABLED=true`, or once a public demo/staging
 > environment with demo mode on is available.
 
