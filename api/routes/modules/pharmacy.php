@@ -13,6 +13,9 @@
  */
 
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyAlertController;
+use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyControlledRegisterController;
+use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyPrescriberController;
+use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyPrescriptionController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyProductController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyPurchaseOrderController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacySaleController;
@@ -55,4 +58,16 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/sales', [PharmacySaleController::class, 'store']);
         Route::get('/sales/{sale}', [PharmacySaleController::class, 'show'])->whereNumber('sale');
         Route::post('/sales/{sale}/void', [PharmacySaleController::class, 'void'])->whereNumber('sale');
+
+        // ── Ordonnances, prescripteurs, ordonnancier (PHARMA-006, #7803) ────
+        Route::get('/prescribers', [PharmacyPrescriberController::class, 'index']);
+        Route::post('/prescribers', [PharmacyPrescriberController::class, 'store']);
+        Route::get('/prescribers/{prescriber}', [PharmacyPrescriberController::class, 'show'])->whereNumber('prescriber');
+        Route::put('/prescribers/{prescriber}', [PharmacyPrescriberController::class, 'update'])->whereNumber('prescriber');
+        Route::get('/prescriptions', [PharmacyPrescriptionController::class, 'index']);
+        Route::post('/prescriptions', [PharmacyPrescriptionController::class, 'store']);
+        Route::get('/prescriptions/{prescription}', [PharmacyPrescriptionController::class, 'show'])->whereNumber('prescription');
+        Route::put('/prescriptions/{prescription}', [PharmacyPrescriptionController::class, 'update'])->whereNumber('prescription');
+        // Ordonnancier : LECTURE SEULE (dérivé du journal immuable des mouvements).
+        Route::get('/controlled-register', [PharmacyControlledRegisterController::class, 'index']);
     });

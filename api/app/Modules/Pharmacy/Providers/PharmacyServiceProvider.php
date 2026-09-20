@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace App\Modules\Pharmacy\Providers;
 
 use App\Core\Solutions\SolutionCatalogue;
+use App\Modules\Pharmacy\Domain\Models\PharmacyPrescriber;
+use App\Modules\Pharmacy\Domain\Models\PharmacyPrescription;
 use App\Modules\Pharmacy\Domain\Models\PharmacyProduct;
 use App\Modules\Pharmacy\Domain\Models\PharmacyPurchaseOrder;
 use App\Modules\Pharmacy\Domain\Models\PharmacySale;
 use App\Modules\Pharmacy\Domain\Models\PharmacyStockMovement;
 use App\Modules\Pharmacy\Domain\Models\PharmacySupplier;
+use App\Modules\Pharmacy\Domain\Policies\PharmacyPrescriberPolicy;
+use App\Modules\Pharmacy\Domain\Policies\PharmacyPrescriptionPolicy;
 use App\Modules\Pharmacy\Domain\Policies\PharmacyProductPolicy;
 use App\Modules\Pharmacy\Domain\Policies\PharmacyPurchaseOrderPolicy;
 use App\Modules\Pharmacy\Domain\Policies\PharmacySalePolicy;
@@ -44,5 +48,7 @@ class PharmacyServiceProvider extends ServiceProvider
         Gate::policy(PharmacySupplier::class, PharmacySupplierPolicy::class);
         Gate::policy(PharmacyPurchaseOrder::class, PharmacyPurchaseOrderPolicy::class);
         Gate::policy(PharmacySale::class, PharmacySalePolicy::class);
+        Gate::policy(PharmacyPrescriber::class, PharmacyPrescriberPolicy::class);
+        Gate::policy(PharmacyPrescription::class, PharmacyPrescriptionPolicy::class);
     }
 }

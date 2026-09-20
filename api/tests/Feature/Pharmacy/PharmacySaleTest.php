@@ -189,12 +189,32 @@ class PharmacySaleTest extends TestCase
             'lines' => [['product_id' => $controlled->id, 'quantity' => 1]],
         ])->assertStatus(422)->assertJsonPath('error', 'PHARMACY_PRESCRIPTION_REQUIRED');
 
-        // Avec prescription_id → accepté.
+        // Avec une ordonnance du tenant → accepté ; ordonnance inexistante → 422.
+        /** @var \App\Modules\Pharmacy\Domain\Models\PharmacyPrescriber $prescriber */
+        $prescriber = \App\Modules\Pharmacy\Domain\Models\PharmacyPrescriber::withoutGlobalScopes()->create([
+            'company_id' => $this->companyA->id,
+            'full_name' => 'Dr Amine Kaci',
+        ]);
+        /** @var \App\Modules\Pharmacy\Domain\Models\PharmacyPrescription $prescription */
+        $prescription = \App\Modules\Pharmacy\Domain\Models\PharmacyPrescription::withoutGlobalScopes()->create([
+            'company_id' => $this->companyA->id,
+            'prescriber_id' => $prescriber->id,
+            'patient_name' => 'Patient Test',
+            'prescribed_at' => Carbon::today()->toDateString(),
+            'reference' => 'ORD-0001',
+        ]);
+
         $this->postJson($this->baseUrl().'/sales', [
             'payment_method' => 'cash',
-            'prescription_id' => 1,
+            'prescription_id' => 999999,
             'lines' => [['product_id' => $this->antibiotic->id, 'quantity' => 2]],
-        ])->assertStatus(201)->assertJsonPath('data.prescription_id', 1);
+        ])->assertStatus(422)->assertJsonPath('error', 'PHARMACY_PRESCRIPTION_NOT_FOUND');
+
+        $this->postJson($this->baseUrl().'/sales', [
+            'payment_method' => 'cash',
+            'prescription_id' => $prescription->id,
+            'lines' => [['product_id' => $this->antibiotic->id, 'quantity' => 2]],
+        ])->assertStatus(201)->assertJsonPath('data.prescription_id', (int) $prescription->id);
     }
 
     public function test_insufficient_stock_rejects_sale_atomically(): void

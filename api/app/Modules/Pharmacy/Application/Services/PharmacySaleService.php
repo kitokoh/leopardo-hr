@@ -7,6 +7,7 @@ namespace App\Modules\Pharmacy\Application\Services;
 use App\Exceptions\DomainException;
 use App\Modules\Pharmacy\Domain\Exceptions\PharmacyInvalidTransitionException;
 use App\Modules\Pharmacy\Domain\Exceptions\PharmacyPrescriptionRequiredException;
+use App\Modules\Pharmacy\Domain\Models\PharmacyPrescription;
 use App\Modules\Pharmacy\Domain\Models\PharmacyProduct;
 use App\Modules\Pharmacy\Domain\Models\PharmacySale;
 use App\Modules\Pharmacy\Domain\Models\PharmacySaleLine;
@@ -50,6 +51,19 @@ class PharmacySaleService
         }
 
         return DB::transaction(function () use ($companyId, $lines, $paymentMethod, $customerName, $prescriptionId, $employeeId): PharmacySale {
+            // Lien vente ↔ ordonnance (PHARMA-006) : l'ordonnance référencée
+            // doit exister DANS le tenant (aucune fuite cross-tenant).
+            if ($prescriptionId !== null) {
+                $prescriptionExists = PharmacyPrescription::withoutGlobalScopes()
+                    ->where('company_id', $companyId)
+                    ->whereKey($prescriptionId)
+                    ->exists();
+
+                if (! $prescriptionExists) {
+                    throw new DomainException('Ordonnance introuvable.', 422, 'PHARMACY_PRESCRIPTION_NOT_FOUND');
+                }
+            }
+
             /** @var array<int, PharmacyProduct> $products */
             $products = [];
 
