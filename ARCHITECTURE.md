@@ -65,7 +65,7 @@ Modules/<Name>/
 ```
 
 
-Modules actifs (31, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `Catalog`, `Communication`, `CRM`, `Delivery`, `EdgeSync`, `EduManager`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HealthManager`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Pharmacy`, `Planning`, `Platform`, `Recruitment`, `Restaurant`, `RestaurantManager`, `Retail`, `Showcase`, `TravelAgency` (ordre alphabétique, vérifié `ls api/app/Modules`) + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`, qui contient aussi `AI`, `Http`, `Notifications`, `Privacy`, `Seed`, `Solutions`).
+Modules actifs (32, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `Catalog`, `Communication`, `CRM`, `Delivery`, `EdgeSync`, `EduManager`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HealthManager`, `HospitalityManager`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Pharmacy`, `Planning`, `Platform`, `Recruitment`, `Restaurant`, `RestaurantManager`, `Retail`, `Showcase`, `TravelAgency` (ordre alphabétique, vérifié `ls api/app/Modules`) + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`, qui contient aussi `AI`, `Http`, `Notifications`, `Privacy`, `Seed`, `Solutions`).
 
 > Décompte vérifié via `ls api/app/Modules | wc -l`. Voir `docs/ARCHITECTURE_STATUS.md` pour l'état couche-par-couche (Domain/Application/Infrastructure/Interfaces/Providers/Tests) de chaque module.
 

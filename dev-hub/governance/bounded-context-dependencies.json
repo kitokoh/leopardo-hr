@@ -780,6 +780,24 @@
       "to": "BC-03",
       "baseline": false,
       "note": "HEALTH → IDENTITY — acteur Employee (praticiens, rôles staff, policies — HC-001 #7785)"
+    },
+    {
+      "from": "BC-32",
+      "to": "BC-01",
+      "baseline": false,
+      "note": "HOSPITALITY → PLATFORM — SolutionCatalogue/FeatureFlag (fondations verticale HospitalityManager, HOSP-001 #7943)"
+    },
+    {
+      "from": "BC-32",
+      "to": "BC-02",
+      "baseline": false,
+      "note": "HOSPITALITY → TENANT — isolation tenant company_id/currentCompany (HOSP-001 #7943)"
+    },
+    {
+      "from": "BC-32",
+      "to": "BC-03",
+      "baseline": false,
+      "note": "HOSPITALITY → IDENTITY — acteur Employee (équipe par établissement, policies — HOSP-001 #7943)"
     }
   ]
 }

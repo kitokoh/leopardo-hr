@@ -113,6 +113,8 @@ tags:
   description: 'BC-31 PHARMACY — verticale PharmaManager : referentiel produits d''officine, stock par lots FEFO, achats fournisseurs, ventes comptoir, ordonnancier des produits controles, dashboard fondateur (PHARMA-001..007, #7798-#7804).'
 - name: HealthManager
   description: 'BC-31 HEALTHMANAGER — solution verticale hôpitaux & cliniques privées (HC-001 #7785 à HC-008 #7792) : structure, patients, rendez-vous, consultations, ordonnances, hospitalisations, facturation des soins.'
+- name: Hospitality
+  description: 'BC-32 HOSPITALITY — solution verticale HospitalityManager (hôtels, résidences, gestion locative multi-sites, HOSP-001 #7943 → HOSP-008 #7950) : établissements, inventaire, réservations guichet et en ligne, baux et loyers.'
 paths:
   /travel/distributor-keys:
     get:
@@ -40368,6 +40370,62 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
+  /hospitality/status:
+    get:
+      tags:
+      - Hospitality
+      summary: État du module HospitalityManager pour le tenant courant
+      description: 'Sonde d''activation de la solution HospitalityManager (BC-32, HOSP-001 #7943) : la route est gardée par le feature flag tenant `hospitality` (403 HOSPITALITY_SOLUTION_INACTIVE si la solution est inactive, fail-closed). Renvoie le jalon livré du programme HOSP-001→008 (stage) et les capacités disponibles (référentiel, équipe, réservations, locatif, API publique — false tant que le lot correspondant n''est pas livré).'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Solution active pour le tenant courant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      module:
+                        type: string
+                        example: hospitality
+                      enabled:
+                        type: boolean
+                        example: true
+                      status:
+                        type: string
+                        example: active
+                      stage:
+                        type: string
+                        example: HOSP-001
+                      capabilities:
+                        type: object
+                        properties:
+                          properties:
+                            type: boolean
+                            example: false
+                          inventory:
+                            type: boolean
+                            example: false
+                          team:
+                            type: boolean
+                            example: false
+                          reservations:
+                            type: boolean
+                            example: false
+                          rentals:
+                            type: boolean
+                            example: false
+                          public_api:
+                            type: boolean
+                            example: false
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
 components:
   securitySchemes:
     BearerAuth:

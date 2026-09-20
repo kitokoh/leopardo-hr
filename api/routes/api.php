@@ -500,6 +500,11 @@ Route::prefix('v1')->group(function (): void {
     // BC-29 COMMUNICATION — boîte mail connectée + IA, squelette R0 (#7685)
     require __DIR__.'/modules/communication.php';
 
+    // BC-32 HOSPITALITY (HOSP-001 #7943) — verticale hôtels, résidences &
+    // gestion locative : routes tenant-scoped derrière le feature flag
+    // `hospitality` (fail-closed).
+    require __DIR__.'/modules/hospitality_manager.php';
+
     // C-PUBLIC #6882 — catalogue public (routes isolées, sans auth)
     require __DIR__.'/modules/catalog_public.php';
     // BC-17 #7807/#7808 — marketplace publique Leopardo Marché (routes isolées, sans auth)
