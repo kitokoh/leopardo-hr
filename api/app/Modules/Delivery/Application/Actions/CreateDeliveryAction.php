@@ -99,6 +99,7 @@ final class CreateDeliveryAction
             'volume_cm3' => $validated['volume_cm3'] ?? null,
             'declared_value_minor' => $validated['declared_value_minor'] ?? 0,
             'cod_amount_minor' => $validated['cod_amount_minor'] ?? null,
+            'cod_currency' => $validated['cod_currency'] ?? null,
             'pickup_contact' => $validated['pickup_contact'] ?? null,
             'pickup_address' => $validated['pickup_address'] ?? null,
             'dropoff_contact' => $validated['dropoff_contact'],
