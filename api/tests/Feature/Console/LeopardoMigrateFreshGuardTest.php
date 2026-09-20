@@ -6,6 +6,7 @@ namespace Tests\Feature\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Testing\PendingCommand;
 use Tests\TestCase;
 
 /**
@@ -48,12 +49,13 @@ class LeopardoMigrateFreshGuardTest extends TestCase
         // Hors production, sans --force : la confirmation est requise. En
         // exécution non interactive, confirm() retourne son défaut (non) →
         // la commande s'arrête AVANT tout DROP SCHEMA (issue #7974).
-        $this->artisan('leopardo:migrate', ['--fresh' => true])
-            ->expectsConfirmation(
-                '--fresh va supprimer les schemas public et shared_tenants de la base ['
-                    .(config('database.connections.pgsql.database') ?: config('database.default')).']. Continuer ?',
-                'no'
-            )
+        $pending = $this->artisan('leopardo:migrate', ['--fresh' => true]);
+        assert($pending instanceof PendingCommand);
+        $pending->expectsConfirmation(
+            '--fresh va supprimer les schemas public et shared_tenants de la base ['
+                .(config('database.connections.pgsql.database') ?: config('database.default')).']. Continuer ?',
+            'no'
+        )
             ->assertExitCode(Command::FAILURE);
     }
 }
