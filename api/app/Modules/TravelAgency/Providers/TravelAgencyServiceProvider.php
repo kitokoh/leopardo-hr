@@ -12,11 +12,14 @@ use App\Modules\TravelAgency\Console\Commands\TravelExpireAdvertsCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelOutboxDispatchCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelWebhookDispatchCommand;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
+use App\Modules\TravelAgency\Domain\Models\TravelCustomerAccount;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\CashPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PvitPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
 use App\Modules\TravelAgency\Policies\TravelReportPolicy;
+use Illuminate\Auth\EloquentUserProvider;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -97,6 +100,19 @@ class TravelAgencyServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // #7739 — provider d'auth des clients GRAND PUBLIC marketplace
+        // (guard Sanctum dédié `travel_customer`). Enregistré comme DRIVER
+        // custom plutôt que par une clé `model` statique dans
+        // `config/auth.php` : Larastan ajoute chaque `auth.providers.*.model`
+        // à l'union de type de `request->user()`/`Auth::user()` sur TOUTE
+        // l'app — la clé statique invalidait ~70 entrées de la baseline
+        // strict (dérive de message) hors de la verticale. Runtime identique
+        // (EloquentUserProvider standard sur TravelCustomerAccount).
+        Auth::provider(
+            'travel_customer_accounts',
+            static fn ($app): EloquentUserProvider => new EloquentUserProvider($app['hash'], TravelCustomerAccount::class),
+        );
+
         // Audit 2026-09-14 — amorçage de la verticale à l'ACTIVATION.
         //
         // `SolutionActivator` ne posait que le feature flag : un tenant agence
