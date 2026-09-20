@@ -96,7 +96,7 @@ class SelfServiceTrialTest extends TestCase
             'status' => 'pending',
         ]);
 
-        Mail::assertSent(TrialVerificationMail::class, fn ($mail) => $mail->hasTo('jean.dupont@exemple.dz'));
+        Mail::assertQueued(TrialVerificationMail::class, fn ($mail) => $mail->hasTo('jean.dupont@exemple.dz'));
     }
 
     /**
