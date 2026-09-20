@@ -222,6 +222,13 @@ class TravelCustomerAccountApiTest extends TestCase
 
         // Logout révoque le token courant : l'appel suivant est rejeté.
         $this->postJson('/api/v1/public/travel/marketplace/account/logout', [], $headers)->assertOk();
+
+        // Le RequestGuard sanctum CACHE l'utilisateur résolu entre deux
+        // requêtes d'un même test Feature : sans reset, le `me` suivant
+        // réutilise le client déjà authentifié alors que son token est
+        // révoqué en base (pattern repo, cf. TravelAdvertDestroyTest).
+        app('auth')->forgetGuards();
+
         $this->getJson('/api/v1/public/travel/marketplace/account/me', $headers)->assertStatus(401);
     }
 
@@ -255,14 +262,20 @@ class TravelCustomerAccountApiTest extends TestCase
         $this->assertSame('pending', $mine['data'][0]['status']);
         $this->assertNotNull($mine['data'][0]['trip']);
 
-        // Le voisin ne voit QUE sa réservation — isolation stricte.
+        // Le voisin ne voit QUE sa réservation — isolation stricte. Reset du
+        // cache de guard : sans lui, cette requête réutiliserait le client
+        // précédent malgré le bearer différent (cf. TravelAdvertDestroyTest).
+        app('auth')->forgetGuards();
+
         $others = $this->getJson('/api/v1/public/travel/marketplace/account/bookings', [
             'Authorization' => 'Bearer '.$neighbour['token'],
         ])->assertOk()->json();
 
         $this->assertSame(1, $others['meta']['total']);
 
-        // Sans token → 401.
+        // Sans token → 401 (reset du cache de guard, même raison).
+        app('auth')->forgetGuards();
+
         $this->getJson('/api/v1/public/travel/marketplace/account/bookings')->assertStatus(401);
     }
 
@@ -291,6 +304,11 @@ class TravelCustomerAccountApiTest extends TestCase
         $this->assertSame((int) $result['account']['id'], $stored->customer_account_id);
 
         // Checkout INVITÉ toujours possible : sans token, pas de rattachement.
+        // Reset du cache de guard : sans lui, la requête invitée hériterait du
+        // client authentifié précédent et la réservation serait rattachée à
+        // tort (cf. TravelAdvertDestroyTest).
+        app('auth')->forgetGuards();
+
         $guestRef = $this->guestBooking($fx['trip']->id, $fx['class'], 'passant@example.test', 'guest-7739-1');
 
         /** @var TravelBooking $guest */
