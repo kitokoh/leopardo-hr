@@ -75,6 +75,9 @@ jobs:
         working-directory: front/web
         env:
           NEXT_PUBLIC_API_URL: ${{ vars.DEV_API_BASE_URL }}
+          # #7963 : funnel.spec.ts exige E2E_API_URL explicitement au chargement
+          # (plus de repli en dur) — cible dev, même si ces cas sont mockés.
+          E2E_API_URL: ${{ vars.DEV_API_BASE_URL }}
           # #4600/#3452 : le build production échoue sans URL de marque réelle.
           NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
           PLAYWRIGHT_WEB_SERVER_COMMAND: npm run build && npm run start
