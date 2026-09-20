@@ -3713,7 +3713,38 @@
     "replyPlaceholder": "Your reply (you validate it before sending)...",
     "weeklyReportLoadError": "Unable to load the weekly report.",
     "aiSummary": "AI summary",
-    "autoSummary": "Automatic summary"
+    "autoSummary": "Automatic summary",
+    "web": {
+      "mediaUrls": {
+        "label": "Media URLs (optional)",
+        "placeholder": "https://example.com/visual.jpg",
+        "add": "Add",
+        "remove": "Remove this media"
+      },
+      "interactions": {
+        "title": "Comments",
+        "toggle": "View interactions",
+        "refresh": "Refresh",
+        "loading": "Loading comments...",
+        "empty": "No comments yet.",
+        "send": "Reply",
+        "sending": "Sending...",
+        "sent": "Reply sent.",
+        "suggesting": "Suggesting..."
+      },
+      "weeklyReport": {
+        "title": "Last 7 days report",
+        "loading": "Loading report...",
+        "empty": "No report available.",
+        "published": "Published posts",
+        "failed": "Failures",
+        "upcoming": "Upcoming",
+        "emails": "Campaign emails"
+      },
+      "postActions": {
+        "delete": "Delete"
+      }
+    }
   },
   "attendanceCorrectionEditDateTitle": "Edit {date}",
   "attendanceSaving": "Saving...",

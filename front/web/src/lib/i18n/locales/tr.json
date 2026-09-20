@@ -514,7 +514,38 @@
     "replyPlaceholder": "Yanıtınız (göndermeden önce siz onaylarsınız)...",
     "weeklyReportLoadError": "Haftalık rapor yüklenemedi.",
     "aiSummary": "YZ özeti",
-    "autoSummary": "Otomatik özet"
+    "autoSummary": "Otomatik özet",
+    "web": {
+      "mediaUrls": {
+        "label": "Medya URL'leri (isteğe bağlı)",
+        "placeholder": "https://ornek.com/gorsel.jpg",
+        "add": "Ekle",
+        "remove": "Bu medyayı kaldır"
+      },
+      "interactions": {
+        "title": "Yorumlar",
+        "toggle": "Etkileşimleri görüntüle",
+        "refresh": "Yenile",
+        "loading": "Yorumlar yükleniyor...",
+        "empty": "Henüz yorum yok.",
+        "send": "Yanıtla",
+        "sending": "Gönderiliyor...",
+        "sent": "Yanıt gönderildi.",
+        "suggesting": "Öneriliyor..."
+      },
+      "weeklyReport": {
+        "title": "Son 7 gün raporu",
+        "loading": "Rapor yükleniyor...",
+        "empty": "Rapor bulunmuyor.",
+        "published": "Yayınlanan gönderiler",
+        "failed": "Başarısız",
+        "upcoming": "Yaklaşan",
+        "emails": "Kampanya e-postaları"
+      },
+      "postActions": {
+        "delete": "Sil"
+      }
+    }
   },
   "attendance": {
     "sending_to_server": "{label} sunucuya gönderiliyor...",

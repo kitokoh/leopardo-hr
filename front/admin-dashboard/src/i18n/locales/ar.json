@@ -3713,7 +3713,38 @@
     "replyPlaceholder": "ردك (تراجعه قبل الإرسال)...",
     "weeklyReportLoadError": "تعذر تحميل التقرير الأسبوعي.",
     "aiSummary": "ملخص الذكاء الاصطناعي",
-    "autoSummary": "ملخص تلقائي"
+    "autoSummary": "ملخص تلقائي",
+    "web": {
+      "mediaUrls": {
+        "label": "روابط الوسائط (اختياري)",
+        "placeholder": "https://example.com/visual.jpg",
+        "add": "إضافة",
+        "remove": "إزالة هذه الوسائط"
+      },
+      "interactions": {
+        "title": "التعليقات",
+        "toggle": "عرض التفاعلات",
+        "refresh": "تحديث",
+        "loading": "جارٍ تحميل التعليقات...",
+        "empty": "لا توجد تعليقات بعد.",
+        "send": "رد",
+        "sending": "جارٍ الإرسال...",
+        "sent": "تم إرسال الرد.",
+        "suggesting": "جارٍ الاقتراح..."
+      },
+      "weeklyReport": {
+        "title": "تقرير آخر 7 أيام",
+        "loading": "جارٍ تحميل التقرير...",
+        "empty": "لا يوجد تقرير متاح.",
+        "published": "منشورات منشورة",
+        "failed": "إخفاقات",
+        "upcoming": "قادمة",
+        "emails": "رسائل الحملة"
+      },
+      "postActions": {
+        "delete": "حذف"
+      }
+    }
   },
   "attendanceCorrectionEditDateTitle": "تعديل {date}",
   "attendanceSaving": "جارٍ الحفظ...",

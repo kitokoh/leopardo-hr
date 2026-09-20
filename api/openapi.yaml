@@ -26390,6 +26390,185 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /marketing/social-posts/{socialPost}/comments:
+    get:
+      tags:
+      - Marketing
+      summary: Lister les commentaires recus sur un post publie (issue #7754)
+      description: Recupere les commentaires du post aupres de l'agregateur Ayrshare (GET /comments/{id}), groupes par plateforme. Reserve aux posts publies porteurs d'une reference agregateur (provider_post_ref).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: socialPost
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commentaires du post (structure brute de l'agregateur, par plateforme)
+        '404':
+          description: Post introuvable (hors tenant) ou aucun compte social actif (SOCIAL_ACCOUNT_NOT_FOUND)
+        '409':
+          description: Post non publie ou sans reference agregateur (SOCIAL_POST_NOT_PUBLISHED)
+        '502':
+          description: Echec de l'agregateur (SOCIAL_COMMENTS_UNAVAILABLE)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /marketing/social-posts/{socialPost}/comments/reply:
+    post:
+      tags:
+      - Marketing
+      summary: Repondre a un commentaire d'un post publie (issue #7754)
+      description: Poste la reponse au nom du compte connecte via Ayrshare (POST /comments). platforms absent = toutes les plateformes cibles du post.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: socialPost
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - comment
+              properties:
+                comment:
+                  type: string
+                  maxLength: 2000
+                platforms:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Reponse postee (reponse brute de l'agregateur)
+        '404':
+          description: Post introuvable (hors tenant) ou aucun compte social actif
+        '409':
+          description: Post non publie ou sans reference agregateur
+        '502':
+          description: Echec de l'agregateur (SOCIAL_COMMENT_REPLY_FAILED)
+        '422':
+          $ref: '#/components/responses/Validation422'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /marketing/social-posts/{socialPost}/comments/suggest-reply:
+    post:
+      tags:
+      - Marketing
+      summary: Suggerer une reponse (IA) a un commentaire — validation humaine obligatoire (issue #7754)
+      description: Genere une proposition de reponse via MarketingAiService (App\AI\LLMClient). La suggestion n'est JAMAIS postee automatiquement — l'humain la valide puis utilise l'endpoint reply.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: socialPost
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - comment
+              properties:
+                comment:
+                  type: string
+                  maxLength: 4000
+                platform:
+                  type: string
+                  maxLength: 40
+                tone:
+                  type: string
+                  maxLength: 60
+                locale:
+                  type: string
+                  maxLength: 10
+      responses:
+        '200':
+          description: Suggestion de reponse generee (data.suggestion)
+        '503':
+          description: IA indisponible (MARKETING_AI_UNAVAILABLE)
+        '422':
+          $ref: '#/components/responses/Validation422'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /marketing/ai/suggest-post:
+    post:
+      tags:
+      - Marketing
+      summary: Suggerer un contenu de post via l'IA (issue #7753)
+      description: Brief + plateformes + ton + langue vers un texte de post propose par MarketingAiService. Humain dans la boucle, rien n'est cree ni publie automatiquement.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - brief
+              properties:
+                brief:
+                  type: string
+                  minLength: 3
+                  maxLength: 2000
+                platforms:
+                  type: array
+                  maxItems: 10
+                  items:
+                    type: string
+                    maxLength: 40
+                tone:
+                  type: string
+                  maxLength: 60
+                locale:
+                  type: string
+                  maxLength: 10
+      responses:
+        '200':
+          description: Suggestion generee (data.suggestion, data.brief, data.platforms)
+        '503':
+          description: IA indisponible (MARKETING_AI_UNAVAILABLE)
+        '422':
+          $ref: '#/components/responses/Validation422'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /marketing/reports/weekly:
+    get:
+      tags:
+      - Marketing
+      summary: Bilan marketing des 7 derniers jours (issue #7753)
+      description: Agregats tenant (posts publies/echoues, publications par plateforme, campagnes CRM en meilleure-effort) + synthese IA avec repli deterministe (summary_source ai|fallback) — jamais bloquant.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Bilan hebdomadaire (data.period, data.stats, data.summary, data.summary_source)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /onboarding-setup/checklist:
     get:
       tags:

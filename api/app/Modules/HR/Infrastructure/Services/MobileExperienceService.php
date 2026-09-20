@@ -303,10 +303,16 @@ class MobileExperienceService
         $modules[] = $this->module(
             key: 'cameras',
             title: 'Securite',
-            description: 'Surveillance et securite seront actives dans une phase ulterieure.',
+            description: 'Surveillance video du site via l application dediee Leopardo Cameras (liste, direct, evenements).',
             domain: 'security',
+            // #7426 : le module est livre par l application mobile DEDIEE
+            // front/mobile_apps/leopardo_cameras (BC-19 DEVICE) — il n existe
+            // aucun ecran cameras dans les apps employee/manager/hr. Module
+            // servi SANS route, comme dashboard_admin (isActive=false cote
+            // client -> carte non cliquable, aucun crash GoRouter, #2212) —
+            // l entree n est plus un `coming_soon` mensonger (AC 5).
             route: null,
-            status: 'coming_soon',
+            status: 'active',
         );
 
         $modules[] = $this->module(
