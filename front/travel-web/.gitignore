@@ -1,0 +1,15 @@
+# deps
+/node_modules
+
+# next
+/.next/
+/out/
+next-env.d.ts
+
+# misc
+.DS_Store
+*.tsbuildinfo
+
+# env — jamais de secret commité
+.env*
+!.env.local.example

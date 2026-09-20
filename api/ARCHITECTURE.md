@@ -135,6 +135,7 @@ restent libres. `Modules/CRM` existe et est complet (`CrmServiceProvider`) ; la 
 | `Modules/Delivery` | ✅ routes/modules/delivery.php | 🟢 verticale BC-26 consolidée (#6757, PHPStan assaini #6759) | `DeliveryServiceProvider` |
 | `Modules/EdgeSync` | ✅ module routes | ✅ complet | `EdgeSyncServiceProvider` |
 | `Modules/TravelAgency` | ✅ routes partagées + publiques shop | 🟢 fondations verticale BC-24 (TRAVEL-101..108, 201..203 + shop/e-billets) | `TravelAgencyServiceProvider` |
+| `Modules/Pharmacy` | ✅ routes/modules/pharmacy.php | 🟢 verticale BC-30 MVP (PHARMA-001..007 : produits, stock FEFO par lots, achats, ventes comptoir, ordonnancier, dashboard) — Infrastructure vide (0 PHP) | `PharmacyServiceProvider` |
 | `Modules/Growth` | ✅ routes/modules/growth.php | 🔶 Infrastructure vide (0 PHP) — Application/Domain/Interfaces présents | `GrowthServiceProvider` |
 | `Modules/Marketing` | ✅ routes/modules/marketing.php | ✅ complet | `MarketingServiceProvider` |
 | `Modules/Onboarding` | ✅ routes/api.php | ✅ complet | `OnboardingServiceProvider` |

@@ -30,12 +30,6 @@ class HealthInvoiceTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    private Company $companyA;
-
-    private Company $companyB;
-
-    private Employee $adminA;
-
     private Employee $billingA;
 
     private Employee $receptionA;
@@ -65,7 +59,6 @@ class HealthInvoiceTest extends TestCase
             'currency' => 'DZD',
             'features' => ['healthmanager' => true],
         ]);
-        $this->companyA = $companyA;
 
         /** @var Company $companyB */
         $companyB = Company::factory()->create([
@@ -73,7 +66,6 @@ class HealthInvoiceTest extends TestCase
             'currency' => 'MAD',
             'features' => ['healthmanager' => true],
         ]);
-        $this->companyB = $companyB;
 
         /** @var Employee $adminA */
         $adminA = Employee::factory()->create([
@@ -81,7 +73,6 @@ class HealthInvoiceTest extends TestCase
             'role' => 'manager',
             'manager_role' => 'principal',
         ]);
-        $this->adminA = $adminA;
 
         /** @var Employee $billingA */
         $billingA = Employee::factory()->create(['company_id' => $companyA->id]);

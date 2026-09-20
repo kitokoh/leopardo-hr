@@ -31,8 +31,6 @@ class HealthAdmissionTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    private Company $companyA;
-
     private Company $companyB;
 
     private Employee $adminA;
@@ -72,7 +70,6 @@ class HealthAdmissionTest extends TestCase
             'currency' => 'DZD',
             'features' => ['healthmanager' => true],
         ]);
-        $this->companyA = $companyA;
 
         /** @var Company $companyB */
         $companyB = Company::factory()->create([

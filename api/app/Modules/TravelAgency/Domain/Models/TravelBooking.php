@@ -21,6 +21,12 @@ use Illuminate\Support\Str;
  * `reference` est générée automatiquement (`GV-…`) si absente à la création.
  * `idempotency_key` garantit qu'une requête rejouée (retry réseau, double
  * clic guichet) ne crée jamais deux réservations pour le même tenant.
+ *
+ * `customer_account_id` est déclaré ici car la migration #7739 altère la table
+ * via un nom de schéma dynamique (`"{$schema}.travel_bookings"`), invisible
+ * pour l'analyse statique des migrations.
+ *
+ * @property int|null $customer_account_id Compte client grand public (nullable : checkout invité, #7739)
  */
 class TravelBooking extends Model
 {
@@ -38,6 +44,7 @@ class TravelBooking extends Model
         'currency',
         'booking_source',
         'customer_contact_id',
+        'customer_account_id',
         'booked_by_user_id',
         'payment_status',
         'cancelled_at',
@@ -70,6 +77,7 @@ class TravelBooking extends Model
         'notify_consent' => 'boolean',
         'consent_recorded_at' => 'datetime',
         'return_booking_id' => 'integer',
+        'customer_account_id' => 'integer',
         'corporate_account_id' => 'integer',
         'quote_id' => 'integer',
         'billing_deferred' => 'boolean',

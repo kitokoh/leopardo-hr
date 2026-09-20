@@ -1,0 +1,7 @@
+# Drapeaux d'analyse statique — voir phpstan-flags.php.
+# À inclure AVANT vendor/larastan/larastan/extension.neon : l'ordre des
+# includes détermine l'ordre des bootstrapFiles, et la constante doit exister
+# avant que le bootstrap Larastan ne boote le noyau (config figée au boot).
+parameters:
+    bootstrapFiles:
+        - phpstan-flags.php

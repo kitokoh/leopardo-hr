@@ -127,6 +127,26 @@ tables=(
   "shared_tenants.user_invitations"
 )
 
+# #7657 — la liste ci-dessus est un instantane fige de tables critiques, or le
+# schema reel evolue (constat drill 2026-09-20 : shared_tenants.user_invitations
+# n'existe plus en production — le drill echouait au tout premier COUNT).
+# Une table absente COTE SOURCE est une derive de CETTE liste, pas une perte de
+# donnees : elle est exclue du drill avec un warning sonore (la liste doit etre
+# mise a jour), et le drill reste fail-loud en echouant si moins de 3 tables
+# critiques restent verifiables.
+present_tables=()
+for fq in "${tables[@]}"; do
+  if [[ "$(psql "${DATABASE_URL}" -AtXc "SELECT (to_regclass('${fq}') IS NOT NULL)::text;")" == "true" ]]; then
+    present_tables+=("${fq}")
+  else
+    log "    WARNING: ${fq} absente du schema source — exclue du drill ; mettre a jour la liste 'tables' de backup_drill.sh"
+  fi
+done
+if [[ ${#present_tables[@]} -lt 3 ]]; then
+  log "DRILL FAILED: seulement ${#present_tables[@]} table(s) critiques presentes cote source — liste obsolete ou base inattendue"
+  exit 1
+fi
+
 # ---------------------------------------------------------------------------
 # 0 + 1. Snapshot REPEATABLE READ partage : counts source + pg_dump.
 # ---------------------------------------------------------------------------
@@ -159,24 +179,27 @@ snapshot_tmp_files+=("${counts_file}")
 export SNAPSHOT_DUMP_FILE="${dump_file}"
 export SNAPSHOT_DB_URL="${DATABASE_URL}"
 
+# #7657 — les SELECT de counts sont generes depuis present_tables (tables
+# critiques reellement presentes) au lieu d'une liste SQL codee en dur.
+psql_script="$(mktemp)"
+snapshot_tmp_files+=("${psql_script}")
+{
+  printf 'BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ;\n'
+  printf 'SELECT pg_export_snapshot() AS snap \\gset\n'
+  printf '\\o :counts_file\n'
+  for fq in "${present_tables[@]}"; do
+    printf "SELECT '%s|' || COUNT(*) FROM %s;\n" "${fq}" "${fq}"
+  done
+  printf '\\o\n'
+  # \! ne fait PAS d'interpolation psql (:var reste litteral), mais \setenv si.
+  # On passe donc le snapshot id via un env var pour que pg_dump le recoive.
+  printf '\\setenv PG_SNAPSHOT :snap\n'
+  printf '\\! pg_dump --format=custom --no-owner --no-privileges --snapshot="$PG_SNAPSHOT" --file="$SNAPSHOT_DUMP_FILE" "$SNAPSHOT_DB_URL"\n'
+  printf 'COMMIT;\n'
+} > "${psql_script}"
+
 PGOPTIONS="--client-min-messages=warning" psql "${DATABASE_URL}" -qAtX -v ON_ERROR_STOP=1 \
-  -v counts_file="${counts_file}" <<'PSQL_SCRIPT'
-BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ;
-SELECT pg_export_snapshot() AS snap \gset
-\o :counts_file
-SELECT 'public.companies|' || COUNT(*) FROM public.companies;
-SELECT 'public.plans|' || COUNT(*) FROM public.plans;
-SELECT 'public.super_admins|' || COUNT(*) FROM public.super_admins;
-SELECT 'shared_tenants.employees|' || COUNT(*) FROM shared_tenants.employees;
-SELECT 'shared_tenants.attendance_logs|' || COUNT(*) FROM shared_tenants.attendance_logs;
-SELECT 'shared_tenants.user_invitations|' || COUNT(*) FROM shared_tenants.user_invitations;
-\o
--- \! ne fait PAS d'interpolation psql (:var reste litteral), mais \setenv si.
--- On passe donc le snapshot id via un env var pour que pg_dump le recoive.
-\setenv PG_SNAPSHOT :snap
-\! pg_dump --format=custom --no-owner --no-privileges --snapshot="$PG_SNAPSHOT" --file="$SNAPSHOT_DUMP_FILE" "$SNAPSHOT_DB_URL"
-COMMIT;
-PSQL_SCRIPT
+  -v counts_file="${counts_file}" -f "${psql_script}"
 
 declare -A source_counts
 while IFS='|' read -r fq cnt; do
@@ -252,7 +275,7 @@ fi
 log "[4/4] row count verification (pre-dump source snapshot vs restored target)"
 
 mismatch=0
-for fq in "${tables[@]}"; do
+for fq in "${present_tables[@]}"; do
   schema="${fq%%.*}"
   table="${fq##*.}"
 
