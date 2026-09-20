@@ -61,11 +61,14 @@ class PasswordResetController
                 'updated_at' => now(),
             ]);
 
-            // #6751 : un échec de TRANSPORT (SMTP injoignable, credentials
-            // invalides) ne doit NI casser le parcours (500) NI fuiter
-            // l'existence du compte (200 inconnu vs 500 existant = énumération).
-            // Le token est déjà en base : l'échec est tracé (report → Sentry/logs),
-            // et la réponse publique reste la réponse anti-énumération standard.
+            // #6751 : un échec d'envoi ne doit NI casser le parcours (500) NI
+            // fuiter l'existence du compte (200 inconnu vs 500 existant =
+            // énumération). #7854 : PasswordResetMail est désormais ShouldQueue
+            // (file `emails`) — `send()` la met en file, l'échec attrapé ici est
+            // celui de la MISE EN FILE (broker queue indisponible) ; les échecs
+            // de transport SMTP se rejouent côté worker. Le token est déjà en
+            // base : l'échec est tracé (report → Sentry/logs), et la réponse
+            // publique reste la réponse anti-énumération standard.
             try {
                 Mail::to($email)->send(new PasswordResetMail($token, $email));
             } catch (\Throwable $exception) {

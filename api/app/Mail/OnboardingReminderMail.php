@@ -7,6 +7,7 @@ namespace App\Mail;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Support\I18nCatalog;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -19,8 +20,12 @@ use Illuminate\Support\Facades\App;
  * Envoyé par SendOnboardingRemindersCommand aux managers dont la société
  * a été créée 24h avant mais dont l'onboarding n'est pas complété.
  * Suit le même pattern que les drip trials (TrialDayOneMail).
+ *
+ * #7854 : ShouldQueue + queue `emails` — la commande faisait déjà
+ * `Mail::to()->queue()`, l'e-mail part désormais sur la file drainée par le
+ * worker prod (cf. render.prod.yaml) au lieu de `default`.
  */
-class OnboardingReminderMail extends Mailable
+class OnboardingReminderMail extends Mailable implements ShouldQueue
 {
     use Queueable;
     use SerializesModels;
@@ -31,6 +36,8 @@ class OnboardingReminderMail extends Mailable
         public readonly string $managerEmail,
         ?string $locale = null,
     ) {
+        $this->onQueue('emails');
+
         $this->locale = I18nCatalog::normalizeLocale($locale ?? $company->language);
     }
 

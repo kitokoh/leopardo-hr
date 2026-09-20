@@ -74,7 +74,7 @@ class FirstLoginPasswordlessTest extends TestCase
 
         $row = $this->provisionTrialAccount();
 
-        Mail::assertSent(TrialWelcomeMail::class, function (TrialWelcomeMail $mail) use ($row) {
+        Mail::assertQueued(TrialWelcomeMail::class, function (TrialWelcomeMail $mail) use ($row) {
             $this->assertIsString($mail->setPasswordUrl);
             $this->assertStringContainsString('/auth/set-password?token=', (string) $mail->setPasswordUrl);
             $this->assertStringContainsString((string) $row->provisioning_token, (string) $mail->setPasswordUrl);
@@ -136,7 +136,7 @@ class FirstLoginPasswordlessTest extends TestCase
             'email' => 'founder@newtech.dz',
         ])->assertStatus(200)->assertJson(['success' => true]);
 
-        Mail::assertSent(LoginCodeMail::class, function (LoginCodeMail $mail) {
+        Mail::assertQueued(LoginCodeMail::class, function (LoginCodeMail $mail) {
             return $mail->hasTo('founder@newtech.dz')
                 && preg_match('/^\d{6}$/', $mail->loginCode) === 1;
         });
@@ -151,7 +151,7 @@ class FirstLoginPasswordlessTest extends TestCase
             'email' => 'nobody@example.com',
         ])->assertStatus(200)->assertJson(['success' => true]);
 
-        Mail::assertNotSent(LoginCodeMail::class);
+        Mail::assertNotQueued(LoginCodeMail::class);
     }
 
     public function test_login_code_verify_opens_a_session_without_password(): void
@@ -165,7 +165,7 @@ class FirstLoginPasswordlessTest extends TestCase
         ])->assertStatus(200);
 
         $code = null;
-        Mail::assertSent(LoginCodeMail::class, function (LoginCodeMail $mail) use (&$code) {
+        Mail::assertQueued(LoginCodeMail::class, function (LoginCodeMail $mail) use (&$code) {
             $code = $mail->loginCode;
 
             return true;
@@ -227,6 +227,6 @@ class FirstLoginPasswordlessTest extends TestCase
             'email' => 'founder@newtech.dz',
         ])->assertStatus(200)->assertJson(['success' => true]);
 
-        Mail::assertNotSent(LoginCodeMail::class);
+        Mail::assertNotQueued(LoginCodeMail::class);
     }
 }

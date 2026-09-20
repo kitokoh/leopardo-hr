@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
@@ -10,8 +11,11 @@ use Illuminate\Queue\SerializesModels;
  * #7347 — le sujet n'est plus codé en dur dans 4 langues (il portait aussi la
  * marque en dur) : il vient du registre d'e-mails, donc du catalogue, et devient
  * modifiable depuis l'admin (Paramètres › E-mails).
+ *
+ * #7854 : envoyé via la queue `emails` (worker prod), plus en synchrone dans
+ * la requête HTTP d'inscription.
  */
-class TrialVerificationMail extends Mailable
+class TrialVerificationMail extends Mailable implements ShouldQueue
 {
     use Queueable;
     use SerializesModels;
@@ -20,7 +24,14 @@ class TrialVerificationMail extends Mailable
         public readonly string $managerName,
         public readonly string $verificationToken,
         public readonly string $emailLocale = 'fr',
-    ) {}
+    ) {
+        $this->onQueue('emails');
+
+        // La demande (CompanyRequest + OTP hashé) est écrite juste avant
+        // l'envoi : si ce flux passe un jour sous transaction, l'e-mail ne
+        // doit partir qu'après commit (no-op hors transaction).
+        $this->afterCommit();
+    }
 
     public function build(): self
     {
