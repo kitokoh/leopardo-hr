@@ -733,6 +733,12 @@
       "to": "BC-23",
       "baseline": false,
       "note": "BC-29 → BC-23 — classification IA des emails (R3 #7688) : EmailClassificationService consomme l'abstraction App\\AI\\LLMClient (driver ai.driver, fake par défaut #6848 — jamais d'appel vendeur direct) + TokenBudgetGuard (fail-closed) + AIAuditLogger (audit ai_tool_executions) ; CommunicationAiToolCatalog déclare le tool email_classify au contrat A3 (AIToolDefinition/AIToolDefinitionRegistry, pattern HrReadToolCatalog/BC-04)"
+    },
+    {
+      "from": "BC-17",
+      "to": "BC-02",
+      "baseline": false,
+      "note": "BC-17 → BC-02 — contrôleurs/services marketplace publics Retail importent App\\Core\\Tenant (Company, TenantManager) pour résoudre le tenant vendeur côté vitrine (#7809/#7814, même patron que BC-24 travel public #7737)"
     }
   ]
 }
