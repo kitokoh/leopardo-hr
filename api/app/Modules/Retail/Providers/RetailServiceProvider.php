@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Retail\Providers;
 
+use App\Modules\Retail\Infrastructure\Payments\ChargilyProvider;
+use App\Modules\Retail\Infrastructure\Payments\MockProvider;
+use App\Modules\Retail\Infrastructure\Payments\RetailPaymentProviderRegistry;
+use App\Modules\Retail\Interfaces\Console\ReconcileRetailPaymentsCommand;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -15,20 +19,34 @@ use Illuminate\Support\ServiceProvider;
  * PA2-ARCH-008) et feature flag tenant `retail`
  * (`RetailFeatures::RETAIL`, mécanisme Core/Feature — companies.features).
  *
- * Les briques POS/stocks/tickets arrivent avec les issues suivantes du
- * programme BC-17 ; le provider reste volontairement minimal tant qu'il
- * n'a pas de service à binder (pattern CatalogServiceProvider #6880).
+ * Paiement en ligne marketplace (#7812) : registre des providers de
+ * paiement (`chargily|mock`, pattern PaymentGatewayRegistry RESTO-406),
+ * selection par `config('retail.payments.provider')` — fallback env en
+ * attendant les profils de paiement tenant BC-21 (PR #7732, non mergé) —
+ * et commande de réconciliation `retail:payments:reconcile`.
  */
 class RetailServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        // Aucun binding pour l'instant (socle fondations #7672).
+        $this->app->singleton(RetailPaymentProviderRegistry::class, function (): RetailPaymentProviderRegistry {
+            $registry = new RetailPaymentProviderRegistry;
+            $registry->register(new ChargilyProvider);
+            $registry->register(new MockProvider);
+
+            return $registry;
+        });
     }
 
     public function boot(): void
     {
         // Les Policies métier sont enregistrées centralement dans
         // App\Providers\AuthServiceProvider (règle PA2-ARCH-008).
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                ReconcileRetailPaymentsCommand::class,
+            ]);
+        }
     }
 }

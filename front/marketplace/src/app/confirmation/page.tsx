@@ -6,7 +6,7 @@
  * avec référence + jeton de suivi et lien direct vers /suivi.
  */
 
-import { CheckCircle2, Copy, KeyRound, ShieldAlert } from "lucide-react";
+import { CheckCircle2, Copy, CreditCard, KeyRound, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
@@ -123,6 +123,15 @@ export default function ConfirmationPage() {
             </dl>
 
             <div className="mt-4 flex flex-wrap gap-3">
+              {order.paymentMethod === "online" && order.checkoutUrl ? (
+                <a
+                  href={order.checkoutUrl}
+                  className="inline-flex h-10 items-center gap-2 rounded-full bg-emerald-600 px-5 text-sm font-semibold text-white transition hover:bg-emerald-700"
+                >
+                  <CreditCard aria-hidden="true" className="h-4 w-4" />
+                  Payer en ligne
+                </a>
+              ) : null}
               <Link
                 href={`/suivi?ref=${encodeURIComponent(order.reference)}&token=${encodeURIComponent(order.trackingToken)}`}
                 className="inline-flex h-10 items-center rounded-full bg-amber-600 px-5 text-sm font-semibold text-white transition hover:bg-amber-700"

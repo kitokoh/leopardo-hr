@@ -10,6 +10,9 @@ use App\Http\Controllers\Controller;
 use App\Modules\Retail\Application\Services\RetailBuyerAccountService;
 use App\Modules\Retail\Application\Services\RetailMarketplaceService;
 use App\Modules\Retail\Application\Services\RetailOnlineOrderService;
+use App\Modules\Retail\Application\Services\RetailPaymentService;
+use App\Modules\Retail\Domain\Enums\RetailPaymentMethod;
+use App\Modules\Retail\Domain\Models\RetailOnlinePaymentIntent;
 use App\Modules\Retail\Domain\Models\RetailOrder;
 use App\Modules\Retail\Domain\Models\RetailOrderItem;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\StoreMarketOrderRequest;
@@ -33,12 +36,20 @@ use Illuminate\Http\Request;
  * cle unique par tenant (rejeu → 200 meme payload). Le suivi exige le
  * jeton `tracking_token` (64 hex) : absent ou errone → 404, et le DTO
  * n'expose AUCUNE donnee interne (ni company_id, ni stock, ni marges).
+ *
+ * Paiement en ligne (#7812) : `payment_method = online` cree un intent de
+ * paiement (RetailPaymentService, provider par config env — abstraction
+ * locale en attendant BC-21/PR #7732) et la reponse embarque
+ * `payment.{method,intent_reference,status,checkout_url}`. COD (`cash`)
+ * reste le defaut. Le suivi public expose `payment.{method,status}`
+ * UNIQUEMENT (fail-closed).
  */
 class RetailMarketOrderPublicController extends Controller
 {
     public function __construct(
         private readonly RetailMarketplaceService $marketplace,
         private readonly RetailOnlineOrderService $orders,
+        private readonly RetailPaymentService $payments,
         private readonly TenantManager $tenants,
         private readonly PublicDeliveryStatusProvider $deliveryStatus,
         private readonly RetailBuyerAccountService $accounts,
@@ -79,32 +90,46 @@ class RetailMarketOrderPublicController extends Controller
 
         app()->instance('tenant_scope_required', true);
 
+        $paymentMethod = (string) $request->input('payment_method');
+
         try {
-            /** @var array{order: RetailOrder, created: bool} $result */
+            /** @var array{order: RetailOrder, created: bool, intent: RetailOnlinePaymentIntent|null} $result */
             $result = $this->tenants->withinTenant(
                 $company,
-                fn (): array => $this->orders->createGuestOrder(
-                    companyId: (string) $company->id,
-                    items: $items,
-                    customer: [
-                        'name' => (string) $request->input('customer.name'),
-                        'phone' => (string) $request->input('customer.phone'),
-                        'email' => $request->filled('customer.email') ? (string) $request->input('customer.email') : null,
-                    ],
-                    delivery: [
-                        'address' => (string) $request->input('delivery.address'),
-                        'city' => (string) $request->input('delivery.city'),
-                        'notes' => $request->filled('delivery.notes') ? (string) $request->input('delivery.notes') : null,
-                    ],
-                    idempotencyKey: (string) $request->input('idempotency_key'),
-                    buyerId: $buyer !== null ? (int) $buyer->id : null,
-                ),
+                function () use ($request, $company, $items, $paymentMethod, $buyer): array {
+                    $result = $this->orders->createGuestOrder(
+                        companyId: (string) $company->id,
+                        items: $items,
+                        customer: [
+                            'name' => (string) $request->input('customer.name'),
+                            'phone' => (string) $request->input('customer.phone'),
+                            'email' => $request->filled('customer.email') ? (string) $request->input('customer.email') : null,
+                        ],
+                        delivery: [
+                            'address' => (string) $request->input('delivery.address'),
+                            'city' => (string) $request->input('delivery.city'),
+                            'notes' => $request->filled('delivery.notes') ? (string) $request->input('delivery.notes') : null,
+                        ],
+                        idempotencyKey: (string) $request->input('idempotency_key'),
+                        buyerId: $buyer !== null ? (int) $buyer->id : null,
+                        paymentMethod: $paymentMethod,
+                    );
+
+                    // Paiement en ligne : intent cree (ou retrouve, rejeu
+                    // idempotent) DANS le contexte tenant du vendeur.
+                    $intent = $paymentMethod === RetailPaymentMethod::Online->value
+                        ? $this->payments->createIntentForOrder($result['order'])
+                        : null;
+
+                    return $result + ['intent' => $intent];
+                },
             );
         } finally {
             app()->forgetInstance('tenant_scope_required');
         }
 
         $order = $result['order'];
+        $intent = $result['intent'];
 
         return response()->json([
             'data' => [
@@ -113,6 +138,12 @@ class RetailMarketOrderPublicController extends Controller
                 'total_minor' => $order->total_minor,
                 'currency' => $order->currency,
                 'seller' => (string) $company->slug,
+                'payment' => [
+                    'method' => $this->paymentMethodValue($order),
+                    'intent_reference' => $intent?->intent_reference,
+                    'status' => $intent?->status->value,
+                    'checkout_url' => $intent?->checkout_url,
+                ],
             ],
         ], $result['created'] ? 201 : 200);
     }
@@ -186,6 +217,12 @@ class RetailMarketOrderPublicController extends Controller
                     'city' => $sellerSettings?->city,
                 ],
                 'items' => $items,
+                'payment' => [
+                    // Fail-closed : moyen + statut de paiement UNIQUEMENT
+                    // (jamais d'URL de checkout ni de reference d'intent).
+                    'method' => $this->paymentMethodValue($order),
+                    'status' => $order->payment_status ?? 'pending',
+                ],
                 'timeline' => [
                     'placed_at' => $order->created_at?->toIso8601String(),
                     'confirmed_at' => $order->confirmed_at?->toIso8601String(),
@@ -195,5 +232,17 @@ class RetailMarketOrderPublicController extends Controller
                 'delivery' => $delivery?->toArray(),
             ],
         ]);
+    }
+
+    /**
+     * Moyen de paiement expose publiquement — lecture BRUTE de l'attribut
+     * (les commandes anterieures a #7812 n'ont pas de `payment_method` :
+     * fallback COD `cash`, defaut historique du checkout).
+     */
+    private function paymentMethodValue(RetailOrder $order): string
+    {
+        $raw = $order->getAttributes()['payment_method'] ?? null;
+
+        return is_string($raw) && $raw !== '' ? $raw : RetailPaymentMethod::Cash->value;
     }
 }
