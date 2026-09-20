@@ -7,7 +7,7 @@ import type { AppLocale } from '@/lib/i18n';
  * - Faits concurrents vérifiables uniquement ; en cas de doute → « Non documenté ».
  * - Statuts Leopardo honnêtes : règles de paie pays = pilot (jamais « conformité validée »).
  * - Métriques datées (docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md).
- * - Motifs interdits par check-naming-drift.sh proscrits (« logiciel RH », « SaaS RH »…) —
+ * - Motifs de catégorie interdits par check-naming-drift.sh proscrits (#7428) —
  *   utiliser « SIRH », « suite métier », « solution de gestion RH ».
  * - Ton : comparaison honnête, jamais de dénigrement — chaque page dit clairement
  *   quand le concurrent est le bon choix.

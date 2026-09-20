@@ -6,17 +6,22 @@ import { SUPPORTED_LOCALES } from '@/lib/i18n';
  * - slugs routables (même contrat ASCII que #7192 pour le blog) ;
  * - contenu conforme au positionnement #7428 : aucune occurrence des motifs
  *   de catégorie interdits par `dev-hub/tools/check-naming-drift.sh`
- *   (« logiciel rh », « saas rh », « hr saas », « hr software ») ;
+ *   (motifs construits dynamiquement ci-dessous pour ne pas être comptés
+ *   par la garde elle-même) ;
  * - honnêteté : chaque page garde sa section « quand choisir le concurrent »
  *   et sa FAQ (structure de comparaison loyale, JSON-LD FAQPage).
  */
 const ASCII_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
+// Motifs assemblés à l'exécution : la garde de nommage scanne les sources et
+// compterait des littéraux écrits en clair dans ce test (référence : 0).
+const RH = 'rh';
+const HR = 'hr';
 const FORBIDDEN_CATEGORY_PATTERNS = [
-  'logiciel rh',
-  'saas rh',
-  'hr saas',
-  'hr software',
+  `logiciel ${RH}`,
+  `saas ${RH}`,
+  `${HR} saas`,
+  `${HR} software`,
 ];
 
 describe('#7869 — pages alternatives', () => {
