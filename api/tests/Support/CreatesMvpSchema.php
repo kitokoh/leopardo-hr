@@ -3978,6 +3978,30 @@ trait CreatesMvpSchema
             });
         }
 
+        // #7641 — clés API de lecture des distributeurs (TRAVEL-DISTRIBUTION) :
+        // miroir des colonnes réelles de la migration tenant 2026_09_20_000200.
+        if (! Schema::hasTable($this->moduleTable('travel_distributor_keys'))) {
+            Schema::create($this->moduleTable('travel_distributor_keys'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+
+                $table->string('name', 120);
+                $table->string('api_key_hash', 64);
+                $table->json('scopes');
+                $table->boolean('enabled')->default(true);
+                $table->timestamp('last_used_at')->nullable();
+                $table->unsignedBigInteger('usage_count')->default(0);
+                $table->timestamp('rotated_at')->nullable();
+                $table->timestamp('revoked_at')->nullable();
+                $table->unsignedBigInteger('created_by_user_id')->nullable();
+
+                $table->timestamps();
+
+                $table->unique(['company_id', 'api_key_hash']);
+                $table->index(['company_id', 'enabled']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('travel_hotels'))) {
             Schema::create($this->moduleTable('travel_hotels'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
