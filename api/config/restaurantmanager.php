@@ -24,6 +24,32 @@ return [
         // déterministe par tenant est dérivé de APP_KEY (voir
         // PaymentCallbackSigner).
         'webhook_secret' => env('RESTAURANT_MOBILE_MONEY_WEBHOOK_SECRET'),
+        // #7728 (BC-21) — première intégration production réelle,
+        // feature-flaggée. L'encaissement est routé sur le profil
+        // `mobile_money` ACTIF du tenant (opérateur + numéro) ; l'endpoint du
+        // provider (PVIT / Orange Money) et sa clé d'API viennent de l'env —
+        // aucun secret en dur. Sans flag / endpoint / profil : fail-closed
+        // « paiement en ligne non configuré ».
+        'production' => [
+            'enabled' => (bool) env('RESTAURANT_MOBILE_MONEY_PRODUCTION_ENABLED', false),
+            'initiate_url' => env('RESTAURANT_MOBILE_MONEY_INITIATE_URL'),
+            'api_key' => env('RESTAURANT_MOBILE_MONEY_API_KEY'),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Carte en ligne (#7728, BC-21)
+    |--------------------------------------------------------------------------
+    |
+    | Checkout Stripe sur les CLÉS PROPRES du tenant (profil `stripe_keys`
+    | actif — jamais les clés plateforme sur la surface publique restaurant).
+    | URLs de retour du checkout hébergé (fallback : /order du portail).
+    |
+    */
+    'card_online' => [
+        'success_url' => env('RESTAURANT_CARD_ONLINE_SUCCESS_URL'),
+        'cancel_url' => env('RESTAURANT_CARD_ONLINE_CANCEL_URL'),
     ],
 
     /*

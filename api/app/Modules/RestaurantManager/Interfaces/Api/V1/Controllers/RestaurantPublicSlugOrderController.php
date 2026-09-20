@@ -16,7 +16,6 @@ use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantPublicOrderS
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantPublicSlugOrderRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 /**
  * RESTO-902 (#7747) — Commande en ligne PUBLIQUE depuis la page par slug.
@@ -146,22 +145,24 @@ class RestaurantPublicSlugOrderController extends Controller
 
     public function pay(Request $request, string $slug, string $ref): JsonResponse
     {
-        /** @var array{provider_code: string, idempotency_key?: string|null} $validated */
+        /** @var array{provider_code?: string|null, idempotency_key?: string|null} $validated */
         $validated = $request->validate([
-            // PSP carte volontairement ABSENT (interface existante seulement,
-            // spec #5272 en attente) : cash / cash_on_delivery / mobile_money.
-            'provider_code' => ['required', 'string', Rule::in(['cash', 'cash_on_delivery', 'mobile_money'])],
+            // #7728 — encaissement réel via les profils de paiement du tenant :
+            // provider optionnel (défaut = premier provider EN LIGNE configuré,
+            // carte prioritaire), le service fail-closed refuse cash/terminal ici.
+            'provider_code' => ['sometimes', 'nullable', 'string', 'max:30'],
             'idempotency_key' => ['sometimes', 'nullable', 'string', 'max:64'],
         ]);
 
         return $this->resolver->within($slug, function (RestaurantBranch $branch) use ($ref, $validated): JsonResponse {
             $order = $this->branchOrder($branch, $ref);
 
-            $payment = $this->publicOrders->pay((string) $order->company_id, $order, [
-                // Alias public `cash_on_delivery` → passerelle `cash` (RESTO-805).
-                'provider_code' => $validated['provider_code'] === 'cash_on_delivery' ? 'cash' : $validated['provider_code'],
+            $result = $this->publicOrders->pay((string) $order->company_id, $order, [
+                'provider_code' => $validated['provider_code'] ?? null,
                 'idempotency_key' => $validated['idempotency_key'] ?? null,
             ]);
+
+            $payment = $result['payment'];
 
             return response()->json([
                 'data' => [
@@ -171,6 +172,9 @@ class RestaurantPublicSlugOrderController extends Controller
                     'status' => $payment->status->value,
                     'amount_minor' => (int) $payment->amount_minor,
                     'currency' => $payment->currency,
+                    // #7728 — URL du checkout hébergé quand la passerelle en
+                    // fournit une ; null pour les flux confirmés par callback.
+                    'checkout_url' => $result['checkout_url'],
                 ],
             ], 201);
         });

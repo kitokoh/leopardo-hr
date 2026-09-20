@@ -32,6 +32,7 @@ use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryA
 use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\GlovoDeliveryAppAdapter;
 use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\UberEatsDeliveryAppAdapter;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGatewayRegistry;
+use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CardOnlinePaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CardPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CashPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\MobileMoneyPaymentGateway;
@@ -77,12 +78,18 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         $this->app->singleton(RestaurantOutboxPublisher::class);
 
         // RESTO-406 (#6193) — registre des passerelles de paiement
-        // (cash / carte / mobile money sandbox, aucun secret en dur).
+        // (cash / carte / mobile money, aucun secret en dur).
+        // #7728 (BC-21) — les passerelles EN LIGNE (carte en ligne Stripe,
+        // mobile money production) sont branchées sur les PROFILS DE PAIEMENT
+        // du tenant via le contrat partagé (garde d'isolation #5584).
         $this->app->singleton(PaymentGatewayRegistry::class, function (): PaymentGatewayRegistry {
+            $tenantProfiles = $this->app->make(\App\Shared\Contracts\Payments\TenantPaymentProfileResolverInterface::class);
+
             $registry = new PaymentGatewayRegistry;
             $registry->register(new CashPaymentGateway);
             $registry->register(new CardPaymentGateway);
-            $registry->register(new MobileMoneyPaymentGateway);
+            $registry->register(new CardOnlinePaymentGateway($tenantProfiles));
+            $registry->register(new MobileMoneyPaymentGateway($tenantProfiles));
 
             return $registry;
         });
