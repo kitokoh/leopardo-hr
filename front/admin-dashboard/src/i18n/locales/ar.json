@@ -1669,7 +1669,37 @@
     "sepaReady": "SEPA جاهز",
     "company": "الشركة",
     "manage2fa": "إدارة التحقق بخطوتين",
-    "tenantSubtitle": "أدر معلومات حسابك وأمانه."
+    "tenantSubtitle": "أدر معلومات حسابك وأمانه.",
+    "billing": {
+      "title": "الاشتراك والفوترة",
+      "subtitle": "راجع خطتك وفواتيرك والخدمات المشترك بها.",
+      "plan": "الخطة الحالية",
+      "status": "الحالة",
+      "none": "لا يوجد اشتراك نشط.",
+      "manage": "إدارة الاشتراك والفواتير"
+    },
+    "emailLocked": "البريد الإلكتروني هو معرّف تسجيل الدخول الخاص بك ولا يمكن تغييره هنا.",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "phone": "الهاتف",
+    "profileLoadError": "تعذر تحميل ملفك الشخصي.",
+    "twoFa": {
+      "loading": "جارٍ التحميل…",
+      "enabledHint": "مفعّلة — حسابك محمي.",
+      "disabledHint": "معطّلة — حسابك أقل أمانًا.",
+      "loadError": "حدث خطأ أثناء التحميل.",
+      "enrollHint": "استخدم تطبيق مصادقة (Google Authenticator أو Authy أو 1Password…) لإنشاء رموز لمرة واحدة.",
+      "enrollStart": "بدء التفعيل",
+      "scanTitle": "الخطوة 1 — امسح رمز QR",
+      "confirmTitle": "الخطوة 2 — أكّد برمز TOTP",
+      "recoveryTitle": "رموز الاسترداد — احتفظ بها في مكان آمن",
+      "recoveryHint": "يمكن استخدام كل رمز مرة واحدة فقط إذا فقدت الوصول إلى تطبيق المصادقة.",
+      "copyAll": "نسخ الكل",
+      "copied": "تم النسخ!",
+      "disableHint": "أدخل رمز TOTP الحالي لتعطيل المصادقة الثنائية.",
+      "codeInvalid": "رمز غير صالح. حاول مجددًا.",
+      "enrollError": "حدث خطأ أثناء التفعيل."
+    }
   },
   "settingsPersonalContacts": "جهات الاتصال الشخصية",
   "attendancePersonalTracking": "المتابعة الشخصية",

@@ -1675,7 +1675,37 @@
     "sepaReady": "SEPA prêt",
     "company": "Société",
     "manage2fa": "Gérer l'authentification à deux facteurs",
-    "tenantSubtitle": "Gérez les informations de votre compte et sa sécurité."
+    "tenantSubtitle": "Gérez les informations de votre compte et sa sécurité.",
+    "billing": {
+      "title": "Abonnement & facturation",
+      "subtitle": "Consultez votre plan, vos factures et les services souscrits.",
+      "plan": "Plan actuel",
+      "status": "Statut",
+      "none": "Aucun abonnement actif.",
+      "manage": "Gérer l'abonnement et les factures"
+    },
+    "emailLocked": "L'adresse email est votre identifiant de connexion et ne peut pas être modifiée ici.",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "phone": "Téléphone",
+    "profileLoadError": "Impossible de charger votre profil.",
+    "twoFa": {
+      "loading": "Chargement…",
+      "enabledHint": "Activée — votre compte est protégé.",
+      "disabledHint": "Désactivée — votre compte est moins sécurisé.",
+      "loadError": "Erreur lors du chargement.",
+      "enrollHint": "Utilisez une application d'authentification (Google Authenticator, Authy, 1Password…) pour générer des codes à usage unique.",
+      "enrollStart": "Commencer l'enrôlement",
+      "scanTitle": "Étape 1 — Scannez le QR code",
+      "confirmTitle": "Étape 2 — Confirmez avec un code TOTP",
+      "recoveryTitle": "Codes de récupération — conservez-les en lieu sûr",
+      "recoveryHint": "Chaque code ne peut être utilisé qu'une seule fois si vous perdez l'accès à votre application d'authentification.",
+      "copyAll": "Copier tout",
+      "copied": "Copié !",
+      "disableHint": "Saisissez votre code TOTP actuel pour désactiver l'authentification à deux facteurs.",
+      "codeInvalid": "Code invalide. Réessayez.",
+      "enrollError": "Erreur lors de l'activation."
+    }
   },
   "settingsPersonalContacts": "Contacts personnels",
   "attendancePersonalTracking": "Suivi personnel",

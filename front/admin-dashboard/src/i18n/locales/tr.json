@@ -1675,7 +1675,37 @@
     "sepaReady": "SEPA hazır",
     "company": "Şirket",
     "manage2fa": "İki adımlı doğrulamayı yönet",
-    "tenantSubtitle": "Hesap bilgilerinizi ve güvenliğini yönetin."
+    "tenantSubtitle": "Hesap bilgilerinizi ve güvenliğini yönetin.",
+    "billing": {
+      "title": "Abonelik ve faturalandırma",
+      "subtitle": "Planınızı, faturalarınızı ve abone olunan hizmetleri inceleyin.",
+      "plan": "Mevcut plan",
+      "status": "Durum",
+      "none": "Aktif abonelik yok.",
+      "manage": "Aboneliği ve faturaları yönet"
+    },
+    "emailLocked": "E-posta adresiniz oturum açma kimliğinizdir ve buradan değiştirilemez.",
+    "firstName": "Ad",
+    "lastName": "Soyad",
+    "phone": "Telefon",
+    "profileLoadError": "Profiliniz yüklenemedi.",
+    "twoFa": {
+      "loading": "Yükleniyor…",
+      "enabledHint": "Etkin — hesabınız korunuyor.",
+      "disabledHint": "Devre dışı — hesabınız daha az güvenli.",
+      "loadError": "Yükleme sırasında hata oluştu.",
+      "enrollHint": "Tek kullanımlık kodlar üretmek için bir doğrulayıcı uygulama (Google Authenticator, Authy, 1Password…) kullanın.",
+      "enrollStart": "Kuruluma başla",
+      "scanTitle": "Adım 1 — QR kodunu tarayın",
+      "confirmTitle": "Adım 2 — TOTP koduyla onaylayın",
+      "recoveryTitle": "Kurtarma kodları — güvenli bir yerde saklayın",
+      "recoveryHint": "Doğrulayıcı uygulamanıza erişimi kaybederseniz her kod yalnızca bir kez kullanılabilir.",
+      "copyAll": "Tümünü kopyala",
+      "copied": "Kopyalandı!",
+      "disableHint": "İki adımlı doğrulamayı devre dışı bırakmak için mevcut TOTP kodunuzu girin.",
+      "codeInvalid": "Geçersiz kod. Tekrar deneyin.",
+      "enrollError": "Etkinleştirme sırasında hata oluştu."
+    }
   },
   "settingsPersonalContacts": "Kişisel iletişim",
   "attendancePersonalTracking": "Kişisel takip",

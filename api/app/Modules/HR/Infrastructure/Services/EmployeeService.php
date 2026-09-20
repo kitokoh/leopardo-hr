@@ -15,6 +15,7 @@ use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
 use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class EmployeeService
@@ -105,6 +106,17 @@ class EmployeeService
                     invitedByEmail: $actor->email,
                     resourceAssignments: $resourceAssignments,
                 );
+            } else {
+                // #7864 (D7) : une invitation attendue mais non envoyée ne doit
+                // pas passer sous silence — l'employé resterait sans accès sans
+                // aucune trace (resend possible via l'endpoint invitations).
+                Log::warning('Employee invitation NOT sent: missing company or actor context', [
+                    'employee_id' => $employee->id,
+                    'company_id' => $employee->company_id,
+                    'has_company' => (bool) $company,
+                    'has_actor' => (bool) $actor,
+                    'send_invitation_requested' => $sendInvitation,
+                ]);
             }
         }
 
