@@ -3704,7 +3704,47 @@
       }
     },
     "socialExamplePlaceholder": "مثال: Leopardo — وسائل التواصل الاجتماعي",
-    "postContentPlaceholder": "محتوى المنشور..."
+    "postContentPlaceholder": "محتوى المنشور...",
+    "publishNow": "انشر الآن",
+    "commentsLoadError": "تعذر تحميل التعليقات.",
+    "aiSuggestUnavailable": "اقتراح الذكاء الاصطناعي غير متاح حاليًا.",
+    "replySendError": "تعذر إرسال الرد.",
+    "suggestReply": "اقتراح رد (ذكاء اصطناعي)",
+    "replyPlaceholder": "ردك (تراجعه قبل الإرسال)...",
+    "weeklyReportLoadError": "تعذر تحميل التقرير الأسبوعي.",
+    "aiSummary": "ملخص الذكاء الاصطناعي",
+    "autoSummary": "ملخص تلقائي",
+    "web": {
+      "mediaUrls": {
+        "label": "روابط الوسائط (اختياري)",
+        "placeholder": "https://example.com/visual.jpg",
+        "add": "إضافة",
+        "remove": "إزالة هذه الوسائط"
+      },
+      "interactions": {
+        "title": "التعليقات",
+        "toggle": "عرض التفاعلات",
+        "refresh": "تحديث",
+        "loading": "جارٍ تحميل التعليقات...",
+        "empty": "لا توجد تعليقات بعد.",
+        "send": "رد",
+        "sending": "جارٍ الإرسال...",
+        "sent": "تم إرسال الرد.",
+        "suggesting": "جارٍ الاقتراح..."
+      },
+      "weeklyReport": {
+        "title": "تقرير آخر 7 أيام",
+        "loading": "جارٍ تحميل التقرير...",
+        "empty": "لا يوجد تقرير متاح.",
+        "published": "منشورات منشورة",
+        "failed": "إخفاقات",
+        "upcoming": "قادمة",
+        "emails": "رسائل الحملة"
+      },
+      "postActions": {
+        "delete": "حذف"
+      }
+    }
   },
   "attendanceCorrectionEditDateTitle": "تعديل {date}",
   "attendanceSaving": "جارٍ الحفظ...",
@@ -6214,7 +6254,8 @@
       "bookingsDesc": "مبيعات الشباك والتأكيد والإلغاء والاسترداد والتذاكر.",
       "reportsDesc": "المبيعات والإشغال والإيرادات والإلغاءات وتصدير CSV.",
       "portal": "بوابة المسافر",
-      "portalDesc": "بحث الرحلات والحجز من جهة العميل."
+      "portalDesc": "بحث الرحلات والحجز من جهة العميل.",
+      "staffDesc": "تعيينات السائق وموظف الشباك والمراقب ورئيس المكتب."
     },
     "network": {
       "addPrice": "إضافة سعر",
@@ -6593,7 +6634,38 @@
     "travel.tripStatus.published": "منشور",
     "travel.tripStatus.scheduled": "مجدول",
     "travel.vehicles.registration": "رقم التسجيل",
-    "travel.vehicles.seats": "المقاعد"
+    "travel.vehicles.seats": "المقاعد",
+    "staff": {
+      "title": "الفريق",
+      "subtitle": "عيّن موظفيك في أدوار السفر (سائق، موظف شباك، مراقب، رئيس مكتب) على مكتب أو رحلة.",
+      "assignTitle": "تعيين عضو في الفريق",
+      "employee": "الموظف",
+      "role": "الدور",
+      "scope": "النطاق",
+      "scopeOffice": "مكتب",
+      "scopeTrip": "رحلة",
+      "assign": "تعيين",
+      "revoke": "إلغاء",
+      "assignFailed": "فشل التعيين.",
+      "revokeFailed": "فشل الإلغاء.",
+      "formIncomplete": "اختر موظفًا ودورًا ونطاقًا.",
+      "activeTitle": "التعيينات النشطة",
+      "empty": "لا يوجد تعيين نشط.",
+      "historyTitle": "سجل التعيينات",
+      "historyEmpty": "لا يوجد تعيين ملغى أو منتهي الصلاحية.",
+      "revokedAt": "تاريخ الإلغاء"
+    },
+    "staffRole": {
+      "driver": "سائق",
+      "agent": "موظف شباك",
+      "controller": "مراقب",
+      "office_manager": "رئيس مكتب"
+    },
+    "staffStatus": {
+      "active": "نشط",
+      "revoked": "ملغى",
+      "expired": "منتهي الصلاحية"
+    }
   },
   "edu": {
     "nav": {
@@ -7514,6 +7586,18 @@
       "publish_showcase": {
         "title": "نشر موقعك التعريفي",
         "desc": "اجعل موقعك مرئيًا بنقرة واحدة."
+      },
+      "travel_setup_network": {
+        "title": "أنشئ شبكتك (محطات، مكاتب، خطوط)",
+        "desc": "أعلن عن محطاتك ومكاتب البيع وخطوطك بين المدن."
+      },
+      "travel_first_trip": {
+        "title": "برمج رحلتك الأولى",
+        "desc": "أنشئ رحلة بتاريخ محدد وأسعارها حسب الدرجة ثم انشرها."
+      },
+      "travel_first_sale": {
+        "title": "سجّل أول عملية بيع",
+        "desc": "بِع أول تذكرة في الشباك أو عبر الإنترنت."
       }
     }
   },
