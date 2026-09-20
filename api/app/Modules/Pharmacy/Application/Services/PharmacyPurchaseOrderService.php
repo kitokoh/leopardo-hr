@@ -101,7 +101,7 @@ class PharmacyPurchaseOrderService
         }
 
         if ($receivedLines === []) {
-            throw new DomainException('Aucune ligne à réceptionner.', 422, 'PHARMACY_EMPTY_RECEIPT');
+            throw new DomainException(__('pharmacy.empty_receipt'), 422, 'PHARMACY_EMPTY_RECEIPT');
         }
 
         $companyId = (string) $order->company_id;
@@ -109,7 +109,7 @@ class PharmacyPurchaseOrderService
         return DB::transaction(function () use ($order, $receivedLines, $employeeId, $companyId): PharmacyPurchaseOrder {
             foreach ($receivedLines as $received) {
                 if ($received['quantity'] <= 0) {
-                    throw new DomainException('La quantité reçue doit être strictement positive.', 422, 'PHARMACY_INVALID_QUANTITY');
+                    throw new DomainException(__('pharmacy.invalid_received_quantity'), 422, 'PHARMACY_INVALID_QUANTITY');
                 }
 
                 /** @var PharmacyPurchaseOrderLine|null $line */
@@ -127,13 +127,12 @@ class PharmacyPurchaseOrderService
                 // Sur-réception refusée : reçu cumulé ≤ commandé.
                 if ($line->quantity_received + $received['quantity'] > $line->quantity_ordered) {
                     throw new DomainException(
-                        sprintf(
-                            'Sur-réception refusée sur la ligne #%d : %d commandé, %d déjà reçu, %d proposé.',
-                            $line->id,
-                            $line->quantity_ordered,
-                            $line->quantity_received,
-                            $received['quantity']
-                        ),
+                        __('pharmacy.over_receipt', [
+                            'line' => $line->id,
+                            'ordered' => $line->quantity_ordered,
+                            'received' => $line->quantity_received,
+                            'proposed' => $received['quantity'],
+                        ]),
                         422,
                         'PHARMACY_OVER_RECEIPT'
                     );

@@ -15,12 +15,11 @@ class PharmacyInsufficientStockException extends DomainException
     public function __construct(int $productId, int $requested, int $available)
     {
         parent::__construct(
-            sprintf(
-                'Stock insuffisant pour le produit #%d : %d demandé, %d disponible (lots non périmés).',
-                $productId,
-                $requested,
-                $available
-            ),
+            __('pharmacy.insufficient_stock', [
+                'product' => $productId,
+                'requested' => $requested,
+                'available' => $available,
+            ]),
             422,
             'PHARMACY_INSUFFICIENT_STOCK'
         );
