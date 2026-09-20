@@ -35,6 +35,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $volume_cm3
  * @property int $declared_value_minor
  * @property int|null $cod_amount_minor
+ * @property string|null $cod_currency
  * @property string|null $pickup_contact
  * @property string|null $pickup_address
  * @property string $dropoff_contact
@@ -71,6 +72,7 @@ class Delivery extends Model
         'volume_cm3',
         'declared_value_minor',
         'cod_amount_minor',
+        'cod_currency',
         'pickup_contact',
         'pickup_address',
         'dropoff_contact',
