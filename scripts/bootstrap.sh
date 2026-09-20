@@ -31,8 +31,8 @@ sleep 5
 # Run migrations and seeders
 echo "Running migrations and seeds..."
 docker exec leopardo-api php artisan key:generate --force
-# NB: leopardo:migrate ne définit pas d'option --force (voir routes/console.php) — #4413
-docker exec leopardo-api php artisan leopardo:migrate --fresh --seed
+# NB: --fresh exige --force hors interaction (garde #7974) — contexte docker dev local uniquement
+docker exec leopardo-api php artisan leopardo:migrate --fresh --seed --force
 
 echo "✅ Leopardo RH is ready!"
 echo "API: http://localhost:8000"

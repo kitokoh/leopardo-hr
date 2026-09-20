@@ -49,7 +49,7 @@ migrate: ## Run database migrations (public + tenant schemas via leopardo:migrat
 
 .PHONY: migrate-fresh
 migrate-fresh: ## Reset database and re-run all migrations with seeders (public + tenant schemas)
-	$(ARTISAN) leopardo:migrate --fresh --seed
+	$(ARTISAN) leopardo:migrate --fresh --seed --force
 
 .PHONY: seed
 seed: ## Run database seeders
