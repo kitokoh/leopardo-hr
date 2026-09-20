@@ -15,7 +15,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | ~~`api/app/Services/`~~ — répertoire **supprimé** (2026-08-11, #1728), ne rien y ajouter | `Modules/<Name>/Infrastructure/Services/` |
 | `api/app/Exceptions/` (base `DomainException` partagée, encore étendue par des modules) | `Modules/<Name>/Domain/Exceptions/` |
 
-## Modules existants (29 modules)
+## Modules existants (30 modules)
 
 | Module | Domaine couvert |
 |---|---|
@@ -52,6 +52,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Restaurant` | Solution sectorielle restaurant : questionnaire de pré-qualification public, pack suggéré (manifest Core/Solutions) |
 | `Accounting` | Comptabilité : plan comptable, grand livre, écritures, facturation, export FEC |
 | `TravelAgency` | Verticale agences de voyages : référentiel pays/villes/gare/bureaux, manifest de solution activable par tenant (TRAVEL-101..108, 201..203) |
+| `Pharmacy` | Verticale officines de pharmacie (BC-30) : référentiel produits (DCI, formes, dosages), stock par lots/péremptions FEFO, achats fournisseurs, ventes comptoir, ordonnances et ordonnancier des produits contrôlés (PHARMA-001..007) |
 | `Accounting` | Comptabilité : plan comptable, grand livre, écritures, facturation, export FEC |
 | `Delivery` | Livraisons dernier-kilomètre : colis, tournées, livreurs, POD, tracking, COD, rapports (BC-26 DELIVERY) |
 

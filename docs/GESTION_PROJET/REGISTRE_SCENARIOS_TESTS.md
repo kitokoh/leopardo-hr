@@ -17,6 +17,24 @@
 > Surfaces web : écran admin Vue « Passerelles de paiement » et page client « Encaissements »
 > (couverts par ESLint/tsc/Jest du lot). Surface mobile : aucune.
 
+> **MAJ 2026-09-19 — #7739 (épic #7736), comptes clients grand public du site marketplace (PR empilée sur #7738/#7781).**
+> Surface **API** : `/api/v1/public/travel/marketplace/account/*` — inscription/connexion
+> (`POST /register`, `POST /login`, throttle `auth-sensitive` + verrouillage 5 échecs/15 min),
+> surface connectée sur guard Sanctum DÉDIÉ `travel_customer` (`POST /logout`, `GET /me`,
+> `GET /bookings` — « mes réservations » cross-agences STRICTEMENT bornées par
+> `customer_account_id`). Rattachement des réservations marketplace au compte : à l'inscription
+> (par e-mail de contact, insensible à la casse, réservations orphelines uniquement) et à la
+> création (client connecté sur `POST /bookings`) ; checkout invité préservé. Contrat documenté
+> dans `api/openapi.yaml` (+5 paths). Scénarios automatisés :
+> `api/tests/Feature/Travel/TravelCustomerAccountApiTest.php` (6 cas Feature multi-tenant :
+> hash du mot de passe + revendication par e-mail sur 2 agences, verrouillage login,
+> me/logout sur guard dédié, isolation stricte entre deux clients, rattachement à la création
+> vs invité non rattaché, mots de passe faibles rejetés).
+> Surface **web** : `front/travel-web` — pages `/account/login`, `/account/register`,
+> `/account` (profil + réservations + déconnexion), pré-remplissage checkout, proxy
+> same-origin relayant `Authorization` uniquement sur `account/*` + `bookings` (vérifié par
+> `tsc`/`eslint` ; pas de suite e2e travel-web à ce stade de l'épic).
+
 > **MAJ 2026-09-19 — lot BC-17 RETAIL #7672–#7675 (PR #7718), le module vendeur devient actif.**
 > Surface **API** : nouveau préfixe `/v1/retail` (flag tenant `retail`, middleware `module.retail`,
 > fail-closed) — produits/catégories (CRUD + publish/unpublish, SKU/slug uniques par tenant),
