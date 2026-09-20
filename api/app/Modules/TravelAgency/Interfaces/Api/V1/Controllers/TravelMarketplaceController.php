@@ -178,7 +178,9 @@ class TravelMarketplaceController extends Controller
                 notifyConsent: (bool) $request->validated('notify_consent', false),
             );
 
-            if ($customerAccountId !== null && $booking->customer_account_id === null) {
+            // getAttribute() : la colonne n'est pas annotée @property sur le
+            // modèle (accès magique) — évite property.notFound en strict.
+            if ($customerAccountId !== null && $booking->getAttribute('customer_account_id') === null) {
                 $booking->forceFill(['customer_account_id' => $customerAccountId])->save();
             }
 
