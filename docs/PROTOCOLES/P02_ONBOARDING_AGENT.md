@@ -6,7 +6,7 @@
 > après une absence. Hors champ : la formation métier RH/paie (voir `docs/payroll/`, compliance pays).
 > **Ancrage existant :** `dev-hub/prompts/00_AGENT_QUICK_CARD.md` (2 min),
 > `dev-hub/prompts/14_ONBOARDING_AGENT.md`, `docs/architecture/AGENT-START-HERE.md`,
-> `docs/CONTEXT/` (01→04), `AGENTS.md`, `.specify/constitution.md`, `docs/QUICKSTART.md`, `docs/DEMARRAGE_RAPIDE.md`.
+> `docs/CONTEXT/` (01→04), `AGENTS.md`, `.specify/constitution.md`, `docs/QUICKSTART.md`, `docs/archive/DEMARRAGE_RAPIDE.md` (archivé).
 
 ## 1. Objet
 
@@ -42,7 +42,7 @@ migrations en collision, CI saturée, travail sur des docs archivées, promesses
 6. **Vérifier les verrous avant de toucher au code** : branches et PRs existantes contenant le
    numéro d'issue ciblé (protocole #2400) ; sinon **claim** : self-assign + branche
    `fix/<issue>-<slug>` + commit vide de claim.
-7. **Environnement local** : `docs/QUICKSTART.md` / `docs/DEMARRAGE_RAPIDE.md` ; ne jamais inventer
+7. **Environnement local** : `docs/QUICKSTART.md` / `docs/archive/DEMARRAGE_RAPIDE.md` (archivé) ; ne jamais inventer
    de clés — `.env.example` est la référence (parité vérifiée par garde
    `check-env-example-parity.sh`).
 
