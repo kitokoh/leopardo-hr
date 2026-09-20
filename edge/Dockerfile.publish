@@ -67,7 +67,22 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
  && chmod -R 775 storage bootstrap/cache
 
 # ── Edge Data Directory ────────────────────────────────────
-RUN mkdir -p /var/leopardo && chmod 755 /var/leopardo
+# #7966 — chown www-data : l'image tourne désormais entièrement en non-root
+# (migrations SQLite dans l'entrypoint + php-fpm/nginx via supervisord, tous
+# en www-data) — le volume /var/leopardo doit être inscriptible par cet
+# utilisateur (propriété initialisée à la 1re création du volume nommé).
+RUN mkdir -p /var/leopardo && chmod 755 /var/leopardo \
+ && chown www-data:www-data /var/leopardo
+
+# ── Exécution non-root (#7966) ─────────────────────────────
+# Répertoires inscriptibles par www-data : logfile/pidfile supervisord et
+# logs des programmes (/var/log/supervisor), temp/lock nginx tels que
+# compilés par le paquet Alpine (client_body/fastcgi temp sous
+# /var/lib/nginx/tmp, lock sous /run/nginx) — le master nginx n'est plus
+# root (port :8080, cf. nginx.edge.conf).
+RUN mkdir -p /var/log/supervisor /run/nginx \
+ && chown www-data:www-data /var/log/supervisor \
+ && chown -R www-data:www-data /var/lib/nginx /var/log/nginx /run/nginx
 
 # ── Config Files ───────────────────────────────────────────
 COPY edge/nginx.edge.conf /etc/nginx/nginx.conf
@@ -82,13 +97,20 @@ ENV APP_ENV=edge \
     LOG_CHANNEL=stderr \
     QUEUE_CONNECTION=sync
 
-EXPOSE 80
+# #7966 — port non privilégié (nginx écoute en :8080, cf. nginx.edge.conf).
+EXPOSE 8080
 
 VOLUME ["/var/leopardo"]
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost/api/v1/edge/readiness || exit 1
+    CMD curl -f http://localhost:8080/api/v1/edge/readiness || exit 1
 
 # #4411 : migrations SQLite AVANT supervisord (schéma edge jamais provisionné).
+# #7966 — image 100% non-root : USER www-data (PID 1 entrypoint + supervisord
+# + nginx master + php-fpm, aucun process root). `-u www-data` est un filet
+# de sécurité si le conteneur était relancé avec `--user root` : supervisord
+# lit sa config puis retombe en www-data AVANT d'ouvrir logs/pidfile et de
+# spawner les programmes (no-op quand l'uid courant est déjà www-data).
+USER www-data
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.publish.sh"]
-CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/conf.d/leopardo.conf"]
+CMD ["/usr/bin/supervisord", "-n", "-u", "www-data", "-c", "/etc/supervisor/conf.d/leopardo.conf"]
