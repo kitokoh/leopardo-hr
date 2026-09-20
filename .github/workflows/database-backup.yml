@@ -281,6 +281,25 @@ jobs:
 
           echo "configured=true" >> "$GITHUB_OUTPUT"
 
+      # #7657 — `backup_drill.sh` attend un CHEMIN de fichier d'identité age
+      # (`age --decrypt --identity <fichier>`), or un secret Actions ne peut
+      # transporter que le CONTENU de la clé. On matérialise donc le secret
+      # `BACKUP_AGE_IDENTITY` dans un fichier éphémère du runner (umask 077).
+      - name: Materialize age identity file
+        if: steps.secrets.outputs.configured == 'true'
+        shell: bash
+        env:
+          BACKUP_AGE_IDENTITY: ${{ secrets.BACKUP_AGE_IDENTITY }}
+        run: |
+          set -euo pipefail
+          if [[ -n "${BACKUP_AGE_IDENTITY:-}" ]]; then
+            umask 077
+            printf '%s\n' "${BACKUP_AGE_IDENTITY}" > "${RUNNER_TEMP}/age-identity.txt"
+            echo "BACKUP_AGE_IDENTITY_FILE=${RUNNER_TEMP}/age-identity.txt" >> "$GITHUB_ENV"
+          else
+            echo "::notice::Secret BACKUP_AGE_IDENTITY absent — le drill échouera si le dump est chiffré (age)."
+          fi
+
       - name: Run backup restore drill
         if: steps.secrets.outputs.configured == 'true'
         shell: bash
@@ -288,7 +307,10 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           RESTORE_DB_URL: ${{ secrets.RESTORE_DB_URL }}
           BACKUP_AGE_RECIPIENT: ${{ secrets.BACKUP_AGE_RECIPIENT }}
-          BACKUP_AGE_IDENTITY_FILE: ${{ secrets.BACKUP_AGE_IDENTITY_FILE }}
+          # #7657 — confirmation destructive exigée par backup_drill.sh (garde #3518) :
+          # RESTORE_DB_URL pointe sur la base scratch dédiée `leopardo_drill`,
+          # jamais sur la base de production (le script vérifie aussi la non-identité).
+          CONFIRM_RESTORE: "YES"
         run: |
           set -euo pipefail
           chmod +x dev-hub/scripts/backup_drill.sh
