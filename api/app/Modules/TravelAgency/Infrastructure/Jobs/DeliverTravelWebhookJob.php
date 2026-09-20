@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Infrastructure\Jobs;
 
+use App\Contracts\Queue\TenantScopedJob;
+use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\TravelAgency\Domain\Models\TravelWebhookDelivery;
 use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookSecretService;
@@ -24,8 +26,12 @@ use Throwable;
  * backoff exponentiel (attempts++, next_attempt_at) ; attempts ≥ MAX →
  * dead-letter (failed). Rejouable : la contrainte unique
  * `(subscription_id, event_id)` empêche tout doublon.
+ *
+ * #7649 — job tenant : la livraison lit l'abonnement et la delivery du
+ * tenant, le contexte (search_path + current_company) doit être établi
+ * avant handle() via EnsureTenantContext.
  */
-class DeliverTravelWebhookJob implements ShouldQueue
+class DeliverTravelWebhookJob implements ShouldQueue, TenantScopedJob
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -40,6 +46,22 @@ class DeliverTravelWebhookJob implements ShouldQueue
         private readonly string $deliveryId,
         private readonly string $subscriptionId,
     ) {}
+
+    public function tenantCompanyId(): ?string
+    {
+        /** @var TravelWebhookDelivery|null $delivery */
+        $delivery = TravelWebhookDelivery::query()->withoutGlobalScopes()->find($this->deliveryId);
+
+        return $delivery?->company_id;
+    }
+
+    /**
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [new EnsureTenantContext];
+    }
 
     public function handle(TravelWebhookSigner $signer): void
     {
