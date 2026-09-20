@@ -33,6 +33,7 @@ use App\Http\Middleware\Travel\TravelPartnerAuthMiddleware;
 use App\Http\Middleware\Web\EnsureEmployeeMiddleware;
 use App\Http\Middleware\Web\EnsureManagerMiddleware;
 use App\Http\Middleware\Web\EnsureManagerRoleMiddleware;
+use App\Modules\RestaurantManager\Domain\Exceptions\PaymentGatewayException as RestaurantPaymentGatewayException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Console\Scheduling\Schedule;
@@ -192,6 +193,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.travelagency' => EnsureTravelAgencyModuleMiddleware::class,
             // BC-24 TRAVEL — API entrante transporteurs (TRAVEL-807/#6086).
             'travel.partner' => TravelPartnerAuthMiddleware::class,
+            // BC-24 TRAVEL — lecture distributeurs par clé scopée (TRAVEL-DISTRIBUTION/#7641).
+            'travel.distributor' => \App\Http\Middleware\Travel\TravelDistributorAuthMiddleware::class,
             // BC-25 RESTAURANT — gate feature flag restaurantmanager (RESTO-102/#6159).
             'module.restaurantmanager' => EnsureRestaurantManagerModuleMiddleware::class,
             // BC-27 SHOWCASE — gate feature flag company_showcase (#6865/#6866).
@@ -279,6 +282,38 @@ return Application::configure(basePath: dirname(__DIR__))
                     'date' => $exception->unlockDate()->format('d/m/Y H:i'),
                 ]),
             ], $exception->statusCode());
+        });
+
+        // #7728 : erreur normalisée des passerelles de paiement Restaurant —
+        // JAMAIS un 500. `online_payment_not_configured` (aucun profil de
+        // paiement tenant actif) est un message UTILISATEUR avec fallback
+        // « paiement sur place » ; les autres codes gardent un message
+        // générique (aucun détail PSP ne fuite).
+        $exceptions->render(function (RestaurantPaymentGatewayException $exception, Request $request) {
+            if (! ($request->expectsJson() || $request->is('api/*'))) {
+                return null;
+            }
+
+            $status = $exception->getCode() >= 400 && $exception->getCode() < 600
+                ? (int) $exception->getCode()
+                : 422;
+
+            $payload = [
+                'error' => $exception->errorCode,
+                'message' => $exception->errorCode,
+                'localized_message' => $exception->errorCode === 'online_payment_not_configured'
+                    ? __('errors.RESTAURANT_ONLINE_PAYMENT_NOT_CONFIGURED')
+                    : __('errors.SERVER_ERROR'),
+            ];
+
+            if ($exception->errorCode === 'online_payment_not_configured') {
+                // Le client public peut toujours régler sur place (POS).
+                $payload['fallback'] = 'pay_on_site';
+            } else {
+                report($exception);
+            }
+
+            return new JsonResponse($payload, $status);
         });
 
         $exceptions->render(function (DomainException $exception, Request $request) {

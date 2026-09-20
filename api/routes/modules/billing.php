@@ -10,8 +10,10 @@
  *   - Feature flags write: principal only
  */
 
+use App\Modules\Billing\Interfaces\Api\V1\Controllers\AiCreditController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\BillingController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\FeatureFlagController;
+use App\Modules\Billing\Interfaces\Api\V1\Controllers\TenantPaymentProfileController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingStepController;
 use Illuminate\Support\Facades\Route;
 
@@ -65,5 +67,21 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // #4931 : customerPortal CRÉE une session Stripe (effet de bord) →
         // POST, jamais GET. La réponse reste la même (URL du portal).
         Route::post('/billing/portal', [BillingController::class, 'customerPortal']);
+
+        // #7727 (BC-21) — profils de paiement du tenant (« Encaissements ») :
+        // clés PSP propres / IBAN / mobile money. Secrets write-only chiffrés,
+        // masques en lecture ; le profil stripe_keys ACTIF route les
+        // encaissements Accounting vers le compte DU TENANT.
+        Route::get('/billing/payment-profiles', [TenantPaymentProfileController::class, 'index']);
+        Route::post('/billing/payment-profiles', [TenantPaymentProfileController::class, 'store']);
+        Route::put('/billing/payment-profiles/{id}', [TenantPaymentProfileController::class, 'update'])->whereNumber('id');
+        Route::post('/billing/payment-profiles/{id}/activate', [TenantPaymentProfileController::class, 'activate'])->whereNumber('id');
+        Route::delete('/billing/payment-profiles/{id}', [TenantPaymentProfileController::class, 'destroy'])->whereNumber('id');
+
+        // Crédits IA achetables (#7764, spec MISSION_ESPACE_CLIENT §3.4) —
+        // achat FACULTATIF de packs de tokens, visible uniquement dans
+        // l'espace Facturation (principal only, comme le reste de /billing).
+        Route::get('/billing/ai-credits', [AiCreditController::class, 'index']);
+        Route::post('/billing/ai-credits/checkout', [AiCreditController::class, 'checkout']);
     });
 });

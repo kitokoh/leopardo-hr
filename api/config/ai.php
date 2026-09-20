@@ -46,10 +46,16 @@ return [
     'temperature' => (float) env('AI_TEMPERATURE', 0.3),
     'system_prompt_path' => resource_path('ai/system_prompt.md'),
 
+    // #7764 — quotas mensuels de REQUÊTES IA par plan, alignés sur les
+    // PlanCode canoniques (free|pilot|operations|enterprise — ADR-0014,
+    // #2977). Les anciens codes trial/starter/business n'existaient plus :
+    // AIRateLimiter retombait toujours sur un défaut codé en dur. `null` =
+    // illimité. Quota épuisé → débit des crédits IA achetés (ai_credit_ledger),
+    // solde nul → 422 AI_CREDITS_EXHAUSTED (fail-closed).
     'quotas' => [
-        'trial' => 10,
-        'starter' => 50,
-        'business' => 200,
+        'free' => 10,
+        'pilot' => 50,
+        'operations' => 200,
         'enterprise' => null,
     ],
 

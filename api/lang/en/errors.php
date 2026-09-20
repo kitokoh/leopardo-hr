@@ -52,7 +52,9 @@ return [
     'TOO_MANY_REQUESTS' => 'Too many requests. Try again later.',
     'AI_QUOTA_EXCEEDED' => 'Monthly AI quota reached. Try again next month.',
     'AI_TOKEN_BUDGET_EXCEEDED' => 'AI token budget exceeded. Shorten the message or start a new conversation.',
+    'AI_CREDITS_EXHAUSTED' => 'AI credits exhausted. Purchase a credit pack from the Billing area to continue.',
     'SERVICE_UNAVAILABLE' => 'Service temporarily unavailable.',
+    'RESTAURANT_ONLINE_PAYMENT_NOT_CONFIGURED' => 'Online payment is not configured for this restaurant. Please pay on site.',
     'HTTP_ERROR' => 'An error occurred. Please try again.',
     'UNSUPPORTED_API_VERSION' => 'Unsupported API version.',
 

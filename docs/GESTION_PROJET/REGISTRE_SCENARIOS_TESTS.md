@@ -2,6 +2,39 @@
 > Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
 > Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
 
+> **MAJ 2026-09-19 — lot BC-21 paiements #7726/#7727 (PR #7732).**
+> Surface **API** : (1) endpoints admin plateforme `GET/PUT /platform/billing/gateways` et
+> `POST /platform/billing/gateways/{gateway}/test` (permission `platform.permission:billing.manage`,
+> secrets write-only masqués) — configuration des passerelles PSP (stripe|chargily) stockée
+> chiffrée en BDD avec précédence BDD → fallback env ; (2) endpoints tenant
+> `GET/POST/PUT/DELETE /billing/payment-profiles` + `/{id}/activate` (réservés au `principal`)
+> — profils de paiement du tenant (stripe_keys|bank_account|mobile_money) et routage des
+> encaissements Accounting vers les clés Stripe DU tenant quand un profil `stripe_keys` est actif.
+> Scénarios automatisés : `api/tests/Feature/Platform/PlatformPaymentGatewayAdminApiTest`
+> (7 cas — masquage, chiffrement au repos, précédence BDD/env, write-only, 403, webhook secret,
+> ping sans fuite) et `api/tests/Feature/Billing/TenantPaymentProfileApiTest` (6 cas — CRUD/activation,
+> 403 non-principal, isolation cross-tenant, routage checkout tenant + fallback plateforme).
+> Surfaces web : écran admin Vue « Passerelles de paiement » et page client « Encaissements »
+> (couverts par ESLint/tsc/Jest du lot). Surface mobile : aucune.
+
+> **MAJ 2026-09-19 — #7739 (épic #7736), comptes clients grand public du site marketplace (PR empilée sur #7738/#7781).**
+> Surface **API** : `/api/v1/public/travel/marketplace/account/*` — inscription/connexion
+> (`POST /register`, `POST /login`, throttle `auth-sensitive` + verrouillage 5 échecs/15 min),
+> surface connectée sur guard Sanctum DÉDIÉ `travel_customer` (`POST /logout`, `GET /me`,
+> `GET /bookings` — « mes réservations » cross-agences STRICTEMENT bornées par
+> `customer_account_id`). Rattachement des réservations marketplace au compte : à l'inscription
+> (par e-mail de contact, insensible à la casse, réservations orphelines uniquement) et à la
+> création (client connecté sur `POST /bookings`) ; checkout invité préservé. Contrat documenté
+> dans `api/openapi.yaml` (+5 paths). Scénarios automatisés :
+> `api/tests/Feature/Travel/TravelCustomerAccountApiTest.php` (6 cas Feature multi-tenant :
+> hash du mot de passe + revendication par e-mail sur 2 agences, verrouillage login,
+> me/logout sur guard dédié, isolation stricte entre deux clients, rattachement à la création
+> vs invité non rattaché, mots de passe faibles rejetés).
+> Surface **web** : `front/travel-web` — pages `/account/login`, `/account/register`,
+> `/account` (profil + réservations + déconnexion), pré-remplissage checkout, proxy
+> same-origin relayant `Authorization` uniquement sur `account/*` + `bookings` (vérifié par
+> `tsc`/`eslint` ; pas de suite e2e travel-web à ce stade de l'épic).
+
 > **MAJ 2026-09-19 — lot BC-17 RETAIL #7672–#7675 (PR #7718), le module vendeur devient actif.**
 > Surface **API** : nouveau préfixe `/v1/retail` (flag tenant `retail`, middleware `module.retail`,
 > fail-closed) — produits/catégories (CRUD + publish/unpublish, SKU/slug uniques par tenant),

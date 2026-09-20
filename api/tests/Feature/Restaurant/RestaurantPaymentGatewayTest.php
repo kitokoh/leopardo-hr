@@ -35,8 +35,9 @@ class RestaurantPaymentGatewayTest extends TestCase
 
         $this->assertTrue($registry->has('cash'));
         $this->assertTrue($registry->has('card'));
+        $this->assertTrue($registry->has('card_online'));
         $this->assertTrue($registry->has('mobile_money'));
-        $this->assertSame(['cash', 'card', 'mobile_money'], $registry->availableProviders());
+        $this->assertSame(['cash', 'card', 'card_online', 'mobile_money'], $registry->availableProviders());
     }
 
     public function test_registry_rejects_unknown_provider(): void

@@ -505,7 +505,47 @@
       }
     },
     "socialExamplePlaceholder": "Ex: Leopardo — Social media",
-    "postContentPlaceholder": "Post content..."
+    "postContentPlaceholder": "Post content...",
+    "publishNow": "Publish now",
+    "commentsLoadError": "Unable to load comments.",
+    "aiSuggestUnavailable": "AI suggestion is unavailable right now.",
+    "replySendError": "Unable to send the reply.",
+    "suggestReply": "Suggest a reply (AI)",
+    "replyPlaceholder": "Your reply (you validate it before sending)...",
+    "weeklyReportLoadError": "Unable to load the weekly report.",
+    "aiSummary": "AI summary",
+    "autoSummary": "Automatic summary",
+    "web": {
+      "mediaUrls": {
+        "label": "Media URLs (optional)",
+        "placeholder": "https://example.com/visual.jpg",
+        "add": "Add",
+        "remove": "Remove this media"
+      },
+      "interactions": {
+        "title": "Comments",
+        "toggle": "View interactions",
+        "refresh": "Refresh",
+        "loading": "Loading comments...",
+        "empty": "No comments yet.",
+        "send": "Reply",
+        "sending": "Sending...",
+        "sent": "Reply sent.",
+        "suggesting": "Suggesting..."
+      },
+      "weeklyReport": {
+        "title": "Last 7 days report",
+        "loading": "Loading report...",
+        "empty": "No report available.",
+        "published": "Published posts",
+        "failed": "Failures",
+        "upcoming": "Upcoming",
+        "emails": "Campaign emails"
+      },
+      "postActions": {
+        "delete": "Delete"
+      }
+    }
   },
   "attendance": {
     "sending_to_server": "Sending {label} to the server...",
@@ -2066,7 +2106,23 @@
     "checkout_sandbox_message": "Simulated payment (sandbox mode). No card is charged.",
     "checkout_unavailable": "Online payment is temporarily unavailable. Contact support at support@leopardo-rh.com.",
     "checkout_failed": "Unable to create the payment session.",
-    "redirect_url_invalid": "Redirect URLs must belong to the authorized site."
+    "redirect_url_invalid": "Redirect URLs must belong to the authorized site.",
+    "ai_credits": {
+      "title": "AI credits",
+      "subtitle": "Token packs for the AI assistant, on top of your plan's monthly quota.",
+      "optional_note": "Strictly optional: your subscription and modules are never blocked if you never buy credits.",
+      "balance_label": "Credit balance",
+      "tokens_unit": "tokens",
+      "buy_pack": "Buy",
+      "pack_label": "Pack {code}",
+      "history_title": "Recent history",
+      "history_empty": "No credit movements yet.",
+      "reason_purchase": "Purchase",
+      "reason_consumption": "Consumption",
+      "reason_adjustment": "Adjustment",
+      "load_error": "Unable to load AI credits.",
+      "checkout_error": "Unable to create the AI credit payment session."
+    }
   },
   "contracts": {
     "list_subtitle": "Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API.",
@@ -4308,7 +4364,9 @@
       "colRevenue": "Today's revenue",
       "colOrders": "Orders",
       "colOccupancy": "Table rotation",
-      "colAlerts": "Stock alerts"
+      "colAlerts": "Stock alerts",
+      "payments": "Payments",
+      "paymentsDesc": "Online payment, Stripe & mobile money profiles"
     },
     "crud": {
       "search": "Search...",
@@ -4626,6 +4684,26 @@
       "reviewNotEligible": "Reviews are only possible after a served or delivered order.",
       "reviewDuplicate": "A review has already been submitted for this order.",
       "reviewError": "Unable to submit the review. Please retry."
+    },
+    "payments": {
+      "title": "Payments",
+      "desc": "Online payment configuration status (payment profiles)",
+      "loadError": "Unable to load the payment configuration.",
+      "onlineEnabled": "Online payment enabled",
+      "onlineDisabled": "Online payment not configured",
+      "onlineDisabledHint": "Your customers cannot pay online: add a payment profile (Stripe keys or mobile money) and activate it. Paying on site always remains possible.",
+      "cardOnline": "Online card (Stripe)",
+      "mobileMoney": "Mobile money",
+      "configured": "Configured",
+      "notConfigured": "Not configured",
+      "sandbox": "Sandbox mode",
+      "production": "Production",
+      "profileActive": "Active profile",
+      "profileMissing": "No active profile",
+      "payOnSite": "Pay on site (POS)",
+      "alwaysAvailable": "Always available",
+      "manageProfiles": "Manage payment profiles",
+      "manageProfilesHint": "Stripe keys and mobile money accounts are managed in Settings → Payments."
     }
   },
   "edu": {
@@ -5500,7 +5578,8 @@
       "bookingsDesc": "Counter sales, confirmation, cancellation, refund and tickets.",
       "reportsDesc": "Sales, occupancy, revenue, cancellations and CSV exports.",
       "portal": "Traveller portal",
-      "portalDesc": "Customer-facing trip search and booking."
+      "portalDesc": "Customer-facing trip search and booking.",
+      "staffDesc": "Driver, ticket agent, controller and office manager assignments."
     },
     "ageCategory": {
       "infant": "Infant",
@@ -5512,6 +5591,37 @@
       "office": "Office",
       "phone": "Phone",
       "partner": "Partner"
+    },
+    "staff": {
+      "title": "Team",
+      "subtitle": "Assign your employees to travel roles (driver, ticket agent, controller, office manager) on an office or a trip.",
+      "assignTitle": "Appoint a team member",
+      "employee": "Employee",
+      "role": "Role",
+      "scope": "Scope",
+      "scopeOffice": "Office",
+      "scopeTrip": "Trip",
+      "assign": "Appoint",
+      "revoke": "Revoke",
+      "assignFailed": "The assignment failed.",
+      "revokeFailed": "The revocation failed.",
+      "formIncomplete": "Choose an employee, a role and a scope.",
+      "activeTitle": "Active assignments",
+      "empty": "No active assignment.",
+      "historyTitle": "Assignment history",
+      "historyEmpty": "No revoked or expired assignment.",
+      "revokedAt": "Revoked on"
+    },
+    "staffRole": {
+      "driver": "Driver",
+      "agent": "Ticket agent",
+      "controller": "Controller",
+      "office_manager": "Office manager"
+    },
+    "staffStatus": {
+      "active": "Active",
+      "revoked": "Revoked",
+      "expired": "Expired"
     }
   },
   "travelPortal": {
@@ -6100,6 +6210,18 @@
       "publish_showcase": {
         "title": "Publish your showcase website",
         "desc": "Make your site visible in one click."
+      },
+      "travel_setup_network": {
+        "title": "Create your network (stations, offices, routes)",
+        "desc": "Declare your stations, sales offices and city-to-city routes."
+      },
+      "travel_first_trip": {
+        "title": "Schedule your first trip",
+        "desc": "Create a dated trip with class fares, then publish it."
+      },
+      "travel_first_sale": {
+        "title": "Record your first sale",
+        "desc": "Sell a first ticket at the counter or online."
       }
     }
   },
@@ -6615,6 +6737,49 @@
       "source": {
         "manual": "Manual",
         "unsubscribe": "Unsubscribed"
+      }
+    }
+  },
+  "paymentGateways": {
+    "nav": "Payment gateways",
+    "title": "Payment gateways",
+    "subtitle": "Configure the platform Stripe and Chargily accounts — keys are encrypted at rest and applied without redeployment.",
+    "loading": "Loading…",
+    "loadError": "Unable to load gateways.",
+    "mode": "Mode",
+    "mode_test": "Test",
+    "mode_live": "Live",
+    "isActive": "Configuration active",
+    "save": "Save",
+    "saved": "Gateway saved.",
+    "saveError": "Unable to save.",
+    "testConnection": "Test connection",
+    "secretEmpty": "Not configured",
+    "secretKeepHint": "Leave empty to keep the current key (never shown in clear).",
+    "secretMissing": "No key stored.",
+    "source": {
+      "database": "Configured via DB",
+      "env": "Configured via env",
+      "none": "Not configured"
+    },
+    "testStatus": {
+      "OK": "Connection succeeded — keys are valid.",
+      "INVALID_CREDENTIALS": "Keys rejected by the gateway.",
+      "NOT_CONFIGURED": "No key configured.",
+      "CONNECTION_FAILED": "Could not reach the gateway.",
+      "UNKNOWN_GATEWAY": "Unknown gateway."
+    },
+    "field": {
+      "stripe": {
+        "secret_key": "Secret key (sk_…)",
+        "webhook_secret": "Webhook secret (whsec_…)",
+        "price_pilot": "Price ID — Pilot plan",
+        "price_operations": "Price ID — Operations plan",
+        "price_enterprise": "Price ID — Enterprise plan"
+      },
+      "chargily": {
+        "api_key": "API key",
+        "webhook_secret": "Webhook secret"
       }
     }
   }

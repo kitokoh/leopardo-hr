@@ -34,6 +34,7 @@ import {
 } from '@/lib/commerce-format';
 import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
+import { COMMERCE_SHOP_FR } from '@/lib/i18n/commerce-shop';
 
 /** Devises acceptées par le backend (RetailPricePolicy::CURRENCIES). */
 const CURRENCIES = ['XOF', 'XAF', 'DZD', 'MAD', 'EUR', 'USD'] as const;
@@ -264,7 +265,7 @@ function SettingsPanel() {
               {t(
                 locale,
                 'commerce.shop.settings.enabledHint',
-                "Tant que la boutique est désactivée, aucun de vos produits n'est visible sur la marketplace.",
+                COMMERCE_SHOP_FR.settingsEnabledHint,
               )}
             </span>
           </span>
@@ -432,7 +433,7 @@ function ProductsPanel() {
           {t(
             locale,
             'commerce.shop.products.hint',
-            "Un produit n'apparaît sur la marketplace que s'il est publié, mis en ligne et que la boutique est activée.",
+            COMMERCE_SHOP_FR.productsHint,
           )}
         </p>
         {error ? <p className="mt-1 text-sm text-red-600">{error}</p> : null}
@@ -607,7 +608,7 @@ function OrdersPanel() {
           const message = t(
             locale,
             'commerce.shop.orders.invalidTransition',
-            "Transition impossible : la commande a déjà changé d'état. La liste a été rechargée.",
+            COMMERCE_SHOP_FR.ordersInvalidTransition,
           );
           if (detail) setDetailError(message);
           else setError(message);
@@ -920,7 +921,7 @@ export default function CommerceShopPage() {
       description={t(
         locale,
         'commerce.shop.pageSubtitle',
-        'Activez votre boutique sur la marketplace, publiez vos produits et gérez les commandes web.',
+        COMMERCE_SHOP_FR.pageSubtitle,
       )}
     >
       <div className="mb-4 flex gap-2">

@@ -18,7 +18,7 @@ use Tests\TestCase;
  * 201), produit non publié en ligne refusé (422), branche non publique →
  * 404 fail-closed, idempotence par `idempotency_key` (rejeu → même commande,
  * 200), suivi par référence sans PII (note interne jamais renvoyée), suivi
- * borné à LA branche du slug, et paiement cash_on_delivery / mobile_money
+ * borné à LA branche du slug, et paiement public EN LIGNE uniquement (#7728)
  * (PSP carte refusé).
  */
 class RestaurantPublicSlugOrderTest extends TestCase
@@ -230,7 +230,7 @@ class RestaurantPublicSlugOrderTest extends TestCase
             ->assertNotFound();
     }
 
-    public function test_pays_order_with_cash_on_delivery_and_rejects_card(): void
+    public function test_public_slug_pay_is_online_only_and_fails_closed(): void
     {
         $company = $this->makeTenant();
         $this->makePublicBranch($company, ['public_slug' => 'chez-leo']);
@@ -246,18 +246,21 @@ class RestaurantPublicSlugOrderTest extends TestCase
 
         $this->assertIsString($reference);
 
-        // PSP carte volontairement fermé (spec #5272 en attente) → 422.
+        // #7728 — la surface publique n'accepte que les providers EN LIGNE
+        // (carte via profil tenant / mobile money) : providers guichet refusés.
         $this->postJson('/api/v1/public/restaurants/chez-leo/orders/'.$reference.'/pay', [
             'provider_code' => 'card',
         ])->assertStatus(422);
 
         $this->postJson('/api/v1/public/restaurants/chez-leo/orders/'.$reference.'/pay', [
             'provider_code' => 'cash_on_delivery',
-        ])
-            ->assertCreated()
-            ->assertJsonPath('data.provider_code', 'cash')
-            ->assertJsonPath('data.order_reference', $reference)
-            ->assertJsonPath('data.amount_minor', 3000)
-            ->assertJsonPath('data.currency', 'XAF');
+        ])->assertStatus(422);
+
+        // Fail-closed : sans profil de paiement tenant actif, même le défaut
+        // (provider omis) répond 422 `online_payment_not_configured` — jamais
+        // un 500, et le paiement sur place reste proposé en repli.
+        $this->postJson('/api/v1/public/restaurants/chez-leo/orders/'.$reference.'/pay')
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'online_payment_not_configured');
     }
 }

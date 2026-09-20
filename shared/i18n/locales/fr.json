@@ -505,7 +505,47 @@
       }
     },
     "socialExamplePlaceholder": "Ex: Leopardo — Reseaux sociaux",
-    "postContentPlaceholder": "Contenu de la publication..."
+    "postContentPlaceholder": "Contenu de la publication...",
+    "publishNow": "Publier maintenant",
+    "commentsLoadError": "Impossible de charger les commentaires.",
+    "aiSuggestUnavailable": "Suggestion IA indisponible pour le moment.",
+    "replySendError": "Impossible d'envoyer la réponse.",
+    "suggestReply": "Suggérer une réponse (IA)",
+    "replyPlaceholder": "Votre réponse (validée par vous avant envoi)...",
+    "weeklyReportLoadError": "Impossible de charger le bilan hebdomadaire.",
+    "aiSummary": "Synthèse IA",
+    "autoSummary": "Synthèse automatique",
+    "web": {
+      "mediaUrls": {
+        "label": "URLs de médias (optionnel)",
+        "placeholder": "https://exemple.com/visuel.jpg",
+        "add": "Ajouter",
+        "remove": "Retirer ce média"
+      },
+      "interactions": {
+        "title": "Commentaires",
+        "toggle": "Voir les interactions",
+        "refresh": "Actualiser",
+        "loading": "Chargement des commentaires...",
+        "empty": "Aucun commentaire pour le moment.",
+        "send": "Répondre",
+        "sending": "Envoi...",
+        "sent": "Réponse envoyée.",
+        "suggesting": "Suggestion..."
+      },
+      "weeklyReport": {
+        "title": "Bilan des 7 derniers jours",
+        "loading": "Chargement du bilan...",
+        "empty": "Aucun bilan disponible.",
+        "published": "Posts publiés",
+        "failed": "Échecs",
+        "upcoming": "À venir",
+        "emails": "Emails campagne"
+      },
+      "postActions": {
+        "delete": "Supprimer"
+      }
+    }
   },
   "attendance": {
     "sending_to_server": "{label} vers le serveur...",
@@ -2066,7 +2106,23 @@
     "checkout_sandbox_message": "Paiement simulé (mode sandbox). Aucune carte débitée.",
     "checkout_unavailable": "Le paiement en ligne est temporairement indisponible. Contactez le support à support@leopardo-rh.com.",
     "checkout_failed": "Impossible de créer la session de paiement.",
-    "redirect_url_invalid": "Les URLs de redirection doivent appartenir au site autorisé."
+    "redirect_url_invalid": "Les URLs de redirection doivent appartenir au site autorisé.",
+    "ai_credits": {
+      "title": "Crédits IA",
+      "subtitle": "Packs de tokens pour l'assistant IA, en complément du quota mensuel de votre plan.",
+      "optional_note": "Achat strictement facultatif : votre abonnement et vos modules ne sont jamais bloqués si vous n'achetez pas de crédits.",
+      "balance_label": "Solde de crédits",
+      "tokens_unit": "tokens",
+      "buy_pack": "Acheter",
+      "pack_label": "Pack {code}",
+      "history_title": "Historique récent",
+      "history_empty": "Aucun mouvement de crédits pour le moment.",
+      "reason_purchase": "Achat",
+      "reason_consumption": "Consommation",
+      "reason_adjustment": "Ajustement",
+      "load_error": "Impossible de charger les crédits IA.",
+      "checkout_error": "Impossible de créer la session de paiement des crédits IA."
+    }
   },
   "contracts": {
     "list_subtitle": "Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH.",
@@ -4308,7 +4364,9 @@
       "colRevenue": "CA du jour",
       "colOrders": "Commandes",
       "colOccupancy": "Rotation tables",
-      "colAlerts": "Alertes stock"
+      "colAlerts": "Alertes stock",
+      "payments": "Encaissement",
+      "paymentsDesc": "Paiement en ligne, profils Stripe & mobile money"
     },
     "crud": {
       "search": "Rechercher...",
@@ -4626,6 +4684,26 @@
       "reviewNotEligible": "L'avis n'est possible qu'après une commande servie ou livrée.",
       "reviewDuplicate": "Un avis a déjà été déposé pour cette commande.",
       "reviewError": "Impossible d'envoyer l'avis. Réessayez."
+    },
+    "payments": {
+      "title": "Encaissement",
+      "desc": "État de la configuration des paiements en ligne (profils d'encaissement)",
+      "loadError": "Impossible de charger l'état de l'encaissement.",
+      "onlineEnabled": "Paiement en ligne actif",
+      "onlineDisabled": "Paiement en ligne non configuré",
+      "onlineDisabledHint": "Vos clients ne peuvent pas payer en ligne : ajoutez un profil d'encaissement (clés Stripe ou mobile money) puis activez-le. Le paiement sur place reste toujours possible.",
+      "cardOnline": "Carte en ligne (Stripe)",
+      "mobileMoney": "Mobile money",
+      "configured": "Configuré",
+      "notConfigured": "Non configuré",
+      "sandbox": "Mode sandbox",
+      "production": "Production",
+      "profileActive": "Profil actif",
+      "profileMissing": "Aucun profil actif",
+      "payOnSite": "Paiement sur place (caisse)",
+      "alwaysAvailable": "Toujours disponible",
+      "manageProfiles": "Gérer les profils d'encaissement",
+      "manageProfilesHint": "Les clés Stripe et les comptes mobile money se gèrent dans Réglages → Encaissements."
     }
   },
   "edu": {
@@ -5500,7 +5578,8 @@
       "bookingsDesc": "Ventes au guichet, confirmation, annulation, remboursement et billets.",
       "reportsDesc": "Ventes, occupation, recettes, annulations et exports CSV.",
       "portal": "Portail voyageur",
-      "portalDesc": "Recherche de trajets et réservation côté client."
+      "portalDesc": "Recherche de trajets et réservation côté client.",
+      "staffDesc": "Affectations chauffeur, guichetier, contrôleur et chef de bureau."
     },
     "ageCategory": {
       "infant": "Bébé",
@@ -5512,6 +5591,37 @@
       "office": "Guichet",
       "phone": "Téléphone",
       "partner": "Partenaire"
+    },
+    "staff": {
+      "title": "Équipe",
+      "subtitle": "Affectez vos employés aux rôles travel (chauffeur, guichetier, contrôleur, chef de bureau) sur un bureau ou un voyage.",
+      "assignTitle": "Nommer un membre de l’équipe",
+      "employee": "Employé",
+      "role": "Rôle",
+      "scope": "Scope",
+      "scopeOffice": "Bureau",
+      "scopeTrip": "Voyage",
+      "assign": "Nommer",
+      "revoke": "Révoquer",
+      "assignFailed": "L'affectation a échoué.",
+      "revokeFailed": "La révocation a échoué.",
+      "formIncomplete": "Choisissez un employé, un rôle et un scope.",
+      "activeTitle": "Affectations actives",
+      "empty": "Aucune affectation active.",
+      "historyTitle": "Historique des affectations",
+      "historyEmpty": "Aucune affectation révoquée ou expirée.",
+      "revokedAt": "Révoquée le"
+    },
+    "staffRole": {
+      "driver": "Chauffeur",
+      "agent": "Guichetier",
+      "controller": "Contrôleur",
+      "office_manager": "Chef de bureau"
+    },
+    "staffStatus": {
+      "active": "Active",
+      "revoked": "Révoquée",
+      "expired": "Expirée"
     }
   },
   "travelPortal": {
@@ -6100,6 +6210,18 @@
       "publish_showcase": {
         "title": "Publier votre site vitrine",
         "desc": "Rendez votre site visible en un clic."
+      },
+      "travel_setup_network": {
+        "title": "Créer votre réseau (gares, bureaux, lignes)",
+        "desc": "Déclarez vos gares, bureaux de vente et lignes ville→ville."
+      },
+      "travel_first_trip": {
+        "title": "Programmer votre premier voyage",
+        "desc": "Créez un trajet daté, ses tarifs par classe, puis publiez-le."
+      },
+      "travel_first_sale": {
+        "title": "Enregistrer votre première vente",
+        "desc": "Vendez un premier billet au guichet ou en ligne."
       }
     }
   },
@@ -6615,6 +6737,49 @@
       "source": {
         "manual": "Manuel",
         "unsubscribe": "Désinscription"
+      }
+    }
+  },
+  "paymentGateways": {
+    "nav": "Passerelles de paiement",
+    "title": "Passerelles de paiement",
+    "subtitle": "Configurez les comptes Stripe et Chargily de la plateforme — les clés sont chiffrées en base et prises en compte sans redéploiement.",
+    "loading": "Chargement…",
+    "loadError": "Impossible de charger les passerelles.",
+    "mode": "Mode",
+    "mode_test": "Test",
+    "mode_live": "Live",
+    "isActive": "Configuration active",
+    "save": "Enregistrer",
+    "saved": "Passerelle enregistrée.",
+    "saveError": "Enregistrement impossible.",
+    "testConnection": "Tester la connexion",
+    "secretEmpty": "Non configuré",
+    "secretKeepHint": "Laisser vide pour conserver la clé en place (jamais réaffichée en clair).",
+    "secretMissing": "Aucune clé enregistrée.",
+    "source": {
+      "database": "Configuré via BDD",
+      "env": "Configuré via env",
+      "none": "Non configuré"
+    },
+    "testStatus": {
+      "OK": "Connexion réussie — clés valides.",
+      "INVALID_CREDENTIALS": "Clés refusées par la passerelle.",
+      "NOT_CONFIGURED": "Aucune clé configurée.",
+      "CONNECTION_FAILED": "Connexion à la passerelle impossible.",
+      "UNKNOWN_GATEWAY": "Passerelle inconnue."
+    },
+    "field": {
+      "stripe": {
+        "secret_key": "Clé secrète (sk_…)",
+        "webhook_secret": "Webhook secret (whsec_…)",
+        "price_pilot": "Price ID — offre Pilot",
+        "price_operations": "Price ID — offre Operations",
+        "price_enterprise": "Price ID — offre Enterprise"
+      },
+      "chargily": {
+        "api_key": "Clé API",
+        "webhook_secret": "Webhook secret"
       }
     }
   }
