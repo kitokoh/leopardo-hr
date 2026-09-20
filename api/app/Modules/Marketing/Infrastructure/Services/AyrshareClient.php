@@ -154,6 +154,77 @@ class AyrshareClient
         ];
     }
 
+    /**
+     * Commentaires reçus sur un post publié (toutes plateformes du post) —
+     * Issue #7754. Référence : GET /comments/{ayrsharePostId}.
+     *
+     * @return array<string, mixed>
+     */
+    public function getComments(string $profileKey, string $ayrsharePostId): array
+    {
+        $response = $this->profileClient($profileKey)
+            ->get("{$this->baseUrl}/comments/".rawurlencode($ayrsharePostId));
+
+        $body = $response->json();
+        $body = is_array($body) ? $body : [];
+
+        // Ayrshare répond 404/« error » quand le post n'a aucun commentaire
+        // selon la plateforme — on renvoie une structure vide plutôt que de
+        // casser l'écran interactions.
+        if ($response->status() === 404) {
+            return [];
+        }
+
+        if (! $response->successful()) {
+            $this->logFailure('getComments', $response->status(), $body);
+            throw new RuntimeException('Ayrshare: echec de recuperation des commentaires.');
+        }
+
+        return $body;
+    }
+
+    /**
+     * Répond à un post publié (commentaire au nom du compte connecté) —
+     * Issue #7754. Référence : POST /comments {id, platforms, comment}.
+     *
+     * @param  array<int, string>  $platforms
+     * @return array<string, mixed>
+     */
+    public function postComment(string $profileKey, string $ayrsharePostId, array $platforms, string $comment): array
+    {
+        $response = $this->profileClient($profileKey)->post("{$this->baseUrl}/comments", [
+            'id' => $ayrsharePostId,
+            'platforms' => $platforms,
+            'comment' => $comment,
+        ]);
+
+        $body = $response->json();
+        $body = is_array($body) ? $body : [];
+
+        if (! $response->successful() || ($body['status'] ?? null) === 'error') {
+            $this->logFailure('postComment', $response->status(), $body);
+            throw new RuntimeException(
+                'Ayrshare: echec de reponse au commentaire — '.$this->firstErrorMessage($body)
+            );
+        }
+
+        return $body;
+    }
+
+    /** @param array<string, mixed> $body */
+    private function firstErrorMessage(array $body): string
+    {
+        if (isset($body['errors'][0]['message']) && is_string($body['errors'][0]['message'])) {
+            return $body['errors'][0]['message'];
+        }
+
+        if (isset($body['message']) && is_string($body['message'])) {
+            return $body['message'];
+        }
+
+        return 'erreur inconnue';
+    }
+
     private function primaryClient(): PendingRequest
     {
         return Http::withToken($this->apiKey, 'Bearer')

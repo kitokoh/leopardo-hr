@@ -15,6 +15,9 @@ use App\Modules\CRM\Infrastructure\Services\EmailRateLimiter;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+// #7751 — import volontairement APRÈS les facades : layer-purity-allowlist.txt
+// épingle Auth/DB/Schema aux lignes 15-17 et le fichier est immuable (#5584).
+use App\Modules\CRM\Domain\Models\CrmCampaign;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -109,10 +112,21 @@ final class CrmEmailService
             return EmailDeliveryResult::failed('contact not found or without email');
         }
 
+        // #7751 — le message envoyé est celui porté par la campagne
+        // (subject/body), plus aucun contenu codé en dur. Repli défensif
+        // pour les campagnes historiques sans contenu (jamais bloquant).
+        $campaign = CrmCampaign::query()
+            ->withoutGlobalScopes()
+            ->where('company_id', $companyId)
+            ->find($send->campaign_id);
+
+        $subject = $campaign?->subject;
+        $body = $campaign?->body;
+
         $message = new EmailMessage(
             $contact->email,
-            'Campagne CRM '.$send->campaign_id,
-            'Message de campagne (canal email).',
+            $subject !== null && $subject !== '' ? $subject : 'Campagne CRM '.$send->campaign_id,
+            $body !== null && $body !== '' ? $body : 'Message de campagne (canal email).',
             ['contact_id' => $send->contact_id, 'campaign_send_id' => $send->id],
         );
 

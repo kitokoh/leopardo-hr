@@ -1369,6 +1369,34 @@ trait CreatesMvpSchema
 
     private function createPostSprintModuleTables(): void
     {
+        // Issue #7764 — crédits IA : ledger et compteurs mensuels.
+        // Miroir des migrations 2026_09_19_001501/001502_7764 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('ai_credit_ledger'))) {
+            Schema::create($this->moduleTable('ai_credit_ledger'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->bigInteger('delta');
+                $table->string('reason', 20);
+                $table->string('reference', 191)->nullable();
+                $table->unsignedInteger('created_by')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'created_at'], 'ai_credit_ledger_company_created_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('ai_usage_counters'))) {
+            Schema::create($this->moduleTable('ai_usage_counters'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id');
+                $table->string('period', 7);
+                $table->unsignedBigInteger('used')->default(0);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'period'], 'ai_usage_counters_company_period_unique');
+            });
+        }
+
         if (DB::getDriverName() === 'pgsql') {
             $this->setPostgresSearchPath('shared_tenants,public');
         }
@@ -3826,6 +3854,27 @@ trait CreatesMvpSchema
                 $table->timestamps();
 
                 $table->index(['company_id', 'id']);
+            });
+        }
+
+        // #7747 (RESTO-902) — avis clients publics : colonnes réelles (et pas un
+        // stub minimal) car RestaurantPublicDirectoryController sous-requête
+        // branch_id/company_id/status/rating sur cette table.
+        if (! Schema::hasTable($this->moduleTable('restaurant_reviews'))) {
+            Schema::create($this->moduleTable('restaurant_reviews'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('branch_id');
+                $table->string('order_reference', 40);
+                $table->unsignedTinyInteger('rating');
+                $table->text('comment')->nullable();
+                $table->string('author_name', 120);
+                $table->string('status', 20)->default('pending');
+                $table->timestamps();
+
+                $table->unique(['company_id', 'order_reference']);
+                $table->index(['branch_id', 'status']);
+                $table->index(['company_id', 'status']);
             });
         }
 

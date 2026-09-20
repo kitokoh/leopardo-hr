@@ -5,7 +5,8 @@ import { motion } from 'framer-motion';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { getCopy, getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
-import { CreditCard, Download, ExternalLink, FileText, Loader2, ShieldCheck, XCircle } from 'lucide-react';
+import { t as catalogT, interpolate } from '@/lib/i18n/locale-catalog';
+import { CreditCard, Download, ExternalLink, FileText, Loader2, ShieldCheck, Sparkles, XCircle } from 'lucide-react';
 
 const emptySubscribe = () => () => {};
 
@@ -28,6 +29,28 @@ type Invoice = {
   status: string;
   due_date?: string | null;
   paid_at?: string | null;
+};
+
+// #7764 — crédits IA achetables (spec MISSION_ESPACE_CLIENT §3.4). Section
+// strictement FACULTATIVE : aucun blocage d'abonnement si jamais achetée.
+type AiCreditPack = {
+  code: string;
+  tokens: number;
+  price_eur_cents: number;
+};
+
+type AiCreditEntry = {
+  id: number;
+  delta: number;
+  reason: string;
+  reference?: string | null;
+  created_at?: string | null;
+};
+
+type AiCredits = {
+  balance: number;
+  packs: AiCreditPack[];
+  history: AiCreditEntry[];
 };
 
 // Codes canoniques PlanCode (free|pilot|operations|enterprise, #2977/#3919).
@@ -75,6 +98,8 @@ export default function BillingPage() {
   const copy = getCopy(locale);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [aiCredits, setAiCredits] = useState<AiCredits | null>(null);
+  const [aiCreditsError, setAiCreditsError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -100,6 +125,20 @@ export default function BillingPage() {
 
       const invData = await invRes.json() as { data?: Invoice[] };
       setInvoices(Array.isArray(invData.data) ? invData.data : []);
+
+      // Crédits IA (#7764) — chargement séparé et NON bloquant : un échec ici
+      // n'empêche jamais l'affichage de l'abonnement et des factures.
+      try {
+        const aiRes = await apiFetch('/billing/ai-credits');
+        const aiData = await aiRes.json() as { data?: AiCredits };
+        setAiCredits(aiData.data ?? null);
+        setAiCreditsError(null);
+      } catch (aiErr) {
+        setAiCredits(null);
+        setAiCreditsError(
+          aiErr instanceof ApiError ? aiErr.message : catalogT(locale, 'billing.ai_credits.load_error'),
+        );
+      }
     } catch (err) {
       setError(err instanceof ApiError ? err.message : copy.billing.loadError);
     } finally {
@@ -112,6 +151,14 @@ export default function BillingPage() {
 
   const formatCurrency = (val: number, currency = 'EUR') =>
     new Intl.NumberFormat(toIntlLocale(locale), { style: 'currency', currency }).format(val || 0);
+
+  const formatTokens = (val: number) =>
+    new Intl.NumberFormat(toIntlLocale(locale)).format(val || 0);
+
+  const aiCreditReasonLabel = (reason: string, loc: AppLocale): string => {
+    const known = ['purchase', 'consumption', 'adjustment'];
+    return known.includes(reason) ? catalogT(loc, `billing.ai_credits.reason_${reason}`, reason) : reason;
+  };
 
   const handleCancel = async () => {
     if (!confirm(copy.billing.cancelConfirm)) return;
@@ -162,6 +209,32 @@ export default function BillingPage() {
       }
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Le paiement en ligne n\'est pas encore configuré pour ce compte.');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleBuyAiPack = async (pack: string) => {
+    setActionLoading(`ai-pack-${pack}`);
+    setAiCreditsError(null);
+    try {
+      const origin = window.location.origin;
+      const res = await apiFetch('/billing/ai-credits/checkout', {
+        method: 'POST',
+        body: JSON.stringify({
+          pack,
+          success_url: `${origin}/billing?ai_credits=success`,
+          cancel_url: `${origin}/billing?ai_credits=cancelled`,
+        }),
+      });
+      const data = await res.json() as { data?: { checkout_url?: string } };
+      if (data.data?.checkout_url) {
+        window.location.href = data.data.checkout_url;
+      }
+    } catch (err) {
+      setAiCreditsError(
+        err instanceof ApiError ? err.message : catalogT(locale, 'billing.ai_credits.checkout_error'),
+      );
     } finally {
       setActionLoading(null);
     }
@@ -290,6 +363,91 @@ export default function BillingPage() {
               </button>
             </div>
           </div>
+
+          <section
+            data-testid="ai-credits-section"
+            className="rounded-2xl border border-app-border bg-white p-6 shadow-sm"
+          >
+            <div className="flex flex-col gap-1">
+              <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-800">
+                <Sparkles className="h-4 w-4 text-emerald-600" />
+                {catalogT(locale, 'billing.ai_credits.title')}
+              </h2>
+              <p className="text-sm text-slate-500">{catalogT(locale, 'billing.ai_credits.subtitle')}</p>
+              <p className="text-xs text-slate-400">{catalogT(locale, 'billing.ai_credits.optional_note')}</p>
+            </div>
+
+            {aiCreditsError ? (
+              <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                {aiCreditsError}
+              </div>
+            ) : null}
+
+            {aiCredits ? (
+              <>
+                <div className="mt-5">
+                  <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                    {catalogT(locale, 'billing.ai_credits.balance_label')}
+                  </p>
+                  <p className="mt-1 text-3xl font-black tabular-nums text-slate-950" data-testid="ai-credits-balance">
+                    {formatTokens(aiCredits.balance)}{' '}
+                    <span className="text-sm font-bold text-slate-500">
+                      {catalogT(locale, 'billing.ai_credits.tokens_unit')}
+                    </span>
+                  </p>
+                </div>
+
+                <div className="mt-4 flex flex-wrap gap-3 border-t border-app-border pt-4">
+                  {aiCredits.packs.map((pack) => (
+                    <button
+                      key={`ai-pack-${pack.code}`}
+                      onClick={() => handleBuyAiPack(pack.code)}
+                      disabled={actionLoading === `ai-pack-${pack.code}`}
+                      className="inline-flex items-center gap-2 rounded-xl bg-slate-950 px-4 py-2 text-sm font-bold text-white hover:bg-slate-800 disabled:opacity-40"
+                    >
+                      {actionLoading === `ai-pack-${pack.code}` ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <CreditCard className="h-4 w-4" />
+                      )}
+                      {interpolate(catalogT(locale, 'billing.ai_credits.pack_label'), { code: pack.code.toUpperCase() })}
+                      {' — '}
+                      {formatTokens(pack.tokens)} {catalogT(locale, 'billing.ai_credits.tokens_unit')}
+                      {' · '}
+                      {formatCurrency(pack.price_eur_cents / 100)}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="mt-5 border-t border-app-border pt-4">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                    {catalogT(locale, 'billing.ai_credits.history_title')}
+                  </h3>
+                  {aiCredits.history.length === 0 ? (
+                    <p className="mt-2 text-sm text-slate-500">{catalogT(locale, 'billing.ai_credits.history_empty')}</p>
+                  ) : (
+                    <ul className="mt-2 divide-y divide-app-border">
+                      {aiCredits.history.map((entry) => (
+                        <li key={`ai-entry-${entry.id}`} className="flex items-center justify-between py-2 text-sm">
+                          <span className="text-slate-600">
+                            {aiCreditReasonLabel(entry.reason, locale)}
+                            {entry.created_at
+                              ? ` · ${new Date(entry.created_at).toLocaleDateString(toIntlLocale(locale))}`
+                              : ''}
+                          </span>
+                          <span
+                            className={`font-bold tabular-nums ${entry.delta >= 0 ? 'text-emerald-700' : 'text-slate-900'}`}
+                          >
+                            {entry.delta >= 0 ? '+' : ''}{formatTokens(entry.delta)}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </>
+            ) : null}
+          </section>
 
           <section className="overflow-hidden rounded-3xl border border-app-border bg-white shadow-sm">
             <div className="border-b border-app-border px-6 py-4">

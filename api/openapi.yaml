@@ -112,6 +112,245 @@ tags:
 - name: Pharmacy
   description: 'BC-30 PHARMACY — verticale PharmaManager : referentiel produits d''officine, stock par lots FEFO, achats fournisseurs, ventes comptoir, ordonnancier des produits controles, dashboard fondateur (PHARMA-001..007, #7798-#7804).'
 paths:
+  /travel/distributor-keys:
+    get:
+      tags:
+      - Travel
+      summary: Liste des cles API de lecture distributeurs
+      description: >-
+        BC-24 TRAVEL (#7641) — cles de LECTURE multiples par distributeur
+        (miroir du pattern partner-keys #6086) : nom, scopes
+        catalog.read/bookings.read, stats d'usage (usage_count,
+        last_used_at), rotation et revocation. Le hash n'est JAMAIS expose,
+        le token brut n'apparait qu'a la creation/rotation. Reserve
+        principal/rh.
+      responses:
+        '200':
+          description: Cles du tenant (jamais le token ni le hash)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelDistributorKey'
+        '401':
+          description: Non authentifie
+        '403':
+          description: Acteur non autorise
+    post:
+      tags:
+      - Travel
+      summary: Emettre une cle API de lecture pour un distributeur
+      description: >-
+        BC-24 TRAVEL (#7641) — emission d'une cle distributeur : token
+        `dsk_...` affiche UNE SEULE fois (hash SHA-256 au repos). `scopes`
+        est une allowlist fail-closed (catalog.read, bookings.read) — scope
+        inconnu → 422. Reserve principal/rh.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, scopes]
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 120
+                scopes:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: string
+                    enum: [catalog.read, bookings.read]
+      responses:
+        '201':
+          description: Cle emise — le champ api_key n'est plus jamais renvoye ensuite
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      scopes:
+                        type: array
+                        items:
+                          type: string
+                      api_key:
+                        type: string
+                      created_at:
+                        type: string
+                        format: date-time
+        '403':
+          description: Acteur non autorise
+        '422':
+          description: Validation (nom manquant, scope hors allowlist)
+  /travel/distributor-keys/{travelDistributorKey}/rotate:
+    post:
+      tags:
+      - Travel
+      summary: Rotation d'une cle distributeur
+      description: >-
+        BC-24 TRAVEL (#7641) — remplace le hash atomiquement : nouveau token
+        affiche une fois, l'ancien est immediatement invalide. Une cle
+        revoquee ne tourne pas (422). Reserve principal/rh, 404 sur cle d'un
+        autre tenant.
+      parameters:
+      - name: travelDistributorKey
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Nouveau token (affiche une seule fois)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      api_key:
+                        type: string
+                      rotated_at:
+                        type: string
+                        format: date-time
+        '403':
+          description: Acteur non autorise
+        '404':
+          description: Introuvable (ou autre tenant)
+        '422':
+          description: Cle revoquee
+  /travel/distributor-keys/{travelDistributorKey}/revoke:
+    post:
+      tags:
+      - Travel
+      summary: Revoquer une cle distributeur
+      description: >-
+        BC-24 TRAVEL (#7641) — revocation idempotente (acte metier POST,
+        convention #4930) : enabled=false + revoked_at, la ligne reste pour
+        la tracabilite et les stats. La cle cesse immediatement
+        d'authentifier la surface de lecture.
+      parameters:
+      - name: travelDistributorKey
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Cle revoquee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelDistributorKey'
+        '403':
+          description: Acteur non autorise
+        '404':
+          description: Introuvable (ou autre tenant)
+  /travel/distributor/catalog:
+    get:
+      tags:
+      - Travel
+      summary: Catalogue des voyages publies (surface distributeur)
+      description: >-
+        BC-24 TRAVEL (#7641) — surface de LECTURE authentifiee par cle
+        distributeur (header X-Distributor-Key, scope catalog.read requis —
+        403 sinon, cle inconnue/revoquee → 401). Seuls les voyages PUBLIES
+        sont exposes (meme regle que la boutique publique), tenant resolu
+        par la cle (isolation cross-tenant garantie). Rate limit dedie
+        60/min. Filtres origin_city_id, destination_city_id, date_from,
+        date_to ; pagination per_page (1..100, defaut 20).
+      security: []
+      parameters:
+      - name: X-Distributor-Key
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: origin_city_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: destination_city_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: date_from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: date_to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Voyages publies pagines (tarifs par classe inclus)
+        '401':
+          description: Cle manquante, inconnue ou revoquee
+        '403':
+          description: Scope catalog.read absent de la cle
+  /travel/distributor/bookings/{reference}:
+    get:
+      tags:
+      - Travel
+      summary: Suivi d'une reservation par reference (surface distributeur)
+      description: >-
+        BC-24 TRAVEL (#7641) — extrait MINIMAL d'une reservation du tenant de
+        la cle (scope bookings.read requis) : reference, statut, statut de
+        paiement, nombre de passagers et trajet — JAMAIS de PII passager
+        (meme posture que le portail voyageur #7395). Reservation d'un autre
+        tenant → 404.
+      security: []
+      parameters:
+      - name: X-Distributor-Key
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Extrait minimal de la reservation
+        '401':
+          description: Cle manquante, inconnue ou revoquee
+        '403':
+          description: Scope bookings.read absent de la cle
+        '404':
+          description: Reference inconnue dans le tenant de la cle
   /travel/staff-assignments:
     get:
       tags:
@@ -20622,6 +20861,148 @@ paths:
           $ref: '#/components/responses/Validation422'
         '500':
           description: Echec d'acces au portail de facturation
+  /billing/ai-credits:
+    get:
+      tags:
+      - Billing
+      summary: Solde, packs et historique des credits IA du tenant (principal)
+      operationId: getBillingAiCredits
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Solde de credits IA, packs achetables et historique pagine
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      balance:
+                        type: integer
+                        description: Solde de tokens IA achetes (somme du ledger)
+                      packs:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                              enum:
+                              - s
+                              - m
+                              - l
+                            tokens:
+                              type: integer
+                            price_eur_cents:
+                              type: integer
+                      packs_version:
+                        type: string
+                      history:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            delta:
+                              type: integer
+                            reason:
+                              type: string
+                              enum:
+                              - purchase
+                              - consumption
+                              - adjustment
+                            reference:
+                              type: string
+                              nullable: true
+                            created_at:
+                              type: string
+                              format: date-time
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      last_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /billing/ai-credits/checkout:
+    post:
+      tags:
+      - Billing
+      summary: Creer une session Stripe Checkout one-shot (mode payment) pour un
+        pack de credits IA (principal)
+      operationId: createBillingAiCreditCheckoutSession
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - pack
+              - success_url
+              - cancel_url
+              properties:
+                pack:
+                  type: string
+                  enum:
+                  - s
+                  - m
+                  - l
+                success_url:
+                  type: string
+                  format: uri
+                  maxLength: 500
+                cancel_url:
+                  type: string
+                  format: uri
+                  maxLength: 500
+      responses:
+        '200':
+          description: Session de paiement creee (ou credit immediat en mode sandbox)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      checkout_url:
+                        type: string
+                        format: uri
+                      session_id:
+                        type: string
+                      sandbox:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+        '500':
+          description: Echec de creation de la session Stripe
+        '503':
+          description: Stripe non configure sur cet environnement
   /billing/invoices:
     get:
       tags:
@@ -26007,6 +26388,185 @@ paths:
           $ref: '#/components/responses/Validation422'
         '404':
           $ref: '#/components/responses/Error404'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /marketing/social-posts/{socialPost}/comments:
+    get:
+      tags:
+      - Marketing
+      summary: Lister les commentaires recus sur un post publie (issue #7754)
+      description: Recupere les commentaires du post aupres de l'agregateur Ayrshare (GET /comments/{id}), groupes par plateforme. Reserve aux posts publies porteurs d'une reference agregateur (provider_post_ref).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: socialPost
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commentaires du post (structure brute de l'agregateur, par plateforme)
+        '404':
+          description: Post introuvable (hors tenant) ou aucun compte social actif (SOCIAL_ACCOUNT_NOT_FOUND)
+        '409':
+          description: Post non publie ou sans reference agregateur (SOCIAL_POST_NOT_PUBLISHED)
+        '502':
+          description: Echec de l'agregateur (SOCIAL_COMMENTS_UNAVAILABLE)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /marketing/social-posts/{socialPost}/comments/reply:
+    post:
+      tags:
+      - Marketing
+      summary: Repondre a un commentaire d'un post publie (issue #7754)
+      description: Poste la reponse au nom du compte connecte via Ayrshare (POST /comments). platforms absent = toutes les plateformes cibles du post.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: socialPost
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - comment
+              properties:
+                comment:
+                  type: string
+                  maxLength: 2000
+                platforms:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Reponse postee (reponse brute de l'agregateur)
+        '404':
+          description: Post introuvable (hors tenant) ou aucun compte social actif
+        '409':
+          description: Post non publie ou sans reference agregateur
+        '502':
+          description: Echec de l'agregateur (SOCIAL_COMMENT_REPLY_FAILED)
+        '422':
+          $ref: '#/components/responses/Validation422'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /marketing/social-posts/{socialPost}/comments/suggest-reply:
+    post:
+      tags:
+      - Marketing
+      summary: Suggerer une reponse (IA) a un commentaire — validation humaine obligatoire (issue #7754)
+      description: Genere une proposition de reponse via MarketingAiService (App\AI\LLMClient). La suggestion n'est JAMAIS postee automatiquement — l'humain la valide puis utilise l'endpoint reply.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: socialPost
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - comment
+              properties:
+                comment:
+                  type: string
+                  maxLength: 4000
+                platform:
+                  type: string
+                  maxLength: 40
+                tone:
+                  type: string
+                  maxLength: 60
+                locale:
+                  type: string
+                  maxLength: 10
+      responses:
+        '200':
+          description: Suggestion de reponse generee (data.suggestion)
+        '503':
+          description: IA indisponible (MARKETING_AI_UNAVAILABLE)
+        '422':
+          $ref: '#/components/responses/Validation422'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /marketing/ai/suggest-post:
+    post:
+      tags:
+      - Marketing
+      summary: Suggerer un contenu de post via l'IA (issue #7753)
+      description: Brief + plateformes + ton + langue vers un texte de post propose par MarketingAiService. Humain dans la boucle, rien n'est cree ni publie automatiquement.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - brief
+              properties:
+                brief:
+                  type: string
+                  minLength: 3
+                  maxLength: 2000
+                platforms:
+                  type: array
+                  maxItems: 10
+                  items:
+                    type: string
+                    maxLength: 40
+                tone:
+                  type: string
+                  maxLength: 60
+                locale:
+                  type: string
+                  maxLength: 10
+      responses:
+        '200':
+          description: Suggestion generee (data.suggestion, data.brief, data.platforms)
+        '503':
+          description: IA indisponible (MARKETING_AI_UNAVAILABLE)
+        '422':
+          $ref: '#/components/responses/Validation422'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /marketing/reports/weekly:
+    get:
+      tags:
+      - Marketing
+      summary: Bilan marketing des 7 derniers jours (issue #7753)
+      description: Agregats tenant (posts publies/echoues, publications par plateforme, campagnes CRM en meilleure-effort) + synthese IA avec repli deterministe (summary_source ai|fallback) — jamais bloquant.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Bilan hebdomadaire (data.period, data.stats, data.summary, data.summary_source)
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -32540,7 +33100,7 @@ paths:
           minimum: 1
       responses:
         '200':
-          description: Liste paginee (slug, name, establishment_type, cuisine_types, city, description, cover_image_url, latitude, longitude, distance_km si near)
+          description: Liste paginee (slug, name, establishment_type, cuisine_types, city, description, cover_image_url, latitude, longitude, rating_avg + reviews_count sur avis publies RESTO-902, distance_km si near)
         '422':
           $ref: '#/components/responses/Error422'
 
@@ -32566,7 +33126,349 @@ paths:
           pattern: '^[a-z0-9][a-z0-9-]{0,159}$'
       responses:
         '200':
-          description: Profil public (slug, identite, horaires, menu publie) - aucun ID interne
+          description: Profil public (slug, identite, horaires, menu publie avec code produit commandable, rating_avg + reviews_count sur avis publies RESTO-902) - aucun ID interne
+        '404':
+          $ref: '#/components/responses/Error404'
+
+  /public/restaurants/{slug}/orders:
+    post:
+      tags:
+      - Restaurant
+      summary: Commander en ligne depuis la page publique d'un restaurant (sans auth)
+      description: >-
+        RESTO-902 (#7747) - creation d'une commande publique par slug
+        (throttle:shop-public, AUCUN middleware tenant/Sanctum). Meme pipeline
+        que RESTO-805 : prix unitaires et TVA SERVEUR (aucun montant accepte du
+        client), idempotence par idempotency_key (rejeu -> meme commande, 200),
+        source online. Produits identifies par leur code metier (identifiant
+        expose par le menu public) et acceptes UNIQUEMENT si publies en ligne
+        (is_published_online) ET disponibles ET servis par la branche (422
+        sinon). Branche non publique / societe suspendue -> 404 fail-closed.
+        order_type accepte l'alias public pickup (-> takeaway) ou delivery.
+      security: []
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9-]{0,159}$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [customer_name, customer_phone, items]
+              properties:
+                customer_name:
+                  type: string
+                  maxLength: 120
+                customer_phone:
+                  type: string
+                  maxLength: 30
+                order_type:
+                  type: string
+                  enum: [pickup, takeaway, delivery]
+                  default: pickup
+                note:
+                  type: string
+                  maxLength: 500
+                idempotency_key:
+                  type: string
+                  maxLength: 64
+                items:
+                  type: array
+                  minItems: 1
+                  maxItems: 50
+                  items:
+                    type: object
+                    required: [product_code, quantity]
+                    properties:
+                      product_code:
+                        type: string
+                        maxLength: 80
+                      quantity:
+                        type: number
+                        minimum: 0
+                        exclusiveMinimum: true
+                        maximum: 999
+                      note:
+                        type: string
+                        maxLength: 200
+      responses:
+        '201':
+          description: Commande creee (reference RST- non enumerable, statut, order_type, totaux minor, currency, items_count, created=true)
+        '200':
+          description: Rejeu idempotent (meme idempotency_key) - commande existante, created=false
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /public/restaurants/{slug}/orders/{ref}:
+    get:
+      tags:
+      - Restaurant
+      summary: Suivre une commande publique par reference (sans auth)
+      description: >-
+        RESTO-902 (#7747) - suivi d'une commande de LA branche du slug par sa
+        reference RST- non enumerable (statut, lignes nom/quantite/montants,
+        totaux). AUCUNE PII : la note interne (contact client) n'est jamais
+        renvoyee. Reference inconnue ou d'une autre branche -> 404 uniforme.
+      security: []
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9-]{0,159}$'
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+          maxLength: 40
+      responses:
+        '200':
+          description: Suivi (reference, status, order_type, items, totaux minor, currency, updated_at) - sans PII
+        '404':
+          $ref: '#/components/responses/Error404'
+
+  /public/restaurants/{slug}/orders/{ref}/pay:
+    post:
+      tags:
+      - Restaurant
+      summary: Payer une commande publique (cash a la livraison / mobile money)
+      description: >-
+        RESTO-902 (#7747) - initiation du paiement d'une commande publique via
+        le contrat PaymentGatewayInterface RESTO-805. Fournisseurs ouverts :
+        cash (alias public cash_on_delivery) et mobile_money - la passerelle
+        carte (PSP) reste volontairement fermee (spec #5272 en attente, 422).
+        Idempotence par idempotency_key ; 409 si la commande n'est pas payable
+        ou deja soldee.
+      security: []
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9-]{0,159}$'
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+          maxLength: 40
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider_code]
+              properties:
+                provider_code:
+                  type: string
+                  enum: [cash, cash_on_delivery, mobile_money]
+                idempotency_key:
+                  type: string
+                  maxLength: 64
+      responses:
+        '201':
+          description: Paiement initie (order_reference, provider_code, provider_reference, status, amount_minor, currency)
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Commande non payable dans son statut, ou deja soldee
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /public/restaurants/{slug}/reviews:
+    get:
+      tags:
+      - Restaurant
+      summary: Lister les avis clients publies d'un restaurant (sans auth)
+      description: >-
+        RESTO-902 (#7747) - avis PUBLIES uniquement, pagines (max 50/page), du
+        plus recent au plus ancien. DTO public STRICT : author_name, rating,
+        comment, date - jamais d'order_reference (secret du client), d'ID
+        interne ni de PII. Branche non publique -> 404 fail-closed.
+      security: []
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9-]{0,159}$'
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Liste paginee des avis publies (author_name, rating, comment, date)
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      tags:
+      - Restaurant
+      summary: Deposer un avis client sur une commande servie/livree (sans auth)
+      description: >-
+        RESTO-902 (#7747) - soumission d'un avis avec preuve d'achat : la
+        order_ref (reference RST- non enumerable remise a la commande) d'une
+        commande de CETTE branche en statut terminal servi/livre
+        (served/paid/closed). UN SEUL avis par commande (409 en doublon) ;
+        statut initial pending (moderation gerant avant publication). Throttle
+        STRICT dedie (restaurant-reviews-public) en plus du throttle du groupe.
+        Reference inconnue ou d'une autre branche -> 404 ; commande non
+        terminale -> 422.
+      security: []
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9-]{0,159}$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [order_ref, rating, author_name]
+              properties:
+                order_ref:
+                  type: string
+                  maxLength: 40
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                comment:
+                  type: string
+                  maxLength: 2000
+                author_name:
+                  type: string
+                  maxLength: 120
+      responses:
+        '201':
+          description: Avis cree en attente de moderation (status=pending, rating, author_name)
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Un avis existe deja pour cette commande
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /restaurant/reviews:
+    get:
+      tags:
+      - Restaurant
+      summary: File de moderation des avis clients (tenant)
+      description: >-
+        RESTO-902 (#7747) - listing tenant des avis (filtres status
+        pending/published/rejected, branch_id), scope par succursales
+        accessibles (ScopesRestaurantBranchListings) et par tenant
+        (BelongsToCompany). DTO de moderation : id, branch_id,
+        order_reference, rating, comment, author_name, status, created_at.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum: [pending, published, rejected]
+      - name: branch_id
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Liste paginee des avis du tenant
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+
+  /restaurant/reviews/{review}/publish:
+    post:
+      tags:
+      - Restaurant
+      summary: Publier un avis client (moderation gerant)
+      description: >-
+        RESTO-902 (#7747) - publication d'un avis (visible publiquement et
+        compte dans la note moyenne). Geste de GESTION de la succursale
+        (RestaurantReviewPolicy::moderate, pattern gerant #7599) ; 404
+        cross-tenant. Purge le cache du profil public de la branche.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: review
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Avis publie
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+
+  /restaurant/reviews/{review}/reject:
+    post:
+      tags:
+      - Restaurant
+      summary: Rejeter un avis client (moderation gerant)
+      description: >-
+        RESTO-902 (#7747) - rejet d'un avis (jamais expose publiquement,
+        retire de la note moyenne s'il etait publie). Geste de GESTION de la
+        succursale (RestaurantReviewPolicy::moderate) ; 404 cross-tenant.
+        Purge le cache du profil public de la branche.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: review
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Avis rejete
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
 
@@ -35327,6 +36229,41 @@ components:
         notes:
           type: string
           nullable: true
+    TravelDistributorKey:
+      type: object
+      description: >-
+        Cle API de lecture d'un distributeur (TRAVEL-DISTRIBUTION, #7641) —
+        acces de lecture distinct, revocable et trace par plateforme de
+        distribution ; hash SHA-256 au repos, jamais expose.
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        scopes:
+          type: array
+          items:
+            type: string
+            enum: [catalog.read, bookings.read]
+        enabled:
+          type: boolean
+        last_used_at:
+          type: string
+          format: date-time
+          nullable: true
+        usage_count:
+          type: integer
+        rotated_at:
+          type: string
+          format: date-time
+          nullable: true
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
     TravelStaffAssignment:
       type: object
       description: >-

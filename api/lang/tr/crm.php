@@ -29,4 +29,14 @@ return [
     'CRM_EXPORT_FAILED' => 'CRM dışa aktarma oluşturma başarısız.',
     'CRM_EXPORT_ENTITY_INVALID' => 'Bilinmeyen CRM dışa aktarma varlığı.',
 
+    // #7751 — campagnes email effectives (tranche 1 Marketing & Communication)
+    'campaigns' => [
+        'email_requires_subject_body' => 'Bir e-posta kampanyası başlatılmadan önce konu ve mesaj gövdesi gerektirir.',
+    ],
+    'console' => [
+        'process_sends_description' => 'Vadesi gelen planlı e-posta kampanyalarını başlatır ve çalışan kampanyaların bekleyen gönderimlerini işler.',
+        'process_sends_tables_missing' => 'crm:process-campaign-sends — kampanya tabloları yok, yapılacak bir şey yok.',
+        'process_sends_summary' => 'crm:process-campaign-sends — vadesi gelen: :due, çalışan: :running, gönderilen: :dispatched, başarısız: :failed.',
+    ],
+
 ];

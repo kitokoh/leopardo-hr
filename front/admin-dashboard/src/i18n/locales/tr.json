@@ -3710,7 +3710,47 @@
       }
     },
     "socialExamplePlaceholder": "Örn: Leopardo — Sosyal medya",
-    "postContentPlaceholder": "Gönderi içeriği..."
+    "postContentPlaceholder": "Gönderi içeriği...",
+    "publishNow": "Şimdi yayınla",
+    "commentsLoadError": "Yorumlar yüklenemedi.",
+    "aiSuggestUnavailable": "Yapay zekâ önerisi şu anda kullanılamıyor.",
+    "replySendError": "Yanıt gönderilemedi.",
+    "suggestReply": "Yanıt öner (YZ)",
+    "replyPlaceholder": "Yanıtınız (göndermeden önce siz onaylarsınız)...",
+    "weeklyReportLoadError": "Haftalık rapor yüklenemedi.",
+    "aiSummary": "YZ özeti",
+    "autoSummary": "Otomatik özet",
+    "web": {
+      "mediaUrls": {
+        "label": "Medya URL'leri (isteğe bağlı)",
+        "placeholder": "https://ornek.com/gorsel.jpg",
+        "add": "Ekle",
+        "remove": "Bu medyayı kaldır"
+      },
+      "interactions": {
+        "title": "Yorumlar",
+        "toggle": "Etkileşimleri görüntüle",
+        "refresh": "Yenile",
+        "loading": "Yorumlar yükleniyor...",
+        "empty": "Henüz yorum yok.",
+        "send": "Yanıtla",
+        "sending": "Gönderiliyor...",
+        "sent": "Yanıt gönderildi.",
+        "suggesting": "Öneriliyor..."
+      },
+      "weeklyReport": {
+        "title": "Son 7 gün raporu",
+        "loading": "Rapor yükleniyor...",
+        "empty": "Rapor bulunmuyor.",
+        "published": "Yayınlanan gönderiler",
+        "failed": "Başarısız",
+        "upcoming": "Yaklaşan",
+        "emails": "Kampanya e-postaları"
+      },
+      "postActions": {
+        "delete": "Sil"
+      }
+    }
   },
   "attendanceCorrectionEditDateTitle": "{date} düzenle",
   "attendanceSaving": "Kaydediliyor...",
@@ -3726,7 +3766,23 @@
     "checkout_sandbox_message": "Simüle edilmiş ödeme (sandbox modu). Karttan ücret alınmaz.",
     "checkout_unavailable": "Çevrimiçi ödeme geçici olarak kullanılamıyor. support@leopardo-rh.com adresinden destek ile iletişime geçin.",
     "checkout_failed": "Ödeme oturumu oluşturulamadı.",
-    "redirect_url_invalid": "Yönlendirme URL'leri yetkili siteye ait olmalıdır."
+    "redirect_url_invalid": "Yönlendirme URL'leri yetkili siteye ait olmalıdır.",
+    "ai_credits": {
+      "title": "Yapay zeka kredileri",
+      "subtitle": "Planınızın aylık kotasına ek olarak yapay zeka asistanı için token paketleri.",
+      "optional_note": "Tamamen isteğe bağlı: kredi satın almazsanız aboneliğiniz ve modülleriniz asla engellenmez.",
+      "balance_label": "Kredi bakiyesi",
+      "tokens_unit": "token",
+      "buy_pack": "Satın al",
+      "pack_label": "Paket {code}",
+      "history_title": "Son hareketler",
+      "history_empty": "Henüz kredi hareketi yok.",
+      "reason_purchase": "Satın alma",
+      "reason_consumption": "Tüketim",
+      "reason_adjustment": "Düzeltme",
+      "load_error": "Yapay zeka kredileri yüklenemedi.",
+      "checkout_error": "Yapay zeka kredisi ödeme oturumu oluşturulamadı."
+    }
   },
   "settingsEmailLabel": "E-posta",
   "companydetailEditSubscription": "Aboneliği düzenle",
@@ -6220,7 +6276,8 @@
       "bookingsDesc": "Gişe satışları, onay, iptal, iade ve biletler.",
       "reportsDesc": "Satışlar, doluluk, gelirler, iptaller ve CSV dışa aktarımları.",
       "portal": "Yolcu portalı",
-      "portalDesc": "Müşteriye yönelik sefer arama ve rezervasyon."
+      "portalDesc": "Müşteriye yönelik sefer arama ve rezervasyon.",
+      "staffDesc": "Şoför, gişe görevlisi, kontrolör ve ofis şefi atamaları."
     },
     "network": {
       "addPrice": "Fiyat ekle",
@@ -6599,7 +6656,38 @@
     "travel.tripStatus.published": "Yayınlandı",
     "travel.tripStatus.scheduled": "Planlandı",
     "travel.vehicles.registration": "Plaka",
-    "travel.vehicles.seats": "Koltuklar"
+    "travel.vehicles.seats": "Koltuklar",
+    "staff": {
+      "title": "Ekip",
+      "subtitle": "Çalışanlarınızı bir ofiste veya seferde travel rollerine (şoför, gişe görevlisi, kontrolör, ofis şefi) atayın.",
+      "assignTitle": "Ekip üyesi ata",
+      "employee": "Çalışan",
+      "role": "Rol",
+      "scope": "Kapsam",
+      "scopeOffice": "Ofis",
+      "scopeTrip": "Sefer",
+      "assign": "Ata",
+      "revoke": "İptal et",
+      "assignFailed": "Atama başarısız oldu.",
+      "revokeFailed": "İptal işlemi başarısız oldu.",
+      "formIncomplete": "Bir çalışan, bir rol ve bir kapsam seçin.",
+      "activeTitle": "Aktif atamalar",
+      "empty": "Aktif atama yok.",
+      "historyTitle": "Atama geçmişi",
+      "historyEmpty": "İptal edilmiş veya süresi dolmuş atama yok.",
+      "revokedAt": "İptal tarihi"
+    },
+    "staffRole": {
+      "driver": "Şoför",
+      "agent": "Gişe görevlisi",
+      "controller": "Kontrolör",
+      "office_manager": "Ofis şefi"
+    },
+    "staffStatus": {
+      "active": "Aktif",
+      "revoked": "İptal edildi",
+      "expired": "Süresi doldu"
+    }
   },
   "edu": {
     "nav": {
@@ -7520,6 +7608,18 @@
       "publish_showcase": {
         "title": "Vitrin sitenizi yayınlayın",
         "desc": "Sitenizi tek tıkla görünür yapın."
+      },
+      "travel_setup_network": {
+        "title": "Ağınızı oluşturun (istasyonlar, ofisler, hatlar)",
+        "desc": "İstasyonlarınızı, satış ofislerinizi ve şehirlerarası hatlarınızı tanımlayın."
+      },
+      "travel_first_trip": {
+        "title": "İlk seferinizi planlayın",
+        "desc": "Tarihli bir sefer ve sınıf tarifelerini oluşturup yayınlayın."
+      },
+      "travel_first_sale": {
+        "title": "İlk satışınızı kaydedin",
+        "desc": "Gişeden veya çevrimiçi ilk biletinizi satın."
       }
     }
   },
