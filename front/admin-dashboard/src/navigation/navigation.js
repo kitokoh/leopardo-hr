@@ -106,7 +106,7 @@ export const NAV_GROUPS = [
   { id: 'entreprise', titleKey: 'navigation.groups.entreprise' },
   { id: 'modules-clients', titleKey: 'navigation.clientModules' },
   { id: 'facturation-offres', titleKey: 'navigation.groups.facturationOffres' },
-  { id: 'referentiels-paie', titleKey: 'navigation.groups.referentielsPaie' },
+  { id: 'rh-paie', titleKey: 'navigation.groups.rhPaie' },
   { id: 'plateforme', titleKey: 'navigation.groups.plateforme' },
   { id: 'systeme', titleKey: 'navigation.groups.systeme' },
 ]
@@ -114,9 +114,14 @@ export const NAV_GROUPS = [
 /**
  * Anciens identifiants de section (persistance `admin.nav.openGroups`) :
  * - `clientModules` → `modules-clients` (avant #7554) ;
- * - `metier` → `plateforme` (avant #7725 : « Métier plateforme »).
+ * - `metier` → `plateforme` (avant #7725 : « Métier plateforme ») ;
+ * - `referentiels-paie` → `rh-paie` (avant #7855 : « Référentiels paie »).
  */
-export const LEGACY_GROUP_IDS = { clientModules: 'modules-clients', metier: 'plateforme' }
+export const LEGACY_GROUP_IDS = {
+  clientModules: 'modules-clients',
+  metier: 'plateforme',
+  'referentiels-paie': 'rh-paie',
+}
 
 /**
  * Entrées de navigation. `name` doit correspondre au `name` de la route
@@ -346,14 +351,6 @@ export const NAV_ENTRIES = [
     ],
   },
   {
-    name: 'training',
-    path: '/training',
-    titleKey: 'navigation.training',
-    icon: AcademicCapIcon,
-    permission: null,
-    group: 'modules-clients',
-  },
-  {
     name: 'fleet',
     path: '/fleet',
     titleKey: 'navigation.fleet',
@@ -419,41 +416,63 @@ export const NAV_ENTRIES = [
     group: 'facturation-offres',
   },
 
-  // ── Référentiels paie (#7725) ──────────────────────────────────────────────
+  // ── RH & Paie (#7855, ex-« Référentiels paie » #7725) ─────────────────────
   // #7554 — pages de paramétrage paie routées mais inatteignables : elles ont
-  // rejoint le menu ; #7725 leur donne un groupe métier DISTINCT (elles
-  // côtoyaient « Mon compte » et « E-mails » sous « Paramètres »).
+  // rejoint le menu ; #7725 leur donne un groupe métier DISTINCT ; #7855
+  // regroupe le para-RH éparpillé (référentiels paie + Formations) sous
+  // « RH & Paie », avec les 4 référentiels en sous-menu d'UNE entrée
+  // « Référentiels paie » (modèle Comptabilité, un seul niveau, règle #7725).
+  // AUCUNE route ne change.
   {
-    name: 'social-contributions',
-    path: '/settings/payroll/social-contributions',
-    titleKey: 'navigation.contributions',
+    name: 'payroll-references',
+    titleKey: 'navigation.groups.referentielsPaie',
     icon: BanknotesIcon,
     permission: 'companies.manage',
-    group: 'referentiels-paie',
+    group: 'rh-paie',
+    children: [
+      {
+        name: 'social-contributions',
+        path: '/settings/payroll/social-contributions',
+        titleKey: 'navigation.contributions',
+        icon: BanknotesIcon,
+        permission: 'companies.manage',
+        group: 'rh-paie',
+      },
+      {
+        name: 'tax-slabs',
+        path: '/settings/payroll/tax-slabs',
+        titleKey: 'navigation.taxBrackets',
+        icon: ScaleIcon,
+        permission: 'companies.manage',
+        group: 'rh-paie',
+      },
+      {
+        name: 'tax-rates',
+        path: '/settings/payroll/tax-rates',
+        titleKey: 'navigation.legalRates',
+        icon: ReceiptPercentIcon,
+        permission: 'companies.manage',
+        group: 'rh-paie',
+      },
+      {
+        name: 'payroll-holidays',
+        path: '/settings/payroll/holidays',
+        titleKey: 'holidays.nav.title',
+        icon: CalendarIcon,
+        permission: 'companies.manage',
+        group: 'rh-paie',
+      },
+    ],
   },
+  // #7855 — « Formations » quitte « Modules clients » pour « RH & Paie »
+  // (même route `/training`, même permission).
   {
-    name: 'tax-slabs',
-    path: '/settings/payroll/tax-slabs',
-    titleKey: 'navigation.taxBrackets',
-    icon: ScaleIcon,
-    permission: 'companies.manage',
-    group: 'referentiels-paie',
-  },
-  {
-    name: 'tax-rates',
-    path: '/settings/payroll/tax-rates',
-    titleKey: 'navigation.legalRates',
-    icon: ReceiptPercentIcon,
-    permission: 'companies.manage',
-    group: 'referentiels-paie',
-  },
-  {
-    name: 'payroll-holidays',
-    path: '/settings/payroll/holidays',
-    titleKey: 'holidays.nav.title',
-    icon: CalendarIcon,
-    permission: 'companies.manage',
-    group: 'referentiels-paie',
+    name: 'training',
+    path: '/training',
+    titleKey: 'navigation.training',
+    icon: AcademicCapIcon,
+    permission: null,
+    group: 'rh-paie',
   },
 
   // ── Plateforme (#7725, ex-« Métier plateforme » + config plateforme) ──────
