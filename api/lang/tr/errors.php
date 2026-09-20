@@ -32,6 +32,7 @@ return [
     'INVITATION_ALREADY_ACCEPTED' => 'Bu davet zaten kabul edildi.',
     'INVITATION_EXPIRED' => 'Bu davetin süresi doldu.',
     'INVITATION_NOT_FOUND' => 'Davet bulunamadı.',
+    'INVITATION_REVOKED' => 'Bu davet iptal edildi.',
 
     // Biometric
     'CAMERA_TOKEN_EXPIRED' => 'Bu kameraya erişim süresi doldu.',
