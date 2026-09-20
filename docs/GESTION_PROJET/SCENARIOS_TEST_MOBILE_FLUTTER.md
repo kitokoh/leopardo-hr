@@ -3,6 +3,15 @@
 > `front/mobile_apps/*` et leur CI est `mobile-apps-ci.yml`. Les chemins `front/mobile/...` ci-dessous
 > n'existent plus ; conserver ce document à titre d'historique des scénarios couverts à l'époque.
 
+## Journal des mises à jour de surface (`front/mobile_apps/`)
+
+- **2026-09-20 (#7963)** — `leopardo_core/lib/core/api/api_client.dart` : message du
+  fail-fast release aligné (build release sans define `API_BASE_URL` → `StateError`
+  explicite au démarrage, comportement #4524 inchangé ; mention de l'ancienne instance
+  dev retirée des commentaires). Scénario de non-régression associé : build release
+  sans `API_BASE_URL` → erreur explicite et immédiate (jamais de repli silencieux) ;
+  build debug → défauts locaux `10.0.2.2`/`127.0.0.1` conservés.
+
 # SCÉNARIOS DE TEST MOBILE FLUTTER (COUVERTURE COMPLÈTE)
 
 ## Objectif
