@@ -4,8 +4,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AddToCartButton } from "@/components/AddToCartButton";
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { Price } from "@/components/Price";
 import { ProductImage } from "@/components/ProductImage";
+import { RatingStars } from "@/components/RatingStars";
+import { ReviewsSection } from "@/components/ReviewsSection";
 import { ApiError, fetchProduct, type PublicProduct } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -87,6 +90,14 @@ export default async function ProductPage({ params }: { params: Params }) {
 
           <h1 className="text-3xl font-bold tracking-tight text-stone-900">{product.name}</h1>
 
+          <div className="flex items-center gap-3">
+            <RatingStars
+              rating={product.rating_avg ?? null}
+              count={product.rating_count ?? 0}
+            />
+            <FavoriteButton productId={product.id} />
+          </div>
+
           <Price
             priceMinor={product.price_minor}
             currency={product.currency}
@@ -126,6 +137,8 @@ export default async function ProductPage({ params }: { params: Params }) {
           </p>
         </div>
       </div>
+
+      <ReviewsSection productId={product.id} />
     </div>
   );
 }

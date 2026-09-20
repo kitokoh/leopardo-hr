@@ -216,6 +216,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'catalog.public' => \App\Http\Middleware\Catalog\EnsureCatalogPublicAccess::class,
             // BC-17 #7807 — marketplace publique Leopardo Marché (slug vendeur, fail-closed 404).
             'market.public' => \App\Http\Middleware\Retail\EnsureMarketPublicAccess::class,
+            // BC-17 #7814 — compte acheteur marketplace (jeton opaque plateforme, 401 fail-closed).
+            'market.buyer' => \App\Http\Middleware\Retail\EnsureMarketBuyerAuth::class,
             'delivery.permission' => \App\Http\Middleware\Delivery\EnsureDeliveryPermissionMiddleware::class,
             // #7553 — permission interne plateforme (`platform.permission:team.manage`).
             'platform.permission' => \App\Http\Middleware\EnsurePlatformPermissionMiddleware::class,
