@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
@@ -16,8 +17,12 @@ use Illuminate\Queue\SerializesModels;
  *
  * Aucun secret durable dans cet e-mail : le code expire en 10 minutes et est
  * consommé au premier usage.
+ *
+ * #7854 : envoyé via la queue `emails` (worker prod), plus en synchrone dans
+ * la requête HTTP. Le code vit 10 min en cache : largement au-dessus de la
+ * latence de drainage de la file.
  */
-class LoginCodeMail extends Mailable
+class LoginCodeMail extends Mailable implements ShouldQueue
 {
     use Queueable;
     use SerializesModels;
@@ -25,7 +30,9 @@ class LoginCodeMail extends Mailable
     public function __construct(
         public readonly string $loginCode,
         public readonly string $emailLocale = 'fr',
-    ) {}
+    ) {
+        $this->onQueue('emails');
+    }
 
     public function build(): self
     {
