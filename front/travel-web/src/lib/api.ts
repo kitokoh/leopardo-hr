@@ -53,6 +53,10 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
       ...(init?.body ? { "Content-Type": "application/json" } : {}),
       ...init?.headers,
     },
+    // #7841 — session en cookie httpOnly : les appels same-origin doivent
+    // toujours embarquer les cookies (comportement fetch par défaut, rendu
+    // explicite ici — le token n'est plus jamais attaché par le JS client).
+    credentials: "same-origin",
     cache: "no-store",
   });
 
@@ -108,10 +112,7 @@ export async function fetchCities(): Promise<MarketplaceCity[]> {
   return payload.data;
 }
 
-export async function createBooking(
-  input: BookingInput,
-  token?: string | null,
-): Promise<{
+export async function createBooking(input: BookingInput): Promise<{
   booking: Booking;
   agencyName: string | null;
 }> {
@@ -120,9 +121,10 @@ export async function createBooking(
     {
       method: "POST",
       body: JSON.stringify(input),
-      // #7739 — client connecté : la réservation est rattachée à son compte
-      // à la création (le checkout invité reste possible sans token).
-      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      // #7739/#7841 — client connecté : la réservation est rattachée à son
+      // compte à la création. Le proxy same-origin lit le cookie httpOnly de
+      // session et injecte le Bearer côté serveur (le checkout invité reste
+      // possible sans session).
     },
   );
   return {
@@ -166,14 +168,13 @@ export async function getTicketPdfUrl(
 }
 
 // ── Compte client grand public (issue #7739) ────────────────────────────────
-// Auth par token Sanctum du guard DÉDIÉ `travel_customer`, relayé par le
-// proxy same-origin uniquement sur la surface `account/*` (fail-closed).
+// Auth par token Sanctum du guard DÉDIÉ `travel_customer`, conservé depuis
+// #7841 dans un cookie httpOnly posé par les route handlers Next
+// (login/register) et relayé en Bearer par le proxy same-origin uniquement
+// sur la surface `account/*` (fail-closed). Le JS client ne voit ni ne
+// transmet jamais le token.
 
 const ACCOUNT = `${MARKETPLACE}/account`;
-
-function authHeaders(token: string): Record<string, string> {
-  return { Authorization: `Bearer ${token}` };
-}
 
 export async function registerAccount(input: {
   name: string;
@@ -199,27 +200,23 @@ export async function loginAccount(input: {
   return payload.data;
 }
 
-export async function logoutAccount(token: string): Promise<void> {
+export async function logoutAccount(): Promise<void> {
   await request<{ data: { logged_out: boolean } }>(`/api/v1/${ACCOUNT}/logout`, {
     method: "POST",
-    headers: authHeaders(token),
   });
 }
 
-export async function fetchAccount(token: string): Promise<CustomerAccount> {
+export async function fetchAccount(): Promise<CustomerAccount> {
   const payload = await request<{ data: { account: CustomerAccount } }>(
     `/api/v1/${ACCOUNT}/me`,
-    { headers: authHeaders(token) },
   );
   return payload.data.account;
 }
 
 export async function fetchMyBookings(
-  token: string,
   perPage = 50,
 ): Promise<{ data: CustomerBooking[]; meta: SearchMeta }> {
   return request<{ data: CustomerBooking[]; meta: SearchMeta }>(
     `/api/v1/${ACCOUNT}/bookings?per_page=${perPage}`,
-    { headers: authHeaders(token) },
   );
 }

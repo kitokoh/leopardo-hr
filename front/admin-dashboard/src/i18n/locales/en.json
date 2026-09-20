@@ -1669,7 +1669,37 @@
     "sepaReady": "SEPA ready",
     "company": "Company",
     "manage2fa": "Manage two-factor authentication",
-    "tenantSubtitle": "Manage your account information and its security."
+    "tenantSubtitle": "Manage your account information and its security.",
+    "billing": {
+      "title": "Subscription & billing",
+      "subtitle": "Review your plan, invoices and subscribed services.",
+      "plan": "Current plan",
+      "status": "Status",
+      "none": "No active subscription.",
+      "manage": "Manage subscription and invoices"
+    },
+    "emailLocked": "Your email address is your login identifier and cannot be changed here.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "phone": "Phone",
+    "profileLoadError": "Unable to load your profile.",
+    "twoFa": {
+      "loading": "Loading…",
+      "enabledHint": "Enabled — your account is protected.",
+      "disabledHint": "Disabled — your account is less secure.",
+      "loadError": "Failed to load.",
+      "enrollHint": "Use an authenticator app (Google Authenticator, Authy, 1Password…) to generate one-time codes.",
+      "enrollStart": "Start enrollment",
+      "scanTitle": "Step 1 — Scan the QR code",
+      "confirmTitle": "Step 2 — Confirm with a TOTP code",
+      "recoveryTitle": "Recovery codes — keep them somewhere safe",
+      "recoveryHint": "Each code can only be used once if you lose access to your authenticator app.",
+      "copyAll": "Copy all",
+      "copied": "Copied!",
+      "disableHint": "Enter your current TOTP code to disable two-factor authentication.",
+      "codeInvalid": "Invalid code. Try again.",
+      "enrollError": "Failed to start activation."
+    }
   },
   "settingsPersonalContacts": "Personal contacts",
   "attendancePersonalTracking": "Personal tracking",

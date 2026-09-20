@@ -9,12 +9,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 
 /**
  * TRAVEL-901/902/903 (#6104/#6105/#6106) — Like (contenu éditorial).
  *
  * @mixin Builder<static>
+ *
+ * @property int $id
  */
 class TravelLike extends Model
 {
@@ -26,6 +27,4 @@ class TravelLike extends Model
     protected $table = 'travel_likes';
 
     protected $fillable = ['company_id', 'article_id', 'actor_type', 'actor_id'];
-
-
 }

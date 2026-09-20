@@ -3,12 +3,12 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Banknote, Bell, ChevronDown, Globe, KeyRound, LayoutGrid, LifeBuoy, LockKeyhole, LogOut, Menu, Paintbrush, Plus, ShieldCheck, Sparkles, UserCircle, X } from 'lucide-react';
+import { Banknote, Bell, ChevronDown, CreditCard, Globe, LayoutGrid, LifeBuoy, LockKeyhole, LogOut, Menu, Paintbrush, Plus, Sparkles, User, UserCircle, X } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
-import { teamRolesT } from '@/lib/i18n/team-roles';
 import { paymentProfilesT } from '@/lib/i18n/payment-profiles';
 import { supportTicketsT } from '@/lib/i18n/support-tickets';
+import { clearTenantBrandingCache, readCachedTenantBranding, storeTenantBranding, TENANT_BRANDING_EVENT, type TenantBranding } from '@/lib/tenant-branding';
 import { trackClientEvent } from '@/lib/client-analytics';
 import { getClientModuleAccess, getModuleAccessForPath, getSidebarSections, isSelfActivable, mergeActivationSurface, sessionModuleSignature, type ClientModuleAccess, type ClientModuleKey } from '@/lib/client-features';
 import { buildBusinessRail, buildDashboardNav, isNavEntryActive, toNavModules, type DashboardNavEntry, type NavMenuGroupId } from '@/lib/dashboard-nav';
@@ -48,19 +48,23 @@ const MD_BREAKPOINT_MEDIA_QUERY = `(min-width: ${768}px)`;
 const SESSION_REFRESH_MIN_INTERVAL_MS = 60_000;
 
 /**
- * #7713 — image de marque du tenant consommée par le shell : couleurs
+ * #7713/#7860 — image de marque du tenant consommée par le shell : couleurs
  * exposées en CSS custom properties, logo affiché à la place du badge LRH.
- * Repli silencieux vers le thème par défaut si l'appel échoue.
+ * Le contrat `TenantBranding` et le cache localStorage vivent dans
+ * `@/lib/tenant-branding` (hydratation instantanée + événement
+ * `tenant-branding-updated`). Repli silencieux vers le thème par défaut si
+ * l'appel échoue.
  */
-type TenantBranding = {
-  display_name: string | null;
-  logo_url: string | null;
-  primary_color: string;
-  accent_color: string;
-  brand_mode: string;
-};
-
 const HEX_COLOR_PATTERN = /^#[0-9A-Fa-f]{6}$/;
+
+/**
+ * #7860 — hover intent des sous-menus de groupe (RH, Finance, Croissance,
+ * Opérations) : petite temporisation à l'ouverture (le pointeur qui traverse
+ * la barre n'ouvre rien) et plus longue à la fermeture (quitter brièvement le
+ * panneau ne le referme pas).
+ */
+const NAV_MENU_HOVER_OPEN_MS = 150;
+const NAV_MENU_HOVER_CLOSE_MS = 300;
 
 /**
  * #7556 — Verrou de défilement partagé par les surfaces superposées (tiroir,
@@ -134,6 +138,7 @@ const MODULES_NAV_PANEL = 'absolute end-0 top-12 z-30 max-h-[70vh] w-64 overflow
 function modulesNavLinkClass(active: boolean): string {
   return [
     'flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-[12px] font-bold transition',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40',
     active ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
   ].join(' ');
 }
@@ -193,6 +198,198 @@ function DashboardModuleLinks({
   );
 }
 
+/**
+ * #7860 — sous-menu de groupe de la barre (RH, Finance, Croissance,
+ * Opérations) : ergonomie desktop complète.
+ *
+ *  - Ouverture au survol avec hover intent (150 ms) EN PLUS du clic ;
+ *    fermeture temporisée (300 ms) pour tolérer un pointeur qui sort
+ *    brièvement du panneau.
+ *  - Panneau animé (opacity/translate) monté conditionnellement : les
+ *    data-testid `dashboard-*-menu(-panel)` et le contrat « panneau démonté
+ *    quand fermé » des tests existants sont conservés.
+ *  - Clavier : Enter/Espace natifs du <button>, ArrowDown ouvre et déplace le
+ *    focus dans le panneau, flèches pour circuler entre les entrées, Escape
+ *    déjà géré par `usePanelDismiss` côté layout.
+ */
+function NavGroupMenu({
+  entry,
+  open,
+  pathname,
+  labels,
+  onOpen,
+  onClose,
+  onToggle,
+}: {
+  entry: Extract<DashboardNavEntry, { kind: 'menu' }>;
+  open: boolean;
+  pathname: string;
+  labels: CopyTree;
+  onOpen: () => void;
+  onClose: () => void;
+  onToggle: () => void;
+}) {
+  const openTimerRef = useRef<number | null>(null);
+  const closeTimerRef = useRef<number | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const focusFirstOnOpenRef = useRef(false);
+  // Animation d'apparition : le panneau monte à l'état « caché » puis
+  // transitionne vers l'état visible à la frame suivante.
+  const [shown, setShown] = useState(false);
+
+  const clearHoverTimers = useCallback(() => {
+    if (openTimerRef.current !== null) {
+      window.clearTimeout(openTimerRef.current);
+      openTimerRef.current = null;
+    }
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => clearHoverTimers, [clearHoverTimers]);
+
+  useEffect(() => {
+    if (!open) {
+      setShown(false);
+      return;
+    }
+    const raf = window.requestAnimationFrame(() => {
+      setShown(true);
+      if (focusFirstOnOpenRef.current) {
+        focusFirstOnOpenRef.current = false;
+        panelRef.current?.querySelector<HTMLElement>('a')?.focus();
+      }
+    });
+    return () => window.cancelAnimationFrame(raf);
+  }, [open]);
+
+  const handleMouseEnter = () => {
+    clearHoverTimers();
+    if (!open) {
+      openTimerRef.current = window.setTimeout(() => {
+        openTimerRef.current = null;
+        onOpen();
+      }, NAV_MENU_HOVER_OPEN_MS);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    clearHoverTimers();
+    if (open) {
+      closeTimerRef.current = window.setTimeout(() => {
+        closeTimerRef.current = null;
+        onClose();
+      }, NAV_MENU_HOVER_CLOSE_MS);
+    }
+  };
+
+  const handleTriggerKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      focusFirstOnOpenRef.current = true;
+      if (open) {
+        panelRef.current?.querySelector<HTMLElement>('a')?.focus();
+      } else {
+        onOpen();
+      }
+    }
+  };
+
+  // Flèches haut/bas : circulation du focus entre les entrées du panneau.
+  const handlePanelKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') {
+      return;
+    }
+    event.preventDefault();
+    const items = Array.from(panelRef.current?.querySelectorAll<HTMLElement>('a') ?? []);
+    if (items.length === 0) {
+      return;
+    }
+    const index = items.indexOf(document.activeElement as HTMLElement);
+    const next = event.key === 'ArrowDown'
+      ? (index + 1) % items.length
+      : (index - 1 + items.length) % items.length;
+    items[next]?.focus();
+  };
+
+  return (
+    <div
+      className="relative shrink-0"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <button
+        type="button"
+        data-testid={`dashboard-${entry.id}-menu`}
+        aria-expanded={open}
+        aria-haspopup="true"
+        aria-controls={`dashboard-${entry.id}-menu-panel`}
+        onClick={() => {
+          // Un clic est une intention explicite : il annule tout timer de
+          // survol en cours (sinon un hover timer pouvait rouvrir le panneau
+          // juste après sa fermeture au clic).
+          clearHoverTimers();
+          onToggle();
+        }}
+        onKeyDown={handleTriggerKeyDown}
+        className={[
+          'group inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[11px] font-black uppercase tracking-tight transition-all',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40',
+          isNavEntryActive(entry, pathname)
+            ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm'
+            : 'border-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-slate-900',
+        ].join(' ')}
+      >
+        {labels.dashboard.navGroups[entry.id] ?? labels.dashboard.hrMenu}
+        <ChevronDown
+          className={`h-3.5 w-3.5 transition-transform ${open ? 'rotate-180' : ''}`}
+          aria-hidden="true"
+        />
+      </button>
+      {open ? (
+        <div
+          ref={panelRef}
+          id={`dashboard-${entry.id}-menu-panel`}
+          data-testid={`dashboard-${entry.id}-menu-panel`}
+          onKeyDown={handlePanelKeyDown}
+          className={[
+            'absolute start-0 top-10 z-30 max-h-[70vh] w-64 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-xl',
+            'transition-all duration-150 ease-out',
+            shown ? 'translate-y-0 opacity-100' : '-translate-y-1 opacity-0',
+          ].join(' ')}
+        >
+          {entry.modules.map((module) => {
+            const active = pathname === module.href;
+            return (
+              <Link
+                key={module.key}
+                href={module.href}
+                onClick={onClose}
+                aria-current={active ? 'page' : undefined}
+                className={modulesNavLinkClass(active)}
+              >
+                <span className="flex min-w-0 items-center gap-2">
+                  {module.icon ? <module.icon className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" /> : null}
+                  <span className="truncate">{labels.dashboard.modules[module.key] ?? module.label}</span>
+                </span>
+                {/* Pastille d'item actif, teintée par le branding du tenant (#7860). */}
+                {active ? (
+                  <span
+                    className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--tenant-primary,#10b981)]"
+                    aria-hidden="true"
+                  />
+                ) : null}
+              </Link>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export default function DashboardLayout({
   children,
 }: {
@@ -248,11 +445,18 @@ export default function DashboardLayout({
     setMounted(true);
   }, []);
 
-  // #7713 — charge l'image de marque du tenant. Toute erreur est silencieuse :
-  // le shell garde son thème par défaut (badge LRH, palette emerald).
+  // #7713/#7860 — image de marque du tenant : hydratation INSTANTANÉE depuis
+  // le cache localStorage (couleurs/logo dès la première frame après login),
+  // puis refetch de `/company/branding` au montage pour rafraîchir le cache.
+  // Toute erreur réseau est silencieuse : le shell garde son thème courant.
   useEffect(() => {
     if (!mounted || !user) {
       return;
+    }
+
+    const cached = readCachedTenantBranding();
+    if (cached) {
+      setTenantBranding(cached);
     }
 
     let cancelled = false;
@@ -263,9 +467,12 @@ export default function DashboardLayout({
         const payload = await response.json() as { data?: { branding?: TenantBranding } };
         if (!cancelled && payload.data?.branding) {
           setTenantBranding(payload.data.branding);
+          // Réalimente le cache pour la prochaine connexion (et les autres
+          // surfaces à l'écoute de `tenant-branding-updated`).
+          storeTenantBranding(payload.data.branding);
         }
       } catch {
-        // Repli silencieux : thème par défaut.
+        // Repli silencieux : thème par défaut (ou cache déjà hydraté).
       }
     })();
 
@@ -273,6 +480,18 @@ export default function DashboardLayout({
       cancelled = true;
     };
   }, [mounted, user]);
+
+  // #7860 — mise à jour immédiate quand /settings/branding sauvegarde : la
+  // page émet `tenant-branding-updated` via storeTenantBranding().
+  useEffect(() => {
+    const onBrandingUpdated = (event: Event) => {
+      const detail = (event as CustomEvent<TenantBranding | null>).detail;
+      setTenantBranding(detail ?? readCachedTenantBranding());
+    };
+
+    window.addEventListener(TENANT_BRANDING_EVENT, onBrandingUpdated);
+    return () => window.removeEventListener(TENANT_BRANDING_EVENT, onBrandingUpdated);
+  }, []);
 
   // Couleurs du tenant → CSS custom properties posées à la racine du shell.
   const tenantThemeStyle = useMemo(() => {
@@ -305,6 +524,9 @@ export default function DashboardLayout({
   }, [locale, mounted, router, user]);
 
   const handleLogout = () => {
+    // #7860 — le thème du tenant ne doit pas fuiter vers la session suivante
+    // (autre compte, autre entreprise) : cache purgé à la déconnexion.
+    clearTenantBrandingCache();
     router.push('/auth/logout');
   };
 
@@ -711,7 +933,7 @@ export default function DashboardLayout({
               // eslint-disable-next-line @next/next/no-img-element -- logo du tenant servi par l'API (URL par entreprise, hors allowlist next/image)
               <img src={tenantLogoUrl} alt="" data-testid="tenant-logo" className="h-9 w-9 shrink-0 rounded-xl border border-slate-200 bg-white object-contain shadow-sm" />
             ) : (
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--tenant-primary,#10b981)] to-[var(--tenant-accent,#0891b2)] shadow-lg shadow-emerald-500/20">
                 <span className="text-xs font-black text-white">LRH</span>
               </div>
             )}
@@ -778,11 +1000,6 @@ export default function DashboardLayout({
               <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
               {labels.dashboard.userMenuAccount}
             </Link>
-            {/* #7555 — gestion des collaborateurs et attribution des rôles. */}
-            <Link href="/settings/team" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
-              <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
-              {teamRolesT(locale, 'menuLabel')}
-            </Link>
             {/* #7727 — encaissements : profils de paiement du tenant (principal). */}
             <Link href="/settings/encaissements" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
               <Banknote className="h-4 w-4 text-slate-400" aria-hidden="true" />
@@ -798,14 +1015,6 @@ export default function DashboardLayout({
             <Link href="/settings/branding" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
               <Paintbrush className="h-4 w-4 text-slate-400" aria-hidden="true" />
               {i18nT(locale, 'brandingPage.title')}
-            </Link>
-            <Link href="/settings/account#password" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
-              <KeyRound className="h-4 w-4 text-slate-400" aria-hidden="true" />
-              {labels.dashboard.userMenuPassword}
-            </Link>
-            <Link href="/settings/security/2fa" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
-              <ShieldCheck className="h-4 w-4 text-slate-400" aria-hidden="true" />
-              {labels.dashboard.userMenuSecurity}
             </Link>
             <Link href="/settings/notifications" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
               <Bell className="h-4 w-4 text-slate-400" aria-hidden="true" />
@@ -864,7 +1073,7 @@ export default function DashboardLayout({
                 // eslint-disable-next-line @next/next/no-img-element -- logo du tenant servi par l'API (URL par entreprise, hors allowlist next/image)
                 <img src={tenantLogoUrl} alt="" className={`h-9 w-9 shrink-0 rounded-xl border border-slate-200 bg-white object-contain shadow-sm ${business.length > 0 ? 'md:hidden' : ''}`} />
               ) : (
-                <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20 ${business.length > 0 ? 'md:hidden' : ''}`}>
+                <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--tenant-primary,#10b981)] to-[var(--tenant-accent,#0891b2)] shadow-lg shadow-emerald-500/20 ${business.length > 0 ? 'md:hidden' : ''}`}>
                   <span className="text-xs font-black text-white">LRH</span>
                 </div>
               )}
@@ -889,56 +1098,30 @@ export default function DashboardLayout({
                     labels={labels}
                   />
                 ) : (
-                  <div key={`menu-${entry.id}`} className="relative shrink-0">
-                    <button
-                      type="button"
-                      data-testid={`dashboard-${entry.id}-menu`}
-                      aria-expanded={openNavMenu === entry.id}
-                      aria-haspopup="true"
-                      aria-controls={`dashboard-${entry.id}-menu-panel`}
-                      onClick={() => {
-                        // Même correction que le menu de compte : fermer les
-                        // autres panneaux puis basculer CELUI-CI sur une cible
-                        // calculée avant (sinon il restait ouvert).
-                        const next = openNavMenu === entry.id ? null : entry.id;
-                        closeHeaderPanels();
-                        setOpenNavMenu(next);
-                      }}
-                      className={[
-                        'group inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[11px] font-black uppercase tracking-tight transition-all',
-                        isNavEntryActive(entry, pathname)
-                          ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm'
-                          : 'border-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-slate-900',
-                      ].join(' ')}
-                    >
-                      {labels.dashboard.navGroups[entry.id] ?? labels.dashboard.hrMenu}
-                      <ChevronDown
-                        className={`h-3.5 w-3.5 transition-transform ${openNavMenu === entry.id ? 'rotate-180' : ''}`}
-                        aria-hidden="true"
-                      />
-                    </button>
-                    {openNavMenu === entry.id ? (
-                      <div
-                        id={`dashboard-${entry.id}-menu-panel`}
-                        data-testid={`dashboard-${entry.id}-menu-panel`}
-                        className="absolute start-0 top-10 z-30 max-h-[70vh] w-56 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-xl"
-                      >
-                        {entry.modules.map((module) => (
-                          <Link
-                            key={module.key}
-                            href={module.href}
-                            onClick={() => setOpenNavMenu(null)}
-                            className={modulesNavLinkClass(pathname === module.href)}
-                          >
-                            <span className="flex min-w-0 items-center gap-2">
-                              {module.icon ? <module.icon className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" /> : null}
-                              <span className="truncate">{labels.dashboard.modules[module.key] ?? module.label}</span>
-                            </span>
-                          </Link>
-                        ))}
-                      </div>
-                    ) : null}
-                  </div>
+                  <NavGroupMenu
+                    key={`menu-${entry.id}`}
+                    entry={entry}
+                    open={openNavMenu === entry.id}
+                    pathname={pathname}
+                    labels={labels}
+                    onOpen={() => {
+                      // Ouverture (survol ou flèche bas) : ferme les autres
+                      // panneaux puis ouvre CELUI-CI.
+                      closeHeaderPanels();
+                      setOpenNavMenu(entry.id);
+                    }}
+                    onClose={() => {
+                      setOpenNavMenu((current) => (current === entry.id ? null : current));
+                    }}
+                    onToggle={() => {
+                      // Même correction que le menu de compte : fermer les
+                      // autres panneaux puis basculer CELUI-CI sur une cible
+                      // calculée avant (sinon il restait ouvert).
+                      const next = openNavMenu === entry.id ? null : entry.id;
+                      closeHeaderPanels();
+                      setOpenNavMenu(next);
+                    }}
+                  />
                 )
               ))}
             </nav>
@@ -1183,9 +1366,10 @@ export default function DashboardLayout({
                 aria-label={labels.dashboard.userMenuAccount}
                 title={getDisplayName(user)}
                 data-testid="user-menu-toggle"
-                className="group flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-gradient-to-br from-slate-100 to-slate-200 text-[11px] font-black text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+                className="group flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-gradient-to-br from-slate-100 to-slate-200 text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
               >
-                {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
+                {/* #7860 — icône de compte universelle à la place des initiales. */}
+                <User className="h-5 w-5" aria-hidden="true" />
               </button>
               {userMenuOpen ? (
                 <div
@@ -1208,10 +1392,16 @@ export default function DashboardLayout({
                       <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
                       {labels.dashboard.userMenuAccount}
                     </Link>
-                    {/* #7555 — gestion des collaborateurs et attribution des rôles. */}
-                    <Link href="/settings/team" role="menuitem" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
-                      <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
-                      {teamRolesT(locale, 'menuLabel')}
+                    {/* #7860 — abonnement & factures du tenant. */}
+                    <Link
+                      href="/billing"
+                      role="menuitem"
+                      onClick={() => setUserMenuOpen(false)}
+                      data-testid="user-menu-billing"
+                      className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
+                    >
+                      <CreditCard className="h-4 w-4 text-slate-400" aria-hidden="true" />
+                      {labels.dashboard.userMenuBilling}
                     </Link>
                     {/* #7727 — encaissements : profils de paiement du tenant (principal). */}
                     <Link href="/settings/encaissements" role="menuitem" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
@@ -1227,24 +1417,6 @@ export default function DashboardLayout({
                     <Link href="/settings/branding" role="menuitem" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
                       <Paintbrush className="h-4 w-4 text-slate-400" aria-hidden="true" />
                       {i18nT(locale, 'brandingPage.title')}
-                    </Link>
-                    <Link
-                      href="/settings/account#password"
-                      role="menuitem"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
-                    >
-                      <KeyRound className="h-4 w-4 text-slate-400" aria-hidden="true" />
-                      {labels.dashboard.userMenuPassword}
-                    </Link>
-                    <Link
-                      href="/settings/security/2fa"
-                      role="menuitem"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
-                    >
-                      <ShieldCheck className="h-4 w-4 text-slate-400" aria-hidden="true" />
-                      {labels.dashboard.userMenuSecurity}
                     </Link>
                   </div>
                   <div className="border-t border-slate-100 p-1.5">

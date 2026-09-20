@@ -38,9 +38,9 @@
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailMarketAccountController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailMarketFavoriteController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailMarketOrderPublicController;
-use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailMarketPaymentPublicController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailMarketPublicController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailMarketReviewController;
+use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailPaymentWebhookPublicController;
 use Illuminate\Support\Facades\Route;
 
 // Surface cross-tenant (recherche globale, checkout par slug dans le corps,
@@ -64,12 +64,10 @@ Route::middleware(['throttle:shop-public'])
         Route::get('/orders/{reference}', [RetailMarketOrderPublicController::class, 'track'])
             ->name('market.public.orders.track');
 
-        // Paiement en ligne (#7812, chantier BC-21) : intent de paiement
-        // (jeton de suivi obligatoire, 404 fail-closed) et webhook PSP signe
-        // HMAC-SHA256 (X-Leopardo-Signature, fail-closed #2615).
-        Route::post('/orders/{reference}/pay', [RetailMarketPaymentPublicController::class, 'pay'])
-            ->name('market.public.orders.pay');
-        Route::post('/payments/webhook', [RetailMarketPaymentPublicController::class, 'webhook'])
+        // Webhook des providers de paiement (#7812) : verification de
+        // signature OBLIGATOIRE fail-closed (401 sinon), idempotent
+        // (rejeu → 200 sans double effet), provider inconnu → 404.
+        Route::post('/payments/webhook/{provider}', [RetailPaymentWebhookPublicController::class, 'handle'])
             ->name('market.public.payments.webhook');
     });
 

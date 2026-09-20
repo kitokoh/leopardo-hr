@@ -169,7 +169,7 @@ export type OrderPaymentStatus = 'paid' | 'partial' | 'cod';
  * Statut d'encaissement d'une commande web (#7812) : `paid` quand les
  * paiements capturés couvrent le total, `partial` quand un acompte en ligne
  * existe, `cod` (paiement à la livraison) sinon — même définition que le
- * solde serveur (`RetailOnlinePaymentService::outstandingAmountMinor`).
+ * solde serveur (`RetailOnlineOrderService::outstandingAmountMinor`).
  */
 export function orderPaymentStatus(
   payments: OrderPayment[] | undefined,

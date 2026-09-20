@@ -12,27 +12,28 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * Intent de paiement en ligne d'une commande marketplace
- * (BC-17 RETAIL, #7812).
+ * Intent de paiement en ligne d'une commande marketplace (BC-17 RETAIL,
+ * #7812).
  *
- * Un seul intent `pending` par commande (index unique partiel Postgres) —
- * le rejeu de la demande retourne l'intent existant. `provider_reference`
- * unique par tenant : c'est la clé de réconciliation du webhook signé
- * (transition `pending → paid|failed`, idempotente au rejeu). Montants en
- * minor units. Écritures UNIQUEMENT via RetailOnlinePaymentService
- * (transaction).
+ * Cree au checkout public quand `payment_method = online`, il porte la
+ * reference publique `intent_reference` (64 hex, unique par tenant et de
+ * facto globale) partagee avec le PSP via ses metadata. Le statut n'evolue
+ * QUE par RetailPaymentService : webhook signe verifie (fail-closed),
+ * reconciliation `retail:payments:reconcile`, ou remboursement vendeur.
+ * Montants en minor units. `provider_payload` conserve les reponses
+ * provider (checkout, evenement webhook, refund) comme trace auditable.
  *
  * @property int $id
  * @property string $company_id
  * @property int $order_id
+ * @property string $intent_reference
  * @property string $provider
- * @property RetailPaymentIntentStatus $status
  * @property int $amount_minor
  * @property string $currency
- * @property string $provider_reference
+ * @property RetailPaymentIntentStatus $status
  * @property string|null $checkout_url
- * @property string|null $failure_reason
- * @property Carbon|null $paid_at
+ * @property array<string, mixed>|null $provider_payload
+ * @property string|null $idempotency_key
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
@@ -40,23 +41,23 @@ use Illuminate\Support\Carbon;
  *
  * @mixin Builder<static>
  */
-class RetailPaymentIntent extends Model
+class RetailOnlinePaymentIntent extends Model
 {
     use BelongsToCompany;
 
-    protected $table = 'retail_payment_intents';
+    protected $table = 'retail_online_payment_intents';
 
     protected $fillable = [
         'company_id',
         'order_id',
+        'intent_reference',
         'provider',
-        'status',
         'amount_minor',
         'currency',
-        'provider_reference',
+        'status',
         'checkout_url',
-        'failure_reason',
-        'paid_at',
+        'provider_payload',
+        'idempotency_key',
     ];
 
     /**
@@ -67,7 +68,7 @@ class RetailPaymentIntent extends Model
         return [
             'status' => RetailPaymentIntentStatus::class,
             'amount_minor' => 'integer',
-            'paid_at' => 'datetime',
+            'provider_payload' => 'array',
         ];
     }
 

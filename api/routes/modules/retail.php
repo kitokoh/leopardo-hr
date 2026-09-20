@@ -103,4 +103,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/online/orders/{order}/ship', [RetailOnlineOrderController::class, 'ship'])->whereNumber('order');
         Route::post('/online/orders/{order}/deliver', [RetailOnlineOrderController::class, 'deliver'])->whereNumber('order');
         Route::post('/online/orders/{order}/cancel', [RetailOnlineOrderController::class, 'cancel'])->whereNumber('order');
+
+        // Paiement en ligne (#7812) : remboursement vendeur — reserve
+        // principal/rh (RetailOrderPolicy@pay), uniquement si l'intent de
+        // paiement est `succeeded` (422 PAYMENT_NOT_REFUNDABLE sinon).
+        Route::post('/online/orders/{order}/refund', [RetailOnlineOrderController::class, 'refund'])->whereNumber('order');
     });

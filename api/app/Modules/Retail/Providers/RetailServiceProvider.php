@@ -6,8 +6,10 @@ namespace App\Modules\Retail\Providers;
 
 use App\Events\RetailOnlineOrderDeliveryCreated;
 use App\Modules\Retail\Application\Listeners\StoreRetailOrderDeliveryReference;
-use App\Modules\Retail\Domain\Contracts\RetailPaymentProviderContract;
-use App\Modules\Retail\Infrastructure\Services\LoggingRetailPaymentProviderAdapter;
+use App\Modules\Retail\Infrastructure\Payments\ChargilyProvider;
+use App\Modules\Retail\Infrastructure\Payments\MockProvider;
+use App\Modules\Retail\Infrastructure\Payments\RetailPaymentProviderRegistry;
+use App\Modules\Retail\Interfaces\Console\ReconcileRetailPaymentsCommand;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,19 +22,23 @@ use Illuminate\Support\ServiceProvider;
  * PA2-ARCH-008) et feature flag tenant `retail`
  * (`RetailFeatures::RETAIL`, mécanisme Core/Feature — companies.features).
  *
- * Les briques POS/stocks/tickets arrivent avec les issues suivantes du
- * programme BC-17 ; le provider reste volontairement minimal tant qu'il
- * n'a pas de service à binder (pattern CatalogServiceProvider #6880).
+ * Paiement en ligne marketplace (#7812) : registre des providers de
+ * paiement (`chargily|mock`, pattern PaymentGatewayRegistry RESTO-406),
+ * selection par `config('retail.payments.provider')` — fallback env en
+ * attendant les profils de paiement tenant BC-21 (PR #7732, non mergé) —
+ * et commande de réconciliation `retail:payments:reconcile`.
  */
 class RetailServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        // Port PSP marketplace (#7812, chantier BC-21) : seam journalisé tant
-        // que les profils de paiement tenant (bc/bc21-paiements-encaissement)
-        // ne sont pas mergés — pattern DeliveryAccountingContract
-        // (DELIVERY-205). Remplacer CE binding suffit à brancher le PSP réel.
-        $this->app->singleton(RetailPaymentProviderContract::class, LoggingRetailPaymentProviderAdapter::class);
+        $this->app->singleton(RetailPaymentProviderRegistry::class, function (): RetailPaymentProviderRegistry {
+            $registry = new RetailPaymentProviderRegistry;
+            $registry->register(new ChargilyProvider);
+            $registry->register(new MockProvider);
+
+            return $registry;
+        });
     }
 
     public function boot(): void
@@ -44,5 +50,11 @@ class RetailServiceProvider extends ServiceProvider
         // livraison — Retail stocke la référence DLV-… sur SA table pour la
         // page de suivi publique (intégration par événements, registre BC).
         Event::listen(RetailOnlineOrderDeliveryCreated::class, StoreRetailOrderDeliveryReference::class);
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                ReconcileRetailPaymentsCommand::class,
+            ]);
+        }
     }
 }

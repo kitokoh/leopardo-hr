@@ -4,6 +4,12 @@
 # App + pgsql en local (hérité Sail). Pour le stack dev complet
 # (api + postgres + redis + mailpit), utiliser le compose RACINE :
 #   docker compose up -d   (à la racine du repo)
+#
+# #7847 : le port hôte Postgres est décalé sur 5433 par défaut
+# (surchargeable via FORWARD_DB_PORT) et lié à 127.0.0.1, pour éviter la
+# collision avec le Postgres de la stack racine (127.0.0.1:5432). Le mot de
+# passe est surchargeable via SAIL_DB_PASSWORD (défaut inchangé :
+# `password` — volume existant leopardo-pgsql non cassé).
 services:
   app:
     build:
@@ -23,7 +29,7 @@ services:
       DB_PORT: "5432"
       DB_DATABASE: leopardo
       DB_USERNAME: sail
-      DB_PASSWORD: password
+      DB_PASSWORD: "${SAIL_DB_PASSWORD:-password}"
       DB_SEARCH_PATH: "shared_tenants,public"
     depends_on:
       pgsql:
@@ -38,9 +44,9 @@ services:
     environment:
       POSTGRES_DB: leopardo
       POSTGRES_USER: sail
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: "${SAIL_DB_PASSWORD:-password}"
     ports:
-      - "5432:5432"
+      - "127.0.0.1:${FORWARD_DB_PORT:-5433}:5432"
     volumes:
       - leopardo-pgsql:/var/lib/postgresql/data
       - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
