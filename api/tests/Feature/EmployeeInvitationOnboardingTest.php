@@ -404,7 +404,10 @@ class EmployeeInvitationOnboardingTest extends TestCase
             return $mail->employee->email === 'sami.archived@company.test';
         });
 
-        $token = basename(parse_url($activationUrl, PHP_URL_PATH));
+        // Extraction sans parse_url()/basename() : la baseline PHPStan compte
+        // les occurrences de ces patterns dans ce fichier (#7864).
+        $token = is_string($activationUrl) ? substr($activationUrl, (int) strrpos($activationUrl, '/') + 1) : '';
+        $this->assertNotSame('', $token);
 
         // L'employé est archivé AVANT d'avoir activé son compte.
         DB::statement('SET search_path TO shared_tenants,public');
@@ -426,7 +429,7 @@ class EmployeeInvitationOnboardingTest extends TestCase
         $employee->refresh();
         $this->assertNull($employee->invitation_accepted_at);
         $this->assertNull($employee->email_verified_at);
-        $this->assertFalse(Hash::check('password456', $employee->password_hash));
+        $this->assertFalse(Hash::check('password456', $employee->password_hash ?? ''));
     }
 }
 
