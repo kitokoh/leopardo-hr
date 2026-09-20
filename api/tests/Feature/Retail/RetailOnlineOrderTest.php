@@ -324,10 +324,12 @@ class RetailOnlineOrderTest extends TestCase
             ->assertJsonPath('data.seller.slug', $this->companyA->slug);
 
         $this->assertSame(
-            ['reference', 'fulfillment_status', 'total_minor', 'currency', 'seller', 'items', 'timeline'],
+            ['reference', 'fulfillment_status', 'total_minor', 'currency', 'seller', 'items', 'timeline', 'delivery'],
             array_keys($tracked->json('data'))
         );
         $this->assertNotNull($tracked->json('data.timeline.placed_at'));
+        // Aucune livraison BC-26 tant que la commande n'est pas confirmee (#7811).
+        $this->assertNull($tracked->json('data.delivery'));
 
         // Jeton absent ou errone → 404 fail-closed (pas de probing).
         $this->getJson('/api/v1/public/market/orders/'.$reference)->assertStatus(404);
