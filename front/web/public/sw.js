@@ -44,6 +44,8 @@ const PROTECTED_PREFIXES = [
   '/support',
   // BC-29 COMMUNICATION (#7691) — boîte connectée (zone dashboard).
   '/communication',
+  // #7908 — page « Modules » (statut, auto-activation) : zone dashboard.
+  '/modules',
 ];
 
 function isProtectedPath(url) {

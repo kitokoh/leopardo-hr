@@ -101,6 +101,18 @@ async function mockPayrollApis(page: Page) {
     });
   });
 
+  // /payroll attend aussi GET /supported-countries (carte de conformité par
+  // pays, #5623) avant de lever son état de chargement. Non mocké, l'appel
+  // part vers le vrai backend avec le jeton e2e factice → 401 → apiFetch
+  // purge la session et renvoie sur /auth/login (échec CI post-#7882).
+  await page.route('**/api/v1/supported-countries**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: [] }),
+    });
+  });
+
 }
 
 test.describe('Client web — conformité paie par niveau de confiance (#2116)', () => {
