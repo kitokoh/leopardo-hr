@@ -2,6 +2,22 @@
 > Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
 > Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
 
+> **MAJ 2026-09-20 — #7866 (API #7865), pop-up d'import du jeu de données de démonstration à la
+> première entrée dans l'espace.** Surface **web client** : `DemoDataPrompt.tsx` monté dans le
+> layout dashboard APRÈS l'écran de bienvenue (#7604) et l'entretien de préparation (#7493) —
+> pré-garde `shouldShowDemoDataPrompt` (RBAC `principal`/`rh` + verticale active + metadata
+> `demo_data`), serveur source de vérité (`GET /demo-data`), import séquentiel des kits
+> proposables, « Plus tard » sans persistance, « Non merci » persisté (`POST dismiss`).
+> Surface **API** : aucune dans cette PR (contrat #7865 livré séparément). Surfaces **web
+> admin** et **mobile** : aucun écran ni parcours modifié — seules les **valeurs traduites**
+> des catalogues (`front/admin-dashboard/src/i18n/locales/*.json`, ARB `leopardo_core`) sont
+> propagées depuis le catalogue partagé (`shared/i18n`, clés `demoDataPrompt.*`).
+> Non-régression :
+> `front/web/src/modules/onboarding/components/__tests__/DemoDataPrompt.test.tsx` (10 cas —
+> table de vérité de la pré-garde, rien sans kit serveur, import + succès, import multiple
+> séquentiel, dismiss persisté, « Plus tard » sans appel serveur, erreur d'import non
+> bloquante).
+
 > **MAJ 2026-09-19 — lot BC-21 paiements #7726/#7727 (PR #7732).**
 > Surface **API** : (1) endpoints admin plateforme `GET/PUT /platform/billing/gateways` et
 > `POST /platform/billing/gateways/{gateway}/test` (permission `platform.permission:billing.manage`,
@@ -827,3 +843,24 @@ restent les gates applicables.
   des exemples API (`python dev-hub/tools/generate_api_examples.py`) au lieu du dossier
   versionné `docs/api-mock-data/` (sorti du dépôt). **Aucun code, contrat ni scénario mobile
   modifié** — aucun scénario nouveau requis.
+
+## Mise à jour 2026-09-20 — fail-fast sur URL backend manquante en production (PR #7881, issue #7842)
+
+- **Surface web admin** : `front/admin-dashboard/src/services/api.js` ne se replie plus en
+  silence sur l'API dev Render (`gestionemployerbackend.onrender.com`) quand `VITE_API_URL`
+  est absente. Scénarios : (1) build de production (`import.meta.env.PROD`) **sans**
+  `VITE_API_URL` → erreur explicite au chargement de l'application (message technique
+  `[admin-dashboard] VITE_API_URL is not set in a production build…`, plus aucun appel vers
+  l'API dev) ; (2) build de production **avec** `VITE_API_URL` posée → comportement normal,
+  toutes les requêtes partent vers l'URL configurée ; (3) dev/test sans variable → repli dev
+  conservé mais signalé par un `console.warn`. Aucun composant / route / contrat d'API
+  modifié — le changement est un durcissement de la résolution de configuration.
+- **Surface web (vitrine / travel-web)** : même durcissement dans
+  `front/web/src/lib/backend-url.ts`, `front/travel-web/src/lib/backend-url.ts` (copies
+  synchronisées) et `front/web/src/lib/csp.ts` — throw au **runtime** de production
+  (résolution d'URL lors d'une requête, et côté client), jamais pendant la phase de build
+  Next (`NEXT_PHASE === PHASE_PRODUCTION_BUILD`, cas du job CI lighthouse qui build sans
+  secrets backend). Scénarios automatisés : `front/web/src/lib/__tests__/backend-url.test.ts`
+  et `front/web/src/lib/__tests__/proxy-csp.test.ts` (repli + warn en dev/test et en phase de
+  build ; erreur actionnable au runtime prod ; aucun warn quand la variable est posée).
+- **Surface API / mobile** : aucun changement de code, aucun scénario nouveau requis.

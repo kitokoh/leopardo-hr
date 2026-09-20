@@ -16,7 +16,11 @@ use Illuminate\Database\ConnectionInterface;
  *  - secrets WRITE-ONLY : seule une valeur non vide écrase l'existant, et
  *    seuls les champs de l'allowlist du type sont acceptés ;
  *  - un profil dont les secrets changent redescend en `draft` (les nouvelles
- *    clés n'ont pas été vérifiées) sauf s'il vient d'être créé.
+ *    clés n'ont pas été vérifiées) sauf s'il vient d'être créé ;
+ *  - #7863 : le type `cash` (encaissement au local) n'exige AUCUN secret —
+ *    ses allowlists (`SECRET_FIELDS['cash'] = []`,
+ *    `DETAIL_FIELDS['cash'] = ['location']`) suffisent, le flux générique
+ *    ci-dessous n'écrit alors que le label et les métadonnées déclaratives.
  */
 class SaveTenantPaymentProfile
 {

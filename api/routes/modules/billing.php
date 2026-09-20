@@ -11,6 +11,7 @@
  */
 
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\AiCreditController;
+use App\Modules\Billing\Interfaces\Api\V1\Controllers\BillingCollectionController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\BillingController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\FeatureFlagController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\TenantPaymentProfileController;
@@ -77,6 +78,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::put('/billing/payment-profiles/{id}', [TenantPaymentProfileController::class, 'update'])->whereNumber('id');
         Route::post('/billing/payment-profiles/{id}/activate', [TenantPaymentProfileController::class, 'activate'])->whereNumber('id');
         Route::delete('/billing/payment-profiles/{id}', [TenantPaymentProfileController::class, 'destroy'])->whereNumber('id');
+
+        // #7863 — encaissements enregistrés au local (espèces / TPE au
+        // comptoir) : confirmation manuelle d'un encaissement hors PSP
+        // (montant, devise, mode, note, date) + listing paginé. Même périmètre
+        // RBAC que les profils de paiement (principal only), isolation tenant
+        // par BelongsToCompany.
+        Route::get('/billing/collections', [BillingCollectionController::class, 'index']);
+        Route::post('/billing/collections', [BillingCollectionController::class, 'store']);
 
         // Crédits IA achetables (#7764, spec MISSION_ESPACE_CLIENT §3.4) —
         // achat FACULTATIF de packs de tokens, visible uniquement dans

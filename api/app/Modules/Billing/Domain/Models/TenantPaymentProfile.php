@@ -36,7 +36,9 @@ class TenantPaymentProfile extends Model
 {
     use BelongsToCompany;
 
-    public const TYPES = ['stripe_keys', 'bank_account', 'mobile_money'];
+    // #7863 : `cash` = encaissement AU LOCAL (espèces / TPE au comptoir) —
+    // aucun secret à configurer, le profil déclare simplement le mode.
+    public const TYPES = ['stripe_keys', 'bank_account', 'mobile_money', 'cash'];
 
     public const STATUSES = ['draft', 'verified', 'active'];
 
@@ -45,6 +47,8 @@ class TenantPaymentProfile extends Model
         'stripe_keys' => ['secret_key', 'publishable_key', 'webhook_secret'],
         'bank_account' => ['iban'],
         'mobile_money' => ['phone_number'],
+        // #7863 : pas de secret pour l'encaissement au local.
+        'cash' => [],
     ];
 
     /** Champs de détail non secrets acceptés par type. */
@@ -52,6 +56,8 @@ class TenantPaymentProfile extends Model
         'stripe_keys' => [],
         'bank_account' => ['account_holder', 'bank_name', 'bic'],
         'mobile_money' => ['operator', 'account_holder'],
+        // #7863 : métadonnées optionnelles du point d'encaissement local.
+        'cash' => ['location'],
     ];
 
     protected $table = 'tenant_payment_profiles';

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Mail\UserInvitationMail;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\HR\Domain\Models\UserInvitation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -259,6 +260,176 @@ class EmployeeInvitationOnboardingTest extends TestCase
                 'password' => 'password789',
                 'password_confirmation' => 'password789',
             ])->assertStatus(410);
+    }
+
+    /**
+     * #7864 (D1) — le resend d'une invitation ne doit PAS effacer les accès
+     * ressource pré-portés par l'invitation (#7601) : createAndSend
+     * reconstruisait $metadata de zéro et perdait `resource_assignments`.
+     */
+    public function test_resend_preserves_pre_assigned_resource_assignments_in_metadata(): void
+    {
+        Mail::fake();
+
+        $company = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'a@company.test',
+            'plan_id' => 1,
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        DB::statement('SET search_path TO shared_tenants,public');
+
+        $manager = new Employee([
+            'first_name' => 'Manager',
+            'last_name' => 'Principal',
+            'email' => 'manager@company.test',
+        ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
+
+        DB::statement('SET search_path TO public');
+
+        $this
+            ->actingAs($manager, 'sanctum')
+            ->postJson('/api/v1/employees', [
+                'first_name' => 'Nadia',
+                'last_name' => 'Preassigned',
+                'email' => 'nadia.preassigned@company.test',
+                'role' => 'employee',
+                'send_invitation' => true,
+            ])
+            ->assertCreated();
+
+        DB::statement('SET search_path TO public');
+
+        /** @var UserInvitation $invitation */
+        $invitation = UserInvitation::query()
+            ->where('email', 'nadia.preassigned@company.test')
+            ->firstOrFail();
+
+        // Invitation pré-portée (#7601) : les accès voyagent dans metadata
+        // jusqu'à l'activation.
+        $preAssigned = [
+            ['resource_type' => 'vehicle', 'resource_id' => 42, 'access_level' => 'read'],
+        ];
+        $invitation->metadata = array_merge(
+            (array) $invitation->metadata,
+            ['resource_assignments' => $preAssigned],
+        );
+        $invitation->save();
+
+        $previousTokenHash = $invitation->token_hash;
+
+        $this
+            ->actingAs($manager, 'sanctum')
+            ->postJson('/api/v1/invitations/'.$invitation->id.'/resend')
+            ->assertOk();
+
+        DB::statement('SET search_path TO public');
+
+        $invitation->refresh();
+
+        // Le token est bien rotationné par le resend…
+        $this->assertNotSame($previousTokenHash, $invitation->token_hash);
+        // …mais les accès pré-assignés sont préservés (régression #7864/D1).
+        $this->assertSame($preAssigned, $invitation->metadata['resource_assignments'] ?? null);
+    }
+
+    /**
+     * #7864 (D5) — un employé archivé (ou parti) ne peut plus activer son
+     * compte : l'invitation est de fait révoquée (410 INVITATION_REVOKED).
+     */
+    public function test_archived_employee_cannot_activate_account(): void
+    {
+        Mail::fake();
+
+        $company = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'a@company.test',
+            'plan_id' => 1,
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        DB::statement('SET search_path TO shared_tenants,public');
+
+        $manager = new Employee([
+            'first_name' => 'Manager',
+            'last_name' => 'Principal',
+            'email' => 'manager@company.test',
+        ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
+
+        DB::statement('SET search_path TO public');
+
+        $this
+            ->actingAs($manager, 'sanctum')
+            ->postJson('/api/v1/employees', [
+                'first_name' => 'Sami',
+                'last_name' => 'Archived',
+                'email' => 'sami.archived@company.test',
+                'role' => 'employee',
+                'send_invitation' => true,
+            ])
+            ->assertCreated();
+
+        $activationUrl = null;
+
+        Mail::assertSent(UserInvitationMail::class, function (UserInvitationMail $mail) use (&$activationUrl): bool {
+            $activationUrl = $mail->activationUrl;
+
+            return $mail->employee->email === 'sami.archived@company.test';
+        });
+
+        // Extraction sans parse_url()/basename() : la baseline PHPStan compte
+        // les occurrences de ces patterns dans ce fichier (#7864).
+        $token = is_string($activationUrl) ? substr($activationUrl, (int) strrpos($activationUrl, '/') + 1) : '';
+        $this->assertNotSame('', $token);
+
+        // L'employé est archivé AVANT d'avoir activé son compte.
+        DB::statement('SET search_path TO shared_tenants,public');
+
+        $employee = Employee::query()->where('email', 'sami.archived@company.test')->firstOrFail();
+        $employee->forceFill(['status' => 'archived'])->save();
+
+        DB::statement('SET search_path TO public');
+
+        $this->withoutMiddleware()
+            ->post('/activate/'.$token, [
+                'password' => 'password456',
+                'password_confirmation' => 'password456',
+            ])->assertStatus(410);
+
+        // Le compte n'a PAS été activé.
+        DB::statement('SET search_path TO shared_tenants,public');
+
+        $employee->refresh();
+        $this->assertNull($employee->invitation_accepted_at);
+        $this->assertNull($employee->email_verified_at);
+        $this->assertFalse(Hash::check('password456', $employee->password_hash ?? ''));
     }
 }
 

@@ -131,6 +131,32 @@ class TenantPaymentProfileApiTest extends TestCase
         $this->assertNull(TenantPaymentProfile::query()->withoutGlobalScopes()->find($id));
     }
 
+    public function test_cash_profile_requires_no_secret_and_can_be_activated(): void
+    {
+        // #7863 : encaissement AU LOCAL (espèces / TPE au comptoir) — aucun
+        // secret à configurer, métadonnée optionnelle `location`, activation
+        // possible dès la création (pas de clé à vérifier).
+        $company = $this->company();
+        Sanctum::actingAs($this->principal($company));
+
+        $created = $this->postJson('/api/v1/billing/payment-profiles', [
+            'type' => 'cash',
+            'label' => 'Caisse comptoir',
+            'details' => ['location' => 'Restaurant — comptoir principal'],
+        ]);
+        $created->assertCreated();
+        $created->assertJsonPath('data.type', 'cash');
+        $created->assertJsonPath('data.status', 'draft');
+        $created->assertJsonPath('data.details.location', 'Restaurant — comptoir principal');
+        $this->assertSame([], (array) $created->json('data.secrets'));
+
+        $id = (int) $created->json('data.id');
+        $activated = $this->postJson("/api/v1/billing/payment-profiles/{$id}/activate");
+        $activated->assertOk();
+        $activated->assertJsonPath('data.status', 'active');
+        $activated->assertJsonPath('data.is_default', true);
+    }
+
     public function test_non_principal_manager_is_forbidden(): void
     {
         $company = $this->company();
