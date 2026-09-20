@@ -24,7 +24,11 @@ class InvitationMail extends Mailable implements ShouldQueue
         public readonly string $companyName,
         public readonly string $invitationUrl,
         public readonly ?string $role = null,
-    ) {}
+    ) {
+        // #7854 : file `emails` explicite (le worker prod la draine — cf.
+        // render.prod.yaml), au lieu de la file `default` implicite.
+        $this->onQueue('emails');
+    }
 
     public function envelope(): Envelope
     {

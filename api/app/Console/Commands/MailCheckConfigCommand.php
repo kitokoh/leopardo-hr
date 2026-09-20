@@ -85,7 +85,9 @@ class MailCheckConfigCommand extends Command
         $to = $this->option('to');
         if (is_string($to) && $to !== '') {
             try {
-                Mail::to($to)->send(new TrialVerificationMail('Diagnostic', '000000', 'fr'));
+                // #7854 : TrialVerificationMail est ShouldQueue — sendNow()
+                // force l'envoi SYNCHRONE requis par ce diagnostic d'egress.
+                Mail::to($to)->sendNow(new TrialVerificationMail('Diagnostic', '000000', 'fr'));
                 $report['test_send'] = ['status' => 'ok', 'to' => $to];
             } catch (Throwable $e) {
                 $report['test_send'] = ['status' => 'failed', 'to' => $to, 'error' => $e->getMessage()];

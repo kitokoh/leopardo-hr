@@ -61,7 +61,7 @@ class SelfServiceTrialTest extends TestCase
         ]);
 
         // Verify OTP email sent
-        Mail::assertSent(TrialVerificationMail::class, function ($mail) {
+        Mail::assertQueued(TrialVerificationMail::class, function ($mail) {
             return $mail->hasTo('founder@newtech.dz');
         });
     }
@@ -143,7 +143,7 @@ class SelfServiceTrialTest extends TestCase
         ]);
 
         // Verify Welcome Mail sent after verification
-        Mail::assertSent(TrialWelcomeMail::class, function ($mail) {
+        Mail::assertQueued(TrialWelcomeMail::class, function ($mail) {
             return $mail->hasTo('founder@newtech.dz')
                 && $mail->trialDays === 14;
         });
