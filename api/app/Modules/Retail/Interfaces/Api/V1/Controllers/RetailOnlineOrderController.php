@@ -7,6 +7,7 @@ namespace App\Modules\Retail\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\Retail\Application\Services\RetailOnlineOrderService;
+use App\Modules\Retail\Application\Services\RetailPaymentService;
 use App\Modules\Retail\Domain\Enums\RetailFulfillmentStatus;
 use App\Modules\Retail\Domain\Models\RetailLocation;
 use App\Modules\Retail\Domain\Models\RetailOrder;
@@ -32,7 +33,10 @@ use Illuminate\Validation\Rule;
  */
 class RetailOnlineOrderController extends Controller
 {
-    public function __construct(private readonly RetailOnlineOrderService $orders) {}
+    public function __construct(
+        private readonly RetailOnlineOrderService $orders,
+        private readonly RetailPaymentService $payments,
+    ) {}
 
     /**
      * GET /retail/online/orders — liste (filtre fulfillment_status, tri
@@ -162,6 +166,35 @@ class RetailOnlineOrderController extends Controller
     }
 
     /**
+     * POST /retail/online/orders/{order}/refund — remboursement du
+     * paiement en ligne (#7812 E). Reserve principal/rh (ability `pay`,
+     * meme portee que l'encaissement POS), UNIQUEMENT si la commande porte
+     * un intent `succeeded` — sinon 422 PAYMENT_NOT_REFUNDABLE. Appelle
+     * `provider->refund` puis bascule intent + commande + trace
+     * RetailOrderPayment en `refunded` (auditable).
+     */
+    public function refund(Request $request, RetailOrder $order): JsonResponse
+    {
+        $this->assertOnlineOrderOfTenant($request, $order);
+        $this->authorize('pay', $order);
+
+        $intent = $this->payments->refund($order);
+
+        $order->refresh();
+
+        return response()->json(['data' => [
+            ...$this->detailPayload($order),
+            'payment' => [
+                'intent_reference' => $intent->intent_reference,
+                'provider' => $intent->provider,
+                'status' => $intent->status->value,
+                'amount_minor' => $intent->amount_minor,
+                'currency' => $intent->currency,
+            ],
+        ]]);
+    }
+
+    /**
      * Progression logistique commune (ready/ship/deliver).
      */
     private function transition(Request $request, RetailOrder $order, RetailFulfillmentStatus $target): JsonResponse
@@ -213,6 +246,9 @@ class RetailOnlineOrderController extends Controller
             'delivery_city' => $order->delivery_city,
             'delivery_notes' => $order->delivery_notes,
             'note' => $order->note,
+            'payment_method' => $order->payment_method?->value,
+            'payment_status' => $order->payment_status,
+            'paid_at' => $order->paid_at?->toIso8601String(),
             'version' => $order->version,
             'confirmed_at' => $order->confirmed_at?->toIso8601String(),
             'shipped_at' => $order->shipped_at?->toIso8601String(),

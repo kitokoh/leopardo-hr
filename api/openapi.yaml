@@ -5032,6 +5032,123 @@ paths:
                 $ref: '#/components/schemas/PlatformCompanyCreateResponse'
         '422':
           $ref: '#/components/responses/Validation422'
+  /platform/billing/gateways:
+    get:
+      tags:
+      - Platform Admin
+      summary: Etat des passerelles de paiement plateforme (#7726) — secrets masques
+      operationId: listPlatformPaymentGateways
+      responses:
+        '200':
+          description: 'Etat par passerelle (stripe, chargily) : source effective
+            (database | env | none), mode, config non secrete, masques des secrets
+            — jamais de cle en clair'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PlatformPaymentGateway'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    put:
+      tags:
+      - Platform Admin
+      summary: Configurer une passerelle de paiement (#7726) — secrets write-only chiffres, ecriture auditee
+      operationId: updatePlatformPaymentGateway
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - gateway
+              properties:
+                gateway:
+                  type: string
+                  enum:
+                  - stripe
+                  - chargily
+                mode:
+                  type: string
+                  enum:
+                  - test
+                  - live
+                is_active:
+                  type: boolean
+                config:
+                  type: object
+                  description: Config non secrete (stripe — price_pilot, price_operations, price_enterprise)
+                  additionalProperties:
+                    type: string
+                    nullable: true
+                secrets:
+                  type: object
+                  description: 'Write-only, allowlist fermee : stripe (secret_key,
+                    webhook_secret), chargily (api_key, webhook_secret). Valeur vide
+                    = cle en place conservee. Audit sans valeur de secret.'
+                  additionalProperties:
+                    type: string
+                    nullable: true
+      responses:
+        '200':
+          description: Passerelle mise a jour (etat presente avec masques)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PlatformPaymentGateway'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/billing/gateways/{gateway}/test:
+    post:
+      tags:
+      - Platform Admin
+      summary: Tester la connexion d'une passerelle (#7726) — cles resolues BDD puis env, aucune cle en reponse
+      operationId: testPlatformPaymentGateway
+      parameters:
+      - name: gateway
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - stripe
+          - chargily
+      responses:
+        '200':
+          description: Connexion verifiee (ok = true)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentGatewayTestResult'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Passerelle inconnue
+        '422':
+          description: Echec (NOT_CONFIGURED | INVALID_CREDENTIALS | CONNECTION_FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentGatewayTestResult'
   /platform/plans:
     get:
       tags:
@@ -20652,6 +20769,186 @@ paths:
           description: Fichier export
         '401':
           $ref: '#/components/responses/Error401'
+  /billing/payment-profiles:
+    get:
+      tags:
+      - Billing
+      summary: Lister les profils de paiement du tenant (#7727, manager principal)
+      operationId: listTenantPaymentProfiles
+      responses:
+        '200':
+          description: Profils de paiement du tenant (secrets masques, jamais en clair)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TenantPaymentProfile'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Billing
+      summary: Creer un profil de paiement tenant (#7727, secrets write-only chiffres)
+      operationId: createTenantPaymentProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              - label
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - stripe_keys
+                  - bank_account
+                  - mobile_money
+                label:
+                  type: string
+                  maxLength: 120
+                details:
+                  type: object
+                  description: Champs non secrets selon le type (account_holder, bank_name, bic, operator)
+                  additionalProperties:
+                    type: string
+                    nullable: true
+                secrets:
+                  type: object
+                  description: 'Write-only, allowlist par type : stripe_keys (secret_key,
+                    publishable_key, webhook_secret), bank_account (iban), mobile_money
+                    (phone_number). Jamais retournes en clair.'
+                  additionalProperties:
+                    type: string
+                    nullable: true
+      responses:
+        '201':
+          description: Profil cree (secrets masques)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TenantPaymentProfile'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /billing/payment-profiles/{id}:
+    put:
+      tags:
+      - Billing
+      summary: Modifier un profil de paiement tenant (#7727, secret vide = valeur conservee)
+      operationId: updateTenantPaymentProfile
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                label:
+                  type: string
+                  maxLength: 120
+                details:
+                  type: object
+                  additionalProperties:
+                    type: string
+                    nullable: true
+                secrets:
+                  type: object
+                  description: Write-only — une valeur vide ou absente conserve le secret en place
+                  additionalProperties:
+                    type: string
+                    nullable: true
+      responses:
+        '200':
+          description: Profil mis a jour (secrets masques)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TenantPaymentProfile'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Profil introuvable (isolation tenant — 404 cross-tenant)
+        '422':
+          $ref: '#/components/responses/Validation422'
+    delete:
+      tags:
+      - Billing
+      summary: Supprimer un profil de paiement tenant (#7727)
+      operationId: deleteTenantPaymentProfile
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Profil supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Profil introuvable (isolation tenant)
+  /billing/payment-profiles/{id}/activate:
+    post:
+      tags:
+      - Billing
+      summary: Activer un profil de paiement (#7727) — routage des encaissements vers ce profil
+      operationId: activateTenantPaymentProfile
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Profil active (devient le profil par defaut de son type)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TenantPaymentProfile'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Profil introuvable (isolation tenant)
+        '422':
+          $ref: '#/components/responses/Validation422'
   /billing/subscription:
     get:
       tags:
@@ -33215,6 +33512,27 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
 
+  /restaurant/payments/configuration:
+    get:
+      tags:
+      - Restaurant
+      summary: Etat de configuration de l'encaissement restaurateur (#7728) — indicateurs seulement, aucun secret
+      operationId: getRestaurantPaymentConfiguration
+      responses:
+        '200':
+          description: Indicateurs carte en ligne / mobile money derives des profils de paiement tenant (#7727)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /public/market/products:
     get:
       tags:
@@ -47283,6 +47601,101 @@ components:
           type: string
           format: date-time
           nullable: true
+    TenantPaymentProfile:
+      type: object
+      description: Profil de paiement du tenant (#7727) — secrets toujours masques
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum:
+          - stripe_keys
+          - bank_account
+          - mobile_money
+        label:
+          type: string
+        status:
+          type: string
+          enum:
+          - draft
+          - verified
+          - active
+        is_default:
+          type: boolean
+        details:
+          type: object
+          additionalProperties: true
+        secrets:
+          type: object
+          description: Masques uniquement (configured + mask type ••••1234), jamais de valeur en clair
+          additionalProperties: true
+        stripe_account_id:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+    PlatformPaymentGateway:
+      type: object
+      description: Etat d'une passerelle de paiement plateforme (#7726) — secrets masques
+      properties:
+        gateway:
+          type: string
+          enum:
+          - stripe
+          - chargily
+        source:
+          type: string
+          enum:
+          - database
+          - env
+          - none
+        mode:
+          type: string
+          enum:
+          - test
+          - live
+        is_active:
+          type: boolean
+        config:
+          type: object
+          additionalProperties:
+            type: string
+        secrets:
+          type: object
+          description: Par champ secret — configured (bool) + mask (sk_live_••••1234), jamais de cle en clair
+          additionalProperties: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+    PaymentGatewayTestResult:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            ok:
+              type: boolean
+            status:
+              type: string
+              enum:
+              - OK
+              - NOT_CONFIGURED
+              - INVALID_CREDENTIALS
+              - CONNECTION_FAILED
+            source:
+              type: string
+              enum:
+              - database
+              - env
+              - none
     Subscription:
       type: object
       properties:

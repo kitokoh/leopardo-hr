@@ -18,6 +18,11 @@ use Illuminate\Foundation\Http\FormRequest;
  * doublon, cle unique par tenant). L'appartenance des produits au vendeur
  * et leur visibilite en ligne sont verifiees en transaction cote service
  * (fail-closed, pas de Rule::exists cross-tenant ici).
+ *
+ * Paiement en ligne (#7812) : `payment_method` accepte `cash` (COD, defaut
+ * historique) ou `online` — dans ce cas un intent de paiement est cree
+ * (RetailPaymentService) et la reponse embarque
+ * `payment.{intent_reference,status,checkout_url}`.
  */
 class StoreMarketOrderRequest extends FormRequest
 {
@@ -44,7 +49,7 @@ class StoreMarketOrderRequest extends FormRequest
             'delivery.address' => ['required', 'string', 'max:255'],
             'delivery.city' => ['required', 'string', 'max:120'],
             'delivery.notes' => ['nullable', 'string', 'max:1000'],
-            'payment_method' => ['required', 'in:cash'],
+            'payment_method' => ['required', 'in:cash,online'],
             'idempotency_key' => ['required', 'string', 'max:64'],
         ];
     }
