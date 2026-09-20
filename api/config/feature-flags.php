@@ -129,6 +129,13 @@ return [
             'killable' => true,
             'description' => 'Solution EduManager (établissements scolaires, classes, notes).',
         ],
+        'healthmanager' => [
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.34.0',
+            'killable' => true,
+            'description' => 'Solution HealthManager (hôpitaux et cliniques privées : patients, rendez-vous, hospitalisations, facturation des soins).',
+        ],
         'travelagency' => [
             'scope' => 'solution',
             'default' => false,

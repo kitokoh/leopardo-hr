@@ -53,6 +53,10 @@ export const PROTECTED_PREFIXES = [
   '/crm',
   '/accounting',
   '/edu-manager',
+  // BC-30 HEALTH (#7792) — verticale HealthManager (patients, rendez-vous,
+  // hospitalisations, facturation des soins) : données de santé, jamais
+  // servies sans session.
+  '/health',
   '/fuel',
   // #7759 — tickets support côté client (zone dashboard) : conversations
   // support du tenant, jamais servies sans session.

@@ -115,6 +115,12 @@ class Company extends Model
         'crm',
         'fuel_station',
         'edumanager',
+        // #7785 (HC-001) : verticale HealthManager (hôpitaux & cliniques
+        // privées). Enregistrée ici DÈS la création (leçon #7220/#7235 :
+        // catalogue + feature-flags + KNOWN_MODULES = les 3 points
+        // d'enregistrement obligatoires, sinon l'admin plateforme ne peut
+        // jamais activer la verticale). Fail-closed (défaut false).
+        'healthmanager',
         'restaurant',
         // #7220 (audit 2026-09-10) : verticale Agence de voyage. `travelagency`
         // est le code du TravelAgencyManifest et le flag posé par
