@@ -1,6 +1,8 @@
 <?php
 
+use Illuminate\Console\Command;
 use Illuminate\Foundation\Inspiring;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -10,13 +12,36 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Artisan::command(
-    'leopardo:migrate {--fresh : Drop all tables before migrating} {--seed : Run base seeders after migrating} {--demo : Also seed DemoCompanySeeder (local/dev only)}',
+    'leopardo:migrate {--fresh : Drop all tables before migrating} {--seed : Run base seeders after migrating} {--demo : Also seed DemoCompanySeeder (local/dev only)} {--force : Skip the interactive confirmation before --fresh (non-production only)}',
     function () {
         $fresh = (bool) $this->option('fresh');
         $seed = (bool) $this->option('seed');
         $demo = (bool) $this->option('demo');
+        $force = (bool) $this->option('force');
 
         if ($fresh) {
+            // Garde d'environnement (issue #7974) : --fresh exécute des
+            // DROP SCHEMA ... CASCADE irréversibles. Refus sec en production,
+            // quelles que soient les options (--force compris).
+            if (App::environment('production')) {
+                $this->error('leopardo:migrate --fresh est interdit en production : DROP SCHEMA public/shared_tenants CASCADE détruirait toutes les données (issue #7974).');
+
+                return Command::FAILURE;
+            }
+
+            // Hors production : confirmation interactive rappelant la base
+            // cible, sauf si --force est passé explicitement (issue #7974).
+            if (! $force) {
+                $database = config('database.connections.pgsql.database')
+                    ?: config('database.default');
+
+                if (! $this->confirm("--fresh va supprimer les schemas public et shared_tenants de la base [{$database}]. Continuer ?")) {
+                    $this->info('Operation annulee.');
+
+                    return Command::FAILURE;
+                }
+            }
+
             $this->warn('--fresh : suppression du schema public et shared_tenants');
             if (DB::getDriverName() === 'pgsql') {
                 DB::statement('DROP SCHEMA IF EXISTS shared_tenants CASCADE');
