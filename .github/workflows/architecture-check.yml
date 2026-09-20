@@ -112,6 +112,9 @@ jobs:
       - name: Migration basename collision guard (issue #1962)
         run: bash dev-hub/tools/check-migration-basename-collisions.sh
 
+      - name: Migration root orphans guard (issue #7975)
+        run: bash dev-hub/tools/check-migration-root-orphans.sh
+
       - name: Migration prefix inter-PR guard (issue #5437)
         run: node dev-hub/tools/check-migration-prefixes.mjs
         env:

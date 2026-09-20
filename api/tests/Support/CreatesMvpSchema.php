@@ -109,9 +109,15 @@ trait CreatesMvpSchema
             $table->string('last_name');
             $table->string('email')->unique();
             $table->string('password_hash')->nullable();
-            $table->string('provider')->default('local');
-            $table->string('preferred_language')->default('fr');
+            // #7975 — miroir EXACT des migrations publiques
+            // 2026_05_02_100001 (création) + 2026_08_26_000003 (personal_statuses) :
+            // provider default 'email' (pas 'local'), google_id UNIQUE, avatar_url.
+            $table->string('provider')->default('email');
+            $table->string('google_id')->nullable()->unique();
+            $table->string('avatar_url')->nullable();
+            $table->string('preferred_language', 2)->default('fr');
             $table->string('status')->default('active');
+            $table->json('personal_statuses')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             // Colonnes de gestion plateforme (issue #2269) — miroir de la
             // migration publique 2026_05_02_100001.

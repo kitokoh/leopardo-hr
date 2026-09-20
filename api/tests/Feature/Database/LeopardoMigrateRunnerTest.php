@@ -102,7 +102,9 @@ class LeopardoMigrateRunnerTest extends TestCase
         // passent » : `leopardo:migrate --fresh` recrée les deux schémas
         // (public + shared_tenants) et ré-applique TOUTES les migrations ;
         // une exécution simple ensuite est un no-op propre.
-        $code = Artisan::call('leopardo:migrate', ['--fresh' => true]);
+        // #7974 : --fresh exige désormais --force hors interaction (garde
+        // anti-destruction production) — le test l'explicite.
+        $code = Artisan::call('leopardo:migrate', ['--fresh' => true, '--force' => true]);
         self::assertSame(0, $code, 'leopardo:migrate --fresh doit réussir (schémas recréés)');
 
         self::assertSame('shared_tenants', $this->tableSchema('employees'), 'table tenant après --fresh');
@@ -110,6 +112,31 @@ class LeopardoMigrateRunnerTest extends TestCase
 
         $rerun = Artisan::call('leopardo:migrate');
         self::assertSame(0, $rerun, 'rerun après --fresh doit être stable (réentrance)');
+    }
+
+    public function test_schema_is_replayable_from_scratch_users_and_onboarding(): void
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            self::markTestSkipped('Vérification de schéma PostgreSQL uniquement.');
+        }
+
+        // #7975 — le schéma doit être rejouable from scratch par le SEUL
+        // runner canonique : les tables publiques growth (users & co.)
+        // atterrissent dans public, onboarding_progresses dans shared_tenants.
+        self::assertSame('public', $this->tableSchema('users'), 'users doit être créée par les migrations public');
+        self::assertSame('public', $this->tableSchema('company_requests'));
+        self::assertSame('public', $this->tableSchema('user_employee_links'));
+        self::assertSame(
+            'shared_tenants',
+            $this->tableSchema('onboarding_progresses'),
+            'onboarding_progresses doit être créée par les migrations tenant (plus orpheline à la racine)'
+        );
+
+        // Colonnes ajoutées par des migrations ultérieures : présentes aussi.
+        $personalStatuses = DB::scalar(
+            "SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'personal_statuses'"
+        );
+        self::assertNotNull($personalStatuses, 'users.personal_statuses (migration 2026_08_26_000003) manquante');
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────

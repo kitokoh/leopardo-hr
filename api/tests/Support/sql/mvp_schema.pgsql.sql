@@ -54,27 +54,32 @@ CREATE TABLE public.plans (
 );
 
 -- Growth module: users (required by partners)
+-- #7975 — miroir EXACT des migrations publiques 2026_05_02_100001 (création)
+-- + 2026_08_26_000003 (personal_statuses) : pas de DEFAULT '' sur les noms,
+-- provider DEFAULT 'email', google_id UNIQUE, personal_statuses jsonb.
 CREATE TABLE public.users (
     id bigserial PRIMARY KEY,
-    first_name varchar(100) NOT NULL DEFAULT '',
-    last_name varchar(100) NOT NULL DEFAULT '',
+    first_name varchar(255) NOT NULL,
+    last_name varchar(255) NOT NULL,
     email varchar(255) NOT NULL,
     password_hash varchar(255) NULL,
-    phone varchar(30) NULL,
+    phone varchar(255) NULL,
     google_id varchar(255) NULL,
-    avatar_url varchar(500) NULL,
-    provider varchar(30) NOT NULL DEFAULT 'local',
-    preferred_language char(2) NOT NULL DEFAULT 'fr',
-    status varchar(20) NOT NULL DEFAULT 'active',
-    email_verified_at timestamptz NULL,
-    last_login_at timestamptz NULL,
-    failed_login_attempts smallint NOT NULL DEFAULT 0,
-    locked_until timestamptz NULL,
-    created_at timestamptz NULL,
-    updated_at timestamptz NULL
+    avatar_url varchar(255) NULL,
+    provider varchar(255) NOT NULL DEFAULT 'email',
+    preferred_language varchar(2) NOT NULL DEFAULT 'fr',
+    status varchar(255) NOT NULL DEFAULT 'active',
+    personal_statuses jsonb NULL,
+    email_verified_at timestamp NULL,
+    last_login_at timestamp NULL,
+    failed_login_attempts integer NOT NULL DEFAULT 0,
+    locked_until timestamp NULL,
+    created_at timestamp NULL,
+    updated_at timestamp NULL
 );
 
 CREATE UNIQUE INDEX users_email_unique ON public.users (email);
+CREATE UNIQUE INDEX users_google_id_unique ON public.users (google_id);
 
 
 CREATE TABLE public.companies (
