@@ -17,8 +17,8 @@ import {
 const sampleBranding: TenantBranding = {
   display_name: 'TechCorp',
   logo_url: 'https://cdn.example/logo.png',
-  primary_color: '#123456',
-  accent_color: '#654321',
+  primary_color: '#155e75',
+  accent_color: '#67e8f9',
   brand_mode: 'default',
 };
 
