@@ -6,6 +6,8 @@ export type StoredAuthUser = {
   last_name?: string | null;
   name?: string | null;
   email?: string | null;
+  // #7861 — téléphone professionnel éditable depuis « Mon compte ».
+  phone?: string | null;
   language?: string | null;
   is_rtl?: boolean;
   role?: string | null;
