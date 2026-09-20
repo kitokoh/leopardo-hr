@@ -165,6 +165,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantPurchaseOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantReceiving;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantRefund;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantReservation;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantReview;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantSupplier;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTable;
@@ -189,6 +190,7 @@ use App\Modules\RestaurantManager\Policies\RestaurantPurchaseOrderPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantReceivingPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantRefundPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantReservationPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantReviewPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantStockLevelPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantSupplierPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantTablePolicy;
@@ -216,6 +218,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelCancellationPolicy;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrierApiKey;
+use App\Modules\TravelAgency\Domain\Models\TravelDistributorKey;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelCurrencyRate;
 use App\Modules\TravelAgency\Domain\Models\TravelHotel;
@@ -235,6 +238,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
 use App\Modules\TravelAgency\Policies\TravelBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelCancellationPolicyPolicy;
 use App\Modules\TravelAgency\Policies\TravelCarrierApiKeyPolicy;
+use App\Modules\TravelAgency\Policies\TravelDistributorKeyPolicy;
 use App\Modules\TravelAgency\Policies\TravelCarrierPolicy;
 use App\Modules\TravelAgency\Policies\TravelClassPolicy;
 use App\Modules\TravelAgency\Policies\TravelCurrencyRatePolicy;
@@ -504,6 +508,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(TravelQuote::class, TravelQuotePolicy::class);
         Gate::policy(TravelCurrencyRate::class, TravelCurrencyRatePolicy::class);
         Gate::policy(TravelCarrierApiKey::class, TravelCarrierApiKeyPolicy::class);
+        // TRAVEL-DISTRIBUTION (#7641) — clés API de lecture distributeurs.
+        Gate::policy(TravelDistributorKey::class, TravelDistributorKeyPolicy::class);
         Gate::policy(TravelCancellationPolicy::class, TravelCancellationPolicyPolicy::class);
         Gate::policy(TravelLoyaltyAccount::class, TravelLoyaltyPolicy::class);
         Gate::policy(RestaurantBranch::class, RestaurantBranchPolicy::class);
@@ -530,6 +536,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(RestaurantReceiving::class, RestaurantReceivingPolicy::class);
         Gate::policy(RestaurantInventoryCount::class, RestaurantInventoryCountPolicy::class);
         Gate::policy(RestaurantReservation::class, RestaurantReservationPolicy::class);
+        Gate::policy(RestaurantReview::class, RestaurantReviewPolicy::class);
 
         // Gate definitions
         Gate::define('manage-billing', [BillingPolicy::class, 'manageSubscription']);

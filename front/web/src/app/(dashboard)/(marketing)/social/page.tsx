@@ -158,6 +158,7 @@ export default function SocialCalendarPage() {
           content: payload.content,
           target_platforms: payload.targetPlatforms,
           scheduled_at: payload.scheduledAt,
+          media_paths: payload.mediaPaths,
         }),
       });
       setComposerDay(null);
