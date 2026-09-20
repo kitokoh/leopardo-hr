@@ -18,6 +18,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * `origin_city_id` et `destination_city_id` référencent le référentiel
  * `travel_cities` (TRAVEL-202) ; une route ne peut relier une ville à
  * elle-même (contrainte DB `travel_routes_origin_destination_distinct_check`).
+ *
+ * @property string $code
+ * @property string $company_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property int $destination_city_id
+ * @property int|null $distance_km
+ * @property int|null $duration_min
+ * @property int $id
+ * @property int $origin_city_id
+ * @property \App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus $status
+ * @property \Illuminate\Support\Carbon|null $updated_at
  */
 class TravelRoute extends Model
 {

@@ -16,6 +16,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * `room_number` unique par hôtel (contrainte DB
  * `travel_hotel_rooms_company_hotel_room_unique`).
+ *
+ * @property int $capacity
+ * @property string $company_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property string $currency
+ * @property int $hotel_id
+ * @property int $id
+ * @property int $price_per_night_minor
+ * @property string $room_number
+ * @property \App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus $status
+ * @property string $type_code
+ * @property \Illuminate\Support\Carbon|null $updated_at
  */
 class TravelHotelRoom extends Model
 {

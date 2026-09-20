@@ -23,6 +23,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * `setDocumentNumber()`/`getDocumentNumber()` plutôt que d'assigner les
  * colonnes brutes directement ; les API Resources ne doivent jamais
  * exposer `document_number_encrypted` ni le retour de `getDocumentNumber()`.
+ *
+ * @property \App\Modules\TravelAgency\Domain\Enums\AgeCategory $age_category
+ * @property \Illuminate\Support\Carbon|null $birth_date
+ * @property int $booking_id
+ * @property int $class_id
+ * @property string $company_id
+ * @property string|null $document_number_encrypted
+ * @property string|null $document_number_hash
+ * @property \App\Modules\TravelAgency\Domain\Enums\DocumentType|null $document_type
+ * @property string $full_name
+ * @property int $id
+ * @property int|null $seat_number
+ * @property int $unit_price_minor
  */
 class TravelPassenger extends Model
 {

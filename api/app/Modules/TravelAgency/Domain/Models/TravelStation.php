@@ -17,6 +17,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Point de départ et d'arrivée physique des trajets (ancien concept de
  * « ville » de gv-back enrichi) : code unique par tenant, ville de référence,
  * fuseau horaire local (affichage), indicateur terminal principal.
+ *
+ * @property string|null $address
+ * @property int $city_id
+ * @property string $code
+ * @property string $company_id
+ * @property string|null $contact_phone
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property int $id
+ * @property bool $is_terminal
+ * @property string $name
+ * @property \App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus $status
+ * @property string $timezone
+ * @property \Illuminate\Support\Carbon|null $updated_at
  */
 class TravelStation extends Model
 {

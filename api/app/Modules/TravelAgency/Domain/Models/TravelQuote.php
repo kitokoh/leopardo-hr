@@ -18,6 +18,21 @@ use Illuminate\Support\Str;
  * Total figé côté serveur (tarifs du trajet en unités mineures) ; la
  * réservation groupée ne peut pas dépasser ce plafond. Facturation différée
  * par événement outbox (contrat Accounting, spec D7).
+ *
+ * @property int|null $booking_id
+ * @property string $company_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property string $currency
+ * @property int|null $customer_contact_id
+ * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property int $id
+ * @property string|null $idempotency_key
+ * @property int|null $passenger_count
+ * @property string|null $reference
+ * @property \App\Modules\TravelAgency\Domain\Enums\QuoteStatus $status
+ * @property int $total_amount_minor
+ * @property int $trip_id
+ * @property \Illuminate\Support\Carbon|null $updated_at
  */
 class TravelQuote extends Model
 {
