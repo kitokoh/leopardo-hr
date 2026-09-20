@@ -514,7 +514,38 @@
     "replyPlaceholder": "Your reply (you validate it before sending)...",
     "weeklyReportLoadError": "Unable to load the weekly report.",
     "aiSummary": "AI summary",
-    "autoSummary": "Automatic summary"
+    "autoSummary": "Automatic summary",
+    "web": {
+      "mediaUrls": {
+        "label": "Media URLs (optional)",
+        "placeholder": "https://example.com/visual.jpg",
+        "add": "Add",
+        "remove": "Remove this media"
+      },
+      "interactions": {
+        "title": "Comments",
+        "toggle": "View interactions",
+        "refresh": "Refresh",
+        "loading": "Loading comments...",
+        "empty": "No comments yet.",
+        "send": "Reply",
+        "sending": "Sending...",
+        "sent": "Reply sent.",
+        "suggesting": "Suggesting..."
+      },
+      "weeklyReport": {
+        "title": "Last 7 days report",
+        "loading": "Loading report...",
+        "empty": "No report available.",
+        "published": "Published posts",
+        "failed": "Failures",
+        "upcoming": "Upcoming",
+        "emails": "Campaign emails"
+      },
+      "postActions": {
+        "delete": "Delete"
+      }
+    }
   },
   "attendance": {
     "sending_to_server": "Sending {label} to the server...",
@@ -5509,7 +5540,8 @@
       "bookingsDesc": "Counter sales, confirmation, cancellation, refund and tickets.",
       "reportsDesc": "Sales, occupancy, revenue, cancellations and CSV exports.",
       "portal": "Traveller portal",
-      "portalDesc": "Customer-facing trip search and booking."
+      "portalDesc": "Customer-facing trip search and booking.",
+      "staffDesc": "Driver, ticket agent, controller and office manager assignments."
     },
     "ageCategory": {
       "infant": "Infant",
@@ -5521,6 +5553,37 @@
       "office": "Office",
       "phone": "Phone",
       "partner": "Partner"
+    },
+    "staff": {
+      "title": "Team",
+      "subtitle": "Assign your employees to travel roles (driver, ticket agent, controller, office manager) on an office or a trip.",
+      "assignTitle": "Appoint a team member",
+      "employee": "Employee",
+      "role": "Role",
+      "scope": "Scope",
+      "scopeOffice": "Office",
+      "scopeTrip": "Trip",
+      "assign": "Appoint",
+      "revoke": "Revoke",
+      "assignFailed": "The assignment failed.",
+      "revokeFailed": "The revocation failed.",
+      "formIncomplete": "Choose an employee, a role and a scope.",
+      "activeTitle": "Active assignments",
+      "empty": "No active assignment.",
+      "historyTitle": "Assignment history",
+      "historyEmpty": "No revoked or expired assignment.",
+      "revokedAt": "Revoked on"
+    },
+    "staffRole": {
+      "driver": "Driver",
+      "agent": "Ticket agent",
+      "controller": "Controller",
+      "office_manager": "Office manager"
+    },
+    "staffStatus": {
+      "active": "Active",
+      "revoked": "Revoked",
+      "expired": "Expired"
     }
   },
   "travelPortal": {
@@ -6109,6 +6172,18 @@
       "publish_showcase": {
         "title": "Publish your showcase website",
         "desc": "Make your site visible in one click."
+      },
+      "travel_setup_network": {
+        "title": "Create your network (stations, offices, routes)",
+        "desc": "Declare your stations, sales offices and city-to-city routes."
+      },
+      "travel_first_trip": {
+        "title": "Schedule your first trip",
+        "desc": "Create a dated trip with class fares, then publish it."
+      },
+      "travel_first_sale": {
+        "title": "Record your first sale",
+        "desc": "Sell a first ticket at the counter or online."
       }
     }
   },

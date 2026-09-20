@@ -14,5 +14,8 @@ return [
     'step_activate_geofence' => 'Activer le géofence',
     'step_customize_showcase' => 'Personnaliser votre site vitrine',
     'step_publish_showcase' => 'Publier votre site vitrine',
+    'step_travel_setup_network' => 'Créer votre réseau (gares, bureaux, lignes)',
+    'step_travel_first_trip' => 'Programmer votre premier voyage',
+    'step_travel_first_sale' => 'Enregistrer votre première vente',
     'interview_invalid_answer' => 'Réponse invalide : :question',
 ];

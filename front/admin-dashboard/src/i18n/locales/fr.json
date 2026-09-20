@@ -3719,7 +3719,38 @@
     "replyPlaceholder": "Votre réponse (validée par vous avant envoi)...",
     "weeklyReportLoadError": "Impossible de charger le bilan hebdomadaire.",
     "aiSummary": "Synthèse IA",
-    "autoSummary": "Synthèse automatique"
+    "autoSummary": "Synthèse automatique",
+    "web": {
+      "mediaUrls": {
+        "label": "URLs de médias (optionnel)",
+        "placeholder": "https://exemple.com/visuel.jpg",
+        "add": "Ajouter",
+        "remove": "Retirer ce média"
+      },
+      "interactions": {
+        "title": "Commentaires",
+        "toggle": "Voir les interactions",
+        "refresh": "Actualiser",
+        "loading": "Chargement des commentaires...",
+        "empty": "Aucun commentaire pour le moment.",
+        "send": "Répondre",
+        "sending": "Envoi...",
+        "sent": "Réponse envoyée.",
+        "suggesting": "Suggestion..."
+      },
+      "weeklyReport": {
+        "title": "Bilan des 7 derniers jours",
+        "loading": "Chargement du bilan...",
+        "empty": "Aucun bilan disponible.",
+        "published": "Posts publiés",
+        "failed": "Échecs",
+        "upcoming": "À venir",
+        "emails": "Emails campagne"
+      },
+      "postActions": {
+        "delete": "Supprimer"
+      }
+    }
   },
   "attendanceCorrectionEditDateTitle": "Modifier le {date}",
   "attendanceSaving": "Enregistrement en cours...",
@@ -5610,7 +5641,8 @@
       "bookingsDesc": "Ventes au guichet, confirmation, annulation, remboursement et billets.",
       "reportsDesc": "Ventes, occupation, recettes, annulations et exports CSV.",
       "portal": "Portail voyageur",
-      "portalDesc": "Recherche de trajets et réservation côté client."
+      "portalDesc": "Recherche de trajets et réservation côté client.",
+      "staffDesc": "Affectations chauffeur, guichetier, contrôleur et chef de bureau."
     },
     "referential": {
       "title": "Référentiel",
@@ -6475,6 +6507,37 @@
       "consent": "J'accepte d'être contacté(e) par email au sujet de ma demande.",
       "sending": "Envoi…",
       "send": "Envoyer la demande"
+    },
+    "staff": {
+      "title": "Équipe",
+      "subtitle": "Affectez vos employés aux rôles travel (chauffeur, guichetier, contrôleur, chef de bureau) sur un bureau ou un voyage.",
+      "assignTitle": "Nommer un membre de l’équipe",
+      "employee": "Employé",
+      "role": "Rôle",
+      "scope": "Scope",
+      "scopeOffice": "Bureau",
+      "scopeTrip": "Voyage",
+      "assign": "Nommer",
+      "revoke": "Révoquer",
+      "assignFailed": "L'affectation a échoué.",
+      "revokeFailed": "La révocation a échoué.",
+      "formIncomplete": "Choisissez un employé, un rôle et un scope.",
+      "activeTitle": "Affectations actives",
+      "empty": "Aucune affectation active.",
+      "historyTitle": "Historique des affectations",
+      "historyEmpty": "Aucune affectation révoquée ou expirée.",
+      "revokedAt": "Révoquée le"
+    },
+    "staffRole": {
+      "driver": "Chauffeur",
+      "agent": "Guichetier",
+      "controller": "Contrôleur",
+      "office_manager": "Chef de bureau"
+    },
+    "staffStatus": {
+      "active": "Active",
+      "revoked": "Révoquée",
+      "expired": "Expirée"
     }
   },
   "edu": {
@@ -7396,6 +7459,18 @@
       "publish_showcase": {
         "title": "Publier votre site vitrine",
         "desc": "Rendez votre site visible en un clic."
+      },
+      "travel_setup_network": {
+        "title": "Créer votre réseau (gares, bureaux, lignes)",
+        "desc": "Déclarez vos gares, bureaux de vente et lignes ville→ville."
+      },
+      "travel_first_trip": {
+        "title": "Programmer votre premier voyage",
+        "desc": "Créez un trajet daté, ses tarifs par classe, puis publiez-le."
+      },
+      "travel_first_sale": {
+        "title": "Enregistrer votre première vente",
+        "desc": "Vendez un premier billet au guichet ou en ligne."
       }
     }
   },
