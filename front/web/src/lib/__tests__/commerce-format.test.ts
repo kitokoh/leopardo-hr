@@ -1,6 +1,10 @@
 import {
+  FULFILLMENT_STATUSES,
   STOCK_REASON_CODES,
+  canApplyFulfillmentAction,
   formatMinor,
+  fulfillmentActions,
+  fulfillmentTarget,
   parseMajorToMinor,
   reasonDirection,
   signedQuantityDelta,
@@ -84,5 +88,45 @@ describe('commerce-format — mapping reason_code (miroir RetailStockReasonCode)
   it('laisse le signe saisi tel quel pour un ajustement', () => {
     expect(signedQuantityDelta('adjustment', -4)).toBe(-4);
     expect(signedQuantityDelta('adjustment', 4)).toBe(4);
+  });
+});
+
+describe('commerce-format — machine d’états fulfillment (Boutique en ligne, #7810)', () => {
+  it('couvre exactement les 6 statuts du contrat marketplace', () => {
+    expect([...FULFILLMENT_STATUSES].sort()).toEqual(
+      ['cancelled', 'confirmed', 'delivered', 'pending', 'ready', 'shipped'].sort(),
+    );
+  });
+
+  it('mappe chaque action sur son statut cible', () => {
+    expect(fulfillmentTarget('confirm')).toBe('confirmed');
+    expect(fulfillmentTarget('ready')).toBe('ready');
+    expect(fulfillmentTarget('ship')).toBe('shipped');
+    expect(fulfillmentTarget('deliver')).toBe('delivered');
+    expect(fulfillmentTarget('cancel')).toBe('cancelled');
+  });
+
+  it('propose la progression linéaire + annulation à chaque étape active', () => {
+    expect(fulfillmentActions('pending')).toEqual(['confirm', 'cancel']);
+    expect(fulfillmentActions('confirmed')).toEqual(['ready', 'cancel']);
+    expect(fulfillmentActions('ready')).toEqual(['ship', 'cancel']);
+    expect(fulfillmentActions('shipped')).toEqual(['deliver', 'cancel']);
+  });
+
+  it('ne propose aucune action sur les statuts terminaux', () => {
+    expect(fulfillmentActions('delivered')).toEqual([]);
+    expect(fulfillmentActions('cancelled')).toEqual([]);
+  });
+
+  it('fail-closed sur un statut inconnu ou vide', () => {
+    expect(fulfillmentActions('unknown')).toEqual([]);
+    expect(fulfillmentActions('')).toEqual([]);
+  });
+
+  it('pré-filtre les transitions invalides côté UI', () => {
+    expect(canApplyFulfillmentAction('pending', 'confirm')).toBe(true);
+    expect(canApplyFulfillmentAction('pending', 'deliver')).toBe(false);
+    expect(canApplyFulfillmentAction('delivered', 'cancel')).toBe(false);
+    expect(canApplyFulfillmentAction('shipped', 'deliver')).toBe(true);
   });
 });

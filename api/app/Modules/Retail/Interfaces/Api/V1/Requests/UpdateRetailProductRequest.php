@@ -70,6 +70,7 @@ class UpdateRetailProductRequest extends FormRequest
             'currency' => ['nullable', 'string', 'size:3', 'regex:/^[A-Z]{3}$/', Rule::in(RetailPricePolicy::allowedCurrencies())],
             'unit' => ['nullable', 'string', 'max:30'],
             'status' => ['nullable', Rule::in($statuses)],
+            'image_url' => ['nullable', 'url', 'max:500'],
             'meta' => ['nullable', 'array'],
         ];
     }

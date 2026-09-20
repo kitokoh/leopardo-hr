@@ -200,12 +200,14 @@ use App\Modules\RestaurantManager\Policies\RestaurantUnitPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantZonePolicy;
 use App\Modules\Retail\Domain\Models\RetailCategory;
 use App\Modules\Retail\Domain\Models\RetailLocation;
+use App\Modules\Retail\Domain\Models\RetailOnlineSettings;
 use App\Modules\Retail\Domain\Models\RetailOrder;
 use App\Modules\Retail\Domain\Models\RetailPosSession;
 use App\Modules\Retail\Domain\Models\RetailProduct;
 use App\Modules\Retail\Domain\Models\RetailStockLevel;
 use App\Modules\Retail\Domain\Policies\RetailCategoryPolicy;
 use App\Modules\Retail\Domain\Policies\RetailLocationPolicy;
+use App\Modules\Retail\Domain\Policies\RetailOnlineSettingsPolicy;
 use App\Modules\Retail\Domain\Policies\RetailOrderPolicy;
 use App\Modules\Retail\Domain\Policies\RetailPosSessionPolicy;
 use App\Modules\Retail\Domain\Policies\RetailProductPolicy;
@@ -430,6 +432,8 @@ class AuthServiceProvider extends ServiceProvider
         // — Retail (BC-17 #7674 : POS v1 — sessions de caisse, commandes, paiements)
         Gate::policy(RetailPosSession::class, RetailPosSessionPolicy::class);
         Gate::policy(RetailOrder::class, RetailOrderPolicy::class);
+        // — Retail (BC-17 #7807 : boutique en ligne Leopardo Marché — réglages vendeur)
+        Gate::policy(RetailOnlineSettings::class, RetailOnlineSettingsPolicy::class);
         // — Showcase (BC-27 #6865 : socle domaine — vitrine entreprise)
         Gate::policy(CompanyShowcase::class, CompanyShowcasePolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
