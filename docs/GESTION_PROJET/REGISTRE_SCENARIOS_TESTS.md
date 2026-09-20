@@ -863,3 +863,24 @@ restent les gates applicables.
 - **Surface mobile** : aucun contrat modifié — clés `health.*` additives propagées par la
   synchronisation du catalogue partagé, aucun scénario mobile nouveau requis (app dédiée
   éventuelle = lot V1).
+
+## Mise à jour 2026-09-20 — fail-fast sur URL backend manquante en production (PR #7881, issue #7842)
+
+- **Surface web admin** : `front/admin-dashboard/src/services/api.js` ne se replie plus en
+  silence sur l'API dev Render (`gestionemployerbackend.onrender.com`) quand `VITE_API_URL`
+  est absente. Scénarios : (1) build de production (`import.meta.env.PROD`) **sans**
+  `VITE_API_URL` → erreur explicite au chargement de l'application (message technique
+  `[admin-dashboard] VITE_API_URL is not set in a production build…`, plus aucun appel vers
+  l'API dev) ; (2) build de production **avec** `VITE_API_URL` posée → comportement normal,
+  toutes les requêtes partent vers l'URL configurée ; (3) dev/test sans variable → repli dev
+  conservé mais signalé par un `console.warn`. Aucun composant / route / contrat d'API
+  modifié — le changement est un durcissement de la résolution de configuration.
+- **Surface web (vitrine / travel-web)** : même durcissement dans
+  `front/web/src/lib/backend-url.ts`, `front/travel-web/src/lib/backend-url.ts` (copies
+  synchronisées) et `front/web/src/lib/csp.ts` — throw au **runtime** de production
+  (résolution d'URL lors d'une requête, et côté client), jamais pendant la phase de build
+  Next (`NEXT_PHASE === PHASE_PRODUCTION_BUILD`, cas du job CI lighthouse qui build sans
+  secrets backend). Scénarios automatisés : `front/web/src/lib/__tests__/backend-url.test.ts`
+  et `front/web/src/lib/__tests__/proxy-csp.test.ts` (repli + warn en dev/test et en phase de
+  build ; erreur actionnable au runtime prod ; aucun warn quand la variable est posée).
+- **Surface API / mobile** : aucun changement de code, aucun scénario nouveau requis.

@@ -35,55 +35,71 @@
  * exécutable est script-src).
  */
 
+import { PHASE_PRODUCTION_BUILD } from "next/constants";
+
 const DEFAULT_API_ORIGIN = "https://gestionemployerbackend.onrender.com";
 
 /**
- * connect-src par ENVIRONNEMENT (#7650) : l'origine API vient de
- * `NEXT_PUBLIC_API_URL` (posée par environnement Vercel/Render).
+ * connect-src par ENVIRONNEMENT (#7650, durci par #7842) : l'origine API
+ * vient de `NEXT_PUBLIC_API_URL` (posée par environnement Vercel/Render),
+ * plus aucun hardcode du service dev dans un fichier statique.
  *
- * #7842 (audit sécurité 2026-09-20) : en production, une variable manquante
- * lève une erreur actionnable — le repli silencieux vers l'origine de DEV
- * n'est conservé qu'en dev/test (poste local sans `.env`), avec warning.
- * Une valeur INVALIDE (URL non parsable) reste tolérée sans casser la
- * construction de la politique : on retombe sur l'origine de dev en
- * dev/test, et on lève en production (une CSP bâtie sur la mauvaise
- * origine bloquerait tous les appels API — autant échouer explicitement).
+ * Fail-fast (#7842) : en PRODUCTION (`NODE_ENV === 'production'` ou
+ * `VERCEL_ENV === 'production'`), variable absente ou invalide → erreur
+ * explicite. Le repli sur l'API dev n'existe plus qu'en dev/test (poste
+ * local sans `.env`), signalé par un `console.warn`.
+ *
+ * EXCEPTION — phase de build Next (#7842, correctif CI lighthouse) : pendant
+ * `next build` (`NEXT_PHASE === PHASE_PRODUCTION_BUILD`), on ne throw
+ * JAMAIS — un build CI sans secrets backend doit passer. Le fail-fast
+ * s'applique au RUNTIME (le proxy émet la CSP par requête, `NEXT_PHASE`
+ * n'est alors plus posé). Même détection que `backend-url.ts`/`site-url.ts`.
  */
-export function resolveApiOrigin(): string {
-  const configured = process.env.NEXT_PUBLIC_API_URL;
+function isNextBuildPhase(): boolean {
+  return process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD;
+}
 
-  if (configured) {
-    try {
-      return new URL(configured).origin;
-    } catch {
-      if (process.env.NODE_ENV === "production") {
-        throw new Error(
-          `[csp] NEXT_PUBLIC_API_URL invalide (« ${configured} ») en production — ` +
-            "corriger la variable dans l'environnement du déploiement (audit #7842).",
-        );
-      }
+function isProductionRuntime(): boolean {
+  return (
+    (process.env.NODE_ENV === "production" ||
+      process.env.VERCEL_ENV === "production") &&
+    !isNextBuildPhase()
+  );
+}
 
-      console.warn(
-        `[csp] NEXT_PUBLIC_API_URL invalide (« ${configured} ») — fallback DEV vers ${DEFAULT_API_ORIGIN} (audit #7842).`,
-      );
+let warnedCspFallback = false;
 
-      return DEFAULT_API_ORIGIN;
-    }
-  }
-
-  if (process.env.NODE_ENV === "production") {
+function devFallbackApiOrigin(reason: string): string {
+  if (isProductionRuntime()) {
     throw new Error(
-      "[csp] NEXT_PUBLIC_API_URL absente alors que NODE_ENV=production — " +
-        "poser la variable dans l'environnement du déploiement (Vercel/Render/Cloudflare) ; " +
-        "le fallback silencieux vers l'API de dev a été retiré (audit #7842).",
+      `[csp] ${reason} en production. Définissez NEXT_PUBLIC_API_URL ` +
+        "(ex. https://api.exemple.com/api/v1) dans l'environnement de " +
+        "déploiement. Le repli silencieux du connect-src vers l'API dev " +
+        "onrender.com a été retiré (#7842).",
     );
   }
-
-  console.warn(
-    `[csp] NEXT_PUBLIC_API_URL absente — fallback DEV vers ${DEFAULT_API_ORIGIN}. Toléré uniquement en dev/test (audit #7842).`,
-  );
-
+  if (!warnedCspFallback) {
+    warnedCspFallback = true;
+    console.warn(
+      `[csp] ${reason} — connect-src replié en dev/test sur ` +
+        `${DEFAULT_API_ORIGIN} (interdit en production, #7842).`,
+    );
+  }
   return DEFAULT_API_ORIGIN;
+}
+
+export function resolveApiOrigin(): string {
+  const configured = process.env.NEXT_PUBLIC_API_URL;
+  if (!configured) {
+    return devFallbackApiOrigin("NEXT_PUBLIC_API_URL absente");
+  }
+  try {
+    return new URL(configured).origin;
+  } catch {
+    return devFallbackApiOrigin(
+      `NEXT_PUBLIC_API_URL invalide (« ${configured} »)`,
+    );
+  }
 }
 
 export function buildCspDirectives({
