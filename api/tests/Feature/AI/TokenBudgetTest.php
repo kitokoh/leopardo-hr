@@ -201,6 +201,29 @@ class TokenBudgetTest extends TestCase
     }
 
     /**
+     * #7764 — quota du plan épuisé SANS crédits achetés (et sans tables
+     * crédits dans la fixture partielle) → 422 AI_CREDITS_EXHAUSTED
+     * fail-closed, même contrat d'erreur que les budgets de tokens.
+     */
+    public function test_chat_fails_closed_when_plan_quota_exhausted_without_credits(): void
+    {
+        [, $employee] = $this->aiFixture();
+        // Pas de souscription active → plan effectif `free` (EntitlementGuard).
+        config(['ai.quotas.free' => 0]);
+
+        Sanctum::actingAs($employee);
+        $this->fakeLlmClientWithTokens(10, 10);
+
+        $this->postJson('/api/v1/ai/chat', ['message' => 'Bonjour'])
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'AI_CREDITS_EXHAUSTED')
+            ->assertJsonStructure(['error', 'message', 'localized_message']);
+
+        // Fail-closed : aucun appel LLM, aucune conversation créée.
+        $this->assertDatabaseCount('ai_conversations', 0);
+    }
+
+    /**
      * @return array{0: Company, 1: Employee}
      */
     private function aiFixture(): array
