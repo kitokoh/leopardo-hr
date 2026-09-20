@@ -6,17 +6,17 @@
  * stocké. Il vivait auparavant au milieu de `lib/i18n.ts` (3 662 lignes de
  * traductions) — invisible pour un audit auth qui greppe `auth`/`session`.
  *
- * Note architecture : dépendance croisée assumée avec `./i18n`
- * (normalizeLocale / storePreferredLocale / PREFERRED_LOCALE_KEY restent des
- * fonctions de locale). Cycle ESM sans effet : uniquement des appels de
- * fonctions résolus à l'exécution, aucune évaluation à l'initialisation.
+ * Note architecture (#8000) : dépend de `./locale-core` (primitives
+ * locale) — le graphe locale-core ← auth-session ← i18n est acyclique
+ * (le cycle initial i18n ↔ auth-session cassait les suites Jest sous
+ * transform CommonJS : TDZ « Cannot access before initialization »).
  *
  * Audit #1699 : le TOKEN n'est plus stocké côté JS (cookie httpOnly
  * `leopardo_token` géré par les route handlers) — seul le PROFIL public et
  * la locale préférée persistent en localStorage.
  */
 
-import { normalizeLocale, storePreferredLocale, PREFERRED_LOCALE_KEY } from './i18n';
+import { normalizeLocale, storePreferredLocale, PREFERRED_LOCALE_KEY } from './locale-core';
 
 export type StoredAuthUser = {
   id?: number | string;

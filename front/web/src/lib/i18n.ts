@@ -1,15 +1,13 @@
+import { type AppLocale, isSupportedLocale, normalizeLocale, PREFERRED_LOCALE_KEY } from './locale-core';
 import { getStoredUser as _getStoredUser } from './auth-session';
 
-export type AppLocale = 'fr' | 'ar' | 'tr' | 'en';
 
 
-export const SUPPORTED_LOCALES: AppLocale[] = ['fr', 'ar', 'tr', 'en'];
-export const PREFERRED_LOCALE_KEY = 'preferred_locale';
 
-// #8000 — gestion de session auth EXTRAITE vers ./auth-session : un audit auth
-// n'a plus à fouiller 3 600 lignes de traductions. Ré-exports de
-// compatibilité (aucun import existant ne casse) — cycle ESM assumé et sans
-// effet : les appels croisés sont tous des fonctions résolues à l'exécution.
+// Ré-exports de compatibilité (#8000) — les définitions vivent dans
+// ./locale-core (primitives locale) et ./auth-session (session) ; aucun
+// import existant depuis '@/lib/i18n' ne casse.
+export { type AppLocale, SUPPORTED_LOCALES, isSupportedLocale, normalizeLocale, PREFERRED_LOCALE_KEY, storePreferredLocale } from './locale-core';
 export { AUTH_TOKEN_KEY, AUTH_USER_KEY, storeAuthSession, clearAuthSession, getStoredUser, getDisplayName } from './auth-session';
 export type { StoredAuthUser } from './auth-session';
 
@@ -3477,18 +3475,7 @@ const copy: Record<AppLocale, CopyTree> = {
   },
 };
 
-export function isSupportedLocale(value: unknown): value is AppLocale {
-  return typeof value === 'string' && SUPPORTED_LOCALES.includes(value as AppLocale);
-}
 
-export function normalizeLocale(value: unknown): AppLocale {
-  if (typeof value !== 'string' || value.trim() === '') {
-    return 'fr';
-  }
-
-  const normalized = value.toLowerCase().slice(0, 2);
-  return isSupportedLocale(normalized) ? normalized : 'fr';
-}
 
 /**
  * Locale SSR de la vitrine (issue #4393) : `?lang=` (liens hreflang, #4173)
@@ -3551,10 +3538,6 @@ export function getPreferredLocale(): AppLocale {
   return normalizeLocale(window.navigator.language);
 }
 
-export function storePreferredLocale(locale: AppLocale): void {
-  if (typeof window === 'undefined') return;
-  window.localStorage.setItem(PREFERRED_LOCALE_KEY, locale);
-}
 
 
 
