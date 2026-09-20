@@ -32,6 +32,44 @@ type PostInteractionsProps = {
 };
 
 /**
+ * Aplati le payload agrégateur (commentaires groupés par plateforme) en une
+ * liste plate — exporté pour les tests. Données tierces : texte brut, jamais
+ * interprété.
+ */
+export function normalizeComments(raw: unknown): SocialComment[] {
+  const result: SocialComment[] = [];
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    return result;
+  }
+  for (const [platform, entries] of Object.entries(raw as Record<string, unknown>)) {
+    if (!Array.isArray(entries)) {
+      continue;
+    }
+    for (const entry of entries) {
+      if (!entry || typeof entry !== 'object') {
+        continue;
+      }
+      const record = entry as Record<string, unknown>;
+      const text = typeof record.comment === 'string'
+        ? record.comment
+        : typeof record.text === 'string'
+          ? record.text
+          : null;
+      if (!text) {
+        continue;
+      }
+      result.push({
+        platform,
+        comment: text,
+        userName: typeof record.userName === 'string' ? record.userName : undefined,
+        created: typeof record.created === 'string' ? record.created : undefined,
+      });
+    }
+  }
+  return result;
+}
+
+/**
  * Module Marketing — Issue #7755 (interactions sociales, backend #7754).
  *
  * Panneau des commentaires reçus sur un post publié : lecture (via
@@ -49,39 +87,6 @@ export function PostInteractions({ postId }: PostInteractionsProps) {
   const [suggesting, setSuggesting] = useState(false);
   const [sent, setSent] = useState(false);
   const locale = getPreferredLocale();
-
-  const normalizeComments = (raw: unknown): SocialComment[] => {
-    const result: SocialComment[] = [];
-    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
-      return result;
-    }
-    for (const [platform, entries] of Object.entries(raw as Record<string, unknown>)) {
-      if (!Array.isArray(entries)) {
-        continue;
-      }
-      for (const entry of entries) {
-        if (!entry || typeof entry !== 'object') {
-          continue;
-        }
-        const record = entry as Record<string, unknown>;
-        const text = typeof record.comment === 'string'
-          ? record.comment
-          : typeof record.text === 'string'
-            ? record.text
-            : null;
-        if (!text) {
-          continue;
-        }
-        result.push({
-          platform,
-          comment: text,
-          userName: typeof record.userName === 'string' ? record.userName : undefined,
-          created: typeof record.created === 'string' ? record.created : undefined,
-        });
-      }
-    }
-    return result;
-  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -145,7 +150,7 @@ export function PostInteractions({ postId }: PostInteractionsProps) {
     <div data-testid="post-interactions" className="mt-3 rounded-2xl border border-app-border bg-slate-50/60 p-4">
       <div className="mb-3 flex items-center justify-between">
         <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-600">
-          <MessageCircle className="h-4 w-4" /> Commentaires
+          <MessageCircle className="h-4 w-4" /> {t(locale, 'marketing.web.interactions.title')}
         </p>
         <button
           type="button"
@@ -153,7 +158,7 @@ export function PostInteractions({ postId }: PostInteractionsProps) {
           disabled={loading}
           className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-bold text-slate-500 transition hover:text-slate-800 disabled:opacity-50"
         >
-          <RefreshCw className="h-3.5 w-3.5" /> Actualiser
+          <RefreshCw className="h-3.5 w-3.5" /> {t(locale, 'marketing.web.interactions.refresh')}
         </button>
       </div>
 
@@ -161,17 +166,17 @@ export function PostInteractions({ postId }: PostInteractionsProps) {
         <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{error}</div>
       ) : null}
       {sent ? (
-        <div className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
-          Reponse envoyee.
+        <div data-testid="post-interactions-sent" className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
+          {t(locale, 'marketing.web.interactions.sent')}
         </div>
       ) : null}
 
       {loading ? (
-        <p className="text-xs text-slate-500">Chargement des commentaires...</p>
+        <p className="text-xs text-slate-500">{t(locale, 'marketing.web.interactions.loading')}</p>
       ) : comments.length === 0 ? (
-        <p className="text-xs text-slate-500">Aucun commentaire pour le moment.</p>
+        <p data-testid="post-interactions-empty" className="text-xs text-slate-500">{t(locale, 'marketing.web.interactions.empty')}</p>
       ) : (
-        <ul className="space-y-2">
+        <ul data-testid="post-interactions-list" className="space-y-2">
           {comments.map((comment, index) => (
             <li key={`${comment.platform}-${index}`} className="rounded-xl bg-white px-3 py-2">
               <div className="flex items-center justify-between gap-2">
@@ -181,12 +186,13 @@ export function PostInteractions({ postId }: PostInteractionsProps) {
                 </p>
                 <button
                   type="button"
+                  data-testid={`post-interactions-suggest-${index}`}
                   onClick={() => void handleSuggest(comment)}
                   disabled={suggesting}
                   className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-bold text-violet-700 transition hover:bg-violet-50 disabled:opacity-50"
                 >
                   <Sparkles className="h-3.5 w-3.5" />
-                  {suggesting ? 'Suggestion...' : t(locale, 'marketing.suggestReply')}
+                  {suggesting ? t(locale, 'marketing.web.interactions.suggesting') : t(locale, 'marketing.suggestReply')}
                 </button>
               </div>
               <p className="mt-1 text-sm text-slate-800">{comment.comment}</p>
@@ -212,7 +218,7 @@ export function PostInteractions({ postId }: PostInteractionsProps) {
           disabled={!reply.trim() || sending}
           className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-700 disabled:opacity-50"
         >
-          <Send className="h-4 w-4" /> {sending ? 'Envoi...' : 'Repondre'}
+          <Send className="h-4 w-4" /> {sending ? t(locale, 'marketing.web.interactions.sending') : t(locale, 'marketing.web.interactions.send')}
         </button>
       </div>
     </div>
