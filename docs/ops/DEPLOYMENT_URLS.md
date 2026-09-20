@@ -16,6 +16,8 @@
 | Admin plateforme (super-admin) | `https://leo-admin.pages.dev` | Cloudflare Pages | HTTP 200 2026-09-05 |
 | Marketplace grand public « Leopardo Marché » | `https://leopardo-marche.vercel.app` | Vercel (projet `leopardo-marche`, rootDirectory `front/marketplace`, `NEXT_PUBLIC_MARKET_API_BASE` → API Render) | HTTP 200 2026-09-19 (#7815) |
 | Site marketing | `https://kitokoh.github.io/leopardo-hr/` | GitHub Pages (depuis main, #6827) | HTTP 200 2026-09-05 |
+| Travel — site public (dev) | `https://leopardo-travel.vercel.app` | Vercel (projet `leopardo-travel`, compte africanovatech) | HTTP 200 2026-09-19 |
+| Travel — site public (prod) | `https://leopardo-travel-prod.vercel.app` | Vercel (projet `leopardo-travel-prod`, compte ibrahimkoubaye) | HTTP 200 2026-09-19 |
 
 > ⚠️ `https://leopardo.vercel.app` répond aussi HTTP 200 (2026-09-05) —
 > projet Vercel distinct à clarifier/rationaliser avec
@@ -23,6 +25,34 @@
 > ce dernier comme web dev de référence).
 > Re-vérification live le **2026-09-09** : 9/9 URLs HTTP 200 (API dev/prod, web
 > dev/prod, admin dev/prod, `leopardo-resto`, `leopardo-travel-prod`, gh-pages).
+
+## Travel — `front/travel-web` (issue #7740, conformité P07)
+
+- **dev** : projet Vercel `leopardo-travel` (compte africanovatech) → `https://leopardo-travel.vercel.app`.
+  Env : `BACKEND_API_URL=https://gestionemployerbackend.onrender.com/api/v1`,
+  `NEXT_PUBLIC_SITE_URL=https://leopardo-travel.vercel.app`.
+- **prod** : projet Vercel `leopardo-travel-prod` (compte ibrahimkoubaye) → `https://leopardo-travel-prod.vercel.app`.
+  Env : `BACKEND_API_URL=https://leopardo-prod.onrender.com/api/v1`,
+  `NEXT_PUBLIC_SITE_URL=https://leopardo-travel-prod.vercel.app`.
+- Variables configurées côté Vercel (aucun secret dans le repo) ; le navigateur ne
+  parle jamais au backend directement (proxy same-origin allowlist `public/travel/*`).
+- Déploiement initial 2026-09-19 via Vercel CLI depuis `front/travel-web` (contenu PR #7781).
+  Intégration au pipeline `deploy-prod.yml` : suivi hors périmètre immédiat (voir issue #7740).
+- Configuration projets Vercel (2026-09-19, via API) : `framework=nextjs` +
+  `rootDirectory=front/travel-web` posés sur les DEUX projets. Le projet **prod**
+  `leopardo-travel-prod` est lié au repo GitHub `kitokoh/leopardo-hr` (branche de
+  production `main` — les pushes sur `main` déclenchent un déploiement production
+  automatique). Le projet **dev** `leopardo-travel` n'a PAS pu être lié via API :
+  le compte Vercel africanovatech n'a pas de « Login Connection » GitHub (action
+  propriétaire — la lier depuis les settings du compte Vercel) ; en attendant, le
+  déploiement dev se fait via Vercel CLI (`vercel deploy --prod` depuis
+  `front/travel-web` d'un clone de `main`, project id épinglé localement dans
+  `.vercel/project.json`, fichier volontairement NON committé et gitignoré).
+- Note de suivi : l'intégration de ces déploiements au workflow `deploy-prod.yml`
+  (job Vercel travel-web avec tokens en secrets GitHub) reste hors périmètre de
+  cette PR — tracée dans l'issue #7740 / épic #7736.
+- Les endpoints `public/travel/marketplace/*` répondent 404 tant que le backend (#7737/#7781)
+  n'est pas mergé et redéployé sur Render — attendu, proxy vérifié fonctionnel.
 
 ## Volets dev & prod (vue matricielle — registre du protocole P07)
 

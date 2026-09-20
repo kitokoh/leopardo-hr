@@ -1,0 +1,252 @@
+name: Deploy Travel Web - Vercel
+
+# Issue #7740 — raccordement CI de `front/travel-web` aux projets Vercel
+# provisionnés (décision #6918, épic #7736) :
+#   - dev  : projet `leopardo-travel`      (compte africanovatech)   → https://leopardo-travel.vercel.app
+#   - prod : projet `leopardo-travel-prod` (compte ibrahimkoubaye)   → https://leopardo-travel-prod.vercel.app
+# Conformité P07 : dev et prod vivent sur deux comptes Vercel distincts →
+# deux jeux de secrets indépendants (jamais un token partagé).
+#
+# Chemins de déploiement :
+#   - PR touchant front/travel-web → déploiement PREVIEW sur le projet dev.
+#   - push main touchant front/travel-web → déploiement PRODUCTION.
+# Mécanique identique à deploy-prod.yml (job deploy-web-prod) : CLI Vercel
+# épinglée, `vercel pull` → `vercel build` → `vercel deploy --prebuilt`
+# depuis la RACINE du repo (le projet Vercel porte rootDirectory:
+# front/travel-web — avec --cwd le chemin serait doublé, fix #6810).
+#
+# Prérequis (une seule fois, repo → Settings → Secrets, action PROPRIÉTAIRE —
+# runbook : docs/ops/travel-web-vercel.md) :
+#   - VERCEL_TRAVEL_DEV_TOKEN / VERCEL_TRAVEL_DEV_ORG_ID / VERCEL_TRAVEL_DEV_PROJECT_ID
+#   - VERCEL_TRAVEL_PROD_TOKEN / VERCEL_TRAVEL_PROD_ORG_ID / VERCEL_TRAVEL_PROD_PROJECT_ID
+# Si les secrets d'un volet sont absents, le job correspondant se termine en
+# skip EXPLICITE (::warning:: + step summary, règle AGENTS.md — jamais de skip
+# silencieux) : le déploiement manuel via Vercel CLI documenté dans
+# docs/ops/travel-web-vercel.md reste le repli. Les secrets ne sont pas
+# lisibles dans un `if:` — pattern env-detour éprouvé du repo
+# (deploy-admin-dashboard.yml : secret → env de job → `if: env.X != ''`).
+
+on:
+  pull_request:
+    paths:
+      - 'front/travel-web/**'
+      - '.github/workflows/travel-web-deploy.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'front/travel-web/**'
+      - '.github/workflows/travel-web-deploy.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environnement cible (preview = projet dev leopardo-travel, production = leopardo-travel-prod)"
+        required: true
+        type: choice
+        options:
+          - preview
+          - production
+        default: preview
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: travel-web-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # ──────────────────────────────────────────────────────────────────────────
+  # PREVIEW (dev) — projet `leopardo-travel`, compte africanovatech.
+  # Déclenché par les PR touchant front/travel-web (ou dispatch preview).
+  # Le déploiement preview reçoit une URL unique *.vercel.app ; l'alias stable
+  # leopardo-travel.vercel.app suit les déploiements du volet dev.
+  deploy-preview:
+    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.environment == 'preview')
+    timeout-minutes: 45
+    name: Deploy travel-web to Vercel (preview/dev)
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TRAVEL_DEV_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_TRAVEL_DEV_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_TRAVEL_DEV_PROJECT_ID }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: 'front/travel-web/package-lock.json'
+
+      - name: Install Vercel CLI (pinned)
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        run: npm install --global vercel@59.11.2
+
+      # Commandes depuis la racine du repo (sans --cwd) : le projet Vercel
+      # leopardo-travel porte rootDirectory: front/travel-web, la CLI
+      # l'applique une seule fois (fix #6810 sur front/web).
+      - name: Pull Vercel environment (preview)
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        run: vercel pull --yes --environment=preview
+
+      - name: Build (preview)
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        run: vercel build
+
+      # --prebuilt : le build local est uploadé tel quel, pas de rebuild côté
+      # Vercel. Un échec en amont ne promeut rien.
+      - name: Deploy preview (Vercel)
+        id: deploy_preview
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="$(vercel deploy --prebuilt | tail -n 1)"
+          echo "::notice::Vercel preview deploy (travel-web): ${URL}"
+          echo "url=${URL}" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Travel Web — preview Vercel"
+            echo ""
+            echo "- Déploiement : ${URL}"
+            echo "- Projet : leopardo-travel (dev, compte africanovatech)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Le healthcheck cible l'URL UNIQUE de l'instance que CE run vient de
+      # déployer (règle AGENTS.md : prouver qu'une NOUVELLE instance répond,
+      # jamais un alias partagé — l'alias stable leopardo-travel.vercel.app ne
+      # bouge pas sur un deploy preview). 401/403 = déploiement vivant mais
+      # protégé par Vercel Authentication (protection par défaut des previews)
+      # — accepté comme sain.
+      - name: Healthcheck preview deployment
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        shell: bash
+        env:
+          DEPLOY_URL: ${{ steps.deploy_preview.outputs.url }}
+        run: |
+          set -euo pipefail
+          URL="${DEPLOY_URL%/}/"
+          echo "Waiting for travel-web preview to answer at ${URL}..."
+          for attempt in {1..12}; do
+            echo "Healthcheck attempt ${attempt}/12 on ${URL}"
+            CODE="$(curl --silent --output /dev/null --max-time 15 --write-out '%{http_code}' "${URL}" || echo 000)"
+            case "${CODE}" in
+              2*) echo "travel-web preview répond (HTTP ${CODE})."; exit 0 ;;
+              401|403) echo "travel-web preview déployé et protégé par Vercel Authentication (HTTP ${CODE}) — considéré sain."; exit 0 ;;
+              *) echo "HTTP ${CODE} — retry" ;;
+            esac
+            sleep 10
+          done
+          echo "::error::travel-web (preview) ne répond pas — build en échec ou env manquante côté Vercel."
+          exit 1
+
+      - name: Skip — secrets Vercel dev absents
+        if: ${{ env.VERCEL_TOKEN == '' || env.VERCEL_ORG_ID == '' || env.VERCEL_PROJECT_ID == '' }}
+        shell: bash
+        run: |
+          echo "::warning::VERCEL_TRAVEL_DEV_TOKEN / VERCEL_TRAVEL_DEV_ORG_ID / VERCEL_TRAVEL_DEV_PROJECT_ID absents — déploiement preview Vercel sauté (issue #7740). Poser les secrets (runbook docs/ops/travel-web-vercel.md) pour activer le déploiement GitHub Actions ; le déploiement manuel via Vercel CLI reste le repli."
+          {
+            echo "## Travel Web — preview Vercel : SKIP"
+            echo ""
+            echo "Secrets \`VERCEL_TRAVEL_DEV_*\` absents (SHA ${GITHUB_SHA}) — voir docs/ops/travel-web-vercel.md."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # PRODUCTION — projet `leopardo-travel-prod`, compte ibrahimkoubaye.
+  # Déclenché par push sur main touchant front/travel-web (ou dispatch
+  # production). Même politique que deploy-admin-dashboard.yml : chemin de
+  # déploiement continu dev-like sur main ; l'intégration au pipeline de
+  # promotion par tag (deploy-prod.yml) est tracée en suivi dans #7740/#7736.
+  deploy-production:
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.environment == 'production')
+    timeout-minutes: 45
+    name: Deploy travel-web to Vercel (production)
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TRAVEL_PROD_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_TRAVEL_PROD_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_TRAVEL_PROD_PROJECT_ID }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: 'front/travel-web/package-lock.json'
+
+      - name: Install Vercel CLI (pinned)
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        run: npm install --global vercel@59.11.2
+
+      - name: Pull Vercel environment (production)
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        run: vercel pull --yes --environment=production
+
+      - name: Build (production)
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        run: vercel build --prod
+
+      # --prebuilt --prod : upload du build local puis promotion. Un échec en
+      # amont laisse le déploiement prod existant en place (rien n'est promu).
+      - name: Deploy to production (Vercel)
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="$(vercel deploy --prebuilt --prod | tail -n 1)"
+          echo "::notice::Vercel prod deploy (travel-web): ${URL}"
+          {
+            echo "## Travel Web — production Vercel"
+            echo ""
+            echo "- Déploiement : ${URL}"
+            echo "- Projet : leopardo-travel-prod (compte ibrahimkoubaye)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Healthcheck sur le domaine prod stable : la promotion --prod vient de
+      # basculer l'alias sur l'instance déployée par CE run (pas de secret
+      # partagé, pas d'URL d'un autre tier — règle AGENTS.md). Homepage SSR
+      # uniquement : les endpoints public/travel/marketplace/* dépendent du
+      # backend Render (#7737) et ne conditionnent pas la santé du front.
+      - name: Wait for travel-web prod healthcheck
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="https://leopardo-travel-prod.vercel.app/"
+          echo "Waiting for travel-web prod to be healthy at ${URL}..."
+          for attempt in {1..30}; do
+            echo "Healthcheck attempt ${attempt}/30 on ${URL}"
+            if curl --fail --silent --show-error --max-time 15 --output /dev/null "${URL}"; then
+              echo "travel-web prod répond (HTTP 2xx)."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::travel-web prod ne répond pas dans les temps (build en échec, env manquante ou cold start)."
+          exit 1
+
+      - name: Skip — secrets Vercel prod absents
+        if: ${{ env.VERCEL_TOKEN == '' || env.VERCEL_ORG_ID == '' || env.VERCEL_PROJECT_ID == '' }}
+        shell: bash
+        run: |
+          echo "::warning::VERCEL_TRAVEL_PROD_TOKEN / VERCEL_TRAVEL_PROD_ORG_ID / VERCEL_TRAVEL_PROD_PROJECT_ID absents — déploiement production Vercel sauté (issue #7740). Poser les secrets (runbook docs/ops/travel-web-vercel.md) pour activer le déploiement GitHub Actions ; le déploiement manuel via Vercel CLI reste le repli."
+          {
+            echo "## Travel Web — production Vercel : SKIP"
+            echo ""
+            echo "Secrets \`VERCEL_TRAVEL_PROD_*\` absents (SHA ${GITHUB_SHA}) — voir docs/ops/travel-web-vercel.md."
+          } >> "$GITHUB_STEP_SUMMARY"

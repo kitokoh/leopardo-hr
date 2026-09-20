@@ -19,6 +19,16 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
+/**
+ * Provisioning d'un tenant d'essai (trial guidé).
+ *
+ * #7649 — job PLATEFORME (hors tenant), volontairement SANS
+ * `TenantScopedJob`/`EnsureTenantContext` : la compagnie n'existe pas encore
+ * au moment du dispatch — c'est précisément ce job qui la crée (via
+ * `ProvisionGuidedTrial`, qui établit lui-même le contexte du tenant
+ * nouvellement créé). Il est listé dans les exemptions du test
+ * d'architecture `QueueTenantContextArchitectureTest`.
+ */
 class ProvisionDemoTenantJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

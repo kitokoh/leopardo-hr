@@ -3704,7 +3704,47 @@
       }
     },
     "socialExamplePlaceholder": "مثال: Leopardo — وسائل التواصل الاجتماعي",
-    "postContentPlaceholder": "محتوى المنشور..."
+    "postContentPlaceholder": "محتوى المنشور...",
+    "publishNow": "انشر الآن",
+    "commentsLoadError": "تعذر تحميل التعليقات.",
+    "aiSuggestUnavailable": "اقتراح الذكاء الاصطناعي غير متاح حاليًا.",
+    "replySendError": "تعذر إرسال الرد.",
+    "suggestReply": "اقتراح رد (ذكاء اصطناعي)",
+    "replyPlaceholder": "ردك (تراجعه قبل الإرسال)...",
+    "weeklyReportLoadError": "تعذر تحميل التقرير الأسبوعي.",
+    "aiSummary": "ملخص الذكاء الاصطناعي",
+    "autoSummary": "ملخص تلقائي",
+    "web": {
+      "mediaUrls": {
+        "label": "روابط الوسائط (اختياري)",
+        "placeholder": "https://example.com/visual.jpg",
+        "add": "إضافة",
+        "remove": "إزالة هذه الوسائط"
+      },
+      "interactions": {
+        "title": "التعليقات",
+        "toggle": "عرض التفاعلات",
+        "refresh": "تحديث",
+        "loading": "جارٍ تحميل التعليقات...",
+        "empty": "لا توجد تعليقات بعد.",
+        "send": "رد",
+        "sending": "جارٍ الإرسال...",
+        "sent": "تم إرسال الرد.",
+        "suggesting": "جارٍ الاقتراح..."
+      },
+      "weeklyReport": {
+        "title": "تقرير آخر 7 أيام",
+        "loading": "جارٍ تحميل التقرير...",
+        "empty": "لا يوجد تقرير متاح.",
+        "published": "منشورات منشورة",
+        "failed": "إخفاقات",
+        "upcoming": "قادمة",
+        "emails": "رسائل الحملة"
+      },
+      "postActions": {
+        "delete": "حذف"
+      }
+    }
   },
   "attendanceCorrectionEditDateTitle": "تعديل {date}",
   "attendanceSaving": "جارٍ الحفظ...",
@@ -3720,7 +3760,23 @@
     "checkout_sandbox_message": "دفع محاكى (وضع الاختبار). لن يتم خصم أي بطاقة.",
     "checkout_unavailable": "الدفع عبر الإنترنت غير متاح مؤقتاً. تواصل مع الدعم على support@leopardo-rh.com.",
     "checkout_failed": "تعذر إنشاء جلسة الدفع.",
-    "redirect_url_invalid": "يجب أن تنتمي عناوين إعادة التوجيه إلى الموقع المسموح به."
+    "redirect_url_invalid": "يجب أن تنتمي عناوين إعادة التوجيه إلى الموقع المسموح به.",
+    "ai_credits": {
+      "title": "أرصدة الذكاء الاصطناعي",
+      "subtitle": "حزم رموز لمساعد الذكاء الاصطناعي، إضافةً إلى الحصة الشهرية لخطتك.",
+      "optional_note": "شراء اختياري تمامًا: لن يتم حظر اشتراكك أو وحداتك أبدًا إذا لم تشترِ أرصدة.",
+      "balance_label": "رصيد الأرصدة",
+      "tokens_unit": "رمز",
+      "buy_pack": "شراء",
+      "pack_label": "حزمة {code}",
+      "history_title": "السجل الأخير",
+      "history_empty": "لا توجد حركات أرصدة حتى الآن.",
+      "reason_purchase": "شراء",
+      "reason_consumption": "استهلاك",
+      "reason_adjustment": "تعديل",
+      "load_error": "تعذر تحميل أرصدة الذكاء الاصطناعي.",
+      "checkout_error": "تعذر إنشاء جلسة دفع أرصدة الذكاء الاصطناعي."
+    }
   },
   "settingsEmailLabel": "البريد الإلكتروني",
   "companydetailEditSubscription": "تعديل الاشتراك",
@@ -4605,7 +4661,9 @@
       "colRevenue": "إيرادات اليوم",
       "colOrders": "الطلبات",
       "colOccupancy": "دوران الطاولات",
-      "colAlerts": "تنبيهات المخزون"
+      "colAlerts": "تنبيهات المخزون",
+      "payments": "التحصيل",
+      "paymentsDesc": "الدفع عبر الإنترنت، ملفات Stripe والدفع عبر الهاتف"
     },
     "crud": {
       "search": "بحث...",
@@ -4923,6 +4981,26 @@
       "reviewNotEligible": "التقييم ممكن فقط بعد طلب مُقدَّم أو مُوصَّل.",
       "reviewDuplicate": "تم إرسال تقييم لهذا الطلب من قبل.",
       "reviewError": "تعذر إرسال التقييم. حاول مرة أخرى."
+    },
+    "payments": {
+      "title": "التحصيل",
+      "desc": "حالة إعداد الدفع عبر الإنترنت (ملفات الدفع)",
+      "loadError": "تعذر تحميل حالة التحصيل.",
+      "onlineEnabled": "الدفع عبر الإنترنت مفعّل",
+      "onlineDisabled": "الدفع عبر الإنترنت غير مُعد",
+      "onlineDisabledHint": "لا يمكن لعملائك الدفع عبر الإنترنت: أضف ملف دفع (مفاتيح Stripe أو الدفع عبر الهاتف) ثم فعّله. يبقى الدفع في الموقع متاحاً دائماً.",
+      "cardOnline": "بطاقة عبر الإنترنت (Stripe)",
+      "mobileMoney": "الدفع عبر الهاتف",
+      "configured": "مُعد",
+      "notConfigured": "غير مُعد",
+      "sandbox": "وضع الاختبار",
+      "production": "إنتاج",
+      "profileActive": "ملف نشط",
+      "profileMissing": "لا يوجد ملف نشط",
+      "payOnSite": "الدفع في الموقع (الصندوق)",
+      "alwaysAvailable": "متاح دائماً",
+      "manageProfiles": "إدارة ملفات الدفع",
+      "manageProfilesHint": "تُدار مفاتيح Stripe وحسابات الدفع عبر الهاتف في الإعدادات ← التحصيلات."
     }
   },
   "commonLanguageArabic": "العربية",
@@ -6214,7 +6292,8 @@
       "bookingsDesc": "مبيعات الشباك والتأكيد والإلغاء والاسترداد والتذاكر.",
       "reportsDesc": "المبيعات والإشغال والإيرادات والإلغاءات وتصدير CSV.",
       "portal": "بوابة المسافر",
-      "portalDesc": "بحث الرحلات والحجز من جهة العميل."
+      "portalDesc": "بحث الرحلات والحجز من جهة العميل.",
+      "staffDesc": "تعيينات السائق وموظف الشباك والمراقب ورئيس المكتب."
     },
     "network": {
       "addPrice": "إضافة سعر",
@@ -6593,7 +6672,38 @@
     "travel.tripStatus.published": "منشور",
     "travel.tripStatus.scheduled": "مجدول",
     "travel.vehicles.registration": "رقم التسجيل",
-    "travel.vehicles.seats": "المقاعد"
+    "travel.vehicles.seats": "المقاعد",
+    "staff": {
+      "title": "الفريق",
+      "subtitle": "عيّن موظفيك في أدوار السفر (سائق، موظف شباك، مراقب، رئيس مكتب) على مكتب أو رحلة.",
+      "assignTitle": "تعيين عضو في الفريق",
+      "employee": "الموظف",
+      "role": "الدور",
+      "scope": "النطاق",
+      "scopeOffice": "مكتب",
+      "scopeTrip": "رحلة",
+      "assign": "تعيين",
+      "revoke": "إلغاء",
+      "assignFailed": "فشل التعيين.",
+      "revokeFailed": "فشل الإلغاء.",
+      "formIncomplete": "اختر موظفًا ودورًا ونطاقًا.",
+      "activeTitle": "التعيينات النشطة",
+      "empty": "لا يوجد تعيين نشط.",
+      "historyTitle": "سجل التعيينات",
+      "historyEmpty": "لا يوجد تعيين ملغى أو منتهي الصلاحية.",
+      "revokedAt": "تاريخ الإلغاء"
+    },
+    "staffRole": {
+      "driver": "سائق",
+      "agent": "موظف شباك",
+      "controller": "مراقب",
+      "office_manager": "رئيس مكتب"
+    },
+    "staffStatus": {
+      "active": "نشط",
+      "revoked": "ملغى",
+      "expired": "منتهي الصلاحية"
+    }
   },
   "edu": {
     "nav": {
@@ -7514,6 +7624,18 @@
       "publish_showcase": {
         "title": "نشر موقعك التعريفي",
         "desc": "اجعل موقعك مرئيًا بنقرة واحدة."
+      },
+      "travel_setup_network": {
+        "title": "أنشئ شبكتك (محطات، مكاتب، خطوط)",
+        "desc": "أعلن عن محطاتك ومكاتب البيع وخطوطك بين المدن."
+      },
+      "travel_first_trip": {
+        "title": "برمج رحلتك الأولى",
+        "desc": "أنشئ رحلة بتاريخ محدد وأسعارها حسب الدرجة ثم انشرها."
+      },
+      "travel_first_sale": {
+        "title": "سجّل أول عملية بيع",
+        "desc": "بِع أول تذكرة في الشباك أو عبر الإنترنت."
       }
     }
   },
@@ -8099,6 +8221,49 @@
         "shipped": "تم الشحن",
         "delivered": "تم التسليم",
         "cancelled": "ملغاة"
+      }
+    }
+  },
+  "paymentGateways": {
+    "nav": "بوابات الدفع",
+    "title": "بوابات الدفع",
+    "subtitle": "قم بإعداد حسابات Stripe وChargily للمنصة — تُشفَّر المفاتيح في قاعدة البيانات وتُطبَّق دون إعادة نشر.",
+    "loading": "جارٍ التحميل…",
+    "loadError": "تعذر تحميل البوابات.",
+    "mode": "الوضع",
+    "mode_test": "تجريبي",
+    "mode_live": "فعلي",
+    "isActive": "الإعداد مفعّل",
+    "save": "حفظ",
+    "saved": "تم حفظ البوابة.",
+    "saveError": "تعذر الحفظ.",
+    "testConnection": "اختبار الاتصال",
+    "secretEmpty": "غير مُعدّ",
+    "secretKeepHint": "اتركه فارغًا للاحتفاظ بالمفتاح الحالي (لا يُعرض أبدًا بشكل صريح).",
+    "secretMissing": "لا يوجد مفتاح مسجّل.",
+    "source": {
+      "database": "مُعدّ عبر قاعدة البيانات",
+      "env": "مُعدّ عبر البيئة",
+      "none": "غير مُعدّ"
+    },
+    "testStatus": {
+      "OK": "نجح الاتصال — المفاتيح صالحة.",
+      "INVALID_CREDENTIALS": "رفضت البوابة المفاتيح.",
+      "NOT_CONFIGURED": "لا يوجد مفتاح مُعدّ.",
+      "CONNECTION_FAILED": "تعذر الوصول إلى البوابة.",
+      "UNKNOWN_GATEWAY": "بوابة غير معروفة."
+    },
+    "field": {
+      "stripe": {
+        "secret_key": "المفتاح السري (sk_…)",
+        "webhook_secret": "سر Webhook (whsec_…)",
+        "price_pilot": "معرّف السعر — خطة Pilot",
+        "price_operations": "معرّف السعر — خطة Operations",
+        "price_enterprise": "معرّف السعر — خطة Enterprise"
+      },
+      "chargily": {
+        "api_key": "مفتاح API",
+        "webhook_secret": "سر Webhook"
       }
     }
   }
