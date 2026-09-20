@@ -6,11 +6,11 @@ namespace Tests\Feature\Pharmacy;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Pharmacy\Application\Services\PharmacyStockService;
 use App\Modules\Pharmacy\Domain\Models\PharmacyBatch;
 use App\Modules\Pharmacy\Domain\Models\PharmacyProduct;
 use App\Modules\Pharmacy\Domain\Models\PharmacySale;
 use App\Modules\Pharmacy\Domain\Models\PharmacyStockMovement;
+use App\Modules\Pharmacy\Infrastructure\Services\PharmacyStockService;
 use Illuminate\Support\Carbon;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -31,8 +31,6 @@ class PharmacySaleTest extends TestCase
     use RefreshTenantDatabase;
 
     private Company $companyA;
-
-    private Company $companyB;
 
     private Employee $managerA;
 
@@ -67,7 +65,6 @@ class PharmacySaleTest extends TestCase
             'currency' => 'MAD',
             'features' => ['pharmacy' => true],
         ]);
-        $this->companyB = $companyB;
 
         /** @var Employee $managerA */
         $managerA = Employee::factory()->create([

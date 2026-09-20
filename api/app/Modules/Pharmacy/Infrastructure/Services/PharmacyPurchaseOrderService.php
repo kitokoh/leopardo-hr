@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Pharmacy\Application\Services;
+namespace App\Modules\Pharmacy\Infrastructure\Services;
 
 use App\Exceptions\DomainException;
 use App\Modules\Pharmacy\Domain\Exceptions\PharmacyInvalidTransitionException;
@@ -22,9 +22,7 @@ use Illuminate\Support\Facades\DB;
  */
 class PharmacyPurchaseOrderService
 {
-    public function __construct(private readonly PharmacyStockService $stock)
-    {
-    }
+    public function __construct(private readonly PharmacyStockService $stock) {}
 
     /**
      * @param  list<array{product_id: int, quantity_ordered: int, unit_price?: string|numeric}>  $lines

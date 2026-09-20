@@ -6,10 +6,10 @@ namespace App\Modules\Pharmacy\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\Pharmacy\Application\Services\PharmacySaleService;
 use App\Modules\Pharmacy\Domain\Models\PharmacyPrescription;
 use App\Modules\Pharmacy\Domain\Models\PharmacySale;
 use App\Modules\Pharmacy\Domain\Models\PharmacyStockMovement;
+use App\Modules\Pharmacy\Infrastructure\Services\PharmacySaleService;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Traits\ChecksPharmacySolution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

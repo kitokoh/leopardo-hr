@@ -27,8 +27,6 @@ class PharmacyProductTest extends TestCase
 
     private Company $companyA;
 
-    private Company $companyB;
-
     private Employee $managerA;
 
     private Employee $lambdaA;
@@ -58,7 +56,6 @@ class PharmacyProductTest extends TestCase
             'currency' => 'MAD',
             'features' => ['pharmacy' => true],
         ]);
-        $this->companyB = $companyB;
 
         /** @var Employee $managerA */
         $managerA = Employee::factory()->create([

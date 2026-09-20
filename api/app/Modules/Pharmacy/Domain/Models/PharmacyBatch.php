@@ -14,7 +14,7 @@ use Illuminate\Support\Carbon;
  *
  * `quantity` est la quantité RESTANTE du lot : elle n'évolue JAMAIS sans un
  * mouvement correspondant dans `pharmacy_stock_movements` (passer par
- * {@see \App\Modules\Pharmacy\Application\Services\PharmacyStockService}).
+ * {@see \App\Modules\Pharmacy\Infrastructure\Services\PharmacyStockService}).
  *
  * @property int $id
  * @property string|null $company_id

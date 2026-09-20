@@ -6,7 +6,7 @@ namespace App\Modules\Pharmacy\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\Pharmacy\Application\Services\PharmacyDashboardService;
+use App\Modules\Pharmacy\Infrastructure\Services\PharmacyDashboardService;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Traits\ChecksPharmacySolution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,9 +21,7 @@ class PharmacyDashboardController extends Controller
 {
     use ChecksPharmacySolution;
 
-    public function __construct(private readonly PharmacyDashboardService $dashboard)
-    {
-    }
+    public function __construct(private readonly PharmacyDashboardService $dashboard) {}
 
     public function index(Request $request): JsonResponse
     {

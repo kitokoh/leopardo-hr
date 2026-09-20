@@ -6,10 +6,10 @@ namespace App\Modules\Pharmacy\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\Pharmacy\Application\Services\PharmacyPurchaseOrderService;
 use App\Modules\Pharmacy\Domain\Models\PharmacyPurchaseOrder;
 use App\Modules\Pharmacy\Domain\Models\PharmacyPurchaseOrderLine;
 use App\Modules\Pharmacy\Domain\Models\PharmacySupplier;
+use App\Modules\Pharmacy\Infrastructure\Services\PharmacyPurchaseOrderService;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Requests\ReceivePharmacyPurchaseOrderRequest;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Requests\StorePharmacyPurchaseOrderRequest;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Traits\ChecksPharmacySolution;
@@ -27,9 +27,7 @@ class PharmacyPurchaseOrderController extends Controller
 {
     use ChecksPharmacySolution;
 
-    public function __construct(private readonly PharmacyPurchaseOrderService $orders)
-    {
-    }
+    public function __construct(private readonly PharmacyPurchaseOrderService $orders) {}
 
     public function index(Request $request): JsonResponse
     {
