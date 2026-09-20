@@ -20,7 +20,7 @@ Audite CI/CD et documentation sur ces 8 axes :
 5. DOCUMENTATION TECHNIQUE : Vérifie docs/CONTEXT/, docs/GUIDES/, docs/GESTION_PROJET/. Identifie les docs obsolètes, les liens cassés internes, les informations contradictoires avec AGENTS.md.
 6. CHANGELOG : Vérifie que CHANGELOG.md est à jour avec les derniers merges. Chaque entrée doit avoir une date et un numéro de version.
 7. AGENTS.MD : Vérifie la cohérence interne d'AGENTS.md. Pas de sections contradictoires, pas de références à des fichiers supprimés, pas d'instructions obsolètes.
-8. DOSSIER ARCHIVE : Vérifie que docs/archive/ contient bien les anciens plans et que docs/PLAN_ACTION2/ ne contient QUE le README.md de redirection. Aucun agent ne doit être tenté de lire les archives pour trouver du travail.
+8. DOSSIER ARCHIVE : Vérifie que docs/archive/ contient bien les anciens plans et que docs/PLAN_ACTION2/ n'existe plus (supprimé #7843, archive : docs/archive/PLAN_ACTION2/) et ne doit pas être recréé. Aucun agent ne doit être tenté de lire les archives pour trouver du travail.
 Produis un rapport avec 🔴🟡🟢 et crée des issues pour les 🔴.
 ## Notes
 - Les workflows web (admin + vitrine) doivent rester séparés avec des filtres paths stricts.
