@@ -105,9 +105,34 @@ function sleep(ms) {
 
 // QA 2026-08-15 (#2659) : tout build sans VITE_API_URL embarquait localhost
 // (déploiement GitHub Actions cassé, dev silencieusement pointé ailleurs).
-// Le défaut est désormais l'URL de production ; localhost reste utilisable
-// explicitement via VITE_API_URL pour le dev local.
-const apiBaseURL = import.meta.env.VITE_API_URL || 'https://gestionemployerbackend.onrender.com/api/v1'
+// Durcissement #7842 : le repli silencieux vers l'API dev Render est retiré
+// en production — un build prod (`import.meta.env.PROD`) sans VITE_API_URL
+// lève désormais une erreur explicite au chargement. En dev/test, le repli
+// vers l'API dev est conservé mais signalé par un console.warn ; localhost
+// reste utilisable explicitement via VITE_API_URL.
+const DEV_FALLBACK_API_BASE_URL = 'https://gestionemployerbackend.onrender.com/api/v1'
+
+function resolveApiBaseUrl() {
+  const configured = import.meta.env.VITE_API_URL
+  if (configured) {
+    return configured
+  }
+  if (import.meta.env.PROD) {
+    throw new Error(
+      '[admin-dashboard] VITE_API_URL absente dans un build de production. ' +
+        'Définissez VITE_API_URL (ex. https://api.exemple.com/api/v1) dans ' +
+        "l'environnement de build. Le repli silencieux vers l'API dev " +
+        'onrender.com a été retiré (#7842).',
+    )
+  }
+  console.warn(
+    '[admin-dashboard] VITE_API_URL absente — repli dev/test sur ' +
+      `${DEV_FALLBACK_API_BASE_URL} (interdit en production, #7842).`,
+  )
+  return DEV_FALLBACK_API_BASE_URL
+}
+
+const apiBaseURL = resolveApiBaseUrl()
 
 function baseEndsWithV1(baseURL) {
   return /\/api\/v1\/?$/.test(baseURL || '')

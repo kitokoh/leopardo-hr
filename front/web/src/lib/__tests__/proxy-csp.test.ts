@@ -117,14 +117,29 @@ describe('CSP enforce + nonce par requête (#7650)', () => {
       expect(csp).not.toContain('gestionemployerbackend.onrender.com');
     });
 
-    it('retombe sur l’API dev UNIQUEMENT sans variable (poste local sans .env)', () => {
+    it('retombe sur l’API dev UNIQUEMENT sans variable (poste local sans .env, jamais en production — #7842)', () => {
       delete process.env.NEXT_PUBLIC_API_URL;
+      delete process.env.VERCEL_ENV;
       expect(resolveApiOrigin()).toBe('https://gestionemployerbackend.onrender.com');
     });
 
-    it('une valeur invalide ne casse pas la construction de la politique', () => {
+    it('une valeur invalide ne casse pas la construction de la politique en dev/test', () => {
       process.env.NEXT_PUBLIC_API_URL = 'not-a-url';
+      delete process.env.VERCEL_ENV;
       expect(resolveApiOrigin()).toBe('https://gestionemployerbackend.onrender.com');
+    });
+
+    it('fail-fast #7842 : en production, NEXT_PUBLIC_API_URL absente → erreur actionnable (plus de repli silencieux)', () => {
+      delete process.env.NEXT_PUBLIC_API_URL;
+      process.env.VERCEL_ENV = 'production';
+      expect(() => resolveApiOrigin()).toThrow(/NEXT_PUBLIC_API_URL/);
+      expect(() => resolveApiOrigin()).toThrow(/#7842/);
+    });
+
+    it('fail-fast #7842 : en production, NEXT_PUBLIC_API_URL invalide → erreur actionnable', () => {
+      process.env.NEXT_PUBLIC_API_URL = 'not-a-url';
+      process.env.VERCEL_ENV = 'production';
+      expect(() => resolveApiOrigin()).toThrow(/NEXT_PUBLIC_API_URL/);
     });
   });
 

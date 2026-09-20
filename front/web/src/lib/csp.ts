@@ -38,17 +38,54 @@
 const DEFAULT_API_ORIGIN = "https://gestionemployerbackend.onrender.com";
 
 /**
- * connect-src par ENVIRONNEMENT (#7650) : l'origine API vient de
- * `NEXT_PUBLIC_API_URL` (posée par environnement Vercel/Render), plus aucun
- * hardcode du service dev dans un fichier statique. Le repli reste l'API dev
- * uniquement pour le poste local sans `.env` — la prod DOIT poser la
- * variable (leopardo-prod → API prod).
+ * connect-src par ENVIRONNEMENT (#7650, durci par #7842) : l'origine API
+ * vient de `NEXT_PUBLIC_API_URL` (posée par environnement Vercel/Render),
+ * plus aucun hardcode du service dev dans un fichier statique.
+ *
+ * Fail-fast (#7842) : en PRODUCTION (`NODE_ENV === 'production'` ou
+ * `VERCEL_ENV === 'production'`), variable absente ou invalide → erreur
+ * explicite. Le repli sur l'API dev n'existe plus qu'en dev/test (poste
+ * local sans `.env`), signalé par un `console.warn`.
  */
+function isProductionRuntime(): boolean {
+  return (
+    process.env.NODE_ENV === "production" ||
+    process.env.VERCEL_ENV === "production"
+  );
+}
+
+let warnedCspFallback = false;
+
+function devFallbackApiOrigin(reason: string): string {
+  if (isProductionRuntime()) {
+    throw new Error(
+      `[csp] ${reason} en production. Définissez NEXT_PUBLIC_API_URL ` +
+        "(ex. https://api.exemple.com/api/v1) dans l'environnement de " +
+        "déploiement. Le repli silencieux du connect-src vers l'API dev " +
+        "onrender.com a été retiré (#7842).",
+    );
+  }
+  if (!warnedCspFallback) {
+    warnedCspFallback = true;
+    console.warn(
+      `[csp] ${reason} — connect-src replié en dev/test sur ` +
+        `${DEFAULT_API_ORIGIN} (interdit en production, #7842).`,
+    );
+  }
+  return DEFAULT_API_ORIGIN;
+}
+
 export function resolveApiOrigin(): string {
+  const configured = process.env.NEXT_PUBLIC_API_URL;
+  if (!configured) {
+    return devFallbackApiOrigin("NEXT_PUBLIC_API_URL absente");
+  }
   try {
-    return new URL(process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_ORIGIN).origin;
+    return new URL(configured).origin;
   } catch {
-    return DEFAULT_API_ORIGIN;
+    return devFallbackApiOrigin(
+      `NEXT_PUBLIC_API_URL invalide (« ${configured} »)`,
+    );
   }
 }
 
