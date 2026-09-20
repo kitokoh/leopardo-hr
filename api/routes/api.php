@@ -27,6 +27,7 @@ use App\Modules\Marketing\Interfaces\Api\V1\Controllers\AcquisitionFunnelEventCo
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingLeadController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
+use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\DemoDataController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\SetupInterviewController;
@@ -438,6 +439,21 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('/setup-interview/answers', [SetupInterviewController::class, 'saveAnswers']);
         Route::post('/setup-interview/complete', [SetupInterviewController::class, 'complete']);
         Route::post('/setup-interview/dismiss', [SetupInterviewController::class, 'dismiss']);
+
+        // #7865 — jeu de données de démonstration à la demande du client :
+        // une entrée par verticale ACTIVE du tenant (kits enregistrés par les
+        // modules dans `DemoDataRegistry`, allowlist fail-closed). L'import
+        // rejoue les seeders idempotents RESTO-107/TRAVEL-107 et persiste
+        // l'état dans `public.companies.metadata.demo_data` (exposé par
+        // `/auth/me`) ; `dismiss` = « non merci », jamais bloquant. RBAC
+        // principal/rh appliqué dans le contrôleur ; l'import (coûteux) est
+        // throttlé par un seau dédié.
+        Route::get('/demo-data', [DemoDataController::class, 'index']);
+        Route::post('/demo-data/{code}/import', [DemoDataController::class, 'import'])
+            ->where('code', '[a-z_]{1,40}')
+            ->middleware('throttle:demo-data-import');
+        Route::post('/demo-data/{code}/dismiss', [DemoDataController::class, 'dismiss'])
+            ->where('code', '[a-z_]{1,40}');
     });
 
     // APV L.08 — Modules Leopardo, chaque module a son propre route group.

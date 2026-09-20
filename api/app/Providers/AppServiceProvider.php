@@ -350,6 +350,19 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinutes(15, 10)->by('trial-verify:'.$email.'|'.$request->ip());
         });
 
+        // #7865 — import du jeu de démonstration d'une verticale : opération
+        // coûteuse (seeders référentiel + enregistrements) déclenchée depuis
+        // le dashboard — seau dédié 6/min par utilisateur (repli IP avant
+        // auth), l'idempotence des seeders rendant tout rejeu inutile.
+        RateLimiter::for('demo-data-import', function (Request $request) {
+            $user = $request->user();
+            $key = $user instanceof Employee
+                ? 'user:'.$user->id
+                : 'ip:'.$request->ip();
+
+            return Limit::perMinute(6)->by('demo-data-import:'.$key);
+        });
+
         // Issue #4217 (audit 360° 2026-08-16) — GET /supported-countries devient
         // public (registre multi-pays canonique #1867, aucune PII) : bucket
         // dédié 60/min par IP pour la vitrine/onboarding/mobile pré-login.

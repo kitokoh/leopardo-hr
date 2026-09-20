@@ -16,7 +16,7 @@
 > Sources à jour : `.github/workflows/README.md` (cartographie des workflows),
 > `release.yml`, `deploy-prod.yml`, et le protocole de validation du corpus
 > `docs/PROTOCOLES/P01_VALIDATION_MARCHE.md`. Modèle de bandeau d'obsoletion :
-> `docs/DEMARRAGE_RAPIDE.md`.
+> `docs/archive/DEMARRAGE_RAPIDE.md` (archivé).
 >
 > Piège constaté : les tags v4.25.0, v4.26.0 et v4.27.2 (2026-09) sont restés
 > **sans GitHub Release** (donc sans déploiement prod) faute de processus

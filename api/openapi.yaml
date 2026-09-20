@@ -3751,6 +3751,111 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /demo-data:
+    get:
+      tags:
+      - Onboarding
+      summary: Kits de données de démonstration par verticale active (#7865)
+      description: |
+        Liste les kits de démonstration du tenant courant : une entrée par
+        solution du catalogue ACTIVE sur la société (code, disponibilité d'un
+        kit, statut `not_imported|imported|dismissed`, horodatages). État
+        persisté dans `companies.metadata.demo_data`. RBAC principal/rh.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Kits de démonstration des verticales actives
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      kits:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/DemoDataKitState'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /demo-data/{code}/import:
+    post:
+      tags:
+      - Onboarding
+      summary: Importer le jeu de démonstration d'une verticale (#7865)
+      description: |
+        Installe le kit de démonstration de la verticale (seeder idempotent,
+        tenant-scoped) puis persiste `metadata.demo_data[code]` (statut
+        `imported`, horodatage, acteur) et trace l'audit
+        `demo_data.imported`. Idempotent : un kit déjà importé renvoie l'état
+        courant SANS rejouer le seeder. Fail-closed : verticale inactive sur
+        la société ou sans kit enregistré → 422. RBAC principal/rh.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: code
+        in: path
+        required: true
+        description: Code de la solution verticale (ex. restaurant, travelagency).
+        schema:
+          type: string
+          pattern: '^[a-z_]{1,40}$'
+      responses:
+        '200':
+          description: Kit importé (ou déjà importé)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DemoDataKitState'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /demo-data/{code}/dismiss:
+    post:
+      tags:
+      - Onboarding
+      summary: Écarter la proposition de démonstration (« non merci », #7865)
+      description: |
+        Marque le kit `dismissed` (relance douce côté front, jamais
+        bloquante). Idempotent ; sans effet sur un kit déjà importé.
+        Fail-closed : verticale inactive sur la société → 422. RBAC
+        principal/rh.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: code
+        in: path
+        required: true
+        description: Code de la solution verticale (ex. restaurant, travelagency).
+        schema:
+          type: string
+          pattern: '^[a-z_]{1,40}$'
+      responses:
+        '200':
+          description: État courant du kit
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DemoDataKitState'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
   /company-integration-requests:
     get:
       tags:
@@ -49169,6 +49274,25 @@ components:
         failed:
           type: array
           items: {type: string}
+    DemoDataKitState:
+      type: object
+      description: "État du kit de données de démonstration d'une verticale (#7865)."
+      properties:
+        code:
+          type: string
+          description: Code de la solution verticale (ex. restaurant, travelagency).
+        available:
+          type: boolean
+          description: Un kit est enregistré pour cette verticale (DemoDataRegistry).
+        status:
+          type: string
+          enum: [not_imported, imported, dismissed]
+        imported_at:
+          type: string
+          nullable: true
+        dismissed_at:
+          type: string
+          nullable: true
     SetupInterviewState:
       type: object
       description: "État de l'entretien de préparation conversationnel (#7493)."

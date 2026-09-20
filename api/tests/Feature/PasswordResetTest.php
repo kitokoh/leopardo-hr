@@ -65,7 +65,7 @@ class PasswordResetTest extends TestCase
         $this->postJson('/api/v1/auth/forgot-password', ['email' => 'reset-me@example.com'])
             ->assertOk();
 
-        Mail::assertSent(PasswordResetMail::class, fn (PasswordResetMail $mail) => $mail->hasTo('reset-me@example.com'));
+        Mail::assertQueued(PasswordResetMail::class, fn (PasswordResetMail $mail) => $mail->hasTo('reset-me@example.com'));
         $this->assertDatabaseHas('password_reset_tokens', ['email' => 'reset-me@example.com']);
     }
 
@@ -106,7 +106,7 @@ class PasswordResetTest extends TestCase
         $this->postJson('/api/v1/auth/forgot-password', ['email' => 'unknown@example.com'])
             ->assertOk();
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
     }
 
     public function test_forgot_password_unknown_email_does_not_sweep_tenant_schemas(): void
@@ -155,7 +155,7 @@ class PasswordResetTest extends TestCase
             'Le chemin public ne doit jamais balayer les schémas tenants (oracle de timing #4495).'
         );
         $this->assertDatabaseMissing('password_reset_tokens', ['email' => 'unknown@example.com']);
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
     }
 
     public function test_forgot_password_schema_tenant_employee_without_lookup_is_not_resolved(): void
@@ -191,7 +191,7 @@ class PasswordResetTest extends TestCase
         $this->postJson('/api/v1/auth/forgot-password', ['email' => 'no-lookup@example.com'])
             ->assertOk();
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
         $this->assertDatabaseMissing('password_reset_tokens', ['email' => 'no-lookup@example.com']);
     }
 
@@ -332,7 +332,7 @@ class PasswordResetTest extends TestCase
             ->assertOk();
 
         $rawToken = null;
-        Mail::assertSent(PasswordResetMail::class, function (PasswordResetMail $mail) use (&$rawToken) {
+        Mail::assertQueued(PasswordResetMail::class, function (PasswordResetMail $mail) use (&$rawToken) {
             $rawToken = $mail->token;
 
             return $mail->hasTo('schema-tenant@example.com');

@@ -16,4 +16,6 @@ return [
     'step_travel_first_trip' => 'Schedule your first trip',
     'step_travel_first_sale' => 'Record your first sale',
     'interview_invalid_answer' => 'Invalid answer: :question',
+    'demo_data_vertical_inactive' => 'The :code solution is not active on your workspace.',
+    'demo_data_kit_unavailable' => 'No demo dataset is available for the :code solution.',
 ];

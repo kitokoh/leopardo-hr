@@ -5,12 +5,13 @@ namespace App\Mail;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class TrialWelcomeMail extends Mailable
+class TrialWelcomeMail extends Mailable implements ShouldQueue
 {
     use Queueable;
     use SerializesModels;
@@ -28,6 +29,15 @@ class TrialWelcomeMail extends Mailable
         public readonly Employee $manager,
         public readonly ?string $setPasswordUrl = null,
     ) {
+        // #7854 : queue `emails` (worker prod) — fin de l'envoi synchrone.
+        // Le worker réhydrate Company (`public.companies`) et le manager
+        // self-service (search_path par défaut `shared_tenants,public`) sans
+        // contexte tenant supplémentaire. Le provisioning écrit sous
+        // transaction juste avant : afterCommit garantit l'ordre si l'envoi
+        // se retrouve un jour à l'intérieur (no-op hors transaction).
+        $this->onQueue('emails');
+        $this->afterCommit();
+
         $this->trialDays = $this->resolveTrialDays();
 
         // `Mailable::send()` évalue `withLocale($this->locale)` AVANT `build()` :

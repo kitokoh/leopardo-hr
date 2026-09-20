@@ -79,6 +79,9 @@ class LoginCodeController extends Controller
         } catch (\Throwable $e) {
             // Best-effort assumé côté réponse (générique), mais tracé : un
             // mailer en panne est indiagnosticable sans ce log (#3057).
+            // #7854 : LoginCodeMail est ShouldQueue (file `emails`) — on
+            // attrape ici un échec de mise en file ; le transport se rejoue
+            // côté worker.
             Log::error('auth.login_code_send_failed', [
                 'error' => $e->getMessage(),
             ]);

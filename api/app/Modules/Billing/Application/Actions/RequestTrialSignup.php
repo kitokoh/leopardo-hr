@@ -46,6 +46,9 @@ class RequestTrialSignup
                 new TrialVerificationMail($managerName, $otp, (string) ($validated['locale'] ?? $countryDefaults['language']))
             );
         } catch (\Throwable $e) {
+            // #7854 : TrialVerificationMail est ShouldQueue (file `emails`) —
+            // ce catch couvre désormais l'échec de MISE EN FILE ; un échec de
+            // transport SMTP est retenté côté worker, plus dans la requête.
             // Issue #5162 : sans visibilité sur le mailer résolu, un échec
             // d'envoi OTP (503 TRIAL_OTP_SEND_FAILED) est indiagnosticable en
             // prod. On logge transport + présence des variables requises
