@@ -31,6 +31,7 @@
 
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailMarketOrderPublicController;
 use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailMarketPublicController;
+use App\Modules\Retail\Interfaces\Api\V1\Controllers\RetailPaymentWebhookPublicController;
 use Illuminate\Support\Facades\Route;
 
 // Surface cross-tenant (recherche globale, checkout par slug dans le corps,
@@ -50,6 +51,12 @@ Route::middleware(['throttle:shop-public'])
             ->name('market.public.orders.store');
         Route::get('/orders/{reference}', [RetailMarketOrderPublicController::class, 'track'])
             ->name('market.public.orders.track');
+
+        // Webhook des providers de paiement (#7812) : verification de
+        // signature OBLIGATOIRE fail-closed (401 sinon), idempotent
+        // (rejeu → 200 sans double effet), provider inconnu → 404.
+        Route::post('/payments/webhook/{provider}', [RetailPaymentWebhookPublicController::class, 'handle'])
+            ->name('market.public.payments.webhook');
     });
 
 // Surface mono-vendeur : tenant résolu par slug public dans `market.public`

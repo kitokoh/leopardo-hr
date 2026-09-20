@@ -7,6 +7,7 @@ namespace App\Modules\Retail\Domain\Models;
 use App\Modules\Retail\Domain\Enums\RetailFulfillmentStatus;
 use App\Modules\Retail\Domain\Enums\RetailOrderSource;
 use App\Modules\Retail\Domain\Enums\RetailOrderStatus;
+use App\Modules\Retail\Domain\Enums\RetailPaymentMethod;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -50,6 +51,9 @@ use Illuminate\Support\Carbon;
  * @property string|null $delivery_notes
  * @property RetailFulfillmentStatus|null $fulfillment_status
  * @property string|null $tracking_token
+ * @property RetailPaymentMethod|null $payment_method
+ * @property string|null $payment_status
+ * @property Carbon|null $paid_at
  * @property Carbon|null $confirmed_at
  * @property Carbon|null $shipped_at
  * @property Carbon|null $delivered_at
@@ -88,6 +92,9 @@ class RetailOrder extends Model
         'delivery_notes',
         'fulfillment_status',
         'tracking_token',
+        'payment_method',
+        'payment_status',
+        'paid_at',
         'confirmed_at',
         'shipped_at',
         'delivered_at',
@@ -106,6 +113,8 @@ class RetailOrder extends Model
             'status' => RetailOrderStatus::class,
             'source' => RetailOrderSource::class,
             'fulfillment_status' => RetailFulfillmentStatus::class,
+            'payment_method' => RetailPaymentMethod::class,
+            'paid_at' => 'datetime',
             'confirmed_at' => 'datetime',
             'shipped_at' => 'datetime',
             'delivered_at' => 'datetime',

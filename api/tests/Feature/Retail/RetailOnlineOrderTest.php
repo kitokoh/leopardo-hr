@@ -324,7 +324,7 @@ class RetailOnlineOrderTest extends TestCase
             ->assertJsonPath('data.seller.slug', $this->companyA->slug);
 
         $this->assertSame(
-            ['reference', 'fulfillment_status', 'total_minor', 'currency', 'seller', 'items', 'timeline'],
+            ['reference', 'fulfillment_status', 'total_minor', 'currency', 'seller', 'items', 'payment', 'timeline'],
             array_keys($tracked->json('data'))
         );
         $this->assertNotNull($tracked->json('data.timeline.placed_at'));
