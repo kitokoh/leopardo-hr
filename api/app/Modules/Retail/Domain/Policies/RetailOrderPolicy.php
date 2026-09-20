@@ -49,4 +49,15 @@ class RetailOrderPolicy
         return $actor->hasManagerRole('principal', 'rh')
             && $order->company_id === (string) $actor->company_id;
     }
+
+    /**
+     * Piloter la logistique d'une commande en ligne Leopardo Marche
+     * (confirm/ready/ship/deliver — #7808) : meme portee que les autres
+     * ecritures POS (principal/rh du tenant proprietaire).
+     */
+    public function fulfill(Employee $actor, RetailOrder $order): bool
+    {
+        return $actor->hasManagerRole('principal', 'rh')
+            && $order->company_id === (string) $actor->company_id;
+    }
 }

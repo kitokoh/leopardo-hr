@@ -31624,6 +31624,323 @@ paths:
         '422':
           $ref: '#/components/responses/Validation422'
 
+  /retail/products/{product}/publish-online:
+    post:
+      tags:
+      - Retail
+      summary: Publier un produit sur la marketplace Leopardo Marche (opt-in en ligne)
+      description: 'BC-17 #7807 : bascule online_visible=true (RetailProductPolicy@publish).
+        Le produit n''est visible publiquement que s''il est aussi published ET
+        que la boutique en ligne du tenant est activee.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit visible en ligne
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /retail/products/{product}/unpublish-online:
+    post:
+      tags:
+      - Retail
+      summary: Retirer un produit de la marketplace Leopardo Marche
+      description: 'BC-17 #7807 : bascule online_visible=false (RetailProductPolicy@publish).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit retire de la vitrine en ligne
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /retail/online/settings:
+    get:
+      tags:
+      - Retail
+      summary: Reglages de la boutique en ligne Leopardo Marche (membres du tenant)
+      description: 'BC-17 #7807 : reglages publics du vendeur (opt-in marketplace).
+        Renvoie null si la boutique n''a jamais ete configuree.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Reglages courants (ou data null)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    put:
+      tags:
+      - Retail
+      summary: Creer ou mettre a jour les reglages boutique (gestion principal/rh)
+      description: 'BC-17 #7807 : create-or-update de la ligne unique du tenant
+        (RetailOnlineSettingsPolicy). enabled=true publie la boutique sur la
+        marketplace (opt-in fail-closed).'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - shop_name
+              properties:
+                enabled:
+                  type: boolean
+                shop_name:
+                  type: string
+                  maxLength: 160
+                shop_description:
+                  type: string
+                  nullable: true
+                city:
+                  type: string
+                  nullable: true
+                contact_phone:
+                  type: string
+                  nullable: true
+                contact_email:
+                  type: string
+                  format: email
+                  nullable: true
+                currency:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                  example: DZD
+      responses:
+        '200':
+          description: Reglages enregistres (version incrementee)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/online/orders:
+    get:
+      tags:
+      - Retail
+      summary: Lister les commandes en ligne Leopardo Marche (membres du tenant)
+      description: 'BC-17 #7808 : uniquement source=online, filtre
+        fulfillment_status, tri recent.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fulfillment_status
+        in: query
+        schema:
+          type: string
+          enum: [pending, confirmed, ready, shipped, delivered, cancelled]
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginee des commandes en ligne
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/online/orders/{order}:
+    get:
+      tags:
+      - Retail
+      summary: Detail d'une commande en ligne (commande + lignes)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande en ligne
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /retail/online/orders/{order}/confirm:
+    post:
+      tags:
+      - Retail
+      summary: Confirmer une commande en ligne (pending vers confirmed, gestion principal/rh)
+      description: 'BC-17 #7808 : le vendeur accepte la commande. Le stock de
+        chaque ligne est decremente (mouvements sale via RetailStockService,
+        sur l''emplacement fourni ou celui de la commande) et le statut
+        historique passe a completed (+ confirmed_at). Transition invalide
+        = 422 INVALID_TRANSITION.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location_id:
+                  type: integer
+                  nullable: true
+      responses:
+        '200':
+          description: Commande confirmee (stock decremente)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/online/orders/{order}/ready:
+    post:
+      tags:
+      - Retail
+      summary: Marquer une commande en ligne prete (confirmed vers ready)
+      description: Transition invalide = 422 INVALID_TRANSITION.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande prete a expedier
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/online/orders/{order}/ship:
+    post:
+      tags:
+      - Retail
+      summary: Expedier une commande en ligne (vers shipped, shipped_at)
+      description: Transition invalide = 422 INVALID_TRANSITION.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande expediee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/online/orders/{order}/deliver:
+    post:
+      tags:
+      - Retail
+      summary: Marquer une commande en ligne livree (shipped vers delivered)
+      description: Transition invalide = 422 INVALID_TRANSITION.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande livree (delivered_at)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/online/orders/{order}/cancel:
+    post:
+      tags:
+      - Retail
+      summary: Annuler une commande en ligne (gestion principal/rh)
+      description: 'BC-17 #7808 : depuis pending, simple bascule ; apres
+        confirmation, mouvements return restaurant le stock (voie identique
+        a l''annulation POS). Transition invalide = 422 INVALID_TRANSITION.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                note:
+                  type: string
+                  nullable: true
+                  maxLength: 2000
+      responses:
+        '200':
+          description: Commande annulee (stock restaure si confirmee)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+
   /communication/integrations:
     get:
       tags:
@@ -32893,6 +33210,216 @@ paths:
       responses:
         '200':
           description: Fiche publique (DTO strict)
+        '404':
+          $ref: '#/components/responses/Error404'
+
+  /public/market/products:
+    get:
+      tags:
+      - Retail
+      summary: Recherche publique cross-tenant des produits Leopardo Marche (sans auth)
+      description: 'BC-17 #7807 - marketplace grand public (throttle:shop-public).
+        Perimetre borne aux vendeurs OPT-IN (boutique activee + feature retail) ;
+        uniquement les produits published ET online_visible. DTO public strict :
+        jamais de company_id, de quantites de stock, de couts/marges ni de meta -
+        seulement available (bool). Prix en minor units.'
+      security: []
+      parameters:
+      - name: q
+        in: query
+        schema:
+          type: string
+      - name: seller
+        in: query
+        description: Slug public du vendeur
+        schema:
+          type: string
+      - name: category
+        in: query
+        schema:
+          type: integer
+      - name: min_price
+        in: query
+        description: Prix minimum en minor units
+        schema:
+          type: integer
+      - name: max_price
+        in: query
+        description: Prix maximum en minor units
+        schema:
+          type: integer
+      - name: sort
+        in: query
+        schema:
+          type: string
+          enum: [recent, price_asc, price_desc]
+      - name: page
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 50
+      responses:
+        '200':
+          description: Liste paginee des produits publics (DTO strict)
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /public/market/products/{id}:
+    get:
+      tags:
+      - Retail
+      summary: Fiche produit publique Leopardo Marche (sans auth)
+      description: 404 fail-closed si produit inconnu, non publie, non visible
+        en ligne ou vendeur non opt-in.
+      security: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Fiche produit publique (DTO strict + vendeur)
+        '404':
+          $ref: '#/components/responses/Error404'
+  /public/market/sellers:
+    get:
+      tags:
+      - Retail
+      summary: Boutiques activees de Leopardo Marche (sans auth)
+      description: 'Nom public, slug, ville, description et nombre de produits
+        publics de chaque vendeur opt-in.'
+      security: []
+      responses:
+        '200':
+          description: Liste des boutiques activees
+  /public/market/sellers/{sellerSlug}:
+    get:
+      tags:
+      - Retail
+      summary: Fiche publique d'une boutique + ses categories publiques (sans auth)
+      description: 'Tenant resolu par slug public (market.public, 404 fail-closed :
+        slug inconnu, company suspendue/expiree, feature retail absente ou
+        boutique non activee).'
+      security: []
+      parameters:
+      - name: sellerSlug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Boutique publique + categories publiques
+        '404':
+          $ref: '#/components/responses/Error404'
+  /public/market/orders:
+    post:
+      tags:
+      - Retail
+      summary: Checkout invite Leopardo Marche (sans auth, COD v1)
+      description: 'BC-17 #7808 (spec 3.2) - 1 commande = 1 vendeur. Prix relus
+        en base, totaux serveur (minor units), source=online,
+        fulfillment_status=pending, reference WEB-..., tracking_token 64 hex.
+        Idempotence par idempotency_key (unique par tenant) : rejeu = 200 avec
+        le meme payload, creation = 201. Vendeur inconnu ou non opt-in = 404
+        fail-closed.'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [seller, items, customer, delivery, payment_method, idempotency_key]
+              properties:
+                seller:
+                  type: string
+                  description: Slug public du vendeur
+                items:
+                  type: array
+                  minItems: 1
+                  maxItems: 50
+                  items:
+                    type: object
+                    required: [product_id, quantity]
+                    properties:
+                      product_id:
+                        type: integer
+                      quantity:
+                        type: integer
+                        minimum: 1
+                        maximum: 999
+                customer:
+                  type: object
+                  required: [name, phone]
+                  properties:
+                    name:
+                      type: string
+                      maxLength: 160
+                    phone:
+                      type: string
+                      maxLength: 40
+                    email:
+                      type: string
+                      format: email
+                      nullable: true
+                delivery:
+                  type: object
+                  required: [address, city]
+                  properties:
+                    address:
+                      type: string
+                      maxLength: 255
+                    city:
+                      type: string
+                      maxLength: 120
+                    notes:
+                      type: string
+                      nullable: true
+                payment_method:
+                  type: string
+                  enum: [cash]
+                idempotency_key:
+                  type: string
+                  maxLength: 64
+      responses:
+        '201':
+          description: Commande creee (reference, tracking_token, total_minor, currency, seller)
+        '200':
+          description: Rejeu idempotent (meme payload que la creation)
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /public/market/orders/{reference}:
+    get:
+      tags:
+      - Retail
+      summary: Suivi public d'une commande Leopardo Marche (jeton obligatoire, sans auth)
+      description: 'Exige ?token={tracking_token} - 404 fail-closed si jeton
+        absent, errone ou reference inconnue. Renvoie statut logistique,
+        timeline, lignes et total. AUCUNE donnee interne.'
+      security: []
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: token
+        in: query
+        required: true
+        schema:
+          type: string
+          maxLength: 64
+      responses:
+        '200':
+          description: Suivi public (statut + timeline + lignes + total)
         '404':
           $ref: '#/components/responses/Error404'
 
