@@ -29,6 +29,9 @@
 | TG | 30 | 2,5 (ouvrables) | autorisé (usage) | oui | Code du travail (loi 2021-012 du 18/06/2021) — *article à confirmer par expert* |
 | BJ | 24 | 2 (ouvrables) | autorisé (usage) | oui | Code du travail (loi 98-004 du 27/01/1998), art. 158 |
 | NE | 30 | 2,5 (calendaires) | autorisé (usage) | oui | Code du travail (loi 2012-45 du 25/09/2012), art. 116 s. — *à confirmer par expert* |
+| FR | 30 | 2,5 (ouvrables) | encadré (accord/usage) | oui (indemnité compensatrice, fin de contrat) | Code du travail, art. L3141-3 |
+| TR | barème 14/20/26 (ouvrables) | ≈ 1,17 (barème d'entrée) | non prévu par la loi (usage) | oui (fin de contrat, m. 59) | İş Kanunu n° 4857, m. 53 et 56 |
+| CA (fédéral) | barème 10/15/20 (2/3/4 semaines) | ≈ 0,83 (barème d'entrée) | report encadré (10 mois) | indemnité 4/6/8 % du brut | Code canadien du travail, art. 183-184.01 |
 
 ## Détail par pays
 
@@ -158,6 +161,36 @@
   après 20/25/30 ans non modélisées). **Numéro d'article à confirmer par
   expert local.**
 
+## Détail France / Turquie / Canada (issue #7931)
+
+### 🇫🇷 FR — France
+
+- **Droit** : 2,5 jours **ouvrables**/mois de travail effectif, plafond de
+  30 jours ouvrables/an (Code du travail, art. L3141-3).
+- **Report/monetisation** : report encadré (période de prise, accords) ;
+  indemnité compensatrice à la rupture (L3141-28) — défauts pilot conservés.
+
+### 🇹🇷 TR — Turquie
+
+- **Droit** : barème d'ancienneté (İş Kanunu n° 4857, m. 53), en jours
+  **ouvrables** (m. 56), ouvert après **1 an** d'ancienneté :
+  - 1 à 5 ans (5 ans inclus) : **14 jours** ;
+  - plus de 5 ans et moins de 15 ans : **20 jours** ;
+  - 15 ans et plus : **26 jours**.
+- Salariés ≤ 18 ans ou ≥ 50 ans : minimum 20 jours (non modélisé, pilot).
+- **Modélisation** : `legalAnnualDaysForSeniority()` (ancienneté au 1er janvier
+  de l'année cible) ; < 1 an → 0 jour (droit légal inexistant) ; le droit
+  « de base » exposé est le barème d'entrée (14 j → plancher mensuel ≈ 1,17 j).
+
+### 🇨🇦 CA — Canada (fédéral, Code canadien du travail)
+
+- **Droit** (art. 184 et 184.01) : 2 semaines (< 5 ans) → 10 jours ouvrables ;
+  3 semaines (5 à 10 ans) → 15 jours ; 4 semaines (10 ans et +) → 20 jours.
+- **Indemnité de congé annuel** (art. 183) : **4 % / 6 % / 8 %** du salaire
+  brut selon les mêmes seuils — exposée par `vacationPayRatePercent()`.
+- **Périmètre** : employeurs sous réglementation FÉDÉRALE uniquement ; les
+  normes provinciales (Québec LNT, Ontario ESA…) sont hors modèle (pilot).
+
 ## Moteur (ce que fait le code)
 
 1. **Registre** (`LegalLeaveRulesRegistry`) : résolution stricte par pays —
@@ -172,7 +205,10 @@
 3. **Droit projeté** (`LegalLeaveEntitlementService`) : calcul pur depuis
    `employees.contract_start` — mois entiers × acquisition mensuelle,
    plafonné au droit annuel ; mois d'embauche compté en entier si embauche
-   le 15 ou avant.
+   le 15 ou avant. Pays à barème d'ancienneté (#7931 : TR, CA) : le droit
+   annuel est résolu par `legalAnnualDaysForSeniority()` avec l'ancienneté
+   au 1er janvier de l'année cible — les pays sans barème gardent le calcul
+   historique à l'identique.
 4. **Calendrier fériés** (`LegalLeaveCalendarService`) : lecture seule de la
    table globale `public_holidays` (fériés nationaux `company_id = null`,
    récurrents appliqués à toutes les années via `month_day`, règle #1936) —
@@ -187,4 +223,8 @@
 - Majorations d'ancienneté additives des codes africains (SN +1 j/5 ans,
   CG/CF +2 j/5 ans, NE après 20 ans…) : la valeur de base légale est
   modélisée, les majorations restent à la politique entreprise (pilot).
+- Normes provinciales canadiennes (Québec, Ontario…) : seul le régime
+  fédéral CLC est modélisé (#7931).
+- Minima TR ≤ 18 ans / ≥ 50 ans (20 j) et jeunes travailleurs CM/GA/MA :
+  non modélisés (cas général adulte).
 - Jours fériés des nouveaux pays (seeders `public_holidays`) : lot ultérieur.

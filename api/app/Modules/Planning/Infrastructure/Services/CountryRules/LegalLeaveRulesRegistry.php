@@ -25,7 +25,7 @@ final class LegalLeaveRulesRegistry
     /**
      * Registre par défaut : les implémentations enregistrées du moteur.
      * DZ/MA/TN/SN d'abord (issue #5289), puis CEMAC/CEDEAO (issue #7930,
-     * lot BC-06 — TD/CF/GQ en pilot prudent).
+     * lot BC-06 — TD/CF/GQ en pilot prudent) et FR/TR/CA (issue #7931).
      *
      * @return array<string, LegalLeaveCountryRuleInterface>
      */
@@ -51,6 +51,10 @@ final class LegalLeaveRulesRegistry
             'TG' => new TogoLegalLeaveRule,
             'BJ' => new BeninLegalLeaveRule,
             'NE' => new NigerLegalLeaveRule,
+            // Europe / Amérique du Nord / Turquie (issue #7931)
+            'FR' => new FranceLegalLeaveRule,
+            'TR' => new TurkeyLegalLeaveRule,
+            'CA' => new CanadaLegalLeaveRule,
         ];
     }
 

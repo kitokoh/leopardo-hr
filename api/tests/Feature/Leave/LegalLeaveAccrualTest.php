@@ -155,12 +155,13 @@ class LegalLeaveAccrualTest extends TestCase
 
     public function test_unsupported_country_preserves_historical_behaviour(): void
     {
-        // FR est supporté par le registre PAYROLL, mais pas (encore) par le
-        // registre des congés légaux : comportement historique préservé.
+        // US n'est pas couvert par le registre des congés légaux : comportement
+        // historique préservé (FR, utilisé ici avant #7931, est désormais
+        // supporté — son plancher légal 2,5 j s'applique donc légitimement).
         $this->travelTo(Carbon::create(2026, 8, 15));
 
-        $company = $this->makeCompany('FR');
-        $employee = $this->makeEmployee($company, 'EMP-FR-001');
+        $company = $this->makeCompany('US');
+        $employee = $this->makeEmployee($company, 'EMP-US-001');
         $type = $this->makeDeductibleType($company);
         $this->makePolicy($company, $type, 1.0);
 
