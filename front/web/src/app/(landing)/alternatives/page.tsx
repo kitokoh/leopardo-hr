@@ -1,0 +1,146 @@
+'use client';
+
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { ArrowRight, Scale } from 'lucide-react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
+import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
+import { getAlternativePages } from '@/modules/vitrine/data/alternatives';
+import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import type { AppLocale } from '@/lib/i18n';
+
+/**
+ * #7869 — Hub « Alternatives & comparatifs » : page pilier SEO listant les
+ * comparatifs /alternatives/[slug] (maillage interne).
+ */
+
+const hubCopy: Record<
+  AppLocale,
+  {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    cardCta: string;
+    disclaimer: string;
+  }
+> = {
+  fr: {
+    eyebrow: 'Comparatifs honnêtes',
+    title: 'Leopardo face aux solutions du marché',
+    subtitle:
+      "Vous évaluez une solution pour la gestion de vos équipes, la paie, le pointage ou vos opérations ? Ces comparatifs vous disent clairement quand un concurrent est le bon choix — et quand Leopardo l'est.",
+    cardCta: 'Lire le comparatif',
+    disclaimer:
+      "Les marques citées appartiennent à leurs propriétaires respectifs. Les informations concurrents sont vérifiées sur leurs sites officiels à la date indiquée sur chaque comparatif ; signalez-nous toute inexactitude.",
+  },
+  en: {
+    eyebrow: 'Honest comparisons',
+    title: 'Leopardo vs established solutions',
+    subtitle:
+      'Evaluating a solution for workforce management, payroll, attendance or operations? These comparisons tell you clearly when a competitor is the right choice — and when Leopardo is.',
+    cardCta: 'Read the comparison',
+    disclaimer:
+      'Trademarks belong to their respective owners. Competitor information is checked against official websites on the date shown on each page; please report any inaccuracy.',
+  },
+  tr: {
+    eyebrow: 'Dürüst karşılaştırmalar',
+    title: 'Leopardo ve yerleşik çözümler',
+    subtitle:
+      'Ekip yönetimi, bordro, yoklama veya operasyonlar için bir çözüm mü değerlendiriyorsunuz? Bu karşılaştırmalar, ne zaman bir rakibin ne zaman Leopardo’nun doğru seçim olduğunu açıkça söyler.',
+    cardCta: 'Karşılaştırmayı oku',
+    disclaimer:
+      'Markalar ilgili sahiplerine aittir. Rakip bilgileri her sayfada belirtilen tarihte resmi sitelerden doğrulanır; hata bildirin.',
+  },
+  ar: {
+    eyebrow: 'مقارنات نزيهة',
+    title: 'ليوباردو مقابل الحلول الراسخة',
+    subtitle:
+      'هل تقيّمون حلاً لإدارة الفرق أو الرواتب أو الحضور أو العمليات؟ تخبركم هذه المقارنات بوضوح متى يكون المنافس هو الخيار الصحيح — ومتى يكون ليوباردو كذلك.',
+    cardCta: 'اقرأ المقارنة',
+    disclaimer:
+      'العلامات التجارية ملك لأصحابها. يتم التحقق من معلومات المنافسين من مواقعهم الرسمية في التاريخ المبيّن على كل صفحة؛ يرجى الإبلاغ عن أي خطأ.',
+  },
+};
+
+const altLabel: Record<AppLocale, (competitor: string) => string> = {
+  fr: (c) => `Alternative à ${c}`,
+  en: (c) => `${c} alternative`,
+  tr: (c) => `${c} alternatifi`,
+  ar: (c) => `بديل ${c}`,
+};
+
+export default function AlternativesHubPage() {
+  const { isDark, toggleDarkMode } = useDarkMode();
+  const { locale, direction } = useVitrineLocale();
+  useScrollReveal();
+
+  const copy = hubCopy[locale] ?? hubCopy.fr;
+  const pages = getAlternativePages(locale);
+
+  return (
+    <div
+      dir={direction}
+      className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}
+    >
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+
+      <section className="relative pt-32 pb-16 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-emerald-50/30 to-cyan-50/20 dark:from-slate-950 dark:via-emerald-950/20 dark:to-cyan-950/10" />
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <p className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-4">
+              <Scale className="w-4 h-4" />
+              {copy.eyebrow}
+            </p>
+            <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white mb-6">
+              {copy.title}
+            </h1>
+            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+              {copy.subtitle}
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="pb-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid sm:grid-cols-2 gap-6">
+            {pages.map((page, index) => (
+              <motion.div
+                key={page.slug}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+              >
+                <Link
+                  href={`/alternatives/${page.slug}`}
+                  className="group block h-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 hover:border-emerald-300 dark:hover:border-emerald-700 hover:shadow-lg transition-all"
+                >
+                  <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
+                    {(altLabel[locale] ?? altLabel.fr)(page.competitor)}
+                  </p>
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
+                    Leopardo vs {page.competitor}
+                  </h2>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 line-clamp-3">
+                    {page.metaDescription}
+                  </p>
+                  <span className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                    {copy.cardCta}
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+
+          <p className="mt-10 text-xs text-slate-500 dark:text-slate-500 max-w-3xl">
+            {copy.disclaimer}
+          </p>
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+  );
+}
