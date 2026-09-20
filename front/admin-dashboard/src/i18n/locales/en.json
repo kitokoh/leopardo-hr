@@ -2941,7 +2941,7 @@
     }
   },
   "settingsBiometricNotesTitle": "Biometric note",
-  "_updated_at": "2026-08-30T15:05:00Z",
+  "_updated_at": "2026-09-21T09:00:00Z",
   "settingsLastNameLabel": "Last name",
   "dashboardActiveLabel": "Active companies",
   "attendanceRetry": "Retry",
@@ -8008,6 +8008,87 @@
       "card": "Card",
       "mobile": "Mobile money",
       "online": "Online"
+    },
+    "shop": {
+      "tileTitle": "Online shop",
+      "tileDesc": "Marketplace settings, product publication and web orders.",
+      "pageTitle": "Online shop",
+      "pageSubtitle": "Enable your marketplace shop, publish your products and manage web orders.",
+      "tab": {
+        "settings": "Settings",
+        "products": "Online products",
+        "orders": "Web orders"
+      },
+      "settings": {
+        "title": "Shop settings",
+        "enabled": "Shop enabled on the marketplace",
+        "enabledBadge": "Enabled",
+        "disabledBadge": "Disabled",
+        "enabledHint": "While the shop is disabled, none of your products are visible on the marketplace.",
+        "name": "Shop name",
+        "description": "Description",
+        "city": "City",
+        "phone": "Contact phone",
+        "email": "Contact email",
+        "currency": "Currency",
+        "saved": "Settings saved."
+      },
+      "products": {
+        "title": "Published products",
+        "hint": "A product only appears on the marketplace if it is published, put online and the shop is enabled.",
+        "online": "Online",
+        "offline": "Offline",
+        "putOnline": "Put online",
+        "takeOffline": "Take offline",
+        "empty": "No published products."
+      },
+      "orders": {
+        "title": "Web orders",
+        "reference": "Reference",
+        "customer": "Customer",
+        "city": "City",
+        "total": "Total",
+        "date": "Date",
+        "fulfillment": "Fulfillment",
+        "allStatuses": "All statuses",
+        "statusFilter": "Filter by fulfillment status",
+        "detail": "Details",
+        "detailTitle": "Order",
+        "items": "Items",
+        "quantity": "Quantity",
+        "unitPrice": "Unit price",
+        "lineTotal": "Line total",
+        "deliveryTitle": "Delivery",
+        "address": "Address",
+        "notes": "Notes",
+        "phone": "Phone",
+        "email": "Email",
+        "empty": "No web orders.",
+        "invalidTransition": "Invalid transition: the order already changed state. The list has been refreshed.",
+        "close": "Close"
+      },
+      "action": {
+        "confirm": "Confirm",
+        "ready": "Mark ready",
+        "ship": "Ship",
+        "deliver": "Mark delivered",
+        "cancel": "Cancel order"
+      },
+      "confirmPrompt": {
+        "confirm": "Confirm this order? Stock will be decremented.",
+        "ready": "Mark this order as ready?",
+        "ship": "Mark this order as shipped?",
+        "deliver": "Mark this order as delivered?",
+        "cancel": "Cancel this order? Stock will be restored if it was already confirmed."
+      },
+      "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "ready": "Ready",
+        "shipped": "Shipped",
+        "delivered": "Delivered",
+        "cancelled": "Cancelled"
+      }
     }
   },
   "paymentGateways": {
