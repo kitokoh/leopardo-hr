@@ -168,6 +168,17 @@ fi
 # Pre-requis: Postgres 9.2+ (pg_export_snapshot) — Neon 16 OK.
 log "[0-1/4] capture source counts + pg_dump in shared REPEATABLE READ snapshot"
 
+# #7657 — pg_dump refuse un serveur de version MAJEURE superieure a la sienne
+# (constat drill 2026-09-20 : serveur 18.6, pg_dump 16.15 — « server version
+# mismatch », dump de 0 octet). On echoue tot avec un message actionnable
+# plutot que de laisser l'etape snapshot produire un dump vide.
+server_major="$(psql "${DATABASE_URL}" -AtXc "SHOW server_version;" | cut -d. -f1)"
+client_major="$(pg_dump --version | awk '{print $3}' | cut -d. -f1)"
+if [[ "${client_major}" -lt "${server_major}" ]]; then
+  log "DRILL FAILED: pg_dump ${client_major}.x < serveur PostgreSQL ${server_major}.x — installer postgresql-client-${server_major} (depot PGDG) sur le runner"
+  exit 2
+fi
+
 counts_file="$(mktemp)"
 # On delegue la suppression de ce fichier au trap cleanup (via une variable
 # dedicated) pour couvrir les chemins d'echec.
@@ -178,6 +189,13 @@ snapshot_tmp_files+=("${counts_file}")
 # pour URL / path avec caracteres speciaux).
 export SNAPSHOT_DUMP_FILE="${dump_file}"
 export SNAPSHOT_DB_URL="${DATABASE_URL}"
+
+# #7657 — le code de sortie d'une commande lancee via `\!` n'est PAS propage
+# par psql (ON_ERROR_STOP ne couvre que le SQL) : un pg_dump en echec laissait
+# le drill continuer avec un dump vide. On capture le rc dans un fichier.
+SNAPSHOT_RC_FILE="$(mktemp)"
+export SNAPSHOT_RC_FILE
+snapshot_tmp_files+=("${SNAPSHOT_RC_FILE}")
 
 # #7657 — les SELECT de counts sont generes depuis present_tables (tables
 # critiques reellement presentes) au lieu d'une liste SQL codee en dur.
@@ -194,7 +212,7 @@ snapshot_tmp_files+=("${psql_script}")
   # \! ne fait PAS d'interpolation psql (:var reste litteral), mais \setenv si.
   # On passe donc le snapshot id via un env var pour que pg_dump le recoive.
   printf '\\setenv PG_SNAPSHOT :snap\n'
-  printf '\\! pg_dump --format=custom --no-owner --no-privileges --snapshot="$PG_SNAPSHOT" --file="$SNAPSHOT_DUMP_FILE" "$SNAPSHOT_DB_URL"\n'
+  printf '\\! pg_dump --format=custom --no-owner --no-privileges --snapshot="$PG_SNAPSHOT" --file="$SNAPSHOT_DUMP_FILE" "$SNAPSHOT_DB_URL"; echo $? > "$SNAPSHOT_RC_FILE"\n'
   printf 'COMMIT;\n'
 } > "${psql_script}"
 
@@ -208,8 +226,18 @@ while IFS='|' read -r fq cnt; do
   log "    ${fq} = ${cnt}"
 done < "${counts_file}"
 
+pg_dump_rc="$(cat "${SNAPSHOT_RC_FILE}" 2>/dev/null || echo 1)"
+if [[ "${pg_dump_rc}" != "0" ]]; then
+  log "DRILL FAILED: pg_dump exited with ${pg_dump_rc} — dump invalide, arret avant chiffrement/restauration"
+  exit 1
+fi
+
 dump_size=$(stat -c%s "${dump_file}" 2>/dev/null || stat -f%z "${dump_file}")
 log "    dump size: ${dump_size} bytes"
+if [[ "${dump_size}" -eq 0 ]]; then
+  log "DRILL FAILED: dump vide (0 octet) — rien a restaurer"
+  exit 1
+fi
 
 # ---------------------------------------------------------------------------
 # 2. Chiffrement optionnel avec age.

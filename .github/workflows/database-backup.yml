@@ -54,7 +54,14 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y postgresql-client age
+          # #7657 — le serveur (Neon) est en PostgreSQL 18 : le paquet
+          # `postgresql-client` d'Ubuntu 24.04 fournit pg_dump 16, qui refuse
+          # de dumper un serveur plus récent (« server version mismatch »,
+          # constat drill 2026-09-20). On installe le client 18 depuis PGDG.
+          sudo apt-get install -y postgresql-common age
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y postgresql-client-18
+          pg_dump --version
           if ! command -v aws >/dev/null 2>&1; then
             python3 -m pip install --user --break-system-packages awscli
             echo "$HOME/.local/bin" >> "$GITHUB_PATH"
@@ -250,7 +257,12 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y postgresql-client age
+          # #7657 — même règle que le backup : client PostgreSQL 18 (PGDG),
+          # le pg_dump 16 d'Ubuntu 24.04 refuse le serveur 18 (drill 2026-09-20).
+          sudo apt-get install -y postgresql-common age
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y postgresql-client-18
+          pg_dump --version
           if ! command -v aws >/dev/null 2>&1; then
             python3 -m pip install --user --break-system-packages awscli
             echo "$HOME/.local/bin" >> "$GITHUB_PATH"
