@@ -57,6 +57,7 @@ class DeliverySourceContractApiTest extends TestCase
         return [
             'restaurant' => ['restaurant', 'RST-2026-0001'],
             'retail' => ['retail', 'POS-2026-0001'],
+            'retail_online' => ['retail_online', 'WEB-20260919-ABC123'],
             'ecommerce' => ['ecommerce', 'ORD-AMZ-778899'],
             'crm' => ['crm', 'CRM-ORD-42'],
         ];
