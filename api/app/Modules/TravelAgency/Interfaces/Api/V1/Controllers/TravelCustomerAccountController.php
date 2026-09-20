@@ -16,7 +16,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
-use Laravel\Sanctum\PersonalAccessToken;
 
 /**
  * Issue #7739 — Comptes clients GRAND PUBLIC de la marketplace (épic #7736).
@@ -136,16 +135,11 @@ class TravelCustomerAccountController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
-        // Le PHPDoc Sanctum type le retour PersonalAccessToken, mais le
-        // runtime peut rendre TransientToken (auth stateful) ou null hors
-        // requête token — on élargit le type pour garder la défense sans
-        // entrée baseline (garde #5448).
-        /** @var \Laravel\Sanctum\Contracts\HasAbilities|null $token */
-        $token = $this->authenticated($request)->currentAccessToken();
-
-        if ($token instanceof PersonalAccessToken) {
-            $token->delete();
-        }
+        // Sous `auth:travel_customer` (Sanctum, bearer token), le token
+        // courant est toujours un PersonalAccessToken : pas de garde
+        // conditionnelle — PHPStan (modules + strict) la signale
+        // toujours-vraie (instanceof.alwaysTrue / if.alwaysTrue).
+        $this->authenticated($request)->currentAccessToken()->delete();
 
         return response()->json(['data' => ['logged_out' => true]]);
     }
