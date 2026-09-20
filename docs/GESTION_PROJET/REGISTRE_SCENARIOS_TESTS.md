@@ -844,6 +844,26 @@ restent les gates applicables.
   versionné `docs/api-mock-data/` (sorti du dépôt). **Aucun code, contrat ni scénario mobile
   modifié** — aucun scénario nouveau requis.
 
+## Mise à jour 2026-09-19 — verticale HealthManager BC-31 (PR #7818, issues #7785–#7792)
+
+- **Surface API** : nouvelle surface `/api/v1/health-manager/*` (63 opérations — référentiel
+  structure, patients, rendez-vous, consultations/prescriptions, hospitalisations,
+  facturation des soins, dashboard). Scénarios automatisés :
+  `api/tests/Feature/HealthManager/` (**71 tests / 517 assertions** — matrice canonique par
+  domaine : 401 non authentifié / 403 solution inactive `HEALTH_SOLUTION_INACTIVE` /
+  403 employé lambda / happy path / 404 cross-tenant), dont les invariants métier :
+  conflit de créneau praticien 409, machine à états des rendez-vous 422, lit occupé 409
+  sous transaction, confidentialité médicale (réception 403 même en lecture), MRN et
+  numérotation facture séquentiels par tenant, prix figés à la ligne, sur-paiement 422.
+- **Surface web** : parcours `(dashboard)/health/*` (hub, patients, rendez-vous,
+  hospitalisations, facturation, référentiel) gatés par le flag `healthmanager`
+  (catalogue `client-features.ts`, non self-activatable) ; `/health` ajouté aux préfixes
+  protégés (session + proxy + sw.js — couvert par les gardes `protected-prefixes.test.ts`).
+  Jest front/web complet vert (135 suites / 1198 tests).
+- **Surface mobile** : aucun contrat modifié — clés `health.*` additives propagées par la
+  synchronisation du catalogue partagé, aucun scénario mobile nouveau requis (app dédiée
+  éventuelle = lot V1).
+
 ## Mise à jour 2026-09-20 — fail-fast sur URL backend manquante en production (PR #7881, issue #7842)
 
 - **Surface web admin** : `front/admin-dashboard/src/services/api.js` ne se replie plus en

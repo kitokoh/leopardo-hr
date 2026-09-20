@@ -756,6 +756,24 @@
       "to": "BC-03",
       "baseline": false,
       "note": "PHARMACY → IDENTITY — Employee acteur des ventes/mouvements, RBAC policies (PHARMA-001/#7798)."
+    },
+    {
+      "from": "BC-31",
+      "to": "BC-01",
+      "baseline": false,
+      "note": "HEALTH → PLATFORM — SolutionCatalogue/FeatureFlag (fondations verticale HealthManager, HC-001 #7785)"
+    },
+    {
+      "from": "BC-31",
+      "to": "BC-02",
+      "baseline": false,
+      "note": "HEALTH → TENANT — isolation tenant company_id/currentCompany (HC-001 #7785)"
+    },
+    {
+      "from": "BC-31",
+      "to": "BC-03",
+      "baseline": false,
+      "note": "HEALTH → IDENTITY — acteur Employee (praticiens, rôles staff, policies — HC-001 #7785)"
     }
   ]
 }

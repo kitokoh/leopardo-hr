@@ -110,7 +110,9 @@ tags:
 - name: Communication
   description: 'BC-29 COMMUNICATION — boite mail connectee + IA (OAuth Gmail serveur, sync, classification, relances) ; squelette R0 (#7685).'
 - name: Pharmacy
-  description: 'BC-30 PHARMACY — verticale PharmaManager : referentiel produits d''officine, stock par lots FEFO, achats fournisseurs, ventes comptoir, ordonnancier des produits controles, dashboard fondateur (PHARMA-001..007, #7798-#7804).'
+  description: 'BC-31 PHARMACY — verticale PharmaManager : referentiel produits d''officine, stock par lots FEFO, achats fournisseurs, ventes comptoir, ordonnancier des produits controles, dashboard fondateur (PHARMA-001..007, #7798-#7804).'
+- name: HealthManager
+  description: 'BC-31 HEALTHMANAGER — solution verticale hôpitaux & cliniques privées (HC-001 #7785 à HC-008 #7792) : structure, patients, rendez-vous, consultations, ordonnances, hospitalisations, facturation des soins.'
 paths:
   /travel/distributor-keys:
     get:
@@ -35951,7 +35953,7 @@ paths:
       - Pharmacy
       summary: Liste paginee du referentiel produits d'officine
       description: >-
-        BC-30 PHARMACY (#7799) — recherche nom/DCI/code-barres/code interne,
+        BC-31 PHARMACY (#7799) — recherche nom/DCI/code-barres/code interne,
         filtres category/status/prescription_required, pagination per_page
         (1..100). Solution `pharmacy` requise (403 PHARMACY_SOLUTION_INACTIVE
         sinon), lecture pour tout employe du tenant.
@@ -36004,7 +36006,7 @@ paths:
       - Pharmacy
       summary: Creer un produit d'officine
       description: >-
-        BC-30 PHARMACY (#7799) — code-barres et code interne uniques PAR
+        BC-31 PHARMACY (#7799) — code-barres et code interne uniques PAR
         TENANT (422 sinon), prix en decimal. Reserve manager.
       requestBody:
         required: true
@@ -36059,7 +36061,7 @@ paths:
       tags:
       - Pharmacy
       summary: Mettre a jour un produit d'officine
-      description: BC-30 PHARMACY (#7799) — reserve manager, tenant-scope (404 cross-tenant).
+      description: BC-31 PHARMACY (#7799) — reserve manager, tenant-scope (404 cross-tenant).
       parameters:
       - name: product
         in: path
@@ -36096,7 +36098,7 @@ paths:
       - Pharmacy
       summary: Archiver un produit d'officine
       description: >-
-        BC-30 PHARMACY (#7799) — jamais de suppression (le produit reste
+        BC-31 PHARMACY (#7799) — jamais de suppression (le produit reste
         reference par lots/ventes/commandes, tracabilite reglementaire).
       parameters:
       - name: product
@@ -36119,7 +36121,7 @@ paths:
       - Pharmacy
       summary: Niveaux de stock par produit (lots non perimes)
       description: >-
-        BC-30 PHARMACY (#7800) — disponible = somme des lots NON perimes ;
+        BC-31 PHARMACY (#7800) — disponible = somme des lots NON perimes ;
         quantite perimee et indicateur sous-seuil par produit.
       parameters:
       - name: search
@@ -36174,7 +36176,7 @@ paths:
       - Pharmacy
       summary: Journal immuable des mouvements de stock
       description: >-
-        BC-30 PHARMACY (#7800) — journal append-only (receipt, sale,
+        BC-31 PHARMACY (#7800) — journal append-only (receipt, sale,
         adjustment, expiry_writeoff, return), filtres product_id/type.
       parameters:
       - name: product_id
@@ -36215,7 +36217,7 @@ paths:
       - Pharmacy
       summary: Ajustement d'inventaire sur un lot
       description: >-
-        BC-30 PHARMACY (#7800) — delta signe non nul, raison OBLIGATOIRE,
+        BC-31 PHARMACY (#7800) — delta signe non nul, raison OBLIGATOIRE,
         jamais de lot negatif (422 PHARMACY_INSUFFICIENT_STOCK). Reserve
         manager ; type adjustment ou expiry_writeoff.
       requestBody:
@@ -36252,7 +36254,7 @@ paths:
       - Pharmacy
       summary: Alertes de stock (sous seuil, perimant, perimes)
       description: >-
-        BC-30 PHARMACY (#7800) — produits sous min_stock_level, lots perimant
+        BC-31 PHARMACY (#7800) — produits sous min_stock_level, lots perimant
         sous N jours (?days=, defaut 90), lots perimes a retirer.
       parameters:
       - name: days
@@ -36315,7 +36317,7 @@ paths:
       tags:
       - Pharmacy
       summary: Creer un fournisseur (grossiste, laboratoire)
-      description: BC-30 PHARMACY (#7801) — reserve manager.
+      description: BC-31 PHARMACY (#7801) — reserve manager.
       requestBody:
         required: true
         content:
@@ -36355,7 +36357,7 @@ paths:
       tags:
       - Pharmacy
       summary: Mettre a jour un fournisseur
-      description: BC-30 PHARMACY (#7801) — reserve manager (archivage via status, jamais de suppression).
+      description: BC-31 PHARMACY (#7801) — reserve manager (archivage via status, jamais de suppression).
       parameters:
       - name: supplier
         in: path
@@ -36422,7 +36424,7 @@ paths:
       - Pharmacy
       summary: Creer une commande d'achat (brouillon)
       description: >-
-        BC-30 PHARMACY (#7801) — numero PO-YYYY-XXXX sequence PAR TENANT,
+        BC-31 PHARMACY (#7801) — numero PO-YYYY-XXXX sequence PAR TENANT,
         fournisseur du tenant obligatoire (404 sinon). Reserve manager.
       requestBody:
         required: true
@@ -36485,7 +36487,7 @@ paths:
       tags:
       - Pharmacy
       summary: Passer la commande (draft vers ordered)
-      description: BC-30 PHARMACY (#7801) — transition invalide → 422 PHARMACY_INVALID_TRANSITION.
+      description: BC-31 PHARMACY (#7801) — transition invalide → 422 PHARMACY_INVALID_TRANSITION.
       parameters:
       - name: purchaseOrder
         in: path
@@ -36531,7 +36533,7 @@ paths:
       - Pharmacy
       summary: Receptionner une commande (partielle ou totale)
       description: >-
-        BC-30 PHARMACY (#7801) — chaque ligne recue (quantite, n° de lot,
+        BC-31 PHARMACY (#7801) — chaque ligne recue (quantite, n° de lot,
         peremption, cout) cree/incremente un lot + mouvement receipt via
         PharmacyStockService. Sur-reception refusee (422
         PHARMACY_OVER_RECEIPT) ; partielle → partially_received, totale →
@@ -36634,7 +36636,7 @@ paths:
       - Pharmacy
       summary: Encaisser une vente comptoir (POS)
       description: >-
-        BC-30 PHARMACY (#7802) — numero VT-YYYY-XXXXX sequence PAR TENANT,
+        BC-31 PHARMACY (#7802) — numero VT-YYYY-XXXXX sequence PAR TENANT,
         delivrance FEFO, totaux calcules SERVEUR (prix figes), ordonnance
         exigee si produit prescription_required ou is_controlled (422
         PHARMACY_PRESCRIPTION_REQUIRED), stock insuffisant → 422 sans effet
@@ -36710,7 +36712,7 @@ paths:
       - Pharmacy
       summary: Annuler une vente (contre-passation, jamais de suppression)
       description: >-
-        BC-30 PHARMACY (#7802) — raison OBLIGATOIRE, reserve manager : la
+        BC-31 PHARMACY (#7802) — raison OBLIGATOIRE, reserve manager : la
         vente passe en voided (CONSERVEE) et le stock des lots d'ORIGINE est
         re-credite par mouvements return. Double void → 422.
       parameters:
@@ -36773,7 +36775,7 @@ paths:
       tags:
       - Pharmacy
       summary: Creer un prescripteur
-      description: BC-30 PHARMACY (#7803) — reserve manager.
+      description: BC-31 PHARMACY (#7803) — reserve manager.
       requestBody:
         required: true
         content:
@@ -36881,7 +36883,7 @@ paths:
       - Pharmacy
       summary: Saisir une ordonnance
       description: >-
-        BC-30 PHARMACY (#7803) — reference unique PAR TENANT (422 sinon),
+        BC-31 PHARMACY (#7803) — reference unique PAR TENANT (422 sinon),
         prescripteur du tenant obligatoire (404 sinon). Saisie par tout
         employe du comptoir.
       requestBody:
@@ -36925,7 +36927,7 @@ paths:
       tags:
       - Pharmacy
       summary: Mettre a jour une ordonnance (reference non modifiable)
-      description: BC-30 PHARMACY (#7803) — reserve manager (piece reglementaire).
+      description: BC-31 PHARMACY (#7803) — reserve manager (piece reglementaire).
       parameters:
       - name: prescription
         in: path
@@ -36969,7 +36971,7 @@ paths:
       - Pharmacy
       summary: Ordonnancier des produits controles (lecture seule)
       description: >-
-        BC-30 PHARMACY (#7803) — registre chronologique DERIVE du journal
+        BC-31 PHARMACY (#7803) — registre chronologique DERIVE du journal
         immuable des mouvements sale/return des produits is_controlled
         (date, produit, lot, quantite, n° de vente, ordonnance, prescripteur,
         patient, delivreur — annulations en contre-passation, jamais
@@ -37012,7 +37014,7 @@ paths:
       - Pharmacy
       summary: Tableau de bord fondateur de l'officine
       description: >-
-        BC-30 PHARMACY (#7804) — CA jour/7j/30j, nb ventes du jour, panier
+        BC-31 PHARMACY (#7804) — CA jour/7j/30j, nb ventes du jour, panier
         moyen 30j, repartition par paiement (ventes voided EXCLUES),
         valorisation du stock (lots non perimes), produits sous seuil, lots
         perimant sous 90 jours, lots perimes, top 5 produits 30j, commandes
@@ -37025,6 +37027,2933 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /health-manager/dashboard:
+    get:
+      tags:
+      - HealthManager
+      summary: Tableau de bord clinique
+      description: 'Agrégats du jour (HC-008 #7792) : rendez-vous, patients actifs, admissions en cours, occupation
+        des lits, chiffre du mois. Accessible à tout rôle clinique (direction, praticien, réception, facturation)
+        — employé lambda 403. Aucun contenu médical exposé. Solution HealthManager requise (feature flag `healthmanager`,
+        fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Tableau de bord
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthDashboard'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /health-manager/departments:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les services médicaux
+      description: 'Liste paginée des services médicaux du tenant. Direction uniquement en écriture. Solution HealthManager
+        requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+        description: Filtre par statut.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+        description: Taille de page.
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HealthDepartment'
+                  meta:
+                    $ref: '#/components/schemas/HealthPageMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Créer un service médical
+      description: 'Crée un service médical pour le tenant. Direction uniquement en écriture. Solution HealthManager
+        requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - code
+              properties:
+                name:
+                  type: string
+                code:
+                  type: string
+                  description: Unique par tenant.
+                description:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+      responses:
+        '201':
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthDepartment'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/departments/{department}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter un service médical
+      description: 'Détail d’un service médical du tenant (cross-tenant → 404 fail-closed). Solution HealthManager
+        requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: department
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ressource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthDepartment'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - HealthManager
+      summary: Mettre à jour un service médical
+      description: 'Mise à jour partielle d’un service médical. Direction uniquement en écriture. Solution HealthManager
+        requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: department
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                code:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+      responses:
+        '200':
+          description: Ressource mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthDepartment'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - HealthManager
+      summary: Supprimer un service médical
+      description: 'Suppression d’un service médical. Refusée (422 `HEALTH_RESOURCE_IN_USE`) tant que des salles ou
+        des praticiens sont rattachés au service. Solution HealthManager requise (feature flag `healthmanager`, fail-closed)
+        : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: department
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ressource supprimée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/rooms:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les salles
+      description: 'Liste paginée des salles du tenant. Direction uniquement en écriture. Solution HealthManager requise
+        (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: department_id
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Filtre par service.
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - consultation
+          - hospitalization
+          - operating
+          - emergency
+          - other
+        description: Filtre par type de salle.
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+        description: Filtre par statut.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+        description: Taille de page.
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HealthRoom'
+                  meta:
+                    $ref: '#/components/schemas/HealthPageMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Créer un salle
+      description: 'Crée un salle pour le tenant. Direction uniquement en écriture. Solution HealthManager requise
+        (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - department_id
+              - name
+              - code
+              properties:
+                department_id:
+                  type: integer
+                name:
+                  type: string
+                code:
+                  type: string
+                  description: Unique par tenant.
+                type:
+                  type: string
+                  enum:
+                  - consultation
+                  - hospitalization
+                  - operating
+                  - emergency
+                  - other
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+      responses:
+        '201':
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthRoom'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/rooms/{room}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter un salle
+      description: 'Détail d’un salle du tenant (cross-tenant → 404 fail-closed). Solution HealthManager requise (feature
+        flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: room
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ressource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthRoom'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - HealthManager
+      summary: Mettre à jour un salle
+      description: 'Mise à jour partielle d’un salle. Direction uniquement en écriture. Solution HealthManager requise
+        (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: room
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                department_id:
+                  type: integer
+                name:
+                  type: string
+                code:
+                  type: string
+                type:
+                  type: string
+                  enum:
+                  - consultation
+                  - hospitalization
+                  - operating
+                  - emergency
+                  - other
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+      responses:
+        '200':
+          description: Ressource mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthRoom'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - HealthManager
+      summary: Supprimer un salle
+      description: 'Suppression d’un salle. Refusée (422 `HEALTH_RESOURCE_IN_USE`) tant que des lits sont rattachés
+        à la salle. Solution HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive
+        → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: room
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ressource supprimée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/beds:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les lits d’hospitalisation
+      description: 'Liste paginée des lits d’hospitalisation du tenant. Direction uniquement en écriture. Solution
+        HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: room_id
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Filtre par salle.
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - free
+          - occupied
+          - maintenance
+        description: Filtre par statut.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+        description: Taille de page.
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HealthBed'
+                  meta:
+                    $ref: '#/components/schemas/HealthPageMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Créer un lit
+      description: 'Crée un lit pour le tenant. Direction uniquement en écriture. Solution HealthManager requise (feature
+        flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - room_id
+              - code
+              properties:
+                room_id:
+                  type: integer
+                code:
+                  type: string
+                  description: Unique par tenant.
+                status:
+                  type: string
+                  enum:
+                  - free
+                  - occupied
+                  - maintenance
+      responses:
+        '201':
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthBed'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/beds/{bed}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter un lit
+      description: 'Détail d’un lit du tenant (cross-tenant → 404 fail-closed). Solution HealthManager requise (feature
+        flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: bed
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ressource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthBed'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - HealthManager
+      summary: Mettre à jour un lit
+      description: 'Mise à jour partielle d’un lit. Direction uniquement en écriture. Solution HealthManager requise
+        (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: bed
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                room_id:
+                  type: integer
+                code:
+                  type: string
+                status:
+                  type: string
+                  enum:
+                  - free
+                  - occupied
+                  - maintenance
+      responses:
+        '200':
+          description: Ressource mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthBed'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - HealthManager
+      summary: Supprimer un lit
+      description: 'Suppression d’un lit. Refusée (422 `HEALTH_RESOURCE_IN_USE`) si le lit est occupé. Solution HealthManager
+        requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: bed
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ressource supprimée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/specialties:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les spécialités médicales
+      description: 'Liste paginée des spécialités médicales du tenant. Direction uniquement en écriture. Solution
+        HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+        description: Taille de page.
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HealthSpecialty'
+                  meta:
+                    $ref: '#/components/schemas/HealthPageMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Créer une spécialité médicale
+      description: 'Crée une spécialité médicale pour le tenant. Direction uniquement en écriture. Solution HealthManager
+        requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - code
+              properties:
+                name:
+                  type: string
+                code:
+                  type: string
+                  description: Unique par tenant.
+      responses:
+        '201':
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthSpecialty'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/specialties/{specialty}:
+    put:
+      tags:
+      - HealthManager
+      summary: Mettre à jour une spécialité médicale
+      description: 'Mise à jour partielle d’une spécialité médicale. Direction uniquement en écriture. Solution HealthManager
+        requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: specialty
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                code:
+                  type: string
+      responses:
+        '200':
+          description: Ressource mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthSpecialty'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - HealthManager
+      summary: Supprimer une spécialité médicale
+      description: 'Suppression d’une spécialité médicale. Refusée (422 `HEALTH_RESOURCE_IN_USE`) tant que des praticiens
+        portent la spécialité. Solution HealthManager requise (feature flag `healthmanager`, fail-closed) : solution
+        inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: specialty
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ressource supprimée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/practitioners:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les praticiens
+      description: 'Liste paginée des praticiens du tenant. Direction uniquement en écriture. Solution HealthManager
+        requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: department_id
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Filtre par service.
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+        description: Filtre par statut.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+        description: Taille de page.
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HealthPractitioner'
+                  meta:
+                    $ref: '#/components/schemas/HealthPageMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Créer un praticien
+      description: 'Crée un praticien pour le tenant. Direction uniquement en écriture. Solution HealthManager requise
+        (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - employee_id
+              properties:
+                employee_id:
+                  type: integer
+                  description: Employé du tenant, une seule fiche praticien par employé.
+                department_id:
+                  type: integer
+                  nullable: true
+                title:
+                  type: string
+                  enum:
+                  - dr
+                  - pr
+                  - midwife
+                  - nurse
+                  - other
+                  nullable: true
+                license_number:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                specialty_ids:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '201':
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthPractitioner'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/practitioners/{practitioner}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter un praticien
+      description: 'Détail d’un praticien du tenant (cross-tenant → 404 fail-closed). Solution HealthManager requise
+        (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: practitioner
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ressource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthPractitioner'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - HealthManager
+      summary: Mettre à jour un praticien
+      description: 'Mise à jour partielle d’un praticien. Direction uniquement en écriture. Solution HealthManager
+        requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: practitioner
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                department_id:
+                  type: integer
+                  nullable: true
+                title:
+                  type: string
+                  enum:
+                  - dr
+                  - pr
+                  - midwife
+                  - nurse
+                  - other
+                  nullable: true
+                license_number:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                specialty_ids:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '200':
+          description: Ressource mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthPractitioner'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - HealthManager
+      summary: Supprimer un praticien
+      description: 'Suppression d’un praticien. Refusée (422 `HEALTH_RESOURCE_IN_USE`) si le praticien porte une activité
+        clinique (rendez-vous ou consultations). Solution HealthManager requise (feature flag `healthmanager`, fail-closed)
+        : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: practitioner
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ressource supprimée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/staff-roles:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les rôles opérationnels
+      description: 'Liste paginée des rôles non médicaux (réception, facturation) du tenant. Direction uniquement
+        en écriture. Solution HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive
+        → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: role
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - reception
+          - billing
+        description: Filtre par rôle.
+      - name: employee_id
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Filtre par employé.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+        description: Taille de page.
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HealthStaffRole'
+                  meta:
+                    $ref: '#/components/schemas/HealthPageMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Attribuer un rôle opérationnel
+      description: 'Attribue un rôle non médical (réception ou facturation) à un employé du tenant — unique par couple
+        employé/rôle. Direction uniquement. Solution HealthManager requise (feature flag `healthmanager`, fail-closed)
+        : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - employee_id
+              - role
+              properties:
+                employee_id:
+                  type: integer
+                role:
+                  type: string
+                  enum:
+                  - reception
+                  - billing
+      responses:
+        '201':
+          description: Rôle attribué
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthStaffRole'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/staff-roles/{staffRole}:
+    delete:
+      tags:
+      - HealthManager
+      summary: Retirer un rôle opérationnel
+      description: 'Retire un rôle non médical attribué à un employé. Direction uniquement. Solution HealthManager
+        requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: staffRole
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Rôle retiré
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /health-manager/patients:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les patients
+      description: 'Liste paginée du registre patients. Recherche `q` sur `full_name` + `mrn` uniquement (le téléphone
+        est chiffré au repos, non interrogeable). Direction + réception gèrent, praticien en lecture seule. Solution
+        HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: q
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Recherche (full_name + mrn).
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - active
+          - deceased
+          - archived
+        description: Filtre par statut.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+        description: Taille de page.
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HealthPatient'
+                  meta:
+                    $ref: '#/components/schemas/HealthPageMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Créer un patient
+      description: 'Crée un patient (statut `active`, MRN `PAT-YYYY-NNNN` généré serveur). Direction + réception.
+        Solution HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - full_name
+              - sex
+              properties:
+                full_name:
+                  type: string
+                sex:
+                  type: string
+                  enum:
+                  - male
+                  - female
+                  - other
+                birth_date:
+                  type: string
+                  format: date
+                  nullable: true
+                blood_group:
+                  type: string
+                  enum:
+                  - A+
+                  - A-
+                  - B+
+                  - B-
+                  - AB+
+                  - AB-
+                  - O+
+                  - O-
+                  nullable: true
+                phone:
+                  type: string
+                  nullable: true
+                email:
+                  type: string
+                  nullable: true
+                address:
+                  type: string
+                  nullable: true
+                emergency_contact_name:
+                  type: string
+                  nullable: true
+                emergency_contact_phone:
+                  type: string
+                  nullable: true
+                insurance_provider:
+                  type: string
+                  nullable: true
+                insurance_number:
+                  type: string
+                  nullable: true
+                allergies:
+                  type: string
+                  nullable: true
+                medical_history:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Patient créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthPatient'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/patients/{patient}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter un patient
+      description: 'Détail d’un patient du tenant (cross-tenant → 404 fail-closed). Solution HealthManager requise
+        (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: patient
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ressource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthPatient'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - HealthManager
+      summary: Mettre à jour un patient
+      description: 'Mise à jour partielle du dossier administratif du patient. Direction + réception. Solution HealthManager
+        requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: patient
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                full_name:
+                  type: string
+                sex:
+                  type: string
+                  enum:
+                  - male
+                  - female
+                  - other
+                birth_date:
+                  type: string
+                  format: date
+                  nullable: true
+                blood_group:
+                  type: string
+                  enum:
+                  - A+
+                  - A-
+                  - B+
+                  - B-
+                  - AB+
+                  - AB-
+                  - O+
+                  - O-
+                  nullable: true
+                phone:
+                  type: string
+                  nullable: true
+                email:
+                  type: string
+                  nullable: true
+                address:
+                  type: string
+                  nullable: true
+                emergency_contact_name:
+                  type: string
+                  nullable: true
+                emergency_contact_phone:
+                  type: string
+                  nullable: true
+                insurance_provider:
+                  type: string
+                  nullable: true
+                insurance_number:
+                  type: string
+                  nullable: true
+                allergies:
+                  type: string
+                  nullable: true
+                medical_history:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - deceased
+      responses:
+        '200':
+          description: Patient mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthPatient'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/patients/{patient}/archive:
+    post:
+      tags:
+      - HealthManager
+      summary: Archiver un patient
+      description: 'Archivage logique (statut `archived`) — les patients ne sont JAMAIS supprimés physiquement (données
+        de santé, spec §3). Solution HealthManager requise (feature flag `healthmanager`, fail-closed) : solution
+        inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: patient
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Patient archivé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthPatient'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /health-manager/appointments:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les rendez-vous
+      description: 'Liste paginée des rendez-vous. Un praticien (non gestionnaire) est toujours restreint à SON agenda
+        quel que soit le filtre `practitioner_id`. Solution HealthManager requise (feature flag `healthmanager`, fail-closed)
+        : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: practitioner_id
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Filtre par praticien (ignoré pour un praticien non gestionnaire).
+      - name: patient_id
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Filtre par patient.
+      - name: date
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+        description: Filtre par jour (date de début).
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - scheduled
+          - confirmed
+          - checked_in
+          - completed
+          - cancelled
+          - no_show
+        description: Filtre par statut.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+        description: Taille de page.
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HealthAppointment'
+                  meta:
+                    $ref: '#/components/schemas/HealthPageMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Créer un rendez-vous
+      description: 'Crée un rendez-vous (statut `scheduled`). Direction + réception uniquement — un praticien ne crée
+        pas ses propres rendez-vous. Chevauchement d’un rendez-vous actif du praticien → 409 `HEALTH_APPOINTMENT_CONFLICT`.
+        Solution HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - patient_id
+              - practitioner_id
+              - starts_at
+              - ends_at
+              properties:
+                patient_id:
+                  type: integer
+                practitioner_id:
+                  type: integer
+                department_id:
+                  type: integer
+                  nullable: true
+                starts_at:
+                  type: string
+                  format: date-time
+                ends_at:
+                  type: string
+                  format: date-time
+                  description: Postérieur à starts_at.
+                reason:
+                  type: string
+                  nullable: true
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Rendez-vous créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthAppointment'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/appointments/agenda:
+    get:
+      tags:
+      - HealthManager
+      summary: Agenda d’un praticien
+      description: 'Rendez-vous d’un praticien sur une fenêtre `[from, to]` (non paginé). Un praticien (non gestionnaire)
+        est TOUJOURS restreint à son propre agenda. Solution HealthManager requise (feature flag `healthmanager`,
+        fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: practitioner_id
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Praticien ciblé (forcé à sa fiche pour un praticien).
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Début de fenêtre.
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Fin de fenêtre.
+      responses:
+        '200':
+          description: Agenda
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HealthAppointment'
+                  meta:
+                    type: object
+                    properties:
+                      practitioner_id:
+                        type: integer
+                        nullable: true
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /health-manager/appointments/{appointment}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter un rendez-vous
+      description: 'Détail d’un rendez-vous du tenant (cross-tenant → 404 fail-closed). Solution HealthManager requise
+        (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: appointment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ressource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthAppointment'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - HealthManager
+      summary: Mettre à jour un rendez-vous
+      description: 'Mise à jour partielle (déplacement de créneau compris). Cohérence temporelle re-vérifiée sur l’état
+        fusionné (422) ; chevauchement d’un autre rendez-vous actif du praticien → 409 `HEALTH_APPOINTMENT_CONFLICT`.
+        Solution HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: appointment
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                patient_id:
+                  type: integer
+                practitioner_id:
+                  type: integer
+                department_id:
+                  type: integer
+                  nullable: true
+                starts_at:
+                  type: string
+                  format: date-time
+                ends_at:
+                  type: string
+                  format: date-time
+                reason:
+                  type: string
+                  nullable: true
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Rendez-vous mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthAppointment'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/appointments/{appointment}/status:
+    post:
+      tags:
+      - HealthManager
+      summary: Transitionner le statut d’un rendez-vous
+      description: 'Machine à états (spec §4) : scheduled → confirmed → checked_in → completed ; annulation/no-show
+        selon l’état. Transition hors machine à états → 422 `HEALTH_INVALID_TRANSITION`. Gestionnaires, ou praticien
+        sur SES rendez-vous. Solution HealthManager requise (feature flag `healthmanager`, fail-closed) : solution
+        inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: appointment
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  type: string
+                  enum:
+                  - scheduled
+                  - confirmed
+                  - checked_in
+                  - completed
+                  - cancelled
+                  - no_show
+      responses:
+        '200':
+          description: Statut mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthAppointment'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/consultations:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les consultations
+      description: 'Liste paginée des consultations. Contenu médical (chiffré au repos) : praticiens + direction UNIQUEMENT
+        — la réception et la facturation sont toujours refusées (403). Solution HealthManager requise (feature flag
+        `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: patient_id
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Filtre par patient.
+      - name: practitioner_id
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Filtre par praticien.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+        description: Taille de page.
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HealthConsultation'
+                  meta:
+                    $ref: '#/components/schemas/HealthPageMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Créer une consultation
+      description: 'Crée une consultation. Un praticien crée SES consultations (fiche forcée) ; la direction peut
+        désigner un praticien du tenant. Patient et rendez-vous du même tenant (404 fail-closed). Contenu médical
+        (chiffré au repos) : praticiens + direction UNIQUEMENT — la réception et la facturation sont toujours refusées
+        (403). Solution HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403
+        `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - patient_id
+              - consulted_at
+              properties:
+                patient_id:
+                  type: integer
+                practitioner_id:
+                  type: integer
+                  nullable: true
+                  description: Direction uniquement — un praticien crée toujours SES consultations (fiche forcée).
+                appointment_id:
+                  type: integer
+                  nullable: true
+                consulted_at:
+                  type: string
+                  format: date-time
+                reason:
+                  type: string
+                  nullable: true
+                clinical_exam:
+                  type: string
+                  nullable: true
+                diagnosis:
+                  type: string
+                  nullable: true
+                vitals:
+                  type: object
+                  properties:
+                    weight_kg:
+                      type: number
+                      nullable: true
+                    height_cm:
+                      type: number
+                      nullable: true
+                    blood_pressure:
+                      type: string
+                      nullable: true
+                    temperature_c:
+                      type: number
+                      nullable: true
+                    pulse_bpm:
+                      type: integer
+                      nullable: true
+                  nullable: true
+                  description: Constantes vitales (chiffrées au repos).
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Consultation créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthConsultation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/consultations/{consultation}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter une consultation
+      description: 'Détail d’une consultation (cross-tenant → 404 fail-closed). Contenu médical (chiffré au repos)
+        : praticiens + direction UNIQUEMENT — la réception et la facturation sont toujours refusées (403). Solution
+        HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: consultation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ressource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthConsultation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - HealthManager
+      summary: Mettre à jour une consultation
+      description: 'Mise à jour partielle — réservée à l’auteur (praticien) ou à la direction. Contenu médical (chiffré
+        au repos) : praticiens + direction UNIQUEMENT — la réception et la facturation sont toujours refusées (403).
+        Solution HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: consultation
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                consulted_at:
+                  type: string
+                  format: date-time
+                reason:
+                  type: string
+                  nullable: true
+                clinical_exam:
+                  type: string
+                  nullable: true
+                diagnosis:
+                  type: string
+                  nullable: true
+                vitals:
+                  type: object
+                  properties:
+                    weight_kg:
+                      type: number
+                      nullable: true
+                    height_cm:
+                      type: number
+                      nullable: true
+                    blood_pressure:
+                      type: string
+                      nullable: true
+                    temperature_c:
+                      type: number
+                      nullable: true
+                    pulse_bpm:
+                      type: integer
+                      nullable: true
+                  nullable: true
+                  description: Constantes vitales (chiffrées au repos).
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Consultation mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthConsultation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/prescriptions:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les ordonnances
+      description: 'Liste paginée des ordonnances (lignes incluses). Contenu médical (chiffré au repos) : praticiens
+        + direction UNIQUEMENT — la réception et la facturation sont toujours refusées (403). Solution HealthManager
+        requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: patient_id
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Filtre par patient.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+        description: Taille de page.
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HealthPrescription'
+                  meta:
+                    $ref: '#/components/schemas/HealthPageMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Créer une ordonnance
+      description: 'Crée une ordonnance liée à une consultation du tenant (patient et praticien dérivés, ≥ 1 ligne,
+        création atomique). Un praticien non-direction ne prescrit que sur SES consultations (422). Contenu médical
+        (chiffré au repos) : praticiens + direction UNIQUEMENT — la réception et la facturation sont toujours refusées
+        (403). Solution HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403
+        `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - consultation_id
+              - items
+              properties:
+                consultation_id:
+                  type: integer
+                  description: Consultation du tenant — patient et praticien dérivés.
+                prescribed_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                notes:
+                  type: string
+                  nullable: true
+                items:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required:
+                    - medication
+                    properties:
+                      medication:
+                        type: string
+                      dosage:
+                        type: string
+                        nullable: true
+                      frequency:
+                        type: string
+                        nullable: true
+                      duration:
+                        type: string
+                        nullable: true
+                      instructions:
+                        type: string
+                        nullable: true
+      responses:
+        '201':
+          description: Ordonnance créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthPrescription'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/prescriptions/{prescription}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter une ordonnance
+      description: 'Détail d’une ordonnance avec ses lignes (cross-tenant → 404 fail-closed). Contenu médical (chiffré
+        au repos) : praticiens + direction UNIQUEMENT — la réception et la facturation sont toujours refusées (403).
+        Solution HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: prescription
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ressource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthPrescription'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /health-manager/admissions:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les admissions
+      description: 'Liste paginée des hospitalisations (sans contenu médical). Direction + réception gèrent, praticien
+        en lecture. Solution HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive
+        → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - admitted
+          - transferred
+          - discharged
+        description: Filtre par statut.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+        description: Taille de page.
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HealthAdmission'
+                  meta:
+                    $ref: '#/components/schemas/HealthPageMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+    post:
+      tags:
+      - HealthManager
+      summary: Admettre un patient
+      description: 'Admission sur un lit libre du tenant (transaction + verrou — statut du lit `free` → `occupied`).
+        Lit occupé → 409 `HEALTH_BED_OCCUPIED` ; lit en maintenance → 422. Patient et praticien référent du même tenant
+        (404 fail-closed). Solution HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive
+        → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - patient_id
+              - practitioner_id
+              - bed_id
+              properties:
+                patient_id:
+                  type: integer
+                practitioner_id:
+                  type: integer
+                bed_id:
+                  type: integer
+                  description: Lit libre du tenant (statut `free`).
+                reason:
+                  type: string
+                  nullable: true
+                admitted_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                expected_discharge_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+      responses:
+        '201':
+          description: Admission créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthAdmission'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/admissions/occupancy:
+    get:
+      tags:
+      - HealthManager
+      summary: Occupation des lits par service
+      description: 'Occupation des lits agrégée par service médical (total, occupés, libres, taux), avec totaux globaux
+        en meta. Solution HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive →
+        403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Occupation par service
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HealthOccupancy'
+                  meta:
+                    type: object
+                    required:
+                    - total_beds
+                    - occupied_beds
+                    - free_beds
+                    - occupancy_rate
+                    properties:
+                      total_beds:
+                        type: integer
+                      occupied_beds:
+                        type: integer
+                      free_beds:
+                        type: integer
+                      occupancy_rate:
+                        type: number
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /health-manager/admissions/{admission}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter une admission
+      description: 'Détail d’une admission du tenant (cross-tenant → 404 fail-closed). Solution HealthManager requise
+        (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: admission
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ressource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthAdmission'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /health-manager/admissions/{admission}/transfer:
+    post:
+      tags:
+      - HealthManager
+      summary: Transférer un patient de lit
+      description: 'Transfert atomique : ancien lit libéré + nouveau occupé (statut `transferred`). Nouveau lit occupé
+        → 409 `HEALTH_BED_OCCUPIED` ; admission clôturée, même lit ou lit en maintenance → 422. Solution HealthManager
+        requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: admission
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - bed_id
+              properties:
+                bed_id:
+                  type: integer
+                  description: Nouveau lit libre du tenant.
+      responses:
+        '200':
+          description: Admission transférée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthAdmission'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/admissions/{admission}/discharge:
+    post:
+      tags:
+      - HealthManager
+      summary: Clôturer une admission (sortie)
+      description: 'Sortie du patient : `discharged_at` + statut `discharged` + lit libéré. Double sortie → 422. Solution
+        HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: admission
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                discharge_notes:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Admission clôturée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthAdmission'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/care-acts:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les actes de soins
+      description: 'Catalogue paginé des actes facturables. Direction + facturation uniquement. Solution HealthManager
+        requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: active
+        in: query
+        required: false
+        schema:
+          type: boolean
+        description: Filtre actif/inactif.
+      - name: category
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - consultation
+          - exam
+          - surgery
+          - hospitalization
+          - other
+        description: Filtre par catégorie.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+        description: Taille de page.
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HealthCareAct'
+                  meta:
+                    $ref: '#/components/schemas/HealthPageMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Créer un acte de soins
+      description: 'Ajoute un acte au catalogue (devise par défaut : celle du tenant). Direction + facturation uniquement.
+        Solution HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - label
+              - category
+              - price
+              properties:
+                code:
+                  type: string
+                  description: Unique par tenant.
+                label:
+                  type: string
+                category:
+                  type: string
+                  enum:
+                  - consultation
+                  - exam
+                  - surgery
+                  - hospitalization
+                  - other
+                price:
+                  type: number
+                currency:
+                  type: string
+                  nullable: true
+                  description: 'ISO 4217 — défaut : devise du tenant.'
+                active:
+                  type: boolean
+      responses:
+        '201':
+          description: Acte créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthCareAct'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/care-acts/{careAct}:
+    put:
+      tags:
+      - HealthManager
+      summary: Mettre à jour un acte de soins
+      description: 'Mise à jour du catalogue — ne réécrit JAMAIS les lignes de factures existantes (prix figés à la
+        facturation). Direction + facturation uniquement. Solution HealthManager requise (feature flag `healthmanager`,
+        fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: careAct
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                label:
+                  type: string
+                category:
+                  type: string
+                  enum:
+                  - consultation
+                  - exam
+                  - surgery
+                  - hospitalization
+                  - other
+                price:
+                  type: number
+                  description: Ne réécrit jamais les lignes de factures existantes (prix figés).
+                currency:
+                  type: string
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Acte mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthCareAct'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - HealthManager
+      summary: Supprimer un acte de soins
+      description: 'Refusée (422 `HEALTH_RESOURCE_IN_USE`) dès qu’une ligne de facture référence l’acte (traçabilité).
+        Direction + facturation uniquement. Solution HealthManager requise (feature flag `healthmanager`, fail-closed)
+        : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: careAct
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Acte supprimé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/invoices:
+    get:
+      tags:
+      - HealthManager
+      summary: Lister les factures de soins
+      description: 'Liste paginée des factures (identité administrative du patient incluse). Direction + facturation
+        gèrent ; réception en lecture seule. Cycle de vie : draft → issued → partially_paid → paid ; annulation possible
+        tant que non payée. Solution HealthManager requise (feature flag `healthmanager`, fail-closed) : solution
+        inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - draft
+          - issued
+          - partially_paid
+          - paid
+          - cancelled
+        description: Filtre par statut.
+      - name: patient_id
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Filtre par patient.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+        description: Taille de page.
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HealthInvoice'
+                  meta:
+                    $ref: '#/components/schemas/HealthPageMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - HealthManager
+      summary: Créer une facture (brouillon)
+      description: 'Crée un brouillon de facture : lignes copiées du catalogue ou libres, totaux calculés serveur,
+        remise plafonnée au sous-total (422 `HEALTH_INVOICE_DISCOUNT`). Direction + facturation gèrent ; réception
+        en lecture seule. Cycle de vie : draft → issued → partially_paid → paid ; annulation possible tant que non
+        payée. Solution HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403
+        `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - patient_id
+              - items
+              properties:
+                patient_id:
+                  type: integer
+                currency:
+                  type: string
+                  nullable: true
+                discount:
+                  type: number
+                  nullable: true
+                items:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required:
+                    - quantity
+                    properties:
+                      care_act_id:
+                        type: integer
+                        nullable: true
+                        description: Acte du catalogue — libellé et prix copiés.
+                      label:
+                        type: string
+                        nullable: true
+                        description: Requis sans care_act_id.
+                      unit_price:
+                        type: number
+                        nullable: true
+                        description: Requis sans care_act_id.
+                      quantity:
+                        type: integer
+      responses:
+        '201':
+          description: Brouillon créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthInvoice'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/invoices/stats:
+    get:
+      tags:
+      - HealthManager
+      summary: Statistiques de facturation
+      description: 'Compteurs par statut, chiffre du mois (Σ encaissements du mois courant) et encours. Solution HealthManager
+        requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Statistiques
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthInvoiceStats'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /health-manager/invoices/{invoice}:
+    get:
+      tags:
+      - HealthManager
+      summary: Consulter une facture
+      description: 'Détail d’une facture avec lignes et encaissements (cross-tenant → 404 fail-closed). Solution HealthManager
+        requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: invoice
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ressource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthInvoice'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /health-manager/invoices/{invoice}/issue:
+    post:
+      tags:
+      - HealthManager
+      summary: Émettre une facture
+      description: 'Émission d’un brouillon : numéro `HINV-YYYY-NNNN` attribué, facture immuable ensuite. Statut autre
+        que `draft` → 422 `HEALTH_INVOICE_STATUS` (transition invalide). Solution HealthManager requise (feature flag
+        `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: invoice
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Facture émise
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthInvoice'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /health-manager/invoices/{invoice}/payments:
+    post:
+      tags:
+      - HealthManager
+      summary: Encaisser un paiement
+      description: 'Encaissement sur une facture émise : le statut suit le cumul (issued → partially_paid → paid).
+        Surpaiement refusé → 422 `HEALTH_OVERPAYMENT` ; facture non émise, payée ou annulée → 422 `HEALTH_INVOICE_STATUS`.
+        Solution HealthManager requise (feature flag `healthmanager`, fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: invoice
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - amount
+              - method
+              properties:
+                amount:
+                  type: number
+                  description: Strictement positif, sans surpaiement.
+                method:
+                  type: string
+                  enum:
+                  - cash
+                  - card
+                  - transfer
+                  - mobile
+                  - insurance
+                  - other
+                reference:
+                  type: string
+                  nullable: true
+                paid_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+      responses:
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '200':
+          description: Paiement enregistré
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthInvoice'
+  /health-manager/invoices/{invoice}/cancel:
+    post:
+      tags:
+      - HealthManager
+      summary: Annuler une facture
+      description: 'Annulation d’un brouillon ou d’une facture émise SANS encaissement. Facture payée, partiellement
+        payée ou déjà annulée → 422 `HEALTH_INVOICE_STATUS`. Solution HealthManager requise (feature flag `healthmanager`,
+        fail-closed) : solution inactive → 403 `HEALTH_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: invoice
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Facture annulée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HealthInvoice'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
 components:
   securitySchemes:
     BearerAuth:
@@ -37210,7 +40139,7 @@ components:
   schemas:
     PharmacyProduct:
       type: object
-      description: Produit d'officine (BC-30 PHARMACY, #7799) — DCI, forme, dosage, regulation, prix decimal.
+      description: Produit d'officine (BC-31 PHARMACY, #7799) — DCI, forme, dosage, regulation, prix decimal.
       properties:
         id:
           type: integer
@@ -37294,7 +40223,7 @@ components:
           enum: [active, archived]
     PharmacyBatch:
       type: object
-      description: Lot physique d'un produit d'officine (BC-30 PHARMACY, #7800).
+      description: Lot physique d'un produit d'officine (BC-31 PHARMACY, #7800).
       properties:
         id:
           type: integer
@@ -37318,7 +40247,7 @@ components:
           type: boolean
     PharmacyStockMovement:
       type: object
-      description: Mouvement du journal immuable de stock (BC-30 PHARMACY, #7800) — append-only.
+      description: Mouvement du journal immuable de stock (BC-31 PHARMACY, #7800) — append-only.
       properties:
         id:
           type: integer
@@ -37350,7 +40279,7 @@ components:
           nullable: true
     PharmacySupplier:
       type: object
-      description: Fournisseur d'officine (BC-30 PHARMACY, #7801).
+      description: Fournisseur d'officine (BC-31 PHARMACY, #7801).
       properties:
         id:
           type: integer
@@ -37399,7 +40328,7 @@ components:
           enum: [active, archived]
     PharmacyPurchaseOrder:
       type: object
-      description: Commande d'achat d'officine (BC-30 PHARMACY, #7801) — cycle draft→ordered→partially_received→received|cancelled, numero PO-YYYY-XXXX sequence par tenant.
+      description: Commande d'achat d'officine (BC-31 PHARMACY, #7801) — cycle draft→ordered→partially_received→received|cancelled, numero PO-YYYY-XXXX sequence par tenant.
       properties:
         id:
           type: integer
@@ -37442,7 +40371,7 @@ components:
                 type: string
     PharmacySale:
       type: object
-      description: Vente comptoir (BC-30 PHARMACY, #7802) — numero VT-YYYY-XXXXX sequence par tenant, prix figes, totaux serveur.
+      description: Vente comptoir (BC-31 PHARMACY, #7802) — numero VT-YYYY-XXXXX sequence par tenant, prix figes, totaux serveur.
       properties:
         id:
           type: integer
@@ -46388,3 +49317,756 @@ components:
               nullable: true
             activated:
               $ref: '#/components/schemas/SetupInterviewActivated'
+
+    HealthCheck:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        latency_ms:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          nullable: true
+        error:
+          type: string
+          nullable: true
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+        version:
+          type: string
+          nullable: true
+        checks:
+          type: object
+          properties:
+            database:
+              $ref: '#/components/schemas/HealthCheck'
+            redis:
+              $ref: '#/components/schemas/HealthCheck'
+            storage:
+              $ref: '#/components/schemas/HealthCheck'
+        timestamp:
+          type: string
+          format: date-time
+    HealthPageMeta:
+      type: object
+      properties:
+        current_page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
+      description: Pagination des listes HealthManager.
+    HealthDepartment:
+      type: object
+      required:
+      - id
+      - name
+      - code
+      - status
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: string
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
+      description: 'Service médical (référentiel structure, HC-002 #7786).'
+    HealthRoom:
+      type: object
+      required:
+      - id
+      - department_id
+      - name
+      - code
+      properties:
+        id:
+          type: integer
+        department_id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: string
+        type:
+          type: string
+          enum:
+          - consultation
+          - hospitalization
+          - operating
+          - emergency
+          - other
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
+      description: 'Salle rattachée à un service médical (HC-002 #7786).'
+    HealthBed:
+      type: object
+      required:
+      - id
+      - room_id
+      - code
+      - status
+      properties:
+        id:
+          type: integer
+        room_id:
+          type: integer
+        code:
+          type: string
+        status:
+          type: string
+          enum:
+          - free
+          - occupied
+          - maintenance
+      description: Lit d'hospitalisation — statut synchronisé avec les admissions actives (HC-002/HC-006).
+    HealthSpecialty:
+      type: object
+      required:
+      - id
+      - name
+      - code
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: string
+      description: 'Spécialité médicale (référentiel, HC-002 #7786).'
+    HealthPractitioner:
+      type: object
+      required:
+      - id
+      - employee_id
+      - status
+      - specialty_ids
+      properties:
+        id:
+          type: integer
+        employee_id:
+          type: integer
+        department_id:
+          type: integer
+          nullable: true
+        title:
+          type: string
+          enum:
+          - dr
+          - pr
+          - midwife
+          - nurse
+          - other
+          nullable: true
+        license_number:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
+        specialty_ids:
+          type: array
+          items:
+            type: integer
+      description: 'Praticien (équipe médicale) adossé à un employé du tenant (HC-002 #7786).'
+    HealthStaffRole:
+      type: object
+      required:
+      - id
+      - employee_id
+      - role
+      properties:
+        id:
+          type: integer
+        employee_id:
+          type: integer
+        role:
+          type: string
+          enum:
+          - reception
+          - billing
+      description: 'Rôle opérationnel non médical (réception, facturation) d''un employé (HC-002 #7786).'
+    HealthPatient:
+      type: object
+      required:
+      - id
+      - mrn
+      - full_name
+      - sex
+      - status
+      properties:
+        id:
+          type: integer
+        mrn:
+          type: string
+          description: Dossier patient `PAT-YYYY-NNNN`, généré serveur.
+        full_name:
+          type: string
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+        sex:
+          type: string
+          enum:
+          - male
+          - female
+          - other
+        blood_group:
+          type: string
+          enum:
+          - A+
+          - A-
+          - B+
+          - B-
+          - AB+
+          - AB-
+          - O+
+          - O-
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        emergency_contact_name:
+          type: string
+          nullable: true
+        emergency_contact_phone:
+          type: string
+          nullable: true
+        insurance_provider:
+          type: string
+          nullable: true
+        insurance_number:
+          type: string
+          nullable: true
+        allergies:
+          type: string
+          nullable: true
+        medical_history:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+          - active
+          - deceased
+          - archived
+      description: 'Patient du registre (HC-003 #7787). Les données personnelles et médicales (birth_date, phone, email,
+        address, contacts, assurance, allergies, antécédents) sont chiffrées au repos — jamais de suppression physique
+        (archivage logique).'
+    HealthAppointment:
+      type: object
+      required:
+      - id
+      - patient_id
+      - practitioner_id
+      - starts_at
+      - ends_at
+      - status
+      properties:
+        id:
+          type: integer
+        patient_id:
+          type: integer
+        practitioner_id:
+          type: integer
+        department_id:
+          type: integer
+          nullable: true
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        reason:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+          - scheduled
+          - confirmed
+          - checked_in
+          - completed
+          - cancelled
+          - no_show
+        notes:
+          type: string
+          nullable: true
+      description: 'Rendez-vous médical (HC-004 #7788) — pas de chevauchement par praticien.'
+    HealthConsultation:
+      type: object
+      required:
+      - id
+      - patient_id
+      - practitioner_id
+      - consulted_at
+      properties:
+        id:
+          type: integer
+        patient_id:
+          type: integer
+        practitioner_id:
+          type: integer
+        appointment_id:
+          type: integer
+          nullable: true
+        consulted_at:
+          type: string
+          format: date-time
+        reason:
+          type: string
+          nullable: true
+        clinical_exam:
+          type: string
+          nullable: true
+          description: Chiffré au repos.
+        diagnosis:
+          type: string
+          nullable: true
+          description: Chiffré au repos.
+        vitals:
+          type: object
+          properties:
+            weight_kg:
+              type: number
+              nullable: true
+            height_cm:
+              type: number
+              nullable: true
+            blood_pressure:
+              type: string
+              nullable: true
+            temperature_c:
+              type: number
+              nullable: true
+            pulse_bpm:
+              type: integer
+              nullable: true
+          nullable: true
+          description: Constantes vitales (chiffrées au repos).
+        notes:
+          type: string
+          nullable: true
+          description: Chiffré au repos.
+      description: 'Consultation médicale (HC-005 #7789) — contenu médical visible des praticiens et de la direction
+        UNIQUEMENT (réception/facturation refusées).'
+    HealthPrescriptionItem:
+      type: object
+      required:
+      - id
+      - medication
+      properties:
+        id:
+          type: integer
+        medication:
+          type: string
+        dosage:
+          type: string
+          nullable: true
+        frequency:
+          type: string
+          nullable: true
+        duration:
+          type: string
+          nullable: true
+        instructions:
+          type: string
+          nullable: true
+      description: 'Ligne d''ordonnance (HC-005 #7789).'
+    HealthPrescription:
+      type: object
+      required:
+      - id
+      - consultation_id
+      - patient_id
+      - practitioner_id
+      - prescribed_at
+      - items
+      properties:
+        id:
+          type: integer
+        consultation_id:
+          type: integer
+        patient_id:
+          type: integer
+        practitioner_id:
+          type: integer
+        prescribed_at:
+          type: string
+          format: date-time
+        notes:
+          type: string
+          nullable: true
+          description: Chiffré au repos.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/HealthPrescriptionItem'
+      description: 'Ordonnance liée à une consultation (HC-005 #7789) — patient et praticien dérivés de la consultation,
+        jamais fournis par le client.'
+    HealthAdmission:
+      type: object
+      required:
+      - id
+      - patient_id
+      - practitioner_id
+      - department_id
+      - bed_id
+      - admitted_at
+      - status
+      properties:
+        id:
+          type: integer
+        patient_id:
+          type: integer
+        practitioner_id:
+          type: integer
+        department_id:
+          type: integer
+        bed_id:
+          type: integer
+        reason:
+          type: string
+          nullable: true
+        admitted_at:
+          type: string
+          format: date-time
+        expected_discharge_at:
+          type: string
+          format: date-time
+          nullable: true
+        discharged_at:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          type: string
+          enum:
+          - admitted
+          - transferred
+          - discharged
+        discharge_notes:
+          type: string
+          nullable: true
+      description: 'Hospitalisation (HC-006 #7790) — machine à états des lits : admission sur lit libre, transfert atomique,
+        sortie qui libère le lit.'
+    HealthCareAct:
+      type: object
+      required:
+      - id
+      - code
+      - label
+      - category
+      - price
+      - currency
+      - active
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        label:
+          type: string
+        category:
+          type: string
+          enum:
+          - consultation
+          - exam
+          - surgery
+          - hospitalization
+          - other
+        price:
+          type: number
+        currency:
+          type: string
+          description: Code devise ISO 4217.
+        active:
+          type: boolean
+      description: 'Acte de soins facturable du catalogue (HC-007 #7791) — les prix sont figés sur les lignes de facture
+        à la facturation.'
+    HealthInvoiceItem:
+      type: object
+      required:
+      - id
+      - label
+      - unit_price
+      - quantity
+      - line_total
+      properties:
+        id:
+          type: integer
+        care_act_id:
+          type: integer
+          nullable: true
+        label:
+          type: string
+        unit_price:
+          type: number
+        quantity:
+          type: integer
+        line_total:
+          type: number
+      description: 'Ligne de facture de soins (prix figé à la facturation, HC-007 #7791).'
+    HealthInvoicePayment:
+      type: object
+      required:
+      - id
+      - amount
+      - method
+      - paid_at
+      properties:
+        id:
+          type: integer
+        amount:
+          type: number
+        method:
+          type: string
+          enum:
+          - cash
+          - card
+          - transfer
+          - mobile
+          - insurance
+          - other
+        paid_at:
+          type: string
+          format: date-time
+        reference:
+          type: string
+          nullable: true
+      description: 'Encaissement sur une facture de soins (HC-007 #7791).'
+    HealthInvoice:
+      type: object
+      required:
+      - id
+      - number
+      - patient_id
+      - status
+      - currency
+      - subtotal
+      - discount
+      - total
+      - amount_paid
+      properties:
+        id:
+          type: integer
+        number:
+          type: string
+          nullable: true
+          description: Numéro `HINV-YYYY-NNNN` attribué à l’émission.
+        patient_id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - draft
+          - issued
+          - partially_paid
+          - paid
+          - cancelled
+        currency:
+          type: string
+        subtotal:
+          type: number
+        discount:
+          type: number
+        total:
+          type: number
+        amount_paid:
+          type: number
+        issued_at:
+          type: string
+          format: date-time
+          nullable: true
+        patient:
+          type: object
+          properties:
+            id:
+              type: integer
+            mrn:
+              type: string
+            full_name:
+              type: string
+          nullable: true
+          description: Identité administrative du patient (si chargée).
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/HealthInvoiceItem'
+          description: Présent sur le détail, la création et les actions du cycle de vie.
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/HealthInvoicePayment'
+          description: Présent sur le détail et après encaissement.
+      description: 'Facture de soins (HC-007 #7791). Cycle de vie : draft → issued → partially_paid → paid ; annulation
+        possible tant que non payée. Une facture émise est immuable.'
+    HealthOccupancy:
+      type: object
+      required:
+      - department_id
+      - department_name
+      - total_beds
+      - occupied_beds
+      - free_beds
+      - occupancy_rate
+      properties:
+        department_id:
+          type: integer
+        department_name:
+          type: string
+        total_beds:
+          type: integer
+        occupied_beds:
+          type: integer
+        free_beds:
+          type: integer
+        occupancy_rate:
+          type: number
+          description: Taux d’occupation (0–1).
+      description: 'Occupation des lits d''un service médical (HC-006 #7790).'
+    HealthInvoiceStats:
+      type: object
+      required:
+      - draft_count
+      - issued_count
+      - partially_paid_count
+      - paid_count
+      - cancelled_count
+      - month_revenue
+      - outstanding
+      - currency
+      properties:
+        draft_count:
+          type: integer
+        issued_count:
+          type: integer
+        partially_paid_count:
+          type: integer
+        paid_count:
+          type: integer
+        cancelled_count:
+          type: integer
+        month_revenue:
+          type: number
+          description: Σ encaissements du mois courant.
+        outstanding:
+          type: number
+          description: Encours (Σ total − amount_paid des factures issued/partially_paid).
+        currency:
+          type: string
+      description: 'Statistiques de facturation des soins (HC-007 #7791).'
+    HealthDashboard:
+      type: object
+      required:
+      - appointments_today
+      - patients_count
+      - admissions_active
+      - occupancy
+      - month_revenue
+      - currency
+      - recent_patients
+      properties:
+        appointments_today:
+          type: integer
+          description: Rendez-vous du jour (hors annulés/no-show).
+        patients_count:
+          type: integer
+          description: Patients actifs.
+        admissions_active:
+          type: integer
+          description: Admissions en cours (admitted + transferred).
+        occupancy:
+          type: object
+          required:
+          - total_beds
+          - occupied_beds
+          - free_beds
+          - maintenance_beds
+          - occupancy_rate
+          - by_department
+          properties:
+            total_beds:
+              type: integer
+            occupied_beds:
+              type: integer
+            free_beds:
+              type: integer
+            maintenance_beds:
+              type: integer
+            occupancy_rate:
+              type: number
+              description: Taux d’occupation (0–1).
+            by_department:
+              type: array
+              items:
+                type: object
+                properties:
+                  department_id:
+                    type: integer
+                  department_name:
+                    type: string
+                  total:
+                    type: integer
+                  occupied:
+                    type: integer
+        month_revenue:
+          type: number
+          description: Σ encaissements du mois courant.
+        currency:
+          type: string
+        recent_patients:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              mrn:
+                type: string
+              full_name:
+                type: string
+              sex:
+                type: string
+                enum:
+                - male
+                - female
+                - other
+              status:
+                type: string
+                enum:
+                - active
+                - deceased
+                - archived
+              created_at:
+                type: string
+                format: date-time
+                nullable: true
+      description: 'Tableau de bord clinique (HC-008 #7792) — agrégats sans contenu médical.'

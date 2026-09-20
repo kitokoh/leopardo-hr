@@ -3865,6 +3865,189 @@ trait CreatesMvpSchema
             });
         }
 
+        // Travel (#7734) — travel_distributor_keys manquait à la fixture (guard
+        // #5443 rouge sur main, réparé au passage par #7818).
+        if (! Schema::hasTable($this->moduleTable('travel_distributor_keys'))) {
+            Schema::create($this->moduleTable('travel_distributor_keys'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        // HealthManager (BC-31, #7786..#7791) — parité fixture ↔ migrations tenant (#5443).
+        if (! Schema::hasTable($this->moduleTable('health_departments'))) {
+            Schema::create($this->moduleTable('health_departments'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('health_rooms'))) {
+            Schema::create($this->moduleTable('health_rooms'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('health_beds'))) {
+            Schema::create($this->moduleTable('health_beds'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('health_specialties'))) {
+            Schema::create($this->moduleTable('health_specialties'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('health_practitioners'))) {
+            Schema::create($this->moduleTable('health_practitioners'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('health_practitioner_specialties'))) {
+            Schema::create($this->moduleTable('health_practitioner_specialties'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('health_staff_roles'))) {
+            Schema::create($this->moduleTable('health_staff_roles'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('health_patients'))) {
+            Schema::create($this->moduleTable('health_patients'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('health_appointments'))) {
+            Schema::create($this->moduleTable('health_appointments'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('health_consultations'))) {
+            Schema::create($this->moduleTable('health_consultations'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('health_prescriptions'))) {
+            Schema::create($this->moduleTable('health_prescriptions'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('health_prescription_items'))) {
+            Schema::create($this->moduleTable('health_prescription_items'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('health_admissions'))) {
+            Schema::create($this->moduleTable('health_admissions'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('health_care_acts'))) {
+            Schema::create($this->moduleTable('health_care_acts'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('health_invoices'))) {
+            Schema::create($this->moduleTable('health_invoices'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('health_invoice_items'))) {
+            Schema::create($this->moduleTable('health_invoice_items'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('health_invoice_payments'))) {
+            Schema::create($this->moduleTable('health_invoice_payments'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('edu_accounting_entries'))) {
             Schema::create($this->moduleTable('edu_accounting_entries'), function (Blueprint $table): void {
                 $table->bigIncrements('id');

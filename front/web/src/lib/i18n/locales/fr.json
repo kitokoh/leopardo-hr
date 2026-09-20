@@ -6824,5 +6824,264 @@
         "webhook_secret": "Webhook secret"
       }
     }
+  },
+  "health": {
+    "section": {
+      "title": "HealthManager — Gestion hôpitaux & cliniques",
+      "subtitle": "Pilotage hôpital & clinique : patients, rendez-vous, hospitalisations, facturation des soins."
+    },
+    "common": {
+      "loadError": "Impossible de charger les données.",
+      "retry": "Réessayer",
+      "previous": "Précédent",
+      "next": "Suivant"
+    },
+    "crud": {
+      "search": "Rechercher...",
+      "create": "Nouveau",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "loading": "Chargement...",
+      "empty": "Aucun résultat.",
+      "loadError": "Impossible de charger les données.",
+      "saveError": "Erreur lors de la sauvegarde.",
+      "deleteError": "Impossible de supprimer.",
+      "confirmDelete": "Supprimer cet élément ?",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "saving": "Enregistrement...",
+      "createTitle": "Créer",
+      "editTitle": "Modifier"
+    },
+    "home": {
+      "kpisTitle": "Indicateurs du jour",
+      "kpiAppointmentsToday": "Rendez-vous du jour",
+      "kpiOccupancy": "Occupation des lits",
+      "kpiMonthRevenue": "Recettes du mois",
+      "kpiActiveAdmissions": "Hospitalisations en cours",
+      "tilesTitle": "Espaces de gestion",
+      "patientsDesc": "Registre patients : identités, assurance, archivage.",
+      "appointmentsDesc": "Agenda du jour, prise de rendez-vous et statuts.",
+      "admissionsDesc": "Admissions, transferts, sorties et occupation des lits.",
+      "billingDesc": "Catalogue d’actes, factures, encaissements.",
+      "referentialDesc": "Services, salles, lits, spécialités, praticiens et rôles.",
+      "recentPatients": "Derniers patients",
+      "noRecentPatients": "Aucun patient enregistré récemment."
+    },
+    "patients": {
+      "title": "Patients",
+      "subtitle": "Registre patients : identités protégées, assurance, archivage logique.",
+      "create": "Nouveau patient",
+      "edit": "Modifier le patient",
+      "empty": "Aucun patient.",
+      "searchPlaceholder": "Rechercher un patient (nom, n° dossier)...",
+      "mrn": "N° dossier",
+      "fullName": "Nom complet",
+      "sex": "Sexe",
+      "birthDate": "Date de naissance",
+      "phone": "Téléphone",
+      "bloodGroup": "Groupe sanguin",
+      "insuranceProvider": "Assureur",
+      "insuranceNumber": "N° d'assuré",
+      "status": "Statut",
+      "archive": "Archiver",
+      "archiveConfirm": "Archiver ce patient ? (aucune suppression physique)",
+      "archiveError": "Impossible d'archiver ce patient.",
+      "piiHint": "Les données sensibles sont chiffrées au repos et jamais exposées hors tenant.",
+      "sexValue": {
+        "male": "Homme",
+        "female": "Femme",
+        "other": "Autre"
+      },
+      "statusValue": {
+        "active": "Actif",
+        "deceased": "Décédé",
+        "archived": "Archivé"
+      }
+    },
+    "appointments": {
+      "title": "Rendez-vous",
+      "subtitle": "Agenda par journée, prise de rendez-vous et suivi des statuts.",
+      "day": "Journée",
+      "create": "Nouveau rendez-vous",
+      "empty": "Aucun rendez-vous ce jour.",
+      "slot": "Créneau",
+      "patient": "Patient",
+      "practitioner": "Praticien",
+      "reason": "Motif",
+      "status": "Statut",
+      "startsAt": "Début",
+      "endsAt": "Fin",
+      "transitionError": "Transition impossible.",
+      "statusValue": {
+        "scheduled": "Planifié",
+        "confirmed": "Confirmé",
+        "checked_in": "Arrivé",
+        "completed": "Terminé",
+        "cancelled": "Annulé",
+        "no_show": "Absent"
+      },
+      "transition": {
+        "confirmed": "Confirmer",
+        "checked_in": "Enregistrer l’arrivée",
+        "completed": "Terminer",
+        "cancelled": "Annuler",
+        "no_show": "Non venu"
+      }
+    },
+    "admissions": {
+      "title": "Hospitalisations",
+      "subtitle": "Admissions en cours, transferts, sorties et occupation des lits.",
+      "occupancyTitle": "Occupation des lits",
+      "totalBeds": "Lits au total",
+      "occupiedBeds": "Lits occupés",
+      "freeBeds": "Lits libres",
+      "occupancyRate": "Taux d'occupation",
+      "activeTitle": "Admissions actives",
+      "create": "Nouvelle admission",
+      "empty": "Aucune admission en cours.",
+      "patient": "Patient",
+      "practitioner": "Praticien référent",
+      "department": "Service",
+      "bed": "Lit",
+      "freeBed": "Lit libre",
+      "admittedAt": "Admis le",
+      "status": "Statut",
+      "reason": "Motif d'admission",
+      "transfer": "Transférer",
+      "transferTitle": "Transférer le patient",
+      "newBed": "Nouveau lit (libre)",
+      "transferError": "Transfert impossible.",
+      "discharge": "Sortie",
+      "dischargeConfirm": "Prononcer la sortie de ce patient ? Le lit sera libéré.",
+      "dischargeError": "Sortie impossible.",
+      "statusValue": {
+        "admitted": "Hospitalisé",
+        "transferred": "Transféré",
+        "discharged": "Sorti"
+      }
+    },
+    "billing": {
+      "title": "Facturation des soins",
+      "subtitle": "Catalogue d'actes, factures et encaissements des soins.",
+      "statsTitle": "Statistiques",
+      "statDraft": "Brouillons",
+      "statIssued": "Émises",
+      "statPaid": "Payées",
+      "statMonthRevenue": "Recettes du mois",
+      "statOutstanding": "Reste à encaisser",
+      "invoicesTitle": "Factures",
+      "invoicesEmpty": "Aucune facture.",
+      "invoiceNumber": "N° facture",
+      "invoicePatient": "Patient",
+      "invoiceTotal": "Total",
+      "invoicePaid": "Encaissé",
+      "invoiceStatus": "Statut",
+      "createDraft": "Nouvelle facture (brouillon)",
+      "discount": "Remise",
+      "lines": "Lignes",
+      "lineAct": "Acte",
+      "lineFree": "Ligne libre",
+      "lineLabel": "Libellé",
+      "lineUnitPrice": "Prix unitaire",
+      "lineQuantity": "Qté",
+      "addLine": "Ajouter une ligne",
+      "removeLine": "Retirer",
+      "issue": "Émettre",
+      "issueError": "Émission impossible.",
+      "pay": "Encaisser",
+      "payTitle": "Encaisser un paiement",
+      "payAmount": "Montant",
+      "payMethod": "Moyen de paiement",
+      "payError": "Encaissement impossible.",
+      "cancel": "Annuler",
+      "cancelConfirm": "Annuler cette facture ?",
+      "cancelError": "Annulation impossible.",
+      "careActsTitle": "Catalogue d'actes",
+      "actCode": "Code",
+      "actLabel": "Libellé",
+      "actCategory": "Catégorie",
+      "actPrice": "Prix",
+      "actCurrency": "Devise",
+      "actActive": "Actif",
+      "invoiceStatusValue": {
+        "draft": "Brouillon",
+        "issued": "Émise",
+        "paid": "Payée",
+        "partially_paid": "Partiellement payée",
+        "cancelled": "Annulée"
+      },
+      "categoryValue": {
+        "consultation": "Consultation",
+        "exam": "Examen",
+        "surgery": "Chirurgie",
+        "hospitalization": "Hospitalisation",
+        "other": "Autre"
+      },
+      "methodValue": {
+        "cash": "Espèces",
+        "card": "Carte",
+        "transfer": "Virement",
+        "mobile": "Paiement mobile",
+        "insurance": "Assurance",
+        "other": "Autre"
+      }
+    },
+    "referential": {
+      "title": "Référentiel",
+      "subtitle": "Structure de l’établissement : services, salles, lits, spécialités, praticiens et rôles.",
+      "tab": {
+        "departments": "Services",
+        "rooms": "Salles",
+        "beds": "Lits",
+        "specialties": "Spécialités",
+        "practitioners": "Praticiens",
+        "staff-roles": "Rôles"
+      },
+      "departments": "Services médicaux",
+      "rooms": "Salles",
+      "beds": "Lits",
+      "specialties": "Spécialités",
+      "practitioners": "Praticiens",
+      "staffRoles": "Rôles réception & facturation",
+      "code": "Code",
+      "name": "Nom",
+      "description": "Description",
+      "status": "Statut",
+      "department": "Service",
+      "room": "Salle",
+      "roomType": "Type",
+      "employeeId": "ID employé",
+      "licenseNumber": "N° de licence",
+      "practitionerTitle": "Titre",
+      "role": "Rôle",
+      "statusValue": {
+        "active": "Actif",
+        "inactive": "Inactif"
+      },
+      "roomTypeValue": {
+        "consultation": "Consultation",
+        "hospitalization": "Hospitalisation",
+        "operating": "Bloc opératoire",
+        "emergency": "Urgences",
+        "other": "Autre"
+      },
+      "bedStatusValue": {
+        "free": "Libre",
+        "occupied": "Occupé",
+        "maintenance": "Maintenance"
+      },
+      "titleValue": {
+        "dr": "Docteur",
+        "pr": "Professeur",
+        "midwife": "Sage-femme",
+        "nurse": "Infirmier·ère",
+        "other": "Autre"
+      },
+      "roleValue": {
+        "reception": "Réception",
+        "billing": "Facturation"
+      }
+    }
   }
 }

@@ -948,6 +948,36 @@
     "BC-02",
     "BC-03"
    ]
+  },
+  {
+   "code": "BC-31",
+   "name": "HEALTH",
+   "context": "HealthManager",
+   "responsibility": "Services médicaux, praticiens, patients, rendez-vous, consultations, prescriptions, hospitalisations, lits et facturation des soins.",
+   "owner": "Agent 31 — BC-HEALTH",
+   "priority": "P1",
+   "status": "active",
+   "paths": [
+    {
+     "path": "api/app/Modules/HealthManager",
+     "status": "active"
+    }
+   ],
+   "routes": [
+    "api/routes/modules/health_manager.php"
+   ],
+   "migrations": [
+    "api/database/migrations/tenant"
+   ],
+   "events": [
+    "App\\Modules\\HealthManager\\Domain\\Events"
+   ],
+   "dependencies": [
+    "BC-02",
+    "BC-04",
+    "BC-14",
+    "BC-20"
+   ]
   }
  ]
 }
