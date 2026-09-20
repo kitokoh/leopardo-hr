@@ -584,6 +584,8 @@ const MODULE_ROUTE_ALIASES: Record<string, ClientModuleKey> = {
   '/commerce/products': 'commerce',
   '/commerce/stock': 'commerce',
   '/commerce/pos': 'commerce',
+  // #7810 — marketplace : page « Boutique en ligne » (même module retail).
+  '/commerce/boutique': 'commerce',
   '/fuel': 'fuel',
   '/edu-manager/campuses': 'edu_manager',
   '/edu-manager/academic-years': 'edu_manager',
