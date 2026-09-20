@@ -39,17 +39,51 @@ const DEFAULT_API_ORIGIN = "https://gestionemployerbackend.onrender.com";
 
 /**
  * connect-src par ENVIRONNEMENT (#7650) : l'origine API vient de
- * `NEXT_PUBLIC_API_URL` (posée par environnement Vercel/Render), plus aucun
- * hardcode du service dev dans un fichier statique. Le repli reste l'API dev
- * uniquement pour le poste local sans `.env` — la prod DOIT poser la
- * variable (leopardo-prod → API prod).
+ * `NEXT_PUBLIC_API_URL` (posée par environnement Vercel/Render).
+ *
+ * #7842 (audit sécurité 2026-09-20) : en production, une variable manquante
+ * lève une erreur actionnable — le repli silencieux vers l'origine de DEV
+ * n'est conservé qu'en dev/test (poste local sans `.env`), avec warning.
+ * Une valeur INVALIDE (URL non parsable) reste tolérée sans casser la
+ * construction de la politique : on retombe sur l'origine de dev en
+ * dev/test, et on lève en production (une CSP bâtie sur la mauvaise
+ * origine bloquerait tous les appels API — autant échouer explicitement).
  */
 export function resolveApiOrigin(): string {
-  try {
-    return new URL(process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_ORIGIN).origin;
-  } catch {
-    return DEFAULT_API_ORIGIN;
+  const configured = process.env.NEXT_PUBLIC_API_URL;
+
+  if (configured) {
+    try {
+      return new URL(configured).origin;
+    } catch {
+      if (process.env.NODE_ENV === "production") {
+        throw new Error(
+          `[csp] NEXT_PUBLIC_API_URL invalide (« ${configured} ») en production — ` +
+            "corriger la variable dans l'environnement du déploiement (audit #7842).",
+        );
+      }
+
+      console.warn(
+        `[csp] NEXT_PUBLIC_API_URL invalide (« ${configured} ») — fallback DEV vers ${DEFAULT_API_ORIGIN} (audit #7842).`,
+      );
+
+      return DEFAULT_API_ORIGIN;
+    }
   }
+
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "[csp] NEXT_PUBLIC_API_URL absente alors que NODE_ENV=production — " +
+        "poser la variable dans l'environnement du déploiement (Vercel/Render/Cloudflare) ; " +
+        "le fallback silencieux vers l'API de dev a été retiré (audit #7842).",
+    );
+  }
+
+  console.warn(
+    `[csp] NEXT_PUBLIC_API_URL absente — fallback DEV vers ${DEFAULT_API_ORIGIN}. Toléré uniquement en dev/test (audit #7842).`,
+  );
+
+  return DEFAULT_API_ORIGIN;
 }
 
 export function buildCspDirectives({

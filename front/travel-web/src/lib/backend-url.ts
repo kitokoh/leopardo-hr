@@ -1,22 +1,58 @@
 /**
- * URL de base de l'API backend — même chaîne de résolution que front/web
- * (`src/lib/backend-url.ts`, audit #1701) :
- *   `API_PROXY_TARGET` > `BACKEND_API_URL` > `NEXT_PUBLIC_API_URL`
- *   > défaut `https://gestionemployerbackend.onrender.com/api/v1`
- * (API Laravel dev réellement en ligne — cf. docs/ops/DOMAINS.md).
+ * Centralisation de l'URL de l'API backend (audit #1701, durci par #7842).
  *
- * Server-side UNIQUEMENT (route handler proxy + pages SSR). Le navigateur,
- * lui, ne parle qu'au proxy same-origin `/api/v1/*`.
+ * FICHIER MIROIR : `front/web/src/lib/backend-url.ts` et
+ * `front/travel-web/src/lib/backend-url.ts` doivent rester STRICTEMENT
+ * identiques (même contenu octet par octet) — toute évolution se fait dans
+ * les deux copies en même temps.
+ *
+ * Chaîne de résolution serveur :
+ *   `API_PROXY_TARGET` > `BACKEND_API_URL` > `NEXT_PUBLIC_API_URL`
+ *
+ * #7842 (audit sécurité 2026-09-20) : le fallback vers l'API Render de DEV
+ * n'existe plus qu'EN DEV/TEST (poste local sans `.env`), avec un warning
+ * console explicite. En production (`NODE_ENV === 'production'`), une
+ * variable manquante lève une erreur actionnable au lieu de pointer
+ * silencieusement des données réelles vers l'environnement de dev.
  */
 
-export const DEFAULT_BACKEND_API_URL =
-  "https://gestionemployerbackend.onrender.com/api/v1";
+export const DEFAULT_BACKEND_API_URL = 'https://gestionemployerbackend.onrender.com/api/v1';
 
+function resolveWithFallbackPolicy(explicit: string | undefined, context: string, envHint: string): string {
+  if (explicit) {
+    return explicit.replace(/\/$/, '');
+  }
+
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      `[backend-url] Aucune URL backend configurée (${context}) alors que NODE_ENV=production. ` +
+        `Poser ${envHint} dans l'environnement du déploiement (Vercel/Render/Cloudflare) — ` +
+        `le fallback silencieux vers l'API de dev a été retiré (audit #7842).`,
+    );
+  }
+
+  console.warn(
+    `[backend-url] ${envHint} absent — fallback DEV vers ${DEFAULT_BACKEND_API_URL} (${context}). ` +
+      'Toléré uniquement en dev/test (audit #7842).',
+  );
+
+  return DEFAULT_BACKEND_API_URL.replace(/\/$/, '');
+}
+
+/** URL de base backend utilisée côté serveur (route handlers). */
 export function resolveBackendBaseUrl(): string {
-  return (
-    process.env.API_PROXY_TARGET ||
-    process.env.BACKEND_API_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    DEFAULT_BACKEND_API_URL
-  ).replace(/\/$/, "");
+  return resolveWithFallbackPolicy(
+    process.env.API_PROXY_TARGET || process.env.BACKEND_API_URL || process.env.NEXT_PUBLIC_API_URL,
+    'résolution serveur',
+    'API_PROXY_TARGET / BACKEND_API_URL / NEXT_PUBLIC_API_URL',
+  );
+}
+
+/** URL de base backend utilisée côté client (navigateur). */
+export function getApiBaseUrl(): string {
+  return resolveWithFallbackPolicy(
+    typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_API_URL : undefined,
+    'résolution client',
+    'NEXT_PUBLIC_API_URL',
+  );
 }
