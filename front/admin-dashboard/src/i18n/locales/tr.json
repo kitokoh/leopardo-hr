@@ -3766,7 +3766,23 @@
     "checkout_sandbox_message": "Simüle edilmiş ödeme (sandbox modu). Karttan ücret alınmaz.",
     "checkout_unavailable": "Çevrimiçi ödeme geçici olarak kullanılamıyor. support@leopardo-rh.com adresinden destek ile iletişime geçin.",
     "checkout_failed": "Ödeme oturumu oluşturulamadı.",
-    "redirect_url_invalid": "Yönlendirme URL'leri yetkili siteye ait olmalıdır."
+    "redirect_url_invalid": "Yönlendirme URL'leri yetkili siteye ait olmalıdır.",
+    "ai_credits": {
+      "title": "Yapay zeka kredileri",
+      "subtitle": "Planınızın aylık kotasına ek olarak yapay zeka asistanı için token paketleri.",
+      "optional_note": "Tamamen isteğe bağlı: kredi satın almazsanız aboneliğiniz ve modülleriniz asla engellenmez.",
+      "balance_label": "Kredi bakiyesi",
+      "tokens_unit": "token",
+      "buy_pack": "Satın al",
+      "pack_label": "Paket {code}",
+      "history_title": "Son hareketler",
+      "history_empty": "Henüz kredi hareketi yok.",
+      "reason_purchase": "Satın alma",
+      "reason_consumption": "Tüketim",
+      "reason_adjustment": "Düzeltme",
+      "load_error": "Yapay zeka kredileri yüklenemedi.",
+      "checkout_error": "Yapay zeka kredisi ödeme oturumu oluşturulamadı."
+    }
   },
   "settingsEmailLabel": "E-posta",
   "companydetailEditSubscription": "Aboneliği düzenle",

@@ -10,6 +10,7 @@
  *   - Feature flags write: principal only
  */
 
+use App\Modules\Billing\Interfaces\Api\V1\Controllers\AiCreditController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\BillingController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\FeatureFlagController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\TenantPaymentProfileController;
@@ -76,5 +77,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::put('/billing/payment-profiles/{id}', [TenantPaymentProfileController::class, 'update'])->whereNumber('id');
         Route::post('/billing/payment-profiles/{id}/activate', [TenantPaymentProfileController::class, 'activate'])->whereNumber('id');
         Route::delete('/billing/payment-profiles/{id}', [TenantPaymentProfileController::class, 'destroy'])->whereNumber('id');
+
+        // Crédits IA achetables (#7764, spec MISSION_ESPACE_CLIENT §3.4) —
+        // achat FACULTATIF de packs de tokens, visible uniquement dans
+        // l'espace Facturation (principal only, comme le reste de /billing).
+        Route::get('/billing/ai-credits', [AiCreditController::class, 'index']);
+        Route::post('/billing/ai-credits/checkout', [AiCreditController::class, 'checkout']);
     });
 });
