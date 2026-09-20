@@ -12,7 +12,7 @@
 > PROJET »). Sources canoniques à la place de ce fichier :
 > - backlog & affectations : **GitHub Issues** (labels BC, milestone « Audit & mise en ordre ») ;
 > - roadmap produit : `docs/REFERENTIEL_PRODUIT/ROADMAP.md` ;
-> - plan 60 jours : `PLAN_60_JOURS.md` (racine) + gate de scope `docs/GOUVERNANCE/FREEZE_SCOPE_60J.md` ;
+> - plan 60 jours : `docs/GESTION_PROJET/PLAN_60_JOURS.md` + gate de scope `docs/GOUVERNANCE/FREEZE_SCOPE_60J.md` ;
 > - règles de travail : `AGENTS.md` (racine) ;
 > - exploitation : `docs/ops/` et `dev-hub/`.
 > Ce fichier est conservé pour traçabilité historique (versions 4.x) ; il peut
