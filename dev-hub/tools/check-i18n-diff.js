@@ -270,6 +270,15 @@ function classifyLiteral(rawValue) {
   if (cssDeclarationPattern.test(value)) return null;
   if (isTechnicalToken(value)) return null;
   if (isCodeExpression(value)) return null;
+  // Diagnostics développeur préfixés par une étiquette de composant entre
+  // crochets (« [admin-dashboard] … », « [backend-url] … », « [csp] … ») :
+  // convention du dépôt pour les messages de console/exception destinés aux
+  // développeurs et opérateurs, jamais rendus dans l'UI — donc hors
+  // catalogue i18n par conception. Constat #7842 : le fail-fast VITE_API_URL
+  // de front/admin-dashboard/src/services/api.js (throw + console.warn
+  // multi-lignes, seules les lignes portant `console.warn(` étant exemptées
+  // par devLogLinePattern) était signalé comme texte utilisateur.
+  if (/^\[[a-z][a-z0-9-]*\]\s/.test(value)) return null;
   return value;
 }
 

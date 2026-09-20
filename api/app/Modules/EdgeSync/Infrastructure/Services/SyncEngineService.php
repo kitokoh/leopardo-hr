@@ -8,7 +8,6 @@ use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncLog;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
 use App\Modules\EdgeSync\Infrastructure\Jobs\ProcessSyncQueueJob;
-use App\Modules\EdgeSync\Infrastructure\Services\EdgeDaemonSyncClient;
 use App\Modules\EdgeSync\Interfaces\Api\V1\Controllers\EdgeNodeController;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
