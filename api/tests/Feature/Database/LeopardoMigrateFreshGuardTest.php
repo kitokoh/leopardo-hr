@@ -6,6 +6,7 @@ namespace Tests\Feature\Database;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Testing\PendingCommand;
 use Tests\TestCase;
 
 /**
@@ -22,16 +23,18 @@ class LeopardoMigrateFreshGuardTest extends TestCase
     {
         $this->app->instance('env', 'production');
 
-        $this->artisan('leopardo:migrate', ['--fresh' => true, '--force' => true])
-            ->expectsOutputToContain('INTERDIT en production')
+        $pending = $this->artisan('leopardo:migrate', ['--fresh' => true, '--force' => true]);
+        assert($pending instanceof PendingCommand);
+        $pending->expectsOutputToContain('INTERDIT en production')
             ->assertExitCode(1);
     }
 
     public function test_fresh_without_force_aborts_without_interactive_confirmation(): void
     {
         // Sans --force, la confirmation est requise ; non confirmée → abandon.
-        $this->artisan('leopardo:migrate', ['--fresh' => true])
-            ->expectsConfirmation(
+        $pending = $this->artisan('leopardo:migrate', ['--fresh' => true]);
+        assert($pending instanceof PendingCommand);
+        $pending->expectsConfirmation(
                 '--fresh va DÉTRUIRE les schémas public et shared_tenants sur ' . $this->expectedTarget() . '. Continuer ?',
                 'no'
             )
