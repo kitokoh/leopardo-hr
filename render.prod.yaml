@@ -8,6 +8,31 @@
 # docs/ops/RENDER_DEV_PROD_TOPOLOGY.md pour le détail de la topologie
 # dev/prod et le plan de bascule vers un plan payant complet.
 #
+# ⚠️ #7845 — Ce fichier décrit l'**état provisionné** du workspace prod ;
+# l'état CIBLE non provisionné (worker, bloqué billing) est conservé en bloc
+# COMMENTÉ plus bas. Services DÉCLARÉS vs RÉELS (API Render, 2026-09-20) :
+#   | Service                    | Blueprint        | Réel (workspace prod)   |
+#   |----------------------------|------------------|-------------------------|
+#   | leopardo-prod              | web, free        | ✅ web, free, frankfurt  |
+#   | leopardo-redis-prod        | redis, free      | ✅ available, frankfurt  |
+#   | leopardo-queue-worker-prod | commenté (cible) | ❌ absent — 402 billing  |
+# Bloquant unique : moyen de paiement absent (Background Workers inéligibles
+# au tier gratuit, #7649).
+#
+# ⚠️ INTÉRIM ASSUMÉ (et son plan de sortie) — #7845/#7649 :
+#   La queue ET le scheduler prod tournent dans le conteneur web FREE-TIER
+#   (docker-entrypoint.sh, gates WEB_QUEUE_DRAIN / WEB_SCHEDULER_LOOP, défaut
+#   on). Conséquence : le web free spin-down après ~15 min d'inactivité → le
+#   scheduler s'arrête avec lui ; toute tâche planifiée due pendant le
+#   spin-down est PERDUE (pas de rattrapage), la queue n'est drainée qu'au
+#   réveil. Supervision sans credentials : queue-supervision.yml (sonde HTTP).
+#   SORTIE D'INTÉRIM (décision billing propriétaire) :
+#     1. ajouter un moyen de paiement au workspace prod ;
+#     2. dé-commenter leopardo-queue-worker-prod ci-dessous et provisionner
+#        (blueprint sync ou API) — starter, ~7 $/mois ;
+#     3. poser WEB_QUEUE_DRAIN=false et WEB_SCHEDULER_LOOP=false sur
+#        leopardo-prod (sinon double consommation de la queue).
+#
 # ⚠️ PHASE 1 (tier gratuit Render, validation du pipeline) :
 #   - Base de données : Neon Postgres (projet "LEOPARDO", branche
 #     "production"), PAS le Postgres Render — le Postgres gratuit Render
@@ -18,13 +43,10 @@
 #   - Key Value (Redis) gratuit Render : en mémoire uniquement, perdu au
 #     redémarrage — suffisant pour cache/session en Phase 1.
 #   - Les Background Workers ne sont PAS éligibles au tier gratuit Render :
-#     `leopardo-queue-worker` et `leopardo-scheduler` ne sont donc PAS
-#     répliqués ici. Nuance (vérifiée 2026-09-05) : la queue est drainée en
-#     mono-conteneur par le web service (docker-entrypoint.sh → queue:work
-#     en arrière-plan, connexion database) — les jobs asynchrones SONT donc
-#     traités en Phase 1. En revanche les tâches planifiées (schedule:run)
-#     ne tournent pas sans `leopardo-scheduler` : à ajouter dès le passage à
-#     un plan payant.
+#     le worker fusionné `leopardo-queue-worker-prod` n'est donc PAS
+#     provisionné (bloc commenté plus bas, #7845). Queue ET scheduler
+#     tournent en intérim dans le conteneur web — cf. « INTÉRIM ASSUMÉ »
+#     ci-dessus pour les limites (spin-down) et le plan de sortie.
 
 services:
   # ──────────────────────────────────────────────────────────────────────────
@@ -182,73 +204,86 @@ services:
   # WEB_QUEUE_DRAIN=false et WEB_SCHEDULER_LOOP=false sur leopardo-prod.
   # Un SEUL worker starter (~7 $/mois) porte queue:work ET schedule:work —
   # l'ancien second service « leopardo-scheduler-prod » est fusionné ici.
-  - type: worker
-    name: leopardo-queue-worker-prod
-    runtime: docker
-    dockerfilePath: api/Dockerfile.prod
-    dockerContext: .
-    region: frankfurt
-    # starter = plan minimal des Background Workers (pas de tier gratuit).
-    plan: starter
-    # Pas de hook Render dédié pour les workers → autoDeploy:false (#6700).
-    autoDeploy: false
-    # exec sur queue:work : sa sortie (max-time 1 h ou crash) termine le
-    # conteneur, Render le redémarre → les DEUX processus repartent.
-    dockerCommand: >-
-      sh -c 'php artisan schedule:work >&2 &
-      exec php artisan queue:work
-      --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default
-      --tries=3
-      --timeout=300
-      --sleep=3
-      --max-jobs=500
-      --max-time=3600'
-    envVars:
-      - key: APP_ENV
-        value: production
-      - key: DEPLOY_TIER
-        value: prod
-      - key: APP_DEBUG
-        value: false
-      - key: DISABLE_DEMO_SEEDING
-        value: "true"
-      # #6558 : migrations UNIQUEMENT sur le service web — jamais au boot
-      # des workers (course de migrations à chaque redémarrage).
-      - key: RUN_MIGRATIONS
-        value: "false"
-      - key: APP_URL
-        fromService:
-          name: leopardo-prod
-          type: web
-          property: host
-      - key: LOG_CHANNEL
-        value: stderr
-      - key: LOG_LEVEL
-        value: info
-      # Database — Neon (DB_URL sync: false, cf. web service).
-      - key: DB_CONNECTION
-        value: pgsql
-      - key: DB_URL
-        sync: false
-      - key: DB_SEARCH_PATH
-        value: shared_tenants,public
-      # #3907 : APP_KEY référencé depuis le web service — une clé
-      # indépendante rendrait indéchiffrables les payloads chiffrés partagés.
-      - key: APP_KEY
-        fromService:
-          name: leopardo-prod
-          type: web
-          envVarKey: APP_KEY
-      - key: QUEUE_CONNECTION
-        value: database
-      - key: CACHE_STORE
-        value: file
+  # ⚠️ #7845 (audit 2026-09-20, vérifié via API Render) : ce worker n'a JAMAIS
+  # été provisionné — le seul service réel du workspace prod est le web
+  # « leopardo-prod » (free) + le Key Value « leopardo-redis-prod » (free).
+  # Le déclarer comme un service actif faisait passer le blueprint pour
+  # l'état réel alors qu'il décrit une CIBLE. Bloc conservé ci-dessous en
+  # COMMENTAIRE (état cible, worker fusionné queue+scheduler, ~7 $/mois) :
+  # dé-commenter tel quel dès qu'un moyen de paiement est ajouté, provisionner
+  # (blueprint sync ou API), puis passer WEB_QUEUE_DRAIN=false et
+  # WEB_SCHEDULER_LOOP=false sur leopardo-prod.
+  #
+#   - type: worker
+#     name: leopardo-queue-worker-prod
+#     runtime: docker
+#     dockerfilePath: api/Dockerfile.prod
+#     dockerContext: .
+#     region: frankfurt
+#     # starter = plan minimal des Background Workers (pas de tier gratuit).
+#     plan: starter
+#     # Pas de hook Render dédié pour les workers → autoDeploy:false (#6700).
+#     autoDeploy: false
+#     # exec sur queue:work : sa sortie (max-time 1 h ou crash) termine le
+#     # conteneur, Render le redémarre → les DEUX processus repartent.
+#     dockerCommand: >-
+#       sh -c 'php artisan schedule:work >&2 &
+#       exec php artisan queue:work
+#       --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default
+#       --tries=3
+#       --timeout=300
+#       --sleep=3
+#       --max-jobs=500
+#       --max-time=3600'
+#     envVars:
+#       - key: APP_ENV
+#         value: production
+#       - key: DEPLOY_TIER
+#         value: prod
+#       - key: APP_DEBUG
+#         value: false
+#       - key: DISABLE_DEMO_SEEDING
+#         value: "true"
+#       # #6558 : migrations UNIQUEMENT sur le service web — jamais au boot
+#       # des workers (course de migrations à chaque redémarrage).
+#       - key: RUN_MIGRATIONS
+#         value: "false"
+#       - key: APP_URL
+#         fromService:
+#           name: leopardo-prod
+#           type: web
+#           property: host
+#       - key: LOG_CHANNEL
+#         value: stderr
+#       - key: LOG_LEVEL
+#         value: info
+#       # Database — Neon (DB_URL sync: false, cf. web service).
+#       - key: DB_CONNECTION
+#         value: pgsql
+#       - key: DB_URL
+#         sync: false
+#       - key: DB_SEARCH_PATH
+#         value: shared_tenants,public
+#       # #3907 : APP_KEY référencé depuis le web service — une clé
+#       # indépendante rendrait indéchiffrables les payloads chiffrés partagés.
+#       - key: APP_KEY
+#         fromService:
+#           name: leopardo-prod
+#           type: web
+#           envVarKey: APP_KEY
+#       - key: QUEUE_CONNECTION
+#         value: database
+#       - key: CACHE_STORE
+#         value: file
 
 databases:
   # Pas de Postgres Render : la base de données est Neon (projet
   # "LEOPARDO", externe, gérée hors Blueprint — voir DB_URL ci-dessus et
   # docs/ops/RENDER_DEV_PROD_TOPOLOGY.md).
   #
+  # #7845 : contrairement aux workers, cette instance EXISTE bien dans le
+  # workspace prod (vérifié via API Render 2026-09-20 : « leopardo-redis-prod »,
+  # free, frankfurt, status available, créée 2026-09-03).
   # Plan gratuit : en mémoire uniquement, une seule instance par workspace.
   - name: leopardo-redis-prod
     plan: free
