@@ -1,6 +1,29 @@
 # AGENTS.md - Guide de travail Leopardo
 
-Derniere mise a jour : 2026-09-19 (verticale HealthManager BC-31 — checklist de création d'une verticale vérifiée de bout en bout)
+Derniere mise a jour : 2026-09-20 (session PM — lot #7963/#7966/#7958/#7967 + réalignement déploiement dev)
+
+> Leçon 2026-09-20 (session PM, audit sécurité 2026-09-20) :
+> 1. **Drift déploiement dev** : la garde `deploy-drift-guard.yml` compare le health
+>    public au dernier commit `api/` — un service Render en retard se réaligne par
+>    l'API Render (`POST /v1/services/{id}/deploys`, clé du workspace) SANS attendre
+>    un push, puis `workflow_dispatch` de la garde pour constater le vert.
+> 2. **APP_KEY Render** : `generateValue: true` dans un blueprint = régénération à
+>    chaque re-sync. Le pin SÉCURISÉ = lire la valeur courante via l'API
+>    (`GET .../env-vars/APP_KEY`), la reprendre telle quelle (`PUT`), PUIS passer le
+>    blueprint en `sync: false` — zéro rotation, zéro invalidation de session (#7967).
+> 3. **Biométrie kiosque (#7958)** : `method=fingerprint/face` sans preuve device est
+>    désormais dégradé en `manual` + audit `UNVERIFIED_IDENTITY` APRÈS la matrice
+>    BIO-006 (méthode désactivée → 422 intact). `manual` est accepté hors matrice :
+>    c'est le mode déclaratif honnête. Le vérificateur de preuve se branchera sur
+>    `KioskAttendanceService::hasVerifiableBiometricProof()` (fail-closed par défaut).
+> 4. **Fail-fast URL backend (#7963)** : `next build` SANS `NEXT_PUBLIC_API_URL`
+>    échoue désormais — tout workflow qui build un front doit poser la variable
+>    (localhost en CI), et tout projet Vercel doit l'avoir par cible (production ET
+>    preview, sinon previews rouges — vérifier via l'API Vercel `GET /v9/projects/{id}/env`).
+> 5. **Images edge non-root (#7966)** : nginx :8080 + `USER www-data` +
+>    `supervisord -u www-data` (no-op si déjà www-data, filet si `--user root`) ;
+>    penser à chowner `/var/log/supervisor`, `/var/lib/nginx`, `/var/log/nginx`,
+>    `/run/nginx` et à propager le port dans compose/Caddyfile/install.sh.
 
 > Leçon 2026-09-19 (HC-001..008 #7785..#7792) : créer une VERTICALE complète = 8 points
 > d'enregistrement au-delà du module lui-même, tous vérifiés par des gardes locales :
