@@ -33961,35 +33961,6 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Validation422'
-  /public/market/payments/webhook/{provider}:
-    post:
-      tags:
-      - Retail
-      summary: Webhook paiement marketplace (#7812) - signature obligatoire
-      description: 'Callback des providers de paiement en ligne. Verification de
-        signature OBLIGATOIRE fail-closed (401 sinon), idempotent (rejeu -> 200
-        sans double effet), provider inconnu -> 404. Aucune auth Sanctum.'
-      security: []
-      parameters:
-      - name: provider
-        in: path
-        required: true
-        schema:
-          type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              description: Payload brut du provider (verifie par signature)
-      responses:
-        '200':
-          description: Evenement traite (ou rejeu idempotent)
-        '401':
-          description: Signature absente ou invalide (fail-closed)
-        '404':
-          $ref: '#/components/responses/Error404'
   /public/market/account/register:
     post:
       tags:
@@ -49602,41 +49573,6 @@ components:
             activated:
               $ref: '#/components/schemas/SetupInterviewActivated'
 
-    HealthCheck:
-      type: object
-      properties:
-        ok:
-          type: boolean
-        latency_ms:
-          type: integer
-          nullable: true
-        status:
-          type: string
-          nullable: true
-        error:
-          type: string
-          nullable: true
-    HealthResponse:
-      type: object
-      properties:
-        status:
-          type: string
-          example: ok
-        version:
-          type: string
-          nullable: true
-        checks:
-          type: object
-          properties:
-            database:
-              $ref: '#/components/schemas/HealthCheck'
-            redis:
-              $ref: '#/components/schemas/HealthCheck'
-            storage:
-              $ref: '#/components/schemas/HealthCheck'
-        timestamp:
-          type: string
-          format: date-time
     HealthPageMeta:
       type: object
       properties:
