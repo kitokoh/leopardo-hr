@@ -16,7 +16,9 @@ import DashboardLayout from '../layout';
  * Ce que ce fichier verrouille :
  *  1. le menu de compte existe, et le nom / l'e-mail ne sont PAS rendus en clair
  *     dans la barre (le symptôme visible de la régression) ;
- *  2. ses quatre entrées sont câblées (profil, mot de passe, 2FA, déconnexion) ;
+ *  2. ses entrées sont câblées (profil, abonnement & factures, déconnexion) —
+ *     #7860 : « Mot de passe », « Sécurité 2FA » et « Collaborateurs & rôles »
+ *     sont sortis du menu (ces capacités vivent dans Mon compte / Employés) ;
  *  3. la déconnexion du menu mène bien à `/auth/logout` ;
  *  4. le menu RH de la barre est monté et ouvre ses sous-modules (le sous-menu
  *     #7328 disparaissait de l'écran quand la nav était écrasée) ;
@@ -134,7 +136,7 @@ describe('Barre du haut — menu de compte (#7422, régression #7350)', () => {
     expect(screen.queryByText(managerUser.email)).not.toBeInTheDocument();
   });
 
-  it('ouvre les quatre entrées du compte, dont la déconnexion', async () => {
+  it('ouvre les entrées du compte, dont abonnement & factures et la déconnexion', async () => {
     const toggle = await renderDashboard();
 
     expect(screen.queryByTestId('user-menu')).not.toBeInTheDocument();
@@ -151,15 +153,24 @@ describe('Barre du haut — menu de compte (#7422, régression #7350)', () => {
       'href',
       '/settings/account',
     );
-    expect(within(menu).getByRole('menuitem', { name: 'Changer mon mot de passe' })).toHaveAttribute(
-      'href',
-      '/settings/account#password',
-    );
-    expect(within(menu).getByRole('menuitem', { name: 'Sécurité (2FA)' })).toHaveAttribute(
-      'href',
-      '/settings/security/2fa',
-    );
+    // #7860 — nouvelle entrée « Abonnement & factures » → /billing.
+    expect(within(menu).getByTestId('user-menu-billing')).toHaveAttribute('href', '/billing');
+    expect(within(menu).getByRole('menuitem', { name: 'Abonnement & factures' })).toBeInTheDocument();
     expect(within(menu).getByTestId('user-menu-logout')).toHaveTextContent('Déconnexion');
+  });
+
+  it('#7860 — mot de passe, 2FA et collaborateurs ne sont plus dans le menu ni le tiroir', async () => {
+    const toggle = await renderDashboard();
+    await userEvent.click(toggle);
+    await screen.findByTestId('user-menu');
+
+    // Ces capacités vivent désormais dans « Mon compte » et « Employés » :
+    // plus aucun lien direct dans le shell (menu avatar ET tiroir mobile).
+    expect(screen.queryByRole('menuitem', { name: 'Changer mon mot de passe' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: 'Sécurité (2FA)' })).not.toBeInTheDocument();
+    expect(document.querySelector('a[href="/settings/account#password"]')).toBeNull();
+    expect(document.querySelector('a[href="/settings/security/2fa"]')).toBeNull();
+    expect(document.querySelector('a[href="/settings/team"]')).toBeNull();
   });
 
   it('la déconnexion du menu est câblée sur /auth/logout', async () => {
@@ -202,6 +213,26 @@ describe('Barre du haut — menu de navigation (#7422, sous-menu #7328)', () => 
     const headerNav = screen.getByTestId('dashboard-horizontal-nav');
     expect(within(headerNav).getByRole('link', { name: 'Employés' })).toHaveAttribute('href', '/employees');
     expect(within(headerNav).getByRole('link', { name: 'Absences' })).toHaveAttribute('href', '/absences');
+  });
+});
+
+describe('Barre du haut — hover intent des sous-menus (#7860)', () => {
+  it('le survol ouvre le menu RH après temporisation, le quitter le referme', async () => {
+    await renderDashboard();
+
+    const hrMenu = screen.getByTestId('dashboard-hr-menu');
+    expect(screen.queryByTestId('dashboard-hr-menu-panel')).not.toBeInTheDocument();
+
+    // L'ouverture n'est PAS immédiate (hover intent ~150 ms) : un pointeur qui
+    // traverse la barre ne déclenche rien, un survol franc ouvre le panneau.
+    await userEvent.hover(hrMenu);
+    expect(screen.queryByTestId('dashboard-hr-menu-panel')).not.toBeInTheDocument();
+    expect(await screen.findByTestId('dashboard-hr-menu-panel')).toBeInTheDocument();
+
+    // La sortie referme après ~300 ms (tolérance de trajectoire).
+    await userEvent.unhover(hrMenu);
+    expect(screen.getByTestId('dashboard-hr-menu-panel')).toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByTestId('dashboard-hr-menu-panel')).not.toBeInTheDocument());
   });
 });
 

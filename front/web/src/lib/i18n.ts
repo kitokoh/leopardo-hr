@@ -113,6 +113,8 @@ export type CopyTree = {
     userMenuAccount: string;
     userMenuPassword: string;
     userMenuSecurity: string;
+    /** #7860 — entrée « Abonnement & factures » du menu avatar (/billing). */
+    userMenuBilling: string;
     presentBadge: string;
     employeeLabel: string;
     checkInAt: string;
@@ -767,6 +769,7 @@ const copy: Record<AppLocale, CopyTree> = {
       userMenuAccount: 'Mon compte',
       userMenuPassword: 'Changer mon mot de passe',
       userMenuSecurity: 'Sécurité (2FA)',
+      userMenuBilling: 'Abonnement & factures',
       language: 'Langue',
       presentBadge: 'Présent',
       employeeLabel: 'Employé',
@@ -1458,6 +1461,7 @@ const copy: Record<AppLocale, CopyTree> = {
       userMenuAccount: 'حسابي',
       userMenuPassword: 'تغيير كلمة المرور',
       userMenuSecurity: 'الأمان (2FA)',
+      userMenuBilling: 'الاشتراك والفواتير',
       language: 'اللغة',
       presentBadge: 'حاضر',
       employeeLabel: 'موظف',
@@ -2145,6 +2149,7 @@ const copy: Record<AppLocale, CopyTree> = {
       userMenuAccount: 'Hesabım',
       userMenuPassword: 'Parolamı değiştir',
       userMenuSecurity: 'Güvenlik (2FA)',
+      userMenuBilling: 'Abonelik ve faturalar',
       language: 'Dil',
       presentBadge: 'Burada',
       employeeLabel: 'Calisan',
@@ -2832,6 +2837,7 @@ const copy: Record<AppLocale, CopyTree> = {
       userMenuAccount: 'My account',
       userMenuPassword: 'Change my password',
       userMenuSecurity: 'Security (2FA)',
+      userMenuBilling: 'Subscription & invoices',
       language: 'Language',
       presentBadge: 'Present',
       employeeLabel: 'Employee',
