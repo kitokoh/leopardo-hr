@@ -104,16 +104,17 @@ test.describe('Marketing funnel preview', () => {
     // QA onboarding 2026-09-14 : la page /signup n'affiche plus de hero
     // marketing (le formulaire EST l'écran, plus de récit à gauche/droite).
     // L'assertion porte donc sur le tunnel réellement présenté.
-    // #7489 — le tunnel s'ouvre DIRECTEMENT sur les coordonnées (e-mail + nom
-    // de l'espace) : le choix du profil (entreprise / indépendant) a été
-    // déplacé dans l'entretien de préparation (#7493), et l'écran « outils +
-    // métier » avait déjà été retiré (#7249).
+    // #7489 — le tunnel s'ouvre DIRECTEMENT sur les coordonnées : le choix du
+    // profil (entreprise / indépendant) a été déplacé dans l'entretien de
+    // préparation (#7493), et l'écran « outils + métier » avait déjà été
+    // retiré (#7249).
     const signupForm = page.locator('main form').first();
     await expect(signupForm.getByLabel(/email professionnel|email/i)).toBeVisible();
     // Le tunnel ne demande plus le rôle (le créateur EST le fondateur), ni la
     // taille d'équipe, ni le téléphone (l'e-mail est vérifié par code), ni le
-    // pays (résolu côté serveur par géolocalisation). Seuls e-mail, entreprise
-    // et CGU restent.
+    // pays (résolu côté serveur par géolocalisation). #7853 — le nom
+    // d'entreprise a été retiré à son tour (dérivé de l'e-mail côté serveur,
+    // affiné dans l'entretien de préparation) : seuls e-mail et CGU restent.
     const submitButton = signupForm.locator('button[type="submit"]');
     await expect(submitButton).toBeVisible();
 
@@ -129,7 +130,6 @@ test.describe('Marketing funnel preview', () => {
     // Champs contrôlés : rejouer les fills avec le clic (cf. test du hero).
     await expect(async () => {
       await signupForm.getByLabel(/email professionnel|email/i).fill(email);
-      await signupForm.getByLabel(/entreprise|company/i).fill('Leopardo Trial Co');
       await signupForm.locator('input[type="checkbox"]').check();
       const [signupResponse] = await Promise.all([
         page.waitForResponse((response) => response.url().includes('/api/forms/signup'), { timeout: 5000 }),
@@ -146,6 +146,8 @@ test.describe('Marketing funnel preview', () => {
     // existe, et il ne porte ni profil ni outils.
     const payload = JSON.parse(signupRequests[0]?.postData() ?? '{}');
     expect(payload.email).toBe(email);
+    // #7853 — e-mail seul : pas de nom d'entreprise dans le payload non plus.
+    expect(payload.company).toBeUndefined();
     expect(payload.company_type).toBeUndefined();
     expect(payload.modules).toBeUndefined();
   });

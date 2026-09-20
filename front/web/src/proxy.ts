@@ -76,6 +76,8 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/support',
   // BC-29 COMMUNICATION (#7691) — boîte connectée (zone dashboard).
   '/communication',
+  // #7908 — page « Modules » (statut, auto-activation) : zone dashboard.
+  '/modules',
 ];
 
 export function proxy(request: NextRequest) {
@@ -210,6 +212,7 @@ export const config = {
 
     '/support/:path*', // #7759 tickets support côté client — gate session
     '/communication/:path*', // BC-29 (#7691) boîte connectée — gate session
+    '/modules/:path*', // #7908 page Modules (statut, auto-activation) — gate session
     // Vitrine landing — ?lang= → en-tête x-vitrine-lang (issue #4004).
     // Routes statiques (exactes) + préfixes dynamiques (source
     // VITRINE_LANG_PREFIXES, garde protected-prefixes.test.ts).
