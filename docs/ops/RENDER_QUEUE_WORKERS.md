@@ -10,6 +10,9 @@ Redis, `leopardo-db`) ne s'appliquent qu'à une éventuelle sortie du
 mono-conteneur ou au provisionnement futur d'un scheduler. Voir
 `docs/ops/RENDER_DEV_PROD_TOPOLOGY.md` (état vérifié 2026-09-05) pour la
 topologie à jour ; `render.yaml` a été réécrit en conséquence (PR #6831).
+**Mise à jour 2026-09-19 (#7649)** : la stratégie change à nouveau — un worker
+dédié redevient la cible ; procédure propriétaire à jour dans
+`docs/ops/RENDER_WORKER_PROVISIONING_7649.md`.
 
 **Portée** : compte Render `africanovatech`, service web `gestionemployerbackend` (prod)
 

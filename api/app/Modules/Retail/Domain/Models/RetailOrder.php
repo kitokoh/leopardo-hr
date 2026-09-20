@@ -50,6 +50,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $delivery_notes
  * @property RetailFulfillmentStatus|null $fulfillment_status
  * @property string|null $tracking_token
+ * @property int|null $buyer_id
  * @property Carbon|null $confirmed_at
  * @property Carbon|null $shipped_at
  * @property Carbon|null $delivered_at
@@ -91,6 +92,7 @@ class RetailOrder extends Model
         'delivery_notes',
         'fulfillment_status',
         'tracking_token',
+        'buyer_id',
         'confirmed_at',
         'shipped_at',
         'delivered_at',
@@ -112,6 +114,7 @@ class RetailOrder extends Model
             'status' => RetailOrderStatus::class,
             'source' => RetailOrderSource::class,
             'fulfillment_status' => RetailFulfillmentStatus::class,
+            'buyer_id' => 'integer',
             'confirmed_at' => 'datetime',
             'shipped_at' => 'datetime',
             'delivered_at' => 'datetime',

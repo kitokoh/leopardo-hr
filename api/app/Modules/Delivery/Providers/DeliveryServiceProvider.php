@@ -14,8 +14,10 @@ use App\Modules\Delivery\Domain\Manifests\DeliveryManifest;
 use App\Modules\Delivery\Domain\Models\DeliveryEvent;
 use App\Modules\Delivery\Infrastructure\Repositories\DeliveryRepository;
 use App\Modules\Delivery\Infrastructure\Services\DeliveryNotificationService;
+use App\Modules\Delivery\Infrastructure\Services\EloquentPublicDeliveryStatusProvider;
 use App\Modules\Delivery\Infrastructure\Services\LoggingDeliveryAccountingAdapter;
 use App\Modules\Delivery\Infrastructure\Services\LoggingRecipientMessageAdapter;
+use App\Shared\Contracts\Delivery\PublicDeliveryStatusProvider;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
@@ -63,6 +65,10 @@ class DeliveryServiceProvider extends ServiceProvider
         // branchés sur les destinataires externes.
         $this->app->singleton(RecipientMessageContract::class, LoggingRecipientMessageAdapter::class);
 
+        // Port PUBLIC lecture seule (#7811) : le suivi public marketplace
+        // (module Retail) lit l'état de la livraison de SA commande via ce
+        // contrat Shared — jamais de requête directe sur les tables Delivery.
+        $this->app->singleton(PublicDeliveryStatusProvider::class, EloquentPublicDeliveryStatusProvider::class);
     }
 
     public function boot(): void

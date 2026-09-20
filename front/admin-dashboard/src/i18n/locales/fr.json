@@ -4667,7 +4667,9 @@
       "colRevenue": "CA du jour",
       "colOrders": "Commandes",
       "colOccupancy": "Rotation tables",
-      "colAlerts": "Alertes stock"
+      "colAlerts": "Alertes stock",
+      "payments": "Encaissement",
+      "paymentsDesc": "Paiement en ligne, profils Stripe & mobile money"
     },
     "crud": {
       "search": "Rechercher...",
@@ -4985,6 +4987,26 @@
       "reviewNotEligible": "L'avis n'est possible qu'après une commande servie ou livrée.",
       "reviewDuplicate": "Un avis a déjà été déposé pour cette commande.",
       "reviewError": "Impossible d'envoyer l'avis. Réessayez."
+    },
+    "payments": {
+      "title": "Encaissement",
+      "desc": "État de la configuration des paiements en ligne (profils d'encaissement)",
+      "loadError": "Impossible de charger l'état de l'encaissement.",
+      "onlineEnabled": "Paiement en ligne actif",
+      "onlineDisabled": "Paiement en ligne non configuré",
+      "onlineDisabledHint": "Vos clients ne peuvent pas payer en ligne : ajoutez un profil d'encaissement (clés Stripe ou mobile money) puis activez-le. Le paiement sur place reste toujours possible.",
+      "cardOnline": "Carte en ligne (Stripe)",
+      "mobileMoney": "Mobile money",
+      "configured": "Configuré",
+      "notConfigured": "Non configuré",
+      "sandbox": "Mode sandbox",
+      "production": "Production",
+      "profileActive": "Profil actif",
+      "profileMissing": "Aucun profil actif",
+      "payOnSite": "Paiement sur place (caisse)",
+      "alwaysAvailable": "Toujours disponible",
+      "manageProfiles": "Gérer les profils d'encaissement",
+      "manageProfilesHint": "Les clés Stripe et les comptes mobile money se gèrent dans Réglages → Encaissements."
     }
   },
   "commonLanguageArabic": "العربية",
@@ -8081,6 +8103,49 @@
         "shipped": "Expédiée",
         "delivered": "Livrée",
         "cancelled": "Annulée"
+      }
+    }
+  },
+  "paymentGateways": {
+    "nav": "Passerelles de paiement",
+    "title": "Passerelles de paiement",
+    "subtitle": "Configurez les comptes Stripe et Chargily de la plateforme — les clés sont chiffrées en base et prises en compte sans redéploiement.",
+    "loading": "Chargement…",
+    "loadError": "Impossible de charger les passerelles.",
+    "mode": "Mode",
+    "mode_test": "Test",
+    "mode_live": "Live",
+    "isActive": "Configuration active",
+    "save": "Enregistrer",
+    "saved": "Passerelle enregistrée.",
+    "saveError": "Enregistrement impossible.",
+    "testConnection": "Tester la connexion",
+    "secretEmpty": "Non configuré",
+    "secretKeepHint": "Laisser vide pour conserver la clé en place (jamais réaffichée en clair).",
+    "secretMissing": "Aucune clé enregistrée.",
+    "source": {
+      "database": "Configuré via BDD",
+      "env": "Configuré via env",
+      "none": "Non configuré"
+    },
+    "testStatus": {
+      "OK": "Connexion réussie — clés valides.",
+      "INVALID_CREDENTIALS": "Clés refusées par la passerelle.",
+      "NOT_CONFIGURED": "Aucune clé configurée.",
+      "CONNECTION_FAILED": "Connexion à la passerelle impossible.",
+      "UNKNOWN_GATEWAY": "Passerelle inconnue."
+    },
+    "field": {
+      "stripe": {
+        "secret_key": "Clé secrète (sk_…)",
+        "webhook_secret": "Webhook secret (whsec_…)",
+        "price_pilot": "Price ID — offre Pilot",
+        "price_operations": "Price ID — offre Operations",
+        "price_enterprise": "Price ID — offre Enterprise"
+      },
+      "chargily": {
+        "api_key": "Clé API",
+        "webhook_secret": "Webhook secret"
       }
     }
   }

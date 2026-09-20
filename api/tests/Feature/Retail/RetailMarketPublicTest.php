@@ -222,7 +222,7 @@ class RetailMarketPublicTest extends TestCase
         $response = $this->getJson('/api/v1/public/market/products')->assertStatus(200);
 
         $this->assertSame(
-            ['id', 'name', 'description', 'price_minor', 'currency', 'image_url', 'category', 'seller', 'available'],
+            ['id', 'name', 'description', 'price_minor', 'currency', 'image_url', 'category', 'seller', 'available', 'rating_avg', 'rating_count'],
             array_keys($response->json('data.0'))
         );
         $this->assertSame(
@@ -249,7 +249,7 @@ class RetailMarketPublicTest extends TestCase
             ->assertJsonPath('data.available', true);
 
         $this->assertSame(
-            ['id', 'name', 'description', 'price_minor', 'currency', 'image_url', 'category', 'seller', 'available'],
+            ['id', 'name', 'description', 'price_minor', 'currency', 'image_url', 'category', 'seller', 'available', 'rating_avg', 'rating_count'],
             array_keys($detail->json('data'))
         );
     }
@@ -383,7 +383,7 @@ class RetailMarketPublicTest extends TestCase
             ->assertJsonPath('data.0.products_count', 2);
 
         $this->assertSame(
-            ['name', 'slug', 'city', 'description', 'products_count'],
+            ['name', 'slug', 'city', 'description', 'products_count', 'rating_avg', 'rating_count'],
             array_keys($sellersResponse->json('data.0'))
         );
 

@@ -4364,7 +4364,9 @@
       "colRevenue": "Günün cirosu",
       "colOrders": "Siparişler",
       "colOccupancy": "Masa rotasyonu",
-      "colAlerts": "Stok uyarıları"
+      "colAlerts": "Stok uyarıları",
+      "payments": "Tahsilat",
+      "paymentsDesc": "Çevrimiçi ödeme, Stripe ve mobil para profilleri"
     },
     "crud": {
       "search": "Ara...",
@@ -4682,6 +4684,26 @@
       "reviewNotEligible": "Değerlendirme yalnızca servis edilen veya teslim edilen bir siparişten sonra yapılabilir.",
       "reviewDuplicate": "Bu sipariş için zaten bir değerlendirme gönderildi.",
       "reviewError": "Değerlendirme gönderilemedi. Tekrar deneyin."
+    },
+    "payments": {
+      "title": "Tahsilat",
+      "desc": "Çevrimiçi ödeme yapılandırma durumu (ödeme profilleri)",
+      "loadError": "Tahsilat durumu yüklenemedi.",
+      "onlineEnabled": "Çevrimiçi ödeme etkin",
+      "onlineDisabled": "Çevrimiçi ödeme yapılandırılmadı",
+      "onlineDisabledHint": "Müşterileriniz çevrimiçi ödeme yapamıyor: bir ödeme profili ekleyin (Stripe anahtarları veya mobil para) ve etkinleştirin. Yerinde ödeme her zaman mümkündür.",
+      "cardOnline": "Çevrimiçi kart (Stripe)",
+      "mobileMoney": "Mobil para",
+      "configured": "Yapılandırıldı",
+      "notConfigured": "Yapılandırılmadı",
+      "sandbox": "Sandbox modu",
+      "production": "Üretim",
+      "profileActive": "Etkin profil",
+      "profileMissing": "Etkin profil yok",
+      "payOnSite": "Yerinde ödeme (kasa)",
+      "alwaysAvailable": "Her zaman kullanılabilir",
+      "manageProfiles": "Ödeme profillerini yönet",
+      "manageProfilesHint": "Stripe anahtarları ve mobil para hesapları Ayarlar → Tahsilatlar bölümünde yönetilir."
     }
   },
   "edu": {
@@ -6724,6 +6746,49 @@
       "source": {
         "manual": "Manuel",
         "unsubscribe": "Abonelikten çıkma"
+      }
+    }
+  },
+  "paymentGateways": {
+    "nav": "Ödeme geçitleri",
+    "title": "Ödeme geçitleri",
+    "subtitle": "Platformun Stripe ve Chargily hesaplarını yapılandırın — anahtarlar veritabanında şifrelenir ve yeniden dağıtım gerekmeden uygulanır.",
+    "loading": "Yükleniyor…",
+    "loadError": "Geçitler yüklenemedi.",
+    "mode": "Mod",
+    "mode_test": "Test",
+    "mode_live": "Canlı",
+    "isActive": "Yapılandırma etkin",
+    "save": "Kaydet",
+    "saved": "Geçit kaydedildi.",
+    "saveError": "Kaydedilemedi.",
+    "testConnection": "Bağlantıyı test et",
+    "secretEmpty": "Yapılandırılmadı",
+    "secretKeepHint": "Mevcut anahtarı korumak için boş bırakın (asla açık gösterilmez).",
+    "secretMissing": "Kayıtlı anahtar yok.",
+    "source": {
+      "database": "Veritabanı ile yapılandırıldı",
+      "env": "Ortam değişkeni ile yapılandırıldı",
+      "none": "Yapılandırılmadı"
+    },
+    "testStatus": {
+      "OK": "Bağlantı başarılı — anahtarlar geçerli.",
+      "INVALID_CREDENTIALS": "Anahtarlar geçit tarafından reddedildi.",
+      "NOT_CONFIGURED": "Yapılandırılmış anahtar yok.",
+      "CONNECTION_FAILED": "Geçide ulaşılamadı.",
+      "UNKNOWN_GATEWAY": "Bilinmeyen geçit."
+    },
+    "field": {
+      "stripe": {
+        "secret_key": "Gizli anahtar (sk_…)",
+        "webhook_secret": "Webhook secret (whsec_…)",
+        "price_pilot": "Price ID — Pilot planı",
+        "price_operations": "Price ID — Operations planı",
+        "price_enterprise": "Price ID — Enterprise planı"
+      },
+      "chargily": {
+        "api_key": "API anahtarı",
+        "webhook_secret": "Webhook secret"
       }
     }
   }

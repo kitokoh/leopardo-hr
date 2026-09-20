@@ -4364,7 +4364,9 @@
       "colRevenue": "إيرادات اليوم",
       "colOrders": "الطلبات",
       "colOccupancy": "دوران الطاولات",
-      "colAlerts": "تنبيهات المخزون"
+      "colAlerts": "تنبيهات المخزون",
+      "payments": "التحصيل",
+      "paymentsDesc": "الدفع عبر الإنترنت، ملفات Stripe والدفع عبر الهاتف"
     },
     "crud": {
       "search": "بحث...",
@@ -4682,6 +4684,26 @@
       "reviewNotEligible": "التقييم ممكن فقط بعد طلب مُقدَّم أو مُوصَّل.",
       "reviewDuplicate": "تم إرسال تقييم لهذا الطلب من قبل.",
       "reviewError": "تعذر إرسال التقييم. حاول مرة أخرى."
+    },
+    "payments": {
+      "title": "التحصيل",
+      "desc": "حالة إعداد الدفع عبر الإنترنت (ملفات الدفع)",
+      "loadError": "تعذر تحميل حالة التحصيل.",
+      "onlineEnabled": "الدفع عبر الإنترنت مفعّل",
+      "onlineDisabled": "الدفع عبر الإنترنت غير مُعد",
+      "onlineDisabledHint": "لا يمكن لعملائك الدفع عبر الإنترنت: أضف ملف دفع (مفاتيح Stripe أو الدفع عبر الهاتف) ثم فعّله. يبقى الدفع في الموقع متاحاً دائماً.",
+      "cardOnline": "بطاقة عبر الإنترنت (Stripe)",
+      "mobileMoney": "الدفع عبر الهاتف",
+      "configured": "مُعد",
+      "notConfigured": "غير مُعد",
+      "sandbox": "وضع الاختبار",
+      "production": "إنتاج",
+      "profileActive": "ملف نشط",
+      "profileMissing": "لا يوجد ملف نشط",
+      "payOnSite": "الدفع في الموقع (الصندوق)",
+      "alwaysAvailable": "متاح دائماً",
+      "manageProfiles": "إدارة ملفات الدفع",
+      "manageProfilesHint": "تُدار مفاتيح Stripe وحسابات الدفع عبر الهاتف في الإعدادات ← التحصيلات."
     }
   },
   "edu": {
@@ -6724,6 +6746,49 @@
       "source": {
         "manual": "يدوي",
         "unsubscribe": "إلغاء اشتراك"
+      }
+    }
+  },
+  "paymentGateways": {
+    "nav": "بوابات الدفع",
+    "title": "بوابات الدفع",
+    "subtitle": "قم بإعداد حسابات Stripe وChargily للمنصة — تُشفَّر المفاتيح في قاعدة البيانات وتُطبَّق دون إعادة نشر.",
+    "loading": "جارٍ التحميل…",
+    "loadError": "تعذر تحميل البوابات.",
+    "mode": "الوضع",
+    "mode_test": "تجريبي",
+    "mode_live": "فعلي",
+    "isActive": "الإعداد مفعّل",
+    "save": "حفظ",
+    "saved": "تم حفظ البوابة.",
+    "saveError": "تعذر الحفظ.",
+    "testConnection": "اختبار الاتصال",
+    "secretEmpty": "غير مُعدّ",
+    "secretKeepHint": "اتركه فارغًا للاحتفاظ بالمفتاح الحالي (لا يُعرض أبدًا بشكل صريح).",
+    "secretMissing": "لا يوجد مفتاح مسجّل.",
+    "source": {
+      "database": "مُعدّ عبر قاعدة البيانات",
+      "env": "مُعدّ عبر البيئة",
+      "none": "غير مُعدّ"
+    },
+    "testStatus": {
+      "OK": "نجح الاتصال — المفاتيح صالحة.",
+      "INVALID_CREDENTIALS": "رفضت البوابة المفاتيح.",
+      "NOT_CONFIGURED": "لا يوجد مفتاح مُعدّ.",
+      "CONNECTION_FAILED": "تعذر الوصول إلى البوابة.",
+      "UNKNOWN_GATEWAY": "بوابة غير معروفة."
+    },
+    "field": {
+      "stripe": {
+        "secret_key": "المفتاح السري (sk_…)",
+        "webhook_secret": "سر Webhook (whsec_…)",
+        "price_pilot": "معرّف السعر — خطة Pilot",
+        "price_operations": "معرّف السعر — خطة Operations",
+        "price_enterprise": "معرّف السعر — خطة Enterprise"
+      },
+      "chargily": {
+        "api_key": "مفتاح API",
+        "webhook_secret": "سر Webhook"
       }
     }
   }

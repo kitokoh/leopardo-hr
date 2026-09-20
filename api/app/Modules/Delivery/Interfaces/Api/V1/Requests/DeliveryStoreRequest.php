@@ -28,6 +28,7 @@ final class DeliveryStoreRequest extends FormRequest
             'volume_cm3' => ['nullable', 'integer', 'min:0', 'max:100000000'],
             'declared_value_minor' => ['nullable', 'integer', 'min:0'],
             'cod_amount_minor' => ['nullable', 'integer', 'min:0'],
+            'cod_currency' => ['nullable', 'string', 'size:3', 'regex:/^[A-Z]{3}$/'],
             'pickup_contact' => ['nullable', 'string', 'max:150'],
             'pickup_address' => ['nullable', 'string', 'max:2000'],
             'dropoff_contact' => ['required', 'string', 'max:150'],

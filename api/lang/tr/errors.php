@@ -54,6 +54,7 @@ return [
     'AI_TOKEN_BUDGET_EXCEEDED' => 'Yapay zeka token bütçesi aşıldı. Mesajı kısaltın veya yeni bir görüşme başlatın.',
     'AI_CREDITS_EXHAUSTED' => 'Yapay zeka kredileri tükendi. Devam etmek için Faturalama alanından bir kredi paketi satın alın.',
     'SERVICE_UNAVAILABLE' => 'Hizmet gecici olarak kullanilamiyor.',
+    'RESTAURANT_ONLINE_PAYMENT_NOT_CONFIGURED' => 'Bu restoran için çevrimiçi ödeme yapılandırılmamış. Lütfen yerinde ödeyin.',
     'HTTP_ERROR' => 'Bir hata olustu. Lutfen tekrar deneyin.',
     'UNSUPPORTED_API_VERSION' => 'Desteklenmeyen API surumu.',
 

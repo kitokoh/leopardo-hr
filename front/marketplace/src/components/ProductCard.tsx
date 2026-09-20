@@ -1,8 +1,10 @@
 import { Store } from "lucide-react";
 import Link from "next/link";
 
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { Price } from "@/components/Price";
 import { ProductImage } from "@/components/ProductImage";
+import { RatingStars } from "@/components/RatingStars";
 import type { PublicProduct } from "@/lib/api";
 
 interface ProductCardProps {
@@ -13,6 +15,10 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
+      <FavoriteButton
+        productId={product.id}
+        className="absolute right-2.5 top-2.5"
+      />
       <ProductImage
         src={product.image_url}
         alt={product.name}
@@ -32,6 +38,9 @@ export function ProductCard({ product }: ProductCardProps) {
           {product.seller.name}
           {product.seller.city ? ` · ${product.seller.city}` : ""}
         </p>
+        {product.rating_count !== undefined && product.rating_count > 0 ? (
+          <RatingStars rating={product.rating_avg ?? null} count={product.rating_count} />
+        ) : null}
         <div className="mt-auto flex items-center justify-between pt-2">
           <Price
             priceMinor={product.price_minor}

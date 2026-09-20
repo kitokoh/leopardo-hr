@@ -4661,7 +4661,9 @@
       "colRevenue": "Today's revenue",
       "colOrders": "Orders",
       "colOccupancy": "Table rotation",
-      "colAlerts": "Stock alerts"
+      "colAlerts": "Stock alerts",
+      "payments": "Payments",
+      "paymentsDesc": "Online payment, Stripe & mobile money profiles"
     },
     "crud": {
       "search": "Search...",
@@ -4979,6 +4981,26 @@
       "reviewNotEligible": "Reviews are only possible after a served or delivered order.",
       "reviewDuplicate": "A review has already been submitted for this order.",
       "reviewError": "Unable to submit the review. Please retry."
+    },
+    "payments": {
+      "title": "Payments",
+      "desc": "Online payment configuration status (payment profiles)",
+      "loadError": "Unable to load the payment configuration.",
+      "onlineEnabled": "Online payment enabled",
+      "onlineDisabled": "Online payment not configured",
+      "onlineDisabledHint": "Your customers cannot pay online: add a payment profile (Stripe keys or mobile money) and activate it. Paying on site always remains possible.",
+      "cardOnline": "Online card (Stripe)",
+      "mobileMoney": "Mobile money",
+      "configured": "Configured",
+      "notConfigured": "Not configured",
+      "sandbox": "Sandbox mode",
+      "production": "Production",
+      "profileActive": "Active profile",
+      "profileMissing": "No active profile",
+      "payOnSite": "Pay on site (POS)",
+      "alwaysAvailable": "Always available",
+      "manageProfiles": "Manage payment profiles",
+      "manageProfilesHint": "Stripe keys and mobile money accounts are managed in Settings → Payments."
     }
   },
   "commonLanguageArabic": "العربية",
@@ -8075,6 +8097,49 @@
         "shipped": "Shipped",
         "delivered": "Delivered",
         "cancelled": "Cancelled"
+      }
+    }
+  },
+  "paymentGateways": {
+    "nav": "Payment gateways",
+    "title": "Payment gateways",
+    "subtitle": "Configure the platform Stripe and Chargily accounts — keys are encrypted at rest and applied without redeployment.",
+    "loading": "Loading…",
+    "loadError": "Unable to load gateways.",
+    "mode": "Mode",
+    "mode_test": "Test",
+    "mode_live": "Live",
+    "isActive": "Configuration active",
+    "save": "Save",
+    "saved": "Gateway saved.",
+    "saveError": "Unable to save.",
+    "testConnection": "Test connection",
+    "secretEmpty": "Not configured",
+    "secretKeepHint": "Leave empty to keep the current key (never shown in clear).",
+    "secretMissing": "No key stored.",
+    "source": {
+      "database": "Configured via DB",
+      "env": "Configured via env",
+      "none": "Not configured"
+    },
+    "testStatus": {
+      "OK": "Connection succeeded — keys are valid.",
+      "INVALID_CREDENTIALS": "Keys rejected by the gateway.",
+      "NOT_CONFIGURED": "No key configured.",
+      "CONNECTION_FAILED": "Could not reach the gateway.",
+      "UNKNOWN_GATEWAY": "Unknown gateway."
+    },
+    "field": {
+      "stripe": {
+        "secret_key": "Secret key (sk_…)",
+        "webhook_secret": "Webhook secret (whsec_…)",
+        "price_pilot": "Price ID — Pilot plan",
+        "price_operations": "Price ID — Operations plan",
+        "price_enterprise": "Price ID — Enterprise plan"
+      },
+      "chargily": {
+        "api_key": "API key",
+        "webhook_secret": "Webhook secret"
       }
     }
   }
