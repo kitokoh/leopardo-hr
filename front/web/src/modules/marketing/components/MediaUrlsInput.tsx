@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { ImagePlus, X } from 'lucide-react';
+import { t } from '@/lib/i18n/locale-catalog';
+import { getPreferredLocale } from '@/lib/i18n';
 
 type MediaUrlsInputProps = {
   value: string[];
@@ -19,6 +21,7 @@ type MediaUrlsInputProps = {
  */
 export function MediaUrlsInput({ value, onChange, disabled = false }: MediaUrlsInputProps) {
   const [draft, setDraft] = useState('');
+  const locale = getPreferredLocale();
 
   const isValidUrl = (raw: string) => raw.startsWith('http://') || raw.startsWith('https://');
 
@@ -37,12 +40,12 @@ export function MediaUrlsInput({ value, onChange, disabled = false }: MediaUrlsI
 
   return (
     <div data-testid="media-urls-input">
-      <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">Medias (URLs, optionnel)</p>
+      <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">{t(locale, 'marketing.web.mediaUrls.label')}</p>
       <div className="flex gap-2">
         <input
           type="url"
           data-testid="media-urls-input-field"
-          placeholder="https://exemple.com/visuel.jpg"
+          placeholder={t(locale, 'marketing.web.mediaUrls.placeholder')}
           value={draft}
           disabled={disabled}
           onChange={(e) => setDraft(e.target.value)}
@@ -61,19 +64,19 @@ export function MediaUrlsInput({ value, onChange, disabled = false }: MediaUrlsI
           disabled={disabled || !isValidUrl(draft.trim())}
           className="inline-flex items-center gap-2 rounded-xl border border-app-border px-3 py-2 text-sm font-bold text-slate-600 transition hover:bg-transparent disabled:opacity-50"
         >
-          <ImagePlus className="h-4 w-4" /> Ajouter
+          <ImagePlus className="h-4 w-4" /> {t(locale, 'marketing.web.mediaUrls.add')}
         </button>
       </div>
       {value.length > 0 ? (
         <ul className="mt-2 space-y-1">
           {value.map((url) => (
             <li key={url} className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 px-3 py-1.5 text-xs text-slate-600">
-              <span className="truncate">{url}</span>
+              <span className="truncate" dir="ltr">{url}</span>
               <button
                 type="button"
                 onClick={() => removeUrl(url)}
                 disabled={disabled}
-                aria-label={`Retirer ${url}`}
+                aria-label={`${t(locale, 'marketing.web.mediaUrls.remove')} ${url}`}
                 className="rounded p-1 text-slate-400 transition hover:text-red-600 disabled:opacity-50"
               >
                 <X className="h-3.5 w-3.5" />
