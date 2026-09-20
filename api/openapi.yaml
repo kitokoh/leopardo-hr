@@ -20900,7 +20900,7 @@ paths:
     post:
       tags:
       - Billing
-      summary: Creer un profil de paiement tenant (#7727, secrets write-only chiffres)
+      summary: Creer un profil de paiement tenant (#7727, type cash #7863, secrets write-only chiffres)
       operationId: createTenantPaymentProfile
       requestBody:
         required: true
@@ -20918,6 +20918,7 @@ paths:
                   - stripe_keys
                   - bank_account
                   - mobile_money
+                  - cash
                 label:
                   type: string
                   maxLength: 120
@@ -21405,124 +21406,6 @@ paths:
           description: Echec de creation de la session Stripe
         '503':
           description: Stripe non configure sur cet environnement
-  /billing/payment-profiles:
-    get:
-      tags:
-      - Billing
-      summary: Lister les profils d'encaissement du tenant (#7727)
-      responses:
-        '200':
-          description: Profils d'encaissement (secrets jamais renvoyes)
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-    post:
-      tags:
-      - Billing
-      summary: Creer un profil d'encaissement (#7727, type cash #7863)
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-              - type
-              - label
-              properties:
-                type:
-                  type: string
-                  enum:
-                  - stripe_keys
-                  - bank_account
-                  - mobile_money
-                  - cash
-                label:
-                  type: string
-                details:
-                  type: object
-                secrets:
-                  type: object
-      responses:
-        '201':
-          description: Profil cree
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '422':
-          $ref: '#/components/responses/Error422'
-  /billing/payment-profiles/{id}:
-    put:
-      tags:
-      - Billing
-      summary: Mettre a jour un profil d'encaissement (type immuable, #7727)
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                label:
-                  type: string
-                details:
-                  type: object
-                secrets:
-                  type: object
-      responses:
-        '200':
-          description: Profil mis a jour
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '422':
-          $ref: '#/components/responses/Error422'
-    delete:
-      tags:
-      - Billing
-      summary: Supprimer un profil d'encaissement (#7727)
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-      responses:
-        '204':
-          description: Profil supprime
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-  /billing/payment-profiles/{id}/activate:
-    post:
-      tags:
-      - Billing
-      summary: Activer un profil d'encaissement (#7727)
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-      responses:
-        '200':
-          description: Profil active
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '422':
-          $ref: '#/components/responses/Error422'
   /billing/collections:
     get:
       tags:
@@ -21598,7 +21481,8 @@ paths:
               properties:
                 amount:
                   type: number
-                  exclusiveMinimum: 0
+                  minimum: 0
+                  exclusiveMinimum: true
                 currency:
                   type: string
                   minLength: 3
@@ -32562,6 +32446,30 @@ paths:
         '422':
           $ref: '#/components/responses/Validation422'
 
+  /retail/online/orders/{order}/refund:
+    post:
+      tags:
+      - Retail
+      summary: Rembourser une commande en ligne payee (#7812, principal/rh)
+      description: 'Remboursement vendeur via le provider de paiement - reserve
+        principal/rh (RetailOrderPolicy@pay). Uniquement si l''intent de
+        paiement est succeeded (422 PAYMENT_NOT_REFUNDABLE sinon). 404
+        cross-tenant fail-closed.'
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande remboursee - detail + etat du paiement
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
   /communication/integrations:
     get:
       tags:
@@ -33959,6 +33867,285 @@ paths:
           description: Boutique publique + categories publiques
         '404':
           $ref: '#/components/responses/Error404'
+  /public/market/products/{id}/reviews:
+    get:
+      tags:
+      - Retail
+      summary: Avis publies d'un produit Leopardo Marche (sans auth, #7814)
+      description: 'Liste paginee des avis approuves du produit. 404 fail-closed
+        si produit inconnu, non publie ou vendeur non opt-in.'
+      security: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: page
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 50
+      responses:
+        '200':
+          description: Avis publies du produit (pagines)
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /public/market/payments/webhook/{provider}:
+    post:
+      tags:
+      - Retail
+      summary: Webhook paiement marketplace (#7812) - signature obligatoire
+      description: 'Callback des providers de paiement en ligne. Verification de
+        signature OBLIGATOIRE fail-closed (401 sinon), idempotent (rejeu -> 200
+        sans double effet), provider inconnu -> 404. Aucune auth Sanctum.'
+      security: []
+      parameters:
+      - name: provider
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Payload brut du provider (verifie par signature)
+      responses:
+        '200':
+          description: Evenement traite (ou rejeu idempotent)
+        '401':
+          description: Signature absente ou invalide (fail-closed)
+        '404':
+          $ref: '#/components/responses/Error404'
+  /public/market/account/register:
+    post:
+      tags:
+      - Retail
+      summary: Creation d'un compte acheteur marketplace (#7814, sans auth)
+      description: 'Compte PLATEFORME cross-tenant. Jeton opaque hashe
+        (mkb_ + 64 hex) retourne a la creation. Throttle strict dedie
+        market-account-public (anti-bruteforce) en plus de shop-public.'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - email
+              - password
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                phone:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Compte cree - jeton buyer (mkb_...) retourne une seule fois
+        '422':
+          $ref: '#/components/responses/Validation422'
+        '429':
+          description: Throttle anti-bruteforce market-account-public
+  /public/market/account/login:
+    post:
+      tags:
+      - Retail
+      summary: Connexion d'un acheteur marketplace (#7814, sans auth)
+      description: 'Retourne un nouveau jeton opaque buyer (mkb_...). 401
+        fail-closed sur identifiants invalides. Throttle strict dedie
+        market-account-public.'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Connexion reussie - jeton buyer retourne
+        '401':
+          description: Identifiants invalides (fail-closed)
+        '422':
+          $ref: '#/components/responses/Validation422'
+        '429':
+          description: Throttle anti-bruteforce market-account-public
+  /public/market/account/logout:
+    post:
+      tags:
+      - Retail
+      summary: Deconnexion de l'acheteur marketplace (jeton buyer, #7814)
+      description: Revoque le jeton buyer courant (middleware market.buyer,
+        401 fail-closed sans jeton valide).
+      security: []
+      responses:
+        '200':
+          description: Jeton revoque
+        '401':
+          description: Jeton buyer absent ou invalide
+  /public/market/account/me:
+    get:
+      tags:
+      - Retail
+      summary: Profil de l'acheteur marketplace courant (jeton buyer, #7814)
+      security: []
+      responses:
+        '200':
+          description: Profil acheteur (nom, email, telephone)
+        '401':
+          description: Jeton buyer absent ou invalide
+  /public/market/account/orders:
+    get:
+      tags:
+      - Retail
+      summary: Commandes de l'acheteur marketplace courant (jeton buyer, #7814)
+      description: Commandes en ligne rattachees au compte buyer, cross-tenant,
+        paginees.
+      security: []
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 50
+      responses:
+        '200':
+          description: Commandes de l'acheteur (paginees)
+        '401':
+          description: Jeton buyer absent ou invalide
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /public/market/account/favorites:
+    get:
+      tags:
+      - Retail
+      summary: Favoris de l'acheteur marketplace courant (jeton buyer, #7814)
+      description: Produits favoris encore eligibles (publies, visibles en
+        ligne, vendeur opt-in) - DTO public strict.
+      security: []
+      responses:
+        '200':
+          description: Produits favoris (DTO public strict)
+        '401':
+          description: Jeton buyer absent ou invalide
+    post:
+      tags:
+      - Retail
+      summary: Ajouter un produit aux favoris (jeton buyer, #7814)
+      description: 404 fail-closed si le produit n'est pas eligible a la
+        marketplace (non publie, non visible, vendeur non opt-in).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - product_id
+              properties:
+                product_id:
+                  type: integer
+      responses:
+        '201':
+          description: Favori ajoute (idempotent si deja present)
+        '401':
+          description: Jeton buyer absent ou invalide
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /public/market/account/favorites/{productId}:
+    delete:
+      tags:
+      - Retail
+      summary: Retirer un produit des favoris (jeton buyer, #7814)
+      security: []
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Favori retire
+        '401':
+          description: Jeton buyer absent ou invalide
+        '404':
+          $ref: '#/components/responses/Error404'
+  /public/market/account/reviews:
+    post:
+      tags:
+      - Retail
+      summary: Deposer un avis produit (jeton buyer, #7814)
+      description: 'Depot gate par reference de commande de l''acheteur
+        (produit effectivement commande), throttle anti-spam dedie
+        market-reviews-public. L''avis passe en moderation avant publication.'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - order_reference
+              - product_id
+              - rating
+              properties:
+                order_reference:
+                  type: string
+                product_id:
+                  type: integer
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                comment:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Avis enregistre (en attente de moderation)
+        '401':
+          description: Jeton buyer absent ou invalide
+        '422':
+          $ref: '#/components/responses/Validation422'
+        '429':
+          description: Throttle anti-spam market-reviews-public
   /public/market/orders:
     post:
       tags:
