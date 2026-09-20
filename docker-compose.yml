@@ -30,7 +30,7 @@ services:
       DB_PORT: "5432"
       DB_DATABASE: leopardo
       DB_USERNAME: leopardo
-      DB_PASSWORD: secret
+      DB_PASSWORD: "${POSTGRES_PASSWORD:-secret}"
       DB_SEARCH_PATH: "shared_tenants,public"
       REDIS_HOST: redis
       CACHE_DRIVER: redis
@@ -59,9 +59,12 @@ services:
     environment:
       POSTGRES_DB: leopardo
       POSTGRES_USER: leopardo
-      POSTGRES_PASSWORD: secret
+      # #7847 : surchargeable via POSTGRES_PASSWORD (défaut conservé pour
+      # l'onboarding dev) — même variable injectée dans api/queue/scheduler.
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-secret}"
+    # #7847 : port publié sur 127.0.0.1 uniquement (pas d'exposition LAN).
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./api/docker/postgres/init:/docker-entrypoint-initdb.d:ro
@@ -74,8 +77,9 @@ services:
   redis:
     image: redis:7-alpine
     container_name: leopardo-redis
+    # #7847 : port publié sur 127.0.0.1 uniquement (pas d'exposition LAN).
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -98,7 +102,7 @@ services:
       DB_PORT: "5432"
       DB_DATABASE: leopardo
       DB_USERNAME: leopardo
-      DB_PASSWORD: secret
+      DB_PASSWORD: "${POSTGRES_PASSWORD:-secret}"
       DB_SEARCH_PATH: "shared_tenants,public"
       REDIS_HOST: redis
       CACHE_DRIVER: redis
@@ -129,7 +133,7 @@ services:
       DB_PORT: "5432"
       DB_DATABASE: leopardo
       DB_USERNAME: leopardo
-      DB_PASSWORD: secret
+      DB_PASSWORD: "${POSTGRES_PASSWORD:-secret}"
       DB_SEARCH_PATH: "shared_tenants,public"
       REDIS_HOST: redis
       CACHE_DRIVER: redis
