@@ -139,7 +139,9 @@ export type CustomerAccount = {
 
 export type AccountAuthPayload = {
   account: CustomerAccount;
-  token: string;
+  // #7841 — le token Sanctum n'atteint plus le navigateur : il est posé en
+  // cookie httpOnly par les route handlers login/register et retiré du
+  // payload avant de répondre au client.
   claimed_bookings?: number;
 };
 
