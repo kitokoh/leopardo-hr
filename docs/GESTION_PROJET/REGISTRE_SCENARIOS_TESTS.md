@@ -2,6 +2,22 @@
 > Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
 > Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
 
+> **MAJ 2026-09-20 — #7866 (API #7865), pop-up d'import du jeu de données de démonstration à la
+> première entrée dans l'espace.** Surface **web client** : `DemoDataPrompt.tsx` monté dans le
+> layout dashboard APRÈS l'écran de bienvenue (#7604) et l'entretien de préparation (#7493) —
+> pré-garde `shouldShowDemoDataPrompt` (RBAC `principal`/`rh` + verticale active + metadata
+> `demo_data`), serveur source de vérité (`GET /demo-data`), import séquentiel des kits
+> proposables, « Plus tard » sans persistance, « Non merci » persisté (`POST dismiss`).
+> Surface **API** : aucune dans cette PR (contrat #7865 livré séparément). Surfaces **web
+> admin** et **mobile** : aucun écran ni parcours modifié — seules les **valeurs traduites**
+> des catalogues (`front/admin-dashboard/src/i18n/locales/*.json`, ARB `leopardo_core`) sont
+> propagées depuis le catalogue partagé (`shared/i18n`, clés `demoDataPrompt.*`).
+> Non-régression :
+> `front/web/src/modules/onboarding/components/__tests__/DemoDataPrompt.test.tsx` (10 cas —
+> table de vérité de la pré-garde, rien sans kit serveur, import + succès, import multiple
+> séquentiel, dismiss persisté, « Plus tard » sans appel serveur, erreur d'import non
+> bloquante).
+
 > **MAJ 2026-09-19 — lot BC-21 paiements #7726/#7727 (PR #7732).**
 > Surface **API** : (1) endpoints admin plateforme `GET/PUT /platform/billing/gateways` et
 > `POST /platform/billing/gateways/{gateway}/test` (permission `platform.permission:billing.manage`,

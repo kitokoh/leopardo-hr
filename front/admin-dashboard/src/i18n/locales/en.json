@@ -8133,5 +8133,17 @@
         "webhook_secret": "Webhook secret"
       }
     }
+  },
+  "demoDataPrompt": {
+    "title": "Would you like to explore your workspace with sample data?",
+    "body": "We’ll install a sample dataset (menus, orders, teams…) so you can explore your workspace freely. You can edit or delete everything at any time.",
+    "import": "Import the sample data",
+    "importing": "Importing…",
+    "later": "Later",
+    "dismiss": "No thanks",
+    "error": "We couldn’t import the data right now. Please try again in a moment.",
+    "successTitle": "Your sample data is ready",
+    "successBody": "Explore freely: everything can be edited or deleted, nothing is billed.",
+    "successCta": "Explore my data"
   }
 }
