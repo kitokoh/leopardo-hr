@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
-import { Banknote, CreditCard, Loader2, Plus, ShieldCheck, Smartphone, Trash2, X } from 'lucide-react';
+import { Banknote, CreditCard, Loader2, Plus, ShieldCheck, Smartphone, Store, Trash2, X } from 'lucide-react';
 
 import { apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
@@ -14,7 +14,7 @@ import {
 
 const emptySubscribe = () => () => {};
 
-type ProfileType = 'stripe_keys' | 'bank_account' | 'mobile_money';
+type ProfileType = 'stripe_keys' | 'bank_account' | 'mobile_money' | 'cash';
 
 type SecretState = { configured?: boolean; mask?: string | null };
 
@@ -36,6 +36,8 @@ const SECRET_FIELDS: Record<ProfileType, Array<{ name: string; labelKey: Payment
   ],
   bank_account: [{ name: 'iban', labelKey: 'fieldIban' }],
   mobile_money: [{ name: 'phone_number', labelKey: 'fieldPhoneNumber' }],
+  // #7863 : encaissement au local — aucun secret.
+  cash: [],
 };
 
 const DETAIL_FIELDS: Record<ProfileType, Array<{ name: string; labelKey: PaymentProfilesKey }>> = {
@@ -49,12 +51,41 @@ const DETAIL_FIELDS: Record<ProfileType, Array<{ name: string; labelKey: Payment
     { name: 'operator', labelKey: 'fieldOperator' },
     { name: 'account_holder', labelKey: 'fieldAccountHolder' },
   ],
+  cash: [{ name: 'location', labelKey: 'fieldCashLocation' }],
 };
 
 const TYPE_LABEL_KEYS: Record<ProfileType, PaymentProfilesKey> = {
   stripe_keys: 'typeStripe',
   bank_account: 'typeBank',
   mobile_money: 'typeMobile',
+  cash: 'typeCash',
+};
+
+// #7863 : familles d'encaissement affichées par verticale, avec une courte
+// explication chacune. L'ordre est celui de la page.
+const FAMILIES: Array<{
+  type: ProfileType;
+  titleKey: PaymentProfilesKey;
+  bodyKey: PaymentProfilesKey;
+}> = [
+  { type: 'stripe_keys', titleKey: 'familyStripeTitle', bodyKey: 'familyStripeBody' },
+  { type: 'bank_account', titleKey: 'familyBankTitle', bodyKey: 'familyBankBody' },
+  { type: 'mobile_money', titleKey: 'familyMobileTitle', bodyKey: 'familyMobileBody' },
+  { type: 'cash', titleKey: 'familyCashTitle', bodyKey: 'familyCashBody' },
+];
+
+type BillingCollectionItem = {
+  id: number;
+  amount: number;
+  currency: string;
+  method: 'cash' | 'card_terminal' | string;
+  note?: string | null;
+  collected_at?: string | null;
+};
+
+const COLLECTION_METHOD_KEYS: Record<string, PaymentProfilesKey> = {
+  cash: 'collectionsMethodCash',
+  card_terminal: 'collectionsMethodCardTerminal',
 };
 
 const STATUS_LABEL_KEYS: Record<string, PaymentProfilesKey> = {
@@ -72,6 +103,7 @@ const STATUS_CLASSES: Record<string, string> = {
 function typeIcon(type: ProfileType) {
   if (type === 'stripe_keys') return CreditCard;
   if (type === 'bank_account') return Banknote;
+  if (type === 'cash') return Store;
   return Smartphone;
 }
 
@@ -95,6 +127,20 @@ export default function PaymentProfilesPage() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
   const [busyId, setBusyId] = useState<number | null>(null);
 
+  // #7863 — encaissements enregistrés au local (espèces / TPE au comptoir).
+  const [collections, setCollections] = useState<BillingCollectionItem[]>([]);
+  const [collectionsLoading, setCollectionsLoading] = useState(true);
+  const [collectionsError, setCollectionsError] = useState<string | null>(null);
+  const [collectionAmount, setCollectionAmount] = useState('');
+  const [collectionCurrency, setCollectionCurrency] = useState(
+    () => getStoredUser()?.company?.currency?.toUpperCase() ?? 'EUR'
+  );
+  const [collectionMethod, setCollectionMethod] = useState<'cash' | 'card_terminal'>('cash');
+  const [collectionNote, setCollectionNote] = useState('');
+  const [collectionSaving, setCollectionSaving] = useState(false);
+  const [collectionFormError, setCollectionFormError] = useState<string | null>(null);
+  const [collectionNotice, setCollectionNotice] = useState<string | null>(null);
+
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -109,17 +155,33 @@ export default function PaymentProfilesPage() {
     }
   }, [tt]);
 
+  const loadCollections = useCallback(async () => {
+    setCollectionsLoading(true);
+    setCollectionsError(null);
+    try {
+      const response = await apiFetch('/billing/collections', { _cacheBust: true });
+      const payload = await response.json();
+      setCollections(Array.isArray(payload?.data?.items) ? payload.data.items : []);
+    } catch {
+      setCollectionsError(tt('collectionsLoadError'));
+    } finally {
+      setCollectionsLoading(false);
+    }
+  }, [tt]);
+
   useEffect(() => {
     if (isPrincipalUser(user)) {
       void load();
+      void loadCollections();
     } else {
       setLoading(false);
+      setCollectionsLoading(false);
     }
-  }, [user, load]);
+  }, [user, load, loadCollections]);
 
-  const openCreate = () => {
+  const openCreate = (type: ProfileType = 'stripe_keys') => {
     setEditing(null);
-    setFormType('stripe_keys');
+    setFormType(type);
     setFormLabel('');
     setFormSecrets({});
     setFormDetails({});
@@ -197,6 +259,36 @@ export default function PaymentProfilesPage() {
     }
   };
 
+  const saveCollection = async () => {
+    const amount = Number.parseFloat(collectionAmount.replace(',', '.'));
+    if (!Number.isFinite(amount) || amount <= 0) {
+      setCollectionFormError(tt('collectionsInvalidAmount'));
+      return;
+    }
+    setCollectionSaving(true);
+    setCollectionFormError(null);
+    try {
+      const response = await apiFetch('/billing/collections', {
+        method: 'POST',
+        body: JSON.stringify({
+          amount,
+          currency: collectionCurrency.trim().toUpperCase(),
+          method: collectionMethod,
+          ...(collectionNote.trim() ? { note: collectionNote.trim() } : {}),
+        }),
+      });
+      if (!response.ok) throw new Error('collection_save_failed');
+      setCollectionNotice(tt('collectionsSaved'));
+      setCollectionAmount('');
+      setCollectionNote('');
+      await loadCollections();
+    } catch {
+      setCollectionFormError(tt('collectionsSaveError'));
+    } finally {
+      setCollectionSaving(false);
+    }
+  };
+
   if (!isPrincipalUser(user)) {
     return (
       <ModulePageShell title={tt('title')} subtitle={tt('subtitle')}>
@@ -234,7 +326,7 @@ export default function PaymentProfilesPage() {
         <div className="flex justify-end">
           <button
             type="button"
-            onClick={openCreate}
+            onClick={() => openCreate()}
             className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-slate-700"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
@@ -247,14 +339,45 @@ export default function PaymentProfilesPage() {
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
             {tt('loading')}
           </div>
-        ) : profiles.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
-            {tt('listEmpty')}
-          </div>
         ) : (
-          <ul className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            {profiles.map((profile) => {
-              const Icon = typeIcon(profile.type);
+          <div className="space-y-8">
+            {profiles.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
+                {tt('listEmpty')}
+              </div>
+            ) : null}
+            {FAMILIES.map((family) => {
+              const FamilyIcon = typeIcon(family.type);
+              const familyProfiles = profiles.filter((profile) => profile.type === family.type);
+              return (
+                <section key={family.type} aria-label={tt(family.titleKey)}>
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100">
+                        <FamilyIcon className="h-5 w-5 text-slate-600" aria-hidden="true" />
+                      </div>
+                      <div>
+                        <h2 className="text-base font-bold text-slate-900">{tt(family.titleKey)}</h2>
+                        <p className="mt-0.5 max-w-2xl text-xs text-slate-500">{tt(family.bodyKey)}</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => openCreate(family.type)}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:bg-slate-50"
+                    >
+                      <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                      {tt('addProfileForFamily')}
+                    </button>
+                  </div>
+                  {familyProfiles.length === 0 ? (
+                    <p className="mt-3 rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-3 text-xs text-slate-400">
+                      {tt('familyEmpty')}
+                    </p>
+                  ) : (
+                    <ul className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
+                      {familyProfiles.map((profile) => {
+                        const Icon = typeIcon(profile.type);
               return (
                 <li key={profile.id} className="rounded-2xl border border-slate-200 bg-white p-5">
                   <div className="flex items-start justify-between gap-3">
@@ -348,9 +471,150 @@ export default function PaymentProfilesPage() {
                   ) : null}
                 </li>
               );
+                      })}
+                    </ul>
+                  )}
+                </section>
+              );
             })}
-          </ul>
+          </div>
         )}
+
+        {/* #7863 — encaissements enregistrés au local (espèces / TPE). */}
+        <section
+          aria-label={tt('collectionsTitle')}
+          className="rounded-2xl border border-slate-200 bg-white p-5"
+        >
+          <h2 className="text-base font-bold text-slate-900">{tt('collectionsTitle')}</h2>
+          <p className="mt-0.5 max-w-2xl text-xs text-slate-500">{tt('collectionsSubtitle')}</p>
+
+          {collectionNotice ? (
+            <div
+              className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800"
+              role="status"
+            >
+              {collectionNotice}
+            </div>
+          ) : null}
+
+          <form
+            className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void saveCollection();
+            }}
+          >
+            <label className="block text-sm">
+              <span className="font-semibold text-slate-700">{tt('collectionsAmount')}</span>
+              <input
+                type="number"
+                inputMode="decimal"
+                min="0"
+                step="0.01"
+                value={collectionAmount}
+                onChange={(event) => setCollectionAmount(event.target.value)}
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2"
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="font-semibold text-slate-700">{tt('collectionsCurrency')}</span>
+              <input
+                type="text"
+                maxLength={3}
+                value={collectionCurrency}
+                onChange={(event) => setCollectionCurrency(event.target.value.toUpperCase())}
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 uppercase"
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="font-semibold text-slate-700">{tt('collectionsMethod')}</span>
+              <select
+                value={collectionMethod}
+                onChange={(event) =>
+                  setCollectionMethod(event.target.value as 'cash' | 'card_terminal')
+                }
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2"
+              >
+                <option value="cash">{tt('collectionsMethodCash')}</option>
+                <option value="card_terminal">{tt('collectionsMethodCardTerminal')}</option>
+              </select>
+            </label>
+            <label className="block text-sm">
+              <span className="font-semibold text-slate-700">{tt('collectionsNote')}</span>
+              <input
+                type="text"
+                maxLength={500}
+                value={collectionNote}
+                placeholder={tt('collectionsNotePlaceholder')}
+                onChange={(event) => setCollectionNote(event.target.value)}
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2"
+              />
+            </label>
+            <div className="flex items-end">
+              <button
+                type="submit"
+                disabled={collectionSaving || collectionCurrency.trim().length !== 3}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-slate-700 disabled:opacity-50"
+              >
+                {collectionSaving ? (
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                ) : null}
+                {tt('collectionsSubmit')}
+              </button>
+            </div>
+          </form>
+          {collectionFormError ? (
+            <p className="mt-2 text-sm text-red-600" role="alert">
+              {collectionFormError}
+            </p>
+          ) : null}
+
+          {collectionsLoading ? (
+            <div className="mt-4 flex items-center gap-2 text-sm text-slate-600">
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              {tt('collectionsLoading')}
+            </div>
+          ) : collectionsError ? (
+            <div
+              className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700"
+              role="alert"
+            >
+              {collectionsError}{' '}
+              <button
+                type="button"
+                className="font-semibold underline"
+                onClick={() => void loadCollections()}
+              >
+                {tt('retry')}
+              </button>
+            </div>
+          ) : collections.length === 0 ? (
+            <p className="mt-4 rounded-2xl border border-dashed border-slate-200 px-4 py-3 text-xs text-slate-400">
+              {tt('collectionsEmpty')}
+            </p>
+          ) : (
+            <ul className="mt-4 divide-y divide-slate-100">
+              {collections.map((collection) => (
+                <li key={collection.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 py-2 text-sm">
+                  <span className="font-bold text-slate-900">
+                    {`${collection.amount.toFixed(2)} ${collection.currency}`}
+                  </span>
+                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">
+                    {tt(COLLECTION_METHOD_KEYS[collection.method] ?? 'collectionsMethodCash')}
+                  </span>
+                  {collection.collected_at ? (
+                    <span className="text-xs text-slate-500">
+                      {new Date(collection.collected_at).toLocaleString(locale)}
+                    </span>
+                  ) : null}
+                  {collection.note ? (
+                    <span className="text-xs text-slate-500">{collection.note}</span>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
 
         {formOpen ? (
           <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4 sm:p-8">
@@ -380,6 +644,7 @@ export default function PaymentProfilesPage() {
                       <option value="stripe_keys">{tt('typeStripe')}</option>
                       <option value="bank_account">{tt('typeBank')}</option>
                       <option value="mobile_money">{tt('typeMobile')}</option>
+                      <option value="cash">{tt('typeCash')}</option>
                     </select>
                   </label>
                 ) : null}
@@ -402,6 +667,9 @@ export default function PaymentProfilesPage() {
                     <input
                       type="text"
                       value={formDetails[field.name] ?? ''}
+                      placeholder={
+                        field.labelKey === 'fieldCashLocation' ? tt('fieldCashLocationPlaceholder') : undefined
+                      }
                       onChange={(event) =>
                         setFormDetails((prev) => ({ ...prev, [field.name]: event.target.value }))
                       }
@@ -409,6 +677,10 @@ export default function PaymentProfilesPage() {
                     />
                   </label>
                 ))}
+
+                {formType === 'cash' ? (
+                  <p className="text-xs text-slate-500">{tt('cashNoSecretHint')}</p>
+                ) : null}
 
                 {SECRET_FIELDS[formType].map((field) => (
                   <label key={field.name} className="block text-sm">
