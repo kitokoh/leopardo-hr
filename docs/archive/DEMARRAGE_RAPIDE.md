@@ -1,4 +1,4 @@
-> ⚠️ **OBSOLÈTE — voir [QUICKSTART.md](QUICKSTART.md)** (corrigé le 2026-08-17)
+> ⚠️ **OBSOLÈTE — voir [QUICKSTART.md](../QUICKSTART.md)** (corrigé le 2026-08-17)
 > Ce document décrit l'état du démarrage en avril-mai 2026 (Laravel 11, dashboard Blade). Le démarrage
 > rapide canonique et à jour est `QUICKSTART.md` (Laravel 12, `leopardo:migrate`, multi-tenant).
 > Conservé pour historique.
