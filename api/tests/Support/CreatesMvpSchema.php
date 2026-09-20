@@ -4005,6 +4005,38 @@ trait CreatesMvpSchema
             });
         }
 
+        // BC-32 HOSPITALITY (HOSP-002 #7944) — référentiel établissements /
+        // types de chambres / unités (miroir des migrations tenant 000014).
+        if (! Schema::hasTable($this->moduleTable('hospitality_properties'))) {
+            Schema::create($this->moduleTable('hospitality_properties'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('hospitality_room_types'))) {
+            Schema::create($this->moduleTable('hospitality_room_types'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('hospitality_units'))) {
+            Schema::create($this->moduleTable('hospitality_units'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('health_patients'))) {
             Schema::create($this->moduleTable('health_patients'), function (Blueprint $table): void {
                 $table->bigIncrements('id');

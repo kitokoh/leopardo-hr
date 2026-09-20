@@ -161,6 +161,12 @@ use App\Modules\HealthManager\Domain\Policies\HealthPrescriptionPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthRoomPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthSpecialtyPolicy;
 use App\Modules\HealthManager\Domain\Policies\HealthStaffRolePolicy;
+use App\Modules\HospitalityManager\Domain\Models\HospitalityProperty;
+use App\Modules\HospitalityManager\Domain\Models\HospitalityRoomType;
+use App\Modules\HospitalityManager\Domain\Models\HospitalityUnit;
+use App\Modules\HospitalityManager\Domain\Policies\HospitalityPropertyPolicy;
+use App\Modules\HospitalityManager\Domain\Policies\HospitalityRoomTypePolicy;
+use App\Modules\HospitalityManager\Domain\Policies\HospitalityUnitPolicy;
 use App\Modules\HR\Domain\Models\Contract;
 use App\Modules\HR\Domain\Models\Department;
 use App\Modules\HR\Domain\Models\Evaluation;
@@ -407,6 +413,10 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(HealthInvoice::class, HealthInvoicePolicy::class);
         Gate::policy(HealthInvoiceItem::class, HealthInvoiceItemPolicy::class);
         Gate::policy(HealthInvoicePayment::class, HealthInvoicePaymentPolicy::class);
+        // — BC-32 HOSPITALITY (HOSP-002 #7944) : policies deny-by-default.
+        Gate::policy(HospitalityProperty::class, HospitalityPropertyPolicy::class);
+        Gate::policy(HospitalityRoomType::class, HospitalityRoomTypePolicy::class);
+        Gate::policy(HospitalityUnit::class, HospitalityUnitPolicy::class);
         // — FuelStation batch A (FUEL-009 #5803, FUEL-010 #5804, FUEL-011 #5805,
         //   FUEL-016 #5810) : policies deny-by-default.
         Gate::policy(FuelStation::class, FuelStationPolicy::class);
