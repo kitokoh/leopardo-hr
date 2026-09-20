@@ -11,7 +11,9 @@ use App\Modules\RestaurantManager\Domain\Enums\PaymentStatus;
  *
  * `providerReference` identifie la transaction chez la passerelle (nécessaire
  * à la vérification et au remboursement) ; `message` est un libellé sûr
- * (aucune stack trace, aucun secret).
+ * (aucune stack trace, aucun secret). `checkoutUrl` (#7728) est l'URL de la
+ * page de paiement hébergée (checkout Stripe / mobile money) quand la
+ * passerelle en fournit une — null pour les paiements sur place.
  */
 final class InitiatePaymentResult
 {
@@ -19,5 +21,6 @@ final class InitiatePaymentResult
         public readonly PaymentStatus $status,
         public readonly ?string $providerReference = null,
         public readonly ?string $message = null,
+        public readonly ?string $checkoutUrl = null,
     ) {}
 }

@@ -54,6 +54,7 @@ return [
     'AI_TOKEN_BUDGET_EXCEEDED' => 'Budget de jetons IA dépassé. Réduisez la longueur du message ou démarrez une nouvelle conversation.',
     'AI_CREDITS_EXHAUSTED' => 'Crédits IA épuisés. Achetez un pack de crédits depuis l\'espace Facturation pour continuer.',
     'SERVICE_UNAVAILABLE' => 'Service temporairement indisponible.',
+    'RESTAURANT_ONLINE_PAYMENT_NOT_CONFIGURED' => 'Le paiement en ligne n\'est pas configuré pour ce restaurant. Réglez votre commande sur place.',
     'HTTP_ERROR' => 'Une erreur est survenue. Veuillez réessayer.',
     'UNSUPPORTED_API_VERSION' => 'Version API non supportee.',
 
