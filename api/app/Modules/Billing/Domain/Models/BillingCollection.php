@@ -61,7 +61,7 @@ class BillingCollection extends Model
             'currency' => $this->currency,
             'method' => $this->method,
             'note' => $this->note,
-            'collected_at' => $this->collected_at?->toIso8601String(),
+            'collected_at' => $this->collected_at->toIso8601String(),
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }
