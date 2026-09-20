@@ -6,7 +6,10 @@ import {
   generateMetadata as generateSEOMetadata,
   generateFAQSchema,
 } from '@/modules/vitrine/lib/seo';
-import { getAlternativePage } from '@/modules/vitrine/data/alternatives';
+import {
+  getAlternativePage,
+  alternativesHubLabel,
+} from '@/modules/vitrine/data/alternatives';
 import type { AppLocale } from '@/lib/i18n';
 import { ArticleJsonLd, BreadcrumbJsonLd, JsonLd } from '@/components/JsonLd';
 import { breadcrumbLabels, localizedUrl } from '@/lib/ai-search';
@@ -22,13 +25,6 @@ async function resolveLocale(): Promise<AppLocale> {
   const headerList = await headers();
   return (headerList.get('x-vitrine-lang') ?? 'fr') as AppLocale;
 }
-
-const hubLabel: Record<AppLocale, string> = {
-  fr: 'Alternatives & comparatifs',
-  en: 'Alternatives & comparisons',
-  tr: 'Alternatifler ve karşılaştırmalar',
-  ar: 'البدائل والمقارنات',
-};
 
 export async function generateMetadata({
   params,
@@ -87,7 +83,7 @@ export default async function AlternativeLayout({
       <BreadcrumbJsonLd
         items={[
           { name: labels.home, url: localizedUrl('/', lang) },
-          { name: hubLabel[lang] ?? hubLabel.fr, url: localizedUrl('/alternatives', lang) },
+          { name: alternativesHubLabel[lang] ?? alternativesHubLabel.fr, url: localizedUrl('/alternatives', lang) },
           { name: page.title, url: pageUrl },
         ]}
       />

@@ -10,6 +10,7 @@ import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
 import {
   getAlternativePage,
   getAlternativePages,
+  alternativesUiCopy,
 } from '@/modules/vitrine/data/alternatives';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
@@ -24,99 +25,6 @@ interface AlternativePageProps {
   params: Promise<{ slug: string }>;
 }
 
-const uiCopy: Record<
-  AppLocale,
-  {
-    backLink: string;
-    dateLocale: string;
-    reviewedAt: string;
-    tableTitle: string;
-    tableCriterion: string;
-    whenCompetitor: (c: string) => string;
-    whenLeopardo: string;
-    faqTitle: string;
-    ctaTitle: string;
-    ctaSubtitle: string;
-    ctaTrial: string;
-    ctaDemo: string;
-    otherComparisons: string;
-    disclaimer: string;
-  }
-> = {
-  fr: {
-    backLink: 'Tous les comparatifs',
-    dateLocale: 'fr-FR',
-    reviewedAt: 'Informations vérifiées le',
-    tableTitle: 'Comparaison point par point',
-    tableCriterion: 'Critère',
-    whenCompetitor: (c) => `Quand choisir ${c}`,
-    whenLeopardo: 'Quand choisir Leopardo',
-    faqTitle: 'Questions fréquentes',
-    ctaTitle: 'Jugez sur pièces',
-    ctaSubtitle:
-      'Essai gratuit 14 jours, sans carte bancaire — démo guidée et onboarding en moins de 30 minutes.',
-    ctaTrial: "Commencer l'essai gratuit",
-    ctaDemo: 'Demander une démo',
-    otherComparisons: 'Autres comparatifs',
-    disclaimer:
-      'Les marques citées appartiennent à leurs propriétaires respectifs. Comparatif informatif : les informations concurrents proviennent de leurs sites et documentations publics à la date de vérification ; signalez-nous toute inexactitude.',
-  },
-  en: {
-    backLink: 'All comparisons',
-    dateLocale: 'en-US',
-    reviewedAt: 'Information checked on',
-    tableTitle: 'Side-by-side comparison',
-    tableCriterion: 'Criterion',
-    whenCompetitor: (c) => `When to choose ${c}`,
-    whenLeopardo: 'When to choose Leopardo',
-    faqTitle: 'Frequently asked questions',
-    ctaTitle: 'See for yourself',
-    ctaSubtitle:
-      '14-day free trial, no credit card — guided demo and onboarding in under 30 minutes.',
-    ctaTrial: 'Start the free trial',
-    ctaDemo: 'Request a demo',
-    otherComparisons: 'Other comparisons',
-    disclaimer:
-      'Trademarks belong to their respective owners. Informational comparison: competitor information comes from their public websites and documentation as of the verification date; please report any inaccuracy.',
-  },
-  tr: {
-    backLink: 'Tüm karşılaştırmalar',
-    dateLocale: 'tr-TR',
-    reviewedAt: 'Bilgiler şu tarihte doğrulandı:',
-    tableTitle: 'Madde madde karşılaştırma',
-    tableCriterion: 'Kriter',
-    whenCompetitor: (c) => `${c} ne zaman seçilmeli`,
-    whenLeopardo: 'Leopardo ne zaman seçilmeli',
-    faqTitle: 'Sık sorulan sorular',
-    ctaTitle: 'Kendiniz deneyin',
-    ctaSubtitle:
-      '14 gün ücretsiz deneme, kredi kartı gerekmez — rehberli demo ve 30 dakikadan kısa kurulum.',
-    ctaTrial: 'Ücretsiz denemeyi başlat',
-    ctaDemo: 'Demo isteyin',
-    otherComparisons: 'Diğer karşılaştırmalar',
-    disclaimer:
-      'Markalar ilgili sahiplerine aittir. Bilgilendirme amaçlı karşılaştırma: rakip bilgileri doğrulama tarihindeki resmi sitelerden alınmıştır; hataları bildirin.',
-  },
-  ar: {
-    backLink: 'جميع المقارنات',
-    dateLocale: 'ar',
-    reviewedAt: 'تم التحقق من المعلومات في',
-    tableTitle: 'مقارنة بندًا ببند',
-    tableCriterion: 'المعيار',
-    whenCompetitor: (c) => `متى تختار ${c}`,
-    whenLeopardo: 'متى تختار ليوباردو',
-    faqTitle: 'الأسئلة الشائعة',
-    ctaTitle: 'جرّب بنفسك',
-    ctaSubtitle:
-      'تجربة مجانية لمدة 14 يومًا دون بطاقة بنكية — عرض موجّه وإعداد في أقل من 30 دقيقة.',
-    ctaTrial: 'ابدأ التجربة المجانية',
-    ctaDemo: 'اطلب عرضًا',
-    otherComparisons: 'مقارنات أخرى',
-    disclaimer:
-      'العلامات التجارية ملك لأصحابها. مقارنة معلوماتية: معلومات المنافسين مأخوذة من مواقعهم الرسمية في تاريخ التحقق؛ يرجى الإبلاغ عن أي خطأ.',
-  },
-};
-
 export default function AlternativeComparisonPage({ params }: AlternativePageProps) {
   const { isDark, toggleDarkMode } = useDarkMode();
   const { locale, direction } = useVitrineLocale();
@@ -129,7 +37,7 @@ export default function AlternativeComparisonPage({ params }: AlternativePagePro
     notFound();
   }
 
-  const ui = uiCopy[locale] ?? uiCopy.fr;
+  const ui = alternativesUiCopy[locale] ?? alternativesUiCopy.fr;
   const others = getAlternativePages(locale).filter((p) => p.slug !== page.slug);
 
   return (

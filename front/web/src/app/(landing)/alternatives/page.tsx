@@ -5,7 +5,11 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Scale } from 'lucide-react';
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
-import { getAlternativePages } from '@/modules/vitrine/data/alternatives';
+import {
+  getAlternativePages,
+  alternativesHubCopy,
+  alternativesAltLabel,
+} from '@/modules/vitrine/data/alternatives';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
 
@@ -14,67 +18,12 @@ import type { AppLocale } from '@/lib/i18n';
  * comparatifs /alternatives/[slug] (maillage interne).
  */
 
-const hubCopy: Record<
-  AppLocale,
-  {
-    eyebrow: string;
-    title: string;
-    subtitle: string;
-    cardCta: string;
-    disclaimer: string;
-  }
-> = {
-  fr: {
-    eyebrow: 'Comparatifs honnêtes',
-    title: 'Leopardo face aux solutions du marché',
-    subtitle:
-      "Vous évaluez une solution pour la gestion de vos équipes, la paie, le pointage ou vos opérations ? Ces comparatifs vous disent clairement quand un concurrent est le bon choix — et quand Leopardo l'est.",
-    cardCta: 'Lire le comparatif',
-    disclaimer:
-      "Les marques citées appartiennent à leurs propriétaires respectifs. Les informations concurrents sont vérifiées sur leurs sites officiels à la date indiquée sur chaque comparatif ; signalez-nous toute inexactitude.",
-  },
-  en: {
-    eyebrow: 'Honest comparisons',
-    title: 'Leopardo vs established solutions',
-    subtitle:
-      'Evaluating a solution for workforce management, payroll, attendance or operations? These comparisons tell you clearly when a competitor is the right choice — and when Leopardo is.',
-    cardCta: 'Read the comparison',
-    disclaimer:
-      'Trademarks belong to their respective owners. Competitor information is checked against official websites on the date shown on each page; please report any inaccuracy.',
-  },
-  tr: {
-    eyebrow: 'Dürüst karşılaştırmalar',
-    title: 'Leopardo ve yerleşik çözümler',
-    subtitle:
-      'Ekip yönetimi, bordro, yoklama veya operasyonlar için bir çözüm mü değerlendiriyorsunuz? Bu karşılaştırmalar, ne zaman bir rakibin ne zaman Leopardo’nun doğru seçim olduğunu açıkça söyler.',
-    cardCta: 'Karşılaştırmayı oku',
-    disclaimer:
-      'Markalar ilgili sahiplerine aittir. Rakip bilgileri her sayfada belirtilen tarihte resmi sitelerden doğrulanır; hata bildirin.',
-  },
-  ar: {
-    eyebrow: 'مقارنات نزيهة',
-    title: 'ليوباردو مقابل الحلول الراسخة',
-    subtitle:
-      'هل تقيّمون حلاً لإدارة الفرق أو الرواتب أو الحضور أو العمليات؟ تخبركم هذه المقارنات بوضوح متى يكون المنافس هو الخيار الصحيح — ومتى يكون ليوباردو كذلك.',
-    cardCta: 'اقرأ المقارنة',
-    disclaimer:
-      'العلامات التجارية ملك لأصحابها. يتم التحقق من معلومات المنافسين من مواقعهم الرسمية في التاريخ المبيّن على كل صفحة؛ يرجى الإبلاغ عن أي خطأ.',
-  },
-};
-
-const altLabel: Record<AppLocale, (competitor: string) => string> = {
-  fr: (c) => `Alternative à ${c}`,
-  en: (c) => `${c} alternative`,
-  tr: (c) => `${c} alternatifi`,
-  ar: (c) => `بديل ${c}`,
-};
-
 export default function AlternativesHubPage() {
   const { isDark, toggleDarkMode } = useDarkMode();
   const { locale, direction } = useVitrineLocale();
   useScrollReveal();
 
-  const copy = hubCopy[locale] ?? hubCopy.fr;
+  const copy = alternativesHubCopy[locale] ?? alternativesHubCopy.fr;
   const pages = getAlternativePages(locale);
 
   return (
@@ -117,7 +66,7 @@ export default function AlternativesHubPage() {
                   className="group block h-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 hover:border-emerald-300 dark:hover:border-emerald-700 hover:shadow-lg transition-all"
                 >
                   <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
-                    {(altLabel[locale] ?? altLabel.fr)(page.competitor)}
+                    {(alternativesAltLabel[locale] ?? alternativesAltLabel.fr)(page.competitor)}
                   </p>
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
                     Leopardo vs {page.competitor}

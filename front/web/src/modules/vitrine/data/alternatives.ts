@@ -382,3 +382,187 @@ export function getAlternativePage(
 ): AlternativePage | undefined {
   return getAlternativePages(locale).find((page) => page.slug === slug);
 }
+
+/**
+ * Libellés UI localisés des pages /alternatives (pattern caseStudyUiCopy :
+ * le COPY vit dans /vitrine/data/, catalogue inline exempté par la garde
+ * check-i18n-diff.js — les pages src/app/** ne portent aucun littéral).
+ */
+export const alternativesUiCopy: Record<
+  AppLocale,
+  {
+    backLink: string;
+    dateLocale: string;
+    reviewedAt: string;
+    tableTitle: string;
+    tableCriterion: string;
+    whenCompetitor: (c: string) => string;
+    whenLeopardo: string;
+    faqTitle: string;
+    ctaTitle: string;
+    ctaSubtitle: string;
+    ctaTrial: string;
+    ctaDemo: string;
+    otherComparisons: string;
+    disclaimer: string;
+  }
+> = {
+  fr: {
+    backLink: 'Tous les comparatifs',
+    dateLocale: 'fr-FR',
+    reviewedAt: 'Informations vérifiées le',
+    tableTitle: 'Comparaison point par point',
+    tableCriterion: 'Critère',
+    whenCompetitor: (c) => `Quand choisir ${c}`,
+    whenLeopardo: 'Quand choisir Leopardo',
+    faqTitle: 'Questions fréquentes',
+    ctaTitle: 'Jugez sur pièces',
+    ctaSubtitle:
+      'Essai gratuit 14 jours, sans carte bancaire — démo guidée et onboarding en moins de 30 minutes.',
+    ctaTrial: "Commencer l'essai gratuit",
+    ctaDemo: 'Demander une démo',
+    otherComparisons: 'Autres comparatifs',
+    disclaimer:
+      'Les marques citées appartiennent à leurs propriétaires respectifs. Comparatif informatif : les informations concurrents proviennent de leurs sites et documentations publics à la date de vérification ; signalez-nous toute inexactitude.',
+  },
+  en: {
+    backLink: 'All comparisons',
+    dateLocale: 'en-US',
+    reviewedAt: 'Information checked on',
+    tableTitle: 'Side-by-side comparison',
+    tableCriterion: 'Criterion',
+    whenCompetitor: (c) => `When to choose ${c}`,
+    whenLeopardo: 'When to choose Leopardo',
+    faqTitle: 'Frequently asked questions',
+    ctaTitle: 'See for yourself',
+    ctaSubtitle:
+      '14-day free trial, no credit card — guided demo and onboarding in under 30 minutes.',
+    ctaTrial: 'Start the free trial',
+    ctaDemo: 'Request a demo',
+    otherComparisons: 'Other comparisons',
+    disclaimer:
+      'Trademarks belong to their respective owners. Informational comparison: competitor information comes from their public websites and documentation as of the verification date; please report any inaccuracy.',
+  },
+  tr: {
+    backLink: 'Tüm karşılaştırmalar',
+    dateLocale: 'tr-TR',
+    reviewedAt: 'Bilgiler şu tarihte doğrulandı:',
+    tableTitle: 'Madde madde karşılaştırma',
+    tableCriterion: 'Kriter',
+    whenCompetitor: (c) => `${c} ne zaman seçilmeli`,
+    whenLeopardo: 'Leopardo ne zaman seçilmeli',
+    faqTitle: 'Sık sorulan sorular',
+    ctaTitle: 'Kendiniz deneyin',
+    ctaSubtitle:
+      '14 gün ücretsiz deneme, kredi kartı gerekmez — rehberli demo ve 30 dakikadan kısa kurulum.',
+    ctaTrial: 'Ücretsiz denemeyi başlat',
+    ctaDemo: 'Demo isteyin',
+    otherComparisons: 'Diğer karşılaştırmalar',
+    disclaimer:
+      'Markalar ilgili sahiplerine aittir. Bilgilendirme amaçlı karşılaştırma: rakip bilgileri doğrulama tarihindeki resmi sitelerden alınmıştır; hataları bildirin.',
+  },
+  ar: {
+    backLink: 'جميع المقارنات',
+    dateLocale: 'ar',
+    reviewedAt: 'تم التحقق من المعلومات في',
+    tableTitle: 'مقارنة بندًا ببند',
+    tableCriterion: 'المعيار',
+    whenCompetitor: (c) => `متى تختار ${c}`,
+    whenLeopardo: 'متى تختار ليوباردو',
+    faqTitle: 'الأسئلة الشائعة',
+    ctaTitle: 'جرّب بنفسك',
+    ctaSubtitle:
+      'تجربة مجانية لمدة 14 يومًا دون بطاقة بنكية — عرض موجّه وإعداد في أقل من 30 دقيقة.',
+    ctaTrial: 'ابدأ التجربة المجانية',
+    ctaDemo: 'اطلب عرضًا',
+    otherComparisons: 'مقارنات أخرى',
+    disclaimer:
+      'العلامات التجارية ملك لأصحابها. مقارنة معلوماتية: معلومات المنافسين مأخوذة من مواقعهم الرسمية في تاريخ التحقق؛ يرجى الإبلاغ عن أي خطأ.',
+  },
+};
+
+export const alternativesHubCopy: Record<
+  AppLocale,
+  {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    cardCta: string;
+    disclaimer: string;
+  }
+> = {
+  fr: {
+    eyebrow: 'Comparatifs honnêtes',
+    title: 'Leopardo face aux solutions du marché',
+    subtitle:
+      "Vous évaluez une solution pour la gestion de vos équipes, la paie, le pointage ou vos opérations ? Ces comparatifs vous disent clairement quand un concurrent est le bon choix — et quand Leopardo l'est.",
+    cardCta: 'Lire le comparatif',
+    disclaimer:
+      "Les marques citées appartiennent à leurs propriétaires respectifs. Les informations concurrents sont vérifiées sur leurs sites officiels à la date indiquée sur chaque comparatif ; signalez-nous toute inexactitude.",
+  },
+  en: {
+    eyebrow: 'Honest comparisons',
+    title: 'Leopardo vs established solutions',
+    subtitle:
+      'Evaluating a solution for workforce management, payroll, attendance or operations? These comparisons tell you clearly when a competitor is the right choice — and when Leopardo is.',
+    cardCta: 'Read the comparison',
+    disclaimer:
+      'Trademarks belong to their respective owners. Competitor information is checked against official websites on the date shown on each page; please report any inaccuracy.',
+  },
+  tr: {
+    eyebrow: 'Dürüst karşılaştırmalar',
+    title: 'Leopardo ve yerleşik çözümler',
+    subtitle:
+      'Ekip yönetimi, bordro, yoklama veya operasyonlar için bir çözüm mü değerlendiriyorsunuz? Bu karşılaştırmalar, ne zaman bir rakibin ne zaman Leopardo’nun doğru seçim olduğunu açıkça söyler.',
+    cardCta: 'Karşılaştırmayı oku',
+    disclaimer:
+      'Markalar ilgili sahiplerine aittir. Rakip bilgileri her sayfada belirtilen tarihte resmi sitelerden doğrulanır; hata bildirin.',
+  },
+  ar: {
+    eyebrow: 'مقارنات نزيهة',
+    title: 'ليوباردو مقابل الحلول الراسخة',
+    subtitle:
+      'هل تقيّمون حلاً لإدارة الفرق أو الرواتب أو الحضور أو العمليات؟ تخبركم هذه المقارنات بوضوح متى يكون المنافس هو الخيار الصحيح — ومتى يكون ليوباردو كذلك.',
+    cardCta: 'اقرأ المقارنة',
+    disclaimer:
+      'العلامات التجارية ملك لأصحابها. يتم التحقق من معلومات المنافسين من مواقعهم الرسمية في التاريخ المبيّن على كل صفحة؛ يرجى الإبلاغ عن أي خطأ.',
+  },
+};
+
+export const alternativesAltLabel: Record<AppLocale, (competitor: string) => string> = {
+  fr: (c) => `Alternative à ${c}`,
+  en: (c) => `${c} alternative`,
+  tr: (c) => `${c} alternatifi`,
+  ar: (c) => `بديل ${c}`,
+};
+
+export const alternativesHubSeo: Record<AppLocale, { title: string; description: string }> = {
+  fr: {
+    title: 'Alternatives & comparatifs — Leopardo face aux solutions du marché',
+    description:
+      "Comparez Leopardo aux solutions établies (Odoo, Sage, PayFit, OrangeHRM, Connecteam, Talenteo) : open source, paie multi-pays, pointage terrain, mode hors ligne. Comparatifs honnêtes, essai 14 jours.",
+  },
+  en: {
+    title: 'Alternatives & comparisons — Leopardo vs established solutions',
+    description:
+      'Compare Leopardo with established solutions (Odoo, Sage, PayFit, OrangeHRM, Connecteam, Talenteo): open source, multi-country payroll, field attendance, offline mode. Honest comparisons, 14-day trial.',
+  },
+  tr: {
+    title: 'Alternatifler ve karşılaştırmalar — Leopardo ve yerleşik çözümler',
+    description:
+      'Leopardo ile yerleşik çözümleri karşılaştırın (Odoo, Sage, PayFit, OrangeHRM, Connecteam): açık kaynak, çok ülkeli bordro, saha yoklaması, çevrimdışı mod. 14 gün deneme.',
+  },
+  ar: {
+    title: 'البدائل والمقارنات — ليوباردو مقابل الحلول الراسخة',
+    description:
+      'قارن ليوباردو بالحلول الراسخة (Odoo وSage وPayFit وOrangeHRM وConnecteam): مفتوح المصدر، رواتب متعددة البلدان، حضور ميداني، وضع دون اتصال. تجربة 14 يومًا.',
+  },
+};
+
+export const alternativesHubLabel: Record<AppLocale, string> = {
+  fr: 'Alternatives & comparatifs',
+  en: 'Alternatives & comparisons',
+  tr: 'Alternatifler ve karşılaştırmalar',
+  ar: 'البدائل والمقارنات',
+};
+
