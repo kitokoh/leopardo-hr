@@ -15,6 +15,8 @@
 | Vitrine / portail web | `https://gestionemployer-backend.vercel.app` | Vercel | HTTP 200 2026-09-05 |
 | Admin plateforme (super-admin) | `https://leo-admin.pages.dev` | Cloudflare Pages | HTTP 200 2026-09-05 |
 | Site marketing | `https://kitokoh.github.io/leopardo-hr/` | GitHub Pages (depuis main, #6827) | HTTP 200 2026-09-05 |
+| Travel — site public (dev) | `https://leopardo-travel.vercel.app` | Vercel (projet `leopardo-travel`, compte africanovatech) | HTTP 200 2026-09-19 |
+| Travel — site public (prod) | `https://leopardo-travel-prod.vercel.app` | Vercel (projet `leopardo-travel-prod`, compte ibrahimkoubaye) | HTTP 200 2026-09-19 |
 
 > ⚠️ `https://leopardo.vercel.app` répond aussi HTTP 200 (2026-09-05) —
 > projet Vercel distinct à clarifier/rationaliser avec
@@ -22,6 +24,21 @@
 > ce dernier comme web dev de référence).
 > Re-vérification live le **2026-09-09** : 9/9 URLs HTTP 200 (API dev/prod, web
 > dev/prod, admin dev/prod, `leopardo-resto`, `leopardo-travel-prod`, gh-pages).
+
+## Travel — `front/travel-web` (issue #7740, conformité P07)
+
+- **dev** : projet Vercel `leopardo-travel` (compte africanovatech) → `https://leopardo-travel.vercel.app`.
+  Env : `BACKEND_API_URL=https://gestionemployerbackend.onrender.com/api/v1`,
+  `NEXT_PUBLIC_SITE_URL=https://leopardo-travel.vercel.app`.
+- **prod** : projet Vercel `leopardo-travel-prod` (compte ibrahimkoubaye) → `https://leopardo-travel-prod.vercel.app`.
+  Env : `BACKEND_API_URL=https://leopardo-prod.onrender.com/api/v1`,
+  `NEXT_PUBLIC_SITE_URL=https://leopardo-travel-prod.vercel.app`.
+- Variables configurées côté Vercel (aucun secret dans le repo) ; le navigateur ne
+  parle jamais au backend directement (proxy same-origin allowlist `public/travel/*`).
+- Déploiement initial 2026-09-19 via Vercel CLI depuis `front/travel-web` (contenu PR #7781).
+  Intégration au pipeline `deploy-prod.yml` : suivi hors périmètre immédiat (voir issue #7740).
+- Les endpoints `public/travel/marketplace/*` répondent 404 tant que le backend (#7737/#7781)
+  n'est pas mergé et redéployé sur Render — attendu, proxy vérifié fonctionnel.
 
 ## Volets dev & prod (vue matricielle — registre du protocole P07)
 
