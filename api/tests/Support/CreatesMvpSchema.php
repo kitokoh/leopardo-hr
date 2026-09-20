@@ -1767,6 +1767,9 @@ trait CreatesMvpSchema
                 $table->timestamp('confirmed_at')->nullable();
                 $table->timestamp('shipped_at')->nullable();
                 $table->timestamp('delivered_at')->nullable();
+                $table->string('delivery_reference', 30)->nullable();
+                $table->string('invoice_number', 30)->nullable();
+                $table->timestamp('invoiced_at')->nullable();
                 $table->unsignedInteger('version')->default(1);
                 $table->timestamps();
 
@@ -1776,6 +1779,10 @@ trait CreatesMvpSchema
                 $table->index(['company_id', 'location_id', 'status'], 'retail_orders_company_location_status_idx');
                 $table->index(['company_id', 'fulfillment_status'], 'retail_orders_company_fulfillment_status_idx');
             });
+
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement('CREATE UNIQUE INDEX IF NOT EXISTS retail_orders_company_invoice_number_unique ON '.$this->moduleTable('retail_orders').' (company_id, invoice_number) WHERE invoice_number IS NOT NULL');
+            }
         }
 
         if (! Schema::hasTable($this->moduleTable('retail_order_items'))) {
@@ -1814,6 +1821,32 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'idempotency_key'], 'retail_order_payments_company_idempotency_key_unique');
                 $table->index(['company_id', 'order_id'], 'retail_order_payments_company_order_idx');
             });
+        }
+
+        // BC-17 RETAIL #7812 — intents de paiement en ligne du checkout
+        // marketplace. Miroir de la migration 2026_09_19_000501_7812 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('retail_online_payment_intents'))) {
+            Schema::create($this->moduleTable('retail_online_payment_intents'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('order_id');
+                $table->string('intent_reference', 64);
+                $table->string('provider', 40);
+                $table->unsignedBigInteger('amount_minor');
+                $table->char('currency', 3)->default('DZD');
+                $table->string('status', 20)->default('pending');
+                $table->text('checkout_url')->nullable();
+                $table->json('provider_payload')->nullable();
+                $table->string('idempotency_key', 80)->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'order_id'], 'retail_payment_intents_company_order_idx');
+                $table->index(['company_id', 'status'], 'retail_payment_intents_company_status_idx');
+            });
+
+            DB::statement('CREATE UNIQUE INDEX IF NOT EXISTS retail_payment_intents_company_reference_unique ON '.$this->moduleTable('retail_online_payment_intents').' (company_id, intent_reference)');
+            DB::statement('CREATE UNIQUE INDEX IF NOT EXISTS retail_payment_intents_company_idempotency_unique ON '.$this->moduleTable('retail_online_payment_intents').' (company_id, idempotency_key)');
+            DB::statement('CREATE INDEX IF NOT EXISTS retail_payment_intents_status_created_idx ON '.$this->moduleTable('retail_online_payment_intents').' (status, created_at)');
         }
 
         // BC-17 RETAIL #7807 — reglages boutique en ligne Leopardo Marche.

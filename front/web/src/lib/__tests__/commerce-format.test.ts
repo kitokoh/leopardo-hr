@@ -5,6 +5,7 @@ import {
   formatMinor,
   fulfillmentActions,
   fulfillmentTarget,
+  orderPaymentStatus,
   parseMajorToMinor,
   reasonDirection,
   signedQuantityDelta,
@@ -128,5 +129,38 @@ describe('commerce-format — machine d’états fulfillment (Boutique en ligne,
     expect(canApplyFulfillmentAction('pending', 'deliver')).toBe(false);
     expect(canApplyFulfillmentAction('delivered', 'cancel')).toBe(false);
     expect(canApplyFulfillmentAction('shipped', 'deliver')).toBe(true);
+  });
+});
+
+/**
+ * #7812 — statut d'encaissement d'une commande web : paiements capturés vs
+ * total (même définition que le solde serveur).
+ */
+describe('commerce-format — orderPaymentStatus', () => {
+  const paid = (amount: number, status = 'captured') => ({
+    method: 'online',
+    amount_minor: amount,
+    currency: 'XOF',
+    status,
+    paid_at: '2026-09-29T10:00:00Z',
+  });
+
+  it('retourne cod sans paiement capturé', () => {
+    expect(orderPaymentStatus(undefined, 3000)).toBe('cod');
+    expect(orderPaymentStatus([], 3000)).toBe('cod');
+    expect(orderPaymentStatus([paid(3000, 'pending')], 3000)).toBe('cod');
+  });
+
+  it('retourne paid quand les paiements capturés couvrent le total', () => {
+    expect(orderPaymentStatus([paid(3000)], 3000)).toBe('paid');
+    expect(orderPaymentStatus([paid(1000), paid(2000)], 3000)).toBe('paid');
+  });
+
+  it('retourne partial pour un acompte en ligne', () => {
+    expect(orderPaymentStatus([paid(1000)], 3000)).toBe('partial');
+  });
+
+  it('reste cod pour un total nul (rien à encaisser)', () => {
+    expect(orderPaymentStatus([], 0)).toBe('cod');
   });
 });

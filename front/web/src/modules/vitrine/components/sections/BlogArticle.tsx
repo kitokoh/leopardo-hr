@@ -47,6 +47,50 @@ export function BlogArticle({
     }));
   }, [post.content]);
 
+  // #7870 : les guides « paie par pays » exigent un maillage interne
+  // (/alternatives, /signup, pages modules) et la mise en évidence du statut
+  // pilote. Le rendu ligne à ligne ne gérait ni les liens ni le gras : le
+  // markdown `[label](href)` et `**gras**` s'affichait brut. Rendu inline
+  // minimal — liens internes via <Link>, externes via <a>, gras via <strong>.
+  const renderInline = (text: string, keyPrefix: string) => {
+    const parts = text.split(/(\[[^\]]+\]\([^)\s]+\)|\*\*[^*]+\*\*)/g);
+    return parts.map((part, i) => {
+      const link = part.match(/^\[([^\]]+)\]\(([^)\s]+)\)$/);
+      if (link) {
+        const [, label, href] = link;
+        if (href.startsWith('/')) {
+          return (
+            <Link
+              key={`${keyPrefix}-${i}`}
+              href={href}
+              className="text-blue-600 dark:text-blue-400 font-semibold underline underline-offset-2 hover:text-blue-700 dark:hover:text-blue-300"
+            >
+              {label}
+            </Link>
+          );
+        }
+        return (
+          <a
+            key={`${keyPrefix}-${i}`}
+            href={href}
+            className="text-blue-600 dark:text-blue-400 font-semibold underline underline-offset-2 hover:text-blue-700 dark:hover:text-blue-300"
+          >
+            {label}
+          </a>
+        );
+      }
+      const bold = part.match(/^\*\*([^*]+)\*\*$/);
+      if (bold) {
+        return (
+          <strong key={`${keyPrefix}-${i}`} className="font-bold text-slate-800 dark:text-slate-200">
+            {bold[1]}
+          </strong>
+        );
+      }
+      return part;
+    });
+  };
+
   // Parse markdown to HTML (simple implementation)
   const renderMarkdown = (markdown: string) => {
     return markdown
@@ -86,7 +130,7 @@ export function BlogArticle({
         if (line.startsWith('- ')) {
           return (
             <li key={index} className="text-slate-600 dark:text-slate-400 ml-6 mb-2">
-              {line.replace(/^- /, '')}
+              {renderInline(line.replace(/^- /, ''), `li-${index}`)}
             </li>
           );
         }
@@ -95,7 +139,7 @@ export function BlogArticle({
         }
         return (
           <p key={index} className="text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
-            {line}
+            {renderInline(line, `p-${index}`)}
           </p>
         );
       });

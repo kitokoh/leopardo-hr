@@ -116,6 +116,27 @@ agence de voyage`, `logiciel gestion station service`, `logiciel gestion école 
 3. **Republication** : dev.to + LinkedIn Articles (canonique vers la vitrine), résumés X/LinkedIn.
 4. Chaque article : CTA essai + maillage vers `/alternatives` et pages modules.
 
+### Cluster « paie par pays » — plan d'exécution
+
+Lot 1 **livré** (#7870) : Algérie (`/blog/guide-paie-algerie-irg-cnas`) et Sénégal
+(`/blog/gerer-la-paie-au-senegal-guide-pme`) — 2 000+ mots FR, parité 4 locales,
+statut pilote mentionné, CTA essai + maillage `/alternatives` et modules.
+Republication dev.to/LinkedIn (canonical vitrine) à exécuter côté owner.
+
+Lots suivants (une issue GROWTH par article, même gabarit que le lot 1) :
+
+| Lot | Pays | Titre de travail | Requête cible | Spécificités à couvrir |
+|---|---|---|---|---|
+| 2 | MA | « Guide de la paie au Maroc (IR, CNSS, AMO) » | logiciel paie et rh maroc | IR barème progressif, CNSS/AMO, CIMR, SIMPL-IR |
+| 2 | CI | « Gérer la paie en Côte d'Ivoire : guide PME » | gestion de la paie côte d'ivoire | ITS/CN/IGR, CNPS, FDFP, convention interprofessionnelle |
+| 3 | TN | « Guide de la paie en Tunisie (IRPP, CNSS) » | logiciel de paie tunisie | IRPP, CNSS, retenue à la source, SMIG/SMAG |
+| 3 | TR | « Türkiye'de bordro rehberi (KOBİ) » — TR d'abord | bordro programı | gelir vergisi, SGK, asgari ücret, e-bildirge |
+
+Règles communes : chiffres datés (« relevé AAAA-MM ») ; statut **pilot** explicite,
+jamais « conformité validée » (MESSAGE.md) ; contenu dans
+`front/web/src/modules/vitrine/data/blog.ts` (posts FR + overrides en/tr/ar) ;
+visuel SVG dédié dans `front/web/public/blog/`.
+
 ---
 
 ## 5. Pilier 3 — Annuaires, marketplaces & listes open source

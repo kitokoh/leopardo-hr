@@ -150,3 +150,36 @@ export function fulfillmentActions(status: string): FulfillmentAction[] {
 export function canApplyFulfillmentAction(status: string, action: FulfillmentAction): boolean {
   return fulfillmentActions(status).includes(action);
 }
+
+/**
+ * Paiement capturé d'une commande (payload `payments` du détail
+ * `GET /retail/online/orders/{id}` — paiement en ligne marketplace #7812).
+ */
+export type OrderPayment = {
+  method: string;
+  amount_minor: number;
+  currency: string;
+  status: string;
+  paid_at: string | null;
+};
+
+export type OrderPaymentStatus = 'paid' | 'partial' | 'cod';
+
+/**
+ * Statut d'encaissement d'une commande web (#7812) : `paid` quand les
+ * paiements capturés couvrent le total, `partial` quand un acompte en ligne
+ * existe, `cod` (paiement à la livraison) sinon — même définition que le
+ * solde serveur (`RetailOnlineOrderService::outstandingAmountMinor`).
+ */
+export function orderPaymentStatus(
+  payments: OrderPayment[] | undefined,
+  totalMinor: number,
+): OrderPaymentStatus {
+  const captured = (payments ?? [])
+    .filter((payment) => payment.status === 'captured')
+    .reduce((sum, payment) => sum + payment.amount_minor, 0);
+  if (captured >= totalMinor && totalMinor > 0) {
+    return 'paid';
+  }
+  return captured > 0 ? 'partial' : 'cod';
+}

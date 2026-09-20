@@ -12,6 +12,7 @@ use App\Modules\Retail\Domain\Enums\RetailFulfillmentStatus;
 use App\Modules\Retail\Domain\Models\RetailLocation;
 use App\Modules\Retail\Domain\Models\RetailOrder;
 use App\Modules\Retail\Domain\Models\RetailOrderItem;
+use App\Modules\Retail\Domain\Models\RetailOrderPayment;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\CancelRetailOrderRequest;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\ConfirmRetailOnlineOrderRequest;
 use Illuminate\Http\JsonResponse;
@@ -253,13 +254,15 @@ class RetailOnlineOrderController extends Controller
             'confirmed_at' => $order->confirmed_at?->toIso8601String(),
             'shipped_at' => $order->shipped_at?->toIso8601String(),
             'delivered_at' => $order->delivered_at?->toIso8601String(),
+            'delivery_reference' => $order->delivery_reference,
             'created_at' => $order->created_at?->toIso8601String(),
             'updated_at' => $order->updated_at?->toIso8601String(),
         ];
     }
 
     /**
-     * Payload detail : commande + lignes.
+     * Payload detail : commande + lignes + paiements (#7812 — le vendeur
+     * voit si la commande est deja payee en ligne avant de la confirmer).
      *
      * @return array<string, mixed>
      */
@@ -276,9 +279,23 @@ class RetailOnlineOrderController extends Controller
                 'line_index' => $item->line_index,
             ])->all();
 
+        $payments = RetailOrderPayment::query()
+            ->where('company_id', (string) $order->company_id)
+            ->where('order_id', (int) $order->id)
+            ->orderBy('id')
+            ->get()
+            ->map(static fn (RetailOrderPayment $payment): array => [
+                'method' => $payment->method->value,
+                'amount_minor' => (int) $payment->amount_minor,
+                'currency' => $payment->currency,
+                'status' => $payment->status,
+                'paid_at' => $payment->paid_at?->toIso8601String(),
+            ])->all();
+
         return [
             ...$this->orderPayload($order),
             'items' => $items,
+            'payments' => $payments,
         ];
     }
 }

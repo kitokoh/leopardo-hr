@@ -174,4 +174,15 @@ return [
     'payslip_regularization_banner' => 'BULLETIN DE RÉGULARISATION — corrige le run #:run',
     'payslip_regularization_banner_slip' => 'BULLETIN DE RÉGULARISATION — corrige le bulletin #:slip',
     'contract_legal_clauses_title' => 'Clauses légales du contrat',
+
+    // BC-17 RETAIL #7813 — ticket POS et facture des commandes.
+    'retail_receipt_title' => 'Ticket de caisse',
+    'retail_customer' => 'Client',
+    'retail_payments_section' => 'Paiements',
+    'retail_discount' => 'Remise',
+    'retail_thanks' => 'Merci de votre achat !',
+    'retail_status_paid' => 'Payée',
+    'retail_status_unpaid' => 'À encaisser',
+    'retail_invoice_seller' => 'Vendeur',
+    'retail_datetime_format' => 'Y-m-d H:i',
 ];
