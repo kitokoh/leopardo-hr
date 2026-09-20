@@ -113,6 +113,23 @@ class TravelAgencyServiceProvider extends ServiceProvider
             static fn ($app): EloquentUserProvider => new EloquentUserProvider($app['hash'], TravelCustomerAccount::class),
         );
 
+        // #7739/#7781 — la clé `model` du provider est INDISPENSABLE au
+        // runtime : `Sanctum\Guard::hasValidProvider()` lit
+        // `auth.providers.travel_customers.model` et un provider sans cette
+        // clé fatale en `instanceof null` (« Class name must be a valid
+        // object or a string », Guard.php:153) à CHAQUE requête authentifiée
+        // du guard — me/logout/bookings 500 (reproduit par
+        // TravelCustomerAccountApiTest en local). Elle est posée ici au
+        // RUNTIME, jamais statiquement dans config/auth.php : sous analyse
+        // (LEOPARDO_STATIC_ANALYSIS) le guard `travel_customer` est masqué,
+        // et Larastan ne parcourt que les providers RÉFÉRENCÉS par un guard
+        // — un provider sans guard n'entre pas dans l'union de
+        // `request->user()`/`Auth::user()` ni ne fait dériver la baseline.
+        config()->set(
+            'auth.providers.travel_customers.model',
+            TravelCustomerAccount::class,
+        );
+
         // Audit 2026-09-14 — amorçage de la verticale à l'ACTIVATION.
         //
         // `SolutionActivator` ne posait que le feature flag : un tenant agence
