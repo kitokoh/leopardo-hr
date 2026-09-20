@@ -229,6 +229,13 @@ services:
       # Opt-in demo (GET /api/v1/demo-users) — staging/demo uniquement.
       - key: DEMO_MODE_ENABLED
         value: "false"
+      # Issue #7864 (D2) : FRONTEND_URL n'était déclaré dans aucun blueprint
+      # alors que les emails d'activation/reset construisent leurs liens
+      # dessus (config/app.php `frontend_url`, fallback codé en dur). Tier
+      # dev : le web client live est le déploiement Vercel historique
+      # (docs/ops/DEPLOYMENT_URLS.md, DOMAINS.md statut `live`).
+      - key: FRONTEND_URL
+        value: https://gestionemployer-backend.vercel.app
 
   # ──────────────────────────────────────────────────────────────────────────
   # Background Worker — Laravel Queue Worker

@@ -159,6 +159,14 @@ services:
         sync: false
       - key: DEMO_MODE_ENABLED
         value: "false"
+      # Issue #7864 (D2) : FRONTEND_URL n'était déclaré dans aucun blueprint
+      # alors que les emails d'activation/reset construisent leurs liens
+      # dessus (config/app.php `frontend_url`) — sans elle, la prod retombait
+      # sur le fallback codé en dur du tier dev. URL canonique du web client
+      # prod documentée dans docs/ops/RENDER_DEV_PROD_TOPOLOGY.md (« CORS/
+      # Sanctum API prod ») et docs/ops/DEPLOYMENT_URLS.md.
+      - key: FRONTEND_URL
+        value: https://leopardo-prod.vercel.app
 
   # ──────────────────────────────────────────────────────────────────────────
   # Background Worker — Queue + Scheduler (issue #7649)
