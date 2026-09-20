@@ -14,7 +14,7 @@ import { t } from '@/lib/i18n/locale-catalog';
 export const PAYMENT_PROFILES_FR = {
   title: 'Encaissements',
   subtitle:
-    'Encaissez vos factures clients sur VOS comptes : clés Stripe propres, coordonnées bancaires (IBAN) ou mobile money.',
+    'Encaissez vos factures clients sur VOS comptes : clés Stripe propres, coordonnées bancaires (IBAN), mobile money ou encaissement au local (espèces / comptoir).',
   menuLabel: 'Encaissements',
   reservedTitle: 'Accès réservé',
   reservedBody:
@@ -30,6 +30,21 @@ export const PAYMENT_PROFILES_FR = {
   typeStripe: 'Clés Stripe propres',
   typeBank: 'Compte bancaire (IBAN)',
   typeMobile: 'Mobile money',
+  typeCash: 'Au local (espèces / comptoir)',
+  familyStripeTitle: 'En ligne (Stripe)',
+  familyStripeBody:
+    'Paiement en ligne des factures par carte : vos propres clés Stripe routent les encaissements vers votre compte.',
+  familyBankTitle: 'Virement bancaire',
+  familyBankBody:
+    'Vos coordonnées bancaires (IBAN) s’affichent sur vos factures pour le règlement par virement.',
+  familyMobileTitle: 'Mobile money',
+  familyMobileBody:
+    'Encaissement via un compte mobile money (opérateur local) : le numéro est chiffré, seul un masque est réaffiché.',
+  familyCashTitle: 'Au local (espèces / comptoir)',
+  familyCashBody:
+    'Encaissement sur place : espèces ou TPE au comptoir. Aucun secret à configurer — déclarez simplement le mode et confirmez vos encaissements.',
+  familyEmpty: 'Aucun profil dans cette famille.',
+  addProfileForFamily: 'Ajouter',
   labelField: 'Nom du profil',
   labelPlaceholder: 'Ex. Compte principal',
   statusDraft: 'Brouillon',
@@ -57,8 +72,29 @@ export const PAYMENT_PROFILES_FR = {
   fieldBic: 'BIC (optionnel)',
   fieldOperator: 'Opérateur mobile money',
   fieldPhoneNumber: 'Numéro mobile money',
+  fieldCashLocation: 'Point d’encaissement (optionnel)',
+  fieldCashLocationPlaceholder: 'Ex. Comptoir principal',
   configured: 'Renseigné',
   notConfigured: 'Non renseigné',
+  cashNoSecretHint: 'Aucune clé ni coordonnée à saisir pour ce mode.',
+  collectionsTitle: 'Encaissements enregistrés',
+  collectionsSubtitle:
+    'Confirmez ici vos encaissements reçus au local (espèces, TPE au comptoir) et retrouvez les derniers montants enregistrés.',
+  collectionsAmount: 'Montant',
+  collectionsCurrency: 'Devise',
+  collectionsMethod: 'Mode',
+  collectionsMethodCash: 'Espèces',
+  collectionsMethodCardTerminal: 'TPE au comptoir',
+  collectionsNote: 'Note (optionnelle)',
+  collectionsNotePlaceholder: 'Ex. Table 4, service du midi',
+  collectionsSubmit: 'Enregistrer l’encaissement',
+  collectionsSaved: 'Encaissement enregistré.',
+  collectionsSaveError: 'Enregistrement de l’encaissement impossible.',
+  collectionsInvalidAmount: 'Saisissez un montant supérieur à zéro.',
+  collectionsLoading: 'Chargement des encaissements…',
+  collectionsLoadError: 'Impossible de charger les encaissements.',
+  collectionsEmpty: 'Aucun encaissement enregistré pour le moment.',
+  collectionsDate: 'Date',
 } as const;
 
 export type PaymentProfilesKey = keyof typeof PAYMENT_PROFILES_FR;
