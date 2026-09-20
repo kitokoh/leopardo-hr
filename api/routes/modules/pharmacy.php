@@ -14,6 +14,7 @@
 
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyAlertController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyControlledRegisterController;
+use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyDashboardController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyPrescriberController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyPrescriptionController;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Controllers\PharmacyProductController;
@@ -70,4 +71,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::put('/prescriptions/{prescription}', [PharmacyPrescriptionController::class, 'update'])->whereNumber('prescription');
         // Ordonnancier : LECTURE SEULE (dérivé du journal immuable des mouvements).
         Route::get('/controlled-register', [PharmacyControlledRegisterController::class, 'index']);
+
+        // ── Tableau de bord fondateur (PHARMA-007, #7804) ─────────────────
+        Route::get('/dashboard', [PharmacyDashboardController::class, 'index']);
     });
