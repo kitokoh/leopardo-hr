@@ -38,8 +38,8 @@
 
 | Secret | Used by | Purpose | Required? |
 |---|---|---|---|
-| `RENDER_DEPLOY_HOOK_URL` | `deploy-main.yml`, `deploy-staging.yml` (fallback) | Render deploy webhook for production API/Web | Required for production deploys |
-| `RENDER_STAGING_DEPLOY_HOOK_URL` | `deploy-staging.yml` | Render deploy webhook for staging API (falls back to `RENDER_DEPLOY_HOOK_URL` if unset) | Recommended; workflow warns and no-ops if both are missing |
+| `RENDER_DEPLOY_HOOK_URL` | `deploy-main.yml` | Render deploy webhook for production API/Web | Required for production deploys |
+| `RENDER_STAGING_DEPLOY_HOOK_URL` | *(orphelin — `deploy-staging.yml` supprimé #7846)* | Render deploy webhook for staging API | Peut être supprimé des secrets du repo ; à re-documenter si un staging est provisionné |
 | `RENDER_ROLLBACK_HOOK_URL` | `deploy-main.yml` | Render rollback webhook, triggered on production deploy failure | Optional (warns if missing, no auto-rollback) |
 | `API_HEALTHCHECK_URL` | `deploy-main.yml` | Overrides the default production healthcheck URL | Optional (has a hardcoded default) |
 | `FIREBASE_TOKEN` | `deploy-main.yml`, `mobile-distribute.yml` | Firebase CLI auth token for App Distribution uploads | Required for mobile staging distribution |
@@ -77,7 +77,7 @@
 | `CI_REPORT_TO` | `tests.yml` | Recipient address for the CI report email | `nouractu.com@gmail.com` |
 | `CI_REPORT_FROM` | `tests.yml` | From address for the CI report email | `CI_SMTP_USERNAME` |
 | `ENABLE_CODEQL_PR` | `codeql.yml` | `"true"` runs the CodeQL (Actions) job on `pull_request` events too | Off (schedule/push only) |
-| `STAGING_API_URL` | `deploy-staging.yml` | Overrides the staging API base URL for health checks and the `environment.url` link | `https://gestionemployerbackend.onrender.com` |
+| `STAGING_API_URL` | *(orphelin — `deploy-staging.yml` supprimé #7846)* | Overrides the staging API base URL for health checks | Peut être supprimé ; à re-documenter si un staging est provisionné |
 | `PLAN_ACTION2_WEEKLY_REPORT_ISSUE` | `fix-feat-ratio-report.yml` (anciennement `plan-action2-weekly-report.yml`) | Issue number to post the weekly fix/feat ratio report as a comment; name kept as-is to avoid silently breaking an existing repo-settings value | Optional (step summary only if unset) |
 
 ## Notes

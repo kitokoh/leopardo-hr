@@ -3,12 +3,16 @@ name: CI Observability
 # Issue #5507 : signale les PRs ouvertes dont le head SHA n'a
 # AUCUN check-run (création de runs défaillante sous congestion,
 # leçon #3545) + publie l'état de la file Actions.
-# Non bloquant (informations) — cron 10 min + workflow_dispatch.
+# Non bloquant (informations) — cron horaire + workflow_dispatch.
+# #7846 (audit externe 2026-09-20) : cron */10 (144 runs/jour) → horaire
+# (24 runs/jour). Rapport purement informatif, non bloquant, sans SLO écrit :
+# aucune justification incident ne motivait 144 runs/jour sur une file déjà
+# saturée. La détection manuelle reste possible via workflow_dispatch.
 # ============================================================
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "7 * * * *"
   workflow_dispatch:
 
 permissions:
