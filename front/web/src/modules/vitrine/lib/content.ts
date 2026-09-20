@@ -612,7 +612,7 @@ export const modulePageContent = {
     solution: {
       title: "Marketing Complet Intégré",
       subtitle: "Tous vos outils marketing en un seul endroit",
-      description: "Leopardo offre email, SMS, réseaux sociaux et analytics intégrés à votre plateforme RH.",
+      description: "Leopardo offre email, SMS, réseaux sociaux et analytics intégrés à votre suite métier.",
       features: [
         {
           title: "Email Marketing",
@@ -1389,7 +1389,7 @@ const modulePageContentEn: Partial<ModulePageContent> = {
     solution: {
       title: "Complete Integrated Marketing",
       subtitle: "All your marketing tools in one place",
-      description: "Leopardo offers email, SMS, social networks and analytics integrated with your HR platform.",
+      description: "Leopardo offers email, SMS, social networks and analytics integrated with your business suite.",
       features: [
         {
           title: "Email Marketing",
@@ -2182,7 +2182,7 @@ const modulePageContentTr: Partial<ModulePageContent> = {
     solution: {
       title: "Eksiksiz Entegre Pazarlama",
       subtitle: "Tüm pazarlama araçlarınız tek yerde",
-      description: "Leopardo; İK platformunuza entegre e-posta, SMS, sosyal ağlar ve analitik sunar.",
+      description: "Leopardo; işletme paketinize entegre e-posta, SMS, sosyal ağlar ve analitik sunar.",
       features: [
         {
           title: "E-posta Pazarlama",
@@ -2975,7 +2975,7 @@ const modulePageContentAr: Partial<ModulePageContent> = {
     solution: {
       title: "تسويق متكامل شامل",
       subtitle: "جميع أدواتك التسويقية في مكان واحد",
-      description: "توفر Leopardo البريد الإلكتروني والرسائل القصيرة وشبكات التواصل والتحليلات مدمجة مع منصة الموارد البشرية.",
+      description: "توفر Leopardo البريد الإلكتروني والرسائل القصيرة وشبكات التواصل والتحليلات مدمجة مع حزمة الأعمال.",
       features: [
         {
           title: "التسويق بالبريد",

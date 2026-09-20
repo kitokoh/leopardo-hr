@@ -50,7 +50,7 @@ export const caseStudiesByLocale: Record<AppLocale, CaseStudyItem[]> = {
       solution: 'Migration vers Leopardo multi-tenant avec paie multi-pays (barèmes fiscaux locaux) et tableau de bord consolidé.',
       results: [
         { metric: '1', label: 'Plateforme unique pour 3 pays' },
-        { metric: '-60%', label: 'Coût logiciel RH' },
+        { metric: '-60%', label: 'Coût de la suite métier' },
         { metric: '100%', label: 'Conformité locale' },
       ],
       testimonial: 'Nous gérons maintenant 3 filiales depuis un seul dashboard. La paie multi-pays est un game-changer.',
@@ -100,7 +100,7 @@ export const caseStudiesByLocale: Record<AppLocale, CaseStudyItem[]> = {
       solution: 'Migration to multi-tenant Leopardo with multi-country payroll (local tax scales) and a consolidated dashboard.',
       results: [
         { metric: '1', label: 'Single platform for 3 countries' },
-        { metric: '-60%', label: 'HR software cost' },
+        { metric: '-60%', label: 'Business suite cost' },
         { metric: '100%', label: 'Local compliance' },
       ],
       testimonial: 'We now manage 3 subsidiaries from a single dashboard. Multi-country payroll is a game-changer.',
@@ -150,7 +150,7 @@ export const caseStudiesByLocale: Record<AppLocale, CaseStudyItem[]> = {
       solution: 'Çok ülkeli maaş (yerel vergi dilimleri) ve konsolide panel ile çok kiracılı Leopardo geçişi.',
       results: [
         { metric: '1', label: '3 ülke için tek platform' },
-        { metric: '-%60', label: 'İK yazılım maliyeti' },
+        { metric: '-%60', label: 'İşletme paketi maliyeti' },
         { metric: '%100', label: 'Yerel uyumluluk' },
       ],
       testimonial: 'Artık 3 şubeyi tek panelden yönetiyoruz. Çok ülkeli maaş oyunun kurallarını değiştirdi.',
@@ -200,7 +200,7 @@ export const caseStudiesByLocale: Record<AppLocale, CaseStudyItem[]> = {
       solution: 'الانتقال إلى Leopardo متعدد المستأجرين مع رواتب متعددة الدول (شرائح ضريبية محلية) ولوحة تحكم موحدة.',
       results: [
         { metric: '1', label: 'منصة واحدة لـ3 دول' },
-        { metric: '-60%', label: 'تكلفة برمجيات الموارد البشرية' },
+        { metric: '-60%', label: 'تكلفة حزمة الأعمال' },
         { metric: '100%', label: 'امتثال محلي' },
       ],
       testimonial: 'ندير الآن 3 فروع من لوحة تحكم واحدة. الرواتب متعددة الدول غيّرت قواعد اللعبة.',
