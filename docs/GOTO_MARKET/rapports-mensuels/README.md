@@ -60,3 +60,4 @@ Mises à jour du mois : #… — propositions de durcissement : #…
 | Mois | Rapport | État |
 |---|---|---|
 | 2026-09 | (premier rituel — à produire) | ⏳ |
+| 2026-09 (acquisition) | `2026-09-acquisition.md` | 🟠 squelette rempli — valeurs « à relever (owner) » (#7877) |
