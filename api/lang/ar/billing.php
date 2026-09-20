@@ -1,6 +1,8 @@
 <?php
 
 return [
+    // #7853 — nom d'entreprise provisoire quand l'inscription se fait par e-mail seul.
+    'trial_company_fallback' => 'شركتي',
     'trial_signup_received' => 'تم استلام طلب التجربة. سيتم إرسال رابط الوصول إليك عبر البريد الإلكتروني.',
     'trial_status_token_invalid' => 'رمز التتبع غير صالح أو منتهي الصلاحية. تحقق من الرابط المستلم مع طلب التجربة.',
     'trial_status_failed' => 'تعذر إنشاء مساحة التجربة الخاصة بك. يرجى المحاولة مرة أخرى أو الاتصال بنا.',

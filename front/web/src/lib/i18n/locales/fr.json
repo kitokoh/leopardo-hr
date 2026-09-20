@@ -6155,6 +6155,10 @@
     "resume": "Terminer la configuration de mon espace",
     "error": "Impossible d'enregistrer pour le moment. Réessayez dans un instant.",
     "questions": {
+      "company_name": {
+        "label": "Quel est le nom de votre entreprise ?",
+        "placeholder": "Ex. Boulangerie El Amel"
+      },
       "company_type": {
         "label": "Travaillez-vous seul(e) ou avec une équipe ?",
         "options": {
@@ -6230,7 +6234,8 @@
       "training": "Formation",
       "reports": "Rapports",
       "marketing": "Marketing"
-    }
+    },
+    "continue": "Continuer"
   },
   "nextSteps": {
     "title": "Prochaines étapes",

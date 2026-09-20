@@ -80,7 +80,9 @@ export async function submitSignupForm(
   try {
     const sanitizedData = {
       email: sanitizeEmail(data.email),
-      company: sanitizeInput(data.company),
+      // #7853 — inscription par e-mail seul : `company` est optionnel, il
+      // n'est transmis que s'il a été fourni par un appelant historique.
+      company: data.company ? sanitizeInput(data.company) : undefined,
       role: data.role,
       employees: data.employees,
       phone: data.phone ? sanitizeInput(data.phone) : undefined,

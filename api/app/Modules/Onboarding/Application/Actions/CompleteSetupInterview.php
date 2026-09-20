@@ -109,6 +109,27 @@ final class CompleteSetupInterview
         $completedAt = now()->toIso8601String();
         $activated = ['solutions' => $solutions, 'tools' => $tools, 'failed' => $failed];
 
+        // #7853 — le nom d'entreprise n'est plus demandé à l'inscription : le
+        // signup provisionne un nom PROVISOIRE (dérivé de l'e-mail) et
+        // l'entretien pose la question `company_name` (texte libre, zappable,
+        // déjà bornée 2..120 par SetupInterviewPlanner::sanitize). Si une
+        // réponse est fournie et diffère du nom courant, la société est
+        // renommée (champ `name`, même écriture qualifiée que metadata).
+        //
+        // DÉCISION : le SLUG existant n'est PAS réécrit. Il a été généré
+        // race-safe au provisioning et sert déjà d'identifiant d'URLs
+        // (liens d'accès, vitrines, deep links mobiles) : le changer ici
+        // casserait des liens déjà distribués pour un bénéfice cosmétique nul.
+        $requestedName = $answers['company_name'] ?? null;
+        $newName = null;
+        if (is_string($requestedName)) {
+            $trimmedName = trim($requestedName);
+            if ($trimmedName !== '' && $trimmedName !== (string) $source->name) {
+                $newName = $trimmedName;
+                $source->name = $trimmedName; // cohérence de l'instance en mémoire
+            }
+        }
+
         $metadata = $source->metadata ?? []; // relu : activateHorizontalTool a muté metadata.modules
         $interview['status'] = 'completed';
         $interview['answers'] = $answers;
@@ -118,8 +139,9 @@ final class CompleteSetupInterview
 
         // Écriture QUALIFIÉE unique des deux sources de vérité (metadata +
         // features) — autoritaire même si le save interne de l'activator a
-        // ciblé un autre schéma sous `search_path` tenant.
-        $this->writer->persist((string) $source->id, $metadata, $source->features ?? []);
+        // ciblé un autre schéma sous `search_path` tenant. Porte aussi le
+        // renommage éventuel (#7853, champ `name` uniquement — jamais le slug).
+        $this->writer->persist((string) $source->id, $metadata, $source->features ?? [], $newName);
 
         // #7494 — la checklist d'onboarding est resynchronisée sur le profil
         // issu de l'entretien : les étapes génériques encore `pending` sans

@@ -105,15 +105,52 @@ describe('SetupInterview (#7493)', () => {
     render(<SetupInterview locale="fr" onClose={jest.fn()} />);
 
     await waitFor(() => expect(screen.getByTestId('interview-question')).toBeInTheDocument());
-    // Une seule question rendue.
+    // Une seule question rendue. #7853 : le nom d'entreprise (texte libre)
+    // ouvre l'entretien — il n'est plus demandé à l'inscription.
     expect(screen.getAllByTestId('interview-question')).toHaveLength(1);
-    expect(screen.getByText('Travaillez-vous seul(e) ou avec une équipe ?')).toBeInTheDocument();
+    expect(screen.getByText('Quel est le nom de votre entreprise ?')).toBeInTheDocument();
+    expect(screen.getByTestId('interview-freetext-input')).toBeInTheDocument();
     expect(screen.getByTestId('interview-skip')).toBeInTheDocument();
     expect(screen.getByTestId('interview-later')).toBeInTheDocument();
   });
 
-  it('enregistre chaque réponse en brouillon SERVEUR et avance', async () => {
+  // #7853 — la question du nom d'entreprise est en texte libre, optionnelle.
+  it('company_name : la saisie est persistée puis la question suivante s’affiche', async () => {
     mockInitialState();
+    render(<SetupInterview locale="fr" onClose={jest.fn()} />);
+
+    await waitFor(() => expect(screen.getByTestId('interview-freetext-input')).toBeInTheDocument());
+    await userEvent.type(screen.getByTestId('interview-freetext-input'), 'Boulangerie El Amel');
+    await userEvent.click(screen.getByTestId('interview-freetext-continue'));
+
+    await waitFor(() =>
+      expect(mockedApiFetch).toHaveBeenCalledWith('/setup-interview/answers', {
+        method: 'PATCH',
+        body: JSON.stringify({ answers: { company_name: 'Boulangerie El Amel' } }),
+      }),
+    );
+    expect(screen.getByText('Travaillez-vous seul(e) ou avec une équipe ?')).toBeInTheDocument();
+  });
+
+  it('company_name : une saisie trop courte vaut question sautée (null)', async () => {
+    mockInitialState();
+    render(<SetupInterview locale="fr" onClose={jest.fn()} />);
+
+    await waitFor(() => expect(screen.getByTestId('interview-freetext-input')).toBeInTheDocument());
+    await userEvent.type(screen.getByTestId('interview-freetext-input'), 'A');
+    await userEvent.click(screen.getByTestId('interview-freetext-continue'));
+
+    await waitFor(() =>
+      expect(mockedApiFetch).toHaveBeenCalledWith('/setup-interview/answers', {
+        method: 'PATCH',
+        body: JSON.stringify({ answers: { company_name: null } }),
+      }),
+    );
+  });
+
+  it('enregistre chaque réponse en brouillon SERVEUR et avance', async () => {
+    // #7853 — company_name déjà répondu : l'entretien reprend au profil.
+    mockInitialState({ status: 'in_progress', answers: { company_name: 'Acme' } });
     render(<SetupInterview locale="fr" onClose={jest.fn()} />);
 
     await waitFor(() => expect(screen.getByTestId('interview-option-team')).toBeInTheDocument());
@@ -130,7 +167,7 @@ describe('SetupInterview (#7493)', () => {
   });
 
   it('ordre adaptatif : un(e) solo ne voit jamais les questions d’équipe', async () => {
-    mockInitialState();
+    mockInitialState({ status: 'in_progress', answers: { company_name: null } });
     render(<SetupInterview locale="fr" onClose={jest.fn()} />);
 
     await waitFor(() => expect(screen.getByTestId('interview-option-solo')).toBeInTheDocument());
@@ -160,7 +197,7 @@ describe('SetupInterview (#7493)', () => {
   it('reprend depuis le brouillon serveur (reprise sur un autre appareil)', async () => {
     mockInitialState({
       status: 'in_progress',
-      answers: { company_type: 'team', team_size: '11-50' },
+      answers: { company_name: 'Acme', company_type: 'team', team_size: '11-50' },
     });
     render(<SetupInterview locale="fr" onClose={jest.fn()} />);
 
@@ -174,7 +211,7 @@ describe('SetupInterview (#7493)', () => {
     // Solo : parcours court (type, activité, lieux, priorités).
     mockInitialState({
       status: 'in_progress',
-      answers: { company_type: 'solo', sector: 'restaurant', premises: 'single' },
+      answers: { company_name: null, company_type: 'solo', sector: 'restaurant', premises: 'single' },
     });
     const onClose = jest.fn();
     render(<SetupInterview locale="fr" onClose={onClose} />);

@@ -94,4 +94,39 @@ class SetupInterviewPlannerTest extends TestCase
         $this->assertContains('company_type', $result['rejected']);
         $this->assertContains('inconnue', $result['rejected']);
     }
+
+    /**
+     * #7853 — `company_name` est une question en TEXTE LIBRE (2..120, trim),
+     * zappable (`null`), et ne produit jamais d'activation.
+     */
+    public function test_sanitize_accepte_company_name_en_texte_libre_borne(): void
+    {
+        $result = $this->planner->sanitize([
+            'company_name' => '  Boulangerie El Amel  ',
+            'sector' => 'commerce',
+        ]);
+
+        $this->assertSame('Boulangerie El Amel', $result['answers']['company_name']);
+        $this->assertSame([], $result['rejected']);
+
+        // Question sautée : `null` accepté.
+        $skipped = $this->planner->sanitize(['company_name' => null]);
+        $this->assertNull($skipped['answers']['company_name']);
+    }
+
+    public function test_sanitize_rejette_company_name_hors_bornes_ou_non_chaine(): void
+    {
+        foreach ([['x'], 'A', str_repeat('a', 121), 42, '   '] as $invalid) {
+            $result = $this->planner->sanitize(['company_name' => $invalid]);
+            $this->assertContains('company_name', $result['rejected']);
+            $this->assertArrayNotHasKey('company_name', $result['answers']);
+        }
+    }
+
+    public function test_company_name_ne_produit_jamais_d_activation(): void
+    {
+        $plan = $this->planner->plan(['company_name' => 'restaurant']);
+
+        $this->assertSame(['solutions' => [], 'tools' => []], $plan);
+    }
 }

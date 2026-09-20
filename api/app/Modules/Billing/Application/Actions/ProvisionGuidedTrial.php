@@ -30,6 +30,12 @@ class ProvisionGuidedTrial
      * (invariant 10 de la spec MULTI_PAYS_RULES_ENGINE). La langue, la
      * devise et le fuseau sont dérivés du pays validé.
      *
+     * #7853 — `$companyName` reste OBLIGATOIRE ici : quand l'inscription se
+     * fait par e-mail seul, l'appelant (SelfServiceTrialController via
+     * `RequestTrialSignup::resolveCompanyName`) fournit un nom provisoire
+     * dérivé de l'e-mail — jamais de chaîne vide (le repli slug `sandbox-*`
+     * ci-dessous reste la dernière ceinture de sécurité).
+     *
      * @param  list<string>  $solutions  Codes de solutions sectorielles demandées (#6693)
      * @param  string|null  $companyType  #7235 — `company` (défaut) | `solo`
      * @param  list<string>  $modules  #7235 — outils horizontaux choisis à l'inscription

@@ -42,6 +42,8 @@ type QuestionDef = {
   key: string;
   options: string[];
   multi?: boolean;
+  /** #7853 — réponse en texte libre (bornée 2..120 côté serveur), zappable. */
+  freeText?: boolean;
   /** Ordre adaptatif : une réponse peut court-circuiter une question. */
   visible?: (answers: InterviewAnswers) => boolean;
 };
@@ -49,8 +51,12 @@ type QuestionDef = {
 const isSolo = (answers: InterviewAnswers) => answers.company_type === 'solo';
 
 // Miroir de l'allowlist serveur (`SetupInterviewPlanner::QUESTIONS`) —
-// 6 questions maximum, aucune à plus de 8 cartes-réponses.
+// 7 questions maximum, aucune à plus de 8 cartes-réponses.
+// #7853 — `company_name` (texte libre, optionnelle) est posée EN PREMIER :
+// le nom d'entreprise n'est plus demandé à l'inscription (e-mail seul), le
+// backend a provisionné un nom provisoire dérivé de l'e-mail.
 const QUESTIONS: QuestionDef[] = [
+  { key: 'company_name', options: [], freeText: true },
   { key: 'company_type', options: ['solo', 'team'] },
   {
     key: 'team_size',
@@ -259,6 +265,24 @@ export function SetupInterview({
     answer(selectedMulti(question.key));
   };
 
+  // #7853 — brouillon local du champ texte libre (company_name). La valeur
+  // n'est persistée (PATCH) qu'à la validation ; < 2 caractères = question
+  // sautée (`null`), miroir de la borne serveur (2..120, fail-closed).
+  const [freeTextValue, setFreeTextValue] = useState('');
+  useEffect(() => {
+    if (question?.freeText) {
+      const saved = answers[question.key];
+      setFreeTextValue(typeof saved === 'string' ? saved : '');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [question?.key]);
+
+  const confirmFreeText = () => {
+    if (!question) return;
+    const trimmed = freeTextValue.trim();
+    answer(trimmed.length >= 2 ? trimmed.slice(0, 120) : null);
+  };
+
   return (
     <div
       role="dialog"
@@ -348,6 +372,34 @@ export function SetupInterview({
                     {i18nT(locale, `setupInterview.questions.${question.key}.hint`, '')}
                   </p>
                 ) : null}
+                {question.freeText ? (
+                  <form
+                    className="mt-5"
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      confirmFreeText();
+                    }}
+                  >
+                    <input
+                      type="text"
+                      value={freeTextValue}
+                      onChange={(event) => setFreeTextValue(event.target.value)}
+                      maxLength={120}
+                      autoFocus
+                      data-testid="interview-freetext-input"
+                      placeholder={i18nT(locale, `setupInterview.questions.${question.key}.placeholder`, '')}
+                      aria-label={i18nT(locale, `setupInterview.questions.${question.key}.label`, question.key)}
+                      className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/40 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+                    />
+                    <button
+                      type="submit"
+                      data-testid="interview-freetext-continue"
+                      className="mt-4 w-full rounded-2xl bg-emerald-600 px-6 py-3 text-sm font-black text-white transition hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+                    >
+                      {t('continue', 'Continuer')}
+                    </button>
+                  </form>
+                ) : (
                 <div className="mt-5 grid gap-2 sm:grid-cols-2">
                   {question.options.map((option) => {
                     const selected = question.multi
@@ -375,6 +427,7 @@ export function SetupInterview({
                     );
                   })}
                 </div>
+                )}
                 {question.multi ? (
                   <button
                     type="button"

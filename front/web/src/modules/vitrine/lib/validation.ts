@@ -36,10 +36,16 @@ export function signupFormSchema(locale: AppLocale) {
       .email(m.emailInvalid)
       .min(5, m.emailTooShort)
       .max(255, m.emailTooLong),
+    // #7853 — inscription par e-mail seul : le nom d'entreprise n'est plus
+    // demandé dans le tunnel (il est dérivé de l'e-mail côté serveur puis
+    // affiné dans l'entretien de préparation #7493). S'il est transmis par un
+    // appelant historique, le contrat 2..120 reste appliqué.
     company: z
       .string()
       .min(2, m.companyTooShort)
-      .max(120, m.companyTooLong),
+      .max(120, m.companyTooLong)
+      .optional()
+      .or(z.literal('')),
     role: z
       .enum(['founder', 'manager', 'hr', 'operations', 'other'], {
         message: m.roleRequired,

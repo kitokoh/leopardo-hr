@@ -16,17 +16,11 @@ type QuickTrialCopy = {
   error: string
 }
 
-function deriveCompanyFromEmail(email: string): string {
-  const domain = email.split('@')[1]?.split('.')[0]?.trim()
-
-  if (!domain || domain.length < 2) {
-    return 'Demande essai Leopardo'
-  }
-
-  return domain
-    .replace(/[-_]+/g, ' ')
-    .replace(/\b\w/g, (letter) => letter.toUpperCase())
-}
+// #7853 — le nom d'entreprise n'est plus envoyé depuis le héro : l'inscription
+// se fait par e-mail seul. Le backend dérive un nom provisoire depuis la partie
+// locale de l'e-mail, et le nom définitif est demandé dans l'entretien de
+// préparation (#7493). L'ancienne dérivation client (domaine → nom) est retirée
+// pour garder UNE seule source de vérité, côté serveur.
 
 export function QuickTrialEmailForm({ locale, copy }: { locale: AppLocale; copy: QuickTrialCopy }) {
   const [email, setEmail] = useState('')
@@ -53,7 +47,6 @@ export function QuickTrialEmailForm({ locale, copy }: { locale: AppLocale; copy:
         body: JSON.stringify({
           ...antispamFields(),
           email: normalizedEmail,
-          company: deriveCompanyFromEmail(normalizedEmail),
           role: 'operations',
           employees: '1-10',
           locale,

@@ -7620,6 +7620,10 @@
           "yes": "Evet",
           "no": "Hayır"
         }
+      },
+      "company_name": {
+        "label": "Şirketinizin adı nedir?",
+        "placeholder": "Örn. El Amel Fırını"
       }
     },
     "modules": {
@@ -7639,7 +7643,8 @@
       "training": "Eğitim merkezi",
       "reports": "Raporlar",
       "marketing": "Pazarlama"
-    }
+    },
+    "continue": "Devam et"
   },
   "nextSteps": {
     "title": "Sonraki adımlar",
