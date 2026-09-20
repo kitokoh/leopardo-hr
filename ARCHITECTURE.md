@@ -13,13 +13,16 @@ leopardo-hr/
 │   ├── web/                # Next.js 16 — landing page + dashboard SaaS (déployé sur Vercel)
 │   ├── web-offline/        # Next.js — PWA offline-first pour le bridge Edge (http://leopardo.local)
 │   ├── admin-dashboard/    # Vue.js 3 — interface super-admin plateforme
-│   ├── mobile_apps/        # Flutter — 7 apps + 1 package partagé (voir melos.yaml)
+│   ├── marketplace/        # Next.js — marketplace publique (déployée sur Vercel, projet leopardo-marche)
+│   ├── travel-web/         # Next.js — front web TravelAgency (déployé sur Vercel, projet leopardo-travel-prod)
+│   ├── mobile_apps/        # Flutter — 8 apps + 1 package partagé (voir melos.yaml)
 │   │   ├── leopardo_core/            # Package partagé (design system, services)
 │   │   ├── leopardo_employee/        # App employé
 │   │   ├── leopardo_manager/         # App manager/RH
 │   │   ├── leopardo_hr/              # App RH dédiée
 │   │   ├── leopardo_marketing/       # App marketing/communication
 │   │   ├── leopardo_accounting/      # App comptabilité
+│   │   ├── leopardo_cameras/         # App caméras/surveillance (module Cameras)
 │   │   ├── leopardo_platform_admin/  # App admin plateforme
 │   │   └── leopardo_travel_agent/    # App agent/vendeur TravelAgency (TRAVEL-701/810)
 │   └── zkteco-kiosk/       # Kiosque HTML/JS pour pointage biométrique
@@ -34,7 +37,7 @@ leopardo-hr/
 ├── examples/               # Exemples d'usage du SDK
 ├── assets/              # Visuels marketing/README en archive (Git LFS — voir assets/README.md)
 ├── site/                   # (statique GitHub Pages versionné dans main — site/gh-pages, cf. pages-deploy.yml)
-└── .github/workflows/      # 69 pipelines CI/CD (vérifié 2026-09-18 — cartographie dans .github/workflows/README.md)
+└── .github/workflows/      # 72 pipelines CI/CD (vérifié 2026-09-20 — cartographie dans .github/workflows/README.md)
 ```
 
 > Cet arbre doit rester synchronisé avec la structure réelle du repo. En cas de doute, vérifier avec `find . -maxdepth 2 -not -path '*/node_modules/*'`.
@@ -127,7 +130,7 @@ modules DDD (`App\Modules\<Nom>\...`). Tout nouveau code va directement au canon
 
 - `leopardo_core` est le package fondation partagé par toutes les apps.
 - `leopardo_employee`, `leopardo_manager` et `leopardo_hr` utilisent le pattern **Feature-first** avec `data/`, `providers/`, `screens/`.
-- Apps présentes dans le dépôt (8 dossiers, cf. `melos.yaml` et `front/mobile_apps/README.md`) : `leopardo_core` (package partagé), `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_marketing`, `leopardo_accounting`, `leopardo_platform_admin`, `leopardo_travel_agent`. Le mobile historique (`front/mobile/`) a été retiré du dépôt.
+- Apps présentes dans le dépôt (9 dossiers, cf. `melos.yaml` et `front/mobile_apps/README.md`) : `leopardo_core` (package partagé), `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_marketing`, `leopardo_accounting`, `leopardo_cameras`, `leopardo_platform_admin`, `leopardo_travel_agent`. Le mobile historique (`front/mobile/`) a été retiré du dépôt.
 
 ## i18n
 

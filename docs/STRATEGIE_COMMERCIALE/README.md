@@ -11,6 +11,8 @@ Ce dossier centralise les supports business et go-to-market lies a l'acquisition
 - `LEOPARDO_RH_CRM_MODELE.md` - structure de CRM recommande
 - `LEOPARDO_RH_CRM_TEMPLATE.csv` et `LEOPARDO_RH_CRM_EXEMPLE_10_LIGNES.csv` - modele et exemple de donnees
 
+> **Note (audit 2026-09-20)** : les fichiers CSV de ce dossier sont des **modeles a donnees entierement fictives** (contacts, entreprises et montants inventes a titre d'exemple). Aucune donnee client reelle ne doit jamais etre commitee dans ce depot public — le CRM reel vit hors du repo.
+
 ## Regle
 
 Ces documents sont utiles pour le business et la commercialisation.

@@ -67,7 +67,7 @@ app/
     └── Resources/Api/V1/       # JsonResource centralisées (dérogation PA2-ARCH-010)
 ```
 
-Modules actifs (28, ordre alphabétique) : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `Catalog`, `Communication`, `CRM`, `Delivery`, `EdgeSync`, `EduManager`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `Restaurant`, `RestaurantManager`, `Showcase`, `TravelAgency` — état couche-par-couche dans `docs/ARCHITECTURE_STATUS.md`.
+Modules actifs (31, ordre alphabétique) : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `Catalog`, `Communication`, `CRM`, `Delivery`, `EdgeSync`, `EduManager`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HealthManager`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Pharmacy`, `Planning`, `Platform`, `Recruitment`, `Restaurant`, `RestaurantManager`, `Retail`, `Showcase`, `TravelAgency` — liste canonique dans `ARCHITECTURE.md` (racine), état couche-par-couche dans `docs/ARCHITECTURE_STATUS.md`.
 > `app/Http/Controllers/Api/V1/`, `app/Models/` et `app/Services/` ont été **supprimés** (PR #824, phase 2, #1728) — tout nouveau code va dans `Modules/<Nom>/` (`App\Modules\<Nom>\*`).
 
 ### 2.4 Multi-tenant

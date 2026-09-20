@@ -2,7 +2,7 @@
 #
 # PA2-AUTO-003: genere les issues GitHub manquantes a partir du CSV
 # canonique docs/archive/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv (source de
-# verite deja validee par dev-hub/tools/validate-plan-action2.ps1 /
+# verite deja validee par dev-hub/tools/validate-mobile-plan28.ps1 /
 # .github/workflows/plan-action2-project.yml).
 #
 # Pourquoi: le CSV et le backlog markdown (02_BACKLOG_ATOMIQUE.md) existent

@@ -50,7 +50,7 @@ docs/
 ├── platforms/       # mobile, web, desktop, admin, client
 ├── ops/             # ops, deployment, i18n (exploitation, déploiement, monitoring)
 ├── security/        # security (menaces, audits sécu, RGPD)
-├── quality/         # qa, testing, validation, qualite, audits, external-audits
+├── quality/         # qa, testing, validation, audits, external-audits
 ├── governance/      # GOUVERNANCE, GESTION_PROJET, PROTOCOLES, plan, pilotes
 ├── contributing/    # contributing, GUIDES, CONTEXT, user-guide, ai
 ├── business/        # GOTO_MARKET, GTM, STRATEGIE_COMMERCIALE, commercial (→ §3 : publication ?)
@@ -105,7 +105,7 @@ Convention écrite + rangement des fichiers en vrac **non référencés par gard
 
 ### Phase 4 — regroupement en familles
 
-Création de `domains/`, `platforms/`, `quality/`… et déplacement des dossiers minuscules restants (chacun référencé par 1-N scripts : `payroll/`, `security/`, `ops/`, `validation/`, `audits/`, `pilotes/`, `deployment/`, `desktop/`, `accounting/`, `attendance/`, `qualite/`, `testing/`, `specifications/`, `infra/`, `focus/`, `plan/`, `architecture/`, `api/` — mise à jour des gardes à chaque fois). Risque : moyen à élevé ; facultatif si le coût dépasse le bénéfice — la taxonomie peut rester « logique » (cet index) sans déplacement physique.
+Création de `domains/`, `platforms/`, `quality/`… et déplacement des dossiers minuscules restants (chacun référencé par 1-N scripts : `payroll/`, `security/`, `ops/`, `validation/`, `audits/`, `pilotes/`, `deployment/`, `desktop/`, `accounting/`, `attendance/`, `testing/`, `specifications/`, `infra/`, `focus/`, `plan/`, `architecture/`, `api/` — mise à jour des gardes à chaque fois). Risque : moyen à élevé ; facultatif si le coût dépasse le bénéfice — la taxonomie peut rester « logique » (cet index) sans déplacement physique.
 
 ### 4.1 Fichiers racine — état après cette PR
 
@@ -194,7 +194,7 @@ Création de `domains/`, `platforms/`, `quality/`… et déplacement des dossier
 |---|---|
 | [`security/`](security/) | Politiques de sécurité, threat models |
 | [`RGPD_REGISTRE_TRAITEMENTS.md`](RGPD_REGISTRE_TRAITEMENTS.md) | Registre RGPD des traitements |
-| [`testing/`](testing/) · [`validation/`](validation/) · [`qualite/`](qualite/) | Stratégie de tests · dossiers de validation · dette qualité |
+| [`testing/`](testing/) · [`validation/`](validation/) | Stratégie de tests · dossiers de validation · dette qualité |
 | [`qa/`](qa/) | Sessions QA — source de vérité de l'état courant |
 | [`audits/`](audits/) · [`external-audits/`](external-audits/) | Audits internes · audits externes |
 
