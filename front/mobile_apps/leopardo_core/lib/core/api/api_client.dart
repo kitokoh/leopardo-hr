@@ -133,13 +133,14 @@ class ApiClient {
     }
 
     // #4524 : un build release/profile sans API_BASE_URL échouait en silence
-    // vers le backend legacy (gestionemployerbackend.onrender.com). Désormais
-    // l'erreur est explicite : le CI passe toujours le define, un build local
-    // release doit le fournir.
+    // vers le backend dev Render historique. Désormais l'erreur est
+    // explicite : le CI passe toujours le define, un build local release
+    // doit le fournir. #7963 : plus AUCUNE URL backend distante codée en
+    // dur — le define est la seule source en release/profile.
     if (kReleaseMode || (!kIsWeb && !kDebugMode)) {
       throw StateError(
         'API_BASE_URL must be provided in release/profile builds '
-        '(silent fallback removed, issue #4524).',
+        '(silent fallback removed, issues #4524/#7963).',
       );
     }
 

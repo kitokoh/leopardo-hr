@@ -107,10 +107,10 @@ function sleep(ms) {
 // (déploiement GitHub Actions cassé, dev silencieusement pointé ailleurs).
 // Durcissement #7842 : le repli silencieux vers l'API dev Render est retiré
 // en production — un build prod (`import.meta.env.PROD`) sans VITE_API_URL
-// lève désormais une erreur explicite au chargement. En dev/test, le repli
-// vers l'API dev est conservé mais signalé par un console.warn ; localhost
-// reste utilisable explicitement via VITE_API_URL.
-const DEV_FALLBACK_API_BASE_URL = 'https://gestionemployerbackend.onrender.com/api/v1'
+// lève désormais une erreur explicite au chargement. #7963 : plus AUCUNE
+// URL distante en dur — en dev/test, le seul repli est le backend LOCAL
+// (signalé par un console.warn) ; toute autre cible passe par VITE_API_URL.
+const DEV_FALLBACK_API_BASE_URL = 'http://localhost:8000/api/v1'
 
 function resolveApiBaseUrl() {
   const configured = import.meta.env.VITE_API_URL
@@ -126,7 +126,7 @@ function resolveApiBaseUrl() {
     )
   }
   console.warn(
-    `[admin-dashboard] VITE_API_URL is not set — falling back to the dev API ${DEV_FALLBACK_API_BASE_URL} (dev/test only, forbidden in production, #7842).`,
+    `[admin-dashboard] VITE_API_URL is not set — falling back to the local backend ${DEV_FALLBACK_API_BASE_URL} (dev/test only, forbidden in production, #7842/#7963).`,
   )
   return DEV_FALLBACK_API_BASE_URL
 }

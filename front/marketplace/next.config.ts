@@ -5,7 +5,8 @@ import type { NextConfig } from "next";
  *
  * Application indépendante de `front/web` : aucune session, aucun proxy —
  * les appels partent directement vers l'API publique
- * (`NEXT_PUBLIC_MARKET_API_BASE`, défaut https://gestionemployerbackend.onrender.com).
+ * (`NEXT_PUBLIC_MARKET_API_BASE`, OBLIGATOIRE — plus aucun défaut en dur,
+ * le build échoue sans elle, #7963).
  *
  * `turbopack.root` / `outputFileTracingRoot` sont fixés sur CE dossier : le
  * monorepo contient plusieurs lockfiles et Next « devinerait » sinon une

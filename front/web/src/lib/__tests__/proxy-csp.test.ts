@@ -114,19 +114,19 @@ describe('CSP enforce + nonce par requête (#7650)', () => {
       const csp = buildCspDirectives({ nonce: 'abc', isDev: false });
       expect(csp).toContain('connect-src');
       expect(csp).toContain('https://api.leopardo-rh.com');
-      expect(csp).not.toContain('gestionemployerbackend.onrender.com');
+      expect(csp).not.toContain('onrender.com');
     });
 
-    it('retombe sur l’API dev UNIQUEMENT sans variable (poste local sans .env, jamais en production — #7842)', () => {
+    it('retombe sur le backend LOCAL UNIQUEMENT sans variable (poste local sans .env, jamais en production — #7842/#7963)', () => {
       delete process.env.NEXT_PUBLIC_API_URL;
       delete process.env.VERCEL_ENV;
-      expect(resolveApiOrigin()).toBe('https://gestionemployerbackend.onrender.com');
+      expect(resolveApiOrigin()).toBe('http://localhost:8000');
     });
 
     it('une valeur invalide ne casse pas la construction de la politique en dev/test', () => {
       process.env.NEXT_PUBLIC_API_URL = 'not-a-url';
       delete process.env.VERCEL_ENV;
-      expect(resolveApiOrigin()).toBe('https://gestionemployerbackend.onrender.com');
+      expect(resolveApiOrigin()).toBe('http://localhost:8000');
     });
 
     it('fail-fast #7842 : en production, NEXT_PUBLIC_API_URL absente → erreur actionnable (plus de repli silencieux)', () => {
@@ -142,11 +142,12 @@ describe('CSP enforce + nonce par requête (#7650)', () => {
       expect(() => resolveApiOrigin()).toThrow(/NEXT_PUBLIC_API_URL/);
     });
 
-    it('pendant `next build` (NEXT_PHASE=phase-production-build) sans variable : PAS de throw, repli dev (CI lighthouse, #7842)', () => {
+    it('pendant `next build` (NEXT_PHASE=phase-production-build) sans variable : erreur explicite (#7963 — les workflows CI posent NEXT_PUBLIC_API_URL)', () => {
       delete process.env.NEXT_PUBLIC_API_URL;
       process.env.VERCEL_ENV = 'production';
       process.env.NEXT_PHASE = 'phase-production-build';
-      expect(resolveApiOrigin()).toBe('https://gestionemployerbackend.onrender.com');
+      expect(() => resolveApiOrigin()).toThrow(/NEXT_PUBLIC_API_URL/);
+      expect(() => resolveApiOrigin()).toThrow(/#7963/);
     });
   });
 
