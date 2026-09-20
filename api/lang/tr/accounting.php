@@ -124,6 +124,8 @@ return [
     'chart_system_account_not_deletable' => 'Sistem hesapları (sağlanan) silinemez — gerekirse devre dışı bırakın.',
     'chart_account_has_entries' => 'Bu hesap yevmiye kayıtları taşıyor ve silinemez.',
     'fec_no_entries' => 'Bu dönem için kayıt yok — FEC dışa aktarılamaz.',
+    'fec_siren_missing' => 'SIREN eksik: FEC dosyasını DGFiP standardına (SIRENFECAAAAMMJJ) göre adlandırmak için şirketin SIREN numarasını (9 hane) girin.',
+    'fec_siren_invalid' => 'Geçersiz SIREN: SIREN tam olarak 9 haneli olmalıdır (DGFiP standardı).',
     'fiscal_year_already_closed' => 'Bu mali yıl zaten kapatıldı veya mevcut değil.',
     'lettering_unbalanced' => 'Mutabakat dengeli olmalıdır: toplam borçlar toplam alacaklara eşit olmalıdır.',
     'lettering_invalid' => 'Geçersiz mutabakat: kayıtlar aynı hesabı hedeflemelidir.',

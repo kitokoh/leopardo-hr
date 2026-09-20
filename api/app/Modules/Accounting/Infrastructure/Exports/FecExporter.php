@@ -16,7 +16,8 @@ use App\Support\CsvCellSanitizer;
  *   - une ligne = une écriture comptable (débit OU crédit exclusif) ;
  *   - aucune ligne de TOTAUX (le FEC officiel n'en comporte pas) ;
  *   - montants au format français : virgule décimale, 2 décimales, cellule
- *     vide si zéro ; Devise = devise de l'écriture (DZD par défaut),
+ *     vide si zéro ; Devise = devise de l'écriture, résolue depuis le pays
+ *     du tenant par l'appelant (issue #7927 — EUR pour FR, DZD pour DZ…),
  *     MontantDevise identique au montant (même devise) ;
  *   - EcritureNum : numéro séquentiel de pièce 1..N sur la période (même
  *     numéro pour toutes les lignes d'une même pièce).
@@ -56,6 +57,52 @@ final class FecExporter
 
     /** Longueur maximale du libellé (norme DGFiP). */
     private const LIBELLE_MAX_LENGTH = 500;
+
+    /**
+     * Nom de fichier FEC officiel pour la France (issue #7927) — arrêté du
+     * 29/07/2013 codifié à l'art. A. 47 A-1 du LPF : `SIRENFECAAAAMMJJ`, où
+     * AAAAMMJJ est la date de clôture de l'exercice comptable. Les exercices
+     * du module sont civils (accounting_fiscal_years.year) : la clôture est
+     * le 31/12 de l'année de la période exportée.
+     */
+    public static function officialFrFilename(string $siren, int $closingYear): string
+    {
+        return sprintf('%sFEC%d1231.txt', $siren, $closingYear);
+    }
+
+    /**
+     * SIREN valide = exactement 9 chiffres (INSEE). La clé de Luhn n'est
+     * pas vérifiée ici (réglage déclaratif, validé en format).
+     */
+    public static function isValidSiren(string $siren): bool
+    {
+        return preg_match('/^\d{9}$/', $siren) === 1;
+    }
+
+    /**
+     * SIREN du tenant depuis les métadonnées de l'entreprise (convention
+     * métadata plate, comme `siret`/`company_iban`) : clé `siren` dédiée,
+     * sinon dérivé des 9 premiers chiffres d'un SIRET 14 chiffres.
+     * Retourne null si aucun réglage exploitable (pas de valeur devinée).
+     *
+     * @param  array<mixed>|null  $metadata
+     */
+    public static function resolveSiren(?array $metadata): ?string
+    {
+        $siren = $metadata['siren'] ?? null;
+
+        if (is_string($siren) && trim($siren) !== '') {
+            return trim($siren);
+        }
+
+        $siret = $metadata['siret'] ?? null;
+
+        if (is_string($siret) && preg_match('/^\d{14}$/', trim($siret)) === 1) {
+            return substr(trim($siret), 0, 9);
+        }
+
+        return null;
+    }
 
     /**
      * Génère le contenu CSV FEC complet (BOM + en-tête + lignes) pour la

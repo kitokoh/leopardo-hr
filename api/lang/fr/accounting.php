@@ -125,6 +125,8 @@ return [
     'chart_system_account_not_deletable' => 'Les comptes système (provisionnés) ne peuvent pas être supprimés — désactivez-les si nécessaire.',
     'chart_account_has_entries' => 'Ce compte porte des écritures au journal et ne peut pas être supprimé.',
     'fec_no_entries' => 'Aucune écriture sur cette période — export FEC impossible.',
+    'fec_siren_missing' => 'SIREN manquant : renseignez le SIREN (9 chiffres) de l\'entreprise pour nommer le FEC selon la norme DGFiP (SIRENFECAAAAMMJJ).',
+    'fec_siren_invalid' => 'SIREN invalide : le SIREN doit comporter exactement 9 chiffres (norme DGFiP).',
     'fiscal_year_already_closed' => 'Cet exercice est déjà clôturé ou n\'existe pas.',
     'lettering_unbalanced' => 'Le lettrage doit être équilibré : la somme des débits doit égaler la somme des crédits.',
     'lettering_invalid' => 'Lettrage invalide : les écritures doivent porter sur le même compte.',

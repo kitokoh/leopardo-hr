@@ -124,6 +124,8 @@ return [
     'chart_system_account_not_deletable' => 'لا يمكن حذف الحسابات النظامية (المجهزة) — يمكن تعطيلها إذا لزم الأمر.',
     'chart_account_has_entries' => 'هذا الحساب يحمل قيوداً في اليومية ولا يمكن حذفه.',
     'fec_no_entries' => 'لا توجد قيود لهذه الفترة — تعذر تصدير FEC.',
+    'fec_siren_missing' => 'رقم SIREN مفقود: أدخل رقم SIREN الخاص بالشركة (9 أرقام) لتسمية ملف FEC وفق معيار DGFiP (SIRENFECAAAAMMJJ).',
+    'fec_siren_invalid' => 'رقم SIREN غير صالح: يجب أن يتكون SIREN من 9 أرقام بالضبط (معيار DGFiP).',
     'fiscal_year_already_closed' => 'هذه السنة المالية مغلقة بالفعل أو غير موجودة.',
     'lettering_unbalanced' => 'يجب أن تكون التسوية متوازنة: مجموع المدين يجب أن يساوي مجموع الدائن.',
     'lettering_invalid' => 'تسوية غير صالحة: يجب أن تستهدف القيود نفس الحساب.',
