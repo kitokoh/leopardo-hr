@@ -136,6 +136,13 @@ return [
             'killable' => true,
             'description' => 'Solution Agence de voyage (ventes, réservations, check-in).',
         ],
+        'pharmacy' => [
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.26.0',
+            'killable' => true,
+            'description' => 'Solution PharmaManager (référentiel produits, stock par lots, achats, ventes comptoir, ordonnancier).',
+        ],
         // BC-27 SHOWCASE — module HORIZONTAL « Site vitrine » (site public de
         // l'entreprise créé en 1 clic par le responsable du tenant). Le module
         // serveur existait (`app/Modules/Showcase`, routes `/api/v1/showcase/*`,

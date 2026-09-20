@@ -234,35 +234,43 @@ services:
   # Background Worker — Laravel Queue Worker
   # Processes: push notifications, emails, PDF generation, payroll runs
   # ──────────────────────────────────────────────────────────────────────────
-  # ⚠️ Constat 2026-09-04 : ce service n'existe PAS (encore) dans le
-  # workspace dev — la queue est drainée par le worker mono-conteneur du
-  # web service (docker-entrypoint.sh, connexion database). Le provisionner
-  # via une sync manuelle du blueprint quand un worker dédié sera nécessaire.
+  # ⚠️ Issue #7649 — provisionnement TENTÉ via l'API Render le 2026-09-19
+  # (POST /v1/services, type background_worker, plan starter) : refus 402
+  # « Payment information is required » — le workspace dev n'a AUCUN moyen
+  # de paiement et les Background Workers sont inéligibles au tier gratuit.
+  # Ce service n'existe donc PAS (encore) dans le workspace ; la queue et le
+  # scheduler tournent en intérim dans le conteneur web (docker-entrypoint.sh,
+  # gates WEB_QUEUE_DRAIN / WEB_SCHEDULER_LOOP, défaut on). Dès qu'une carte
+  # est ajoutée : provisionner via blueprint sync (ou API), puis passer
+  # WEB_QUEUE_DRAIN=false et WEB_SCHEDULER_LOOP=false sur le web service.
   - type: worker
     name: leopardo-queue-worker
     runtime: docker
     dockerfilePath: api/Dockerfile.prod
     dockerContext: .
     region: frankfurt
-    # #7648 : starter CONSERVÉ — ce worker n'existe pas encore dans le
-    # workspace (cf. ⚠️ ci-dessus) et les Background Workers sont
-    # inéligibles au tier gratuit Render : starter est le plan minimal de
-    # provisionnement futur (décision billing : #7649).
+    # #7648/#7649 : starter = plan minimal des Background Workers (pas de
+    # tier gratuit) — provisionnement bloqué billing, cf. ⚠️ ci-dessus.
     plan: starter
     # #6700 : pas de hook Render dédié pour les workers → autoDeploy:false
     # (déploiement manuel / blueprint sync assumé ; un autoDeploy:true sur
     # dockerContext racine rebuildait à CHAQUE push main).
     autoDeploy: false
     # Issue #5578 : la queue est sur database — le worker consomme la
-    # connexion par défaut (aligné sur le probe et le drain GH Actions).
+    # connexion par défaut (aligné sur le probe et la sonde queue-supervision).
+    # Issue #7649 : un seul worker starter porte queue:work ET le scheduler
+    # (schedule:work en arrière-plan) — évite un second service payant.
+    # exec sur queue:work : sa sortie (max-time 1 h ou crash) termine le
+    # conteneur, Render le redémarre → les DEUX processus repartent.
     dockerCommand: >-
-      php artisan queue:work
+      sh -c 'php artisan schedule:work >&2 &
+      exec php artisan queue:work
       --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default
       --tries=3
       --timeout=300
       --sleep=3
       --max-jobs=500
-      --max-time=3600
+      --max-time=3600'
     envVars:
       # #7648 : aligné sur le web service (tier dev = staging + DEPLOY_TIER).
       - key: APP_ENV
