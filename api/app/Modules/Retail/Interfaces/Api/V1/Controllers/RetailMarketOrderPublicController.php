@@ -194,19 +194,23 @@ class RetailMarketOrderPublicController extends Controller
                     // (COD à la livraison).
                     'status' => $this->payments->outstandingAmountMinor($order) === 0 ? 'paid' : 'pending',
                 ],
-                'delivery' => [
-                    // Handoff BC-26 (#7811) : reference publique de la
-                    // livraison creee a la confirmation (null avant
-                    // confirmation ou si le vendeur n'a pas le module).
-                    'reference' => $order->delivery_reference,
-                ],
                 'timeline' => [
                     'placed_at' => $order->created_at?->toIso8601String(),
                     'confirmed_at' => $order->confirmed_at?->toIso8601String(),
                     'shipped_at' => $order->shipped_at?->toIso8601String(),
                     'delivered_at' => $order->delivered_at?->toIso8601String(),
                 ],
-                'delivery' => $delivery?->toArray(),
+                // Handoff BC-26 (#7811) : null tant qu'aucune livraison
+                // n'existe (commande pending, vendeur sans module BC-26) ;
+                // sinon reference publique DLV-… (stockée par Retail via
+                // l'événement retour) + état public fail-closed du DTO
+                // `PublicDeliveryStatus` (statut + horodatages uniquement).
+                'delivery' => $delivery === null && $order->delivery_reference === null
+                    ? null
+                    : array_merge(
+                        ['reference' => $order->delivery_reference],
+                        $delivery?->toArray() ?? [],
+                    ),
             ],
         ]);
     }

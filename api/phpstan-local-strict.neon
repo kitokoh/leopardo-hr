@@ -1,0 +1,5 @@
+includes:
+    - phpstan-strict.neon
+parameters:
+    parallel:
+        maximumNumberOfProcesses: 1
