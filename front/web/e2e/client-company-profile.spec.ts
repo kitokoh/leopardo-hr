@@ -75,6 +75,22 @@ async function bootDashboard(page: Page, user: unknown) {
   await expect(page.locator('[data-testid="trial-banner"]')).toBeVisible();
 }
 
+/**
+ * #7908 — les modules entreprise vivent dans la sidebar unifiée, repliés en
+ * accordéons par groupe : on déplie tous les groupes avant de compter les
+ * liens (un panneau fermé n'est pas monté dans le DOM).
+ */
+async function openEnterpriseGroups(page: Page) {
+  const toggles = page.locator('[data-testid="dashboard-enterprise-nav"] button[aria-expanded="false"]');
+  while ((await toggles.count()) > 0) {
+    await toggles.first().click();
+  }
+}
+
+const navLink = (page: Page, href: string) =>
+  page.locator(`[data-testid="dashboard-sidebar"] nav a[href="${href}"]`);
+
+
 test.describe('Profil d’entreprise — navigation et essai (#7235)', () => {
   test('un indépendant garde son socle RH mais pas les outils d’équipe, et son essai est compté', async ({ page }) => {
     await bootDashboard(page, {
@@ -92,9 +108,10 @@ test.describe('Profil d’entreprise — navigation et essai (#7235)', () => {
 
     // #7423 — plancher d’accès : le pointage (et les absences, la paie) restent
     // accessibles à un indépendant, même décochés dans la sélection.
-    await expect(page.locator('header a[href="/attendance"]')).toHaveCount(1);
+    await openEnterpriseGroups(page);
+    await expect(navLink(page, '/attendance')).toHaveCount(1);
     // …alors que le pilotage d’équipe reste fermé.
-    await expect(page.locator('header a[href="/employees"]')).toHaveCount(0);
+    await expect(navLink(page, '/employees')).toHaveCount(0);
 
     const banner = page.locator('[data-testid="trial-banner"]');
     await expect(banner).toBeVisible();
@@ -117,11 +134,12 @@ test.describe('Profil d’entreprise — navigation et essai (#7235)', () => {
       },
     });
 
-    await expect(page.locator('header a[href="/employees"]')).toHaveCount(1);
-    await expect(page.locator('header a[href="/absences"]')).toHaveCount(1);
+    await openEnterpriseGroups(page);
+    await expect(navLink(page, '/employees')).toHaveCount(1);
+    await expect(navLink(page, '/absences')).toHaveCount(1);
     // Décochés : hors du menu, malgré `rh` actif dans la carte plateforme.
-    await expect(page.locator('header a[href="/attendance"]')).toHaveCount(0);
-    await expect(page.locator('header a[href="/payroll"]')).toHaveCount(0);
+    await expect(navLink(page, '/attendance')).toHaveCount(0);
+    await expect(navLink(page, '/payroll')).toHaveCount(0);
   });
 
   test('sans sélection déclarée, le menu reste celui d’avant', async ({ page }) => {
@@ -136,8 +154,9 @@ test.describe('Profil d’entreprise — navigation et essai (#7235)', () => {
       },
     });
 
-    await expect(page.locator('header a[href="/attendance"]')).toHaveCount(1);
-    await expect(page.locator('header a[href="/employees"]')).toHaveCount(1);
+    await openEnterpriseGroups(page);
+    await expect(navLink(page, '/attendance')).toHaveCount(1);
+    await expect(navLink(page, '/employees')).toHaveCount(1);
   });
 
   test('aucun bandeau d’essai hors période d’essai', async ({ page }) => {

@@ -2,9 +2,9 @@ import { expect, installAuthenticatedSession, test, type AuthenticatedUser } fro
 import type { Page } from '@playwright/test';
 
 /**
- * #7225 — le rail métier (« Mon métier », verticales du tenant) est en
- * `hidden md:flex` : sous 768 px il n'était atteignable par aucun déclencheur.
- * Il devient un tiroir piloté par un bouton hamburger.
+ * #7225/#7908 — la sidebar unifiée (métier + entreprise + plateforme) est un
+ * tiroir sous 768 px, piloté par le bouton hamburger de la topbar. Le rail
+ * métier (« Mon métier ») est une section de cette sidebar.
  *
  * Le compte démo standard n'a aucune verticale activée : la session mockée
  * active `restaurant` pour que le rail existe réellement.
@@ -47,10 +47,12 @@ async function seedBusinessSession(page: Page) {
 }
 
 const toggle = (page: Page) => page.getByTestId('dashboard-nav-toggle');
-const rail = (page: Page) => page.getByTestId('business-rail');
+// #7908 — le tiroir est la sidebar unifiée (`dashboard-sidebar`), toujours
+// rendue ; `business-rail` n'est plus qu'une section interne.
+const rail = (page: Page) => page.getByTestId('dashboard-sidebar');
 const backdrop = (page: Page) => page.getByTestId('dashboard-nav-backdrop');
 
-test.describe('Dashboard — navigation mobile du rail métier (#7225)', () => {
+test.describe('Dashboard — navigation mobile de la sidebar unifiée (#7225/#7908)', () => {
   test('le burger ouvre le rail en tiroir, verrouille le scroll, Échap referme', async ({ page }) => {
     await seedBusinessSession(page);
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });

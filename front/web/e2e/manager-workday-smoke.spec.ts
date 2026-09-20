@@ -220,13 +220,15 @@ async function mockManagerSession(page: Page) {
 }
 
 /**
- * #7328 — les modules RH sont repliés dans un sous-menu « RH » du bandeau
- * (`data-testid="dashboard-hr-menu"`). Le panneau n'est monté que lorsqu'il est
- * ouvert (`hrMenuOpen ? … : null`) : un clic direct sur
- * `header a[href="/employees"]` ne trouve donc **rien** tant que le sous-menu
- * est fermé (régression constatée sur `main` après #7332). On l'ouvre comme le
+ * #7328/#7908 — les modules RH sont repliés dans l'accordéon « RH » de la
+ * sidebar unifiée (`data-testid="dashboard-hr-menu"`). Le panneau n'est monté
+ * que lorsqu'il est ouvert : un clic direct sur
+ * `a[href="/employees"]` ne trouve donc **rien** tant que l'accordéon est
+ * fermé (régression constatée sur `main` après #7332). On l'ouvre comme le
  * ferait un utilisateur. Si un seul module RH est activé, `buildDashboardNav`
- * rend un lien direct — il n'y a alors rien à ouvrir.
+ * rend un lien direct — il n'y a alors rien à ouvrir. Le groupe actif est
+ * auto-ouvert selon le pathname (#7908) : l'helper tolère un accordéon déjà
+ * ouvert.
  */
 async function openHrSubmenu(page: Page) {
   const trigger = page.getByTestId('dashboard-hr-menu');
@@ -249,12 +251,13 @@ test.describe('Client web manager workday smoke', () => {
     await expect(page.locator('body')).toContainText('TechCorp Algerie SARL');
     await expect(page.locator('body')).toContainText('absence.requested');
 
-    // #7225 — IA revue : les modules transverses vivent dans le bandeau
-    // horizontal « Entreprise » (header), le rail `aside` étant réservé au métier.
-    // #7328 — depuis #7332, les modules RH y sont repliés dans un sous-menu :
-    // on l'ouvre avant chaque cible (le panneau n'existe pas fermé).
+    // #7225/#7908 — les modules transverses vivent dans la section
+    // « Entreprise » de la sidebar unifiée (`dashboard-sidebar`), les modules
+    // RH y étant repliés dans un accordéon : on l'ouvre avant chaque cible
+    // (le panneau n'existe pas fermé).
+    const sidebar = page.getByTestId('dashboard-sidebar');
     await openHrSubmenu(page);
-    await page.locator('header a[href="/employees"]').first().click();
+    await sidebar.locator('a[href="/employees"]').first().click();
     await expect(page).toHaveURL(/\/employees$/);
     await expect(page.locator('body')).toContainText('Total équipe');
     await expect(page.locator('body')).toContainText('42');
@@ -262,22 +265,22 @@ test.describe('Client web manager workday smoke', () => {
     await expect(page.locator('body')).toContainText('EMP-501');
 
     await openHrSubmenu(page);
-    await page.locator('header a[href="/attendance"]').first().click();
+    await sidebar.locator('a[href="/attendance"]').first().click();
     await expect(page).toHaveURL(/\/attendance$/);
     await expect(page.locator('body')).toContainText('Manager');
     await expect(page.locator('body')).toContainText('Nadia Kaci');
     await expect(page.locator('body')).toContainText(/Présents|present/i);
 
     await openHrSubmenu(page);
-    await page.locator('header a[href="/absences"]').first().click();
+    await sidebar.locator('a[href="/absences"]').first().click();
     await expect(page).toHaveURL(/\/absences$/);
     await expect(page.locator('body')).toContainText('Absences');
     await expect(page.locator('body')).toContainText('Conges payes');
     await expect(page.locator('body')).toContainText('En attente');
 
-    // #7350 — la déconnexion n'est plus une icône isolée de la barre : elle vit
-    // dans le menu du compte (retour propriétaire : un seul bouton). On ouvre le
-    // menu comme le ferait l'utilisateur avant de cliquer.
+    // #7350/#7908 — la déconnexion vit dans le menu du compte, au pied de la
+    // sidebar unifiée (un seul bouton). On ouvre le menu comme le ferait
+    // l'utilisateur avant de cliquer.
     await page.locator('[data-testid="user-menu-toggle"]').click();
     await expect(page.locator('[data-testid="user-menu"]')).toBeVisible();
     await page.locator('[data-testid="user-menu-logout"]').click();
