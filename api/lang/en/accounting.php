@@ -115,11 +115,17 @@ return [
     'tva_label_sales_tax' => 'Sales tax',
     'tva_label_gst' => 'GST',
     'tva_label_reduced' => 'Reduced VAT',
+    'tva_label_super_reduced' => 'Super-reduced VAT',
+    'tva_label_hst' => 'HST',
+    'tva_label_pst' => 'PST',
+    'tva_label_qst' => 'QST',
 
     // Profondeur comptable (issue #5422)
     'chart_system_account_not_deletable' => 'System accounts (provisioned) cannot be deleted — deactivate them if needed.',
     'chart_account_has_entries' => 'This account carries journal entries and cannot be deleted.',
     'fec_no_entries' => 'No entries for this period — FEC export impossible.',
+    'fec_siren_missing' => 'Missing SIREN: set the company SIREN (9 digits) to name the FEC file per the DGFiP standard (SIRENFECAAAAMMJJ).',
+    'fec_siren_invalid' => 'Invalid SIREN: the SIREN must be exactly 9 digits (DGFiP standard).',
     'fiscal_year_already_closed' => 'This fiscal year is already closed or does not exist.',
     'lettering_unbalanced' => 'Lettering must be balanced: total debits must equal total credits.',
     'lettering_invalid' => 'Invalid lettering: entries must target the same account.',

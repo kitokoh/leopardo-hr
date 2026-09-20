@@ -28,7 +28,11 @@ class ProvisionChartOfAccounts
 
         try {
             $tenantManager->withinTenant($event->company, function () use ($event): void {
-                app(ChartOfAccountsService::class)->ensureProvisioned($event->company->id);
+                app(ChartOfAccountsService::class)->ensureProvisioned(
+                    $event->company->id,
+                    $event->company->country,
+                    $event->company->language,
+                );
             });
         } catch (Throwable $exception) {
             Log::warning('accounting.chart_provision_skipped', [

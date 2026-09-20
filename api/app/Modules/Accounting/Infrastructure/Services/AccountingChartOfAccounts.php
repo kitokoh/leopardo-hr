@@ -36,6 +36,19 @@ use App\Support\CountryDefaults;
  */
 final class AccountingChartOfAccounts
 {
+    /** Familles de référentiels de plan comptable (issue #7925). */
+    public const FAMILY_PCG = 'pcg';
+
+    public const FAMILY_SYSCOHADA = 'syscohada';
+
+    public const FAMILY_TEKDUZEN = 'tekduzen';
+
+    public const FAMILY_UK = 'uk';
+
+    public const FAMILY_US = 'us';
+
+    public const FAMILY_CA = 'ca';
+
     /**
      * Plan comptable « famille PCG » — utilisé tel quel par les pays
      * francophones (DZ/MA/TN/FR) et, sous sa déclinaison SYSCOHADA, par la
@@ -158,19 +171,7 @@ final class AccountingChartOfAccounts
      *
      * @var list<string>
      */
-    private const OHADA_COUNTRIES = ['SN', 'CI', 'ML', 'BF', 'BJ', 'TG', 'NE', 'CM', 'GA', 'CG', 'TD', 'CF', 'GQ'];
-
-    /**
-     * Registre des plans comptables explicites par pays.
-     *
-     * @var array<string, array<string, array{code: string, label: string}>>
-     */
-    private const EXPLICIT = [
-        'TR' => self::TR_ACCOUNTS,
-        'GB' => self::UK_ACCOUNTS,
-        'US' => self::US_ACCOUNTS,
-        'CA' => self::CA_ACCOUNTS,
-    ];
+    public const OHADA_COUNTRIES = ['SN', 'CI', 'ML', 'BF', 'BJ', 'TG', 'NE', 'CM', 'GA', 'CG', 'TD', 'CF', 'GQ'];
 
     /** Familles de comptes attendues pour chaque pays. @var list<string> */
     public const ACCOUNT_FAMILIES = [
@@ -194,18 +195,37 @@ final class AccountingChartOfAccounts
      */
     public static function for(?string $country): array
     {
+        return match (self::familyFor($country)) {
+            self::FAMILY_TEKDUZEN => self::withConfidence(self::TR_ACCOUNTS, 'pilot'),
+            self::FAMILY_UK => self::withConfidence(self::UK_ACCOUNTS, 'pilot'),
+            self::FAMILY_US => self::withConfidence(self::US_ACCOUNTS, 'pilot'),
+            self::FAMILY_CA => self::withConfidence(self::CA_ACCOUNTS, 'pilot'),
+            self::FAMILY_SYSCOHADA => self::withConfidence(self::OHADA_ACCOUNTS, 'production'),
+            // Famille PCG (DZ/MA/TN/FR + fallback) — codes référentiels officiels.
+            default => self::withConfidence(self::PCG_ACCOUNTS, 'production'),
+        };
+    }
+
+    /**
+     * Famille de référentiel comptable d'un pays (issue #7925) — résolution
+     * unique réutilisée par le seed du plan comptable au provisioning
+     * (ChartOfAccountsDefaults) : zone OHADA → SYSCOHADA, TR → Tekdüzen,
+     * CA/GB/US → plans anglo-saxons, sinon PCG. Un pays inconnu retombe
+     * explicitement sur la famille PCG (comportement historique documenté,
+     * pas de fallback silencieux vers un autre pays).
+     */
+    public static function familyFor(?string $country): string
+    {
         $code = strtoupper(trim((string) $country));
 
-        if (isset(self::EXPLICIT[$code])) {
-            return self::withConfidence(self::EXPLICIT[$code], 'pilot');
-        }
-
-        if (in_array($code, self::OHADA_COUNTRIES, true)) {
-            return self::withConfidence(self::OHADA_ACCOUNTS, 'production');
-        }
-
-        // Famille PCG (DZ/MA/TN/FR + fallback) — codes référentiels officiels.
-        return self::withConfidence(self::PCG_ACCOUNTS, 'production');
+        return match (true) {
+            $code === 'TR' => self::FAMILY_TEKDUZEN,
+            $code === 'GB' => self::FAMILY_UK,
+            $code === 'US' => self::FAMILY_US,
+            $code === 'CA' => self::FAMILY_CA,
+            in_array($code, self::OHADA_COUNTRIES, true) => self::FAMILY_SYSCOHADA,
+            default => self::FAMILY_PCG,
+        };
     }
 
     /**
