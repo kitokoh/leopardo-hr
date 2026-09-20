@@ -921,6 +921,33 @@
     "BC-11",
     "BC-13"
    ]
+  },
+  {
+   "code": "BC-30",
+   "name": "PHARMACY",
+   "context": "Pharmacy",
+   "responsibility": "Verticale PharmaManager (officines de pharmacie, PHARMA-001/#7798) : référentiel produits (DCI, formes, dosages, codes-barres), stock par lots et péremptions, achats fournisseurs, ventes comptoir FEFO, ordonnances/prescripteurs et ordonnancier des produits contrôlés — solution activable par tenant (flag `pharmacy`).",
+   "owner": "Agent 30 — BC-PHARMACY",
+   "priority": "P1",
+   "status": "active",
+   "paths": [
+    {
+     "path": "api/app/Modules/Pharmacy",
+     "status": "active"
+    }
+   ],
+   "routes": [
+    "api/routes/modules/pharmacy.php"
+   ],
+   "migrations": [
+    "api/database/migrations/tenant"
+   ],
+   "events": [],
+   "dependencies": [
+    "BC-01",
+    "BC-02",
+    "BC-03"
+   ]
   }
  ]
 }
