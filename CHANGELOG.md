@@ -45,6 +45,7 @@ et le projet vise l'adhésion au [Semantic Versioning](https://semver.org/lang/f
 
 ### Fixed
 
+- **Guards main** : parité `.env.example` (clés `RATE_LIMIT_MARKET_*` et `RETAIL_PAY_*`), couverture OpenAPI des 12 routes market public/retail refund, et policy RBAC sur la configuration d'encaissement restaurant (#7900).
 - **CI/CD** : suites backend fiabilisées (timeouts de verrous Postgres, reaper idle-in-transaction, dérive de fixtures), gardes governance suivant les déplacements de docs, workflows SHA-pinnés, gate de déploiement non contournable, déploiements Vercel/staging réparés, mémoire PHPStan strict/modules relevée de 1 G à 3 G (#7879).
 - **BC-21 post-merge** : parité `.env.example` (5 clés restaurant) et couverture OpenAPI des 9 routes paiements réparées (#7726/#7727/#7856).
 - **Invitations employés** : préservation des accès au renvoi d'invitation, `FRONTEND_URL` honoré dans les liens, garde-fous sur `accept()` (#7864/#7886).
