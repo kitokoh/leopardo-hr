@@ -24,18 +24,37 @@ final class LegalLeaveRulesRegistry
 
     /**
      * Registre par défaut : les implémentations enregistrées du moteur.
-     * DZ/MA/TN/SN d'abord (issue #5289) — les autres pays arriveront avec
-     * leurs packs (waves W2→W5, PLAN_100PCT.md).
+     * DZ/MA/TN/SN d'abord (issue #5289), puis CEMAC/CEDEAO (issue #7930,
+     * lot BC-06 — TD/CF/GQ en pilot prudent) et FR/TR/CA (issue #7931).
      *
      * @return array<string, LegalLeaveCountryRuleInterface>
      */
     public static function defaultRulesMap(): array
     {
         return [
+            // Maghreb + Sénégal (issue #5289)
             'DZ' => new AlgeriaLegalLeaveRule,
             'MA' => new MoroccoLegalLeaveRule,
             'TN' => new TunisiaLegalLeaveRule,
             'SN' => new SenegalLegalLeaveRule,
+            // CEMAC (issue #7930 — TD/CF/GQ en pilot prudent)
+            'CM' => new CameroonLegalLeaveRule,
+            'GA' => new GabonLegalLeaveRule,
+            'CG' => new CongoLegalLeaveRule,
+            'TD' => new ChadLegalLeaveRule,
+            'CF' => new CentralAfricanRepublicLegalLeaveRule,
+            'GQ' => new EquatorialGuineaLegalLeaveRule,
+            // CEDEAO (issue #7930)
+            'CI' => new IvoryCoastLegalLeaveRule,
+            'BF' => new BurkinaFasoLegalLeaveRule,
+            'ML' => new MaliLegalLeaveRule,
+            'TG' => new TogoLegalLeaveRule,
+            'BJ' => new BeninLegalLeaveRule,
+            'NE' => new NigerLegalLeaveRule,
+            // Europe / Amérique du Nord / Turquie (issue #7931)
+            'FR' => new FranceLegalLeaveRule,
+            'TR' => new TurkeyLegalLeaveRule,
+            'CA' => new CanadaLegalLeaveRule,
         ];
     }
 
