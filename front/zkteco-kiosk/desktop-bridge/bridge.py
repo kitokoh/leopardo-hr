@@ -163,7 +163,17 @@ ALLOWED_STATIC_FILES = frozenset({
 VALID_ACTIONS = frozenset({"check_in", "check_out"})
 VALID_BIOMETRIC_TYPES = frozenset({"fingerprint", "face", "mixed"})
 # #5121 — méthodes de pointage (nouveau contrat, inclut la carte)
-VALID_PUNCH_METHODS = frozenset({"fingerprint", "face", "card"})
+# #7958 — aligné sur le contrat serveur (fingerprint|face|badge|pin|manager|
+# card|manual) : le bridge ne COERCE plus silencieusement badge/pin en
+# « fingerprint » (maquillage d'identité historique). Les méthodes
+# biométriques restent acceptées mais sont dégradées en `manual` côté
+# serveur tant qu'aucune preuve lecteur n'existe.
+VALID_PUNCH_METHODS = frozenset({"fingerprint", "face", "card", "badge", "pin", "manager", "manual"})
+
+# #7958 — méthodes déclaratives mises en file hors-ligne : marquées
+# `unverified` à la sync pour rester distinguables en audit (validables
+# après coup par un manager).
+UNVERIFIED_OFFLINE_METHODS = frozenset({"pin", "manual"})
 
 # Politique de retry de la sync (#3588) : 5xx/réseau = transitoire (backoff
 # exponentiel borné), 4xx = permanent (dead-letter). Au-delà du cap, un
@@ -514,6 +524,10 @@ class SyncEngine:
                     # #5121 — méthode de pointage + badge pour flux carte
                     **({"method": event["method"]} if event.get("method") else {}),
                     **({"badge_number": event["badge_number"]} if event.get("badge_number") else {}),
+                    # #7958 — PIN/saisie déclarative hors-ligne : marqués non
+                    # vérifiés à la sync (la biométrie sans preuve est, elle,
+                    # dégradée en `manual` directement côté serveur).
+                    **({"unverified": True} if event.get("method") in UNVERIFIED_OFFLINE_METHODS else {}),
                 }
                 for event in events
             ]

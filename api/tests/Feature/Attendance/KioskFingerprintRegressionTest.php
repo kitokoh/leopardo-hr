@@ -16,9 +16,12 @@ use Tests\TestCase;
 /**
  * QLT-002 (#6776) — non-régression du pointage kiosque par empreinte.
  *
- * Le flux historique (badge/carte + empreinte + validation manager) reste
- * vert après les lots ATT-004 (#6769) / BIO-006 (#6767) / BIO-007 (#6772) :
- *   - méthode `fingerprint` persistée telle quelle ;
+ * Le flux historique (badge/carte + validation manager) reste vert après
+ * les lots ATT-004 (#6769) / BIO-006 (#6767) / BIO-007 (#6772) ; #7958
+ * durcit la biométrie déclarative :
+ *   - méthode `fingerprint` SANS preuve device → persistée `manual`
+ *     (`unverified` + audit claimed_method) — jamais telle quelle tant
+ *     qu'aucun vérificateur de preuve lecteur n'existe (fail-closed) ;
  *   - badge accepté SANS flag biométrique employé (relaxation BIO-006),
  *     méthode `card` persistée ;
  *   - validation manager persistée (`manager`) ;
@@ -83,10 +86,12 @@ final class KioskFingerprintRegressionTest extends TestCase
         $this->manager->forceFill(['manager_role' => 'principal'])->save();
     }
 
-    public function test_fingerprint_punch_still_persists_the_fingerprint_method(): void
+    public function test_fingerprint_punch_without_device_proof_is_persisted_manual_and_flagged(): void
     {
         [$deviceCode, $syncToken] = $this->registerKiosk(['fingerprint', 'badge', 'manager']);
 
+        // #7958 : la méthode `fingerprint` réclamée SANS preuve device est
+        // dégradée en `manual` — la réponse signale l'identité non vérifiée.
         $this->withHeader('X-Kiosk-Token', $syncToken)
             ->postJson('/api/v1/kiosks/'.$deviceCode.'/punch', [
                 'identifier' => 'FP-001',
@@ -94,13 +99,63 @@ final class KioskFingerprintRegressionTest extends TestCase
                 'method' => 'fingerprint',
             ])
             ->assertCreated()
-            ->assertJsonPath('data.method', 'fingerprint');
+            ->assertJsonPath('data.method', 'manual')
+            ->assertJsonPath('data.unverified', true);
 
         DB::statement('SET search_path TO shared_tenants,public');
         $this->assertDatabaseHas('attendance_logs', [
             'employee_id' => $this->fingerprintEmployee->id,
+            'method' => 'manual',
+        ]);
+        $this->assertDatabaseMissing('attendance_logs', [
+            'employee_id' => $this->fingerprintEmployee->id,
             'method' => 'fingerprint',
         ]);
+
+        // L'audit trace la méthode RÉCLAMÉE + le caractère non vérifié.
+        $this->assertDatabaseHas('biometric_audit_logs', [
+            'company_id' => $this->company->id,
+            'employee_id' => $this->fingerprintEmployee->id,
+            'event' => 'kiosk.punch.recorded',
+            'method' => 'manual',
+            'result_code' => 'UNVERIFIED_IDENTITY',
+        ]);
+    }
+
+    public function test_fingerprint_punch_with_unverifiable_proof_stays_manual_fail_closed(): void
+    {
+        [$deviceCode, $syncToken] = $this->registerKiosk(['fingerprint']);
+
+        // #7958 : tant qu'aucun vérificateur de preuve lecteur n'existe, une
+        // « preuve » quelconque ne change rien — fail-closed, `manual`.
+        $this->withHeader('X-Kiosk-Token', $syncToken)
+            ->postJson('/api/v1/kiosks/'.$deviceCode.'/punch', [
+                'identifier' => 'FP-001',
+                'action' => 'check_in',
+                'method' => 'fingerprint',
+                'biometric_proof' => 'opaque-blob-prétendu-signé',
+            ])
+            ->assertCreated()
+            ->assertJsonPath('data.method', 'manual')
+            ->assertJsonPath('data.unverified', true);
+    }
+
+    public function test_manual_punch_is_accepted_as_honest_declarative_mode(): void
+    {
+        [$deviceCode, $syncToken] = $this->registerKiosk(['fingerprint']);
+
+        // #7958 : `manual` est le mode déclaratif honnête — accepté même hors
+        // matrice (la matrice ne liste que des méthodes à preuve), sans flag
+        // `unverified` côté réponse (le client n'a rien réclamé d'autre).
+        $this->withHeader('X-Kiosk-Token', $syncToken)
+            ->postJson('/api/v1/kiosks/'.$deviceCode.'/punch', [
+                'identifier' => 'EMP-001',
+                'action' => 'check_in',
+                'method' => 'manual',
+            ])
+            ->assertCreated()
+            ->assertJsonPath('data.method', 'manual')
+            ->assertJsonPath('data.unverified', false);
     }
 
     public function test_badge_punch_without_biometric_flags_still_works_and_persists_card(): void
@@ -173,10 +228,11 @@ final class KioskFingerprintRegressionTest extends TestCase
 
         DB::statement('SET search_path TO shared_tenants,public');
         $this->assertDatabaseCount('attendance_logs', 1);
+        // #7958 : fingerprint sans preuve → persisté `manual` (dégradation).
         $this->assertDatabaseHas('attendance_logs', [
             'employee_id' => $this->fingerprintEmployee->id,
             'check_out' => null,
-            'method' => 'fingerprint',
+            'method' => 'manual',
         ]);
     }
 
@@ -195,12 +251,14 @@ final class KioskFingerprintRegressionTest extends TestCase
 
         DB::statement('SET search_path TO shared_tenants,public');
 
-        // L'audit biométrique du pointage existe (corrélation appareil).
+        // L'audit biométrique du pointage existe (corrélation appareil) —
+        // méthode persistée `manual` (#7958) avec méthode réclamée en contexte.
         $this->assertDatabaseHas('biometric_audit_logs', [
             'company_id' => $this->company->id,
             'employee_id' => $this->fingerprintEmployee->id,
             'event' => 'kiosk.punch.recorded',
-            'method' => 'fingerprint',
+            'method' => 'manual',
+            'result_code' => 'UNVERIFIED_IDENTITY',
             'correlation_id' => 'dev-evt-regression-001',
         ]);
 

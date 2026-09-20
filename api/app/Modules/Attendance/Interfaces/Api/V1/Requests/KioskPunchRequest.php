@@ -31,11 +31,18 @@ final class KioskPunchRequest extends FormRequest
             'work_type' => ['nullable', 'string', 'in:normal,overtime,break,resume,mission,travel,training,other'],
             // BIO-006 (#6767) : méthode réellement utilisée + validation
             // manager pour les cas exceptionnels.
-            'method' => ['nullable', 'in:fingerprint,face,badge,pin,manager,card'],
+            // #7958 : `manual` = pointage déclaratif (identité non prouvée) ;
+            // les biométries sans preuve device y sont dégradées côté service.
+            'method' => ['nullable', 'in:fingerprint,face,badge,pin,manager,card,manual'],
             'manager_employee_id' => ['nullable', 'integer', 'min:1'],
             // BIO-007 (#6772) : identifiant d'événement appareil (réconciliation
             // idempotente quand l'Idempotency-Key n'est pas fournie).
             'device_event_id' => ['nullable', 'string', 'max:100'],
+            // #7958 : preuve device biométrique (retour signé du lecteur).
+            // RÉSERVÉ à la future intégration SDK — tant qu'aucun vérificateur
+            // n'existe, toute méthode biométrique est dégradée en `manual`
+            // (fail-closed, jamais persistée `fingerprint`/`face`).
+            'biometric_proof' => ['nullable', 'string', 'max:2048'],
         ];
     }
 }
