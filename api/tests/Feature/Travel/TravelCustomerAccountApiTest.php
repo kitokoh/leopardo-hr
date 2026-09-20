@@ -301,7 +301,7 @@ class TravelCustomerAccountApiTest extends TestCase
             ->where('reference', $booking['reference'])
             ->firstOrFail();
 
-        $this->assertSame((int) $result['account']['id'], $stored->customer_account_id);
+        $this->assertSame((int) $result['account']['id'], $stored->getAttribute('customer_account_id'));
 
         // Checkout INVITÉ toujours possible : sans token, pas de rattachement.
         // Reset du cache de guard : sans lui, la requête invitée hériterait du
@@ -317,7 +317,7 @@ class TravelCustomerAccountApiTest extends TestCase
             ->where('reference', $guestRef)
             ->firstOrFail();
 
-        $this->assertNull($guest->customer_account_id);
+        $this->assertNull($guest->getAttribute('customer_account_id'));
     }
 
     public function test_register_rejects_weak_passwords(): void

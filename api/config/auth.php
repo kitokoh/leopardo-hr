@@ -3,7 +3,6 @@
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
-use App\Modules\TravelAgency\Domain\Models\TravelCustomerAccount;
 
 return [
 
@@ -117,8 +116,13 @@ return [
         // provider masqué pendant l'analyse statique uniquement.
     ] + (defined('LEOPARDO_STATIC_ANALYSIS') ? [] : [
         'travel_customers' => [
-            'driver' => 'eloquent',
-            'model' => TravelCustomerAccount::class,
+            // #7739 — driver CUSTOM enregistré par
+            // TravelAgencyServiceProvider::boot() (EloquentUserProvider sur
+            // TravelCustomerAccount). Pas de clé `model` ici : Larastan
+            // ajoute chaque `providers.*.model` à l'union de type de
+            // request->user() sur toute l'app, ce qui invalidait ~70 entrées
+            // de baseline strict hors verticale. Runtime identique.
+            'driver' => 'travel_customer_accounts',
         ],
     ]),
 
