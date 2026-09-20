@@ -232,7 +232,7 @@ jobs:
 
       - name: Run PHPStan on modules
         working-directory: api
-        run: vendor/bin/phpstan analyse --configuration=phpstan-modules.neon --memory-limit=1G --no-progress
+        run: vendor/bin/phpstan analyse --configuration=phpstan-modules.neon --memory-limit=3G --no-progress
 
   # Audit §2.3 / Plan P1: phpstan-strict.neon existed in the repo (level 8 on
   # app/Core, app/Modules, app/Shared) but was never invoked by any workflow
@@ -297,7 +297,7 @@ jobs:
       - name: Run PHPStan (strict, blocking on delta vs baseline)
         if: needs.detect-changes.outputs.api_changed == 'true'
         working-directory: api
-        run: vendor/bin/phpstan analyse --configuration=phpstan-strict.neon --memory-limit=1G --no-progress
+        run: vendor/bin/phpstan analyse --configuration=phpstan-strict.neon --memory-limit=3G --no-progress
 
   module-structure-check:
     needs: detect-changes
