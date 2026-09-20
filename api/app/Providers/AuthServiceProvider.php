@@ -143,6 +143,16 @@ use App\Modules\Payroll\Domain\Models\PublicHoliday;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
 use App\Modules\Payroll\Domain\Models\TaxRateChangeLog;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
+use App\Modules\Pharmacy\Domain\Models\PharmacyBatch;
+use App\Modules\Pharmacy\Domain\Models\PharmacyProduct;
+use App\Modules\Pharmacy\Domain\Models\PharmacyPurchaseOrder;
+use App\Modules\Pharmacy\Domain\Models\PharmacySale;
+use App\Modules\Pharmacy\Domain\Models\PharmacySupplier;
+use App\Modules\Pharmacy\Domain\Policies\PharmacyProductPolicy;
+use App\Modules\Pharmacy\Domain\Policies\PharmacyPurchaseOrderPolicy;
+use App\Modules\Pharmacy\Domain\Policies\PharmacySalePolicy;
+use App\Modules\Pharmacy\Domain\Policies\PharmacyStockPolicy;
+use App\Modules\Pharmacy\Domain\Policies\PharmacySupplierPolicy;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\ExpenseClaim;
 use App\Modules\Planning\Domain\Models\Schedule;
@@ -428,6 +438,15 @@ class AuthServiceProvider extends ServiceProvider
         // — Retail (BC-17 #7674 : POS v1 — sessions de caisse, commandes, paiements)
         Gate::policy(RetailPosSession::class, RetailPosSessionPolicy::class);
         Gate::policy(RetailOrder::class, RetailOrderPolicy::class);
+        // — Pharmacy (BC-30 #7799 : référentiel produits d'officine)
+        Gate::policy(PharmacyProduct::class, PharmacyProductPolicy::class);
+        // — Pharmacy (BC-30 #7800 : stock par lots, mouvements immuables, alertes)
+        Gate::policy(PharmacyBatch::class, PharmacyStockPolicy::class);
+        // — Pharmacy (BC-30 #7801 : fournisseurs et commandes d'achat)
+        Gate::policy(PharmacySupplier::class, PharmacySupplierPolicy::class);
+        Gate::policy(PharmacyPurchaseOrder::class, PharmacyPurchaseOrderPolicy::class);
+        // — Pharmacy (BC-30 #7802 : ventes comptoir POS, délivrance FEFO)
+        Gate::policy(PharmacySale::class, PharmacySalePolicy::class);
         // — Showcase (BC-27 #6865 : socle domaine — vitrine entreprise)
         Gate::policy(CompanyShowcase::class, CompanyShowcasePolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
