@@ -902,3 +902,15 @@ restent les gates applicables.
   simplifié + hover-intent), `tenant-branding.test.ts` (9 cas : cache + événement).
 - **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue partagé
   `settingsPage.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+
+## Mise à jour 2026-09-20 — remise au vert des e2e web sur main (PR #7956, issue #7955)
+
+- **Surface web** : specs Playwright réalignées sur l'UX mergée (#7882..#7886, #7853, #7748) —
+  `auth-client-smoke`, `marketing-funnel`, `funnel-tracking`, `payroll-compliance`,
+  `shop-order`, fixtures `authenticated.ts` (mocks branding/invitations) ; régression réelle
+  réparée dans `/employees` (chargement non bloquant). Admin : `sidebar-unique-entries`
+  réaligné (Formations sous « RH & Paie »).
+- **Surface mobile** : uniquement la correction d'accents du catalogue partagé propagée aux
+  ARB par `sync-mobile.js` (« Barèmes fiscaux »/« Taux légaux », régression #7725) — aucun
+  contrat ni écran mobile modifié, aucun scénario mobile nouveau requis.
+- **Surface API** : aucun changement de code backend, aucun scénario nouveau requis.
