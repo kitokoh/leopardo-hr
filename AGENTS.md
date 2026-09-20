@@ -1,6 +1,15 @@
 # AGENTS.md - Guide de travail Leopardo
 
-Derniere mise a jour : 2026-09-20 (session PM — lot #7963/#7966/#7958/#7967 + réalignement déploiement dev)
+Derniere mise a jour : 2026-09-20 (lot sécurité backend #7995/#7999 + session PM #7963/#7966/#7958/#7967)
+
+> Leçon 2026-09-20 (#7995/#7999) : **(1) une politique de validation = un helper unique**
+> — les 3 sites historiques de la norme mots de passe étaient dupliqués textuellement ;
+> les centraliser dans `PasswordPolicy` ET refactoriser les sites existants évite la
+> prochaine dérive. **(2) `BelongsToCompany` est sans danger sur les routes publiques**
+> (no-op sans compagnie liée) : l'ajouter « par défense » sur un modèle lu publiquement
+> ne casse rien et protège la surface tenant future. **(3) toute garde nouvelle doit
+> embarquer la liste des cas préexistants** (legacy_pending_review) — une garde qui
+> échoue sur l'existant ne sera jamais mergée.
 
 > Leçon 2026-09-20 (session PM, audit sécurité 2026-09-20) :
 > 1. **Drift déploiement dev** : la garde `deploy-drift-guard.yml` compare le health

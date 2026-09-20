@@ -100,6 +100,12 @@ jobs:
         working-directory: api
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
+      - name: Tenant-scope models guard (issue #7999)
+        run: bash dev-hub/tools/check-tenant-scope-models.sh
+
+      - name: Password policy guard (issue #7995)
+        run: bash dev-hub/tools/check-password-policy.sh
+
       - name: APP_VERSION drift guard (issue #3528)
         run: bash dev-hub/tools/check-app-version-sync.sh api
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Retail\Domain\Models;
 
 use App\Modules\Retail\Domain\Enums\MarketplaceReviewStatus;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -34,12 +35,20 @@ use Illuminate\Support\Carbon;
  */
 class MarketplaceReview extends Model
 {
+    // #7999 — défense en profondeur tenant : scope automatique sur la surface
+    // tenant (fail-closed #3727). No-op sur les routes publiques /market/*
+    // (aucune compagnie courante liée) — les lectures publiques gardent leurs
+    // where explicites.
+    use BelongsToCompany;
+
     protected $table = 'marketplace_reviews';
 
     /** @var list<string> */
+    // #7999 (leçon #7646) : company_id n'est PLUS mass-assignable — il est
+    // posé explicitement par le service (voir RetailBuyerReviewService) ou
+    // auto-rempli par le trait sur la surface tenant.
     protected $fillable = [
         'buyer_id',
-        'company_id',
         'product_id',
         'order_id',
         'rating',

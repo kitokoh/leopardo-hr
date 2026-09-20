@@ -136,7 +136,7 @@ class RetailMarketBuyerAccountTest extends TestCase
         $data = $this->postJson('/api/v1/public/market/account/register', [
             'name' => $name,
             'email' => $email,
-            'password' => 'secret-123',
+            'password' => 'Buyer-S3cret-2026!',
             'phone' => '+221770000000',
         ])->assertStatus(201)->json('data');
 
@@ -197,7 +197,7 @@ class RetailMarketBuyerAccountTest extends TestCase
         $this->postJson('/api/v1/public/market/account/register', [
             'name' => 'Doublon',
             'email' => $email,
-            'password' => 'secret-123',
+            'password' => 'Buyer-S3cret-2026!',
         ])->assertStatus(422);
 
         // Mauvais mot de passe → 401 uniforme.
@@ -209,7 +209,7 @@ class RetailMarketBuyerAccountTest extends TestCase
         // Login OK → nouveau jeton utilisable.
         $login = $this->postJson('/api/v1/public/market/account/login', [
             'email' => $email,
-            'password' => 'secret-123',
+            'password' => 'Buyer-S3cret-2026!',
         ])->assertStatus(200)->json('data');
         $this->assertIsString($login['token']);
 

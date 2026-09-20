@@ -118,7 +118,7 @@ class ScheduleControllerTest extends TestCase
             'first_name' => 'Karim',
             'last_name' => 'Terrain',
             'email' => 'karim.terrain@example.test',
-            'password' => 'password123',
+            'password' => 'Sched-Ctrl-Test-2026!',
             'schedule_id' => $schedule->id,
             'role' => 'employee',
         ])
@@ -151,7 +151,7 @@ class ScheduleControllerTest extends TestCase
             'first_name' => 'Ahmet',
             'last_name' => 'Wrong',
             'email' => 'ahmet.wrong@example.test',
-            'password' => 'password123',
+            'password' => 'Sched-Ctrl-Test-2026!',
             'schedule_id' => $foreignSchedule->id,
             'role' => 'employee',
         ])

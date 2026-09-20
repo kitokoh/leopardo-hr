@@ -36,6 +36,12 @@ use Illuminate\Support\Carbon;
  *
  * @mixin Builder<static>
  */
+/**
+ * EXCEPTION TENANT-SCOPE canonique (#7999) : `converted_company_id` est un
+ * pointeur de conversion (lead plateforme → compagnie créée), PAS une clé
+ * d'isolation — un lead n'appartient à aucun tenant tant qu'il n'est pas
+ * converti. Donnée plateforme gérée par la surface super-admin.
+ */
 class MarketingLead extends Model
 {
     protected $table = 'marketing_leads';

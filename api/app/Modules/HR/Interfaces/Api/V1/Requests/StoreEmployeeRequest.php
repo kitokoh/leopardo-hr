@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\EmployeeResourceAssignment;
 use App\Core\Tenant\Infrastructure\Services\ResourceTypeRegistry;
 use App\Rules\GlobalEmailUnique;
+use App\Shared\Rules\PasswordPolicy;
 use App\Rules\ValidIban;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
@@ -44,7 +45,8 @@ class StoreEmployeeRequest extends FormRequest
                 Rule::unique('employees', 'email'),
                 new GlobalEmailUnique,
             ],
-            'password' => ['nullable', 'string', 'min:8', 'max:255'],
+            // #7995 — politique unique #5620 (min 12 + chiffre + blocklist), fini le min:8.
+            'password' => PasswordPolicy::optional(),
             'schedule_id' => [
                 'nullable',
                 'integer',

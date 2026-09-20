@@ -52,7 +52,7 @@ class EmployeeIbanValidationTest extends TestCase
                 'first_name' => 'John',
                 'last_name' => 'Doe',
                 'email' => 'john.doe@a.test',
-                'password' => 'password123',
+                'password' => 'Emp-1ban-Test-2026!',
                 'role' => 'employee',
                 'iban' => 'NOT-A-VALID-IBAN',
             ]);
@@ -71,7 +71,7 @@ class EmployeeIbanValidationTest extends TestCase
                 'first_name' => 'John',
                 'last_name' => 'Doe',
                 'email' => 'john.doe@a.test',
-                'password' => 'password123',
+                'password' => 'Emp-1ban-Test-2026!',
                 'role' => 'employee',
                 'iban' => 'FR7630006000011234567890189',
             ]);
