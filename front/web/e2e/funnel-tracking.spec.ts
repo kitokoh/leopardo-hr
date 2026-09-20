@@ -90,9 +90,9 @@ test.describe('Tracking du funnel (#7496)', () => {
     // Étape 1 : la vue de /signup est mesurée.
     await expect.poll(() => beacons.map((b) => b.event)).toContain('signup_view');
 
-    // Étape 2 : soumission du formulaire minimal (e-mail + espace + CGU).
+    // Étape 2 : soumission du formulaire minimal (e-mail + CGU) — le champ
+    // « entreprise » a été retiré du /signup email-only (#7853/#7896).
     await page.locator('input[type="email"]').first().fill('e2e-funnel@example.com');
-    await page.locator('input[name="company"], #company').first().fill('Acme E2E');
     await page.locator('input[type="checkbox"]').first().check();
     await page
       .locator('button[type="submit"]')
@@ -126,7 +126,6 @@ test.describe('Tracking du funnel (#7496)', () => {
     // d'espace, ni code).
     const serialized = JSON.stringify(beacons);
     expect(serialized).not.toContain('e2e-funnel@example.com');
-    expect(serialized).not.toContain('Acme E2E');
     expect(serialized).not.toMatch(/password|otp_code/i);
   });
 

@@ -177,6 +177,14 @@ export type CopyTree = {
     sectionDiscoverBusiness: string;
     /** #7225 — « À activer » (modules verrouillés, découvrables) */
     sectionLocked: string;
+    /** #7908 — sidebar unifiée : titre de la section « Plateforme » */
+    sectionPlatform: string;
+    /** #7908 — lien « Modules » de la section Plateforme (page /modules) */
+    platformModules: string;
+    /** #7908 — sous-titre de la page /modules */
+    modulesPageSubtitle: string;
+    /** #7908 — état « non lue » d'une notification (aria-label de la pastille) */
+    notificationUnread: string;
   };
   passwordReset: {
     title: string;
@@ -842,6 +850,10 @@ const copy: Record<AppLocale, CopyTree> = {
       sectionModules: 'Modules & plan',
       sectionDiscoverBusiness: 'Découvrir les métiers',
       sectionLocked: 'À activer',
+      sectionPlatform: 'Plateforme',
+      platformModules: 'Modules',
+      modulesPageSubtitle: 'Gérez les modules de votre espace : statut, activation en autonomie et découverte des métiers.',
+      notificationUnread: 'Non lue',
     },
     passwordReset: {
       title: 'Mot de passe oublié',
@@ -1540,6 +1552,10 @@ const copy: Record<AppLocale, CopyTree> = {
       sectionModules: 'الوحدات والخطة',
       sectionDiscoverBusiness: 'اكتشف القطاعات',
       sectionLocked: 'للتفعيل',
+      sectionPlatform: 'المنصة',
+      platformModules: 'الوحدات',
+      modulesPageSubtitle: 'أدر وحدات مساحتك: الحالة والتفعيل الذاتي واكتشاف القطاعات.',
+      notificationUnread: 'غير مقروءة',
     },
     passwordReset: {
       title: 'نسيت كلمة المرور؟',
@@ -2234,6 +2250,10 @@ const copy: Record<AppLocale, CopyTree> = {
       sectionModules: 'Modüller ve plan',
       sectionDiscoverBusiness: 'İş kollarını keşfet',
       sectionLocked: 'Etkinleştirilecek',
+      sectionPlatform: 'Platform',
+      platformModules: 'Modüller',
+      modulesPageSubtitle: 'Alanınızın modüllerini yönetin: durum, kendi kendine etkinleştirme ve sektörleri keşfetme.',
+      notificationUnread: 'Okunmadı',
     },
     passwordReset: {
       title: 'Şifrenizi mi unuttunuz?',
@@ -2928,6 +2948,10 @@ const copy: Record<AppLocale, CopyTree> = {
       sectionModules: 'Modules & plan',
       sectionDiscoverBusiness: 'Discover business modules',
       sectionLocked: 'To activate',
+      sectionPlatform: 'Platform',
+      platformModules: 'Modules',
+      modulesPageSubtitle: 'Manage the modules of your workspace: status, self-service activation and business discovery.',
+      notificationUnread: 'Unread',
     },
     passwordReset: {
       title: 'Forgot your password?',

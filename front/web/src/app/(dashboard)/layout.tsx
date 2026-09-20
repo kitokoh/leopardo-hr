@@ -1,22 +1,19 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Banknote, Bell, ChevronDown, CreditCard, Globe, LayoutGrid, LifeBuoy, LockKeyhole, LogOut, Menu, Paintbrush, Plus, Sparkles, User, UserCircle, X } from 'lucide-react';
+import { Bell, LockKeyhole, Menu } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
-import { paymentProfilesT } from '@/lib/i18n/payment-profiles';
-import { supportTicketsT } from '@/lib/i18n/support-tickets';
 import { clearTenantBrandingCache, readCachedTenantBranding, storeTenantBranding, TENANT_BRANDING_EVENT, type TenantBranding } from '@/lib/tenant-branding';
 import { trackClientEvent } from '@/lib/client-analytics';
-import { getClientModuleAccess, getModuleAccessForPath, getSidebarSections, isSelfActivable, mergeActivationSurface, sessionModuleSignature, type ClientModuleAccess, type ClientModuleKey } from '@/lib/client-features';
-import { buildBusinessRail, buildDashboardNav, isNavEntryActive, toNavModules, type DashboardNavEntry, type NavMenuGroupId } from '@/lib/dashboard-nav';
+import { getClientModuleAccess, getModuleAccessForPath, getSidebarSections, mergeActivationSurface, sessionModuleSignature, type ClientModuleAccess } from '@/lib/client-features';
+import { buildBusinessRail, buildDashboardNav, toNavModules } from '@/lib/dashboard-nav';
 import {
   applyDocumentLocale,
   clearAuthSession,
   getCopy,
-  getDisplayName,
   getStoredUser,
   normalizeLocale,
   storeAuthSession,
@@ -25,6 +22,8 @@ import {
   type StoredAuthUser,
 } from '@/lib/i18n';
 import { TrialBanner } from '@/components/TrialBanner';
+import { Sidebar } from '@/components/layout/Sidebar';
+import { usePanelDismiss } from '@/components/layout/panel-dismiss';
 // #7494 — la modale OnboardingWizard n'est plus le point d'entrée de la mise
 // en route : l'entretien (#7493) puis la carte « Prochaines étapes » du
 // dashboard la remplacent.
@@ -33,6 +32,16 @@ import { WelcomeScreen, shouldShowFirstLoginWelcome, type WelcomeScreenAction } 
 // #7866 — invite d'import du jeu de données de démonstration (API #7865),
 // séquencée APRÈS l'écran de bienvenue et l'entretien de préparation.
 import { DemoDataPrompt, shouldShowDemoDataPrompt, type DemoDataPromptCloseReason } from '@/modules/onboarding/components/DemoDataPrompt';
+
+/**
+ * #7908 — Refonte du shell client : la navigation vit dans une SIDEBAR gauche
+ * unifiée (`@/components/layout/Sidebar`), toujours rendue (colonne fixe sur
+ * desktop, tiroir sous `md`). La topbar est réduite à une ligne fine :
+ * burger mobile + titre contextuel à gauche ; reprise d'onboarding, essai,
+ * notifications et pastille de présence à droite. La nav horizontale, le
+ * panneau « Modules & plan » (déménagé sur la page /modules), le select de
+ * langue et le menu avatar (déménagés dans la sidebar) ont quitté la barre.
+ */
 
 /**
  * Breakpoint Tailwind `md` (768 px) — valeur technique, pas une chaîne
@@ -60,339 +69,6 @@ const SESSION_REFRESH_MIN_INTERVAL_MS = 60_000;
  */
 const HEX_COLOR_PATTERN = /^#[0-9A-Fa-f]{6}$/;
 
-/**
- * #7860 — hover intent des sous-menus de groupe (RH, Finance, Croissance,
- * Opérations) : petite temporisation à l'ouverture (le pointeur qui traverse
- * la barre n'ouvre rien) et plus longue à la fermeture (quitter brièvement le
- * panneau ne le referme pas).
- */
-const NAV_MENU_HOVER_OPEN_MS = 150;
-const NAV_MENU_HOVER_CLOSE_MS = 300;
-
-/**
- * #7556 — Verrou de défilement partagé par les surfaces superposées (tiroir,
- * panneaux de la barre). Compté plutôt que posé à `hidden` en aveugle : deux
- * surfaces ouvertes en même temps ne doivent pas se rendre la main l'une à
- * l'autre un `overflow` intermédiaire (le dernier fermé restitue la valeur
- * d'origine du document).
- */
-let overlayScrollLocks = 0;
-let overflowBeforeFirstLock = '';
-
-function lockDocumentScroll(): () => void {
-  if (overlayScrollLocks === 0) {
-    overflowBeforeFirstLock = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-  }
-  overlayScrollLocks += 1;
-  let released = false;
-
-  return () => {
-    if (released) {
-      return;
-    }
-    released = true;
-    overlayScrollLocks = Math.max(0, overlayScrollLocks - 1);
-    if (overlayScrollLocks === 0) {
-      document.body.style.overflow = overflowBeforeFirstLock;
-    }
-  };
-}
-
-/**
- * #7556 — tout panneau déroulant (tiroir de navigation, notifications,
- * modules, compte, sous-menu RH) se referme par Échap et verrouille le
- * défilement du document tant qu'il est ouvert.
- *
- * `onClose` est lu via une ref : l'effet ne se réabonne pas à chaque rendu.
- */
-function usePanelDismiss(open: boolean, onClose: () => void): void {
-  const closeRef = useRef(onClose);
-
-  useEffect(() => {
-    closeRef.current = onClose;
-  }, [onClose]);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        closeRef.current();
-      }
-    };
-
-    window.addEventListener('keydown', onKeyDown);
-    const unlock = lockDocumentScroll();
-
-    return () => {
-      window.removeEventListener('keydown', onKeyDown);
-      unlock();
-    };
-  }, [open]);
-}
-
-/** Classes de la liste de modules du shell (partagées tiroir / panneau `md`). */
-const MODULES_NAV_PANEL = 'absolute end-0 top-12 z-30 max-h-[70vh] w-64 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-xl';
-
-/** Classes d'un lien de module (état actif / repos). */
-function modulesNavLinkClass(active: boolean): string {
-  return [
-    'flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-[12px] font-bold transition',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40',
-    active ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
-  ].join(' ');
-}
-
-/**
- * #7556 — liste de modules du shell (liens directs + sous-menu RH replié),
- * rendue à l'identique dans le tiroir mobile et dans le panneau `md`–`lg`.
- */
-function DashboardModuleLinks({
-  entries,
-  pathname,
-  labels,
-  onNavigate,
-}: {
-  entries: DashboardNavEntry[];
-  pathname: string;
-  labels: CopyTree;
-  onNavigate: () => void;
-}) {
-  return (
-    <>
-      {entries.map((entry) => (
-        entry.kind === 'link' ? (
-          <Link
-            key={entry.module.key}
-            href={entry.module.href}
-            onClick={onNavigate}
-            className={modulesNavLinkClass(pathname === entry.module.href)}
-          >
-            <span className="flex min-w-0 items-center gap-2">
-              {entry.module.icon ? <entry.module.icon className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" /> : null}
-              <span className="truncate">{labels.dashboard.modules[entry.module.key] ?? entry.module.label}</span>
-            </span>
-          </Link>
-        ) : (
-          <div key={`menu-${entry.id}`} className="mt-1 border-t border-slate-100 pt-1">
-            <p className="px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-500">
-              {labels.dashboard.navGroups[entry.id] ?? labels.dashboard.hrMenu}
-            </p>
-            {entry.modules.map((module) => (
-              <Link
-                key={module.key}
-                href={module.href}
-                onClick={onNavigate}
-                className={`ps-6 ${modulesNavLinkClass(pathname === module.href)}`}
-              >
-                <span className="flex min-w-0 items-center gap-2">
-                  {module.icon ? <module.icon className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" /> : null}
-                  <span className="truncate">{labels.dashboard.modules[module.key] ?? module.label}</span>
-                </span>
-              </Link>
-            ))}
-          </div>
-        )
-      ))}
-    </>
-  );
-}
-
-/**
- * #7860 — sous-menu de groupe de la barre (RH, Finance, Croissance,
- * Opérations) : ergonomie desktop complète.
- *
- *  - Ouverture au survol avec hover intent (150 ms) EN PLUS du clic ;
- *    fermeture temporisée (300 ms) pour tolérer un pointeur qui sort
- *    brièvement du panneau.
- *  - Panneau animé (opacity/translate) monté conditionnellement : les
- *    data-testid `dashboard-*-menu(-panel)` et le contrat « panneau démonté
- *    quand fermé » des tests existants sont conservés.
- *  - Clavier : Enter/Espace natifs du <button>, ArrowDown ouvre et déplace le
- *    focus dans le panneau, flèches pour circuler entre les entrées, Escape
- *    déjà géré par `usePanelDismiss` côté layout.
- */
-function NavGroupMenu({
-  entry,
-  open,
-  pathname,
-  labels,
-  onOpen,
-  onClose,
-  onToggle,
-}: {
-  entry: Extract<DashboardNavEntry, { kind: 'menu' }>;
-  open: boolean;
-  pathname: string;
-  labels: CopyTree;
-  onOpen: () => void;
-  onClose: () => void;
-  onToggle: () => void;
-}) {
-  const openTimerRef = useRef<number | null>(null);
-  const closeTimerRef = useRef<number | null>(null);
-  const panelRef = useRef<HTMLDivElement | null>(null);
-  const focusFirstOnOpenRef = useRef(false);
-  // Animation d'apparition : le panneau monte à l'état « caché » puis
-  // transitionne vers l'état visible à la frame suivante.
-  const [shown, setShown] = useState(false);
-
-  const clearHoverTimers = useCallback(() => {
-    if (openTimerRef.current !== null) {
-      window.clearTimeout(openTimerRef.current);
-      openTimerRef.current = null;
-    }
-    if (closeTimerRef.current !== null) {
-      window.clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = null;
-    }
-  }, []);
-
-  useEffect(() => clearHoverTimers, [clearHoverTimers]);
-
-  useEffect(() => {
-    if (!open) {
-      setShown(false);
-      return;
-    }
-    const raf = window.requestAnimationFrame(() => {
-      setShown(true);
-      if (focusFirstOnOpenRef.current) {
-        focusFirstOnOpenRef.current = false;
-        panelRef.current?.querySelector<HTMLElement>('a')?.focus();
-      }
-    });
-    return () => window.cancelAnimationFrame(raf);
-  }, [open]);
-
-  const handleMouseEnter = () => {
-    clearHoverTimers();
-    if (!open) {
-      openTimerRef.current = window.setTimeout(() => {
-        openTimerRef.current = null;
-        onOpen();
-      }, NAV_MENU_HOVER_OPEN_MS);
-    }
-  };
-
-  const handleMouseLeave = () => {
-    clearHoverTimers();
-    if (open) {
-      closeTimerRef.current = window.setTimeout(() => {
-        closeTimerRef.current = null;
-        onClose();
-      }, NAV_MENU_HOVER_CLOSE_MS);
-    }
-  };
-
-  const handleTriggerKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
-    if (event.key === 'ArrowDown') {
-      event.preventDefault();
-      focusFirstOnOpenRef.current = true;
-      if (open) {
-        panelRef.current?.querySelector<HTMLElement>('a')?.focus();
-      } else {
-        onOpen();
-      }
-    }
-  };
-
-  // Flèches haut/bas : circulation du focus entre les entrées du panneau.
-  const handlePanelKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') {
-      return;
-    }
-    event.preventDefault();
-    const items = Array.from(panelRef.current?.querySelectorAll<HTMLElement>('a') ?? []);
-    if (items.length === 0) {
-      return;
-    }
-    const index = items.indexOf(document.activeElement as HTMLElement);
-    const next = event.key === 'ArrowDown'
-      ? (index + 1) % items.length
-      : (index - 1 + items.length) % items.length;
-    items[next]?.focus();
-  };
-
-  return (
-    <div
-      className="relative shrink-0"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <button
-        type="button"
-        data-testid={`dashboard-${entry.id}-menu`}
-        aria-expanded={open}
-        aria-haspopup="true"
-        aria-controls={`dashboard-${entry.id}-menu-panel`}
-        onClick={() => {
-          // Un clic est une intention explicite : il annule tout timer de
-          // survol en cours (sinon un hover timer pouvait rouvrir le panneau
-          // juste après sa fermeture au clic).
-          clearHoverTimers();
-          onToggle();
-        }}
-        onKeyDown={handleTriggerKeyDown}
-        className={[
-          'group inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[11px] font-black uppercase tracking-tight transition-all',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40',
-          isNavEntryActive(entry, pathname)
-            ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm'
-            : 'border-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-slate-900',
-        ].join(' ')}
-      >
-        {labels.dashboard.navGroups[entry.id] ?? labels.dashboard.hrMenu}
-        <ChevronDown
-          className={`h-3.5 w-3.5 transition-transform ${open ? 'rotate-180' : ''}`}
-          aria-hidden="true"
-        />
-      </button>
-      {open ? (
-        <div
-          ref={panelRef}
-          id={`dashboard-${entry.id}-menu-panel`}
-          data-testid={`dashboard-${entry.id}-menu-panel`}
-          onKeyDown={handlePanelKeyDown}
-          className={[
-            'absolute start-0 top-10 z-30 max-h-[70vh] w-64 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-xl',
-            'transition-all duration-150 ease-out',
-            shown ? 'translate-y-0 opacity-100' : '-translate-y-1 opacity-0',
-          ].join(' ')}
-        >
-          {entry.modules.map((module) => {
-            const active = pathname === module.href;
-            return (
-              <Link
-                key={module.key}
-                href={module.href}
-                onClick={onClose}
-                aria-current={active ? 'page' : undefined}
-                className={modulesNavLinkClass(active)}
-              >
-                <span className="flex min-w-0 items-center gap-2">
-                  {module.icon ? <module.icon className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" /> : null}
-                  <span className="truncate">{labels.dashboard.modules[module.key] ?? module.label}</span>
-                </span>
-                {/* Pastille d'item actif, teintée par le branding du tenant (#7860). */}
-                {active ? (
-                  <span
-                    className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--tenant-primary,#10b981)]"
-                    aria-hidden="true"
-                  />
-                ) : null}
-              </Link>
-            );
-          })}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
 export default function DashboardLayout({
   children,
 }: {
@@ -407,24 +83,8 @@ export default function DashboardLayout({
   const [notificationPreview, setNotificationPreview] = useState<ClientNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  // Retour propriétaire : une seule entrée de compte (avatar) au lieu du nom +
-  // e-mail affichés en clair et d'une icône de déconnexion isolée.
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
-  // Retour propriétaire : le badge de présence ne garde que sa pastille, le
-  // libellé « PRÉSENTS » passe en `sr-only` (il reste lu par les lecteurs
-  // d'écran et sert de `title` au survol).
-  const [modulesOpen, setModulesOpen] = useState(false);
-  // #7322 — auto-activation d'un module horizontal depuis « Modules & plan ».
-  const [activatingModule, setActivatingModule] = useState<ClientModuleKey | null>(null);
-  const [activateError, setActivateError] = useState('');
-  // #7328/#7724 — menu sur une seule ligne : sous-menus de groupe (RH,
-  // Finance, Clients & croissance, Opérations) + menu mobile des modules.
-  // Un seul sous-menu de groupe ouvert à la fois.
-  const [openNavMenu, setOpenNavMenu] = useState<NavMenuGroupId | null>(null);
-  const [mobileModulesOpen, setMobileModulesOpen] = useState(false);
-  // #7225 — le rail métier (`business-rail`) est `hidden md:flex` : sous 768 px
-  // il était inaccessible (aucun déclencheur). Il devient un tiroir piloté par
-  // un bouton hamburger, sur le même modèle que l'admin.
+  // #7908 — la sidebar unifiée est TOUJOURS rendue : sous 768 px elle devient
+  // un tiroir piloté par le bouton hamburger de la topbar.
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   // #7713 — branding du tenant (couleurs + logo), chargé après montage.
@@ -435,7 +95,7 @@ export default function DashboardLayout({
   const modules = useMemo(() => getClientModuleAccess(user), [user]);
   const currentModule = useMemo(() => getModuleAccessForPath(pathname, user), [pathname, user]);
   // #7483 — le titre de la barre reflète la page courante : même résolution
-  // que les pastilles de navigation (catalogue ROUTE_TO_MODULE → clé i18n
+  // que la navigation (catalogue ROUTE_TO_MODULE → clé i18n
   // `dashboard.modules`), au lieu d'être figé sur `dashboard.heading`
   // (« Tableau de bord » partout). Repli sur le titre générique pour les
   // routes hors catalogue (ex. /settings/account).
@@ -526,25 +186,12 @@ export default function DashboardLayout({
     applyDocumentLocale(locale, user.is_rtl);
   }, [locale, mounted, router, user]);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     // #7860 — le thème du tenant ne doit pas fuiter vers la session suivante
     // (autre compte, autre entreprise) : cache purgé à la déconnexion.
     clearTenantBrandingCache();
     router.push('/auth/logout');
-  };
-
-  /**
-   * #7556 — un seul panneau déroulant ouvert à la fois dans la barre : ouvrir
-   * un panneau referme les autres (et donc leur voile).
-   */
-  const closeHeaderPanels = useCallback(() => {
-    setNotificationsOpen(false);
-    setModulesOpen(false);
-    setMobileModulesOpen(false);
-    setUserMenuOpen(false);
-    setOpenNavMenu(null);
-  }, []);
-  const headerPanelOpen = notificationsOpen || modulesOpen || mobileModulesOpen || userMenuOpen || openNavMenu !== null;
+  }, [router]);
 
   useEffect(() => {
     let cancelled = false;
@@ -617,8 +264,8 @@ export default function DashboardLayout({
     setUnreadCount(0);
   };
 
-  // ── Navigation mobile (#7225) ────────────────────────────────────────────
-  // Suit le breakpoint `md` (768 px) : rail en colonne sur desktop / tiroir sur mobile.
+  // ── Navigation mobile (#7225/#7908) ─────────────────────────────────────
+  // Suit le breakpoint `md` (768 px) : sidebar en colonne sur desktop / tiroir sur mobile.
   useEffect(() => {
     const query = window.matchMedia(MD_BREAKPOINT_MEDIA_QUERY);
     const update = () => setIsDesktop(query.matches);
@@ -627,21 +274,16 @@ export default function DashboardLayout({
     return () => query.removeEventListener('change', update);
   }, []);
 
-  // Ferme le tiroir et les panneaux de la barre à chaque navigation.
+  // Ferme le tiroir et le panneau de notifications à chaque navigation.
   useEffect(() => {
     setMobileNavOpen(false);
-    closeHeaderPanels();
-  }, [closeHeaderPanels, pathname]);
+    setNotificationsOpen(false);
+  }, [pathname]);
 
-  // Échap ferme le tiroir ; le scroll du document est verrouillé tant qu'il est ouvert.
+  // Échap ferme le tiroir / le panneau ; le scroll du document est verrouillé
+  // tant qu'une de ces surfaces est ouverte (#7556).
   usePanelDismiss(mobileNavOpen, () => setMobileNavOpen(false));
-  // #7556 — mêmes garanties pour les panneaux de la barre (notifications,
-  // modules, plan, compte, sous-menu RH).
   usePanelDismiss(notificationsOpen, () => setNotificationsOpen(false));
-  usePanelDismiss(modulesOpen, () => setModulesOpen(false));
-  usePanelDismiss(mobileModulesOpen, () => setMobileModulesOpen(false));
-  usePanelDismiss(userMenuOpen, () => setUserMenuOpen(false));
-  usePanelDismiss(openNavMenu !== null, () => setOpenNavMenu(null));
 
   const [showInterview, setShowInterview] = useState(false);
   // #7493 — relance douce : tant que l'entretien n'est pas complété (report
@@ -854,39 +496,7 @@ export default function DashboardLayout({
     };
   }, [mounted]);
 
-  /**
-   * #7322 — active un module HORIZONTAL pour le tenant puis recharge
-   * `/auth/me` pour que la navigation reflète l'activation SANS reconnexion
-   * (même surface que le rafraîchissement silencieux #7245).
-   */
-  const activateModule = async (key: ClientModuleKey) => {
-    setActivatingModule(key);
-    setActivateError('');
-
-    try {
-      const response = await apiFetch(`/company/modules/${key}/activate`, { method: 'POST' });
-      if (!response.ok) {
-        throw new Error(`activation failed (${response.status})`);
-      }
-
-      const me = await apiFetch('/auth/me');
-      if (me.ok) {
-        const payload = await me.json() as { data?: StoredAuthUser };
-        const current = userRef.current;
-        if (payload.data && current) {
-          const refreshed = mergeActivationSurface(current, payload.data);
-          storeAuthSession(null, refreshed);
-          setUserOverride(refreshed);
-        }
-      }
-    } catch {
-      setActivateError(labels.dashboard.activateError);
-    } finally {
-      setActivatingModule(null);
-    }
-  };
-
-  const handleLanguageChange = async (value: string) => {
+  const handleLanguageChange = useCallback(async (value: string) => {
     const nextLocale = normalizeLocale(value);
     const response = await apiFetch('/auth/language', {
       method: 'PATCH',
@@ -905,7 +515,7 @@ export default function DashboardLayout({
     setUserOverride(payload.data);
     setLocaleOverride(normalizeLocale(payload.data.language));
     applyDocumentLocale(normalizeLocale(payload.data.language), payload.data.is_rtl);
-  };
+  }, []);
 
   if (!mounted) {
     return null;
@@ -913,25 +523,16 @@ export default function DashboardLayout({
 
   // #7225 — deux axes : transverse (entreprise) vs métier (verticales du tenant).
   // Les modules métier non activés sont sortis du menu et restent découvrables
-  // dans la carte « Plan & Modules » (avant : « Restaurant » s'affichait chez
-  // toutes les entreprises, y compris une agence de voyage).
-  const { core, business, lockedBusiness } = getSidebarSections(modules);
+  // sur la page /modules (#7908, ex-panneau « Modules & plan »).
+  const { core, business } = getSidebarSections(modules);
 
-  // #7225 — IA demandée : bandeau HORIZONTAL « Entreprise » (transverse) +
-  // rail VERTICAL « Mon métier » (verticales du tenant). Les modules de
-  // plateforme (facturation, intégrations) et les verticales non activées
-  // restent découvrables dans le panneau « Modules & plan ».
-  // Le bandeau horizontal ne montre QUE ce que le client a réellement
-  // (menus = capacités du tenant) ; les modules non activés (transverses ou
-  // métier) sont découvrables dans le panneau « Modules & plan ».
+  // #7908 — la sidebar unifiée porte : le rail métier (verticales activées),
+  // les groupes Entreprise (ex-nav horizontale) en accordéons, et la section
+  // Plateforme (Modules, Abonnement & factures, Intégrations). Les modules non
+  // activés restent découvrables sur la page /modules.
   const navPills = core.filter((module) => module.group !== 'platform' && module.href && module.enabled);
-  const platformModules = core.filter((module) => module.group === 'platform');
-  const lockedCore = core.filter((module) => module.group !== 'platform' && module.href && !module.enabled);
-  const discoverable = [...lockedCore, ...lockedBusiness];
-
-  // #7328 — le bandeau « Entreprise » (2e ligne) est supprimé : le menu vit
-  // dans la barre h-16 et les modules RH sont repliés dans un sous-menu.
   const navEntries = buildDashboardNav(toNavModules(navPills));
+  const businessRail = buildBusinessRail(business);
 
   return (
     <div className="flex min-h-screen bg-transparent" style={tenantThemeStyle}>
@@ -941,8 +542,8 @@ export default function DashboardLayout({
         <div className="absolute top-[20%] -right-[5%] w-[30%] h-[30%] rounded-full bg-cyan-500/5 blur-[100px]" />
       </div>
 
-      {/* Voile mobile du rail métier — referme le tiroir au clic. */}
-      {business.length > 0 && mobileNavOpen ? (
+      {/* Voile mobile de la sidebar — referme le tiroir au clic. */}
+      {mobileNavOpen ? (
         <div
           className="fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm md:hidden"
           aria-hidden="true"
@@ -951,528 +552,55 @@ export default function DashboardLayout({
         />
       ) : null}
 
-      {business.length > 0 ? (
-        <aside
-          data-testid="business-rail"
-          id="dashboard-sidebar"
-          role={isDesktop ? undefined : 'dialog'}
-          aria-modal={!isDesktop && mobileNavOpen ? true : undefined}
-          aria-label={isDesktop ? labels.dashboard.businessSection : labels.dashboard.navMenu}
-          inert={!isDesktop && !mobileNavOpen}
-          className={`fixed inset-y-0 start-0 z-50 flex w-64 max-w-[85vw] shrink-0 flex-col overflow-y-auto border-e border-slate-200/50 bg-white text-slate-900 shadow-2xl transition-transform duration-300 md:relative md:z-10 md:w-64 md:translate-x-0 md:overflow-visible md:bg-white/80 md:shadow-none md:backdrop-blur-xl ${
-            mobileNavOpen ? 'translate-x-0' : '-translate-x-full rtl:translate-x-full'
-          }`}
-        >
-        <div className="flex h-16 shrink-0 items-center justify-between gap-3 border-b border-slate-200/50 px-5">
-          <div className="flex min-w-0 items-center gap-3">
-            {tenantLogoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element -- logo du tenant servi par l'API (URL par entreprise, hors allowlist next/image)
-              <img src={tenantLogoUrl} alt="" data-testid="tenant-logo" className="h-9 w-9 shrink-0 rounded-xl border border-slate-200 bg-white object-contain shadow-sm" />
-            ) : (
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--tenant-primary,#10b981)] to-[var(--tenant-accent,#0891b2)] shadow-lg shadow-emerald-500/20">
-                <span className="text-xs font-black text-white">LRH</span>
-              </div>
-            )}
-            <div className="min-w-0">
-              <p className="truncate text-sm font-black tracking-tight text-slate-950">{user?.company?.name ?? 'Leopardo'}</p>
-              <p className="truncate text-[10px] font-black uppercase tracking-widest text-emerald-700">{labels.dashboard.businessSection}</p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => setMobileNavOpen(false)}
-            className="shrink-0 rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 md:hidden"
-            aria-label={i18nT(locale, 'a11y.close')}
-            data-testid="dashboard-nav-close"
-          >
-            <X className="h-5 w-5" aria-hidden="true" />
-          </button>
-        </div>
-
-        <nav className="mt-4 flex-1 space-y-1 overflow-y-auto px-3" aria-label={labels.dashboard.businessSection}>
-          {/* #7724 — rail hiérarchisé : les sous-écrans (Cuisine, Portail
-              voyageur) sont rendus sous leur carte parente. */}
-          {buildBusinessRail(business).map(({ module, children }) => (
-            <div key={module.key}>
-              <BusinessCard module={module} active={pathname === module.href} labels={labels} />
-              {children.length > 0 ? (
-                <div className="ms-6 mt-1 space-y-1 border-s border-slate-200 ps-3">
-                  {children.map((child) => (
-                    <BusinessCard key={child.key} module={child} active={pathname === child.href} labels={labels} compact />
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          ))}
-        </nav>
-
-        {/* #7556 — sous `md`, le tiroir est le point d'entrée UNIQUE de
-            navigation : il porte aussi les modules entreprise/horizontaux
-            (masqués par `lg:flex` sous 1024 px) et les liens
-            compte/paramètres, auparavant accessibles seulement par l'avatar. */}
-        <div className="md:hidden">
-          {navEntries.length > 0 ? (
-            <section className="border-t border-slate-200/50 px-3 py-3" aria-label={labels.dashboard.sectionEnterprise}>
-              <p className="px-1 pb-1 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                {labels.dashboard.sectionEnterprise}
-              </p>
-              <DashboardModuleLinks
-                entries={navEntries}
-                pathname={pathname}
-                labels={labels}
-                onNavigate={() => setMobileNavOpen(false)}
-              />
-            </section>
-          ) : null}
-          <section
-            className="border-t border-slate-200/50 px-3 py-3"
-            aria-label={labels.dashboard.accountSection}
-            data-testid="dashboard-drawer-account"
-          >
-            <p className="px-1 pb-1 text-[10px] font-black uppercase tracking-widest text-slate-500">
-              {labels.dashboard.accountSection}
-            </p>
-            <Link href="/settings/account" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
-              <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
-              {labels.dashboard.userMenuAccount}
-            </Link>
-            {/* #7727 — encaissements : profils de paiement du tenant (principal). */}
-            <Link href="/settings/encaissements" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
-              <Banknote className="h-4 w-4 text-slate-400" aria-hidden="true" />
-              {paymentProfilesT(locale, 'menuLabel')}
-            </Link>
-            {/* #7759 — tickets support côté client (tous les rôles pour l'instant,
-                la restriction par grant `support` arrive dans un autre lot). */}
-            <Link href="/support" onClick={() => setMobileNavOpen(false)} data-testid="dashboard-drawer-support" className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
-              <LifeBuoy className="h-4 w-4 text-slate-400" aria-hidden="true" />
-              {supportTicketsT(locale, 'menu_label')}
-            </Link>
-            {/* #7713 — image de marque du tenant. */}
-            <Link href="/settings/branding" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
-              <Paintbrush className="h-4 w-4 text-slate-400" aria-hidden="true" />
-              {i18nT(locale, 'brandingPage.title')}
-            </Link>
-            <Link href="/settings/notifications" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
-              <Bell className="h-4 w-4 text-slate-400" aria-hidden="true" />
-              {i18nT(locale, 'shell.notifications')}
-            </Link>
-            <button
-              type="button"
-              onClick={handleLogout}
-              data-testid="dashboard-drawer-logout"
-              className="mt-1 flex w-full items-center gap-3 rounded-lg border-t border-slate-100 px-3 py-2 text-[12px] font-bold text-red-600 transition hover:bg-red-50"
-            >
-              <LogOut className="h-4 w-4" aria-hidden="true" />
-              {labels.dashboard.logout}
-            </button>
-          </section>
-        </div>
-
-        </aside>
-      ) : null}
+      {/* #7908 — sidebar unifiée, TOUJOURS rendue (même sans verticale métier). */}
+      <Sidebar
+        user={user}
+        labels={labels}
+        locale={locale}
+        pathname={pathname}
+        businessRail={businessRail}
+        navEntries={navEntries}
+        tenantLogoUrl={tenantLogoUrl}
+        mobileNavOpen={mobileNavOpen}
+        isDesktop={isDesktop}
+        onClose={() => setMobileNavOpen(false)}
+        onLanguageChange={handleLanguageChange}
+        onLogout={handleLogout}
+      />
 
       <div className="relative z-10 flex min-w-0 flex-1 flex-col">
-        {/* #7556 — voile des panneaux de la barre (notifications, modules, plan,
-            compte, sous-menu RH) : il capte le clic extérieur. Placé DANS la
-            colonne (au-dessus du contenu, sous la barre `z-40` et ses panneaux)
-            car cette colonne est elle-même un contexte d'empilement `z-10` —
-            un voile posé à la racine recouvrirait la barre et ses panneaux. */}
-        {headerPanelOpen ? (
+        {/* #7556 — voile du panneau de notifications : il capte le clic
+            extérieur. Placé DANS la colonne (au-dessus du contenu, sous la
+            barre `z-40` et son panneau) car cette colonne est elle-même un
+            contexte d'empilement `z-10`. */}
+        {notificationsOpen ? (
           <div
             className="fixed inset-0 z-30"
             aria-hidden="true"
             data-testid="dashboard-panel-backdrop"
-            onClick={closeHeaderPanels}
+            onClick={() => setNotificationsOpen(false)}
           />
         ) : null}
+        {/* #7908 — topbar réduite à une ligne fine. */}
         <header className="sticky top-0 z-40 border-b border-slate-200/50 bg-white/80 backdrop-blur-md">
-          <div className="flex h-16 items-center justify-between gap-4 px-4 md:px-8">
+          <div className="flex h-14 items-center justify-between gap-3 px-4 md:px-6">
             <div className="flex min-w-0 items-center gap-3">
-              {business.length > 0 ? (
-                <button
-                  type="button"
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 md:hidden"
-                  aria-label={labels.dashboard.navMenu}
-                  aria-expanded={mobileNavOpen}
-                  aria-controls="dashboard-sidebar"
-                  data-testid="dashboard-nav-toggle"
-                  onClick={() => setMobileNavOpen((value) => !value)}
-                >
-                  <Menu className="h-5 w-5" aria-hidden="true" />
-                </button>
-              ) : null}
-              {/* #7422 — repère de marque DÉDUPLIQUÉ : le rail métier porte déjà le
-                  badge LRH (`business-rail`), donc la barre du haut ne le rend plus
-                  au-dessus de `md` que lorsque le tenant n'a aucun rail métier.
-                  Sous `md` le rail est un tiroir hors-écran : le badge reste. */}
-              {tenantLogoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element -- logo du tenant servi par l'API (URL par entreprise, hors allowlist next/image)
-                <img src={tenantLogoUrl} alt="" className={`h-9 w-9 shrink-0 rounded-xl border border-slate-200 bg-white object-contain shadow-sm ${business.length > 0 ? 'md:hidden' : ''}`} />
-              ) : (
-                <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--tenant-primary,#10b981)] to-[var(--tenant-accent,#0891b2)] shadow-lg shadow-emerald-500/20 ${business.length > 0 ? 'md:hidden' : ''}`}>
-                  <span className="text-xs font-black text-white">LRH</span>
-                </div>
-              )}
-              <div className="min-w-0">
-                <h2 className="truncate text-base font-black uppercase tracking-tight text-slate-950">{pageTitle}</h2>
-                <p className="truncate text-[11px] font-semibold text-slate-500">{user?.company?.name ?? ''}</p>
-              </div>
-            </div>
-          {/* #7328 — menu des modules DANS la barre (plus de 2e ligne). */}
-          {navEntries.length > 0 ? (
-            <nav
-              data-testid="dashboard-horizontal-nav"
-              aria-label={labels.dashboard.sectionEnterprise}
-              className="hidden min-w-0 flex-1 items-center gap-1.5 overflow-x-auto lg:flex"
-            >
-              {navEntries.map((entry) => (
-                entry.kind === 'link' ? (
-                  <NavPill
-                    key={entry.module.key}
-                    module={entry.module}
-                    active={pathname === entry.module.href}
-                    labels={labels}
-                  />
-                ) : (
-                  <NavGroupMenu
-                    key={`menu-${entry.id}`}
-                    entry={entry}
-                    open={openNavMenu === entry.id}
-                    pathname={pathname}
-                    labels={labels}
-                    onOpen={() => {
-                      // Ouverture (survol ou flèche bas) : ferme les autres
-                      // panneaux puis ouvre CELUI-CI.
-                      closeHeaderPanels();
-                      setOpenNavMenu(entry.id);
-                    }}
-                    onClose={() => {
-                      setOpenNavMenu((current) => (current === entry.id ? null : current));
-                    }}
-                    onToggle={() => {
-                      // Même correction que le menu de compte : fermer les
-                      // autres panneaux puis basculer CELUI-CI sur une cible
-                      // calculée avant (sinon il restait ouvert).
-                      const next = openNavMenu === entry.id ? null : entry.id;
-                      closeHeaderPanels();
-                      setOpenNavMenu(next);
-                    }}
-                  />
-                )
-              ))}
-            </nav>
-          ) : null}
-          <div className="flex items-center gap-2 md:gap-4">
-            {/* #7328 — sous `lg`, le menu vit dans un panneau (la barre reste sur une ligne).
-                #7556 — ce panneau n'est nécessaire qu'entre `md` et `lg` (768–1024 px)
-                où la nav horizontale `dashboard-horizontal-nav` est encore masquée ;
-                sous `md`, c'est le tiroir (`dashboard-nav-toggle`) qui porte les
-                modules. Un tenant SANS verticale n'a pas de tiroir : le panneau
-                reste alors le seul accès aux modules sous `md`. */}
-            {navEntries.length > 0 ? (
-              <div className={`relative lg:hidden ${business.length > 0 ? 'hidden md:block' : ''}`}>
-                <button
-                  type="button"
-                  data-testid="dashboard-modules-nav-toggle"
-                  aria-expanded={mobileModulesOpen}
-                  aria-haspopup="true"
-                  aria-controls="dashboard-modules-panel"
-                  aria-label={labels.dashboard.sectionEnterprise}
-                  onClick={() => {
-                    // #7584 — calculer la cible AVANT de fermer les autres panneaux :
-                    // closeHeaderPanels() remet CE panneau à false, donc l'updater
-                    // fonctionnel relisait `false` et le rouvrait aussitôt — le
-                    // panneau ne se fermait jamais par son propre déclencheur.
-                    const next = !mobileModulesOpen;
-                    closeHeaderPanels();
-                    setMobileModulesOpen(next);
-                  }}
-                  className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
-                >
-                  <Menu className="h-4 w-4" aria-hidden="true" />
-                </button>
-                {mobileModulesOpen ? (
-                  <div id="dashboard-modules-panel" data-testid="dashboard-modules-panel" className={MODULES_NAV_PANEL}>
-                    <DashboardModuleLinks
-                      entries={navEntries}
-                      pathname={pathname}
-                      labels={labels}
-                      onNavigate={() => setMobileModulesOpen(false)}
-                    />
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
-            {/* #7225 — panneau « Modules & plan » : modules de plateforme +
-                verticales non activées (découverte, sans polluer le menu). */}
-            <div className="relative">
               <button
                 type="button"
-                onClick={() => {
-                  // #7584 — même correction que le menu de compte et le sous-menu RH
-                  // (#7556) : cible calculée avant la fermeture des autres panneaux.
-                  const next = !modulesOpen;
-                  closeHeaderPanels();
-                  setModulesOpen(next);
-                }}
-                aria-expanded={modulesOpen}
-                aria-haspopup="true"
-                aria-controls="dashboard-plan-panel"
-                data-testid="dashboard-plan-toggle"
-                className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 md:hidden"
+                aria-label={labels.dashboard.navMenu}
+                aria-expanded={mobileNavOpen}
+                aria-controls="dashboard-sidebar"
+                data-testid="dashboard-nav-toggle"
+                onClick={() => setMobileNavOpen((value) => !value)}
               >
-                <LayoutGrid className="h-4 w-4" aria-hidden="true" />
-                {/* #7422 — icône seule : le libellé visible coûtait ~90 px à la
-                    barre ; il reste en `sr-only` pour nommer le bouton. */}
-                <span className="sr-only">{labels.dashboard.sectionModules}</span>
+                <Menu className="h-5 w-5" aria-hidden="true" />
               </button>
-              {modulesOpen ? (
-                <div
-                  id="dashboard-plan-panel"
-                  data-testid="dashboard-plan-panel"
-                  className="absolute right-0 top-12 z-30 max-h-[70vh] w-80 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-xl"
-                >
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{labels.dashboard.sectionEnterprise}</p>
-                  <div className="mt-2 space-y-1">
-                    {platformModules.length > 0 ? platformModules.map((module) => (
-                      <div key={module.key} className="flex items-center justify-between gap-2 text-[12px] font-bold text-slate-600">
-                        <span>{labels.dashboard.modules[module.key] ?? module.label}</span>
-                        <span className={`rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${
-                          module.enabled ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-slate-200 bg-slate-100 text-slate-500'
-                        }`}>
-                          {module.enabled ? (module.state === 'trial' ? 'Trial' : labels.dashboard.present) : 'Lock'}
-                        </span>
-                      </div>
-                    )) : <p className="text-[12px] text-slate-400">—</p>}
-                  </div>
-                  {discoverable.length > 0 ? (
-                    <>
-                      <p className="mt-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                        {business.length > 0 ? labels.dashboard.sectionLocked : labels.dashboard.sectionDiscoverBusiness}
-                      </p>
-                      <div className="mt-2 space-y-1">
-                        {discoverable.map((module) => {
-                          // #7322 — un outil HORIZONTAL s'active en autonomie ;
-                          // une verticale métier reste « sur demande » (seeders
-                          // et dépendances de pack, admin plateforme).
-                          const label = labels.dashboard.modules[module.key] ?? module.label;
-
-                          if (isSelfActivable(module)) {
-                            const busy = activatingModule === module.key;
-                            return (
-                              <button
-                                key={module.key}
-                                type="button"
-                                data-testid={`activate-module-${module.key}`}
-                                onClick={() => void activateModule(module.key)}
-                                disabled={activatingModule !== null}
-                                className="flex w-full items-center justify-between gap-2 rounded-lg px-1 py-1.5 text-start text-[12px] font-bold text-emerald-700 transition hover:bg-emerald-50 disabled:opacity-60"
-                              >
-                                <span>{label}</span>
-                                {busy ? (
-                                  <span aria-live="polite">{labels.dashboard.activating}</span>
-                                ) : (
-                                  <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wide">
-                                    <Plus className="h-3.5 w-3.5" aria-hidden="true" />
-                                    {labels.dashboard.activate}
-                                  </span>
-                                )}
-                              </button>
-                            );
-                          }
-
-                          return (
-                            <Link
-                              key={module.key}
-                              href="/contact?topic=upgrade"
-                              className="flex items-center justify-between gap-2 rounded-lg px-1 py-1.5 text-[12px] font-bold text-slate-500 transition hover:bg-emerald-50 hover:text-emerald-700"
-                            >
-                              <span>{label}</span>
-                              <Plus className="h-3.5 w-3.5" aria-hidden="true" />
-                            </Link>
-                          );
-                        })}
-                      </div>
-                      {activateError !== '' ? (
-                        <p role="alert" className="mt-2 text-[11px] font-semibold text-red-600">
-                          {activateError}
-                        </p>
-                      ) : null}
-                    </>
-                  ) : null}
-                </div>
-              ) : null}
+              <h2 className="truncate text-sm font-black uppercase tracking-tight text-slate-950">{pageTitle}</h2>
             </div>
-            <div className="flex items-center gap-4">
-            <div className="relative">
-              <button
-                type="button"
-                className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
-                aria-label={i18nT(locale, 'shell.notifications')}
-                aria-expanded={notificationsOpen}
-                aria-haspopup="true"
-                aria-controls="dashboard-notifications-panel"
-                data-testid="dashboard-notifications-toggle"
-                onClick={() => {
-                  // #7584 — même correction : la cloche ne pouvait jamais refermer
-                  // le panneau de notifications (closeHeaderPanels() le remettait
-                  // à false, puis l'updater le relisait et le rouvrait).
-                  const next = !notificationsOpen;
-                  closeHeaderPanels();
-                  setNotificationsOpen(next);
-                }}
-              >
-                <Bell className="h-5 w-5" aria-hidden="true" />
-                {unreadCount > 0 ? (
-                  <span className="absolute -right-1 -top-1 min-w-5 rounded-full bg-red-500 px-1.5 py-0.5 text-center text-[10px] font-bold text-white">
-                    {unreadCount > 9 ? '9+' : unreadCount}
-                  </span>
-                ) : null}
-              </button>
-              {notificationsOpen ? (
-                <div
-                  id="dashboard-notifications-panel"
-                  data-testid="dashboard-notifications-panel"
-                  className="absolute right-0 top-12 z-30 max-h-[70vh] w-80 overflow-y-auto rounded-lg border border-slate-200 bg-white p-3 shadow-xl"
-                >
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                    <p className="text-sm font-bold text-slate-900">{i18nT(locale, 'shell.notifications')}</p>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-slate-500">{unreadCount} non lue(s)</span>
-                      {unreadCount > 0 ? (
-                        <button
-                          type="button"
-                          className="text-xs font-semibold text-emerald-700 transition hover:text-emerald-800"
-                          onClick={() => void markAllNotificationsRead()}
-                        >
-                          {i18nT(locale, 'notifMarkAllAsRead')}
-                        </button>
-                      ) : null}
-                    </div>
-                  </div>
-                  <div className="mt-2 max-h-80 space-y-2 overflow-auto">
-                    {notificationPreview.length > 0 ? notificationPreview.map((notification) => (
-                      <button
-                        key={notification.id}
-                        type="button"
-                        className="w-full rounded-lg border border-slate-100 bg-transparent p-3 text-left transition hover:border-emerald-200 hover:bg-emerald-50"
-                        onClick={() => void markNotificationRead(notification)}
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <p className="text-sm font-bold text-slate-900">{notification.title}</p>
-                          {!notification.is_read ? <span className="mt-1 h-2 w-2 rounded-full bg-emerald-500" aria-label="Non lue" /> : null}
-                        </div>
-                        <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-600">{notification.body}</p>
-                        <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">{notification.type}</p>
-                      </button>
-                    )) : (
-                      <p className="rounded-lg bg-transparent p-3 text-sm text-slate-600">{labels.dashboard.noNotifications}</p>
-                    )}
-                  </div>
-                  <Link
-                    href="/settings/notifications"
-                    className="mt-3 flex items-center justify-center rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 transition hover:border-emerald-300 hover:text-emerald-700"
-                    onClick={() => setNotificationsOpen(false)}
-                  >
-                    {labels.dashboard.managePreferences}
-                  </Link>
-                </div>
-              ) : null}
-            </div>
-            {/* Retour propriétaire — nom et e-mail ne sont plus affichés en
-                clair dans la barre : un seul avatar ouvre les options du compte,
-                avec une unique entrée « Déconnexion ». */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => {
-                  // #7556 : `closeHeaderPanels()` remet CE panneau à false puis
-                  // l'updater `!value` le rouvrait aussitôt (les deux mises à jour
-                  // sont traitées dans le même lot) — le menu ne se refermait
-                  // jamais au clic sur l'avatar. On calcule la cible AVANT de
-                  // fermer les autres panneaux (régression vue par
-                  // layout-header-menu.test.tsx « le menu du compte est refermable »).
-                  const next = !userMenuOpen;
-                  closeHeaderPanels();
-                  setUserMenuOpen(next);
-                }}
-                aria-expanded={userMenuOpen}
-                aria-haspopup="menu"
-                aria-controls="dashboard-user-menu"
-                aria-label={labels.dashboard.userMenuAccount}
-                title={getDisplayName(user)}
-                data-testid="user-menu-toggle"
-                className="group flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-gradient-to-br from-slate-100 to-slate-200 text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
-              >
-                {/* #7860 — icône de compte universelle à la place des initiales. */}
-                <User className="h-5 w-5" aria-hidden="true" />
-              </button>
-              {userMenuOpen ? (
-                <div
-                  role="menu"
-                  id="dashboard-user-menu"
-                  data-testid="user-menu"
-                  className="absolute right-0 top-11 z-30 max-h-[70vh] w-64 overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-xl"
-                >
-                  <div className="border-b border-slate-100 px-4 py-3">
-                    <p className="truncate text-sm font-black text-slate-900">{getDisplayName(user)}</p>
-                    <p className="truncate text-xs text-slate-500">{user?.email}</p>
-                  </div>
-                  <div className="p-1.5">
-                    <Link
-                      href="/settings/account"
-                      role="menuitem"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
-                    >
-                      <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
-                      {labels.dashboard.userMenuAccount}
-                    </Link>
-                    {/* #7860 — abonnement & factures du tenant. */}
-                    <Link
-                      href="/billing"
-                      role="menuitem"
-                      onClick={() => setUserMenuOpen(false)}
-                      data-testid="user-menu-billing"
-                      className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
-                    >
-                      <CreditCard className="h-4 w-4 text-slate-400" aria-hidden="true" />
-                      {labels.dashboard.userMenuBilling}
-                    </Link>
-                    {/* #7727 — encaissements : profils de paiement du tenant (principal). */}
-                    <Link href="/settings/encaissements" role="menuitem" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
-                      <Banknote className="h-4 w-4 text-slate-400" aria-hidden="true" />
-                      {paymentProfilesT(locale, 'menuLabel')}
-                    </Link>
-                    {/* #7759 — tickets support côté client. */}
-                    <Link href="/support" role="menuitem" onClick={() => setUserMenuOpen(false)} data-testid="user-menu-support" className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
-                      <LifeBuoy className="h-4 w-4 text-slate-400" aria-hidden="true" />
-                      {supportTicketsT(locale, 'menu_label')}
-                    </Link>
-                    {/* #7713 — image de marque du tenant. */}
-                    <Link href="/settings/branding" role="menuitem" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950">
-                      <Paintbrush className="h-4 w-4 text-slate-400" aria-hidden="true" />
-                      {i18nT(locale, 'brandingPage.title')}
-                    </Link>
-                  </div>
-                  <div className="border-t border-slate-100 p-1.5">
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={handleLogout}
-                      data-testid="user-menu-logout"
-                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50"
-                    >
-                      <LogOut className="h-4 w-4" aria-hidden="true" />
-                      {labels.dashboard.logout}
-                    </button>
-                  </div>
-                </div>
-              ) : null}
-            </div>
-            {/* #7238 (retour PM) — l'essai et la reprise de configuration sont
-                des pastilles de la barre du haut, plus des lignes pleine largeur. */}
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-2 md:gap-3">
+              {/* #7238 (retour PM) — l'essai et la reprise de configuration sont
+                  des pastilles de la barre du haut, plus des lignes pleine largeur. */}
               {onboardingPending && !showInterview ? (
                 <button
                   type="button"
@@ -1483,37 +611,86 @@ export default function DashboardLayout({
                 </button>
               ) : null}
               <TrialBanner user={user} locale={locale} variant="compact" />
-            </div>
-            <label
-              className="hidden items-center gap-1.5 text-sm text-slate-600 md:flex"
-              title={labels.dashboard.language}
-            >
-              <Globe className="h-4 w-4 text-slate-400" aria-hidden="true" />
-              <span className="sr-only">{labels.dashboard.language}</span>
-              <select
-                className="rounded-md border border-slate-300 bg-white px-2 py-1 text-sm text-slate-700"
-                value={locale}
-                onChange={(e) => void handleLanguageChange(e.target.value)}
-              >
-                <option value="fr">Français</option>
-                <option value="ar">العربية</option>
-                <option value="tr">Türkçe</option>
-                <option value="en">English</option>
-              </select>
-            </label>
-            <div className="hidden items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-700 xl:flex"
-              title={labels.dashboard.present}
-            >
-              <div className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+              <div className="relative">
+                <button
+                  type="button"
+                  className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+                  aria-label={i18nT(locale, 'shell.notifications')}
+                  aria-expanded={notificationsOpen}
+                  aria-haspopup="true"
+                  aria-controls="dashboard-notifications-panel"
+                  data-testid="dashboard-notifications-toggle"
+                  onClick={() => setNotificationsOpen((value) => !value)}
+                >
+                  <Bell className="h-5 w-5" aria-hidden="true" />
+                  {unreadCount > 0 ? (
+                    <span className="absolute -right-1 -top-1 min-w-5 rounded-full bg-red-500 px-1.5 py-0.5 text-center text-[10px] font-bold text-white">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  ) : null}
+                </button>
+                {notificationsOpen ? (
+                  <div
+                    id="dashboard-notifications-panel"
+                    data-testid="dashboard-notifications-panel"
+                    className="absolute right-0 top-11 z-30 max-h-[70vh] w-80 overflow-y-auto rounded-lg border border-slate-200 bg-white p-3 shadow-xl"
+                  >
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                      <p className="text-sm font-bold text-slate-900">{i18nT(locale, 'shell.notifications')}</p>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-semibold text-slate-500">{unreadCount} non lue(s)</span>
+                        {unreadCount > 0 ? (
+                          <button
+                            type="button"
+                            className="text-xs font-semibold text-emerald-700 transition hover:text-emerald-800"
+                            onClick={() => void markAllNotificationsRead()}
+                          >
+                            {i18nT(locale, 'notifMarkAllAsRead')}
+                          </button>
+                        ) : null}
+                      </div>
+                    </div>
+                    <div className="mt-2 max-h-80 space-y-2 overflow-auto">
+                      {notificationPreview.length > 0 ? notificationPreview.map((notification) => (
+                        <button
+                          key={notification.id}
+                          type="button"
+                          className="w-full rounded-lg border border-slate-100 bg-transparent p-3 text-left transition hover:border-emerald-200 hover:bg-emerald-50"
+                          onClick={() => void markNotificationRead(notification)}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="text-sm font-bold text-slate-900">{notification.title}</p>
+                            {!notification.is_read ? <span className="mt-1 h-2 w-2 rounded-full bg-emerald-500" aria-label={labels.dashboard.notificationUnread} /> : null}
+                          </div>
+                          <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-600">{notification.body}</p>
+                          <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">{notification.type}</p>
+                        </button>
+                      )) : (
+                        <p className="rounded-lg bg-transparent p-3 text-sm text-slate-600">{labels.dashboard.noNotifications}</p>
+                      )}
+                    </div>
+                    <Link
+                      href="/settings/notifications"
+                      className="mt-3 flex items-center justify-center rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 transition hover:border-emerald-300 hover:text-emerald-700"
+                      onClick={() => setNotificationsOpen(false)}
+                    >
+                      {labels.dashboard.managePreferences}
+                    </Link>
+                  </div>
+                ) : null}
               </div>
-              {/* Issue #2720 — statistique « Live » codée en dur retirée :
-                  aucun endpoint ne la fournit (honnêteté des données). */}
-              <span className="sr-only">{labels.dashboard.present}</span>
+              <div className="hidden items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 xl:flex"
+                title={labels.dashboard.present}
+              >
+                <div className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+                </div>
+                {/* Issue #2720 — statistique « Live » codée en dur retirée :
+                    aucun endpoint ne la fournit (honnêteté des données). */}
+                <span className="sr-only">{labels.dashboard.present}</span>
+              </div>
             </div>
-          </div>
-          </div>
           </div>
         </header>
         <main className="mx-auto w-full max-w-7xl p-4 md:p-8">
@@ -1555,67 +732,6 @@ type ClientNotification = {
   body?: string | null;
   is_read?: boolean;
 };
-
-function NavPill({ module, active, labels }: { module: ClientModuleAccess; active: boolean; labels: CopyTree }) {
-  const label = labels.dashboard.modules[module.key] ?? module.label;
-  const className = [
-    'group inline-flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-1.5 text-[11px] font-black uppercase tracking-tight transition-all',
-    active
-      ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm'
-      : module.enabled
-        ? 'border-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-slate-900'
-        : 'border-transparent text-slate-300',
-  ].join(' ');
-
-  return (
-    <Link href={module.href ?? '#'} className={className} aria-disabled={!module.enabled} aria-current={active ? 'page' : undefined}>
-      {/* #7724 — icône de module sur les pills (plus de pill texte seul). */}
-      {module.icon ? <module.icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /> : null}
-      {label}
-      {!module.enabled ? <LockKeyhole className="h-3 w-3" aria-label={labels.dashboard.featureLockedBadge} /> : null}
-      {module.enabled && module.state === 'trial' ? (
-        <span className="rounded-md border border-amber-200 bg-amber-50 px-1 py-0.5 text-[8px] font-black uppercase tracking-widest text-amber-600">Trial</span>
-      ) : null}
-    </Link>
-  );
-}
-
-function BusinessCard({ module, active, labels, compact = false }: { module: ClientModuleAccess; active: boolean; labels: CopyTree; compact?: boolean }) {
-  const label = labels.dashboard.modules[module.key] ?? module.label;
-  const initials = label.trim().slice(0, 2).toUpperCase();
-  const Icon = module.icon;
-
-  return (
-    <Link
-      href={module.href ?? '#'}
-      aria-current={active ? 'page' : undefined}
-      className={[
-        'group flex items-center gap-3 rounded-2xl border text-sm font-bold transition-all',
-        compact ? 'px-3 py-2' : 'px-3.5 py-3',
-        active
-          ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm'
-          : 'border-transparent text-slate-600 hover:border-slate-200 hover:bg-white hover:text-slate-900',
-      ].join(' ')}
-    >
-      <span
-        className={[
-          'flex shrink-0 items-center justify-center rounded-xl border text-[11px] font-black uppercase',
-          compact ? 'h-7 w-7' : 'h-9 w-9',
-          active
-            ? 'border-emerald-200 bg-white text-emerald-700'
-            : 'border-slate-200 bg-slate-50 text-slate-500 group-hover:text-emerald-700',
-        ].join(' ')}
-      >
-        {/* #7724 — icône de module sur les cartes métier (repli : initiales). */}
-        {Icon ? <Icon className={compact ? 'h-3.5 w-3.5' : 'h-4 w-4'} aria-hidden="true" /> : initials}
-      </span>
-      <span className="min-w-0 flex-1 truncate">{label}</span>
-      {module.state === 'trial' ? (
-        <span className="rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest text-amber-600">Trial</span>
-      ) : null}
-    </Link>
-  );
-}
 
 function FeatureLockedPanel({ module, labels }: { module: ClientModuleAccess; labels: CopyTree }) {
   // #2986 : messages localisés (4 locales) — plus de FR en dur.
@@ -1662,4 +778,3 @@ function FeatureLockedPanel({ module, labels }: { module: ClientModuleAccess; la
     </section>
   );
 }
-

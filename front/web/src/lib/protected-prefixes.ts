@@ -64,6 +64,9 @@ export const PROTECTED_PREFIXES = [
   // BC-29 COMMUNICATION (#7691) — boîte mail connectée + IA (zone dashboard) :
   // fils Gmail, file de confirmations, réglages — jamais servis sans session.
   '/communication',
+  // #7908 — page « Modules » (statut, auto-activation) : surface d'activation
+  // du tenant, jamais servie sans session.
+  '/modules',
 ] as const;
 
 /**
