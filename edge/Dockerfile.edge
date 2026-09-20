@@ -13,7 +13,10 @@ FROM php:8.4-fpm-alpine
 
 WORKDIR /var/www/html
 
-# Install system deps
+# Install system deps (runtime uniquement — #7847 : git/nodejs/npm retirés,
+# ils ne servaient qu'au build ; ni l'entrypoint ni supervisord ne les
+# utilisent — aucun `npm install` dans cette image, composer installe depuis
+# les archives dist)
 RUN apk add --no-cache \
     nginx \
     sqlite \
@@ -21,9 +24,6 @@ RUN apk add --no-cache \
     curl \
     zip \
     unzip \
-    git \
-    nodejs \
-    npm \
     supervisor
 
 # Install PHP extensions
@@ -35,11 +35,22 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Copy source
 COPY api/ .
 
-# Install PHP dependencies (no dev)
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# Install PHP dependencies (no dev) — #7847 : git n'est nécessaire qu'à
+# composer (dépôts vcs / repli source) et est purgé dans la même couche,
+# il n'existe pas dans l'image finale.
+RUN apk add --no-cache --virtual .composer-build-deps git \
+    && composer install --no-dev --optimize-autoloader --no-interaction \
+    && apk del .composer-build-deps
 
-# Create data directory
-RUN mkdir -p /var/leopardo && chmod 755 /var/leopardo
+# #7847 — exécution non-root : les programmes applicatifs (php-fpm,
+# migration) tournent en `www-data` (voir supervisord.edge.conf).
+# Prépare les répertoires accessibles en écriture pour cet utilisateur.
+# NB : /var/leopardo est monté en volume nommé (edge_data) — le chown au
+# build initialise la propriété du volume à sa première création.
+RUN mkdir -p /var/leopardo /var/log/supervisor \
+    && chown www-data:www-data /var/leopardo \
+    && chmod 755 /var/leopardo \
+    && chown -R www-data:www-data storage bootstrap/cache
 
 # SQLite DB will be at /var/leopardo/edge.sqlite (volume mounted)
 
@@ -51,4 +62,9 @@ COPY edge/supervisord.edge.conf /etc/supervisor/conf.d/leopardo.conf
 
 EXPOSE 80
 
+# #7847 — supervisord reste root : il doit gérer les process (signaux,
+# redirection des logs) et lancer nginx dont le master bind :80 (< 1024).
+# Le durcissement se fait au niveau des PROGRAMMES : `user=www-data` dans
+# supervisord.edge.conf pour php-fpm et la migration ; les workers nginx
+# tournent déjà déprivilégiés (utilisateur nginx du paquet Alpine).
 CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/conf.d/leopardo.conf"]
