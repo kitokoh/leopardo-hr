@@ -36,7 +36,7 @@ function priceFor(price: TripPrice | undefined, age: AgeCategory): number {
 
 export function BookingFlow({ trip }: { trip: MarketplaceTripDetail }) {
   const { dict, locale } = useLocale();
-  const { account, token } = useAccount();
+  const { account } = useAccount();
   const router = useRouter();
 
   const defaultClassId = trip.prices[0]?.class_id ?? 0;
@@ -166,8 +166,8 @@ export function BookingFlow({ trip }: { trip: MarketplaceTripDetail }) {
             seat_number: p.seat_number,
           })),
         },
-        // #7739 — client connecté : réservation rattachée à son compte.
-        token,
+        // #7739/#7841 — client connecté : réservation rattachée à son compte
+        // via le cookie httpOnly de session (injecté en Bearer par le proxy).
       );
 
       try {
