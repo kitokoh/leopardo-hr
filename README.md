@@ -251,7 +251,7 @@ Leopardo is an active and evolving open-source project. The repository contains 
 | **Planned** | Architecture and issues prepared; implementation is not yet complete. |
 | **Pilot** | Enabled for selected tenants or workflows with explicit monitoring and rollback. |
 
-Current project metrics are maintained in the repository audit and operational documents. They should not be copied into long-lived marketing claims without updating their measurement date. As measured on 2026-09-18, the repository counts 27 DDD backend modules, 69 CI workflows, 798 OpenAPI paths, 1,045 backend `*Test.php` files, 7 Flutter apps plus the shared `leopardo_core` package, and over 1,000 documentation files under `docs/`.
+Current project metrics are maintained in the repository audit and operational documents. They should not be copied into long-lived marketing claims without updating their measurement date. As measured on 2026-09-20, the repository counts 31 DDD backend modules, 72 CI workflows, 994 OpenAPI paths, 1,120 backend `*Test.php` files, 8 Flutter apps plus the shared `leopardo_core` package, and over 1,000 documentation files under `docs/`.
 
 ---
 

@@ -149,7 +149,7 @@ services:
     restart: unless-stopped
 
   mailpit:
-    image: axllent/mailpit:latest
+    image: axllent/mailpit:v1.31.2 # pinné (règle #3972 : jamais de latest flottant)
     container_name: leopardo-mailpit
     ports:
       - "8025:8025"

@@ -317,7 +317,7 @@ PYEOF
       printf '%b' "$summary_rows"
       echo "| **Total** | **${grand_base_total}** | **${grand_head_total}** | **$((grand_head_total - grand_base_total))** |"
       echo ""
-      echo "Verdict total : ${total_verdict} (nouvelles entrées tolérées : ${tolerated_occ_total} occ). Cartographie : \`docs/qualite/DETTE_PHPSTAN_7655.md\`."
+      echo "Verdict total : ${total_verdict} (nouvelles entrées tolérées : ${tolerated_occ_total} occ). Cartographie : \`docs/qa/DETTE_PHPSTAN_7655.md\`."
     } >> "$GITHUB_STEP_SUMMARY"
   fi
 

@@ -25,6 +25,9 @@ on:
     - cron: '*/5 * * * *'
   workflow_dispatch:
 
+# Moindre privilège (audit #7969) : sonde HTTP pure, aucun accès repo requis.
+permissions: {}
+
 # Un seul run de supervision à la fois ; un run en retard REMPLACE le
 # précédent (comme launch-observability-smoke, leçon #3968).
 concurrency:
