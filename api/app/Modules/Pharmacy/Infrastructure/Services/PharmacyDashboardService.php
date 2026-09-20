@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Pharmacy\Application\Services;
+namespace App\Modules\Pharmacy\Infrastructure\Services;
 
 use App\Modules\Pharmacy\Domain\Models\PharmacyBatch;
 use App\Modules\Pharmacy\Domain\Models\PharmacyProduct;

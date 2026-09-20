@@ -6,9 +6,9 @@ namespace App\Modules\Pharmacy\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\Pharmacy\Application\Services\PharmacySaleService;
 use App\Modules\Pharmacy\Domain\Models\PharmacySale;
 use App\Modules\Pharmacy\Domain\Models\PharmacySaleLine;
+use App\Modules\Pharmacy\Infrastructure\Services\PharmacySaleService;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Requests\StorePharmacySaleRequest;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Requests\VoidPharmacySaleRequest;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Traits\ChecksPharmacySolution;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Pharmacy\Application\Services;
+namespace App\Modules\Pharmacy\Infrastructure\Services;
 
 use App\Exceptions\DomainException;
 use App\Modules\Pharmacy\Domain\Exceptions\PharmacyInvalidTransitionException;
@@ -126,7 +126,7 @@ class PharmacyPurchaseOrderService
                 if ($line->quantity_received + $received['quantity'] > $line->quantity_ordered) {
                     throw new DomainException(
                         (string) __('pharmacy.over_receipt', [
-                            'line' => (int) $line->id,
+                            'line' => $line->id,
                             'ordered' => $line->quantity_ordered,
                             'received' => $line->quantity_received,
                             'proposed' => $received['quantity'],

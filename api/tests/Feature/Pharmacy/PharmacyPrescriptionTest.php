@@ -6,10 +6,10 @@ namespace Tests\Feature\Pharmacy;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Pharmacy\Application\Services\PharmacyStockService;
 use App\Modules\Pharmacy\Domain\Models\PharmacyPrescriber;
 use App\Modules\Pharmacy\Domain\Models\PharmacyPrescription;
 use App\Modules\Pharmacy\Domain\Models\PharmacyProduct;
+use App\Modules\Pharmacy\Infrastructure\Services\PharmacyStockService;
 use Illuminate\Support\Carbon;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -27,8 +27,6 @@ use Tests\TestCase;
 class PharmacyPrescriptionTest extends TestCase
 {
     use RefreshTenantDatabase;
-
-    private Company $companyA;
 
     private Company $companyB;
 
@@ -59,7 +57,6 @@ class PharmacyPrescriptionTest extends TestCase
             'currency' => 'DZD',
             'features' => ['pharmacy' => true],
         ]);
-        $this->companyA = $companyA;
 
         /** @var Company $companyB */
         $companyB = Company::factory()->create([

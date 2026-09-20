@@ -6,11 +6,11 @@ namespace Tests\Feature\Pharmacy;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Pharmacy\Application\Services\PharmacySaleService;
-use App\Modules\Pharmacy\Application\Services\PharmacyStockService;
 use App\Modules\Pharmacy\Domain\Models\PharmacyProduct;
 use App\Modules\Pharmacy\Domain\Models\PharmacyPurchaseOrder;
 use App\Modules\Pharmacy\Domain\Models\PharmacySale;
+use App\Modules\Pharmacy\Infrastructure\Services\PharmacySaleService;
+use App\Modules\Pharmacy\Infrastructure\Services\PharmacyStockService;
 use Illuminate\Support\Carbon;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -29,8 +29,6 @@ class PharmacyDashboardTest extends TestCase
     use RefreshTenantDatabase;
 
     private Company $companyA;
-
-    private Company $companyB;
 
     private Employee $managerA;
 
@@ -65,7 +63,6 @@ class PharmacyDashboardTest extends TestCase
             'currency' => 'MAD',
             'features' => ['pharmacy' => true],
         ]);
-        $this->companyB = $companyB;
 
         /** @var Employee $managerA */
         $managerA = Employee::factory()->create([
@@ -181,7 +178,7 @@ class PharmacyDashboardTest extends TestCase
             'company_id' => $companyId,
             'name' => 'Grossiste',
         ]);
-        $orders = app(\App\Modules\Pharmacy\Application\Services\PharmacyPurchaseOrderService::class);
+        $orders = app(\App\Modules\Pharmacy\Infrastructure\Services\PharmacyPurchaseOrderService::class);
         $orders->create($companyId, (int) $supplier->id, [
             ['product_id' => (int) $this->paracetamol->id, 'quantity_ordered' => 10, 'unit_price' => '20.00'],
         ]);
