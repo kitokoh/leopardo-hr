@@ -26,7 +26,7 @@ Leopardo is the business suite for field-based companies — HR & payroll, atten
 
 Leopardo is an **open-source, self-hostable and SaaS-ready business suite** for companies that manage people, sites, schedules, customers and operational processes across multiple locations.
 
-Its historical foundation is HR and payroll: employee records, attendance, leave, documents, payroll preparation and workforce operations. The suite extends that foundation with accounting, customer relationship management, marketing integrations, an API ecosystem — and **tenant-activable vertical solutions** for sector-specific operations (travel agencies, restaurants and delivery, fuel stations, schools).
+Its historical foundation is HR and payroll: employee records, attendance, leave, documents, payroll preparation and workforce operations. The suite extends that foundation with accounting, customer relationship management, marketing integrations, an API ecosystem — and **tenant-activable vertical solutions** for sector-specific operations (travel agencies, restaurants and delivery, fuel stations, schools, healthcare, pharmacies).
 
 The suite is organized in three layers:
 
@@ -50,7 +50,7 @@ Growing companies often coordinate HR, attendance, payroll, customer follow-up a
 | Manage company finances | Accounting documents, journals, currencies, VAT and payment-related workflows. |
 | Manage customers | Tenant-scoped accounts, contacts, leads, opportunities, activities and tasks. |
 | Activate customer marketing | Segments, consent, campaigns and official channel adapters. |
-| Run a sector-specific operation | Tenant-activable vertical solutions (pilot): travel agencies, restaurants & delivery, fuel stations, schools. |
+| Run a sector-specific operation | Tenant-activable vertical solutions (pilot): travel agencies, restaurants & delivery, fuel stations, schools, healthcare, pharmacies. |
 | Integrate existing systems | OpenAPI contracts, SDKs, webhooks and explicit domain events. |
 | Operate securely | Multi-tenant isolation, RBAC, audit, secret scanning and security testing. |
 
@@ -68,7 +68,7 @@ Leopardo is a suite, not a single undifferentiated application. Each module has 
 | **Customer Marketing** | Client workspaces and channel API | Planned V1 | Segments, consent, campaigns, email/SMS and official WhatsApp integration. |
 | **Platform Administration** | Leopardo admin | Core | Platform configuration, tenant lifecycle, support and commercial operations. |
 | **Commercial CRM** | Leopardo admin only | Existing / evolving | Leopardo’s own acquisition, trials, onboarding and customer conversion pipeline. |
-| **Vertical solutions** | Tenant-activable sector packs | Pilot | Travel agencies, restaurants & delivery, fuel stations and schools — see below. |
+| **Vertical solutions** | Tenant-activable sector packs | Pilot | Travel agencies, restaurants & delivery, fuel stations, schools, healthcare and pharmacies — see below. |
 | **Mobile suite** | Flutter apps | Core / evolving | Employee, manager, HR, marketing and platform administration experiences. |
 | **Desktop clients** | Future targeted clients | Planned | Only justified desktop workflows such as intensive accounting or kiosk operation. |
 
@@ -82,6 +82,8 @@ Beyond the shared modules, Leopardo ships **vertical solutions**: configuration 
 | **Restaurant & delivery** | Food service | Pilot | Branches, menus, POS and kitchen flows, stock and COGS, delivery workflows. |
 | **Fuel station** | Fuel retail | Pilot | Stations, pumps, shifts, stock and sales operations. |
 | **EduManager** | Education | Pilot | Campuses, classes, enrollment and school operations. |
+| **HealthManager** | Healthcare | Pilot | Hospitals and private clinics: patients, appointments, hospitalizations and care billing. |
+| **Pharmacy** | Pharmacy | Pilot | Product catalogue, batch-tracked stock, purchasing, counter sales and prescription register. |
 
 Companies outside these sectors simply run the horizontal modules (HR, attendance, payroll, accounting, CRM and more). The onboarding interview maps a declared sector to the matching solution — or to the horizontal toolset.
 
