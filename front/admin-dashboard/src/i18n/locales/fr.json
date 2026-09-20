@@ -8102,7 +8102,16 @@
         "email": "Email",
         "empty": "Aucune commande web.",
         "invalidTransition": "Transition impossible : la commande a déjà changé d'état. La liste a été rechargée.",
-        "close": "Fermer"
+        "close": "Fermer",
+        "deliveryReference": "Livraison BC-26",
+        "paymentsTitle": "Paiement",
+        "payment": {
+          "paid": "Payée en ligne",
+          "partial": "Acompte en ligne reçu",
+          "cod": "À encaisser à la livraison"
+        },
+        "invoicePdf": "Facture PDF",
+        "invoiceError": "La facture ne peut pas être générée."
       },
       "action": {
         "confirm": "Confirmer",

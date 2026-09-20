@@ -30,7 +30,9 @@ import {
   FULFILLMENT_STATUSES,
   formatMinor,
   fulfillmentActions,
+  orderPaymentStatus,
   type FulfillmentAction,
+  type OrderPayment,
 } from '@/lib/commerce-format';
 import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
@@ -82,8 +84,12 @@ type OnlineOrder = {
   delivery_address: string | null;
   delivery_city: string | null;
   delivery_notes: string | null;
+  /** Handoff BC-26 (#7811) : référence DLV-… de la livraison créée à la confirmation. */
+  delivery_reference?: string | null;
   created_at: string | null;
   items?: OnlineOrderItem[];
+  /** Paiements capturés (#7812) : en ligne (PSP) ou encaissements. */
+  payments?: OrderPayment[];
 };
 
 type PaginationMeta = { current_page: number; last_page: number; total: number };
@@ -644,6 +650,37 @@ function OrdersPanel() {
     [locale],
   );
 
+  /**
+   * Facture PDF (#7813) : `GET /retail/orders/{id}/invoice` assigne le
+   * numéro légal FAC-… à la première génération (immuable au rejeu) —
+   * téléchargement blob, pattern billing/page.tsx.
+   */
+  const downloadInvoice = async (order: OnlineOrder) => {
+    setDetailError('');
+    try {
+      const res = await apiFetch(`/retail/orders/${order.id}/invoice`);
+      if (!res.ok) {
+        const msg = await readApiError(res);
+        throw new Error(
+          msg ?? t(locale, 'commerce.shop.orders.invoiceError', 'La facture ne peut pas être générée.'),
+        );
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `facture-${order.reference}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      setDetailError(
+        e instanceof Error && e.message
+          ? e.message
+          : t(locale, 'commerce.shop.orders.invoiceError', 'La facture ne peut pas être générée.'),
+      );
+    }
+  };
+
   const renderActions = (order: OnlineOrder) =>
     fulfillmentActions(order.fulfillment_status).map((action) => (
       <button
@@ -835,6 +872,33 @@ function OrdersPanel() {
                     {t(locale, 'commerce.shop.orders.notes', 'Notes')} : {detail.delivery_notes}
                   </p>
                 ) : null}
+                {detail.delivery_reference ? (
+                  <p className="text-slate-500">
+                    {t(locale, 'commerce.shop.orders.deliveryReference', 'Livraison BC-26')} :{' '}
+                    <span className="font-semibold text-slate-700">{detail.delivery_reference}</span>
+                  </p>
+                ) : null}
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-slate-700">
+                  {t(locale, 'commerce.shop.orders.paymentsTitle', 'Paiement')}
+                </h4>
+                <p className="text-slate-700">
+                  {t(
+                    locale,
+                    `commerce.shop.orders.payment.${orderPaymentStatus(detail.payments, detail.total_minor)}`,
+                    orderPaymentStatus(detail.payments, detail.total_minor),
+                  )}
+                </p>
+                {(detail.payments ?? [])
+                  .filter((payment) => payment.status === 'captured')
+                  .map((payment, index) => (
+                    <p key={index} className="text-slate-500">
+                      {payment.method} — {formatMinor(locale, payment.amount_minor, payment.currency)}
+                      {payment.paid_at ? ` — ${new Date(payment.paid_at).toLocaleString(locale)}` : ''}
+                    </p>
+                  ))}
               </div>
 
               <div>
@@ -885,7 +949,16 @@ function OrdersPanel() {
             </div>
 
             <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex flex-wrap gap-3">{renderActions(detail)}</div>
+              <div className="flex flex-wrap gap-3">
+                {renderActions(detail)}
+                <button
+                  type="button"
+                  onClick={() => void downloadInvoice(detail)}
+                  className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                >
+                  {t(locale, 'commerce.shop.orders.invoicePdf', 'Facture PDF')}
+                </button>
+              </div>
               <button
                 type="button"
                 onClick={() => {

@@ -14119,7 +14119,7 @@ paths:
               properties:
                 source:
                   type: string
-                  enum: [manual, restaurant, retail, ecommerce, crm, field]
+                  enum: [manual, restaurant, retail, retail_online, ecommerce, crm, field]
                 source_reference:
                   type: string
                 type:
@@ -32093,6 +32093,64 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Validation422'
+  /retail/pos/orders/{order}/receipt:
+    get:
+      tags:
+      - Retail
+      summary: Ticket de caisse PDF imprimable d'une vente POS (membres du tenant)
+      description: 'BC-17 #7813 : ticket rouleau 80 mm (DomPDF, i18n 4 locales,
+        montants en minor units rendus en unites). Commande d''un autre tenant
+        = 404 ; commande hors canal POS ou non completed = 422.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: PDF du ticket (application/pdf, inline)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /retail/orders/{order}/invoice:
+    get:
+      tags:
+      - Retail
+      summary: Facture PDF d'une commande Retail - POS ou web (membres du tenant)
+      description: 'BC-17 #7813 : facture A4 avec numerotation LEGALE par
+        tenant (FAC-YYYY-NNNNNN, assignee a la premiere generation puis
+        IMMUABLE - les rejeux re-rendent le meme numero ; unicite
+        (company_id, invoice_number) en base). Reutilise la mecanique du
+        renderer PDF Billing (DomPDF + Blade, #7763) sans import
+        cross-module. Commande d''un autre tenant = 404 ; commande non
+        completed = 422 ORDER_NOT_INVOICEABLE.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: PDF de la facture (application/pdf, inline)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
   /retail/pos/orders/{order}/cancel:
     post:
       tags:
@@ -32304,7 +32362,11 @@ paths:
         chaque ligne est decremente (mouvements sale via RetailStockService,
         sur l''emplacement fourni ou celui de la commande) et le statut
         historique passe a completed (+ confirmed_at). Transition invalide
-        = 422 INVALID_TRANSITION.'
+        = 422 INVALID_TRANSITION. Handoff BC-26 (#7811) : apres commit, la
+        livraison est creee automatiquement (source=retail_online,
+        source_reference=WEB-..., idempotente par unicite, COD = solde non
+        encaisse) si le tenant a le module delivery ; la reference DLV-...
+        est renvoyee ensuite dans delivery_reference.'
       security:
       - BearerAuth: []
       parameters:
@@ -34234,7 +34296,9 @@ paths:
       summary: Suivi public d'une commande Leopardo Marche (jeton obligatoire, sans auth)
       description: 'Exige ?token={tracking_token} - 404 fail-closed si jeton
         absent, errone ou reference inconnue. Renvoie statut logistique,
-        timeline, lignes et total. AUCUNE donnee interne.'
+        timeline, lignes, total et delivery.reference (reference publique
+        DLV-... de la livraison BC-26 creee a la confirmation, #7811 - null
+        avant handoff). AUCUNE donnee interne.'
       security: []
       parameters:
       - name: reference
@@ -34250,9 +34314,42 @@ paths:
           maxLength: 64
       responses:
         '200':
-          description: Suivi public (statut + timeline + lignes + total)
+          description: Suivi public (statut + timeline + lignes + total + paiement + livraison)
         '404':
           $ref: '#/components/responses/Error404'
+
+  /public/market/payments/webhook/{provider}:
+    post:
+      tags:
+      - Retail
+      summary: Webhook des providers de paiement marketplace (signature obligatoire, fail-closed)
+      description: 'BC-17 #7812 : reconciliation des paiements en ligne du
+        checkout marketplace. Verification de signature OBLIGATOIRE
+        fail-closed (401 sinon), idempotent (rejeu = 200 sans double effet),
+        provider inconnu = 404. La confirmation du paiement ne vient QUE de
+        ce webhook signe (jamais du retour navigateur).'
+      security: []
+      parameters:
+      - name: provider
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Reconciliation appliquee (ou rejeu idempotent)
+        '401':
+          description: Signature absente ou invalide (fail-closed)
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
 
   /restaurant/branches/{restaurantBranch}/public-profile:
     get:
@@ -41414,7 +41511,7 @@ components:
           example: DLV-2026-000123
         source:
           type: string
-          enum: [manual, restaurant, retail, ecommerce, crm, field]
+          enum: [manual, restaurant, retail, retail_online, ecommerce, crm, field]
         source_reference:
           type: string
           nullable: true

@@ -740,6 +740,12 @@
       "note": "RETAIL → TENANT : résolution Company/TenantManager pour la surface publique marketplace (#7807/#7808, PR #7817)"
     },
     {
+      "from": "BC-26",
+      "to": "BC-02",
+      "baseline": false,
+      "note": "BC-26 → BC-02 — CreateDeliveryForRetailOnlineOrder (handoff livraison #7811) importe App\\Core\\Tenant\\Domain\\Models\\Company pour résoudre le tenant de la commande marketplace (même patron que BC-17 → BC-02)"
+    },
+    {
       "from": "BC-30",
       "to": "BC-01",
       "baseline": false,

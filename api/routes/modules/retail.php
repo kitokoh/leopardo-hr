@@ -79,6 +79,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/pos/orders/{order}/payments', [RetailOrderController::class, 'addPayment'])->whereNumber('order');
         Route::post('/pos/orders/{order}/cancel', [RetailOrderController::class, 'cancel'])->whereNumber('order');
 
+        // Documents de vente (#7813) : ticket de caisse PDF imprimable
+        // (ventes POS encaissees) et facture PDF (POS + commandes web) avec
+        // numerotation legale par tenant (FAC-YYYY-NNNNNN, immuable).
+        Route::get('/pos/orders/{order}/receipt', [RetailOrderController::class, 'receipt'])->whereNumber('order');
+        Route::get('/orders/{order}/invoice', [RetailOrderController::class, 'invoice'])->whereNumber('order');
+
         // Boutique en ligne Leopardo Marché (#7807) : réglages publics du
         // vendeur (create-or-update, RetailOnlineSettingsPolicy).
         Route::get('/online/settings', [RetailOnlineSettingsController::class, 'show']);

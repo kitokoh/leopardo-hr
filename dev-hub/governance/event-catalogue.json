@@ -367,6 +367,46 @@
    "consumers": [
     "App\\Listeners\\SendInvoicePaymentReceipt"
    ]
+  },
+  {
+   "name": "RetailOnlineOrderConfirmed",
+   "class": "App\\Events\\RetailOnlineOrderConfirmed",
+   "owner": "BC-17 RETAIL",
+   "version": 1,
+   "status": "active",
+   "payload": {
+    "companyId": "string",
+    "orderId": "int",
+    "reference": "string",
+    "totalMinor": "int",
+    "currency": "string",
+    "codAmountMinor": "?int",
+    "customerName": "?string",
+    "customerPhone": "?string",
+    "deliveryAddress": "?string",
+    "deliveryCity": "?string",
+    "deliveryNotes": "?string"
+   },
+   "consumers": [
+    "App\\Modules\\Delivery\\Application\\Listeners\\CreateDeliveryForRetailOnlineOrder"
+   ]
+  },
+  {
+   "name": "RetailOnlineOrderDeliveryCreated",
+   "class": "App\\Events\\RetailOnlineOrderDeliveryCreated",
+   "owner": "BC-26 DELIVERY",
+   "version": 1,
+   "status": "active",
+   "payload": {
+    "companyId": "string",
+    "orderId": "int",
+    "orderReference": "string",
+    "deliveryReference": "string",
+    "deliveryStatus": "string"
+   },
+   "consumers": [
+    "App\\Modules\\Retail\\Application\\Listeners\\StoreRetailOrderDeliveryReference"
+   ]
   }
  ],
  "compatibility_rules": [
