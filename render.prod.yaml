@@ -114,8 +114,13 @@ services:
         fromDatabase:
           name: leopardo-redis-prod
           property: password
+      # #7967 : generateValue régénérait la clé à chaque re-sync du blueprint
+      # (sessions + valeurs chiffrées invalidées). Valeur ÉPINGLÉE dans le
+      # dashboard Render le 2026-09-20 (strictement identique à la valeur
+      # générée — aucune rotation, aucun impact runtime) ; sync: false la
+      # préserve désormais de toute re-sync.
       - key: APP_KEY
-        generateValue: true
+        sync: false
       # Queue drainée en mono-conteneur par le web service (voir en-tête) —
       # scheduler seul manquant en Phase 1.
       - key: QUEUE_CONNECTION

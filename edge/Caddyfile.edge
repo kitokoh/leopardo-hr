@@ -27,8 +27,10 @@
 	tls internal
 
 	# API
+	# #7966 : edge-api écoute en :8080 (port non privilégié — image 100%
+	# non-root, nginx master en www-data).
 	handle /api/* {
-		reverse_proxy edge-api:80
+		reverse_proxy edge-api:8080
 	}
 
 	# Health check
@@ -59,7 +61,8 @@ https://{$EDGE_DOMAIN:leopardo.local}:7879, https://{$EDGE_LAN_IP:127.0.0.1}:787
 	import leopardo_edge
 }
 
-# Port historique API (ex `7878:80` publié en clair par edge-api).
+# Port historique API (ex `7878:80` publié en clair par edge-api — avant
+# #7653 ; edge-api écoute désormais en :8080 non privilégié, cf. #7966).
 # Snippet complet : les clients API existants appellent /api/v1/* — inchangé.
 https://{$EDGE_DOMAIN:leopardo.local}:7878, https://{$EDGE_LAN_IP:127.0.0.1}:7878 {
 	import leopardo_edge

@@ -580,10 +580,10 @@ function tplFingerprint() {
         <div class="field-stack">
           <div>
             <label for="fpId">${escapeHtml(t('identifier.label'))}</label>
-            <input id="fpId" name="identifier" autocomplete="off" placeholder="${escapeHtml(t('identifier.placeholder'))}" aria-label="${escapeHtml(t('identifier.aria'))}" data-enter-method="fingerprint" data-enter-kind="check_in">
+            <input id="fpId" name="identifier" autocomplete="off" placeholder="${escapeHtml(t('identifier.placeholder'))}" aria-label="${escapeHtml(t('identifier.aria'))}" data-enter-method="manual" data-enter-kind="check_in">
           </div>
         </div>
-        ${tplActionRow('fingerprint')}
+        ${tplActionRow('manual')}
       </div>
     </div>`;
 }
@@ -1209,7 +1209,7 @@ function clearFieldAndRefocus(id) {
   try { field.focus(); } catch { /* noop */ }
 }
 
-async function submitFingerprintPunch(action) {
+async function submitDeclarativePunch(action) {
   if (state.isPunching) return;
   const field = document.getElementById('fpId');
   const identifier = field ? field.value.trim() : '';
@@ -1225,11 +1225,14 @@ async function submitFingerprintPunch(action) {
   setStatus('#statusBox', t('punch.recognizing', { type: t('method.fingerprint'), action: actionLabel(action) }));
 
   try {
-    // Chemin fingerprint INCHANGE : pont local offline-first + sync auto.
+    // #7958 — chemin pont local offline-first INCHANGÉ, mais la méthode
+    // déclarée est `manual` (identité non vérifiée) : aucune intégration
+    // lecteur ZKTeco n'existe ici, prétendre `fingerprint` donnait une
+    // fausse garantie d'authenticité aux données de présence.
     const employee = await findLocalRosterEmployee(identifier);
     const payload = await localFetchJson(`${CONFIG.localBridgeUrl}/punch`, {
       method: 'POST',
-      body: JSON.stringify({ identifier, action, biometric_type: 'fingerprint', method: 'fingerprint' }),
+      body: JSON.stringify({ identifier, action, biometric_type: 'fingerprint', method: 'manual' }),
     });
     const mode = payload.data.sync_status === 'synced' ? t('punch.mode.synced') : t('punch.mode.offline');
     const employeeLabel = employee ? employee.name : identifier;
@@ -1328,10 +1331,10 @@ async function directOrQueuedPunch({ method, action, identifier, fieldId, badgeL
 
 /**
  * Repli hors-ligne : file SQLite du pont local (synchro auto quand le reseau
- * revient). Le pont ne connait que fingerprint|face|card : badge → card
- * (equivalence domaine), pin → legacy fingerprint (meme comportement que la
- * saisie manuelle historique). La confirmation reste honnete : « stocke hors
- * ligne » tant que le serveur n'a pas repondu.
+ * revient). badge → card (equivalence domaine) ; pin transmis tel quel et
+ * marque `unverified` a la sync (#7958 — fin du maquillage en fingerprint).
+ * La confirmation reste honnete : « stocke hors ligne » tant que le serveur
+ * n'a pas repondu.
  */
 async function queueViaBridge({ method, action, identifier, fieldId }) {
   try {
@@ -1341,7 +1344,10 @@ async function queueViaBridge({ method, action, identifier, fieldId }) {
       identifier,
       action,
       biometric_type: 'fingerprint', // rétro-compat pont local
-      method: isBadge ? 'card' : 'fingerprint',
+      // #7958 : le PIN hors-ligne est désormais transmis tel quel (marqué
+      // `unverified` à la sync par le pont) au lieu d'être maquillé en
+      // `fingerprint` — la coercion silencieuse est corrigée côté bridge.
+      method: isBadge ? 'card' : 'pin',
       ...(isBadge ? { badge_number: identifier } : {}),
     };
     const payload = await localFetchJson(`${CONFIG.localBridgeUrl}/punch`, {
@@ -1450,7 +1456,10 @@ async function performPunch(method, action) {
     feedback.error();
     return;
   }
-  if (method === 'fingerprint') return submitFingerprintPunch(action);
+  // #7958 : l'écran « fingerprint » est une saisie DÉCLARATIVE (aucun lecteur
+  // biométrique intégré) — les tuiles fingerprint ET les boutons `manual`
+  // aboutissent au même pointage honnête, persisté `manual` par le serveur.
+  if (method === 'fingerprint' || method === 'manual') return submitDeclarativePunch(action);
   if (method === 'badge') return submitBadgePunch(action);
   if (method === 'pin') return submitPinPunch(action);
   if (method === 'manager') return submitManagerPunch(action);

@@ -162,8 +162,12 @@ services:
       - key: REDIS_PASSWORD
         sync: false
       # App secrets
+      # #7967 : generateValue régénérait la clé à chaque re-sync du blueprint
+      # (sessions + valeurs chiffrées invalidées). Valeur ÉPINGLÉE dans le
+      # dashboard Render le 2026-09-20 (identique à la valeur générée — aucune
+      # rotation, aucun impact runtime) ; sync: false la préserve désormais.
       - key: APP_KEY
-        generateValue: true
+        sync: false
       # Issue #5578 : la queue est sur database (probe + drain GH #5204/#5205),
       # pas sur Redis (quota Upstash, incident 2026-08-19).
       - key: QUEUE_CONNECTION

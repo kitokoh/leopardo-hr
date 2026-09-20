@@ -33,7 +33,7 @@ test.describe('Google OAuth — vitrine (bouton + proxy same-origin)', () => {
     }
 
     const bodyHtml = await page.locator('body').innerHTML();
-    expect(bodyHtml).not.toContain('gestionemployerbackend.onrender.com');
+    expect(bodyHtml).not.toContain('onrender.com');
   });
 
   test('proxy same-origin : GET /api/v1/auth/google répond 3xx (smoke prod)', async ({ request }) => {

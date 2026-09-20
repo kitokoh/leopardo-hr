@@ -42,14 +42,23 @@ RUN apk add --no-cache --virtual .composer-build-deps git \
     && composer install --no-dev --optimize-autoloader --no-interaction \
     && apk del .composer-build-deps
 
-# #7847 — exécution non-root : les programmes applicatifs (php-fpm,
-# migration) tournent en `www-data` (voir supervisord.edge.conf).
-# Prépare les répertoires accessibles en écriture pour cet utilisateur.
+# #7847 / #7966 — exécution non-root : les programmes applicatifs (php-fpm,
+# migration) tournent en `www-data` (voir supervisord.edge.conf) ; depuis
+# #7966 l'image ENTIÈRE (supervisord + nginx master inclus) tourne en
+# www-data — voir USER plus bas.
+# Prépare les répertoires accessibles en écriture pour cet utilisateur :
+#   - /var/log/supervisor : logfile + pidfile supervisord et logs programmes
+#   - /var/lib/nginx, /var/log/nginx, /run/nginx : temp/lock/pid nginx tels
+#     que compilés par le paquet Alpine (client_body/fastcgi temp sous
+#     /var/lib/nginx/tmp, lock sous /run/nginx) — requis car le master nginx
+#     n'est plus root (port :8080, cf. nginx.edge.conf).
 # NB : /var/leopardo est monté en volume nommé (edge_data) — le chown au
 # build initialise la propriété du volume à sa première création.
-RUN mkdir -p /var/leopardo /var/log/supervisor \
+RUN mkdir -p /var/leopardo /var/log/supervisor /run/nginx \
     && chown www-data:www-data /var/leopardo \
     && chmod 755 /var/leopardo \
+    && chown www-data:www-data /var/log/supervisor \
+    && chown -R www-data:www-data /var/lib/nginx /var/log/nginx /run/nginx \
     && chown -R www-data:www-data storage bootstrap/cache
 
 # SQLite DB will be at /var/leopardo/edge.sqlite (volume mounted)
@@ -60,11 +69,15 @@ COPY edge/nginx.edge.conf /etc/nginx/nginx.conf
 # Supervisor for nginx + php-fpm
 COPY edge/supervisord.edge.conf /etc/supervisor/conf.d/leopardo.conf
 
-EXPOSE 80
+# #7966 — port non privilégié (nginx écoute en :8080, cf. nginx.edge.conf).
+EXPOSE 8080
 
-# #7847 — supervisord reste root : il doit gérer les process (signaux,
-# redirection des logs) et lancer nginx dont le master bind :80 (< 1024).
-# Le durcissement se fait au niveau des PROGRAMMES : `user=www-data` dans
-# supervisord.edge.conf pour php-fpm et la migration ; les workers nginx
-# tournent déjà déprivilégiés (utilisateur nginx du paquet Alpine).
-CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/conf.d/leopardo.conf"]
+# #7966 — image 100% non-root : tout (PID 1 supervisord, master nginx,
+# php-fpm, migration) tourne en www-data. Remplace le modèle #7847 où
+# supervisord restait root pour binder :80 et gérer les process.
+# `-u www-data` est un filet de sécurité : si le conteneur était relancé
+# avec `--user root`, supervisord lit sa config puis retombe en www-data
+# AVANT d'ouvrir logs/pidfile et de spawner les programmes (no-op quand
+# l'uid courant est déjà www-data).
+USER www-data
+CMD ["/usr/bin/supervisord", "-n", "-u", "www-data", "-c", "/etc/supervisor/conf.d/leopardo.conf"]

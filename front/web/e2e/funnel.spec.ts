@@ -35,7 +35,16 @@ import { expect, test, type APIRequestContext, type BrowserContext, type Page } 
  * `playwright.staging-funnel.config.ts` pour ne jamais dépasser la limite.
  */
 
-const API_BASE_URL = (process.env.E2E_API_URL || 'https://gestionemployerbackend.onrender.com').replace(/\/+$/, '');
+// #7963 : plus AUCUN repli en dur vers le backend dev Render — E2E_API_URL
+// est obligatoire (e2e-staging.yml la pose toujours via DEFAULT_STAGING_URL
+// ou l'input staging_url). À défaut, échec explicite au chargement.
+if (!process.env.E2E_API_URL) {
+  throw new Error(
+    'E2E_API_URL absente : la suite funnel exige une cible API explicite ' +
+      '(repli en dur vers le backend dev retiré, #7963).',
+  );
+}
+const API_BASE_URL = process.env.E2E_API_URL.replace(/\/+$/, '');
 const API_V1_URL = API_BASE_URL.endsWith('/api/v1') ? API_BASE_URL : `${API_BASE_URL}/api/v1`;
 const MAILCATCHER_URL = (process.env.E2E_MAILCATCHER_URL || '').replace(/\/+$/, '');
 const hasMailcatcher = MAILCATCHER_URL !== '';

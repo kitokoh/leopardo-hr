@@ -46,8 +46,9 @@ class KioskAttendanceService
         ?string $method = null,
         ?int $managerEmployeeId = null,
         ?string $deviceEventId = null,
+        ?string $biometricProof = null,
     ): AttendanceLog {
-        return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $identifier, $action, $workType, $method, $managerEmployeeId, $deviceEventId): AttendanceLog {
+        return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $identifier, $action, $workType, $method, $managerEmployeeId, $deviceEventId, $biometricProof): AttendanceLog {
             // BIO-007 (#6772) : rejeu d'un événement appareil déjà traité →
             // retour du log existant (aucune présence dupliquée).
             if ($deviceEventId !== null && $deviceEventId !== '') {
@@ -71,13 +72,35 @@ class KioskAttendanceService
             // l'interface l'envoie. `biometric` reste la valeur legacy quand
             // le kiosque n'indique pas de méthode précise.
             $resolvedMethod = $method ?: 'biometric';
+            // #7958 — méthode biométrique RÉCLAMÉE mais dégradée faute de
+            // preuve device (audit : claimed_method + unverified).
+            $claimedMethod = null;
 
-            if ($resolvedMethod === 'biometric') {
+            if ($resolvedMethod === 'manual') {
+                // #7958 : pointage déclaratif (identité non prouvée) — accepté
+                // hors matrice : c'est le mode dégradé honnête vers lequel
+                // toute méthode sans preuve device bascule. Persisté `manual`,
+                // distinguable en audit, jamais maquillé en biométrie.
+            } elseif ($resolvedMethod === 'biometric') {
                 if (! $employee->biometric_fingerprint_enabled && ! $employee->biometric_face_enabled) {
                     abort(403, 'BIOMETRIC_NOT_APPROVED');
                 }
             } else {
                 $this->assertKioskMethodAllowed($kiosk, $employee, $resolvedMethod, $managerEmployeeId);
+
+                // #7958 — APRÈS la matrice (BIO-006 intacte : méthode
+                // désactivée → 422, enrôlement exigé → 403) : une méthode
+                // biométrique autorisée mais SANS preuve device vérifiable
+                // n'est jamais persistée `fingerprint`/`face` — l'écran
+                // « fingerprint » du kiosque est une saisie déclarative
+                // (aucune intégration SDK lecteur). Dégradation honnête en
+                // `manual` + audit, en attendant le vérificateur de preuve.
+                $claimedVerification = VerificationMethod::tryFrom($resolvedMethod);
+                if ($claimedVerification !== null && $claimedVerification->isBiometric()
+                    && ! $this->hasVerifiableBiometricProof($biometricProof)) {
+                    $claimedMethod = $resolvedMethod;
+                    $resolvedMethod = 'manual';
+                }
             }
 
             // Mapping domaine → persistance (ATT-002) : `badge` est stocké
@@ -140,6 +163,12 @@ class KioskAttendanceService
                 'method' => (string) $log->method,
                 'correlation_id' => (string) $log->external_event_id,
                 'device_code_hash' => (string) $kiosk->device_code,
+                // #7958 : la méthode RÉCLAMÉE et le caractère non vérifié
+                // sont tracés quand une biométrie déclarative a été dégradée.
+                'result_code' => $claimedMethod !== null ? 'UNVERIFIED_IDENTITY' : null,
+                'context' => $claimedMethod !== null
+                    ? ['claimed_method' => $claimedMethod, 'unverified' => true, 'reason' => 'NO_DEVICE_PROOF']
+                    : null,
             ]);
 
             return $log;
@@ -183,6 +212,19 @@ class KioskAttendanceService
         if ($verificationMethod === VerificationMethod::Manager) {
             $this->managerGuard->assertManager($kiosk, $managerEmployeeId);
         }
+    }
+
+    /**
+     * #7958 — vérifie la preuve device biométrique (retour signé du lecteur
+     * ZKTeco). AUCUN vérificateur n'est implémenté tant que l'intégration
+     * SDK lecteur n'existe pas : fail-closed — toute preuve est réputée non
+     * vérifiable et le pointage est dégradé en `manual`. Le champ contrat
+     * `biometric_proof` est réservé à cette intégration future : le
+     * vérificateur se branchera ici, sans changement de contrat.
+     */
+    private function hasVerifiableBiometricProof(?string $biometricProof): bool
+    {
+        return false;
     }
 
     /**
@@ -270,6 +312,12 @@ class KioskAttendanceService
                 // badge/PIN/carte/manager n'exigent pas de flag biométrique.
                 $eventMethod = isset($event['method']) && is_string($event['method']) ? $event['method'] : 'biometric';
                 $isLegacyBiometric = $eventMethod === 'biometric';
+                // #7958 : le bridge marque les pointages hors-ligne déclaratifs
+                // (PIN saisi sans vérification, `unverified`) ; toute biométrie
+                // réclamée sans preuve device est dégradée de la même façon —
+                // jamais persistée `fingerprint`/`face`.
+                $eventUnverified = filter_var($event['unverified'] ?? false, FILTER_VALIDATE_BOOLEAN);
+                $claimedEventMethod = null;
 
                 if (! $isLegacyBiometric) {
                     $verificationMethod = VerificationMethod::tryFrom($eventMethod)
@@ -281,7 +329,14 @@ class KioskAttendanceService
                         continue;
                     }
 
-                    $eventMethod = $verificationMethod->attendanceLogMethod();
+                    if ($verificationMethod->isBiometric()
+                        && ! $this->hasVerifiableBiometricProof(isset($event['biometric_proof']) && is_string($event['biometric_proof']) ? $event['biometric_proof'] : null)) {
+                        $claimedEventMethod = $eventMethod;
+                        $eventMethod = 'manual';
+                        $eventUnverified = true;
+                    } else {
+                        $eventMethod = $verificationMethod->attendanceLogMethod();
+                    }
                 }
 
                 if ($isLegacyBiometric && ! $employee->biometric_fingerprint_enabled && ! $employee->biometric_face_enabled) {
@@ -312,6 +367,30 @@ class KioskAttendanceService
                     $skip('NO_OPEN_SESSION');
 
                     continue;
+                }
+
+                // #7958 : traçabilité audit des pointages non vérifiés —
+                // distinguables et validables après coup (ex. confirmation
+                // manager), jamais invisibles dans les données de présence.
+                if ($eventUnverified) {
+                    BiometricAuditLog::query()->create([
+                        'company_id' => $kiosk->company_id,
+                        'employee_id' => (int) $log->employee_id,
+                        'kiosk_id' => (int) $kiosk->id,
+                        'site_id' => $kiosk->site_id,
+                        'event' => 'kiosk.punch.unverified',
+                        'method' => (string) $log->method,
+                        'result_code' => 'UNVERIFIED_IDENTITY',
+                        'correlation_id' => $externalEventId,
+                        'device_code_hash' => (string) $kiosk->device_code,
+                        'context' => array_filter([
+                            'claimed_method' => $claimedEventMethod ?? (isset($event['method']) && is_string($event['method']) ? $event['method'] : null),
+                            'unverified' => true,
+                            'source' => 'offline_sync',
+                            'reason' => $claimedEventMethod !== null ? 'NO_DEVICE_PROOF' : 'DECLARED_UNVERIFIED_BY_DEVICE',
+                        ], static fn (mixed $value): bool => $value !== null),
+                        'occurred_at' => now(),
+                    ]);
                 }
 
                 $processed[] = $log->id;

@@ -6,11 +6,38 @@
  * (forme `{ data, meta: {...} }` OU forme aplatie `{ data, current_page, ... }`).
  */
 
-const DEFAULT_BASE = "https://gestionemployerbackend.onrender.com";
+/**
+ * Base de l'API — OBLIGATOIRE (#7963) : plus AUCUN repli en dur vers un
+ * backend distant (l'ancien défaut pointait le backend DEV Render).
+ * `NEXT_PUBLIC_MARKET_API_BASE` doit être posée partout — build Next
+ * inclus (pas de convention de backend local pour ce client public) —
+ * sinon erreur explicite. Seul `NODE_ENV === 'test'` tolère un repli
+ * localhost, signalé par un `console.warn`.
+ */
+const TEST_FALLBACK_BASE = "http://localhost:8000";
+
+let warnedTestFallback = false;
 
 export function apiBase(): string {
   const base = process.env.NEXT_PUBLIC_MARKET_API_BASE?.trim();
-  return `${(base && base.length > 0 ? base : DEFAULT_BASE).replace(/\/+$/, "")}/api/v1`;
+  if (base && base.length > 0) {
+    return `${base.replace(/\/+$/, "")}/api/v1`;
+  }
+  if (process.env.NODE_ENV === "test") {
+    if (!warnedTestFallback) {
+      warnedTestFallback = true;
+      console.warn(
+        `[marketplace] NEXT_PUBLIC_MARKET_API_BASE absente — repli TEST sur ` +
+          `${TEST_FALLBACK_BASE} (interdit hors NODE_ENV=test, #7963).`,
+      );
+    }
+    return `${TEST_FALLBACK_BASE}/api/v1`;
+  }
+  throw new Error(
+    "[marketplace] NEXT_PUBLIC_MARKET_API_BASE absente. Définissez " +
+      "NEXT_PUBLIC_MARKET_API_BASE (ex. https://api.exemple.com) dans " +
+      "l'environnement — build Next ET runtime (aucun repli en dur, #7963).",
+  );
 }
 
 /* ── Types publics (DTO du contrat §3, MARKETPLACE_RETAIL_PUBLIC.md) ────── */

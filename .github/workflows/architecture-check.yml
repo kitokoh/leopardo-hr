@@ -115,6 +115,15 @@ jobs:
       - name: Migration root orphans guard (issue #7975)
         run: bash dev-hub/tools/check-migration-root-orphans.sh
 
+      # #7961 — cliquet BRANCHE vs main : le total d'occurrences (somme des
+      # count:) des 3 baselines PHPStan ne peut pas croître par rapport à
+      # origin/main. Complémentaire aux gardes diff-scopées #5448/#7655 et
+      # PA2-ARCH-005 (qui comparent base→head d'une PR) : couvre les merges
+      # de branches anciennes et affiche le top 10 modules/fichiers pour la
+      # priorisation. Budget : dev-hub/governance/phpstan-baseline-budget.json.
+      - name: PHPStan baselines total ratchet vs main + budget (issue #7961)
+        run: bash dev-hub/tools/check-phpstan-baseline-budget.sh origin/main api
+
       - name: Migration prefix inter-PR guard (issue #5437)
         run: node dev-hub/tools/check-migration-prefixes.mjs
         env:

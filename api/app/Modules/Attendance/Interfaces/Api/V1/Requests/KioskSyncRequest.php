@@ -40,7 +40,15 @@ final class KioskSyncRequest extends FormRequest
             'events.*.biometric_type' => ['nullable', 'in:fingerprint,face,mixed'],
             // BIO-006 (#6767) : la méthode réellement utilisée est préservée
             // dans la synchro offline (badge → card en persistance).
-            'events.*.method' => ['nullable', 'in:fingerprint,face,badge,pin,manager,card'],
+            // #7958 : `manual` = pointage déclaratif (identité non prouvée) —
+            // c'est aussi la valeur de dégradation des biométries sans preuve.
+            'events.*.method' => ['nullable', 'in:fingerprint,face,badge,pin,manager,card,manual'],
+            // #7958 : preuve device biométrique (réservé future intégration
+            // SDK lecteur — fail-closed tant qu'aucun vérificateur n'existe).
+            'events.*.biometric_proof' => ['nullable', 'string', 'max:2048'],
+            // #7958 : le bridge marque les pointages hors-ligne déclaratifs
+            // (ex. PIN saisi sans vérification) pour l'audit de sync.
+            'events.*.unverified' => ['nullable', 'boolean'],
             'events.*.work_type' => ['nullable', 'string', 'in:normal,overtime,break,resume,mission,travel,training,other'],
             // BIO-007 (#6772) : enveloppe d'intégrité du batch offline.
             'device_state' => ['nullable', 'array'],

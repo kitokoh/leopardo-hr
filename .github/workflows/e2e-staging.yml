@@ -383,7 +383,8 @@ jobs:
       # playwright.staging-funnel.config.ts (expect.timeout 15 s, poll
       # /trial/status jusqu'à 180 s, retries 0 à cause du throttle
       # `throttle:5,15` sur /trial/signup). E2E_API_URL = API Laravel
-      # (défaut : prod Render) ; E2E_MAILCATCHER_URL = boîte de test
+      # (obligatoire — le repli en dur du spec a été retiré, #7963) ;
+      # E2E_MAILCATCHER_URL = boîte de test
       # Mailpit/MailHog (optionnelle : sans elle, US1.2/US3 sont skippés).
       # Fail-closed conservé : pas de continue-on-error — un échec de test
       # rend le run rouge (garde #1833, aucun faux vert).

@@ -36,6 +36,11 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   # Required by src/lib/site-url.ts for production metadata builds.
   NEXT_PUBLIC_SITE_URL: https://leopardo-rh.com
+  # #7963 : le build Next échoue désormais sans NEXT_PUBLIC_API_URL (fail-fast,
+  # plus de repli en dur vers le backend dev) — cible localhost factice pour
+  # CE build CI, jamais l'URL distante dev ; posée au niveau workflow pour
+  # couvrir aussi `npm run start` (le proxy résout l'origine API par requête).
+  NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
 
 jobs:
   lighthouse:
