@@ -26,6 +26,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * implémentation (`LoyaltyPointsService`, `travel_loyalty_transactions`) a été
  * supprimée : il ne doit rester qu'UNE fidélité, adossée à
  * `travel_loyalty_accounts` + `travel_loyalty_entries`.
+ *
+ * @property int $id
+ * @property bool $opt_in
+ * @property \Illuminate\Support\Carbon|null $opt_in_at
+ * @property \Illuminate\Support\Carbon|null $opt_out_at
+ * @property int $points_balance
  */
 class TravelLoyaltyAccount extends Model
 {

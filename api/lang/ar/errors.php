@@ -32,6 +32,7 @@ return [
     'INVITATION_ALREADY_ACCEPTED' => 'تم قبول هذه الدعوة بالفعل.',
     'INVITATION_EXPIRED' => 'انتهت صلاحية هذه الدعوة.',
     'INVITATION_NOT_FOUND' => 'الدعوة غير موجودة.',
+    'INVITATION_REVOKED' => 'تم إلغاء هذه الدعوة.',
 
     // Biometric
     'CAMERA_TOKEN_EXPIRED' => 'انتهت صلاحية الوصول إلى هذه الكاميرا.',

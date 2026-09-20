@@ -170,3 +170,55 @@ référencée sur #7655.
 - Rapport détaillé à la demande : `dev-hub/tools/check-phpstan-baseline-debt.sh report api`
   (pur bash/python3, aucun PHP requis).
 - Trajectoire chiffrée : résumé du job `Module Structure Validator` sur chaque PR.
+
+## 8. Tranche 2 (2026-09-19) — lot B exécuté sur TravelAgency
+
+Réalisée avec PHP 8.4 + composer + PHPStan **exécutés en local** via
+`dev-hub/tools/bootstrap-local-php.sh` (#7585) — contrairement à la tranche 1,
+les corrections sont vérifiées par les mêmes commandes que les checks requis.
+
+### Ce qui a été fait
+
+1. **Campagne d'annotations `@property` sur les 38 modèles Eloquent
+   `TravelAgency`** (284 lignes de PHPDoc) : types dérivés des **migrations
+   tenant** (création gagnante = la plus ancienne, guard `schemaTableExists` ;
+   colonnes ajoutées/relâchées par la consolidation #7452 prises en compte)
+   puis surchargés par les `$casts` (enums du domaine, `Carbon`, entiers).
+   Les Resources API portaient déjà `@mixin` : leurs `property.notFound` se
+   résolvaient par les mêmes annotations de modèles.
+   Trois propriétés **volontairement non annotées** car les colonnes
+   n'existent pas en base (bugs latents, lot A) : `TravelAdvert::$payment_id`,
+   `TravelAdvert::$published_at`, `TravelLoyaltyAccount::$contact_id`.
+2. **Code mort révélé par le typage** : garde `instanceof Carbon` toujours
+   vrai supprimé dans `TravelCancellationPolicyService` (le seul écart
+   détecté par PHPStan après annotation).
+3. **Régénération complète des baselines couvertes par un run local vert**
+   (`--generate-baseline`) : les entrées résorbées **et** les entrées périmées
+   (dette déjà corrigée mais jamais élaguée) disparaissent.
+   `phpstan-baseline.neon` (legacy, level max) n'est pas régénérée : aucun
+   check CI n'exécute ce scope en entier, une régénération n'y serait pas
+   prouvable localement.
+
+### Trajectoire chiffrée (occurrences = sortie canonique de
+`check-phpstan-baseline-debt.sh guard`, méthode du cliquet tranche 1)
+
+| Baseline | Lignes | Entrées (`path:`) | Occurrences |
+|---|---:|---:|---:|
+| `phpstan-strict-baseline.neon` | 9 963 → **7 178** | 1 660 → **1 196** | 3 267 → **1 512** |
+| `phpstan-modules-baseline.neon` | 3 182 → **38** | 530 → **6** | 682 → **4** |
+| `phpstan-baseline.neon` (inchangée) | 3 874 | 644 | 1 042 |
+| **Total** | **17 019 → 11 090 (−35 %)** | **2 834 → 1 846** | **4 991 → 2 558 (−49 %)** |
+
+### Validations locales
+
+- `vendor/bin/phpstan analyse --configuration=phpstan-strict.neon` (run
+  complet, level 8) : `[OK] No errors` ;
+- `vendor/bin/phpstan analyse --configuration=phpstan-modules.neon` : `[OK]` ;
+- gate diff-scopée reproduite (`phpstan.neon` + 2 baselines, level 8) sur les
+  14 fichiers hors module qui consomment `TravelAgency` : `[OK]` avant/après ;
+- diff des baselines : **0 entrée ajoutée, 0 `count:` augmenté** (cliquets
+  #5448/PA2-ARCH-005/tranche 1 rejoués localement).
+
+Restent pour les tranches suivantes : lots A (bugs latents), C, D (tests,
+désormais premier poste de dette), E, F — et les points 2 (RBAC) et
+3 (Sanctum) de l'issue.

@@ -40,6 +40,31 @@ use Illuminate\Support\Facades\Log;
 class SyncEngineService
 {
     /**
+     * #7840 — registre EXPLICITE des entity_type synchronisables Edge → Cloud,
+     * mappés vers leur table tenant. `entity_type` provient du push d'un nœud
+     * Edge (validé seulement `required|string|max:100` côté contrôleur) : sans
+     * cette allowlist, un nœud compromis pourrait cibler n'importe quelle
+     * table du search_path (`public.companies`, `public.user_lookups`, …).
+     * Tout type absent de ce registre est rejeté en conflit (jamais appliqué).
+     *
+     * NB : garder ce registre aligné avec `config/edge.php` (pushable_entities).
+     *
+     * @var array<string, string> entity_type => table tenant
+     */
+    private const SYNCABLE_ENTITY_TABLES = [
+        'attendance_logs' => 'attendance_logs',
+        'absences' => 'absences',
+    ];
+
+    /**
+     * #7840 — clés qu'un payload poussé par un nœud Edge n'a JAMAIS le droit
+     * d'imposer : le `company_id` est toujours forcé depuis le tenant du nœud.
+     *
+     * @var list<string>
+     */
+    private const FORBIDDEN_PAYLOAD_KEYS = ['company_id'];
+
+    /**
      * Execute a full bidirectional sync for an Edge node.
      */
     public function sync(EdgeNode $node): SyncLog
@@ -168,23 +193,106 @@ class SyncEngineService
     /**
      * Apply a queued item to the Cloud database.
      *
+     * #7840 : tout entity_type hors du registre {@see self::SYNCABLE_ENTITY_TABLES}
+     * est rejeté en conflit (et journalisé) AVANT toute requête — le nom de
+     * table n'est jamais dérivé d'une entrée non allowlistée.
+     *
      * @return array{conflict:bool, conflict_note:string|null}
      */
     protected function applyToCloud(SyncQueue $item): array
     {
+        $table = $this->syncableEntityTables()[$item->entity_type] ?? null;
+
+        if ($table === null) {
+            Log::warning('[EdgeSync] entity_type hors allowlist — enregistrement rejeté', [
+                'sync_queue_id' => $item->id,
+                'edge_node_id' => $item->edge_node_id,
+                'entity_type' => $item->entity_type,
+                'operation' => $item->operation,
+            ]);
+
+            return [
+                'conflict' => true,
+                'conflict_note' => sprintf(
+                    "entity_type '%s' hors allowlist de synchronisation — enregistrement rejeté.",
+                    $item->entity_type
+                ),
+            ];
+        }
+
         return match ($item->entity_type) {
             'attendance_logs' => $this->applyAttendanceLog($item),
             'absences' => $this->applyAbsence($item),
-            default => $this->applyGeneric($item),
+            default => $this->applyGeneric($item, $table),
         };
+    }
+
+    /**
+     * Registre des entity_type synchronisables (surchargable en test).
+     *
+     * @return array<string, string> entity_type => table tenant
+     */
+    protected function syncableEntityTables(): array
+    {
+        return self::SYNCABLE_ENTITY_TABLES;
+    }
+
+    /**
+     * #7840 — company_id du tenant propriétaire du nœud Edge ayant poussé
+     * l'item. C'est la SEULE source de vérité tenant : le payload ne peut
+     * jamais imposer le sien.
+     */
+    protected function tenantCompanyId(SyncQueue $item): ?string
+    {
+        /** @var EdgeNode|null $node */
+        $node = $item->edgeNode()->withoutGlobalScopes()->first();
+        $companyId = $node?->getAttribute('company_id');
+
+        if (is_string($companyId) && $companyId !== '') {
+            return $companyId;
+        }
+
+        if (is_int($companyId)) {
+            return (string) $companyId;
+        }
+
+        return null;
+    }
+
+    /**
+     * #7840 — nettoie un payload poussé par un nœud Edge avant écriture :
+     * retire les clés interdites (company_id fourni, id en update ciblé) et
+     * force le company_id du contexte tenant.
+     *
+     * @param  array<string, mixed>  $payload
+     * @return array<string, mixed>
+     */
+    protected function sanitizePayload(array $payload, string $companyId, string $operation): array
+    {
+        foreach (self::FORBIDDEN_PAYLOAD_KEYS as $key) {
+            unset($payload[$key]);
+        }
+
+        if ($operation === 'update') {
+            unset($payload['id']);
+        }
+
+        $payload['company_id'] = $companyId;
+
+        return $payload;
     }
 
     /** @return array{conflict: bool, conflict_note: string|null} */
     protected function applyAttendanceLog(SyncQueue $item): array
     {
+        // #7840 : le payload ne peut pas imposer son company_id — forçage du
+        // tenant du nœud (les nœuds legacy sans tenant restent inchangés).
+        $companyId = $this->tenantCompanyId($item);
+
         // Attendance records are additive — no conflict unless duplicate external_event_id
         $exists = DB::table('attendance_logs')
             ->where('external_event_id', $item->entity_id)
+            ->when($companyId !== null, fn ($q) => $q->where('company_id', $companyId))
             ->exists();
 
         if ($exists && $item->operation === 'create') {
@@ -197,17 +305,23 @@ class SyncEngineService
         $payload = $item->payload;
         $payload['synced_from_offline'] = true;
 
+        if ($companyId !== null) {
+            $payload = $this->sanitizePayload($payload, $companyId, $item->operation);
+        }
+
         try {
             // #4978 : savepoint — le 23505 attendu (external_event_id dupliqué)
             // est rollbacké localement, pas de 25P02 en aval du job.
-            DB::transaction(function () use ($item, $payload): void {
+            DB::transaction(function () use ($item, $payload, $companyId): void {
                 match ($item->operation) {
                     'create' => DB::table('attendance_logs')->insert($payload),
                     'update' => DB::table('attendance_logs')
                         ->where('id', $item->entity_id)
+                        ->when($companyId !== null, fn ($q) => $q->where('company_id', $companyId))
                         ->update($payload),
                     'delete' => DB::table('attendance_logs')
                         ->where('id', $item->entity_id)
+                        ->when($companyId !== null, fn ($q) => $q->where('company_id', $companyId))
                         ->delete(),
                     default => null,
                 };
@@ -236,8 +350,14 @@ class SyncEngineService
     /** @return array{conflict: bool, conflict_note: string|null} */
     protected function applyAbsence(SyncQueue $item): array
     {
+        // #7840 : lecture et écritures scopées au tenant du nœud.
+        $companyId = $this->tenantCompanyId($item);
+
         // Absences: Cloud wins for any approval status changes
-        $cloud = DB::table('absences')->where('id', $item->entity_id)->first();
+        $cloud = DB::table('absences')
+            ->where('id', $item->entity_id)
+            ->when($companyId !== null, fn ($q) => $q->where('company_id', $companyId))
+            ->first();
 
         if ($cloud && in_array($cloud->status, ['approved', 'rejected'], true)) {
             return [
@@ -248,21 +368,57 @@ class SyncEngineService
 
         $payload = $item->payload;
 
+        if ($companyId !== null) {
+            $payload = $this->sanitizePayload($payload, $companyId, $item->operation);
+        }
+
         match ($item->operation) {
             'create' => DB::table('absences')->insert($payload),
-            'update' => DB::table('absences')->where('id', $item->entity_id)->update($payload),
-            'delete' => DB::table('absences')->where('id', $item->entity_id)->delete(),
+            'update' => DB::table('absences')
+                ->where('id', $item->entity_id)
+                ->when($companyId !== null, fn ($q) => $q->where('company_id', $companyId))
+                ->update($payload),
+            'delete' => DB::table('absences')
+                ->where('id', $item->entity_id)
+                ->when($companyId !== null, fn ($q) => $q->where('company_id', $companyId))
+                ->delete(),
             default => null,
         };
 
         return ['conflict' => false, 'conflict_note' => null];
     }
 
-    /** @return array{conflict: bool, conflict_note: string|null} */
-    protected function applyGeneric(SyncQueue $item): array
+    /**
+     * #7840 : la table n'est plus dérivée de `entity_type` — elle provient du
+     * registre allowlisté résolu par {@see self::applyToCloud()}, toutes les
+     * requêtes sont scopées au tenant du nœud et le payload est nettoyé
+     * (company_id forcé, id retiré en update).
+     *
+     * @return array{conflict: bool, conflict_note: string|null}
+     */
+    protected function applyGeneric(SyncQueue $item, string $table): array
     {
-        // Last-write-wins using updated_at timestamp
-        $cloud = DB::table($item->entity_type)->where('id', $item->entity_id)->first();
+        $companyId = $this->tenantCompanyId($item);
+
+        if ($companyId === null) {
+            Log::warning('[EdgeSync] applyGeneric — nœud Edge sans tenant, enregistrement rejeté', [
+                'sync_queue_id' => $item->id,
+                'edge_node_id' => $item->edge_node_id,
+                'entity_type' => $item->entity_type,
+            ]);
+
+            return [
+                'conflict' => true,
+                'conflict_note' => 'Nœud Edge sans tenant (company_id absent) — enregistrement rejeté.',
+            ];
+        }
+
+        // Last-write-wins using updated_at timestamp — lecture scopée tenant :
+        // un enregistrement d'un autre tenant est invisible ici.
+        $cloud = DB::table($table)
+            ->where('id', $item->entity_id)
+            ->where('company_id', $companyId)
+            ->first();
         $localUpdatedAt = Carbon::parse($item->payload['updated_at'] ?? now());
 
         if ($cloud && Carbon::parse($cloud->updated_at)->gt($localUpdatedAt)) {
@@ -272,13 +428,17 @@ class SyncEngineService
             ];
         }
 
+        $payload = $this->sanitizePayload($item->payload, $companyId, $item->operation);
+
         match ($item->operation) {
-            'create' => DB::table($item->entity_type)->insert($item->payload),
-            'update' => DB::table($item->entity_type)
+            'create' => DB::table($table)->insert($payload),
+            'update' => DB::table($table)
                 ->where('id', $item->entity_id)
-                ->update($item->payload),
-            'delete' => DB::table($item->entity_type)
+                ->where('company_id', $companyId)
+                ->update($payload),
+            'delete' => DB::table($table)
                 ->where('id', $item->entity_id)
+                ->where('company_id', $companyId)
                 ->delete(),
             default => null,
         };

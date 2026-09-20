@@ -16,6 +16,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * `rank` détermine l'ordre de passage sur la route ; une même ville ne peut
  * apparaître deux fois sur la même route (contrainte DB
  * `travel_route_stops_company_route_city_unique`).
+ *
+ * @property int $city_id
+ * @property string $company_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property int $id
+ * @property bool $is_stopover
+ * @property int|null $min_duration_min
+ * @property int $rank
+ * @property int $route_id
+ * @property \Illuminate\Support\Carbon|null $updated_at
  */
 class TravelRouteStop extends Model
 {

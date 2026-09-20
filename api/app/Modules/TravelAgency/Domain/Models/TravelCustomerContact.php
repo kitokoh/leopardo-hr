@@ -33,6 +33,8 @@ use Illuminate\Support\Carbon;
  * @property array<string, mixed>|null $metadata_json
  *
  * @mixin Builder<static>
+ *
+ * @property \Illuminate\Support\Carbon|null $created_at
  */
 class TravelCustomerContact extends Model
 {

@@ -82,6 +82,14 @@ class UserInvitationService
                 );
             }
             $metadata['resource_assignments'] = $resourceAssignments;
+        } elseif (isset($invitation->metadata['resource_assignments'])) {
+            // #7864 (D1) : un resend sans paramètre resourceAssignments (cas
+            // InvitationController::resend) reconstruisait $metadata de zéro
+            // et EFFAÇAIT les accès pré-portés par l'invitation (#7601).
+            // On préserve la clé existante de l'invitation relue en base —
+            // les entrées ont déjà été validées lors de leur pré-assignation
+            // et sont re-filtrées à l'activation (applyPreAssignedResources).
+            $metadata['resource_assignments'] = $invitation->metadata['resource_assignments'];
         }
 
         $invitation->metadata = $metadata;
@@ -123,7 +131,13 @@ class UserInvitationService
                 ->firstOrFail();
 
             abort_if($invitation->accepted_at !== null, 410, 'INVITATION_ALREADY_ACCEPTED');
-            abort_if($invitation->expires_at?->isPast(), 410, 'INVITATION_EXPIRED');
+            // #7864 (D6) : expires_at null = invitation sans expiration connue
+            // → fail-closed (traitée comme expirée) au lieu de fail-open.
+            abort_if(
+                $invitation->expires_at === null || $invitation->expires_at->isPast(),
+                410,
+                'INVITATION_EXPIRED',
+            );
 
             $company = Company::query()->findOrFail($invitation->company_id);
 
@@ -136,6 +150,16 @@ class UserInvitationService
             try {
                 /** @var Employee $employee */
                 $employee = Employee::query()->findOrFail($invitation->employee_id);
+
+                // #7864 (D5) : un employé archivé/parti ne peut plus activer
+                // son compte — l'invitation est de fait révoquée (410, même
+                // famille que INVITATION_ALREADY_ACCEPTED/INVITATION_EXPIRED).
+                abort_if(
+                    in_array($employee->status, ['archived', 'departed'], true),
+                    410,
+                    'INVITATION_REVOKED',
+                );
+
                 $acceptedAt = now();
 
                 $employee->password_hash = Hash::make($password);

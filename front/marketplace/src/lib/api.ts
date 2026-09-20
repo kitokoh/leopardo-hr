@@ -76,13 +76,23 @@ export type FulfillmentStatus =
   | "delivered"
   | "cancelled";
 
+export type PaymentMethod = "cash" | "online";
+
 export interface OrderPayload {
   seller: string;
   items: { product_id: number; quantity: number }[];
   customer: { name: string; phone: string; email?: string };
   delivery: { address: string; city: string; notes?: string };
-  payment_method: "cash";
+  payment_method: PaymentMethod;
   idempotency_key: string;
+}
+
+/** Bloc paiement du checkout (#7812) — renseigné quand payment_method = online. */
+export interface OrderPaymentInfo {
+  method: string;
+  intent_reference: string | null;
+  status: string | null;
+  checkout_url: string | null;
 }
 
 export interface OrderCreated {
@@ -91,6 +101,7 @@ export interface OrderCreated {
   total_minor: number;
   currency: string;
   seller: string;
+  payment?: OrderPaymentInfo;
 }
 
 export interface TimelineEntry {
@@ -105,6 +116,19 @@ export interface TrackedItem {
   line_total_minor?: number;
 }
 
+/**
+ * État public de la livraison BC-26 (#7811) — présent uniquement si une
+ * livraison `retail_online` existe pour la commande (champ optionnel et
+ * défensif : statut + horodatages publics, rien d'autre).
+ */
+export interface DeliveryStatus {
+  status: string;
+  created_at: string | null;
+  delivered_at: string | null;
+  failed_at: string | null;
+  returned_at: string | null;
+}
+
 export interface OrderTracking {
   reference: string;
   fulfillment_status: FulfillmentStatus;
@@ -113,6 +137,9 @@ export interface OrderTracking {
   total_minor: number;
   currency: string;
   seller?: PublicSellerRef | string;
+  /** Paiement (#7812) : méthode (cash|online) + statut (pending|paid|refunded). */
+  payment?: { method: string; status: string };
+  delivery?: DeliveryStatus;
 }
 
 /* ── Erreurs & fetch ────────────────────────────────────────────────────── */
@@ -329,6 +356,18 @@ function normalizeTimeline(raw: unknown): TimelineEntry[] {
   return [];
 }
 
+function normalizeDelivery(raw: unknown): DeliveryStatus | undefined {
+  if (!isRecord(raw) || typeof raw.status !== "string" || raw.status === "") return undefined;
+  const iso = (value: unknown): string | null => (typeof value === "string" ? value : null);
+  return {
+    status: raw.status,
+    created_at: iso(raw.created_at),
+    delivered_at: iso(raw.delivered_at),
+    failed_at: iso(raw.failed_at),
+    returned_at: iso(raw.returned_at),
+  };
+}
+
 export async function fetchOrderTracking(reference: string, token: string): Promise<OrderTracking> {
   const payload = await request<unknown>(
     `/public/market/orders/${encodeURIComponent(reference)}`,
@@ -371,6 +410,13 @@ export async function fetchOrderTracking(reference: string, token: string): Prom
       : typeof record.seller === "string"
         ? record.seller
         : undefined,
+    payment: isRecord(record.payment)
+      ? {
+          method: typeof record.payment.method === "string" ? record.payment.method : "cash",
+          status: typeof record.payment.status === "string" ? record.payment.status : "pending",
+        }
+      : undefined,
+    delivery: normalizeDelivery(record.delivery),
   };
 }
 

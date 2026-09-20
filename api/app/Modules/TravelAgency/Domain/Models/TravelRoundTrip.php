@@ -18,6 +18,12 @@ use Illuminate\Support\Str;
  * Lie deux réservations (aller + retour) d'un même tenant ; le statut est
  * dérivé du statut des deux réservations (jamais persisté — chaque sens reste
  * une réservation standard, annulable par sens).
+ *
+ * @property string $company_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property int $id
+ * @property string $reference
+ * @property \Illuminate\Support\Carbon|null $updated_at
  */
 class TravelRoundTrip extends Model
 {

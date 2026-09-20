@@ -81,6 +81,61 @@ class AuthProfileSettingsTest extends TestCase
         ]);
     }
 
+    /**
+     * Issue #7861 — « Mon compte » web : l'utilisateur connecté peut modifier
+     * prénom, nom et téléphone professionnel sans toucher à l'email.
+     */
+    public function test_employee_can_update_name_and_phone_without_email(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create([
+            'name' => 'Company Phone',
+            'slug' => 'company-phone-7861',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'phone7861@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'first_name' => 'Lina',
+            'last_name' => 'Meddah',
+            'email' => 'lina@company.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+
+        $token = $employee->createToken('tests')->plainTextToken;
+
+        $response = $this->withHeader('Authorization', "Bearer {$token}")
+            ->patchJson('/api/v1/auth/profile', [
+                'first_name' => 'Lina Updated',
+                'last_name' => 'Meddah Updated',
+                'phone' => '+213770123456',
+            ]);
+
+        $response->assertOk();
+        $response->assertJsonPath('data.first_name', 'Lina Updated');
+        $response->assertJsonPath('data.last_name', 'Meddah Updated');
+        $response->assertJsonPath('data.phone', '+213770123456');
+        // L'email (identifiant de connexion) reste inchangé.
+        $response->assertJsonPath('data.email', 'lina@company.test');
+
+        $this->assertDatabaseHas('employees', [
+            'id' => $employee->id,
+            'first_name' => 'Lina Updated',
+            'last_name' => 'Meddah Updated',
+            'phone' => '+213770123456',
+            'email' => 'lina@company.test',
+        ]);
+    }
+
     public function test_employee_can_view_durable_career_summary(): void
     {
         /** @var Company $company */

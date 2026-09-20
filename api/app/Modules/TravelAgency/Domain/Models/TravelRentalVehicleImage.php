@@ -15,6 +15,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * `position` unique par véhicule (contrainte DB
  * `travel_rental_images_company_vehicle_position_unique`).
+ *
+ * @property int $asset_id
+ * @property string $company_id
+ * @property int $id
+ * @property int $position
+ * @property int $vehicle_id
  */
 class TravelRentalVehicleImage extends Model
 {

@@ -16,6 +16,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Le token partenaire n'est jamais stocké en clair : seul `api_key_hash`
  * (SHA-256) est persisté — le token brut n'est affiché qu'une fois à la
  * création (pattern sync_token_hash ZKTeco).
+ *
+ * @property int $carrier_id
+ * @property string $company_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property int $id
+ * @property string|null $label
  */
 class TravelCarrierApiKey extends Model
 {

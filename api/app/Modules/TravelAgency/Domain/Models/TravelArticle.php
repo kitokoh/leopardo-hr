@@ -15,6 +15,21 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * TRAVEL-901/902/903 (#6104/#6105/#6106) — Article (contenu éditorial).
  *
  * @mixin Builder<static>
+ *
+ * @property int|null $author_id
+ * @property string|null $author_type
+ * @property string $body_redacted
+ * @property int|null $category_id
+ * @property string $company_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $moderated_at
+ * @property string|null $moderation_note
+ * @property \Illuminate\Support\Carbon|null $published_at
+ * @property string|null $slug
+ * @property string $status
+ * @property string $title
+ * @property \Illuminate\Support\Carbon|null $updated_at
  */
 class TravelArticle extends Model
 {

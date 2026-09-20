@@ -171,7 +171,7 @@ parameters:
 		-
 			message: '#^Parameter \#2 \$hashedValue of static method Illuminate\\Support\\Facades\\Hash\:\:check\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
-			count: 3
+			count: 2
 			path: app/Core/Auth/Interfaces/Api/V1/Controllers/PlatformAuthController.php
 
 		-
@@ -365,12 +365,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Web/InvitationManagementController.php
-
-		-
-			message: '#^Parameter \#2 \$hashedValue of static method Illuminate\\Support\\Facades\\Hash\:\:check\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Web/PlatformAuthController.php
 
 		-
 			message: '#^Using nullsafe property access on non\-nullable type App\\Core\\Tenant\\Domain\\Models\\Company\. Use \-\> instead\.$#'
@@ -1177,18 +1171,6 @@ parameters:
 			path: app/Http/Resources/Api/V1/TrainingSessionResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\VehicleAlertResource\:\:\$resolved_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/VehicleAlertResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\VehicleAlertResource\:\:\$severity\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/VehicleAlertResource.php
-
-		-
 			message: '#^Method App\\Http\\Resources\\Api\\V1\\VehicleAlertResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1223,24 +1205,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Resources/Api/V1/VehicleResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\VehicleTripResource\:\:\$end_location\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/VehicleTripResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\VehicleTripResource\:\:\$purpose\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/VehicleTripResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\VehicleTripResource\:\:\$start_location\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/VehicleTripResource.php
 
 		-
 			message: '#^Method App\\Http\\Resources\\Api\\V1\\VehicleTripResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
@@ -1879,42 +1843,6 @@ parameters:
 			path: app/Modules/Cameras/Domain/Contracts/AccessTokenServiceInterface.php
 
 		-
-			message: '#^Cannot access property \$company on App\\Modules\\Cameras\\Domain\\Camera\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/Cameras/Infrastructure/Services/CameraService.php
-
-		-
-			message: '#^Method App\\Modules\\Cameras\\Infrastructure\\Services\\CameraService\:\:create\(\) should return App\\Modules\\Cameras\\Domain\\Camera but returns App\\Modules\\Cameras\\Domain\\Camera\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Modules/Cameras/Infrastructure/Services/CameraService.php
-
-		-
-			message: '#^Method App\\Modules\\Cameras\\Infrastructure\\Services\\CameraService\:\:issueAccessToken\(\) should return App\\Modules\\Cameras\\Domain\\CameraAccessToken but returns App\\Modules\\Cameras\\Domain\\CameraAccessToken\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Modules/Cameras/Infrastructure/Services/CameraService.php
-
-		-
-			message: '#^Method App\\Modules\\Cameras\\Infrastructure\\Services\\CameraService\:\:revokeAccessToken\(\) should return App\\Modules\\Cameras\\Domain\\CameraAccessToken but returns App\\Modules\\Cameras\\Domain\\CameraAccessToken\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Modules/Cameras/Infrastructure/Services/CameraService.php
-
-		-
-			message: '#^Method App\\Modules\\Cameras\\Infrastructure\\Services\\CameraService\:\:update\(\) should return App\\Modules\\Cameras\\Domain\\Camera but returns App\\Modules\\Cameras\\Domain\\Camera\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Modules/Cameras/Infrastructure/Services/CameraService.php
-
-		-
-			message: '#^Property App\\Modules\\Cameras\\Domain\\CameraAccessLog\:\:\$camera_id \(int\) does not accept int\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Modules/Cameras/Infrastructure/Services/CameraService.php
-
-		-
 			message: '#^Using nullsafe property access "\?\-\>id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
@@ -2019,7 +1947,7 @@ parameters:
 		-
 			message: '#^Expression on left side of \?\? is not nullable\.$#'
 			identifier: nullCoalesce.expr
-			count: 2
+			count: 1
 			path: app/Modules/EdgeSync/Infrastructure/Notifications/EdgeLicenseExpiringNotification.php
 
 		-
@@ -2037,7 +1965,7 @@ parameters:
 		-
 			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
-			count: 3
+			count: 2
 			path: app/Modules/EdgeSync/Infrastructure/Notifications/EdgeLicenseExpiringNotification.php
 
 		-
@@ -2075,42 +2003,6 @@ parameters:
 			identifier: property.nonObject
 			count: 5
 			path: app/Modules/EdgeSync/Interfaces/Api/V1/Controllers/EdgeNodeController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduAdmission\:\:\$applicant_name\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/EduManager/Infrastructure/Services/AdmissionService.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduAdmission\:\:\$contact_reference\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/EduManager/Infrastructure/Services/AdmissionService.php
-
-		-
-			message: '#^PHPDoc tag @var for variable \$classesQuery contains generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/EduManager/Infrastructure/Services/AttendanceService.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduAssessment\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/EduManager/Infrastructure/Services/GradeService.php
-
-		-
-			message: '#^PHPDoc tag @var for variable \$classesQuery contains generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/EduManager/Infrastructure/Services/GradeService.php
-
-		-
-			message: '#^Right side of && is always true\.$#'
-			identifier: booleanAnd.rightAlwaysTrue
-			count: 1
-			path: app/Modules/EduManager/Infrastructure/Services/TimetableService.php
 
 		-
 			message: '#^Method App\\Modules\\EduManager\\Domain\\Models\\EduAdmission\:\:academicYear\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
@@ -2173,28 +2065,22 @@ parameters:
 			path: app/Modules/EduManager/Domain/Policies/EduAttendanceRecordPolicy.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduReportCard\:\:\$class_id\.$#'
-			identifier: property.notFound
+			message: '#^PHPDoc tag @var for variable \$classesQuery contains generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
 			count: 1
-			path: app/Modules/EduManager/Domain/Policies/EduReportCardPolicy.php
+			path: app/Modules/EduManager/Infrastructure/Services/AttendanceService.php
 
 		-
 			message: '#^PHPDoc tag @var for variable \$classesQuery contains generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
-			path: app/Modules/EduManager/Domain/Policies/EduReportCardPolicy.php
+			path: app/Modules/EduManager/Infrastructure/Services/GradeService.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduAdmission\:\:\$consent_revoked_at\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/EduManager/Infrastructure/Services/EduAdmissionFollowupService.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduAdmission\:\:\$consent_revoked_at\.$#'
-			identifier: property.notFound
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
 			count: 1
-			path: app/Modules/EduManager/Interfaces/Api/V1/Controllers/EduAdmissionCampaignController.php
+			path: app/Modules/EduManager/Infrastructure/Services/TimetableService.php
 
 		-
 			message: '#^Parameter \#2 \$class of static method App\\Modules\\EduManager\\Domain\\Access\\EduAccess\:\:canManageClass\(\) expects App\\Modules\\EduManager\\Domain\\Models\\EduClass, App\\Modules\\EduManager\\Domain\\Models\\EduClass\|null given\.$#'
@@ -2207,12 +2093,6 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Modules/Expense/Interfaces/Api/V1/Controllers/ExpenseClaimController.php
-
-		-
-			message: '#^Method App\\Modules\\Fleet\\Domain\\Contracts\\VehicleRepositoryInterface\:\:findByCompanyAndStatus\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Fleet/Domain/Contracts/VehicleRepositoryInterface.php
 
 		-
 			message: '#^Parameter \#1 \$deviceId of method App\\Modules\\Attendance\\Infrastructure\\Services\\TraccarService\:\:getLastPosition\(\) expects int, string given\.$#'
@@ -2495,42 +2375,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/FuelStation/Interfaces/Api/V1/Controllers/FuelStationController.php
-
-		-
-			message: '#^Access to an undefined property object\:\:\$code\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Modules/FuelStation/Interfaces/Api/V1/Controllers/FuelStationReferentialController.php
-
-		-
-			message: '#^Access to an undefined property object\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/FuelStation/Interfaces/Api/V1/Controllers/FuelStationReferentialController.php
-
-		-
-			message: '#^Access to an undefined property object\:\:\$station_id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Modules/FuelStation/Interfaces/Api/V1/Controllers/FuelStationReferentialController.php
-
-		-
-			message: '#^Access to an undefined property object\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/FuelStation/Interfaces/Api/V1/Controllers/FuelStationReferentialController.php
-
-		-
-			message: '#^Access to an undefined property object\:\:\$updated_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/FuelStation/Interfaces/Api/V1/Controllers/FuelStationReferentialController.php
-
-		-
-			message: '#^Parameter \#1 \$boolean of function abort_unless expects bool, bool\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/FuelStation/Interfaces/Api/V1/Controllers/FuelStationReferentialController.php
 
 		-
 			message: '#^Method App\\Modules\\FuelStation\\Interfaces\\Api\\V1\\Controllers\\FuelStockController\:\:deliveryPayload\(\) return type has no value type specified in iterable type array\.$#'
@@ -3211,24 +3055,6 @@ parameters:
 			path: app/Modules/Notification/Interfaces/Api/V1/Controllers/ConversationController.php
 
 		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
-			count: 1
-			path: app/Modules/Notification/Interfaces/Api/V1/Controllers/NotificationStreamController.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between null and null will always evaluate to true\.$#'
-			identifier: identical.alwaysTrue
-			count: 1
-			path: app/Modules/Notification/Interfaces/Api/V1/Controllers/NotificationStreamController.php
-
-		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
-			identifier: deadCode.unreachable
-			count: 1
-			path: app/Modules/Notification/Interfaces/Api/V1/Controllers/NotificationStreamController.php
-
-		-
 			message: '#^Method App\\Modules\\Onboarding\\Application\\DTOs\\CompleteStepDTO\:\:__construct\(\) has parameter \$metadata with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -3397,12 +3223,6 @@ parameters:
 			path: app/Modules/Payroll/Infrastructure/Services/SocialDeclarationGenerator.php
 
 		-
-			message: '#^Anonymous function should return App\\Modules\\Payroll\\Domain\\Models\\PaymentBatch but returns App\\Modules\\Payroll\\Domain\\Models\\PaymentBatch\|null\.$#'
-			identifier: return.type
-			count: 2
-			path: app/Modules/Payroll/Interfaces/Api/V1/Controllers/PaymentBatchController.php
-
-		-
 			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
@@ -3427,46 +3247,10 @@ parameters:
 			path: app/Modules/Payroll/Interfaces/Api/V1/Controllers/PayrollRunController.php
 
 		-
-			message: '#^Cannot access property \$payment_declared_by on App\\Modules\\Payroll\\Domain\\Models\\SalaryAdvance\|null\.$#'
-			identifier: property.nonObject
-			count: 4
-			path: app/Modules/Payroll/Interfaces/Api/V1/Controllers/SalaryAdvanceController.php
-
-		-
-			message: '#^Cannot call method load\(\) on App\\Modules\\Payroll\\Domain\\Models\\SalaryAdvance\|null\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: app/Modules/Payroll/Interfaces/Api/V1/Controllers/SalaryAdvanceController.php
-
-		-
-			message: '#^Parameter \#1 \$advance of method App\\Modules\\Payroll\\Infrastructure\\Services\\SalaryAdvanceService\:\:notify\(\) expects App\\Modules\\Payroll\\Domain\\Models\\SalaryAdvance, App\\Modules\\Payroll\\Domain\\Models\\SalaryAdvance\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Modules/Payroll/Interfaces/Api/V1/Controllers/SalaryAdvanceController.php
-
-		-
-			message: '#^Parameter \#1 \$advance of method App\\Modules\\Payroll\\Infrastructure\\Services\\SalaryAdvanceService\:\:notifyRecipient\(\) expects App\\Modules\\Payroll\\Domain\\Models\\SalaryAdvance, App\\Modules\\Payroll\\Domain\\Models\\SalaryAdvance\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Modules/Payroll/Interfaces/Api/V1/Controllers/SalaryAdvanceController.php
-
-		-
 			message: '#^Parameter \#1 \$employee of method App\\Modules\\Payroll\\Infrastructure\\Services\\SalaryAdvanceService\:\:create\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Modules/Payroll/Interfaces/Api/V1/Controllers/SalaryAdvanceController.php
-
-		-
-			message: '#^Parameter \$employee of method App\\Modules\\Payroll\\Infrastructure\\Services\\LedgerService\:\:record\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, App\\Core\\Auth\\Domain\\Models\\Employee\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Payroll/Interfaces/Api/V1/Controllers/SalaryAdvanceController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 3
-			path: app/Modules/Payroll/Interfaces/Api/V1/Controllers/SocialDeclarationController.php
 
 		-
 			message: '#^Method App\\Modules\\Payroll\\Interfaces\\Api\\V1\\Requests\\DecideSalaryAdvanceRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
@@ -4159,42 +3943,6 @@ parameters:
 			path: app/Modules/RestaurantManager/Providers/RestaurantManagerServiceProvider.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$customer_contact_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Application/Actions/BookQuoteAction.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$idempotency_key\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Application/Actions/BookQuoteAction.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$passenger_count\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Application/Actions/BookQuoteAction.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$reference\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Application/Actions/BookQuoteAction.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$passenger_count\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Application/Actions/CreateQuoteAction.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$reference\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Application/Actions/CreateQuoteAction.php
-
-		-
 			message: '#^Using nullsafe property access "\?\-\>departure_time" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
@@ -4279,12 +4027,6 @@ parameters:
 			path: app/Modules/TravelAgency/Domain/Models/TravelPayment.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$reference\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Domain/Models/TravelQuote.php
-
-		-
 			message: '#^Method App\\Modules\\TravelAgency\\Domain\\Models\\TravelWebhookSubscription\:\:carrier\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -4309,12 +4051,6 @@ parameters:
 			path: app/Modules/TravelAgency/Infrastructure/Services/LegacyTravelImportService.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCancellationPolicy\:\:\$cancel_before_hours\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Infrastructure/Services/TravelCancellationPolicyService.php
-
-		-
 			message: '#^Parameter \$passengers of method App\\Modules\\TravelAgency\\Application\\Actions\\CreateBookingAction\:\:execute\(\) expects list\<array\{full_name\: string, birth_date\?\: string\|null, document_type\?\: string\|null, document_number\?\: string\|null, age_category\: string, class_id\: int, seat_number\?\: int\|null\}\>, list\<array\<string, mixed\>\> given\.$#'
 			identifier: argument.type
 			count: 2
@@ -4333,18 +4069,6 @@ parameters:
 			path: app/Modules/TravelAgency/Infrastructure/Services/TravelConnectionService.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCurrencyRate\:\:\$rate\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Modules/TravelAgency/Infrastructure/Services/TravelCurrencyService.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelLoyaltyAccount\:\:\$opt_in\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/TravelAgency/Infrastructure/Services/TravelLoyaltyService.php
-
-		-
 			message: '#^Parameter \$passengers of method App\\Modules\\TravelAgency\\Application\\Actions\\CreateBookingAction\:\:execute\(\) expects list\<array\{full_name\: string, birth_date\?\: string\|null, document_type\?\: string\|null, document_number\?\: string\|null, age_category\: string, class_id\: int, seat_number\?\: int\|null\}\>, non\-empty\-array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
@@ -4361,18 +4085,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/TravelAgency/Infrastructure/Services/TravelOutboxConsumerRegistry.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuizQuestion\:\:\$correct_answer_hash\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Infrastructure/Services/TravelQuizService.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelArticle\:\:\$moderation_note\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelArticleController.php
 
 		-
 			message: '#^Method App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Controllers\\TravelArticleController\:\:articlePayload\(\) return type has no value type specified in iterable type array\.$#'
@@ -4441,36 +4153,6 @@ parameters:
 			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelPublicShopController.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuiz\:\:\$bonus_points\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelQuizController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuizQuestion\:\:\$choices\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelQuizController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuizQuestion\:\:\$correct_answer_hash\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelQuizController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuizQuestion\:\:\$label\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelQuizController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuizQuestion\:\:\$rank\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelQuizController.php
-
-		-
 			message: '#^Method App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Controllers\\TravelQuizController\:\:questionPayload\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -4499,48 +4181,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelTouristSiteController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCancellationPolicy\:\:\$cancel_before_hours\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCancellationPolicyResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCancellationPolicy\:\:\$description\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCancellationPolicyResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCancellationPolicy\:\:\$is_active\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCancellationPolicyResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelQuoteResource\:\:\$booking_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelQuoteResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelQuoteResource\:\:\$customer_contact_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelQuoteResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelQuoteResource\:\:\$passenger_count\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelQuoteResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelQuoteResource\:\:\$reference\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelQuoteResource.php
 
 		-
 			message: '#^Method App\\Notifications\\EdgeNodeSilentAlert\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
@@ -4590,60 +4230,11 @@ parameters:
 			count: 1
 			path: app/Shared/Models/Language.php
 
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/AI/ToolPermissionMatrixTest.php
-
 		-
 			message: '#^Cannot access property \$status on App\\Modules\\Planning\\Domain\\Models\\Absence\|null\.$#'
 			identifier: property.nonObject
 			count: 1
 			path: tests/Feature/AI/ToolPermissionMatrixTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/AIGatewayAndAnalyticsTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\AIGatewayAndAnalyticsTest\:\:aiFixture\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/AIGatewayAndAnalyticsTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/AIGatewayAndAnalyticsTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/AIWorkflowTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 3
-			path: tests/Feature/AIWorkflowTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/Absences/AbsenceIndexTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Absences/AbsenceIndexTest.php
 
 		-
 			message: '#^Method Tests\\Feature\\Accounting\\DocumentWorkflowNumberingTest\:\:sentInvoice\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
@@ -4688,24 +4279,6 @@ parameters:
 			path: tests/Feature/Accounting/GoldenAccountingInvariantsTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$department_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/AnnouncementControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 71
-			path: tests/Feature/AnnouncementControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 18
-			path: tests/Feature/AnnouncementControllerTest.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 4
@@ -4716,42 +4289,6 @@ parameters:
 			identifier: argument.templateType
 			count: 4
 			path: tests/Feature/AnnouncementControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 31
-			path: tests/Feature/Attendance/AttendanceAnomaliesTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 5
-			path: tests/Feature/Attendance/AttendanceAnomaliesTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/Attendance/AttendanceMonthlyReportTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/Attendance/AttendanceMonthlyReportTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 35
-			path: tests/Feature/Attendance/AttendanceRegularityTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 5
-			path: tests/Feature/Attendance/AttendanceRegularityTest.php
 
 		-
 			message: '#^Cannot call method setTimezone\(\) on Illuminate\\Support\\Carbon\|null\.$#'
@@ -4826,58 +4363,10 @@ parameters:
 			path: tests/Feature/Attendance/MultiPunchTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 14
-			path: tests/Feature/Attendance/MyAttendanceAnomaliesTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 3
-			path: tests/Feature/Attendance/MyAttendanceAnomaliesTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/Attendance/TodayAndHistoryTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Attendance/TodayAndHistoryTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/AuditLogExportTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\AuditLogExportTest\:\:employee\(\) should return App\\Core\\Auth\\Domain\\Models\\Employee but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/AuditLogExportTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/Auth/GoogleIdentityBindingTest.php
-
-		-
 			message: '#^Cannot access property \$google_id on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
 			identifier: property.nonObject
 			count: 3
 			path: tests/Feature/Auth/GoogleIdentityBindingTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/Auth/RegisterLoginFlowTest.php
 
 		-
 			message: '#^Method Tests\\Feature\\Auth\\RegisterLoginFlowTest\:\:createInvitation\(\) should return string but returns string\|null\.$#'
@@ -4904,24 +4393,6 @@ parameters:
 			path: tests/Feature/Auth/SsoConfigureSsrfGuardTest.php
 
 		-
-			message: '#^Property Tests\\Feature\\Auth\\SsoConfigureSsrfGuardTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Auth/SsoConfigureSsrfGuardTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Auth\\SsoConfigureSsrfGuardTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Auth/SsoConfigureSsrfGuardTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Auth\\SsoConfigureSsrfGuardTest\:\:\$manager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Auth/SsoConfigureSsrfGuardTest.php
-
-		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNull\(\) with string will always evaluate to false\.$#'
 			identifier: method.impossibleType
 			count: 1
@@ -4932,36 +4403,6 @@ parameters:
 			identifier: argument.type
 			count: 2
 			path: tests/Feature/AuthProfileSettingsTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\AuthRefreshTokenTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/AuthRefreshTokenTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\AuthRefreshTokenTest\:\:\$manager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/AuthRefreshTokenTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 8
-			path: tests/Feature/BackfillNotificationPreferencesCommandTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/BankExportControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\BankExportControllerTest\:\:actors\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/BankExportControllerTest.php
 
 		-
 			message: '#^Cannot call method assertExitCode\(\) on Illuminate\\Testing\\PendingCommand\|int\.$#'
@@ -5006,58 +4447,16 @@ parameters:
 			path: tests/Feature/Billing/TrialRestaurantSolutionActivationTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 22
-			path: tests/Feature/BillingControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 11
-			path: tests/Feature/BillingControllerTest.php
-
-		-
 			message: '#^Parameter \#2 \$string of method PHPUnit\\Framework\\Assert\:\:assertStringStartsWith\(\) expects string, string\|false given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/BillingControllerTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 8
-			path: tests/Feature/BulkPaymentControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\BulkPaymentControllerTest\:\:fixture\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee, App\\Modules\\Payroll\\Domain\\Models\\PayrollRun, App\\Modules\\Payroll\\Domain\\Models\\PaySlip, App\\Modules\\Payroll\\Domain\\Models\\PaySlip\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model, App\\Modules\\Payroll\\Domain\\Models\\PayrollRun, App\\Modules\\Payroll\\Domain\\Models\\PaySlip, App\\Modules\\Payroll\\Domain\\Models\\PaySlip\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/BulkPaymentControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Cabinet\\CabinetDocumentControllerTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Cabinet/CabinetDocumentControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Cabinet\\CabinetDocumentControllerTest\:\:\$manager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Cabinet/CabinetDocumentControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Cabinet\\CabinetDocumentControllerTest\:\:\$otherCompany \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Cabinet/CabinetDocumentControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Cabinet\\CabinetDocumentControllerTest\:\:\$otherManager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Cabinet/CabinetDocumentControllerTest.php
+			message: '#^Call to static method query\(\) on an unknown class App\\Modules\\CRM\\Domain\\Models\\CrmPipeline\.$#'
+			identifier: class.notFound
+			count: 4
+			path: tests/Feature/CRM/CrmModelsTenantScopingTest.php
 
 		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
@@ -5070,24 +4469,6 @@ parameters:
 			identifier: argument.templateType
 			count: 1
 			path: tests/Feature/Cabinet/CabinetDocumentControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\CalendarSyncControllerTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/CalendarSyncControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\CalendarSyncControllerTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/CalendarSyncControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\CalendarSyncControllerTest\:\:\$manager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/CalendarSyncControllerTest.php
 
 		-
 			message: '#^Property Tests\\Feature\\CalendarSyncControllerTest\:\:\$manager is never read, only written\.$#'
@@ -5102,108 +4483,6 @@ parameters:
 			path: tests/Feature/CalendarSyncServiceTest.php
 
 		-
-			message: '#^Property Tests\\Feature\\CalendarSyncServiceTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/CalendarSyncServiceTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\CalendarSyncServiceTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/CalendarSyncServiceTest.php
-
-		-
-			message: '#^Cannot access property \$last_used_at on App\\Modules\\Cameras\\Domain\\CameraAccessToken\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: tests/Feature/Cameras/CameraStreamTokenVerifyTest.php
-
-		-
-			message: '#^Cannot access property \$use_count on App\\Modules\\Cameras\\Domain\\CameraAccessToken\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: tests/Feature/Cameras/CameraStreamTokenVerifyTest.php
-
-		-
-			message: '#^Cannot access property \$name on App\\Modules\\Cameras\\Domain\\Camera\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: tests/Feature/Cameras/CamerasCrudTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/ClientEventControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\ClientEventControllerTest\:\:tenantFixture\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/ClientEventControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 9
-			path: tests/Feature/CommunicationAnalyticsControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/CommunicationAnalyticsControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/CommunicationServiceTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\CommunicationServiceTest\:\:employee\(\) should return App\\Core\\Auth\\Domain\\Models\\Employee but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/CommunicationServiceTest.php
-
-		-
-			message: '#^Parameter \#1 \$employee of method App\\Modules\\Notification\\Infrastructure\\Services\\CommunicationService\:\:notifyEmployee\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/CommunicationServiceTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Tenant\\Domain\\Models\\Company\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Core\\Tenant\\Domain\\Models\\Company\>\:\:\$metadata\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/CompanyBrandingControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 6
-			path: tests/Feature/CompanyBrandingControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of method Illuminate\\Foundation\\Testing\\TestCase\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 6
-			path: tests/Feature/CompanyBrandingControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 7
-			path: tests/Feature/CompanyOnboardingIntegrationTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 3
-			path: tests/Feature/CompanyOnboardingIntegrationTest.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 3
@@ -5216,26 +4495,8 @@ parameters:
 			path: tests/Feature/CompanyOnboardingIntegrationTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/Contracts/ApiListQueryContractTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Contracts\\ApiListQueryContractTest\:\:actors\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/Contracts/ApiListQueryContractTest.php
-
-		-
 			message: '#^Cannot access property \$status on App\\Modules\\HR\\Domain\\Models\\Contract\|null\.$#'
 			identifier: property.nonObject
-			count: 1
-			path: tests/Feature/Contracts/ContractLifecycleTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
 			count: 1
 			path: tests/Feature/Contracts/ContractLifecycleTest.php
 
@@ -5270,24 +4531,6 @@ parameters:
 			path: tests/Feature/Contracts/ContractWorkflowTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Contracts/FrontendJsonContractTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Contracts\\FrontendJsonContractTest\:\:kioskActor\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/Contracts/FrontendJsonContractTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Contracts\\FrontendJsonContractTest\:\:managerActor\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/Contracts/FrontendJsonContractTest.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 1
@@ -5298,12 +4541,6 @@ parameters:
 			identifier: argument.templateType
 			count: 1
 			path: tests/Feature/Contracts/MobilePayloadContractTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 62
-			path: tests/Feature/ConversationControllerTest.php
 
 		-
 			message: '#^Cannot access property \$attachment_original_name on App\\Modules\\Notification\\Domain\\Models\\ConversationMessage\|null\.$#'
@@ -5330,18 +4567,6 @@ parameters:
 			path: tests/Feature/ConversationControllerTest.php
 
 		-
-			message: '#^Parameter \#1 \$employee of method App\\Modules\\Notification\\Domain\\Models\\ConversationThread\:\:isUnreadFor\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/ConversationControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 10
-			path: tests/Feature/ConversationControllerTest.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 1
@@ -5354,90 +4579,6 @@ parameters:
 			path: tests/Feature/ConversationControllerTest.php
 
 		-
-			message: '#^Property Tests\\Feature\\CotisationSimulationControllerTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/CotisationSimulationControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\CotisationSimulationControllerTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/CotisationSimulationControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\CotisationSimulationControllerTest\:\:\$manager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/CotisationSimulationControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 7
-			path: tests/Feature/CotisationSimulationTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 6
-			path: tests/Feature/CotisationSimulationTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/CountryCurrencyPropagationTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 3
-			path: tests/Feature/CountryCurrencyPropagationTest.php
-
-		-
-			message: '#^Call to static method query\(\) on an unknown class App\\Modules\\CRM\\Domain\\Models\\CrmPipeline\.$#'
-			identifier: class.notFound
-			count: 4
-			path: tests/Feature/CRM/CrmModelsTenantScopingTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\CrossTenantIndexIsolationTest\:\:\$companyA \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/CrossTenantIndexIsolationTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\CrossTenantIndexIsolationTest\:\:\$companyB \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/CrossTenantIndexIsolationTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\CrossTenantIndexIsolationTest\:\:\$employeeA \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/CrossTenantIndexIsolationTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\CrossTenantIndexIsolationTest\:\:\$employeeB \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/CrossTenantIndexIsolationTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\CrossTenantIndexIsolationTest\:\:\$managerA \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/CrossTenantIndexIsolationTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\CrossTenantIndexIsolationTest\:\:\$managerB \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/CrossTenantIndexIsolationTest.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 5
@@ -5448,24 +4589,6 @@ parameters:
 			identifier: argument.templateType
 			count: 5
 			path: tests/Feature/CrossTenantIndexIsolationTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 27
-			path: tests/Feature/DashboardControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\DashboardControllerTest\:\:tenantFixture\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/DashboardControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/DashboardControllerTest.php
 
 		-
 			message: '#^Method Tests\\Feature\\DataModel\\CompositeTenantIndexesTest\:\:indexProvider\(\) should return array\<string, string\> but returns array\<string, list\<string\>\>\.$#'
@@ -5486,12 +4609,6 @@ parameters:
 			path: tests/Feature/Demo/DemoMagicLinkTest.php
 
 		-
-			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 7
-			path: tests/Feature/DemoUserControllerTest.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 1
@@ -5502,24 +4619,6 @@ parameters:
 			identifier: argument.templateType
 			count: 1
 			path: tests/Feature/DemoUserControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\DeviceTokenControllerTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/DeviceTokenControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\DeviceTokenControllerTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/DeviceTokenControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\DeviceTokenControllerTest\:\:\$manager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/DeviceTokenControllerTest.php
 
 		-
 			message: '#^Cannot access property \$check_in on App\\Modules\\Attendance\\Domain\\Models\\AttendanceLog\|null\.$#'
@@ -5560,18 +4659,6 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$json of function json_decode expects string, array\|null given\.$#'
 			identifier: argument.type
-			count: 1
-			path: tests/Feature/Edge/EdgeConflictResolutionTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeConflictResolutionTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Edge/EdgeConflictResolutionTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeConflictResolutionTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
 			count: 1
 			path: tests/Feature/Edge/EdgeConflictResolutionTest.php
 
@@ -5648,12 +4735,6 @@ parameters:
 			path: tests/Feature/Edge/EdgeLicenseExpiryTest.php
 
 		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeLicenseExpiryTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Edge/EdgeLicenseExpiryTest.php
-
-		-
 			message: '#^Method Tests\\Feature\\Edge\\EdgeLicenseFailClosedTest\:\:signWithAppKey\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -5670,30 +4751,6 @@ parameters:
 			identifier: argument.type
 			count: 2
 			path: tests/Feature/Edge/EdgeLicenseFailClosedTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeLicenseIssuanceGuardTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Edge/EdgeLicenseIssuanceGuardTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeLicenseIssuanceGuardTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Edge/EdgeLicenseIssuanceGuardTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeLicenseIssuanceGuardTest\:\:\$manager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Edge/EdgeLicenseIssuanceGuardTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/Edge/EdgeMultiTenantIsolationTest.php
 
 		-
 			message: '#^Cannot access property \$node_id on stdClass\|null\.$#'
@@ -5714,66 +4771,6 @@ parameters:
 			path: tests/Feature/Edge/EdgeMultiTenantIsolationTest.php
 
 		-
-			message: '#^Parameter \#1 \$company of method Tests\\Feature\\Edge\\EdgeMultiTenantIsolationTest\:\:createLog\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Edge/EdgeMultiTenantIsolationTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of method Tests\\Feature\\Edge\\EdgeMultiTenantIsolationTest\:\:insertNode\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Edge/EdgeMultiTenantIsolationTest.php
-
-		-
-			message: '#^Parameter \#2 \$employee of method Tests\\Feature\\Edge\\EdgeMultiTenantIsolationTest\:\:createLog\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Edge/EdgeMultiTenantIsolationTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeMultiTenantIsolationTest\:\:\$companyA \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Edge/EdgeMultiTenantIsolationTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeMultiTenantIsolationTest\:\:\$companyB \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Edge/EdgeMultiTenantIsolationTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeMultiTenantIsolationTest\:\:\$employeeA \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Edge/EdgeMultiTenantIsolationTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeMultiTenantIsolationTest\:\:\$employeeB \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Edge/EdgeMultiTenantIsolationTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/Edge/EdgeNodeSyncRouteTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of method Illuminate\\Foundation\\Testing\\TestCase\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 3
-			path: tests/Feature/Edge/EdgeNodeSyncRouteTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Edge/EdgeOfflinePunchTest.php
-
-		-
 			message: '#^Cannot access property \$pending_count on stdClass\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -5782,18 +4779,6 @@ parameters:
 		-
 			message: '#^Method Tests\\Feature\\Edge\\EdgeOfflinePunchTest\:\:insertEdgeNode\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Edge/EdgeOfflinePunchTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeOfflinePunchTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Edge/EdgeOfflinePunchTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeOfflinePunchTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
 			count: 1
 			path: tests/Feature/Edge/EdgeOfflinePunchTest.php
 
@@ -5812,12 +4797,6 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$date of method Carbon\\Carbon\:\:equalTo\(\) expects DateTimeInterface\|string, Illuminate\\Support\\Carbon\|null given\.$#'
 			identifier: argument.type
-			count: 1
-			path: tests/Feature/Edge/EdgeSilentNodeDetectionTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeSilentNodeDetectionTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
 			count: 1
 			path: tests/Feature/Edge/EdgeSilentNodeDetectionTest.php
 
@@ -5900,24 +4879,6 @@ parameters:
 			path: tests/Feature/Edge/EdgeSyncOnReconnectTest.php
 
 		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeSyncOnReconnectTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Edge/EdgeSyncOnReconnectTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeSyncOnReconnectTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Edge/EdgeSyncOnReconnectTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/EdgeSync/EdgeOfflineScenarioTest.php
-
-		-
 			message: '#^Cannot access property \$conflict_resolution on App\\Modules\\EdgeSync\\Domain\\Models\\SyncQueue\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -5972,24 +4933,6 @@ parameters:
 			path: tests/Feature/EdgeSync/EdgeOfflineScenarioTest.php
 
 		-
-			message: '#^Property Tests\\Feature\\EdgeSync\\EdgeOfflineScenarioTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/EdgeSync/EdgeOfflineScenarioTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\EdgeSync\\EdgeOfflineScenarioTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/EdgeSync/EdgeOfflineScenarioTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/EdgeSync/EdgeSyncDaemonIntegrationTest.php
-
-		-
 			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
 			identifier: larastan.noEnvCallsOutsideOfConfig
 			count: 3
@@ -6000,18 +4943,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Feature/EdgeSync/EdgeSyncDaemonIntegrationTest.php
-
-		-
-			message: '#^Parameter \#1 \$actor of method App\\Modules\\EduManager\\Infrastructure\\Services\\EduAcademicYearService\:\:createYear\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/EduManager/EduAcademicYearServiceTest.php
-
-		-
-			message: '#^Access to undefined constant App\\Modules\\EduManager\\Domain\\Models\\EduAcademicYear\:\:STATUS_ARCHIVED\.$#'
-			identifier: classConstant.notFound
-			count: 1
-			path: tests/Feature/EduManager/EduAcademicYearTest.php
 
 		-
 			message: '#^Method Tests\\Feature\\EduManager\\EduAcademicYearTest\:\:dropTablesReferencing\(\) is unused\.$#'
@@ -6030,42 +4961,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Feature/EduManager/EduAdmissionServiceTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduAdmission\:\:\$consent_at\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/EduManager/EduAdmissionTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduAdmission\:\:\$consent_marketing\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/EduManager/EduAdmissionTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduAdmission\:\:\$contact_reference\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/EduManager/EduAdmissionTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduAdmission\:\:\$decided_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/EduManager/EduAdmissionTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduAdmission\:\:\$decided_by\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/EduManager/EduAdmissionTest.php
-
-		-
-			message: '#^Access to undefined constant App\\Modules\\EduManager\\Domain\\Models\\EduAdmission\:\:STATUS_PENDING\.$#'
-			identifier: classConstant.notFound
-			count: 2
-			path: tests/Feature/EduManager/EduAdmissionTest.php
 
 		-
 			message: '#^Cannot access property \$consent_at on stdClass\|null\.$#'
@@ -6134,12 +5029,6 @@ parameters:
 			path: tests/Feature/EduManager/EduAttendanceTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduClass\:\:\$grade_level\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/EduManager/EduClassTest.php
-
-		-
 			message: '#^Cannot call method is\(\) on App\\Modules\\EduManager\\Domain\\Models\\EduAcademicYear\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -6176,18 +5065,6 @@ parameters:
 			path: tests/Feature/EduManager/EduDashboardTest.php
 
 		-
-			message: '#^Access to undefined constant App\\Modules\\EduManager\\Infrastructure\\Services\\EduFeeService\:\:EVENT_CHARGE_CREATED\.$#'
-			identifier: classConstant.notFound
-			count: 1
-			path: tests/Feature/EduManager/EduFeeTest.php
-
-		-
-			message: '#^Access to undefined constant App\\Modules\\EduManager\\Infrastructure\\Services\\EduFeeService\:\:EVENT_CHARGE_WAIVED\.$#'
-			identifier: classConstant.notFound
-			count: 1
-			path: tests/Feature/EduManager/EduFeeTest.php
-
-		-
 			message: '#^Cannot access property \$account_code on App\\Modules\\EduManager\\Domain\\Models\\EduAccountingEntry\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -6212,39 +5089,9 @@ parameters:
 			path: tests/Feature/EduManager/EduGradeServiceTest.php
 
 		-
-			message: '#^Parameter \#1 \$actor of method App\\Modules\\EduManager\\Infrastructure\\Services\\EduAcademicYearService\:\:createClass\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/EduManager/EduGradeServiceTest.php
-
-		-
-			message: '#^Parameter \#1 \$actor of method App\\Modules\\EduManager\\Infrastructure\\Services\\EduAcademicYearService\:\:createYear\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/EduManager/EduGradeServiceTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduAssessment\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/EduManager/EduGradeTest.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduGrade\:\:\$graded_at\.$#'
 			identifier: property.notFound
 			count: 1
-			path: tests/Feature/EduManager/EduGradeTest.php
-
-		-
-			message: '#^Access to undefined constant App\\Modules\\EduManager\\Domain\\Models\\EduAssessment\:\:STATUS_DRAFT\.$#'
-			identifier: classConstant.notFound
-			count: 2
-			path: tests/Feature/EduManager/EduGradeTest.php
-
-		-
-			message: '#^Access to undefined constant App\\Modules\\EduManager\\Domain\\Models\\EduAssessment\:\:TYPE_TEST\.$#'
-			identifier: classConstant.notFound
-			count: 2
 			path: tests/Feature/EduManager/EduGradeTest.php
 
 		-
@@ -6326,60 +5173,6 @@ parameters:
 			path: tests/Feature/EduManager/EduPerformanceTest.php
 
 		-
-			message: '#^Access to undefined constant App\\Modules\\EduManager\\Domain\\Models\\EduAdmission\:\:STATUS_PENDING\.$#'
-			identifier: classConstant.notFound
-			count: 1
-			path: tests/Feature/EduManager/EduRbacMatrixTest.php
-
-		-
-			message: '#^Access to undefined constant App\\Modules\\EduManager\\Domain\\Models\\EduAssessment\:\:STATUS_DRAFT\.$#'
-			identifier: classConstant.notFound
-			count: 1
-			path: tests/Feature/EduManager/EduRbacMatrixTest.php
-
-		-
-			message: '#^Access to undefined constant App\\Modules\\EduManager\\Domain\\Models\\EduAssessment\:\:TYPE_TEST\.$#'
-			identifier: classConstant.notFound
-			count: 1
-			path: tests/Feature/EduManager/EduRbacMatrixTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduReportCard\:\:\$average_score\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/EduManager/EduReportCardTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduReportCard\:\:\$class_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/EduManager/EduReportCardTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduReportCard\:\:\$data\.$#'
-			identifier: property.notFound
-			count: 6
-			path: tests/Feature/EduManager/EduReportCardTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduReportCard\:\:\$period_end\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/EduManager/EduReportCardTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduReportCard\:\:\$period_label\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/EduManager/EduReportCardTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\EduManager\\Domain\\Models\\EduReportCard\:\:\$period_start\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/EduManager/EduReportCardTest.php
-
-		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsString\(\) with string will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
@@ -6400,18 +5193,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$email_bounce_reason\.$#'
 			identifier: property.notFound
-			count: 1
-			path: tests/Feature/EmailBounceWebhookControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/EmailBounceWebhookControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\EmailBounceWebhookControllerTest\:\:employee\(\) should return App\\Core\\Auth\\Domain\\Models\\Employee but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
 			count: 1
 			path: tests/Feature/EmailBounceWebhookControllerTest.php
 
@@ -6440,21 +5221,9 @@ parameters:
 			path: tests/Feature/EmployeeInvitationOnboardingTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 34
-			path: tests/Feature/EmployeeLoanControllerTest.php
-
-		-
 			message: '#^Cannot access property \$amount on App\\Modules\\Payroll\\Domain\\Models\\LoanRepayment\|null\.$#'
 			identifier: property.nonObject
 			count: 1
-			path: tests/Feature/EmployeeLoanControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 8
 			path: tests/Feature/EmployeeLoanControllerTest.php
 
 		-
@@ -6476,100 +5245,16 @@ parameters:
 			path: tests/Feature/EmployeesRbacTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 11
-			path: tests/Feature/ExceptionLeakRegressionTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$preferred_language\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/ExceptionLeakRegressionTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 5
-			path: tests/Feature/ExceptionLeakRegressionTest.php
-
-		-
 			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringNotContainsString\(\) expects string, string\|false given\.$#'
 			identifier: argument.type
 			count: 6
 			path: tests/Feature/ExceptionLeakRegressionTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Expense/ExpenseClaimWorkflowTest.php
-
-		-
 			message: '#^Method Tests\\Feature\\Expense\\ExpenseClaimWorkflowTest\:\:validPayload\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Feature/Expense/ExpenseClaimWorkflowTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 4
-			path: tests/Feature/Expense/ExpenseClaimWorkflowTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 50
-			path: tests/Feature/ExpenseClaimControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 14
-			path: tests/Feature/ExpenseClaimControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/ExportControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 4
-			path: tests/Feature/ExportControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 6
-			path: tests/Feature/FeatureFlagControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 4
-			path: tests/Feature/FeatureFlagControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/FeatureManifestApiTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\FeatureManifestApiTest\:\:\$adminUser \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/FeatureManifestApiTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\FeatureManifestApiTest\:\:\$user \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/FeatureManifestApiTest.php
 
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<string, mixed\> will always evaluate to true\.$#'
@@ -6584,38 +5269,8 @@ parameters:
 			path: tests/Feature/FeatureRegistryIntegrationTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/FleetControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\FleetControllerTest\:\:fleetActor\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/FleetControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of method Tests\\Feature\\FleetControllerTest\:\:vehicle\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 3
-			path: tests/Feature/FleetControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Fuel/FuelAccountingOutboxTest.php
-
-		-
 			message: '#^Cannot call method assertExitCode\(\) on Illuminate\\Testing\\PendingCommand\|int\.$#'
 			identifier: method.nonObject
-			count: 1
-			path: tests/Feature/Fuel/FuelAccountingOutboxTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
 			count: 1
 			path: tests/Feature/Fuel/FuelAccountingOutboxTest.php
 
@@ -6638,58 +5293,10 @@ parameters:
 			path: tests/Feature/Fuel/FuelAlertApiTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/Fuel/FuelAlertServiceTest.php
-
-		-
 			message: '#^Access to undefined constant App\\Modules\\FuelStation\\Domain\\Models\\FuelMaintenanceTask\:\:TYPE_PREVENTIVE\.$#'
 			identifier: classConstant.notFound
 			count: 1
 			path: tests/Feature/Fuel/FuelAlertServiceTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Fuel\\FuelAlertServiceTest\:\:seedTenant\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee, App\\Modules\\FuelStation\\Domain\\Models\\FuelStation\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model, App\\Modules\\FuelStation\\Domain\\Models\\FuelStation\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/Fuel/FuelAlertServiceTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/Fuel/FuelCrmApiTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Fuel\\FuelCrmApiTest\:\:seedAccount\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee, App\\Core\\Auth\\Domain\\Models\\Employee, App\\Modules\\FuelStation\\Domain\\Models\\FuelProfessionalAccount\} but returns array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model, App\\Modules\\FuelStation\\Domain\\Models\\FuelProfessionalAccount\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/Fuel/FuelCrmApiTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Fuel\\FuelCrmApiTest\:\:seedTenant\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/Fuel/FuelCrmApiTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/Fuel/FuelImportApiTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Fuel\\FuelImportApiTest\:\:seedTenant\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/Fuel/FuelImportApiTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Fuel\\FuelImportApiTest\:\:seedTenantWithOperator\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/Fuel/FuelImportApiTest.php
 
 		-
 			message: '#^Access to undefined constant App\\Modules\\FuelStation\\Domain\\Models\\FuelImport\:\:KIND_METER_READINGS\.$#'
@@ -6702,12 +5309,6 @@ parameters:
 			identifier: classConstant.notFound
 			count: 1
 			path: tests/Feature/Fuel/FuelImportExportTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/Fuel/FuelIncidentApiTest.php
 
 		-
 			message: '#^Access to an undefined property Tests\\Feature\\Fuel\\FuelIncidentApiTest\:\:\$companyA\.$#'
@@ -6740,12 +5341,6 @@ parameters:
 			path: tests/Feature/Fuel/FuelIncidentApiTest.php
 
 		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/Fuel/FuelIncidentApiTest.php
-
-		-
 			message: '#^Cannot call method assertExitCode\(\) on Illuminate\\Testing\\PendingCommand\|int\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -6756,48 +5351,6 @@ parameters:
 			identifier: method.nonObject
 			count: 2
 			path: tests/Feature/Fuel/FuelOutboxApiTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 6
-			path: tests/Feature/Fuel/FuelReadingSyncApiTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Fuel\\FuelReadingSyncApiTest\:\:seedFixture\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee, App\\Modules\\FuelStation\\Domain\\Models\\FuelStation, App\\Modules\\FuelStation\\Domain\\Models\\FuelPump, App\\Modules\\FuelStation\\Domain\\Models\\FuelMeterRegister\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model, App\\Modules\\FuelStation\\Domain\\Models\\FuelStation, App\\Modules\\FuelStation\\Domain\\Models\\FuelPump, App\\Modules\\FuelStation\\Domain\\Models\\FuelMeterRegister\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/Fuel/FuelReadingSyncApiTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/Fuel/FuelReferenceApiTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Fuel\\FuelReferenceApiTest\:\:seedStation\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee, App\\Core\\Auth\\Domain\\Models\\Employee, App\\Modules\\FuelStation\\Domain\\Models\\FuelStation\} but returns array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model, App\\Modules\\FuelStation\\Domain\\Models\\FuelStation\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/Fuel/FuelReferenceApiTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Fuel\\FuelReferenceApiTest\:\:seedTenant\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/Fuel/FuelReferenceApiTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of method Tests\\Feature\\Fuel\\FuelReferenceApiTest\:\:createStation\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Fuel/FuelReferenceApiTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Fuel/FuelReferenceApiTest.php
 
 		-
 			message: '#^Access to an undefined property Tests\\Feature\\Fuel\\FuelReferentialApiTest\:\:\$companyA\.$#'
@@ -6812,12 +5365,6 @@ parameters:
 			path: tests/Feature/Fuel/FuelReferentialApiTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/Fuel/FuelReportApiTest.php
-
-		-
 			message: '#^Method Tests\\Feature\\Fuel\\FuelReportApiTest\:\:seedSales\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -6828,24 +5375,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Feature/Fuel/FuelReportApiTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Fuel/FuelReportApiTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/Fuel/FuelSecurityPerfTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Fuel\\FuelSecurityPerfTest\:\:seedTenant\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee, App\\Modules\\FuelStation\\Domain\\Models\\FuelStation\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model, App\\Modules\\FuelStation\\Domain\\Models\\FuelStation\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/Fuel/FuelSecurityPerfTest.php
 
 		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
@@ -6860,12 +5389,6 @@ parameters:
 			path: tests/Feature/Fuel/FuelSecurityPerfTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/Fuel/FuelStockApiTest.php
-
-		-
 			message: '#^Method Tests\\Feature\\Fuel\\FuelStockApiTest\:\:seedTenant\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -6874,24 +5397,6 @@ parameters:
 		-
 			message: '#^Offset ''tanks'' might not exist on array\<string, mixed\>\|null\.$#'
 			identifier: offsetAccess.notFound
-			count: 1
-			path: tests/Feature/Fuel/FuelStockApiTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of method Tests\\Feature\\Fuel\\FuelStockApiTest\:\:createStation\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 3
-			path: tests/Feature/Fuel/FuelStockApiTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of method Tests\\Feature\\Fuel\\FuelStockApiTest\:\:createTank\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/Fuel/FuelStockApiTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
 			count: 1
 			path: tests/Feature/Fuel/FuelStockApiTest.php
 
@@ -6914,52 +5419,10 @@ parameters:
 			path: tests/Feature/FuelStation/MeterOcrFeatureTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/GenerateBankExportJobTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\GenerateBankExportJobTest\:\:companyAndEmployee\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/GenerateBankExportJobTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 13
-			path: tests/Feature/GeneratePaymentDocumentJobNotificationTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 19
-			path: tests/Feature/GeneratePaymentDocumentJobTest.php
-
-		-
 			message: '#^Offset ''currency'' might not exist on array\<mixed\>\|null\.$#'
 			identifier: offsetAccess.notFound
 			count: 3
 			path: tests/Feature/GeneratePaymentDocumentJobTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/GrowthModuleTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 7
-			path: tests/Feature/GrowthModuleTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$referrer_partner_id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/GrowthModuleTest.php
 
 		-
 			message: '#^Access to an undefined property Tests\\Feature\\GrowthModuleTest\:\:\$commissionService\.$#'
@@ -6989,12 +5452,6 @@ parameters:
 			message: '#^Cannot access property \$referrer_partner_id on App\\Core\\Tenant\\Domain\\Models\\Company\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Core\\Tenant\\Domain\\Models\\Company\>\|null\.$#'
 			identifier: property.nonObject
 			count: 1
-			path: tests/Feature/GrowthModuleTest.php
-
-		-
-			message: '#^Cannot access property \$referrer_partner_id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 5
 			path: tests/Feature/GrowthModuleTest.php
 
 		-
@@ -7124,42 +5581,6 @@ parameters:
 			path: tests/Feature/GrowthModuleTest.php
 
 		-
-			message: '#^Parameter \#1 \$company of class App\\Events\\CompanyCreated constructor expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/GrowthModuleTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of method App\\Modules\\Billing\\Infrastructure\\Services\\PartnerService\:\:attributeCompanyToPartner\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/GrowthModuleTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of method App\\Modules\\Billing\\Infrastructure\\Services\\PartnerService\:\:reassignCompanyPartner\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/GrowthModuleTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of method Illuminate\\Foundation\\Testing\\TestCase\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/GrowthModuleTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 8
-			path: tests/Feature/HR/EmployeeExtraDataMaskingTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 3
-			path: tests/Feature/HR/EmployeeExtraDataMaskingTest.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 1
@@ -7172,48 +5593,6 @@ parameters:
 			path: tests/Feature/HR/EmployeeExtraDataMaskingTest.php
 
 		-
-			message: '#^Method Tests\\Feature\\HR\\EmployeeImportRaceTest\:\:makeCompany\(\) should return App\\Core\\Tenant\\Domain\\Models\\Company but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/HR/EmployeeImportRaceTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/HR/HrControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\HR\\HrControllerTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/HR/HrControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\HR\\HrControllerTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/HR/HrControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\HR\\HrControllerTest\:\:\$manager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/HR/HrControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\HR\\HrControllerTest\:\:\$otherCompany \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/HR/HrControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\HR\\HrControllerTest\:\:\$otherManager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/HR/HrControllerTest.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 2
@@ -7224,72 +5603,12 @@ parameters:
 			identifier: argument.templateType
 			count: 2
 			path: tests/Feature/HR/HrControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 8
-			path: tests/Feature/HR/UserEmployeeLinkCrossTenantTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/HR/UserEmployeeLinkCrossTenantTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/HrReportControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\HrReportControllerTest\:\:actingAsEmployee\(\) should return App\\Core\\Auth\\Domain\\Models\\Employee but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/HrReportControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\HrReportControllerTest\:\:actingAsManager\(\) should return App\\Core\\Auth\\Domain\\Models\\Employee but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/HrReportControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 3
-			path: tests/Feature/HrReportControllerTest.php
 
 		-
 			message: '#^Parameter \#1 \$string of function base64_encode expects string, string\|false given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/KioskMultiEventPunchTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 12
-			path: tests/Feature/LaunchReadinessControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 4
-			path: tests/Feature/LaunchReadinessControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Leave/LeavePolicyApiTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 20
-			path: tests/Feature/Leave/LeavePolicyApiTest.php
 
 		-
 			message: '#^Cannot access property \$active on App\\Modules\\Planning\\Domain\\Models\\LeavePolicy\|null\.$#'
@@ -7304,24 +5623,6 @@ parameters:
 			path: tests/Feature/Leave/LeavePolicyApiTest.php
 
 		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/Leave/LeavePolicyApiTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/LeaveWorkflowIntegrationTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 3
-			path: tests/Feature/LeaveWorkflowIntegrationTest.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 1
@@ -7334,34 +5635,10 @@ parameters:
 			path: tests/Feature/LeaveWorkflowIntegrationTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/Marketing/ConnectSocialAccountActionTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/Marketing/CreateSocialPostActionTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 6
-			path: tests/Feature/Marketing/DisconnectSocialAccountActionTest.php
-
-		-
 			message: '#^Method Tests\\Feature\\Marketing\\MarketingLeadControllerTest\:\:authorizedHeaders\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Feature/Marketing/MarketingLeadControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/Marketing/PostPublicationTest.php
 
 		-
 			message: '#^Cannot access property \$error_message on App\\Modules\\Marketing\\Domain\\Models\\PostPublication\|null\.$#'
@@ -7394,12 +5671,6 @@ parameters:
 			path: tests/Feature/Marketing/PostPublicationTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 9
-			path: tests/Feature/Marketing/PublishScheduledPostJobTest.php
-
-		-
 			message: '#^Cannot access property \$provider_post_ref on App\\Modules\\Marketing\\Domain\\Models\\SocialPost\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -7410,12 +5681,6 @@ parameters:
 			identifier: property.nonObject
 			count: 3
 			path: tests/Feature/Marketing/PublishScheduledPostJobTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/Marketing/PublishScheduledSocialPostsCommandTest.php
 
 		-
 			message: '#^Cannot access property \$attempts on App\\Modules\\Marketing\\Domain\\Models\\SocialPost\|null\.$#'
@@ -7442,46 +5707,10 @@ parameters:
 			path: tests/Feature/Marketing/PublishScheduledSocialPostsCommandTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/Marketing/SchedulePostActionTest.php
-
-		-
 			message: '#^Cannot call method toDateTimeString\(\) on Illuminate\\Support\\Carbon\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: tests/Feature/Marketing/SchedulePostActionTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 6
-			path: tests/Feature/Marketing/SocialAccountControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Marketing\\SocialAccountControllerTest\:\:marketingManager\(\) should return App\\Core\\Auth\\Domain\\Models\\Employee but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/Marketing/SocialAccountControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of method Tests\\Feature\\Marketing\\SocialAccountControllerTest\:\:marketingManager\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 4
-			path: tests/Feature/Marketing/SocialAccountControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/Marketing/SocialAccountControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/Marketing/SocialAccountModelTest.php
 
 		-
 			message: '#^Cannot call method is\(\) on App\\Modules\\Marketing\\Domain\\Models\\SocialAccount\|null\.$#'
@@ -7490,76 +5719,10 @@ parameters:
 			path: tests/Feature/Marketing/SocialAccountModelTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 10
-			path: tests/Feature/Marketing/SocialAccountPolicyTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:can\(\)\.$#'
-			identifier: method.notFound
-			count: 10
-			path: tests/Feature/Marketing/SocialAccountPolicyTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 8
-			path: tests/Feature/Marketing/SocialPostControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Marketing\\SocialPostControllerTest\:\:marketingManager\(\) should return App\\Core\\Auth\\Domain\\Models\\Employee but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/Marketing/SocialPostControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of method Tests\\Feature\\Marketing\\SocialPostControllerTest\:\:connectedAccount\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 9
-			path: tests/Feature/Marketing/SocialPostControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of method Tests\\Feature\\Marketing\\SocialPostControllerTest\:\:marketingManager\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 8
-			path: tests/Feature/Marketing/SocialPostControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Marketing/SocialPostControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 8
-			path: tests/Feature/Marketing/SocialPostPolicyTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:can\(\)\.$#'
-			identifier: method.notFound
-			count: 13
-			path: tests/Feature/Marketing/SocialPostPolicyTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 6
-			path: tests/Feature/Marketing/SocialPublishingServiceTest.php
-
-		-
 			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/Marketing/SocialPublishingServiceTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/NotificationControllerTest.php
 
 		-
 			message: '#^Cannot access property \$is_read on App\\Modules\\Notification\\Domain\\Models\\Notification\|null\.$#'
@@ -7568,70 +5731,10 @@ parameters:
 			path: tests/Feature/NotificationControllerTest.php
 
 		-
-			message: '#^Method Tests\\Feature\\NotificationControllerTest\:\:notificationFixture\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/NotificationControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/NotificationPreferenceControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\NotificationPreferenceControllerTest\:\:employee\(\) should return App\\Core\\Auth\\Domain\\Models\\Employee but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/NotificationPreferenceControllerTest.php
-
-		-
 			message: '#^Offset ''channels'' might not exist on array\<mixed\>\|null\.$#'
 			identifier: offsetAccess.notFound
 			count: 2
 			path: tests/Feature/NotificationPreferenceControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Onboarding\\OnboardingControllerTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Onboarding/OnboardingControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Onboarding\\OnboardingControllerTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Onboarding/OnboardingControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Onboarding\\OnboardingControllerTest\:\:\$manager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Onboarding/OnboardingControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Onboarding\\OnboardingControllerTest\:\:\$otherCompany \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Onboarding/OnboardingControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Onboarding\\OnboardingControllerTest\:\:\$otherManager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Onboarding/OnboardingControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/OnboardingChecklistTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/OnboardingChecklistTest.php
 
 		-
 			message: '#^Cannot access property \$status on App\\Modules\\HR\\Domain\\Models\\OnboardingStep\|null\.$#'
@@ -7640,24 +5743,6 @@ parameters:
 			path: tests/Feature/OnboardingStepControllerTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/OrgChartControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 33
-			path: tests/Feature/OrgChartControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 10
-			path: tests/Feature/OrgChartControllerTest.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 1
@@ -7668,12 +5753,6 @@ parameters:
 			identifier: argument.templateType
 			count: 1
 			path: tests/Feature/OrgChartControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/PaySlipControllerTest.php
 
 		-
 			message: '#^Cannot access property \$status on App\\Modules\\Payroll\\Domain\\Models\\PaySlip\|null\.$#'
@@ -7682,24 +5761,6 @@ parameters:
 			path: tests/Feature/PaySlipControllerTest.php
 
 		-
-			message: '#^Method Tests\\Feature\\PaySlipControllerTest\:\:payrollActor\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/PaySlipControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of method Tests\\Feature\\PaySlipControllerTest\:\:payrollSlip\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/PaySlipControllerTest.php
-
-		-
-			message: '#^Parameter \#2 \$employee of method Tests\\Feature\\PaySlipControllerTest\:\:payrollSlip\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 4
-			path: tests/Feature/PaySlipControllerTest.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 1
@@ -7710,24 +5771,6 @@ parameters:
 			identifier: argument.templateType
 			count: 1
 			path: tests/Feature/PaySlipControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/PaySlipPdfLocaleTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of method Tests\\Feature\\PaySlipPdfLocaleTest\:\:payrollSlip\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 3
-			path: tests/Feature/PaySlipPdfLocaleTest.php
-
-		-
-			message: '#^Parameter \#2 \$employee of method Tests\\Feature\\PaySlipPdfLocaleTest\:\:payrollSlip\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 3
-			path: tests/Feature/PaySlipPdfLocaleTest.php
 
 		-
 			message: '#^Cannot access property \$status on App\\Modules\\Payroll\\Domain\\Models\\PaymentItem\|null\.$#'
@@ -7740,12 +5783,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/PaymentBatchControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/PaymentWebhookControllerTest.php
 
 		-
 			message: '#^Cannot access property \$cancelled_at on App\\Modules\\Billing\\Domain\\Models\\Subscription\|null\.$#'
@@ -7769,12 +5806,6 @@ parameters:
 			message: '#^Cannot access property \$status on App\\Modules\\Billing\\Domain\\Models\\Subscription\|null\.$#'
 			identifier: property.nonObject
 			count: 5
-			path: tests/Feature/PaymentWebhookControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\PaymentWebhookControllerTest\:\:billingFixture\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Modules\\Billing\\Domain\\Models\\Subscription, App\\Modules\\Billing\\Domain\\Models\\Invoice\} but returns array\{Illuminate\\Database\\Eloquent\\Model, App\\Modules\\Billing\\Domain\\Models\\Subscription, App\\Modules\\Billing\\Domain\\Models\\Invoice\}\.$#'
-			identifier: return.type
-			count: 1
 			path: tests/Feature/PaymentWebhookControllerTest.php
 
 		-
@@ -7826,12 +5857,6 @@ parameters:
 			path: tests/Feature/Payroll/Golden/GoldenDzProrataOvertimeTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 9
-			path: tests/Feature/Payroll/Golden/GoldenDzSalaryStructurePerEmployeeTest.php
-
-		-
 			message: '#^Cannot access property \$gross_salary on App\\Modules\\Payroll\\Domain\\Models\\PaySlip\|null\.$#'
 			identifier: property.nonObject
 			count: 3
@@ -7844,34 +5869,10 @@ parameters:
 			path: tests/Feature/Payroll/Golden/GoldenDzSalaryStructurePerEmployeeTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/Payroll/PayrollAnomalyServiceTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of method Tests\\Feature\\Payroll\\PayrollAnomalyServiceTest\:\:makeRun\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 7
-			path: tests/Feature/Payroll/PayrollAnomalyServiceTest.php
-
-		-
 			message: '#^Parameter \#1 \$run of method App\\Modules\\Payroll\\Infrastructure\\Services\\PayrollAnomalyService\:\:detectForRun\(\) expects App\\Modules\\Payroll\\Domain\\Models\\PayrollRun, App\\Modules\\Payroll\\Domain\\Models\\PayrollRun\|null given\.$#'
 			identifier: argument.type
 			count: 5
 			path: tests/Feature/Payroll/PayrollAnomalyServiceTest.php
-
-		-
-			message: '#^Parameter \#2 \$employee of method Tests\\Feature\\Payroll\\PayrollAnomalyServiceTest\:\:makeSlip\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 8
-			path: tests/Feature/Payroll/PayrollAnomalyServiceTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/Payroll/PayrollExportsTest.php
 
 		-
 			message: '#^Method Tests\\Feature\\Payroll\\PayrollExportsTest\:\:seededRun\(\) return type has no value type specified in iterable type array\.$#'
@@ -7880,38 +5881,8 @@ parameters:
 			path: tests/Feature/Payroll/PayrollExportsTest.php
 
 		-
-			message: '#^Parameter \#2 \$employee of method Tests\\Feature\\Payroll\\PayrollExportsTest\:\:slip\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/Payroll/PayrollExportsTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Payroll/PayrollTenantIsolationTest.php
-
-		-
 			message: '#^Method Tests\\Feature\\Payroll\\PayrollTenantIsolationTest\:\:seedPayrollData\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Payroll/PayrollTenantIsolationTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Payroll\\PayrollTenantIsolationTest\:\:\$companyA \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Payroll/PayrollTenantIsolationTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Payroll\\PayrollTenantIsolationTest\:\:\$companyB \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Payroll/PayrollTenantIsolationTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Payroll\\PayrollTenantIsolationTest\:\:\$managerA \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
 			count: 1
 			path: tests/Feature/Payroll/PayrollTenantIsolationTest.php
 
@@ -7922,12 +5893,6 @@ parameters:
 			path: tests/Feature/Payroll/PayrollTenantIsolationTest.php
 
 		-
-			message: '#^Property Tests\\Feature\\Payroll\\PayrollTenantIsolationTest\:\:\$managerB \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Payroll/PayrollTenantIsolationTest.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 2
@@ -7940,54 +5905,6 @@ parameters:
 			path: tests/Feature/Payroll/PayrollTenantIsolationTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 19
-			path: tests/Feature/Payroll/PayrollWorkInputsTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of method Tests\\Feature\\Payroll\\PayrollWorkInputsTest\:\:makeRun\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 3
-			path: tests/Feature/Payroll/PayrollWorkInputsTest.php
-
-		-
-			message: '#^Parameter \#2 \$employee of method App\\Modules\\Payroll\\Infrastructure\\Services\\PayrollCalculator\:\:collectWorkInputs\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 3
-			path: tests/Feature/Payroll/PayrollWorkInputsTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 9
-			path: tests/Feature/Payroll/PrecalculatePayrollRunsCommandTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 6
-			path: tests/Feature/Payroll/ProcessPayrollBatchJobTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 9
-			path: tests/Feature/PayrollAccountingExportTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 3
-			path: tests/Feature/PayrollAccountingExportTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 4
-			path: tests/Feature/PayrollCycleIntegrationTest.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 1
@@ -7998,36 +5915,6 @@ parameters:
 			identifier: argument.templateType
 			count: 1
 			path: tests/Feature/PayrollCycleIntegrationTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 8
-			path: tests/Feature/PayrollCyclePreviewTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 5
-			path: tests/Feature/PayrollCyclePreviewTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 6
-			path: tests/Feature/PayrollCycleSettingsTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$timezone\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/PayrollCycleSettingsTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 6
-			path: tests/Feature/PayrollCycleSettingsTest.php
 
 		-
 			message: '#^Cannot access property \$validated_by on App\\Modules\\Payroll\\Domain\\Models\\PayrollRun\|null\.$#'
@@ -8040,66 +5927,6 @@ parameters:
 			identifier: method.nonObject
 			count: 1
 			path: tests/Feature/PlanSeederTrialDaysAlignmentTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\PlanningControllerTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/PlanningControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\PlanningControllerTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/PlanningControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\PlanningControllerTest\:\:\$manager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/PlanningControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\PlanningOptimizationTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/PlanningOptimizationTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\PlanningOptimizationTest\:\:\$manager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/PlanningOptimizationTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Platform\\PlatformControllerTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Platform/PlatformControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Platform\\PlatformControllerTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Platform/PlatformControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Platform\\PlatformControllerTest\:\:\$manager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Platform/PlatformControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Platform\\PlatformControllerTest\:\:\$otherCompany \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Platform/PlatformControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Platform\\PlatformControllerTest\:\:\$otherManager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Platform/PlatformControllerTest.php
 
 		-
 			message: '#^Call to method forceFill\(\) on an unknown class App\\Core\\Auth\\Domain\\Models\\SuperAdmin\.$#'
@@ -8132,18 +5959,6 @@ parameters:
 			path: tests/Feature/Platform/PlatformSolutionSurveyStatsTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 13
-			path: tests/Feature/PlatformAnnouncementControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/PlatformAnnouncementControllerTest.php
-
-		-
 			message: '#^Cannot access offset 1 on array\|false\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -8162,52 +5977,10 @@ parameters:
 			path: tests/Feature/PlatformAuthTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/PlatformCompanyHealthApiTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 20
-			path: tests/Feature/PlatformCompanyHealthApiTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$slug\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/PlatformCompanyHealthApiTest.php
-
-		-
 			message: '#^Call to an undefined method App\\Core\\Tenant\\Domain\\Models\\Company\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Core\\Tenant\\Domain\\Models\\Company\>\:\:hasFeature\(\)\.$#'
 			identifier: method.notFound
 			count: 2
 			path: tests/Feature/PlatformCompanyProvisioningTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/PlatformCompanySubscriptionApiTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$notes\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/PlatformCompanySubscriptionApiTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$plan_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/PlatformCompanySubscriptionApiTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/PlatformCompanySubscriptionApiTest.php
 
 		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
@@ -8220,12 +5993,6 @@ parameters:
 			identifier: argument.templateType
 			count: 4
 			path: tests/Feature/PlatformCrmPipelineApiTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 35
-			path: tests/Feature/PlatformImpersonationControllerTest.php
 
 		-
 			message: '#^Cannot access property \$ended_at on App\\Modules\\Platform\\Domain\\Models\\PlatformImpersonationSession\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Modules\\Platform\\Domain\\Models\\PlatformImpersonationSession\>\|null\.$#'
@@ -8240,24 +6007,6 @@ parameters:
 			path: tests/Feature/PlatformImpersonationControllerTest.php
 
 		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/PlatformImpersonationControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 6
-			path: tests/Feature/PlatformMetricsOverviewApiTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 13
-			path: tests/Feature/PlatformNotificationObservabilityApiTest.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 3
@@ -8268,18 +6017,6 @@ parameters:
 			identifier: argument.templateType
 			count: 3
 			path: tests/Feature/PlatformNotificationObservabilityApiTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 12
-			path: tests/Feature/PlatformSupportTicketControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 10
-			path: tests/Feature/PlatformSupportTicketControllerTest.php
 
 		-
 			message: '#^Cannot access offset 1 on array\|false\.$#'
@@ -8312,82 +6049,10 @@ parameters:
 			path: tests/Feature/PlatformWebAuth2faTest.php
 
 		-
-			message: '#^Property Tests\\Feature\\PredictionControllerTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/PredictionControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\PredictionControllerTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/PredictionControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\PredictionControllerTest\:\:\$manager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/PredictionControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/PrivacyControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\PrivacyControllerTest\:\:privacyActor\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/PrivacyControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/ProcessBulkPaymentJobTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\ProcessBulkPaymentJobTest\:\:companyAndManager\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/ProcessBulkPaymentJobTest.php
-
-		-
-			message: '#^Parameter \#2 \$employee of method Tests\\Feature\\ProcessBulkPaymentJobTest\:\:paySlip\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 10
-			path: tests/Feature/ProcessBulkPaymentJobTest.php
-
-		-
 			message: '#^Strict comparison using \!\=\= between int and null will always evaluate to true\.$#'
 			identifier: notIdentical.alwaysTrue
 			count: 1
 			path: tests/Feature/ProcessBulkPaymentJobTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\ProfileFunctionalReadinessTest\:\:makeProfileMatrix\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, array\<string, App\\Core\\Auth\\Domain\\Models\\Employee\>\} but returns array\{Illuminate\\Database\\Eloquent\\Model, array\{principal\: App\\Core\\Auth\\Domain\\Models\\Employee, rh\: App\\Core\\Auth\\Domain\\Models\\Employee, dept\: App\\Core\\Auth\\Domain\\Models\\Employee, comptable\: App\\Core\\Auth\\Domain\\Models\\Employee, superviseur\: App\\Core\\Auth\\Domain\\Models\\Employee, employee\: App\\Core\\Auth\\Domain\\Models\\Employee\}\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/ProfileFunctionalReadinessTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of method Tests\\Feature\\ProfileFunctionalReadinessTest\:\:employee\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 6
-			path: tests/Feature/ProfileFunctionalReadinessTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 19
-			path: tests/Feature/PublicCareerControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$slug\.$#'
-			identifier: property.notFound
-			count: 15
-			path: tests/Feature/PublicCareerControllerTest.php
 
 		-
 			message: '#^Parameter \#1 \$data of function simplexml_load_string expects string, string\|false given\.$#'
@@ -8406,18 +6071,6 @@ parameters:
 			identifier: argument.templateType
 			count: 3
 			path: tests/Feature/QueueObservabilityApiTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 17
-			path: tests/Feature/RecruitmentControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 6
-			path: tests/Feature/RecruitmentControllerTest.php
 
 		-
 			message: '#^Cannot call method assertSuccessful\(\) on Illuminate\\Testing\\PendingCommand\|int\.$#'
@@ -8444,12 +6097,6 @@ parameters:
 			path: tests/Feature/Restaurant/RestaurantDeliveryWebhookTest.php
 
 		-
-			message: '#^Undefined variable\: \$companyA$#'
-			identifier: variable.undefined
-			count: 1
-			path: tests/Feature/Restaurant/RestaurantDeliveryWebhookTest.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\RestaurantManager\\Domain\\Models\\RestaurantReservation\:\:\$reminder_sent_at\.$#'
 			identifier: property.notFound
 			count: 2
@@ -8460,12 +6107,6 @@ parameters:
 			identifier: method.nonObject
 			count: 4
 			path: tests/Feature/Restaurant/RestaurantJobsTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of method App\\Core\\Tenant\\TenantManager\:\:withinTenant\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Restaurant/RestaurantKitchenQueueTest.php
 
 		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
@@ -8582,22 +6223,10 @@ parameters:
 			path: tests/Feature/Restaurant/RestaurantPushNotificationTest.php
 
 		-
-			message: '#^Parameter \#1 \$company of method App\\Core\\Tenant\\TenantManager\:\:withinTenant\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Restaurant/RestaurantReservationAvailabilityTest.php
-
-		-
 			message: '#^Cannot call method assertSuccessful\(\) on Illuminate\\Testing\\PendingCommand\|int\.$#'
 			identifier: method.nonObject
 			count: 2
 			path: tests/Feature/Restaurant/RestaurantReservationJobsTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of method App\\Core\\Tenant\\TenantManager\:\:withinTenant\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Restaurant/RestaurantReservationTest.php
 
 		-
 			message: '#^Cannot call method assertSuccessful\(\) on Illuminate\\Testing\\PendingCommand\|int\.$#'
@@ -8630,70 +6259,10 @@ parameters:
 			path: tests/Feature/Restaurant/RestaurantStockCrudTest.php
 
 		-
-			message: '#^Anonymous function has an unused use \$company\.$#'
-			identifier: closure.unusedUse
-			count: 2
-			path: tests/Feature/Restaurant/RestaurantStockDecrementTest.php
-
-		-
 			message: '#^Method Tests\\Feature\\Restaurant\\RestaurantStockDecrementTest\:\:makeOrderWithRecipe\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Feature/Restaurant/RestaurantStockDecrementTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of method App\\Core\\Tenant\\TenantManager\:\:withinTenant\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Restaurant/RestaurantStockMovementTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of method App\\Core\\Tenant\\TenantManager\:\:withinTenant\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Restaurant/RestaurantTableSessionTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 26
-			path: tests/Feature/RoleAssignmentAuditTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 6
-			path: tests/Feature/RoleAssignmentAuditTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\SSOControllerTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/SSOControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\SSOControllerTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/SSOControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\SSOControllerTest\:\:\$manager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/SSOControllerTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 28
-			path: tests/Feature/ScheduleControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 7
-			path: tests/Feature/ScheduleControllerTest.php
 
 		-
 			message: '#^Parameter \#1 \$json of function json_decode expects string, string\|false given\.$#'
@@ -8702,62 +6271,8 @@ parameters:
 			path: tests/Feature/Security/ApiManagerMiddlewareTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Security/ApiVersionAndPlanRateLimitTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Security/ApiVersionAndPlanRateLimitTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/Security/AuthenticatedGuardrailsTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/Security/AuthenticatedGuardrailsTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 4
-			path: tests/Feature/Security/AuthenticatedGuardrailsTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Security/CheckThenCreateRaceTest.php
-
-		-
 			message: '#^Method Tests\\Feature\\Security\\ExposedSyncEngineService\:\:exposeApplyAttendanceLog\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Security/CheckThenCreateRaceTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Security/CheckThenCreateRaceTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Security\\CheckThenCreateRaceTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Security/CheckThenCreateRaceTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Security\\CheckThenCreateRaceTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
 			count: 1
 			path: tests/Feature/Security/CheckThenCreateRaceTest.php
 
@@ -8774,12 +6289,6 @@ parameters:
 			path: tests/Feature/Security/DepartmentScopedRbacTest.php
 
 		-
-			message: '#^Method Tests\\Feature\\Security\\EvaluationSecurityTest\:\:createEmployee\(\) should return App\\Core\\Auth\\Domain\\Models\\Employee but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/Security/EvaluationSecurityTest.php
-
-		-
 			message: '#^Cannot access property \$company_id on stdClass\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -8790,12 +6299,6 @@ parameters:
 			identifier: property.nonObject
 			count: 1
 			path: tests/Feature/Security/GlobalEmailUniquenessTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/Security/GoogleAuthGlobalLookupTest.php
 
 		-
 			message: '#^Method Tests\\Feature\\Security\\GoogleAuthGlobalLookupTest\:\:test_google_login_rejects_unknown_email_with_401\(\) has no return type specified\.$#'
@@ -8816,18 +6319,6 @@ parameters:
 			path: tests/Feature/Security/KioskCrossTenantIsolationTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/Security/SensitiveRateLimitTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Security/SensitiveRateLimitTest.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 6
@@ -8838,18 +6329,6 @@ parameters:
 			identifier: argument.templateType
 			count: 6
 			path: tests/Feature/Security/SupervisorScopedRbacTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/Security/TenantScopeFailClosedTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 5
-			path: tests/Feature/Security/TenantScopeFailClosedTest.php
 
 		-
 			message: '#^Cannot access property \$url on App\\Modules\\Billing\\Domain\\Models\\WebhookEndpoint\|null\.$#'
@@ -8954,24 +6433,6 @@ parameters:
 			path: tests/Feature/SelfServiceTrialTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/SocialDeclarationControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\SocialDeclarationControllerTest\:\:socialDeclarationActors\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model\}\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Feature/SocialDeclarationControllerTest.php
-
-		-
-			message: '#^Parameter \#2 \$employee of method Tests\\Feature\\SocialDeclarationControllerTest\:\:validatedSlip\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/SocialDeclarationControllerTest.php
-
-		-
 			message: '#^Cannot access property \$answers on stdClass\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -9008,42 +6469,6 @@ parameters:
 			path: tests/Feature/Solutions/SolutionSurveyStatsTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 15
-			path: tests/Feature/TaskControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Training\\TrainingControllerTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Training/TrainingControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Training\\TrainingControllerTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Training/TrainingControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Training\\TrainingControllerTest\:\:\$manager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Training/TrainingControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Training\\TrainingControllerTest\:\:\$otherCompany \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Training/TrainingControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Training\\TrainingControllerTest\:\:\$otherManager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Training/TrainingControllerTest.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelAdvert\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Modules\\TravelAgency\\Domain\\Models\\TravelAdvert\>\:\:\$expires_at\.$#'
 			identifier: property.notFound
 			count: 2
@@ -9058,7 +6483,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelAdvert\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Modules\\TravelAgency\\Domain\\Models\\TravelAdvert\>\:\:\$status\.$#'
 			identifier: property.notFound
-			count: 4
+			count: 3
 			path: tests/Feature/Travel/TravelAdvertApiTest.php
 
 		-
@@ -9068,55 +6493,7 @@ parameters:
 			path: tests/Feature/Travel/TravelAdvertApiTest.php
 
 		-
-			message: '#^Method Tests\\Feature\\Travel\\TravelAdvertApiTest\:\:referentials\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Travel/TravelAdvertApiTest.php
-
-		-
-			message: '#^Parameter \$managerRole of method Tests\\Feature\\Travel\\TravelAdvertCatalogTest\:\:principal\(\) expects string, null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Travel/TravelAdvertCatalogTest.php
-
-		-
-			message: '#^Access to undefined constant App\\Modules\\TravelAgency\\Domain\\Models\\TravelAdvert\:\:STATUS_ARCHIVED\.$#'
-			identifier: classConstant.notFound
-			count: 1
-			path: tests/Feature/Travel/TravelAdvertExpirationTest.php
-
-		-
-			message: '#^Access to undefined constant App\\Modules\\TravelAgency\\Domain\\Models\\TravelAdvert\:\:STATUS_DRAFT\.$#'
-			identifier: classConstant.notFound
-			count: 1
-			path: tests/Feature/Travel/TravelAdvertExpirationTest.php
-
-		-
-			message: '#^Access to undefined constant App\\Modules\\TravelAgency\\Domain\\Models\\TravelAdvert\:\:STATUS_EXPIRED\.$#'
-			identifier: classConstant.notFound
-			count: 3
-			path: tests/Feature/Travel/TravelAdvertExpirationTest.php
-
-		-
-			message: '#^Access to undefined constant App\\Modules\\TravelAgency\\Domain\\Models\\TravelAdvert\:\:STATUS_PUBLISHED\.$#'
-			identifier: classConstant.notFound
-			count: 2
-			path: tests/Feature/Travel/TravelAdvertExpirationTest.php
-
-		-
-			message: '#^Undefined variable\: \$company$#'
-			identifier: variable.undefined
-			count: 4
-			path: tests/Feature/Travel/TravelAdvertExpirationTest.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelAdvert\:\:\$payment_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Travel/TravelAdvertLifecycleTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelAdvert\:\:\$published_at\.$#'
 			identifier: property.notFound
 			count: 1
 			path: tests/Feature/Travel/TravelAdvertLifecycleTest.php
@@ -9131,12 +6508,6 @@ parameters:
 			message: '#^Method Tests\\Feature\\Travel\\TravelAdvertLifecycleTest\:\:submit\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: tests/Feature/Travel/TravelAdvertLifecycleTest.php
-
-		-
-			message: '#^Undefined variable\: \$company$#'
-			identifier: variable.undefined
-			count: 3
 			path: tests/Feature/Travel/TravelAdvertLifecycleTest.php
 
 		-
@@ -9272,12 +6643,6 @@ parameters:
 			path: tests/Feature/Travel/TravelNotificationApiTest.php
 
 		-
-			message: '#^Method App\\Modules\\TravelAgency\\Infrastructure\\Services\\TravelNotificationConsumer\:\:handle\(\) invoked with 1 parameter, 2 required\.$#'
-			identifier: arguments.count
-			count: 6
-			path: tests/Feature/Travel/TravelNotificationConsumerTest.php
-
-		-
 			message: '#^Method Tests\\Feature\\Travel\\TravelNotificationConsumerTest\:\:makeBooking\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -9287,18 +6652,6 @@ parameters:
 			message: '#^Parameter \#1 \$address of method Illuminate\\Mail\\Mailable\:\:hasTo\(\) expects array\|object\|string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
-			path: tests/Feature/Travel/TravelNotificationConsumerTest.php
-
-		-
-			message: '#^Parameter \#1 \$eventType of method App\\Modules\\TravelAgency\\Infrastructure\\Services\\TravelNotificationConsumer\:\:handle\(\) expects string, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Travel/TravelNotificationConsumerTest.php
-
-		-
-			message: '#^Parameter \#1 \$eventType of method App\\Modules\\TravelAgency\\Infrastructure\\Services\\TravelNotificationConsumer\:\:handle\(\) expects string, array\<string, string\> given\.$#'
-			identifier: argument.type
-			count: 5
 			path: tests/Feature/Travel/TravelNotificationConsumerTest.php
 
 		-
@@ -9372,12 +6725,6 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: tests/Feature/Travel/TravelPublicTunnelTest.php
-
-		-
-			message: '#^Access to undefined constant App\\Modules\\TravelAgency\\Domain\\Enums\\QuizStatus\:\:ACTIVE\.$#'
-			identifier: classConstant.notFound
-			count: 1
-			path: tests/Feature/Travel/TravelQuizApiTest.php
 
 		-
 			message: '#^Cannot access property \$correct_answer_hash on App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuizQuestion\|null\.$#'
@@ -9602,63 +6949,9 @@ parameters:
 			path: tests/Feature/Travel/TravelWebhookTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/TrialDripEmailLocalizationTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$first_name\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/TrialDripEmailLocalizationTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/TrialDripEmailLocalizationTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$last_name\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/TrialDripEmailLocalizationTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of class App\\Mail\\TrialDayOneMail constructor expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/TrialDripEmailLocalizationTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of class App\\Mail\\TrialDaySevenMail constructor expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/TrialDripEmailLocalizationTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of class App\\Mail\\TrialDayThreeMail constructor expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/TrialDripEmailLocalizationTest.php
-
-		-
-			message: '#^Parameter \#1 \$company of class App\\Mail\\TrialDripMail constructor expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/TrialDripEmailLocalizationTest.php
-
-		-
 			message: '#^Parameter \#1 \$haystack of function str_contains expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 3
-			path: tests/Feature/TrialDripEmailLocalizationTest.php
-
-		-
-			message: '#^Parameter \#2 \$manager of class App\\Mail\\TrialDripMail constructor expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
 			path: tests/Feature/TrialDripEmailLocalizationTest.php
 
 		-
@@ -9672,24 +6965,6 @@ parameters:
 			identifier: property.nonObject
 			count: 1
 			path: tests/Feature/User/UserAuthGoogleSignInSecurityTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 11
-			path: tests/Feature/WebhookDeadLetterTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 5
-			path: tests/Feature/WebhookDeadLetterTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/WebhookRetryAndDeactivationTest.php
 
 		-
 			message: '#^Cannot call method assertSuccessful\(\) on Illuminate\\Testing\\PendingCommand\|int\.$#'
@@ -9746,22 +7021,10 @@ parameters:
 			path: tests/Unit/CountryDefaultsTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Unit/EdgeSync/EdgeDaemonSyncClientTest.php
-
-		-
 			message: '#^Cannot call method run\(\) on Illuminate\\Testing\\PendingCommand\|int\.$#'
 			identifier: method.nonObject
 			count: 5
 			path: tests/Unit/HrModelSeederTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Unit/Jobs/EnsureTenantContextTest.php
 
 		-
 			message: '#^Method App\\Contracts\\Queue\\TenantScopedJob@anonymous/tests/Unit/Jobs/EnsureTenantContextTest\.php\:62\:\:tenantCompanyId\(\) never returns null so it can be removed from the return type\.$#'
@@ -9800,20 +7063,8 @@ parameters:
 			path: tests/Unit/PayrollCountryRulesTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Unit/Providers/MailMessageProviderTest.php
-
-		-
 			message: '#^Method Tests\\Unit\\Providers\\MailMessageProviderTest\:\:employee\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/Providers/MailMessageProviderTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Providers\\MailMessageProviderTest\:\:employee\(\) should return App\\Core\\Auth\\Domain\\Models\\Employee but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
 			count: 1
 			path: tests/Unit/Providers/MailMessageProviderTest.php
 
@@ -9836,28 +7087,10 @@ parameters:
 			path: tests/Unit/Providers/PolicyRegistrationTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Unit/Providers/TwilioSmsMessageProviderTest.php
-
-		-
 			message: '#^Method Tests\\Unit\\Providers\\TwilioSmsMessageProviderTest\:\:employee\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Unit/Providers/TwilioSmsMessageProviderTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Providers\\TwilioSmsMessageProviderTest\:\:employee\(\) should return App\\Core\\Auth\\Domain\\Models\\Employee but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Unit/Providers/TwilioSmsMessageProviderTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Unit/Providers/TwilioWhatsAppMessageProviderTest.php
 
 		-
 			message: '#^Method Tests\\Unit\\Providers\\TwilioWhatsAppMessageProviderTest\:\:employee\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
@@ -9866,26 +7099,8 @@ parameters:
 			path: tests/Unit/Providers/TwilioWhatsAppMessageProviderTest.php
 
 		-
-			message: '#^Method Tests\\Unit\\Providers\\TwilioWhatsAppMessageProviderTest\:\:employee\(\) should return App\\Core\\Auth\\Domain\\Models\\Employee but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Unit/Providers/TwilioWhatsAppMessageProviderTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Unit/Providers/WhatsappCloudApiMessageProviderTest.php
-
-		-
 			message: '#^Method Tests\\Unit\\Providers\\WhatsappCloudApiMessageProviderTest\:\:employee\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/Providers/WhatsappCloudApiMessageProviderTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Providers\\WhatsappCloudApiMessageProviderTest\:\:employee\(\) should return App\\Core\\Auth\\Domain\\Models\\Employee but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
 			count: 1
 			path: tests/Unit/Providers/WhatsappCloudApiMessageProviderTest.php
 

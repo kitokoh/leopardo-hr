@@ -4,6 +4,7 @@ import { getAllPublicRestaurantSlugs } from '@/lib/restaurants-public-api';
 import { getEnvConfig } from '@/modules/vitrine/lib/env';
 import { getSiteUrl } from '@/lib/site';
 import { getAllCaseStudySlugs } from '@/modules/vitrine/lib/case-studies';
+import { getAlternativePages } from '@/modules/vitrine/data/alternatives';
 
 const siteUrl = getSiteUrl();
 const locales = ['fr', 'en', 'tr', 'ar'] as const;
@@ -86,6 +87,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     page('/terms', 'yearly', 0.4, false),
     // #7593 — mentions légales (page FR, comme privacy/terms).
     page('/mentions-legales', 'yearly', 0.3, false),
+    // #7869 : hub SEO d'interception « Alternatives & comparatifs ».
+    page('/alternatives', 'weekly', 0.8),
     page('/guides/rh-startup', 'monthly', 0.7),
     page('/guides/checklist-paie', 'monthly', 0.7),
     page('/guides/planning-employes', 'monthly', 0.7),
@@ -120,7 +123,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  const allStatic = [...staticPages, ...caseStudyPages, ...restaurantPages];
+  // #7869 : pages comparatives /alternatives/[slug] (statiques, indexables).
+  const alternativePages: MetadataRoute.Sitemap = getAlternativePages('fr').map((p) => ({
+    url: `${siteUrl}/alternatives/${p.slug}`,
+    lastModified: p.reviewedAt ? new Date(p.reviewedAt) : undefined,
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+    alternates: localizedAlternates(`/alternatives/${p.slug}`),
+  }));
+
+  const allStatic = [...staticPages, ...caseStudyPages, ...restaurantPages, ...alternativePages];
 
   // Blog posts: source réelle = src/modules/vitrine/data/blog (getBlogPosts).
   // Déduplication des slugs toutes locales confondues : un seul entry par slug,

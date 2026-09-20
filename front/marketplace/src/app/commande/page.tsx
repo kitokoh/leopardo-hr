@@ -10,9 +10,15 @@
  * essai, la même clé est rejouée et le serveur répond de façon idempotente
  * (pas de commande dupliquée). Succès partiel géré : les boutiques servies
  * sont retirées du panier, les autres restent et peuvent être re-soumises.
+ *
+ * Paiement (#7812) : « Paiement à la livraison » (défaut) ou « Paiement en
+ * ligne ». En ligne : le serveur crée un intent et renvoie une
+ * `checkout_url` — une seule boutique → redirection immédiate vers le PSP
+ * (retour sur /paiement/retour) ; plusieurs boutiques → /confirmation, un
+ * bouton « Payer en ligne » par commande.
  */
 
-import { AlertTriangle, HandCoins, Loader2 } from "lucide-react";
+import { AlertTriangle, CreditCard, HandCoins, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
@@ -21,7 +27,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { Price } from "@/components/Price";
 import { useBuyer } from "@/hooks/useBuyer";
 import { useCart } from "@/hooks/useCart";
-import { createOrder, type OrderCreated } from "@/lib/api";
+import { createOrder, type OrderCreated, type PaymentMethod } from "@/lib/api";
 import { removeSellerFromCart, type CartGroup } from "@/lib/cart";
 import { idempotencyKeyFor, releaseIdempotencyKey, saveOrders, type SavedOrder } from "@/lib/orders";
 
@@ -50,6 +56,7 @@ export default function CheckoutPage() {
   // liée au compte (historique + avis vérifiés), sinon checkout invité.
   const { session } = useBuyer();
   const [form, setForm] = useState<CustomerForm>(EMPTY_FORM);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [submitting, setSubmitting] = useState(false);
   const [failures, setFailures] = useState<{ sellerName: string; message: string }[]>([]);
 
@@ -85,7 +92,7 @@ export default function CheckoutPage() {
             city: form.city.trim(),
             ...(form.notes.trim() ? { notes: form.notes.trim() } : {}),
           },
-          payment_method: "cash",
+          payment_method: paymentMethod,
           idempotency_key: key,
         }, session?.token);
         created.push({
@@ -96,6 +103,8 @@ export default function CheckoutPage() {
           sellerName: group.seller.name,
           sellerSlug: group.seller.slug,
           createdAt: new Date().toISOString(),
+          paymentMethod,
+          checkoutUrl: order.payment?.checkout_url ?? null,
         });
         // Boutique servie : clé libérée + articles retirés du panier.
         releaseIdempotencyKey(group.seller.slug);
@@ -114,6 +123,15 @@ export default function CheckoutPage() {
     }
 
     if (failed.length === 0) {
+      // Paiement en ligne, une seule commande avec URL de paiement :
+      // redirection immédiate vers la page hébergée du PSP (le retour se
+      // fait sur /paiement/retour). Plusieurs commandes : /confirmation
+      // affiche un bouton « Payer en ligne » par commande.
+      const payable = created.filter((order) => order.checkoutUrl);
+      if (paymentMethod === "online" && payable.length === 1 && payable[0].checkoutUrl) {
+        window.location.assign(payable[0].checkoutUrl);
+        return;
+      }
       router.push("/confirmation");
       return;
     }
@@ -260,13 +278,66 @@ export default function CheckoutPage() {
             </div>
           </fieldset>
 
-          <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4">
-            <HandCoins aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" />
-            <p className="text-sm text-stone-700">
-              <strong>Paiement à la livraison.</strong> Vous réglez chaque commande en
-              espèces, directement au livreur de la boutique.
-            </p>
-          </div>
+          <fieldset className="space-y-3 rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+            <legend className="px-2 text-sm font-semibold text-stone-900">Mode de paiement</legend>
+
+            <label
+              className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition ${
+                paymentMethod === "cash"
+                  ? "border-amber-500 bg-amber-50"
+                  : "border-stone-200 hover:border-stone-300"
+              }`}
+            >
+              <input
+                type="radio"
+                name="payment-method"
+                value="cash"
+                checked={paymentMethod === "cash"}
+                onChange={() => setPaymentMethod("cash")}
+                className="mt-1 h-4 w-4 accent-amber-600"
+              />
+              <span className="flex items-start gap-3">
+                <HandCoins aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" />
+                <span>
+                  <span className="block text-sm font-semibold text-stone-900">
+                    Paiement à la livraison
+                  </span>
+                  <span className="block text-xs text-stone-500">
+                    Vous réglez chaque commande en espèces, directement au livreur de la boutique.
+                  </span>
+                </span>
+              </span>
+            </label>
+
+            <label
+              className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition ${
+                paymentMethod === "online"
+                  ? "border-amber-500 bg-amber-50"
+                  : "border-stone-200 hover:border-stone-300"
+              }`}
+            >
+              <input
+                type="radio"
+                name="payment-method"
+                value="online"
+                checked={paymentMethod === "online"}
+                onChange={() => setPaymentMethod("online")}
+                className="mt-1 h-4 w-4 accent-amber-600"
+              />
+              <span className="flex items-start gap-3">
+                <CreditCard aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" />
+                <span>
+                  <span className="block text-sm font-semibold text-stone-900">
+                    Paiement en ligne
+                  </span>
+                  <span className="block text-xs text-stone-500">
+                    Carte ou mobile money, sur une page de paiement sécurisée. Vous serez
+                    redirigé après la validation de la commande.
+                  </span>
+                </span>
+              </span>
+            </label>
+          </fieldset>
 
           <p className="text-xs leading-relaxed text-stone-400">
             Vos données (nom, téléphone, adresse, e-mail facultatif) sont transmises
