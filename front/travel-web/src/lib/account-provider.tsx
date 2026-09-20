@@ -14,18 +14,25 @@ import type { CustomerAccount } from "@/lib/types";
 
 /**
  * Compte client grand public (issue #7739) — état d'authentification côté
- * navigateur. Le token Sanctum du guard DÉDIÉ `travel_customer` est conservé
- * en localStorage (site public sans cookie de session) et validé au montage
- * via `/account/me` : un token révoqué/expiré est purgé silencieusement.
+ * navigateur. Depuis #7841 (pattern #1299 de front/web), le token Sanctum du
+ * guard DÉDIÉ `travel_customer` vit dans un cookie httpOnly posé par les
+ * route handlers Next (`account/login` / `account/register`) : le JS de la
+ * page ne voit jamais le token. La session est validée au montage via
+ * `/account/me` (cookie envoyé automatiquement, Bearer injecté par le proxy
+ * côté serveur) ; une session révoquée/expirée est purgée silencieusement.
  */
 
-const TOKEN_STORAGE_KEY = "travel-account-token";
+/**
+ * #7841 — ancienne clé localStorage du token (héritage #7739). Le token n'y
+ * est PLUS jamais écrit ; toute valeur résiduelle est purgée au chargement et
+ * au logout pour éliminer les tokens legacy exposés au JS.
+ */
+const LEGACY_TOKEN_STORAGE_KEY = "travel-account-token";
 
 type AccountContextValue = {
-  /** null tant que l'état initial (localStorage + /me) n'est pas résolu. */
+  /** null tant que l'état initial (cookie de session + /me) n'est pas résolu. */
   ready: boolean;
   account: CustomerAccount | null;
-  token: string | null;
   login: (email: string, password: string) => Promise<CustomerAccount>;
   register: (input: {
     name: string;
@@ -39,54 +46,37 @@ type AccountContextValue = {
 const AccountContext = createContext<AccountContextValue>({
   ready: false,
   account: null,
-  token: null,
   login: async () => Promise.reject(new Error("AccountProvider missing")),
   register: async () => Promise.reject(new Error("AccountProvider missing")),
   logout: async () => undefined,
 });
 
-function readStoredToken(): string | null {
+function purgeLegacyToken(): void {
   try {
-    return localStorage.getItem(TOKEN_STORAGE_KEY);
+    localStorage.removeItem(LEGACY_TOKEN_STORAGE_KEY);
   } catch {
-    return null;
-  }
-}
-
-function storeToken(token: string | null): void {
-  try {
-    if (token === null) {
-      localStorage.removeItem(TOKEN_STORAGE_KEY);
-    } else {
-      localStorage.setItem(TOKEN_STORAGE_KEY, token);
-    }
-  } catch {
-    // Stockage indisponible (navigation privée) : session en mémoire seule.
+    // Stockage indisponible (navigation privée) : rien à purger.
   }
 }
 
 export function AccountProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
   const [account, setAccount] = useState<CustomerAccount | null>(null);
 
   useEffect(() => {
-    const stored = readStoredToken();
-    if (!stored) {
-      setReady(true);
-      return;
-    }
+    // #7841 — purge du token legacy AVANT tout : il ne doit plus exister de
+    // copie du token lisible par le JS (XSS), même issue d'une session #7739.
+    purgeLegacyToken();
 
     let cancelled = false;
-    fetchAccount(stored)
+    // La session (cookie httpOnly) est opaque pour le client : seul `/me`
+    // dit si elle existe encore. 401 = pas de session, résolu en anonyme.
+    fetchAccount()
       .then((profile) => {
-        if (cancelled) return;
-        setToken(stored);
-        setAccount(profile);
+        if (!cancelled) setAccount(profile);
       })
       .catch(() => {
-        if (cancelled) return;
-        storeToken(null);
+        if (!cancelled) setAccount(null);
       })
       .finally(() => {
         if (!cancelled) setReady(true);
@@ -99,8 +89,6 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(async (email: string, password: string) => {
     const payload = await loginAccount({ email, password });
-    storeToken(payload.token);
-    setToken(payload.token);
     setAccount(payload.account);
     return payload.account;
   }, []);
@@ -108,8 +96,6 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
   const register = useCallback(
     async (input: { name: string; email: string; phone?: string; password: string }) => {
       const payload = await registerAccount(input);
-      storeToken(payload.token);
-      setToken(payload.token);
       setAccount(payload.account);
       return {
         account: payload.account,
@@ -120,22 +106,21 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = useCallback(async () => {
-    const current = token;
-    storeToken(null);
-    setToken(null);
     setAccount(null);
-    if (current) {
-      try {
-        await logoutAccount(current);
-      } catch {
-        // Token déjà invalide côté serveur : la session locale est purgée.
-      }
+    purgeLegacyToken();
+    try {
+      // Le route handler révoque le token backend puis supprime le cookie
+      // httpOnly. Session déjà invalide côté serveur : l'état local est
+      // de toute façon purgé.
+      await logoutAccount();
+    } catch {
+      // Best-effort : la déconnexion locale ne dépend pas du réseau.
     }
-  }, [token]);
+  }, []);
 
   const value = useMemo(
-    () => ({ ready, account, token, login, register, logout }),
-    [ready, account, token, login, register, logout],
+    () => ({ ready, account, login, register, logout }),
+    [ready, account, login, register, logout],
   );
 
   return <AccountContext.Provider value={value}>{children}</AccountContext.Provider>;

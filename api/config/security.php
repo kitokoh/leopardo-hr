@@ -14,6 +14,10 @@ return [
         'restaurant_shop_public_per_minute' => (int) env('RATE_LIMIT_RESTAURANT_SHOP_PUBLIC_PER_MINUTE', 30),
         // RESTO-902 #7747 — soumission d'avis clients publics (anti-spam, throttle strict dédié).
         'restaurant_reviews_public_per_minute' => (int) env('RATE_LIMIT_RESTAURANT_REVIEWS_PUBLIC_PER_MINUTE', 5),
+        // BC-17 #7814 — comptes acheteurs marketplace (register/login, anti-bruteforce par IP).
+        'market_account_per_minute' => (int) env('RATE_LIMIT_MARKET_ACCOUNT_PER_MINUTE', 10),
+        // BC-17 #7814 — soumission d'avis acheteurs marketplace (anti-spam, throttle strict dédié).
+        'market_reviews_public_per_minute' => (int) env('RATE_LIMIT_MARKET_REVIEWS_PUBLIC_PER_MINUTE', 5),
         // Audit fiabilité #6555 — bucket ZKTeco par device (serial_number + IP).
         'zkteco_device_per_minute' => (int) env('RATE_LIMIT_ZKTECO_DEVICE_PER_MINUTE', 120),
         // #6557 — durée du verrou anti-course de l'idempotence (RTMX #5277) :

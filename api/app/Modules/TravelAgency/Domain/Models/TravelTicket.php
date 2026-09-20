@@ -20,6 +20,19 @@ use Illuminate\Support\Str;
  * n'est donc jamais persisté en clair, reste imprimable sur l'e-billet à tout
  * moment (PDF/QR), et n'est renvoyé par l'API qu'UNE SEULE FOIS, à l'émission
  * (`issuedValidationCode`) — jamais par une route de lecture.
+ *
+ * @property int $booking_id
+ * @property \Illuminate\Support\Carbon|null $checked_in_at
+ * @property string $company_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $issued_at
+ * @property int $passenger_id
+ * @property \App\Modules\TravelAgency\Domain\Enums\TicketStatus $status
+ * @property string $ticket_number
+ * @property \Illuminate\Support\Carbon|null $valid_from
+ * @property \Illuminate\Support\Carbon|null $valid_until
+ * @property string $validation_code
  */
 class TravelTicket extends Model
 {

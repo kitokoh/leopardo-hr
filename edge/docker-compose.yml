@@ -1,7 +1,6 @@
-version: "3.9"
-
 # ============================================================
 # Leopardo Edge — Local Docker Stack
+# (#7847 : clé obsolète `version:` retirée — ignorée par Compose v2)
 # Installé chez le client pour fonctionnement offline-first
 #
 # Issue #3972 — reproductibilité des installs : les images Leopardo sont
@@ -82,6 +81,10 @@ services:
       dockerfile: Dockerfile.edge
     container_name: leopardo-edge-sync
     restart: unless-stopped
+    # #7847 : même utilisateur non-root que les programmes de l'API
+    # (supervisord.edge.conf) — évite des fichiers root sur le volume
+    # edge_data partagé (SQLite + journaux) que php-fpm ne pourrait plus écrire.
+    user: "www-data"
     # #4411 : migration SQLite idempotente avant le daemon (l'API migre au
     # démarrage via supervisord, mais ce service est un conteneur séparé).
     command: ["sh", "-c", "php artisan migrate --path=database/migrations/tenant/2026_06_29_000001_create_edge_sync_tables.php --database=sqlite --force --no-interaction && php artisan edge:sync-daemon"]

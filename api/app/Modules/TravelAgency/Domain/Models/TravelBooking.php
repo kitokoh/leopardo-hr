@@ -26,7 +26,24 @@ use Illuminate\Support\Str;
  * via un nom de schéma dynamique (`"{$schema}.travel_bookings"`), invisible
  * pour l'analyse statique des migrations.
  *
+ * @property int|null $booked_by_user_id
+ * @property \App\Modules\TravelAgency\Domain\Enums\BookingSource $booking_source
+ * @property string $company_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property string $currency
+ * @property int|null $customer_contact_id
+ * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property int $id
+ * @property string $idempotency_key
+ * @property int $passenger_count
+ * @property \App\Modules\TravelAgency\Domain\Enums\PaymentStatus $payment_status
+ * @property string $reference
+ * @property \App\Modules\TravelAgency\Domain\Enums\BookingStatus $status
+ * @property int $total_amount_minor
+ * @property int $trip_id
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @property int|null $customer_account_id Compte client grand public (nullable : checkout invité, #7739)
+ * @property int $version
  */
 class TravelBooking extends Model
 {

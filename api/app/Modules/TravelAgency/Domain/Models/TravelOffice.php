@@ -17,6 +17,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Point de vente physique (guichet) de la verticale — ancien concept
  * « agences » de gv-back. Les ventes `booking_source=office` y sont
  * rattachées (épic 3xx).
+ *
+ * @property string|null $address
+ * @property int $city_id
+ * @property string $company_id
+ * @property string|null $contact_phone
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property int $id
+ * @property string $name
+ * @property \App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus $status
+ * @property \Illuminate\Support\Carbon|null $updated_at
  */
 class TravelOffice extends Model
 {

@@ -17,6 +17,17 @@ use Illuminate\Database\Eloquent\Model;
  * Référentiel tenant-scoped des transporteurs (bus/train/avion/bateau) —
  * code unique par tenant. Consommé par `travel_vehicles` (flotte propre,
  * carrier_id nullable) et `travel_trips`.
+ *
+ * @property string $code
+ * @property string $company_id
+ * @property string|null $contact_phone
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property int $id
+ * @property int|null $logo_asset_id
+ * @property string $name
+ * @property \App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus $status
+ * @property \App\Modules\TravelAgency\Domain\Enums\CarrierType $type
+ * @property \Illuminate\Support\Carbon|null $updated_at
  */
 class TravelCarrier extends Model
 {

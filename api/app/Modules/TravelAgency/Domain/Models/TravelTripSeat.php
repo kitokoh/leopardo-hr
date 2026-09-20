@@ -17,6 +17,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Généré en transaction par `GenerateTripSeatsAction` à la création du
  * trajet — `booking_id`/`passenger_id` restent nullables tant que
  * `travel_bookings`/`travel_passengers` (TRAVEL-209) n'existent pas.
+ *
+ * @property int $seat_number
+ * @property \App\Modules\TravelAgency\Domain\Enums\SeatStatus $status
  */
 class TravelTripSeat extends Model
 {

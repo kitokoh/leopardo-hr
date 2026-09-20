@@ -16,6 +16,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Partiel par passager ou complet ; idempotent par refund_key (rejeu sans
  * double remboursement). Pénalité calculée serveur (règles d'élasticité,
  * surclassées par les politiques d'annulation TRAVEL-813/#6103).
+ *
+ * @property int $amount_minor
+ * @property int $booking_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property string $currency
+ * @property int $id
+ * @property int|null $passenger_id
+ * @property int $penalty_minor
+ * @property string $reason
+ * @property string $refund_key
  */
 class TravelRefund extends Model
 {

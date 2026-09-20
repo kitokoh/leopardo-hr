@@ -25,6 +25,9 @@ class UpdateProfileRequest extends FormRequest
         return [
             'first_name' => ['sometimes', 'nullable', 'string', 'max:100'],
             'last_name' => ['sometimes', 'nullable', 'string', 'max:100'],
+            // Issue #7861 : « Mon compte » web édite aussi le téléphone
+            // professionnel (renvoyé par /auth/me au champ `phone`).
+            'phone' => ['sometimes', 'nullable', 'string', 'max:30'],
             'personal_email' => ['sometimes', 'nullable', 'email', 'max:150'],
             'recovery_email' => ['sometimes', 'nullable', 'email', 'max:150'],
             'personal_phone' => ['sometimes', 'nullable', 'string', 'max:30'],

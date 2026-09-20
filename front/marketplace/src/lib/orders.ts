@@ -19,6 +19,10 @@ export interface SavedOrder {
   sellerName: string;
   sellerSlug: string;
   createdAt: string;
+  /** Paiement en ligne (#7812) : méthode choisie au checkout. */
+  paymentMethod?: "cash" | "online";
+  /** URL de paiement hébergée (PSP) — pour reprendre un paiement en attente. */
+  checkoutUrl?: string | null;
 }
 
 function isBrowser(): boolean {
@@ -61,6 +65,14 @@ export function saveOrders(orders: SavedOrder[]): void {
   } catch {
     // Stockage indisponible : la confirmation affiche quand même les jetons.
   }
+}
+
+/**
+ * Retrouve une commande enregistrée par sa référence (page /paiement/retour :
+ * le jeton de suivi n'est JAMAIS transmis au PSP, il est relu localement).
+ */
+export function findSavedOrder(reference: string): SavedOrder | null {
+  return readSavedOrders().find((order) => order.reference === reference) ?? null;
 }
 
 /**

@@ -15,6 +15,17 @@ use Illuminate\Database\Eloquent\Model;
  * `rate_minor` = taux × 10000 (entier) : la conversion reste en math entière
  * (unités mineures × rate_minor / 10000) — aucune perte d'arrondi.
  * Valide sur [valid_from, valid_to] (valid_to NULL = période ouverte).
+ *
+ * @property string $company_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property string|null $from_currency
+ * @property int $id
+ * @property string|null $rate
+ * @property int|null $rate_minor
+ * @property string|null $to_currency
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon $valid_from
+ * @property \Illuminate\Support\Carbon|null $valid_to
  */
 class TravelCurrencyRate extends Model
 {

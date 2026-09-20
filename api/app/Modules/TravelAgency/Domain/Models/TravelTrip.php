@@ -19,6 +19,23 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * `carrier_id`/`vehicle_id` nullables (préparation avant affectation).
  * `total_seats` pilote la génération transactionnelle des sièges
  * (TRAVEL-208, #6021).
+ *
+ * @property \Illuminate\Support\Carbon $arrival_date
+ * @property string $arrival_time
+ * @property int|null $carrier_id
+ * @property string $code
+ * @property string $company_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon $departure_date
+ * @property string $departure_time
+ * @property int $id
+ * @property \App\Modules\TravelAgency\Domain\Enums\MeansOfTransport $means_of_transport
+ * @property \Illuminate\Support\Carbon|null $published_at
+ * @property int $route_id
+ * @property \App\Modules\TravelAgency\Domain\Enums\TripStatus $status
+ * @property int $total_seats
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int|null $vehicle_id
  */
 class TravelTrip extends Model
 {

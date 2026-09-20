@@ -14,6 +14,8 @@ use App\Modules\Retail\Domain\Models\RetailOrder;
 use App\Modules\Retail\Domain\Models\RetailOrderItem;
 use App\Modules\Retail\Domain\Models\RetailProduct;
 use App\Modules\Retail\Domain\Models\RetailStockLevel;
+use App\Shared\Events\RetailOnlineOrderConfirmed;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
@@ -45,6 +47,7 @@ final class RetailOnlineOrderService
     public function __construct(
         private readonly ConnectionInterface $connection,
         private readonly RetailStockService $stockService,
+        private readonly Dispatcher $events,
     ) {}
 
     /**
@@ -54,10 +57,15 @@ final class RetailOnlineOrderService
      * `tracking_token` aleatoire (64 hex). Idempotence : si la cle existe
      * deja pour ce tenant, la commande existante est retournee avec
      * `created = false` (rejeu → 200 meme payload cote controleur).
+     * Paiement (#7812) : `payment_method` = `cash` (COD) ou `online`
+     * (intent cree en aval par RetailPaymentService), `payment_status`
+     * initial `pending` — seul le webhook signe/la reconciliation le passe
+     * a `paid`.
      *
      * @param  list<array{product_id: int, quantity: int}>  $items
      * @param  array{name: string, phone: string, email: string|null}  $customer
      * @param  array{address: string, city: string, notes: string|null}  $delivery
+     * @param  int|null  $buyerId  compte acheteur plateforme (#7814) — null = invite
      * @return array{order: RetailOrder, created: bool}
      *
      * @throws ValidationException 422 (produit indisponible, devises melangees, vendeur sans emplacement).
@@ -68,10 +76,12 @@ final class RetailOnlineOrderService
         array $customer,
         array $delivery,
         string $idempotencyKey,
+        ?int $buyerId = null,
+        string $paymentMethod = 'cash',
     ): array {
         /** @var array{order: RetailOrder, created: bool} $result */
         $result = $this->connection->transaction(
-            function () use ($companyId, $items, $customer, $delivery, $idempotencyKey): array {
+            function () use ($companyId, $items, $customer, $delivery, $idempotencyKey, $buyerId, $paymentMethod): array {
                 /** @var RetailOrder|null $existing */
                 $existing = RetailOrder::query()
                     ->where('company_id', $companyId)
@@ -146,6 +156,9 @@ final class RetailOnlineOrderService
                     'delivery_notes' => $delivery['notes'],
                     'fulfillment_status' => RetailFulfillmentStatus::Pending->value,
                     'tracking_token' => bin2hex(random_bytes(32)),
+                    'payment_method' => $paymentMethod,
+                    'payment_status' => 'pending',
+                    'buyer_id' => $buyerId,
                     'version' => 1,
                 ]);
 
@@ -205,6 +218,22 @@ final class RetailOnlineOrderService
                 return $locked->refresh();
             }
         );
+
+        // Handoff BC-26 (#7811) : l'événement est émis APRÈS commit — jamais
+        // de livraison fantôme si la transaction de confirmation échoue.
+        // Payload en scalaires uniquement (frontière de bounded context).
+        $this->events->dispatch(new RetailOnlineOrderConfirmed(
+            companyId: (string) $updated->company_id,
+            orderId: (int) $updated->id,
+            reference: (string) $updated->reference,
+            totalMinor: (int) $updated->total_minor,
+            currency: (string) $updated->currency,
+            customerName: (string) ($updated->customer_name ?? ''),
+            customerPhone: (string) ($updated->customer_phone ?? ''),
+            deliveryAddress: (string) ($updated->delivery_address ?? ''),
+            deliveryCity: (string) ($updated->delivery_city ?? ''),
+            deliveryNotes: $updated->delivery_notes,
+        ));
 
         return $updated;
     }

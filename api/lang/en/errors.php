@@ -33,6 +33,7 @@ return [
     'INVITATION_ALREADY_ACCEPTED' => 'This invitation has already been accepted.',
     'INVITATION_EXPIRED' => 'This invitation has expired.',
     'INVITATION_NOT_FOUND' => 'Invitation not found.',
+    'INVITATION_REVOKED' => 'This invitation has been revoked.',
 
     // Biometric
     'CAMERA_TOKEN_EXPIRED' => 'Access to this camera has expired.',
