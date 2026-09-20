@@ -4693,7 +4693,9 @@
       "colOccupancy": "دوران الطاولات",
       "colAlerts": "تنبيهات المخزون",
       "payments": "التحصيل",
-      "paymentsDesc": "الدفع عبر الإنترنت، ملفات Stripe والدفع عبر الهاتف"
+      "paymentsDesc": "الدفع عبر الإنترنت، ملفات Stripe والدفع عبر الهاتف",
+      "team": "الفريق",
+      "teamDesc": "تعيين الموظفين في الفروع والأدوار"
     },
     "crud": {
       "search": "بحث...",
@@ -5031,6 +5033,29 @@
       "alwaysAvailable": "متاح دائماً",
       "manageProfiles": "إدارة ملفات الدفع",
       "manageProfilesHint": "تُدار مفاتيح Stripe وحسابات الدفع عبر الهاتف في الإعدادات ← التحصيلات."
+    },
+    "team": {
+      "title": "الفريق",
+      "subtitle": "قم بتعيين موظفيك في فروع المطعم، وإدارة أدوارهم وإزالتهم بنقرتين.",
+      "assignTitle": "تعيين موظف",
+      "employee": "الموظف",
+      "role": "الدور",
+      "rolePlaceholder": "نادل، طباخ، مدير…",
+      "assignedAt": "تاريخ التعيين",
+      "assign": "تعيين",
+      "empty": "لا يوجد موظف معيّن في هذا الفرع.",
+      "loadError": "تعذر تحميل التعيينات.",
+      "assignFailed": "فشل التعيين.",
+      "updateFailed": "فشل تحديث الدور.",
+      "removeFailed": "فشلت الإزالة.",
+      "remove": "إزالة",
+      "confirmRemove": "هل تريد إزالة هذا الموظف من الفرع؟",
+      "editRole": "تعديل الدور",
+      "save": "حفظ",
+      "cancel": "إلغاء",
+      "selectPlaceholder": "اختر…",
+      "formIncomplete": "اختر موظفًا.",
+      "saving": "جارٍ الحفظ…"
     }
   },
   "commonLanguageArabic": "العربية",
