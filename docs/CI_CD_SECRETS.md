@@ -55,6 +55,7 @@
 | `AWS_ENDPOINT_URL` | `database-backup.yml` | Optional S3-compatible endpoint (e.g. Backblaze B2 `https://s3.<region>.backblazeb2.com`, Cloudflare R2). Empty = AWS S3 (#7676) | Optional (defaults to AWS S3) |
 | `BACKUP_S3_BUCKET` | `database-backup.yml` | Target S3 bucket for DB backups | Required for backups |
 | `BACKUP_AGE_IDENTITY_FILE` | `database-backup.yml` | `age` private key for backup decryption (restore drills) | Optional (encryption feature) |
+| `BACKUP_AGE_IDENTITY` | `database-backup.yml` | Contenu de la clé privée `age` matérialisée en fichier éphémère du runner pour le drill de restauration mensuel (#7657 — ligne manquante repérée par la garde #7271 lors du lot #7740) | Optional (restore drill) |
 | `BACKUP_AGE_RECIPIENT` | `database-backup.yml` | `age` public recipient for backup encryption | Optional (encryption feature) |
 | `DATABASE_URL` | `database-backup.yml` | Production DB connection string to back up | Required for backups |
 | `RESTORE_DB_URL` | `database-backup.yml` | Scratch DB connection string used by the monthly restore drill | Required for the restore-drill job only |
@@ -117,6 +118,22 @@ Ils ne sont donc pas nécessaires pour contribuer.
 | `VERCEL_PROD_PROJECT_ID` | `deploy-prod.yml` | Projet Vercel cible (`front/web`) | Required for production web deploys |
 | `CLOUDFLARE_PROD_API_TOKEN` | `deploy-prod.yml` | Token Cloudflare Pages pour déployer l'admin plateforme de production | Required for production admin deploys |
 | `CLOUDFLARE_PROD_ACCOUNT_ID` | `deploy-prod.yml` | Compte Cloudflare cible | Required for production admin deploys |
+
+### Secrets de déploiement Travel Web (`travel-web-deploy.yml`, issue #7740)
+
+Déploiement Vercel de `front/travel-web` — deux jeux distincts car les volets dev et prod vivent
+sur deux comptes Vercel séparés (P07). **Optionnels** : si un jeu est absent, le job correspondant
+se termine en skip explicite (pattern `deploy-admin-dashboard.yml`) et le déploiement manuel via
+Vercel CLI reste le repli. Runbook complet : `docs/ops/travel-web-vercel.md`.
+
+| Secret | Used by | Purpose | Required? |
+|---|---|---|---|
+| `VERCEL_TRAVEL_DEV_TOKEN` | `travel-web-deploy.yml` | Token CLI Vercel du compte africanovatech (previews PR, projet `leopardo-travel`) | Optional (job skipped if absent) |
+| `VERCEL_TRAVEL_DEV_ORG_ID` | `travel-web-deploy.yml` | Organisation Vercel du volet dev | Optional (job skipped if absent) |
+| `VERCEL_TRAVEL_DEV_PROJECT_ID` | `travel-web-deploy.yml` | Projet Vercel `leopardo-travel` (dev) | Optional (job skipped if absent) |
+| `VERCEL_TRAVEL_PROD_TOKEN` | `travel-web-deploy.yml` | Token CLI Vercel du compte ibrahimkoubaye (push main, projet `leopardo-travel-prod`) | Optional (job skipped if absent) |
+| `VERCEL_TRAVEL_PROD_ORG_ID` | `travel-web-deploy.yml` | Organisation Vercel du volet prod | Optional (job skipped if absent) |
+| `VERCEL_TRAVEL_PROD_PROJECT_ID` | `travel-web-deploy.yml` | Projet Vercel `leopardo-travel-prod` (prod) | Optional (job skipped if absent) |
 
 ### Secrets de supervision de la queue (sonde HTTP via GitHub Actions)
 
