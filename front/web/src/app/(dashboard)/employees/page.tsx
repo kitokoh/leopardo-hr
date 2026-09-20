@@ -230,7 +230,6 @@ export default function EmployeesPage() {
       try {
         // Seuls les employés conditionnent l'état de chargement de la page.
         await loadEmployees(1, '');
-        await loadInvitations();
       } catch (err) {
         if (active) {
           setError(teamRolesErrorMessage(locale, err, 'loadError'));
@@ -240,6 +239,12 @@ export default function EmployeesPage() {
           setLoading(false);
         }
       }
+
+      // Les invitations sont une information d'appoint fusionnée sur les
+      // lignes : un GET /invitations lent ou en échec ne doit JAMAIS bloquer
+      // l'affichage de la liste équipe (régression #7862 — même leçon que
+      // #7321 pour les départements ; loadInvitations gère ses erreurs).
+      await loadInvitations();
     }
 
     void bootstrap();
