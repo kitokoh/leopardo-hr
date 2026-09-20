@@ -1,0 +1,44 @@
+{
+  "_comment": "Budget de réduction des baselines PHPStan (#7961). Le cliquet check-phpstan-baseline-budget.sh ÉCHOUE si le total d'occurrences (somme des count:) croît vs origin/main ; ce fichier fixe l'objectif de DÉCROISSANCE (informatif dans la garde, opposable en revue). Mettre à jour snapshot.date/total_occurrences à chaque campagne de réduction (jamais à la hausse). Doc : docs/qa/BUDGET_PHPSTAN_7961.md — cartographie détaillée : docs/qa/DETTE_PHPSTAN_7655.md.",
+  "issue": "7961",
+  "snapshot": {
+    "date": "2026-09-20",
+    "total_occurrences": 2719,
+    "by_baseline": {
+      "phpstan-strict-baseline.neon": 1553,
+      "phpstan-baseline.neon": 1160,
+      "phpstan-modules-baseline.neon": 6
+    }
+  },
+  "weekly_reduction_pct": 5,
+  "priority_modules": [
+    {
+      "module": "app/Core/Auth",
+      "baseline": "phpstan-strict-baseline.neon",
+      "occurrences_2026_09_20": 32,
+      "target": 0,
+      "rationale": "Cœur sécurité — mixed/nullables sur les actions d'authentification = risque réel."
+    },
+    {
+      "module": "app/Core/Tenant",
+      "baseline": "phpstan-strict-baseline.neon",
+      "occurrences_2026_09_20": 4,
+      "target": 0,
+      "rationale": "Cœur multi-tenant — quasi propre, verrouiller à 0 en premier (quick win)."
+    },
+    {
+      "module": "app/Modules/Payroll",
+      "baseline": "phpstan-strict-baseline.neon",
+      "occurrences_2026_09_20": 41,
+      "target": 0,
+      "rationale": "Calculs de paie — toute erreur de type masquée peut fausser un bulletin."
+    },
+    {
+      "module": "app/Modules/Billing",
+      "baseline": "phpstan-strict-baseline.neon",
+      "occurrences_2026_09_20": 26,
+      "target": 0,
+      "rationale": "Facturation — montants/devises, même criticité que Payroll."
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 info:
   title: Leopardo RH API
-  version: 4.24.0
+  version: 4.33.0
   license:
     name: MIT
     url: https://github.com/kitokoh/leopardo-hr/blob/main/LICENSE
