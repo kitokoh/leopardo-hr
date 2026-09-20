@@ -49,7 +49,7 @@ export interface AlternativePage {
 
 /**
  * Ligne récurrente : rappel honnête du statut pilot de la paie multi-pays.
- * (Promesse interdite : « conformité légale validée » — garde #7058.)
+ * (Garde #7058 : ne jamais revendiquer de conformité « validée » dans la copie publique.)
  */
 const PAYROLL_PILOT_NOTE =
   'Règles de paie disponibles pour 21 pays (mesuré 2026-09-09), en statut pilote : les barèmes sont fournis et testés, la validation finale reste de la responsabilité du gestionnaire de paie.';
