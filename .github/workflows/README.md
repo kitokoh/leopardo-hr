@@ -49,8 +49,8 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 |---|---|---|
 | `deploy-main.yml` | Push → main | Déploiement continu dev/test (Render `gestionemployerbackend` via hook) |
 | `deploy-prod.yml` | GitHub Release publiée (tag `vX.Y.Z` → `release.yml` → `release: published`) + `workflow_dispatch` | Déploiement PROD des trois surfaces : API Render `leopardo-prod` (job `deploy-prod`, rollback API), web Vercel `leopardo-prod` (job `deploy-web-prod`), admin Cloudflare Pages `leo-admin-prod` (job `deploy-admin-prod`) — voir `docs/ops/RENDER_DEV_PROD_TOPOLOGY.md` |
-| `deploy-staging.yml` | **Manuel** (dispatch) — #7256 | Déploiement du tier staging : **aucun staging n'existe**, le déclenchement sur push a été retiré (run toujours `skipped` = vert qui ne déployait rien). Fonctionnel en dispatch dès qu'un environnement sera provisionné |
-| `e2e-staging.yml` | `workflow_run` de « Deploy - Leopardo » (`deploy-main.yml`) | Tests E2E post-déploiement **prod** (nom de fichier historique ; contenu : `E2E - Playwright Prod Smoke`) |
+| `deploy-staging.yml` | **Supprimé** (#7846) | Workflow mort supprimé le 2026-09-20 : aucun staging n'a jamais existé (#7256/#1485), le déclenchement sur push produisait des runs verts qui ne déployaient rien, puis plus aucun run depuis le passage en dispatch-only (2026-09-13). À recréer depuis l'historique git (`git log -- .github/workflows/deploy-staging.yml`) quand un environnement staging sera provisionné |
+| `e2e-staging.yml` | **Manuel** (dispatch) — #7846 | Smoke Playwright contre la **prod** (nom de fichier historique ; contenu : `E2E - Playwright Prod Smoke`). Le déclencheur `workflow_run` post-deploy est désactivé (#7846) : il martelait la prod free-tier à chaque push main faute de staging réel |
 | `mobile-distribute.yml` | Manuel + tags | Distribution APK/IPA |
 | `release.yml` | Tags v*.*.* | Création de release GitHub |
 
@@ -117,7 +117,7 @@ ci-dessous.
 | `bc-batch-branch-protocol.yml` | PR bc/* | Vérifie le protocole de branche par lot BC |
 | `branch-hygiene.yml` | PR/push | Hygiène des branches (noms, markers) |
 | `branch-protection-guard.yml` | Schedule (quotidien) + PR → main | Vérifie la cohérence de la protection de branche (fail-loud si `BRANCH_PROTECTION_TOKEN` absent — #7270) |
-| `ci-observability.yml` | Schedule + manuel | Observabilité des runs CI |
+| `ci-observability.yml` | Schedule (horaire — #7846) + manuel | Observabilité des runs CI |
 | `ci-secrets-doc-guard.yml` | PR/push → `.github/workflows/**`, `docs/CI_CD_SECRETS.md` | Parité doc/secrets : échoue si un `secrets.*`/`vars.*` d'un workflow n'est pas documenté (issue #7271) |
 | `cleanup-orphan-runs.yml` | Schedule + PR close | Annule les runs orphelins (cf. `dev-hub/tools/cancel-orphan-runs.sh`) |
 | `country-catalog-check.yml` | PR → api | Garde catalogue pays (double du check dans `architecture-check.yml`) |

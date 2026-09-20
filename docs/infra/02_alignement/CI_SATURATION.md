@@ -66,3 +66,92 @@ des runs utiles) :
 - `.github/workflows/e2e-staging.yml`, `owasp-zap.yml` — groupe par SHA.
 - Issu : #2131 (Closes). Contexte historique : #1903 (constat), #2032
   (merge_group partiel), #2105/#2132 (path filters sur checks requis).
+
+---
+
+# Plan de désaturation CI (issue #7846, audit externe 2026-09-20)
+
+> Audit réel du 2026-09-20 : 74 fichiers de workflows (77 workflows actifs côté
+> API dont 2 dynamiques), ~30 guards/reports de gouvernance, **18 workflows
+> planifiés** (20 crons). Données runs vérifiées via
+> `GET /repos/kitokoh/leopardo-hr/actions/workflows/{id}/runs?per_page=100`.
+
+## 1. Inventaire des crons (état avant #7846)
+
+| Workflow | Cron | Runs/jour | Nature | Constat runs (100 derniers) |
+|---|---|---:|---|---|
+| `queue-supervision.yml` | `*/5 * * * *` | 288 | Supervision prod (sonde HTTP sans credentials) | 99 success — **CONSERVÉ** : justification écrite DoD #5282 (panne queue détectée < 15 min : intervalle 5 min + seuil stale 10 min) |
+| `ci-observability.yml` | `*/10 * * * *` → `7 * * * *` | 144 → 24 | Rapport informatif non bloquant | 100 success, aucune alerte critique — **ESPACÉ dans cette PR** (#7846) |
+| `deploy-drift-guard.yml` | `13,43 * * * *` | 48 | Garde drift deploy | **33 failure / 6 success** : garde rouge en boucle = bruit ; corriger la cause ou espacer à 2 h (étape 2) |
+| `launch-observability-smoke.yml` | `*/30 * * * *` | 48 | Sonde surfaces publiques | 74 success / 26 failure : candidat horaire (étape 2) |
+| `cleanup-orphan-runs.yml` | `17 */2 * * *` | 12 | Ménage file Actions | **95/100 runs CANCELLED** (concurrency) : le ménage se neutralise lui-même ; passer quotidien (étape 2) |
+| `deploy-main-catchup.yml` | `23 * * * *` | 24 | Rattrapage deploy | 72/72 success (quasi toujours no-op) : candidat 4×/jour (étape 2) |
+| `admin-pages-deploy-guard.yml` | `17 */6 * * *` | 4 | Garde deploy admin | acceptable |
+| Quotidiens : `branch-hygiene`, `branch-protection-guard`, `bc-batch-branch-protocol`, `crm-branch-protocol`, `issue-governance-guard`, `database-backup` (×2) | 1×/jour | ~7 | hygiène/sécurité/backup | acceptables |
+| Hebdo/mensuels : `codeql`, `secret-history-scan`, `fix-feat-ratio-report`, `lighthouse`, `ci-saturation-report`, backup mensuel | — | <1 | sécurité/rapport | acceptables |
+
+## 2. Actions implémentées dans la PR #7846 (étape 1 — sans risque)
+
+1. **`deploy-staging.yml` SUPPRIMÉ** (9,6 Ko de code mort). Vérifié :
+   aucun staging provisionné (#7256/#1485), dispatch-only depuis 2026-09-13
+   et **zéro run depuis** (dernier run : push du 2026-09-13, gate
+   skipped-green) ; aucune référence active dans `.github/workflows/**`
+   (seul un commentaire historique dans `branch-protection-guard.yml` et la
+   ligne du README, mise à jour pour garder la trace). Restauration :
+   `git log -- .github/workflows/deploy-staging.yml`.
+2. **`e2e-staging.yml` ne teste plus la prod automatiquement** : le
+   déclencheur `workflow_run` post-deploy (Playwright contre la prod
+   free-tier Render à CHAQUE push main, 5 119 runs cumulés, 11 échecs sur
+   les 100 derniers, throttling 429 documenté #7317) est désactivé avec
+   commentaire justifié ; `workflow_dispatch` conservé pour le smoke à la
+   demande. Ré-activation conditionnée à un staging réel.
+3. **`ci-observability.yml` : `*/10` → horaire** (144 → 24 runs/jour).
+   Rapport purement informatif, non bloquant, 100 % success sur 100 runs.
+4. **`queue-supervision.yml` `*/5` VOLONTAIREMENT INCHANGÉ** : supervision
+   d'incident prod avec justification écrite (DoD #5282 : détection < 15 min ;
+   à `*/10`, le pire cas passe à 20 min > DoD). Sonde HTTP sans checkout ni
+   secret sensible (#7694) — coût unitaire minimal.
+
+Gain étape 1 : ~120 runs planifiés/jour en moins + fin des runs E2E prod par
+push (≈ 10-30/jour selon les rafales de merge) + 1 workflow mort en moins.
+
+## 3. Étapes suivantes (hors périmètre de cette PR — issues dédiées)
+
+### Étape 2 — crons restants (gain ~60 runs/jour, risque faible)
+- `deploy-drift-guard.yml` : d'abord CORRIGER le rouge chronique (33/100
+  failure) puis `13,43 * * * *` → `13 */2 * * *` (48 → 12/jour).
+- `cleanup-orphan-runs.yml` : `*/2 h` → quotidien (12 → 1/jour) ; 95 % des
+  runs s'annulent entre eux, la valeur marginale est nulle.
+- `launch-observability-smoke.yml` : `*/30` → horaire (48 → 24/jour) après
+  analyse des 26 % d'échecs (cold start Render vs vraies pannes).
+- `deploy-main-catchup.yml` : horaire → `23 */6 * * *` (24 → 4/jour), le
+  rattrapage est quasi toujours no-op.
+
+### Étape 3 — fusion des guards à deux têtes (gain ~3 workflows)
+- `fix-feat-ratio-guard.yml` + `fix-feat-ratio-report.yml` → un workflow à
+  2 jobs (guard PR bloquant + rapport hebdo).
+- `secret-scan.yml` + `secret-history-scan.yml` → un workflow (job push +
+  job cron hebdo historique).
+- `design-token-sync.yml` + `web-design-tokens.yml` → un guard tokens unique
+  conditionné par `paths:`.
+
+### Étape 4 — revue des ~30 guards (gouvernance)
+Chaque guard doit justifier **≥ 1 détection réelle sur 90 jours** (données :
+`ci-saturation-report.yml`). Guard sans détection → fusion dans un guard
+composite `paths:`-conditionné ou rétrogradation en check local
+(`dev-hub/tools/`). Candidats à examiner en priorité : les guards protocole
+de branche (bc-batch/crm), `content-naming-guard`, `horizontal-tools-parity`,
+`public-promises-guard`.
+
+## 4. Matrice risque / gain
+
+| Action | Gain (runs/jour) | Risque | Mitigation |
+|---|---:|---|---|
+| Suppression `deploy-staging.yml` (fait) | ~0 (déjà dormant) + dette −9,6 Ko | Quasi nul : aucun run depuis 2026-09-13, aucun staging | Historique git + trace README |
+| Désactivation trigger auto `e2e-staging.yml` (fait) | 10-30 | **Moyen** : perte du smoke post-deploy automatique | Dispatch manuel conservé ; `launch-observability-smoke` (30 min) + `owasp-zap` post-deploy couvrent la disponibilité prod ; ré-activation dès staging réel |
+| `ci-observability` horaire (fait) | 120 | Faible : détection PR-sans-checks retardée de ≤ 60 min (rapport non bloquant) | dispatch manuel |
+| `queue-supervision` inchangé | 0 | — | DoD #5282 écrit ; re-challenger si un worker dédié avec alerting applicatif arrive (#7649) |
+| Étape 2 (crons restants) | ~60 | Faible-moyen (drift détecté moins vite) | corriger le rouge chronique AVANT d'espacer |
+| Étapes 3-4 (fusions guards) | ~10-20 + latence PR réduite | Moyen (perte de granularité des checks requis) | migration check requis par check requis, jamais en lot |
+
+Réf. : issue #7846, audit externe 2026-09-20, PR d'implémentation étape 1.

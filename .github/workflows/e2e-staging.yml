@@ -20,10 +20,18 @@ on:
         description: "Run real demo auth smoke with production/demo credentials"
         required: false
         default: "false"
-  workflow_run:
-    workflows: ["Deploy - Leopardo"]
-    types: [completed]
-    branches: [main]
+  # #7846 (audit externe 2026-09-20) — déclencheur automatique DÉSACTIVÉ :
+  # faute de staging provisionné (#1485/#7256), ce workflow lançait Playwright
+  # contre la PRODUCTION free-tier Render après CHAQUE deploy de main
+  # (workflow_run sur « Deploy - Leopardo », 5 119 runs cumulés, 429/latence
+  # infligés à la prod et échecs récurrents « E2E Prod Smoke »). Le smoke prod
+  # reste exécutable À LA DEMANDE via workflow_dispatch ci-dessus. Ré-activer
+  # ce bloc UNIQUEMENT quand un vrai staging existe (vars.STAGING_API_URL) —
+  # il devra alors pointer le staging, pas la prod.
+  # workflow_run:
+  #   workflows: ["Deploy - Leopardo"]
+  #   types: [completed]
+  #   branches: [main]
 
 permissions:
   contents: read
