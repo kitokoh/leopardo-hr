@@ -58,6 +58,7 @@ final class RetailOnlineOrderService
      * @param  list<array{product_id: int, quantity: int}>  $items
      * @param  array{name: string, phone: string, email: string|null}  $customer
      * @param  array{address: string, city: string, notes: string|null}  $delivery
+     * @param  int|null  $buyerId  compte acheteur plateforme (#7814) — null = invite
      * @return array{order: RetailOrder, created: bool}
      *
      * @throws ValidationException 422 (produit indisponible, devises melangees, vendeur sans emplacement).
@@ -68,10 +69,11 @@ final class RetailOnlineOrderService
         array $customer,
         array $delivery,
         string $idempotencyKey,
+        ?int $buyerId = null,
     ): array {
         /** @var array{order: RetailOrder, created: bool} $result */
         $result = $this->connection->transaction(
-            function () use ($companyId, $items, $customer, $delivery, $idempotencyKey): array {
+            function () use ($companyId, $items, $customer, $delivery, $idempotencyKey, $buyerId): array {
                 /** @var RetailOrder|null $existing */
                 $existing = RetailOrder::query()
                     ->where('company_id', $companyId)
@@ -146,6 +148,7 @@ final class RetailOnlineOrderService
                     'delivery_notes' => $delivery['notes'],
                     'fulfillment_status' => RetailFulfillmentStatus::Pending->value,
                     'tracking_token' => bin2hex(random_bytes(32)),
+                    'buyer_id' => $buyerId,
                     'version' => 1,
                 ]);
 
