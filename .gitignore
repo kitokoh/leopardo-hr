@@ -126,3 +126,6 @@ dev-hub/openapi/v1.yaml
 dev-hub/sdk/MANIFEST.json
 dev-hub/sdk/javascript/leopardoClient.js
 dev-hub/sdk/python/leopardo_client.py
+
+# Vercel CLI local link metadata (jamais committe — IDs de projet/orga)
+.vercel/
