@@ -25,6 +25,7 @@ Ce dossier capture les decisions structurantes qui doivent rester stables pour L
 | [0015](0015-onboarding-steps-canonical.md) | Proposee | Onboarding : 6 etapes seedees canoniques (dont optionnelles), Quick Start < 15 employes |
 | [0017](0017-paiement-en-ligne-portail-client.md) | Proposee | Paiement en ligne des factures (portail client) : passerelle(s) et architecture |
 | [0016](0016-attendance-smartattendance-fusion.md) | Proposee | Fusion progressive Attendance + SmartAttendance en un module unique (5 phases, zero perte de donnees, contrat API preserve) |
+| [0023](0023-admin-dashboard-typage.md) | Proposee | admin-dashboard (Vue 3/JS) : typage TypeScript incremental (JSDoc + checkJs progressif puis vue-tsc), gel du JS nouveau via CI — issue #7849 |
 
 ## Format
 

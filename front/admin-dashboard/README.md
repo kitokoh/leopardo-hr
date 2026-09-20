@@ -2,6 +2,14 @@
 
 ## 📊 Vue d'ensemble
 Dashboard d'administration interne pour la plateforme Leopardo. Interface moderne construite avec Vue.js 3, Tailwind CSS et des outils open source pour une gestion efficace de la plateforme.
+
+> **Stack & typage (#7849)** : la stack réelle (Vue 3 + **JavaScript**, pas de
+> TypeScript) est documentée dans [`STACK.md`](./STACK.md). La décision de
+> migration TS **incrémentale** (JSDoc + `checkJs` progressif, services/stores
+> d'abord, gel du JS nouveau) est actée dans
+> [`docs/architecture/adr/0023-admin-dashboard-typage.md`](../../docs/architecture/adr/0023-admin-dashboard-typage.md).
+> Nouveaux composants : `<script setup lang="ts">` dès acceptation de l'ADR.
+
 ## 🚀 Fonctionnalités Implémentées
 ### ✅ Phase 1 - Foundation (Complétée)
 **Architecture de Base**
