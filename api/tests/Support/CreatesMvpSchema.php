@@ -3838,7 +3838,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // HealthManager (BC-30, #7786..#7791) — parité fixture ↔ migrations tenant (#5443).
+        // HealthManager (BC-31, #7786..#7791) — parité fixture ↔ migrations tenant (#5443).
         if (! Schema::hasTable($this->moduleTable('health_departments'))) {
             Schema::create($this->moduleTable('health_departments'), function (Blueprint $table): void {
                 $table->bigIncrements('id');

@@ -1,4 +1,4 @@
-# HealthManager — Modèle de données (BC-30 HEALTH)
+# HealthManager — Modèle de données (BC-31 HEALTH)
 
 > Issues #7786..#7791 — spec `docs/specifications/HEALTHMANAGER_SOLUTION.md` §3.
 > 17 tables tenant préfixées `health_`, toutes `company_id` uuid NON nullable

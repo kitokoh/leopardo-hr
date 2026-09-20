@@ -9,7 +9,7 @@ use App\Modules\HealthManager\Domain\Access\HealthAccess;
 use App\Modules\HealthManager\Domain\Models\HealthAdmission;
 
 /**
- * #7790 (BC-30) — Policy des hospitalisations (admissions).
+ * #7790 (BC-31) — Policy des hospitalisations (admissions).
  *
  * Deny-by-default (spec §2) : direction et réception gèrent les admissions
  * (sans JAMAIS accéder au contenu médical) ; praticien en LECTURE ;

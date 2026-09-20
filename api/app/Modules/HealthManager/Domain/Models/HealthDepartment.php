@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * Service médical d'un établissement de santé — Issue #7786 (BC-30).
+ * Service médical d'un établissement de santé — Issue #7786 (BC-31).
  *
  * Code unique par tenant ; statut borné (active|inactive, CHECK en base).
  *

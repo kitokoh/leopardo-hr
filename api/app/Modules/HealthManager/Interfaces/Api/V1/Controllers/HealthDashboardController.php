@@ -19,7 +19,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Tableau de bord clinique — HC-008 (#7792, BC-30).
+ * Tableau de bord clinique — HC-008 (#7792, BC-31).
  *
  * Contrat consommé par `front/web/src/lib/health-api.ts` (type
  * `HealthDashboard`) : les noms de champs sont contractuels

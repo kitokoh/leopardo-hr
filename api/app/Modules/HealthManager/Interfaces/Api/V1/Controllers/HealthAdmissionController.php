@@ -19,7 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 /**
- * API des hospitalisations (admissions & lits) — HC-006 (#7790, BC-30).
+ * API des hospitalisations (admissions & lits) — HC-006 (#7790, BC-31).
  *
  * Direction + réception gèrent les admissions (SANS contenu médical),
  * praticien en lecture (Policy §2). La machine à états des lits (free →

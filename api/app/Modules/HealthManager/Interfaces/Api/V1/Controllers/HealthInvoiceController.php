@@ -18,7 +18,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Factures de soins & encaissements — HC-007 (#7791, BC-30).
+ * Factures de soins & encaissements — HC-007 (#7791, BC-31).
  *
  * RBAC (HealthInvoicePolicy) : direction + facturation gèrent ; réception
  * en LECTURE seulement. Cycle de vie (spec §4) : draft → issued →

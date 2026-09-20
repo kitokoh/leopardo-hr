@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 /**
- * API des ordonnances — HC-005 (#7789, BC-30).
+ * API des ordonnances — HC-005 (#7789, BC-31).
  *
  * Contenu MÉDICAL : praticiens + direction UNIQUEMENT (réception et
  * facturation TOUJOURS refusées, Policy §2). L'ordonnance est liée à une

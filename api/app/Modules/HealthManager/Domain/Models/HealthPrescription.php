@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * Ordonnance (prescription) — Issue #7789 (BC-30).
+ * Ordonnance (prescription) — Issue #7789 (BC-31).
  *
  * Liée à une consultation ; notes chiffrées AU REPOS. Contenu médical :
  * visible praticiens + direction UNIQUEMENT (RBAC §2).

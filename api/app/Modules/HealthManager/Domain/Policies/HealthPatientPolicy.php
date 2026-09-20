@@ -9,7 +9,7 @@ use App\Modules\HealthManager\Domain\Access\HealthAccess;
 use App\Modules\HealthManager\Domain\Models\HealthPatient;
 
 /**
- * #7787 (BC-30) — Policy des patients.
+ * #7787 (BC-31) — Policy des patients.
  *
  * Deny-by-default (spec §2) : gestion administrative par la direction et la
  * réception ; praticien en LECTURE seule ; facturation et employé lambda

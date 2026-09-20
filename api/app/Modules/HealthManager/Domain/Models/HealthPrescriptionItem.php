@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * Ligne d'ordonnance (médicament + posologie) — Issue #7789 (BC-30).
+ * Ligne d'ordonnance (médicament + posologie) — Issue #7789 (BC-31).
  *
  * @property int $id
  * @property string $company_id

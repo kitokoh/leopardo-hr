@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * Facture de soins — Issue #7791 (BC-30).
+ * Facture de soins — Issue #7791 (BC-31).
  *
  * Numéro `HINV-YYYY-NNNN` séquentiel par tenant/année, généré serveur.
  * Invariants (spec §4, service) : total recalculé serveur (Σ line_total −

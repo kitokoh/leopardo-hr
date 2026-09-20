@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * Lit d'hospitalisation — Issue #7786 (BC-30).
+ * Lit d'hospitalisation — Issue #7786 (BC-31).
  *
  * Rattaché à une salle (FK composite anti cross-tenant). Code unique par
  * tenant ; statut borné (free|occupied|maintenance, CHECK en base) —

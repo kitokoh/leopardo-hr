@@ -9,7 +9,7 @@ use App\Modules\HealthManager\Domain\Access\HealthAccess;
 use App\Modules\HealthManager\Domain\Models\HealthCareAct;
 
 /**
- * #7791 (BC-30) — Policy du catalogue d'actes de soins.
+ * #7791 (BC-31) — Policy du catalogue d'actes de soins.
  *
  * Deny-by-default (spec §2) : direction et facturation UNIQUEMENT —
  * réception, praticiens et employé lambda refusés.

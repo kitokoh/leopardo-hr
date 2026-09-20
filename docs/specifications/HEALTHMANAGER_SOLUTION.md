@@ -1,4 +1,4 @@
-# Spécification — Solution verticale HealthManager (BC-30 HEALTH)
+# Spécification — Solution verticale HealthManager (BC-31 HEALTH)
 
 > Issues : #7785 (fondations), #7786 (référentiel), #7787 (patients),
 > #7788 (rendez-vous), #7789 (consultations & prescriptions),

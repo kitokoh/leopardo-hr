@@ -9,7 +9,7 @@ use App\Modules\HealthManager\Domain\Access\HealthAccess;
 use App\Modules\HealthManager\Domain\Models\HealthDepartment;
 
 /**
- * #7786 (BC-30) — Policy des services médicaux (référentiel).
+ * #7786 (BC-31) — Policy des services médicaux (référentiel).
  *
  * Deny-by-default (spec §2) : gestion réservée à la direction
  * (`health.admin`) ; lecture ouverte aux praticiens et à la réception.

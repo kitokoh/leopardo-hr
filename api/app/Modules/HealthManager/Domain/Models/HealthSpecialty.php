@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * Spécialité médicale — Issue #7786 (BC-30).
+ * Spécialité médicale — Issue #7786 (BC-31).
  *
  * Référentiel par tenant (code unique par tenant), seed standard à
  * l'activation de la solution. Liée n-n aux praticiens via

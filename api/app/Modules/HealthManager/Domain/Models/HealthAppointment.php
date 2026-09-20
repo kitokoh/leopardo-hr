@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * Rendez-vous patient ↔ praticien — Issue #7788 (BC-30).
+ * Rendez-vous patient ↔ praticien — Issue #7788 (BC-31).
  *
  * Invariants (spec §4, service) : chevauchement praticien interdit ;
  * transitions bornées (scheduled→confirmed|cancelled ;

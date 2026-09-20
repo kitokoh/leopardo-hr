@@ -1,6 +1,6 @@
 # AGENTS.md - Guide de travail Leopardo
 
-Derniere mise a jour : 2026-09-19 (verticale HealthManager BC-30 — checklist de création d'une verticale vérifiée de bout en bout)
+Derniere mise a jour : 2026-09-19 (verticale HealthManager BC-31 — checklist de création d'une verticale vérifiée de bout en bout)
 
 > Leçon 2026-09-19 (HC-001..008 #7785..#7792) : créer une VERTICALE complète = 8 points
 > d'enregistrement au-delà du module lui-même, tous vérifiés par des gardes locales :

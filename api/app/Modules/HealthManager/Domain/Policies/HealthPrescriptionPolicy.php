@@ -9,7 +9,7 @@ use App\Modules\HealthManager\Domain\Access\HealthAccess;
 use App\Modules\HealthManager\Domain\Models\HealthPrescription;
 
 /**
- * #7789 (BC-30) — Policy des ordonnances (contenu MÉDICAL).
+ * #7789 (BC-31) — Policy des ordonnances (contenu MÉDICAL).
  *
  * Deny-by-default (spec §2) : contenu médical visible des praticiens et de
  * la direction UNIQUEMENT — réception et facturation TOUJOURS refusées.

@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * Salle d'un service médical — Issue #7786 (BC-30).
+ * Salle d'un service médical — Issue #7786 (BC-31).
  *
  * Rattachée à un service (FK composite anti cross-tenant). Code unique par
  * tenant ; type et statut bornés (CHECK en base).

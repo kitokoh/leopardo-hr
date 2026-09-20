@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * Praticien de l'établissement — Issue #7786 (BC-30).
+ * Praticien de l'établissement — Issue #7786 (BC-31).
  *
  * Lié à un employé RH du tenant (`employee_id`, sans FK dure — pattern
  * EduTeacher : lien découplé du référentiel RH), rattaché optionnellement

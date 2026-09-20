@@ -9,7 +9,7 @@ use App\Modules\HealthManager\Domain\Access\HealthAccess;
 use App\Modules\HealthManager\Domain\Models\HealthSpecialty;
 
 /**
- * #7786 (BC-30) — Policy des spécialités médicales (référentiel).
+ * #7786 (BC-31) — Policy des spécialités médicales (référentiel).
  *
  * Deny-by-default (spec §2) : gestion réservée à la direction
  * (`health.admin`) ; lecture ouverte aux praticiens et à la réception.

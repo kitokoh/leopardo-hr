@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * Affectation praticien → spécialité (n-n) — Issue #7786 (BC-30).
+ * Affectation praticien → spécialité (n-n) — Issue #7786 (BC-31).
  *
  * Unique par tenant (UNIQUE company_id+practitioner_id+specialty_id) ;
  * FK composites anti cross-tenant.

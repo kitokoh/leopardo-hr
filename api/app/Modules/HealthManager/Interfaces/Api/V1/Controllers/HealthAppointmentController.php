@@ -19,7 +19,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
- * API des rendez-vous & agenda — HC-004 (#7788, BC-30).
+ * API des rendez-vous & agenda — HC-004 (#7788, BC-31).
  *
  * RBAC (HealthAppointmentPolicy) : direction + réception gèrent TOUS les
  * rendez-vous ; un praticien voit/transitionne UNIQUEMENT les siens et ne

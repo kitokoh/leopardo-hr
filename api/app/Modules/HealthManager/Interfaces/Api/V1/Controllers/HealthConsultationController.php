@@ -19,7 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 /**
- * API des consultations médicales — HC-005 (#7789, BC-30).
+ * API des consultations médicales — HC-005 (#7789, BC-31).
  *
  * Contenu MÉDICAL (chiffré au repos) : visible des praticiens et de la
  * direction UNIQUEMENT — la réception et la facturation sont TOUJOURS

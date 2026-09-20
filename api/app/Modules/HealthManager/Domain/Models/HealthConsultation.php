@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * Consultation médicale — Issue #7789 (BC-30).
+ * Consultation médicale — Issue #7789 (BC-31).
  *
  * Contenu MÉDICAL chiffré AU REPOS (casts `encrypted` / `encrypted:array`) :
  * examen clinique, diagnostic, constantes vitales (weight_kg, height_cm,

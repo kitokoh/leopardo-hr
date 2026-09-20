@@ -110,9 +110,9 @@ tags:
 - name: Communication
   description: 'BC-29 COMMUNICATION — boite mail connectee + IA (OAuth Gmail serveur, sync, classification, relances) ; squelette R0 (#7685).'
 - name: Pharmacy
-  description: 'BC-30 PHARMACY — verticale PharmaManager : referentiel produits d''officine, stock par lots FEFO, achats fournisseurs, ventes comptoir, ordonnancier des produits controles, dashboard fondateur (PHARMA-001..007, #7798-#7804).'
+  description: 'BC-31 PHARMACY — verticale PharmaManager : referentiel produits d''officine, stock par lots FEFO, achats fournisseurs, ventes comptoir, ordonnancier des produits controles, dashboard fondateur (PHARMA-001..007, #7798-#7804).'
 - name: HealthManager
-  description: 'BC-30 HEALTHMANAGER — solution verticale hôpitaux & cliniques privées (HC-001 #7785 à HC-008 #7792) : structure, patients, rendez-vous, consultations, ordonnances, hospitalisations, facturation des soins.'
+  description: 'BC-31 HEALTHMANAGER — solution verticale hôpitaux & cliniques privées (HC-001 #7785 à HC-008 #7792) : structure, patients, rendez-vous, consultations, ordonnances, hospitalisations, facturation des soins.'
 paths:
   /travel/distributor-keys:
     get:
@@ -34784,7 +34784,7 @@ paths:
       - Pharmacy
       summary: Liste paginee du referentiel produits d'officine
       description: >-
-        BC-30 PHARMACY (#7799) — recherche nom/DCI/code-barres/code interne,
+        BC-31 PHARMACY (#7799) — recherche nom/DCI/code-barres/code interne,
         filtres category/status/prescription_required, pagination per_page
         (1..100). Solution `pharmacy` requise (403 PHARMACY_SOLUTION_INACTIVE
         sinon), lecture pour tout employe du tenant.
@@ -34837,7 +34837,7 @@ paths:
       - Pharmacy
       summary: Creer un produit d'officine
       description: >-
-        BC-30 PHARMACY (#7799) — code-barres et code interne uniques PAR
+        BC-31 PHARMACY (#7799) — code-barres et code interne uniques PAR
         TENANT (422 sinon), prix en decimal. Reserve manager.
       requestBody:
         required: true
@@ -34892,7 +34892,7 @@ paths:
       tags:
       - Pharmacy
       summary: Mettre a jour un produit d'officine
-      description: BC-30 PHARMACY (#7799) — reserve manager, tenant-scope (404 cross-tenant).
+      description: BC-31 PHARMACY (#7799) — reserve manager, tenant-scope (404 cross-tenant).
       parameters:
       - name: product
         in: path
@@ -34929,7 +34929,7 @@ paths:
       - Pharmacy
       summary: Archiver un produit d'officine
       description: >-
-        BC-30 PHARMACY (#7799) — jamais de suppression (le produit reste
+        BC-31 PHARMACY (#7799) — jamais de suppression (le produit reste
         reference par lots/ventes/commandes, tracabilite reglementaire).
       parameters:
       - name: product
@@ -34952,7 +34952,7 @@ paths:
       - Pharmacy
       summary: Niveaux de stock par produit (lots non perimes)
       description: >-
-        BC-30 PHARMACY (#7800) — disponible = somme des lots NON perimes ;
+        BC-31 PHARMACY (#7800) — disponible = somme des lots NON perimes ;
         quantite perimee et indicateur sous-seuil par produit.
       parameters:
       - name: search
@@ -35007,7 +35007,7 @@ paths:
       - Pharmacy
       summary: Journal immuable des mouvements de stock
       description: >-
-        BC-30 PHARMACY (#7800) — journal append-only (receipt, sale,
+        BC-31 PHARMACY (#7800) — journal append-only (receipt, sale,
         adjustment, expiry_writeoff, return), filtres product_id/type.
       parameters:
       - name: product_id
@@ -35048,7 +35048,7 @@ paths:
       - Pharmacy
       summary: Ajustement d'inventaire sur un lot
       description: >-
-        BC-30 PHARMACY (#7800) — delta signe non nul, raison OBLIGATOIRE,
+        BC-31 PHARMACY (#7800) — delta signe non nul, raison OBLIGATOIRE,
         jamais de lot negatif (422 PHARMACY_INSUFFICIENT_STOCK). Reserve
         manager ; type adjustment ou expiry_writeoff.
       requestBody:
@@ -35085,7 +35085,7 @@ paths:
       - Pharmacy
       summary: Alertes de stock (sous seuil, perimant, perimes)
       description: >-
-        BC-30 PHARMACY (#7800) — produits sous min_stock_level, lots perimant
+        BC-31 PHARMACY (#7800) — produits sous min_stock_level, lots perimant
         sous N jours (?days=, defaut 90), lots perimes a retirer.
       parameters:
       - name: days
@@ -35148,7 +35148,7 @@ paths:
       tags:
       - Pharmacy
       summary: Creer un fournisseur (grossiste, laboratoire)
-      description: BC-30 PHARMACY (#7801) — reserve manager.
+      description: BC-31 PHARMACY (#7801) — reserve manager.
       requestBody:
         required: true
         content:
@@ -35188,7 +35188,7 @@ paths:
       tags:
       - Pharmacy
       summary: Mettre a jour un fournisseur
-      description: BC-30 PHARMACY (#7801) — reserve manager (archivage via status, jamais de suppression).
+      description: BC-31 PHARMACY (#7801) — reserve manager (archivage via status, jamais de suppression).
       parameters:
       - name: supplier
         in: path
@@ -35255,7 +35255,7 @@ paths:
       - Pharmacy
       summary: Creer une commande d'achat (brouillon)
       description: >-
-        BC-30 PHARMACY (#7801) — numero PO-YYYY-XXXX sequence PAR TENANT,
+        BC-31 PHARMACY (#7801) — numero PO-YYYY-XXXX sequence PAR TENANT,
         fournisseur du tenant obligatoire (404 sinon). Reserve manager.
       requestBody:
         required: true
@@ -35318,7 +35318,7 @@ paths:
       tags:
       - Pharmacy
       summary: Passer la commande (draft vers ordered)
-      description: BC-30 PHARMACY (#7801) — transition invalide → 422 PHARMACY_INVALID_TRANSITION.
+      description: BC-31 PHARMACY (#7801) — transition invalide → 422 PHARMACY_INVALID_TRANSITION.
       parameters:
       - name: purchaseOrder
         in: path
@@ -35364,7 +35364,7 @@ paths:
       - Pharmacy
       summary: Receptionner une commande (partielle ou totale)
       description: >-
-        BC-30 PHARMACY (#7801) — chaque ligne recue (quantite, n° de lot,
+        BC-31 PHARMACY (#7801) — chaque ligne recue (quantite, n° de lot,
         peremption, cout) cree/incremente un lot + mouvement receipt via
         PharmacyStockService. Sur-reception refusee (422
         PHARMACY_OVER_RECEIPT) ; partielle → partially_received, totale →
@@ -35467,7 +35467,7 @@ paths:
       - Pharmacy
       summary: Encaisser une vente comptoir (POS)
       description: >-
-        BC-30 PHARMACY (#7802) — numero VT-YYYY-XXXXX sequence PAR TENANT,
+        BC-31 PHARMACY (#7802) — numero VT-YYYY-XXXXX sequence PAR TENANT,
         delivrance FEFO, totaux calcules SERVEUR (prix figes), ordonnance
         exigee si produit prescription_required ou is_controlled (422
         PHARMACY_PRESCRIPTION_REQUIRED), stock insuffisant → 422 sans effet
@@ -35543,7 +35543,7 @@ paths:
       - Pharmacy
       summary: Annuler une vente (contre-passation, jamais de suppression)
       description: >-
-        BC-30 PHARMACY (#7802) — raison OBLIGATOIRE, reserve manager : la
+        BC-31 PHARMACY (#7802) — raison OBLIGATOIRE, reserve manager : la
         vente passe en voided (CONSERVEE) et le stock des lots d'ORIGINE est
         re-credite par mouvements return. Double void → 422.
       parameters:
@@ -35606,7 +35606,7 @@ paths:
       tags:
       - Pharmacy
       summary: Creer un prescripteur
-      description: BC-30 PHARMACY (#7803) — reserve manager.
+      description: BC-31 PHARMACY (#7803) — reserve manager.
       requestBody:
         required: true
         content:
@@ -35714,7 +35714,7 @@ paths:
       - Pharmacy
       summary: Saisir une ordonnance
       description: >-
-        BC-30 PHARMACY (#7803) — reference unique PAR TENANT (422 sinon),
+        BC-31 PHARMACY (#7803) — reference unique PAR TENANT (422 sinon),
         prescripteur du tenant obligatoire (404 sinon). Saisie par tout
         employe du comptoir.
       requestBody:
@@ -35758,7 +35758,7 @@ paths:
       tags:
       - Pharmacy
       summary: Mettre a jour une ordonnance (reference non modifiable)
-      description: BC-30 PHARMACY (#7803) — reserve manager (piece reglementaire).
+      description: BC-31 PHARMACY (#7803) — reserve manager (piece reglementaire).
       parameters:
       - name: prescription
         in: path
@@ -35802,7 +35802,7 @@ paths:
       - Pharmacy
       summary: Ordonnancier des produits controles (lecture seule)
       description: >-
-        BC-30 PHARMACY (#7803) — registre chronologique DERIVE du journal
+        BC-31 PHARMACY (#7803) — registre chronologique DERIVE du journal
         immuable des mouvements sale/return des produits is_controlled
         (date, produit, lot, quantite, n° de vente, ordonnance, prescripteur,
         patient, delivreur — annulations en contre-passation, jamais
@@ -35845,7 +35845,7 @@ paths:
       - Pharmacy
       summary: Tableau de bord fondateur de l'officine
       description: >-
-        BC-30 PHARMACY (#7804) — CA jour/7j/30j, nb ventes du jour, panier
+        BC-31 PHARMACY (#7804) — CA jour/7j/30j, nb ventes du jour, panier
         moyen 30j, repartition par paiement (ventes voided EXCLUES),
         valorisation du stock (lots non perimes), produits sous seuil, lots
         perimant sous 90 jours, lots perimes, top 5 produits 30j, commandes
@@ -38970,7 +38970,7 @@ components:
   schemas:
     PharmacyProduct:
       type: object
-      description: Produit d'officine (BC-30 PHARMACY, #7799) — DCI, forme, dosage, regulation, prix decimal.
+      description: Produit d'officine (BC-31 PHARMACY, #7799) — DCI, forme, dosage, regulation, prix decimal.
       properties:
         id:
           type: integer
@@ -39054,7 +39054,7 @@ components:
           enum: [active, archived]
     PharmacyBatch:
       type: object
-      description: Lot physique d'un produit d'officine (BC-30 PHARMACY, #7800).
+      description: Lot physique d'un produit d'officine (BC-31 PHARMACY, #7800).
       properties:
         id:
           type: integer
@@ -39078,7 +39078,7 @@ components:
           type: boolean
     PharmacyStockMovement:
       type: object
-      description: Mouvement du journal immuable de stock (BC-30 PHARMACY, #7800) — append-only.
+      description: Mouvement du journal immuable de stock (BC-31 PHARMACY, #7800) — append-only.
       properties:
         id:
           type: integer
@@ -39110,7 +39110,7 @@ components:
           nullable: true
     PharmacySupplier:
       type: object
-      description: Fournisseur d'officine (BC-30 PHARMACY, #7801).
+      description: Fournisseur d'officine (BC-31 PHARMACY, #7801).
       properties:
         id:
           type: integer
@@ -39159,7 +39159,7 @@ components:
           enum: [active, archived]
     PharmacyPurchaseOrder:
       type: object
-      description: Commande d'achat d'officine (BC-30 PHARMACY, #7801) — cycle draft→ordered→partially_received→received|cancelled, numero PO-YYYY-XXXX sequence par tenant.
+      description: Commande d'achat d'officine (BC-31 PHARMACY, #7801) — cycle draft→ordered→partially_received→received|cancelled, numero PO-YYYY-XXXX sequence par tenant.
       properties:
         id:
           type: integer
@@ -39202,7 +39202,7 @@ components:
                 type: string
     PharmacySale:
       type: object
-      description: Vente comptoir (BC-30 PHARMACY, #7802) — numero VT-YYYY-XXXXX sequence par tenant, prix figes, totaux serveur.
+      description: Vente comptoir (BC-31 PHARMACY, #7802) — numero VT-YYYY-XXXXX sequence par tenant, prix figes, totaux serveur.
       properties:
         id:
           type: integer

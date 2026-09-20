@@ -9,7 +9,7 @@ use App\Modules\HealthManager\Domain\Access\HealthAccess;
 use App\Modules\HealthManager\Domain\Models\HealthAppointment;
 
 /**
- * #7788 (BC-30) — Policy des rendez-vous.
+ * #7788 (BC-31) — Policy des rendez-vous.
  *
  * Deny-by-default (spec §2) : direction et réception gèrent TOUS les
  * rendez-vous ; un praticien voit et met à jour UNIQUEMENT les siens

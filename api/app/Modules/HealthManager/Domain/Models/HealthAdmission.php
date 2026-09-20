@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * Hospitalisation (admission) — Issue #7790 (BC-30).
+ * Hospitalisation (admission) — Issue #7790 (BC-31).
  *
  * Invariants (spec §4, service, transaction + verrou) : lit `free` requis
  * → lit `occupied` ; transfert = ancien lit libéré + nouveau occupé ;

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * Ligne de facture de soins — Issue #7791 (BC-30).
+ * Ligne de facture de soins — Issue #7791 (BC-31).
  *
  * Prix unitaire FIGÉ au moment de la facturation (jamais recalculé depuis
  * le catalogue) ; `care_act_id` nullable (ligne libre).

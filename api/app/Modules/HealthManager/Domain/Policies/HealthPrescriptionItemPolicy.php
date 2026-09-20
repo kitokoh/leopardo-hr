@@ -9,7 +9,7 @@ use App\Modules\HealthManager\Domain\Access\HealthAccess;
 use App\Modules\HealthManager\Domain\Models\HealthPrescriptionItem;
 
 /**
- * #7789 (BC-30) — Policy des lignes d'ordonnance (contenu MÉDICAL).
+ * #7789 (BC-31) — Policy des lignes d'ordonnance (contenu MÉDICAL).
  *
  * Deny-by-default (spec §2) : même périmètre que l'ordonnance parente —
  * praticiens + direction en lecture ; auteur (praticien de l'ordonnance)

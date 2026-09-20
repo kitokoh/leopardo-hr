@@ -813,7 +813,7 @@ restent les gates applicables.
   versionné `docs/api-mock-data/` (sorti du dépôt). **Aucun code, contrat ni scénario mobile
   modifié** — aucun scénario nouveau requis.
 
-## Mise à jour 2026-09-19 — verticale HealthManager BC-30 (PR #7818, issues #7785–#7792)
+## Mise à jour 2026-09-19 — verticale HealthManager BC-31 (PR #7818, issues #7785–#7792)
 
 - **Surface API** : nouvelle surface `/api/v1/health-manager/*` (63 opérations — référentiel
   structure, patients, rendez-vous, consultations/prescriptions, hospitalisations,

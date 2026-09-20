@@ -9,7 +9,7 @@ use App\Modules\HealthManager\Domain\Access\HealthAccess;
 use App\Modules\HealthManager\Domain\Models\HealthInvoice;
 
 /**
- * #7791 (BC-30) — Policy des factures de soins.
+ * #7791 (BC-31) — Policy des factures de soins.
  *
  * Deny-by-default (spec §2) : direction et facturation gèrent ; réception
  * en LECTURE (suivi administratif, jamais le contenu médical) ; praticiens

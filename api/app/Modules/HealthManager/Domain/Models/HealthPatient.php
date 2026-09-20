@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * Dossier administratif patient — Issue #7787 (BC-30).
+ * Dossier administratif patient — Issue #7787 (BC-31).
  *
  * MRN `PAT-YYYY-NNNN` séquentiel par tenant/année, généré serveur.
  * PII et données médicales chiffrées AU REPOS (casts `encrypted`, pattern

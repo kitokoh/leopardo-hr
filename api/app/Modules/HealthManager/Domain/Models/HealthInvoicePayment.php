@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * Encaissement d'une facture de soins — Issue #7791 (BC-30).
+ * Encaissement d'une facture de soins — Issue #7791 (BC-31).
  *
  * Invariants (spec §4, service) : cumul ≤ total (sur-paiement 422) ;
  * cumul = total → facture `paid`, sinon `partially_paid`. Méthode bornée

@@ -9,7 +9,7 @@ use App\Modules\HealthManager\Domain\Access\HealthAccess;
 use App\Modules\HealthManager\Domain\Models\HealthPractitionerSpecialty;
 
 /**
- * #7786 (BC-30) — Policy des affectations praticien → spécialité.
+ * #7786 (BC-31) — Policy des affectations praticien → spécialité.
  *
  * Deny-by-default (spec §2) : gestion réservée à la direction
  * (`health.admin`) ; lecture ouverte aux praticiens et à la réception.

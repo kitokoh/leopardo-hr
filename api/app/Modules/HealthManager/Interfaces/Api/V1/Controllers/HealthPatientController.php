@@ -15,7 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * API du registre patients — HC-003 (#7787, BC-30).
+ * API du registre patients — HC-003 (#7787, BC-31).
  *
  * RBAC (HealthPatientPolicy) : direction + réception gèrent, praticien en
  * lecture seule, employé lambda 403, cross-tenant 404. MRN `PAT-YYYY-NNNN`

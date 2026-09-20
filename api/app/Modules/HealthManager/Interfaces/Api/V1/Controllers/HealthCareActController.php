@@ -15,7 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Catalogue des actes de soins facturables — HC-007 (#7791, BC-30).
+ * Catalogue des actes de soins facturables — HC-007 (#7791, BC-31).
  *
  * RBAC (HealthCareActPolicy) : direction + facturation UNIQUEMENT.
  * Suppression refusée (422 HEALTH_RESOURCE_IN_USE) dès qu'une ligne de

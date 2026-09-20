@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * Acte de soins facturable (catalogue) — Issue #7791 (BC-30).
+ * Acte de soins facturable (catalogue) — Issue #7791 (BC-31).
  *
  * Code unique par tenant ; catégorie bornée (CHECK en base). Le prix
  * courant est FIGÉ à la ligne de facture au moment de la facturation.

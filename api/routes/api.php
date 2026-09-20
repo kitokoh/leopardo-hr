@@ -470,7 +470,7 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/showcase.php';
     require __DIR__.'/modules/fuel_station.php';
     require __DIR__.'/modules/edu_manager.php';
-    // BC-30 HEALTH — verticale hôpitaux & cliniques privées (HC-001 #7785)
+    // BC-31 HEALTH — verticale hôpitaux & cliniques privées (HC-001 #7785)
     require __DIR__.'/modules/health_manager.php';
 
     // PHARMA-001 (#7798) — verticale PharmaManager (officines de pharmacie) :
