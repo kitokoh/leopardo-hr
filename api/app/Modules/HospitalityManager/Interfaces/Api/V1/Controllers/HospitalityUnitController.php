@@ -32,7 +32,9 @@ class HospitalityUnitController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
         $this->assertSameTenant($property, $actor->company_id);
-        $this->authorize('viewAny', HospitalityUnit::class);
+        // Liste imbriquée : lecture scopée à CET établissement (RBAC
+        // ressource-scopé progressif — voir ChecksHospitalityPropertyAccess).
+        $this->authorize('view', $property);
 
         $query = HospitalityUnit::query()
             ->where('company_id', $actor->company_id)
@@ -65,7 +67,7 @@ class HospitalityUnitController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
         $this->assertSameTenant($property, $actor->company_id);
-        $this->authorize('create', HospitalityUnit::class);
+        $this->authorize('create', [HospitalityUnit::class, $property->getKey()]);
 
         /** @var HospitalityUnit $unit */
         $unit = HospitalityUnit::query()->create(array_merge($request->validated(), [

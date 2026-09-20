@@ -4037,6 +4037,17 @@ trait CreatesMvpSchema
             });
         }
 
+        // BC-32 (HOSP-003 #7945) — équipe par établissement (pivot soft delete).
+        if (! Schema::hasTable($this->moduleTable('hospitality_property_staff'))) {
+            Schema::create($this->moduleTable('hospitality_property_staff'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('health_patients'))) {
             Schema::create($this->moduleTable('health_patients'), function (Blueprint $table): void {
                 $table->bigIncrements('id');

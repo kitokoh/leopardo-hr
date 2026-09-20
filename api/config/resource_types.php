@@ -53,6 +53,14 @@ return [
         'label_column' => 'name',
         'scope_company' => true,
     ],
+    // HOSP-003 (#7945, BC-32) — établissement hôtelier / locatif : objet
+    // d'autorisation du RBAC ressource-scopé Hospitality (responsables de
+    // site = assignation `manage` sur la propriété).
+    'hospitality_property' => [
+        'model' => App\Modules\HospitalityManager\Domain\Models\HospitalityProperty::class,
+        'label_column' => 'name',
+        'scope_company' => true,
+    ],
     'site' => [
         'model' => App\Core\Tenant\Domain\Models\Site::class,
         'label_column' => 'name',

@@ -40956,6 +40956,160 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+  /hospitality/properties/{property}/staff:
+    get:
+      tags:
+      - Hospitality
+      summary: Lister l''équipe d''un établissement
+      description: 'Affectations staff de l''établissement (employé embarqué id/prénom/nom, rôle descriptif, date). Lecture scopée à CET établissement (RBAC ressource-scopé progressif `hospitality_property` — HOSP-003 #7945 : fallback direction principal/rh tant qu''aucune assignation n''existe dans le tenant, fail-closed ensuite). Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+      responses:
+        '200':
+          description: Page d''affectations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HospitalityPropertyStaff'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      tags:
+      - Hospitality
+      summary: Affecter un employé à un établissement
+      description: 'Affectation stricte : employé d''un autre tenant → 422 `EMPLOYEE_OUTSIDE_TENANT` ; doublon actif → 409 `EMPLOYEE_ALREADY_ASSIGNED` ; ré-affectation après retrait = restauration de la ligne soft-deleted (jamais de doublon physique). Le `role` est descriptif (métier), jamais une source d''autorisation. Gestion de l''établissement requise (`manage`).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HospitalityPropertyStaffInput'
+      responses:
+        '201':
+          description: Affectation créée (ou restaurée)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityPropertyStaff'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Employé déjà affecté à cet établissement (EMPLOYEE_ALREADY_ASSIGNED)
+        '422':
+          description: Employé hors tenant (EMPLOYEE_OUTSIDE_TENANT) ou payload invalide
+  /hospitality/properties/{property}/staff/{assignment}:
+    patch:
+      tags:
+      - Hospitality
+      summary: Mettre à jour le rôle descriptif d''une affectation
+      description: 'L''affectation doit appartenir à l''établissement de la route (sinon 404). Cross-tenant → 404. Gestion de l''établissement requise (`manage`).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: assignment
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                  maxLength: 80
+                  nullable: true
+      responses:
+        '200':
+          description: Affectation mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityPropertyStaff'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - Hospitality
+      summary: Retirer un employé d''un établissement
+      description: 'Retrait = soft delete (historique conservé ; la ré-affectation restaurera la ligne). Cross-tenant → 404. Gestion de l''établissement requise (`manage`).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: assignment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Retiré
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
 components:
   securitySchemes:
     BearerAuth:
@@ -50613,6 +50767,52 @@ components:
           type: string
           maxLength: 2000
       description: Entrée création/mise à jour d''une unité (HOSP-002).
+    HospitalityPropertyStaff:
+      type: object
+      required:
+      - id
+      - property_id
+      - employee_id
+      properties:
+        id:
+          type: integer
+        property_id:
+          type: integer
+        employee_id:
+          type: integer
+        employee:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            first_name:
+              type: string
+            last_name:
+              type: string
+        role:
+          type: string
+          nullable: true
+          description: Rôle MÉTIER descriptif (réceptionniste, gouvernante…) — jamais une source d''autorisation.
+        assigned_at:
+          type: string
+          format: date-time
+          nullable: true
+      description: 'Affectation staff ↔ établissement (HOSP-003 #7945).'
+    HospitalityPropertyStaffInput:
+      type: object
+      required:
+      - employee_id
+      properties:
+        employee_id:
+          type: integer
+          minimum: 1
+          description: Employé RH du MÊME tenant (sinon 422 EMPLOYEE_OUTSIDE_TENANT).
+        role:
+          type: string
+          maxLength: 80
+          nullable: true
+      description: Entrée affectation staff (HOSP-003).
     HealthDepartment:
       type: object
       required:

@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityModuleStatusController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityPropertyController;
+use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityPropertyStaffController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityRoomTypeController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityUnitController;
 use Illuminate\Support\Facades\Route;
@@ -54,4 +55,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/properties/{property}/units', [HospitalityUnitController::class, 'store'])->whereNumber('property');
         Route::patch('/units/{unit}', [HospitalityUnitController::class, 'update'])->whereNumber('unit');
         Route::delete('/units/{unit}', [HospitalityUnitController::class, 'destroy'])->whereNumber('unit');
+
+        // ── Équipe par établissement (HOSP-003 #7945) ─────────────────
+        Route::get('/properties/{property}/staff', [HospitalityPropertyStaffController::class, 'index'])->whereNumber('property');
+        Route::post('/properties/{property}/staff', [HospitalityPropertyStaffController::class, 'store'])->whereNumber('property');
+        Route::patch('/properties/{property}/staff/{assignment}', [HospitalityPropertyStaffController::class, 'update'])->whereNumber('property')->whereNumber('assignment');
+        Route::delete('/properties/{property}/staff/{assignment}', [HospitalityPropertyStaffController::class, 'destroy'])->whereNumber('property')->whereNumber('assignment');
     });
