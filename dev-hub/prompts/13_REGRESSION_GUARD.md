@@ -41,9 +41,9 @@ d) Backend — patterns interdits :
    - `dd()` ou `dump()` laissés dans le code
    - `grep -rn "dd(\|dump(" api/app/ --include="*.php"`
 e) Documentation — fichiers interdits :
-   - Fichiers .md dans docs/PLAN_ACTION2/ (autre que README.md)
+   - Fichiers .md dans docs/PLAN_ACTION2/ (dossier supprimé #7843 — ne doit pas réapparaître, archive : docs/archive/PLAN_ACTION2/)
    - Fichiers .md dans docs/PLAN_ACTION/ (tout doit être dans archive)
-   - `ls docs/PLAN_ACTION2/ | findstr /v README.md`
+   - `ls docs/PLAN_ACTION2/` (le dossier ne doit plus exister — supprimé #7843)
 PARTIE 3 — SANTÉ DES SCRIPTS DE VALIDATION
 Exécute (ou vérifie la présence de) chaque script de dev-hub/tools/ :
 - validate-launch-workflows.ps1

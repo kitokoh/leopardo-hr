@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\RestaurantManager\Providers;
 
 use App\Contracts\Communication\CommunicationServiceInterface;
+use App\Core\Solutions\Contracts\DemoDataKit;
+use App\Core\Solutions\DemoDataRegistry;
 use App\Modules\RestaurantManager\Application\Consumers\KitchenOrderNotificationConsumer;
 use App\Modules\RestaurantManager\Application\Consumers\ServiceOrderNotificationConsumer;
 use App\Modules\RestaurantManager\Application\Observers\RestaurantOrderObserver;
@@ -37,6 +39,7 @@ use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CardPa
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CashPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\MobileMoneyPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\ReceivingService;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDemoSeederService;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxConsumerRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use App\Modules\RestaurantManager\Infrastructure\Services\StockMovementService;
@@ -63,6 +66,20 @@ class RestaurantManagerServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(SolutionManifest::class, RestaurantManagerManifest::class);
+
+        // #7865 — kit de données de démonstration de la verticale (code de
+        // solution `restaurant`, manifest porté par Modules/Restaurant — le
+        // SEEDER vit ici, RESTO-107). Pattern partagé `SolutionCatalogue` :
+        // singleton avec garde `bound()` + `resolving()` (registre partagé
+        // entre modules, ne jamais le ré-écraser) ; factory paresseuse — le
+        // seeder n'est instancié qu'à l'import effectif.
+        if (! $this->app->bound(DemoDataRegistry::class)) {
+            $this->app->singleton(DemoDataRegistry::class, static fn (): DemoDataRegistry => new DemoDataRegistry);
+        }
+
+        $this->app->resolving(DemoDataRegistry::class, function (DemoDataRegistry $registry): void {
+            $registry->register('restaurant', fn (): DemoDataKit => $this->app->make(RestaurantDemoSeederService::class));
+        });
 
         // Ports & adapters de persistance (RESTO-215, issue #6180) : les
         // implémentations Eloquent sont résolues en singleton derrière leur

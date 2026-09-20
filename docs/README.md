@@ -11,7 +11,7 @@ Index de la documentation technique et stratégique du projet.
 | Doc | Contenu |
 |---|---|
 | [`QUICKSTART.md`](QUICKSTART.md) | Setup local en 5 minutes (doc canonique) |
-| [`DEMARRAGE_RAPIDE.md`](DEMARRAGE_RAPIDE.md) | ⚠️ Obsolète/archivé — voir QUICKSTART.md |
+| [`archive/DEMARRAGE_RAPIDE.md`](archive/DEMARRAGE_RAPIDE.md) | ⚠️ Obsolète/archivé (déplacé dans `archive/`, #7843) — voir QUICKSTART.md |
 | [`../DEVELOPMENT.md`](../DEVELOPMENT.md) | Conventions de développement |
 | [`MONOREPO_TOOLING.md`](MONOREPO_TOOLING.md) | Commandes melos, npm --prefix, Makefile backend |
 

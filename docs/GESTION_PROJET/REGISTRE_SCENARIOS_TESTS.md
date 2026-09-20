@@ -864,3 +864,21 @@ restent les gates applicables.
   et `front/web/src/lib/__tests__/proxy-csp.test.ts` (repli + warn en dev/test et en phase de
   build ; erreur actionnable au runtime prod ; aucun warn quand la variable est posée).
 - **Surface API / mobile** : aucun changement de code, aucun scénario nouveau requis.
+
+## Mise à jour 2026-09-20 — refonte UX espace web client (PRs #7882..#7886, issues #7860..#7864)
+
+- **Surface API** : `PATCH /auth/profile` accepte désormais `phone` (#7861 — cas PHPUnit
+  `test_employee_can_update_name_and_phone_without_email` dans `AuthProfileSettingsTest`) ;
+  nouveaux endpoints `POST/GET /billing/collections` (#7863 — suite `BillingCollectionApiTest` :
+  création/listing/pagination, validation 422, RBAC principal 403, isolation cross-tenant) et
+  type de profil `cash` (`TenantPaymentProfileApiTest` étendu) ; flux d'invitation durci (#7864 —
+  `EmployeeInvitationOnboardingTest` : préservation des resource-assignments au resend,
+  employé archivé → 410 à l'activation).
+- **Surface web** : suites Jest nouvelles/adaptées — `account-page.test.tsx` (8 cas : profil
+  éditable, PATCH + resync session, mot de passe, panneau 2FA, carte abonnement),
+  `encaissements-page.test.tsx` (6 cas : familles, profil cash sans secret, encaissements
+  enregistrés), `employees-page.test.tsx` (11 cas : page unique équipe, grants, invitations,
+  archivage), `team-page.test.tsx` (redirection), `layout-header-menu.test.tsx` (menu avatar
+  simplifié + hover-intent), `tenant-branding.test.ts` (9 cas : cache + événement).
+- **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue partagé
+  `settingsPage.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.

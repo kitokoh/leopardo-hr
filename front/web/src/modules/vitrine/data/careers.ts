@@ -74,7 +74,7 @@ const careersByLocale: Record<AppLocale, CareersContent> = {
       title: 'Postes Ouverts',
       subtitle: 'postes disponibles',
       items: [
-        { title: 'Développeur Full-Stack Senior', department: 'Engineering', location: 'Paris / Remote', type: 'CDI', description: "Rejoignez notre équipe pour développer les nouvelles fonctionnalités de la plateforme RH." },
+        { title: 'Développeur Full-Stack Senior', department: 'Engineering', location: 'Paris / Remote', type: 'CDI', description: "Rejoignez notre équipe pour développer les nouvelles fonctionnalités de la suite métier." },
         { title: 'Designer UI/UX', department: 'Design', location: 'Paris / Remote', type: 'CDI', description: 'Concevez des interfaces intuitives pour notre application web et mobile.' },
         { title: 'Customer Success Manager', department: 'Customer Success', location: 'Paris', type: 'CDI', description: "Accompagnez nos clients dans l'adoption de Leopardo RH." },
         { title: 'Développeur Mobile Flutter', department: 'Engineering', location: 'Remote', type: 'CDI', description: 'Développez et améliorez notre application mobile multi-plateforme.' },
@@ -121,7 +121,7 @@ const careersByLocale: Record<AppLocale, CareersContent> = {
       title: 'Open Positions',
       subtitle: 'open positions',
       items: [
-        { title: 'Senior Full-Stack Developer', department: 'Engineering', location: 'Paris / Remote', type: 'Full-time', description: 'Join our team to build the new features of the HR platform.' },
+        { title: 'Senior Full-Stack Developer', department: 'Engineering', location: 'Paris / Remote', type: 'Full-time', description: 'Join our team to build the new features of the business suite.' },
         { title: 'UI/UX Designer', department: 'Design', location: 'Paris / Remote', type: 'Full-time', description: 'Design intuitive interfaces for our web and mobile application.' },
         { title: 'Customer Success Manager', department: 'Customer Success', location: 'Paris', type: 'Full-time', description: 'Support our clients in adopting Leopardo RH.' },
         { title: 'Flutter Mobile Developer', department: 'Engineering', location: 'Remote', type: 'Full-time', description: 'Build and improve our cross-platform mobile application.' },
@@ -168,7 +168,7 @@ const careersByLocale: Record<AppLocale, CareersContent> = {
       title: 'Açık Pozisyonlar',
       subtitle: 'açık pozisyon',
       items: [
-        { title: 'Kıdemli Full-Stack Geliştirici', department: 'Mühendislik', location: 'Paris / Remote', type: 'Tam zamanlı', description: 'İK platformunun yeni özelliklerini geliştirmek için ekibimize katılın.' },
+        { title: 'Kıdemli Full-Stack Geliştirici', department: 'Mühendislik', location: 'Paris / Remote', type: 'Tam zamanlı', description: 'İşletme paketinin yeni özelliklerini geliştirmek için ekibimize katılın.' },
         { title: 'UI/UX Tasarımcısı', department: 'Tasarım', location: 'Paris / Remote', type: 'Tam zamanlı', description: 'Web ve mobil uygulamamız için sezgisel arayüzler tasarlayın.' },
         { title: 'Müşteri Başarı Yöneticisi', department: 'Müşteri Başarısı', location: 'Paris', type: 'Tam zamanlı', description: 'Müşterilerimize Leopardo RH benimsenmesinde eşlik edin.' },
         { title: 'Flutter Mobil Geliştirici', department: 'Mühendislik', location: 'Remote', type: 'Tam zamanlı', description: 'Çok platformlu mobil uygulamamızı geliştirin ve iyileştirin.' },
@@ -215,7 +215,7 @@ const careersByLocale: Record<AppLocale, CareersContent> = {
       title: 'الوظائف الشاغرة',
       subtitle: 'وظيفة شاغرة',
       items: [
-        { title: 'مطور Full-Stack أول', department: 'الهندسة', location: 'باريس / عن بُعد', type: 'دوام كامل', description: 'انضم إلى فريقنا لتطوير الميزات الجديدة لمنصة الموارد البشرية.' },
+        { title: 'مطور Full-Stack أول', department: 'الهندسة', location: 'باريس / عن بُعد', type: 'دوام كامل', description: 'انضم إلى فريقنا لتطوير الميزات الجديدة لحزمة الأعمال.' },
         { title: 'مصمم UI/UX', department: 'التصميم', location: 'باريس / عن بُعد', type: 'دوام كامل', description: 'صمم واجهات بديهية لتطبيقنا على الويب والجوال.' },
         { title: 'مدير نجاح العملاء', department: 'نجاح العملاء', location: 'باريس', type: 'دوام كامل', description: 'رافق عملاءنا في اعتماد ليوباردو RH.' },
         { title: 'مطور تطبيقات Flutter', department: 'الهندسة', location: 'عن بُعد', type: 'دوام كامل', description: 'طور وحسّن تطبيقنا للجوال متعدد المنصات.' },

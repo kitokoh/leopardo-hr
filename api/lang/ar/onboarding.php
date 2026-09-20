@@ -16,4 +16,6 @@ return [
     'step_travel_first_trip' => 'برمج رحلتك الأولى',
     'step_travel_first_sale' => 'سجّل أول عملية بيع',
     'interview_invalid_answer' => 'إجابة غير صالحة: :question',
+    'demo_data_vertical_inactive' => 'الحل :code غير مفعّل في مساحتك.',
+    'demo_data_kit_unavailable' => 'لا تتوفر بيانات تجريبية للحل :code.',
 ];

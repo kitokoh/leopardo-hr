@@ -89,7 +89,7 @@ type CaseStudySeo = { title: string; description: string };
 const caseStudySeoByLocale: Record<AppLocale, Record<string, CaseStudySeo>> = {
   fr: {
     startup: {
-      title: 'Logiciel RH pour startup en croissance : étude de cas',
+      title: 'Suite métier pour startup en croissance : étude de cas RH',
       description:
         "Comment une startup technologique a structuré pointage, absences et paie de 5 à 50 employés avec Leopardo, sans recruter de profil RH dédié.",
     },
@@ -151,7 +151,7 @@ const caseStudySeoByLocale: Record<AppLocale, Record<string, CaseStudySeo>> = {
   },
   en: {
     startup: {
-      title: 'HR software for a fast-growing startup: case study',
+      title: 'Business suite for a fast-growing startup: HR case study',
       description:
         'How a technology startup structured attendance, leave and payroll while scaling from 5 to 50 employees with Leopardo, without a dedicated HR hire.',
     },
@@ -213,7 +213,7 @@ const caseStudySeoByLocale: Record<AppLocale, Record<string, CaseStudySeo>> = {
   },
   tr: {
     startup: {
-      title: 'Hızlı büyüyen startup için İK yazılımı: vaka analizi',
+      title: 'Hızlı büyüyen startup için işletme paketi: İK vaka analizi',
       description:
         "Bir teknoloji startup'ı 5'ten 50 çalışana büyürken giriş-çıkış, izin ve bordroyu Leopardo İK ile nasıl düzenledi? Ayrı bir İK uzmanı işe almadan.",
     },
@@ -275,7 +275,7 @@ const caseStudySeoByLocale: Record<AppLocale, Record<string, CaseStudySeo>> = {
   },
   ar: {
     startup: {
-      title: 'برنامج موارد بشرية لشركة ناشئة سريعة النمو: دراسة حالة',
+      title: 'حزمة أعمال لشركة ناشئة سريعة النمو: دراسة حالة موارد بشرية',
       description:
         'كيف نظّمت شركة تقنية ناشئة الحضور والإجازات والرواتب أثناء نموها من 5 إلى 50 موظفًا مع ليوباردو، دون تعيين مسؤول موارد بشرية مختص.',
     },

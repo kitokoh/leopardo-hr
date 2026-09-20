@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Infrastructure\Services;
 
+use App\Core\Solutions\Contracts\DemoDataKit;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus;
 use Illuminate\Support\Collection;
@@ -21,8 +22,12 @@ use Illuminate\Support\Facades\DB;
  *
  * Idempotence : les insertions utilisent insertOrIgnore sur les clés uniques
  * tenant-scoped ; rejouer la commande ne crée jamais de doublon.
+ *
+ * #7865 — le service implémente `DemoDataKit` : le client (principal/rh)
+ * peut installer ce jeu à la demande via `POST /demo-data/travelagency/import`
+ * (registre `DemoDataRegistry`, enregistré par le provider du module).
  */
-final class TravelDemoSeederService
+final class TravelDemoSeederService implements DemoDataKit
 {
     public function __construct(private readonly TravelGeoSeederService $geoSeeder) {}
 
