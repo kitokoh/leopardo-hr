@@ -163,6 +163,8 @@ export const pageMetadata = {
     description:
       "Gérez vos employés, paie et documents en un seul endroit. Essai gratuit 14 jours, sans carte bancaire.",
     keywords: [
+      "suite métier entreprises de terrain",
+      "suite de gestion entreprises de terrain",
       "gestion employés SaaS",
       "logiciel RH PME",
       "paie automatisée",
@@ -697,19 +699,19 @@ export function getPageMetadata(page: string, lang?: string): SEOMetadata {
  */
 export const rootSeoL10n: Record<'fr' | 'en' | 'tr' | 'ar', { keywords: string[]; ogImageAlt: string }> = {
   fr: {
-    keywords: ['SaaS RH', 'logiciel RH', 'paie', 'pointage mobile', 'absences', 'kiosque RH', 'multi-tenant', 'RH multilingue'],
+    keywords: ['suite métier', 'suite métier open-source', 'suite de gestion entreprises de terrain', 'SaaS RH', 'logiciel RH', 'paie', 'pointage mobile', 'absences', 'kiosque RH', 'multi-tenant', 'RH multilingue'],
     ogImageAlt: String(t('fr', 'seoRoot.ogImageAlt') ?? ''),
   },
   en: {
-    keywords: ['HR SaaS', 'HR software', 'payroll', 'mobile time tracking', 'leave management', 'HR kiosk', 'multi-tenant', 'multilingual HR'],
+    keywords: ['business suite', 'open-source business suite', 'business suite for field-based companies', 'HR SaaS', 'HR software', 'payroll', 'mobile time tracking', 'leave management', 'HR kiosk', 'multi-tenant', 'multilingual HR'],
     ogImageAlt: String(t('en', 'seoRoot.ogImageAlt') ?? ''),
   },
   tr: {
-    keywords: ['İK SaaS', 'İK yazılımı', 'bordro', 'mobil yoklama', 'izin yönetimi', 'İK kiosk', 'çok kiracılı', 'çok dilli İK'],
+    keywords: ['işletme yönetimi paketi', 'açık kaynaklı işletme paketi', 'saha şirketleri için yönetim paketi', 'İK SaaS', 'İK yazılımı', 'bordro', 'mobil yoklama', 'izin yönetimi', 'İK kiosk', 'çok kiracılı', 'çok dilli İK'],
     ogImageAlt: String(t('tr', 'seoRoot.ogImageAlt') ?? ''),
   },
   ar: {
-    keywords: ['نظام موارد بشرية سحابي', 'برنامج موارد بشرية', 'الرواتب', 'الحضور عبر الجوال', 'إدارة الإجازات', 'كشك الموارد البشرية', 'متعدد المستأجرين', 'موارد بشرية متعددة اللغات'],
+    keywords: ['حزمة أعمال', 'حزمة أعمال مفتوحة المصدر', 'حزمة إدارة الشركات الميدانية', 'نظام موارد بشرية سحابي', 'برنامج موارد بشرية', 'الرواتب', 'الحضور عبر الجوال', 'إدارة الإجازات', 'كشك الموارد البشرية', 'متعدد المستأجرين', 'موارد بشرية متعددة اللغات'],
     ogImageAlt: String(t('ar', 'seoRoot.ogImageAlt') ?? ''),
   },
 };

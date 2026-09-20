@@ -19,6 +19,9 @@ export { ParticleField } from './ParticleField';
 // Visuel « Pile Leopardo » : socle + couche horizontale + verticales métier.
 // WebGL chargé en import dynamique, repli CSS 3D si indisponible.
 export { SolutionStack } from './hero/SolutionStack';
+// Leo en visuel d'entrée du héro + la pile 3D en section autonome (#7851).
+export { LeoHeroVisual } from './hero/LeoHeroVisual';
+export { SolutionStackSection } from './hero/SolutionStackSection';
 export { LegalPageShell } from './LegalPageShell';
 export { GoogleAuthButton } from './GoogleAuthButton';
 export { RestaurantSolutionWizard } from './RestaurantSolutionWizard';
