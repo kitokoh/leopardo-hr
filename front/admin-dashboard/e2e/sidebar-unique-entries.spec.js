@@ -85,7 +85,7 @@ test.describe('Sidebar — une entrée par page (#6741)', () => {
 test.describe('Sidebar — modules d’entreprise cliente regroupés (#7329)', () => {
   test.skip(LIVE, 'Skipped: BACKEND_LIVE=1 — tests mock désactivés')
 
-  test('les 4 modules clients sont sous « Entreprises », section dépliée par défaut', async ({ page }) => {
+  test('les modules clients sont sous « Entreprises », section dépliée par défaut (#7855 : Formations vit sous RH & Paie)', async ({ page }) => {
     await page.addInitScript(() => {
       sessionStorage.setItem('admin_token', 'e2e-sidebar-token')
     })
@@ -112,8 +112,9 @@ test.describe('Sidebar — modules d’entreprise cliente regroupés (#7329)', (
 
     // Les écrans du périmètre client restent atteignables en un clic.
     // #7725 : « Stations-service » devient un sous-menu (Hub / Opérations).
+    // #7855/#7898 : « Formations » quitte « Modules clients » pour le groupe
+    // « RH & Paie » (même route /training) — vérifié plus bas.
     const modules = [
-      /^Formations$/i,
       /^Flotte véhicules$/i,
       /^Agence de voyage$/i,
     ]
@@ -141,9 +142,21 @@ test.describe('Sidebar — modules d’entreprise cliente regroupés (#7329)', (
     // Le repli est réellement fonctionnel (et réversible).
     await header.click()
     await expect(header).toHaveAttribute('aria-expanded', 'false')
-    await expect(nav.getByRole('link', { name: /^Formations$/i })).toBeHidden()
+    await expect(nav.getByRole('link', { name: /^Flotte véhicules$/i })).toBeHidden()
     await header.click()
     await expect(header).toHaveAttribute('aria-expanded', 'true')
+    await expect(nav.getByRole('link', { name: /^Flotte véhicules$/i })).toBeVisible()
+
+    // #7855/#7898 — « Formations » vit désormais sous « RH & Paie » : toujours
+    // atteignable, mais rattaché à ce groupe (repli du groupe = lien masqué).
+    const rhPaie = nav.getByRole('button', { name: /^RH & Paie$/i })
+    await expect(rhPaie).toBeVisible()
+    await expect(rhPaie).toHaveAttribute('aria-expanded', 'true')
+    await expect(nav.getByRole('link', { name: /^Formations$/i })).toBeVisible()
+    await rhPaie.click()
+    await expect(rhPaie).toHaveAttribute('aria-expanded', 'false')
+    await expect(nav.getByRole('link', { name: /^Formations$/i })).toBeHidden()
+    await rhPaie.click()
     await expect(nav.getByRole('link', { name: /^Formations$/i })).toBeVisible()
   })
 })
