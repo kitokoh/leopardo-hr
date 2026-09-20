@@ -343,4 +343,23 @@ class RestaurantPaymentRoutingTest extends TestCase
             ->assertJsonPath('data.card_online.configured', false)
             ->assertJsonPath('data.mobile_money.configured', false);
     }
+
+    public function test_restaurateur_payment_configuration_is_forbidden_for_ordinary_employee(): void
+    {
+        // #7599/#7600 — la configuration d'encaissement est une surface de
+        // gestion sensible (niveau `manage`) : un employé sans rôle de
+        // gestion (ni principal ni rh) reçoit 403.
+        $this->fakeProfiles($this->tenantStripeProfile(), null);
+
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'employee',
+            'manager_role' => null,
+        ]);
+        Sanctum::actingAs($employee);
+
+        $this->getJson('/api/v1/restaurant/payments/configuration')
+            ->assertStatus(403);
+    }
 }

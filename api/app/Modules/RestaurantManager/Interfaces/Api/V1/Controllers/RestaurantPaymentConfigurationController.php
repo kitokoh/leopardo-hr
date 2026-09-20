@@ -7,6 +7,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantPaymentConfigurationService;
+use App\Modules\RestaurantManager\Policies\Concerns\ChecksRestaurantBranchAccess;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -22,6 +23,8 @@ use Illuminate\Http\Request;
  */
 class RestaurantPaymentConfigurationController extends Controller
 {
+    use ChecksRestaurantBranchAccess;
+
     public function __construct(
         private readonly RestaurantPaymentConfigurationService $configuration,
     ) {}
@@ -30,6 +33,14 @@ class RestaurantPaymentConfigurationController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+
+        // #7599/#7600 (guard RBAC) : la configuration d'encaissement est une
+        // surface de gestion sensible du tenant (company-wide, sans branche)
+        // — niveau `manage`, réservé au gérant/propriétaire (principal/rh,
+        // principal seul dès que le scoping par succursale est actif).
+        if (! $this->canManageBranchResource($actor, null)) {
+            abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
+        }
 
         return response()->json([
             'data' => $this->configuration->statusForCompany((string) $actor->company_id),
