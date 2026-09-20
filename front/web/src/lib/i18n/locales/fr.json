@@ -2106,7 +2106,23 @@
     "checkout_sandbox_message": "Paiement simulé (mode sandbox). Aucune carte débitée.",
     "checkout_unavailable": "Le paiement en ligne est temporairement indisponible. Contactez le support à support@leopardo-rh.com.",
     "checkout_failed": "Impossible de créer la session de paiement.",
-    "redirect_url_invalid": "Les URLs de redirection doivent appartenir au site autorisé."
+    "redirect_url_invalid": "Les URLs de redirection doivent appartenir au site autorisé.",
+    "ai_credits": {
+      "title": "Crédits IA",
+      "subtitle": "Packs de tokens pour l'assistant IA, en complément du quota mensuel de votre plan.",
+      "optional_note": "Achat strictement facultatif : votre abonnement et vos modules ne sont jamais bloqués si vous n'achetez pas de crédits.",
+      "balance_label": "Solde de crédits",
+      "tokens_unit": "tokens",
+      "buy_pack": "Acheter",
+      "pack_label": "Pack {code}",
+      "history_title": "Historique récent",
+      "history_empty": "Aucun mouvement de crédits pour le moment.",
+      "reason_purchase": "Achat",
+      "reason_consumption": "Consommation",
+      "reason_adjustment": "Ajustement",
+      "load_error": "Impossible de charger les crédits IA.",
+      "checkout_error": "Impossible de créer la session de paiement des crédits IA."
+    }
   },
   "contracts": {
     "list_subtitle": "Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH.",
