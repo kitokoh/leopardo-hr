@@ -20,6 +20,12 @@ Donner une base de scenarios stable pour le dashboard `front/admin-dashboard/`, 
 
 ## Matrice des scenarios
 
+### 0. Configuration d'environnement (fail-closed)
+
+- build sans `VITE_API_URL` => echec explicite au build (garde #4715 dans `vite.config.js`)
+- runtime production sans `VITE_API_URL` => erreur explicite au demarrage, JAMAIS de repli silencieux
+- **2026-09-20 (#7963)** : dev/test sans `VITE_API_URL` => repli `http://localhost:8000/api/v1` avec avertissement (fin de toute URL distante codee en dur — l'ancienne instance dev onrender.com n'apparait plus nulle part dans `src/`)
+
 ### 1. Auth et session
 
 - page login accessible
