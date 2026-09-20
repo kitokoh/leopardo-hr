@@ -1,57 +1,17 @@
+import { getStoredUser as _getStoredUser } from './auth-session';
+
 export type AppLocale = 'fr' | 'ar' | 'tr' | 'en';
 
-export type StoredAuthUser = {
-  id?: number | string;
-  first_name?: string | null;
-  last_name?: string | null;
-  name?: string | null;
-  email?: string | null;
-  // #7861 — téléphone professionnel éditable depuis « Mon compte ».
-  phone?: string | null;
-  language?: string | null;
-  is_rtl?: boolean;
-  role?: string | null;
-  manager_role?: string | null;
-  // #7761/#7762 — grants de modules délégués (registre fermé ModuleKey) renvoyés
-  // par /auth/me pour SA propre fiche : ['marketing', 'accounting', ...].
-  module_grants?: string[] | null;
-  capabilities?: Record<string, unknown> | null;
-  // Features tenant (FeatureFlag::for) renvoyées au niveau racine par
-  // /auth/me (EmployeeResource) : {rh, finance, cameras, muhasebe, leo_ai}.
-  features?: Record<string, unknown> | null;
-  company?: {
-    id?: number | string | null;
-    name?: string | null;
-    language?: string | null;
-    timezone?: string | null;
-    currency?: string | null;
-    features?: Record<string, unknown> | null;
-    metadata?: Record<string, unknown> | null;
-    // #7235 — profil d'activité déclaré à l'inscription : `company`
-    // (entreprise) ou `solo` (indépendant, sans outils d'équipe).
-    type?: string | null;
-    // #7235 — secteur / métier vertical (ex. « restaurant »).
-    sector?: string | null;
-    // #7235 — sélection EXPLICITE des outils horizontaux faite à
-    // l'inscription ({ employees: true, attendance: false, … }). `null` ou
-    // absent = aucune sélection déclarée → comportement historique.
-    modules?: Record<string, unknown> | null;
-    // #7235 — essai : `subscription_end` alimente le compteur de jours
-    // restants dans l'application (les CTA « essai 14 jours » de la vitrine
-    // disparaissent, l'inscription est directe).
-    status?: string | null;
-    subscription_end?: string | null;
-  } | null;
-  plan?: {
-    name?: string | null;
-    features?: Record<string, unknown> | null;
-  } | null;
-};
 
 export const SUPPORTED_LOCALES: AppLocale[] = ['fr', 'ar', 'tr', 'en'];
-export const AUTH_TOKEN_KEY = 'auth_token';
-export const AUTH_USER_KEY = 'auth_user';
 export const PREFERRED_LOCALE_KEY = 'preferred_locale';
+
+// #8000 — gestion de session auth EXTRAITE vers ./auth-session : un audit auth
+// n'a plus à fouiller 3 600 lignes de traductions. Ré-exports de
+// compatibilité (aucun import existant ne casse) — cycle ESM assumé et sans
+// effet : les appels croisés sont tous des fonctions résolues à l'exécution.
+export { AUTH_TOKEN_KEY, AUTH_USER_KEY, storeAuthSession, clearAuthSession, getStoredUser, getDisplayName } from './auth-session';
+export type { StoredAuthUser } from './auth-session';
 
 export type CopyTree = {
   login: {
@@ -3574,24 +3534,11 @@ export function getCopy(locale: AppLocale) {
   return copy[locale];
 }
 
-export function getStoredUser(): StoredAuthUser | null {
-  if (typeof window === 'undefined') return null;
-
-  const raw = window.localStorage.getItem(AUTH_USER_KEY);
-  if (!raw) return null;
-
-  try {
-    return JSON.parse(raw) as StoredAuthUser;
-  } catch {
-    clearAuthSession();
-    return null;
-  }
-}
 
 export function getPreferredLocale(): AppLocale {
   if (typeof window === 'undefined') return 'fr';
 
-  const storedUser = getStoredUser();
+  const storedUser = _getStoredUser();
   if (storedUser?.language) {
     return normalizeLocale(storedUser.language);
   }
@@ -3609,22 +3556,7 @@ export function storePreferredLocale(locale: AppLocale): void {
   window.localStorage.setItem(PREFERRED_LOCALE_KEY, locale);
 }
 
-// Audit #1699 : le token n'est plus stocké côté JS (cookie httpOnly
-// `leopardo_token` géré par les route handlers). Le paramètre token est
-// conservé pour la compatibilité d'appel mais jamais écrit au repos.
-export function storeAuthSession(_token: string | null | undefined, user: StoredAuthUser): void {
-  if (typeof window === 'undefined') return;
-  window.localStorage.removeItem(AUTH_TOKEN_KEY);
-  window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
-  storePreferredLocale(normalizeLocale(user.language));
-}
 
-export function clearAuthSession(): void {
-  if (typeof window === 'undefined') return;
-  window.localStorage.removeItem(AUTH_TOKEN_KEY);
-  window.localStorage.removeItem(AUTH_USER_KEY);
-  window.localStorage.removeItem(PREFERRED_LOCALE_KEY);
-}
 
 export function applyDocumentLocale(locale: AppLocale, isRtl?: boolean): void {
   if (typeof document === 'undefined') return;
@@ -3632,12 +3564,6 @@ export function applyDocumentLocale(locale: AppLocale, isRtl?: boolean): void {
   document.documentElement.dir = getLocaleDirection(locale, isRtl);
 }
 
-export function getDisplayName(user?: StoredAuthUser | null): string {
-  if (!user) return 'Leopardo';
-
-  const fullName = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
-  return fullName || user.name || user.email || 'Leopardo';
-}
 
 export function getApiErrorMessage(payload: unknown, fallback: string): string {
   if (!payload || typeof payload !== 'object') {
