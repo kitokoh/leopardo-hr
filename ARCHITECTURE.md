@@ -136,7 +136,7 @@ Des scripts de synchronisation (`shared/i18n/sync/`) propagent les clés vers le
 
 ## CI/CD
 
-Voir `.github/workflows/` et `docs/ARCHITECTURE_CICD.md`.
+Voir `.github/workflows/` et `docs/architecture/ARCHITECTURE_CICD.md`.
 
 Les pipelines principaux :
 - `tests.yml` — tests backend PHPUnit/Pest + lint/build `front/admin-dashboard`
