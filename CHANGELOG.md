@@ -94,6 +94,7 @@ et le projet vise l'adhésion au [Semantic Versioning](https://semver.org/lang/f
 
 ### Fixed
 
+- **Main vert (#7657)** : contrat OpenAPI réparé (chemins `/billing/payment-profiles*` dédoublonnés, `exclusiveMinimum` conforme 3.0.3), 12 routes documentées (11 marketplace publique #7814 + remboursement en ligne Retail #7812), garde RBAC satisfaite sur `RestaurantPaymentConfigurationController` (policy `viewAny` des paiements, #7599).
 - **CI/CD** : suites backend fiabilisées (timeouts de verrous Postgres, reaper idle-in-transaction, dérive de fixtures), gardes governance suivant les déplacements de docs, workflows SHA-pinnés, gate de déploiement non contournable, déploiements Vercel/staging réparés, mémoire PHPStan strict/modules relevée de 1 G à 3 G (#7879).
 - **BC-21 post-merge** : parité `.env.example` (5 clés restaurant) et couverture OpenAPI des 9 routes paiements réparées (#7726/#7727/#7856).
 - **Invitations employés** : préservation des accès au renvoi d'invitation, `FRONTEND_URL` honoré dans les liens, garde-fous sur `accept()` (#7864/#7886).

@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderPayment;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantPaymentConfigurationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -30,6 +31,12 @@ class RestaurantPaymentConfigurationController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+
+        // #7599 — garde RBAC : lecture des indicateurs d'encaissement alignée
+        // sur la policy des paiements (RestaurantOrderPaymentPolicy@viewAny).
+        if ($actor->cannot('viewAny', RestaurantOrderPayment::class)) {
+            abort(403);
+        }
 
         return response()->json([
             'data' => $this->configuration->statusForCompany((string) $actor->company_id),
