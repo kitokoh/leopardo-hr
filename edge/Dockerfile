@@ -92,6 +92,18 @@ COPY front/web-offline/ ./
 RUN npm run build
 
 # ---------------------------------------------------------------------------
+# Reprise du stage applicatif (#8024 — correction AVD-DS-0006)
+# ---------------------------------------------------------------------------
+# Sans ce `FROM base`, TOUT ce qui suit (copie du static export, Caddyfile,
+# entrypoint, EXPOSE/USER) s'exécutait dans le stage `pwa-build`
+# (node:20-alpine) : le stage final n'était donc PAS l'image FrankenPHP, et
+# `COPY --from=pwa-build` référençait le stage courant (auto-référence
+# signalée par Trivy AVD-DS-0006 sur ce fichier). L'image de référence
+# documentée en en-tête (API Laravel + PWA embarquée) est désormais
+# réellement celle qui est produite.
+FROM base
+
+# ---------------------------------------------------------------------------
 # Copie du static export de la PWA web offline (out/ + public/ fusionnés par
 # Next) — Caddyfile.standalone le sert avec fallback SPA → /index.html
 # ---------------------------------------------------------------------------

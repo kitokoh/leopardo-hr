@@ -4,7 +4,7 @@
 # Consommé par :
 #   - .github/workflows/image-scan.yml (input `trivyignores` de trivy-action,
 #     scans config ET image) ;
-#   - edge/publish.sh quand TRIVY_ENFORCE=1 (--ignorefile).
+#   - edge/publish.sh (scan PAR DÉFAUT depuis #8024, opt-out TRIVY_ENFORCE=0).
 #
 # Convention du dépôt (à respecter pour TOUTE nouvelle entrée) :
 #   - `statement` OBLIGATOIRE : justification honnête de l'acquittement —
@@ -16,6 +16,13 @@
 #     l'échéance le constat redevient bloquant (fail-loud), ce qui force un
 #     ré-examen explicite plutôt qu'un oubli éternel.
 #
+# #8024 — les acquittements doivent décrire l'état RÉEL du dépôt : trois
+# entrées décrivaient un état antérieur à #7966/#7996 et ont été retirées
+# (php84/Dockerfile et edge/Dockerfile sont non-root ; l'auto-référence
+# `COPY --from` de edge/Dockerfile est corrigée dans le Dockerfile même).
+# Un acquittement qui contredit le code est pire qu'aucun : il masque un
+# défaut réapparu sans que personne ne le voie.
+#
 # Format : https://trivy.dev/latest/docs/configuration/filtering/#trivyignoreyaml
 # ============================================================================
 
@@ -23,54 +30,28 @@ misconfigurations:
   # DS-0002 (HIGH) — « Specify at least 1 USER command with non-root user ».
   - id: AVD-DS-0002
     paths:
-      - api/docker/php84/Dockerfile
-    statement: >-
-      Image CLI de dev/CI bind-mountée, jamais livrée chez les clients —
-      périmètre explicitement exclu du passage non-root #7966 (voir son entrée
-      CHANGELOG) ; le USER non-root y casserait les montages de volumes dev.
-    expired_at: 2027-03-21
-
-  - id: AVD-DS-0002
-    paths:
-      - edge/Dockerfile
-    statement: >-
-      Image de référence FrankenPHP standalone NON câblée à aucun build
-      (statut en en-tête du fichier) : #7966 a volontairement limité la
-      refonte non-root aux images actives Dockerfile.edge/Dockerfile.publish —
-      l'entrypoint chowne /data en root et Caddy écoute sur :80, refonte du
-      port non triviale renvoyée à un lot dédié.
-    expired_at: 2027-03-21
-
-  - id: AVD-DS-0002
-    paths:
       - front/web/Dockerfile.dev
       - front/admin-dashboard/Dockerfile.dev
     statement: >-
       Images de développement local uniquement (suffixe .dev), jamais
       publiées ni déployées — surface d'attaque bornée au poste développeur.
+      Vérifié le 2026-09-21 : ces deux fichiers n'ont aucune directive USER
+      et ne sont construits ni par publish.sh ni par image-scan.yml.
     expired_at: 2027-03-21
 
   - id: AVD-DS-0002
     paths:
       - front/web-offline/Dockerfile
     statement: >-
-      DETTE RÉELLE acquittée à court terme : image de production
-      leopardo/edge-ui (publiée par edge/publish.sh, installée chez les
-      clients #7966) dont nginx tourne en root. La correction exige la
-      refonte du port d'écoute (>1024) et des chemins pid/log nginx — même
-      chantier que #7966, hors périmètre fichiers de #7997. À résorber en
-      priorité dans le lot dédié ; à l'échéance le scan redevient bloquant.
-    expired_at: 2027-03-21
-
-  # DS-0006 (CRITICAL) — « COPY --from ne doit pas référencer l'alias courant ».
-  - id: AVD-DS-0006
-    paths:
-      - edge/Dockerfile
-    statement: >-
-      Défaut RÉEL mais borné à l'image de référence non câblée edge/Dockerfile
-      (aucun script/compose ne la construit) : ligne 91, `COPY --from=pwa-build`
-      référence son propre stage — l'image est vraisemblablement non
-      constructible en l'état (le dernier stage est node:20-alpine, pas
-      FrankenPHP). Correction du Dockerfile hors périmètre fichiers de #7997,
-      signalée dans le rapport de l'issue pour un lot dédié.
+      DETTE RÉELLE acquittée à court terme : cette image EST publiée en
+      production (leopardo/edge-ui, construite par edge/publish.sh et scannée
+      chaque lundi par image-scan.yml) et son nginx tourne en root.
+      État réel vérifié le 2026-09-21 (#8024) : `nginx:1.27-alpine` sans
+      directive USER — le master nginx démarre en root puis abandonne les
+      workers à l'utilisateur `nginx`. Le port d'écoute est DÉJÀ
+      non privilégié (`EXPOSE 3000`, nginx.conf : `listen 3000`), donc la
+      remédiation n'est PAS un changement de port : elle consiste à fournir
+      un pid/cache/log inscriptibles puis `USER nginx` (ou à basculer sur
+      `nginxinc/nginx-unprivileged`). Le build n'est pas vérifiable en local
+      sans Docker → lot dédié, avec smoke build.
     expired_at: 2027-03-21
