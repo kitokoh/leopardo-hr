@@ -28,7 +28,9 @@ final class CloseDeliveryRouteCommand extends Command
         $routeRaw = $this->argument('route');
         $companyRaw = $this->argument('company');
         $routeId = is_numeric($routeRaw) ? (int) $routeRaw : 0;
-        $companyId = is_string($companyRaw) ? $companyRaw : '';
+        // #8004 — `is_string()` etait redundant (PHPStan level 8 : la valeur est
+        // deja typee `string`) ; le cast explicite garde la meme semantique.
+        $companyId = (string) $companyRaw;
 
         $route = DeliveryRoute::query()
             ->where('company_id', $companyId)

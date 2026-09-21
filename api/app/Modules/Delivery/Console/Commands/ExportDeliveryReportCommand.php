@@ -26,7 +26,8 @@ final class ExportDeliveryReportCommand extends Command
     public function handle(): int
     {
         $companyRaw = $this->argument('company');
-        $companyId = is_string($companyRaw) ? $companyRaw : '';
+        // #8004 — narrowing `is_string()` redundant (PHPStan level 8).
+        $companyId = (string) $companyRaw;
 
         $exists = Delivery::query()
             ->where('company_id', $companyId)
@@ -40,8 +41,12 @@ final class ExportDeliveryReportCommand extends Command
 
         $fromRaw = $this->option('from');
         $toRaw = $this->option('to');
-        $from = is_string($fromRaw) && $fromRaw !== '' ? $fromRaw : now()->subDays(30)->format('Y-m-d');
-        $to = is_string($toRaw) && $toRaw !== '' ? $toRaw : now()->format('Y-m-d');
+        // #8004 — narrowing `is_string()` redundant (PHPStan level 8) : le
+        // cast explicite conserve exactement la meme semantique (defaut si vide).
+        $fromValue = (string) $fromRaw;
+        $toValue = (string) $toRaw;
+        $from = $fromValue !== '' ? $fromValue : now()->subDays(30)->format('Y-m-d');
+        $to = $toValue !== '' ? $toValue : now()->format('Y-m-d');
 
         ExportDeliveryReportJob::dispatch($companyId, $from, $to, (string) Str::uuid());
 
