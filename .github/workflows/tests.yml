@@ -140,8 +140,15 @@ jobs:
       - name: Raise PostgreSQL max_locks_per_transaction (#8004)
         run: |
           set -euo pipefail
-          docker exec -u postgres leopardo-postgres \
-            psql -v ON_ERROR_STOP=1 -d postgres \
+          # #8004 (tranche 3) : le service container est initialisé avec
+          # POSTGRES_USER=leopardo_user — c'est LUI le superutilisateur du
+          # cluster ; le rôle « postgres » n'existe pas. `docker exec -u postgres`
+          # (tranche 2) faisait donc échouer l'étape dès la première requête
+          # (`FATAL: role "postgres" does not exist`, exit 2 — main rouge en 44 s).
+          # On s'authentifie par le socket local (pg_hba `local … trust`) avec
+          # `-U leopardo_user`, sans supposer l'existence d'un utilisateur OS.
+          docker exec leopardo-postgres \
+            psql -U leopardo_user -v ON_ERROR_STOP=1 -d postgres \
             -c "ALTER SYSTEM SET max_locks_per_transaction = 512;"
           docker restart leopardo-postgres
           for _ in $(seq 1 60); do
@@ -150,8 +157,16 @@ jobs:
             fi
             sleep 1
           done
-          docker exec -u postgres leopardo-postgres \
-            psql -tAc "SHOW max_locks_per_transaction;"
+          # L'étape ne sert à rien si la valeur n'est pas réellement appliquée au
+          # postmaster (le paramètre est alloué au démarrage) : on l'ASSERTE, sinon
+          # un `ALTER SYSTEM` sans effet repasserait pour un vert de plus.
+          applied="$(docker exec leopardo-postgres \
+            psql -U leopardo_user -tAc "SHOW max_locks_per_transaction;")"
+          echo "max_locks_per_transaction=${applied}"
+          if [ "${applied}" != "512" ]; then
+            echo "::error::max_locks_per_transaction non appliqué (${applied} ≠ 512)"
+            exit 1
+          fi
 
       - name: Setup backend (PHP + Composer + multi-tenant DB)
         uses: ./.github/actions/setup-backend-db

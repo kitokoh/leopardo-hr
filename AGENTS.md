@@ -1,6 +1,6 @@
 # AGENTS.md - Guide de travail Leopardo
 
-Derniere mise a jour : 2026-09-21 (lots sécurité backend #7995/#7999 + BC-01 PLATFORM #7973..#7978 + session PM #7963/#7966/#7958/#7967 — fusion des deux blocs de leçons ; + garde Trivy opt-out et acquittements réalignés #8024)
+Derniere mise a jour : 2026-09-21 (lots sécurité backend #7995/#7999 + BC-01 PLATFORM #7973..#7978 + session PM #7963/#7966/#7958/#7967 — fusion des deux blocs de leçons ; + garde Trivy opt-out et acquittements réalignés #8024 ; + tranche 3 déblocage main CI #8004)
 
 > Leçon 2026-09-21 (#8024) : **(1) un `.trivyignore.yaml` qui contredit le code est pire
 > qu'aucun acquittement** — trois entrées y décrivaient l'état *antérieur* à #7966/#7996
@@ -20,6 +20,22 @@ Derniere mise a jour : 2026-09-21 (lots sécurité backend #7995/#7999 + BC-01 P
 > et n'était posé par aucun workflow — une garde jamais appelée ne protège rien. Même
 > règle que #8013 : une garde se juge à sa fréquence d'exécution réelle, pas à son
 > existence.
+
+> Leçon 2026-09-21 (#8004, tranche 3) : **(1) un service container GitHub Actions n'a pas
+> de rôle `postgres`** — il est initialisé avec `POSTGRES_USER`, et c'est CETTE valeur qui
+> est le superutilisateur du cluster : `docker exec -u postgres … psql` échoue en
+> `FATAL: role "postgres" does not exist` (exit 2) alors que le conteneur est bien joint
+> (`--name` fonctionne). S'authentifier par le socket local avec `-U $POSTGRES_USER`
+> (`pg_hba` `local … trust`) ne suppose, lui, ni rôle ni utilisateur OS. Surtout : **une
+> étape qui reconfigure le postmaster doit ASSERTER la valeur après redémarrage** —
+> `max_locks_per_transaction` est alloué au démarrage, un `ALTER SYSTEM` non appliqué est un
+> vert silencieux (même règle que #8013/#8018 : une sonde qui ne peut pas être rouge ne
+> prouve rien). **(2) Un job peut mourir AVANT la suite de tests** : quand un run dure
+> quelques dizaines de secondes là où il en attend des dizaines de minutes, lire la log de
+> l'étape fautive (ici « max_locks », 44 s, 0 test exécuté) avant d'attribuer le rouge aux
+> ~470 échecs feature annoncés par l'issue — la signature de l'issue décrivait l'état
+> ANTÉRIEUR, déjà corrigé par la tranche 1 (`email_classify` a bien son handler).
+
 Derniere mise a jour : 2026-09-21 (lot sécurité #8021 — politique mots de passe réellement unique + garde durcie ; lots #7995/#7999 + BC-01 PLATFORM #7973..#7978 — fusion des blocs de leçons)
 
 > Leçon 2026-09-21 (#8021) : **(1) un helper unique ne suffit pas — il faut migrer les sites
