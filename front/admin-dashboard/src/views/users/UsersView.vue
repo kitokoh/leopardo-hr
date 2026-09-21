@@ -234,6 +234,28 @@ import { useLocaleStore } from '@/stores/locale.js'
 // la fuite des noms utilisateurs vers ui-avatars.com (service tiers absent du
 // registre RGPD docs/RGPD_REGISTRE_TRAITEMENTS.md) et de la dépendance runtime
 // à un service externe.
+//
+// Issue #8022 (tranche 4) — échappement XML des initiales : elles sont
+// interpolées dans le SVG AVANT l'encodage URI ; un nom contenant `<` ou `&`
+// (ex. « A <b> », « S & P ») produirait après décodage un XML mal formé —
+// data-URI cassée (avatar vide), voire un markup injecté dans le SVG.
+function escapeXml(value) {
+  return String(value).replace(/[&<>"']/g, (ch) => {
+    switch (ch) {
+      case '&':
+        return '&amp;'
+      case '<':
+        return '&lt;'
+      case '>':
+        return '&gt;'
+      case '"':
+        return '&quot;'
+      default:
+        return '&apos;'
+    }
+  })
+}
+
 function localInitialsAvatar(name) {
   const initials = (name || '?')
     .trim()
@@ -245,7 +267,7 @@ function localInitialsAvatar(name) {
   let hash = 0
   for (const ch of name || '') hash = (hash * 31 + ch.charCodeAt(0)) >>> 0
   const bg = `hsl(${hash % 360}, 45%, 42%)`
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="${bg}"/><text x="50%" y="50%" dy=".35em" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" fill="#fff">${initials}</text></svg>`
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="${bg}"/><text x="50%" y="50%" dy=".35em" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" fill="#fff">${escapeXml(initials)}</text></svg>`
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
 }
 
