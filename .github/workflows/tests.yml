@@ -140,18 +140,42 @@ jobs:
       - name: Raise PostgreSQL max_locks_per_transaction (#8004)
         run: |
           set -euo pipefail
-          docker exec -u postgres leopardo-postgres \
-            psql -v ON_ERROR_STOP=1 -d postgres \
+          # Le rôle `postgres` N'EXISTE PAS dans ce service : il est initialisé
+          # avec `POSTGRES_USER: leopardo_user`, et `initdb -U <user>` fait de
+          # CETTE valeur le seul superutilisateur créé (l'entrée `postgres`
+          # n'est jamais créée dans ce cas). `docker exec -u postgres … psql`
+          # échouait donc en `FATAL: role "postgres" does not exist`, et le job
+          # Backend mourait ICI — avant la première migration, donc avant le
+          # premier test (rouge `main` depuis #8036, symptôme trompeur).
+          # Le rôle `leopardo_user` est superutilisateur : `ALTER SYSTEM` est permis.
+          docker exec leopardo-postgres \
+            psql -U leopardo_user -v ON_ERROR_STOP=1 -d postgres \
             -c "ALTER SYSTEM SET max_locks_per_transaction = 512;"
           docker restart leopardo-postgres
+          ready=0
           for _ in $(seq 1 60); do
             if docker exec leopardo-postgres pg_isready -U leopardo_user -d leopardo_test >/dev/null 2>&1; then
+              ready=1
               break
             fi
             sleep 1
           done
-          docker exec -u postgres leopardo-postgres \
-            psql -tAc "SHOW max_locks_per_transaction;"
+          if [ "$ready" -ne 1 ]; then
+            echo "::error::postgres n'est pas redevenu prêt après redémarrage (60 s)"
+            exit 1
+          fi
+          # Sonde NON tautologique (#8014/#8018) : la valeur effective est
+          # VÉRIFIÉE, pas seulement imprimée — un `SHOW` qui n'échoue jamais ne
+          # prouve rien (c'est exactement le défaut que cette étape devait
+          # corriger : elle ne s'exécutait pas du tout).
+          actual="$(docker exec leopardo-postgres \
+            psql -U leopardo_user -d postgres -tAc 'SHOW max_locks_per_transaction;')"
+          actual="${actual//[[:space:]]/}"
+          if [ "$actual" != "512" ]; then
+            echo "::error::max_locks_per_transaction=${actual:-<vide>} (attendu : 512)"
+            exit 1
+          fi
+          echo "max_locks_per_transaction=${actual} (effectif après redémarrage)"
 
       - name: Setup backend (PHP + Composer + multi-tenant DB)
         uses: ./.github/actions/setup-backend-db

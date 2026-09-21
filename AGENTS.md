@@ -1,5 +1,18 @@
 # AGENTS.md - Guide de travail Leopardo
 
+Derniere mise a jour : 2026-09-21 (tranche 3 du deblocage CI #8004 — role Postgres du service container)
+
+> Lecon 2026-09-21 (#8004, tranche 3) : **(1) dans un service container PostgreSQL de GitHub
+> Actions, le role `postgres` N'EXISTE PAS des que `POSTGRES_USER` est personnalise** : `initdb -U
+> $POSTGRES_USER` fait de CETTE valeur le seul superutilisateur cree. Un `docker exec -u postgres
+> <conteneur> psql …` repond donc `FATAL: role "postgres" does not exist` et tue le job — utiliser
+> `psql -U <POSTGRES_USER>` (auth locale `trust` dans l'image officielle, `ALTER SYSTEM` permis
+> puisque ce role est superutilisateur). **(2) Un job qui meurt a l'etape de preparation rend le
+> diagnostic de l'issue FAUX** : #8004 annoncait « ~470 tests Feature KO » alors que le job
+> Backend n'atteignait jamais la premiere migration — lire la PREMIERE erreur du log de job
+> (`/actions/jobs/<id>/logs`, token repo requis) AVANT d'attribuer les echecs aux tests ; les
+> annotations de check run ne portent que « Process completed with exit code N ».
+
 Derniere mise a jour : 2026-09-21 (lots sécurité backend #7995/#7999 + BC-01 PLATFORM #7973..#7978 + session PM #7963/#7966/#7958/#7967 — fusion des deux blocs de leçons ; + garde Trivy opt-out et acquittements réalignés #8024)
 
 > Leçon 2026-09-21 (#8024) : **(1) un `.trivyignore.yaml` qui contredit le code est pire
