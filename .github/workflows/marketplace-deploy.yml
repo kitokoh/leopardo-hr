@@ -1,0 +1,290 @@
+name: Deploy Marketplace - Vercel
+
+# Issue #7994 — `front/marketplace` n'avait AUCUN workflow de déploiement :
+# le projet Vercel `leopardo-marche` ne vivait que par l'intégration git,
+# dont les déploiements production sont tous CANCELED depuis le 2026-09-19
+# ~20:27Z (le correctif de sécurité #7963 n'était plus servi). Ce workflow
+# est calqué sur travel-web-deploy.yml (#7740) avec deux durcissements
+# nés de l'audit 2026-09-20 :
+#   1. Le skip « secrets absents » est une ERREUR BLOQUANTE sur push main
+#      (::error + exit 1) — un push qui touche le front sans déploiement
+#      possible doit être VISIBLE, jamais un run vert trompeur (#7994 §4) ;
+#      il reste un ::warning non bloquant sur PR (preview).
+#   2. Après un déploiement production réussi, un GitHub Deployment est
+#      enregistré (environnement « Production – leopardo-marche ») pour
+#      alimenter la garde anti-dérive des fronts Vercel (#7994 §5,
+#      job fronts-vercel de deploy-drift-guard.yml).
+#
+# Projet cible : `leopardo-marche` (compte ibrahimkoubaye, rootDirectory
+# front/marketplace) → https://leopardo-marche.vercel.app
+# Il n'existe PAS de projet marketplace « dev » séparé (contrairement au
+# binôme leopardo-travel / leopardo-travel-prod, décision #6918) : la
+# preview de PR est donc un déploiement preview DU MÊME projet (URL unique
+# *.vercel.app, jamais l'alias de production).
+#
+# Mécanique identique à travel-web-deploy.yml : CLI Vercel épinglée,
+# `vercel pull` → `vercel build` → `vercel deploy --prebuilt` depuis la
+# RACINE du repo (le projet porte rootDirectory: front/marketplace — avec
+# --cwd le chemin serait doublé, fix #6810). `vercel pull` récupère les
+# variables du projet (dont NEXT_PUBLIC_MARKET_API_BASE, exigée au build
+# depuis #7963 — déjà posée sur le projet, cf. CHANGELOG #7963 §5).
+#
+# Prérequis (une seule fois, repo → Settings → Secrets, action PROPRIÉTAIRE) :
+#   - VERCEL_MARCHE_PROD_TOKEN / VERCEL_MARCHE_PROD_ORG_ID / VERCEL_MARCHE_PROD_PROJECT_ID
+# ⚠️ Ne PAS réutiliser un token voué à révocation (#7994 §1) : créer un
+# token dédié sur le compte prod (runbook docs/ops/travel-web-vercel.md,
+# même procédure). Les secrets ne sont pas lisibles dans un `if:` — pattern
+# env-detour éprouvé du repo (deploy-admin-dashboard.yml).
+
+on:
+  pull_request:
+    paths:
+      - 'front/marketplace/**'
+      - '.github/workflows/marketplace-deploy.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'front/marketplace/**'
+      - '.github/workflows/marketplace-deploy.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environnement cible (preview = déploiement preview du projet, production = leopardo-marche)"
+        required: true
+        type: choice
+        options:
+          - preview
+          - production
+        default: preview
+
+permissions:
+  contents: read
+  # Enregistrement du GitHub Deployment après déploiement réussi (#7994 §5).
+  deployments: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: marketplace-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # ──────────────────────────────────────────────────────────────────────────
+  # PREVIEW — déploiement preview du projet `leopardo-marche` (pas de projet
+  # marketplace dev distinct, voir l'en-tête). Déclenché par les PR touchant
+  # front/marketplace (ou dispatch preview).
+  deploy-preview:
+    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.environment == 'preview')
+    timeout-minutes: 45
+    name: Deploy marketplace to Vercel (preview)
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_MARCHE_PROD_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_MARCHE_PROD_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_MARCHE_PROD_PROJECT_ID }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: 'front/marketplace/package-lock.json'
+
+      - name: Install Vercel CLI (pinned)
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        run: npm install --global vercel@59.11.2
+
+      # Commandes depuis la racine du repo (sans --cwd) : le projet Vercel
+      # leopardo-marche porte rootDirectory: front/marketplace, la CLI
+      # l'applique une seule fois (fix #6810 sur front/web).
+      - name: Pull Vercel environment (preview)
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        run: vercel pull --yes --environment=preview
+
+      - name: Build (preview)
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        run: vercel build
+
+      # --prebuilt : le build local est uploadé tel quel, pas de rebuild côté
+      # Vercel. Un échec en amont ne promeut rien.
+      - name: Deploy preview (Vercel)
+        id: deploy_preview
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="$(vercel deploy --prebuilt | tail -n 1)"
+          echo "::notice::Vercel preview deploy (marketplace): ${URL}"
+          echo "url=${URL}" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Marketplace — preview Vercel"
+            echo ""
+            echo "- Déploiement : ${URL}"
+            echo "- Projet : leopardo-marche (compte ibrahimkoubaye)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Le healthcheck cible l'URL UNIQUE de l'instance déployée par CE run
+      # (règle AGENTS.md : prouver qu'une NOUVELLE instance répond, jamais un
+      # alias partagé). 401/403 = déploiement vivant mais protégé par Vercel
+      # Authentication (protection par défaut des previews) — accepté.
+      - name: Healthcheck preview deployment
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        shell: bash
+        env:
+          DEPLOY_URL: ${{ steps.deploy_preview.outputs.url }}
+        run: |
+          set -euo pipefail
+          URL="${DEPLOY_URL%/}/"
+          echo "Waiting for marketplace preview to answer at ${URL}..."
+          for attempt in {1..12}; do
+            echo "Healthcheck attempt ${attempt}/12 on ${URL}"
+            CODE="$(curl --silent --output /dev/null --max-time 15 --write-out '%{http_code}' "${URL}" || echo 000)"
+            case "${CODE}" in
+              2*) echo "marketplace preview répond (HTTP ${CODE})."; exit 0 ;;
+              401|403) echo "marketplace preview déployé et protégé par Vercel Authentication (HTTP ${CODE}) — considéré sain."; exit 0 ;;
+              *) echo "HTTP ${CODE} — retry" ;;
+            esac
+            sleep 10
+          done
+          echo "::error::marketplace (preview) ne répond pas — build en échec ou env manquante côté Vercel."
+          exit 1
+
+      # Skip preview (PR) : NON bloquant — le retard de déploiement est déjà
+      # rendu visible par le job production sur push main (#7994 §4).
+      - name: Skip — secrets Vercel absents
+        if: ${{ env.VERCEL_TOKEN == '' || env.VERCEL_ORG_ID == '' || env.VERCEL_PROJECT_ID == '' }}
+        shell: bash
+        run: |
+          echo "::warning::VERCEL_MARCHE_PROD_TOKEN / VERCEL_MARCHE_PROD_ORG_ID / VERCEL_MARCHE_PROD_PROJECT_ID absents — déploiement preview Vercel sauté (issue #7994). Poser les secrets (runbook docs/ops/travel-web-vercel.md) pour activer le déploiement GitHub Actions ; le déploiement manuel via Vercel CLI reste le repli."
+          {
+            echo "## Marketplace — preview Vercel : SKIP"
+            echo ""
+            echo "Secrets \`VERCEL_MARCHE_PROD_*\` absents (SHA ${GITHUB_SHA}) — voir docs/ops/travel-web-vercel.md."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # PRODUCTION — projet `leopardo-marche`. Déclenché par push sur main
+  # touchant front/marketplace (ou dispatch production).
+  deploy-production:
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.environment == 'production')
+    timeout-minutes: 45
+    name: Deploy marketplace to Vercel (production)
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_MARCHE_PROD_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_MARCHE_PROD_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_MARCHE_PROD_PROJECT_ID }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: 'front/marketplace/package-lock.json'
+
+      - name: Install Vercel CLI (pinned)
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        run: npm install --global vercel@59.11.2
+
+      - name: Pull Vercel environment (production)
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        run: vercel pull --yes --environment=production
+
+      - name: Build (production)
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        run: vercel build --prod
+
+      # --prebuilt --prod : upload du build local puis promotion. Un échec en
+      # amont laisse le déploiement prod existant en place (rien n'est promu).
+      - name: Deploy to production (Vercel)
+        id: deploy_production
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="$(vercel deploy --prebuilt --prod | tail -n 1)"
+          echo "::notice::Vercel prod deploy (marketplace): ${URL}"
+          echo "url=${URL}" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Marketplace — production Vercel"
+            echo ""
+            echo "- Déploiement : ${URL}"
+            echo "- Projet : leopardo-marche (compte ibrahimkoubaye)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Healthcheck sur le domaine prod stable : la promotion --prod vient de
+      # basculer l'alias sur l'instance déployée par CE run (règle AGENTS.md).
+      # Homepage uniquement : les endpoints public/marketplace/* dépendent du
+      # backend Render et ne conditionnent pas la santé du front.
+      - name: Wait for marketplace prod healthcheck
+        if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="https://leopardo-marche.vercel.app/"
+          echo "Waiting for marketplace prod to be healthy at ${URL}..."
+          for attempt in {1..30}; do
+            echo "Healthcheck attempt ${attempt}/30 on ${URL}"
+            if curl --fail --silent --show-error --max-time 15 --output /dev/null "${URL}"; then
+              echo "marketplace prod répond (HTTP 2xx)."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::marketplace prod ne répond pas dans les temps (build en échec, env manquante ou cold start)."
+          exit 1
+
+      # #7994 §5 — traçabilité : enregistrer le déploiement comme GitHub
+      # Deployment (environnement « Production – leopardo-marche ») pour que
+      # la garde anti-dérive des fronts Vercel (job fronts-vercel de
+      # deploy-drift-guard.yml) puisse comparer le sha servi à main SANS
+      # aucun secret Vercel.
+      - name: Enregistrer le GitHub Deployment (traçabilité drift)
+        if: ${{ success() && env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEPLOY_URL: ${{ steps.deploy_production.outputs.url }}
+        run: |
+          set -euo pipefail
+          bash dev-hub/tools/register-github-deployment.sh \
+            --environment "Production – leopardo-marche" \
+            --sha "${GITHUB_SHA}" \
+            --url "https://leopardo-marche.vercel.app" \
+            --description "marketplace prod déployé par marketplace-deploy.yml (${DEPLOY_URL})"
+
+      # #7994 §4 — skip BLOQUANT sur push main : un push qui touche le front
+      # alors que les secrets manquent signifie que la prod NE SERA PAS
+      # déployée — le run vert masquait ce retard depuis le raccordement
+      # (#7740). Désormais ::error + échec du job = retard VISIBLE.
+      # (Le skip preview sur PR reste un simple ::warning, cf. job preview.)
+      - name: Skip — secrets Vercel prod absents (BLOQUANT sur push main)
+        if: ${{ env.VERCEL_TOKEN == '' || env.VERCEL_ORG_ID == '' || env.VERCEL_PROJECT_ID == '' }}
+        shell: bash
+        run: |
+          {
+            echo "## Marketplace — production Vercel : SKIP BLOQUANT"
+            echo ""
+            echo "Secrets \`VERCEL_MARCHE_PROD_*\` absents (SHA ${GITHUB_SHA}) — la production n'est **pas** déployée."
+            echo "Poser les secrets (runbook docs/ops/travel-web-vercel.md) ; ne pas réutiliser un token voué à révocation (#7994 §1)."
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [[ "${GITHUB_EVENT_NAME}" == "push" ]]; then
+            echo "::error::VERCEL_MARCHE_PROD_TOKEN / VERCEL_MARCHE_PROD_ORG_ID / VERCEL_MARCHE_PROD_PROJECT_ID absents — push main sur front/marketplace SANS déploiement production possible (#7994 §4 : le retard doit être visible). Poser les secrets, cf. docs/ops/travel-web-vercel.md."
+            exit 1
+          fi
+          echo "::warning::secrets VERCEL_MARCHE_PROD_* absents — déploiement production sauté (dispatch manuel)."

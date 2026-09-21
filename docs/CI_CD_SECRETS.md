@@ -132,9 +132,24 @@ Vercel CLI reste le repli. Runbook complet : `docs/ops/travel-web-vercel.md`.
 | `VERCEL_TRAVEL_DEV_TOKEN` | `travel-web-deploy.yml` | Token CLI Vercel du compte africanovatech (previews PR, projet `leopardo-travel`) | Optional (job skipped if absent) |
 | `VERCEL_TRAVEL_DEV_ORG_ID` | `travel-web-deploy.yml` | Organisation Vercel du volet dev | Optional (job skipped if absent) |
 | `VERCEL_TRAVEL_DEV_PROJECT_ID` | `travel-web-deploy.yml` | Projet Vercel `leopardo-travel` (dev) | Optional (job skipped if absent) |
-| `VERCEL_TRAVEL_PROD_TOKEN` | `travel-web-deploy.yml` | Token CLI Vercel du compte ibrahimkoubaye (push main, projet `leopardo-travel-prod`) | Optional (job skipped if absent) |
-| `VERCEL_TRAVEL_PROD_ORG_ID` | `travel-web-deploy.yml` | Organisation Vercel du volet prod | Optional (job skipped if absent) |
-| `VERCEL_TRAVEL_PROD_PROJECT_ID` | `travel-web-deploy.yml` | Projet Vercel `leopardo-travel-prod` (prod) | Optional (job skipped if absent) |
+| `VERCEL_TRAVEL_PROD_TOKEN` | `travel-web-deploy.yml` | Token CLI Vercel du compte ibrahimkoubaye (push main, projet `leopardo-travel-prod`) | Optional — mais skip BLOQUANT sur push main depuis #7994 §4 |
+| `VERCEL_TRAVEL_PROD_ORG_ID` | `travel-web-deploy.yml` | Organisation Vercel du volet prod | Optional (idem) |
+| `VERCEL_TRAVEL_PROD_PROJECT_ID` | `travel-web-deploy.yml` | Projet Vercel `leopardo-travel-prod` (prod) | Optional (idem) |
+
+### Déploiement Vercel de `front/marketplace` (#7994)
+
+Déploiement Vercel de la marketplace « Leopardo Marché » — un seul jeu (le projet
+`leopardo-marche`, compte ibrahimkoubaye, n'a pas de pendant dev : les previews de PR
+sont des déploiements preview du même projet). **Optionnels** au sens GitHub, mais le
+skip « secrets absents » du job production est **bloquant sur push main** (#7994 §4) :
+le retard de déploiement doit être visible. Runbook : `docs/ops/travel-web-vercel.md`
+(section Marketplace). **Ne jamais poser un token voué à révocation** (#7994 §1).
+
+| Secret | Used by | Purpose | Required? |
+|---|---|---|---|
+| `VERCEL_MARCHE_PROD_TOKEN` | `marketplace-deploy.yml` | Token CLI Vercel du compte ibrahimkoubaye (push main + previews, projet `leopardo-marche`) | Optional — skip BLOQUANT sur push main (#7994 §4) |
+| `VERCEL_MARCHE_PROD_ORG_ID` | `marketplace-deploy.yml` | Organisation Vercel du compte ibrahimkoubaye | Optional (idem) |
+| `VERCEL_MARCHE_PROD_PROJECT_ID` | `marketplace-deploy.yml` | Projet Vercel `leopardo-marche` (rootDirectory `front/marketplace`) | Optional (idem) |
 
 ### Secrets de supervision de la queue (sonde HTTP via GitHub Actions)
 
