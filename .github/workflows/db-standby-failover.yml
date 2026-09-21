@@ -140,8 +140,9 @@ jobs:
             exit 1
           fi
 
+          SPARE_HOST="$(host_of "${SPARE_URL}")"
           echo "Base LIVE (Render DB_URL) : ${LIVE_KIND} (${LIVE_HOST})"
-          echo "Base de secours          : ${SPARE_KIND} (${SPARE_HOST:-inconnue})"
+          echo "Base de secours          : ${SPARE_KIND} (${SPARE_HOST})"
 
           # Sonde LIVE : 3 tentatives espacées (évite une bascule sur un incident réseau transitoire).
           live_ok=0
@@ -164,7 +165,7 @@ jobs:
           echo "::warning::Base LIVE ${LIVE_KIND} (${LIVE_HOST}) injoignable — évaluation du secours."
 
           if ! probe "${SPARE_URL}"; then
-            echo "::error::LES DEUX BASES SONT INJOIGNABLES (${LIVE_HOST}, ${SPARE_HOST:-?}) — aucune bascule possible, intervention humaine requise."
+            echo "::error::LES DEUX BASES SONT INJOIGNABLES (${LIVE_HOST}, ${SPARE_HOST}) — aucune bascule possible, intervention humaine requise."
             exit 1
           fi
 
