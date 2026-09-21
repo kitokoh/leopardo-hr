@@ -5,6 +5,17 @@
  * localStorage (`leopardo_marche_buyer`). Même pattern que le panier :
  * store externe + CustomEvent pour synchroniser les composants du même
  * onglet, événement natif `storage` pour les autres onglets.
+ *
+ * ⚠️ COMPROMIS ASSUMÉ (#7979) : une credential en localStorage est lisible
+ * par tout JS de la page (une XSS suffirait à la voler). La cible reste un
+ * cookie HttpOnly; Secure; SameSite posé par l'API (échange cross-stack,
+ * tranche dédiée). En attendant, la surface est réduite par :
+ *   - CSP stricte posée par next.config (#7980) — script-src limité à
+ *     'self' + inline du bootstrap, aucune origine tierce de script ;
+ *   - TTL du jeton réduit à 7 jours (était 30) côté
+ *     RetailBuyerAccountService (#7979) — rotation à chaque login ;
+ *   - jeton opaque HASHÉ en base : sa valeur volée n'a d'usage que tant
+ *     qu'il n'est ni expiré ni révoqué (logout = suppression).
  */
 
 import type { BuyerProfile } from "@/lib/api";

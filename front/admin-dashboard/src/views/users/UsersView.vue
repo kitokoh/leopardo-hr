@@ -230,6 +230,25 @@ import api from '@/services/api'
 import { translate, toIntlLocale } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 
+// Issue #8000 — avatar à initiales calculé LOCALEMENT (SVG data URI) : fin de
+// la fuite des noms utilisateurs vers ui-avatars.com (service tiers absent du
+// registre RGPD docs/RGPD_REGISTRE_TRAITEMENTS.md) et de la dépendance runtime
+// à un service externe.
+function localInitialsAvatar(name) {
+  const initials = (name || '?')
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => (part[0] ? part[0].toUpperCase() : ''))
+    .join('') || '?'
+  // Couleur déterministe dérivée du nom (hachage simple → teinte HSL sobre).
+  let hash = 0
+  for (const ch of name || '') hash = (hash * 31 + ch.charCodeAt(0)) >>> 0
+  const bg = `hsl(${hash % 360}, 45%, 42%)`
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="${bg}"/><text x="50%" y="50%" dy=".35em" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" fill="#fff">${initials}</text></svg>`
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
+}
+
 // Components
 import UserTable from '@/components/users/UserTable.vue'
 import Pagination from '@/components/common/Pagination.vue'
@@ -346,7 +365,7 @@ async function loadUsers() {
       company: user.company ?? null,
       createdAt: user.created_at ? new Date(user.created_at) : null,
       lastLoginAt: user.last_login_at ? new Date(user.last_login_at) : null,
-      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`
+      avatar: localInitialsAvatar(user.name)
     }))
     // Issue #2698 — métadonnées de pagination renvoyées par l'API.
     const meta = res.data?.meta

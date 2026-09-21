@@ -51,7 +51,10 @@ export function buildCsp(env = {}) {
     // Styles inline requis par Vue (bindings :style) et vue-toastification.
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' data: https://fonts.gstatic.com",
-    "img-src 'self' data: https://ui-avatars.com https://*.tile.openstreetmap.org",
+    // #8000 : ui-avatars.com retiré — les avatars sont des SVG data:
+    // calculés localement (UsersView.vue), plus aucun appel image tiers
+    // sauf les tuiles OpenStreetMap (carte flotte, FleetView.vue).
+    "img-src 'self' data: https://*.tile.openstreetmap.org",
     `connect-src ${connectSrc.join(' ')}`,
     "object-src 'none'",
     "base-uri 'self'",
