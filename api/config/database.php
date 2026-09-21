@@ -100,7 +100,9 @@ return [
             // timestamps « naïfs » écrits par l'app (ex. pointage) dans son
             // fuseau → heures décalées et paie fausses. Tout est stocké en UTC.
             'timezone' => env('DB_TIMEZONE', 'UTC'),
-            'sslmode' => 'prefer',
+            // #7980 : piloté par l'env (DB_SSLMODE) — 'prefer' toléré en local,
+            // 'require' (voire 'verify-full') attendu en prod (posé dans render.prod.yaml).
+            'sslmode' => env('DB_SSLMODE', 'prefer'),
         ],
 
         'sqlsrv' => [

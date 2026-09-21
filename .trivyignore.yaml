@@ -1,0 +1,76 @@
+# ============================================================================
+# .trivyignore.yaml — acquittements Trivy documentés (issue #7997)
+#
+# Consommé par :
+#   - .github/workflows/image-scan.yml (input `trivyignores` de trivy-action,
+#     scans config ET image) ;
+#   - edge/publish.sh quand TRIVY_ENFORCE=1 (--ignorefile).
+#
+# Convention du dépôt (à respecter pour TOUTE nouvelle entrée) :
+#   - `statement` OBLIGATOIRE : justification honnête de l'acquittement —
+#     jamais d'ignore muet (même règle que les baselines du dépôt) ;
+#   - `paths` OBLIGATOIRE : l'acquittement est SCOPÉ au(x) fichier(s) visé(s),
+#     il ne masque jamais le même défaut ailleurs (notamment dans un futur
+#     Dockerfile) ;
+#   - `expired_at` OBLIGATOIRE : l'acquittement est de la dette datée — à
+#     l'échéance le constat redevient bloquant (fail-loud), ce qui force un
+#     ré-examen explicite plutôt qu'un oubli éternel.
+#
+# Format : https://trivy.dev/latest/docs/configuration/filtering/#trivyignoreyaml
+# ============================================================================
+
+misconfigurations:
+  # DS-0002 (HIGH) — « Specify at least 1 USER command with non-root user ».
+  - id: AVD-DS-0002
+    paths:
+      - api/docker/php84/Dockerfile
+    statement: >-
+      Image CLI de dev/CI bind-mountée, jamais livrée chez les clients —
+      périmètre explicitement exclu du passage non-root #7966 (voir son entrée
+      CHANGELOG) ; le USER non-root y casserait les montages de volumes dev.
+    expired_at: 2027-03-21
+
+  - id: AVD-DS-0002
+    paths:
+      - edge/Dockerfile
+    statement: >-
+      Image de référence FrankenPHP standalone NON câblée à aucun build
+      (statut en en-tête du fichier) : #7966 a volontairement limité la
+      refonte non-root aux images actives Dockerfile.edge/Dockerfile.publish —
+      l'entrypoint chowne /data en root et Caddy écoute sur :80, refonte du
+      port non triviale renvoyée à un lot dédié.
+    expired_at: 2027-03-21
+
+  - id: AVD-DS-0002
+    paths:
+      - front/web/Dockerfile.dev
+      - front/admin-dashboard/Dockerfile.dev
+    statement: >-
+      Images de développement local uniquement (suffixe .dev), jamais
+      publiées ni déployées — surface d'attaque bornée au poste développeur.
+    expired_at: 2027-03-21
+
+  - id: AVD-DS-0002
+    paths:
+      - front/web-offline/Dockerfile
+    statement: >-
+      DETTE RÉELLE acquittée à court terme : image de production
+      leopardo/edge-ui (publiée par edge/publish.sh, installée chez les
+      clients #7966) dont nginx tourne en root. La correction exige la
+      refonte du port d'écoute (>1024) et des chemins pid/log nginx — même
+      chantier que #7966, hors périmètre fichiers de #7997. À résorber en
+      priorité dans le lot dédié ; à l'échéance le scan redevient bloquant.
+    expired_at: 2027-03-21
+
+  # DS-0006 (CRITICAL) — « COPY --from ne doit pas référencer l'alias courant ».
+  - id: AVD-DS-0006
+    paths:
+      - edge/Dockerfile
+    statement: >-
+      Défaut RÉEL mais borné à l'image de référence non câblée edge/Dockerfile
+      (aucun script/compose ne la construit) : ligne 91, `COPY --from=pwa-build`
+      référence son propre stage — l'image est vraisemblablement non
+      constructible en l'état (le dernier stage est node:20-alpine, pas
+      FrankenPHP). Correction du Dockerfile hors périmètre fichiers de #7997,
+      signalée dans le rapport de l'issue pour un lot dédié.
+    expired_at: 2027-03-21

@@ -100,11 +100,42 @@ Notes :
   `.github/workflows/travel-web-deploy.yml`.
 - Registre canonique des domaines : `docs/ops/DOMAINS.md`.
 
+## Marketplace « Leopardo Marché » (`front/marketplace`, #7994)
+
+Même mécanique que travel-web, avec deux différences : il n'existe **pas de
+projet marketplace dev distinct** (la preview de PR est un déploiement preview
+du projet prod, URL unique `*.vercel.app`) et le skip « secrets absents » est
+**bloquant sur push main** (`::error` + échec du job — #7994 §4 : un push qui
+touche le front sans déploiement possible doit être visible, fin du run vert
+trompeur constaté par l'audit).
+
+| Secret | Contenu |
+|---|---|
+| `VERCEL_MARCHE_PROD_TOKEN` | Token CLI Vercel du compte **ibrahimkoubaye** — token DÉDIÉ, **jamais un token voué à révocation** (#7994 §1) |
+| `VERCEL_MARCHE_PROD_ORG_ID` | `orgId` du compte ibrahimkoubaye |
+| `VERCEL_MARCHE_PROD_PROJECT_ID` | `projectId` du projet `leopardo-marche` (rootDirectory `front/marketplace`, domaine `https://leopardo-marche.vercel.app`) |
+
+- Workflow : `.github/workflows/marketplace-deploy.yml` (PR → preview ; push
+  main / dispatch → production + healthcheck sur le domaine stable).
+- `NEXT_PUBLIC_MARKET_API_BASE` est exigée au build (#7963) et déjà posée sur
+  le projet — `vercel pull` la récupère comme pour travel-web.
+- Après un déploiement production réussi, le workflow enregistre un **GitHub
+  Deployment** (`Production – leopardo-marche`, même convention pour
+  travel-web) : la garde `deploy-drift-guard.yml` (job `fronts-vercel`,
+  script `dev-hub/tools/check-vercel-front-drift.sh`) compare alors le sha
+  servi à `main` **sans aucun secret Vercel** et échoue visiblement en cas
+  de retard (#7994 §5).
+- Les déploiements de l'intégration Git Vercel du projet étaient tous
+  CANCELED depuis le 2026-09-19 (constat #7994) — vérifier l'intégration
+  côté Dashboard si le repli git doit revivre ; le chemin de référence
+  reste le workflow CI ci-dessus.
+
 ## Checklist propriétaire (activation du pipeline)
 
 - [ ] Créer un token CLI sur chaque compte Vercel (africanovatech, ibrahimkoubaye).
 - [ ] Récupérer `orgId`/`projectId` des deux projets (`vercel link`, voir plus haut).
 - [ ] Poser les 6 secrets `VERCEL_TRAVEL_*` dans GitHub (tableau ci-dessus).
+- [ ] Poser les 3 secrets `VERCEL_MARCHE_PROD_*` (section Marketplace, #7994).
 - [ ] Vérifier les env vars runtime des deux projets (tableau ci-dessus).
 - [ ] Lancer `travel-web-deploy.yml` en `workflow_dispatch` (`preview`) et
       vérifier le run vert + l'URL de preview dans le step summary.
@@ -118,8 +149,13 @@ Notes :
 
 ## Dépannage
 
-- **Job en skip avec warning** : secrets absents — c'est le comportement nominal
-  prêt-à-secrets, voir checklist.
+- **Job prod en échec « secrets absents » sur push main** : comportement voulu
+  depuis #7994 §4 (skip bloquant) — poser les secrets du volet concerné, ou
+  déployer manuellement via la CLI en attendant (la garde drift des fronts
+  restera rouge tant que la prod n'aura pas été redéployée via un workflow
+  enregistreur).
+- **Job preview en skip avec warning (PR)** : secrets absents — non bloquant,
+  voir checklist.
 - **`vercel pull` échoue (403/projet introuvable)** : token du mauvais compte,
   ou `ORG_ID`/`PROJECT_ID` ne correspondent pas au projet — re-vérifier avec
   `vercel link`.

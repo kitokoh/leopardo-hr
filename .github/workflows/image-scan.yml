@@ -1,0 +1,120 @@
+name: Image Scan (Trivy)
+
+# Issue #7997 — scan de vulnérabilités des images Docker (audit 2026-09-20 :
+# 0 résultat pour « trivy|grype|docker scout » sur 73 workflows). La chaîne
+# sécurité couvrait le code (CodeQL), les secrets (detect-secrets + history
+# scan) et le runtime web (ZAP baseline), mais AUCUN scan de CVE des images
+# Docker — alors que edge/publish.sh pousse `leopardo/edge-*` sur Docker Hub,
+# images installées chez les clients (appliances Edge, #7966). Même logique
+# de chaîne d'approvisionnement que le post-mortem secrets #7968.
+#
+# Deux volets :
+#   (a) job `dockerfiles-scan` — à chaque PR touchant un Dockerfile (paths
+#       filter), `trivy config` audite les Dockerfiles (bonnes pratiques IaC :
+#       USER non-root, COPY --from, …). Bloquant sur CRITICAL/HIGH.
+#   (b) job `edge-images-scan` — hebdomadaire (lundi 05:00 UTC, créneau libre
+#       entre CodeQL 04:00 et secret-history-scan 06:00) + workflow_dispatch :
+#       build des deux images de publication edge (edge-api, edge-ui) puis
+#       `trivy image`, bloquant sur CRITICAL/HIGH corrigeables.
+#
+# Acquittements : `.trivyignore.yaml` à la racine — chaque entrée est SCOPÉE
+# par chemin avec `statement` justificatif et `expired_at` obligatoires (voir
+# l'en-tête du fichier). Un acquittement expiré redevient bloquant (fail-loud,
+# jamais d'ignore éternel silencieux).
+#
+# Pas d'upload SARIF volontairement : la sortie table des logs suffit au
+# triage et `permissions: contents: read` reste le strict minimum (pas besoin
+# de `security-events: write`).
+
+on:
+  pull_request:
+    paths:
+      - '**/Dockerfile*'
+      - '.trivyignore.yaml'
+      - '.github/workflows/image-scan.yml'
+  schedule:
+    # Lundi 05:00 UTC — en dehors des heures de pointe CI.
+    - cron: '0 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: image-scan-${{ github.ref }}
+  # Même règle que codeql/actionlint (#2131) : annulation sur PR uniquement —
+  # un run schedule/dispatch ne doit jamais être annulé par un run suivant.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  dockerfiles-scan:
+    timeout-minutes: 10
+    name: Trivy — Dockerfiles (config)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Trivy config scan (Dockerfiles, bloquant CRITICAL/HIGH)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: 'config'
+          scan-ref: '.'
+          severity: 'CRITICAL,HIGH'
+          # exit-code 1 : toute misconfiguration CRITICAL/HIGH non acquittée
+          # (.trivyignore.yaml) fait échouer la PR.
+          exit-code: '1'
+          trivyignores: '.trivyignore.yaml'
+
+  edge-images-scan:
+    timeout-minutes: 45
+    name: Trivy — images edge (build + scan)
+    runs-on: ubuntu-latest
+    # Volet (b) réservé au schedule hebdo + workflow_dispatch : les PRs ne
+    # buildent pas les images (coût), elles sont couvertes par le scan config.
+    if: github.event_name != 'pull_request'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Miroir exact de edge/publish.sh : mêmes Dockerfiles, mêmes
+          # contextes de build, mêmes noms d'images publiées.
+          - image: leopardo/edge-api
+            dockerfile: edge/Dockerfile.publish
+            context: .
+          - image: leopardo/edge-ui
+            dockerfile: front/web-offline/Dockerfile
+            context: front/web-offline
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Build ${{ matrix.image }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build \
+            -f "${{ matrix.dockerfile }}" \
+            -t "${{ matrix.image }}:scan" \
+            "${{ matrix.context }}"
+
+      - name: Trivy image scan (${{ matrix.image }}, bloquant CRITICAL/HIGH)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: 'image'
+          image-ref: '${{ matrix.image }}:scan'
+          severity: 'CRITICAL,HIGH'
+          # Seules les CVE CORRIGEABLES bloquent : une CVE sans fix upstream
+          # (base alpine/debian) n'est pas actionnable et rendrait le schedule
+          # rouge sans recours — elle reste traitable via .trivyignore.yaml si
+          # un jour elle doit être acquittée explicitement.
+          ignore-unfixed: 'true'
+          exit-code: '1'
+          trivyignores: '.trivyignore.yaml'

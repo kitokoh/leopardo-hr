@@ -61,8 +61,12 @@ jobs:
       # Volontairement identique a la commande documentee dans README.md /
       # DEVELOPMENT.md — pas un raccourci CI. Si cette etape ou une des
       # suivantes echoue, c'est que la doc d'onboarding elle-meme est cassee.
+      # #7996 : l'image api tourne desormais en non-root (uid ARG APP_UID,
+      # defaut 1000 = 1er utilisateur Linux) ; le checkout du runner
+      # appartient a uid 1001 — on aligne l'uid du conteneur sur l'hote
+      # pour que le bind-mount ./api reste inscriptible (vendor/, storage/).
       - name: docker compose up --build (as documented)
-        run: docker compose up -d --build postgres redis api
+        run: APP_UID=$(id -u) APP_GID=$(id -g) docker compose up -d --build postgres redis api
 
       - name: Wait for API container to accept connections
         run: |
