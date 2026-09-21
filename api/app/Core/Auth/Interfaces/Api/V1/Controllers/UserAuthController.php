@@ -8,11 +8,10 @@ use App\Core\Auth\Domain\Models\User;
 use App\Core\Auth\Infrastructure\Services\UserAuthService;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
-use App\Shared\Rules\NotCommonPassword;
+use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 
 class UserAuthController extends Controller
 {
@@ -34,7 +33,8 @@ class UserAuthController extends Controller
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword],
+            // #8021 — politique unique #5620 (pas de confirmation à l'inscription).
+            'password' => PasswordPolicy::required(confirmed: false),
             'phone' => ['nullable', 'string', 'max:20'],
         ]);
 
@@ -192,7 +192,7 @@ class UserAuthController extends Controller
     {
         $validated = $request->validate([
             'current_password' => ['required', 'string'],
-            'new_password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword, 'confirmed'],
+            'new_password' => PasswordPolicy::required(),
         ]);
 
         /** @var User $user */

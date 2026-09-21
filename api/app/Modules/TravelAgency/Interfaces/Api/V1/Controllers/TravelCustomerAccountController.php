@@ -10,12 +10,11 @@ use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelCustomerAccount;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelCustomerAccountService;
-use App\Shared\Rules\NotCommonPassword;
+use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 
 /**
  * Issue #7739 — Comptes clients GRAND PUBLIC de la marketplace (épic #7736).
@@ -56,7 +55,8 @@ class TravelCustomerAccountController extends Controller
             'name' => ['required', 'string', 'max:160'],
             'email' => ['required', 'email', 'max:255', 'unique:travel_customer_accounts,email'],
             'phone' => ['nullable', 'string', 'max:40'],
-            'password' => ['required', 'string', 'max:255', Password::min(12)->numbers(), new NotCommonPassword],
+            // #8021 — politique unique #5620 : min 12 + chiffre + blocklist.
+            'password' => PasswordPolicy::required(confirmed: false),
         ]);
 
         $account = TravelCustomerAccount::query()->create([

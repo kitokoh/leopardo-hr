@@ -13,7 +13,7 @@ use App\Jobs\ProvisionDemoTenantJob;
 use App\Modules\Billing\Application\Actions\RequestTrialSignup;
 use App\Modules\Billing\Application\Actions\VerifyTrialSignup;
 use App\Rules\SupportedCountry;
-use App\Shared\Rules\NotCommonPassword;
+use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,7 +24,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 
 /**
  * Self-service trial provisioning endpoint.
@@ -595,9 +594,10 @@ class SelfServiceTrialController extends Controller
             ], 404);
         }
 
-        // Même politique que la réinitialisation de mot de passe (#5620).
+        // Même politique que la réinitialisation de mot de passe (#5620,
+        // helper unique #8021).
         $validated = $request->validate([
-            'password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword, 'confirmed'],
+            'password' => PasswordPolicy::required(),
         ]);
 
         $row = DB::table('trial_provisionings')

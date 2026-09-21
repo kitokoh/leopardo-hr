@@ -7,13 +7,12 @@ namespace App\Core\Auth\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Infrastructure\Services\SuperAdminService;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
-use App\Shared\Rules\NotCommonPassword;
+use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rules\Password;
 use Throwable;
 
 class PlatformAuthController extends Controller
@@ -244,8 +243,9 @@ class PlatformAuthController extends Controller
     {
         $validated = $request->validate([
             'current_password' => ['required', 'string'],
-            // Issue #5620 : min 8 caractères + au moins 1 chiffre.
-            'new_password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword, 'max:255', 'confirmed'],
+            // Issue #5620 : politique unique (min 12 + chiffre + blocklist) —
+            // helper unique #8021.
+            'new_password' => PasswordPolicy::required(),
         ]);
 
         /** @var SuperAdmin $superAdmin */

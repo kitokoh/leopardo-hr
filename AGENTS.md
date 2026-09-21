@@ -20,6 +20,22 @@ Derniere mise a jour : 2026-09-21 (lots sécurité backend #7995/#7999 + BC-01 P
 > et n'était posé par aucun workflow — une garde jamais appelée ne protège rien. Même
 > règle que #8013 : une garde se juge à sa fréquence d'exécution réelle, pas à son
 > existence.
+Derniere mise a jour : 2026-09-21 (lot sécurité #8021 — politique mots de passe réellement unique + garde durcie ; lots #7995/#7999 + BC-01 PLATFORM #7973..#7978 — fusion des blocs de leçons)
+
+> Leçon 2026-09-21 (#8021) : **(1) un helper unique ne suffit pas — il faut migrer les sites
+> historiques ET durcir la garde.** #7995 avait créé `PasswordPolicy` mais sa garde CI ne
+> tolérait que `min:1..11` : sept surfaces (les comptes plateforme les plus privilégiés + 6
+> sites inline) ont survécu avec la règle dupliquée, dont un `min:12` SEUL sans chiffre ni
+> blocklist. Une garde de politique doit exiger la conformité COMPLÈTE (blocklist + chiffre)
+> et couvrir TOUS les noms de champ (`new_password`), pas seulement le cas le plus faible ;
+> et un scanner borné par l'équilibre des crochets vaut mieux qu'une fenêtre glissante de
+> N lignes (qui déborde sur la règle suivante). **(2) Dans une worktree, vérifier OÙ
+> l'autoloader résout le code** : `api/vendor` symlinké vers le checkout principal fait
+> résoudre `App\`/`Tests\` via `dirname(vendorDir)` = le checkout PRINCIPAL — les tests
+> tournent alors sur le mauvais code (faux verts). Trancher avec
+> `php -r 'echo (new ReflectionClass(App\Shared\Rules\PasswordPolicy::class))->getFileName();'` ;
+> remède local = copie réelle de `vendor/` (jamais de `composer dump-autoload` dans le
+> vendor partagé).
 
 > Leçon 2026-09-20 (#7995/#7999) : **(1) une politique de validation = un helper unique**
 > — les 3 sites historiques de la norme mots de passe étaient dupliqués textuellement ;

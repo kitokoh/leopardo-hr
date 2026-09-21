@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Onboarding\Interfaces\Api\V1\Requests;
 
-use App\Shared\Rules\NotCommonPassword;
+use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
 
 /**
  * Activation d'invitation onboarding (mot de passe).
@@ -23,6 +22,7 @@ class ActivateInvitationRequest extends FormRequest
      */
     public function rules(): array
     {
-        return ['password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword, 'confirmed']];
+        // #8021 — politique unique #5620 : min 12 + chiffre + blocklist.
+        return ['password' => PasswordPolicy::required()];
     }
 }
