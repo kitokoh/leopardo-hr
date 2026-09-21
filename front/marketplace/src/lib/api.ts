@@ -188,12 +188,10 @@ interface RequestOptions {
   body?: unknown;
   query?: Record<string, string | number | undefined>;
   timeoutMs?: number;
-  /** Jeton compte acheteur (#7814) — ajoute `Authorization: Bearer …`. */
-  token?: string;
 }
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { method = "GET", body, query, timeoutMs = 12_000, token } = options;
+  const { method = "GET", body, query, timeoutMs = 12_000 } = options;
 
   const url = new URL(`${apiBase()}${path}`);
   if (query) {
@@ -214,7 +212,6 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
       headers: {
         Accept: "application/json",
         ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
-        ...(token !== undefined && token.length > 0 ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
       cache: "no-store",
@@ -255,6 +252,71 @@ function defaultErrorMessage(status: number): string {
   if (status === 422) return "Les informations envoyées sont invalides.";
   if (status === 429) return "Trop de requêtes. Merci de patienter un instant.";
   return "Une erreur est survenue. Veuillez réessayer.";
+}
+
+/**
+ * Appels SAME-ORIGIN `/api/v1/*` (#8022) — surface compte acheteur et
+ * création de commande. Le jeton de session vit dans un cookie httpOnly
+ * posé par les route handlers Next (pattern #7841 de front/travel-web) :
+ * c'est le proxy serveur qui l'injecte en `Authorization: Bearer`, jamais
+ * le JS de la page. Ces appels échouent en 401 si la session a expiré —
+ * à traiter via `useBuyer().handleUnauthorized`.
+ */
+async function sameOriginRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const { method = "GET", body, query, timeoutMs = 12_000 } = options;
+
+  const url = new URL(`/api/v1${path}`,
+    typeof window !== "undefined" ? window.location.origin : "http://localhost");
+  if (query) {
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined && `${value}`.length > 0) {
+        url.searchParams.set(key, `${value}`);
+      }
+    }
+  }
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  let response: Response;
+  try {
+    response = await fetch(url.toString(), {
+      method,
+      headers: {
+        Accept: "application/json",
+        ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
+      },
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+      cache: "no-store",
+      signal: controller.signal,
+    });
+  } catch (error) {
+    const aborted = error instanceof DOMException && error.name === "AbortError";
+    throw new ApiError(
+      aborted
+        ? "Le serveur met trop de temps à répondre. Veuillez réessayer."
+        : "Impossible de joindre le serveur. Vérifiez votre connexion.",
+      0,
+    );
+  } finally {
+    clearTimeout(timer);
+  }
+
+  let payload: unknown = null;
+  try {
+    payload = await response.json();
+  } catch {
+    payload = null;
+  }
+
+  if (!response.ok) {
+    const message =
+      (isRecord(payload) && typeof payload.message === "string" && payload.message) ||
+      defaultErrorMessage(response.status);
+    throw new ApiError(message, response.status, payload);
+  }
+
+  return payload as T;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -341,14 +403,14 @@ export async function fetchSeller(slug: string): Promise<PublicSeller> {
   return normalizeSeller(raw);
 }
 
-export async function createOrder(payload: OrderPayload, buyerToken?: string): Promise<OrderCreated> {
-  const response = await request<unknown>("/public/market/orders", {
+export async function createOrder(payload: OrderPayload): Promise<OrderCreated> {
+  // #8022 — l'appel passe par le relais same-origin : si une session
+  // acheteur existe (cookie httpOnly), la commande est liée au compte
+  // (historique + avis vérifiés) ; sinon checkout invité inchangé (#7814).
+  const response = await sameOriginRequest<unknown>("/public/market/orders", {
     method: "POST",
     body: payload,
     timeoutMs: 20_000,
-    // #7814 — jeton buyer OPTIONNEL : si valide, la commande est liée au
-    // compte (historique + avis vérifiés) ; sinon checkout invité inchangé.
-    ...(buyerToken !== undefined && buyerToken.length > 0 ? { token: buyerToken } : {}),
   });
   const raw = isRecord(response) && isRecord(response.data) ? response.data : response;
   return raw as OrderCreated;
@@ -457,7 +519,8 @@ export interface BuyerProfile {
 }
 
 export interface BuyerSession {
-  token: string;
+  // #8022 — plus de `token` : le jeton vit dans un cookie httpOnly posé
+  // par le route handler Next, jamais exposé au JS de la page.
   buyer: BuyerProfile;
 }
 
@@ -497,7 +560,6 @@ function normalizeBuyerSession(payload: unknown): BuyerSession {
   const raw = isRecord(payload) && isRecord(payload.data) ? payload.data : {};
   const buyer = isRecord(raw.buyer) ? raw.buyer : {};
   return {
-    token: typeof raw.token === "string" ? raw.token : "",
     buyer: {
       name: typeof buyer.name === "string" ? buyer.name : "",
       email: typeof buyer.email === "string" ? buyer.email : "",
@@ -513,7 +575,7 @@ export async function registerBuyer(payload: {
   password: string;
   phone?: string;
 }): Promise<BuyerSession> {
-  const response = await request<unknown>("/public/market/account/register", {
+  const response = await sameOriginRequest<unknown>("/public/market/account/register", {
     method: "POST",
     body: payload,
   });
@@ -521,19 +583,19 @@ export async function registerBuyer(payload: {
 }
 
 export async function loginBuyer(payload: { email: string; password: string }): Promise<BuyerSession> {
-  const response = await request<unknown>("/public/market/account/login", {
+  const response = await sameOriginRequest<unknown>("/public/market/account/login", {
     method: "POST",
     body: payload,
   });
   return normalizeBuyerSession(response);
 }
 
-export async function logoutBuyer(token: string): Promise<void> {
-  await request<unknown>("/public/market/account/logout", { method: "POST", token });
+export async function logoutBuyer(): Promise<void> {
+  await sameOriginRequest<unknown>("/public/market/account/logout", { method: "POST" });
 }
 
-export async function fetchBuyerProfile(token: string): Promise<BuyerProfile> {
-  const payload = await request<unknown>("/public/market/account/me", { token });
+export async function fetchBuyerProfile(): Promise<BuyerProfile> {
+  const payload = await sameOriginRequest<unknown>("/public/market/account/me");
   const raw = isRecord(payload) && isRecord(payload.data) ? payload.data : {};
   return {
     name: typeof raw.name === "string" ? raw.name : "",
@@ -543,42 +605,37 @@ export async function fetchBuyerProfile(token: string): Promise<BuyerProfile> {
   };
 }
 
-export async function fetchBuyerOrders(token: string, page = 1): Promise<Paginated<AccountOrder>> {
-  const payload = await request<unknown>("/public/market/account/orders", {
-    token,
+export async function fetchBuyerOrders(page = 1): Promise<Paginated<AccountOrder>> {
+  const payload = await sameOriginRequest<unknown>("/public/market/account/orders", {
     query: { page },
   });
   return normalizePaginated<AccountOrder>(payload);
 }
 
-export async function fetchFavorites(token: string): Promise<PublicProduct[]> {
-  const payload = await request<unknown>("/public/market/account/favorites", { token });
+export async function fetchFavorites(): Promise<PublicProduct[]> {
+  const payload = await sameOriginRequest<unknown>("/public/market/account/favorites");
   return isRecord(payload) && Array.isArray(payload.data) ? (payload.data as PublicProduct[]) : [];
 }
 
-export async function addFavorite(token: string, productId: number): Promise<void> {
-  await request<unknown>("/public/market/account/favorites", {
+export async function addFavorite(productId: number): Promise<void> {
+  await sameOriginRequest<unknown>("/public/market/account/favorites", {
     method: "POST",
     body: { product_id: productId },
-    token,
   });
 }
 
-export async function removeFavorite(token: string, productId: number): Promise<void> {
-  await request<unknown>(`/public/market/account/favorites/${productId}`, {
+export async function removeFavorite(productId: number): Promise<void> {
+  await sameOriginRequest<unknown>(`/public/market/account/favorites/${productId}`, {
     method: "DELETE",
-    token,
   });
 }
 
 export async function submitReview(
-  token: string,
   payload: { order_reference: string; product_id: number; rating: number; comment?: string },
 ): Promise<void> {
-  await request<unknown>("/public/market/account/reviews", {
+  await sameOriginRequest<unknown>("/public/market/account/reviews", {
     method: "POST",
     body: payload,
-    token,
   });
 }
 

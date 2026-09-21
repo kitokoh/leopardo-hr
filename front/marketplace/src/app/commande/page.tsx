@@ -25,7 +25,6 @@ import { useState, type FormEvent } from "react";
 
 import { EmptyState } from "@/components/EmptyState";
 import { Price } from "@/components/Price";
-import { useBuyer } from "@/hooks/useBuyer";
 import { useCart } from "@/hooks/useCart";
 import { createOrder, type OrderCreated, type PaymentMethod } from "@/lib/api";
 import { removeSellerFromCart, type CartGroup } from "@/lib/cart";
@@ -52,9 +51,8 @@ const EMPTY_FORM: CustomerForm = {
 export default function CheckoutPage() {
   const router = useRouter();
   const { ready, groups } = useCart();
-  // #7814 — session acheteur optionnelle : si connecté, la commande est
-  // liée au compte (historique + avis vérifiés), sinon checkout invité.
-  const { session } = useBuyer();
+  // #7814/#8022 — si une session acheteur existe (cookie httpOnly), le
+  // relais same-origin lie la commande au compte ; sinon checkout invité.
   const [form, setForm] = useState<CustomerForm>(EMPTY_FORM);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [submitting, setSubmitting] = useState(false);
@@ -94,7 +92,7 @@ export default function CheckoutPage() {
           },
           payment_method: paymentMethod,
           idempotency_key: key,
-        }, session?.token);
+        });
         created.push({
           reference: order.reference,
           trackingToken: order.tracking_token,

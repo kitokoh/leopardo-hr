@@ -241,11 +241,21 @@ function localInitialsAvatar(name) {
     .slice(0, 2)
     .map((part) => (part[0] ? part[0].toUpperCase() : ''))
     .join('') || '?'
+  // Issue #8022 — échapper le XML AVANT interpolation : une initiale `<`
+  // ou `&` (ex. « <Co », « A&B ») rendait le SVG malformé et cassait le
+  // data-URI (avatar invisible). encodeURIComponent protège l'URL, pas la
+  // validité XML du document embarqué.
+  const xmlSafeInitials = initials
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
   // Couleur déterministe dérivée du nom (hachage simple → teinte HSL sobre).
   let hash = 0
   for (const ch of name || '') hash = (hash * 31 + ch.charCodeAt(0)) >>> 0
   const bg = `hsl(${hash % 360}, 45%, 42%)`
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="${bg}"/><text x="50%" y="50%" dy=".35em" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" fill="#fff">${initials}</text></svg>`
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="${bg}"/><text x="50%" y="50%" dy=".35em" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" fill="#fff">${xmlSafeInitials}</text></svg>`
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
 }
 

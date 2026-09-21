@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import type { ReactNode } from "react";
 
 import { Footer } from "@/components/Footer";
@@ -23,7 +24,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  // #8022 — forcer le rendu DYNAMIQUE de toutes les routes HTML : le proxy
+  // (`src/proxy.ts`) émet une CSP à nonce par requête et Next n'appose le
+  // nonce sur ses scripts inline que si la route est rendue dynamiquement.
+  // Lire `headers()` est le mécanisme canonique (même précédent que #3807
+  // dans front/web et que #7841/`cookies()` dans front/travel-web). Le
+  // nonce n'est pas consommé ici : aucun script inline maison n'existe.
+  await headers();
+
   return (
     <html lang="fr">
       <body className="flex min-h-screen flex-col">
