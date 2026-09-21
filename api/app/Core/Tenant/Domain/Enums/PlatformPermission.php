@@ -29,6 +29,7 @@ enum PlatformPermission: string
     case BillingView = 'billing.view';
     case BillingManage = 'billing.manage';
     case PlansView = 'plans.view';
+    case PlansManage = 'plans.manage';
 
     case UsersView = 'users.view';
     case UsersManage = 'users.manage';
@@ -43,6 +44,29 @@ enum PlatformPermission: string
     case CrmView = 'crm.view';
     case ShowcaseManage = 'showcase.manage';
     case EdgeManage = 'edge.manage';
+
+    /**
+     * #7973 — administration des webhooks sortants de la plateforme : un
+     * endpoint pointant vers une URL arbitraire est un canal d'exfiltration
+     * des événements plateforme → réservé à admin + ops.
+     */
+    case WebhooksManage = 'webhooks.manage';
+
+    /**
+     * #7973 — réglages plateforme sensibles : templates d'e-mails officiels
+     * (phishing via mails légitimes), réglages IA (clés chiffrées), barèmes
+     * fiscaux / cotisations sociales (intégrité de la paie nationale),
+     * fériés nationaux, validation des taux, oauth-config marketing.
+     * Réservé au rôle `admin` (+ super_admin).
+     */
+    case SettingsManage = 'settings.manage';
+
+    /**
+     * #7973 — audit des calculs de paie CROSS-TENANT (traces salariales) :
+     * finance (litiges de facturation/paie) + ops (débogage calculs).
+     * Le support en est volontairement exclu (données de rémunération).
+     */
+    case PayrollView = 'payroll.view';
 
     /**
      * Délégation des rôles internes — réservée au rôle `super_admin`
@@ -70,6 +94,7 @@ enum PlatformPermission: string
             self::BillingView => 'Consulter la facturation et les abonnements',
             self::BillingManage => 'Modifier la facturation et les abonnements',
             self::PlansView => 'Consulter les offres',
+            self::PlansManage => 'Modifier les offres (prix, features, archivage)',
             self::UsersView => 'Consulter les utilisateurs des entreprises',
             self::UsersManage => 'Activer/suspendre un utilisateur d’entreprise',
             self::Impersonate => 'Ouvrir une session d’impersonation',
@@ -81,6 +106,9 @@ enum PlatformPermission: string
             self::CrmView => 'Consulter le pipeline CRM',
             self::ShowcaseManage => 'Administrer la vitrine publique',
             self::EdgeManage => 'Administrer les nœuds edge',
+            self::WebhooksManage => 'Administrer les webhooks sortants plateforme',
+            self::SettingsManage => 'Administrer les réglages plateforme (e-mails, IA, barèmes, fériés)',
+            self::PayrollView => 'Consulter l’audit des calculs de paie (cross-tenant)',
             self::TeamManage => 'Gérer l’équipe plateforme et distribuer les rôles',
         };
     }

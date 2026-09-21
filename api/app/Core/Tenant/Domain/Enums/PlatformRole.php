@@ -76,6 +76,11 @@ enum PlatformRole: string
                 PlatformPermission::BillingView,
                 PlatformPermission::BillingManage,
                 PlatformPermission::PlansView,
+                // #7973 — la matrice « offres » de #7553 donne la gestion des
+                // offres à finance ; l'audit paie cross-tenant (traces
+                // salariales) sert aux litiges de facturation/paie.
+                PlatformPermission::PlansManage,
+                PlatformPermission::PayrollView,
                 PlatformPermission::MetricsView,
             ],
             self::Ops => [
@@ -84,6 +89,10 @@ enum PlatformRole: string
                 PlatformPermission::MetricsView,
                 PlatformPermission::KillSwitchManage,
                 PlatformPermission::EdgeManage,
+                // #7973 — webhooks sortants (admin + ops) et audit paie
+                // cross-tenant (débogage des calculs).
+                PlatformPermission::WebhooksManage,
+                PlatformPermission::PayrollView,
             ],
             self::Marketing => [
                 PlatformPermission::CompaniesView,

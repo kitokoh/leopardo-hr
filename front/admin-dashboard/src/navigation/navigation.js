@@ -423,11 +423,13 @@ export const NAV_ENTRIES = [
   // « RH & Paie », avec les 4 référentiels en sous-menu d'UNE entrée
   // « Référentiels paie » (modèle Comptabilité, un seul niveau, règle #7725).
   // AUCUNE route ne change.
+  // #7973 — les API /admin/* de ces écrans (barèmes, cotisations, taux,
+  // fériés) exigent désormais `settings.manage` : le menu suit la même sonde.
   {
     name: 'payroll-references',
     titleKey: 'navigation.groups.referentielsPaie',
     icon: BanknotesIcon,
-    permission: 'companies.manage',
+    permission: 'settings.manage',
     group: 'rh-paie',
     children: [
       {
@@ -435,7 +437,7 @@ export const NAV_ENTRIES = [
         path: '/settings/payroll/social-contributions',
         titleKey: 'navigation.contributions',
         icon: BanknotesIcon,
-        permission: 'companies.manage',
+        permission: 'settings.manage',
         group: 'rh-paie',
       },
       {
@@ -443,7 +445,7 @@ export const NAV_ENTRIES = [
         path: '/settings/payroll/tax-slabs',
         titleKey: 'navigation.taxBrackets',
         icon: ScaleIcon,
-        permission: 'companies.manage',
+        permission: 'settings.manage',
         group: 'rh-paie',
       },
       {
@@ -451,7 +453,7 @@ export const NAV_ENTRIES = [
         path: '/settings/payroll/tax-rates',
         titleKey: 'navigation.legalRates',
         icon: ReceiptPercentIcon,
-        permission: 'companies.manage',
+        permission: 'settings.manage',
         group: 'rh-paie',
       },
       {
@@ -459,7 +461,7 @@ export const NAV_ENTRIES = [
         path: '/settings/payroll/holidays',
         titleKey: 'holidays.nav.title',
         icon: CalendarIcon,
-        permission: 'companies.manage',
+        permission: 'settings.manage',
         group: 'rh-paie',
       },
     ],
@@ -500,7 +502,7 @@ export const NAV_ENTRIES = [
     path: '/settings/emails',
     titleKey: 'navigation.emailTemplates',
     icon: EnvelopeIcon,
-    permission: 'companies.manage',
+    permission: 'settings.manage',
     group: 'plateforme',
   },
   {
@@ -508,7 +510,7 @@ export const NAV_ENTRIES = [
     path: '/settings/ai',
     titleKey: 'navigation.aiAssistant',
     icon: CpuChipIcon,
-    permission: 'companies.manage',
+    permission: 'settings.manage',
     group: 'plateforme',
   },
   {
@@ -524,7 +526,7 @@ export const NAV_ENTRIES = [
     path: '/webhooks',
     titleKey: 'navigation.webhooks',
     icon: LinkIcon,
-    permission: 'companies.manage',
+    permission: 'webhooks.manage',
     group: 'plateforme',
   },
   {
@@ -540,7 +542,8 @@ export const NAV_ENTRIES = [
     path: '/marketing/oauth',
     titleKey: 'marketing.oauth.nav_title',
     icon: MegaphoneIcon,
-    permission: null,
+    // #7973 — l'API /admin/platform/marketing/oauth-config exige settings.manage.
+    permission: 'settings.manage',
     group: 'plateforme',
     descKey: 'adminPalette.itemMarketingDesc',
   },
