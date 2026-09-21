@@ -88,6 +88,9 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCustomerAccount
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelMarketplaceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 
 // Edge routes are now registered by EdgeSyncServiceProvider
@@ -154,9 +157,9 @@ Route::prefix('v1')->group(function (): void {
         // groupe `api` activerait la protection CSRF Sanctum sur les routes
         // utilisées par la SPA admin et les clients mobiles.
         Route::middleware([
-            \Illuminate\Cookie\Middleware\EncryptCookies::class,
-            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-            \Illuminate\Session\Middleware\StartSession::class,
+            EncryptCookies::class,
+            AddQueuedCookiesToResponse::class,
+            StartSession::class,
             'throttle:auth-sensitive',
         ])->group(function (): void {
             Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
@@ -545,7 +548,10 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/plans/{plan}/archive', [PlatformPlanAdminController::class, 'archive'])->whereNumber('plan')->middleware('platform.permission:plans.manage');
         Route::delete('/plans/{plan}', [PlatformPlanAdminController::class, 'destroy'])->whereNumber('plan')->middleware('platform.permission:plans.manage');
         Route::get('/plans', PlatformPlanController::class)->middleware('platform.permission:plans.view');
-        Route::get('/country-defaults', PlatformCountryDefaultsController::class);
+        // #8020 — référentiel pays (libellé, langue, devise, fuseau)
+        // lu par l'écran Entreprises : même famille que GET /platform/companies
+        // (`companies.view`), aucun secret exposé.
+        Route::get('/country-defaults', PlatformCountryDefaultsController::class)->middleware('platform.permission:companies.view');
         Route::get('/companies', [PlatformCompanyController::class, 'index'])->middleware('platform.permission:companies.view');
         Route::post('/companies', [PlatformCompanyController::class, 'store'])->middleware('platform.permission:companies.provision');
         Route::get('/companies/health', [PlatformCompanyHealthController::class, 'index'])->middleware('platform.permission:companies.view');
@@ -688,29 +694,44 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/edge-nodes/{nodeId}/sync', [EdgeNodeController::class, 'forceSync'])->middleware('platform.permission:edge.manage');
         Route::post('/edge-nodes/{nodeId}/revoke', [EdgeNodeController::class, 'revokeNode'])->middleware('platform.permission:edge.manage');
 
-        Route::get('/ai/conversations', [PlatformAdminAiConversationController::class, 'index']);
+        // #8020 — contenus CROSS-TENANT (titres et messages des conversations
+        // IA de tous les tenants) : `companies.manage` (admin seul), la
+        // permission la plus forte du catalogue sur des données tenant —
+        // alignée sur la garde déjà déclarée par le SPA (`/chat`).
+        Route::get('/ai/conversations', [PlatformAdminAiConversationController::class, 'index'])->middleware('platform.permission:companies.manage');
         Route::get('/ai/conversations/{conversation}/messages', [PlatformAdminAiConversationController::class, 'messages'])
-            ->whereNumber('conversation');
-        Route::post('/ai/chat', [PlatformAdminAiConversationController::class, 'chat']);
+            ->whereNumber('conversation')->middleware('platform.permission:companies.manage');
+        Route::post('/ai/chat', [PlatformAdminAiConversationController::class, 'chat'])->middleware('platform.permission:companies.manage');
 
         // BC-25 #6694 — pilotage des surveys de solutions (stats de conversion
         // du wizard vitrine, agrégées depuis marketing_leads type solution_survey).
-        Route::get('/solutions/survey-stats', [PlatformSolutionSurveyStatsController::class, 'index']);
+        // #8020 — agrégats des leads `solution_survey` (table marketing_leads) :
+        // même famille que /admin/marketing/leads (`crm.view`, marketing + admin).
+        Route::get('/solutions/survey-stats', [PlatformSolutionSurveyStatsController::class, 'index'])->middleware('platform.permission:crm.view');
         Route::get('/marketing/leads', [PlatformMarketingLeadController::class, 'index'])->middleware('platform.permission:crm.view');
 
         // #7496 — conversions du funnel d'acquisition par étape/jour/source
         // (dashboard admin CRM commercial, données acquisition_funnel_events).
         Route::get('/funnel/stats', [PlatformAcquisitionFunnelController::class, 'index'])->middleware('platform.permission:metrics.view');
 
-        Route::get('/fleet/alerts', [PlatformAdminFleetAlertController::class, 'index']);
+        // #8020 — alertes flotte de TOUS les tenants (messages véhicule +
+        // raison sociale) : données tenant cross-tenant → `companies.manage`.
+        Route::get('/fleet/alerts', [PlatformAdminFleetAlertController::class, 'index'])->middleware('platform.permission:companies.manage');
 
-        Route::get('/hr-reports', [PlatformHrReportController::class, 'generate']);
+        // #8020 — rapports RH cross-tenant (headcount, turnover, absentéisme,
+        // résumé de paie, formation) : agrégats de rémunération de tous les
+        // tenants → `companies.manage` (admin seul), même permission que
+        // l'écran « Exports » du SPA. Le support/finance/ops en sont exclus.
+        Route::get('/hr-reports', [PlatformHrReportController::class, 'generate'])->middleware('platform.permission:companies.manage');
 
         // Issue #2634 : équivalents /admin des vues Training et Webhooks
         // (les routes tenant /training/* et /webhooks* sont api.manager → 401 super-admin).
-        Route::get('/training/courses', [PlatformAdminTrainingController::class, 'indexCourses']);
-        Route::get('/training/sessions', [PlatformAdminTrainingController::class, 'indexSessions']);
-        Route::get('/training/enrollments', [PlatformAdminTrainingController::class, 'indexEnrollments']);
+        // #8020 — vue cross-tenant des formations (cours, sessions,
+        // inscriptions nominatives) : données RH de tous les tenants →
+        // `companies.manage`.
+        Route::get('/training/courses', [PlatformAdminTrainingController::class, 'indexCourses'])->middleware('platform.permission:companies.manage');
+        Route::get('/training/sessions', [PlatformAdminTrainingController::class, 'indexSessions'])->middleware('platform.permission:companies.manage');
+        Route::get('/training/enrollments', [PlatformAdminTrainingController::class, 'indexEnrollments'])->middleware('platform.permission:companies.manage');
         // #7973 — webhooks sortants vers une URL arbitraire = canal
         // d'exfiltration des événements plateforme : TOUT le bloc (lecture
         // comprise — les configs révèlent URLs cibles et secrets) exige
@@ -749,8 +770,11 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/platform/ai/test-connection', [PlatformAiSettingsController::class, 'testConnection'])->middleware('platform.permission:settings.manage');
 
         // #7385 — suivi de l'assistant, tous tenants (usage, coûts, erreurs).
-        Route::get('/platform/ai/monitoring', [PlatformAiMonitoringController::class, 'index']);
-        Route::get('/platform/ai/health', [PlatformAiMonitoringController::class, 'health']);
+        // #8020 — onglets de l'écran Paramètres › Assistant IA, dont la garde
+        // SPA est `settings.manage` : même permission que le bloc
+        // /admin/platform/ai/settings voisin (admin seul).
+        Route::get('/platform/ai/monitoring', [PlatformAiMonitoringController::class, 'index'])->middleware('platform.permission:settings.manage');
+        Route::get('/platform/ai/health', [PlatformAiMonitoringController::class, 'health'])->middleware('platform.permission:settings.manage');
 
         // #7973 — fériés nationaux + barèmes fiscaux + cotisations sociales
         // (intégrité de la paie nationale) + validation des taux : tout le
@@ -775,7 +799,10 @@ Route::prefix('v1')->group(function (): void {
         Route::put('/tax-slabs/{taxSlab}', [TaxSlabAdminController::class, 'update'])->whereNumber('taxSlab')->middleware('platform.permission:settings.manage');
         Route::delete('/tax-slabs/{taxSlab}', [TaxSlabAdminController::class, 'destroy'])->whereNumber('taxSlab')->middleware('platform.permission:settings.manage');
         Route::post('/tax-slabs/reset-defaults', [TaxSlabAdminController::class, 'resetDefaults'])->middleware('platform.permission:settings.manage');
-        Route::post('/payroll/simulate', [PayrollSimulationController::class, 'simulate']);
+        // #8020 — simulation sur les barèmes/paramètres nationaux, appelée par
+        // les écrans Paramètres › Barèmes fiscaux et Cotisations sociales
+        // (tous deux `settings.manage`) : même permission.
+        Route::post('/payroll/simulate', [PayrollSimulationController::class, 'simulate'])->middleware('platform.permission:settings.manage');
 
         // Issue #1874 — audit des calculs de paie (vue plateforme, cross-tenant :
         // filtre company_id optionnel ; le platform_admin est autorisé par

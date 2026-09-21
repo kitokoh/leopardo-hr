@@ -69,6 +69,25 @@ Derniere mise a jour : 2026-09-21 (lots sécurité backend #7995/#7999 + BC-01 P
 > DROP déjà exécuté laisse la table SANS contrainte. Documenter la remédiation (purge des valeurs
 > avant rollback), et se demander si le rollback a encore un sens (l'union EST le correctif).
 
+> Leçon 2026-09-21 (#8020, suivi #8005) : **(1) la matrice `platform.permission` (#7553) se
+> vérifie par SONDAGE, pas par grep** — après un lot de durcissement, re-scanner le groupe
+> `/admin` ET `/platform` jusqu'à zéro `Route::` sans `->middleware('platform.permission:...')`
+> (hors `auth/*` et groupes déjà gardés) : #8020 a trouvé 13 routes oubliées (hr-reports,
+> ai/*, training/*, fleet/alerts, survey-stats, ai monitoring/health, country-defaults,
+> payroll/simulate). **Un alias = la même permission que sa route canonique**, et un contenu
+> tenant CROSS-TENANT se garde au niveau le PLUS fort du catalogue réutilisé (`companies.manage`),
+> jamais au niveau de confort du rôle qui l'utilise aujourd'hui. **(2) Piège de test de garde :
+> le binding implicite (`SubstituteBindings`, groupe `api`) s'exécute AVANT les middlewares de
+> route** — dès qu'un paramètre est lié à un modèle (`WebhookEndpoint $webhookEndpoint`), un 403
+> de permission devient 404 sur une ressource absente (c'est ce qui rend
+> `test_webhooks_require_webhooks_manage` rouge seul et vert en suite complète). Tester la garde
+> sur une route SANS binding, ou inspecter la définition (`Route::getRoutes()` →
+> `gatherMiddleware()` contient `platform.permission:<perm>`), comme
+> `PlatformPermissionMatrixDeploymentTest`. **(3) Worktree + `vendor` symlinké** : les tests d'un
+> worktree chargent l'app du dépôt qui porte le `vendor` (`Application::inferBasePath()`) —
+> lancer `APP_BASE_PATH=<worktree>/api php artisan test ...` sinon on teste le code d'un autre
+> checkout.
+
 > Leçon 2026-09-20 (#7995/#7999) : **(1) une politique de validation = un helper unique**
 > — les 3 sites historiques de la norme mots de passe étaient dupliqués textuellement ;
 > les centraliser dans `PasswordPolicy` ET refactoriser les sites existants évite la

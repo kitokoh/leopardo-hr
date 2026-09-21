@@ -2,6 +2,21 @@
 > Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
 > Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
 
+> **MAJ 2026-09-21 — #8020 (suivi #8005/#7973), dernière tranche de la matrice `platform.permission`.**
+> Surface **API** : les 13 routes `/admin` et `/platform` restées sans garde sont armées sans
+> ajouter de permission — `GET /platform/country-defaults` → `companies.view` ;
+> `GET /admin/ai/conversations`, `GET /admin/ai/conversations/{conversation}/messages`,
+> `POST /admin/ai/chat`, `GET /admin/hr-reports`, `GET /admin/fleet/alerts`,
+> `GET /admin/training/{courses,sessions,enrollments}` → `companies.manage` (contenus tenant
+> cross-tenant, admin seul) ; `GET /admin/solutions/survey-stats` → `crm.view` ;
+> `GET /admin/platform/ai/{monitoring,health}` et `POST /admin/payroll/simulate` → `settings.manage`.
+> Scénarios automatisés : `api/tests/Feature/Platform/PlatformPermissionMatrixDeploymentTest.php`
+> étendu (table route → permission vérifiée sur la définition réelle via `gatherMiddleware()`,
+> 403 des rôles délégués, passage des rôles habilités ; sur schéma MVP `CreatesMvpSchema`).
+> Surfaces web admin (les sondes `navigation.js` de `/fleet`, `/training` et
+> `/solutions/survey-stats` restent `permission: null` — alignement à suivre, sans impact
+> sécurité) et mobile : aucune nouvelle.
+
 > **MAJ 2026-09-21 — lot BC-01 PLATFORM #7973/#7974/#7975/#7977/#7978 (PR #8005), critiques
 > d'audit plateforme.** Surface **API** : (1) #7973 — la matrice `platform.permission` (#7553)
 > est déployée sur les blocs qui l'avaient perdue : écriture `/platform/plans` → `plans.manage`
