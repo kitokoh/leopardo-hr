@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Enums\PlatformPermission;
 use App\Core\Tenant\Domain\Enums\PlatformRole;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
+use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -58,7 +59,8 @@ class PlatformTeamController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:150', Rule::unique('super_admins', 'email')],
-            'password' => ['required', 'string', 'min:12'],
+            // #8021 — politique unique #5620 : min 12 + chiffre + blocklist.
+            'password' => PasswordPolicy::required(confirmed: false),
             'platform_role' => ['required', Rule::in(PlatformRole::values())],
         ]);
 

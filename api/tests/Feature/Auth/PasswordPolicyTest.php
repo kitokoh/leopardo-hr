@@ -6,6 +6,8 @@ namespace Tests\Feature\Auth;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\SuperAdmin;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -19,12 +21,22 @@ use Tests\TestCase;
  *
  * Ces tests verrouillent le rejet (422 / erreur de validation) d'un mot de
  * passe faible sur chacune des 4 surfaces corrigées.
+ *
+ * #8021 (suivi #8002) — étend la preuve aux surfaces les plus PRIVILÉGIÉES :
+ * les comptes plateforme (super_admins) ne portaient qu'un `min:12` — un mot
+ * de passe de 12 caractères sans chiffre était accepté à la création alors
+ * qu'il était refusé au changement.
  */
 class PasswordPolicyTest extends TestCase
 {
     use RefreshTenantDatabase;
 
     private const WEAK = 'weakpass'; // 8 caractères, sans chiffre — refusé partout
+
+    /** 12 caractères SANS chiffre : longueur suffisante, robustesse insuffisante. */
+    private const TWELVE_CHARS_WITHOUT_DIGIT = 'nodigitshere';
+
+    private const COMPLIANT = 'Platform-2026-Pass'; // 12+ caractères AVEC chiffre
 
     public function test_employee_create_rejects_weak_password(): void
     {
@@ -85,5 +97,67 @@ class PasswordPolicyTest extends TestCase
 
         $response->assertRedirect('/activate/jeton-bidon');
         $response->assertSessionHasErrors(['password']);
+    }
+
+    public function test_platform_team_creation_rejects_a_long_password_without_digit(): void
+    {
+        // Surface la plus privilégiée du SaaS (super_admins) : la création d'un
+        // collaborateur interne passe par le contrôleur plateforme.
+        $owner = $this->platformAccount('owner.policy@leopardo.test');
+        Sanctum::actingAs($owner, ['*'], 'super_admin_api');
+
+        // Locale verrouillée : on vérifie le message DE LA RÈGLE manquante
+        // (chiffre), pas une traduction locale (le dépôt porte en/fr/ar/tr).
+        app()->setLocale('en');
+
+        $response = $this->postJson('/api/v1/platform/team', [
+            'name' => 'Sans Chiffre',
+            'email' => 'sans.chiffre@leopardo.test',
+            'password' => self::TWELVE_CHARS_WITHOUT_DIGIT,
+            'platform_role' => 'ops',
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors(['password']);
+        // Le message pointe la règle exacte (Password::numbers) et non la seule
+        // longueur : c'est la preuve que le renforcement est bien appliqué.
+        $this->assertStringContainsString(
+            'at least one number',
+            (string) $response->json('errors.password.0'),
+        );
+        $this->assertDatabaseMissing('super_admins', ['email' => 'sans.chiffre@leopardo.test']);
+    }
+
+    public function test_platform_user_update_applies_the_same_policy_and_stays_optional(): void
+    {
+        $owner = $this->platformAccount('owner.users@leopardo.test');
+        $target = $this->platformAccount('target.users@leopardo.test');
+
+        Sanctum::actingAs($owner, ['*'], 'super_admin_api');
+
+        $this->patchJson("/api/v1/platform/users/{$target->id}", [
+            'password' => self::TWELVE_CHARS_WITHOUT_DIGIT,
+        ])->assertStatus(422)->assertJsonValidationErrors(['password']);
+
+        // `sometimes` préservé : sans champ `password`, la mise à jour passe
+        // (le mot de passe existant reste inchangé).
+        $this->patchJson("/api/v1/platform/users/{$target->id}", ['name' => 'Renommé'])
+            ->assertOk()
+            ->assertJsonPath('data.name', 'Renommé');
+    }
+
+    private function platformAccount(string $email): SuperAdmin
+    {
+        /** @var SuperAdmin $account */
+        $account = new SuperAdmin([
+            'name' => 'Platform Owner',
+            'email' => $email,
+        ]);
+        $account->forceFill([
+            'password_hash' => Hash::make(self::COMPLIANT),
+            'status' => 'active',
+            'platform_role' => 'super_admin',
+        ])->save();
+
+        return $account;
     }
 }

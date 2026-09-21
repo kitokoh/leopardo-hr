@@ -25,6 +25,9 @@ final class PlatformTeamApiTest extends TestCase
 {
     use CreatesMvpSchema;
 
+    /** #8021 — politique unique #5620 : 12+ caractères AVEC un chiffre. */
+    private const COMPLIANT_PASSWORD = 'Platform-Ops-2026';
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -76,7 +79,7 @@ final class PlatformTeamApiTest extends TestCase
         $this->postJson('/api/v1/platform/team', [
             'name' => 'New Ops',
             'email' => 'ops@leopardo.test',
-            'password' => 'a-very-long-password',
+            'password' => self::COMPLIANT_PASSWORD,
             'platform_role' => 'ops',
         ])->assertForbidden();
     }
@@ -90,7 +93,7 @@ final class PlatformTeamApiTest extends TestCase
         $response = $this->postJson('/api/v1/platform/team', [
             'name' => 'Amina Support',
             'email' => 'Amina.Support@leopardo.test',
-            'password' => 'a-very-long-password',
+            'password' => self::COMPLIANT_PASSWORD,
             'platform_role' => 'support',
         ]);
 
@@ -116,7 +119,7 @@ final class PlatformTeamApiTest extends TestCase
         $this->postJson('/api/v1/platform/team', [
             'name' => 'Rogue',
             'email' => 'rogue@leopardo.test',
-            'password' => 'a-very-long-password',
+            'password' => self::COMPLIANT_PASSWORD,
             'platform_role' => 'root',
         ])->assertStatus(422)->assertJsonValidationErrors('platform_role');
     }

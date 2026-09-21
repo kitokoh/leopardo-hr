@@ -14,8 +14,8 @@ use Illuminate\Contracts\Validation\ValidationRule;
  * (liste locale, AUCUN appel réseau : pas de dépendance à un service tiers
  * dans le chemin d'inscription) et des motifs trivialement devinables.
  *
- * Usage :
- *   'password' => ['required', 'string', 'confirmed', Password::min(10)->letters()->numbers(), new NotCommonPassword()],
+ * Usage (politique unique #8021 — ne pas dupliquer la règle) :
+ *   'password' => App\Shared\Rules\PasswordPolicy::required(),
  */
 final class NotCommonPassword implements ValidationRule
 {

@@ -7,6 +7,7 @@ namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
+use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -71,7 +72,8 @@ class PlatformUserController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:150', Rule::unique('super_admins', 'email')],
-            'password' => ['required', 'string', 'min:12'],
+            // #8021 — politique unique #5620 : min 12 + chiffre + blocklist.
+            'password' => PasswordPolicy::required(confirmed: false),
         ]);
 
         // #4695 : password_hash hors $fillable ET NOT NULL en base — on ne peut
@@ -102,7 +104,8 @@ class PlatformUserController extends Controller
         $validated = $request->validate([
             'name' => ['sometimes', 'string', 'max:100'],
             'email' => ['sometimes', 'email', 'max:150', Rule::unique('super_admins', 'email')->ignore($user->id)],
-            'password' => ['sometimes', 'string', 'min:12'],
+            // #8021 — `sometimes` conservé (champ absent = inchangé) + politique unique.
+            'password' => array_merge(['sometimes'], PasswordPolicy::optional()),
             'status' => ['sometimes', Rule::in(self::STATUSES)],
         ]);
 
