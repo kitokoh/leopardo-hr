@@ -45,11 +45,18 @@ class TravelExpirePendingBookingsCommand extends Command
         {--sync : exécute l\'expiration EN LIGNE (sans file de queue) — compatibilité #6070}
         {--limit=500 : nombre max de cibles par passe (compagnies en mode global, réservations en mode --company)}';
 
-    protected $description = 'Expire les réservations pending dépassées : annulation + libération des sièges + événement (TRAVEL-418/#6070).';
+    /**
+     * PA2-I18N-007 — même pattern que `TravelExpireAdvertsCommand` : `$description`
+     * est une expression constante, le libellé traduit est donc posé dans le
+     * constructeur (catalogue `travel.console.*`, plus aucun littéral accentué).
+     */
+    protected $description = 'travel.console.expire_pending_description';
 
     public function __construct(private readonly TravelOutboxPublisher $outbox)
     {
         parent::__construct();
+
+        $this->description = __('travel.console.expire_pending_description');
     }
 
     public function handle(TenantManager $tenantManager): int
@@ -64,24 +71,23 @@ class TravelExpirePendingBookingsCommand extends Command
         $companyIds = $this->companiesWithDueBookings();
 
         if ($companyIds === []) {
-            $this->info('Aucune réservation pending expirée.');
+            $this->info(__('travel.console.expire_pending_none'));
 
             return self::SUCCESS;
         }
 
         $targets = array_slice($companyIds, 0, $limit);
 
-        $this->info(sprintf(
-            '%d compagnie(s) concernée(s) (%d traitées, limit=%d).',
-            count($companyIds),
-            count($targets),
-            $limit,
-        ));
+        $this->info(__('travel.console.expire_pending_summary', [
+            'count' => count($companyIds),
+            'processed' => count($targets),
+            'limit' => $limit,
+        ]));
 
         foreach ($targets as $companyId) {
             if ($this->option('sync')) {
                 $this->expireInline($tenantManager, $companyId);
-                $this->line("  [sync] {$companyId} expirée en ligne.");
+                $this->line(__('travel.console.expire_pending_sync', ['company' => $companyId]));
 
                 continue;
             }
@@ -112,10 +118,10 @@ class TravelExpirePendingBookingsCommand extends Command
         );
 
         if ($count > 0) {
-            $this->info("Tenant {$company->id} : {$count} réservation(s) expirée(s).");
+            $this->info(__('travel.console.expire_pending_tenant', ['company' => $company->id, 'count' => $count]));
         }
 
-        $this->info("Total : {$count} réservation(s) expirée(s).");
+        $this->info(__('travel.console.expire_pending_total', ['count' => $count]));
 
         return self::SUCCESS;
     }

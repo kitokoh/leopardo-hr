@@ -164,9 +164,13 @@ class TravelBookingExpirationTest extends TestCase
     {
         $this->tenants->withinTenant($this->company, fn (): TravelBooking => $this->pendingBooking($this->company, now()->subMinutes(5)));
 
+        // #8004 — le message est désormais traduit (catalogue
+        // `travel.console.expire_pending_*`) : on asserte un jeton indépendant
+        // de la locale (l'identifiant du tenant traité) plutôt qu'un littéral
+        // français qui ne vaudrait qu'en locale `fr`.
         $this->artisan('travel:expire-pending-bookings', ['--sync' => true])
             ->assertExitCode(0)
-            ->expectsOutputToContain('compagnie(s) concernée(s)');
+            ->expectsOutputToContain((string) $this->company->id);
 
         $this->tenants->withinTenant($this->company, function (): void {
             $this->assertSame(

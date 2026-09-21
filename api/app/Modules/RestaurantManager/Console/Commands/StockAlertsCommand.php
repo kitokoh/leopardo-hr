@@ -20,7 +20,7 @@ use Illuminate\Support\Str;
  */
 final class StockAlertsCommand extends Command
 {
-    protected $signature = 'leopardo:restaurant:stock-alerts {company? : UUID (ou slug) de la company à scanner (défaut : tous les tenants)}';
+    protected $signature = 'leopardo:restaurant:stock-alerts {company? : UUID or slug of the company to scan (default: all tenants)}';
 
     protected $description = 'Publie les alertes de seuil de stock RestaurantManager (restaurant.stock.alert.v1)';
 
