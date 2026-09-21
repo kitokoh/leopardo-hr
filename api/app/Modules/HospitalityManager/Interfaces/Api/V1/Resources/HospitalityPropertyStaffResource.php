@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\HospitalityManager\Interfaces\Api\V1\Resources;
 
+use App\Modules\HospitalityManager\Domain\Models\HospitalityPropertyStaff;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -11,6 +12,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * Représentation API d'une affectation staff ↔ établissement — HOSP-003
  * (#7945). L'employé est embarqué (id/prénom/nom) quand la relation est
  * chargée.
+ *
+ * @mixin HospitalityPropertyStaff
  */
 class HospitalityPropertyStaffResource extends JsonResource
 {

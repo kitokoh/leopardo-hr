@@ -79,7 +79,10 @@ class HospitalityReferentialTest extends TestCase
         return $employee;
     }
 
-    /** @return array<string, mixed> */
+    /**
+     * @param array<string, mixed> $overrides
+     * @return array<string, mixed>
+     */
     private function propertyPayload(array $overrides = []): array
     {
         return array_merge([
@@ -93,6 +96,7 @@ class HospitalityReferentialTest extends TestCase
         ], $overrides);
     }
 
+    /** @param array<string, mixed> $overrides */
     private function createProperty(Company $company, array $overrides = []): HospitalityProperty
     {
         /** @var HospitalityProperty $property */

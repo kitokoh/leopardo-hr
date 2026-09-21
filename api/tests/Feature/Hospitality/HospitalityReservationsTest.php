@@ -11,6 +11,7 @@ use App\Modules\HospitalityManager\Domain\Models\HospitalityProperty;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityReservation;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityRoomType;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityUnit;
+use Illuminate\Testing\PendingCommand;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -32,8 +33,6 @@ class HospitalityReservationsTest extends TestCase
     private Employee $admin;
 
     private Employee $lambda;
-
-    private Employee $otherAdmin;
 
     private HospitalityProperty $property;
 
@@ -57,7 +56,9 @@ class HospitalityReservationsTest extends TestCase
 
         $this->admin = $this->manager($this->company);
         $this->lambda = $this->employee($this->company);
-        $this->otherAdmin = $this->manager($this->otherCompany);
+        // Manager du tenant adverse créé pour la simple existence du périmètre
+        // cross-tenant (jamais relu — PHPStan level 8 : pas de propriété).
+        $this->manager($this->otherCompany);
 
         $this->property = $this->createProperty($this->company);
         $this->roomType = $this->createRoomType($this->property, 'STD', 'Standard');
@@ -132,7 +133,10 @@ class HospitalityReservationsTest extends TestCase
         return $unit;
     }
 
-    /** @return array<string, mixed> */
+    /**
+     * @param array<string, mixed> $overrides
+     * @return array<string, mixed>
+     */
     private function reservationPayload(array $overrides = []): array
     {
         return array_merge([
@@ -147,6 +151,7 @@ class HospitalityReservationsTest extends TestCase
         ], $overrides);
     }
 
+    /** @param array<string, mixed> $overrides */
     private function makeReservation(array $overrides): HospitalityReservation
     {
         /** @var HospitalityReservation $reservation */
@@ -222,18 +227,18 @@ class HospitalityReservationsTest extends TestCase
         $assignment->save();
 
         Sanctum::actingAs($this->lambda);
-        $ids = collect(
-            $this->getJson('/api/v1/hospitality/reservations')->assertStatus(200)->json('data')
-        )->pluck('id');
+        /** @var array<int, mixed> $data */
+        $data = $this->getJson('/api/v1/hospitality/reservations')->assertStatus(200)->json('data');
+        $ids = collect($data)->pluck('id');
 
         $this->assertContains($resaA, $ids);
         $this->assertNotContains($resaB, $ids);
 
         // Le filtre explicite sur l'établissement B ne doit rien fuiter.
-        $idsB = collect(
-            $this->getJson('/api/v1/hospitality/reservations?property_id='.$propertyB->getKey())
-                ->assertStatus(200)->json('data')
-        )->pluck('id');
+        /** @var array<int, mixed> $dataB */
+        $dataB = $this->getJson('/api/v1/hospitality/reservations?property_id='.$propertyB->getKey())
+            ->assertStatus(200)->json('data');
+        $idsB = collect($dataB)->pluck('id');
         $this->assertNotContains($resaB, $idsB);
     }
 
@@ -321,6 +326,7 @@ class HospitalityReservationsTest extends TestCase
 
         // Une annulation libère la capacité immédiatement : la réservation
         // refusée ci-dessus ne chevauche plus qu'une seule tenante → 201.
+        /** @var HospitalityReservation $first */
         $first = HospitalityReservation::query()->orderBy('id')->first();
         $this->postJson("/api/v1/hospitality/reservations/{$first->getKey()}/cancel")->assertStatus(200);
 
@@ -503,8 +509,9 @@ class HospitalityReservationsTest extends TestCase
         $deskPending = $this->makeReservation(['status' => 'pending']); // sans expiration (guichet)
         $confirmed = $this->makeReservation(['status' => 'confirmed', 'check_in' => '2026-11-01', 'check_out' => '2026-11-02']);
 
-        $this->artisan('hospitality:expire-pending-reservations', ['--company' => $this->company->id])
-            ->assertExitCode(0);
+        $pending = $this->artisan('hospitality:expire-pending-reservations', ['--company' => $this->company->id]);
+        assert($pending instanceof PendingCommand);
+        $pending->assertExitCode(0);
 
         $this->assertSame('cancelled', $expiredOnline->refresh()->status);
         $this->assertSame('pending', $freshOnline->refresh()->status);
@@ -512,8 +519,9 @@ class HospitalityReservationsTest extends TestCase
         $this->assertSame('confirmed', $confirmed->refresh()->status);
 
         // Idempotent : une seconde passe n'expire plus rien.
-        $this->artisan('hospitality:expire-pending-reservations', ['--company' => $this->company->id])
-            ->assertExitCode(0);
+        $pendingReplay = $this->artisan('hospitality:expire-pending-reservations', ['--company' => $this->company->id]);
+        assert($pendingReplay instanceof PendingCommand);
+        $pendingReplay->assertExitCode(0);
         $this->assertSame(1, HospitalityReservation::query()->where('status', 'cancelled')->count());
     }
 

@@ -90,7 +90,7 @@ class HospitalityReservationController extends Controller
         $actor = $request->user();
         $this->authorize('create', [HospitalityReservation::class, (int) $request->input('property_id')]);
 
-        $reservation = $this->reservations->createDeskReservation($actor->company_id, $request->validated());
+        $reservation = $this->reservations->createDeskReservation((string) $actor->company_id, $request->validated());
 
         // Rejeu idempotent (clé déjà connue) → 200 avec l'existant, pas 201.
         $status = $reservation->wasRecentlyCreated ? 201 : 200;
@@ -177,8 +177,8 @@ class HospitalityReservationController extends Controller
             'guest_name' => $reservation->guest_name,
             'contact_email' => $reservation->contact_email,
             'contact_phone' => $reservation->contact_phone,
-            'check_in' => $reservation->check_in?->toDateString(),
-            'check_out' => $reservation->check_out?->toDateString(),
+            'check_in' => $reservation->check_in->toDateString(),
+            'check_out' => $reservation->check_out->toDateString(),
             'adults' => $reservation->adults,
             'children' => $reservation->children,
             'status' => $reservation->status,

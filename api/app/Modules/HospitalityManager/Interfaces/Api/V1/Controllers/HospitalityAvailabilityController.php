@@ -47,7 +47,7 @@ class HospitalityAvailabilityController extends Controller
                 'property_id' => (int) $property->getKey(),
                 'from' => $from->toDateString(),
                 'to' => $to->toDateString(),
-                'room_types' => $this->reservations->availability($actor->company_id, (int) $property->getKey(), $from, $to),
+                'room_types' => $this->reservations->availability((string) $actor->company_id, (int) $property->getKey(), $from, $to),
             ],
         ]);
     }
