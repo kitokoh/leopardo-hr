@@ -165,6 +165,13 @@ return [
         // lecture seule du statut agrégé du run de paie, permission =
         // policy lecture payroll existante (même portée que get_payroll_summary).
         'payroll_current_status' => ['role' => 'manager', 'permissions' => ['payroll.view']],
+        // R3 (#7688) — outil lecture BC-29 COMMUNICATION (contrat A3, #6850) :
+        // classification IA d'un email de sa propre boîte synchronisée —
+        // lecture seule (sortie validée, contenu hostile, budget fail-closed).
+        'email_classify' => ['role' => 'employee', 'permissions' => ['communication.classify']],
+        // R5 (#7690) — brouillon de réponse assistée : le texte généré entre
+        // dans la file Pending (validation humaine) — jamais d'envoi par le tool.
+        'email_reply_draft' => ['role' => 'employee', 'permissions' => ['communication.reply_draft']],
         'create_absence' => ['role' => 'employee', 'permissions' => ['absences.create']],
         'approve_absence' => ['role' => 'manager', 'permissions' => ['absences.approve']],
         // B3a (#6856) — outil écriture BC-06 LEAVE (contrat A3, #6850) :
