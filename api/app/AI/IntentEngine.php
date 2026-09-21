@@ -10,6 +10,11 @@ use App\AI\DTOs\ToolResult;
 use App\AI\Exceptions\ToolPermissionDeniedException;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\Communication\Domain\Models\CommunicationMessage;
+use App\Modules\Communication\Domain\Models\CommunicationPendingReply;
+use App\Modules\Communication\Infrastructure\Jobs\PrepareCommunicationReplyJob;
+use App\Modules\Communication\Infrastructure\Services\CommunicationReplyService;
+use App\Modules\Communication\Infrastructure\Services\EmailClassificationService;
 use App\Modules\HR\Domain\Models\Department;
 use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Payroll\Domain\Models\Payroll;
@@ -63,6 +68,11 @@ class IntentEngine
             'employee_leave_balance',
             // B2 (#6855) — outil lecture BC-07 PAYROLL (contrat A3 #6850).
             'payroll_current_status',
+            // R3/R5 Communication (#7688/#7690, contrat A3 #6850) — outils
+            // lecture BC-29 : classification IA d'un email synchronisé et
+            // brouillon de réponse assistée (file Pending, jamais d'envoi).
+            'email_classify',
+            'email_reply_draft',
         ];
     }
 
@@ -331,6 +341,12 @@ class IntentEngine
             // B2 (#6855) — agrégat du statut de paie via les modèles canoniques
             // Payroll (PayrollRun + PaySlip) — aucun montant exposé.
             'payroll_current_status' => fn (array $arguments): array => $this->getPayrollCurrentStatus($companyId, $userId),
+            // R3/R5 Communication (#7688/#7690) — outils lecture BC-29
+            // COMMUNICATION (contrat A3 #6850) : classification d'un email
+            // synchronisé et brouillon de réponse, via les services canoniques
+            // du module (parité pipeline sync/jobs — jamais d'envoi ici).
+            'email_classify' => fn (array $arguments): array => $this->classifyCommunicationMessage($companyId, $arguments),
+            'email_reply_draft' => fn (array $arguments): array => $this->draftCommunicationReply($companyId, $arguments),
         ];
     }
 
@@ -987,5 +1003,124 @@ class IntentEngine
             'paid_at' => $run->paid_at?->toIso8601String(),
             'updated_at' => $run->updated_at?->toIso8601String(),
         ];
+    }
+
+    /**
+     * R3 Communication (#7688) — handler du read-tool `email_classify` :
+     * classification IA d'un message synchronisé, PARITÉ avec le pipeline
+     * canonique (`ClassifyCommunicationMessageJob`) — service
+     * `EmailClassificationService` (sortie validée contre la taxonomie du
+     * tenant, contenu traité comme donnée hostile, budget fail-closed) puis,
+     * si le message est classé, chaînage idempotent de la préparation de
+     * réponse R5 (le job dédupplique via l'UNIQUE company+message).
+     *
+     * @param  array<string, mixed>  $args
+     * @return array<string, mixed>
+     */
+    private function classifyCommunicationMessage(string $companyId, array $args): array
+    {
+        $message = $this->findCommunicationMessage($companyId, $args['message_id'] ?? null);
+
+        if (! $message instanceof CommunicationMessage) {
+            return ['error' => 'Message not found'];
+        }
+
+        $force = filter_var($args['force'] ?? false, FILTER_VALIDATE_BOOL);
+
+        app(EmailClassificationService::class)->classify($message, $force);
+        $message->refresh();
+
+        // Parité avec le job canonique : une classification réussie alimente
+        // le pipeline des réponses assistées R5 (#7690) — idempotent (UNIQUE
+        // company+message dans la file Pending, aucun doublon au rejeu).
+        if ($message->classification_status === CommunicationMessage::CLASSIFICATION_CLASSIFIED) {
+            PrepareCommunicationReplyJob::dispatch($companyId, (string) $message->id);
+        }
+
+        return [
+            'message_id' => $message->id,
+            'classification_status' => $message->classification_status,
+            'category' => $message->ai_category,
+            'language' => $message->ai_language,
+            'sentiment' => $message->ai_sentiment,
+            'action' => $message->ai_action,
+            'confidence' => $message->ai_confidence,
+            'error' => $message->classification_error,
+        ];
+    }
+
+    /**
+     * R5 Communication (#7690) — handler du read-tool `email_reply_draft` :
+     * brouillon de réponse à un email entrant classé. Chemin canonique
+     * `CommunicationReplyService::prepare()` : la POLITIQUE de la boîte
+     * (off/draft/confirm/auto) décide — le texte généré entre dans la file
+     * Pending (validation humaine en confirm) ou passe les garde-fous R4
+     * (auto opt-in) ; cet outil n'envoie JAMAIS rien et ne contourne jamais
+     * la politique choisie par le propriétaire de la boîte.
+     *
+     * @param  array<string, mixed>  $args
+     * @return array<string, mixed>
+     */
+    private function draftCommunicationReply(string $companyId, array $args): array
+    {
+        $message = $this->findCommunicationMessage($companyId, $args['message_id'] ?? null);
+
+        if (! $message instanceof CommunicationMessage) {
+            return ['error' => 'Message not found'];
+        }
+
+        if ($message->classification_status !== CommunicationMessage::CLASSIFICATION_CLASSIFIED) {
+            return [
+                'error' => 'message_not_classified',
+                'message' => "Classifiez d'abord le message (outil email_classify) avant de demander un brouillon.",
+            ];
+        }
+
+        app(CommunicationReplyService::class)->prepare($message);
+
+        /** @var CommunicationPendingReply|null $reply */
+        $reply = CommunicationPendingReply::query()
+            ->where('company_id', $companyId)
+            ->where('message_id', $message->id)
+            ->first();
+
+        if ($reply === null) {
+            // Politique off (ou message inéligible : sortant, auto-répondeur,
+            // liste) — aucune proposition créée : c'est le comportement voulu.
+            return [
+                'message_id' => $message->id,
+                'status' => 'no_reply_prepared',
+                'message' => "Aucun brouillon préparé : la politique de réponse de la boîte est inactive pour cette catégorie (ou le message n'est pas éligible).",
+            ];
+        }
+
+        return [
+            'message_id' => $message->id,
+            'pending_reply_id' => $reply->id,
+            'status' => $reply->status,
+            'mode' => $reply->mode,
+            'subject' => $reply->subject,
+            'body' => $reply->body,
+            'confidence' => $reply->ai_confidence,
+        ];
+    }
+
+    /**
+     * Message Communication du tenant courant (clé UUID) — défense en
+     * profondeur : filtre `company_id` explicite, le pipeline IA résout le
+     * tenant depuis la session, jamais depuis les arguments du LLM.
+     */
+    private function findCommunicationMessage(string $companyId, mixed $messageId): ?CommunicationMessage
+    {
+        if (! is_string($messageId) || $messageId === '') {
+            return null;
+        }
+
+        /** @var CommunicationMessage|null $message */
+        $message = CommunicationMessage::query()
+            ->where('company_id', $companyId)
+            ->find($messageId);
+
+        return $message;
     }
 }
