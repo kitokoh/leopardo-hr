@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import type { AppLocale } from '@/lib/i18n';
+import { t } from '@/lib/i18n/locale-catalog';
 import type { ComponentType } from 'react';
 
 /**
@@ -128,7 +129,6 @@ const sectors: Sector[] = [
 type Copy = {
   title: string;
   subtitle: string;
-  clarification: string;
   sectorLabels: Record<string, string>;
 };
 
@@ -136,7 +136,6 @@ const copyByLocale: Record<AppLocale, Copy> = {
   fr: {
     title: 'Concu pour vos secteurs',
     subtitle: 'Leopardo RH s\u2019adresse aux entreprises de Turquie, d\u2019Afrique du Nord, d\u2019Europe, d\u2019Afrique et du Monde Arabe qui ont besoin de paie multi-pays et de pointage terrain fiable.',
-    clarification: 'Secteurs adresses par la plateforme — aucune reference client implicite.',
     sectorLabels: {
       industry: 'Industrie',
       energy: 'Energie & BTP',
@@ -151,7 +150,6 @@ const copyByLocale: Record<AppLocale, Copy> = {
   en: {
     title: 'Built for your sector',
     subtitle: 'Leopardo RH serves companies across Turkey, North Africa, Europe, Africa and the Arab World that need multi-country payroll and reliable field attendance.',
-    clarification: 'Sectors the platform addresses — no implied customer reference.',
     sectorLabels: {
       industry: 'Manufacturing',
       energy: 'Energy & Construction',
@@ -166,7 +164,6 @@ const copyByLocale: Record<AppLocale, Copy> = {
   tr: {
     title: 'Sektorunuz icin tasarlandi',
     subtitle: 'Leopardo RH, cok ulkeli bordro ve guvenilir saha devam takibine ihtiyaci olan Turkiye, Kuzey Afrika, Avrupa, Afrika ve Arap Dunyasindaki sirketlere hizmet verir.',
-    clarification: 'Platformun hitap ettigi sektorler — musteri referansi ima edilmez.',
     sectorLabels: {
       industry: 'Uretim',
       energy: 'Enerji & Insaat',
@@ -181,7 +178,6 @@ const copyByLocale: Record<AppLocale, Copy> = {
   ar: {
     title: 'مصمم لقطاعك',
     subtitle: 'يخدم Leopardo RH الشركات في تركيا وشمال أفريقيا وأوروبا وأفريقيا والعالم العربي التي تحتاج إلى رواتب متعددة البلدان وحضور ميداني موثوق.',
-    clarification: 'قطاعات تستهدفها المنصة — دون أي إيحاء بمرجعية عملاء.',
     sectorLabels: {
       industry: 'الصناعة',
       energy: 'الطاقة والبناء',
@@ -238,7 +234,7 @@ export function TrustedBrands({ locale = 'fr' }: TrustedBrandsProps) {
             {copy.subtitle}
           </p>
           <p className="mt-3 text-xs font-medium uppercase tracking-[0.18em] text-slate-500 dark:text-slate-500">
-            {copy.clarification}
+            {t(locale, 'vitrine.trustedBrands.clarification')}
           </p>
         </motion.div>
       </div>

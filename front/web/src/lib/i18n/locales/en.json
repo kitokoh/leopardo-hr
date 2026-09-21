@@ -6329,6 +6329,9 @@
       "faqDesc": "Frequently asked questions",
       "support": "Support",
       "supportDesc": "Contact our team"
+    },
+    "trustedBrands": {
+      "clarification": "Sectors the platform addresses — no implied customer reference."
     }
   },
   "commerce": {
