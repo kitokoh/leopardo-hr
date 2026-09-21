@@ -245,6 +245,18 @@ const structuralAttributes = new Set([
   // types MIME (`accept=".csv,text/csv"`), jamais du texte utilisateur
   // (constat #7776 — import de relevé bancaire de la console admin).
   'accept', ':accept',
+  // Attributs de GÉOMÉTRIE et de PEINTURE SVG : des nombres et des commandes
+  // de tracé, jamais du texte utilisateur. Constat mesuré (2026-09-21, vitrine —
+  // glyphes symboliques du bloc « secteurs ») : `d="M2 12h4l2.5-6 3 12 2.5-6h8"`
+  // était signalé comme « nouvelle chaîne en dur » et poussait à réécrire du SVG
+  // correct — même famille que #7482/#8000, donc même traitement : le motif
+  // devient un cas de test dans check-i18n-diff-test.sh.
+  'd', 'viewBox', 'points', 'transform', 'preserveAspectRatio',
+  'cx', 'cy', 'r', 'rx', 'ry', 'x1', 'y1', 'x2', 'y2',
+  'fill', 'fill-rule', 'fillRule', 'stroke',
+  'stroke-width', 'strokeWidth', 'stroke-linecap', 'strokeLinecap',
+  'stroke-linejoin', 'strokeLinejoin', 'stroke-dasharray', 'strokeDasharray',
+  'stop-color', 'stopColor', 'offset',
 ]);
 
 // Noms d'attribut : `:class`, `@click`, `v-model`, `#default`, `aria-label`…
