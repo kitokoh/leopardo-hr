@@ -344,7 +344,8 @@ class IntentEngine
             // R3/R5 Communication (#7688/#7690) — outils lecture BC-29
             // COMMUNICATION (contrat A3 #6850) : classification d'un email
             // synchronisé et brouillon de réponse, via les services canoniques
-            // du module (parité pipeline sync/jobs — jamais d'envoi ici).
+            // du module (parité pipeline sync/jobs — jamais d'envoi ici :
+            // #8023 le mode `auto` est rétrogradé en `confirm` sur ce chemin).
             'email_classify' => fn (array $arguments): array => $this->classifyCommunicationMessage($companyId, $arguments),
             'email_reply_draft' => fn (array $arguments): array => $this->draftCommunicationReply($companyId, $arguments),
         ];
@@ -1054,9 +1055,20 @@ class IntentEngine
      * brouillon de réponse à un email entrant classé. Chemin canonique
      * `CommunicationReplyService::prepare()` : la POLITIQUE de la boîte
      * (off/draft/confirm/auto) décide — le texte généré entre dans la file
-     * Pending (validation humaine en confirm) ou passe les garde-fous R4
-     * (auto opt-in) ; cet outil n'envoie JAMAIS rien et ne contourne jamais
-     * la politique choisie par le propriétaire de la boîte.
+     * Pending (validation humaine en confirm), et le mode `draft` dépose en
+     * plus un brouillon RÉVERSIBLE dans le Gmail du propriétaire
+     * (`gmail.compose`, jamais d'envoi).
+     *
+     * #8023 — le mode `auto` (envoi direct) est EXCLU de ce chemin read-tool :
+     * `prepare(..., allowAutoSend: false)` rétrograde `auto` en `confirm`. Un
+     * tool call est décidé par le LLM DANS la boucle de l'Orchestrator, sans
+     * validation humaine préalable : il ne doit pas y produire d'ENVOI Gmail
+     * synchrone et irréversible (`CommunicationReplyService::handleAuto()` →
+     * `GoogleGmailReplySender::send()`), contrairement au chemin canonique
+     * (job `PrepareCommunicationReplyJob`) qui conserve le mode `auto` opt-in.
+     * Le brouillon généré est malgré tout renvoyé par l'outil (il alimente la
+     * file Pending) ; l'envoi éventuel reste une décision humaine explicite
+     * (endpoint approve, propriétaire de la boîte).
      *
      * @param  array<string, mixed>  $args
      * @return array<string, mixed>
@@ -1076,7 +1088,9 @@ class IntentEngine
             ];
         }
 
-        app(CommunicationReplyService::class)->prepare($message);
+        // #8023 — `allowAutoSend: false` : le tool force le mode non-envoyant
+        // (auto rétrogradé en confirm) — aucune sortie Gmail synchrone ici.
+        app(CommunicationReplyService::class)->prepare($message, allowAutoSend: false);
 
         /** @var CommunicationPendingReply|null $reply */
         $reply = CommunicationPendingReply::query()

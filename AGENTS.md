@@ -54,6 +54,20 @@ Derniere mise a jour : 2026-09-21 (lots sécurité backend #7995/#7999 + BC-01 P
 > d'image** : ne jamais écrire « à confirmer par la CI (edge-ci) » pour un
 > `docker build` (edge-ci n'en fait aucun) — dire « non vérifié — build
 > manuel ».
+Derniere mise a jour : 2026-09-21 (lots sécurité backend #7995/#7999 + BC-01 PLATFORM #7973..#7978 + session PM #7963/#7966/#7958/#7967 + suivi de revue #8023 — fusion des deux blocs de leçons)
+
+> Leçon 2026-09-21 (#8023) : **(1) un « read-tool » qui délègue à un service canonique hérite de TOUS ses
+> effets** — lire le `match($mode)` jusqu'au bout avant d'écrire « cet outil n'envoie JAMAIS rien » :
+> en politique `auto`, `CommunicationReplyService::prepare()` appelait `GoogleGmailReplySender::send()`,
+> un envoi synchrone et irréversible déclenché par un tool call du LLM SANS validation humaine. Un
+> chemin read-tool s'immunise par un paramètre EXPLICITE au service (`allowAutoSend: false` → mode
+> rétrogradé en `confirm`), pas par un commentaire ; le chemin canonique (job/endpoints) garde son
+> défaut, et un test à spy sur le sender verrouille les deux sens (rouge sans correctif).
+> **(2) tout `down()` de migration de contrainte CHECK doit dire s'il est LOSSY** : ré-imposer une
+> liste antérieure plus étroite fait échouer le rollback en SQLSTATE 23514 dès que des valeurs
+> nouvelles (ici `dispatcher`/`delivery_manager`) ont été écrites entre `up()` et `down()` — et le
+> DROP déjà exécuté laisse la table SANS contrainte. Documenter la remédiation (purge des valeurs
+> avant rollback), et se demander si le rollback a encore un sens (l'union EST le correctif).
 
 > Leçon 2026-09-20 (#7995/#7999) : **(1) une politique de validation = un helper unique**
 > — les 3 sites historiques de la norme mots de passe étaient dupliqués textuellement ;

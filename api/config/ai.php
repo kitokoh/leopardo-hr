@@ -170,7 +170,8 @@ return [
         // lecture seule (sortie validée, contenu hostile, budget fail-closed).
         'email_classify' => ['role' => 'employee', 'permissions' => ['communication.classify']],
         // R5 (#7690) — brouillon de réponse assistée : le texte généré entre
-        // dans la file Pending (validation humaine) — jamais d'envoi par le tool.
+        // dans la file Pending (validation humaine) — jamais d'envoi par le tool
+        // (#8023 : le mode `auto` y est rétrogradé en `confirm`).
         'email_reply_draft' => ['role' => 'employee', 'permissions' => ['communication.reply_draft']],
         'create_absence' => ['role' => 'employee', 'permissions' => ['absences.create']],
         'approve_absence' => ['role' => 'manager', 'permissions' => ['absences.approve']],

@@ -81,6 +81,24 @@ return new class extends Migration
 
         // État antérieur = liste restaurant (#6187), la plus récente avant
         // cette union.
+        //
+        // CAVEAT (perte de données, issue #8023) : ce `down()` RÉ-IMPOSE la
+        // liste restaurant-only, qui REJETTE les valeurs `dispatcher` et
+        // `delivery_manager` (rôles delivery #6285). Toute ligne `employees`
+        // écrite ENTRE `up()` et `down()` avec l'une de ces deux valeurs
+        // viole donc la contrainte au moment du ADD CONSTRAINT : PostgreSQL
+        // lève SQLSTATE 23514 (« check constraint ... is violated by some
+        // row ») et le rollback ÉCHOUE, la contrainte restant absente (le
+        // DROP a déjà eu lieu) — l'état est PIRE qu'avant le rollback.
+        //
+        // Remédiation AVANT tout `migrate:rollback` de cette migration :
+        // `UPDATE employees SET manager_role = NULL WHERE manager_role IN
+        // ('dispatcher', 'delivery_manager')` (ou migration de données vers
+        // le nouveau modèle de rôles), puis vérifier
+        // `SELECT DISTINCT manager_role FROM employees`. Le rollback est
+        // légitime seulement si le module Delivery n'a jamais écrit ces
+        // rôles — sinon, ne pas revenir en arrière : cette union est
+        // précisément le correctif du CHECK écrasé (#8004).
         DB::statement("ALTER TABLE \"{$schema}\".\"employees\" DROP CONSTRAINT IF EXISTS employees_manager_role_check");
         DB::statement(
             "ALTER TABLE \"{$schema}\".\"employees\" ADD CONSTRAINT employees_manager_role_check ".

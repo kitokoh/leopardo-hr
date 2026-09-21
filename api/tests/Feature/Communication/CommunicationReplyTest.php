@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Tests\Feature\Communication;
 
 use App\AI\DTOs\AIResponse;
+use App\AI\DTOs\ToolCall;
+use App\AI\IntentEngine;
 use App\AI\LLMClient;
+use App\AI\ToolRegistry;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Communication\Domain\Models\CommunicationFollowUpOptOut;
@@ -22,11 +25,13 @@ use App\Modules\Communication\Infrastructure\Services\CommunicationReplyService;
 use App\Modules\Communication\Infrastructure\Services\EmailClassificationService;
 use App\Modules\Communication\Infrastructure\Services\GoogleGmailOAuthService;
 use App\Modules\Communication\Infrastructure\Services\GoogleGmailReplySender;
+use Database\Seeders\AIToolRegistrySeeder;
 use Illuminate\Http\Client\Request as ClientRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
+use Mockery;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -640,6 +645,107 @@ class CommunicationReplyTest extends TestCase
             PrepareCommunicationReplyJob::class,
             fn (PrepareCommunicationReplyJob $pushed): bool => $pushed->tenantCompanyId() === (string) $this->company->id
         );
+    }
+
+    // ── Read-tool `email_reply_draft` : aucun envoi synchrone (#8023) ────
+
+    /**
+     * #8023 — un tool call est decide par le LLM DANS la boucle de
+     * l'Orchestrator, sans validation humaine : meme avec la politique `auto`
+     * opt-in, le read-tool `email_reply_draft` ne doit PAS produire l'envoi
+     * Gmail SYNCHRONE et irreversible du pipeline canonique. Le mode est
+     * retrograde en `confirm` (comme une categorie bloquee) : la proposition
+     * generee reste en file Pending, le brouillon est renvoye a l'agent.
+     */
+    public function test_email_reply_draft_tool_never_sends_even_with_auto_policy(): void
+    {
+        $integration = $this->makeIntegration($this->employee);
+        $this->makePolicy($integration, 'prospect', CommunicationReplyPolicy::POLICY_AUTO);
+        $message = $this->makeClassifiedInbound($integration);
+
+        // Sortie LLM scriptee (abstraction `LLMClient`, aucun appel reseau).
+        $this->app->instance(LLMClient::class, new ScriptedReplyLlm([self::DRAFT_JSON]));
+
+        // Spy sur le sender : `send()` ne doit JAMAIS etre appele ici.
+        $sender = Mockery::spy(GoogleGmailReplySender::class);
+        $this->app->instance(GoogleGmailReplySender::class, $sender);
+
+        // Si un envoi partait, il serait enregistre par ce fake (et le test
+        // echouerait sur assertNothingSent) : filet independant du spy.
+        Http::fake([self::SEND => Http::response(['id' => 'sent-should-not-happen'], 200)]);
+
+        $payload = $this->executeReplyDraftTool($message);
+
+        $sender->shouldNotHaveReceived('send');
+        Http::assertNothingSent();
+
+        $reply = $this->soleReply();
+        $this->assertSame(CommunicationPendingReply::MODE_CONFIRM, $reply->mode);
+        $this->assertSame(CommunicationPendingReply::STATUS_PENDING, $reply->status);
+        $this->assertNull($reply->sent_at);
+        $this->assertNull($reply->sent_gmail_message_id);
+        $this->assertDatabaseMissing('communication_reply_logs', [
+            'pending_reply_id' => $reply->id,
+            'action' => CommunicationReplyLog::ACTION_AUTO_SENT,
+        ]);
+
+        // Le brouillon genere est bien RENDU a l'agent (valeur de l'outil).
+        $this->assertSame('pending', $payload['status'] ?? null);
+        $this->assertSame('confirm', $payload['mode'] ?? null);
+        $this->assertSame('Re: Demande de devis', $payload['subject'] ?? null);
+        $this->assertNotEmpty($payload['body'] ?? null);
+    }
+
+    /**
+     * Contre-epreuve du correctif #8023 : le chemin CANONIQUE (job
+     * `PrepareCommunicationReplyJob` / endpoints) garde le mode `auto`
+     * opt-in — c'est bien l'appel du READ-TOOL qui est protege, pas la
+     * politique `auto` du proprietaire de la boite.
+     */
+    public function test_canonical_auto_policy_still_sends_outside_the_tool_path(): void
+    {
+        $integration = $this->makeIntegration($this->employee);
+        $this->makePolicy($integration, 'prospect', CommunicationReplyPolicy::POLICY_AUTO);
+        $message = $this->makeClassifiedInbound($integration);
+
+        Http::fake([self::SEND => Http::response(['id' => 'sent-canonical'], 200)]);
+
+        // `prepare()` sans argument = defaut `allowAutoSend: true`.
+        $this->prepare($message);
+
+        $reply = $this->soleReply();
+        $this->assertSame(CommunicationPendingReply::MODE_AUTO, $reply->mode);
+        $this->assertSame(CommunicationPendingReply::STATUS_SENT, $reply->status);
+        $this->assertSame('sent-canonical', $reply->sent_gmail_message_id);
+    }
+
+    /**
+     * Invoque le read-tool `email_reply_draft` par le chemin REEL de
+     * l'Orchestrator (`IntentEngine::executeToolCalls` : registre + matrice
+     * de permissions + handler) et retourne le payload JSON du ToolResult.
+     *
+     * @return array<string, mixed>
+     */
+    private function executeReplyDraftTool(CommunicationMessage $message): array
+    {
+        config(['ai.enabled' => true]);
+        $this->seed(AIToolRegistrySeeder::class);
+        $this->app->forgetInstance(ToolRegistry::class);
+
+        $results = app(IntentEngine::class)->executeToolCalls(
+            new AIResponse(content: '', toolCalls: [
+                new ToolCall('call_1', 'email_reply_draft', ['message_id' => (string) $message->id]),
+            ]),
+            (string) $this->company->id,
+            (int) $this->employee->id,
+        );
+
+        $this->assertNotEmpty($results);
+        $this->assertTrue($results[0]->success, $results[0]->content);
+
+        $decoded = json_decode($results[0]->content, true);
+
+        return is_array($decoded) ? $decoded : [];
     }
 
     // ── File Pending : endpoints approve / reject / edit ─────────────────
