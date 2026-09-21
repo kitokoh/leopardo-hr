@@ -326,4 +326,7 @@ return [
     'RESOURCE_NOT_FOUND' => 'المورد غير موجود في هذه الشركة.',
     'RESOURCE_ASSIGNMENTS_REQUIRED' => 'قائمة الصلاحيات مطلوبة (يمكن أن تكون فارغة لإلغاء الكل).',
     'RESOURCE_ACCESS_LEVEL_INVALID' => 'مستوى الوصول غير صالح (view أو operate أو manage).',
+
+    // #8019 — HospitalityManager.
+    'CHECKOUT_BEFORE_CHECKIN' => 'يجب أن يكون تاريخ المغادرة بعد تاريخ الوصول.',
 ];

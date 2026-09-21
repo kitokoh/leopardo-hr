@@ -326,4 +326,7 @@ return [
     'RESOURCE_NOT_FOUND' => 'Kaynak bu şirkette bulunamadı.',
     'RESOURCE_ASSIGNMENTS_REQUIRED' => 'Yetki listesi gereklidir (hepsini kaldırmak için boş olabilir).',
     'RESOURCE_ACCESS_LEVEL_INVALID' => 'Geçersiz erişim düzeyi (view, operate veya manage).',
+
+    // #8019 — HospitalityManager.
+    'CHECKOUT_BEFORE_CHECKIN' => 'Çıkış tarihi giriş tarihinden sonra olmalıdır.',
 ];

@@ -10,6 +10,7 @@ use App\Modules\HospitalityManager\Domain\Models\HospitalityReservation;
 use App\Modules\HospitalityManager\Infrastructure\Services\HospitalityReservationService;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Requests\StoreHospitalityReservationRequest;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Requests\UpdateHospitalityReservationRequest;
+use App\Modules\HospitalityManager\Interfaces\Api\V1\Traits\BoundsPagination;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Traits\ChecksHospitalitySolution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,12 +24,12 @@ use Illuminate\Http\Request;
  */
 class HospitalityReservationController extends Controller
 {
+    use BoundsPagination;
     use ChecksHospitalitySolution;
 
     public function __construct(
         private readonly HospitalityReservationService $reservations
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -70,7 +71,7 @@ class HospitalityReservationController extends Controller
         }
 
         $reservations = $query->orderByDesc('check_in')->orderByDesc('id')
-            ->paginate((int) ($request->input('per_page') ?? 15));
+            ->paginate($this->boundedPerPage($request, 15));
 
         return response()->json([
             'data' => collect($reservations->items())->map(fn (HospitalityReservation $reservation): array => $this->payload($reservation)),

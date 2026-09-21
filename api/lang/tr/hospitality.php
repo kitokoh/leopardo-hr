@@ -8,6 +8,8 @@ return [
     'solution_inactive' => 'HospitalityManager çözümü bu kiracı için aktif değil.',
     'no_availability' => 'Bu oda tipi için bu aralıkta müsaitlik yok.',
     'invalid_transition' => 'Geçersiz rezervasyon geçişi (:from → :target).',
+    'checkout_before_checkin' => 'Çıkış tarihi giriş tarihinden sonra olmalıdır.',
+    'unit_room_type_mismatch' => 'Atanan birim, rezervasyonun oda tipiyle aynı olmalıdır.',
     'console' => [
         'expire_pending_description' => 'Süresi geçen bekleyen hospitality rezervasyonlarını düşürür: iptal + envanter iadesi (HOSP-004/#7946).',
         'expire_pending_no_tenant' => 'Aktif kiracı yok — düşürülecek bir şey yok.',

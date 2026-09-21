@@ -10,6 +10,7 @@ use App\Modules\HospitalityManager\Domain\Models\HospitalityProperty;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityRoomType;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Requests\StoreHospitalityRoomTypeRequest;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Requests\UpdateHospitalityRoomTypeRequest;
+use App\Modules\HospitalityManager\Interfaces\Api\V1\Traits\BoundsPagination;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Traits\ChecksHospitalitySolution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,6 +24,7 @@ use Illuminate\Http\Request;
  */
 class HospitalityRoomTypeController extends Controller
 {
+    use BoundsPagination;
     use ChecksHospitalitySolution;
 
     public function index(Request $request, HospitalityProperty $property): JsonResponse
@@ -44,7 +46,7 @@ class HospitalityRoomTypeController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        $roomTypes = $query->orderBy('name')->paginate((int) ($request->input('per_page') ?? 15));
+        $roomTypes = $query->orderBy('name')->paginate($this->boundedPerPage($request, 15));
 
         return response()->json([
             'data' => collect($roomTypes->items())->map(fn (HospitalityRoomType $roomType): array => $this->payload($roomType)),

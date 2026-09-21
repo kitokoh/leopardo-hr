@@ -7,10 +7,12 @@ namespace Tests\Feature\Hospitality;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\EmployeeResourceAssignment;
+use App\Modules\HospitalityManager\Domain\Exceptions\HospitalityInvalidTransitionException;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityProperty;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityReservation;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityRoomType;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityUnit;
+use App\Modules\HospitalityManager\Infrastructure\Services\HospitalityReservationService;
 use Illuminate\Testing\PendingCommand;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -134,7 +136,7 @@ class HospitalityReservationsTest extends TestCase
     }
 
     /**
-     * @param array<string, mixed> $overrides
+     * @param  array<string, mixed>  $overrides
      * @return array<string, mixed>
      */
     private function reservationPayload(array $overrides = []): array
@@ -511,7 +513,10 @@ class HospitalityReservationsTest extends TestCase
 
         $pending = $this->artisan('hospitality:expire-pending-reservations', ['--company' => $this->company->id]);
         assert($pending instanceof PendingCommand);
-        $pending->assertExitCode(0);
+        // `assertExitCode()` est PARESSEUX : sans `run()` la commande n'est
+        // exécutée qu'au __destruct, donc les assertions suivantes observent
+        // l'état d'AVANT l'exécution (#8004).
+        $pending->assertExitCode(0)->run();
 
         $this->assertSame('cancelled', $expiredOnline->refresh()->status);
         $this->assertSame('pending', $freshOnline->refresh()->status);
@@ -521,7 +526,7 @@ class HospitalityReservationsTest extends TestCase
         // Idempotent : une seconde passe n'expire plus rien.
         $pendingReplay = $this->artisan('hospitality:expire-pending-reservations', ['--company' => $this->company->id]);
         assert($pendingReplay instanceof PendingCommand);
-        $pendingReplay->assertExitCode(0);
+        $pendingReplay->assertExitCode(0)->run();
         $this->assertSame(1, HospitalityReservation::query()->where('status', 'cancelled')->count());
     }
 
@@ -574,5 +579,185 @@ class HospitalityReservationsTest extends TestCase
         $this->assertSame(1, $data['arrivals_today']);
         $this->assertSame(1, $data['departures_today']);
         $this->assertSame(1, $data['pending_online']);
+    }
+
+    // ── Durcissements #8019 ───────────────────────────────────────────
+
+    /**
+     * #8019 (1) : CHOIX = les agrégats du dashboard sont BORNÉS aux
+     * établissements lisibles par l'acteur (RBAC ressource-scopé `view`,
+     * même bornage que la liste des réservations) — pas d'agrégat
+     * tenant-wide pour un réceptionniste scopé à un seul site.
+     */
+    public function test_dashboard_kpis_are_bounded_to_accessible_properties(): void
+    {
+        $propertyB = $this->createProperty($this->company);
+        $roomTypeB = $this->createRoomType($propertyB, 'STDB', 'Standard B');
+
+        // Site A : 2 unités dont 1 occupée ; Site B : 3 unités dont 3 occupées.
+        $this->createUnit($this->property, $this->roomType, 'CH-A1', 'occupied');
+        $this->createUnit($this->property, $this->roomType, 'CH-A2', 'available');
+        $this->createUnit($propertyB, $roomTypeB, 'CH-B1', 'occupied');
+        $this->createUnit($propertyB, $roomTypeB, 'CH-B2', 'occupied');
+        $this->createUnit($propertyB, $roomTypeB, 'CH-B3', 'occupied');
+
+        $today = now()->toDateString();
+        // Arrivées du jour : 1 au site A, 2 au site B.
+        $this->makeReservation(['status' => 'confirmed', 'check_in' => $today, 'check_out' => now()->addDays(3)->toDateString()]);
+        $this->makeReservation([
+            'property_id' => $propertyB->getKey(),
+            'room_type_id' => $roomTypeB->getKey(),
+            'status' => 'confirmed',
+            'check_in' => $today,
+            'check_out' => now()->addDays(3)->toDateString(),
+        ]);
+        $this->makeReservation([
+            'property_id' => $propertyB->getKey(),
+            'room_type_id' => $roomTypeB->getKey(),
+            'status' => 'confirmed',
+            'check_in' => $today,
+            'check_out' => now()->addDays(3)->toDateString(),
+        ]);
+
+        // Direction (aucune restriction) → agrégat tenant-wide historique.
+        Sanctum::actingAs($this->admin);
+        $tenantWide = $this->getJson('/api/v1/hospitality/dashboard/kpis')->assertStatus(200)->json('data');
+        $this->assertSame(5, $tenantWide['occupancy']['operational_units']);
+        $this->assertSame(4, $tenantWide['occupancy']['occupied_units']);
+        $this->assertSame(3, $tenantWide['arrivals_today']);
+
+        // Réceptionniste scopé au site A : seuls les agrégats de A.
+        $assignment = new EmployeeResourceAssignment([
+            'employee_id' => $this->lambda->id,
+            'resource_type' => 'hospitality_property',
+            'resource_id' => $this->property->getKey(),
+            'access_level' => EmployeeResourceAssignment::LEVEL_VIEW,
+        ]);
+        $assignment->company_id = $this->company->id;
+        $assignment->save();
+
+        Sanctum::actingAs($this->lambda);
+        $scoped = $this->getJson('/api/v1/hospitality/dashboard/kpis')->assertStatus(200)->json('data');
+
+        $this->assertSame(2, $scoped['occupancy']['operational_units']);
+        $this->assertSame(1, $scoped['occupancy']['occupied_units']);
+        $this->assertSame(1, $scoped['arrivals_today']);
+    }
+
+    /**
+     * #8019 (2) : la garde d'état terminal de `updateReservation` est
+     * re-vérifiée DANS la transaction, sur la ligne verrouillée — une
+     * annulation concurrente entre la lecture du contrôleur et l'écriture
+     * ne peut plus être contournée (avant : édition acceptée à tort).
+     */
+    public function test_update_refuses_a_reservation_cancelled_after_the_controller_read(): void
+    {
+        $this->createUnit($this->property, $this->roomType, 'CH-1');
+
+        /** @var HospitalityReservation $stale */
+        $stale = $this->makeReservation(['status' => 'confirmed']);
+
+        // Un autre guichet annule la réservation (autre requête, autre
+        // instance) : l'instance liée par le contrôleur est désormais périmée.
+        HospitalityReservation::query()->withoutGlobalScopes()
+            ->whereKey($stale->getKey())
+            ->update(['status' => 'cancelled']);
+
+        $refused = false;
+
+        try {
+            app(HospitalityReservationService::class)->updateReservation($stale, ['guest_name' => 'Trop tard']);
+        } catch (HospitalityInvalidTransitionException) {
+            $refused = true;
+        }
+
+        $this->assertTrue($refused, 'la garde terminale doit relire la ligne FRAÎCHE sous verrou');
+        $this->assertSame('Client Test', $stale->refresh()->guest_name);
+    }
+
+    /**
+     * #8019 (6) : `check_out <= check_in` à l'édition est une exception de
+     * DOMAINE — le contrat HTTP reste 422 + `CHECKOUT_BEFORE_CHECKIN`.
+     */
+    public function test_update_with_checkout_before_checkin_is_a_422_domain_error(): void
+    {
+        $this->createUnit($this->property, $this->roomType, 'CH-1');
+        $reservation = $this->makeReservation(['status' => 'confirmed']);
+
+        Sanctum::actingAs($this->admin);
+
+        $this->patchJson("/api/v1/hospitality/reservations/{$reservation->getKey()}", [
+            'check_in' => '2026-10-05',
+            'check_out' => '2026-10-04',
+        ])
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'CHECKOUT_BEFORE_CHECKIN')
+            ->assertJsonPath('message', 'CHECKOUT_BEFORE_CHECKIN');
+
+        // La réservation n'a pas bougé.
+        $this->assertSame('2026-10-04', $reservation->refresh()->check_out->toDateString());
+    }
+
+    /**
+     * #8019 (8) : l'unité affectée doit appartenir au MÊME type de chambre
+     * que la réservation — y compris quand SEUL le type change.
+     */
+    public function test_update_constrains_unit_to_the_same_room_type(): void
+    {
+        $deluxe = $this->createRoomType($this->property, 'DLX', 'Deluxe');
+        $stdUnit = $this->createUnit($this->property, $this->roomType, 'CH-STD-1');
+        $dlxUnit = $this->createUnit($this->property, $deluxe, 'CH-DLX-1');
+        $reservation = $this->makeReservation(['status' => 'confirmed']); // type STD
+
+        Sanctum::actingAs($this->admin);
+        $url = "/api/v1/hospitality/reservations/{$reservation->getKey()}";
+
+        // Unité d'un AUTRE type → 422 (erreur sur `unit_id`).
+        $this->patchJson($url, ['unit_id' => $dlxUnit->getKey()])
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'VALIDATION_ERROR')
+            ->assertJsonStructure(['errors' => ['unit_id']]);
+
+        // Unité du MÊME type → 200.
+        $this->patchJson($url, ['unit_id' => $stdUnit->getKey()])
+            ->assertStatus(200)
+            ->assertJsonPath('data.unit_id', $stdUnit->getKey());
+
+        // Changement de type SANS unité cohérente → 422 (l'unité STD reste).
+        $this->patchJson($url, ['room_type_id' => $deluxe->getKey()])
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'VALIDATION_ERROR');
+
+        // Type + unité changés ENSEMBLE et cohérents → 200.
+        $this->patchJson($url, [
+            'room_type_id' => $deluxe->getKey(),
+            'unit_id' => $dlxUnit->getKey(),
+        ])
+            ->assertStatus(200)
+            ->assertJsonPath('data.room_type_id', $deluxe->getKey())
+            ->assertJsonPath('data.unit_id', $dlxUnit->getKey());
+
+        // Retrait explicite de l'unité → 200 (plus de contrainte).
+        $this->patchJson($url, ['unit_id' => null])
+            ->assertStatus(200)
+            ->assertJsonPath('data.unit_id', null);
+    }
+
+    /**
+     * #8019 (4) : `per_page` borné sur la liste des réservations.
+     */
+    public function test_reservations_index_clamps_per_page(): void
+    {
+        Sanctum::actingAs($this->admin);
+
+        $this->getJson('/api/v1/hospitality/reservations?per_page=1000000')
+            ->assertStatus(200)
+            ->assertJsonPath('meta.per_page', 1000);
+        $this->getJson('/api/v1/hospitality/reservations?per_page=-1')
+            ->assertStatus(200)
+            ->assertJsonPath('meta.per_page', 1);
+        $this->getJson('/api/v1/hospitality/reservations')
+            ->assertStatus(200)
+            ->assertJsonPath('meta.per_page', 15);
     }
 }

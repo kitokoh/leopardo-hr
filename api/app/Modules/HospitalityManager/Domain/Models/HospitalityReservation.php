@@ -97,11 +97,17 @@ class HospitalityReservation extends Model
         self::STATUS_NO_SHOW => [],
     ];
 
-    /** Statuts qui immobilisent l'inventaire (comptage anti-overbooking). */
-    public const INVENTORY_HOLDING_STATUSES = [
-        self::STATUS_PENDING,
-        self::STATUS_CONFIRMED,
-        self::STATUS_CHECKED_IN,
+    /**
+     * Statuts TERMINAUX : plus aucune transition, plus aucun effet inventaire.
+     * Une réservation hors de ces statuts est « active » — elle référence
+     * encore son unité (garde de suppression `HOSPITALITY_UNIT_IN_USE`, #8019).
+     *
+     * @var list<string>
+     */
+    public const TERMINAL_STATUSES = [
+        self::STATUS_CHECKED_OUT,
+        self::STATUS_CANCELLED,
+        self::STATUS_NO_SHOW,
     ];
 
     protected $table = 'hospitality_reservations';
@@ -173,21 +179,10 @@ class HospitalityReservation extends Model
     }
 
     /**
-     * Une réservation online pending dont expires_at est dépassé n'immobilise
-     * plus l'inventaire (elle sera annulée par la commande d'expiration).
+     * La réservation est-elle dans un état terminal (figée) ?
      */
-    public function holdsInventory(): bool
+    public function isTerminal(): bool
     {
-        if (! in_array($this->status, self::INVENTORY_HOLDING_STATUSES, true)) {
-            return false;
-        }
-
-        if ($this->status === self::STATUS_PENDING
-            && $this->expires_at !== null
-            && $this->expires_at->isPast()) {
-            return false;
-        }
-
-        return true;
+        return in_array($this->status, self::TERMINAL_STATUSES, true);
     }
 }

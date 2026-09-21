@@ -333,4 +333,8 @@ return [
     'RESOURCE_NOT_FOUND' => 'Resource not found in this company.',
     'RESOURCE_ASSIGNMENTS_REQUIRED' => 'The assignments list is required (it may be empty to revoke everything).',
     'RESOURCE_ACCESS_LEVEL_INVALID' => 'Invalid access level (view, operate or manage).',
+
+    // #8019 — HospitalityManager: business rule surfaced by a DomainException
+    // (the localized message comes from the errors.* catalogue).
+    'CHECKOUT_BEFORE_CHECKIN' => 'Check-out date must be after the check-in date.',
 ];

@@ -17,8 +17,9 @@ use App\Core\Tenant\Domain\Models\EmployeeResourceAssignment;
  *
  * Règle de progressivité (spec §4) : tant qu'AUCUNE assignation
  * `hospitality_property` n'existe dans l'entreprise, le comportement
- * historique est conservé (fallback `hasManagerRole('principal','rh')` =
- * `HospitalityAccess::isAdmin`). Dès la première assignation, le scoping est
+ * historique est conservé (fallback `hasManagerRole('principal','rh')`) :
+ * la classe `HospitalityAccess` (HOSP-002) qui portait ce test était morte
+ * — supprimée au durcissement #8019. Dès la première assignation, le scoping est
  * actif et fail-closed via `Employee::hasResourceAccess()` : un non-assigné
  * ne lit plus et n'écrit plus (principal passe toujours, rh retombe à la
  * lecture seule — conception restaurant §3.3).
