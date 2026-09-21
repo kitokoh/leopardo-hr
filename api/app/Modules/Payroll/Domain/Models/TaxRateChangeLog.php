@@ -28,12 +28,11 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  *
  * @mixin Builder<static>
-  * EXCEPTION TENANT-SCOPE canonique (#7999) : `company_id` NULLABLE — les
+ * EXCEPTION TENANT-SCOPE canonique (#7999) : `company_id` NULLABLE — les
  * lignes NULL tracent les mutations du référentiel LÉGAL national
  * (platform_admin, #1923) et doivent rester visibles de tous les tenants.
  * Un global scope `company_id = ?` les masquerait silencieusement.
- *
-*/
+ */
 class TaxRateChangeLog extends Model
 {
     public const TABLE_TAX_SLABS = 'tax_slabs';

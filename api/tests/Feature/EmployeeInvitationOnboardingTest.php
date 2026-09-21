@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Mail\UserInvitationMail;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Mail\UserInvitationMail;
 use App\Modules\HR\Domain\Models\UserInvitation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -432,4 +432,3 @@ class EmployeeInvitationOnboardingTest extends TestCase
         $this->assertFalse(Hash::check('password456', $employee->password_hash ?? ''));
     }
 }
-

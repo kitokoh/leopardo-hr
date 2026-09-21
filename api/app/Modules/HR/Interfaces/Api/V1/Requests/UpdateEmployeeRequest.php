@@ -6,8 +6,8 @@ namespace App\Modules\HR\Interfaces\Api\V1\Requests;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Rules\GlobalEmailUnique;
-use App\Shared\Rules\PasswordPolicy;
 use App\Rules\ValidIban;
+use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;

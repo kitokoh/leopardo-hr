@@ -2263,3 +2263,16 @@ Huit nouvelles opérations (module RestaurantManager), contrat OpenAPI +8 paths 
 Modération tenant : `GET /api/v1/restaurant/reviews?status=`, `POST /api/v1/restaurant/reviews/{review}/publish|reject` — `RestaurantReviewPolicy::moderate` (pattern gérant `canManageBranchResource` #7599), listing scopé par succursales accessibles, cross-tenant → 404, non-gérant → 403.
 
 Couverture : `api/tests/Feature/Restaurant/RestaurantPublicSlugOrderTest.php` (8 cas : prix serveur, produit non publié, produit d'une autre branche, 404 branche non publique, idempotence, suivi sans PII, suivi scopé au slug, paiement cash/carte refusée) et `api/tests/Feature/Restaurant/RestaurantReviewTest.php` (8 cas : pending sur commande servie, non-terminale refusée, référence étrangère refusée, doublon 409, listing public DTO strict, publish/reject gérant, RBAC + isolation tenant, moyenne publique).
+
+## Addendum 2026-09-21 — Politique mots de passe unique (#7995) + défense en profondeur tenant Marketplace (#7999)
+
+`App\Shared\Rules\PasswordPolicy` (norme #5620 : `Password::min(12)->numbers()` + `NotCommonPassword`) appliquée aux 4 surfaces qui acceptaient encore `min:8` : création/modification d'employé (`StoreEmployeeRequest`/`UpdateEmployeeRequest`), inscription acheteur marketplace (`RegisterMarketBuyerRequest`, surface publique), acceptation d'invitation web (`InvitationController`). Les surfaces déjà conformes (#5620) passent par le même helper — une seule source de vérité, gardée par `dev-hub/tools/check-password-policy.sh` (tout `min:8` sur un champ password dans `api/app` = échec).
+
+| Cas | Attendu |
+|---|---|
+| mot de passe de 8 caractères ou figurant dans la blocklist (ex. `password123`) sur chacune des 4 surfaces | 422, erreur de validation `password` |
+| mot de passe conforme (≥ 12, chiffres, non listé) | comportement inchangé |
+
+Côté tenant (#7999, reliquat #7730) : `BelongsToCompany` ajouté à `MarketplaceReview` et `MarketplaceFavorite` (scope fail-closed #3727 sur surface tenant, no-op sur les routes publiques `/market/*`) ; `company_id` retiré des `$fillable` de `MarketplaceReview` (leçon #7646 — posé en affectation directe par `RetailBuyerReviewService`). Exceptions canoniques justifiées dans `dev-hub/governance/tenant-scope-exceptions.json` (`MarketplaceBuyer` sans colonne, `MarketingLead`/`converted_company_id` pointeur de conversion, `TaxRateChangeLog` company_id nullable légal national, `UserEmployeeLink` résolu au login) — garde `check-tenant-scope-models.sh` : tout NOUVEAU modèle à `company_id` hors trait et hors liste = échec.
+
+Couverture : `api/tests/Feature/Auth/PasswordPolicyTest.php` (4 cas : rejet 422 d'un mot de passe faible sur chacune des 4 surfaces).

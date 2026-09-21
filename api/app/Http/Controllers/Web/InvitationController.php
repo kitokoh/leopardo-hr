@@ -7,9 +7,9 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Modules\HR\Domain\Models\UserInvitation;
 use App\Modules\HR\Infrastructure\Services\UserInvitationService;
+use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Http\Request;
 
 class InvitationController extends Controller
@@ -41,4 +41,3 @@ class InvitationController extends Controller
         return redirect()->route('login')->with('status', 'Compte active. Vous pouvez maintenant vous connecter.');
     }
 }
-
