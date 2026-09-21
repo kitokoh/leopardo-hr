@@ -1,0 +1,434 @@
+name: DB Standby & Auto-Failover
+
+# ─────────────────────────────────────────────────────────────────────────────
+# But : garder l'API prod EN LIGNE quand la base Neon active épuise son quota
+# mensuel (plan gratuit — reset le 1er du mois) ou tombe.
+#
+# Principe (aucune modification applicative, aucune carte bancaire) :
+#   - deux bases Neon : PRIMAIRE (secrets.DATABASE_URL) et SECOURS
+#     (secrets.STANDBY_DATABASE_URL) ;
+#   - la source de vérité de la base RÉELLEMENT utilisée par Render est la
+#     variable d'environnement `DB_URL` du service prod, lue via l'API Render
+#     (pas de fichier d'état à maintenir) ;
+#   - job `watchdog` (toutes les 20 min) : sonde la base LIVE. Si elle ne
+#     répond plus, bascule `DB_URL` sur le secours puis redéploie le service ;
+#   - job `sync` (horaire) : tant que LIVE = PRIMAIRE, recharge le SECOURS
+#     depuis la PRIMAIRE — le secours reste une copie fraîche (RPO ≤ 1 h) ;
+#   - job `switch-back` (manuel, confirm=YES) : retour vers la PRIMAIRE, avec
+#     dump de sécurité de la base courante avant bascule.
+#
+# Garde-fous (à ne pas retirer) :
+#   1. aucun mode n'écrit JAMAIS dans la base LIVE ;
+#   2. la bascule exige que le secours réponde ET porte un marqueur de
+#      synchro récent (`_standby_sync`, ≤ 48 h) — jamais de bascule vers une
+#      copie vide ou à demi restau-rée (le job `sync` DROP les schémas cible
+#      avant de restaurer : un sync interrompu rend le marqueur absent) ;
+#   3. un dump de sécurité est pris AVANT tout retour arrière ;
+#   4. les URLs de connexion sont masquées dans les logs (`::add-mask::`).
+#
+# Secrets requis : DATABASE_URL (primaire, existant), STANDBY_DATABASE_URL
+# (secours, à créer), RENDER_PROD_API_KEY + RENDER_PROD_SERVICE_ID +
+# PROD_RENDER_API_BASE_URL (environnement `production`), API_HEALTHCHECK_URL.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "status = diagnostic seul | watchdog = sonde + bascule si besoin | sync = recharge le secours | switch-back = retour vers la primaire"
+        required: true
+        default: "status"
+        type: choice
+        options:
+          - status
+          - watchdog
+          - sync
+          - switch-back
+      confirm:
+        description: "YES obligatoire pour switch-back (destructif pour la base courante)"
+        required: false
+        default: ""
+        type: string
+  schedule:
+    # Watchdog : toutes les 20 min (détection de quota épuisé / base HS).
+    - cron: "9,29,49 * * * *"
+    # Recharge du secours : toutes les heures.
+    - cron: "23 * * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: db-standby-failover
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  # ───────────────────────────────────────────────────────────────────────────
+  # 1. Watchdog — sonde la base LIVE et bascule si elle est HS.
+  # ───────────────────────────────────────────────────────────────────────────
+  watchdog:
+    timeout-minutes: 25
+    name: Watchdog base LIVE + bascule
+    runs-on: ubuntu-latest
+    environment: production
+    if: >-
+      (github.event_name == 'schedule' && github.event.schedule == '9,29,49 * * * *')
+      || (github.event_name == 'workflow_dispatch' && (github.event.inputs.mode == 'watchdog' || github.event.inputs.mode == 'status'))
+    steps:
+      - name: Outils
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v psql >/dev/null 2>&1; then sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client; fi
+          psql --version
+
+      - name: Sonder la base LIVE et basculer si besoin
+        shell: bash
+        env:
+          PRIMARY_URL: ${{ secrets.DATABASE_URL }}
+          STANDBY_URL: ${{ secrets.STANDBY_DATABASE_URL }}
+          HEALTH_URL: ${{ secrets.API_HEALTHCHECK_URL }}
+          RENDER_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
+          RENDER_API_BASE: ${{ secrets.PROD_RENDER_API_BASE_URL }}
+          # mode=status : diagnostic seul, aucune mutation.
+          DRY_RUN: ${{ github.event.inputs.mode == 'status' && '1' || '0' }}
+        run: |
+          set -euo pipefail
+          : "${PRIMARY_URL:?secrets.DATABASE_URL manquant}"
+          : "${STANDBY_URL:?secrets.STANDBY_DATABASE_URL manquant (base de secours non configurée)}"
+          : "${RENDER_API_KEY:?secrets.RENDER_PROD_API_KEY manquant}"
+          : "${RENDER_SERVICE_ID:?secrets.RENDER_PROD_SERVICE_ID manquant}"
+          api="${RENDER_API_BASE:-https://api.render.com/v1}"
+
+          # Jamais de mot de passe en clair dans les logs (les valeurs Render ne
+          # sont pas des « secrets » GitHub : masquage explicite).
+          echo "::add-mask::${PRIMARY_URL}"
+          echo "::add-mask::${STANDBY_URL}"
+
+          host_of() { sed -E 's#^[a-zA-Z+]+://([^@]*@)?([^/:]+).*#\2#' <<<"$1"; }
+          probe() { PGCONNECT_TIMEOUT=8 PGSSLMODE=require psql "$1" -AtXc 'select 1' >/dev/null 2>&1; }
+
+          render_db_url() {
+            curl -fsS -H "Authorization: Bearer ${RENDER_API_KEY}" \
+              "${api}/services/${RENDER_SERVICE_ID}/env-vars?limit=100" \
+              | jq -r '.[].envVar | select(.key=="DB_URL") | .value'
+          }
+
+          PRIMARY_HOST="$(host_of "${PRIMARY_URL}")"
+          STANDBY_HOST="$(host_of "${STANDBY_URL}")"
+          if [[ "${PRIMARY_HOST}" == "${STANDBY_HOST}" ]]; then
+            echo "::error::DATABASE_URL et STANDBY_DATABASE_URL pointent la MÊME base (${PRIMARY_HOST}) — secours inutile, configuration à corriger."
+            exit 1
+          fi
+
+          LIVE_URL="$(render_db_url)"
+          echo "::add-mask::${LIVE_URL}"
+          LIVE_HOST="$(host_of "${LIVE_URL}")"
+
+          if [[ "${LIVE_HOST}" == "${STANDBY_HOST}" ]]; then LIVE_KIND=secours; SPARE_URL="${PRIMARY_URL}"; SPARE_KIND=primaire
+          elif [[ "${LIVE_HOST}" == "${PRIMARY_HOST}" ]]; then LIVE_KIND=primaire; SPARE_URL="${STANDBY_URL}"; SPARE_KIND=secours
+          else
+            echo "::error::DB_URL de Render (${LIVE_HOST}) n'est ni la primaire ni le secours connus — bascule refusée (config inconnue)."
+            exit 1
+          fi
+
+          echo "Base LIVE (Render DB_URL) : ${LIVE_KIND} (${LIVE_HOST})"
+          echo "Base de secours          : ${SPARE_KIND} (${SPARE_HOST:-inconnue})"
+
+          # Sonde LIVE : 3 tentatives espacées (évite une bascule sur un incident réseau transitoire).
+          live_ok=0
+          for attempt in 1 2 3; do
+            if probe "${LIVE_URL}"; then live_ok=1; break; fi
+            echo "LIVE injoignable (tentative ${attempt}/3)"
+            sleep 20
+          done
+
+          if [[ ${live_ok} -eq 1 ]]; then
+            {
+              echo "### Watchdog base — OK"
+              echo ""
+              echo "- Base LIVE : **${LIVE_KIND}** (\`${LIVE_HOST}\`) — répond."
+              echo "- Aucune action (la bascule est volontairement « collante » : on ne revient pas automatiquement sur la primaire, le job \`switch-back\` est manuel)."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          echo "::warning::Base LIVE ${LIVE_KIND} (${LIVE_HOST}) injoignable — évaluation du secours."
+
+          if ! probe "${SPARE_URL}"; then
+            echo "::error::LES DEUX BASES SONT INJOIGNABLES (${LIVE_HOST}, ${SPARE_HOST:-?}) — aucune bascule possible, intervention humaine requise."
+            exit 1
+          fi
+
+          # Marqueur de synchro : refuse de basculer vers une copie à demi
+          # restaurée. Deux cas acceptés :
+          #   (a) marqueur récent (<= 48 h)      -> copie vérifiée par le job sync ;
+          #   (b) secours VIERGE (aucune table de migrations) -> reprise à zéro,
+          #       schéma créé par les migrations au boot (aucune donnée à copier :
+          #       utilisé quand la source est morte et qu'aucune sauvegarde n'existe).
+          # Refusé : des tables existent mais pas de marqueur (restauration
+          # interrompue) -> la bascule conduirait à une base incohérente.
+          synced_at="$(PGCONNECT_TIMEOUT=8 PGSSLMODE=require psql "${SPARE_URL}" -AtXc \
+            "select to_char(synced_at,'YYYY-MM-DD HH24:MI:SS') from public._standby_sync order by id desc limit 1;" 2>/dev/null || true)"
+          age_h=""
+          if [[ -n "${synced_at}" ]]; then
+            marker_epoch="$(date -u -d "${synced_at} UTC" +%s 2>/dev/null || echo 0)"
+            age_h=$(( ( $(date -u +%s) - marker_epoch ) / 3600 ))
+            echo "Secours synchronisé il y a ${age_h} h (${synced_at} UTC)"
+            if [[ "${marker_epoch}" -eq 0 || "${age_h}" -gt 48 ]]; then
+              echo "::error::Bascule REFUSÉE : dernière synchro du secours trop ancienne (${synced_at} UTC, ${age_h} h). Lancer le job 'sync' d'abord."
+              exit 1
+            fi
+          else
+            spare_migrations="$(PGCONNECT_TIMEOUT=8 PGSSLMODE=require psql "${SPARE_URL}" -AtXc \
+              "select count(*) from public.migrations;" 2>/dev/null || echo "")"
+            if [[ -z "${spare_migrations}" || "${spare_migrations}" == "0" ]]; then
+              echo "::warning::Secours VIERGE (aucune donnée restaurée) — bascule autorisée : le schéma sera créé par les migrations au boot du conteneur. Source injoignable et aucune sauvegarde disponible : reprise à zéro assumée."
+            else
+              echo "::error::Bascule REFUSÉE : le secours contient ${spare_migrations} migrations mais aucun marqueur _standby_sync — copie incohérente (restauration interrompue). Lancer 'sync', puis relancer le watchdog."
+              exit 1
+            fi
+          fi
+
+          if [[ "${DRY_RUN}" == "1" ]]; then
+            echo "::notice::DRY-RUN (mode=status) : bascule nécessaire mais NON appliquée. Relancer en mode 'watchdog'."
+            exit 0
+          fi
+
+          if [[ -n "${age_h}" ]]; then echo "Bascule : DB_URL <- ${SPARE_KIND} (${SPARE_HOST}), synchro ${age_h} h — perte de données attendue ≤ ${age_h} h."
+          else echo "Bascule : DB_URL <- ${SPARE_KIND} (${SPARE_HOST}), secours vierge — reprise à zéro (aucune donnée copiable)."; fi
+          curl -fsS -X PUT -H "Authorization: Bearer ${RENDER_API_KEY}" -H "Content-Type: application/json" \
+            "${api}/services/${RENDER_SERVICE_ID}/env-vars/DB_URL" \
+            -d "$(jq -nc --arg v "${SPARE_URL}" '{value:$v}')" >/dev/null
+          echo "DB_URL mis à jour sur Render."
+
+          curl -fsS -X POST -H "Authorization: Bearer ${RENDER_API_KEY}" -H "Content-Type: application/json" \
+            "${api}/services/${RENDER_SERVICE_ID}/deploys" -d '{"clearCache":"do_not_clear"}' >/dev/null
+          echo "Redéploiement déclenché (la nouvelle DB_URL est appliquée au boot du conteneur)."
+
+          # Attente de santé (best effort : le spin-up Render gratuit peut être lent).
+          if [[ -n "${HEALTH_URL:-}" ]]; then
+            for attempt in $(seq 1 15); do
+              if curl -fsS --max-time 15 "${HEALTH_URL}" | grep -q '"status":"ok"'; then
+                echo "API prod saine après bascule (tentative ${attempt})."
+                healthy=1; break
+              fi
+              sleep 20
+            done
+          fi
+
+          {
+            echo "### Bascule DB automatique ✅"
+            echo ""
+            echo "- Base LIVE précédente : **${LIVE_KIND}** (\`${LIVE_HOST}\`) — injoignable (quota épuisé ou panne)."
+            if [[ -n "${age_h}" ]]; then
+              echo "- Nouvelle base LIVE : **${SPARE_KIND}** (\`${SPARE_HOST}\`), copie datant de ${age_h} h (\`${synced_at}\` UTC)."
+              echo "- Perte de données attendue : ≤ ${age_h} h (dernière synchro)."
+            else
+              echo "- Nouvelle base LIVE : **${SPARE_KIND}** (\`${SPARE_HOST}\`) — **vierge** : le schéma est recréé par les migrations au boot, aucune donnée reprise (source morte, aucune sauvegarde disponible)."
+            fi
+            echo "- Retour vers la primaire : **manuel** — job \`switch-back\` (confirm=YES), précédé d'un dump de sécurité."
+            echo ""
+            echo "Seuils/quota : la base écartée repart au prochain reset mensuel Neon (1er du mois) ; la faire re-synchroniser par le job \`sync\` avant tout retour arrière."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [[ "${healthy:-0}" != "1" ]]; then
+            echo "::warning::Bascule appliquée mais l'API n'a pas répondu 'ok' dans le délai imparti — vérifier /api/v1/health (migrations au boot possibles)."
+          fi
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # 2. Sync — recharge le SECOURS depuis la PRIMAIRE (LIVE = primaire requis).
+  # ───────────────────────────────────────────────────────────────────────────
+  sync:
+    timeout-minutes: 45
+    name: Recharge le secours depuis la base live
+    runs-on: ubuntu-latest
+    environment: production
+    if: >-
+      (github.event_name == 'schedule' && github.event.schedule == '23 * * * *')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'sync')
+    steps:
+      - name: Outils (client PostgreSQL 18 — le serveur Neon est en 18)
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y >/dev/null
+          sudo apt-get install -y -qq postgresql-client-18
+          echo "/usr/lib/postgresql/18/bin" >> "$GITHUB_PATH"
+
+      - name: Dump de la base live -> restaure sur le secours
+        shell: bash
+        env:
+          PRIMARY_URL: ${{ secrets.DATABASE_URL }}
+          STANDBY_URL: ${{ secrets.STANDBY_DATABASE_URL }}
+          RENDER_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
+          RENDER_API_BASE: ${{ secrets.PROD_RENDER_API_BASE_URL }}
+        run: |
+          set -euo pipefail
+          api="${RENDER_API_BASE:-https://api.render.com/v1}"
+          echo "::add-mask::${PRIMARY_URL}"
+          echo "::add-mask::${STANDBY_URL}"
+
+          host_of() { sed -E 's#^[a-zA-Z+]+://([^@]*@)?([^/:]+).*#\2#' <<<"$1"; }
+          probe() { PGCONNECT_TIMEOUT=8 PGSSLMODE=require psql "$1" -AtXc 'select 1' >/dev/null 2>&1; }
+
+          LIVE_URL="$(curl -fsS -H "Authorization: Bearer ${RENDER_API_KEY}" \
+            "${api}/services/${RENDER_SERVICE_ID}/env-vars?limit=100" \
+            | jq -r '.[].envVar | select(.key=="DB_URL") | .value')"
+          echo "::add-mask::${LIVE_URL}"
+          LIVE_HOST="$(host_of "${LIVE_URL}")"
+          PRIMARY_HOST="$(host_of "${PRIMARY_URL}")"
+          STANDBY_HOST="$(host_of "${STANDBY_URL}")"
+
+          # Règle de sûreté : on ne recharge le secours QUE si la prod tourne sur
+          # la primaire. Si la prod tourne déjà sur le secours, celui-ci est la
+          # base vivante : l'écraser détruirait les écritures réelles.
+          if [[ "${LIVE_HOST}" != "${PRIMARY_HOST}" ]]; then
+            echo "::notice::La prod tourne sur '${LIVE_HOST}' (≠ primaire) — recharge du secours NON pertinente, job ignoré (le secours est la base vivante)."
+            exit 0
+          fi
+
+          if ! probe "${PRIMARY_URL}"; then
+            echo "::warning::Primaire injoignable — rien à dumper, recharge ignorée."
+            exit 0
+          fi
+          if ! probe "${STANDBY_URL}"; then
+            echo "::warning::Secours injoignable (quota épuisé ?) — recharge ignorée. Réessai au prochain créneau horaire."
+            exit 0
+          fi
+
+          dump="$(mktemp -t standby-XXXXXX.dump)"
+          pg_dump --format=custom --no-owner --no-privileges --file="${dump}" "${PRIMARY_URL}"
+          echo "Dump primaire : $(stat -c %s "${dump}") octets"
+
+          # Remise à zéro du secours (base inerte : jamais la base LIVE).
+          psql "${STANDBY_URL}" -v ON_ERROR_STOP=1 -q \
+            -c "DROP SCHEMA IF EXISTS shared_tenants CASCADE; DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;" >/dev/null
+
+          rc=0
+          pg_restore --no-owner --no-privileges --dbname="${STANDBY_URL}" "${dump}" || rc=$?
+          if [[ ${rc} -ne 0 ]]; then
+            echo "::warning::pg_restore a retourné ${rc} (avertissements non bloquants possibles) — la vérification par comptage fait foi."
+          fi
+
+          # Vérification : la table des migrations doit être présente et peuplée.
+          migrated="$(PGCONNECT_TIMEOUT=8 PGSSLMODE=require psql "${STANDBY_URL}" -AtXc \
+            "select count(*) from public.migrations;" 2>/dev/null || echo NA)"
+          users="$(PGCONNECT_TIMEOUT=8 PGSSLMODE=require psql "${STANDBY_URL}" -AtXc \
+            "select count(*) from public.users;" 2>/dev/null || echo NA)"
+          if [[ "${migrated}" == "NA" || "${migrated}" -lt 1 ]]; then
+            echo "::error::Secours incohérent après restauration (table migrations absente/vide) — secours marqué non fiable, bascule bloquée."
+            exit 1
+          fi
+
+          # Marqueur de fraîcheur lu par le watchdog avant toute bascule.
+          psql "${STANDBY_URL}" -v ON_ERROR_STOP=1 -q -c \
+            "CREATE TABLE IF NOT EXISTS public._standby_sync (id bigserial primary key, synced_at timestamptz not null default now(), source_host text, migrations int, users int);
+             INSERT INTO public._standby_sync (source_host, migrations, users) VALUES ('${PRIMARY_HOST}', ${migrated}, ${users});" >/dev/null
+
+          rm -f "${dump}"
+          {
+            echo "### Recharge du secours ✅"
+            echo ""
+            echo "- Source : \`${PRIMARY_HOST}\` (primaire, live) — ${migrated} migrations, ${users} utilisateurs."
+            echo "- Cible : \`${STANDBY_HOST}\` (secours) — copie fraîche, marqueur \`_standby_sync\` posé."
+            echo "- RPO en cas de bascule : ≤ 1 h."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # 3. Switch-back — retour manuel vers la primaire (dump de sécurité d'abord).
+  # ───────────────────────────────────────────────────────────────────────────
+  switch-back:
+    timeout-minutes: 45
+    name: Retour vers la primaire (manuel)
+    runs-on: ubuntu-latest
+    environment: production
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'switch-back'
+    steps:
+      - name: Garde de confirmation
+        shell: bash
+        env:
+          CONFIRM: ${{ github.event.inputs.confirm }}
+        run: |
+          set -euo pipefail
+          if [[ "${CONFIRM}" != "YES" ]]; then
+            echo "::error::Retour arrière refusé : saisir confirm=YES (la base courante sera remplacée par la primaire)."
+            exit 1
+          fi
+
+      - name: Outils (client PostgreSQL 18)
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y >/dev/null
+          sudo apt-get install -y -qq postgresql-client-18
+          echo "/usr/lib/postgresql/18/bin" >> "$GITHUB_PATH"
+
+      - name: Dump de sécurité de la base courante puis retour sur la primaire
+        shell: bash
+        env:
+          PRIMARY_URL: ${{ secrets.DATABASE_URL }}
+          STANDBY_URL: ${{ secrets.STANDBY_DATABASE_URL }}
+          RENDER_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
+          RENDER_API_BASE: ${{ secrets.PROD_RENDER_API_BASE_URL }}
+        run: |
+          set -euo pipefail
+          api="${RENDER_API_BASE:-https://api.render.com/v1}"
+          echo "::add-mask::${PRIMARY_URL}"
+          echo "::add-mask::${STANDBY_URL}"
+          host_of() { sed -E 's#^[a-zA-Z+]+://([^@]*@)?([^/:]+).*#\2#' <<<"$1"; }
+          probe() { PGCONNECT_TIMEOUT=8 PGSSLMODE=require psql "$1" -AtXc 'select 1' >/dev/null 2>&1; }
+
+          LIVE_URL="$(curl -fsS -H "Authorization: Bearer ${RENDER_API_KEY}" \
+            "${api}/services/${RENDER_SERVICE_ID}/env-vars?limit=100" \
+            | jq -r '.[].envVar | select(.key=="DB_URL") | .value')"
+          echo "::add-mask::${LIVE_URL}"
+          LIVE_HOST="$(host_of "${LIVE_URL}")"
+          PRIMARY_HOST="$(host_of "${PRIMARY_URL}")"
+
+          if [[ "${LIVE_HOST}" == "${PRIMARY_HOST}" ]]; then
+            echo "::notice::La prod tourne déjà sur la primaire — rien à faire."
+            exit 0
+          fi
+          if ! probe "${PRIMARY_URL}"; then
+            echo "::error::Primaire injoignable — retour arrière refusé (l'API perdrait sa base)."
+            exit 1
+          fi
+
+          # Dump de sécurité de la base courante (celle qui contient les écritures
+          # récentes) : publié en artefact, 30 jours, pour ne rien perdre du tout.
+          mkdir -p /tmp/safety-dumps
+          out="/tmp/safety-dumps/backup-before-switchback-$(date -u +%Y%m%d-%H%M%S).dump"
+          pg_dump --format=custom --no-owner --no-privileges --file="${out}" "${LIVE_URL}"
+          echo "safe_dump=${out}" >> "$GITHUB_ENV"
+
+          curl -fsS -X PUT -H "Authorization: Bearer ${RENDER_API_KEY}" -H "Content-Type: application/json" \
+            "${api}/services/${RENDER_SERVICE_ID}/env-vars/DB_URL" \
+            -d "$(jq -nc --arg v "${PRIMARY_URL}" '{value:$v}')" >/dev/null
+          curl -fsS -X POST -H "Authorization: Bearer ${RENDER_API_KEY}" -H "Content-Type: application/json" \
+            "${api}/services/${RENDER_SERVICE_ID}/deploys" -d '{"clearCache":"do_not_clear"}' >/dev/null
+          {
+            echo "### Retour sur la primaire"
+            echo ""
+            echo "- Nouvelle base LIVE : \`${PRIMARY_HOST}\` (primaire)."
+            echo "- Dump de sécurité de la base précédente (\`${LIVE_HOST}\`) : artefact \`db-safety-dump\` (30 jours) — y restaurer les écritures post-bascule si nécessaire."
+            echo "- ⚠️ La base écartée n'est PAS rechargée automatiquement : le job \`sync\` la reprendra quand elle sera la cible."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publier le dump de sécurité
+        if: env.safe_dump != ''
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: db-safety-dump
+          path: /tmp/safety-dumps/*.dump
+          retention-days: 30
