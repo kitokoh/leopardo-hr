@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Platform;
 
-use App\Core\Auth\Domain\Models\SuperAdmin;
+use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Modules\Marketing\Domain\Models\MarketingLead;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
