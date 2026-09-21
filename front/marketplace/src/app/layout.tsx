@@ -23,6 +23,18 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * #8022 (tranche 1) — rendu dynamique de TOUTES les routes : la CSP à nonce
+ * strict émise par `src/proxy.ts` exige que chaque page HTML soit rendue à
+ * la requête pour que Next appose le nonce sur ses scripts inline
+ * (bootstrap, flight data). Les pages catalogue étaient déjà
+ * `force-dynamic` (données API en `no-store`) ; cette déclaration étend le
+ * comportement aux pages clientes (panier, compte…) auparavant
+ * pré-rendues — leur contenu utile arrivait déjà côté client, le coût de
+ * rendu ne change donc pas en pratique.
+ */
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="fr">
