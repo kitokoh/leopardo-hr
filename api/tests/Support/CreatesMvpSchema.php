@@ -109,9 +109,15 @@ trait CreatesMvpSchema
             $table->string('last_name');
             $table->string('email')->unique();
             $table->string('password_hash')->nullable();
-            $table->string('provider')->default('local');
-            $table->string('preferred_language')->default('fr');
+            // #7975 — miroir EXACT des migrations publiques
+            // 2026_05_02_100001 (création) + 2026_08_26_000003 (personal_statuses) :
+            // provider default 'email' (pas 'local'), google_id UNIQUE, avatar_url.
+            $table->string('provider')->default('email');
+            $table->string('google_id')->nullable()->unique();
+            $table->string('avatar_url')->nullable();
+            $table->string('preferred_language', 2)->default('fr');
             $table->string('status')->default('active');
+            $table->json('personal_statuses')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             // Colonnes de gestion plateforme (issue #2269) — miroir de la
             // migration publique 2026_05_02_100001.
@@ -304,6 +310,21 @@ trait CreatesMvpSchema
             $table->string('iban', 255)->nullable();
             $table->string('bank_account', 255)->nullable();
             $table->string('national_id', 255)->nullable();
+            // #8004 — resynchronisation fixture ↔ migrations (double source de
+            // schéma #7975) : colonnes ajoutées post-création que la fixture
+            // n'avait pas (SQLSTATE 42703 en tests, ex. google_id ×16).
+            $table->string('google_id')->nullable();                    // 2026_08_31_000006_6531
+            $table->unsignedBigInteger('candidate_id')->nullable();     // 2026_08_24_000001
+            $table->string('two_fa_secret')->nullable();                // 2026_08_25_000006_5454
+            $table->timestamp('two_fa_enabled_at')->nullable();
+            $table->json('two_fa_recovery_codes')->nullable();
+            $table->string('cnps_matricule', 50)->nullable();           // 2026_08_14_000006
+            $table->string('cnss_ci_matricule', 50)->nullable();        // 2026_08_14_000007
+            $table->string('ipres_matricule', 50)->nullable();
+            $table->string('ipres_category', 20)->default('general');
+            $table->string('cnss_bf_matricule', 50)->nullable();        // 2026_08_15_000001
+            $table->string('inps_ml_matricule', 50)->nullable();
+            $table->decimal('family_parts', 3, 1)->nullable();          // 2026_08_14_000019
             $table->boolean('biometric_face_enabled')->default(false);
             $table->boolean('biometric_fingerprint_enabled')->default(false);
             $table->string('biometric_face_reference_path', 255)->nullable();
@@ -329,6 +350,8 @@ trait CreatesMvpSchema
 
             $table->unique('email');
             $table->unique(['company_id', 'matricule']);
+            $table->unique('google_id');    // parité 2026_08_31_000006_6531 (NULL multiples tolérés)
+            $table->index('candidate_id'); // parité 2026_08_24_000001
         });
 
         Schema::create($this->tenantTable('attendance_logs'), function (Blueprint $table): void {

@@ -532,11 +532,13 @@ Route::prefix('v1')->group(function (): void {
         // d'employés, matrice de features), duplication, archivage, et
         // suppression REFUSÉE (409) dès qu'une offre est utilisée — elle
         // s'archive. Chaque écriture est auditée (AuditLog, société nulle).
-        Route::post('/plans', [PlatformPlanAdminController::class, 'store']);
-        Route::patch('/plans/{plan}', [PlatformPlanAdminController::class, 'update'])->whereNumber('plan');
-        Route::post('/plans/{plan}/duplicate', [PlatformPlanAdminController::class, 'duplicate'])->whereNumber('plan');
-        Route::post('/plans/{plan}/archive', [PlatformPlanAdminController::class, 'archive'])->whereNumber('plan');
-        Route::delete('/plans/{plan}', [PlatformPlanAdminController::class, 'destroy'])->whereNumber('plan');
+        // #7973 — écriture des offres réservée à `plans.manage` (finance +
+        // admin) : le GET exigeait déjà `plans.view`, l'écriture n'exigeait rien.
+        Route::post('/plans', [PlatformPlanAdminController::class, 'store'])->middleware('platform.permission:plans.manage');
+        Route::patch('/plans/{plan}', [PlatformPlanAdminController::class, 'update'])->whereNumber('plan')->middleware('platform.permission:plans.manage');
+        Route::post('/plans/{plan}/duplicate', [PlatformPlanAdminController::class, 'duplicate'])->whereNumber('plan')->middleware('platform.permission:plans.manage');
+        Route::post('/plans/{plan}/archive', [PlatformPlanAdminController::class, 'archive'])->whereNumber('plan')->middleware('platform.permission:plans.manage');
+        Route::delete('/plans/{plan}', [PlatformPlanAdminController::class, 'destroy'])->whereNumber('plan')->middleware('platform.permission:plans.manage');
         Route::get('/plans', PlatformPlanController::class)->middleware('platform.permission:plans.view');
         Route::get('/country-defaults', PlatformCountryDefaultsController::class);
         Route::get('/companies', [PlatformCompanyController::class, 'index'])->middleware('platform.permission:companies.view');
@@ -547,12 +549,15 @@ Route::prefix('v1')->group(function (): void {
         // (désactivation d'abord), inventaire chiffré, confirmation par
         // ressaisie du nom exact, journalisation dans
         // `public.tenant_deletion_audits` (qui survit à la purge).
-        Route::get('/companies/{company}/deletion-inventory', [PlatformCompanyDeletionController::class, 'inventory']);
-        Route::get('/companies/{company}/deletion-audits', [PlatformCompanyDeletionController::class, 'history']);
+        // #7973 — purge d'un tenant (données RH/paie complètes) :
+        // inventaire + destruction exigent `companies.manage` (admin seul,
+        // la route sœur auditTrail avait déjà `companies.view` — oubli caractérisé).
+        Route::get('/companies/{company}/deletion-inventory', [PlatformCompanyDeletionController::class, 'inventory'])->middleware('platform.permission:companies.manage');
+        Route::get('/companies/{company}/deletion-audits', [PlatformCompanyDeletionController::class, 'history'])->middleware('platform.permission:companies.view');
         // #7576 — la piste d'audit survit à la purge : lecture plateforme, non
         // scopée à une entreprise vivante (sinon la preuve est inexploitable).
         Route::get('/tenant-deletion-audits', [PlatformCompanyDeletionController::class, 'auditTrail'])->middleware('platform.permission:companies.view');
-        Route::delete('/companies/{company}', [PlatformCompanyDeletionController::class, 'destroy']);
+        Route::delete('/companies/{company}', [PlatformCompanyDeletionController::class, 'destroy'])->middleware('platform.permission:companies.manage');
         // MULTI-PAYS (#1952) : réparation/choix du pays d'un tenant legacy
         // (refusé si données de paie — invariant 9). #7680 : les doublons SANS
         // platform.permission masquaient ces versions protégées (Laravel matche
@@ -672,9 +677,11 @@ Route::prefix('v1')->group(function (): void {
         // Edge nodes : réutilisation du contrôleur EdgeSync existant
         // (listAllNodes / forceSync / revokeNode) — alias des routes
         // /platform/edge/nodes pour le contrat SPA /admin/edge-nodes.
-        Route::get('/edge-nodes', [EdgeNodeController::class, 'listAllNodes']);
-        Route::post('/edge-nodes/{nodeId}/sync', [EdgeNodeController::class, 'forceSync']);
-        Route::post('/edge-nodes/{nodeId}/revoke', [EdgeNodeController::class, 'revokeNode']);
+        // #7973 — ces alias /admin des routes /platform/edge/nodes perdaient
+        // la garde `edge.manage` au passage (bypass de la matrice #7553).
+        Route::get('/edge-nodes', [EdgeNodeController::class, 'listAllNodes'])->middleware('platform.permission:edge.manage');
+        Route::post('/edge-nodes/{nodeId}/sync', [EdgeNodeController::class, 'forceSync'])->middleware('platform.permission:edge.manage');
+        Route::post('/edge-nodes/{nodeId}/revoke', [EdgeNodeController::class, 'revokeNode'])->middleware('platform.permission:edge.manage');
 
         Route::get('/ai/conversations', [PlatformAdminAiConversationController::class, 'index']);
         Route::get('/ai/conversations/{conversation}/messages', [PlatformAdminAiConversationController::class, 'messages'])
@@ -699,86 +706,102 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/training/courses', [PlatformAdminTrainingController::class, 'indexCourses']);
         Route::get('/training/sessions', [PlatformAdminTrainingController::class, 'indexSessions']);
         Route::get('/training/enrollments', [PlatformAdminTrainingController::class, 'indexEnrollments']);
-        Route::get('/webhooks', [PlatformAdminWebhookController::class, 'index']);
-        Route::get('/webhooks/events', [PlatformAdminWebhookController::class, 'events']);
-        Route::post('/webhooks', [PlatformAdminWebhookController::class, 'store']);
-        Route::get('/webhooks/{webhookEndpoint}', [PlatformAdminWebhookController::class, 'show'])->whereNumber('webhookEndpoint');
-        Route::put('/webhooks/{webhookEndpoint}', [PlatformAdminWebhookController::class, 'update'])->whereNumber('webhookEndpoint');
-        Route::patch('/webhooks/{webhookEndpoint}', [PlatformAdminWebhookController::class, 'update'])->whereNumber('webhookEndpoint');
-        Route::delete('/webhooks/{webhookEndpoint}', [PlatformAdminWebhookController::class, 'destroy'])->whereNumber('webhookEndpoint');
-        Route::post('/webhooks/{webhookEndpoint}/test', [PlatformAdminWebhookController::class, 'test'])->whereNumber('webhookEndpoint');
-        Route::get('/webhooks/{webhookEndpoint}/dead-letters', [PlatformAdminWebhookController::class, 'deadLetters'])->whereNumber('webhookEndpoint');
-        Route::post('/webhooks/{webhookEndpoint}/dead-letters/{delivery}/replay', [PlatformAdminWebhookController::class, 'replayDeadLetter'])->whereNumber('webhookEndpoint')->whereNumber('delivery');
+        // #7973 — webhooks sortants vers une URL arbitraire = canal
+        // d'exfiltration des événements plateforme : TOUT le bloc (lecture
+        // comprise — les configs révèlent URLs cibles et secrets) exige
+        // `webhooks.manage` (admin + ops).
+        Route::get('/webhooks', [PlatformAdminWebhookController::class, 'index'])->middleware('platform.permission:webhooks.manage');
+        Route::get('/webhooks/events', [PlatformAdminWebhookController::class, 'events'])->middleware('platform.permission:webhooks.manage');
+        Route::post('/webhooks', [PlatformAdminWebhookController::class, 'store'])->middleware('platform.permission:webhooks.manage');
+        Route::get('/webhooks/{webhookEndpoint}', [PlatformAdminWebhookController::class, 'show'])->whereNumber('webhookEndpoint')->middleware('platform.permission:webhooks.manage');
+        Route::put('/webhooks/{webhookEndpoint}', [PlatformAdminWebhookController::class, 'update'])->whereNumber('webhookEndpoint')->middleware('platform.permission:webhooks.manage');
+        Route::patch('/webhooks/{webhookEndpoint}', [PlatformAdminWebhookController::class, 'update'])->whereNumber('webhookEndpoint')->middleware('platform.permission:webhooks.manage');
+        Route::delete('/webhooks/{webhookEndpoint}', [PlatformAdminWebhookController::class, 'destroy'])->whereNumber('webhookEndpoint')->middleware('platform.permission:webhooks.manage');
+        Route::post('/webhooks/{webhookEndpoint}/test', [PlatformAdminWebhookController::class, 'test'])->whereNumber('webhookEndpoint')->middleware('platform.permission:webhooks.manage');
+        Route::get('/webhooks/{webhookEndpoint}/dead-letters', [PlatformAdminWebhookController::class, 'deadLetters'])->whereNumber('webhookEndpoint')->middleware('platform.permission:webhooks.manage');
+        Route::post('/webhooks/{webhookEndpoint}/dead-letters/{delivery}/replay', [PlatformAdminWebhookController::class, 'replayDeadLetter'])->whereNumber('webhookEndpoint')->whereNumber('delivery')->middleware('platform.permission:webhooks.manage');
 
         // #7347 — édition des contenus d'e-mails depuis la plateforme admin
         // (Paramètres › E-mails). Surcharge par (template, locale) ; sans
         // surcharge, l'e-mail garde sa valeur par défaut du catalogue.
-        Route::get('/email-templates', [PlatformEmailTemplateController::class, 'index']);
-        Route::put('/email-templates', [PlatformEmailTemplateController::class, 'update']);
-        Route::delete('/email-templates', [PlatformEmailTemplateController::class, 'reset']);
-        Route::post('/email-templates/preview', [PlatformEmailTemplateController::class, 'preview']);
+        // #7973 — bloc /admin des réglages plateforme sous `settings.manage`
+        // (admin seul) : éditer les templates d'e-mails officiels = phishing
+        // via mails légitimes ; réglages IA = clés chiffrées.
+        Route::get('/email-templates', [PlatformEmailTemplateController::class, 'index'])->middleware('platform.permission:settings.manage');
+        Route::put('/email-templates', [PlatformEmailTemplateController::class, 'update'])->middleware('platform.permission:settings.manage');
+        Route::delete('/email-templates', [PlatformEmailTemplateController::class, 'reset'])->middleware('platform.permission:settings.manage');
+        Route::post('/email-templates/preview', [PlatformEmailTemplateController::class, 'preview'])->middleware('platform.permission:settings.manage');
 
-        Route::get('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'index']);
-        Route::put('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'update']);
+        Route::get('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'index'])->middleware('platform.permission:settings.manage');
+        Route::put('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'update'])->middleware('platform.permission:settings.manage');
 
         // #7384 — assistant IA : réglages éditables depuis le cockpit. Les
         // valeurs sensibles sont chiffrées au repos et ne sont JAMAIS renvoyées.
-        Route::get('/platform/ai/settings', [PlatformAiSettingsController::class, 'index']);
-        Route::put('/platform/ai/settings', [PlatformAiSettingsController::class, 'update']);
-        Route::post('/platform/ai/settings/reset', [PlatformAiSettingsController::class, 'reset']);
+        Route::get('/platform/ai/settings', [PlatformAiSettingsController::class, 'index'])->middleware('platform.permission:settings.manage');
+        Route::put('/platform/ai/settings', [PlatformAiSettingsController::class, 'update'])->middleware('platform.permission:settings.manage');
+        Route::post('/platform/ai/settings/reset', [PlatformAiSettingsController::class, 'reset'])->middleware('platform.permission:settings.manage');
         // Test à blanc du fournisseur : valider une clé AVANT d'activer l'IA.
-        Route::post('/platform/ai/test-connection', [PlatformAiSettingsController::class, 'testConnection']);
+        Route::post('/platform/ai/test-connection', [PlatformAiSettingsController::class, 'testConnection'])->middleware('platform.permission:settings.manage');
 
         // #7385 — suivi de l'assistant, tous tenants (usage, coûts, erreurs).
         Route::get('/platform/ai/monitoring', [PlatformAiMonitoringController::class, 'index']);
         Route::get('/platform/ai/health', [PlatformAiMonitoringController::class, 'health']);
 
+        // #7973 — fériés nationaux + barèmes fiscaux + cotisations sociales
+        // (intégrité de la paie nationale) + validation des taux : tout le
+        // bloc réglages passe sous `settings.manage` (admin seul).
         // Public holidays (issue #1811) — super-admin : CRUD fériés nationaux.
-        Route::get('/public-holidays', [PublicHolidayController::class, 'index']);
-        Route::post('/public-holidays', [PublicHolidayController::class, 'store']);
-        Route::put('/public-holidays/{publicHoliday}', [PublicHolidayController::class, 'update'])->whereNumber('publicHoliday');
-        Route::delete('/public-holidays/{publicHoliday}', [PublicHolidayController::class, 'destroy'])->whereNumber('publicHoliday');
+        Route::get('/public-holidays', [PublicHolidayController::class, 'index'])->middleware('platform.permission:settings.manage');
+        Route::post('/public-holidays', [PublicHolidayController::class, 'store'])->middleware('platform.permission:settings.manage');
+        Route::put('/public-holidays/{publicHoliday}', [PublicHolidayController::class, 'update'])->whereNumber('publicHoliday')->middleware('platform.permission:settings.manage');
+        Route::delete('/public-holidays/{publicHoliday}', [PublicHolidayController::class, 'destroy'])->whereNumber('publicHoliday')->middleware('platform.permission:settings.manage');
 
         // Islamic calendar (issue #1812) — super-admin : dates mobiles des
         // fêtes islamiques (Aïd, Maouloud, Tamkharit…) par année.
-        Route::get('/islamic-calendar', [IslamicCalendarController::class, 'index']);
-        Route::post('/islamic-calendar/confirm-year/{year}', [IslamicCalendarController::class, 'confirmYear'])->whereNumber('year');
+        Route::get('/islamic-calendar', [IslamicCalendarController::class, 'index'])->middleware('platform.permission:settings.manage');
+        Route::post('/islamic-calendar/confirm-year/{year}', [IslamicCalendarController::class, 'confirmYear'])->whereNumber('year')->middleware('platform.permission:settings.manage');
         Route::put('/islamic-calendar/{holidayKey}/{year}', [IslamicCalendarController::class, 'update'])
             ->whereIn('holidayKey', ['eid_al_fitr', 'eid_al_adha', 'mawlid', 'tahmarit', 'muharram'])
-            ->whereNumber('year');
+            ->whereNumber('year')->middleware('platform.permission:settings.manage');
 
         // Issue #1814 — barèmes fiscaux nationaux (CRUD admin) + simulation.
-        Route::get('/tax-slabs', [TaxSlabAdminController::class, 'index']);
-        Route::post('/tax-slabs', [TaxSlabAdminController::class, 'store']);
-        Route::put('/tax-slabs/{taxSlab}', [TaxSlabAdminController::class, 'update'])->whereNumber('taxSlab');
-        Route::delete('/tax-slabs/{taxSlab}', [TaxSlabAdminController::class, 'destroy'])->whereNumber('taxSlab');
-        Route::post('/tax-slabs/reset-defaults', [TaxSlabAdminController::class, 'resetDefaults']);
+        Route::get('/tax-slabs', [TaxSlabAdminController::class, 'index'])->middleware('platform.permission:settings.manage');
+        Route::post('/tax-slabs', [TaxSlabAdminController::class, 'store'])->middleware('platform.permission:settings.manage');
+        Route::put('/tax-slabs/{taxSlab}', [TaxSlabAdminController::class, 'update'])->whereNumber('taxSlab')->middleware('platform.permission:settings.manage');
+        Route::delete('/tax-slabs/{taxSlab}', [TaxSlabAdminController::class, 'destroy'])->whereNumber('taxSlab')->middleware('platform.permission:settings.manage');
+        Route::post('/tax-slabs/reset-defaults', [TaxSlabAdminController::class, 'resetDefaults'])->middleware('platform.permission:settings.manage');
         Route::post('/payroll/simulate', [PayrollSimulationController::class, 'simulate']);
 
         // Issue #1874 — audit des calculs de paie (vue plateforme, cross-tenant :
         // filtre company_id optionnel ; le platform_admin est autorisé par
         // PayrollAuditPolicy — pattern #1917).
-        Route::get('/payroll/audit', [PayrollAuditController::class, 'index']);
-        Route::get('/payroll/audit/{correlationId}', [PayrollAuditController::class, 'show'])->whereUuid('correlationId');
+        // #7973 — cas tranché en PR : traces salariales cross-tenant →
+        // nouvelle permission `payroll.view` (finance + ops ; le support en
+        // est exclu — données de rémunération). Le Gate PayrollAuditPolicy
+        // reste en dessous (défense en profondeur).
+        Route::get('/payroll/audit', [PayrollAuditController::class, 'index'])->middleware('platform.permission:payroll.view');
+        Route::get('/payroll/audit/{correlationId}', [PayrollAuditController::class, 'show'])->whereUuid('correlationId')->middleware('platform.permission:payroll.view');
 
         // Issue #1815 — cotisations sociales nationales (CRUD admin).
-        Route::get('/social-contributions', [SocialContributionAdminController::class, 'index']);
-        Route::post('/social-contributions', [SocialContributionAdminController::class, 'store']);
-        Route::put('/social-contributions/{socialContribution}', [SocialContributionAdminController::class, 'update'])->whereNumber('socialContribution');
-        Route::delete('/social-contributions/{socialContribution}', [SocialContributionAdminController::class, 'destroy'])->whereNumber('socialContribution');
+        Route::get('/social-contributions', [SocialContributionAdminController::class, 'index'])->middleware('platform.permission:settings.manage');
+        Route::post('/social-contributions', [SocialContributionAdminController::class, 'store'])->middleware('platform.permission:settings.manage');
+        Route::put('/social-contributions/{socialContribution}', [SocialContributionAdminController::class, 'update'])->whereNumber('socialContribution')->middleware('platform.permission:settings.manage');
+        Route::delete('/social-contributions/{socialContribution}', [SocialContributionAdminController::class, 'destroy'])->whereNumber('socialContribution')->middleware('platform.permission:settings.manage');
 
         // Issue #1813 — validation des modifications de taux légaux
         // (approbation/rejet réservés au platform_admin).
-        Route::get('/rate-validation/pending', [RateValidationAdminController::class, 'pending']);
+        Route::get('/rate-validation/pending', [RateValidationAdminController::class, 'pending'])->middleware('platform.permission:settings.manage');
         Route::put('/rate-validation/{table}/{id}/approve', [RateValidationAdminController::class, 'approve'])
-            ->whereIn('table', ['tax_slabs', 'social_contributions'])->whereNumber('id');
+            ->whereIn('table', ['tax_slabs', 'social_contributions'])->whereNumber('id')->middleware('platform.permission:settings.manage');
         Route::put('/rate-validation/{table}/{id}/reject', [RateValidationAdminController::class, 'reject'])
-            ->whereIn('table', ['tax_slabs', 'social_contributions'])->whereNumber('id');
+            ->whereIn('table', ['tax_slabs', 'social_contributions'])->whereNumber('id')->middleware('platform.permission:settings.manage');
 
         // Issue #2269 — gestion des utilisateurs plateforme (contrat SPA
         // UsersView/UserDetailView réels, plus de mocks).
-        Route::get('/users', [PlatformUsersController::class, 'index']);
-        Route::get('/users/{user}', [PlatformUsersController::class, 'show'])->whereNumber('user');
-        Route::patch('/users/{user}', [PlatformUsersController::class, 'update'])->whereNumber('user');
+        // #7973 — la consultation exige `users.view`, la modification
+        // `users.manage` (la matrice #7553 portait déjà les deux).
+        Route::get('/users', [PlatformUsersController::class, 'index'])->middleware('platform.permission:users.view');
+        Route::get('/users/{user}', [PlatformUsersController::class, 'show'])->whereNumber('user')->middleware('platform.permission:users.view');
+        Route::patch('/users/{user}', [PlatformUsersController::class, 'update'])->whereNumber('user')->middleware('platform.permission:users.manage');
     });
 });

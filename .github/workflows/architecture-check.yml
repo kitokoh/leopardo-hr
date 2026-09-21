@@ -112,8 +112,14 @@ jobs:
       - name: .env.example parity guard (issue #1487)
         run: bash dev-hub/tools/check-env-example-parity.sh api
 
+      - name: Render worker env parity guard (issue #7977)
+        run: bash dev-hub/tools/check-render-worker-env-parity.sh
+
       - name: Migration basename collision guard (issue #1962)
         run: bash dev-hub/tools/check-migration-basename-collisions.sh
+
+      - name: Migration root orphans guard (issue #7975)
+        run: bash dev-hub/tools/check-migration-root-orphans.sh
 
       # #7961 — cliquet BRANCHE vs main : le total d'occurrences (somme des
       # count:) des 3 baselines PHPStan ne peut pas croître par rapport à

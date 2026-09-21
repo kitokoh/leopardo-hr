@@ -2,6 +2,28 @@
 > Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
 > Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
 
+> **MAJ 2026-09-21 — lot BC-01 PLATFORM #7973/#7974/#7975/#7977/#7978 (PR #8005), critiques
+> d'audit plateforme.** Surface **API** : (1) #7973 — la matrice `platform.permission` (#7553)
+> est déployée sur les blocs qui l'avaient perdue : écriture `/platform/plans` → `plans.manage`
+> (nouvelle permission, finance + admin), purge tenant (`deletion-inventory` + DELETE
+> `/platform/companies/{company}`) → `companies.manage`, TOUT le bloc `/admin/webhooks*` (lecture
+> comprise) → `webhooks.manage` (nouvelle, admin + ops), bloc réglages `/admin/*` (templates
+> e-mail, IA, oauth-config marketing, fériés FR/islamiques, tax-slabs, social-contributions,
+> rate-validation) → `settings.manage` (nouvelle, admin seul), `/admin/payroll/audit*` →
+> `payroll.view` (nouvelle, finance + ops — support exclu), `/admin/users` GET → `users.view` /
+> PATCH → `users.manage`, alias `/admin/edge-nodes` réalignés sur `edge.manage` ; (2) #7974 —
+> `leopardo:migrate --fresh` refusé sec en production (exit 1) et soumis à confirmation
+> interactive hors production sauf `--force` (nouvelle option) ; (3) #7975 — migration
+> `create_onboarding_progresses_table` déplacée de la racine (orpheline du runner) vers
+> `tenant/` avec garde `schemaTableExists`. Scénarios automatisés :
+> `api/tests/Feature/Platform/PlatformPermissionMatrixDeploymentTest.php` (matrice rôle →
+> nouvelles permissions + pour chaque bloc touché : 403 pour un rôle délégué sans permission,
+> passage du middleware pour un rôle habilité — sur schéma MVP `CreatesMvpSchema`),
+> `api/tests/Feature/Database/LeopardoMigrateFreshGuardTest.php` (refus production + abandon
+> sans confirmation interactive, base intacte), `api/tests/Feature/Database/LeopardoMigrateRunnerTest.php`
+> réaligné (rejouabilité du runner). Surfaces web admin (sondes de menu `navigation.js`
+> alignées), mobile : aucune nouvelle — couverture existante inchangée.
+
 > **MAJ 2026-09-20 — #7866 (API #7865), pop-up d'import du jeu de données de démonstration à la
 > première entrée dans l'espace.** Surface **web client** : `DemoDataPrompt.tsx` monté dans le
 > layout dashboard APRÈS l'écran de bienvenue (#7604) et l'entretien de préparation (#7493) —

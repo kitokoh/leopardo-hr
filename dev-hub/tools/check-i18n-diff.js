@@ -140,6 +140,26 @@ function isCssClassList(value) {
   return hyphenatedCount > 0 || tokens.some((token) => bareUtilityWords.has(token));
 }
 
+// Pile de polices CSS (attribut/propriété font-family) : liste de familles
+// séparées par des virgules dont au moins une famille générique — jamais du
+// texte utilisateur. Constat #8000 : l'avatar SVG local de UsersView.vue
+// (`font-family="system-ui, sans-serif"`, remplacement RGPD d'ui-avatars.com)
+// était signalé comme chaîne à traduire. Le mot-clé générique est exigé pour
+// ne pas avaler un vrai texte à virgule (« Bonjour, monde » reste flaggé).
+const cssGenericFontFamilies = new Set([
+  'serif', 'sans-serif', 'monospace', 'cursive', 'fantasy', 'system-ui',
+  'ui-serif', 'ui-sans-serif', 'ui-monospace', 'ui-rounded', 'emoji', 'math',
+  'fangsong', 'inherit', 'initial', 'unset',
+]);
+const cssFontFamilyNamePattern = /^[a-zA-Z][a-zA-Z0-9-]*( [a-zA-Z][a-zA-Z0-9-]*)*$/;
+
+function isFontFamilyStack(value) {
+  const parts = value.split(',').map((part) => part.trim()).filter(Boolean);
+  if (parts.length < 2) return false;
+  if (!parts.every((part) => cssFontFamilyNamePattern.test(part))) return false;
+  return parts.some((part) => cssGenericFontFamilies.has(part.toLowerCase()));
+}
+
 // Limite connue, volontairement conservée (issue #7482) : un littéral d'un seul
 // mot sans espace est classé « jeton technique ». Un `aria-label="Supprimer"`
 // d'un seul mot passe donc la garde, alors qu'un `aria-label="Supprimer le
@@ -268,6 +288,7 @@ function classifyLiteral(rawValue) {
   if (!/[\p{Letter}]/u.test(value)) return null;
   if (isCssClassList(value)) return null;
   if (cssDeclarationPattern.test(value)) return null;
+  if (isFontFamilyStack(value)) return null;
   if (isTechnicalToken(value)) return null;
   if (isCodeExpression(value)) return null;
   // Diagnostics développeur préfixés par une étiquette de composant entre

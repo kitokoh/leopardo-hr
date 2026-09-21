@@ -1,6 +1,6 @@
 # AGENTS.md - Guide de travail Leopardo
 
-Derniere mise a jour : 2026-09-20 (lot sécurité backend #7995/#7999 + session PM #7963/#7966/#7958/#7967)
+Derniere mise a jour : 2026-09-21 (lots sécurité backend #7995/#7999 + BC-01 PLATFORM #7973..#7978 + session PM #7963/#7966/#7958/#7967 — fusion des deux blocs de leçons)
 
 > Leçon 2026-09-20 (#7995/#7999) : **(1) une politique de validation = un helper unique**
 > — les 3 sites historiques de la norme mots de passe étaient dupliqués textuellement ;
@@ -10,6 +10,18 @@ Derniere mise a jour : 2026-09-20 (lot sécurité backend #7995/#7999 + session 
 > ne casse rien et protège la surface tenant future. **(3) toute garde nouvelle doit
 > embarquer la liste des cas préexistants** (legacy_pending_review) — une garde qui
 > échoue sur l'existant ne sera jamais mergée.
+
+> Leçon 2026-09-20 (#7973/#7975) : **(1) un grep littéral ne prouve pas l'absence**
+> — `rg "Schema::create('users'"` = 0 ne voulait pas dire « users sans migration » :
+> `public/2026_05_02_100001` la crée via `createTableIfMissing($variable)`. Avant de
+> créer une migration « manquante », chercher aussi les helpers avec variable
+> (`createTableIfMissing`, `schemaTableExists`) et les builds Schema::create($var).
+> **(2) Toute nouvelle route `/platform/*` ou `/admin/*` DOIT porter
+> `platform.permission:<perm>`** — #7973 a trouvé 7 blocs oubliés (purge tenant,
+> plans, webhooks, réglages, audit paie) + des alias `/admin/edge-nodes` qui
+> perdaient la garde de leur route canonique : un alias = la MÊME permission.
+> **(3) `leopardo:migrate --fresh` exige `--force` hors interaction** (#7974) —
+> refus sec en production ; penser à répercuter dans Makefile/scripts/tests.
 
 > Leçon 2026-09-20 (session PM, audit sécurité 2026-09-20) :
 > 1. **Drift déploiement dev** : la garde `deploy-drift-guard.yml` compare le health
