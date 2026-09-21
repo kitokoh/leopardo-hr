@@ -193,3 +193,30 @@ describe('Sidebar unifiée — accordéons Entreprise (#7908)', () => {
     expect(within(panel).getByRole('link', { name: 'Employés' })).toHaveAttribute('aria-current', 'page');
   });
 });
+
+describe('Sidebar unifiée — module en essai visible comme tel (#8028)', () => {
+  const trialUser = {
+    ...baseUser,
+    capabilities: { ...baseUser.capabilities, reports: 'trial' },
+    company: {
+      ...baseUser.company,
+      features: { reports: 'trial' },
+    },
+  };
+
+  it('signale un module cœur en essai SANS le verrouiller', async () => {
+    const sidebar = await renderDashboardAt('/reports', trialUser);
+
+    // L'essai n'est pas un verrou : le module reste navigable…
+    const reportsLink = within(sidebar).getByRole('link', { name: /Rapports/ });
+    expect(reportsLink).toHaveAttribute('href', '/reports');
+    // …et il est signalé comme tel dans la navigation (régression #7908).
+    expect(within(reportsLink).getByTestId('sidebar-module-trial-badge')).toHaveTextContent('Trial');
+  });
+
+  it('n’affiche aucun badge « Trial » pour un module réellement inclus', async () => {
+    const sidebar = await renderDashboardAt('/reports', baseUser);
+
+    expect(within(sidebar).queryByTestId('sidebar-module-trial-badge')).not.toBeInTheDocument();
+  });
+});
