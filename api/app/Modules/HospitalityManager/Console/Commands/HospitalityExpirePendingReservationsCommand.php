@@ -24,11 +24,18 @@ class HospitalityExpirePendingReservationsCommand extends Command
         {--company= : Cibler un tenant precis}
         {--limit=500 : nombre max de reservations par passe (defaut 500)}';
 
-    protected $description = 'Expire les reservations hospitality pending depassees : annulation + liberation inventaire (HOSP-004/#7946).';
+    /**
+     * PA2-I18N-007 — `$description` est une expression constante : le libellé
+     * est la CLÉ du catalogue, remplacée par la traduction dans le
+     * constructeur (pattern `travel:expire-adverts`).
+     */
+    protected $description = 'hospitality.console.expire_pending_description';
 
     public function __construct(private readonly HospitalityReservationService $reservations)
     {
         parent::__construct();
+
+        $this->description = __('hospitality.console.expire_pending_description');
     }
 
     public function handle(TenantManager $tenantManager): int
@@ -40,7 +47,7 @@ class HospitalityExpirePendingReservationsCommand extends Command
             ->get();
 
         if ($companies->isEmpty()) {
-            $this->warn('Aucun tenant actif — rien a expirer.');
+            $this->warn(__('hospitality.console.expire_pending_no_tenant'));
 
             return self::SUCCESS;
         }
@@ -55,13 +62,13 @@ class HospitalityExpirePendingReservationsCommand extends Command
             );
 
             if ($count > 0) {
-                $this->info("Tenant {$company->id} : {$count} reservation(s) hospitality expiree(s).");
+                $this->info(__('hospitality.console.expire_pending_tenant_summary', ['company' => $company->id, 'count' => $count]));
             }
 
             $total += $count;
         }
 
-        $this->info("Total : {$total} reservation(s) hospitality expiree(s).");
+        $this->info(__('hospitality.console.expire_pending_total', ['count' => $total]));
 
         return self::SUCCESS;
     }

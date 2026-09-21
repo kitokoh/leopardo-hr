@@ -15,7 +15,7 @@ class HospitalitySolutionInactiveException extends DomainException
     public function __construct()
     {
         parent::__construct(
-            'La solution HospitalityManager n\'est pas active pour ce tenant.',
+            (string) __('hospitality.solution_inactive'),
             403,
             'HOSPITALITY_SOLUTION_INACTIVE'
         );
