@@ -27,8 +27,9 @@ name: DB Standby & Auto-Failover
 #   4. les URLs de connexion sont masquées dans les logs (`::add-mask::`).
 #
 # Secrets requis : DATABASE_URL (primaire, existant), STANDBY_DATABASE_URL
-# (secours, à créer), RENDER_PROD_API_KEY + RENDER_PROD_SERVICE_ID +
-# PROD_RENDER_API_BASE_URL (environnement `production`), API_HEALTHCHECK_URL.
+# (secours), RENDER_PROD_API_KEY + RENDER_PROD_SERVICE_ID (environnement
+# `production`) et PROD_RENDER_API_BASE_URL (URL PUBLIQUE du service prod, pour
+# le healthcheck post-bascule — l'API de management Render est api.render.com/v1).
 # ─────────────────────────────────────────────────────────────────────────────
 
 on:
@@ -90,10 +91,13 @@ jobs:
         env:
           PRIMARY_URL: ${{ secrets.DATABASE_URL }}
           STANDBY_URL: ${{ secrets.STANDBY_DATABASE_URL }}
-          HEALTH_URL: ${{ secrets.API_HEALTHCHECK_URL }}
+          # PROD_RENDER_API_BASE_URL = URL PUBLIQUE du service
+          # (https://leopardo-prod.onrender.com), pas l'API de management Render
+          # (constat run 35557975929 : 404). L'API de management est explicite.
+          HEALTH_URL: ${{ secrets.PROD_RENDER_API_BASE_URL }}/api/v1/health
           RENDER_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
           RENDER_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
-          RENDER_API_BASE: ${{ secrets.PROD_RENDER_API_BASE_URL }}
+          RENDER_API_BASE: https://api.render.com/v1
           # mode=status : diagnostic seul, aucune mutation.
           DRY_RUN: ${{ github.event.inputs.mode == 'status' && '1' || '0' }}
         run: |
@@ -269,7 +273,7 @@ jobs:
           STANDBY_URL: ${{ secrets.STANDBY_DATABASE_URL }}
           RENDER_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
           RENDER_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
-          RENDER_API_BASE: ${{ secrets.PROD_RENDER_API_BASE_URL }}
+          RENDER_API_BASE: https://api.render.com/v1
         run: |
           set -euo pipefail
           api="${RENDER_API_BASE:-https://api.render.com/v1}"
@@ -380,7 +384,7 @@ jobs:
           STANDBY_URL: ${{ secrets.STANDBY_DATABASE_URL }}
           RENDER_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
           RENDER_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
-          RENDER_API_BASE: ${{ secrets.PROD_RENDER_API_BASE_URL }}
+          RENDER_API_BASE: https://api.render.com/v1
         run: |
           set -euo pipefail
           api="${RENDER_API_BASE:-https://api.render.com/v1}"
