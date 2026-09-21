@@ -4,8 +4,10 @@
 # Laravel Edge dans le même conteneur FrankenPHP.
 # Issue #3592 : l'ancien Caddyfile.edge proxyait vers edge-ui:3000 / edge-api:80
 # (hôtes inexistants ici) → 502 sur tout le trafic, PWA jamais servie.
+# #7996 : :8080 (port non privilégié) — l'image tourne en www-data (non-root),
+# Caddy ne peut plus binder :80 ; EXPOSE et SERVER_NAME sont alignés.
 
-:80 {
+:8080 {
     root * /app/public
 
     # API Laravel Edge (FrankenPHP exécute le PHP en process)
