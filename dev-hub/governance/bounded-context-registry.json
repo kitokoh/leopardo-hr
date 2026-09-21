@@ -978,6 +978,39 @@
     "BC-14",
     "BC-20"
    ]
+  },
+  {
+   "code": "BC-32",
+   "name": "HOSPITALITY",
+   "context": "HospitalityManager",
+   "responsibility": "Établissements (hôtels, résidences, immeubles, maisons d'hôtes), inventaire (types de chambres, unités), équipe par établissement, réservations guichet et en ligne, vitrine publique /stay, gestion locative (baux, loyers, encaissements).",
+   "owner": "Agent 32 — BC-HOSPITALITY",
+   "priority": "P1",
+   "status": "active",
+   "paths": [
+    {
+     "path": "api/app/Modules/HospitalityManager",
+     "status": "active"
+    },
+    {
+     "path": "front/web/src/app/(dashboard)/hospitality",
+     "status": "planned"
+    }
+   ],
+   "routes": [
+    "api/routes/modules/hospitality_manager.php"
+   ],
+   "migrations": [
+    "api/database/migrations/tenant"
+   ],
+   "events": [
+    "App\\Modules\\HospitalityManager\\Domain\\Events"
+   ],
+   "dependencies": [
+    "BC-01",
+    "BC-02",
+    "BC-03"
+   ]
   }
  ]
 }

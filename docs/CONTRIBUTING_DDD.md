@@ -15,7 +15,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | ~~`api/app/Services/`~~ — répertoire **supprimé** (2026-08-11, #1728), ne rien y ajouter | `Modules/<Name>/Infrastructure/Services/` |
 | `api/app/Exceptions/` (base `DomainException` partagée, encore étendue par des modules) | `Modules/<Name>/Domain/Exceptions/` |
 
-## Modules existants (31 modules)
+## Modules existants (32 modules)
 
 | Module | Domaine couvert |
 |---|---|
@@ -32,6 +32,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Delivery` | Livraison générique multi-tenant : colis, tournées, livreurs, tracking, COD, contrats sources (DELIVERY-101..208, BC-26) |
 | `EduManager` | Verticale scolaire BC-16 : inscriptions, classes, notes, frais, portail guardian, marketing admissions |
 | `HealthManager` | Verticale santé BC-30 : services médicaux, praticiens, patients, rendez-vous, consultations, hospitalisations, facturation des soins |
+| `HospitalityManager` | Verticale hôtellerie & locatif BC-32 : établissements, inventaire (types de chambres, unités), équipe par site, réservations guichet et en ligne, baux et loyers (HOSP-001..008, #7943→#7950) |
 | `Restaurant` | Solutions restaurant publiques BC-25 (enquêtes) |
 | `RestaurantManager` | Verticale restauration BC-25 : commandes, menus, livraisons, fidélité, promotions, kiosque |
 | `Retail` | Module vendeur générique BC-17 : produits, catégories, publication (fondations #7672) |

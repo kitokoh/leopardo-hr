@@ -57,6 +57,10 @@ export const PROTECTED_PREFIXES = [
   // hospitalisations, facturation des soins) : données de santé, jamais
   // servies sans session.
   '/health',
+  // BC-32 HOSPITALITY (HOSP-001 #7943) — verticale HospitalityManager
+  // (établissements, réservations, baux) : données tenant, jamais servies
+  // sans session. La vitrine PUBLIQUE vit sous /stay/[slug] (hors liste).
+  '/hospitality',
   '/fuel',
   // #7759 — tickets support côté client (zone dashboard) : conversations
   // support du tenant, jamais servies sans session.
