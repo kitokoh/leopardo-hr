@@ -122,6 +122,19 @@ return [
             'killable' => true,
             'description' => 'Solution Restaurant (POS, cuisine, réservations, stock).',
         ],
+        // #7976 — même leçon que #7220/#7235 (voir ci-dessus) : le flag
+        // opérationnel de la verticale Restaurant est `restaurantmanager`
+        // (posé par `ActivateRestaurantManagerAction`, gate des 210 routes
+        // du middleware `module.restaurantmanager`), mais il était absent de
+        // ce registre → toute la verticale répondait 403 après une activation
+        // standard. Fail-closed conservé (défaut false).
+        'restaurantmanager' => [
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.34.0',
+            'killable' => true,
+            'description' => 'Verticale RestaurantManager (POS & caisse, commandes, réservations, stock/COGS, livraison, fidélité).',
+        ],
         'edumanager' => [
             'scope' => 'solution',
             'default' => false,

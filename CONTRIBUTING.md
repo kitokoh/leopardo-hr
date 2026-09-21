@@ -6,7 +6,7 @@ First off, thank you for considering contributing to Leopardo! It's people like 
 
 We maintain high standards for code quality, security, and documentation.
 
--   **Backend:** PHP 8.4, Laravel 12 (^12.60), PSR-12, Pest PHP for testing.
+-   **Backend:** PHP 8.4, Laravel 12 (^12.60), PSR-12, PHPUnit for testing (classes PHPUnit standard — Pest n'est pas le framework de test du dépôt, #7998).
 -   **Frontend:** Next.js 16, TypeScript, Tailwind CSS.
 -   **Mobile:** Flutter 3.x, Riverpod for state management.
 -   **Architecture:** Modular Monolith & Domain-Driven Design (DDD).

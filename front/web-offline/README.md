@@ -11,7 +11,7 @@ Base URL de l'API Edge interrogée par la PWA. Deux cibles possibles :
 | Cible | Valeur | Quand l'utiliser |
 |---|---|---|
 | Nœud Edge local (recommandé) | `http://leopardo.local:7878` | La PWA est servie sur le réseau local d'un client équipé d'un nœud Leopardo Edge (défaut). |
-| Backend cloud Render | `https://gestionemployerbackend.onrender.com` | Aucun nœud Edge local n'est installé : la PWA sonde l'API cloud. |
+| Backend local Laravel | `http://localhost:8000` | Développement sans nœud Edge : la PWA sonde le backend local (`php artisan serve`). Le backend DEV Render est banni des fronts (#7842/#7963) ; en production, renseigner l'URL de l'API servie. |
 
 > ⚠️ Ne jamais utiliser les domaines réservés `*.leopardo-rh.com` / `*.leopardo.app` :
 > ils sont NXDOMAIN tant que le DNS de production n'est pas provisionné

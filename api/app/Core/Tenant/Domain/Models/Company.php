@@ -122,6 +122,13 @@ class Company extends Model
         // jamais activer la verticale). Fail-closed (défaut false).
         'healthmanager',
         'restaurant',
+        // #7976 — le flag opérationnel de la verticale Restaurant est
+        // `restaurantmanager` (posé par ActivateRestaurantManagerAction, gate
+        // des routes `module.restaurantmanager`). Même leçon que #7220/#7235 :
+        // absent de ce registre, l'admin plateforme ne pouvait jamais
+        // l'activer → toute la verticale en 403. Fail-closed conservé
+        // (défaut false, `rh` seul actif par défaut).
+        'restaurantmanager',
         // #7220 (audit 2026-09-10) : verticale Agence de voyage. `travelagency`
         // est le code du TravelAgencyManifest et le flag posé par
         // `ActivateTravelAgencyAction`, mais il était ABSENT de ce registre :

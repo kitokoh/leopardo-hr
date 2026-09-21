@@ -1,14 +1,14 @@
 {
   "info": {
     "_postman_id": "a1b2c3d4-e5f6-4a5b-6c7d-8e9f0a1b2c3d",
-    "name": "Leopardo RH Enterprise API",
-    "description": "Enterprise-grade HR Management API — Auth, HRM, Payroll, Attendance, Admin. Collection étendue (session QA 2026-08-15) : endpoints publics + auth + CRUD représentatif par module. Régénérer via dev-hub ou compléter depuis api/openapi.yaml.",
+    "name": "Leopardo API",
+    "description": "API de la suite métier Leopardo — Auth, RH & paie, pointage, modules verticaux. Collection représentative (régénérable depuis api/openapi.yaml).\n\nEnvironnements : par défaut `baseUrl` = http://localhost:8000/api/v1 (backend local, voir CONTRIBUTING.md). Pour la prod, créer un environnement avec l’URL de l’API servie (NE JAMAIS pointer les intégrations vers le backend DEV Render, banni par #7842/#7963).\n\nCompte démo : uniquement si DEMO_MODE_ENABLED=true côté backend — la source canonique est GET /demo-users (voir docs/DEMO_ACCOUNTS.md). Persona type : ahmed.benali@techcorp-algerie.dz (Manager Principal).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "baseUrl",
-      "value": "https://gestionemployerbackend.onrender.com/api/v1",
+      "value": "http://localhost:8000/api/v1",
       "type": "string"
     },
     {
@@ -21,8 +21,8 @@
       "value": "manager@entreprise.com"
     },
     {
-      "key": "demoAdminEmail",
-      "value": "admin@leopardo-rh.com"
+      "key": "demoManagerEmail",
+      "value": "ahmed.benali@techcorp-algerie.dz"
     },
     {
       "key": "demoPassword",
@@ -184,7 +184,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"{{demoAdminEmail}}\",\n  \"password\": \"{{demoPassword}}\",\n  \"device_name\": \"postman\"\n}",
+              "raw": "{\n  \"email\": \"{{demoManagerEmail}}\",\n  \"password\": \"{{demoPassword}}\",\n  \"device_name\": \"postman\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
