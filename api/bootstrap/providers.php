@@ -17,6 +17,7 @@ use App\Modules\Expense\Providers\ExpenseServiceProvider;
 use App\Modules\Fleet\Providers\FleetServiceProvider;
 use App\Modules\FuelStation\Providers\FuelStationServiceProvider;
 use App\Modules\Growth\Providers\GrowthServiceProvider;
+use App\Modules\HospitalityManager\Providers\HospitalityManagerServiceProvider;
 use App\Modules\HR\Providers\HRServiceProvider;
 use App\Modules\Marketing\Providers\MarketingServiceProvider;
 use App\Modules\Notification\Providers\NotificationServiceProvider;
@@ -78,4 +79,7 @@ return [
     RetailServiceProvider::class,
     ShowcaseServiceProvider::class,
     CommunicationServiceProvider::class,
+    // HOSP-001 (#7943) — verticale HospitalityManager (BC-32, hôtels &
+    // résidences) : enregistre le manifest `hospitality` au catalogue.
+    HospitalityManagerServiceProvider::class,
 ];

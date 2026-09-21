@@ -36,6 +36,8 @@ const PROTECTED_PREFIXES = [
   '/edu-manager',
   // BC-30 HEALTH (#7792) — verticale HealthManager (zone dashboard).
   '/health',
+  // BC-32 HOSPITALITY (#7943) — verticale HospitalityManager (zone dashboard).
+  '/hospitality',
   '/fuel',
   // BC-17 — espace vendeur (zone dashboard).
   '/commerce',

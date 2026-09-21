@@ -187,6 +187,12 @@ class Company extends Model
         // #7235). Fail-closed conservé (défaut false) ; gate serveur
         // `module.communication` sur les routes /api/v1/communication/*.
         'communication',
+        // BC-32 HOSPITALITY (HOSP-001, #7943) — verticale HospitalityManager
+        // (hôtels, résidences, gestion locative multi-sites). Code du
+        // HospitalityManagerManifest — enregistrée ici DÈS la création
+        // (leçon #7220/#7235 : sans cette entrée, l'admin plateforme ne peut
+        // jamais activer la verticale). Fail-closed conservé (défaut false).
+        'hospitality',
     ];
 
     /**

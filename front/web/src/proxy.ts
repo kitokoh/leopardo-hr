@@ -68,6 +68,8 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/edu-manager',
   // BC-30 HEALTH (#7792) — verticale HealthManager (données de santé).
   '/health',
+  // BC-32 HOSPITALITY (#7943) — verticale HospitalityManager (données tenant).
+  '/hospitality',
   '/fuel',
   // BC-17 — espace vendeur (produits, stock, caisse) : zone dashboard.
   '/commerce',
@@ -207,6 +209,7 @@ export const config = {
     '/accounting/:path*', // #7663 comptabilité applicative (vitrine = /comptabilite)
     '/edu-manager/:path*', // #7663 gestion scolaire — gate session
     '/health/:path*', // BC-30 (#7792) HealthManager — gate session
+    '/hospitality/:path*', // BC-32 (#7943) HospitalityManager — gate session
     '/fuel/:path*', // #7663 stations-service — gate session
     '/commerce/:path*', // BC-17 espace vendeur — gate session (source unique #3377)
 

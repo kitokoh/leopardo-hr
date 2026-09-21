@@ -113,6 +113,8 @@ tags:
   description: 'BC-31 PHARMACY — verticale PharmaManager : referentiel produits d''officine, stock par lots FEFO, achats fournisseurs, ventes comptoir, ordonnancier des produits controles, dashboard fondateur (PHARMA-001..007, #7798-#7804).'
 - name: HealthManager
   description: 'BC-31 HEALTHMANAGER — solution verticale hôpitaux & cliniques privées (HC-001 #7785 à HC-008 #7792) : structure, patients, rendez-vous, consultations, ordonnances, hospitalisations, facturation des soins.'
+- name: Hospitality
+  description: 'BC-32 HOSPITALITY — solution verticale HospitalityManager (hôtels, résidences, gestion locative multi-sites, HOSP-001 #7943 → HOSP-008 #7950) : établissements, inventaire, réservations guichet et en ligne, baux et loyers.'
 paths:
   /travel/distributor-keys:
     get:
@@ -40368,6 +40370,1193 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
+  /hospitality/status:
+    get:
+      tags:
+      - Hospitality
+      summary: État du module HospitalityManager pour le tenant courant
+      description: 'Sonde d''activation de la solution HospitalityManager (BC-32, HOSP-001 #7943) : la route est gardée par le feature flag tenant `hospitality` (403 HOSPITALITY_SOLUTION_INACTIVE si la solution est inactive, fail-closed). Renvoie le jalon livré du programme HOSP-001→008 (stage) et les capacités disponibles (référentiel, équipe, réservations, locatif, API publique — false tant que le lot correspondant n''est pas livré).'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Solution active pour le tenant courant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      module:
+                        type: string
+                        example: hospitality
+                      enabled:
+                        type: boolean
+                        example: true
+                      status:
+                        type: string
+                        example: active
+                      stage:
+                        type: string
+                        example: HOSP-001
+                      capabilities:
+                        type: object
+                        properties:
+                          properties:
+                            type: boolean
+                            example: false
+                          inventory:
+                            type: boolean
+                            example: false
+                          team:
+                            type: boolean
+                            example: false
+                          reservations:
+                            type: boolean
+                            example: false
+                          rentals:
+                            type: boolean
+                            example: false
+                          public_api:
+                            type: boolean
+                            example: false
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /hospitality/properties:
+    get:
+      tags:
+      - Hospitality
+      summary: Lister les établissements du tenant
+      description: 'Liste paginée des établissements hôteliers / locatifs du tenant courant (filtres `status`, `type`). Solution HospitalityManager requise (feature flag `hospitality`, fail-closed) : solution inactive → 403 `HOSPITALITY_SOLUTION_INACTIVE`. Direction uniquement (deny-by-default).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - hotel
+          - residence
+          - apartment_building
+          - guesthouse
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+      responses:
+        '200':
+          description: Page d''établissements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HospitalityProperty'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Hospitality
+      summary: Créer un établissement
+      description: 'Création d''un établissement (code unique par tenant — doublon → 422). Direction uniquement. Solution inactive → 403 `HOSPITALITY_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HospitalityPropertyInput'
+      responses:
+        '201':
+          description: Établissement créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityProperty'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /hospitality/properties/{property}:
+    get:
+      tags:
+      - Hospitality
+      summary: Consulter un établissement
+      description: 'Détail d''un établissement du tenant (cross-tenant → 404 fail-closed). Solution inactive → 403 `HOSPITALITY_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ressource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityProperty'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    patch:
+      tags:
+      - Hospitality
+      summary: Mettre à jour un établissement
+      description: 'Mise à jour partielle (code toujours unique par tenant). Direction uniquement. Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HospitalityPropertyInput'
+      responses:
+        '200':
+          description: Établissement mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityProperty'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - Hospitality
+      summary: Supprimer un établissement
+      description: 'Suppression refusée tant que des types de chambres ou des unités sont rattachés (422 `HOSPITALITY_PROPERTY_IN_USE`). Direction uniquement. Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprimé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /hospitality/properties/{property}/publish:
+    post:
+      tags:
+      - Hospitality
+      summary: Publier la vitrine d''un établissement
+      description: 'Active `is_public` et génère au premier passage le `public_slug` unique GLOBAL (vitrine `/stay/{slug}` — HOSP-006/008). Idempotent ; le slug est conservé entre dépublication et re-publication (URL stable). Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Établissement publié
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityProperty'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /hospitality/properties/{property}/unpublish:
+    post:
+      tags:
+      - Hospitality
+      summary: Dépublier la vitrine d''un établissement
+      description: 'Désactive `is_public` (la vitrine `/stay/{slug}` devient inaccessible — fail-closed) ; le slug est conservé. Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Établissement dépublié
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityProperty'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /hospitality/properties/{property}/room-types:
+    get:
+      tags:
+      - Hospitality
+      summary: Lister les types de chambres d''un établissement
+      description: 'Liste paginée (filtre `status`). Établissement d''un autre tenant → 404 fail-closed. Solution inactive → 403.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+      responses:
+        '200':
+          description: Page de types de chambres
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HospitalityRoomType'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      tags:
+      - Hospitality
+      summary: Créer un type de chambre
+      description: 'Code unique par (tenant, établissement) — doublon → 422. Prix en minor units. Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HospitalityRoomTypeInput'
+      responses:
+        '201':
+          description: Type de chambre créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityRoomType'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /hospitality/room-types/{roomType}:
+    patch:
+      tags:
+      - Hospitality
+      summary: Mettre à jour un type de chambre
+      description: 'Route shallow — le tenant est re-vérifié (cross-tenant → 404). Code toujours unique par (tenant, établissement).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: roomType
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HospitalityRoomTypeInput'
+      responses:
+        '200':
+          description: Type de chambre mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityRoomType'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - Hospitality
+      summary: Supprimer un type de chambre
+      description: 'Suppression refusée tant que des unités y sont rattachées (422 `HOSPITALITY_ROOM_TYPE_IN_USE`). Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: roomType
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprimé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /hospitality/properties/{property}/units:
+    get:
+      tags:
+      - Hospitality
+      summary: Lister les unités physiques d''un établissement
+      description: 'Liste paginée (filtres `status`, `room_type_id`). Établissement d''un autre tenant → 404 fail-closed.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - available
+          - occupied
+          - maintenance
+          - out_of_service
+      - name: room_type_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+      responses:
+        '200':
+          description: Page d''unités
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HospitalityUnit'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      tags:
+      - Hospitality
+      summary: Créer une unité physique
+      description: 'Code unique par (tenant, établissement). `room_type_id` nullable (unité locative hors typologie) — le type rattaché doit appartenir au MÊME établissement (sinon 422). Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HospitalityUnitInput'
+      responses:
+        '201':
+          description: Unité créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityUnit'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /hospitality/units/{unit}:
+    patch:
+      tags:
+      - Hospitality
+      summary: Mettre à jour une unité physique
+      description: 'Route shallow — le tenant est re-vérifié (cross-tenant → 404). Le type rattaché doit appartenir au MÊME établissement que l''unité.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: unit
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HospitalityUnitInput'
+      responses:
+        '200':
+          description: Unité mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityUnit'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - Hospitality
+      summary: Supprimer une unité physique
+      description: 'Cross-tenant → 404 fail-closed. Direction uniquement.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: unit
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprimée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /hospitality/properties/{property}/staff:
+    get:
+      tags:
+      - Hospitality
+      summary: Lister l''équipe d''un établissement
+      description: 'Affectations staff de l''établissement (employé embarqué id/prénom/nom, rôle descriptif, date). Lecture scopée à CET établissement (RBAC ressource-scopé progressif `hospitality_property` — HOSP-003 #7945 : fallback direction principal/rh tant qu''aucune assignation n''existe dans le tenant, fail-closed ensuite). Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+      responses:
+        '200':
+          description: Page d''affectations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HospitalityPropertyStaff'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      tags:
+      - Hospitality
+      summary: Affecter un employé à un établissement
+      description: 'Affectation stricte : employé d''un autre tenant → 422 `EMPLOYEE_OUTSIDE_TENANT` ; doublon actif → 409 `EMPLOYEE_ALREADY_ASSIGNED` ; ré-affectation après retrait = restauration de la ligne soft-deleted (jamais de doublon physique). Le `role` est descriptif (métier), jamais une source d''autorisation. Gestion de l''établissement requise (`manage`).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HospitalityPropertyStaffInput'
+      responses:
+        '201':
+          description: Affectation créée (ou restaurée)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityPropertyStaff'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Employé déjà affecté à cet établissement (EMPLOYEE_ALREADY_ASSIGNED)
+        '422':
+          description: Employé hors tenant (EMPLOYEE_OUTSIDE_TENANT) ou payload invalide
+  /hospitality/properties/{property}/staff/{assignment}:
+    patch:
+      tags:
+      - Hospitality
+      summary: Mettre à jour le rôle descriptif d''une affectation
+      description: 'L''affectation doit appartenir à l''établissement de la route (sinon 404). Cross-tenant → 404. Gestion de l''établissement requise (`manage`).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: assignment
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                  maxLength: 80
+                  nullable: true
+      responses:
+        '200':
+          description: Affectation mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityPropertyStaff'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - Hospitality
+      summary: Retirer un employé d''un établissement
+      description: 'Retrait = soft delete (historique conservé ; la ré-affectation restaurera la ligne). Cross-tenant → 404. Gestion de l''établissement requise (`manage`).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: assignment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Retiré
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /hospitality/reservations:
+    get:
+      tags:
+      - Hospitality
+      summary: Lister les réservations du tenant
+      description: 'Liste paginée (filtres `property_id`, `status`, `from`, `to` — chevauchement d''intervalle). Solution inactive → 403 `HOSPITALITY_SOLUTION_INACTIVE`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - pending
+          - confirmed
+          - checked_in
+          - checked_out
+          - cancelled
+          - no_show
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+      responses:
+        '200':
+          description: Page de réservations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HospitalityReservation'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Hospitality
+      summary: Créer une réservation au guichet
+      description: 'Création anti-overbooking TRANSACTIONNELLE (verrou du type de chambre + comptage sur l''intervalle [check_in, check_out)) : capacité atteinte → 409 `HOSPITALITY_NO_AVAILABILITY`. Idempotente sur `idempotency_key` (rejeu → 200 avec l''existant). `check_out > check_in` exigé (422). Geste opérationnel `operate` sur l''établissement.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HospitalityReservationInput'
+      responses:
+        '201':
+          description: Réservation créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityReservation'
+        '200':
+          description: Rejeu idempotent — réservation existante retournée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityReservation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '409':
+          description: Aucune disponibilité sur l''intervalle (HOSPITALITY_NO_AVAILABILITY)
+        '422':
+          $ref: '#/components/responses/Error422'
+  /hospitality/reservations/{reservation}:
+    get:
+      tags:
+      - Hospitality
+      summary: Consulter une réservation
+      description: 'Détail d''une réservation du tenant (cross-tenant → 404 fail-closed). `allowed_transitions` reflète la machine à états.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: reservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ressource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityReservation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    patch:
+      tags:
+      - Hospitality
+      summary: Mettre à jour une réservation
+      description: 'Champs éditables uniquement (le statut ne change QUE par les transitions). Interdite sur état terminal (409 `INVALID_RESERVATION_TRANSITION`) ; tout changement d''intervalle ou de type re-vérifie la disponibilité (409 `HOSPITALITY_NO_AVAILABILITY`). Geste `manage`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: reservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HospitalityReservationUpdateInput'
+      responses:
+        '200':
+          description: Réservation mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityReservation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition interdite (état terminal) ou aucune disponibilité
+        '422':
+          $ref: '#/components/responses/Error422'
+  /hospitality/reservations/{reservation}/confirm:
+    post:
+      tags:
+      - Hospitality
+      summary: Confirmer une réservation (pending → confirmed)
+      description: 'Transition gardée par la machine à états (409 `INVALID_RESERVATION_TRANSITION`) ; la disponibilité est re-vérifiée (409 `HOSPITALITY_NO_AVAILABILITY`). Geste opérationnel `operate`. Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: reservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Réservation confirmée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityReservation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition invalide ou aucune disponibilité
+  /hospitality/reservations/{reservation}/check-in:
+    post:
+      tags:
+      - Hospitality
+      summary: Enregistrer l''arrivée (confirmed → checked_in)
+      description: 'Transition gardée (409 `INVALID_RESERVATION_TRANSITION`) ; l''unité affectée passe `occupied`. Geste opérationnel `operate`. Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: reservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Arrivée enregistrée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityReservation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition invalide
+  /hospitality/reservations/{reservation}/check-out:
+    post:
+      tags:
+      - Hospitality
+      summary: Enregistrer le départ (checked_in → checked_out)
+      description: 'Transition gardée (409 `INVALID_RESERVATION_TRANSITION`) ; l''unité affectée repasse `available`. Geste opérationnel `operate`. Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: reservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Départ enregistré
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityReservation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition invalide
+  /hospitality/reservations/{reservation}/cancel:
+    post:
+      tags:
+      - Hospitality
+      summary: Annuler une réservation (pending|confirmed → cancelled)
+      description: 'Transition gardée (409 `INVALID_RESERVATION_TRANSITION`). Geste opérationnel `operate`. Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: reservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Réservation annulée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityReservation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition invalide
+  /hospitality/reservations/{reservation}/no-show:
+    post:
+      tags:
+      - Hospitality
+      summary: Marquer en no-show (confirmed → no_show)
+      description: 'Transition gardée (409 `INVALID_RESERVATION_TRANSITION`). Geste opérationnel `operate`. Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: reservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Réservation marquée no-show
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HospitalityReservation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition invalide
+  /hospitality/properties/{property}/availability:
+    get:
+      tags:
+      - Hospitality
+      summary: Disponibilités d''un établissement par type de chambre
+      description: 'Capacité opérationnelle (unités hors maintenance/hors service), immobilisations sur l''intervalle [from, to) (pending non expirées + confirmed + checked_in) et disponibilité nette, par type de chambre actif. Cross-tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: property
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: from
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Disponibilités par type
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      property_id:
+                        type: integer
+                      from:
+                        type: string
+                        format: date
+                      to:
+                        type: string
+                        format: date
+                      room_types:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            room_type_id:
+                              type: integer
+                            code:
+                              type: string
+                            name:
+                              type: string
+                            capacity:
+                              type: integer
+                            held:
+                              type: integer
+                            available:
+                              type: integer
+                            base_price_minor:
+                              type: integer
+                            currency:
+                              type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /hospitality/dashboard/kpis:
+    get:
+      tags:
+      - Hospitality
+      summary: KPIs du tableau de bord Hospitality
+      description: 'Occupation du jour (unités opérationnelles / occupées / taux), arrivées et départs du jour, réservations en ligne en attente (pending non expirées). Les KPIs locatifs arrivent avec HOSP-005.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Indicateurs du jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      date:
+                        type: string
+                        format: date
+                      occupancy:
+                        type: object
+                        properties:
+                          operational_units:
+                            type: integer
+                          occupied_units:
+                            type: integer
+                          rate:
+                            type: number
+                            nullable: true
+                      arrivals_today:
+                        type: integer
+                      departures_today:
+                        type: integer
+                      pending_online:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
 components:
   securitySchemes:
     BearerAuth:
@@ -49742,6 +50931,519 @@ components:
         total:
           type: integer
       description: Pagination des listes HealthManager.
+    HospitalityProperty:
+      type: object
+      required:
+      - id
+      - name
+      - code
+      - type
+      - country
+      - currency
+      - status
+      - is_public
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: string
+        type:
+          type: string
+          enum:
+          - hotel
+          - residence
+          - apartment_building
+          - guesthouse
+        address:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        country:
+          type: string
+          minLength: 2
+          maxLength: 2
+        timezone:
+          type: string
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        phone:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        star_rating:
+          type: integer
+          nullable: true
+          minimum: 1
+          maximum: 5
+        amenities:
+          type: object
+          nullable: true
+        latitude:
+          type: number
+          nullable: true
+        longitude:
+          type: number
+          nullable: true
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
+        is_public:
+          type: boolean
+        public_slug:
+          type: string
+          nullable: true
+          description: Slug public unique GLOBAL — généré au premier `publish`, conservé ensuite.
+        public_url:
+          type: string
+          nullable: true
+          example: /stay/hotel-bellevue-x7k2p9
+      description: 'Établissement hôtelier / locatif (HOSP-002 #7944).'
+    HospitalityPropertyInput:
+      type: object
+      required:
+      - name
+      - code
+      - type
+      - country
+      - currency
+      properties:
+        name:
+          type: string
+          maxLength: 150
+        code:
+          type: string
+          maxLength: 40
+          description: Unique par tenant.
+        type:
+          type: string
+          enum:
+          - hotel
+          - residence
+          - apartment_building
+          - guesthouse
+        address:
+          type: string
+          maxLength: 255
+        city:
+          type: string
+          maxLength: 120
+        country:
+          type: string
+          minLength: 2
+          maxLength: 2
+        timezone:
+          type: string
+          maxLength: 64
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        phone:
+          type: string
+          maxLength: 40
+        email:
+          type: string
+          format: email
+          maxLength: 190
+        star_rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        amenities:
+          type: object
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
+      description: Entrée création/mise à jour d''un établissement (HOSP-002).
+    HospitalityRoomType:
+      type: object
+      required:
+      - id
+      - property_id
+      - name
+      - code
+      - currency
+      - status
+      properties:
+        id:
+          type: integer
+        property_id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: string
+        description:
+          type: string
+          nullable: true
+        capacity_adults:
+          type: integer
+        capacity_children:
+          type: integer
+        base_price_minor:
+          type: integer
+          description: Prix de base en minor units (centimes).
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        amenities:
+          type: object
+          nullable: true
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
+      description: 'Type de chambre d''un établissement (HOSP-002 #7944).'
+    HospitalityRoomTypeInput:
+      type: object
+      required:
+      - name
+      - code
+      - currency
+      properties:
+        name:
+          type: string
+          maxLength: 150
+        code:
+          type: string
+          maxLength: 40
+          description: Unique par (tenant, établissement).
+        description:
+          type: string
+        capacity_adults:
+          type: integer
+          minimum: 0
+          maximum: 30
+        capacity_children:
+          type: integer
+          minimum: 0
+          maximum: 30
+        base_price_minor:
+          type: integer
+          minimum: 0
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        amenities:
+          type: object
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
+      description: Entrée création/mise à jour d''un type de chambre (HOSP-002).
+    HospitalityUnit:
+      type: object
+      required:
+      - id
+      - property_id
+      - code
+      - status
+      properties:
+        id:
+          type: integer
+        property_id:
+          type: integer
+        room_type_id:
+          type: integer
+          nullable: true
+          description: null = unité locative hors typologie.
+        code:
+          type: string
+        floor:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+          - available
+          - occupied
+          - maintenance
+          - out_of_service
+        notes:
+          type: string
+          nullable: true
+      description: 'Unité physique — chambre / appartement (HOSP-002 #7944).'
+    HospitalityUnitInput:
+      type: object
+      required:
+      - code
+      properties:
+        room_type_id:
+          type: integer
+          nullable: true
+          description: Doit appartenir au MÊME établissement (sinon 422).
+        code:
+          type: string
+          maxLength: 40
+          description: Unique par (tenant, établissement).
+        floor:
+          type: string
+          maxLength: 30
+        status:
+          type: string
+          enum:
+          - available
+          - occupied
+          - maintenance
+          - out_of_service
+        notes:
+          type: string
+          maxLength: 2000
+      description: Entrée création/mise à jour d''une unité (HOSP-002).
+    HospitalityPropertyStaff:
+      type: object
+      required:
+      - id
+      - property_id
+      - employee_id
+      properties:
+        id:
+          type: integer
+        property_id:
+          type: integer
+        employee_id:
+          type: integer
+        employee:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            first_name:
+              type: string
+            last_name:
+              type: string
+        role:
+          type: string
+          nullable: true
+          description: Rôle MÉTIER descriptif (réceptionniste, gouvernante…) — jamais une source d''autorisation.
+        assigned_at:
+          type: string
+          format: date-time
+          nullable: true
+      description: 'Affectation staff ↔ établissement (HOSP-003 #7945).'
+    HospitalityPropertyStaffInput:
+      type: object
+      required:
+      - employee_id
+      properties:
+        employee_id:
+          type: integer
+          minimum: 1
+          description: Employé RH du MÊME tenant (sinon 422 EMPLOYEE_OUTSIDE_TENANT).
+        role:
+          type: string
+          maxLength: 80
+          nullable: true
+      description: Entrée affectation staff (HOSP-003).
+    HospitalityReservation:
+      type: object
+      required:
+      - id
+      - reference
+      - property_id
+      - room_type_id
+      - guest_name
+      - check_in
+      - check_out
+      - status
+      - source
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+          example: HRS-2026-X7K2P9
+        property_id:
+          type: integer
+        room_type_id:
+          type: integer
+        unit_id:
+          type: integer
+          nullable: true
+        guest_name:
+          type: string
+        contact_email:
+          type: string
+          nullable: true
+        contact_phone:
+          type: string
+          nullable: true
+        check_in:
+          type: string
+          format: date
+        check_out:
+          type: string
+          format: date
+        adults:
+          type: integer
+        children:
+          type: integer
+        status:
+          type: string
+          enum:
+          - pending
+          - confirmed
+          - checked_in
+          - checked_out
+          - cancelled
+          - no_show
+        total_amount_minor:
+          type: integer
+          nullable: true
+        currency:
+          type: string
+          nullable: true
+        source:
+          type: string
+          enum:
+          - desk
+          - online
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        version:
+          type: integer
+        allowed_transitions:
+          type: array
+          items:
+            type: string
+          description: Transitions autorisées depuis le statut courant (machine à états).
+      description: 'Réservation guichet ou en ligne (HOSP-004 #7946).'
+    HospitalityReservationInput:
+      type: object
+      required:
+      - property_id
+      - room_type_id
+      - guest_name
+      - check_in
+      - check_out
+      properties:
+        property_id:
+          type: integer
+        room_type_id:
+          type: integer
+          description: Doit appartenir à l''établissement (sinon 422).
+        unit_id:
+          type: integer
+          nullable: true
+        guest_name:
+          type: string
+          maxLength: 150
+        contact_email:
+          type: string
+          format: email
+          maxLength: 190
+        contact_phone:
+          type: string
+          maxLength: 40
+        check_in:
+          type: string
+          format: date
+        check_out:
+          type: string
+          format: date
+          description: Strictement postérieure à check_in.
+        adults:
+          type: integer
+          minimum: 1
+          maximum: 30
+        children:
+          type: integer
+          minimum: 0
+          maximum: 30
+        status:
+          type: string
+          enum:
+          - pending
+          - confirmed
+          default: pending
+        total_amount_minor:
+          type: integer
+          minimum: 0
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        idempotency_key:
+          type: string
+          maxLength: 80
+          description: Rejeu idempotent — la même clé retourne l''existant (200).
+        notes:
+          type: string
+          maxLength: 2000
+      description: Entrée création d''une réservation au guichet (HOSP-004).
+    HospitalityReservationUpdateInput:
+      type: object
+      properties:
+        room_type_id:
+          type: integer
+        unit_id:
+          type: integer
+          nullable: true
+        guest_name:
+          type: string
+          maxLength: 150
+        contact_email:
+          type: string
+          format: email
+          maxLength: 190
+        contact_phone:
+          type: string
+          maxLength: 40
+        check_in:
+          type: string
+          format: date
+        check_out:
+          type: string
+          format: date
+        adults:
+          type: integer
+          minimum: 1
+          maximum: 30
+        children:
+          type: integer
+          minimum: 0
+          maximum: 30
+        total_amount_minor:
+          type: integer
+          minimum: 0
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        notes:
+          type: string
+          maxLength: 2000
+      description: Entrée mise à jour d''une réservation (HOSP-004 — statut via transitions uniquement).
     HealthDepartment:
       type: object
       required:

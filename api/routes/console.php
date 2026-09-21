@@ -214,6 +214,14 @@ Schedule::command('travel:expire-pending-bookings')
     ->withoutOverlapping()
     ->onOneServer();
 
+// BC-32 HOSPITALITY (HOSP-004 #7946) — expiration des réservations en ligne
+// pending (+30 min sans confirmation) : annulation + libération de
+// l'inventaire (idempotent, re-vérification sous verrou).
+Schedule::command('hospitality:expire-pending-reservations')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->onOneServer();
+
 // BC-24 TRAVEL — expiration des annonces validées (#6111) : durée de
 // validité dépassée → invisible (idempotent).
 Schedule::command('travel:expire-adverts')

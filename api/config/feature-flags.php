@@ -205,5 +205,20 @@ return [
             'killable' => true,
             'description' => 'Communication (boîte mail connectée + IA) : intégrations Gmail, classification, relances et réponses assistées.',
         ],
+        // BC-32 HOSPITALITY (HOSP-001, #7943) — verticale HospitalityManager
+        // (chaînes d'hôtels, résidences, gestion locative multi-sites,
+        // [FREEZE-EXCEPTION] fondateur 2026-09-20, EPIC #7951, spec
+        // docs/specifications/SOLUTION_HOSPITALITY.md). Déclaré ici ET dans
+        // `Company::KNOWN_MODULES` dès la création (leçon #7220/#7235 :
+        // catalogue + feature-flags + KNOWN_MODULES = les 3 points
+        // d'enregistrement obligatoires). Fail-closed : défaut false,
+        // gate `assertSolutionActive()` sur les routes /api/v1/hospitality/*.
+        'hospitality' => [
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.34.0',
+            'killable' => true,
+            'description' => 'Solution HospitalityManager (hôtels, résidences, locations : établissements, inventaire, réservations, baux et loyers).',
+        ],
     ],
 ];
