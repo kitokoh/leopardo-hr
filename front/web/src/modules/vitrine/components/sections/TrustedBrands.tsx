@@ -1,45 +1,22 @@
-'use client';
+﻿'use client';
 
 import { motion } from 'framer-motion';
 import type { AppLocale } from '@/lib/i18n';
-import { t } from '@/lib/i18n/locale-catalog';
 import type { ComponentType } from 'react';
 
 /**
- * PA2-MKT-011: cette section listait auparavant 22 entreprises réelles nommées
- * (« ils nous font confiance ») sans aucune autorisation ni preuve de relation
- * client — risque réputationnel et d'usage de marques, pas seulement un écart de
- * crédibilité marketing (voir docs/PLAN_ACTION2/…, backlog PA2-MKT-011). Faute de
- * liste de clients réelle et autorisée, la section a été requalifiée en
- * « secteurs / marchés adressés » (catégories génériques, aucun nom, aucun logo).
+ * Relecture propriétaire (2026-09-21) : « la preuve n'est pas assez vivante ;
+ * mettre avion et autres icônes littérales risque de confondre le lecteur —
+ * mets plutôt des trucs symboliques ».
  *
- * Relecture propriétaire (2026-09-21) — « la preuve n'est pas représentative, pas
- * assez vivante ; mettre avion et autres icônes littérales risque de confondre le
- * lecteur, mets plutôt des trucs symboliques » :
- *   - les icônes LITTÉRALES par métier (avion, usine, camion, panier…) sont
- *     remplacées par des **glyphes symboliques** (géométrie abstraite) : plus
- *     aucune image d'objet ne peut être lue comme un client ou un secteur
- *     « déjà servi » ;
- *   - la mention « secteur adressé ≠ référence client » est explicite (×4 langues) ;
- *   - le défilement est conservé (vivant) et complété par une respiration douce
- *     des glyphes (animation continue, désactivée si `prefers-reduced-motion`).
+ * Les icônes LITTÉRALES par métier (avion, usine, camion, panier, carte…)
+ * laissent place à des **glyphes symboliques** : géométrie abstraite (orbe,
+ * treillis, arcs, nœuds, flux, hexagone, paliers). Aucune image d'objet ne peut
+ * donc plus être lue comme un client ou un secteur « déjà servi » — le risque
+ * de confusion qui motivait PA2-MKT-011. Le défilement est conservé (vivant) et
+ * complété par une respiration douce, coupée si `prefers-reduced-motion`.
  */
-
-/**
- * Glyphes SYMBOLIQUES (24×24, stroke = currentColor) : aucune représentation
- * d'objet réel, uniquement des formes abstraites (orbe, arcs, nœuds, treillis…).
- */
-function GlyphOrbit({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={className} aria-hidden="true">
-      <circle cx="12" cy="12" r="3.2" />
-      <ellipse cx="12" cy="12" rx="9" ry="4.2" />
-      <circle cx="21" cy="12" r="1.4" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
-function GlyphLattice({ className }: { className?: string }) {
+function IconLattice({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={className} aria-hidden="true">
       <rect x="4" y="4" width="16" height="16" rx="2" />
@@ -49,15 +26,16 @@ function GlyphLattice({ className }: { className?: string }) {
   );
 }
 
-function GlyphPulse({ className }: { className?: string }) {
+function IconHex({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={className} aria-hidden="true">
-      <path d="M2 12h4l2.5-6 3 12 2.5-6h8" />
+      <path d="M12 3l7.5 4.3v9L12 20.6 4.5 16.3v-9L12 3z" />
+      <path d="M12 8.2l4.2 2.4v4.8L12 17.8 7.8 15.4v-4.8L12 8.2z" opacity="0.7" />
     </svg>
   );
 }
 
-function GlyphTiers({ className }: { className?: string }) {
+function IconTiers({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={className} aria-hidden="true">
       <path d="M12 3l8 4.5-8 4.5-8-4.5L12 3z" />
@@ -67,18 +45,25 @@ function GlyphTiers({ className }: { className?: string }) {
   );
 }
 
-function GlyphWaves({ className }: { className?: string }) {
+function IconOrbit({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={className} aria-hidden="true">
-      <path d="M12 20a8 8 0 0 0 0-16" />
-      <path d="M12 16a4 4 0 0 0 0-8" />
-      <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
-      <path d="M12 2v2M12 20v2" opacity="0.6" />
+      <circle cx="12" cy="12" r="3.2" />
+      <ellipse cx="12" cy="12" rx="9" ry="4.2" />
+      <circle cx="21" cy="12" r="1.4" fill="currentColor" stroke="none" />
     </svg>
   );
 }
 
-function GlyphNetwork({ className }: { className?: string }) {
+function IconPulse({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={className} aria-hidden="true">
+      <path d="M2 12h4l2.5-6 3 12 2.5-6h8" />
+    </svg>
+  );
+}
+
+function IconNetwork({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={className} aria-hidden="true">
       <circle cx="6" cy="7" r="2.2" />
@@ -89,7 +74,7 @@ function GlyphNetwork({ className }: { className?: string }) {
   );
 }
 
-function GlyphFlow({ className }: { className?: string }) {
+function IconFlow({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={className} aria-hidden="true">
       <path d="M3 16c4 0 4-8 8-8s4 8 8 8" />
@@ -100,30 +85,48 @@ function GlyphFlow({ className }: { className?: string }) {
   );
 }
 
-function GlyphHex({ className }: { className?: string }) {
+function IconWaves({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={className} aria-hidden="true">
-      <path d="M12 3l7.5 4.3v9L12 20.6 4.5 16.3v-9L12 3z" />
-      <path d="M12 8.2l4.2 2.4v4.8L12 17.8 7.8 15.4v-4.8L12 8.2z" opacity="0.7" />
+      <path d="M12 20a8 8 0 0 0 0-16" />
+      <path d="M12 16a4 4 0 0 0 0-8" />
+      <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
+      <path d="M12 2v2M12 20v2" opacity="0.6" />
     </svg>
   );
 }
 
+/**
+ * PA2-MKT-011: this section previously listed 22 real, named, well-known
+ * companies (Arcelik, Sonatrach, SAP, Aramco, Turkish Airlines, Emirates,
+ * ...) under an implicit "they trust us" badge with zero authorization or
+ * proof of any customer relationship — a reputational and potential
+ * trademark-misuse risk, not just a marketing credibility gap (see
+ * docs/PLAN_ACTION2/13_PLAN_ACTION_EN_VIGUEUR_2026-07-20.md section 2.7 and
+ * the PA2-MKT-011 backlog entry).
+ *
+ * Per the ticket's own definition of done, since no real, authorized
+ * customer list exists yet, this is requalified into "sectors/markets
+ * addressed" (generic industry categories, no company names or logos) so
+ * it can no longer be read as implying an existing customer relationship
+ * with any real company.
+ */
 type Sector = {
   key: string;
-  Glyph: ComponentType<{ className?: string }>;
+  Icon: ComponentType<{ className?: string }>;
 };
 
 /** Secteurs / marchés ADRESSÉS — jamais des références clients (PA2-MKT-011). */
+
 const sectors: Sector[] = [
-  { key: 'industry', Glyph: GlyphLattice },
-  { key: 'energy', Glyph: GlyphHex },
-  { key: 'finance', Glyph: GlyphTiers },
-  { key: 'aviation', Glyph: GlyphOrbit },
-  { key: 'telecom', Glyph: GlyphPulse },
-  { key: 'retail', Glyph: GlyphNetwork },
-  { key: 'logistics', Glyph: GlyphFlow },
-  { key: 'tech', Glyph: GlyphWaves },
+  { key: 'industry', Icon: IconLattice },
+  { key: 'energy', Icon: IconHex },
+  { key: 'finance', Icon: IconTiers },
+  { key: 'aviation', Icon: IconOrbit },
+  { key: 'telecom', Icon: IconPulse },
+  { key: 'retail', Icon: IconNetwork },
+  { key: 'logistics', Icon: IconFlow },
+  { key: 'tech', Icon: IconWaves },
 ];
 
 type Copy = {
@@ -192,14 +195,12 @@ const copyByLocale: Record<AppLocale, Copy> = {
 };
 
 function SectorCard({ sector, label }: { sector: Sector; label: string }) {
-  const { Glyph } = sector;
+  const { Icon } = sector;
   return (
     <div className="flex-shrink-0 mx-3">
       <div className="flex items-center gap-3 px-5 py-3 rounded-xl border bg-gradient-to-br from-emerald-500/10 to-cyan-500/5 border-emerald-500/20 backdrop-blur-sm hover:scale-105 transition-transform duration-300">
         <div className="w-10 h-10 rounded-lg bg-white/80 dark:bg-white/10 flex items-center justify-center shadow-sm">
-          {/* Symbole, jamais une image d'objet : la respiration douce garde le
-              bloc vivant sans suggérer un secteur « client ». */}
-          <Glyph className="w-5 h-5 text-emerald-700 dark:text-emerald-400 symbol-breathe" />
+          <Icon className="w-5 h-5 text-emerald-700 dark:text-emerald-400 symbol-breathe" />
         </div>
         <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 whitespace-nowrap">
           {label}
@@ -232,9 +233,6 @@ export function TrustedBrands({ locale = 'fr' }: TrustedBrandsProps) {
           </h2>
           <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             {copy.subtitle}
-          </p>
-          <p className="mt-3 text-xs font-medium uppercase tracking-[0.18em] text-slate-500 dark:text-slate-500">
-            {t(locale, 'vitrine.trustedBrands.clarification')}
           </p>
         </motion.div>
       </div>
@@ -291,3 +289,4 @@ export function TrustedBrands({ locale = 'fr' }: TrustedBrandsProps) {
     </section>
   );
 }
+
