@@ -19,7 +19,7 @@ class RegisterMarketBuyerRequest extends FormRequest
     }
 
     /**
-     * @return array<string, list<string>>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
