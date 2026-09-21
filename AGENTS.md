@@ -36,6 +36,24 @@ Derniere mise a jour : 2026-09-21 (lot sécurité #8021 — politique mots de pa
 > `php -r 'echo (new ReflectionClass(App\Shared\Rules\PasswordPolicy::class))->getFileName();'` ;
 > remède local = copie réelle de `vendor/` (jamais de `composer dump-autoload` dans le
 > vendor partagé).
+Derniere mise a jour : 2026-09-21 (lots sécurité backend #7995/#7999 + BC-01 PLATFORM #7973..#7978 + session PM #7963/#7966/#7958/#7967 — fusion des deux blocs de leçons) + suivi dev #8018
+
+> Leçon 2026-09-21 (#8018, suivi #8014) : **(1) toute sonde qui grep un motif
+> dans `/proc/*/cmdline` doit CASSER le motif (`[q]ueue:work`)** — sinon le
+> `grep` de la sonde lit SA PROPRE cmdline (elle contient le littéral), la sonde
+> est tautologique et toujours verte : une sonde qui ne peut pas être rouge ne
+> prouve rien. Le rejouer en simulation : sans worker elle doit être ROUGE, avec
+> un `sh -c '... <motif> ...'` vivant elle doit être VERTE (sémantique
+> préservée). **(2) Un mot de passe Postgres ne s'applique qu'à l'`initdb`** : le
+> changer sur un volume `pgdata` existant fait échouer l'app en `password
+> authentication failed` — garder l'ancienne valeur ou `docker compose down -v`.
+> **(3) Après le passage d'une image en non-root, les fichiers root-owned du
+> bind-mount doivent être rechownés par l'hôte** (`sudo chown -R $(id -u):$(id -g)
+> api/`) — et l'uid de l'image aligné (`APP_UID`/`APP_GID`) si l'uid hôte diffère
+> de 1000. **(4) Un workflow de gardes de scripts ne vérifie pas un build
+> d'image** : ne jamais écrire « à confirmer par la CI (edge-ci) » pour un
+> `docker build` (edge-ci n'en fait aucun) — dire « non vérifié — build
+> manuel ».
 
 > Leçon 2026-09-20 (#7995/#7999) : **(1) une politique de validation = un helper unique**
 > — les 3 sites historiques de la norme mots de passe étaient dupliqués textuellement ;
