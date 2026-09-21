@@ -192,6 +192,11 @@ class TravelBookingExpirationTest extends TestCase
 
         Bus::assertDispatched(ExpirePendingBookingsJob::class, fn (ExpirePendingBookingsJob $job): bool => $job->companyId === $this->company->id);
         Bus::assertDispatched(ExpirePendingBookingsJob::class, fn (ExpirePendingBookingsJob $job): bool => $job->companyId === $otherCompany->id);
-        Bus::assertDispatchedCount(ExpirePendingBookingsJob::class, 2);
+        // #8004 — `Bus::assertDispatchedCount()` N'EXISTE PAS dans Laravel :
+        // le vrai nom est `assertDispatchedTimes()` (l'ancien appel levait
+        // « Call to undefined method BusFake::assertDispatchedCount() », bug
+        // masqué tant que la commande n'était pas enregistrée et échouait
+        // avant cette ligne sur `InvalidOptionException`).
+        Bus::assertDispatchedTimes(ExpirePendingBookingsJob::class, 2);
     }
 }

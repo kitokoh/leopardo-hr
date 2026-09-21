@@ -28,6 +28,11 @@ final class PilotSeedGuard
     public const ALLOWED_PILOT_SLUGS = [
         'crm-pilot-alpha',
         'crm-pilot-beta',
+        // #8004 — les verticales `fuel`/`edu` (MAT-012 #5870) ont leurs propres
+        // tenants pilotes synthétiques ; ils doivent être nettoyables par la
+        // même commande `pilot:seed --clean` sans contourner l'allowlist.
+        'fuel-pilot-001',
+        'edu-pilot-001',
         'techcorp-algerie',
         'pharmaplus-casablanca',
         'digitalflow-tunis',

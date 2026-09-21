@@ -10,8 +10,13 @@ use App\Core\Solutions\DemoDataRegistry;
 use App\Core\Solutions\SolutionCatalogue;
 use App\Events\SolutionActivated;
 use App\Modules\TravelAgency\Application\Actions\ActivateTravelAgencyAction;
+use App\Modules\TravelAgency\Console\Commands\RecalculateTravelReadModelsCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelExpireAdvertsCommand;
+use App\Modules\TravelAgency\Console\Commands\TravelExpirePendingBookingsCommand;
+use App\Modules\TravelAgency\Console\Commands\TravelLegacyImportCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelOutboxDispatchCommand;
+use App\Modules\TravelAgency\Console\Commands\TravelSalesSettleCommand;
+use App\Modules\TravelAgency\Console\Commands\TravelSettleSalesCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelWebhookDispatchCommand;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
 use App\Modules\TravelAgency\Domain\Models\TravelCustomerAccount;
@@ -110,6 +115,19 @@ class TravelAgencyServiceProvider extends ServiceProvider
             // module (tenant-aware, --company/--limit, expire + archive) est
             // désormais l'unique implémentation, le doublon racine est supprimé.
             TravelExpireAdvertsCommand::class,
+            // #8004 — MÊME piège (#7420) sur les commandes restantes du module :
+            // Laravel n'auto-découvre QUE `app/Console/Commands`, jamais
+            // `app/Modules/*/Console/Commands` — sans cette liste, `artisan`
+            // répond « Command not found » et ~30 tests Feature rougissent.
+            // Le doublon racine `travel:expire-pending-bookings` et le doublon
+            // racine `leopardo:travel:import-legacy` (mêmes noms, options
+            // différentes → masquage dépendant de l'ordre) sont supprimés :
+            // les implémentations du module sont désormais les seules.
+            TravelExpirePendingBookingsCommand::class,
+            TravelLegacyImportCommand::class,
+            RecalculateTravelReadModelsCommand::class,
+            TravelSalesSettleCommand::class,
+            TravelSettleSalesCommand::class,
         ]);
     }
 

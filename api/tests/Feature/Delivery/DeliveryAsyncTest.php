@@ -220,9 +220,13 @@ class DeliveryAsyncTest extends TestCase
             'status' => 'new',
         ]);
 
+        // #8004 — `assertExitCode()` est PARESSEUX : il ne fait qu'enregistrer
+        // l'attente, l'exécution réelle est différée au `__destruct` du
+        // PendingCommand. Sans `run()`, les assertions suivantes (Queue, base)
+        // observent l'état D'AVANT l'exécution — d'où des rouges fantômes.
         $cmd = $this->artisan('delivery:replay-dlq');
         assert($cmd instanceof \Illuminate\Testing\PendingCommand);
-        $cmd->assertExitCode(0);
+        $cmd->assertExitCode(0)->run();
 
         Queue::assertPushed(CloseDeliveryRouteJob::class);
         Queue::assertPushed(ExportDeliveryReportJob::class);
@@ -247,7 +251,7 @@ class DeliveryAsyncTest extends TestCase
 
         $cmd = $this->artisan('delivery:replay-dlq');
         assert($cmd instanceof \Illuminate\Testing\PendingCommand);
-        $cmd->assertExitCode(1);
+        $cmd->assertExitCode(1)->run();
 
         self::assertSame(1, DeliveryDeadLetter::query()->where('status', 'failed')->count());
     }
@@ -262,12 +266,12 @@ class DeliveryAsyncTest extends TestCase
 
         $cmd = $this->artisan('delivery:close-route', ['route' => $route->id, 'company' => $this->company->id]);
         assert($cmd instanceof \Illuminate\Testing\PendingCommand);
-        $cmd->assertExitCode(0);
+        $cmd->assertExitCode(0)->run();
         Queue::assertPushed(CloseDeliveryRouteJob::class);
 
         $cmd = $this->artisan('delivery:export-report', ['company' => $this->company->id]);
         assert($cmd instanceof \Illuminate\Testing\PendingCommand);
-        $cmd->assertExitCode(0);
+        $cmd->assertExitCode(0)->run();
         Queue::assertPushed(ExportDeliveryReportJob::class);
     }
 }

@@ -8,6 +8,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Application\Services\StockAlertService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 /**
  * RESTO-505 (#6204) — Commande de détection des alertes de seuil de stock.
@@ -19,7 +20,7 @@ use Illuminate\Console\Command;
  */
 final class StockAlertsCommand extends Command
 {
-    protected $signature = 'leopardo:restaurant:stock-alerts {company? : UUID of the company to scan (default: all)}';
+    protected $signature = 'leopardo:restaurant:stock-alerts {company? : UUID (ou slug) de la company à scanner (défaut : tous les tenants)}';
 
     protected $description = 'Publie les alertes de seuil de stock RestaurantManager (restaurant.stock.alert.v1)';
 
@@ -28,7 +29,12 @@ final class StockAlertsCommand extends Command
         $companyId = $this->argument('company');
 
         if ($companyId !== null) {
-            $company = Company::query()->find($companyId);
+            // #8004 — le doublon `RestaurantStockAlertCommand` (non enregistré)
+            // résolvait déjà les slugs : la capacité est conservée ici pour ne
+            // pas régresser, l'implémentation tenant-scoped reste la seule.
+            $company = Str::isUuid((string) $companyId)
+                ? Company::query()->whereKey($companyId)->first()
+                : Company::query()->where('slug', $companyId)->first();
 
             if (! $company instanceof Company) {
                 $this->error("Company {$companyId} introuvable.");

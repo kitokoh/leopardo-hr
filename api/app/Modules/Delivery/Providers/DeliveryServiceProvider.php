@@ -6,6 +6,9 @@ namespace App\Modules\Delivery\Providers;
 
 use App\Events\RetailOnlineOrderConfirmed;
 use App\Modules\Delivery\Application\Listeners\CreateDeliveryForRetailOnlineOrder;
+use App\Modules\Delivery\Console\Commands\CloseDeliveryRouteCommand;
+use App\Modules\Delivery\Console\Commands\ExportDeliveryReportCommand;
+use App\Modules\Delivery\Console\Commands\ReplayDeliveryDlqCommand;
 use App\Modules\Delivery\Domain\Contracts\DeliveryAccountingContract;
 use App\Modules\Delivery\Domain\Contracts\DeliveryRepositoryInterface;
 use App\Modules\Delivery\Domain\Contracts\RecipientMessageContract;
@@ -69,6 +72,17 @@ class DeliveryServiceProvider extends ServiceProvider
         // (module Retail) lit l'état de la livraison de SA commande via ce
         // contrat Shared — jamais de requête directe sur les tables Delivery.
         $this->app->singleton(PublicDeliveryStatusProvider::class, EloquentPublicDeliveryStatusProvider::class);
+
+        // #8004 — Laravel n'auto-découvre QUE `app/Console/Commands` : les
+        // commandes du module DOIVENT être listées ici, sinon `artisan` répond
+        // « Command not found » (même piège que #7420/#5729). `delivery:close-route`,
+        // `delivery:export-report` et `delivery:replay-dlq` sont exercées par
+        // DeliveryAsyncTest.
+        $this->commands([
+            CloseDeliveryRouteCommand::class,
+            ExportDeliveryReportCommand::class,
+            ReplayDeliveryDlqCommand::class,
+        ]);
     }
 
     public function boot(): void
