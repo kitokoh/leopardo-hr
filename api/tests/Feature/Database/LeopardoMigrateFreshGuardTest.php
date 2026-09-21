@@ -35,9 +35,9 @@ class LeopardoMigrateFreshGuardTest extends TestCase
         $pending = $this->artisan('leopardo:migrate', ['--fresh' => true]);
         assert($pending instanceof PendingCommand);
         $pending->expectsConfirmation(
-                '--fresh va DÉTRUIRE les schémas public et shared_tenants sur ' . $this->expectedTarget() . '. Continuer ?',
-                'no'
-            )
+            '--fresh va DÉTRUIRE les schémas public et shared_tenants sur '.$this->expectedTarget().'. Continuer ?',
+            'no'
+        )
             ->assertExitCode(1);
 
         if (DB::getDriverName() === 'pgsql') {
