@@ -7,6 +7,7 @@ namespace Tests\Feature\Hospitality;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityProperty;
+use App\Modules\HospitalityManager\Domain\Models\HospitalityReservation;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityRoomType;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityUnit;
 use Laravel\Sanctum\Sanctum;
@@ -80,7 +81,7 @@ class HospitalityReferentialTest extends TestCase
     }
 
     /**
-     * @param array<string, mixed> $overrides
+     * @param  array<string, mixed>  $overrides
      * @return array<string, mixed>
      */
     private function propertyPayload(array $overrides = []): array
@@ -399,5 +400,98 @@ class HospitalityReferentialTest extends TestCase
 
         $this->patchJson("/api/v1/hospitality/units/{$foreignUnit->getKey()}", ['status' => 'occupied'])->assertStatus(404);
         $this->deleteJson("/api/v1/hospitality/units/{$foreignUnit->getKey()}")->assertStatus(404);
+    }
+
+    // ── Durcissements #8019 ───────────────────────────────────────────
+
+    /**
+     * #8019 (3) : une unité référencée par une réservation ACTIVE (non
+     * terminale) n'est plus supprimable — la réservation pointerait dans le
+     * vide (même invariant que `HOSPITALITY_PROPERTY_IN_USE` /
+     * `HOSPITALITY_ROOM_TYPE_IN_USE`). Une réservation terminale ne bloque pas.
+     */
+    public function test_unit_referenced_by_an_active_reservation_is_a_422(): void
+    {
+        $property = $this->createProperty($this->company);
+        /** @var HospitalityRoomType $roomType */
+        $roomType = HospitalityRoomType::query()->withoutGlobalScopes()->create([
+            'company_id' => $this->company->id,
+            'property_id' => $property->getKey(),
+            'code' => 'STD',
+            'name' => 'Standard',
+            'currency' => 'EUR',
+        ]);
+        /** @var HospitalityUnit $unit */
+        $unit = HospitalityUnit::query()->withoutGlobalScopes()->create([
+            'company_id' => $this->company->id,
+            'property_id' => $property->getKey(),
+            'room_type_id' => $roomType->getKey(),
+            'code' => 'CH-1',
+            'status' => 'available',
+        ]);
+
+        /** @var HospitalityReservation $reservation */
+        $reservation = HospitalityReservation::query()->withoutGlobalScopes()->create([
+            'company_id' => $this->company->id,
+            'reference' => 'HRS-UNIT-01',
+            'property_id' => $property->getKey(),
+            'room_type_id' => $roomType->getKey(),
+            'unit_id' => $unit->getKey(),
+            'guest_name' => 'Awa Ndiaye',
+            'check_in' => '2026-10-01',
+            'check_out' => '2026-10-04',
+            'status' => 'confirmed',
+            'source' => 'desk',
+        ]);
+
+        Sanctum::actingAs($this->admin);
+
+        $this->deleteJson("/api/v1/hospitality/units/{$unit->getKey()}")
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'HOSPITALITY_UNIT_IN_USE');
+
+        $this->assertTrue(HospitalityUnit::query()->whereKey($unit->getKey())->exists());
+
+        // Réservation terminale → l'unité redevient supprimable.
+        $reservation->update(['status' => 'cancelled']);
+
+        $this->deleteJson("/api/v1/hospitality/units/{$unit->getKey()}")->assertStatus(204);
+    }
+
+    /**
+     * #8019 (4) : `per_page` est borné (1..1000, défaut 15) sur les index
+     * établissements / types de chambres / unités — un `per_page` débile
+     * (négatif ou milliardaire) ne charge plus tout le référentiel du tenant.
+     */
+    public function test_index_endpoints_clamp_per_page(): void
+    {
+        $property = $this->createProperty($this->company);
+        Sanctum::actingAs($this->admin);
+
+        $this->getJson('/api/v1/hospitality/properties')
+            ->assertStatus(200)
+            ->assertJsonPath('meta.per_page', 15);
+        $this->getJson('/api/v1/hospitality/properties?per_page=3')
+            ->assertStatus(200)
+            ->assertJsonPath('meta.per_page', 3);
+        $this->getJson('/api/v1/hospitality/properties?per_page=1000000')
+            ->assertStatus(200)
+            ->assertJsonPath('meta.per_page', 1000);
+        $this->getJson('/api/v1/hospitality/properties?per_page=0')
+            ->assertStatus(200)
+            ->assertJsonPath('meta.per_page', 1);
+        $this->getJson('/api/v1/hospitality/properties?per_page=-5')
+            ->assertStatus(200)
+            ->assertJsonPath('meta.per_page', 1);
+
+        $this->getJson("/api/v1/hospitality/properties/{$property->getKey()}/room-types?per_page=1000000")
+            ->assertStatus(200)
+            ->assertJsonPath('meta.per_page', 1000);
+        $this->getJson("/api/v1/hospitality/properties/{$property->getKey()}/units?per_page=0")
+            ->assertStatus(200)
+            ->assertJsonPath('meta.per_page', 1);
+        $this->getJson("/api/v1/hospitality/properties/{$property->getKey()}/units?per_page=1000000")
+            ->assertStatus(200)
+            ->assertJsonPath('meta.per_page', 1000);
     }
 }

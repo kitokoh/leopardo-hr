@@ -8,6 +8,8 @@ return [
     'solution_inactive' => 'حل HospitalityManager غير مفعّل لهذا المستأجر.',
     'no_availability' => 'لا يوجد توفر لهذا النوع من الغرف في هذه الفترة.',
     'invalid_transition' => 'انتقال حجز غير صالح (:from → :target).',
+    'checkout_before_checkin' => 'يجب أن يكون تاريخ المغادرة بعد تاريخ الوصول.',
+    'unit_room_type_mismatch' => 'يجب أن تنتمي الوحدة المخصصة إلى نفس نوع الغرفة الخاص بالحجز.',
     'console' => [
         'expire_pending_description' => 'إنهاء حجوزات الضيافة المعلّقة المتجاوزة: إلغاء + تحرير المخزون (HOSP-004/#7946).',
         'expire_pending_no_tenant' => 'لا يوجد مستأجر نشط — لا شيء لإنهائه.',

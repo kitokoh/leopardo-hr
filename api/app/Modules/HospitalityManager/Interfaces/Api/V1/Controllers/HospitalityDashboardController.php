@@ -5,18 +5,28 @@ declare(strict_types=1);
 namespace App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\EmployeeResourceAssignment;
 use App\Http\Controllers\Controller;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityReservation;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityUnit;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Traits\ChecksHospitalitySolution;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * KPIs du tableau de bord Hospitality — HOSP-004 (#7946).
+ * KPIs du tableau de bord Hospitality — HOSP-004 (#7946), durci #8019.
  *
  * Occupation du jour, arrivées/départs du jour, réservations en ligne en
  * attente. Les KPIs locatifs (loyers en retard) arrivent avec HOSP-005.
+ *
+ * CHOIX #8019 — les agrégats sont BORNÉS aux établissements que l'acteur peut
+ * LIRE (RBAC ressource-scopé `hospitality_property`, niveau `view`), exactement
+ * comme `HospitalityReservationController::index` : `null` = aucune restriction
+ * (principal, rh en lecture, ou type pas encore assigné) → agrégat tenant-wide
+ * historique. Sans ce bornage, un réceptionniste scopé au site A lisait
+ * l'occupation, les arrivées/départs et les réservations en attente des autres
+ * sites du tenant (fuite de volumétrie + d'activité commerciale).
  */
 class HospitalityDashboardController extends Controller
 {
@@ -33,7 +43,14 @@ class HospitalityDashboardController extends Controller
         $companyId = $actor->company_id;
         $today = now()->toDateString();
 
-        $unitsQuery = fn () => HospitalityUnit::query()->where('company_id', $companyId);
+        // RBAC ressource-scopé progressif (HOSP-003 #7945) : bornage des
+        // agrégats aux établissements lisibles (`null` = aucune restriction).
+        $accessiblePropertyIds = $actor->accessibleResourceIds(
+            'hospitality_property',
+            EmployeeResourceAssignment::LEVEL_VIEW
+        );
+
+        $unitsQuery = fn (): Builder => $this->unitsQuery($companyId, $accessiblePropertyIds);
 
         $operationalUnits = $unitsQuery()
             ->whereNotIn('status', [HospitalityUnit::STATUS_MAINTENANCE, HospitalityUnit::STATUS_OUT_OF_SERVICE])
@@ -43,7 +60,7 @@ class HospitalityDashboardController extends Controller
             ->where('status', HospitalityUnit::STATUS_OCCUPIED)
             ->count();
 
-        $reservationsQuery = fn () => HospitalityReservation::query()->where('company_id', $companyId);
+        $reservationsQuery = fn (): Builder => $this->reservationsQuery($companyId, $accessiblePropertyIds);
 
         return response()->json([
             'data' => [
@@ -72,5 +89,41 @@ class HospitalityDashboardController extends Controller
                     ->count(),
             ],
         ]);
+    }
+
+    /**
+     * Unités du tenant, bornées aux établissements lisibles par l'acteur
+     * (`$accessiblePropertyIds === null` = aucune restriction).
+     *
+     * @param  list<int>|null  $accessiblePropertyIds
+     * @return Builder<HospitalityUnit>
+     */
+    private function unitsQuery(string $companyId, ?array $accessiblePropertyIds): Builder
+    {
+        $query = HospitalityUnit::query()->where('company_id', $companyId);
+
+        if ($accessiblePropertyIds !== null) {
+            $query->whereIn('property_id', $accessiblePropertyIds);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Réservations du tenant, bornées aux établissements lisibles par l'acteur
+     * (`$accessiblePropertyIds === null` = aucune restriction).
+     *
+     * @param  list<int>|null  $accessiblePropertyIds
+     * @return Builder<HospitalityReservation>
+     */
+    private function reservationsQuery(string $companyId, ?array $accessiblePropertyIds): Builder
+    {
+        $query = HospitalityReservation::query()->where('company_id', $companyId);
+
+        if ($accessiblePropertyIds !== null) {
+            $query->whereIn('property_id', $accessiblePropertyIds);
+        }
+
+        return $query;
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\HospitalityManager\Infrastructure\Services;
 
+use App\Modules\HospitalityManager\Domain\Exceptions\HospitalityCheckoutBeforeCheckinException;
 use App\Modules\HospitalityManager\Domain\Exceptions\HospitalityInvalidTransitionException;
 use App\Modules\HospitalityManager\Domain\Exceptions\HospitalityNoAvailabilityException;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityReservation;
@@ -25,7 +26,8 @@ use Throwable;
  * opérationnelle (unités du type hors maintenance / hors service).
  *
  * Une réservation `pending` en ligne EXPIRÉE n'immobilise plus
- * (`holdsInventory()`) — filet avant le passage de la commande d'expiration.
+ * (comptage explicite `heldCount()`) — filet avant le passage de la commande
+ * d'expiration.
  */
 final class HospitalityReservationService
 {
@@ -132,34 +134,46 @@ final class HospitalityReservationService
      * notes) : interdite sur un état terminal ; tout changement d'intervalle
      * ou de type re-vérifie la disponibilité (en s'excluant du comptage).
      *
+     * #8019 : la garde d'état terminal vit DÉSORMAIS dans la transaction,
+     * sous verrou de ligne (`lockForUpdate`) et re-vérifiée sur la ligne
+     * fraîche — la garde hors transaction était contournable par une course
+     * (annulation/check-out concurrent entre la lecture et l'écriture).
+     *
      * @param  array<string, mixed>  $data
      */
     public function updateReservation(HospitalityReservation $reservation, array $data): HospitalityReservation
     {
-        if (in_array($reservation->status, [
-            HospitalityReservation::STATUS_CHECKED_OUT,
-            HospitalityReservation::STATUS_CANCELLED,
-            HospitalityReservation::STATUS_NO_SHOW,
-        ], true)) {
-            throw new HospitalityInvalidTransitionException($reservation->status, 'update');
-        }
-
         return DB::transaction(function () use ($reservation, $data): HospitalityReservation {
-            $checkIn = CarbonImmutable::parse($data['check_in'] ?? $reservation->check_in);
-            $checkOut = CarbonImmutable::parse($data['check_out'] ?? $reservation->check_out);
-            $roomTypeId = (int) ($data['room_type_id'] ?? $reservation->room_type_id);
+            /** @var HospitalityReservation $fresh */
+            $fresh = HospitalityReservation::query()
+                ->whereKey($reservation->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
 
-            if ($checkOut->lessThanOrEqualTo($checkIn)) {
-                abort(422, 'CHECKOUT_BEFORE_CHECKIN');
+            // Re-vérification SOUS verrou (#8019) : un autre guichet a pu
+            // annuler (ou clôturer) la réservation entre la lecture et ici.
+            if ($fresh->isTerminal()) {
+                throw new HospitalityInvalidTransitionException($fresh->status, 'update');
             }
 
-            $this->assertAvailabilityFor($reservation->company_id, $roomTypeId, $checkIn, $checkOut, (int) $reservation->getKey());
+            $checkIn = CarbonImmutable::parse($data['check_in'] ?? $fresh->check_in);
+            $checkOut = CarbonImmutable::parse($data['check_out'] ?? $fresh->check_out);
+            $roomTypeId = (int) ($data['room_type_id'] ?? $fresh->room_type_id);
 
-            $reservation->update(array_merge($data, [
-                'version' => $reservation->version + 1,
+            if ($checkOut->lessThanOrEqualTo($checkIn)) {
+                // #8019 : exception de DOMAINE (l'`abort(422, …)` du service
+                // faisait fuiter la couche HTTP) — rendu HTTP identique :
+                // 422 + error/message `CHECKOUT_BEFORE_CHECKIN`.
+                throw new HospitalityCheckoutBeforeCheckinException;
+            }
+
+            $this->assertAvailabilityFor($fresh->company_id, $roomTypeId, $checkIn, $checkOut, (int) $fresh->getKey());
+
+            $fresh->update(array_merge($data, [
+                'version' => $fresh->version + 1,
             ]));
 
-            return $reservation->refresh();
+            return $fresh->refresh();
         });
     }
 
@@ -176,15 +190,15 @@ final class HospitalityReservationService
         }
 
         return DB::transaction(function () use ($reservation, $target): HospitalityReservation {
-            /** @var HospitalityReservation|null $fresh */
+            // #8019 : `firstOrFail()` remplace l'`abort(404)` du service — la
+            // ligne disparue est signalée par l'absence de résultat
+            // (ModelNotFoundException) que le renderer global mappe sur le
+            // MÊME corps 404 `RESOURCE_NOT_FOUND` qu'avant.
+            /** @var HospitalityReservation $fresh */
             $fresh = HospitalityReservation::query()
                 ->whereKey($reservation->getKey())
                 ->lockForUpdate()
-                ->first();
-
-            if ($fresh === null) {
-                abort(404);
-            }
+                ->firstOrFail();
 
             // Re-vérification sous verrou : un autre guichet a pu transiter
             // entre la lecture et la transaction.

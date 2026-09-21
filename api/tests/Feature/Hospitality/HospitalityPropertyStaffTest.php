@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\EmployeeResourceAssignment;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityProperty;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityPropertyStaff;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -198,6 +199,55 @@ class HospitalityPropertyStaffTest extends TestCase
         // L'affectation appartient à un AUTRE établissement du même tenant.
         $this->patchJson($this->staffUrl().'/'.$assignment->getKey(), ['role' => 'x'])
             ->assertStatus(404);
+    }
+
+    // ── Durcissement #8019 (7) : affectation concurrente ──────────────
+
+    /**
+     * #8019 (7) : un doublon arrivé ENTRE le SELECT d'unicité et l'INSERT
+     * (deux affectations concurrentes) doit répondre 409
+     * `EMPLOYEE_ALREADY_ASSIGNED` — jamais 500. Simulation fidèle au pattern
+     * `EmployeeImportRaceTest` : la ligne concurrente est insérée sur une
+     * connexion INDÉPENDANTE (committed, hors du SAVEPOINT du test) dans le
+     * hook `creating`, juste avant l'INSERT du service → violation de l'index
+     * unique `(company_id, property_id, employee_id)`.
+     */
+    public function test_concurrent_duplicate_assignment_is_a_409_not_a_500(): void
+    {
+        Sanctum::actingAs($this->admin);
+
+        config()->set('database.connections.race', array_merge(
+            config('database.connections.pgsql'),
+            ['database' => config('database.connections.pgsql.database')],
+        ));
+        DB::purge('race');
+
+        HospitalityPropertyStaff::creating(function (HospitalityPropertyStaff $model): void {
+            if ((int) $model->employee_id !== $this->lambda->id) {
+                return;
+            }
+
+            DB::connection('race')->table('hospitality_property_staff')->insert([
+                'company_id' => $model->company_id,
+                'property_id' => $model->property_id,
+                'employee_id' => $model->employee_id,
+                'role' => 'Concurrent',
+                'assigned_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        });
+
+        $this->postJson($this->staffUrl(), ['employee_id' => $this->lambda->id])
+            ->assertStatus(409)
+            ->assertJsonPath('error', 'EMPLOYEE_ALREADY_ASSIGNED');
+
+        // La ligne « concurrente » a été COMMITÉE hors de la transaction du
+        // test : on la retire pour ne pas polluer les tests suivants.
+        DB::connection('race')->table('hospitality_property_staff')
+            ->where('company_id', $this->company->id)
+            ->where('employee_id', $this->lambda->id)
+            ->delete();
     }
 
     // ── RBAC ressource-scopé progressif (#7598/#7599) ─────────────────

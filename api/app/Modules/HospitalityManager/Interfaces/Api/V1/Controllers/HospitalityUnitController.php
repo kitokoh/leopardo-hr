@@ -7,9 +7,11 @@ namespace App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityProperty;
+use App\Modules\HospitalityManager\Domain\Models\HospitalityReservation;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityUnit;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Requests\StoreHospitalityUnitRequest;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Requests\UpdateHospitalityUnitRequest;
+use App\Modules\HospitalityManager\Interfaces\Api\V1\Traits\BoundsPagination;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Traits\ChecksHospitalitySolution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,9 +22,14 @@ use Illuminate\Http\Request;
  * Index/création imbriqués sous l'établissement ; mise à jour et
  * suppression en route « shallow » (`/units/{unit}`) — tenant TOUJOURS
  * re-vérifié (404 fail-closed).
+ *
+ * #8019 : la suppression est refusée (422 `HOSPITALITY_UNIT_IN_USE`) tant
+ * qu'une réservation ACTIVE (non terminale) référence l'unité — même
+ * invariant que `HOSPITALITY_PROPERTY_IN_USE` / `HOSPITALITY_ROOM_TYPE_IN_USE`.
  */
 class HospitalityUnitController extends Controller
 {
+    use BoundsPagination;
     use ChecksHospitalitySolution;
 
     public function index(Request $request, HospitalityProperty $property): JsonResponse
@@ -48,7 +55,7 @@ class HospitalityUnitController extends Controller
             $query->where('room_type_id', (int) $request->input('room_type_id'));
         }
 
-        $units = $query->orderBy('code')->paginate((int) ($request->input('per_page') ?? 15));
+        $units = $query->orderBy('code')->paginate($this->boundedPerPage($request, 15));
 
         return response()->json([
             'data' => collect($units->items())->map(fn (HospitalityUnit $unit): array => $this->payload($unit)),
@@ -100,6 +107,20 @@ class HospitalityUnitController extends Controller
         $actor = $request->user();
         $this->assertSameTenant($unit, $actor->company_id);
         $this->authorize('delete', $unit);
+
+        // Une unité référencée par une réservation ACTIVE (non terminale)
+        // n'est pas supprimable : la réservation pointerait dans le vide et
+        // l'occupation du jour deviendrait incohérente (même invariant que
+        // `HOSPITALITY_PROPERTY_IN_USE` / `HOSPITALITY_ROOM_TYPE_IN_USE`).
+        $activeReservations = HospitalityReservation::query()
+            ->where('company_id', $actor->company_id)
+            ->where('unit_id', $unit->getKey())
+            ->whereNotIn('status', HospitalityReservation::TERMINAL_STATUSES)
+            ->exists();
+
+        if ($activeReservations) {
+            abort(422, 'HOSPITALITY_UNIT_IN_USE');
+        }
 
         $unit->delete();
 

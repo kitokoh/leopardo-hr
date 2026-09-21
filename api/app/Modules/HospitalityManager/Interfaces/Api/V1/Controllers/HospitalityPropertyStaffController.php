@@ -12,6 +12,7 @@ use App\Modules\HospitalityManager\Infrastructure\Services\HospitalityPropertySt
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Requests\StoreHospitalityPropertyStaffRequest;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Requests\UpdateHospitalityPropertyStaffRequest;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Resources\HospitalityPropertyStaffResource;
+use App\Modules\HospitalityManager\Interfaces\Api\V1\Traits\BoundsPagination;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Traits\ChecksHospitalitySolution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,12 +26,12 @@ use Illuminate\Http\Request;
  */
 class HospitalityPropertyStaffController extends Controller
 {
+    use BoundsPagination;
     use ChecksHospitalitySolution;
 
     public function __construct(
         private readonly HospitalityPropertyStaffService $staffService
-    ) {
-    }
+    ) {}
 
     public function index(Request $request, HospitalityProperty $property): JsonResponse
     {
@@ -43,7 +44,7 @@ class HospitalityPropertyStaffController extends Controller
         // assigné d'un autre site ne lit pas l'équipe de celui-ci).
         $this->authorize('view', $property);
 
-        $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
+        $perPage = $this->boundedPerPage($request, 50);
 
         $assignments = HospitalityPropertyStaff::query()
             ->with('employee')

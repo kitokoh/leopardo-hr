@@ -8,6 +8,8 @@ return [
     'solution_inactive' => 'The HospitalityManager solution is not active for this tenant.',
     'no_availability' => 'No availability for this room type on this interval.',
     'invalid_transition' => 'Invalid reservation transition (:from → :target).',
+    'checkout_before_checkin' => 'Check-out date must be after the check-in date.',
+    'unit_room_type_mismatch' => 'The assigned unit must belong to the same room type as the reservation.',
     'console' => [
         'expire_pending_description' => 'Expire overdue pending hospitality reservations: cancellation + inventory release (HOSP-004/#7946).',
         'expire_pending_no_tenant' => 'No active tenant — nothing to expire.',

@@ -327,4 +327,8 @@ return [
     'RESOURCE_NOT_FOUND' => 'Ressource introuvable dans cette entreprise.',
     'RESOURCE_ASSIGNMENTS_REQUIRED' => 'La liste des accès est requise (elle peut être vide pour tout retirer).',
     'RESOURCE_ACCESS_LEVEL_INVALID' => 'Niveau d\'accès invalide (view, operate ou manage).',
+
+    // #8019 — HospitalityManager : règle métier rendue par une DomainException
+    // (le message localisé vient du catalogue errors.*, pas du message interne).
+    'CHECKOUT_BEFORE_CHECKIN' => 'La date de départ doit être postérieure à la date d\'arrivée.',
 ];

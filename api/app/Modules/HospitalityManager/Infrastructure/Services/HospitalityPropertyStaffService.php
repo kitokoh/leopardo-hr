@@ -7,6 +7,8 @@ namespace App\Modules\HospitalityManager\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityProperty;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityPropertyStaff;
+use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Règles métier des affectations staff ↔ établissement — HOSP-003 (#7945).
@@ -19,6 +21,10 @@ use App\Modules\HospitalityManager\Domain\Models\HospitalityPropertyStaff;
  * - Retrait : soft delete ; une ré-affectation restaure la ligne supprimée
  *   (l'unicité `(company_id, property_id, employee_id)` porte aussi sur
  *   les lignes soft-deleted — jamais de doublon physique).
+ * - #8019 : l'affectation est TRANSACTIONNELLE (verrou de la ligne existante
+ *   + rattrapage de la violation d'unicité `23505`) — le check-then-create
+ *   hors transaction rendait la course « deux affectations simultanées » en
+ *   500 au lieu de 409 `EMPLOYEE_ALREADY_ASSIGNED`.
  */
 final class HospitalityPropertyStaffService
 {
@@ -40,34 +46,47 @@ final class HospitalityPropertyStaffService
 
         abort_if($employee === null, 422, 'EMPLOYEE_OUTSIDE_TENANT');
 
-        $existing = HospitalityPropertyStaff::query()
-            ->withTrashed()
-            ->where('company_id', $property->company_id)
-            ->where('property_id', $property->getKey())
-            ->where('employee_id', $employeeId)
-            ->first();
+        try {
+            return DB::transaction(function () use ($property, $employeeId, $data): HospitalityPropertyStaff {
+                /** @var HospitalityPropertyStaff|null $existing */
+                $existing = HospitalityPropertyStaff::query()
+                    ->withTrashed()
+                    ->where('company_id', $property->company_id)
+                    ->where('property_id', $property->getKey())
+                    ->where('employee_id', $employeeId)
+                    ->lockForUpdate()
+                    ->first();
 
-        // Déjà affecté (ligne non supprimée) → conflit métier.
-        abort_if($existing !== null && ! $existing->trashed(), 409, 'EMPLOYEE_ALREADY_ASSIGNED');
+                // Déjà affecté (ligne non supprimée) → conflit métier.
+                abort_if($existing !== null && ! $existing->trashed(), 409, 'EMPLOYEE_ALREADY_ASSIGNED');
 
-        if ($existing !== null) {
-            // Ré-affectation après retrait : restauration de la ligne
-            // soft-deleted (l'unique en base couvre aussi les supprimées).
-            $existing->restore();
-            $existing->update([
-                'role' => $data['role'] ?? null,
-                'assigned_at' => now(),
-            ]);
+                if ($existing !== null) {
+                    // Ré-affectation après retrait : restauration de la ligne
+                    // soft-deleted (l'unique en base couvre aussi les supprimées).
+                    $existing->restore();
+                    $existing->update([
+                        'role' => $data['role'] ?? null,
+                        'assigned_at' => now(),
+                    ]);
 
-            return $existing->refresh();
+                    return $existing->refresh();
+                }
+
+                return HospitalityPropertyStaff::query()->create([
+                    'company_id' => $property->company_id,
+                    'property_id' => $property->getKey(),
+                    'employee_id' => $employeeId,
+                    'role' => $data['role'] ?? null,
+                    'assigned_at' => now(),
+                ]);
+            });
+        } catch (UniqueConstraintViolationException) {
+            // Course perdue : une affectation concurrente (ou un doublon arrivé
+            // entre le SELECT et l'INSERT — le verrou ne bloquant pas une ligne
+            // inexistante) a posé la ligne en premier. L'index unique
+            // `(company_id, property_id, employee_id)` est la garde ultime :
+            // on rend le MÊME 409 que le chemin nominal, jamais un 500.
+            abort(409, 'EMPLOYEE_ALREADY_ASSIGNED');
         }
-
-        return HospitalityPropertyStaff::query()->create([
-            'company_id' => $property->company_id,
-            'property_id' => $property->getKey(),
-            'employee_id' => $employeeId,
-            'role' => $data['role'] ?? null,
-            'assigned_at' => now(),
-        ]);
     }
 }
