@@ -15,7 +15,7 @@ class HospitalityNoAvailabilityException extends DomainException
     public function __construct()
     {
         parent::__construct(
-            'Aucune disponibilité pour ce type de chambre sur cet intervalle.',
+            __('Aucune disponibilité pour ce type de chambre sur cet intervalle.'),
             409,
             'HOSPITALITY_NO_AVAILABILITY'
         );

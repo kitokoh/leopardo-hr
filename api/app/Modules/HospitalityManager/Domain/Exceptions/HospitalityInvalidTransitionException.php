@@ -15,7 +15,7 @@ class HospitalityInvalidTransitionException extends DomainException
     public function __construct(string $from, string $target)
     {
         parent::__construct(
-            "Transition de réservation invalide ({$from} → {$target}).",
+            __('Transition de réservation invalide (:from → :target).', ['from' => $from, 'target' => $target]),
             409,
             'INVALID_RESERVATION_TRANSITION'
         );
