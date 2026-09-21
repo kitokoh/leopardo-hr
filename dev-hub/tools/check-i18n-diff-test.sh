@@ -207,6 +207,37 @@ expect_clean 'PIN invalide.' "valeur du catalogue i18n kiosk (#7651)"
 expect_clean '[admin-dashboard] VITE_API_URL is not set' "diagnostic développeur préfixé [composant] (#7842)"
 expect_clean 'system-ui, sans-serif' "pile de polices CSS (font-family d'un avatar SVG local) — #8000"
 
+# ── Cas 1bis : glyphes SVG (attributs de géométrie) → VERT ───────────────────
+# Constat mesuré (2026-09-21, vitrine) : `d="M2 12h4l2.5-6 3 12 2.5-6h8"` était
+# signalé comme texte utilisateur, alors que c'est une commande de tracé. Un
+# attribut SVG ne porte jamais de texte affiché (le libellé reste hors du SVG).
+REPO_SVG="$(new_repo svg)"
+mkdir -p "$REPO_SVG/front/web/src/components"
+cat > "$REPO_SVG/front/web/src/components/Glyphes.tsx" <<'TSX'
+export function Glyphes() {
+  return (
+    <div className="flex items-center">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+        <path d="M2 12h4l2.5-6 3 12 2.5-6h8" />
+        <circle cx="12" cy="12" r="3.2" />
+        <ellipse cx="12" cy="12" rx="9" ry="4.2" />
+      </svg>
+    </div>
+  )
+}
+TSX
+git -C "$REPO_SVG" add -A
+git -C "$REPO_SVG" commit -q -m "glyphes svg symboliques"
+run_guard "$REPO_SVG"
+if [[ "$GUARD_STATUS" -ne 0 ]]; then
+  printf '%s\n' "$OUT" >&2
+  fail "faux positif SVG : les attributs de géométrie (d, viewBox, cx…) sont du code, pas du texte utilisateur"
+fi
+for motif in 'M2 12h4l2.5-6' 'viewBox="0 0 24 24"' 'cx="12"' 'strokeWidth'; do
+  expect_clean "$motif" "attribut de géométrie SVG « $motif »"
+done
+echo "ok: cas 1bis vert (tracés SVG non signalés)"
+
 # ── Cas 2 : code technique + vrais textes utilisateur → ROUGE ────────────────
 REPO_TEXT="$(new_repo mixte)"
 mkdir -p "$REPO_TEXT/front/admin-dashboard/src/components" "$REPO_TEXT/front/web/src/app/checkout"
