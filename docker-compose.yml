@@ -150,8 +150,13 @@ services:
     # (`composer install` pas encore lancé → unhealthy, honnête) du worker
     # réellement démarré. Si le worker meurt, le shell sort et
     # `restart: unless-stopped` relance le conteneur.
+    # #8018 : le motif s'écrit `[q]ueue:work` (classe de caractères). Sans les
+    # crochets, le `grep` de la sonde matche SA PROPRE cmdline (elle contient le
+    # littéral) et la sonde devient tautologique — toujours verte. La classe
+    # matche la cmdline du worker (`sh -c` + `php artisan queue:work`) sans
+    # matcher la sonde : ne PAS « simplifier » en `queue:work`.
     healthcheck:
-      test: ["CMD-SHELL", "grep -qs queue:work /proc/[0-9]*/cmdline && test -f vendor/autoload.php"]
+      test: ["CMD-SHELL", "grep -qs '[q]ueue:work' /proc/[0-9]*/cmdline && test -f vendor/autoload.php"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -195,8 +200,10 @@ services:
     # porte la chaîne « schedule:run » dans son cmdline en permanence (le
     # `php artisan schedule:run` réel ne tourne qu'une minute sur deux), et
     # vendor/autoload.php marque la fin de la phase d'attente.
+    # #8018 : motif `[s]chedule:run` — cf. commentaire du service queue : les
+    # crochets empêchent le grep de matcher sa propre cmdline.
     healthcheck:
-      test: ["CMD-SHELL", "grep -qs schedule:run /proc/[0-9]*/cmdline && test -f vendor/autoload.php"]
+      test: ["CMD-SHELL", "grep -qs '[s]chedule:run' /proc/[0-9]*/cmdline && test -f vendor/autoload.php"]
       interval: 30s
       timeout: 5s
       retries: 3

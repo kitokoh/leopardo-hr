@@ -75,6 +75,47 @@ docker compose exec api php artisan leopardo:migrate --seed
 > `0` = aligné, `1` = dérive (le script nomme les deux SHAs), `2` = environnement
 > injoignable. Runbook : `docs/ops/RENDER_DEV_ALIGNMENT.md`.
 
+### Migration d'un poste dev existant (issues #7996 / #8018)
+
+Trois pièges après le passage des images dev en non-root et des ports en
+loopback (#7847 / #7996) :
+
+- **`POSTGRES_PASSWORD` ne s'applique qu'au PREMIER `initdb`.** Le mot de passe
+  est écrit dans le volume `pgdata` à sa création : le changer dans
+  `.env`/le compose ne le met pas à jour sur un volume existant, et le service
+  `api` tente alors le NOUVEAU mot de passe → `password authentication failed`
+  (le conteneur postgres, lui, n'écoute pas la variable après l'initdb). Volume
+  déjà initialisé avec l'ancien `secret` : soit garder ce mot de passe
+  (`POSTGRES_PASSWORD=secret` dans l'environnement ou dans un `.env` racine, non
+  versionné), soit recréer le volume et repartir d'une base neuve
+  (`make destroy` = `docker compose down -v`, puis `make install`).
+- **`api/vendor` et `api/storage` appartiennent à root.** Si la stack a tourné
+  avant #7996 (images root), les fichiers créés dans le bind-mount `./api` sont
+  root-owned et l'utilisateur non-root `leopardo` (uid 1000) de l'image ne peut
+  plus écrire (composer, logs, cache). Remède :
+  `sudo chown -R $(id -u):$(id -g) api/`. Si l'uid de l'hôte n'est pas 1000,
+  alignez aussi l'image : `APP_UID=$(id -u) APP_GID=$(id -g) docker compose up -d --build`.
+- **Perte de l'accès LAN.** Depuis #7847/#7996, TOUS les ports de dev (api 8000,
+  dashboard 3000, web 3001, postgres, redis, mailpit) sont publiés sur
+  `127.0.0.1` uniquement : un téléphone ou une tablette du réseau local ne peut
+  plus joindre la stack via l'IP de la machine (c'est volontaire — les mots de
+  passe de dev sont publics sur ce compose). Workaround local et non versionné,
+  `docker-compose.override.yml` à la racine du dépôt :
+
+  ```yaml
+  # Republie le port sur toutes les interfaces. `!override` (Compose >= 2.24)
+  # REMPLACE la liste `ports` du compose principal ; avec un Compose plus ancien
+  # (listes concaténées), utilisez un port hôte distinct, ex. "8001:8000"
+  # (joignable via http://<ip-de-la-machine>:8001).
+  services:
+    api:
+      ports: !override
+        - "8000:8000"
+  ```
+
+  Dupliquez le bloc pour les autres services utiles (dashboard, web…). À
+  réserver aux réseaux de confiance : cette stack de dev n'a pas de secrets.
+
 ## Project Structure
 
 ```
