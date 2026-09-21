@@ -178,6 +178,18 @@ services:
         value: file
       - key: SESSION_DRIVER
         value: file
+      # #7980 : cookies de session HTTPS-only — Render sert TOUJOURS l'app en
+      # TLS, y compris sur le service dev ; sans ce flag un cookie de session
+      # peut transiter en clair au premier hop d'une redirection. Parité avec
+      # render.prod.yaml (même finding, même correctif).
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      # #7980 : fin du `sslmode => 'prefer'` en dur — TLS OBLIGATOIRE vers la
+      # base managée (le défaut applicatif est désormais 'require' hors
+      # local/test, cf. config/database.php). Un self-host sans TLS pose
+      # explicitement DB_SSLMODE=prefer ou disable.
+      - key: DB_SSLMODE
+        value: require
       # Issue #5586 : Sentry était inerte en prod (DSN absent → aucun
       # événement). DSN optionnel : renseigner SENTRY_LARAVEL_DSN dans le
       # dashboard Render (secret sync: false) pour activer le report d'erreurs

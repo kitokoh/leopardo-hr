@@ -37,6 +37,9 @@ services:
       APP_DEBUG: "true"
       DB_CONNECTION: pgsql
       DB_HOST: postgres
+      # #7980 : le PostgreSQL du compose local n'a pas de TLS ; hors
+      # local/test le défaut applicatif est 'require'.
+      DB_SSLMODE: prefer
       DB_PORT: "5432"
       DB_DATABASE: leopardo
       DB_USERNAME: leopardo
@@ -130,6 +133,9 @@ services:
       APP_DEBUG: "true"
       DB_CONNECTION: pgsql
       DB_HOST: postgres
+      # #7980 : le PostgreSQL du compose local n'a pas de TLS ; hors
+      # local/test le défaut applicatif est 'require'.
+      DB_SSLMODE: prefer
       DB_PORT: "5432"
       DB_DATABASE: leopardo
       DB_USERNAME: leopardo
@@ -182,6 +188,9 @@ services:
       APP_DEBUG: "true"
       DB_CONNECTION: pgsql
       DB_HOST: postgres
+      # #7980 : le PostgreSQL du compose local n'a pas de TLS ; hors
+      # local/test le défaut applicatif est 'require'.
+      DB_SSLMODE: prefer
       DB_PORT: "5432"
       DB_DATABASE: leopardo
       DB_USERNAME: leopardo
