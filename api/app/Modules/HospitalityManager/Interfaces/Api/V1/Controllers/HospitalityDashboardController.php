@@ -40,7 +40,10 @@ class HospitalityDashboardController extends Controller
         $actor = $request->user();
         $this->authorize('viewAny', HospitalityReservation::class);
 
-        $companyId = $actor->company_id;
+        // `(string)` : `employees.company_id` est nullable au niveau du modèle ;
+        // le middleware tenant garantit la valeur au runtime. Même conversion que
+        // `HospitalityReservationController::createDeskReservation()`.
+        $companyId = (string) $actor->company_id;
         $today = now()->toDateString();
 
         // RBAC ressource-scopé progressif (HOSP-003 #7945) : bornage des
