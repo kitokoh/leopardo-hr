@@ -31,6 +31,13 @@ use Illuminate\Database\UniqueConstraintViolationException;
  *               — un verdict temporel laisse la proposition en file de
  *               confirmation humaine, jamais de rejeu automatique.
  *
+ * #8023 — le mode `auto` est EXCLU du chemin READ-TOOL : l'IntentEngine
+ * appelle `prepare($message, allowAutoSend: false)`, qui retrograde `auto`
+ * en `confirm`. Un tool call est decide par le LLM dans la boucle de
+ * l'Orchestrator, sans validation humaine prealable : il ne doit jamais
+ * produire d'envoi Gmail SYNCHRONE et irreversible. Le chemin canonique
+ * (job `PrepareCommunicationReplyJob`) conserve le mode `auto` opt-in.
+ *
  * Defense en profondeur : une politique `auto` sur une categorie bloquee
  * (finance/RH/juridique — liste en dur) est retrogradee en `confirm` meme
  * si une ligne invalide existait en base (l'API la refuse deja en 422).
@@ -52,10 +59,22 @@ class CommunicationReplyService
      * eligible (sortant, auto-repondeur, liste, non classifie, politique
      * off, proposition deja existante).
      *
+     * `$allowAutoSend = false` (chemin READ-TOOL, #8023 — outil
+     * `email_reply_draft` de l'IntentEngine) retrograde une politique `auto`
+     * en `confirm` : un tool call est decide par le LLM DANS la boucle de
+     * l'Orchestrator, sans validation humaine prealable — il ne doit donc pas
+     * declencher l'envoi Gmail SYNCHRONE et irreversible de `handleAuto()`
+     * (`$this->sender->send()`) ; la proposition generee reste en file Pending
+     * (ZERO effet externe, le brouillon est toujours renvoye a l'agent).
+     * Defaut `true` : le chemin canonique (job `PrepareCommunicationReplyJob`,
+     * endpoints) garde le mode `auto` opt-in intact.
+     *
+     * @param  bool  $allowAutoSend  false = read-tool : `auto` ramene a `confirm`
+     *
      * @throws GmailRateLimitedException quota Gmail (backoff job)
      * @throws GmailSyncAuthException token mort (integration marquee error)
      */
-    public function prepare(CommunicationMessage $message): void
+    public function prepare(CommunicationMessage $message, bool $allowAutoSend = true): void
     {
         if ($message->classification_status !== CommunicationMessage::CLASSIFICATION_CLASSIFIED
             || $message->ai_category === null) {
@@ -83,7 +102,7 @@ class CommunicationReplyService
             return;
         }
 
-        $mode = $this->resolveMode($integration, $message->ai_category);
+        $mode = $this->resolveMode($integration, $message->ai_category, $allowAutoSend);
 
         if ($mode === null) {
             return;
@@ -147,10 +166,15 @@ class CommunicationReplyService
     /**
      * Politique effective de la boite pour la categorie — null = off.
      * `auto` sur une categorie bloquee est retrograde en `confirm`
-     * (defense en profondeur, la liste est bloquee EN DUR).
+     * (defense en profondeur, la liste est bloquee EN DUR). `auto` est
+     * egalement retrograde en `confirm` quand l'appelant interdit l'envoi
+     * synchrone (`$allowAutoSend = false`, chemin read-tool #8023).
      */
-    private function resolveMode(CommunicationIntegration $integration, string $categoryKey): ?string
-    {
+    private function resolveMode(
+        CommunicationIntegration $integration,
+        string $categoryKey,
+        bool $allowAutoSend = true,
+    ): ?string {
         /** @var CommunicationReplyPolicy|null $policy */
         $policy = CommunicationReplyPolicy::query()
             ->withoutGlobalScopes()
@@ -164,7 +188,7 @@ class CommunicationReplyService
         }
 
         if ($policy->policy === CommunicationReplyPolicy::POLICY_AUTO
-            && CommunicationReplyPolicy::isAutoBlockedCategory($categoryKey)) {
+            && (! $allowAutoSend || CommunicationReplyPolicy::isAutoBlockedCategory($categoryKey))) {
             return CommunicationPendingReply::MODE_CONFIRM;
         }
 
