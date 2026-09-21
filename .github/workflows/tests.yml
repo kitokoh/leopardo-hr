@@ -99,7 +99,13 @@ jobs:
           POSTGRES_PASSWORD: leopardo_pass_test
         ports:
           - 5432:5432
+        # #8004 : `--name` rend le conteneur adressable par l'étape de
+        # reconfiguration ci-dessous (les `options:` d'un service GitHub Actions
+        # sont passées à `docker create [options] <image>` — AUCUN argument ne
+        # peut être ajouté APRÈS l'image, donc `-c max_locks_per_transaction=…`
+        # est inexprimable ici ; cf. docker-library/postgres discussion #1091).
         options: >-
+          --name leopardo-postgres
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
@@ -121,6 +127,31 @@ jobs:
         with:
           lfs: false
           fetch-depth: 0
+
+      # #8004 — `SQLSTATE[53200] Out of shared memory` : la fixture MVP (et les
+      # purges de schéma de RefreshTenantDatabase) tient des centaines de verrous
+      # DDL dans UNE transaction (`DROP SCHEMA … CASCADE`, ~400 tables) alors que
+      # le postgres:16 du service container garde le défaut
+      # `max_locks_per_transaction=64`. Ce paramètre est alloué au démarrage du
+      # postmaster : il ne peut PAS être posé par une requête, et les `options:`
+      # d'un service container interdisent tout argument après l'image
+      # (docker-library/postgres#1091). Il est donc posé par ALTER SYSTEM puis
+      # appliqué par un redémarrage du conteneur, avant toute migration.
+      - name: Raise PostgreSQL max_locks_per_transaction (#8004)
+        run: |
+          set -euo pipefail
+          docker exec -u postgres leopardo-postgres \
+            psql -v ON_ERROR_STOP=1 -d postgres \
+            -c "ALTER SYSTEM SET max_locks_per_transaction = 512;"
+          docker restart leopardo-postgres
+          for _ in $(seq 1 60); do
+            if docker exec leopardo-postgres pg_isready -U leopardo_user -d leopardo_test >/dev/null 2>&1; then
+              break
+            fi
+            sleep 1
+          done
+          docker exec -u postgres leopardo-postgres \
+            psql -tAc "SHOW max_locks_per_transaction;"
 
       - name: Setup backend (PHP + Composer + multi-tenant DB)
         uses: ./.github/actions/setup-backend-db

@@ -164,9 +164,13 @@ class TravelBookingExpirationTest extends TestCase
     {
         $this->tenants->withinTenant($this->company, fn (): TravelBooking => $this->pendingBooking($this->company, now()->subMinutes(5)));
 
+        // #8004 — le message est désormais traduit (catalogue
+        // `travel.console.expire_pending_*`) : on asserte un jeton indépendant
+        // de la locale (l'identifiant du tenant traité) plutôt qu'un littéral
+        // français qui ne vaudrait qu'en locale `fr`.
         $this->artisan('travel:expire-pending-bookings', ['--sync' => true])
             ->assertExitCode(0)
-            ->expectsOutputToContain('compagnie(s) concernée(s)');
+            ->expectsOutputToContain((string) $this->company->id);
 
         $this->tenants->withinTenant($this->company, function (): void {
             $this->assertSame(
@@ -192,6 +196,11 @@ class TravelBookingExpirationTest extends TestCase
 
         Bus::assertDispatched(ExpirePendingBookingsJob::class, fn (ExpirePendingBookingsJob $job): bool => $job->companyId === $this->company->id);
         Bus::assertDispatched(ExpirePendingBookingsJob::class, fn (ExpirePendingBookingsJob $job): bool => $job->companyId === $otherCompany->id);
-        Bus::assertDispatchedCount(ExpirePendingBookingsJob::class, 2);
+        // #8004 — `Bus::assertDispatchedCount()` N'EXISTE PAS dans Laravel :
+        // le vrai nom est `assertDispatchedTimes()` (l'ancien appel levait
+        // « Call to undefined method BusFake::assertDispatchedCount() », bug
+        // masqué tant que la commande n'était pas enregistrée et échouait
+        // avant cette ligne sur `InvalidOptionException`).
+        Bus::assertDispatchedTimes(ExpirePendingBookingsJob::class, 2);
     }
 }

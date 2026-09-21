@@ -39,7 +39,8 @@ final class TravelLegacyImportCommand extends Command
         TravelLegacyImportService $service,
     ): int {
         $companyValue = $this->option('company');
-        $companySlug = is_string($companyValue) ? $companyValue : '';
+        // #8004 — narrowing `is_string()` redundant (PHPStan level 8).
+        $companySlug = (string) $companyValue;
         $company = $this->resolveCompany($companySlug);
 
         if ($company === null) {
@@ -49,7 +50,7 @@ final class TravelLegacyImportCommand extends Command
         }
 
         $dumpValue = $this->argument('dump');
-        $path = is_string($dumpValue) ? $dumpValue : '';
+        $path = (string) $dumpValue;
 
         if (! is_file($path) || ! is_readable($path)) {
             $this->error("Fichier dump illisible : {$path}");

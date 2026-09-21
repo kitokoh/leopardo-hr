@@ -22,6 +22,12 @@ return [
         'expire_adverts_no_tenant' => 'Kiracı yok — sona erdirilecek bir şey yok.',
         'expire_adverts_tenant_summary' => 'Kiracı :company: :expired süresi geçti, :archived arşivlendi.',
         'expire_adverts_total' => 'Toplam: :expired ilan süresi geçti, :archived arşivlendi.',
+        'expire_pending_description' => 'Süresi geçen bekleyen TravelAgency rezervasyonlarını sona erdirir (TRAVEL-418/#6070).',
+        'expire_pending_none' => 'Süresi geçmiş bekleyen rezervasyon yok.',
+        'expire_pending_summary' => 'İlgili şirket sayısı: :count (:processed işlendi, limit=:limit).',
+        'expire_pending_sync' => '[sync] :company satır içinde sona erdirildi.',
+        'expire_pending_tenant' => 'Kiracı :company: :count rezervasyon sona erdirildi.',
+        'expire_pending_total' => 'Toplam: :count rezervasyon sona erdirildi.',
     ],
     'marketplace' => [
         'booking_not_found' => 'Pazar yeri rezervasyonu bulunamadı.',

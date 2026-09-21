@@ -16,7 +16,10 @@ use App\Modules\RestaurantManager\Application\Services\CogsCalculator;
 use App\Modules\RestaurantManager\Application\Services\StockAlertService;
 use App\Modules\RestaurantManager\Application\Services\StockDecrementer;
 use App\Modules\RestaurantManager\Console\Commands\ActivateRestaurantManagerCommand;
+use App\Modules\RestaurantManager\Console\Commands\RestaurantNoShowExpireCommand;
 use App\Modules\RestaurantManager\Console\Commands\RestaurantOutboxDispatchCommand;
+use App\Modules\RestaurantManager\Console\Commands\RestaurantReservationJobsCommand;
+use App\Modules\RestaurantManager\Console\Commands\RestaurantSendRemindersCommand;
 use App\Modules\RestaurantManager\Console\Commands\SeedRestaurantDemoCommand;
 use App\Modules\RestaurantManager\Console\Commands\StockAlertsCommand;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantBranchRepositoryInterface;
@@ -137,11 +140,22 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         // RESTO-107 (#6164) — seed de démonstration idempotent ;
         // RESTO-505 (#6204) — alerte de seuil de stock (rescan complet) ;
         // RESTO-808 (#6229) — dispatcher outbox (consommation des événements).
+        //
+        // #8004 — Laravel n'auto-découvre QUE `app/Console/Commands` : les
+        // commandes du module DOIVENT être listées ici (`restaurant:no-show-expire`,
+        // `restaurant:send-reminders`, `leopardo:restaurant:reservation-jobs`
+        // échouaient en CommandNotFoundException). Le doublon non enregistré ni
+        // testé `RestaurantStockAlertCommand` (même nom que `StockAlertsCommand`,
+        // scoping tenant absent) est supprimé — `StockAlertsCommand` reste
+        // l'unique implémentation de `leopardo:restaurant:stock-alerts`.
         $this->commands([
             ActivateRestaurantManagerCommand::class,
             SeedRestaurantDemoCommand::class,
             StockAlertsCommand::class,
             RestaurantOutboxDispatchCommand::class,
+            RestaurantNoShowExpireCommand::class,
+            RestaurantSendRemindersCommand::class,
+            RestaurantReservationJobsCommand::class,
         ]);
 
         // RESTO-808 (#6229) — registre des consommateurs d'outbox de la

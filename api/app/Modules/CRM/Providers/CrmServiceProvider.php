@@ -10,12 +10,12 @@ use App\Modules\CRM\Domain\Contracts\CampaignConsentCheckerInterface;
 use App\Modules\CRM\Domain\Contracts\ChannelAdapterContract;
 use App\Modules\CRM\Domain\Contracts\CrmChannelMessageRepositoryInterface;
 use App\Modules\CRM\Domain\Contracts\CrmImportRepositoryInterface;
-use App\Modules\CRM\Domain\Events\CampaignStarted;
 use App\Modules\CRM\Domain\Contracts\CrmImportRowPersisterInterface;
 use App\Modules\CRM\Domain\Contracts\CrmLeadRepositoryInterface;
 use App\Modules\CRM\Domain\Contracts\EmailProviderInterface;
 use App\Modules\CRM\Domain\Contracts\SegmentContactSourceInterface;
 use App\Modules\CRM\Domain\Enums\CrmChannelType;
+use App\Modules\CRM\Domain\Events\CampaignStarted;
 use App\Modules\CRM\Domain\Events\CrmConsentRevoked;
 use App\Modules\CRM\Infrastructure\Integrations\Sms\SmsAdapter;
 use App\Modules\CRM\Infrastructure\Integrations\WhatsApp\WhatsAppAdapter;
@@ -147,9 +147,12 @@ class CrmServiceProvider extends ServiceProvider
     {
         // Commandes artisan du module CRM (#5729) : auto-découverte hors
         // app/Console/Commands → enregistrement explicite.
+        // #8004 : `crm:tasks:send-overdue-reminders` n'était listée nulle part
+        // (CommandNotFoundException) — même piège que #7420/#5729.
         $this->commands([
             \App\Modules\CRM\Console\Commands\CleanupCrmExports::class,
             \App\Modules\CRM\Console\Commands\ProcessCampaignSends::class,
+            \App\Modules\CRM\Console\Commands\CrmSendOverdueTaskReminders::class,
         ]);
         // #7751 — le canal email prend en charge les envois d'une campagne
         // dès son démarrage (worker asynchrone, claim atomique par send).

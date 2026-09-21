@@ -18,6 +18,10 @@ class AbsenceFactory extends Factory
         $end = (clone $start)->modify("+{$days} days");
 
         return [
+            // #8004 — `absences.absence_type_id` est NOT NULL : la factory doit
+            // fournir un type par défaut (l'état `withType()` reste disponible
+            // pour rattacher explicitement un type existant du même tenant).
+            'absence_type_id' => AbsenceType::factory(),
             'start_date' => $start->format('Y-m-d'),
             'end_date' => $end->format('Y-m-d'),
             'days_count' => $days,

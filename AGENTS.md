@@ -102,6 +102,28 @@ Derniere mise a jour : 2026-09-21 (lots sécurité backend #7995/#7999 + BC-01 P
 > tests) pointe encore `/api/v1/public/restaurant/menu|orders` alors que les
 > routes vivent sous `/public/restaurant/shop/*` : lancer `phpunit <fichier>`
 > AVANT d'y ajouter des tests, et poser les nouveaux tests dans une suite verte.
+Derniere mise a jour : 2026-09-21 (lots sécurité backend #7995/#7999 + BC-01 PLATFORM #7973..#7978 + session PM #7963/#7966/#7958/#7967 — fusion des deux blocs de leçons ; + tranche 2 déblocage main #8004)
+
+> Leçon 2026-09-21 (#8004) : **(1) `PendingCommand::assertExitCode()` est PARESSEUX.**
+> `$cmd->assertExitCode(0);` n'exécute PAS la commande — il enregistre l'attente et
+> l'exécution réelle est différée au `__destruct` du `PendingCommand`. Tout test qui
+> assertait ensuite la file d'attente (`Queue::assertPushed`) ou la base observait donc
+> l'état **d'avant l'exécution** : un rouge fantôme, très difficile à attribuer au vrai
+> coupable. Écrire `$this->artisan('x')->assertExitCode(0)->run();` (ou ne rien asserter
+> après). Corollaire : un échec de test peut cacher un bug de test — avant de chercher
+> dans le code applicatif, vérifier que le test observe bien l'état APRÈS.
+> **(2) Laravel n'auto-découvre QUE `app/Console/Commands`.** Toute commande rangée sous
+> `app/Modules/*/Console/Commands` doit être listée dans le `$this->commands([...])` de son
+> Provider (pattern #7420) : sinon `artisan` répond « Command not found » **et** un doublon
+> racine homonyme peut masquer l'implémentation du module selon l'ordre d'enregistrement
+> (4 collisions constatées : `travel:expire-pending-bookings`, `leopardo:travel:import-legacy`,
+> `leopardo:restaurant:stock-alerts`, `pilot:seed`). Détecter : extraire les `$signature`
+> des deux arborescences et comparer les PREMIERS mots (les options changent d'une ligne à
+> l'autre, le nom non).
+> **(3) Un test rouge peut masquer les suivants.** Les doublons `assertDispatchedCount()`
+> (méthode inexistante, vrai nom `assertDispatchedTimes()`) n'étaient visibles qu'APRÈS
+> l'enregistrement de la commande : l'`InvalidOptionException` échouait plus tôt. Réparer
+> une cause racine en révèle d'autres — prévoir plusieurs passes.
 
 > Leçon 2026-09-20 (#7995/#7999) : **(1) une politique de validation = un helper unique**
 > — les 3 sites historiques de la norme mots de passe étaient dupliqués textuellement ;

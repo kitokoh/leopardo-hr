@@ -132,8 +132,28 @@ abstract class TestCase extends BaseTestCase
     /** @var array<string, true> */
     private static array $parallelPublicMigrated = [];
 
+    /**
+     * Bases de workers déjà créées lors de CE processus (issue #8004).
+     *
+     * Sans mémoïsation, `CREATE DATABASE` était retenté à CHAQUE setUp : en
+     * `--parallel`, ~6 700 CREATE échouaient en 42P04 avant d'être avalés,
+     * saturant le journal PostgreSQL et verrouillant la table des locks
+     * (`SQLSTATE[53200] out of shared memory`). Un `CREATE DATABASE` réussi est
+     * définitif pour la durée du worker : on le mémorise comme le fait déjà
+     * `ensureWorkerPublicSchema()` juste en dessous.
+     *
+     * @var array<string, true>
+     */
+    private static array $parallelDatabaseCreated = [];
+
     private function ensureParallelDatabaseExists(string $database): void
     {
+        if (isset(self::$parallelDatabaseCreated[$database])) {
+            $this->ensureWorkerPublicSchema($database);
+
+            return;
+        }
+
         if (DB::transactionLevel() > 0) {
             return;
         }
@@ -141,11 +161,16 @@ abstract class TestCase extends BaseTestCase
         try {
             Schema::createDatabase($database);
         } catch (QueryException $exception) {
-            // 42P04 duplicate_database → base déjà créée par un test précédent.
+            // 42P04 duplicate_database → base déjà créée par un test précédent
+            // (ou par un setUp antérieur de ce même worker avant la
+            // mémoïsation) : ce n'est pas une erreur, la base est utilisable.
             if ($exception->getCode() !== '42P04' && ! str_contains($exception->getMessage(), '42P04')) {
                 throw $exception;
             }
         }
+
+        // Mémorisé même après un 42P04 : dans les deux cas la base existe.
+        self::$parallelDatabaseCreated[$database] = true;
 
         $this->ensureWorkerPublicSchema($database);
     }
