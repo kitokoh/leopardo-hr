@@ -6,7 +6,7 @@ namespace App\Core\Auth\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Mail\PasswordResetMail;
-use App\Shared\Rules\NotCommonPassword;
+use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Password;
 
 /**
  * Issue #2626 — réinitialisation de mot de passe.
@@ -95,7 +94,7 @@ class PasswordResetController
             'email' => ['required', 'email', 'max:255'],
             'token' => ['required', 'string', 'max:64'],
             // Issue #5620 : min 8 caractères + au moins 1 chiffre.
-            'password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword, 'confirmed'],
+            'password' => PasswordPolicy::required(), // #7995 — politique unique
         ]);
 
         $email = strtolower(trim($validated['email']));

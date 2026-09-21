@@ -99,15 +99,31 @@ class RetailMarketFavoriteController extends Controller
             abort(404);
         }
 
-        $favorite = MarketplaceFavorite::query()->firstOrCreate([
-            'buyer_id' => (int) $buyer->id,
-            'company_id' => (string) $product->company_id,
-            'product_id' => (int) $product->id,
-        ]);
+        $favorite = MarketplaceFavorite::query()
+            ->where('buyer_id', (int) $buyer->id)
+            ->where('company_id', (string) $product->company_id)
+            ->where('product_id', (int) $product->id)
+            ->first();
+
+        $created = false;
+        if (! $favorite instanceof MarketplaceFavorite) {
+            // #7999 — company_id résolu serveur (produit éligible) et posé en
+            // affectation directe, jamais mass-assigné : même défense en
+            // profondeur que MarketplaceReview. Hors contexte tenant
+            // (route /market/* cross-tenant), le hook BelongsToCompany est
+            // permissif — la valeur DOIT donc venir d'ici.
+            $favorite = new MarketplaceFavorite([
+                'buyer_id' => (int) $buyer->id,
+                'product_id' => (int) $product->id,
+            ]);
+            $favorite->company_id = (string) $product->company_id;
+            $favorite->save();
+            $created = true;
+        }
 
         return response()->json([
             'data' => ['product_id' => (int) $product->id, 'favorite' => true],
-        ], $favorite->wasRecentlyCreated ? 201 : 200);
+        ], $created ? 201 : 200);
     }
 
     /**

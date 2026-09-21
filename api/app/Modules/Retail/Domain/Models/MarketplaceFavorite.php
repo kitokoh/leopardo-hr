@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Retail\Domain\Models;
 
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -27,12 +28,15 @@ use Illuminate\Support\Carbon;
  */
 class MarketplaceFavorite extends Model
 {
+    // #7999 — même défense en profondeur que MarketplaceReview (scope tenant
+    // fail-closed, no-op sur les routes publiques).
+    use BelongsToCompany;
+
     protected $table = 'marketplace_favorites';
 
     /** @var list<string> */
     protected $fillable = [
         'buyer_id',
-        'company_id',
         'product_id',
     ];
 

@@ -82,9 +82,11 @@ final class RetailBuyerReviewService
             ]);
         }
 
-        return MarketplaceReview::query()->create([
+        // #7999 (leçon #7646) : company_id retiré des $fillable — posé en
+        // affectation directe, jamais via le payload (même si ici il vient
+        // de la commande résolue côté serveur, pas de la requête).
+        $review = new MarketplaceReview([
             'buyer_id' => (int) $buyer->id,
-            'company_id' => (string) $order->company_id,
             'product_id' => $productId,
             'order_id' => (int) $order->id,
             'rating' => $rating,
@@ -93,5 +95,9 @@ final class RetailBuyerReviewService
             // prevue v2, le champ existe deja.
             'status' => MarketplaceReviewStatus::Approved->value,
         ]);
+        $review->company_id = (string) $order->company_id;
+        $review->save();
+
+        return $review;
     }
 }

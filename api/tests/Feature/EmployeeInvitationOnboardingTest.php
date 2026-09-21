@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Mail\UserInvitationMail;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Mail\UserInvitationMail;
 use App\Modules\HR\Domain\Models\UserInvitation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -182,14 +182,14 @@ class EmployeeInvitationOnboardingTest extends TestCase
 
         $this->withoutMiddleware()
             ->post('/activate/'.$token, [
-                'password' => 'password456',
-                'password_confirmation' => 'password456',
+                'password' => 'Invit-Onboard-2026!',
+                'password_confirmation' => 'Invit-Onboard-2026!',
             ])->assertRedirect(route('login'));
 
         DB::statement('SET search_path TO shared_tenants,public');
 
         $employee = Employee::query()->where('email', 'karim.aouad@company.test')->firstOrFail();
-        $this->assertTrue(Hash::check('password456', $employee->password_hash));
+        $this->assertTrue(Hash::check('Invit-Onboard-2026!', $employee->password_hash));
         $this->assertNotNull($employee->invitation_accepted_at);
         $this->assertNotNull($employee->email_verified_at);
     }
@@ -251,14 +251,14 @@ class EmployeeInvitationOnboardingTest extends TestCase
 
         $this->withoutMiddleware()
             ->post('/activate/'.$token, [
-                'password' => 'password456',
-                'password_confirmation' => 'password456',
+                'password' => 'Invit-Onboard-2026!',
+                'password_confirmation' => 'Invit-Onboard-2026!',
             ])->assertRedirect(route('login'));
 
         $this->withoutMiddleware()
             ->post('/activate/'.$token, [
-                'password' => 'password789',
-                'password_confirmation' => 'password789',
+                'password' => 'Invit-Onboard-2027!',
+                'password_confirmation' => 'Invit-Onboard-2027!',
             ])->assertStatus(410);
     }
 
@@ -419,8 +419,8 @@ class EmployeeInvitationOnboardingTest extends TestCase
 
         $this->withoutMiddleware()
             ->post('/activate/'.$token, [
-                'password' => 'password456',
-                'password_confirmation' => 'password456',
+                'password' => 'Invit-Onboard-2026!',
+                'password_confirmation' => 'Invit-Onboard-2026!',
             ])->assertStatus(410);
 
         // Le compte n'a PAS été activé.
@@ -432,4 +432,3 @@ class EmployeeInvitationOnboardingTest extends TestCase
         $this->assertFalse(Hash::check('password456', $employee->password_hash ?? ''));
     }
 }
-

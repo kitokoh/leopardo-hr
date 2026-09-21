@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Modules\HR\Domain\Models\UserInvitation;
 use App\Modules\HR\Infrastructure\Services\UserInvitationService;
+use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,7 +33,7 @@ class InvitationController extends Controller
     public function activate(Request $request, string $token): RedirectResponse
     {
         $validated = $request->validate([
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => PasswordPolicy::required(), // #7995 — premier mdp du compte : norme #5620
         ]);
 
         $this->userInvitationService->accept($token, $validated['password']);
@@ -40,4 +41,3 @@ class InvitationController extends Controller
         return redirect()->route('login')->with('status', 'Compte active. Vous pouvez maintenant vous connecter.');
     }
 }
-

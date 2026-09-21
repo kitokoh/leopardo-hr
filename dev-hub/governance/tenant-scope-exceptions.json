@@ -1,0 +1,38 @@
+{
+  "$comment": "Liste canonique tenant-scope (#7730, #7999). Tout modèle de api/app/Modules mentionnant une colonne company_id DOIT soit utiliser App\\Shared\\Traits\\BelongsToCompany, soit figurer dans `exceptions` (justifié). `legacy_pending_review` = modèles pré-#7999 non encore qualifiés — dette documentée, à traiter dans un lot dédié ; la garde les signale sans bloquer, mais REJETTE tout nouveau modèle hors des deux listes. Garde : dev-hub/tools/check-tenant-scope-models.sh.",
+  "exceptions": [
+    {
+      "model": "App\\Modules\\Retail\\Domain\\Models\\MarketplaceBuyer",
+      "reason": "Table centrale cross-tenant SANS colonne company_id : un acheteur marketplace n'appartient à aucun vendeur (#7814). Trait inapplicable.",
+      "added": "2026-09-20"
+    },
+    {
+      "model": "App\\Modules\\Marketing\\Domain\\Models\\MarketingLead",
+      "reason": "converted_company_id est un pointeur de conversion (lead plateforme → compagnie), pas une clé d'isolation. Donnée plateforme pré-tenant.",
+      "added": "2026-09-20"
+    },
+    {
+      "model": "App\\Modules\\Payroll\\Domain\\Models\\TaxRateChangeLog",
+      "reason": "company_id NULLABLE : les lignes NULL = mutations du référentiel légal national (#1923), visibles de tous les tenants par conception.",
+      "added": "2026-09-20"
+    },
+    {
+      "model": "App\\Modules\\HR\\Domain\\Models\\UserEmployeeLink",
+      "reason": "Table de liaison User↔Employee résolue au LOGIN, avant tout contexte tenant (#7711) — un scope fail-closed casserait l'authentification.",
+      "added": "2026-09-20"
+    }
+  ],
+  "legacy_pending_review": [
+    "App\\Modules\\CRM\\Domain\\Models\\CrmAutomationState",
+    "App\\Modules\\CRM\\Domain\\Models\\CrmWebhookChannelLookup",
+    "App\\Modules\\Payroll\\Domain\\Models\\Commission",
+    "App\\Modules\\Payroll\\Domain\\Models\\PublicHoliday",
+    "App\\Modules\\TravelAgency\\Domain\\Models\\TravelCustomerAccount",
+    "App\\Modules\\EdgeSync\\Domain\\Models\\EdgeNode",
+    "App\\Modules\\Billing\\Domain\\Models\\PartnerReferral",
+    "App\\Modules\\Billing\\Domain\\Models\\Partner",
+    "App\\Modules\\Platform\\Domain\\Models\\PlatformSupportTicket",
+    "App\\Modules\\Platform\\Domain\\Models\\PlatformImpersonationSession",
+    "App\\Modules\\Platform\\Domain\\Models\\PlatformAnnouncement"
+  ]
+}

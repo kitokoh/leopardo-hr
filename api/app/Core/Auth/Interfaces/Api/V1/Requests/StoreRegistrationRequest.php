@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Interfaces\Api\V1\Requests;
 
-use App\Shared\Rules\NotCommonPassword;
+use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
 
 class StoreRegistrationRequest extends FormRequest
 {
@@ -27,7 +26,7 @@ class StoreRegistrationRequest extends FormRequest
             // jeton d'invitation (issu de UserInvitationService::createAndSend).
             'email' => ['required', 'email', 'max:150'],
             // Issue #5620 : min 8 caractères + au moins 1 chiffre.
-            'password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword, 'confirmed'],
+            'password' => PasswordPolicy::required(), // #7995 — politique unique
             'device_name' => ['nullable', 'string', 'max:100'],
             // Issue #2617 : inscription réservée aux invitations valides.
             'invitation_token' => ['required', 'string', 'max:64'],

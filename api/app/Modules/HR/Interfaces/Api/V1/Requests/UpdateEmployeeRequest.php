@@ -7,6 +7,7 @@ namespace App\Modules\HR\Interfaces\Api\V1\Requests;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Rules\GlobalEmailUnique;
 use App\Rules\ValidIban;
+use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -44,7 +45,7 @@ class UpdateEmployeeRequest extends FormRequest
                 Rule::unique('employees', 'email')->ignore($employeeId),
                 new GlobalEmailUnique((int) $employeeId),
             ],
-            'password' => ['sometimes', 'nullable', 'string', 'min:8', 'max:255'],
+            'password' => array_merge(['sometimes'], PasswordPolicy::optional()), // #7995 — politique unique #5620
             'contract_start' => ['sometimes', 'nullable', 'date_format:Y-m-d'],
             'schedule_id' => [
                 'sometimes',

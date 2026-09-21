@@ -1,6 +1,15 @@
 # AGENTS.md - Guide de travail Leopardo
 
-Derniere mise a jour : 2026-09-20 (lot BC-01 PLATFORM #7973..#7978 + session PM #7963/#7966/#7958/#7967 — fusion des deux blocs de leçons)
+Derniere mise a jour : 2026-09-21 (lots sécurité backend #7995/#7999 + BC-01 PLATFORM #7973..#7978 + session PM #7963/#7966/#7958/#7967 — fusion des deux blocs de leçons)
+
+> Leçon 2026-09-20 (#7995/#7999) : **(1) une politique de validation = un helper unique**
+> — les 3 sites historiques de la norme mots de passe étaient dupliqués textuellement ;
+> les centraliser dans `PasswordPolicy` ET refactoriser les sites existants évite la
+> prochaine dérive. **(2) `BelongsToCompany` est sans danger sur les routes publiques**
+> (no-op sans compagnie liée) : l'ajouter « par défense » sur un modèle lu publiquement
+> ne casse rien et protège la surface tenant future. **(3) toute garde nouvelle doit
+> embarquer la liste des cas préexistants** (legacy_pending_review) — une garde qui
+> échoue sur l'existant ne sera jamais mergée.
 
 > Leçon 2026-09-20 (#7973/#7975) : **(1) un grep littéral ne prouve pas l'absence**
 > — `rg "Schema::create('users'"` = 0 ne voulait pas dire « users sans migration » :

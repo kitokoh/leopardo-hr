@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Interfaces\Api\V1\Requests;
 
-use App\Shared\Rules\NotCommonPassword;
+use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
 
 /**
  * Règles de validation pour le changement de mot de passe.
@@ -32,8 +31,8 @@ class ChangePasswordRequest extends FormRequest
     {
         return [
             'current_password' => ['required', 'string'],
-            // Issue #5620 : min 8 caractères + au moins 1 chiffre.
-            'new_password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword, 'max:255', 'confirmed'],
+            // #5620 + #7995 — politique unique centralisée (min 12 + chiffre + blocklist).
+            'new_password' => PasswordPolicy::required(),
         ];
     }
 }

@@ -29,6 +29,8 @@ class UserEmployeeLink extends Model
     // liaison User↔Employee résolue au LOGIN, AVANT que le contexte tenant
     // n'existe (c'est elle qui permet de déterminer la société de
     // l'utilisateur). Un scope fail-closed casserait l'authentification.
+    // EXCEPTION TENANT-SCOPE canonique (#7999) — voir
+    // dev-hub/governance/tenant-scope-exceptions.json.
 
     protected $table = 'user_employee_links';
 

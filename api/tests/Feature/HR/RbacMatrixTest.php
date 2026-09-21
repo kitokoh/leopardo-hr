@@ -91,7 +91,7 @@ class RbacMatrixTest extends TestCase
             'first_name' => 'Nouveau',
             'last_name' => 'Employé',
             'email' => 'nouveau.rbac@a.test',
-            'password' => 'password123',
+            'password' => 'Rbac-Matrix-2026!',
             'contract_start' => '2026-09-01',
         ])->assertStatus(201);
     }
@@ -182,7 +182,7 @@ class RbacMatrixTest extends TestCase
             'first_name' => 'Interdit',
             'last_name' => 'Comptable',
             'email' => 'interdit.rbac@a.test',
-            'password' => 'password123',
+            'password' => 'Rbac-Matrix-2026!',
         ])->assertForbidden();
     }
 

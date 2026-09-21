@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Retail\Interfaces\Api\V1\Requests;
 
+use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -18,14 +19,16 @@ class RegisterMarketBuyerRequest extends FormRequest
     }
 
     /**
-     * @return array<string, list<string>>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
         return [
             'name' => ['required', 'string', 'max:160'],
             'email' => ['required', 'email', 'max:160', 'unique:marketplace_buyers,email'],
-            'password' => ['required', 'string', 'min:8', 'max:100'],
+            // #7995 — surface PUBLIQUE : même norme #5620 que le back-office
+            // (pas de 'confirmed' : le client public n'envoie pas de confirmation).
+            'password' => PasswordPolicy::required(confirmed: false, max: 100),
             'phone' => ['nullable', 'string', 'max:40'],
         ];
     }

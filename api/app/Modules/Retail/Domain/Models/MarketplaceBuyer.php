@@ -14,7 +14,12 @@ use Illuminate\Support\Carbon;
  *
  * Compte PLATEFORME (table centrale `marketplace_buyers`, schema public,
  * PAS de company_id) : la marketplace est cross-tenant, un acheteur
- * n'appartient a aucun vendeur. Inscription legere (email unique + mot de
+ * n'appartient a aucun vendeur.
+ *
+ * EXCEPTION TENANT-SCOPE canonique (#7999, liste
+ * dev-hub/governance/tenant-scope-exceptions.json) : la table ne PORTE pas
+ * de colonne company_id — BelongsToCompany est donc inapplicable. Les
+ * credentials acheteur ne croisent jamais la surface tenant Sanctum. Inscription legere (email unique + mot de
  * passe hashe + nom + telephone optionnel), authentification par jeton
  * opaque hashe (MarketplaceBuyerToken) — jamais de Sanctum tenant ici.
  *
