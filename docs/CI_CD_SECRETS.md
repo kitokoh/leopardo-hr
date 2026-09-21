@@ -58,6 +58,7 @@
 | `BACKUP_AGE_IDENTITY` | `database-backup.yml` | Contenu de la clé privée `age` matérialisée en fichier éphémère du runner pour le drill de restauration mensuel (#7657 — ligne manquante repérée par la garde #7271 lors du lot #7740) | Optional (restore drill) |
 | `BACKUP_AGE_RECIPIENT` | `database-backup.yml` | `age` public recipient for backup encryption | Optional (encryption feature) |
 | `DATABASE_URL` | `database-backup.yml` | Production DB connection string to back up | Required for backups |
+| `STANDBY_DATABASE_URL` | `db-standby-failover.yml` | Chaîne de connexion de la base de **secours** (projet Neon `leopardo-standby`, aws-eu-central-1) — cible de bascule automatique du watchdog quand la base active épuise son quota mensuel ou tombe | Required for auto-failover |
 | `RESTORE_DB_URL` | `database-backup.yml` | Scratch DB connection string used by the monthly restore drill | Required for the restore-drill job only |
 | `CI_SMTP_SERVER` / `CI_SMTP_USERNAME` / `CI_SMTP_PASSWORD` | `tests.yml` | SMTP creds for emailing the CI report | Optional (email step is skipped if unset) |
 | `STAGING_DEMO_AUTH_SMOKE` | `e2e-staging.yml` | `"true"` enables the real-credential demo auth smoke test | Optional (defaults to `false`/input override) |

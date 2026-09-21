@@ -15,7 +15,7 @@ Application **Next.js (App Router) indépendante de `front/web`** :
 
 | Variable | Défaut | Rôle |
 |---|---|---|
-| `NEXT_PUBLIC_MARKET_API_BASE` | `https://gestionemployerbackend.onrender.com` | Base de l'API (sans `/api/v1`) |
+| `NEXT_PUBLIC_MARKET_API_BASE` | **aucun — OBLIGATOIRE (#7963)** | Base de l'API (sans `/api/v1`). Le build échoue sans elle ; le backend DEV Render est banni des fronts (#7842). En local : `http://localhost:8000`. |
 
 ## Développement
 
