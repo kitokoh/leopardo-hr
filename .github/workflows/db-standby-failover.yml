@@ -187,7 +187,6 @@ jobs:
             spare_migrations="$(PGCONNECT_TIMEOUT=8 PGSSLMODE=require psql "${SPARE_URL}" -AtXc \
               "select count(*) from public.migrations;" 2>/dev/null || echo "")"
             if [[ -z "${spare_migrations}" || "${spare_migrations}" == "0" ]]; then
-              virgin=1
               echo "::warning::Secours VIERGE (aucune donnée restaurée) — bascule autorisée : le schéma sera créé par les migrations au boot du conteneur. Source injoignable et aucune sauvegarde disponible : reprise à zéro assumée."
             else
               echo "::error::Bascule REFUSÉE : le secours contient ${spare_migrations} migrations mais aucun marqueur _standby_sync — copie incohérente (restauration interrompue). Lancer 'sync', puis relancer le watchdog."
