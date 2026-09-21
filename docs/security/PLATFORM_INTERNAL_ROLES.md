@@ -57,8 +57,26 @@ petite surface qui lui permet de travailler.
 entreprises (lecture/paramétrage/provisioning), abonnements et offres, comptes
 des utilisateurs d'entreprise, impersonation, kill switches, observabilité et
 métriques, support, annonces, CRM, nœuds edge, et le nouveau groupe `/team`.
-Côté cockpit `/admin/*`, la garde couvre l'impersonation et le tableau de bord
-(`metrics.view`).
+Côté cockpit `/admin/*`, la garde couvre l'impersonation, le tableau de bord
+(`metrics.view`), les webhooks sortants (`webhooks.manage`), les réglages
+(`settings.manage`), l'audit paie (`payroll.view`) et les comptes plateforme
+(`users.view`/`users.manage`).
+
+Depuis **#8020** (suivi #7973), la matrice est **complète sur les deux groupes** :
+les 13 routes plateforme restantes qui n'avaient aucune garde sont armées en
+**réutilisant le catalogue ci-dessus** (aucune nouvelle permission) —
+`GET /platform/country-defaults` → `companies.view` ; `GET /admin/ai/conversations`,
+`GET /admin/ai/conversations/{conversation}/messages`, `POST /admin/ai/chat`,
+`GET /admin/hr-reports`, `GET /admin/fleet/alerts`, `GET /admin/training/courses|sessions|enrollments`
+→ `companies.manage` (contenus tenant cross-tenant : conversations IA, rapports RH
+dont résumé de paie, formations nominatives, alertes flotte — admin seul, le support
+en est volontairement exclu) ; `GET /admin/solutions/survey-stats` → `crm.view`
+(agrégats `marketing_leads` type `solution_survey`) ; `GET /admin/platform/ai/monitoring`,
+`GET /admin/platform/ai/health` et `POST /admin/payroll/simulate` → `settings.manage`
+(onglets de l'écran Paramètres › Assistant IA ; simulation des barèmes nationaux).
+Les seules routes plateforme sans permission sont désormais les routes `auth/*`
+(login, `me`, profil, 2FA, logout), qui précèdent la distribution du rôle, et le
+groupe `/team` (middleware posé au niveau du groupe).
 
 ## Garde-fous (anti auto-verrouillage)
 
