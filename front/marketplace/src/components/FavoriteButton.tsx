@@ -17,12 +17,10 @@ interface FavoriteButtonProps {
 // Cache module-level des ids favoris : un seul GET par session de page,
 // partagé entre toutes les cartes produit affichées.
 let favoriteIdsPromise: Promise<Set<number>> | null = null;
-let favoriteIdsToken: string | null = null;
 
-function favoriteIds(token: string): Promise<Set<number>> {
-  if (favoriteIdsPromise === null || favoriteIdsToken !== token) {
-    favoriteIdsToken = token;
-    favoriteIdsPromise = fetchFavorites(token)
+function favoriteIds(): Promise<Set<number>> {
+  if (favoriteIdsPromise === null) {
+    favoriteIdsPromise = fetchFavorites()
       .then((products) => new Set(products.map((product) => product.id)))
       .catch(() => new Set<number>());
   }
@@ -46,7 +44,7 @@ export function FavoriteButton({ productId, initialFavorite, className }: Favori
   useEffect(() => {
     if (initialFavorite !== undefined || !session) return;
     let cancelled = false;
-    void favoriteIds(session.token).then((ids) => {
+    void favoriteIds().then((ids) => {
       if (!cancelled) setFavorite(ids.has(productId));
     });
     return () => {
@@ -67,9 +65,9 @@ export function FavoriteButton({ productId, initialFavorite, className }: Favori
     setFavorite(next);
     try {
       if (next) {
-        await addFavorite(session.token, productId);
+        await addFavorite(productId);
       } else {
-        await removeFavorite(session.token, productId);
+        await removeFavorite(productId);
       }
       invalidateFavoriteIds();
     } catch (error) {

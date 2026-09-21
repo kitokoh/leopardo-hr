@@ -47,22 +47,19 @@ export default function AccountOrdersPage() {
   // Formulaire d'avis ouvert : `${reference}:${productId}`.
   const [openReview, setOpenReview] = useState<string | null>(null);
 
-  const load = useCallback(
-    async (token: string) => {
-      setError(null);
-      try {
-        const page = await fetchBuyerOrders(token);
-        setOrders(page.data);
-      } catch (err) {
-        if (handleUnauthorized(err)) {
-          router.push("/compte");
-          return;
-        }
-        setError(err instanceof Error ? err.message : "Une erreur est survenue.");
+  const load = useCallback(async () => {
+    setError(null);
+    try {
+      const page = await fetchBuyerOrders();
+      setOrders(page.data);
+    } catch (err) {
+      if (handleUnauthorized(err)) {
+        router.push("/compte");
+        return;
       }
-    },
-    [handleUnauthorized, router],
-  );
+      setError(err instanceof Error ? err.message : "Une erreur est survenue.");
+    }
+  }, [handleUnauthorized, router]);
 
   useEffect(() => {
     if (!ready) return;
@@ -73,7 +70,7 @@ export default function AccountOrdersPage() {
     // Fetch-au-montage légitime (synchronisation avec l'API) : la règle
     // « React Compiler readiness » flaguerait le setError synchrone.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    void load(session.token);
+    void load();
   }, [ready, session, router, load]);
 
   if (!ready || (session && orders === null && error === null)) {
@@ -177,7 +174,6 @@ export default function AccountOrdersPage() {
                       </div>
                       {openReview === reviewKey ? (
                         <ReviewForm
-                          token={session.token}
                           orderReference={order.reference}
                           productId={item.product_id}
                           productName={item.product_name}

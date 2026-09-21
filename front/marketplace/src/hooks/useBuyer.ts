@@ -1,10 +1,15 @@
 "use client";
 
 /**
- * Hook session acheteur (#7814) — état React synchronisé avec le
- * localStorage via useSyncExternalStore (même pattern que useCart) :
+ * Hook session acheteur (#7814, durci par #8022) — état React synchronisé
+ * avec le localStorage via useSyncExternalStore (même pattern que useCart) :
  * même onglet via le CustomEvent émis par writeBuyerSession/clear, autres
  * onglets via l'événement natif `storage`.
+ *
+ * Depuis #8022, la session persistée ne contient QUE le profil public :
+ * le jeton vit en cookie HttpOnly posé par l'API (plus rien à voler par
+ * XSS, tranche 2) — signOut révoque donc via l'endpoint logout appelé avec
+ * `credentials: "include"`, sans aucun jeton côté JS.
  */
 
 import { useCallback, useSyncExternalStore } from "react";
@@ -77,14 +82,13 @@ export function useBuyer(): UseBuyer {
   }, []);
 
   const signOut = useCallback(async () => {
-    const current = readBuyerSession();
     clearBuyerSession();
-    if (current) {
-      try {
-        await logoutBuyer(current.token);
-      } catch {
-        // Révocation best-effort : la session locale est déjà purgée.
-      }
+    try {
+      // #8022 — révocation côté API via le cookie HttpOnly (aucun jeton à
+      // transmettre depuis le JS). La session locale est déjà purgée.
+      await logoutBuyer();
+    } catch {
+      // Révocation best-effort : la session locale est déjà purgée.
     }
   }, []);
 

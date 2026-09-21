@@ -5,7 +5,8 @@
  *
  * Sans session : formulaire connexion OU inscription légère (bascule).
  * Avec session : profil + liens Mes commandes / Mes favoris + déconnexion.
- * Le jeton acheteur (opaque, `mkb_…`) est stocké en localStorage.
+ * Depuis #8022, le jeton acheteur (`mkb_…`) vit en cookie HttpOnly posé
+ * par l'API — seul le profil public reste persisté côté navigateur.
  */
 
 import { Heart, Loader2, LogOut, PackageSearch, UserRound } from "lucide-react";

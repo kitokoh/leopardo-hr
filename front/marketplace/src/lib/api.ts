@@ -188,7 +188,14 @@ interface RequestOptions {
   body?: unknown;
   query?: Record<string, string | number | undefined>;
   timeoutMs?: number;
-  /** Jeton compte acheteur (#7814) — ajoute `Authorization: Bearer …`. */
+  /**
+   * Jeton compte acheteur (#7814) — ajoute `Authorization: Bearer …`.
+   * OPTIONNEL depuis #8022 : l'API pose le jeton en cookie HttpOnly à la
+   * connexion/inscription et le navigateur le renvoie automatiquement
+   * (`credentials: "include"` ci-dessous) ; le header Bearer reste accepté
+   * par l'API pour les clients existants (rétrocompatibilité), mais le
+   * front ne le transmet plus — le JS ne voit jamais la credential.
+   */
   token?: string;
 }
 
@@ -218,6 +225,12 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
       cache: "no-store",
+      // #8022 (tranche 2) — le cookie HttpOnly de session acheteur doit
+      // accompagner TOUTES les requêtes (cross-origin inclus : le CORS de
+      // l'API est en `supports_credentials: true` avec allow-list
+      // d'origines explicite). `include` et non `same-origin` : l'API vit
+      // sur une origine dédiée (NEXT_PUBLIC_MARKET_API_BASE).
+      credentials: "include",
       signal: controller.signal,
     });
   } catch (error) {
@@ -346,8 +359,10 @@ export async function createOrder(payload: OrderPayload, buyerToken?: string): P
     method: "POST",
     body: payload,
     timeoutMs: 20_000,
-    // #7814 — jeton buyer OPTIONNEL : si valide, la commande est liée au
-    // compte (historique + avis vérifiés) ; sinon checkout invité inchangé.
+    // #7814/#8022 — liaison au compte acheteur OPTIONNELLE : le cookie
+    // HttpOnly suffit désormais (`credentials: "include"`) ; le paramètre
+    // `buyerToken` ne sert plus qu'aux appelants legacy qui détiendraient
+    // encore un jeton en clair (rétrocompatibilité Bearer côté API).
     ...(buyerToken !== undefined && buyerToken.length > 0 ? { token: buyerToken } : {}),
   });
   const raw = isRecord(response) && isRecord(response.data) ? response.data : response;
@@ -456,6 +471,13 @@ export interface BuyerProfile {
   created_at: string | null;
 }
 
+/**
+ * Réponse des endpoints login/register (#7814). L'API renvoie toujours le
+ * jeton en clair dans `token` — RÉTROCOMPATIBILITÉ pour les clients qui
+ * utilisent `Authorization: Bearer` — mais depuis #8022 le front l'ignore
+ * délibérément : la session navigateur repose sur le cookie HttpOnly posé
+ * par la même réponse (le jeton ne doit plus être persisté côté JS).
+ */
 export interface BuyerSession {
   token: string;
   buyer: BuyerProfile;
@@ -528,11 +550,11 @@ export async function loginBuyer(payload: { email: string; password: string }): 
   return normalizeBuyerSession(response);
 }
 
-export async function logoutBuyer(token: string): Promise<void> {
+export async function logoutBuyer(token?: string): Promise<void> {
   await request<unknown>("/public/market/account/logout", { method: "POST", token });
 }
 
-export async function fetchBuyerProfile(token: string): Promise<BuyerProfile> {
+export async function fetchBuyerProfile(token?: string): Promise<BuyerProfile> {
   const payload = await request<unknown>("/public/market/account/me", { token });
   const raw = isRecord(payload) && isRecord(payload.data) ? payload.data : {};
   return {
@@ -543,7 +565,7 @@ export async function fetchBuyerProfile(token: string): Promise<BuyerProfile> {
   };
 }
 
-export async function fetchBuyerOrders(token: string, page = 1): Promise<Paginated<AccountOrder>> {
+export async function fetchBuyerOrders(token?: string, page = 1): Promise<Paginated<AccountOrder>> {
   const payload = await request<unknown>("/public/market/account/orders", {
     token,
     query: { page },
@@ -551,12 +573,12 @@ export async function fetchBuyerOrders(token: string, page = 1): Promise<Paginat
   return normalizePaginated<AccountOrder>(payload);
 }
 
-export async function fetchFavorites(token: string): Promise<PublicProduct[]> {
+export async function fetchFavorites(token?: string): Promise<PublicProduct[]> {
   const payload = await request<unknown>("/public/market/account/favorites", { token });
   return isRecord(payload) && Array.isArray(payload.data) ? (payload.data as PublicProduct[]) : [];
 }
 
-export async function addFavorite(token: string, productId: number): Promise<void> {
+export async function addFavorite(productId: number, token?: string): Promise<void> {
   await request<unknown>("/public/market/account/favorites", {
     method: "POST",
     body: { product_id: productId },
@@ -564,7 +586,7 @@ export async function addFavorite(token: string, productId: number): Promise<voi
   });
 }
 
-export async function removeFavorite(token: string, productId: number): Promise<void> {
+export async function removeFavorite(productId: number, token?: string): Promise<void> {
   await request<unknown>(`/public/market/account/favorites/${productId}`, {
     method: "DELETE",
     token,
@@ -572,8 +594,8 @@ export async function removeFavorite(token: string, productId: number): Promise<
 }
 
 export async function submitReview(
-  token: string,
   payload: { order_reference: string; product_id: number; rating: number; comment?: string },
+  token?: string,
 ): Promise<void> {
   await request<unknown>("/public/market/account/reviews", {
     method: "POST",
