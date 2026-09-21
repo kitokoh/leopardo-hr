@@ -253,7 +253,10 @@ class PlatformPermissionMatrixDeploymentTest extends TestCase
     {
         $route = null;
 
-        foreach (Route::getRoutes() as $candidate) {
+        // #8020 — `RouteCollectionInterface` n'est pas typée `iterable` par
+        // PHPStan (level 8, `foreach.nonIterable`) : `getRoutes()` expose la
+        // liste concrète des routes.
+        foreach (Route::getRoutes()->getRoutes() as $candidate) {
             if ($candidate->uri() === $uri && in_array($method, $candidate->methods(), true)) {
                 $route = $candidate;
                 break;
