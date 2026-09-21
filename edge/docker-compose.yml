@@ -71,6 +71,14 @@ services:
     # n'est joignable que via edge-proxy (TLS interne, port 7879).
     depends_on:
       - edge-api
+    # #7996 : nginx:1.27-alpine embarque wget (busybox) — on sonde la page
+    # d'accueil servie sur :3000 (cf. front/web-offline/nginx.conf).
+    healthcheck:
+      test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
     networks:
       - leopardo-local
 
@@ -132,6 +140,15 @@ services:
     depends_on:
       - edge-api
       - edge-ui
+    # #7996 : le proxy est le SEUL point d'entrée (#7653) — sa santé est
+    # critique. Caddy (image alpine, wget busybox) sert /health en clair
+    # sur :80 justement pour les sondes (cf. Caddyfile.edge).
+    healthcheck:
+      test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
     networks:
       - leopardo-local
 
@@ -154,7 +171,16 @@ services:
       - ./mediamtx/mediamtx.yml:/mediamtx.yml:ro
       - mediamtx_recordings:/var/leopardo/cameras
     ports:
-      # WebRTC (lecture navigateur) et HLS (repli) — exposés sur l'hôte local.
+      # #7996 — commentaire corrigé (il prétendait « exposés sur l'hôte
+      # local » alors que les ports sont publiés sur TOUTES les interfaces,
+      # 0.0.0.0). L'exposition LAN est VOLONTAIRE et conservée : les
+      # navigateurs du site (postes/kiosques) lisent les flux WebRTC/HLS
+      # directement sur le nœud Edge — ils ne tournent pas sur la machine
+      # hôte, binder 127.0.0.1 casserait la lecture (topologie ADR-0021,
+      # voir mediamtx/README.md). L'exposition LAN ne veut PAS dire accès
+      # anonyme : chaque lecture exige un `stream_token` JWT que MediaMTX
+      # fait vérifier par l'API Leopardo (authHTTPAddress →
+      # /internal/camera-token/verify, cf. mediamtx/mediamtx.yml).
       - "8889:8889"
       - "8888:8888"
       # 9997 (API de contrôle) est délibérément NON publié : elle n'écoute que

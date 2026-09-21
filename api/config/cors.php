@@ -97,7 +97,13 @@ return [
         'Idempotent-Replayed',
     ],
 
-    'max_age' => 0,
+    // #7996 : cache preflight de 10 minutes. `max_age => 0` interdisait
+    // toute mise en cache des réponses OPTIONS par les navigateurs — chaque
+    // requête cross-origin était donc précédée d'un preflight (un aller-
+    // retour réseau pur perdu, à chaque appel, en prod comme en dev).
+    // 600 s supprime ce coût tout en propageant vite une évolution des
+    // origines/entêtes autorisées.
+    'max_age' => 600,
 
     'supports_credentials' => true,
 

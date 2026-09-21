@@ -13,7 +13,8 @@
 #
 # #4804 : la CSP est désormais ENFORCÉE (plus de report-only). La politique
 # liste explicitement toutes les origines chargées par le dashboard (API
-# Render, WebSocket, Google Fonts, ui-avatars, tuiles OpenStreetMap).
+# Render, WebSocket, Google Fonts, tuiles OpenStreetMap). #8000 : avatars
+# désormais calculés localement (SVG data:) — ui-avatars.com a quitté la CSP.
 #
 # #7695 : la valeur de la CSP est GÉNÉRÉE AU BUILD (plugin `csp-headers` de
 # vite.config.js, module scripts/csp.mjs) — ce fichier ne porte qu'un
@@ -41,8 +42,8 @@
 #  - connect-src: VITE_API_URL (REST) and VITE_WEBSOCKET_URL (Socket.IO
 #    realtime notifications, see src/stores/realtime.js), explicit origins
 #    injected at build time (#7695).
-#  - img-src: ui-avatars.com (generated user avatars) and OpenStreetMap tile
-#    servers (Leaflet fleet map, src/views/fleet/FleetView.vue).
+#  - img-src: OpenStreetMap tile servers (Leaflet fleet map,
+#    src/views/fleet/FleetView.vue) — les avatars sont locaux depuis #8000.
 #  - style-src/font-src: Google Fonts (Inter, loaded via <link> in
 #    index.html).
 /*

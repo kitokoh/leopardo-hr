@@ -12,12 +12,24 @@ DATA_DIR="/data"
 # Préparer le volume de données
 # ---------------------------------------------------------------------------
 mkdir -p "${DATA_DIR}"
-chown -R www-data:www-data "${DATA_DIR}"
+# #7996 : l'image tourne désormais en www-data (non-root) — le chown n'est
+# possible que si l'entrypoint s'exécute en root (rechownage manuel d'un
+# volume pré-peuplé par l'ancienne version root, cf. edge/Dockerfile).
+# En www-data on exige simplement que le volume soit inscriptible : le chown
+# du Dockerfile initialise la propriété d'un volume nommé à sa 1re création.
+if [ "$(id -u)" = "0" ]; then
+    chown -R www-data:www-data "${DATA_DIR}"
+elif [ ! -w "${DATA_DIR}" ]; then
+    echo "[edge-entrypoint] ERROR: ${DATA_DIR} n'est pas inscriptible par l'utilisateur courant — volume créé par une version root de l'image ? Le rechownir une fois (voir edge/Dockerfile, #7996)." >&2
+    exit 1
+fi
 
 # Chemin SQLite (depuis .env ou valeur par défaut)
 SQLITE_PATH="${DB_DATABASE:-${DATA_DIR}/leopardo_edge.sqlite}"
 touch "${SQLITE_PATH}"
-chown www-data:www-data "${SQLITE_PATH}"
+if [ "$(id -u)" = "0" ]; then
+    chown www-data:www-data "${SQLITE_PATH}"
+fi
 
 # ---------------------------------------------------------------------------
 # Générer la clé d'application si absente
@@ -41,7 +53,9 @@ if [ -z "${APP_KEY}" ]; then
     APP_KEY=$(php artisan key:generate --show --no-interaction)
     export APP_KEY
     touch "${ENV_FILE}"
-    chown www-data:www-data "${ENV_FILE}"
+    if [ "$(id -u)" = "0" ]; then
+        chown www-data:www-data "${ENV_FILE}"
+    fi
     if ! grep -q '^APP_KEY=' "${ENV_FILE}"; then
         printf 'APP_KEY=%s\n' "${APP_KEY}" >> "${ENV_FILE}"
     fi
