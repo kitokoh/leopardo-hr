@@ -8,6 +8,9 @@
  *   - front/web/src/lib/backend-url.ts
  *   - front/travel-web/src/lib/backend-url.ts
  * Toute modification doit être reportée à l'identique dans l'autre copie.
+ * La parité est OPPOSABLE depuis #7964 : la garde CI
+ * `dev-hub/tools/check-front-shared-parity.sh` (workflow
+ * front-shared-parity-guard.yml) rougit dès que les deux copies divergent.
  *
  * Chaîne de résolution côté serveur (route handlers, SSR) :
  *   `API_PROXY_TARGET` > `BACKEND_API_URL` > `NEXT_PUBLIC_API_URL`
