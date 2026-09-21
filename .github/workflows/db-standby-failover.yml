@@ -17,6 +17,14 @@ name: DB Standby & Auto-Failover
 #     (RPO ≤ 1 h) dans les deux sens de rotation, ce qui rend une bascule
 #     possible même après un premier incident (avant, le renversement de rôle
 #     laissait la base d'appoint sans marqueur => bascule refusée) ;
+#   - sauvegardes : le même job publie une fois par jour (créneau 03:23 UTC, ou
+#     mode=backup) un dump **chiffré age** de la base vivante en artefact 90 j,
+#     auto-vérifié (`age --decrypt` + `pg_restore --list`). Dépôt PUBLIC : aucun
+#     dump n'est jamais publié en clair — sans BACKUP_AGE_RECIPIENT le job
+#     refuse d'écraser une copie étrangère et ne publie rien ;
+#   - battement de cœur : le watchdog est aussi déclenché par un push sur main
+#     (cadence limitée à un vrai contrôle / 15 min), car l'ordonnanceur GitHub a
+#     cessé de déclencher les crons sur ce dépôt le 2026-09-21 (arrêt à 01:37) ;
 #   - job `switch-back` (manuel, confirm=YES) : retour vers la PRIMAIRE, avec
 #     dump de sécurité de la base courante avant bascule.
 #
@@ -39,7 +47,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "status = diagnostic seul | watchdog = sonde + bascule si besoin | sync = recharge le secours | switch-back = retour vers la primaire"
+        description: "status = diagnostic | watchdog = sonde + bascule | sync = recharge la copie | backup = dump chiffré immédiat | switch-back = retour vers la base d'origine"
         required: true
         default: "status"
         type: choice
@@ -47,6 +55,7 @@ on:
           - status
           - watchdog
           - sync
+          - backup
           - switch-back
       confirm:
         description: "YES obligatoire pour switch-back (destructif pour la base courante)"
@@ -58,6 +67,12 @@ on:
     - cron: "9,29,49 * * * *"
     # Recharge du secours : toutes les heures.
     - cron: "23 * * * *"
+  # Battement de cœur : l'ordonnanceur GitHub peut cesser de déclencher les
+  # crons (constaté le 2026-09-21 : plus aucun run planifié sur le dépôt à
+  # partir de 01:37 UTC). Un push sur main relance le watchdog, avec un
+  # garde-fou de cadence (au plus un vrai contrôle toutes les 15 min).
+  push:
+    branches: [main]
 
 permissions:
   contents: read
@@ -80,9 +95,28 @@ jobs:
     environment: production
     if: >-
       (github.event_name == 'schedule' && github.event.schedule == '9,29,49 * * * *')
+      || github.event_name == 'push'
       || (github.event_name == 'workflow_dispatch' && (github.event.inputs.mode == 'watchdog' || github.event.inputs.mode == 'status'))
     steps:
+      - name: Cadence (un push ne déclenche un vrai contrôle que toutes les 15 min)
+        id: cadence
+        if: github.event_name == 'push'
+        shell: bash
+        env:
+          GH: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          last="$(curl -fsS -H "Authorization: Bearer ${GH}" \
+            "https://api.github.com/repos/${REPO}/actions/workflows/db-standby-failover.yml/runs?per_page=30" \
+            | jq -r --arg cur "${GITHUB_RUN_ID}" '[.workflow_runs[] | select((.id|tostring) != $cur) | .created_at] | max // empty')"
+          if [[ -z "${last}" ]]; then echo "recent=false" >> "$GITHUB_OUTPUT"; exit 0; fi
+          age=$(( $(date -u +%s) - $(date -u -d "${last}" +%s) ))
+          echo "Dernier run : ${last} (il y a ${age}s)"
+          if [[ ${age} -lt 900 ]]; then echo "recent=true" >> "$GITHUB_OUTPUT"; else echo "recent=false" >> "$GITHUB_OUTPUT"; fi
+
       - name: Outils
+        if: steps.cadence.outputs.recent != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -90,6 +124,7 @@ jobs:
           psql --version
 
       - name: Sonder la base LIVE et basculer si besoin
+        if: steps.cadence.outputs.recent != 'true'
         shell: bash
         env:
           PRIMARY_URL: ${{ secrets.DATABASE_URL }}
@@ -270,19 +305,19 @@ jobs:
     environment: production
     if: >-
       (github.event_name == 'schedule' && github.event.schedule == '23 * * * *')
-      || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'sync')
+      || (github.event_name == 'workflow_dispatch' && (github.event.inputs.mode == 'sync' || github.event.inputs.mode == 'backup'))
     steps:
       - name: Outils (client PostgreSQL 18 — le serveur Neon est en 18)
         shell: bash
         run: |
           set -euo pipefail
           sudo apt-get update -qq
-          sudo apt-get install -y -qq postgresql-common
+          sudo apt-get install -y -qq postgresql-common age
           sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y >/dev/null
           sudo apt-get install -y -qq postgresql-client-18
           echo "/usr/lib/postgresql/18/bin" >> "$GITHUB_PATH"
 
-      - name: Copie LIVE -> base d'appoint
+      - name: Copie LIVE -> base d'appoint (+ sauvegarde chiffrée)
         shell: bash
         env:
           PRIMARY_URL: ${{ secrets.DATABASE_URL }}
@@ -290,6 +325,12 @@ jobs:
           RENDER_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
           RENDER_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
           RENDER_API_BASE: https://api.render.com/v1
+          # Chiffrement age OBLIGATOIRE avant toute publication de dump :
+          # le dépôt est PUBLIC, un artefact contenant une base prod en clair
+          # serait téléchargeable par n'importe qui.
+          BACKUP_AGE_RECIPIENT: ${{ secrets.BACKUP_AGE_RECIPIENT }}
+          BACKUP_AGE_IDENTITY: ${{ secrets.BACKUP_AGE_IDENTITY }}
+          FORCE_BACKUP: ${{ github.event.inputs.mode == 'backup' && '1' || '0' }}
         run: |
           set -euo pipefail
           api="${RENDER_API_BASE:-https://api.render.com/v1}"
@@ -301,6 +342,12 @@ jobs:
           host_of() { sed -E 's#^[a-zA-Z+]+://([^@]*@)?([^/:]+).*#\2#' <<<"$1"; }
           probe() { PGCONNECT_TIMEOUT=8 PGSSLMODE=require psql "$1" -AtXc 'select 1' >/dev/null 2>&1; }
           q() { PGCONNECT_TIMEOUT=8 PGSSLMODE=require psql "$1" -AtXc "$2" 2>/dev/null || true; }
+
+          age_available=0
+          if [[ -n "${BACKUP_AGE_RECIPIENT:-}" ]] && command -v age >/dev/null 2>&1; then age_available=1; fi
+          if [[ ${age_available} -eq 0 ]]; then
+            echo "::warning::BACKUP_AGE_RECIPIENT absent ou age indisponible : les dumps resteront LOCAUX (aucune publication d'artefact, dépôt public oblige)."
+          fi
 
           LIVE_URL="$(curl -fsS -H "Authorization: Bearer ${RENDER_API_KEY}" \
             "${api}/services/${RENDER_SERVICE_ID}/env-vars?limit=100" \
@@ -331,19 +378,53 @@ jobs:
           fi
 
           # Copie « étrangère » : des tables, mais aucun marqueur de synchro.
+          # On refuse d'écraser sans dump de sécurité CHIFFRÉ disponible.
           existing_migrations="$(q "${SPARE_URL}" 'select count(*) from public.migrations;')"
           has_marker="$(q "${SPARE_URL}" 'select count(*) from public._standby_sync;')"
           if [[ -n "${existing_migrations}" && "${existing_migrations}" != "0" && -z "${has_marker}" ]]; then
+            if [[ ${age_available} -eq 0 ]]; then
+              echo "::error::La base d'appoint (${SPARE_HOST}) contient ${existing_migrations} migrations sans marqueur (copie étrangère) et aucun chiffrement age n'est disponible : écrasement REFUSÉ pour ne pas perdre ces données (dépôt public = pas de dump en clair)."
+              exit 1
+            fi
             mkdir -p /tmp/spare-safety-dumps
-            out="/tmp/spare-safety-dumps/spare-${SPARE_KIND}-before-overwrite-$(date -u +%Y%m%d-%H%M%S).dump"
-            pg_dump --format=custom --no-owner --no-privileges --file="${out}" "${SPARE_URL}"
-            echo "safety_dump=${out}" >> "$GITHUB_ENV"
-            echo "::warning::Base d'appoint (${SPARE_HOST}) = copie étrangère (${existing_migrations} migrations, aucun marqueur) : dump de sécurité publié en artefact AVANT écrasement."
+            raw="/tmp/spare-safety-dumps/spare-${SPARE_KIND}-before-overwrite-$(date -u +%Y%m%d-%H%M%S).dump"
+            pg_dump --format=custom --no-owner --no-privileges --file="${raw}" "${SPARE_URL}"
+            age --recipient "${BACKUP_AGE_RECIPIENT}" --output "${raw}.age" "${raw}"
+            rm -f "${raw}"
+            echo "safety_dump=${raw}.age" >> "$GITHUB_ENV"
+            echo "::warning::Base d'appoint (${SPARE_HOST}) = copie étrangère (${existing_migrations} migrations, aucun marqueur) : dump de sécurité CHIFFRÉ publié en artefact AVANT écrasement."
           fi
 
           dump="$(mktemp -t standby-XXXXXX.dump)"
           pg_dump --format=custom --no-owner --no-privileges --file="${dump}" "${LIVE_URL}"
           echo "Dump ${LIVE_KIND} (${LIVE_HOST}) : $(stat -c %s "${dump}") octets"
+
+          # Sauvegarde chiffrée : le dump de la base VIVANTE, publié une fois par
+          # jour (créneau 03:23 UTC) ou sur demande (mode=backup). Auto-vérifiée
+          # par un `pg_restore --list` après déchiffrement : un dump illisible ne
+          # sert à rien.
+          daily=0
+          if [[ "${FORCE_BACKUP}" == "1" || "$(date -u +%H)" == "03" ]]; then daily=1; fi
+          if [[ ${age_available} -eq 1 && ${daily} -eq 1 ]]; then
+            age --recipient "${BACKUP_AGE_RECIPIENT}" --output "${dump}.age" "${dump}"
+            if [[ -n "${BACKUP_AGE_IDENTITY:-}" ]]; then
+              ident="$(mktemp)"; umask 077; printf '%s\n' "${BACKUP_AGE_IDENTITY}" > "${ident}"
+              verify="$(mktemp)"
+              age --decrypt --identity "${ident}" --output "${verify}" "${dump}.age"
+              if pg_restore --list "${verify}" > /dev/null; then
+                echo "Sauvegarde chiffrée auto-vérifiée : déchiffrement + pg_restore --list OK."
+              else
+                echo "::error::Sauvegarde chiffrée illisible (pg_restore --list a échoué) — artefact NON publié."
+                rm -f "${ident}" "${verify}" "${dump}.age"
+              fi
+              rm -f "${ident}" "${verify}"
+            else
+              echo "::warning::BACKUP_AGE_IDENTITY absent : la sauvegarde chiffrée n'a pas pu être auto-vérifiée (elle reste restaurable avec la clé privée age)."
+            fi
+            if [[ -f "${dump}.age" ]]; then
+              echo "backup_artifact=${dump}.age" >> "$GITHUB_ENV"
+            fi
+          fi
 
           # Remise à zéro de la base d'appoint (jamais la base LIVE).
           psql "${SPARE_URL}" -v ON_ERROR_STOP=1 -q \
@@ -373,14 +454,25 @@ jobs:
             echo "- Source (LIVE) : \`${LIVE_HOST}\` (${LIVE_KIND}) — ${migrated} migrations, ${users} utilisateurs."
             echo "- Cible (appoint) : \`${SPARE_HOST}\` (${SPARE_KIND}) — marqueur \`_standby_sync\` posé."
             echo "- RPO en cas de bascule automatique : ≤ 1 h."
+            if [[ ${age_available} -eq 0 ]]; then
+              echo "- ⚠️ Sauvegardes chiffrées indisponibles : \`BACKUP_AGE_RECIPIENT\` absent (les dumps restent locaux au runner, jamais publiés)."
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Publier le dump de sécurité (copie étrangère écrasée)
+      - name: Publier la sauvegarde chiffrée du jour
+        if: env.backup_artifact != ''
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: db-encrypted-backup
+          path: ${{ env.backup_artifact }}
+          retention-days: 90
+
+      - name: Publier le dump de sécurité chiffré (copie étrangère écrasée)
         if: env.safety_dump != ''
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: db-spare-safety-dump
-          path: /tmp/spare-safety-dumps/*.dump
+          path: ${{ env.safety_dump }}
           retention-days: 30
 
   # ───────────────────────────────────────────────────────────────────────────
@@ -409,8 +501,8 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update -qq
-          sudo apt-get install -y -qq postgresql-common
-          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y >/dev/null
+          sudo apt-get install -y -qq postgresql-common age
+          sudo /usr/share/postgresql-common age/pgdg/apt.postgresql.org.sh -y >/dev/null
           sudo apt-get install -y -qq postgresql-client-18
           echo "/usr/lib/postgresql/18/bin" >> "$GITHUB_PATH"
 
@@ -422,6 +514,9 @@ jobs:
           RENDER_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
           RENDER_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
           RENDER_API_BASE: https://api.render.com/v1
+          # Le dépôt est PUBLIC : le dump de sécurité doit être chiffré avant
+          # publication (sinon n'importe qui peut le télécharger).
+          BACKUP_AGE_RECIPIENT: ${{ secrets.BACKUP_AGE_RECIPIENT }}
         run: |
           set -euo pipefail
           api="${RENDER_API_BASE:-https://api.render.com/v1}"
@@ -429,6 +524,11 @@ jobs:
           echo "::add-mask::${STANDBY_URL}"
           host_of() { sed -E 's#^[a-zA-Z+]+://([^@]*@)?([^/:]+).*#\2#' <<<"$1"; }
           probe() { PGCONNECT_TIMEOUT=8 PGSSLMODE=require psql "$1" -AtXc 'select 1' >/dev/null 2>&1; }
+
+          if [[ -z "${BACKUP_AGE_RECIPIENT:-}" ]] || ! command -v age >/dev/null 2>&1; then
+            echo "::error::Retour arrière refusé : la base courante doit être sauvegardée AVANT bascule et le dépôt est public — un dump en clair ne peut pas y être publié. Renseigner BACKUP_AGE_RECIPIENT."
+            exit 1
+          fi
 
           LIVE_URL="$(curl -fsS -H "Authorization: Bearer ${RENDER_API_KEY}" \
             "${api}/services/${RENDER_SERVICE_ID}/env-vars?limit=100" \
@@ -449,9 +549,11 @@ jobs:
           # Dump de sécurité de la base courante (celle qui contient les écritures
           # récentes) : publié en artefact, 30 jours, pour ne rien perdre du tout.
           mkdir -p /tmp/safety-dumps
-          out="/tmp/safety-dumps/backup-before-switchback-$(date -u +%Y%m%d-%H%M%S).dump"
-          pg_dump --format=custom --no-owner --no-privileges --file="${out}" "${LIVE_URL}"
-          echo "safe_dump=${out}" >> "$GITHUB_ENV"
+          raw="/tmp/safety-dumps/backup-before-switchback-$(date -u +%Y%m%d-%H%M%S).dump"
+          pg_dump --format=custom --no-owner --no-privileges --file="${raw}" "${LIVE_URL}"
+          age --recipient "${BACKUP_AGE_RECIPIENT}" --output "${raw}.age" "${raw}"
+          rm -f "${raw}"
+          echo "safe_dump=${raw}.age" >> "$GITHUB_ENV"
 
           curl -fsS -X PUT -H "Authorization: Bearer ${RENDER_API_KEY}" -H "Content-Type: application/json" \
             "${api}/services/${RENDER_SERVICE_ID}/env-vars/DB_URL" \
@@ -471,5 +573,5 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: db-safety-dump
-          path: /tmp/safety-dumps/*.dump
+          path: /tmp/safety-dumps/*.dump.age
           retention-days: 30
