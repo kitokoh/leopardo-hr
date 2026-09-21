@@ -25,6 +25,15 @@ name: Image Scan (Trivy)
 # Pas d'upload SARIF volontairement : la sortie table des logs suffit au
 # triage et `permissions: contents: read` reste le strict minimum (pas besoin
 # de `security-events: write`).
+#
+# ⚠️ NE JAMAIS inscrire ces jobs dans les required status checks tant que le
+# `paths:` ci-dessous est présent (#8024, piège PA2-OPS-003 / #2032) : un
+# workflow filtré par chemins ne produit AUCUN check sur une PR qui ne touche
+# pas un Dockerfile — GitHub attend alors indéfiniment un statut qui n'arrivera
+# jamais, et la PR devient inmergeable. Le rendu requis exige d'abord de retirer
+# le filtre `paths:` (le scan config devient alors inconditionnel), ou de
+# passer par un job-agrégateur non filtré qui rend un verdict explicite
+# (même schéma que le `detect-changes` de architecture-check.yml, #7269).
 
 on:
   pull_request:

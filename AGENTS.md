@@ -1,6 +1,25 @@
 # AGENTS.md - Guide de travail Leopardo
 
-Derniere mise a jour : 2026-09-21 (lots sécurité backend #7995/#7999 + BC-01 PLATFORM #7973..#7978 + session PM #7963/#7966/#7958/#7967 — fusion des deux blocs de leçons)
+Derniere mise a jour : 2026-09-21 (lots sécurité backend #7995/#7999 + BC-01 PLATFORM #7973..#7978 + session PM #7963/#7966/#7958/#7967 — fusion des deux blocs de leçons ; + garde Trivy opt-out et acquittements réalignés #8024)
+
+> Leçon 2026-09-21 (#8024) : **(1) un `.trivyignore.yaml` qui contredit le code est pire
+> qu'aucun acquittement** — trois entrées y décrivaient l'état *antérieur* à #7966/#7996
+> (php84 « exclu du non-root » alors qu'il porte `USER leopardo` ; `edge/Dockerfile`
+> « chown root + Caddy :80 » alors qu'il est `USER www-data` sur :8080). Un acquittement
+> périmé ne fait pas que mentir : il **masque** le défaut s'il réapparaît. Corollaire
+> opérationnel : après tout lot non-root (#7966/#7996), relire les acquittements Trivy
+> et `trivy config` localement (binaire téléchargeable, `--ignorefile .trivyignore.yaml`)
+> avant de pousser.
+> **(2) Une auto-référence `COPY --from` peut cacher un Dockerfile entièrement faux** :
+> `edge/Dockerfile` n'avait aucun `FROM base` avant son dernier bloc, donc tout le bloc
+> final (PWA, Caddyfile, entrypoint, `EXPOSE`, `USER`) s'exécutait dans le stage
+> `pwa-build` (`node:20-alpine`) — l'image produite n'était pas FrankenPHP du tout.
+> Retirer un acquittement peut donc RÉVÉLER un bug réel (ici `AVD-DS-0006`, CRITICAL) :
+> ne jamais le retirer sans rejouer le scan.
+> **(3) Garde locale = opt-out, jamais opt-in** : `TRIVY_ENFORCE` était à `0` par défaut
+> et n'était posé par aucun workflow — une garde jamais appelée ne protège rien. Même
+> règle que #8013 : une garde se juge à sa fréquence d'exécution réelle, pas à son
+> existence.
 
 > Leçon 2026-09-20 (#7995/#7999) : **(1) une politique de validation = un helper unique**
 > — les 3 sites historiques de la norme mots de passe étaient dupliqués textuellement ;

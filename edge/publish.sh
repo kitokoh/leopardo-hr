@@ -4,11 +4,13 @@
 # Usage: bash edge/publish.sh [VERSION]
 # Example: bash edge/publish.sh 1.0.0
 #
-# Garde Trivy optionnelle (#7997) : TRIVY_ENFORCE=1 bash edge/publish.sh 1.0.0
-#   refuse le push si une vulnérabilité CRITICAL/HIGH corrigeable non
-#   acquittée (.trivyignore.yaml à la racine) subsiste dans une image.
-#   Défaut : 0 (comportement historique — le scan CI hebdo image-scan.yml
-#   reste la garde systématique). Exige le binaire `trivy` dans le PATH.
+# Garde Trivy PAR DÉFAUT (#7997, durcissement #8024) : un scan
+#   CRITICAL/HIGH corrigeable non acquitté (.trivyignore.yaml) REFUSE le push.
+#   Opt-out explicite et délibéré : TRIVY_ENFORCE=0 bash edge/publish.sh 1.0.0
+#   (l'opt-in précédent n'était jamais posé en pratique — il ne protégeait donc
+#   rien ; le workflow hebdo image-scan.yml reste la garde systématique côté CI).
+#   Fail-closed : sans binaire `trivy` dans le PATH, le script s'ARRÊTE avant
+#   tout push (jamais de skip silencieux).
 # ============================================================
 set -e
 
@@ -50,21 +52,21 @@ docker build \
 echo ""
 echo "✅ Build successful!"
 
-# #7997 : refus de push sur CRITICAL/HIGH non acquitté — opt-in documenté
-# (TRIVY_ENFORCE=1, défaut 0). Fail-closed : si la garde est demandée sans
-# binaire trivy disponible, on s'arrête AVANT tout push (jamais de skip
+# #7997 / #8024 : refus de push sur CRITICAL/HIGH non acquitté — OPT-OUT
+# (défaut 1 ; désactivable explicitement via TRIVY_ENFORCE=0). Fail-closed :
+# si le binaire trivy est absent, on s'arrête AVANT tout push (jamais de skip
 # silencieux). `--ignore-unfixed` : seules les CVE corrigeables bloquent,
 # comme dans le workflow image-scan.yml ; les acquittements sont partagés
 # via .trivyignore.yaml (statement + expired_at obligatoires).
-TRIVY_ENFORCE="${TRIVY_ENFORCE:-0}"
-if [[ "${TRIVY_ENFORCE}" == "1" ]]; then
+TRIVY_ENFORCE="${TRIVY_ENFORCE:-1}"
+if [[ "${TRIVY_ENFORCE}" != "0" ]]; then
   if ! command -v trivy >/dev/null 2>&1; then
-    echo "❌ TRIVY_ENFORCE=1 mais le binaire 'trivy' est introuvable dans le PATH." >&2
-    echo "   Installez Trivy (https://trivy.dev) ou relancez sans TRIVY_ENFORCE." >&2
+    echo "❌ Scan Trivy actif par défaut (#8024) mais le binaire 'trivy' est introuvable dans le PATH." >&2
+    echo "   Installez Trivy (https://trivy.dev), ou désactivez explicitement le scan : TRIVY_ENFORCE=0 bash edge/publish.sh" >&2
     exit 1
   fi
   echo ""
-  echo "🔍 TRIVY_ENFORCE=1 — scan Trivy CRITICAL/HIGH avant push (acquittements : .trivyignore.yaml)..."
+  echo "🔍 Scan Trivy CRITICAL/HIGH avant push (acquittements : .trivyignore.yaml)..."
   for image in "${IMAGE}:${VERSION}" "${UI_IMAGE}:${VERSION}"; do
     trivy image \
       --severity CRITICAL,HIGH \
