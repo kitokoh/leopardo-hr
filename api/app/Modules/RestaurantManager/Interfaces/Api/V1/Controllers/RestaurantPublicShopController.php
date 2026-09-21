@@ -117,7 +117,11 @@ class RestaurantPublicShopController extends Controller
 
     public function track(Request $request, string $reference): JsonResponse
     {
+        // #7985 — `items` et `items.product` étaient chargés paresseusement
+        // ligne par ligne (1 + N requêtes) : eager loading explicite, le
+        // nombre de requêtes devient CONSTANT quel que soit le panier.
         $order = RestaurantOrder::query()
+            ->with('items.product')
             ->where('reference', $reference)
             ->first();
 

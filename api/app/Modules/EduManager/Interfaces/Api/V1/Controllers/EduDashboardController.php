@@ -27,6 +27,12 @@ use Illuminate\Http\Request;
  * d'administration (campus, années, classes, élèves, inscriptions,
  * évaluations, bulletins, frais) — l'UI consomme ce contrat pour construire
  * sa navigation et ses états vides.
+ *
+ * #7985 — les agrégats (frais en attente, admissions par statut) sont
+ * calculés EN SQL (`count(*)` / `sum(amount)` / `group by`) : l'ancienne
+ * version chargeait toutes les lignes (`->get()`) puis sommait/comptait en
+ * PHP, soit O(n) lignes transférées et hydratées à chaque ouverture du
+ * dashboard. Le payload RESTE identique (mêmes clés, mêmes types).
  */
 class EduDashboardController extends Controller
 {
@@ -52,16 +58,26 @@ class EduDashboardController extends Controller
             ->where('status', EduReportCard::STATUS_PUBLISHED)
             ->count();
 
-        $pendingFees = EduFeeCharge::query()
+        // #7985 — agrégat SQL : count + sum en UNE requête, aucune ligne
+        // hydratée (l'ancien `->get()` chargeait toutes les charges en
+        // attente puis `count()`/`sum('amount')` en PHP).
+        $pendingFeesAggregate = EduFeeCharge::query()
             ->where('company_id', $companyId)
             ->whereIn('status', [EduFeeCharge::STATUS_PENDING, EduFeeCharge::STATUS_PARTIAL])
-            ->get();
+            ->selectRaw('count(*) as pending_count, coalesce(sum(amount), 0) as pending_amount')
+            ->first();
 
+        $pendingFeesCount = (int) ($pendingFeesAggregate?->getAttribute('pending_count') ?? 0);
+        $pendingFeesTotal = round((float) ($pendingFeesAggregate?->getAttribute('pending_amount') ?? 0), 2);
+
+        // #7985 — `countBy('status')` en PHP → `group by status` SQL : un
+        // agrégat par statut, jamais les dossiers eux-mêmes.
         $admissionsByStatus = EduAdmission::query()
             ->where('company_id', $companyId)
-            ->select('status')
-            ->get()
-            ->countBy('status')
+            ->selectRaw('status, count(*) as aggregate')
+            ->groupBy('status')
+            ->pluck('aggregate', 'status')
+            ->map(static fn (mixed $count): int => (int) $count)
             ->all();
 
         return response()->json([
@@ -75,12 +91,12 @@ class EduDashboardController extends Controller
                     ['key' => 'admissions', 'label' => 'Admissions', 'count' => (int) array_sum($admissionsByStatus), 'route' => '/edu-manager/admissions'],
                     ['key' => 'assessments', 'label' => 'Évaluations', 'count' => $assessments, 'route' => '/edu-manager/assessments'],
                     ['key' => 'report_cards', 'label' => 'Bulletins publiés', 'count' => $publishedReportCards, 'route' => '/edu-manager/report-cards'],
-                    ['key' => 'fees', 'label' => 'Frais scolaires', 'count' => $pendingFees->count(), 'route' => '/edu-manager/fee-charges'],
+                    ['key' => 'fees', 'label' => 'Frais scolaires', 'count' => $pendingFeesCount, 'route' => '/edu-manager/fee-charges'],
                 ],
                 'summary' => [
                     'admissions_by_status' => $admissionsByStatus,
-                    'pending_fees_total' => round((float) $pendingFees->sum('amount'), 2),
-                    'pending_fees_count' => $pendingFees->count(),
+                    'pending_fees_total' => $pendingFeesTotal,
+                    'pending_fees_count' => $pendingFeesCount,
                 ],
             ],
         ]);

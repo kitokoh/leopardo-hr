@@ -87,6 +87,21 @@ Derniere mise a jour : 2026-09-21 (lots sécurité backend #7995/#7999 + BC-01 P
 > worktree chargent l'app du dépôt qui porte le `vendor` (`Application::inferBasePath()`) —
 > lancer `APP_BASE_PATH=<worktree>/api php artisan test ...` sinon on teste le code d'un autre
 > checkout.
+Derniere mise a jour : 2026-09-21 (lots sécurité backend #7995/#7999 + BC-01 PLATFORM #7973..#7978 + session PM #7963/#7966/#7958/#7967 + perf #7985)
+
+> Leçon 2026-09-21 (#7985) : **(1) un test de comptage de requêtes doit exclure la
+> plomberie de connexion** — `SHOW search_path` / `SET search_path` (bascule
+> tenant) varient d'un appel à l'autre DANS le même test : un `assertSame` sur le
+> total est flaky (observé 9 puis 10 requêtes pour la même requête HTTP).
+> Ne compter que les requêtes métier (`SELECT/INSERT/UPDATE/DELETE`).
+> **(2) une optimisation « agrégat » n'est PAS prouvable par le seul nombre de
+> requêtes** — `->get()` + `sum()` en PHP et l'agrégat SQL émettent le MÊME
+> nombre de requêtes : la garde utile est l'assertion sur le SQL (`sum(amount)`,
+> `group by "status"`) PLUS l'invariance N vs 2N lignes. **(3) les suites citées
+> par une issue peuvent être ROUGES sur main** — `RestaurantPublicShopTest` (9
+> tests) pointe encore `/api/v1/public/restaurant/menu|orders` alors que les
+> routes vivent sous `/public/restaurant/shop/*` : lancer `phpunit <fichier>`
+> AVANT d'y ajouter des tests, et poser les nouveaux tests dans une suite verte.
 
 > Leçon 2026-09-20 (#7995/#7999) : **(1) une politique de validation = un helper unique**
 > — les 3 sites historiques de la norme mots de passe étaient dupliqués textuellement ;
