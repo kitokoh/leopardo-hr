@@ -102,13 +102,28 @@ function SidebarModuleLink({
         {module.icon ? <module.icon className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" /> : null}
         <span className="truncate">{labels.dashboard.modules[module.key] ?? module.label}</span>
       </span>
-      {/* Pastille d'item actif, teintée par le branding du tenant (#7860). */}
-      {active ? (
-        <span
-          className="ms-auto h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--tenant-primary,#10b981)]"
-          aria-hidden="true"
-        />
-      ) : null}
+      {/* #8028 — un module en essai doit rester VISIBLE comme tel dans la
+          navigation : le refactor #7908 n'avait gardé le badge « Trial » que
+          sur les cartes métier, si bien qu'un module cœur en essai (ex.
+          « Rapports ») n'était plus signalé nulle part (régression verrouillée
+          par `e2e/client-feature-gates.spec.ts`). */}
+      <span className="ms-auto flex shrink-0 items-center gap-1.5">
+        {module.state === 'trial' ? (
+          <span
+            data-testid="sidebar-module-trial-badge"
+            className="rounded-md border border-amber-200 bg-amber-50 px-1 py-0.5 text-[8px] font-black uppercase tracking-widest text-amber-600"
+          >
+            Trial
+          </span>
+        ) : null}
+        {/* Pastille d'item actif, teintée par le branding du tenant (#7860). */}
+        {active ? (
+          <span
+            className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--tenant-primary,#10b981)]"
+            aria-hidden="true"
+          />
+        ) : null}
+      </span>
     </Link>
   );
 }

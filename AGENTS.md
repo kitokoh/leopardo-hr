@@ -20,6 +20,21 @@ Derniere mise a jour : 2026-09-21 (lots sécurité backend #7995/#7999 + BC-01 P
 > et n'était posé par aucun workflow — une garde jamais appelée ne protège rien. Même
 > règle que #8013 : une garde se juge à sa fréquence d'exécution réelle, pas à son
 > existence.
+
+> Leçon 2026-09-21 (#8028) : **(1) un refactor de composant peut faire disparaître un
+> ÉTAT MÉTIER de l'écran sans casser un seul test unitaire.** #7908 a déplacé le badge
+> « Trial » dans `BusinessRailCard` (modules `scope: 'business'`) alors que l'ancien
+> `NavPill` le rendait pour tout module `enabled && state === 'trial'` : un module cœur en
+> essai (« Rapports ») n'était plus signalé nulle part, et seule la garde **e2e** l'a vu —
+> encore faut-il qu'elle tourne sur un job REQUIS, ce qui n'était pas le cas (job vitrine
+> hors branch protection). Déplacer un composant = vérifier la liste des états qu'il
+> rendait, pas seulement ses liens.
+> **(2) Reproduire un e2e « déterministe » en local AVANT de choisir entre « test obsolète »
+> et « régression produit », puis DATER la régression par l'historique** :
+> `commits?path=<spec>` puis `contents?ref=<sha>` sur le fichier d'avant le refactor suffisent
+> à trancher (ici : le badge existait bien avant #7908). Sans cette double preuve, on
+> « répare » le test et on enterre la régression.
+
 Derniere mise a jour : 2026-09-21 (lot sécurité #8021 — politique mots de passe réellement unique + garde durcie ; lots #7995/#7999 + BC-01 PLATFORM #7973..#7978 — fusion des blocs de leçons)
 
 > Leçon 2026-09-21 (#8021) : **(1) un helper unique ne suffit pas — il faut migrer les sites
