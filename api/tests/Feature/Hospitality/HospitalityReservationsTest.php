@@ -6,6 +6,7 @@ namespace Tests\Feature\Hospitality;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\EmployeeResourceAssignment;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityProperty;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityReservation;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityRoomType;
@@ -190,6 +191,50 @@ class HospitalityReservationsTest extends TestCase
 
         $this->postJson('/api/v1/hospitality/reservations', $this->reservationPayload())
             ->assertStatus(403);
+    }
+
+    public function test_scoped_employee_only_lists_reservations_of_accessible_properties(): void
+    {
+        $propertyB = $this->createProperty($this->company);
+        $roomTypeB = $this->createRoomType($propertyB, 'STDB', 'Standard B');
+        $this->createUnit($this->property, $this->roomType, 'CH-A1');
+        $this->createUnit($propertyB, $roomTypeB, 'CH-B1');
+
+        Sanctum::actingAs($this->admin);
+        $resaA = $this->postJson('/api/v1/hospitality/reservations', $this->reservationPayload())
+            ->assertStatus(201)->json('data.id');
+        $resaB = $this->postJson('/api/v1/hospitality/reservations', $this->reservationPayload([
+            'property_id' => $propertyB->getKey(),
+            'room_type_id' => $roomTypeB->getKey(),
+            'guest_name' => 'Moussa Faye',
+        ]))->assertStatus(201)->json('data.id');
+
+        // Réceptionniste scopé à l'établissement A uniquement (HOSP-003) :
+        // la liste des réservations est bornée aux établissements lisibles,
+        // sinon il lirait la clientèle (PII) des autres sites du tenant.
+        $assignment = new EmployeeResourceAssignment([
+            'employee_id' => $this->lambda->id,
+            'resource_type' => 'hospitality_property',
+            'resource_id' => $this->property->getKey(),
+            'access_level' => EmployeeResourceAssignment::LEVEL_VIEW,
+        ]);
+        $assignment->company_id = $this->company->id;
+        $assignment->save();
+
+        Sanctum::actingAs($this->lambda);
+        $ids = collect(
+            $this->getJson('/api/v1/hospitality/reservations')->assertStatus(200)->json('data')
+        )->pluck('id');
+
+        $this->assertContains($resaA, $ids);
+        $this->assertNotContains($resaB, $ids);
+
+        // Le filtre explicite sur l'établissement B ne doit rien fuiter.
+        $idsB = collect(
+            $this->getJson('/api/v1/hospitality/reservations?property_id='.$propertyB->getKey())
+                ->assertStatus(200)->json('data')
+        )->pluck('id');
+        $this->assertNotContains($resaB, $idsB);
     }
 
     // ── Création & validation ─────────────────────────────────────────

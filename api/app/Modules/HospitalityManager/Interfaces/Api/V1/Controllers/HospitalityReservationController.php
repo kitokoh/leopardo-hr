@@ -40,6 +40,19 @@ class HospitalityReservationController extends Controller
 
         $query = HospitalityReservation::query()->where('company_id', $actor->company_id);
 
+        // RBAC ressource-scopé (HOSP-003 #7945) : la liste est bornée aux
+        // établissements accessibles en LECTURE — `null` = aucune
+        // restriction (principal, rh en lecture, ou type pas encore assigné).
+        // Sans ce bornage, un réceptionniste scopé au site A lisait la
+        // clientèle (PII) de tous les autres établissements du tenant.
+        $accessible = $actor->accessibleResourceIds(
+            'hospitality_property',
+            \App\Core\Tenant\Domain\Models\EmployeeResourceAssignment::LEVEL_VIEW
+        );
+        if ($accessible !== null) {
+            $query->whereIn('property_id', $accessible);
+        }
+
         if ($request->filled('property_id')) {
             $query->where('property_id', (int) $request->input('property_id'));
         }
