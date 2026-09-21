@@ -372,29 +372,8 @@ jobs:
             echo "::warning::Base LIVE (${LIVE_KIND}, ${LIVE_HOST}) injoignable — rien à copier, recharge ignorée."
             exit 0
           fi
-          if ! probe "${SPARE_URL}"; then
-            echo "::warning::Base d'appoint (${SPARE_KIND}, ${SPARE_HOST}) injoignable (quota épuisé ?) — recharge ignorée, réessai au prochain créneau horaire."
-            exit 0
-          fi
-
-          # Copie « étrangère » : des tables, mais aucun marqueur de synchro.
-          # On refuse d'écraser sans dump de sécurité CHIFFRÉ disponible.
-          existing_migrations="$(q "${SPARE_URL}" 'select count(*) from public.migrations;')"
-          has_marker="$(q "${SPARE_URL}" 'select count(*) from public._standby_sync;')"
-          if [[ -n "${existing_migrations}" && "${existing_migrations}" != "0" && -z "${has_marker}" ]]; then
-            if [[ ${age_available} -eq 0 ]]; then
-              echo "::error::La base d'appoint (${SPARE_HOST}) contient ${existing_migrations} migrations sans marqueur (copie étrangère) et aucun chiffrement age n'est disponible : écrasement REFUSÉ pour ne pas perdre ces données (dépôt public = pas de dump en clair)."
-              exit 1
-            fi
-            mkdir -p /tmp/spare-safety-dumps
-            raw="/tmp/spare-safety-dumps/spare-${SPARE_KIND}-before-overwrite-$(date -u +%Y%m%d-%H%M%S).dump"
-            pg_dump --format=custom --no-owner --no-privileges --file="${raw}" "${SPARE_URL}"
-            age --recipient "${BACKUP_AGE_RECIPIENT}" --output "${raw}.age" "${raw}"
-            rm -f "${raw}"
-            echo "safety_dump=${raw}.age" >> "$GITHUB_ENV"
-            echo "::warning::Base d'appoint (${SPARE_HOST}) = copie étrangère (${existing_migrations} migrations, aucun marqueur) : dump de sécurité CHIFFRÉ publié en artefact AVANT écrasement."
-          fi
-
+          # 1) SAUVEGARDE d'abord : elle ne dépend d'aucune autre base (le mode
+          #    backup doit produire un dump même si l'appoint est injoignable).
           dump="$(mktemp -t standby-XXXXXX.dump)"
           pg_dump --format=custom --no-owner --no-privileges --file="${dump}" "${LIVE_URL}"
           echo "Dump ${LIVE_KIND} (${LIVE_HOST}) : $(stat -c %s "${dump}") octets"
@@ -424,6 +403,29 @@ jobs:
             if [[ -f "${dump}.age" ]]; then
               echo "backup_artifact=${dump}.age" >> "$GITHUB_ENV"
             fi
+          fi
+
+          if ! probe "${SPARE_URL}"; then
+            echo "::warning::Base d'appoint (${SPARE_KIND}, ${SPARE_HOST}) injoignable (quota épuisé ?) — copie non effectuée ; la sauvegarde chiffrée ci-dessus reste valable. Réessai au prochain créneau horaire."
+            exit 0
+          fi
+
+          # Copie « étrangère » : des tables, mais aucun marqueur de synchro.
+          # On refuse d'écraser sans dump de sécurité CHIFFRÉ disponible.
+          existing_migrations="$(q "${SPARE_URL}" 'select count(*) from public.migrations;')"
+          has_marker="$(q "${SPARE_URL}" 'select count(*) from public._standby_sync;')"
+          if [[ -n "${existing_migrations}" && "${existing_migrations}" != "0" && -z "${has_marker}" ]]; then
+            if [[ ${age_available} -eq 0 ]]; then
+              echo "::error::La base d'appoint (${SPARE_HOST}) contient ${existing_migrations} migrations sans marqueur (copie étrangère) et aucun chiffrement age n'est disponible : écrasement REFUSÉ pour ne pas perdre ces données (dépôt public = pas de dump en clair)."
+              exit 1
+            fi
+            mkdir -p /tmp/spare-safety-dumps
+            raw="/tmp/spare-safety-dumps/spare-${SPARE_KIND}-before-overwrite-$(date -u +%Y%m%d-%H%M%S).dump"
+            pg_dump --format=custom --no-owner --no-privileges --file="${raw}" "${SPARE_URL}"
+            age --recipient "${BACKUP_AGE_RECIPIENT}" --output "${raw}.age" "${raw}"
+            rm -f "${raw}"
+            echo "safety_dump=${raw}.age" >> "$GITHUB_ENV"
+            echo "::warning::Base d'appoint (${SPARE_HOST}) = copie étrangère (${existing_migrations} migrations, aucun marqueur) : dump de sécurité CHIFFRÉ publié en artefact AVANT écrasement."
           fi
 
           # Remise à zéro de la base d'appoint (jamais la base LIVE).
