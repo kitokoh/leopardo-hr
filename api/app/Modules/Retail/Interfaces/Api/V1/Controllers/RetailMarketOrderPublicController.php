@@ -86,7 +86,12 @@ class RetailMarketOrderPublicController extends Controller
         // requete porte un jeton buyer VALIDE, la commande est liee au
         // compte (historique cross-tenant + avis verifies). Jeton absent ou
         // invalide → checkout invite inchange (jamais bloquant).
-        $buyer = $this->accounts->buyerForBearerToken($request->bearerToken());
+        // #8022 — le jeton est resolu depuis le Bearer (retrocompatibilite)
+        // OU le cookie HttpOnly de session (front marketplace desormais
+        // sans credential cote JS).
+        $buyer = $this->accounts->buyerForBearerToken(
+            $this->accounts->resolveRequestToken($request),
+        );
 
         app()->instance('tenant_scope_required', true);
 

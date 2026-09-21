@@ -33969,7 +33969,9 @@ paths:
       - Retail
       summary: Creation d'un compte acheteur marketplace (#7814, sans auth)
       description: 'Compte PLATEFORME cross-tenant. Jeton opaque hashe
-        (mkb_ + 64 hex) retourne a la creation. Throttle strict dedie
+        (mkb_ + 64 hex) retourne a la creation ET pose en cookie HttpOnly
+        Secure SameSite market_buyer_token (#8022 — le Bearer JSON reste
+        fourni pour les clients existants). Throttle strict dedie
         market-account-public (anti-bruteforce) en plus de shop-public.'
       security: []
       requestBody:
@@ -34006,8 +34008,9 @@ paths:
       tags:
       - Retail
       summary: Connexion d'un acheteur marketplace (#7814, sans auth)
-      description: 'Retourne un nouveau jeton opaque buyer (mkb_...). 401
-        fail-closed sur identifiants invalides. Throttle strict dedie
+      description: 'Retourne un nouveau jeton opaque buyer (mkb_...) ET le
+        pose en cookie HttpOnly Secure SameSite market_buyer_token (#8022).
+        401 fail-closed sur identifiants invalides. Throttle strict dedie
         market-account-public.'
       security: []
       requestBody:
@@ -34041,7 +34044,9 @@ paths:
       - Retail
       summary: Deconnexion de l'acheteur marketplace (jeton buyer, #7814)
       description: Revoque le jeton buyer courant (middleware market.buyer,
-        401 fail-closed sans jeton valide).
+        401 fail-closed sans jeton valide) et expire le cookie HttpOnly de
+        session (#8022). Le jeton est resolu depuis le Bearer OU le cookie
+        market_buyer_token.
       security: []
       responses:
         '200':
@@ -34053,6 +34058,8 @@ paths:
       tags:
       - Retail
       summary: Profil de l'acheteur marketplace courant (jeton buyer, #7814)
+      description: Jeton buyer resolu depuis le header Authorization Bearer
+        OU le cookie HttpOnly market_buyer_token (#8022).
       security: []
       responses:
         '200':

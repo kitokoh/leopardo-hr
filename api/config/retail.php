@@ -46,4 +46,34 @@ return [
             'webhook_secret' => env('RETAIL_PAY_MOCK_WEBHOOK_SECRET'),
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Retail — Session acheteur marketplace en cookie HttpOnly (#8022)
+    |--------------------------------------------------------------------------
+    |
+    | Tranche 2 de #8022 (suivi #7979) : le jeton opaque `mkb_…` est pose en
+    | cookie HttpOnly a l'inscription/connexion et accepte en REPLI du header
+    | `Authorization: Bearer` (conserve pour les clients existants) — le
+    | front marketplace ne stocke plus la credential en localStorage,
+    | lisible par n'importe quel JS de la page (XSS).
+    |
+    */
+
+    'buyer_session' => [
+        // Nom du cookie (host-only : aucun domaine pose, path=/).
+        'cookie' => env('RETAIL_BUYER_SESSION_COOKIE', 'market_buyer_token'),
+
+        // Secure : le cookie ne transite qu'en HTTPS. A desactiver
+        // UNIQUEMENT pour un dev http non-localhost (les navigateurs
+        // modernes acceptent Secure sur localhost).
+        'secure' => (bool) env('RETAIL_BUYER_SESSION_SECURE', true),
+
+        // SameSite : 'lax' par defaut. Un deploiement CROSS-SITE (front et
+        // API sur des sites distincts — ex. Vercel ↔ Render) exige 'none'
+        // (qui impose secure=true) pour que le cookie accompagne les
+        // requetes fetch cross-origin ; en 'lax' cross-site, seul le Bearer
+        // legacy reste fonctionnel (retrocompatibilite conservee).
+        'same_site' => env('RETAIL_BUYER_SESSION_SAME_SITE', 'lax'),
+    ],
 ];

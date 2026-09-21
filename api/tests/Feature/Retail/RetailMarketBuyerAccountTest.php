@@ -10,7 +10,9 @@ use App\Modules\Retail\Domain\Enums\RetailFulfillmentStatus;
 use App\Modules\Retail\Domain\Models\MarketplaceBuyer;
 use App\Modules\Retail\Domain\Models\RetailOrder;
 use Illuminate\Support\Str;
+use Illuminate\Testing\TestResponse;
 use Laravel\Sanctum\Sanctum;
+use Symfony\Component\HttpFoundation\Cookie;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -180,6 +182,31 @@ class RetailMarketBuyerAccountTest extends TestCase
             ]);
     }
 
+    /**
+     * Nom du cookie de session (#8022) — lu depuis la config, avec repli.
+     */
+    private function sessionCookieName(): string
+    {
+        $name = config('retail.buyer_session.cookie', 'market_buyer_token');
+
+        return is_string($name) && $name !== '' ? $name : 'market_buyer_token';
+    }
+
+    /**
+     * Cookie de session pose sur une reponse (nom configurable, #8022).
+     *
+     * @param  TestResponse<\Symfony\Component\HttpFoundation\Response>  $response
+     */
+    private function sessionCookieOf(TestResponse $response, string $name): Cookie
+    {
+        $cookie = collect($response->headers->getCookies())
+            ->firstWhere(fn (Cookie $candidate): bool => $candidate->getName() === $name);
+
+        $this->assertNotNull($cookie, "Cookie de session {$name} absent de la reponse.");
+
+        return $cookie;
+    }
+
     public function test_register_login_me_logout_flow(): void
     {
         [$token, $email] = $this->registerBuyer();
@@ -223,6 +250,110 @@ class RetailMarketBuyerAccountTest extends TestCase
         $this->getJson('/api/v1/public/market/account/me')->assertStatus(401);
         $this->getJson('/api/v1/public/market/account/me', ['Authorization' => 'Bearer mkb_'.str_repeat('0', 64)])
             ->assertStatus(401);
+    }
+
+    public function test_httponly_session_cookie_flow(): void
+    {
+        $cookieName = $this->sessionCookieName();
+
+        // Register → Set-Cookie HttpOnly; Secure; SameSite=Lax portant le
+        // jeton (#8022) : le navigateur n'a plus besoin de le stocker en JS.
+        $register = $this->postJson('/api/v1/public/market/account/register', [
+            'name' => 'Awa Ndiaye',
+            'email' => Str::lower(Str::random(10)).'@buyer.test',
+            'password' => 'Buyer-S3cret-2026!',
+        ])->assertStatus(201);
+
+        /** @var array{token: string, buyer: array{email: string}} $data */
+        $data = $register->json('data');
+        $token = $data['token'];
+        $cookie = $this->sessionCookieOf($register, $cookieName);
+        $this->assertSame($token, $cookie->getValue());
+        $this->assertTrue($cookie->isHttpOnly());
+        $this->assertTrue($cookie->isSecure());
+        $this->assertSame('lax', strtolower((string) $cookie->getSameSite()));
+        $this->assertSame('/', $cookie->getPath());
+        $this->assertSame('', $cookie->getDomain(), 'cookie host-only attendu (pas d\'attribut Domain)');
+
+        // /me via le cookie SEUL (sans Bearer) → 200.
+        $this->withUnencryptedCookie($cookieName, $token)
+            ->withCredentials()
+            ->getJson('/api/v1/public/market/account/me')
+            ->assertStatus(200)
+            ->assertJsonPath('data.name', 'Awa Ndiaye');
+
+        // Retrocompatibilite : le Bearer PRIME sur un cookie invalide.
+        $this->withUnencryptedCookie($cookieName, 'mkb_'.str_repeat('1', 64))
+            ->withCredentials()
+            ->getJson('/api/v1/public/market/account/me', ['Authorization' => 'Bearer '.$token])
+            ->assertStatus(200);
+
+        // Login pose aussi le cookie (rotation : nouveau jeton).
+        $login = $this->postJson('/api/v1/public/market/account/login', [
+            'email' => $data['buyer']['email'],
+            'password' => 'Buyer-S3cret-2026!',
+        ])->assertStatus(200);
+
+        /** @var array{token: string} $loginData */
+        $loginData = $login->json('data');
+        $loginToken = $loginData['token'];
+        $this->assertSame($loginToken, $this->sessionCookieOf($login, $cookieName)->getValue());
+
+        // Logout via cookie → jeton revoque ET cookie expire.
+        $logout = $this->withUnencryptedCookie($cookieName, $loginToken)
+            ->withCredentials()
+            ->postJson('/api/v1/public/market/account/logout')
+            ->assertStatus(200);
+        $this->assertTrue(
+            $this->sessionCookieOf($logout, $cookieName)->isCleared(),
+            'le logout doit poser un cookie expire (suppression navigateur)',
+        );
+        $this->withUnencryptedCookie($cookieName, $loginToken)
+            ->withCredentials()
+            ->getJson('/api/v1/public/market/account/me')
+            ->assertStatus(401);
+    }
+
+    public function test_checkout_links_order_to_buyer_via_session_cookie(): void
+    {
+        $this->enableShop($this->principalA);
+        $product = $this->storeOnlineProduct($this->principalA);
+
+        [$token] = $this->registerBuyer();
+        $cookieName = $this->sessionCookieName();
+
+        /** @var int $productId */
+        $productId = $product['id'];
+
+        // Checkout avec le cookie HttpOnly SEUL (sans Bearer, #8022) →
+        // commande liee au buyer, comme avec le header historique.
+        /** @var array{reference: string} $linked */
+        $linked = $this->withUnencryptedCookie($cookieName, $token)
+            ->withCredentials()
+            ->postJson('/api/v1/public/market/orders', [
+                'seller' => (string) $this->companyA->slug,
+                'items' => [['product_id' => $productId, 'quantity' => 2]],
+                'customer' => [
+                    'name' => 'Awa Ndiaye',
+                    'phone' => '+221770000000',
+                ],
+                'delivery' => [
+                    'address' => '12 rue des Manguiers',
+                    'city' => 'Dakar',
+                ],
+                'payment_method' => 'cash',
+                'idempotency_key' => (string) Str::uuid(),
+            ])->assertStatus(201)->json('data');
+
+        /** @var MarketplaceBuyer $buyer */
+        $buyer = MarketplaceBuyer::query()->firstOrFail();
+
+        /** @var RetailOrder $order */
+        $order = RetailOrder::query()
+            ->withoutGlobalScope('company')
+            ->where('reference', $linked['reference'])
+            ->firstOrFail();
+        $this->assertEquals($buyer->id, $order->buyer_id);
     }
 
     public function test_checkout_links_order_to_authenticated_buyer(): void

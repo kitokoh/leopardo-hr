@@ -7,7 +7,10 @@ namespace App\Modules\Retail\Application\Services;
 use App\Modules\Retail\Domain\Models\MarketplaceBuyer;
 use App\Modules\Retail\Domain\Models\MarketplaceBuyerToken;
 use Illuminate\Contracts\Hashing\Hasher;
+use Illuminate\Cookie\CookieJar;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Symfony\Component\HttpFoundation\Cookie;
 
 /**
  * Comptes acheteurs de la marketplace Leopardo Marche (BC-17 RETAIL, #7814).
@@ -16,6 +19,12 @@ use Illuminate\Support\Carbon;
  * legere, login email + mot de passe, jetons OPAQUES (`mkb_` + 64 hex)
  * hashes en SHA-256 cote serveur — jamais de Sanctum tenant ici (les
  * personal access tokens Sanctum vivent dans les schemas tenants).
+ *
+ * Depuis #8022 (tranche 2, cible #7979), le jeton est AUSSI livre en cookie
+ * HttpOnly; Secure; SameSite (sessionCookie/forgetSessionCookie ci-dessous)
+ * et accepte en repli du header `Authorization: Bearer` sur les routes
+ * authentifiees (resolveRequestToken) : le front marketplace ne stocke plus
+ * la credential en localStorage, lisible par XSS.
  *
  * Fail-closed : jeton absent/errone/expire → null (le middleware
  * `market.buyer` repond 401 uniforme, sans probing).
@@ -29,7 +38,72 @@ final class RetailBuyerAccountService
     // livré ; une rotation courte borne la fenêtre d'abus d'un jeton volé.
     private const TOKEN_TTL_DAYS = 7;
 
-    public function __construct(private readonly Hasher $hasher) {}
+    public function __construct(
+        private readonly Hasher $hasher,
+        private readonly CookieJar $cookies,
+    ) {}
+
+    /**
+     * Nom du cookie HttpOnly de session acheteur (#8022, tranche 2).
+     */
+    public function sessionCookieName(): string
+    {
+        $name = config('retail.buyer_session.cookie', 'market_buyer_token');
+
+        return is_string($name) && $name !== '' ? $name : 'market_buyer_token';
+    }
+
+    /**
+     * Cookie HttpOnly posé sur register/login (#8022, tranche 2 — cible
+     * documentée par #7979) : HttpOnly (illisible par le JS de la page —
+     * fin du jeton en localStorage), Secure (HTTPS, réglable par env pour
+     * le dev http local), SameSite=Lax par défaut ('none' exigé si le
+     * front et l'API sont servis sur des sites distincts — cross-site,
+     * ex. Vercel ↔ Render), host-only (pas de domaine), path=/.
+     * Durée alignée sur le TTL du jeton : le cookie ne survit pas au jeton.
+     */
+    public function sessionCookie(string $token): Cookie
+    {
+        $sameSite = config('retail.buyer_session.same_site', 'lax');
+
+        return $this->cookies->make(
+            name: $this->sessionCookieName(),
+            value: $token,
+            minutes: self::TOKEN_TTL_DAYS * 24 * 60,
+            path: '/',
+            secure: (bool) config('retail.buyer_session.secure', true),
+            httpOnly: true,
+            raw: false,
+            sameSite: is_string($sameSite) && $sameSite !== '' ? $sameSite : 'lax',
+        );
+    }
+
+    /**
+     * Cookie d'expiration immédiate posé sur logout (#8022) : le
+     * navigateur le supprime, la session cookie est close.
+     */
+    public function forgetSessionCookie(): Cookie
+    {
+        return $this->cookies->forget($this->sessionCookieName());
+    }
+
+    /**
+     * Jeton porté par la requête (#8022) : `Authorization: Bearer` d'abord
+     * (rétrocompatibilité — clients historiques, apps, intégrations),
+     * puis le cookie HttpOnly de session. null si ni l'un ni l'autre.
+     */
+    public function resolveRequestToken(Request $request): ?string
+    {
+        $bearer = $request->bearerToken();
+
+        if (is_string($bearer) && trim($bearer) !== '') {
+            return $bearer;
+        }
+
+        $cookie = $request->cookie($this->sessionCookieName());
+
+        return is_string($cookie) && $cookie !== '' ? $cookie : null;
+    }
 
     /**
      * Inscription legere. L'unicite email est verifiee en amont

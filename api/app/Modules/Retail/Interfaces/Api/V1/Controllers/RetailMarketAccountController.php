@@ -39,7 +39,9 @@ class RetailMarketAccountController extends Controller
     ) {}
 
     /**
-     * POST /public/market/account/register — inscription legere.
+     * POST /public/market/account/register — inscription legere. Pose le
+     * jeton en cookie HttpOnly (#8022) EN PLUS de le renvoyer dans le
+     * corps JSON (retrocompatibilite des clients Bearer).
      */
     public function register(RegisterMarketBuyerRequest $request): JsonResponse
     {
@@ -55,12 +57,13 @@ class RetailMarketAccountController extends Controller
                 'token' => $result['token'],
                 'buyer' => $this->buyerPayload($result['buyer']),
             ],
-        ], 201);
+        ], 201)->withCookie($this->accounts->sessionCookie($result['token']));
     }
 
     /**
      * POST /public/market/account/login — 401 uniforme si identifiants
-     * invalides (jamais de distinction email/mot de passe).
+     * invalides (jamais de distinction email/mot de passe). Pose le cookie
+     * HttpOnly de session (#8022) comme register.
      */
     public function login(LoginMarketBuyerRequest $request): JsonResponse
     {
@@ -78,18 +81,22 @@ class RetailMarketAccountController extends Controller
                 'token' => $result['token'],
                 'buyer' => $this->buyerPayload($result['buyer']),
             ],
-        ]);
+        ])->withCookie($this->accounts->sessionCookie($result['token']));
     }
 
     /**
      * POST /public/market/account/logout — revoque le jeton courant
-     * (idempotent).
+     * (idempotent) et expire le cookie HttpOnly de session (#8022) :
+     * la session est close des deux cotes (serveur + navigateur).
      */
     public function logout(Request $request): JsonResponse
     {
-        $this->accounts->revokeBearerToken($request->bearerToken());
+        $this->accounts->revokeBearerToken(
+            $this->accounts->resolveRequestToken($request),
+        );
 
-        return response()->json(['data' => ['logged_out' => true]]);
+        return response()->json(['data' => ['logged_out' => true]])
+            ->withCookie($this->accounts->forgetSessionCookie());
     }
 
     /**
