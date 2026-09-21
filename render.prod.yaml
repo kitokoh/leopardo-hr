@@ -129,6 +129,13 @@ services:
         value: redis
       - key: SESSION_DRIVER
         value: redis
+      # #7980 : cookies de session HTTPS-only — la prod est servie en TLS,
+      # sans ce flag un cookie peut transiter en clair sur une redirection.
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      # #7980 : SSL obligatoire vers Neon (fin du sslmode 'prefer' en dur).
+      - key: DB_SSLMODE
+        value: require
       # Paiements — clés réelles à saisir dans le dashboard Render (ou via
       # Pulumi ESC solarnyxss/leopardo-hr/prod) après rotation.
       - key: STRIPE_SECRET_KEY

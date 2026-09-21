@@ -57,6 +57,8 @@ on:
 
 permissions:
   contents: read
+  # Job fronts-vercel : lecture des GitHub Deployments (#7994 §5).
+  deployments: read
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -262,3 +264,48 @@ jobs:
         shell: bash
         run: |
           echo "::notice::Dérive détectée — runbook : docs/ops/RENDER_DEV_ALIGNMENT.md (aligner l'environnement sur la référence AVANT toute recette)."
+
+  # ──────────────────────────────────────────────────────────────────────
+  # #7994 §5 — Fronts Vercel : le drift des fronts n'était couvert par
+  # AUCUNE garde (travel-web et marketplace sont restés figés des jours,
+  # déploiements git CANCELED + secrets CI absents, sans aucun signal).
+  # Comparateur SANS secret Vercel : les GitHub Deployments enregistrés
+  # par les workflows de déploiement eux-mêmes après healthcheck réussi
+  # (register-github-deployment.sh — cf. travel-web-deploy.yml /
+  # marketplace-deploy.yml). Un environnement SANS enregistrement = prod
+  # non traçable → échec visible (c'est précisément le cas à réparer).
+  fronts-vercel:
+    name: Drift front Vercel (${{ matrix.label }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.repository == 'kitokoh/leopardo-hr'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: travel-web
+            path: front/travel-web
+            environment: "Production – leopardo-travel-prod"
+          - label: marketplace
+            path: front/marketplace
+            environment: "Production – leopardo-marche"
+    steps:
+      - name: Vérifier la dérive du front (deployment GitHub ↔ main)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FRONT_ENV: ${{ matrix.environment }}
+          FRONT_PATH: ${{ matrix.path }}
+          FRONT_LABEL: ${{ matrix.label }}
+        run: |
+          set -uo pipefail
+          bash dev-hub/tools/check-vercel-front-drift.sh \
+            --environment "${FRONT_ENV}" \
+            --path "${FRONT_PATH}" \
+            --label "${FRONT_LABEL}"
+
+      - name: Rappel du contexte
+        if: failure()
+        shell: bash
+        run: |
+          echo "::notice::Drift front Vercel — déclencher le workflow de déploiement du front en production (travel-web-deploy.yml / marketplace-deploy.yml, workflow_dispatch) ; si les secrets VERCEL_* manquent, action propriétaire requise (#7994 §1 — jamais de token voué à révocation)."

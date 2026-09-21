@@ -24,7 +24,10 @@ final class RetailBuyerAccountService
 {
     private const TOKEN_PREFIX = 'mkb_';
 
-    private const TOKEN_TTL_DAYS = 30;
+    // #7979 : TTL court (7 j, était 30) — la session acheteur vit en
+    // localStorage (lisible par XSS) tant que le cookie HttpOnly n'est pas
+    // livré ; une rotation courte borne la fenêtre d'abus d'un jeton volé.
+    private const TOKEN_TTL_DAYS = 7;
 
     public function __construct(private readonly Hasher $hasher) {}
 

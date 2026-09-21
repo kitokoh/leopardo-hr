@@ -16,12 +16,22 @@ services:
     build:
       context: ./api
       dockerfile: docker/php84/Dockerfile
+      # #7996 : uid/gid de l'utilisateur non-root `leopardo`, alignables sur
+      # l'hôte du bind-mount (./api) — ex. CI GitHub (runner uid 1001) :
+      # APP_UID=$(id -u) APP_GID=$(id -g) docker compose up -d --build
+      args:
+        APP_UID: ${APP_UID:-1000}
+        APP_GID: ${APP_GID:-1000}
     container_name: leopardo-api
     working_dir: /var/www/html
     volumes:
       - ./api:/var/www/html
+    # #7996 : port publié sur 127.0.0.1 uniquement, comme postgres/redis
+    # depuis #7847 (pas d'exposition LAN du serveur de dev). L'accès depuis
+    # l'émulateur Android est inchangé : il joint la loopback de l'hôte via
+    # 10.0.2.2.
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
@@ -30,7 +40,7 @@ services:
       DB_PORT: "5432"
       DB_DATABASE: leopardo
       DB_USERNAME: leopardo
-      DB_PASSWORD: "${POSTGRES_PASSWORD:-secret}"
+      DB_PASSWORD: "${POSTGRES_PASSWORD:-leopardo-dev-local-only}"
       DB_SEARCH_PATH: "shared_tenants,public"
       REDIS_HOST: redis
       CACHE_STORE: redis
@@ -41,6 +51,17 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+    # #7996 : sonde HTTP réelle (ni curl ni wget dans php:8.4-cli-bookworm —
+    # on passe par PHP). /api/v1/health renvoie 503 si la base tombe : la
+    # sonde reflète alors l'indisponibilité. Tant que `composer install`
+    # n'a pas tourné (voir `command:` ci-dessous), le conteneur est
+    # « unhealthy » — c'est honnête : il ne sert encore rien.
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@file_get_contents('http://127.0.0.1:8000/api/v1/health') !== false ? 0 : 1);"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     # `./api` is bind-mounted over the image's /var/www/html, so a fresh clone
     # has no vendor/ until `docker compose exec api composer install` runs (the
     # documented onboarding step, see DEVELOPMENT.md). Without this wait guard,
@@ -59,9 +80,15 @@ services:
     environment:
       POSTGRES_DB: leopardo
       POSTGRES_USER: leopardo
-      # #7847 : surchargeable via POSTGRES_PASSWORD (défaut conservé pour
-      # l'onboarding dev) — même variable injectée dans api/queue/scheduler.
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-secret}"
+      # #7847 : surchargeable via POSTGRES_PASSWORD — même variable injectée
+      # dans api/queue/scheduler. #7996 : le fallback `secret` (mot de passe
+      # trivial) est remplacé par une valeur longue explicitement DEV-ONLY,
+      # alignée sur le `DB_PASSWORD` de api/.env.example pour que PHP sur
+      # l'hôte puisse aussi joindre ce postgres. La vraie barrière reste le
+      # binding 127.0.0.1 ci-dessous + l'injection de secrets en prod (Render)
+      # — aucun `.env.example` racine n'existe, exiger la variable (`:?`)
+      # casserait le démarrage à froid documenté dans DEVELOPMENT.md.
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-leopardo-dev-local-only}"
     # #7847 : port publié sur 127.0.0.1 uniquement (pas d'exposition LAN).
     ports:
       - "127.0.0.1:5432:5432"
@@ -90,6 +117,10 @@ services:
     build:
       context: ./api
       dockerfile: docker/php84/Dockerfile
+      # Mêmes args d'uid que le service api (#7996) — même image de base.
+      args:
+        APP_UID: ${APP_UID:-1000}
+        APP_GID: ${APP_GID:-1000}
     container_name: leopardo-queue
     working_dir: /var/www/html
     volumes:
@@ -102,7 +133,7 @@ services:
       DB_PORT: "5432"
       DB_DATABASE: leopardo
       DB_USERNAME: leopardo
-      DB_PASSWORD: "${POSTGRES_PASSWORD:-secret}"
+      DB_PASSWORD: "${POSTGRES_PASSWORD:-leopardo-dev-local-only}"
       DB_SEARCH_PATH: "shared_tenants,public"
       REDIS_HOST: redis
       CACHE_STORE: redis
@@ -113,6 +144,18 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    # #7996 : ni curl/wget ni pgrep dans l'image — on sonde /proc. Le cmdline
+    # du `sh -c` de `command:` contient « queue:work » en permanence ; la
+    # présence de vendor/autoload.php distingue la phase d'attente
+    # (`composer install` pas encore lancé → unhealthy, honnête) du worker
+    # réellement démarré. Si le worker meurt, le shell sort et
+    # `restart: unless-stopped` relance le conteneur.
+    healthcheck:
+      test: ["CMD-SHELL", "grep -qs queue:work /proc/[0-9]*/cmdline && test -f vendor/autoload.php"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     command: >
       sh -c "while [ ! -f vendor/autoload.php ]; do sleep 2; done; php artisan queue:work --sleep=3 --tries=3 --max-time=3600"
     restart: unless-stopped
@@ -121,6 +164,10 @@ services:
     build:
       context: ./api
       dockerfile: docker/php84/Dockerfile
+      # Mêmes args d'uid que le service api (#7996) — même image de base.
+      args:
+        APP_UID: ${APP_UID:-1000}
+        APP_GID: ${APP_GID:-1000}
     container_name: leopardo-scheduler
     working_dir: /var/www/html
     volumes:
@@ -133,7 +180,7 @@ services:
       DB_PORT: "5432"
       DB_DATABASE: leopardo
       DB_USERNAME: leopardo
-      DB_PASSWORD: "${POSTGRES_PASSWORD:-secret}"
+      DB_PASSWORD: "${POSTGRES_PASSWORD:-leopardo-dev-local-only}"
       DB_SEARCH_PATH: "shared_tenants,public"
       REDIS_HOST: redis
       CACHE_STORE: redis
@@ -144,6 +191,16 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    # #7996 : même logique que le service queue — la boucle schedule:run
+    # porte la chaîne « schedule:run » dans son cmdline en permanence (le
+    # `php artisan schedule:run` réel ne tourne qu'une minute sur deux), et
+    # vendor/autoload.php marque la fin de la phase d'attente.
+    healthcheck:
+      test: ["CMD-SHELL", "grep -qs schedule:run /proc/[0-9]*/cmdline && test -f vendor/autoload.php"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     command: >
       sh -c "while [ ! -f vendor/autoload.php ]; do sleep 2; done; while true; do php artisan schedule:run --verbose --no-interaction; sleep 60; done"
     restart: unless-stopped
@@ -151,9 +208,11 @@ services:
   mailpit:
     image: axllent/mailpit:v1.31.2 # pinné (règle #3972 : jamais de latest flottant)
     container_name: leopardo-mailpit
+    # #7996 : publication sur 127.0.0.1 uniquement (cf. postgres/redis #7847)
+    # — l'UI web et le SMTP de dev ne quittent pas la loopback.
     ports:
-      - "8025:8025"
-      - "1025:1025"
+      - "127.0.0.1:8025:8025"
+      - "127.0.0.1:1025:1025"
     profiles:
       - full
 
@@ -162,26 +221,44 @@ services:
       context: ./front/admin-dashboard
       dockerfile: Dockerfile.dev
     container_name: leopardo-dashboard
+    # #7996 : publication sur 127.0.0.1 uniquement (cf. postgres/redis #7847).
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     volumes:
       - ./front/admin-dashboard:/app
       - /app/node_modules
     profiles:
       - full
+    # #7996 : le dev server Vite est sondé en HTTP via le node de l'image
+    # (node:20-alpine — ni curl installé, fetch est natif depuis Node 18).
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
 
   web:
     build:
       context: ./front/web
       dockerfile: Dockerfile.dev
     container_name: leopardo-web
+    # #7996 : publication sur 127.0.0.1 uniquement (cf. postgres/redis #7847).
     ports:
-      - "3001:3001"
+      - "127.0.0.1:3001:3001"
     volumes:
       - ./front/web:/app
       - /app/node_modules
     profiles:
       - full
+    # #7996 : dev server Next.js sondé en HTTP via le node de l'image
+    # (même logique que le service dashboard).
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
 
 volumes:
   pgdata:

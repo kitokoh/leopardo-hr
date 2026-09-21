@@ -49,6 +49,9 @@ on:
 
 permissions:
   contents: read
+  # Enregistrement du GitHub Deployment après déploiement prod réussi
+  # (#7994 §5 — traçabilité pour la garde anti-dérive des fronts Vercel).
+  deployments: write
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -240,13 +243,40 @@ jobs:
           echo "::error::travel-web prod ne répond pas dans les temps (build en échec, env manquante ou cold start)."
           exit 1
 
-      - name: Skip — secrets Vercel prod absents
+      # #7994 §5 — traçabilité : enregistrer le déploiement comme GitHub
+      # Deployment (environnement « Production – leopardo-travel-prod ») pour
+      # que la garde anti-dérive des fronts Vercel (job fronts-vercel de
+      # deploy-drift-guard.yml) puisse comparer le sha servi à main SANS
+      # aucun secret Vercel.
+      - name: Enregistrer le GitHub Deployment (traçabilité drift)
+        if: ${{ success() && env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          bash dev-hub/tools/register-github-deployment.sh \
+            --environment "Production – leopardo-travel-prod" \
+            --sha "${GITHUB_SHA}" \
+            --url "https://leopardo-travel-prod.vercel.app" \
+            --description "travel-web prod déployé par travel-web-deploy.yml"
+
+      # #7994 §4 — skip BLOQUANT sur push main : un push qui touche le front
+      # alors que les secrets manquent signifie que la prod NE SERA PAS
+      # déployée ; le skip « explicite » en ::warning laissait le run VERT
+      # et masquait le retard (preuve : prod jamais déployée depuis #7740).
+      - name: Skip — secrets Vercel prod absents (BLOQUANT sur push main)
         if: ${{ env.VERCEL_TOKEN == '' || env.VERCEL_ORG_ID == '' || env.VERCEL_PROJECT_ID == '' }}
         shell: bash
         run: |
-          echo "::warning::VERCEL_TRAVEL_PROD_TOKEN / VERCEL_TRAVEL_PROD_ORG_ID / VERCEL_TRAVEL_PROD_PROJECT_ID absents — déploiement production Vercel sauté (issue #7740). Poser les secrets (runbook docs/ops/travel-web-vercel.md) pour activer le déploiement GitHub Actions ; le déploiement manuel via Vercel CLI reste le repli."
           {
-            echo "## Travel Web — production Vercel : SKIP"
+            echo "## Travel Web — production Vercel : SKIP BLOQUANT"
             echo ""
-            echo "Secrets \`VERCEL_TRAVEL_PROD_*\` absents (SHA ${GITHUB_SHA}) — voir docs/ops/travel-web-vercel.md."
+            echo "Secrets \`VERCEL_TRAVEL_PROD_*\` absents (SHA ${GITHUB_SHA}) — la production n'est **pas** déployée."
+            echo "Poser les secrets (runbook docs/ops/travel-web-vercel.md) ; ne pas réutiliser un token voué à révocation (#7994 §1)."
           } >> "$GITHUB_STEP_SUMMARY"
+          if [[ "${GITHUB_EVENT_NAME}" == "push" ]]; then
+            echo "::error::VERCEL_TRAVEL_PROD_TOKEN / VERCEL_TRAVEL_PROD_ORG_ID / VERCEL_TRAVEL_PROD_PROJECT_ID absents — push main sur front/travel-web SANS déploiement production possible (#7994 §4 : le retard doit être visible). Poser les secrets, cf. docs/ops/travel-web-vercel.md."
+            exit 1
+          fi
+          echo "::warning::secrets VERCEL_TRAVEL_PROD_* absents — déploiement production sauté (dispatch manuel ; repli CLI du runbook)."
