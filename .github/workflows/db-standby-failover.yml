@@ -402,6 +402,7 @@ jobs:
             fi
             if [[ -f "${dump}.age" ]]; then
               echo "backup_artifact=${dump}.age" >> "$GITHUB_ENV"
+              echo "backup_date=$(date -u +%Y%m%d)" >> "$GITHUB_ENV"
             fi
           fi
 
@@ -425,6 +426,7 @@ jobs:
             age --recipient "${BACKUP_AGE_RECIPIENT}" --output "${raw}.age" "${raw}"
             rm -f "${raw}"
             echo "safety_dump=${raw}.age" >> "$GITHUB_ENV"
+            echo "backup_date=$(date -u +%Y%m%d)" >> "$GITHUB_ENV"
             echo "::warning::Base d'appoint (${SPARE_HOST}) = copie étrangère (${existing_migrations} migrations, aucun marqueur) : dump de sécurité CHIFFRÉ publié en artefact AVANT écrasement."
           fi
 
@@ -465,17 +467,19 @@ jobs:
         if: env.backup_artifact != ''
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: db-encrypted-backup
+          name: db-encrypted-backup-${{ env.backup_date }}
           path: ${{ env.backup_artifact }}
           retention-days: 90
+          overwrite: true
 
       - name: Publier le dump de sécurité chiffré (copie étrangère écrasée)
         if: env.safety_dump != ''
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: db-spare-safety-dump
+          name: db-spare-safety-dump-${{ env.backup_date }}
           path: ${{ env.safety_dump }}
           retention-days: 30
+          overwrite: true
 
   # ───────────────────────────────────────────────────────────────────────────
   # 3. Switch-back — retour manuel vers la primaire (dump de sécurité d'abord).
@@ -574,6 +578,6 @@ jobs:
         if: env.safe_dump != ''
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: db-safety-dump
+          name: db-safety-dump-${{ github.run_id }}
           path: /tmp/safety-dumps/*.dump.age
           retention-days: 30
