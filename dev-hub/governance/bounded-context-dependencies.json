@@ -798,6 +798,12 @@
       "to": "BC-03",
       "baseline": false,
       "note": "HOSPITALITY → IDENTITY — acteur Employee (équipe par établissement, policies — HOSP-001 #7943)"
+    },
+    {
+      "from": "BC-23",
+      "to": "BC-29",
+      "baseline": false,
+      "note": "AI → COMMUNICATION : handlers email_classify/email_reply_draft d'IntentEngine (#8004, tranche 1) — classification + préparation de réponses sur les messages du tenant courant (company_id de session, jamais d'args LLM), chaînage idempotent."
     }
   ]
 }
