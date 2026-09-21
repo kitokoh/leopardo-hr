@@ -114,6 +114,8 @@ const key = 'options.0.label'
 const otherKey = 'settings.billing.title'
 const isEmpty = (v: unknown) => v == null
 const classes = 'flex items-center'
+// Pile de polices CSS dans un avatar SVG local (#8000) : technique, pas du texte.
+const avatarSvg = `<svg xmlns="http://www.w3.org/2000/svg"><text font-family="system-ui, sans-serif" font-size="24">AB</text></svg>`
 </script>
 VUE
 git -C "$REPO_TECH" add -A
@@ -203,6 +205,7 @@ expect_clean '.csv,text/csv' "filtre de type de fichier (input accept) — #7776
 expect_clean 'Acces administrateur' "valeur du catalogue i18n kiosk (#7651)"
 expect_clean 'PIN invalide.' "valeur du catalogue i18n kiosk (#7651)"
 expect_clean '[admin-dashboard] VITE_API_URL is not set' "diagnostic développeur préfixé [composant] (#7842)"
+expect_clean 'system-ui, sans-serif' "pile de polices CSS (font-family d'un avatar SVG local) — #8000"
 
 # ── Cas 2 : code technique + vrais textes utilisateur → ROUGE ────────────────
 REPO_TEXT="$(new_repo mixte)"
@@ -223,9 +226,12 @@ VUE
 cat > "$REPO_TEXT/front/web/src/app/checkout/Checkout.client.tsx" <<'TSX'
 export function Checkout() {
   const message = 'Votre espace est pret'
+  // Contre-contrôle #8000 : un texte à virgule SANS famille générique CSS
+  // ne doit pas être absorbé par le motif « pile de polices ».
+  const greeting = 'Bonjour, le monde'
   return (
     <section className="flex items-center" aria-label="Recapitulatif du panier">
-      <p>{message}</p>
+      <p>{message}{greeting}</p>
     </section>
   )
 }
@@ -243,6 +249,7 @@ expect_flagged "Nom de l'entreprise" "attribut statique placeholder (apostrophe)
 expect_flagged 'Champ obligatoire' "littéral DANS une expression liée :label"
 expect_flagged 'Votre espace est pret' "littéral de script Next.js"
 expect_flagged 'Recapitulatif du panier' "attribut statique aria-label (TSX)"
+expect_flagged 'Bonjour, le monde' "texte à virgule sans famille générique — pas une pile de polices (#8000)"
 for motif in 'form[key]' 'item.x == null' 'flex items-center' 'companies'; do
   expect_clean "$motif" "motif technique « $motif » (cas 2)"
 done
