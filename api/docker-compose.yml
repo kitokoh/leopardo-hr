@@ -34,7 +34,14 @@ services:
     depends_on:
       pgsql:
         condition: service_healthy
-    command: php artisan serve --host=0.0.0.0 --port=8000
+    # Même garde que le compose racine (#7978) : `./` est bind-mounté sur
+    # /var/www/html, donc vendor/ est absent sur clone frais — sans boucle
+    # d'attente + restart, `php artisan serve` crashait et le conteneur
+    # restait `exited` définitivement. Lancer :
+    #   docker compose -f api/docker-compose.yml exec app composer install
+    command: >
+      sh -c "while [ ! -f vendor/autoload.php ]; do echo 'Waiting for composer install (run: docker compose -f api/docker-compose.yml exec app composer install)...'; sleep 2; done; php artisan serve --host=0.0.0.0 --port=8000"
+    restart: unless-stopped
 
   pgsql:
     # The Debian-based image is more reliable than alpine on some Windows Docker

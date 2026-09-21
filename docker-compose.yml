@@ -43,7 +43,7 @@ services:
       DB_PASSWORD: "${POSTGRES_PASSWORD:-leopardo-dev-local-only}"
       DB_SEARCH_PATH: "shared_tenants,public"
       REDIS_HOST: redis
-      CACHE_DRIVER: redis
+      CACHE_STORE: redis
       QUEUE_CONNECTION: redis
       SESSION_DRIVER: redis
     depends_on:
@@ -136,7 +136,7 @@ services:
       DB_PASSWORD: "${POSTGRES_PASSWORD:-leopardo-dev-local-only}"
       DB_SEARCH_PATH: "shared_tenants,public"
       REDIS_HOST: redis
-      CACHE_DRIVER: redis
+      CACHE_STORE: redis
       QUEUE_CONNECTION: redis
       SESSION_DRIVER: redis
     depends_on:
@@ -183,7 +183,7 @@ services:
       DB_PASSWORD: "${POSTGRES_PASSWORD:-leopardo-dev-local-only}"
       DB_SEARCH_PATH: "shared_tenants,public"
       REDIS_HOST: redis
-      CACHE_DRIVER: redis
+      CACHE_STORE: redis
       QUEUE_CONNECTION: redis
       SESSION_DRIVER: redis
     depends_on:

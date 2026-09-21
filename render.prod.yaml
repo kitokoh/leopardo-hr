@@ -225,6 +225,10 @@ services:
   # dé-commenter tel quel dès qu'un moyen de paiement est ajouté, provisionner
   # (blueprint sync ou API), puis passer WEB_QUEUE_DRAIN=false et
   # WEB_SCHEDULER_LOOP=false sur leopardo-prod.
+  # RAPPEL (#7977) : toute évolution des envVars du worker dev (render.yaml)
+  # ou du web prod DOIT être répercutée ici — la garde
+  # dev-hub/tools/check-render-worker-env-parity.sh (CI architecture-check)
+  # refuse toute clé du worker dev absente de ce bloc.
   #
 #   - type: worker
 #     name: leopardo-queue-worker-prod
@@ -285,8 +289,67 @@ services:
 #           envVarKey: APP_KEY
 #       - key: QUEUE_CONNECTION
 #         value: database
+#       # #7977 : CACHE_STORE=redis (aligné web prod) — en `file`, les
+#       # invalidations de cache entre web et worker seraient perdues.
 #       - key: CACHE_STORE
-#         value: file
+#         value: redis
+#       - key: SESSION_DRIVER
+#         value: redis
+#       # Redis — même Key Value que le web prod (connectionString + password).
+#       - key: REDIS_CLIENT
+#         value: predis
+#       - key: REDIS_URL
+#         fromDatabase:
+#           name: leopardo-redis-prod
+#           property: connectionString
+#       - key: REDIS_PASSWORD
+#         fromDatabase:
+#           name: leopardo-redis-prod
+#           property: password
+#       # Sentry sur le worker aussi (erreurs de jobs : PDF, paie, webhooks
+#       # — #5586/#4340) ; DSN partagé depuis le web service (même clé).
+#       - key: SENTRY_LARAVEL_DSN
+#         fromService:
+#           name: leopardo-prod
+#           type: web
+#           envVarKey: SENTRY_LARAVEL_DSN
+#       - key: SENTRY_TRACES_SAMPLE_RATE
+#         value: "0.1"
+#       # Notifications push (jobs notifications) — sans ces clés le worker
+#       # traiterait la queue sans pouvoir émettre de push (#7977).
+#       - key: FIREBASE_PROJECT_ID
+#         sync: false
+#       - key: FIREBASE_SERVICE_ACCOUNT_JSON
+#         sync: false
+#       # Mail — la queue `emails` est consommée ici : sans MAIL_*/RESEND_KEY
+#       # le worker ne peut envoyer aucun e-mail (#7977).
+#       - key: MAIL_MAILER
+#         value: resend
+#       - key: MAIL_HOST
+#         sync: false
+#       - key: MAIL_PORT
+#         value: 587
+#       - key: MAIL_USERNAME
+#         sync: false
+#       - key: MAIL_PASSWORD
+#         sync: false
+#       # Transport HTTP Resend (#5139 : le SMTP sortant est bloqué par Render).
+#       - key: RESEND_KEY
+#         sync: false
+#       - key: MAIL_ENCRYPTION
+#         value: tls
+#       - key: MAIL_FROM_ADDRESS
+#         value: noreply@hurkonsan.com
+#       - key: MAIL_FROM_NAME
+#         value: "Leopardo RH"
+#       # Paiements (jobs webhooks/payroll).
+#       - key: STRIPE_SECRET_KEY
+#         sync: false
+#       - key: CHARGILY_API_KEY
+#         sync: false
+#       # Liens cockpit admin dans les e-mails envoyés par les jobs.
+#       - key: ADMIN_DASHBOARD_URL
+#         sync: false
 
 databases:
   # Pas de Postgres Render : la base de données est Neon (projet
