@@ -100,9 +100,14 @@ return [
             // timestamps « naïfs » écrits par l'app (ex. pointage) dans son
             // fuseau → heures décalées et paie fausses. Tout est stocké en UTC.
             'timezone' => env('DB_TIMEZONE', 'UTC'),
-            // #7980 : piloté par l'env (DB_SSLMODE) — 'prefer' toléré en local,
-            // 'require' (voire 'verify-full') attendu en prod (posé dans render.prod.yaml).
-            'sslmode' => env('DB_SSLMODE', 'prefer'),
+            // #7980 : piloté par l'env (DB_SSLMODE) — jamais de downgrade TLS
+            // SILENCIEUX. Défaut 'require' dès qu'on n'est plus en local/test :
+            // Neon/Render exigent TLS, et un `DB_URL` sans `?sslmode=require`
+            // pouvait retomber en clair sans que rien ne le signale.
+            // Le local et la CI (PostgreSQL sans certificat) posent
+            // explicitement `DB_SSLMODE` (phpunit.xml, docker-compose.yml,
+            // .env.example) ; un self-host sans TLS peut le faire aussi.
+            'sslmode' => env('DB_SSLMODE', in_array(env('APP_ENV'), ['local', 'testing'], true) ? 'prefer' : 'require'),
         ],
 
         'sqlsrv' => [

@@ -43,6 +43,10 @@
              L'ordre public,shared_tenants garantit que `CREATE TABLE migrations` atterrit
              dans public et que les migrations tenant sont correctement scoped (#1597). -->
         <env name="DB_SEARCH_PATH" value="public,shared_tenants"/>
+        <!-- #7980 : le PostgreSQL de test (service CI / local) n'a pas de
+             certificat TLS — la politique par défaut hors local est 'require',
+             on l'explicite ici pour ne pas casser la suite. -->
+        <env name="DB_SSLMODE" value="prefer"/>
         <env name="MAIL_MAILER" value="array"/>
         <!-- #7696 : plus de fallback en dur dans config/demo.php — la valeur de test est explicite ici -->
         <env name="DEMO_PASSWORD" value="password123"/>
