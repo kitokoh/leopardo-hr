@@ -965,3 +965,21 @@ restent les gates applicables.
   `client-business-flows` (parcours affecter → renommer rôle → retirer).
 - **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
   `restaurant.team.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+## Mise à jour 2026-09-21 — CSP nonce travel/marketplace + session acheteur httpOnly (PR #8042, issue #8022)
+
+- **Surface web (admin-dashboard)** : `localInitialsAvatar` (`views/users/UsersView.vue`)
+  échappe désormais le XML des initiales (`& < > " '`) — un nom contenant `<` ou `&`
+  rendait le SVG malformé (avatar invisible). Pas de nouveau parcours utilisateur :
+  le rendu avatar existant est simplement correct pour ces noms ; aucun scénario
+  e2e nouveau requis (comportement visuel couvert par les écrans utilisateurs
+  existants).
+- **Surface marketplace (front/marketplace)** : session acheteur migrée du
+  localStorage vers un cookie httpOnly posé par route handlers Next
+  (`/api/v1/public/market/account/{login,register,logout}` + relais same-origin
+  fail-closed `[...path]` et `orders`). Parcours couverts par les flux existants
+  (inscription/connexion compte, commande liée au compte, favoris, avis) —
+  marketplace n'a pas de runner de tests préexistant ; vérifié par tsc + eslint +
+  build + smoke runtime des routes (400/404/relais).
+- **Surface travel-web** : CSP à nonce (proxy + `lib/csp.ts`, pattern #7650) sans
+  changement de parcours ; suites vitest existantes (proxy session, auth-session,
+  logout) vertes — aucun scénario nouveau requis.

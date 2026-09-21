@@ -188,6 +188,23 @@ function resolveApiBaseUrl() {
 JS
 git -C "$REPO_TECH" add -A
 git -C "$REPO_TECH" commit -q -m "diagnostics développeur préfixés [composant] (#7842)"
+# Cas 1septies — entités XML/HTML (#8022) : l'échappement de chaînes
+# interpolées dans un document XML (avatar SVG data-URI de l'admin) produit
+# des littéraux `&amp;` / `&lt;` / `&gt;` / `&quot;` / `&apos;` — constantes
+# de balisage, jamais du texte utilisateur.
+mkdir -p "$REPO_TECH/front/admin-dashboard/src/views/users"
+cat > "$REPO_TECH/front/admin-dashboard/src/views/users/avatar.js" <<'JS'
+function xmlEscape(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
+}
+JS
+git -C "$REPO_TECH" add -A
+git -C "$REPO_TECH" commit -q -m "échappement XML d'un avatar SVG (#8022)"
 run_guard "$REPO_TECH"
 if [[ "$GUARD_STATUS" -ne 0 ]]; then
   printf '%s\n' "$OUT" >&2
@@ -206,6 +223,9 @@ expect_clean 'Acces administrateur' "valeur du catalogue i18n kiosk (#7651)"
 expect_clean 'PIN invalide.' "valeur du catalogue i18n kiosk (#7651)"
 expect_clean '[admin-dashboard] VITE_API_URL is not set' "diagnostic développeur préfixé [composant] (#7842)"
 expect_clean 'system-ui, sans-serif' "pile de polices CSS (font-family d'un avatar SVG local) — #8000"
+for motif in '&amp;' '&lt;' '&gt;' '&quot;' '&apos;'; do
+  expect_clean "$motif" "entité XML « $motif » — #8022"
+done
 
 # ── Cas 2 : code technique + vrais textes utilisateur → ROUGE ────────────────
 REPO_TEXT="$(new_repo mixte)"

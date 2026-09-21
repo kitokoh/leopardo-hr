@@ -300,6 +300,12 @@ function classifyLiteral(rawValue) {
   // multi-lignes, seules les lignes portant `console.warn(` étant exemptées
   // par devLogLinePattern) était signalé comme texte utilisateur.
   if (/^\[[a-z][a-z0-9-]*\]\s/.test(value)) return null;
+  // Entités XML/HTML (`&amp;`, `&lt;`, `&quot;`, `&#39;`…) : constantes de
+  // balisage, jamais du texte utilisateur à localiser. Constat #8022 —
+  // l'échappement XML des initiales de `localInitialsAvatar`
+  // (front/admin-dashboard/src/views/users/UsersView.vue) était signalé
+  // comme 4 « chaînes en dur » (`&amp;`, `&lt;`, `&gt;`, `&quot;`).
+  if (/^&(?:[a-z]+|#\d+);$/.test(value)) return null;
   return value;
 }
 
