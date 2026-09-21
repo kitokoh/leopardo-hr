@@ -179,6 +179,12 @@ function isTechnicalToken(value) {
   // structurées (constat #7748 : le JSON-LD `Restaurant` des pages publiques
   // /restaurants était signalé comme chaîne en dur).
   if (/^@[a-zA-Z]+$/.test(trimmed)) return true;
+  // Entités de caractères XML/HTML (« &amp; », « &lt; », « &#38; »,
+  // « &#x26; ») : constantes techniques d'échappement, jamais du texte
+  // utilisateur. Constat #8022 (tranche 4) : l'échappement XML des
+  // initiales de l'avatar SVG local de UsersView.vue (escapeXml) était
+  // signalé comme 5 « chaînes en dur » à traduire.
+  if (/^&(?:[a-zA-Z][a-zA-Z0-9]+|#[0-9]+|#x[0-9a-fA-F]+);$/.test(trimmed)) return true;
   if (/^@?[a-zA-Z0-9_.-]+(?:\/[a-zA-Z0-9_.-]+)+$/.test(trimmed)) return true;
   // Imports Next.js alias (« @/modules/... ») — chemin technique, pas une
   // chaîne utilisateur (faux positif signalé sur #6663).
