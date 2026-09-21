@@ -37,7 +37,6 @@ class MarketplaceFavorite extends Model
     /** @var list<string> */
     protected $fillable = [
         'buyer_id',
-        'company_id',
         'product_id',
     ];
 
