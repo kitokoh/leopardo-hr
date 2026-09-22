@@ -136,6 +136,14 @@ services:
       # #7980 : SSL obligatoire vers Neon (fin du sslmode 'prefer' en dur).
       - key: DB_SSLMODE
         value: require
+      # Quota Neon (2026-09-22) : ralentit le polling de la file depuis le
+      # conteneur web — le driver `database` teste chaque queue de la liste
+      # (8 requêtes par cycle à vide, ~138 000/jour à 5 s = ~2 Go/mois sur les
+      # 5 Go de transfert du plan gratuit, partagés par TOUS les projets du
+      # compte). 10 = moitié des requêtes, latence ≤ 10 s sur un job en file.
+      # Défaut 5 (comportement historique) si la clé est absente.
+      - key: WEB_QUEUE_SLEEP
+        value: "10"
       # Paiements — clés réelles à saisir dans le dashboard Render (ou via
       # Pulumi ESC solarnyxss/leopardo-hr/prod) après rotation.
       - key: STRIPE_SECRET_KEY

@@ -98,7 +98,14 @@ return Application::configure(basePath: dirname(__DIR__))
         // Cible les managers dont la société a été créée il y a 20h–28h et
         // dont l'onboarding comporte encore des étapes requises non complétées.
         $schedule->command('onboarding:send-reminders')->dailyAt('09:00');
-        $schedule->command('travel:outbox-dispatch')->everyMinute()->withoutOverlapping();
+        // `travel:outbox-dispatch` est planifié UNE seule fois, dans
+        // api/routes/console.php (everyMinute + withoutOverlapping +
+        // onOneServer). Le doublon qui était déclaré ici a été retiré
+        // (quota Neon, 2026-09-22) : deux entrées `everyMinute()` pour la même
+        // commande = deux passes par minute, donc ~1 440 requêtes/jour en plus
+        // sur la base — sur le plan gratuit Neon c'est directement du quota
+        // mensuel du compte consommé pour rien.
+
         // Issue #5616 — Purge des fichiers TTS temporaires (RGPD + espace disque).
         // Les URLs signées expirent en 60 s ; purger les fichiers > 60 min suffit
         // pour garantir qu'aucun fichier accessible ne subsiste sur disque.

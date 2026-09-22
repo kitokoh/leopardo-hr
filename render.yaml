@@ -151,6 +151,11 @@ services:
         sync: false
       - key: DB_SEARCH_PATH
         value: shared_tenants,public
+      # Quota Neon (2026-09-22) : idem prod — ralentit le polling de la file
+      # dans le conteneur web (8 requêtes/cycle à vide). Voir render.prod.yaml
+      # et api/docker-entrypoint.sh (WEB_QUEUE_SLEEP, défaut 5).
+      - key: WEB_QUEUE_SLEEP
+        value: "10"
       # Redis — instance Key Value du workspace (« leopardoai », constat
       # 2026-09-04) branchée dans le dashboard (sync: false). REDIS_CLIENT=
       # predis reste le défaut ; le probe d'entrypoint (infra:probe-

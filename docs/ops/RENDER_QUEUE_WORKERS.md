@@ -125,7 +125,7 @@ psql "$DATABASE_URL" -c "SELECT id, email, status, updated_at FROM public.trial_
      workers gratuits sont suspendus après 15 min d'inactivité → jobs en attente).
    - `Start Command` (worker queue) :
      ```
-     php artisan queue:work --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default --tries=3 --timeout=300 --sleep=3 --max-jobs=500 --max-time=3600
+     php artisan queue:work --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default --tries=3 --timeout=300 --sleep=5 --max-jobs=500 --max-time=3600
      ```
    - `Start Command` (scheduler) :
      ```
