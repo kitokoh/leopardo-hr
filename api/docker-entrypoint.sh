@@ -495,6 +495,19 @@ fi
 # worker leopardo-queue-worker(-prod) est provisionné, poser
 # WEB_QUEUE_DRAIN=false sur le web service — sinon deux consommateurs
 # concurrents pollent la même table jobs (verrous inutiles sur l'OLTP).
+# Quota (2026-09-22) : le worker en boucle interroge la base à vide — le driver
+# `database` teste CHAQUE queue de la liste, soit 8 requêtes par cycle. À
+# --sleep=5 c'est ~138 000 requêtes/jour, de quoi consommer à lui seul ~2 Go/mois
+# du transfert du plan gratuit Neon (5 Go/mois partagés par TOUS les projets du
+# compte) : c'est ce qui a fait tomber la prod le 2026-09-20 puis le secours.
+# `WEB_QUEUE_SLEEP` permet de ralentir ce polling sans redéployer de code :
+#   - 5 (défaut, comportement historique) : latence max 5 s sur un job en file ;
+#   - 10/15 en prod (posé côté Render) : moitié/tiers des requêtes, latence
+#     dégradée d'autant (acceptable : les e-mails OTP partent par la file
+#     `emails` — un utilisateur qui s'inscrit attend au pire la valeur du sleep) ;
+#   - ne pas descendre sous 5 sans raison : c'est du quota pur.
+# Idéal à terme : worker/scheduler dédiés (issues #7649 / #7845) — le web
+# conteneurisé ne devrait pas porter le polling de la file.
 if [ "${WEB_QUEUE_DRAIN:-true}" = "true" ]; then
 echo "Starting background queue worker (web container, respawn loop)..."
 (
@@ -510,7 +523,7 @@ echo "Starting background queue worker (web container, respawn loop)..."
         # de `queue:work` (un `| sed` le remplacerait par celui du pipe).
         php artisan queue:work \
             --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default \
-            --tries=3 --timeout=300 --sleep=5 --max-jobs=500 --max-time=3600 \
+            --tries=3 --timeout=300 --sleep="${WEB_QUEUE_SLEEP:-5}" --max-jobs=500 --max-time=3600 \
             >&2
         echo "[entrypoint] queue worker exited ($?), respawn in 2s..." >&2
         sleep 2

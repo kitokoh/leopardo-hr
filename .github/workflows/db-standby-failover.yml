@@ -10,21 +10,34 @@ name: DB Standby & Auto-Failover
 #   - la source de vérité de la base RÉELLEMENT utilisée par Render est la
 #     variable d'environnement `DB_URL` du service prod, lue via l'API Render
 #     (pas de fichier d'état à maintenir) ;
-#   - job `watchdog` (toutes les 20 min) : sonde la base LIVE. Si elle ne
-#     répond plus, bascule `DB_URL` sur le secours puis redéploie le service ;
-#   - job `sync` (horaire) : recharge la base d'appoint (celle qui n'est PAS
-#     utilisée par la prod) depuis la base LIVE — la copie reste fraîche
-#     (RPO ≤ 1 h) dans les deux sens de rotation, ce qui rend une bascule
-#     possible même après un premier incident (avant, le renversement de rôle
-#     laissait la base d'appoint sans marqueur => bascule refusée) ;
+#   - job `watchdog` (horaire) : sonde la base LIVE. Si elle ne répond plus,
+#     bascule `DB_URL` sur le secours puis redéploie le service ;
+#   - job `sync` (toutes les 6 h, ancré sur 03:23 UTC) : recharge la base
+#     d'appoint (celle qui n'est PAS utilisée par la prod) depuis la base LIVE
+#     — la copie reste fraîche (RPO ≤ 6 h) dans les deux sens de rotation, ce
+#     qui rend une bascule possible même après un premier incident (avant, le
+#     renversement de rôle laissait la base d'appoint sans marqueur => bascule
+#     refusée) ;
+#
+# QUOTA NEON (plan gratuit) — la cadence de ce workflow est un budget :
+#   Chaque synchro télécharge le dump de la base LIVE (~2 Mo) : toutes les
+#   heures, cela représente ~1,5 Go/mois de transfert, soit près d'un tiers du
+#   quota gratuit **de tout le compte** (5 Go/mois, partagé entre TOUS les
+#   projets Neon du compte) — de quoi faire tomber la prod avant la fin du
+#   mois. Idem pour les sondes `watchdog` qui réveillent le compute. D'où :
+#   watchdog horaire (au lieu de /20 min), synchro /6 h (au lieu de /1 h),
+#   battement de cœur par push limité à 1 vrai contrôle /60 min (au lieu de
+#   /15 min). Pour resserrer la détection (RPO ≤ 1 h), repasser les crons côte
+#   à côte AU PRIX du quota ci-dessus — arbitrage explicite, ne pas le faire
+#   sans vérifier la conso du compte.
+#   - battement de cœur : le watchdog est aussi déclenché par un push sur main
+#     (cadence limitée à un vrai contrôle / 60 min), car l'ordonnanceur GitHub a
+#     cessé de déclencher les crons sur ce dépôt le 2026-09-21 (arrêt à 01:37) ;
 #   - sauvegardes : le même job publie une fois par jour (créneau 03:23 UTC, ou
 #     mode=backup) un dump **chiffré age** de la base vivante en artefact 90 j,
 #     auto-vérifié (`age --decrypt` + `pg_restore --list`). Dépôt PUBLIC : aucun
 #     dump n'est jamais publié en clair — sans BACKUP_AGE_RECIPIENT le job
 #     refuse d'écraser une copie étrangère et ne publie rien ;
-#   - battement de cœur : le watchdog est aussi déclenché par un push sur main
-#     (cadence limitée à un vrai contrôle / 15 min), car l'ordonnanceur GitHub a
-#     cessé de déclencher les crons sur ce dépôt le 2026-09-21 (arrêt à 01:37) ;
 #   - job `switch-back` (manuel, confirm=YES) : retour vers la PRIMAIRE, avec
 #     dump de sécurité de la base courante avant bascule.
 #
@@ -63,10 +76,12 @@ on:
         default: ""
         type: string
   schedule:
-    # Watchdog : toutes les 20 min (détection de quota épuisé / base HS).
-    - cron: "9,29,49 * * * *"
-    # Recharge du secours : toutes les heures.
-    - cron: "23 * * * *"
+    # Watchdog : horaire (détection de quota épuisé / base HS). /20 min coûtait
+    # 3 sondes/heure qui réveillaient le compute Neon — cf. « QUOTA NEON » plus haut.
+    - cron: "17 * * * *"
+    # Recharge du secours : toutes les 6 h, ancrée sur 03:23 UTC (le créneau de
+    # la sauvegarde quotidienne ci-dessous dépend de l'heure UTC == 03).
+    - cron: "23 3,9,15,21 * * *"
   # Battement de cœur : l'ordonnanceur GitHub peut cesser de déclencher les
   # crons (constaté le 2026-09-21 : plus aucun run planifié sur le dépôt à
   # partir de 01:37 UTC). Un push sur main relance le watchdog, avec un
@@ -94,11 +109,11 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     if: >-
-      (github.event_name == 'schedule' && github.event.schedule == '9,29,49 * * * *')
+      (github.event_name == 'schedule' && github.event.schedule == '17 * * * *')
       || github.event_name == 'push'
       || (github.event_name == 'workflow_dispatch' && (github.event.inputs.mode == 'watchdog' || github.event.inputs.mode == 'status'))
     steps:
-      - name: Cadence (un push ne déclenche un vrai contrôle que toutes les 15 min)
+      - name: Cadence (un push ne déclenche un vrai contrôle que toutes les 60 min)
         id: cadence
         if: github.event_name == 'push'
         shell: bash
@@ -113,7 +128,8 @@ jobs:
           if [[ -z "${last}" ]]; then echo "recent=false" >> "$GITHUB_OUTPUT"; exit 0; fi
           age=$(( $(date -u +%s) - $(date -u -d "${last}" +%s) ))
           echo "Dernier run : ${last} (il y a ${age}s)"
-          if [[ ${age} -lt 900 ]]; then echo "recent=true" >> "$GITHUB_OUTPUT"; else echo "recent=false" >> "$GITHUB_OUTPUT"; fi
+          # 3600 s : chaque contrôle réveille le compute Neon (quota du compte).
+          if [[ ${age} -lt 3600 ]]; then echo "recent=true" >> "$GITHUB_OUTPUT"; else echo "recent=false" >> "$GITHUB_OUTPUT"; fi
 
       - name: Outils
         if: steps.cadence.outputs.recent != 'true'
@@ -304,7 +320,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     if: >-
-      (github.event_name == 'schedule' && github.event.schedule == '23 * * * *')
+      (github.event_name == 'schedule' && github.event.schedule == '23 3,9,15,21 * * *')
       || (github.event_name == 'workflow_dispatch' && (github.event.inputs.mode == 'sync' || github.event.inputs.mode == 'backup'))
     steps:
       - name: Outils (client PostgreSQL 18 — le serveur Neon est en 18)
