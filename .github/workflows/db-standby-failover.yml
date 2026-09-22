@@ -330,6 +330,12 @@ jobs:
           # serait téléchargeable par n'importe qui.
           BACKUP_AGE_RECIPIENT: ${{ secrets.BACKUP_AGE_RECIPIENT }}
           BACKUP_AGE_IDENTITY: ${{ secrets.BACKUP_AGE_IDENTITY }}
+          # Backblaze B2 (API NATIVE — la clé applicative du compte n'est pas
+          # acceptée par l'API S3 : « Malformed Access Key Id » constaté le
+          # 2026-09-21, cf. issue #8008 ; l'API native, elle, fonctionne).
+          B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
+          B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
+          B2_BUCKET_NAME: ${{ secrets.B2_BUCKET_NAME }}
           FORCE_BACKUP: ${{ github.event.inputs.mode == 'backup' && '1' || '0' }}
         run: |
           set -euo pipefail
@@ -471,6 +477,62 @@ jobs:
           path: ${{ env.backup_artifact }}
           retention-days: 90
           overwrite: true
+
+      - name: Archiver la sauvegarde chiffrée sur Backblaze B2 (API native)
+        if: env.backup_artifact != ''
+        shell: bash
+        env:
+          B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
+          B2_APP_KEY: ${{ secrets.B2_APP_KEY }}
+          B2_BUCKET_NAME: ${{ secrets.B2_BUCKET_NAME }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${B2_KEY_ID:-}" || -z "${B2_APP_KEY:-}" || -z "${B2_BUCKET_NAME:-}" ]]; then
+            echo "::notice::Backblaze non configuré (B2_KEY_ID / B2_APP_KEY / B2_BUCKET_NAME) — sauvegarde conservée en artefact GitHub seulement."
+            exit 0
+          fi
+          : "${backup_artifact:?artefact de sauvegarde introuvable}"
+
+          auth="$(curl -fsS -u "${B2_KEY_ID}:${B2_APP_KEY}" \
+            "https://api.backblazeb2.com/b2api/v2/b2_authorize_account")"
+          api_url="$(jq -r .apiUrl <<<"${auth}")"
+          account_id="$(jq -r .accountId <<<"${auth}")"
+          token="$(jq -r .authorizationToken <<<"${auth}")"
+          echo "::add-mask::${token}"
+
+          bucket_id="$(curl -fsS -H "Authorization: ${token}" -H "Content-Type: application/json" \
+            "${api_url}/b2api/v2/b2_list_buckets" \
+            -d "$(jq -nc --arg a "${account_id}" --arg n "${B2_BUCKET_NAME}" '{accountId:$a, bucketName:$n}')" \
+            | jq -r '.buckets[0].bucketId // empty')"
+          if [[ -z "${bucket_id}" ]]; then
+            echo "::error::Bucket Backblaze introuvable : ${B2_BUCKET_NAME}"
+            exit 1
+          fi
+
+          up="$(curl -fsS -H "Authorization: ${token}" \
+            "${api_url}/b2api/v2/b2_get_upload_url?bucketId=${bucket_id}")"
+          up_url="$(jq -r .uploadUrl <<<"${up}")"
+          up_token="$(jq -r .authorizationToken <<<"${up}")"
+          echo "::add-mask::${up_token}"
+
+          # Même convention d'arborescence que database-backup.yml.
+          day="$(date -u +%Y/%m/%d)"
+          remote="postgres/daily/${day}/$(basename "${backup_artifact}")"
+          sha1="$(sha1sum "${backup_artifact}" | cut -d' ' -f1)"
+
+          result="$(curl -fsS -X POST "${up_url}" \
+            -H "Authorization: ${up_token}" \
+            -H "X-Bz-File-Name: ${remote}" \
+            -H "Content-Type: application/octet-stream" \
+            -H "X-Bz-Content-Sha1: ${sha1}" \
+            --data-binary "@${backup_artifact}")"
+          file_id="$(jq -r .fileId <<<"${result}")"
+          size="$(jq -r .contentLength <<<"${result}")"
+          echo "Sauvegarde archivée sur Backblaze : b2://${B2_BUCKET_NAME}/${remote} (${size} octets, fileId ${file_id:0:24}…)"
+          {
+            echo ""
+            echo "- Archive Backblaze B2 : \`postgres/daily/${day}/$(basename "${backup_artifact}")\` (${size} octets)."
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Publier le dump de sécurité chiffré (copie étrangère écrasée)
         if: env.safety_dump != ''
