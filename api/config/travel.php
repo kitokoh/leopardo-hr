@@ -16,6 +16,24 @@ return [
         'callback_secret' => env('TRAVEL_PAYMENT_CALLBACK_SECRET', ''),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Boutique publique (TRAVEL-1001/#6114)
+    |--------------------------------------------------------------------------
+    |
+    | Hook anti-bot CAPTCHA : si `captcha_secret` est renseigné, le jeton
+    | client (X-Captcha-Token) est vérifié côté serveur auprès du
+    | fournisseur (`siteverify`, fail-closed — #8054). Avant #8054, seul le
+    | caractère non-vide du header était exigé (bypass trivial).
+    |
+    */
+    'public_shop' => [
+        'captcha_secret' => env('TRAVEL_SHOP_CAPTCHA_SECRET'),
+        // Endpoint siteverify du fournisseur (défaut : Cloudflare Turnstile,
+        // même contrat que reCAPTCHA) — voir CaptchaVerifier::DEFAULT_VERIFY_URL.
+        'captcha_verify_url' => env('TRAVEL_SHOP_CAPTCHA_VERIFY_URL'),
+    ],
+
     // TRAVEL-803 (#6094) — réservations corporate.
     'corporate' => [
         'min_group_size' => (int) env('TRAVEL_CORPORATE_MIN_GROUP_SIZE', 5),

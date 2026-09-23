@@ -79,6 +79,7 @@ class GatewaySettingsService implements PaymentGatewayConfigProviderInterface
     public function flush(string $gateway): void
     {
         unset($this->resolved[$gateway]);
+        // tenant-cache:shared — passerelles configurées au niveau PLATEFORME (une ligne active par gateway) (#8058)
         Cache::forget(self::CACHE_PREFIX.$gateway);
     }
 
@@ -96,6 +97,7 @@ class GatewaySettingsService implements PaymentGatewayConfigProviderInterface
     {
         try {
             /** @var string|array<string, mixed> $cached */
+            // tenant-cache:shared — passerelles PLATEFORME ; le cache ne reçoit que le CIPHERTEXT (#8058)
             $cached = Cache::remember(
                 self::CACHE_PREFIX.$gateway,
                 self::CACHE_TTL_SECONDS,

@@ -112,6 +112,7 @@ class CommunicationIntegrationController extends Controller
 
         $state = Str::random(40);
 
+        // tenant-cache:shared — état OAuth aléatoire (40 chars), usage unique, company re-validée au callback (#8058)
         Cache::put(
             self::STATE_CACHE_PREFIX.$state,
             [
@@ -145,6 +146,7 @@ class CommunicationIntegrationController extends Controller
         }
 
         /** @var array{employee_id: int, company_id: string}|null $context */
+        // tenant-cache:shared — consommation du state ci-dessus (endpoint public, pas de contexte tenant) (#8058)
         $context = Cache::pull(self::STATE_CACHE_PREFIX.$state);
 
         if (! is_array($context)) {

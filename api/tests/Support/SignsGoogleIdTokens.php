@@ -89,6 +89,19 @@ trait SignsGoogleIdTokens
     private function fakeGoogleJwks(array $keys): void
     {
         Cache::flush();
+        // #8053 — le contrôle d'audience est désormais fail-closed (une liste
+        // vide ne désactive plus le check) : les tests de connexion Google
+        // déclarent l'audience acceptée, SAUF si le test en a déjà posé une
+        // explicitement (ex. UserAuthGoogleSignInSecurityTest).
+        $alreadyConfigured = collect([
+            config('services.google.client_id'),
+            config('services.google.web_client_id'),
+            config('services.google.android_client_id'),
+            config('services.google.ios_client_id'),
+        ])->contains(static fn (mixed $value): bool => is_string($value) && $value !== '');
+        if (! $alreadyConfigured) {
+            config()->set('services.google.android_client_id', 'leopardo-mobile-client');
+        }
         Http::fake([
             self::GOOGLE_JWKS_URI.'*' => Http::response(['keys' => $keys], 200),
         ]);
