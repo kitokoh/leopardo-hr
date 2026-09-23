@@ -9,6 +9,7 @@
     "test": "node tests/i18n.test.mjs && node tests/feedback.test.mjs && python3 tests/test_bridge_globals.py && python3 tests/test_bridge_security.py"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20.9.0",
+    "npm": ">=10.0.0"
   }
 }
