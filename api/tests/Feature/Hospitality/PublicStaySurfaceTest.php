@@ -105,7 +105,10 @@ class PublicStaySurfaceTest extends TestCase
         return $unit;
     }
 
-    /** @return array<string, mixed> */
+    /**
+     * @param array<string, mixed> $overrides
+     * @return array<string, mixed>
+     */
     private function reservationPayload(array $overrides = []): array
     {
         return array_merge([
