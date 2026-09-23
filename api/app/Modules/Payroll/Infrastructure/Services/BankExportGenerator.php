@@ -216,7 +216,7 @@ class BankExportGenerator
         foreach ($slips as $slip) {
             $employee = $slip->employee;
             $name = CsvCellSanitizer::neutralize(mb_strtoupper(trim(($employee->last_name ?? '').' '.($employee->first_name ?? ''))));
-            $ccp = CsvCellSanitizer::neutralize($employee->bank_account ?? $employee->iban ?? str_pad((string) $employee->id, 20, '0', STR_PAD_LEFT));
+            $ccp = CsvCellSanitizer::neutralize($employee->bank_account ?? $employee->iban ?? str_pad((string) $employee?->id, 20, '0', STR_PAD_LEFT));
             $amount = str_pad(number_format($slip->net_salary, 2, '', ''), 12, '0', STR_PAD_LEFT);
 
             $lines[] = 'D'.str_pad((string) $seq, 6, '0', STR_PAD_LEFT).str_pad($ccp, 20).str_pad($name, 30).$amount;
