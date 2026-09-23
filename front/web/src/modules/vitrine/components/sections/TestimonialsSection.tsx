@@ -28,7 +28,8 @@ export function TestimonialsSection({
   }[columns];
 
   return (
-    <section className="relative py-32 overflow-hidden">
+    // #8073 — id="temoignages" (lien navbar) + scroll-mt-24 sous la navbar fixe.
+    <section id="temoignages" className="relative py-32 overflow-hidden scroll-mt-24">
       <div className="absolute inset-0 bg-gradient-to-b from-slate-50/50 via-white to-slate-50/50 dark:from-slate-900/50 dark:via-slate-950 dark:to-slate-900/50" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

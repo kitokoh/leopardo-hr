@@ -131,4 +131,14 @@ describe('solution-stack — copie ×4 locales', () => {
       expect(serialized).not.toMatch(/Ã|Â|Ù|Ø/);
     }
   });
+
+  // #8073 — la section 3D reste la section « architecture » mais son titre
+  // doit parler bénéfice, plus jargon « briques » (constat audit vitrine).
+  it('le titre parle bénéfice (plus de jargon « briques ») dans les 4 locales', () => {
+    for (const locale of LOCALES) {
+      const copy = getSolutionStackCopy(locale);
+      expect(copy.title.trim().length).toBeGreaterThan(0);
+      expect(copy.title).not.toMatch(/briques horizontales|building blocks|yapı taşları|مكوّنات/i);
+    }
+  });
 });
