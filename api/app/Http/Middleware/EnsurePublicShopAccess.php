@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Core\Http\Security\CaptchaVerifier;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
@@ -32,15 +33,26 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class EnsurePublicShopAccess
 {
-    public function __construct(private readonly TenantManager $tenants) {}
+    public function __construct(
+        private readonly TenantManager $tenants,
+        private readonly CaptchaVerifier $captcha,
+    ) {}
 
     public function handle(Request $request, Closure $next): Response
     {
         // Hook anti-bot (CAPTCHA) : activé uniquement si un secret est configuré.
+        // #8054 — VRAIE vérification serveur (`siteverify`, fail-closed) :
+        // avant, seul le caractère non-vide du header était exigé et le
+        // secret n'était jamais utilisé (bypass trivial `X-Captcha-Token: x`).
         $captchaSecret = (string) config('travel.public_shop.captcha_secret', '');
 
-        if ($captchaSecret !== '' && trim((string) $request->header('X-Captcha-Token', '')) === '') {
-            abort(403, 'Validation anti-bot requise (X-Captcha-Token).');
+        if ($captchaSecret !== '') {
+            $captchaToken = trim((string) $request->header('X-Captcha-Token', ''));
+            $verifyUrl = (string) config('travel.public_shop.captcha_verify_url', '');
+
+            if (! $this->captcha->verify($captchaSecret, $captchaToken, $request->ip(), $verifyUrl !== '' ? $verifyUrl : null)) {
+                abort(403, 'Validation anti-bot requise (X-Captcha-Token).');
+            }
         }
 
         $token = (string) $request->header('X-Travel-Shop-Token', '');
