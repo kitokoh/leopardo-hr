@@ -15,8 +15,8 @@ on:
     paths:
       - "front/web/src/lib/backend-url.ts"
       - "front/travel-web/src/lib/backend-url.ts"
-      - "front/travel-web/src/proxy.ts"
-      - "front/marketplace/src/proxy.ts"
+      - "front/travel-web/src/middleware.ts"
+      - "front/marketplace/src/middleware.ts"
       - "dev-hub/tools/check-front-shared-parity.sh"
       - ".github/workflows/front-shared-parity-guard.yml"
   push:
@@ -24,8 +24,8 @@ on:
     paths:
       - "front/web/src/lib/backend-url.ts"
       - "front/travel-web/src/lib/backend-url.ts"
-      - "front/travel-web/src/proxy.ts"
-      - "front/marketplace/src/proxy.ts"
+      - "front/travel-web/src/middleware.ts"
+      - "front/marketplace/src/middleware.ts"
 
 permissions:
   contents: read

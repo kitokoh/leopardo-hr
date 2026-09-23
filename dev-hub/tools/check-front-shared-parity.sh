@@ -32,7 +32,7 @@ cd "$(git rev-parse --show-toplevel)"
 # message d'erreur la désigne comme référence de resynchronisation).
 PAIRS=(
   "front/web/src/lib/backend-url.ts|front/travel-web/src/lib/backend-url.ts"
-  "front/travel-web/src/proxy.ts|front/marketplace/src/proxy.ts"
+  "front/travel-web/src/middleware.ts|front/marketplace/src/middleware.ts"
 )
 
 status=0
