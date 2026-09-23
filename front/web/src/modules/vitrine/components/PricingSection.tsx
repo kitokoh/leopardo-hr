@@ -42,18 +42,22 @@ export function PricingSection() {
   const toggle = { monthly: t(locale, 'pricing.section.toggleMonthly'), annual: t(locale, 'pricing.section.toggleAnnual') }
 
   return (
-    <section id="tarifs" className="relative py-32 overflow-hidden">
+    // #8073 — scroll-mt-24 : la navbar fixe (h-20) ne recouvre jamais le haut
+    // de section après un saut d'ancre (#tarifs).
+    <section id="tarifs" className="relative py-32 overflow-hidden scroll-mt-24">
       <div className="absolute inset-0 bg-gradient-to-b from-white via-slate-50/80 to-white dark:from-slate-950 dark:via-slate-900/80 dark:to-slate-950" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 gsap-reveal">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-500/[0.08] border border-violet-500/15 text-violet-700 dark:text-violet-400 text-sm font-semibold mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
+          {/* #8074 — charte verte du site (le badge violet était la seule
+              occurrence hors charte, constat audit fr-12). */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/[0.08] border border-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-sm font-semibold mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             {copy.pricing.badge}
           </div>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6 tracking-tight">
             {copy.pricing.title}{' '}
-            <span className="bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-emerald-500 to-cyan-500 bg-clip-text text-transparent">
               {copy.pricing.titleHighlight}
             </span>
           </h2>
@@ -174,6 +178,14 @@ export function PricingSection() {
                     {plan.cta}
                     {plan.popular && <ArrowRight className="w-4 h-4" />}
                   </Link>
+                  {/* #8074 — réassurance sous le CTA : les plans en essai sans
+                      carte l'affichent (le plan Enterprise mène à un contact
+                      commercial, pas à un essai). */}
+                  {hasNumericPrice && (
+                    <p className="mt-3 text-center text-xs text-slate-500 dark:text-slate-400">
+                      {t(locale, 'pricing.section.reassurance')}
+                    </p>
+                  )}
                 </div>
               </motion.div>
             )
@@ -181,6 +193,10 @@ export function PricingSection() {
         </div>
 
         <div className="mt-12 text-center">
+          {/* #8074 — rappel de l'option self-host gratuite (cf. double funnel). */}
+          <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
+            {t(locale, 'pricing.section.selfHostNote')}
+          </p>
           <Link
             href="/pricing"
             className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors"

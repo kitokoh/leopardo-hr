@@ -193,7 +193,13 @@ export interface SolutionStackCopy {
 const COPY: Record<AppLocale, SolutionStackCopy> = {
   fr: {
     eyebrow: 'Architecture de la solution',
-    title: 'Une plateforme. Des briques horizontales. Vos verticales.',
+    // #8073 — titre bénéfice (plus de jargon « briques ») et distinct du titre
+    // de VerticalsSection (« Une plateforme, vos métiers », #8072) : la 3D
+    // reste la section « architecture » qui EXPLIQUE, les cartes verticales
+    // sont la section « métiers » qui VEND. Décision documentée en tête de
+    // fichier : la 3D est conservée (coût maîtrisé : chunk three.js ~130 Ko
+    // gzip différé à l'idle + montage à l'approche du viewport + repli CSS).
+    title: 'Un socle commun, des modules pour chaque métier',
     subtitle:
       "Le socle et les outils transverses sont partagés par tous les métiers : chaque verticale vient s'y brancher au lieu de repartir de zéro.",
     layerPlatform: {
@@ -240,7 +246,7 @@ const COPY: Record<AppLocale, SolutionStackCopy> = {
 
   en: {
     eyebrow: 'Solution architecture',
-    title: 'One platform. Horizontal building blocks. Your verticals.',
+    title: 'A shared foundation, modules for every business line',
     subtitle:
       'The foundation and the cross-cutting tools are shared across every industry: each vertical plugs into them instead of starting from scratch.',
     layerPlatform: {
@@ -287,7 +293,7 @@ const COPY: Record<AppLocale, SolutionStackCopy> = {
 
   tr: {
     eyebrow: 'Çözüm mimarisi',
-    title: 'Tek platform. Yatay yapı taşları. Dikey çözümleriniz.',
+    title: 'Ortak temel, her sektör için modüller',
     subtitle:
       'Temel katman ve yatay araçlar tüm sektörlerle paylaşılır: her dikey çözüm sıfırdan başlamak yerine bunlara bağlanır.',
     layerPlatform: {
@@ -334,7 +340,7 @@ const COPY: Record<AppLocale, SolutionStackCopy> = {
 
   ar: {
     eyebrow: 'بنية الحل',
-    title: 'منصة واحدة. مكوّنات أفقية. حلولك القطاعية.',
+    title: 'أساس مشترك، وحدات لكل مجال عمل',
     subtitle:
       'الأساس والأدوات الأفقية مشتركة بين جميع القطاعات: كل حل قطاعي يتصل بها بدل أن يبدأ من الصفر.',
     layerPlatform: {
