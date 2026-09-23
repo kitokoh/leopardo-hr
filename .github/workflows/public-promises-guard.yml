@@ -11,10 +11,17 @@ on:
 permissions:
   contents: read
 
+# #7986 — sérialiser les runs du garde (annulation des runs PR obsolètes
+# uniquement ; jamais sur main, cf. règle #2131).
+concurrency:
+  group: public-promises-guard-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   promises-guard:
     name: Anti-over-promise (MESSAGE registry)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Scan public copy for forbidden promises
