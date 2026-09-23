@@ -55,7 +55,7 @@ class AuthenticateZktecoDevice
             // bypass tenant explicite (#7960) pour rester correct même si un
             // `current_company` résiduel était lié (worker persistant).
             $device = ZktecoDevice::query()
-                ->crossTenantForSystemTask('lookup pré-tenant par serial_number unique global — auth par X-Device-Token (#7711, #7960)')
+                ->crossTenantForSystemTask('lookup pre-tenant par serial_number unique global, auth par X-Device-Token (#7711, #7960)')
                 ->where('serial_number', $serialNumber)
                 ->firstOrFail();
 

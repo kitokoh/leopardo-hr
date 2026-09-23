@@ -168,7 +168,9 @@ trait BelongsToCompany
      * point d'appel et le rend auditable (`rg "crossTenantForSystemTask"`).
      *
      * @param  Builder<static>  $builder
-     * @param  non-empty-string  $justification  Raison + n° d'issue.
+     * @param  string  $justification  Raison + n° d'issue — ne doit pas être
+     *   vide (vérifié à l'exécution par l'assert ci-dessous : la sonde reste
+     *   non tautologique, doctrine #8014 — pas de `non-empty-string` ici).
      * @return Builder<static>
      */
     public function scopeCrossTenantForSystemTask(Builder $builder, string $justification): Builder
