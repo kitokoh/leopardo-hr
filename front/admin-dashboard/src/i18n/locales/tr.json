@@ -8613,5 +8613,59 @@
     "successTitle": "Örnek verileriniz hazır",
     "successBody": "Özgürce keşfedin: her şey düzenlenebilir veya silinebilir, hiçbir ücret alınmaz.",
     "successCta": "Verilerimi keşfet"
+  },
+  "stay": {
+    "public": {
+      "notFoundTitle": "Tesis bulunamadı",
+      "metaDescription": "{name} tesisini keşfedin: odalar, fiyatlar ve hesapsız online rezervasyon.",
+      "roomTypesTitle": "Odalar ve fiyatlar",
+      "noRoomTypes": "Bu tesisin odaları henüz yayınlanmadı.",
+      "pricePerNight": "{price} / gece",
+      "propertyType": {
+        "hotel": "Otel",
+        "residence": "Rezidans",
+        "apartment_building": "Apartman",
+        "guesthouse": "Konukevi"
+      },
+      "bookingTitle": "Online rezervasyon",
+      "checkInLabel": "Giriş",
+      "checkOutLabel": "Çıkış",
+      "adultsLabel": "Misafir sayısı",
+      "searchAvailability": "Müsaitlik ara",
+      "searching": "Aranıyor…",
+      "datesError": "Geçerli giriş ve çıkış tarihleri seçin.",
+      "searchError": "Müsaitlik yüklenemedi. Lütfen kısa süre sonra tekrar deneyin.",
+      "noAvailability": "Bu tarihlerde müsait oda yok.",
+      "noAvailabilityError": "Bu oda bu tarihlerde artık müsait değil. Yeniden arayın.",
+      "unitsAvailable": "{count} müsait",
+      "soldOut": "Bu tarihlerde dolu",
+      "guestNameLabel": "Misafir adı",
+      "emailLabel": "E-posta (isteğe bağlı)",
+      "phoneLabel": "Telefon (isteğe bağlı)",
+      "guestNameError": "Lütfen misafir adını girin.",
+      "book": "Rezervasyon yap",
+      "booking": "Rezervasyon yapılıyor…",
+      "bookingError": "Rezervasyon başarısız oldu. Lütfen kısa süre sonra tekrar deneyin.",
+      "confirmedTitle": "Rezervasyon talebi alındı",
+      "referenceLabel": "Referans",
+      "trackingCodeLabel": "Takip kodu",
+      "trackingCodeNotice": "Bu kodu güvenle saklayın: bir daha asla gösterilmeyecek ve rezervasyonu takip etmenizi veya iptal etmenizi sağlar.",
+      "pendingExpiryNotice": "Tesis 30 dakika içinde onaylamazsa talep otomatik olarak sona erer.",
+      "trackTitle": "Rezervasyon takibi veya iptali",
+      "trackAction": "Ara",
+      "trackFormError": "Referansı ve takip kodunu girin.",
+      "trackNotFound": "Bu referans ve kodla eşleşen rezervasyon yok.",
+      "cancelAction": "Rezervasyonu iptal et",
+      "cancelError": "İptal başarısız oldu. Lütfen kısa süre sonra tekrar deneyin.",
+      "statusLabel": "Durum",
+      "status": {
+        "pending": "Onay bekliyor",
+        "confirmed": "Onaylandı",
+        "checked_in": "Konaklama devam ediyor",
+        "checked_out": "Konaklama tamamlandı",
+        "cancelled": "İptal edildi",
+        "no_show": "Gelmedi"
+      }
+    }
   }
 }
