@@ -28,7 +28,7 @@ import { PricingSection as LocalePricingSection } from '@/modules/vitrine/compon
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { getFeatures } from '@/modules/vitrine/data/features';
 import { getFaqItems } from '@/modules/vitrine/data/faq';
-import { getTestimonials } from '@/modules/vitrine/data/testimonials';
+import { getTestimonials, TESTIMONIALS_ARE_DEMO } from '@/modules/vitrine/data/testimonials';
 import { StickyMobileCTA } from '@/components/StickyMobileCTA';
 import { QuickTrialEmailForm } from '@/modules/vitrine/components/HeroSection';
 
@@ -155,6 +155,9 @@ export default function LandingPage() {
             company: t.company,
             avatar: t.avatar,
             rating: t.rating,
+            // #8070 — flag démo explicite : tant qu'il n'y a pas de clients
+            // réels, chaque témoignage porte le badge « Exemple illustratif ».
+            demo: TESTIMONIALS_ARE_DEMO,
           }))}
           columns={3}
         />
