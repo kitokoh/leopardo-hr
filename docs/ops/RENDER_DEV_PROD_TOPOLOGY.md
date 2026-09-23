@@ -241,9 +241,31 @@ hors périmètre #7648.
 **Écart prod ↔ main désormais visible** : `deploy-drift-guard.yml` publie à
 chaque run planifié (2×/heure) un rapport « Écart prod ↔ main (#7648) »
 (résumé de job + `::warning`) : version servie par la prod, nombre de
-commits de `main` non déployés, âge du commit déployé. Report-only (une
-release est une décision propriétaire) et sans secret supplémentaire
-(healthcheck public + `github.token` — `RENDER_API_KEY` inutile).
+commits de `main` non déployés, âge du commit déployé. Sans secret
+supplémentaire (healthcheck public + `github.token` — `RENDER_API_KEY`
+inutile). Depuis #8092 le rapport n'est plus purement report-only : si le
+retard a plus de `vars.PROD_DRIFT_MAX_AGE_HOURS` heures (défaut 24 h,
+mesuré sur le **premier commit non déployé**), le job échoue en rouge —
+un `::warning` de run planifié vert n'est lu par personne (constat
+2026-09-23 : prod 2 jours derrière `main` sans signal).
+
+**Rattrapage prod automatique (#8092)** : `deploy-main-catchup.yml` porte,
+en plus du rattrapage dev, un job `prod-catch-up` (1×/heure) qui compare le
+commit du dernier deploy **live** du service prod (API Render,
+`secrets.RENDER_PROD_API_KEY` + `secrets.RENDER_PROD_SERVICE_ID`) au dernier
+commit `api/**` de `main`, et redéclenche un deploy si la prod est en
+retard — gaté par les tests verts du HEAD. Particularités :
+
+- les deploys sont posés avec un **`commitId` explicite** : un
+  `POST /deploys` sans corps laisse `commit: null` côté Render, ce qui
+  aveugle toute comparaison ultérieure (#8092 §3) ;
+- quand le deploy live n'a **pas** de commit lisible (héritage pré-#8092),
+  le job se rabat sur l'âge du deploy (`vars.PROD_CATCHUP_MAX_AGE_HOURS`,
+  défaut 6 h) ;
+- chaque rattrapage réussi (deploy live + healthcheck) est enregistré comme
+  GitHub Deployment « Production – leopardo-prod »
+  (`register-github-deployment.sh`, même mécanique que les fronts Vercel
+  #7994 §5) — le SHA réellement servi est ainsi visible sans secret.
 
 **Actions restées côté propriétaire (hors dépôt)** :
 
@@ -252,8 +274,9 @@ release est une décision propriétaire) et sans secret supplémentaire
 2. Poser `APP_ENV=staging` + `DEPLOY_TIER=dev` dans le dashboard Render du
    service dev (étape 2 ci-dessus).
 3. Rattraper la prod : publier une Release sur la HEAD de `main` pour
-   déclencher `deploy-prod.yml` (le rapport de drift le rappellera tant que
-   l'écart persiste).
+   déclencher `deploy-prod.yml` — ou laisser le job `prod-catch-up` de
+   `deploy-main-catchup.yml` la rattraper automatiquement (#8092) ; le
+   rapport de drift le rappellera tant que l'écart persiste.
 4. Optionnel : `AI_LLM_DRIVER` explicite sur le service dev (voir plan de
    migration, étape 4).
 
