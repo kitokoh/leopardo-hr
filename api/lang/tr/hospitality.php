@@ -6,6 +6,7 @@ declare(strict_types=1);
 // kullanıcı mesajları (PA2-I18N-007: katalog dışı metin yok).
 return [
     'solution_inactive' => 'HospitalityManager çözümü bu kiracı için aktif değil.',
+    'room_type_unavailable' => 'Bu oda tipi bu tesis için uygun değil.',
     'no_availability' => 'Bu oda tipi için bu aralıkta müsaitlik yok.',
     'invalid_transition' => 'Geçersiz rezervasyon geçişi (:from → :target).',
     'checkout_before_checkin' => 'Çıkış tarihi giriş tarihinden sonra olmalıdır.',

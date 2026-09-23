@@ -137,7 +137,7 @@ class HospitalityPublicStayController extends Controller
 
             if (! $roomTypeBelongsToProperty) {
                 throw ValidationException::withMessages([
-                    'room_type_id' => ['Ce type de chambre n\'est pas disponible pour cet établissement.'],
+                    'room_type_id' => [(string) __('hospitality.room_type_unavailable')],
                 ]);
             }
 

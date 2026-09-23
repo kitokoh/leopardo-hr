@@ -6,6 +6,7 @@ declare(strict_types=1);
 // user-facing messages (PA2-I18N-007: catalog only, no hardcoded strings).
 return [
     'solution_inactive' => 'The HospitalityManager solution is not active for this tenant.',
+    'room_type_unavailable' => 'This room type is not available for this property.',
     'no_availability' => 'No availability for this room type on this interval.',
     'invalid_transition' => 'Invalid reservation transition (:from → :target).',
     'checkout_before_checkin' => 'Check-out date must be after the check-in date.',
