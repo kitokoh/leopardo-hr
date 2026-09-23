@@ -9,7 +9,7 @@ import {
   useScrollReveal,
   SocialProofMetrics,
   ProductScreenshots,
-  MarketingReadinessSection,
+  WhyOpenSourceSection,
   TrustedBrands,
   ProductDemoVideo,
   // Phase-3 sections — no more Legacy prefixes
@@ -135,7 +135,9 @@ export default function LandingPage() {
 
         {/* ─── PRODUCT VISUAL ─── */}
         <ProductScreenshots locale={locale} />
-        <MarketingReadinessSection locale={locale} />
+        {/* #8065 : « Pourquoi open source » remplace MarketingReadinessSection
+            (langage de pilotage interne, conservé pour usage interne). */}
+        <WhyOpenSourceSection locale={locale} />
 
         {/* ─── DEMO ─── */}
 

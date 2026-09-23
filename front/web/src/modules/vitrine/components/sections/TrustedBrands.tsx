@@ -222,8 +222,8 @@ export function TrustedBrands({ locale = 'fr' }: TrustedBrandsProps) {
     <section className="relative py-16 overflow-hidden bg-transparent dark:bg-slate-900/50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ y: 20 }}
+          whileInView={{ y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="text-center"
