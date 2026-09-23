@@ -8,11 +8,11 @@ export type FaqItem = {
 const faqByLocale: Record<AppLocale, FaqItem[]> = {
   fr: [
     {
-      question: 'Combien de temps faut-il pour déployer Leopardo RH ?',
+      question: 'Combien de temps faut-il pour déployer Leopardo ?',
       answer: "Le déploiement standard prend moins de 24 heures. Votre équipe peut commencer à utiliser la plateforme des le premier jour avec notre onboarding guide.",
     },
     {
-      question: 'Est-ce que Leopardo RH fonctionne hors ligne ?',
+      question: 'Est-ce que Leopardo fonctionne hors ligne ?',
       answer: "Oui, l'application mobile dispose d'un mode offline complet. Les pointages et demandes se synchronisent automatiquement des que la connexion revient.",
     },
     {
@@ -34,11 +34,11 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
   ],
   en: [
     {
-      question: 'How long does Leopardo RH take to deploy?',
+      question: 'How long does Leopardo take to deploy?',
       answer: 'A standard rollout takes less than 24 hours. Most teams start operating on day one with guided onboarding.',
     },
     {
-      question: 'Does Leopardo RH work offline?',
+      question: 'Does Leopardo work offline?',
       answer: 'Yes. Mobile attendance and requests keep working offline and synchronize automatically when connectivity returns.',
     },
     {
@@ -60,11 +60,11 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
   ],
   tr: [
     {
-      question: 'Leopardo RH ne kadar hizli devreye alinir?',
+      question: 'Leopardo ne kadar hizli devreye alinir?',
       answer: 'Standart kurulum 24 saatten kisa surer. Cogu ekip ilk gunden itibaren kullanima baslar.',
     },
     {
-      question: 'Leopardo RH cevrimdisi calisir mi?',
+      question: 'Leopardo cevrimdisi calisir mi?',
       answer: 'Evet. Mobil takip ve talepler cevrimdisi devam eder, baglanti gelince otomatik eslesir.',
     },
     {
@@ -86,11 +86,11 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
   ],
   ar: [
     {
-      question: 'كم يستغرق تشغيل Leopardo RH؟',
+      question: 'كم يستغرق تشغيل Leopardo؟',
       answer: 'النشر القياسي يستغرق اقل من 24 ساعة، ويمكن للفريق البدء في الاستخدام من اليوم الاول.',
     },
     {
-      question: 'هل يعمل Leopardo RH دون اتصال؟',
+      question: 'هل يعمل Leopardo دون اتصال؟',
       answer: 'نعم. الحضور والطلبات عبر الجوال تستمر دون اتصال ثم تتزامن تلقائيا عند عودة الشبكة.',
     },
     {

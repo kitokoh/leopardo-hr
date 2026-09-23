@@ -9,9 +9,9 @@
  * vit désormais ici, comme le reste de la copie vitrine
  * (`src/modules/vitrine/data/`), et les pages ne portent plus que la mécanique.
  *
- * Corrigé au passage : le `<title>` incluait déjà « | Leopardo RH » alors que
+ * Corrigé au passage : le `<title>` incluait déjà « | Leopardo » alors que
  * le template du layout racine l'ajoute — d'où un doublon en production
- * (« … | Leopardo RH | Leopardo RH »).
+ * (« … | Leopardo | Leopardo »).
  */
 export type LegalSeo = {
   title: string;
@@ -22,18 +22,18 @@ export const legalPageSeo: Record<'terms' | 'privacy' | 'legal', LegalSeo> = {
   terms: {
     title: "Conditions générales d'utilisation",
     description:
-      "Conditions générales d'utilisation multilingues de Leopardo RH pour les clients, administrateurs, managers, employés et intégrateurs.",
+      "Conditions générales d'utilisation multilingues de Leopardo pour les clients, administrateurs, managers, employés et intégrateurs.",
   },
   privacy: {
     title: 'Politique de confidentialité',
     description:
-      'Politique de confidentialité multilingue de Leopardo RH : données RH, conformité, droits des utilisateurs et sécurité.',
+      'Politique de confidentialité multilingue de Leopardo : données RH, conformité, droits des utilisateurs et sécurité.',
   },
   // #7593 — mentions légales : le pied de page y renvoie depuis la correction du
   // lot vitrine (#7592), la page devait exister.
   legal: {
     title: 'Mentions légales',
     description:
-      "Mentions légales de Leopardo RH : éditeur du site, hébergement, propriété intellectuelle et renvoi vers la politique de confidentialité.",
+      "Mentions légales de Leopardo : éditeur du site, hébergement, propriété intellectuelle et renvoi vers la politique de confidentialité.",
   },
 };

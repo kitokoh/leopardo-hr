@@ -146,7 +146,7 @@ type BrandingPageCopy = {
 const copy: Record<Lang, BrandingPageCopy> = {
   fr: {
     hero: 'Personnalisation entreprise',
-    heroSub: 'Faites de Leopardo RH votre propre outil. Logo, couleurs, nom — tout reflète votre identité.',
+    heroSub: 'Faites de Leopardo votre propre outil. Logo, couleurs, nom — tout reflète votre identité.',
     badge: 'Tenant Branding Premium',
     featuresTitle: 'Ce que vous pouvez personnaliser',
     apiSectionTitle: 'API Branding',
@@ -158,7 +158,7 @@ const copy: Record<Lang, BrandingPageCopy> = {
   },
   en: {
     hero: 'Enterprise Branding',
-    heroSub: 'Make Leopardo RH yours. Logo, colours, name — everything reflects your identity.',
+    heroSub: 'Make Leopardo yours. Logo, colours, name — everything reflects your identity.',
     badge: 'Tenant Branding Premium',
     featuresTitle: 'What you can customise',
     apiSectionTitle: 'Branding API',
@@ -170,7 +170,7 @@ const copy: Record<Lang, BrandingPageCopy> = {
   },
   tr: {
     hero: 'Kurumsal Marka',
-    heroSub: 'Leopardo RH\'yi kendinize ait yapın. Logo, renkler, isim — her şey kimliğinizi yansıtır.',
+    heroSub: 'Leopardo\'yi kendinize ait yapın. Logo, renkler, isim — her şey kimliğinizi yansıtır.',
     badge: 'Kiracı Marka Premium',
     featuresTitle: 'Neler özelleştirilebilir',
     apiSectionTitle: 'Marka API',
@@ -182,7 +182,7 @@ const copy: Record<Lang, BrandingPageCopy> = {
   },
   ar: {
     hero: 'هوية بصرية للمؤسسة',
-    heroSub: 'اجعل Leopardo RH منصتك الخاصة. شعار، ألوان، اسم — كل شيء يعكس هويتك.',
+    heroSub: 'اجعل Leopardo منصتك الخاصة. شعار، ألوان، اسم — كل شيء يعكس هويتك.',
     badge: 'هوية المستأجر المميزة',
     featuresTitle: 'ما يمكنك تخصيصه',
     apiSectionTitle: 'واجهة برمجة تطبيقات الهوية',

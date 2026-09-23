@@ -138,7 +138,7 @@ type Copy = {
 const copyByLocale: Record<AppLocale, Copy> = {
   fr: {
     title: 'Concu pour vos secteurs',
-    subtitle: 'Leopardo RH s\u2019adresse aux entreprises de Turquie, d\u2019Afrique du Nord, d\u2019Europe, d\u2019Afrique et du Monde Arabe qui ont besoin de paie multi-pays et de pointage terrain fiable.',
+    subtitle: 'Leopardo s\u2019adresse aux entreprises de Turquie, d\u2019Afrique du Nord, d\u2019Europe, d\u2019Afrique et du Monde Arabe qui ont besoin de paie multi-pays et de pointage terrain fiable.',
     sectorLabels: {
       industry: 'Industrie',
       energy: 'Energie & BTP',
@@ -152,7 +152,7 @@ const copyByLocale: Record<AppLocale, Copy> = {
   },
   en: {
     title: 'Built for your sector',
-    subtitle: 'Leopardo RH serves companies across Turkey, North Africa, Europe, Africa and the Arab World that need multi-country payroll and reliable field attendance.',
+    subtitle: 'Leopardo serves companies across Turkey, North Africa, Europe, Africa and the Arab World that need multi-country payroll and reliable field attendance.',
     sectorLabels: {
       industry: 'Manufacturing',
       energy: 'Energy & Construction',
@@ -166,7 +166,7 @@ const copyByLocale: Record<AppLocale, Copy> = {
   },
   tr: {
     title: 'Sektorunuz icin tasarlandi',
-    subtitle: 'Leopardo RH, cok ulkeli bordro ve guvenilir saha devam takibine ihtiyaci olan Turkiye, Kuzey Afrika, Avrupa, Afrika ve Arap Dunyasindaki sirketlere hizmet verir.',
+    subtitle: 'Leopardo, cok ulkeli bordro ve guvenilir saha devam takibine ihtiyaci olan Turkiye, Kuzey Afrika, Avrupa, Afrika ve Arap Dunyasindaki sirketlere hizmet verir.',
     sectorLabels: {
       industry: 'Uretim',
       energy: 'Enerji & Insaat',
@@ -180,7 +180,7 @@ const copyByLocale: Record<AppLocale, Copy> = {
   },
   ar: {
     title: 'مصمم لقطاعك',
-    subtitle: 'يخدم Leopardo RH الشركات في تركيا وشمال أفريقيا وأوروبا وأفريقيا والعالم العربي التي تحتاج إلى رواتب متعددة البلدان وحضور ميداني موثوق.',
+    subtitle: 'يخدم Leopardo الشركات في تركيا وشمال أفريقيا وأوروبا وأفريقيا والعالم العربي التي تحتاج إلى رواتب متعددة البلدان وحضور ميداني موثوق.',
     sectorLabels: {
       industry: 'الصناعة',
       energy: 'الطاقة والبناء',

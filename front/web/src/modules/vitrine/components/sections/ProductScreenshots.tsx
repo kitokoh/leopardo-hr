@@ -36,7 +36,7 @@ const screensByLocale: Record<AppLocale, { badge: string; title: string; titleHi
         gradient: 'from-emerald-500 to-cyan-500',
         mockup: 'desktop',
         screenshotSrc: '/screenshots/web-dashboard.png',
-        screenshotAlt: 'Capture du dashboard admin Leopardo RH',
+        screenshotAlt: 'Capture du dashboard admin Leopardo',
       },
       {
         icon: <Smartphone className="w-6 h-6" />,
@@ -71,7 +71,7 @@ const screensByLocale: Record<AppLocale, { badge: string; title: string; titleHi
         gradient: 'from-emerald-500 to-cyan-500',
         mockup: 'desktop',
         screenshotSrc: '/screenshots/web-dashboard.png',
-        screenshotAlt: 'Leopardo HR admin dashboard screenshot',
+        screenshotAlt: 'Leopardo admin dashboard screenshot',
       },
       {
         icon: <Smartphone className="w-6 h-6" />,
