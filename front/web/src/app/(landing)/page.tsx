@@ -11,7 +11,6 @@ import {
   ProductScreenshots,
   WhyOpenSourceSection,
   TrustedBrands,
-  ProductDemoVideo,
   // Phase-3 sections — no more Legacy prefixes
   HeroSection,
   HeroProductShowcase,
@@ -114,8 +113,8 @@ export default function LandingPage() {
         <TrustedBrands locale={locale} />
         <SocialProofMetrics locale={locale} />
 
-        {/* ─── PRODUCT DEMO VIDEO ─── PA2-MKT-014 */}
-        <ProductDemoVideo locale={locale} />
+        {/* ─── PRODUCT DEMO VIDEO ─── #8071 option A : retirée de la home,
+            conservée sur /demo et /videos (nouveau poster = dashboard réel) */}
 
         {/* ─── FEATURES ─── Phase-3 */}
         {/* id="fonctionnalites": PA2-MKT-013 — Footer links here via /#fonctionnalites */}
