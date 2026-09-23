@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
-# check-module-isolation.sh — garde CI issue #5584
+# check-module-isolation.sh — garde CI issue #5584 (+ #8059 : app/Http)
 #
 # Détecte les NOUVEAUX imports croisés entre modules PHP (App\Modules\X\
 # important App\Modules\Y\, ou App\Core\X important App\Modules\Y\).
+# Depuis #8059, scanne aussi app/Http/ (Resources, Controllers, Middleware…) :
+# tout `use App\Modules\X\` depuis app/Http est un couplage croisé
+# (trajectoire : rapatrier chaque Resource dans son module propriétaire,
+# Modules/X/Interfaces/Api/V1/Resources).
 #
-# La liste des violations EXISTANTES est dans module-isolation-allowlist.txt.
+# La liste des violations EXISTANTES est dans module-isolation-allowlist.txt
+# (sources Modules/ et Core/) et module-isolation-http-allowlist.txt
+# (sources app/Http, baseline datée 2026-09-23, issue #8059).
 # Ce fichier est immuable depuis CI — tout nouvel import croisé fait échouer
 # la PR. Corriger le code (Events Shared, contrats) plutôt qu'agrandir l'allowlist.
 #
@@ -20,6 +26,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ALLOWLIST="${SCRIPT_DIR}/module-isolation-allowlist.txt"
+HTTP_ALLOWLIST="${SCRIPT_DIR}/module-isolation-http-allowlist.txt"
 API_DIR="${1:-api}"
 APP_DIR="${API_DIR}/app"
 
@@ -30,6 +37,11 @@ fi
 
 if [[ ! -f "${ALLOWLIST}" ]]; then
   echo "❌  Allowlist introuvable : ${ALLOWLIST}" >&2
+  exit 1
+fi
+
+if [[ ! -f "${HTTP_ALLOWLIST}" ]]; then
+  echo "❌  Allowlist app/Http introuvable : ${HTTP_ALLOWLIST} (issue #8059)" >&2
   exit 1
 fi
 
@@ -53,6 +65,11 @@ for php_file in sorted(app_dir.rglob("*.php")):
         source_module = f"Modules/{parts[1]}"
     elif parts[0] == "Core" and len(parts) >= 2:
         source_module = f"Core/{parts[1]}"
+    elif parts[0] == "Http":
+        # #8059 : app/Http (Resources, Controllers, Middleware…) est une
+        # source scannée — tout import de module depuis ce canal est un
+        # couplage croisé hors frontière.
+        source_module = f"Http/{parts[1]}" if len(parts) >= 3 else "Http"
     else:
         continue
 
@@ -69,13 +86,10 @@ for php_file in sorted(app_dir.rglob("*.php")):
         m = re.match(r"use App\\Modules\\(\w+)\\", line)
         if m:
             target = f"Modules/{m.group(1)}"
-            if target != source_module and "Core/" not in source_module:
+            if source_module.startswith(("Core/", "Http")):
                 violations.add(f"{source_module} -> {target}")
-
-        if "Core/" in source_module:
-            m2 = re.match(r"use App\\Modules\\(\w+)\\", line)
-            if m2:
-                violations.add(f"{source_module} -> Modules/{m2.group(1)}")
+            elif target != source_module:
+                violations.add(f"{source_module} -> {target}")
 
 for v in sorted(violations):
     print(v)
@@ -83,7 +97,7 @@ PYEOF
 )
 
 # ── Comparaison contre l'allowlist ───────────────────────────────────────────
-ALLOWED=$(grep -v '^#' "${ALLOWLIST}" | grep -v '^[[:space:]]*$' | sort)
+ALLOWED=$(cat "${ALLOWLIST}" "${HTTP_ALLOWLIST}" | grep -v '^#' | grep -v '^[[:space:]]*$' | sort)
 
 NEW_VIOLATIONS=$(
   TMP_CURRENT=$(mktemp)
@@ -105,5 +119,7 @@ echo "${NEW_VIOLATIONS}" | sed "s/^/    /" >&2
 echo "" >&2
 echo "Ces imports violent la règle d'isolation des modules (ARCHITECTURE.md §2)." >&2
 echo "Alternatives : Events Shared, contrats (interfaces), injection de dépendance." >&2
+echo "Sources Http/* (#8059) : rapatrier la Resource dans son module propriétaire" >&2
+echo "(Modules/X/Interfaces/Api/V1/Resources) plutôt que d'importer le module." >&2
 echo "NE PAS ajouter à l'allowlist sans discussion architecturale documentée." >&2
 exit 1
