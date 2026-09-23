@@ -219,10 +219,15 @@ class PayrollCalculator
             return $this->regularization->calculateRegularizationRun($run, $rules);
         }
 
-        /** @var Collection<int, Employee> $employees */
+        // #8057 : pas de ->get() sur toute la population — hydratation par
+        // lots de 500 (lazyById) pour garder une empreinte mémoire bornée sur
+        // les grosses entreprises (conteneur 512 Mo). Chaque énumération de la
+        // LazyCollection ré-exécute la requête par chunks (une passe pour les
+        // agrégats batch #2687, une passe pour le calcul des bulletins).
+        /** @var \Illuminate\Support\LazyCollection<int, Employee> $employees */
         $employees = Employee::where('company_id', $companyId)
             ->where('status', 'active')
-            ->get();
+            ->lazyById(500);
 
         /** @var Collection<int, SalaryStructure> $structuresCollection */
         $structuresCollection = SalaryStructure::where('company_id', $companyId)
