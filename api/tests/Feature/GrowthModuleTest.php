@@ -544,12 +544,16 @@ class GrowthModuleTest extends TestCase
     {
         // 15 liens DISTINCTS depuis la même IP : la dédup par lien ne borne
         // pas ce scénario — le plafond global /IP/heure prend le relais.
+        // Le comptage est SCOPÉ aux liens créés ici : le schéma MVP
+        // partagé n'isole pas partner_clicks entre les tests du fichier.
+        $linkIds = [];
         for ($i = 0; $i < 15; $i++) {
             $link = $this->makeActiveLink('CAP'.$i);
+            $linkIds[] = $link->id;
             $this->get('/p/'.$link->code)->assertRedirect('/signup');
         }
 
-        $this->assertSame(12, PartnerClick::query()->count(),
+        $this->assertSame(12, PartnerClick::query()->whereIn('partner_link_id', $linkIds)->count(),
             'Plafond global de 12 clics comptés / IP / heure (#8060).');
     }
 }
