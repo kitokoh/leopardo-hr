@@ -45,7 +45,7 @@ class PurgeExpiredDocumentSharesCommand extends Command
 
         /** @var Collection<int, object{company_id: string, total: int}> $counts */
         $counts = AccountingDocumentShare::query()
-            ->withoutGlobalScope('company')
+            ->crossTenantForSystemTask('purge des partages de documents expirés, tous tenants (#7960)')
             ->where('expires_at', '<', $cutoff)
             ->select('company_id', DB::raw('count(*) as total'))
             ->groupBy('company_id')
@@ -71,7 +71,7 @@ class PurgeExpiredDocumentSharesCommand extends Command
         }
 
         $deleted = AccountingDocumentShare::query()
-            ->withoutGlobalScope('company')
+            ->crossTenantForSystemTask('purge des partages de documents expirés, tous tenants (#7960)')
             ->where('expires_at', '<', $cutoff)
             ->delete();
 

@@ -33,7 +33,7 @@ class CrmOverdueReminderService
 
         /** @var \Illuminate\Support\Collection<int, CrmTask> $tasks */
         $tasks = CrmTask::query()
-            ->withoutGlobalScope('company')
+            ->crossTenantForSystemTask('scheduler de rappels de tâches CRM en retard — itère tous les tenants (#7960)')
             ->whereIn('status', ['todo', 'in_progress'])
             ->where('due_at', '<', $now)
             ->get(['id', 'company_id', 'assigned_to', 'title', 'due_at']);

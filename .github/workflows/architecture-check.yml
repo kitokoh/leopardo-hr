@@ -103,6 +103,9 @@ jobs:
       - name: Tenant-scope models guard (issue #7999)
         run: bash dev-hub/tools/check-tenant-scope-models.sh
 
+      - name: withoutGlobalScope ratchet guard (issue #7960)
+        run: bash dev-hub/tools/check-without-global-scope.sh
+
       - name: Password policy guard (issue #7995)
         run: bash dev-hub/tools/check-password-policy.sh
 
