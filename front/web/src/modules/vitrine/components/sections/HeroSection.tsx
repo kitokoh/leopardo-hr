@@ -45,6 +45,16 @@ export interface HeroSectionProps {
   layout?: 'centered' | 'split';
   /** Optional inline quick-trial form rendered below CTAs (e.g. QuickTrialEmailForm) */
   quickTrialForm?: React.ReactNode;
+  /** #8068 — ligne de réassurance sous les CTA (« Gratuit · Sans CB · … »). */
+  ctaReassurance?: string;
+}
+
+/** Lien externe (GitHub, docs hors site) → nouvel onglet. */
+const EXTERNAL_HREF_RE = /^https?:\/\//i;
+function externalProps(href: string): { target?: string; rel?: string } {
+  return EXTERNAL_HREF_RE.test(href)
+    ? { target: '_blank', rel: 'noopener noreferrer' }
+    : {};
 }
 
 export function HeroSection({
@@ -58,6 +68,7 @@ export function HeroSection({
   animated = true,
   layout = 'centered',
   quickTrialForm,
+  ctaReassurance,
 }: HeroSectionProps) {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
@@ -169,6 +180,7 @@ export function HeroSection({
                 {ctaPrimary && (
                   <Link
                     href={withLocaleHref(ctaPrimary.href, search)}
+                    {...externalProps(ctaPrimary.href)}
                     className="hero-cta-primary group relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-700 to-emerald-800 px-8 py-4 font-bold text-white transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
                   >
                     <span className="relative z-10 flex items-center gap-2.5 text-base">
@@ -182,6 +194,7 @@ export function HeroSection({
                 {ctaSecondary && (
                   <Link
                     href={withLocaleHref(ctaSecondary.href, search)}
+                    {...externalProps(ctaSecondary.href)}
                     className="group flex items-center gap-3.5 rounded-2xl border border-slate-200 bg-white px-8 py-4 font-semibold text-slate-900 transition-all duration-300 hover:border-emerald-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:hover:border-emerald-800"
                   >
                     {ctaSecondary.icon ? (
@@ -200,6 +213,15 @@ export function HeroSection({
             )}
 
             {/* Optional quick-trial inline form (e.g. QuickTrialEmailForm with source=hero_email_trial) */}
+            {ctaReassurance && (
+              <p
+                className={`text-sm font-medium text-slate-500 dark:text-slate-400 ${
+                  isSplit ? 'text-center lg:text-left' : 'text-center'
+                }`}
+              >
+                {ctaReassurance}
+              </p>
+            )}
             {quickTrialForm}
           </div>
 

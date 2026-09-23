@@ -56,6 +56,8 @@ type LandingCopy = {
     subtitleTail: string
     primaryCta: string
     secondaryCta: string
+    /** #8068 — réassurance sous les CTA (« Gratuit · Sans CB · Code source ouvert »). */
+    ctaReassurance: string
     mobileBadge?: string
     downloadCta?: string
     visualAlt?: string
@@ -197,8 +199,9 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       mobileBadge: 'Disponible sur mobile',
       downloadCta: 'Telecharger les apps',
       visualAlt: 'Capture du tableau de bord admin Leopardo',
-      primaryCta: 'Creer un compte',
-      secondaryCta: 'Voir la demo',
+      primaryCta: 'Essayer gratuitement',
+      secondaryCta: 'Installer sur votre serveur',
+      ctaReassurance: 'Gratuit · Sans carte bancaire · Code source ouvert',
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'Pays couverts (paie)' },
         { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'Langues (FR/EN/AR/TR)' },
@@ -269,8 +272,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       title: 'Pret a transformer',
       titleHighlight: 'votre gestion RH ?',
       subtitle: 'Commencez votre essai gratuit de 14 jours. Aucune carte de credit requise. Configuration en moins de 5 minutes.',
-      primary: 'Commencer gratuitement',
-      secondary: 'Demander une demo',
+      primary: 'Essayer gratuitement',
+      secondary: 'Installer sur votre serveur',
     },
     changelog: {
       badge: 'Produit',
@@ -345,8 +348,9 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       mobileBadge: 'Available on mobile',
       downloadCta: 'Download the apps',
       visualAlt: 'Leopardo admin dashboard screenshot',
-      primaryCta: 'Create an account',
-      secondaryCta: 'Watch demo',
+      primaryCta: 'Try for free',
+      secondaryCta: 'Install on your server',
+      ctaReassurance: 'Free · No credit card · Open source',
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'Payroll countries' },
         { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'Languages (FR/EN/AR/TR)' },
@@ -417,8 +421,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       title: 'Ready to transform',
       titleHighlight: 'your HR operations?',
       subtitle: 'Launch your 14-day free trial. No credit card required. Production setup in under five minutes.',
-      primary: 'Start for free',
-      secondary: 'Request a demo',
+      primary: 'Try for free',
+      secondary: 'Install on your server',
     },
     changelog: {
       badge: 'Product',
@@ -493,8 +497,9 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       mobileBadge: 'Mobilde kullanilabilir',
       downloadCta: 'Uygulamalari indir',
       visualAlt: 'Leopardo yonetici paneli ekran goruntusu',
-      primaryCta: '14 gun ucretsiz deneyin',
-      secondaryCta: 'Demoyu izle',
+      primaryCta: 'Ucretsiz dene',
+      secondaryCta: 'Kendi sunucunuza kurun',
+      ctaReassurance: 'Ucretsiz · Kredi karti yok · Acik kaynak',
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'Bordro ulkesi' },
         { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'Dil (FR/EN/AR/TR)' },
@@ -565,8 +570,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       title: 'IK sureclerini',
       titleHighlight: 'donusturmeye hazir misiniz?',
       subtitle: '14 gun ucretsiz deneyin. Kredi karti gerekmez. Kurulum bes dakikadan kisa surer.',
-      primary: 'Ucretsiz basla',
-      secondary: 'Demo iste',
+      primary: 'Ucretsiz dene',
+      secondary: 'Kendi sunucunuza kurun',
     },
     changelog: {
       badge: 'Urun',
@@ -641,8 +646,9 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       mobileBadge: 'متاح على الجوال',
       downloadCta: 'تحميل التطبيقات',
       visualAlt: 'لقطة شاشة للوحة تحكم الإدارة في ليوباردو',
-      primaryCta: 'ابدأ تجربة 14 يوما',
-      secondaryCta: 'شاهد العرض',
+      primaryCta: 'جرّب مجانًا',
+      secondaryCta: 'ثبّت على خادمك',
+      ctaReassurance: 'مجاني · بدون بطاقة بنكية · كود مفتوح المصدر',
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'دول الرواتب' },
         { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'لغات (FR/EN/AR/TR)' },
@@ -713,8 +719,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       title: 'هل انت مستعد',
       titleHighlight: 'لتطوير عمليات الموارد البشرية؟',
       subtitle: 'ابدأ تجربة مجانية لمدة 14 يوما بدون بطاقة ائتمان. التشغيل يتم خلال اقل من خمس دقائق.',
-      primary: 'ابدأ مجانا',
-      secondary: 'اطلب عرضا',
+      primary: 'جرّب مجانًا',
+      secondary: 'ثبّت على خادمك',
     },
     changelog: {
       badge: 'المنتج',

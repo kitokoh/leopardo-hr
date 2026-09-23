@@ -1,8 +1,8 @@
 'use client';
 
-import { Sparkles, Play, Zap, Users, TrendingUp, Star } from 'lucide-react';
+import { Sparkles, Server, Zap, Users, TrendingUp, Star } from 'lucide-react';
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
-import { useState } from 'react';
+import { GITHUB_REPO_URL } from '@/modules/vitrine/data/github-repo';
 import {
   Navbar,
   Footer,
@@ -65,13 +65,16 @@ export default function LandingPage() {
           headline={`${copy.hero.titleTop} ${copy.hero.titleBottom}`}
           subheadline={copy.hero.subtitle}
           ctaPrimary={{ text: copy.hero.primaryCta, href: '/signup' }}
+          // #8068 — double funnel : l'essai cloud ET l'install self-host dès
+          // le hero (le dépôt public = page d'installation pour un technicien).
           ctaSecondary={{
             text: copy.hero.secondaryCta,
-            href: '/demo',
+            href: GITHUB_REPO_URL,
             icon: (
-              <Play className="w-4 h-4 text-emerald-600 dark:text-emerald-400 ml-0.5" />
+              <Server className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             ),
           }}
+          ctaReassurance={copy.hero.ctaReassurance}
           stats={copy.hero.stats.map((s, i) => {
             const Icon = STAT_ICONS[i % STAT_ICONS.length];
             return {
@@ -177,7 +180,7 @@ export default function LandingPage() {
           headline={copy.cta.title}
           subheadline={copy.cta.subtitle}
           ctaPrimary={{ text: copy.cta.primary, href: '/signup' }}
-          ctaSecondary={{ text: copy.cta.secondary, href: '/demo' }}
+          ctaSecondary={{ text: copy.cta.secondary, href: GITHUB_REPO_URL }}
           background="gradient"
         />
       </main>

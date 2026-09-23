@@ -1233,6 +1233,17 @@
         "freePrice": "Gratuit",
         "freeNote": "Sans carte bancaire · Pour toujours",
         "freeTag": "gratuit"
+      },
+      "selfhost": {
+        "title": "Gratuit pour toujours, sur votre serveur",
+        "subtitle": "Le code est ouvert (licence MIT) : déployez Leopardo avec Docker, sans prix par utilisateur.",
+        "bullets": {
+          "0": "Code source ouvert (licence MIT)",
+          "1": "Docker Compose — en ligne en quelques minutes",
+          "2": "Vos données restent chez vous"
+        },
+        "ctaGithub": "Voir le dépôt GitHub",
+        "ctaDocs": "Guide de déploiement"
       }
     },
     "plans": {
@@ -6328,7 +6339,8 @@
       "faq": "FAQ",
       "faqDesc": "Questions fréquentes",
       "support": "Support",
-      "supportDesc": "Contactez notre équipe"
+      "supportDesc": "Contactez notre équipe",
+      "selfhostDesc": "Docker + code source sur GitHub, vos données chez vous"
     }
   },
   "commerce": {
