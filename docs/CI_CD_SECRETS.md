@@ -180,6 +180,8 @@ le retard de déploiement doit être visible. Runbook : `docs/ops/travel-web-ver
 | `MERGE_DAILY_QUOTA` | `merge-quota-guard.yml` | Nombre maximal de merges sur `main` par 24 h | `25` |
 | `FIX_FEAT_RATIO_DAYS` / `FIX_FEAT_RATIO_WARN` / `FIX_FEAT_RATIO_MAX` / `FIX_FEAT_RATIO_ENFORCE` | `fix-feat-ratio-guard.yml`, `fix-feat-ratio-report.yml` | Fenêtre d'observation, seuils d'alerte, seuil max et activation du blocage du ratio fix/feat | `30` / `2.5` / `3.5` / `false` |
 | `QUEUE_MAX_PENDING` / `QUEUE_MAX_FAILED` / `QUEUE_MAX_STALE_MINUTES` | `queue-supervision.yml` | Seuils d'alerte de la queue (jobs en attente, jobs échoués, ancienneté) | `50` / `10` / `10` |
+| `PROD_CATCHUP_MAX_AGE_HOURS` | `deploy-main-catchup.yml` (job `prod-catch-up`, #8092) | Âge (heures) au-delà duquel un deploy prod live SANS commit lisible (`commit: null`, héritage pré-#8092) est considéré en retard et rattrapé | `6` |
+| `PROD_DRIFT_MAX_AGE_HOURS` | `deploy-drift-guard.yml` (rapport prod↔main, #8092) | Âge (heures) du premier commit non déployé au-delà duquel le rapport prod↔main passe de `::warning` à échec rouge | `24` |
 
 ### Propriété et rotation
 

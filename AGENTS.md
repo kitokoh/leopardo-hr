@@ -1,5 +1,20 @@
 # AGENTS.md - Guide de travail Leopardo
 
+Derniere mise a jour : 2026-09-23 (#8092 — rattrapage prod Render + alerte de retard)
+
+> Leçon 2026-09-23 (#8092) : **(1) un workflow de rattrapage se juge à sa COUVERTURE réelle,
+> pas à son nom** — « Deploy Main Catch-up » concluait 4×/h « dev à jour — aucun rattrapage
+> nécessaire » pendant que la PROD Render tournait 2 jours derrière `main` : le job ne
+> comparait que le tier dev. Quand un mécanisme renvoie vers un filet de sécurité (« le
+> catch-up rattrapera »), vérifier que le filet couvre BIEN l'environnement concerné.
+> **(2) Un `::warning` dans un run planifié vert n'alerte personne** : le rapport prod↔main
+> (#7648) existait et mesurait l'écart — il n'a rien empêché. Au-delà d'un seuil d'âge, la
+> garde doit ÉCHOUER (rouge visible) ; et mesurer l'âge du RETARD sur le premier commit non
+> déployé, pas sur le commit déployé (un merge d'il y a 1 h sur une prod posée il y a 5 jours
+> n'a qu'1 h de retard). **(3) `POST /deploys` Render sans corps laisse `commit: null`** sur
+> le deploy — tout déclenchement API doit porter un `commitId` explicite, sinon la
+> comparaison « SHA déployé ↔ main » devient impossible et aveugle les gardes suivantes.
+
 Derniere mise a jour : 2026-09-21 (tranche 3 du deblocage CI #8004 — role Postgres du service container)
 
 > Lecon 2026-09-21 (#8004, tranche 3) : **(1) dans un service container PostgreSQL de GitHub
