@@ -9,6 +9,7 @@
     "lint": "eslint src --max-warnings 0",
     "lint:e2e": "eslint e2e --max-warnings 0",
     "check:mojibake": "node scripts/check-mojibake.mjs",
+    "check:brand-assets": "node scripts/check-baked-checkerboard.mjs",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

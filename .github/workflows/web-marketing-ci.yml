@@ -60,6 +60,10 @@ jobs:
         working-directory: front/web
         run: npm run check:mojibake
 
+      - name: Check brand assets for baked-in transparency checkerboard (#8064)
+        working-directory: front/web
+        run: npm run check:brand-assets
+
   web-marketing-build:
     timeout-minutes: 30
     name: Web Marketing Build
