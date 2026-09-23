@@ -1,17 +1,4 @@
-import 'dart:async';
+export 'package:leopardo_core/features/notifications/providers/notification_provider.dart'
+    show notificationsProvider;
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:leopardo_employee/core/providers/core_providers.dart';
-import 'package:leopardo_core/models/notification.dart';
-
-final notificationsProvider = FutureProvider<List<AppNotification>>((
-  ref,
-) async {
-  final timer = Timer.periodic(const Duration(seconds: 30), (_) {
-    ref.invalidateSelf();
-  });
-  ref.onDispose(timer.cancel);
-
-  final repo = ref.watch(notificationRepositoryProvider);
-  return await repo.getMyNotifications();
-});
+/// Leopardo employee — provider notifications partagé (leopardo_core, #7652).
