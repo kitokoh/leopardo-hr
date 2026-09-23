@@ -14,7 +14,7 @@ use App\Core\Tenant\Interfaces\Api\V1\Controllers\ResourceCatalogController;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\AttendanceController;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\BiometricEnrollmentController;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\KioskController;
-use App\Modules\Attendance\Interfaces\Api\V1\KioskEnrollmentController;
+use App\Modules\Attendance\Interfaces\Api\V1\Controllers\KioskEnrollmentController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CareerEventController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartmentController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartureController;
