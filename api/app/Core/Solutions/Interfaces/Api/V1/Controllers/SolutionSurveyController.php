@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Solutions\Interfaces\Api\V1;
+namespace App\Core\Solutions\Interfaces\Api\V1\Controllers;
 
 use App\Core\Solutions\Infrastructure\Services\SolutionPackPdfGenerator;
 use App\Core\Solutions\SolutionCatalogue;

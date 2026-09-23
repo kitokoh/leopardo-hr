@@ -19,7 +19,7 @@ sous-système applicatif hors `Modules/` (verrou : ne pas en créer d'autre sans
 | `ToolRegistry.php` | registre déclaratif des outils IA ; couverture verrouillée par `ToolRegistryCoverageTest` (tout outil actif a un handler) |
 | `WriteActionRunner.php` / `WriteToolPolicy.php` | exécution des outils **write** avec politique d'autorisation |
 | `ToolPermissionPolicy.php` | permissions outil × rôle |
-| `LLMClient.php` | client fournisseur LLM (timeouts, budget) |
+| `LLMClient.php` | contrat (interface) des clients fournisseurs LLM — `chat()`, `provider()` |
 | `TokenBudgetGuard.php` | garde de budget tokens par contexte |
 | `Orchestrator.php` / `AgentRunner.php` | orchestration multi-étapes et exécution d'agent |
 | `MemoryManager.php` | mémoire conversationnelle bornée |
@@ -35,8 +35,7 @@ sous-système applicatif hors `Modules/` (verrou : ne pas en créer d'autre sans
 1. Tout nouvel outil IA = entrée registre **+** handler (`IntentEngine` ou `WriteActionRunner`)
    dans le même commit — le test de couverture échoue sinon (cf. #8004 pour le cas
    `email_classify` enregistré sans handler).
-2. Aucun appel LLM sans passer par `LLMClient` + `TokenBudgetGuard` (budget et timeouts
-   centralisés).
+2. Aucun appel LLM sans passer par le contrat `LLMClient` (budget via `TokenBudgetGuard`).
 3. Toute donnée utilisateur vers un fournisseur externe transite par `Privacy/`.
 4. Exception unique : ne pas créer d'autre sous-système racine (`app/<Foo>`) sans documenter
    ici l'exception et sa justification.
