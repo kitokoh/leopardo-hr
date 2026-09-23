@@ -82,8 +82,8 @@ export function PricingSection() {
           </span>
           {isAnnual && (
             <motion.span
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
               className="ml-1 px-2.5 py-0.5 text-xs font-bold text-emerald-700 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-full"
             >
               {copy.pricing.annualSavings}
@@ -100,8 +100,8 @@ export function PricingSection() {
             return (
               <motion.div
                 key={`${plan.name}-${index}`}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ y: 40 }}
+                whileInView={{ y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.12 }}
                 whileHover={{ y: -8, transition: { duration: 0.25 } }}

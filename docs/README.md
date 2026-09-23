@@ -27,10 +27,10 @@ Renommages **différés** (phases 2-3, voir §4 — beaucoup sont surveillés pa
 |---|---|---|---|
 | `CONTEXT/` | `context/` | `GESTION_PROJET/` | `gestion-projet/` ⚠️ garde |
 | `GOTO_MARKET/` | `business/go-to-market/` | `GOUVERNANCE/` | `governance/` |
-| `GTM/` | `business/go-to-market/` | `GUIDES/` | `guides/` |
+| `GTM/` | ✅ fusionné dans `GOTO_MARKET/` (#7844 ph.1) | `GUIDES/` | `guides/` |
 | `HR/` | `domains/hr/` | `PROMPTS_EXECUTION/` | `archive/prompts-execution/` (ou dépôt privé) |
 | `PROTOCOLES/` | `governance/protocoles/` | `REFERENTIEL_PRODUIT/` | `product/referentiel/` ⚠️ garde |
-| `STRATEGIE_COMMERCIALE/` | `business/` (ou dépôt privé) | `commercial/` | `business/avant-vente/` |
+| `STRATEGIE_COMMERCIALE/` | ✅ → `business/vente/` (#7844 ph.1 ; dépôt privé : décision #7982) | `commercial/` | ✅ → `business/vente/` (#7844 ph.1) |
 | `dossierdeConception/` | `architecture/conception/` ⚠️ garde | | |
 
 ---
@@ -53,7 +53,7 @@ docs/
 ├── quality/         # qa, testing, validation, audits, external-audits
 ├── governance/      # GOUVERNANCE, GESTION_PROJET, PROTOCOLES, plan, pilotes
 ├── contributing/    # contributing, GUIDES, CONTEXT, user-guide, ai
-├── business/        # GOTO_MARKET, GTM, STRATEGIE_COMMERCIALE, commercial (→ §3 : publication ?)
+├── business/        # vente/ ✅ créé (#7844 ph.1) ; GOTO_MARKET → go-to-market/ à terme (→ §3 : publication ?)
 ├── archive/         # archive, notes, PROMPTS_EXECUTION (historique gelé)
 └── assets/          # assets partagés
 ```
@@ -62,10 +62,10 @@ docs/
 
 | Actuel | Contenu | Cible |
 |---|---|---|
-| `GOTO_MARKET/` | Stratégie GTM, canaux, rapports mensuels (référencé par workflows — `rapports-mensuels/YYYY-MM.md`) | `business/go-to-market/` (**stratégie**) |
-| `GTM/` | Templates prospection, cas clients | fusion dans `business/go-to-market/` |
-| `STRATEGIE_COMMERCIALE/` | Scripts de vente, modèles + CSV CRM, PDF | `business/vente/` (**opérationnel**) — candidat n°1 au dépôt privé |
-| `commercial/` | Benchmarks concurrents, dossiers appels d'offres | fusion dans `business/vente/` |
+| `GOTO_MARKET/` | Stratégie GTM, canaux, rapports mensuels (référencé par workflows — `rapports-mensuels/YYYY-MM.md`) + prospection (ex-`GTM/`) | `business/go-to-market/` (**stratégie**, renommage différé) |
+| ~~`GTM/`~~ | ✅ fusionné dans `GOTO_MARKET/` (#7844 ph.1, 2026-09-23) | — |
+| ~~`STRATEGIE_COMMERCIALE/`~~ | ✅ déplacé vers `business/vente/` (#7844 ph.1) | candidat n°1 au dépôt privé (décision #7982) |
+| ~~`commercial/`~~ | ✅ fusionné dans `business/vente/` (#7844 ph.1) | — |
 
 ---
 
@@ -74,12 +74,12 @@ docs/
 Ce dépôt est **public (MIT)**. Ne DOIVENT PAS être publiés dans `docs/` :
 
 - **Secrets & accès** : credentials, tokens, URLs internes authentifiées (les docs comme `CI_CD_SECRETS.md` décrivent les *noms* de secrets, jamais les valeurs — à vérifier à chaque PR).
-- **Données clients/CRM** : CSV de prospects, coordonnées, pipelines nominatifs (⚠️ `STRATEGIE_COMMERCIALE/LEOPARDO_RH_CRM_*.csv` — voir décision ci-dessous).
-- **Scripts de vente & tactiques commerciales** (`STRATEGIE_COMMERCIALE/LEOPARDO_RH_SCRIPTS_COMMERCIAUX.md`) : avantage concurrentiel.
+- **Données clients/CRM** : CSV de prospects, coordonnées, pipelines nominatifs (⚠️ `business/vente/LEOPARDO_RH_CRM_*.csv` — anonymisés #7982, voir décision ci-dessous).
+- **Scripts de vente & tactiques commerciales** (`business/vente/LEOPARDO_RH_SCRIPTS_COMMERCIAUX.md`) : avantage concurrentiel.
 - **Prompts d'orchestration IA internes** (`PROMPTS_EXECUTION/`) : mode opératoire interne.
 - **Données personnelles** de pilotes/employés (carnets `pilotes/`, sessions QA nominatives).
 
-**Décision propriétaire requise (hors périmètre de cette PR)** : déplacer `STRATEGIE_COMMERCIALE/` (au minimum les CSV CRM et scripts), `PROMPTS_EXECUTION/` et les carnets nominatifs de `pilotes/` vers un **dépôt privé** (`leopardo-hr-internal`), ou assumer explicitement leur publication. Tracer la décision dans une issue dédiée.
+**Décision propriétaire requise (tracée dans #7982)** : déplacer `business/vente/` (au minimum les CSV CRM et scripts), `PROMPTS_EXECUTION/` et les carnets nominatifs de `pilotes/` vers un **dépôt privé** (`leopardo-internal`), ou assumer explicitement leur publication. En attendant : CSV anonymisés + bandeaux « contenu interne » posés (2026-09-23).
 
 ---
 
@@ -91,9 +91,9 @@ Ce dépôt est **public (MIT)**. Ne DOIVENT PAS être publiés dans `docs/` :
 
 Convention écrite + rangement des fichiers en vrac **non référencés par gardes/workflows/code** (détail en §4.1).
 
-### Phase 1 — consolidation commerciale + décision public/privé
+### Phase 1 — consolidation commerciale + décision public/privé — ✅ partie consolidation FAITE (2026-09-23, #7844/#7982)
 
-`GTM/` → `GOTO_MARKET/`, `commercial/` + `STRATEGIE_COMMERCIALE/` → dossier vente unique ; extraction du contenu interne vers dépôt privé. Gardes : workflow rapport mensuel GTM (`docs/GOTO_MARKET/rapports-mensuels/`). Risque : moyen.
+✅ Fait : `GTM/` → `GOTO_MARKET/` (fusion), `commercial/` + `STRATEGIE_COMMERCIALE/` → `business/vente/` (dossier vente unique) ; CSV CRM anonymisé (données explicitement fictives) et bandeaux « contenu interne » posés (#7982). Gardes vérifiées : aucun workflow/script ne référençait `docs/GTM/`, `docs/commercial/` ou `docs/STRATEGIE_COMMERCIALE/` ; le workflow rapport mensuel GTM (`docs/GOTO_MARKET/rapports-mensuels/`) est intact. ⏳ Reste : décision propriétaire dépôt privé vs publication assumée (#7982) + éventuelle réécriture d'historique (BFG).
 
 ### Phase 2 — renommages kebab-case non gardés
 
@@ -216,13 +216,11 @@ Création de `domains/`, `platforms/`, `quality/`… et déplacement des dossier
 | [`GOUVERNANCE/`](GOUVERNANCE/) · [`PROTOCOLES/`](PROTOCOLES/) | Gouvernance · protocoles P01-P07 |
 | [`pilotes/`](pilotes/) · [`plan/`](plan/) · [`focus/`](focus/) | Carnets pilotes · plans d'exécution · programme FOCUS 2026 |
 
-### 📈 Commercial & go-to-market (→ consolidation phase 1, §2)
+### 📈 Commercial & go-to-market (consolidation phase 1 : ✅ faite, #7844/#7982)
 | Doc | Contenu |
 |---|---|
-| [`GOTO_MARKET/`](GOTO_MARKET/) | Stratégie go-to-market (source de vérité business) |
-| [`GTM/`](GTM/) | Outils de prospection (templates, cas clients) |
-| [`STRATEGIE_COMMERCIALE/`](STRATEGIE_COMMERCIALE/) | Plans d'action commerciaux, modèles CRM — ⚠️ candidat dépôt privé (§3) |
-| [`commercial/`](commercial/) | Benchmarks concurrents, appels d'offres |
+| [`GOTO_MARKET/`](GOTO_MARKET/) | Stratégie go-to-market (source de vérité business) + outils de prospection (ex-`GTM/` : templates, cas clients) |
+| [`business/vente/`](business/vente/) | Exécution vente (ex-`STRATEGIE_COMMERCIALE/` + ex-`commercial/`) : scripts, modèles CRM fictifs, benchmarks, appels d'offres — ⚠️ candidat dépôt privé (§3, décision #7982 en attente) |
 | [`archive/LEOPARDO_STRATEGIC_ANALYSIS.md`](archive/LEOPARDO_STRATEGIC_ANALYSIS.md) | Analyse stratégique (archivée) |
 
 ### 🧩 Domaines métier & guides

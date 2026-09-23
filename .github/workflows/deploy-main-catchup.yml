@@ -8,6 +8,21 @@ name: Deploy Main Catch-up
 # au HEAD de main et redéclenche deploy-main si nécessaire — mais uniquement
 # si les tests du HEAD sont verts (deploy-main en mode workflow_dispatch
 # contourne son gate interne, on se gate soi-même).
+#
+# #8092 (constat 2026-09-23) : le job ci-dessus ne couvrait QUE le tier dev —
+# quand deploy-main différait un déploiement, la PROD Render (service
+# leopardo-prod, qui construit le HEAD de main) restait des jours en retard
+# sans aucun rattrapage ni alerte (« dev à jour — aucun rattrapage nécessaire »
+# 4×/h pendant que la prod servait un code vieux de 2 jours). Le job
+# `prod-catch-up` compare le commit du dernier deploy LIVE côté Render
+# (API Render, secrets RENDER_PROD_*) au dernier commit `api/**` de main et
+# redéclenche un deploy si la prod est en retard — gaté par les tests verts du
+# HEAD, comme le tier dev. Les deploys sont déclenchés avec un `commitId`
+# EXPLICITE (POST /deploys) : les deploys API sans commitId ont `commit: null`
+# côté Render, ce qui aveuglait toute comparaison ultérieure (#8092 §3) ; et
+# chaque deploy réussi est enregistré comme GitHub Deployment
+# (« Production – leopardo-prod ») pour rendre le SHA servi visible sans
+# secret (même mécanique que #7994 §5 pour les fronts Vercel).
 
 on:
   schedule:
@@ -15,6 +30,8 @@ on:
     - cron: "23 * * * *"
   workflow_dispatch:
 
+# NB #8092 : la permission `deployments: write` est accordée au seul job
+# prod-catch-up (job-level), pas au workflow entier.
 permissions:
   contents: read
   actions: write
@@ -142,4 +159,226 @@ jobs:
             echo "## Rattrapage deploy-main déclenché"
             echo "- Dev en retard : SHA live ≠ HEAD de main."
             echo "- deploy-main redéclenché sur \`main\` (tests HEAD verts) avec \`force_deploy: true\` (bypass api_changed — #6973)."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ──────────────────────────────────────────────────────────────────────
+  # #8092 — Rattrapage PROD : la prod Render construit le HEAD de main mais
+  # n'était couverte par AUCUN rattrapage (le job ci-dessus ne regarde que le
+  # tier dev). Ce job compare le commit du dernier deploy live du service
+  # prod au dernier commit `api/**` de main et redéclenche si nécessaire.
+  prod-catch-up:
+    timeout-minutes: 35
+    name: Rattraper la prod Render si en retard sur main (#8092)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Checkout (outils de déploiement)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Comparer le deploy live Render (prod) vs main
+        id: compare
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
+          RENDER_PROD_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
+          # Deploy sans commit lisible (commit: null, héritage pré-#8092) :
+          # au-delà de cet âge on considère la prod en retard et on rattrape.
+          MAX_AGE_HOURS: ${{ vars.PROD_CATCHUP_MAX_AGE_HOURS || 6 }}
+        run: |
+          set -euo pipefail
+          missing=()
+          [[ -z "${RENDER_PROD_API_KEY}" ]] && missing+=("secrets.RENDER_PROD_API_KEY")
+          [[ -z "${RENDER_PROD_SERVICE_ID}" ]] && missing+=("secrets.RENDER_PROD_SERVICE_ID")
+          if (( ${#missing[@]} > 0 )); then
+            echo "::error::Rattrapage prod impossible — ${missing[*]} manquant(s) (#8092, voir docs/ops/RENDER_DEV_PROD_TOPOLOGY.md)."
+            exit 1
+          fi
+
+          head_sha="$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}.git" refs/heads/main | awk '{print $1}')"
+          if [[ -z "${head_sha}" || ! "${head_sha}" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::HEAD de main illisible — rattrapage prod impossible."
+            exit 1
+          fi
+          # Référentiel : dernier commit touchant api/** (le service prod ne
+          # sert que l'API Laravel — même sémantique que le drift guard dev).
+          api_sha="$(curl -fsS -H "Authorization: Bearer ${GH_TOKEN}" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits?path=api&per_page=1&sha=main" \
+            | jq -r '.[0].sha // empty')"
+          if [[ -z "${api_sha}" ]]; then
+            echo "::warning::dernier commit api/ introuvable — repli sur le HEAD de main."
+            api_sha="${head_sha}"
+          fi
+          echo "head_sha=${head_sha}" >> "$GITHUB_OUTPUT"
+          echo "HEAD main : ${head_sha:0:7} — dernier commit api/ : ${api_sha:0:7}"
+
+          live="$(curl -fsS -H "Authorization: Bearer ${RENDER_PROD_API_KEY}" \
+            "https://api.render.com/v1/services/${RENDER_PROD_SERVICE_ID}/deploys?status=live&limit=1")"
+          live_commit="$(jq -r '.[0].deploy.commit.id // empty' <<<"${live}")"
+          live_finished="$(jq -r '.[0].deploy.finishedAt // .[0].deploy.createdAt // empty' <<<"${live}")"
+          echo "Deploy live prod : commit=${live_commit:-null} finishedAt=${live_finished:-inconnu}"
+
+          stale=false
+          if [[ -n "${live_commit}" ]]; then
+            if [[ "${live_commit}" == "${api_sha}" ]]; then
+              echo "prod à jour (commit live = dernier commit api/)."
+            else
+              # Un commit live POSTÉRIEUR au dernier commit api/ contient ce
+              # dernier : à jour. `behind`/`diverged` = prod en retard.
+              status="$(curl -fsS -H "Authorization: Bearer ${GH_TOKEN}" \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/compare/${api_sha}...${live_commit}" \
+                | jq -r '.status // empty' || true)"
+              echo "compare ${api_sha:0:7}...${live_commit:0:7} → ${status:-illisible}"
+              if [[ "${status}" == "ahead" || "${status}" == "identical" ]]; then
+                echo "prod à jour (commit live postérieur au dernier commit api/)."
+              else
+                stale=true
+              fi
+            fi
+          else
+            # commit: null (deploy déclenché par API sans commitId — c'est le
+            # trou de visibilité de #8092 §3). Repli sur l'âge du deploy.
+            if [[ -z "${live_finished}" ]]; then
+              echo "::warning::deploy live sans commit NI date — rattrapage déclenché par prudence (#8092)."
+              stale=true
+            else
+              age_h=$(( ( $(date -u +%s) - $(date -u -d "${live_finished}" +%s) ) / 3600 ))
+              echo "deploy live sans commit lisible — âge ${age_h} h (seuil ${MAX_AGE_HOURS} h)."
+              if (( age_h >= MAX_AGE_HOURS )); then
+                stale=true
+              else
+                echo "::notice::deploy récent (< ${MAX_AGE_HOURS} h) mais commit illisible — comparaison impossible ce run ; les deploys posés par ce job portent un commitId explicite (#8092 §3)."
+              fi
+            fi
+          fi
+          echo "dispatch_needed=${stale}" >> "$GITHUB_OUTPUT"
+
+      - name: Gate interne — Tests verts sur le HEAD de main
+        id: testsgate
+        if: steps.compare.outputs.dispatch_needed == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ steps.compare.outputs.head_sha }}
+        run: |
+          set -euo pipefail
+          ok=""
+          conclusion=""
+          for attempt in {1..12}; do
+            runs="$(curl -sS -H "Authorization: Bearer ${GH_TOKEN}" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?branch=main&event=push&per_page=50")"
+            conclusion="$(echo "${runs}" | jq -r --arg sha "${HEAD_SHA}" '
+              .workflow_runs[]
+              | select(.head_sha == $sha and .name == "Tests - Leopardo")
+              | (.conclusion // .status)' 2>/dev/null | head -n 1)"
+            echo "  [${attempt}/12] Tests sur ${HEAD_SHA:0:7} : ${conclusion:-introuvable}"
+            if [[ "${conclusion}" == "success" || "${conclusion}" == "skipped" ]]; then
+              ok=true
+              break
+            fi
+            if [[ "${conclusion}" == "failure" || "${conclusion}" == "cancelled" || "${conclusion}" == "timed_out" ]]; then
+              break
+            fi
+            sleep 30
+          done
+          if [[ "${ok}" != "true" ]]; then
+            echo "::warning::Rattrapage prod annulé — Tests non verts sur le HEAD ${HEAD_SHA:0:7} (${conclusion:-aucun run})."
+            echo "dispatch=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "dispatch=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Déclencher le deploy prod Render (commitId explicite)
+        id: trigger
+        if: steps.testsgate.outputs.dispatch == 'true'
+        shell: bash
+        env:
+          RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
+          RENDER_PROD_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
+          HEAD_SHA: ${{ steps.compare.outputs.head_sha }}
+        run: |
+          set -euo pipefail
+          # commitId EXPLICITE : sans lui les deploys API ont `commit: null`
+          # côté Render, ce qui aveugle toute comparaison future (#8092 §3).
+          code="$(curl --silent --show-error -o /tmp/deploy.json -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer ${RENDER_PROD_API_KEY}" \
+            -H "Content-Type: application/json" \
+            "https://api.render.com/v1/services/${RENDER_PROD_SERVICE_ID}/deploys" \
+            -d "{\"commitId\":\"${HEAD_SHA}\"}")"
+          if [[ "${code}" != "201" && "${code}" != "202" ]]; then
+            echo "::warning::deploy avec commitId refusé (HTTP ${code}: $(cat /tmp/deploy.json)) — repli sans commitId."
+            code="$(curl --silent --show-error -o /tmp/deploy.json -w '%{http_code}' -X POST \
+              -H "Authorization: Bearer ${RENDER_PROD_API_KEY}" \
+              -H "Content-Type: application/json" \
+              "https://api.render.com/v1/services/${RENDER_PROD_SERVICE_ID}/deploys" \
+              -d '{}')"
+          fi
+          if [[ "${code}" != "201" && "${code}" != "202" ]]; then
+            echo "::error::déclenchement du deploy prod échoué (HTTP ${code}) : $(cat /tmp/deploy.json)"
+            exit 1
+          fi
+          echo "deploy prod déclenché (HTTP ${code}) pour ${HEAD_SHA:0:7}."
+
+      - name: Attendre le deploy live + healthcheck
+        id: wait
+        if: steps.testsgate.outputs.dispatch == 'true'
+        shell: bash
+        env:
+          RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
+          RENDER_PROD_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
+          PROD_URL: ${{ vars.PROD_RENDER_SERVICE_URL }}
+        run: |
+          set -euo pipefail
+          status=""
+          for attempt in {1..40}; do
+            status="$(curl -fsS -H "Authorization: Bearer ${RENDER_PROD_API_KEY}" \
+              "https://api.render.com/v1/services/${RENDER_PROD_SERVICE_ID}/deploys?limit=1" \
+              | jq -r '.[0].deploy.status // empty')"
+            echo "  [${attempt}/40] statut deploy : ${status:-inconnu}"
+            [[ "${status}" == "live" ]] && break
+            if [[ "${status}" == "build_failed" || "${status}" == "update_failed" || "${status}" == "canceled" || "${status}" == "deactivated" ]]; then
+              echo "::error::deploy prod terminé en « ${status} » — rattrapage échoué (#8092)."
+              exit 1
+            fi
+            sleep 30
+          done
+          if [[ "${status}" != "live" ]]; then
+            echo "::warning::deploy prod toujours pas live après ~20 min — le drift guard revérifiera (#8092)."
+            echo "live=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [[ -n "${PROD_URL}" ]]; then
+            health="$(curl -fsS --max-time 30 "${PROD_URL%/}/api/v1/health" || true)"
+            echo "health : ${health:0:200}"
+            if [[ "${health}" != *'"ok":true'* && "${health}" != *'"status":"ok"'* && "${health}" != *'"database"'* ]]; then
+              echo "::error::healthcheck prod illisible après deploy — vérifier ${PROD_URL%/}/api/v1/health (#8092)."
+              exit 1
+            fi
+          fi
+          echo "live=true" >> "$GITHUB_OUTPUT"
+
+      - name: Enregistrer le GitHub Deployment (visibilité du SHA servi)
+        if: steps.wait.outputs.live == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ steps.compare.outputs.head_sha }}
+          PROD_URL: ${{ vars.PROD_RENDER_SERVICE_URL }}
+        run: |
+          set -euo pipefail
+          bash dev-hub/tools/register-github-deployment.sh \
+            --environment "Production – leopardo-prod" \
+            --sha "${HEAD_SHA}" \
+            ${PROD_URL:+--url "${PROD_URL}"} \
+            --description "Rattrapage prod #8092 (deploy-main-catchup, commitId explicite)"
+          {
+            echo "## Rattrapage prod Render déclenché (#8092)"
+            echo "- Prod en retard sur le dernier commit \`api/**\` de main."
+            echo "- Deploy Render posé avec \`commitId=${HEAD_SHA:0:7}\` (SHA visible côté Render)."
+            echo "- GitHub Deployment « Production – leopardo-prod » enregistré après healthcheck."
           } >> "$GITHUB_STEP_SUMMARY"

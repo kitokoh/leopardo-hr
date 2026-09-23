@@ -8,7 +8,7 @@
 > la communication interne (issues, rapports techniques).
 > **Ancrage existant :** `README.md`, `docs/REFERENTIEL_PRODUIT/APV.md` (pitch 1 phrase, 4 piliers,
 > 12 Lois), `docs/REFERENTIEL_PRODUIT/STATUTS.md` (statuts fonctionnels opposables),
-> `docs/specifications/SOLUTION_SITE_VITRINE.md` (BC-27), `docs/GTM/`, `docs/STRATEGIE_COMMERCIALE/`,
+> `docs/specifications/SOLUTION_SITE_VITRINE.md` (BC-27), `docs/GOTO_MARKET/`, `docs/business/vente/`,
 > `docs/GOTO_MARKET/` (SOCIAL_MEDIA_PITCHES), `docs/ops/DOMAINS.md`.
 
 ## 1. Objet
@@ -30,7 +30,7 @@ Le coût d'une vitrine inexacte est la confiance — ce protocole la protège.
 | Vitrines tenants | BC-27 SHOWCASE (`api/app/Modules/Showcase`, `/vitrine/{slug}`) | Sections/thèmes du tenant — ne contient **aucune** donnée interne |
 | Dépôt GitHub | `README.md`, description repo, topics | `README.md` (badges, product map, « One platform. Several business domains ») |
 | Stores mobiles + Firebase App Distribution | fiches stores, notes de version | `docs/validation/MOBILE_STORE_READINESS.md`, CHANGELOG |
-| Pitchs commerciaux / sociaux / AO | `docs/GTM/`, `docs/STRATEGIE_COMMERCIALE/`, `docs/commercial/` | APV (pitch 1 phrase) + `docs/REFERENTIEL_PRODUIT/STATUTS.md` |
+| Pitchs commerciaux / sociaux / AO | `docs/GOTO_MARKET/` (templates), `docs/business/vente/` | APV (pitch 1 phrase) + `docs/REFERENTIEL_PRODUIT/STATUTS.md` |
 | Démos (compte démo, parcours guidé) | `dev-hub/demo/`, `/signup` vitrine | Honnêteté : démo ≠ inscription (quick card) |
 
 ## 3. Règles

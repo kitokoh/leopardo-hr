@@ -84,7 +84,7 @@ const copy: Record<AppLocale, {
       steps: [
         { step: '01', title: 'Installez', description: 'Telechargez et lancez l\'installateur. Configuration automatique en 2 minutes.' },
         { step: '02', title: 'Connectez', description: 'Entrez l\'adresse IP de vos bornes ZKTeco. Détection automatique sur le réseau local.' },
-        { step: '03', title: 'Synchronisez', description: 'Les pointages remontent automatiquement vers Leopardo RH dans le cloud. Temps reel ou par batch.' },
+        { step: '03', title: 'Synchronisez', description: 'Les pointages remontent automatiquement vers Leopardo dans le cloud. Temps reel ou par batch.' },
       ],
     },
     faq: [
@@ -119,7 +119,7 @@ const copy: Record<AppLocale, {
       steps: [
         { step: '01', title: 'Install', description: 'Download and run the installer. Auto-configuration in 2 minutes.' },
         { step: '02', title: 'Connect', description: 'Enter your ZKTeco terminal IP addresses. Auto-detection on local network.' },
-        { step: '03', title: 'Sync', description: 'Attendance data flows automatically to Leopardo RH in the cloud. Real-time or batch mode.' },
+        { step: '03', title: 'Sync', description: 'Attendance data flows automatically to Leopardo in the cloud. Real-time or batch mode.' },
       ],
     },
     faq: [
@@ -154,7 +154,7 @@ const copy: Record<AppLocale, {
       steps: [
         { step: '01', title: 'Kurun', description: 'Yukleyiciyi indirin ve calistirin. 2 dakikada otomatik yapilandirma.' },
         { step: '02', title: 'Baglanin', description: 'ZKTeco terminal IP adreslerini girin. Yerel agda otomatik algilama.' },
-        { step: '03', title: 'Senkronize edin', description: 'Yoklama verileri otomatik olarak buluttaki Leopardo RH\'ye akar.' },
+        { step: '03', title: 'Senkronize edin', description: 'Yoklama verileri otomatik olarak buluttaki Leopardo\'ye akar.' },
       ],
     },
     faq: [
@@ -189,7 +189,7 @@ const copy: Record<AppLocale, {
       steps: [
         { step: '01', title: 'ثبّت', description: 'حمّل وشغّل المثبت. إعداد تلقائي في دقيقتين.' },
         { step: '02', title: 'اتصل', description: 'أدخل عناوين IP لأجهزة ZKTeco. كشف تلقائي على الشبكة المحلية.' },
-        { step: '03', title: 'زامن', description: 'تتدفق بيانات الحضور تلقائياً إلى Leopardo RH في السحابة.' },
+        { step: '03', title: 'زامن', description: 'تتدفق بيانات الحضور تلقائياً إلى Leopardo في السحابة.' },
       ],
     },
     faq: [

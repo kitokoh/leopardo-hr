@@ -8,6 +8,7 @@ import "./globals.css";
 import { LocaleSync } from "@/components/locale-sync";
 import { PWAProvider } from "@/components/PWAProvider";
 import { DarkModeProvider } from "@/components/DarkModeProvider";
+import { MotionProvider } from "@/components/MotionProvider";
 import { ConsentProvider } from "@/modules/vitrine/components/ConsentProvider";
 import { ConsentBanner } from "@/modules/vitrine/components/ConsentBanner";
 import { ConsentScripts } from "@/modules/vitrine/components/ConsentScripts";
@@ -242,6 +243,7 @@ export default async function RootLayout({
             de réponse et l'ancrage des alias de marque). */}
         <WebSiteJsonLd locale={ssrLang} />
         <ConsentProvider>
+        <MotionProvider>
         <DarkModeProvider>
           <PWAProvider>
             <LocaleSync />
@@ -254,6 +256,7 @@ export default async function RootLayout({
             </main>
           </PWAProvider>
         </DarkModeProvider>
+        </MotionProvider>
         <ConsentBanner />
         </ConsentProvider>
       </body>

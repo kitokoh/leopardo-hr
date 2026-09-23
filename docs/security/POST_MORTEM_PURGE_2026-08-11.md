@@ -41,7 +41,7 @@ remplacées par des placeholders `REDACTED_*` via `git filter-repo --replace-tex
 | Commits `main` | 2619 | 2619 (SHAs réécrits) | ✅ aucune perte |
 | Tag `v1.0-staging` | 71 commits | 71 commits (réécrit) | ✅ aucune perte |
 | TruffleHog A-2 (prochain run hebdo) | secrets connus signalés | à confirmer au prochain run | ⏳ |
-| Alertes GitHub Secret Scanning (`google_api_key` ×2) | open | à résoudre après push | ⏳ |
+| Alertes GitHub Secret Scanning (`google_api_key` ×2) | open | **`resolved: revoked` le 2026-08-11T00:33Z** (vérifié par API le 2026-09-23, #7968 — 0 alerte ouverte) | ✅ |
 
 ## 4. Findings gitleaks résiduels (12) — faux positifs documentaires
 
@@ -74,3 +74,20 @@ Les 12 findings restants sont des **exemples de documentation, aucun secret rée
 - TruffleHog sur PR/push (secret-scan.yml) + scan hebdo A-2 (secret-history-scan.yml,
   informationnel) + gitleaks si ajouté à la CI.
 - Rotation planifiée ≥ 1×/an ; rotation immédiate en cas de suspicion.
+
+## 7. État au 2026-09-23 (audit #7968) — suivi de rotation des 11 valeurs
+
+Re-vérification par API GitHub (session agent, #7968). Les 11 valeurs purgées se répartissent
+en 3 familles + variantes d'encodage ; le suivi par famille vit dans
+`HISTORIQUE_SECRETS.md` § « Attestations de rotation » (source de vérité). État consolidé :
+
+| Famille | Rotation/révocation | Preuve |
+|---|---|---|
+| Redis Upstash (#1472) | ✅ faite 2026-08-10 | Attestée dans #1472 |
+| PostgreSQL Neon (#1601) | ⏳ **à attester par le propriétaire** (console Neon + MAJ `DATABASE_URL` Render) | Aucune attestation à ce jour — tant que non attestée, la valeur est à considérer compromise |
+| 2 clés Google/Firebase (#1467) | ✅ **révoquées** | 2 alertes Secret Scanning `resolved: revoked` le 2026-08-11T00:33Z (API `/secret-scanning/alerts`, 0 ouverte au 2026-09-23) — reste à confirmer la MAJ du secret Actions `GOOGLE_SERVICES_JSON` |
+| Forks (risque résiduel §5.1) | ⏳ **action propriétaire non engagée** | État API 2026-09-23 : `heartshare`, `emelaslan`, `Ahmedmaped/hr`, `dipit-s` toujours publics (aucun push depuis août 2026) ; `mirkosalvato1-ctrl/leopardo-hr` → 404 en direct (supprimé/privé — à confirmer). Procédure et messages types : `PLAN_PURGE_FORKS_2026-08-11.md` §3-4 (contact 7 j puis GitHub Support) |
+
+Décision attendue du propriétaire (issue #7968) : ① attester la rotation Neon ; ② confirmer
+la MAJ `GOOGLE_SERVICES_JSON` ; ③ engager le contact forks/GitHub Support — ou documenter
+ici la décision de ne pas le faire.

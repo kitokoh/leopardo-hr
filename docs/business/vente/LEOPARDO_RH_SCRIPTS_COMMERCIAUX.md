@@ -1,5 +1,12 @@
 # Leopardo - Scripts commerciaux
 
+> ⚠️ **Contenu interne publié — décision propriétaire en attente (#7982).** La convention
+> [`docs/README.md` §3](../../README.md) classe ce document « ne DOIT PAS être publié » (tactique
+> commerciale / mode opératoire interne) et le désigne candidat au dépôt privé. Il reste publié
+> en attendant la décision (transfert vers un dépôt privé vs transparence assumée). Aucune
+> donnée nominative (prospect, contact, pilote) ne doit y figurer.
+
+
 ## Objet
 
 Ces scripts servent a lancer des conversations, obtenir des retours utiles, convertir les beta testeurs et ouvrir des discussions avec de nouveaux prospects sans ton trop agressif.
