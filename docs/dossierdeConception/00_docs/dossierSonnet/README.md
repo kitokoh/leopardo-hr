@@ -26,4 +26,4 @@ Les 12 autres PDF (`Leopardo_RH_Admin_Dashboard_Marketing`, `Leopardo_RH_Archite
 - `Leopardo_RH_Architecture_Deploiement.pdf` -> reference d'architecture non canonique, voir aussi `docs/infra/03_archives_pdf/`
 - `Leopardo_RH_Pointage_Validation_Finale.pdf` -> referentiel QA du module pointage, voir aussi `docs/validation/01_pointage/`
 
-Pour les autres (marketing, IA, i18n, etc.), aucune source de verite courte n'existe encore ailleurs dans le depot : ces PDF restent donc la reference de fait sur leur sujet jusqu'a ce qu'un document court equivalent soit cree dans `docs/REFERENTIEL_PRODUIT/` ou `docs/GTM/`.
+Pour les autres (marketing, IA, i18n, etc.), aucune source de verite courte n'existe encore ailleurs dans le depot : ces PDF restent donc la reference de fait sur leur sujet jusqu'a ce qu'un document court equivalent soit cree dans `docs/REFERENTIEL_PRODUIT/` ou `docs/business/vente/`.

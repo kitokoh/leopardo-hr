@@ -34,7 +34,7 @@ export type Integration = {
 export const integrationsByLocale: Record<AppLocale, { title: string; subtitle: string; badge: string; docsNote: string; statusLabels: { available: string; coming_soon: string }; categories: string[]; integrations: Integration[] }> = {
   fr: {
     title: 'Intégrations',
-    subtitle: 'Connectez Leopardo RH à vos outils existants',
+    subtitle: 'Connectez Leopardo à vos outils existants',
     badge: 'Ecosysteme',
     docsNote: 'API publique documentee sur',
     statusLabels: { available: 'Disponible', coming_soon: 'Bientot' },
@@ -56,7 +56,7 @@ export const integrationsByLocale: Record<AppLocale, { title: string; subtitle: 
   },
   en: {
     title: 'Integrations',
-    subtitle: 'Connect Leopardo RH to your existing tools',
+    subtitle: 'Connect Leopardo to your existing tools',
     badge: 'Ecosystem',
     docsNote: 'Public API documented at',
     statusLabels: { available: 'Available', coming_soon: 'Coming soon' },
@@ -78,7 +78,7 @@ export const integrationsByLocale: Record<AppLocale, { title: string; subtitle: 
   },
   tr: {
     title: 'Entegrasyonlar',
-    subtitle: 'Leopardo RH yi kullandiginiz araclara baglayin',
+    subtitle: 'Leopardo yi kullandiginiz araclara baglayin',
     badge: 'Ekosistem',
     docsNote: 'Herkese acik API dokumani',
     statusLabels: { available: 'Hazir', coming_soon: 'Yakinda' },
@@ -100,7 +100,7 @@ export const integrationsByLocale: Record<AppLocale, { title: string; subtitle: 
   },
   ar: {
     title: 'التكاملات',
-    subtitle: 'اربط Leopardo RH بأدواتك الحالية',
+    subtitle: 'اربط Leopardo بأدواتك الحالية',
     badge: 'النظام البيئي',
     docsNote: 'توثيق API العام على',
     statusLabels: { available: 'متاح', coming_soon: 'قريبا' },

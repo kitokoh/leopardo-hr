@@ -72,7 +72,7 @@ type DemoCopy = {
 const demoCopy: Record<AppLocale, DemoCopy> = {
   fr: {
     hero: {
-      headline: 'Demandez une demo Leopardo RH',
+      headline: 'Demandez une demo Leopardo',
       subheadline: 'Voyez comment la plateforme connecte RH, paie, pointage, mobile et admin dans un seul socle.',
       cta: 'Remplir le formulaire',
       badge: 'Demo gratuite',
@@ -111,7 +111,7 @@ const demoCopy: Record<AppLocale, DemoCopy> = {
   },
   en: {
     hero: {
-      headline: 'Request a Leopardo RH demo',
+      headline: 'Request a Leopardo demo',
       subheadline: 'See how HR, payroll, attendance, mobile and platform admin work together in one foundation.',
       cta: 'Fill the form',
       badge: 'Free demo',
@@ -150,7 +150,7 @@ const demoCopy: Record<AppLocale, DemoCopy> = {
   },
   tr: {
     hero: {
-      headline: 'Leopardo RH demosu talep edin',
+      headline: 'Leopardo demosu talep edin',
       subheadline: 'IK, bordro, devam takibi, mobil ve platform admin alaninin tek bir zeminde nasil calistigini gorun.',
       cta: 'Formu doldur',
       badge: 'Ucretsiz demo',
@@ -189,7 +189,7 @@ const demoCopy: Record<AppLocale, DemoCopy> = {
   },
   ar: {
     hero: {
-      headline: 'اطلب عرضا توضيحيا لمنصة Leopardo RH',
+      headline: 'اطلب عرضا توضيحيا لمنصة Leopardo',
       subheadline: 'شاهد كيف تعمل الموارد البشرية والرواتب والحضور والتطبيق والإدارة في منصة واحدة.',
       cta: 'املأ النموذج',
       badge: 'عرض مجاني',

@@ -76,7 +76,7 @@ const careersByLocale: Record<AppLocale, CareersContent> = {
       items: [
         { title: 'Développeur Full-Stack Senior', department: 'Engineering', location: 'Paris / Remote', type: 'CDI', description: "Rejoignez notre équipe pour développer les nouvelles fonctionnalités de la suite métier." },
         { title: 'Designer UI/UX', department: 'Design', location: 'Paris / Remote', type: 'CDI', description: 'Concevez des interfaces intuitives pour notre application web et mobile.' },
-        { title: 'Customer Success Manager', department: 'Customer Success', location: 'Paris', type: 'CDI', description: "Accompagnez nos clients dans l'adoption de Leopardo RH." },
+        { title: 'Customer Success Manager', department: 'Customer Success', location: 'Paris', type: 'CDI', description: "Accompagnez nos clients dans l'adoption de Leopardo." },
         { title: 'Développeur Mobile Flutter', department: 'Engineering', location: 'Remote', type: 'CDI', description: 'Développez et améliorez notre application mobile multi-plateforme.' },
         { title: 'DevOps Engineer', department: 'Engineering', location: 'Paris / Remote', type: 'CDI', description: 'Optimisez notre infrastructure cloud et nos pipelines CI/CD.' },
       ],
@@ -123,7 +123,7 @@ const careersByLocale: Record<AppLocale, CareersContent> = {
       items: [
         { title: 'Senior Full-Stack Developer', department: 'Engineering', location: 'Paris / Remote', type: 'Full-time', description: 'Join our team to build the new features of the business suite.' },
         { title: 'UI/UX Designer', department: 'Design', location: 'Paris / Remote', type: 'Full-time', description: 'Design intuitive interfaces for our web and mobile application.' },
-        { title: 'Customer Success Manager', department: 'Customer Success', location: 'Paris', type: 'Full-time', description: 'Support our clients in adopting Leopardo RH.' },
+        { title: 'Customer Success Manager', department: 'Customer Success', location: 'Paris', type: 'Full-time', description: 'Support our clients in adopting Leopardo.' },
         { title: 'Flutter Mobile Developer', department: 'Engineering', location: 'Remote', type: 'Full-time', description: 'Build and improve our cross-platform mobile application.' },
         { title: 'DevOps Engineer', department: 'Engineering', location: 'Paris / Remote', type: 'Full-time', description: 'Optimize our cloud infrastructure and CI/CD pipelines.' },
       ],
@@ -170,7 +170,7 @@ const careersByLocale: Record<AppLocale, CareersContent> = {
       items: [
         { title: 'Kıdemli Full-Stack Geliştirici', department: 'Mühendislik', location: 'Paris / Remote', type: 'Tam zamanlı', description: 'İşletme paketinin yeni özelliklerini geliştirmek için ekibimize katılın.' },
         { title: 'UI/UX Tasarımcısı', department: 'Tasarım', location: 'Paris / Remote', type: 'Tam zamanlı', description: 'Web ve mobil uygulamamız için sezgisel arayüzler tasarlayın.' },
-        { title: 'Müşteri Başarı Yöneticisi', department: 'Müşteri Başarısı', location: 'Paris', type: 'Tam zamanlı', description: 'Müşterilerimize Leopardo RH benimsenmesinde eşlik edin.' },
+        { title: 'Müşteri Başarı Yöneticisi', department: 'Müşteri Başarısı', location: 'Paris', type: 'Tam zamanlı', description: 'Müşterilerimize Leopardo benimsenmesinde eşlik edin.' },
         { title: 'Flutter Mobil Geliştirici', department: 'Mühendislik', location: 'Remote', type: 'Tam zamanlı', description: 'Çok platformlu mobil uygulamamızı geliştirin ve iyileştirin.' },
         { title: 'DevOps Mühendisi', department: 'Mühendislik', location: 'Paris / Remote', type: 'Tam zamanlı', description: 'Bulut altyapımızı ve CI/CD hatlarımızı optimize edin.' },
       ],

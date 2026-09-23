@@ -699,7 +699,7 @@ jobs:
 
       - name: Send CI report email (if SMTP configured)
         if: always() && env.CI_SMTP_SERVER != '' && env.CI_SMTP_USERNAME != '' && env.CI_SMTP_PASSWORD != ''
-        uses: dawidd6/action-send-mail@03a02a49409134de07636216fb379a026c52991e # v21
+        uses: dawidd6/action-send-mail@67ce3558d613188179559c61d3565140cf389968 # v22
         with:
           server_address: ${{ env.CI_SMTP_SERVER }}
           server_port: 587

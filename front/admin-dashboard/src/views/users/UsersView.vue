@@ -241,11 +241,19 @@ function localInitialsAvatar(name) {
     .slice(0, 2)
     .map((part) => (part[0] ? part[0].toUpperCase() : ''))
     .join('') || '?'
+  // #8022 (point 4) : des initiales contenant `<`, `>` ou `&` cassaient le
+  // XML du data-URI (et ouvraient une injection de balisage dans le SVG).
+  const safeInitials = initials
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&apos;')
   // Couleur déterministe dérivée du nom (hachage simple → teinte HSL sobre).
   let hash = 0
   for (const ch of name || '') hash = (hash * 31 + ch.charCodeAt(0)) >>> 0
   const bg = `hsl(${hash % 360}, 45%, 42%)`
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="${bg}"/><text x="50%" y="50%" dy=".35em" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" fill="#fff">${initials}</text></svg>`
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="${bg}"/><text x="50%" y="50%" dy=".35em" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" fill="#fff">${safeInitials}</text></svg>`
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
 }
 

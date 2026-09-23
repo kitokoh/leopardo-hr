@@ -36,7 +36,7 @@ const screensByLocale: Record<AppLocale, { badge: string; title: string; titleHi
         gradient: 'from-emerald-500 to-cyan-500',
         mockup: 'desktop',
         screenshotSrc: '/screenshots/web-dashboard.png',
-        screenshotAlt: 'Capture du dashboard admin Leopardo RH',
+        screenshotAlt: 'Capture du dashboard admin Leopardo',
       },
       {
         icon: <Smartphone className="w-6 h-6" />,
@@ -71,7 +71,7 @@ const screensByLocale: Record<AppLocale, { badge: string; title: string; titleHi
         gradient: 'from-emerald-500 to-cyan-500',
         mockup: 'desktop',
         screenshotSrc: '/screenshots/web-dashboard.png',
-        screenshotAlt: 'Leopardo HR admin dashboard screenshot',
+        screenshotAlt: 'Leopardo admin dashboard screenshot',
       },
       {
         icon: <Smartphone className="w-6 h-6" />,
@@ -289,8 +289,8 @@ export function ProductScreenshots({ locale = 'fr' }: ProductScreenshotsProps) {
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ y: 20 }}
+          whileInView={{ y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
@@ -311,8 +311,8 @@ export function ProductScreenshots({ locale = 'fr' }: ProductScreenshotsProps) {
           {data.screens.map((screen, index) => (
             <motion.div
               key={screen.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ y: 30 }}
+              whileInView={{ y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.15 }}
               className="group"

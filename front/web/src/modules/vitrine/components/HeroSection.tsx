@@ -83,8 +83,8 @@ export function QuickTrialEmailForm({ locale, copy }: { locale: AppLocale; copy:
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ y: 18 }}
+      animate={{ y: 0 }}
       transition={{ duration: 0.8, delay: 0.62 }}
       className="mx-auto mt-8 max-w-2xl"
     >

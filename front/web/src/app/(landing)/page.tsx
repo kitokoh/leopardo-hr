@@ -9,12 +9,12 @@ import {
   useScrollReveal,
   SocialProofMetrics,
   ProductScreenshots,
-  MarketingReadinessSection,
+  WhyOpenSourceSection,
   TrustedBrands,
   ProductDemoVideo,
   // Phase-3 sections — no more Legacy prefixes
   HeroSection,
-  LeoHeroVisual,
+  HeroProductShowcase,
   SolutionStackSection,
   FAQSection,
   CTASection,
@@ -84,7 +84,8 @@ export default function LandingPage() {
             <QuickTrialEmailForm locale={locale} copy={copy.heroQuickTrial} />
           }
           layout="split"
-          visual={<LeoHeroVisual locale={locale} />}
+          // #8067 — produit-first : screenshot réel + badge GitHub à la place de la mascotte (LeoHeroVisual reste dispo en marque secondaire)
+          visual={<HeroProductShowcase locale={locale} />}
         />
 
         {/* ─── PROBLEM / SOLUTION ─── */}
@@ -134,7 +135,9 @@ export default function LandingPage() {
 
         {/* ─── PRODUCT VISUAL ─── */}
         <ProductScreenshots locale={locale} />
-        <MarketingReadinessSection locale={locale} />
+        {/* #8065 : « Pourquoi open source » remplace MarketingReadinessSection
+            (langage de pilotage interne, conservé pour usage interne). */}
+        <WhyOpenSourceSection locale={locale} />
 
         {/* ─── DEMO ─── */}
 

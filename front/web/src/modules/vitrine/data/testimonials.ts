@@ -25,7 +25,7 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Amina Diallo',
       role: 'DRH',
       company: 'TechAfrika',
-      content: 'Leopardo RH a transformé notre gestion du personnel. Le gain de temps est phénoménal, surtout sur la paie et le pointage.',
+      content: 'Leopardo a transformé notre gestion du personnel. Le gain de temps est phénoménal, surtout sur la paie et le pointage.',
       rating: 5,
     },
     {
@@ -55,7 +55,7 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Amina Diallo',
       role: 'HR Director',
       company: 'TechAfrika',
-      content: 'Leopardo RH transformed our people operations. The time savings on payroll and attendance are dramatic.',
+      content: 'Leopardo transformed our people operations. The time savings on payroll and attendance are dramatic.',
       rating: 5,
     },
     {
@@ -85,7 +85,7 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Amina Diallo',
       role: 'IK Direktoru',
       company: 'TechAfrika',
-      content: 'Leopardo RH, personel operasyonlarimizi donusturdu. Bordro ve devam takibinde buyuk zaman kazandik.',
+      content: 'Leopardo, personel operasyonlarimizi donusturdu. Bordro ve devam takibinde buyuk zaman kazandik.',
       rating: 5,
     },
     {
@@ -115,7 +115,7 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Amina Diallo',
       role: 'مديرة الموارد البشرية',
       company: 'TechAfrika',
-      content: 'Leopardo RH غير طريقة ادارتنا للموظفين، خاصة في الرواتب والحضور.',
+      content: 'Leopardo غير طريقة ادارتنا للموظفين، خاصة في الرواتب والحضور.',
       rating: 5,
     },
     {

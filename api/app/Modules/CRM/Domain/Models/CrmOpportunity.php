@@ -8,6 +8,7 @@ use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * #5717/#5709 — Opportunité CRM client (tenant-scoped).
@@ -30,6 +31,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class CrmOpportunity extends Model
 {
     use BelongsToCompany;
+    use SoftDeletes;
 
     protected $table = 'crm_opportunities';
 
