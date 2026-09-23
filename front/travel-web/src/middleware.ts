@@ -1,3 +1,10 @@
+/**
+ * ⚠️ SYNCHRONISATION MANUELLE (#7964) : ce fichier existe en DEUX copies
+ * byte-identiques — front/travel-web/src/middleware.ts et
+ * front/marketplace/src/middleware.ts. Toute modification doit être
+ * reportée à l'identique sur l'autre copie (garde CI :
+ * dev-hub/tools/check-front-shared-parity.sh).
+ */
 import { NextResponse, type NextRequest } from "next/server";
 
 import { buildCspDirectives, generateCspNonce } from "@/lib/csp";
