@@ -152,6 +152,7 @@ class PushNotificationService implements PushNotifier
     {
         $cacheKey = 'firebase_access_token';
 
+        // tenant-cache:shared — crédential Firebase PLATEFORME (compte de service unique, hors donnée tenant) (#8058)
         if (Cache::has($cacheKey)) {
             return Cache::get($cacheKey);
         }
@@ -199,6 +200,7 @@ class PushNotificationService implements PushNotifier
 
         if ($response->successful()) {
             $token = $response->json('access_token');
+            // tenant-cache:shared — même crédential Firebase plateforme (#8058)
             Cache::put($cacheKey, $token, 3000);
 
             return $token;

@@ -40,6 +40,7 @@ final class ShowcasePublicCache
      */
     public function remember(string $slug, string $locale, \Closure $resolver): mixed
     {
+        // tenant-cache:shared — vitrine PUBLIQUE par slug globalement unique (#8058)
         return Cache::remember(self::key($slug, $locale), now()->addSeconds(self::TTL_SECONDS), $resolver);
     }
 
@@ -48,9 +49,11 @@ final class ShowcasePublicCache
      */
     public function forget(string $slug): void
     {
+        // tenant-cache:shared — même vitrine publique (#8058)
         Cache::forget(self::KEY_PREFIX.$slug);
 
         foreach (ShowcaseLocales::supported() as $locale) {
+            // tenant-cache:shared — même vitrine publique (#8058)
             Cache::forget(self::key($slug, $locale));
         }
     }

@@ -97,6 +97,7 @@ class PlatformCompanyHealthService
         $perPage = self::normalizePerPage($perPage);
 
         /** @var array<string, mixed> $result */
+        // tenant-cache:shared — portefeuille santé PLATEFORME (back-office, cross-tenant par design) (#8058)
         $result = Cache::remember(
             self::portfolioCacheKey($page, $perPage),
             self::PORTFOLIO_CACHE_TTL_SECONDS,
@@ -115,6 +116,7 @@ class PlatformCompanyHealthService
      */
     public function forgetPortfolioCache(int $page = 1, int $perPage = self::PORTFOLIO_DEFAULT_PER_PAGE): void
     {
+        // tenant-cache:shared — même portefeuille plateforme (#8058)
         Cache::forget(self::portfolioCacheKey(max(1, $page), self::normalizePerPage($perPage)));
     }
 
