@@ -15,6 +15,8 @@ export * from './sections';
 // by pages from their file paths, not via this barrel, so no alias is
 // re-exported here for them.
 export { DemoSection } from './DemoSection';
+// Filet de sécurité anti « sections invisibles au scroll » (#8063).
+export { RevealFallbackGuard } from './RevealFallbackGuard';
 export { ParticleField } from './ParticleField';
 // Visuel « Pile Leopardo » : socle + couche horizontale + verticales métier.
 // WebGL chargé en import dynamique, repli CSS 3D si indisponible.

@@ -1,12 +1,14 @@
 'use client';
 
 import { Sparkles, Play, Zap, Users, TrendingUp, Star } from 'lucide-react';
+import { MotionConfig } from 'framer-motion';
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { useState } from 'react';
 import {
   Navbar,
   Footer,
   useScrollReveal,
+  RevealFallbackGuard,
   SocialProofMetrics,
   ProductScreenshots,
   TrustedBrands,
@@ -45,6 +47,7 @@ export default function LandingPage() {
   const testimonials = getTestimonials(locale);
 
   return (
+    <MotionConfig reducedMotion="user">
     <div
       dir={direction}
       className={`min-h-screen transition-colors duration-500 ${
@@ -52,6 +55,10 @@ export default function LandingPage() {
       }`}
     >
       <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+
+      {/* #8063 — l'animation d'apparition est une bonification, jamais une
+          condition d'affichage : garde de révélation + fallback noscript. */}
+      <RevealFallbackGuard />
 
       <main>
         {/* ─── HERO ─── Phase-3 */}
@@ -187,5 +194,6 @@ export default function LandingPage() {
       {/* ─── STICKY MOBILE CTA ─── visible on mobile after 400px scroll */}
       <StickyMobileCTA locale={locale} />
     </div>
+    </MotionConfig>
   );
 }
