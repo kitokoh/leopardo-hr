@@ -14,6 +14,7 @@
 
 | Date de mise à jour | Statut |
 |---|---|
+| 2026-09-23 (audit #7968) | 🟡 État re-vérifié par API : **clés Google révoquées ✅** (2 alertes Secret Scanning `resolved: revoked` le 2026-08-11T00:33Z — preuve ci-dessous) ; **Neon toujours à attester** côté console (⏳ propriétaire) ; **forks : 4/5 toujours publics avec l'historique pré-purge** (`heartshare`, `emelaslan`, `Ahmedmaped/hr`, `dipit-s` — aucun push depuis août), `mirkosalvato1-ctrl/leopardo-hr` répond 404 en accès direct (supprimé ou passé privé — à confirmer) ; contact forks/GitHub Support toujours non engagé (⏳ propriétaire, plan `PLAN_PURGE_FORKS_2026-08-11.md`) |
 | 2026-08-11 (soir) | 🟡 Purge OK + health prod vérifié (database.ok) ; rotations Neon/Google **à attester côté console** par le propriétaire ; plan de purge des 5 forks documenté (#1723) |
 | 2026-08-11 | 🟢 Purge historique EFFECTUÉE (git filter-repo --replace-text + force-push) — voir POST_MORTEM_PURGE_2026-08-11.md |
 
@@ -52,8 +53,8 @@ Détails et risques résiduels (forks) : `docs/security/POST_MORTEM_PURGE_2026-0
 |---|---|---|---|
 | Redis Upstash (#1472) | ✅ Fait (2026-08-10) | ✅ Attesté | Rotation attestée 2026-08-10 (issue #1472) |
 | PostgreSQL Neon (#1601) | 🔄 À attester | ⏳ **Action propriétaire** : reset du mot de passe en console Neon, MAJ `DATABASE_URL` Render (API + workers) | Health prod vérifié le 2026-08-11 18:01 UTC : `GET https://gestionemployerbackend.onrender.com/api/v1/health` → `checks.database.ok=true` (latence 39 ms) — l'URL actuelle fonctionne ; l'attestation de la rotation console reste à tracer ici |
-| Clés API Google / Firebase (#1467) | 🔄 À attester | ⏳ **Action propriétaire** : révoquer/restreindre les 2 clés Google/Firebase (valeurs non citées, convention #1614) en console Google Cloud/Firebase, MAJ du secret Actions `GOOGLE_SERVICES_JSON` | Historique purgé (0/11 valeurs) ; 2 alertes Secret Scanning résiduelles à résoudre après révocation |
-| 5 forks publics | 🍴 Plan documenté | ⏳ **Action propriétaire** : contacts + takedown GitHub Support si sans réponse | `docs/security/PLAN_PURGE_FORKS_2026-08-11.md` (inventaire + messages types) |
+| Clés API Google / Firebase (#1467) | ✅ **Révocation attestée** (vérifié le 2026-09-23, #7968) | ✅ Les 2 alertes GitHub Secret Scanning `google_api_key` sont `resolved: revoked` depuis le **2026-08-11T00:33Z** (API `/secret-scanning/alerts`, 0 alerte ouverte) | Reste à confirmer par le propriétaire : MAJ du secret Actions `GOOGLE_SERVICES_JSON` avec les nouvelles clés restreintes |
+| 5 forks publics | 🍴 Plan documenté — état re-vérifié 2026-09-23 (#7968) | ⏳ **Action propriétaire** : contacts + takedown GitHub Support si sans réponse. État API du 2026-09-23 : `heartshare`, `emelaslan`, `Ahmedmaped/hr`, `dipit-s` **toujours publics** (aucun push depuis août 2026) ; `mirkosalvato1-ctrl/leopardo-hr` → 404 en accès direct (supprimé/privé ?) | `docs/security/PLAN_PURGE_FORKS_2026-08-11.md` (inventaire + messages types) |
 
 > Checklist propriétaire (#1723) : ① console Neon → reset password + MAJ `DATABASE_URL` Render ;
 > ② console Google/Firebase → révocation des 2 clés + MAJ `GOOGLE_SERVICES_JSON` ;
