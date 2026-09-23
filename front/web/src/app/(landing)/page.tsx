@@ -14,7 +14,7 @@ import {
   ProductDemoVideo,
   // Phase-3 sections — no more Legacy prefixes
   HeroSection,
-  LeoHeroVisual,
+  HeroProductShowcase,
   SolutionStackSection,
   FAQSection,
   CTASection,
@@ -84,7 +84,8 @@ export default function LandingPage() {
             <QuickTrialEmailForm locale={locale} copy={copy.heroQuickTrial} />
           }
           layout="split"
-          visual={<LeoHeroVisual locale={locale} />}
+          // #8067 — produit-first : screenshot réel + badge GitHub à la place de la mascotte (LeoHeroVisual reste dispo en marque secondaire)
+          visual={<HeroProductShowcase locale={locale} />}
         />
 
         {/* ─── PROBLEM / SOLUTION ─── */}

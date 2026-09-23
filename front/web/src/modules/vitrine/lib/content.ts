@@ -357,7 +357,7 @@ export const modulePageContent = {
         },
         {
           question: "Comment gérez-vous la conformité RGPD?",
-          answer: "Leopardo RH applique des mesures de protection des données (chiffrement, isolation par société, registre des traitements) et fournit les exports/suppressions prévus par le RGPD. Voir notre politique de confidentialité pour le détail.",
+          answer: "Leopardo applique des mesures de protection des données (chiffrement, isolation par société, registre des traitements) et fournit les exports/suppressions prévus par le RGPD. Voir notre politique de confidentialité pour le détail.",
         },
         {
           question: "Quel est le délai de mise en place?",

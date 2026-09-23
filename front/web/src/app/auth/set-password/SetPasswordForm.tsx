@@ -127,7 +127,7 @@ export function SetPasswordForm({ tokenFromUrl }: { tokenFromUrl: string }) {
           <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-8 text-white">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-bold uppercase tracking-wider">
               <LockKeyhole className="h-3.5 w-3.5" aria-hidden="true" />
-              Leopardo RH
+              Leopardo
             </div>
             <h1 className="text-2xl font-black">{t('setPassword.title')}</h1>
             <p className="mt-2 text-sm text-emerald-50">
