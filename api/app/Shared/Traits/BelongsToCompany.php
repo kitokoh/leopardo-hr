@@ -20,6 +20,19 @@ use Illuminate\Support\Facades\Log;
  *   use App\Shared\Traits\BelongsToCompany;
  *
  * Required: the model must have a `company_id` column.
+ *
+ * Issue #7960 — bypass explicite du scope tenant : ne JAMAIS appeler
+ * `withoutGlobalScope('company')` directement dans le code applicatif.
+ * Utiliser les wrappers nommés qui documentent l'intention :
+ *   - `Model::forCompany($company)` — lecture ciblée sur UN tenant explicite
+ *     (webhooks, surfaces publiques résolvant le tenant par slug/token…).
+ *   - `Model::crossTenantForPlatformAdmin()` — lectures plateforme
+ *     (super-admin, health checks multi-tenants).
+ *   - `Model::crossTenantForSystemTask('raison #issue')` — console, jobs,
+ *     schedulers parcourant tous les tenants ; la justification est
+ *     obligatoire et versionnée au point d'appel.
+ * La garde CI `dev-hub/tools/check-without-global-scope.sh` (ratchet sur
+ * baseline) fait échouer tout nouvel usage brut de `withoutGlobalScope`.
  */
 trait BelongsToCompany
 {
@@ -117,5 +130,53 @@ trait BelongsToCompany
 
             $model->setAttribute('company_id', $original);
         });
+    }
+
+    /**
+     * #7960 — Requête volontairement portée sur UN tenant explicite, hors
+     * contexte `current_company` (webhook, device, boutique publique…).
+     * Remplace le couple `withoutGlobalScope('company')->where('company_id', …)`.
+     *
+     * @param  Builder<static>  $builder
+     * @return Builder<static>
+     */
+    public function scopeForCompany(Builder $builder, Company|string|int $company): Builder
+    {
+        $companyId = $company instanceof Company ? $company->id : $company;
+
+        return $builder
+            ->withoutGlobalScope('company')
+            ->where($builder->getModel()->qualifyColumn('company_id'), $companyId);
+    }
+
+    /**
+     * #7960 — Lecture cross-tenant assumée pour les surfaces plateforme
+     * (super-admin, santé des tenants). N'utiliser que derrière une
+     * autorisation plateforme déjà vérifiée.
+     *
+     * @param  Builder<static>  $builder
+     * @return Builder<static>
+     */
+    public function scopeCrossTenantForPlatformAdmin(Builder $builder): Builder
+    {
+        return $builder->withoutGlobalScope('company');
+    }
+
+    /**
+     * #7960 — Parcours cross-tenant d'une tâche système (console, job,
+     * scheduler). La justification est obligatoire : elle documente le
+     * point d'appel et le rend auditable (`rg "crossTenantForSystemTask"`).
+     *
+     * @param  Builder<static>  $builder
+     * @param  string  $justification  Raison + n° d'issue — ne doit pas être
+     *                                 vide (vérifié à l'exécution par l'assert ci-dessous : la sonde reste
+     *                                 non tautologique, doctrine #8014 — pas de `non-empty-string` ici).
+     * @return Builder<static>
+     */
+    public function scopeCrossTenantForSystemTask(Builder $builder, string $justification): Builder
+    {
+        assert($justification !== '', 'crossTenantForSystemTask: justification obligatoire (#7960)');
+
+        return $builder->withoutGlobalScope('company');
     }
 }
