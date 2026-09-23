@@ -198,6 +198,64 @@ class PayrollServiceTest extends TestCase
         $this->assertSame('active', $advance->status);
     }
 
+    /**
+     * #8057 (TOCTOU) — le check `status === 'validated'` était hors
+     * transaction : deux requêtes concurrentes pouvaient le passer toutes les
+     * deux puis valider deux fois → double déduction d'avance sur salaire.
+     * On simule la concurrence de façon déterministe : le modèle en mémoire
+     * est PERIMÉ (encore `draft`) alors qu'une « autre requête » a déjà
+     * validé le bulletin en base et consommé l'avance. Le re-check sous
+     * `lockForUpdate` DANS la transaction doit rejeter la seconde validation
+     * et ne pas toucher l'avance une deuxième fois.
+     */
+    public function test_validate_rechecks_status_under_lock_and_never_double_deducts_advance(): void
+    {
+        $advance = SalaryAdvance::query()->forceCreate([
+            'company_id' => $this->company->id,
+            'employee_id' => $this->employee->id,
+            'amount' => 10000,
+            'status' => 'active',
+            'amount_remaining' => 6000,
+            'monthly_deduction' => 2500,
+            'validation_status' => 'employee_confirmed',
+        ]);
+
+        $service = new PayrollService();
+        $payroll = $service->create($this->manager, [
+            'employee_id' => $this->employee->id,
+            'period_month' => 7,
+            'period_year' => 2026,
+            'gross_salary' => 60000,
+            'advance_deduction' => 2500,
+        ]);
+
+        // « Requête A » : validation complète via une AUTRE instance du modèle
+        // (statut + déduction persistés en base) — $payroll reste périmé.
+        /** @var Payroll $freshInstance */
+        $freshInstance = Payroll::query()->findOrFail($payroll->id);
+        $service->validate($freshInstance, $this->manager);
+
+        $advance->refresh();
+        $this->assertSame(3500.0, $advance->amount_remaining);
+
+        // « Requête B » : son modèle chargé AVANT la requête A est périmé
+        // (status = draft en mémoire) → le fast-fail hors transaction ne voit
+        // rien, seul le re-check sous verrou peut arrêter la double validation.
+        $this->assertSame('draft', $payroll->status);
+
+        try {
+            $service->validate($payroll, $this->manager);
+            $this->fail('La seconde validation aurait dû lever PayrollAlreadyValidatedException.');
+        } catch (PayrollAlreadyValidatedException) {
+            // attendu
+        }
+
+        // Aucune double déduction : l'avance n'a pas bougé.
+        $advance->refresh();
+        $this->assertSame(3500.0, $advance->amount_remaining);
+        $this->assertSame('active', $advance->status);
+    }
+
     public function test_delete_removes_draft_and_rejects_validated(): void
     {
         $service = new PayrollService();

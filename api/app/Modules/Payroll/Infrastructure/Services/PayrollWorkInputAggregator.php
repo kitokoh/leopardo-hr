@@ -9,8 +9,8 @@ use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Planning\Domain\Models\Absence;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Enumerable;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -73,10 +73,10 @@ final class PayrollWorkInputAggregator
      * approuvés payés/non payés (absences, clipping période identique à
      * sumApprovedLeaveDays). ~3 requêtes au total au lieu de ~5 par employé.
      *
-     * @param  Collection<int, Employee>  $employees
+     * @param  Enumerable<int, Employee>  $employees
      * @return array{0: array<int, array{distinct_days?: int, overtime_hours?: float}>, 1: array<int, array{paid_leave_days?: float, unpaid_leave_days?: float}>}
      */
-    public function aggregateWorkInputs(PayrollRun $run, Collection $employees): array
+    public function aggregateWorkInputs(PayrollRun $run, Enumerable $employees): array
     {
         $attendance = [];
         $leave = [];
