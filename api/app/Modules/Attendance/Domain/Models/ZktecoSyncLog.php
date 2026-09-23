@@ -28,4 +28,3 @@ class ZktecoSyncLog extends Model
         'completed_at' => 'datetime',
     ];
 }
-
