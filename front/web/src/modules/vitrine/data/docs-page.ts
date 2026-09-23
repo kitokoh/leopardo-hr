@@ -155,7 +155,7 @@ export const docsCategoriesCopy: Record<AppLocale, DocsCategory[]> = {
         { title: 'Environnement sandbox', desc: 'URL demo Render, comptes de test, token Bearer demo', href: '/docs#api-quickstart' },
         { title: 'Explorer les endpoints', desc: 'Interface Swagger / Redoc interactive', href: '/docs#api-quickstart' },
         { title: 'Exemples cURL', desc: "Collection d'appels prêts à l'emploi pour tous les modules", href: '/docs#api-quickstart' },
-        { title: 'Tokens développeur', desc: 'Creer un token scope-reduit pour tests partenaires', href: '/docs#api-quickstart' },
+        { title: 'Tokens développeur', desc: 'Créer un token à scope réduit pour tests partenaires', href: '/docs#api-quickstart' },
       ],
     },
     {
@@ -514,17 +514,17 @@ export const docsPageCopy: Record<AppLocale, DocsCopy> = {
     },
     sdkSection: {
       title: 'SDK Mobiles Flutter',
-      subtitle: 'leopardo_core — le package partage entre les 3 apps',
+      subtitle: 'leopardo_core — le package partagé entre les 3 apps',
       apps: [
         { name: 'leopardo_employee', desc: "App employé : pointage, bulletin, demandes d'absence, notifications" },
-        { name: 'leopardo_manager', desc: 'App manager : équipe, horaires, taches, validation avances, paie' },
-        { name: 'leopardo_platform_admin', desc: 'Super-admin : creation tenants, provisioning, 2FA, monitoring' },
+        { name: 'leopardo_manager', desc: 'App manager : équipe, horaires, tâches, validation avances, paie' },
+        { name: 'leopardo_platform_admin', desc: 'Super-admin : création tenants, provisioning, 2FA, monitoring' },
       ],
       learnMore: 'En savoir plus',
     },
     kioskSection: {
       title: 'Pointage depuis le kiosque (ZKTeco)',
-      subtitle: "Borne d'entree biometrie/QR + bridge desktop local offline-first",
+      subtitle: "Borne d'entrée biométrie/QR + bridge desktop local hors ligne",
       installTitle: 'Installation',
       installSteps: [
         'Copier config.example.json en config.json',

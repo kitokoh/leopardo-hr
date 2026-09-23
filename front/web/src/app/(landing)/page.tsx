@@ -1,8 +1,8 @@
 'use client';
 
-import { Sparkles, Play, Zap, Users, TrendingUp, Star } from 'lucide-react';
+import { Sparkles, Server, Zap, Users, TrendingUp, Star } from 'lucide-react';
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
-import { useState } from 'react';
+import { GITHUB_REPO_URL } from '@/modules/vitrine/data/github-repo';
 import {
   Navbar,
   Footer,
@@ -11,7 +11,6 @@ import {
   ProductScreenshots,
   WhyOpenSourceSection,
   TrustedBrands,
-  ProductDemoVideo,
   // Phase-3 sections — no more Legacy prefixes
   HeroSection,
   HeroProductShowcase,
@@ -21,6 +20,8 @@ import {
   ProblemSection,
   SolutionSection,
   TestimonialsSection,
+  ZKTecoHookSection,
+  VerticalsSection,
 } from '@/modules/vitrine';
 import { FeaturesSection as ModernFeaturesSection } from '@/modules/vitrine/components/sections/FeaturesSection';
 // PricingSection: keep the self-contained locale-aware version (not the generic sections/ one)
@@ -28,7 +29,7 @@ import { PricingSection as LocalePricingSection } from '@/modules/vitrine/compon
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { getFeatures } from '@/modules/vitrine/data/features';
 import { getFaqItems } from '@/modules/vitrine/data/faq';
-import { getTestimonials } from '@/modules/vitrine/data/testimonials';
+import { getTestimonials, TESTIMONIALS_ARE_DEMO } from '@/modules/vitrine/data/testimonials';
 import { StickyMobileCTA } from '@/components/StickyMobileCTA';
 import { QuickTrialEmailForm } from '@/modules/vitrine/components/HeroSection';
 
@@ -65,13 +66,16 @@ export default function LandingPage() {
           headline={`${copy.hero.titleTop} ${copy.hero.titleBottom}`}
           subheadline={copy.hero.subtitle}
           ctaPrimary={{ text: copy.hero.primaryCta, href: '/signup' }}
+          // #8068 — double funnel : l'essai cloud ET l'install self-host dès
+          // le hero (le dépôt public = page d'installation pour un technicien).
           ctaSecondary={{
             text: copy.hero.secondaryCta,
-            href: '/demo',
+            href: GITHUB_REPO_URL,
             icon: (
-              <Play className="w-4 h-4 text-emerald-600 dark:text-emerald-400 ml-0.5" />
+              <Server className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             ),
           }}
+          ctaReassurance={copy.hero.ctaReassurance}
           stats={copy.hero.stats.map((s, i) => {
             const Icon = STAT_ICONS[i % STAT_ICONS.length];
             return {
@@ -87,6 +91,11 @@ export default function LandingPage() {
           // #8067 — produit-first : screenshot réel + badge GitHub à la place de la mascotte (LeoHeroVisual reste dispo en marque secondaire)
           visual={<HeroProductShowcase locale={locale} />}
         />
+
+        {/* ─── PREUVE SOCIALE + HOOK ZKTECO — remontés juste après le hero (#8072) ─── */}
+        <TrustedBrands locale={locale} />
+        <SocialProofMetrics locale={locale} />
+        <ZKTecoHookSection locale={locale} />
 
         {/* ─── PROBLEM / SOLUTION ─── */}
         <ProblemSection
@@ -107,12 +116,8 @@ export default function LandingPage() {
         {/* ─── PILE LEOPARDO ─── architecture de l'offre, ex-visuel héro (#7851) */}
         <SolutionStackSection locale={locale} />
 
-        {/* ─── SOCIAL PROOF ─── */}
-        <TrustedBrands locale={locale} />
-        <SocialProofMetrics locale={locale} />
-
-        {/* ─── PRODUCT DEMO VIDEO ─── PA2-MKT-014 */}
-        <ProductDemoVideo locale={locale} />
+        {/* ─── PRODUCT DEMO VIDEO ─── #8071 option A : retirée de la home,
+            conservée sur /demo et /videos (nouveau poster = dashboard réel) */}
 
         {/* ─── FEATURES ─── Phase-3 */}
         {/* id="fonctionnalites": PA2-MKT-013 — Footer links here via /#fonctionnalites */}
@@ -136,10 +141,11 @@ export default function LandingPage() {
         {/* ─── PRODUCT VISUAL ─── */}
         <ProductScreenshots locale={locale} />
         {/* #8065 : « Pourquoi open source » remplace MarketingReadinessSection
-            (langage de pilotage interne, conservé pour usage interne). */}
+            (langage de pilotage interne — composant retiré par #8075). */}
         <WhyOpenSourceSection locale={locale} />
 
-        {/* ─── DEMO ─── */}
+        {/* ─── VERTICALES en cartes cliquables (#8072) ─── */}
+        <VerticalsSection locale={locale} />
 
         {/* ─── TESTIMONIALS ─── Phase-3 */}
         <TestimonialsSection
@@ -154,6 +160,9 @@ export default function LandingPage() {
             company: t.company,
             avatar: t.avatar,
             rating: t.rating,
+            // #8070 — flag démo explicite : tant qu'il n'y a pas de clients
+            // réels, chaque témoignage porte le badge « Exemple illustratif ».
+            demo: TESTIMONIALS_ARE_DEMO,
           }))}
           columns={3}
         />
@@ -179,7 +188,7 @@ export default function LandingPage() {
           headline={copy.cta.title}
           subheadline={copy.cta.subtitle}
           ctaPrimary={{ text: copy.cta.primary, href: '/signup' }}
-          ctaSecondary={{ text: copy.cta.secondary, href: '/demo' }}
+          ctaSecondary={{ text: copy.cta.secondary, href: GITHUB_REPO_URL }}
           background="gradient"
         />
       </main>

@@ -50,9 +50,16 @@ final class OidcIdTokenValidator
      *         (signature, émetteur, audience, expiration ou nonce).
      *
      * Note : si `audiences` est fourni (liste de client_id acceptés), l'aud
-     * du token doit intersecter cette liste. Si `audiences` est une liste
-     * vide, le contrôle d'audience est sauté (mode dev — signature, iss et
-     * exp restent obligatoires). Issue #3941.
+     * du token doit intersecter cette liste ; sinon le contrôle retombe sur
+     * `client_id`. Issue #3941.
+     *
+     * Issue #8053 (durcissement fail-closed) :
+     * - `exp` et `iat` sont OBLIGATOIRES (OIDC Core §2) — un id_token sans
+     *   `exp` n'expirait jamais ;
+     * - une liste `audiences` qui se résout à vide (ou un `client_id` vide
+     *   en fallback) REJETTE le token au lieu de sauter le contrôle
+     *   d'audience — le mode « liste vide = check désactivé » permettait la
+     *   substitution d'un token émis pour un autre client.
      */
     public function validate(string $idToken, array $expected): array
     {
@@ -88,17 +95,37 @@ final class OidcIdTokenValidator
             'strval',
             (array) ($expected['audiences'] ?? [(string) $expected['client_id']])
         ), static fn (string $value): bool => $value !== ''));
-        if ($allowedAudiences !== [] && array_intersect($auds, $allowedAudiences) === []) {
+        // #8053 — fail-closed : le contrôle d'audience n'est JAMAIS sauté.
+        // Une liste `audiences` fournie mais vide (ou ne contenant que des
+        // chaînes vides), ou un `client_id` vide en fallback, est une erreur
+        // de configuration — pas une désactivation du contrôle.
+        if ($allowedAudiences === []) {
+            throw new \RuntimeException(
+                'OIDC configuration invalide : aucune audience autorisée '
+                .'(audiences vide ou client_id manquant) — contrôle fail-closed.'
+            );
+        }
+        if (array_intersect($auds, $allowedAudiences) === []) {
             throw new \RuntimeException('OIDC id_token : audience (aud) invalide.');
         }
 
-        $exp = (int) ($claims['exp'] ?? 0);
-        if ($exp > 0 && $exp < time() - self::CLOCK_SKEW_SECONDS) {
+        // #8053 — `exp` est OBLIGATOIRE (OIDC Core §2) : un id_token sans
+        // `exp` n'expirait jamais (exp=0 court-circuitait le contrôle).
+        $exp = filter_var($claims['exp'] ?? null, FILTER_VALIDATE_INT);
+        if (! is_int($exp) || $exp <= 0) {
+            throw new \RuntimeException('OIDC id_token : claim exp manquant ou invalide (obligatoire).');
+        }
+        if ($exp < time() - self::CLOCK_SKEW_SECONDS) {
             throw new \RuntimeException('OIDC id_token : expiré.');
         }
 
-        $iat = (int) ($claims['iat'] ?? 0);
-        if ($iat > 0 && $iat > time() + self::CLOCK_SKEW_SECONDS) {
+        // #8053 — `iat` est OBLIGATOIRE : un token sans date d'émission est
+        // rejeté (le contrôle « iat dans le futur » ne vaut que si iat existe).
+        $iat = filter_var($claims['iat'] ?? null, FILTER_VALIDATE_INT);
+        if (! is_int($iat) || $iat <= 0) {
+            throw new \RuntimeException('OIDC id_token : claim iat manquant ou invalide (obligatoire).');
+        }
+        if ($iat > time() + self::CLOCK_SKEW_SECONDS) {
             throw new \RuntimeException('OIDC id_token : iat dans le futur.');
         }
 

@@ -136,6 +136,7 @@ final class ShowcasePublicController extends Controller
     public function sitemap(): HttpResponse
     {
         /** @var string $xml */
+        // tenant-cache:shared — sitemap vitrines GLOBAL (agrégat cross-tenant voulu) (#8058)
         $xml = Cache::remember(self::SITEMAP_CACHE_KEY, now()->addSeconds(ShowcasePublicCache::TTL_SECONDS), function (): string {
             $lines = [
                 '<?xml version="1.0" encoding="UTF-8"?>',

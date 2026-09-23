@@ -9,7 +9,7 @@ use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Support\CountryDefaults;
 use App\Support\CsvCellSanitizer;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Enumerable;
 use Throwable;
 
 /**
@@ -27,10 +27,15 @@ class BankExportGenerator
      */
     public function generate(PayrollRun $run, string $format, ?array $companyBank = null): string
     {
+        // #8057 : pas de ->get() — hydratation par lots de 500 (lazyById)
+        // pour garder une empreinte mémoire bornée sur les gros runs
+        // (conteneur 512 Mo). Les générateurs consomment count()/sum()/
+        // foreach : chaque énumération de la LazyCollection ré-exécute la
+        // requête par chunks — coût en requêtes accepté, mémoire bornée.
         $slips = $run->paySlips()
             ->with('employee:id,first_name,last_name,iban,bank_account')
             ->where('status', 'validated')
-            ->get();
+            ->lazyById(500);
 
         // sepa_xml/csv_generic/virement_ma are multi-country formats, so
         // their currency must follow the payroll run's own country. ccp_dz/
@@ -91,12 +96,12 @@ class BankExportGenerator
         ];
     }
 
-    /** @param Collection<int, PaySlip> $slips */
+    /** @param Enumerable<int, PaySlip> $slips */
     /**
-     * @param  Collection<int, PaySlip>  $slips
+     * @param  Enumerable<int, PaySlip>  $slips
      * @param  array<string, mixed>|null  $companyBank
      */
-    private function generateSepaExport(PayrollRun $run, Collection $slips, string $currency, ?array $companyBank = null): string
+    private function generateSepaExport(PayrollRun $run, Enumerable $slips, string $currency, ?array $companyBank = null): string
     {
         $bank = $companyBank ?? $this->companyBankDetails($run);
 
@@ -139,9 +144,10 @@ class BankExportGenerator
         };
     }
 
+    /** @param Enumerable<int, PaySlip> $slips */
     private function generateSepaXml(
         PayrollRun $run,
-        Collection $slips,
+        Enumerable $slips,
         string $currency = 'EUR',
         ?string $companyIban = null,
         ?string $companyBic = null,
@@ -199,7 +205,8 @@ class BankExportGenerator
         return $xml;
     }
 
-    private function generateCcpAlgerie(PayrollRun $run, Collection $slips): string
+    /** @param Enumerable<int, PaySlip> $slips */
+    private function generateCcpAlgerie(PayrollRun $run, Enumerable $slips): string
     {
         $lines = [];
         $lines[] = str_pad('ENTETE', 120);
@@ -209,7 +216,7 @@ class BankExportGenerator
         foreach ($slips as $slip) {
             $employee = $slip->employee;
             $name = CsvCellSanitizer::neutralize(mb_strtoupper(trim(($employee->last_name ?? '').' '.($employee->first_name ?? ''))));
-            $ccp = CsvCellSanitizer::neutralize($employee->bank_account ?? $employee->iban ?? str_pad((string) $employee->id, 20, '0', STR_PAD_LEFT));
+            $ccp = CsvCellSanitizer::neutralize($employee->bank_account ?? $employee->iban ?? str_pad((string) $employee?->id, 20, '0', STR_PAD_LEFT));
             $amount = str_pad(number_format($slip->net_salary, 2, '', ''), 12, '0', STR_PAD_LEFT);
 
             $lines[] = 'D'.str_pad((string) $seq, 6, '0', STR_PAD_LEFT).str_pad($ccp, 20).str_pad($name, 30).$amount;
@@ -221,7 +228,8 @@ class BankExportGenerator
         return implode("\r\n", $lines)."\r\n";
     }
 
-    private function generateCsvGeneric(PayrollRun $run, Collection $slips, string $currency = 'EUR'): string
+    /** @param Enumerable<int, PaySlip> $slips */
+    private function generateCsvGeneric(PayrollRun $run, Enumerable $slips, string $currency = 'EUR'): string
     {
         $csv = "employee_id,first_name,last_name,iban,bank_account,net_salary,currency,period\n";
 
@@ -245,7 +253,8 @@ class BankExportGenerator
         return $csv;
     }
 
-    private function generateCpaBna(PayrollRun $run, Collection $slips, string $bank): string
+    /** @param Enumerable<int, PaySlip> $slips */
+    private function generateCpaBna(PayrollRun $run, Enumerable $slips, string $bank): string
     {
         $lines = [];
         $batchDate = now()->format('dmY');
@@ -300,9 +309,9 @@ class BankExportGenerator
      * ⚠️ Format à valider avec CNEP Banque avant usage réel (même niveau de
      * confiance `pilot` que les formats ccp_dz/cpa_dz/bna_dz existants).
      *
-     * @param  Collection<int, PaySlip>  $slips
+     * @param  Enumerable<int, PaySlip>  $slips
      */
-    private function generateCnep(PayrollRun $run, Collection $slips): string
+    private function generateCnep(PayrollRun $run, Enumerable $slips): string
     {
         $lines = [];
         $batchDate = now()->format('dmY');
@@ -358,9 +367,9 @@ class BankExportGenerator
      * ⚠️ Convention interne documentée — le gabarit exact des colonnes est
      * à confirmer avec la banque émettrice avant usage en production.
      *
-     * @param  Collection<int, PaySlip>  $slips
+     * @param  Enumerable<int, PaySlip>  $slips
      */
-    private function generateEdx(PayrollRun $run, Collection $slips): string
+    private function generateEdx(PayrollRun $run, Enumerable $slips): string
     {
         $lines = [];
         $totalAmount = $slips->sum('net_salary');

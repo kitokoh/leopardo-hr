@@ -28,6 +28,7 @@ Ce dossier capture les decisions structurantes qui doivent rester stables pour L
 | [0022](0022-renommage-depot-leopardo.md) | Proposee — decision owner requise | Renommage du depot `leopardo-hr` : inventaire des 378 references, 3 options (renommer `leopardo-suite` / conserver / migration exhaustive), recommandation A — issue #7848 |
 | [0023](0023-admin-dashboard-typage.md) | Proposee | admin-dashboard (Vue 3/JS) : typage TypeScript incremental (JSDoc + checkJs progressif puis vue-tsc), gel du JS nouveau via CI — issue #7849 |
 | [0024](0024-tables-tenant-scoping-transitif-employe.md) | Acceptee | 4 tables tenant scopées employé sans `company_id` (device_tokens, calendar_connections, calendar_events, app_notifications) : statu quo documenté, scoping transitif via employee/user — issue #7984 |
+| [0025](0025-sanctum-ttl-30j-glissants.md) | Proposee | Tokens Sanctum : TTL 30 jours glissants justifie (decision proprietaire #7491) + controles compensatoires (purge quotidienne, prefixe `leo_`) — issue #7655 point 3 |
 
 ## Format
 

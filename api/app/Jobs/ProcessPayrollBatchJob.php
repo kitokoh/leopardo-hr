@@ -9,6 +9,7 @@ use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -16,7 +17,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class ProcessPayrollBatchJob implements ShouldQueue, TenantScopedJob
+class ProcessPayrollBatchJob implements ShouldBeUnique, ShouldQueue, TenantScopedJob
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -26,6 +27,20 @@ class ProcessPayrollBatchJob implements ShouldQueue, TenantScopedJob
     public int $tries = 3;
 
     public int $timeout = 600;
+
+    /**
+     * #8057 : deux workers ne doivent jamais calculer le même run de paie en
+     * parallèle. Le claim conditionnel (#6529) protège déjà contre le
+     * double-démarrage séquentiel mais pas contre deux jobs simultanés déjà
+     * en file : verrou d'unicité au niveau queue (clé = payroll_run_id),
+     * libéré à la fin du job, TTL aligné sur le timeout.
+     */
+    public int $uniqueFor = 600;
+
+    public function uniqueId(): string
+    {
+        return 'payroll-run:'.$this->companyId.':'.$this->payrollRunId;
+    }
 
     public function __construct(
         private readonly int $payrollRunId,
@@ -126,5 +141,4 @@ class ProcessPayrollBatchJob implements ShouldQueue, TenantScopedJob
             'exception' => $e->getMessage(),
         ]);
     }
-
 }

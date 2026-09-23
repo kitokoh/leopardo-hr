@@ -37,11 +37,20 @@ final class GoogleIdentityVerifier
      */
     public function verify(string $idToken): array
     {
+        $audiences = $this->allowedAudiences();
+
+        // #8053 — fail-closed explicite : sans audience configurée, refus
+        // net avec message de config (le validateur refuse aussi, mais ce
+        // message distingue une ERREUR DE CONFIG d'un token invalide).
+        if ($audiences === []) {
+            throw new GoogleTokenInvalidException('Google Sign-In non configuré : aucun client ID autorisé (GOOGLE_CLIENT_ID et variantes).');
+        }
+
         try {
             $claims = $this->idTokenValidator->validate($idToken, [
                 'issuer' => self::GOOGLE_ISSUER,
                 'client_id' => (string) config('services.google.client_id', ''),
-                'audiences' => $this->allowedAudiences(),
+                'audiences' => $audiences,
                 'nonce' => null,
                 'jwks_uri' => self::GOOGLE_JWKS_URI,
             ]);

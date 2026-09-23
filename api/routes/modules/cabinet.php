@@ -7,9 +7,9 @@
  * d'un placard personnel pour stocker, organiser et partager leurs documents.
  */
 
-use App\Modules\Cabinet\Interfaces\Api\V1\CabinetDocumentController;
-use App\Modules\Cabinet\Interfaces\Api\V1\CabinetFolderController;
-use App\Modules\Cabinet\Interfaces\Api\V1\CabinetShareController;
+use App\Modules\Cabinet\Interfaces\Api\V1\Controllers\CabinetDocumentController;
+use App\Modules\Cabinet\Interfaces\Api\V1\Controllers\CabinetFolderController;
+use App\Modules\Cabinet\Interfaces\Api\V1\Controllers\CabinetShareController;
 use Illuminate\Support\Facades\Route;
 
 // Public: access shared resources via token (no auth required)

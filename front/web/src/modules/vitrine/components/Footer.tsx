@@ -39,12 +39,24 @@ export function getFooterHref(sectionIndex: number, linkIndex: number): string |
     // (étaient absentes de toute navigation, uniquement dans le sitemap).
     '0-6': '/about',
     '0-7': '/videos',
+    // #8075 : pages modules construites mais jamais liées — 1 clic footer.
+    '0-8': '/employes',
+    '0-9': '/comptabilite',
+    '0-10': '/marketing',
     '1-0': '/docs',
     '1-1': '/guides/rh-startup',
     '1-2': '/blog',
     '1-3': '/contact',
     '1-4': '/contact?topic=community',
-    '1-5': '/branding',
+    // #8075 : pages orphelines liées (case-studies et restaurateur méritent
+    // le trafic, cf. issue) ; /branding repositionné en '1-10' (il occupait
+    // '1-5' alors qu'aucune locale n'a de 6e libellé Ressources).
+    '1-5': '/case-studies',
+    '1-6': '/testimonials',
+    '1-7': '/alternatives',
+    '1-8': '/restaurateur',
+    '1-9': '/careers',
+    '1-10': '/branding',
     '2-0': '/download#mobile-apps',
     '2-1': '/mobile',
     '2-2': '/download#mobile-apps',

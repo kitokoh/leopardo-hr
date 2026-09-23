@@ -94,6 +94,7 @@ class TravelCustomerAccountController extends Controller
         $attemptKey = $accountKey.':'.$request->ip();
         $lockKey = $accountKey.':lock';
 
+        // tenant-cache:shared — anti-bruteforce par email+IP (endpoint public, pas de contexte tenant) (#8058)
         if (Cache::get($lockKey)) {
             return response()->json([
                 'message' => __('auth.account_locked'),
@@ -106,16 +107,20 @@ class TravelCustomerAccountController extends Controller
             ->first();
 
         if (! $account instanceof TravelCustomerAccount || ! Hash::check((string) $data['password'], $account->password)) {
+            // tenant-cache:shared — même anti-bruteforce (#8058)
             $attempts = (int) Cache::get($attemptKey, 0) + 1;
+            // tenant-cache:shared — même anti-bruteforce (#8058)
             Cache::put($attemptKey, $attempts, now()->addMinutes(15));
 
             if ($attempts >= self::MAX_LOGIN_ATTEMPTS) {
+                // tenant-cache:shared — même anti-bruteforce (#8058)
                 Cache::put($lockKey, true, now()->addMinutes(15));
             }
 
             return response()->json(['message' => __('auth.failed')], 401);
         }
 
+        // tenant-cache:shared — même anti-bruteforce (#8058)
         Cache::forget($attemptKey);
         Cache::forget($lockKey);
 

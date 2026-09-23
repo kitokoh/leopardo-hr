@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\CRM\Infrastructure\Services;
 
+use App\Shared\Support\TenantCache;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -21,6 +22,7 @@ final class EmailRateLimiter
         }
 
         $key = $this->key($companyId, $bucket);
+        // tenant-cache:via-helper — clé construite par TenantCache::keyFor (#8058)
         $cached = Cache::get($key, 0);
         $used = is_numeric($cached) ? (int) $cached : 0;
 
@@ -28,7 +30,9 @@ final class EmailRateLimiter
             return false;
         }
 
+        // tenant-cache:via-helper — clé construite par TenantCache::keyFor (#8058)
         Cache::add($key, 0, 3600);
+        // tenant-cache:via-helper — clé construite par TenantCache::keyFor (#8058)
         $after = (int) Cache::increment($key);
 
         return $after <= $limitPerHour;
@@ -36,6 +40,7 @@ final class EmailRateLimiter
 
     private function key(string $companyId, string $bucket): string
     {
-        return 'crm_email:'.$companyId.':'.$bucket.':'.now()->format('YmdH');
+        // #8058 — clé tenant via le helper central (préfixe company_id systématique)
+        return TenantCache::keyFor($companyId, 'crm_email:'.$bucket.':'.now()->format('YmdH'));
     }
 }
