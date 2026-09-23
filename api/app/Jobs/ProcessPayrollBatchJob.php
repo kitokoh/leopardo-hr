@@ -9,6 +9,7 @@ use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -16,7 +17,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class ProcessPayrollBatchJob implements ShouldQueue, TenantScopedJob
+class ProcessPayrollBatchJob implements ShouldBeUnique, ShouldQueue, TenantScopedJob
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -26,6 +27,18 @@ class ProcessPayrollBatchJob implements ShouldQueue, TenantScopedJob
     public int $tries = 3;
 
     public int $timeout = 600;
+
+    /**
+     * #8057 — deux workers ne doivent jamais traiter le même run de paie en
+     * parallèle : verrou d'unicité sur le payroll_run_id, tenu au plus
+     * timeout + marge (libéré automatiquement à la fin du job).
+     */
+    public int $uniqueFor = 660;
+
+    public function uniqueId(): string
+    {
+        return (string) $this->payrollRunId;
+    }
 
     public function __construct(
         private readonly int $payrollRunId,

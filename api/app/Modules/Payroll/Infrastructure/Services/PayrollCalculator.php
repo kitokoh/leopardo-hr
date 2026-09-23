@@ -219,11 +219,6 @@ class PayrollCalculator
             return $this->regularization->calculateRegularizationRun($run, $rules);
         }
 
-        /** @var Collection<int, Employee> $employees */
-        $employees = Employee::where('company_id', $companyId)
-            ->where('status', 'active')
-            ->get();
-
         /** @var Collection<int, SalaryStructure> $structuresCollection */
         $structuresCollection = SalaryStructure::where('company_id', $companyId)
             ->where('country_code', $run->country_code)
@@ -237,23 +232,15 @@ class PayrollCalculator
         /** @var SalaryStructure|null $defaultStructure */
         $defaultStructure = $structures->first();
 
-        // Issue #2687 (T026) : agrégats BATCH (attendance + congés) pour tous
-        // les employés en ~3 requêtes au lieu de ~5 par employé (1000 employés
-        // ≈ 15 requêtes au lieu de 5000+). Les méthodes par-employé restent
-        // inchangées quand l'agrégat n'est pas fourni (repli identique).
-        [$attendanceAgg, $leaveAgg] = $this->workInputAggregator->aggregateWorkInputs($run, $employees);
-
         DB::transaction(function () use (
             $run,
-            $employees,
+            $companyId,
             $structures,
             $defaultStructure,
             $rules,
             $rulesVersion,
             $rulesIdentifier,
-            $rulesPeriod,
-            $attendanceAgg,
-            $leaveAgg
+            $rulesPeriod
         ) {
             $run->paySlips()->delete();
 
@@ -262,37 +249,61 @@ class PayrollCalculator
             $totalNet = 0.0;
             $totalEmployerCost = 0.0;
 
-            foreach ($employees as $employee) {
-                // Issue #1587 : la structure salariale est résolue PAR EMPLOYÉ
-                // (employees.salary_structure_id) avec repli sur la structure
-                // par défaut de l'entreprise si non affecté — comportement
-                // historique (première structure active) préservé en fallback.
-                /** @var SalaryStructure|null $structure */
-                $structure = $employee->salary_structure_id !== null
-                    ? ($structures->get($employee->salary_structure_id) ?? $defaultStructure)
-                    : $defaultStructure;
-
-                if ($structure === null) {
-                    continue;
-                }
-
-                $slip = $this->calculateSlip(
+            // #8057 — robustesse mémoire : plus de Employee::...->get() global
+            // (OOM prévisible sur un conteneur 512 Mo). Les employés sont
+            // traités par lots de 200 via chunkById() ; les agrégats batch
+            // (attendance + congés, issue #2687) sont calculés PAR LOT (~3
+            // requêtes par lot de 200 au lieu de ~5 par employé).
+            Employee::where('company_id', $companyId)
+                ->where('status', 'active')
+                ->chunkById(200, function (Collection $employees) use (
                     $run,
-                    $employee,
-                    $structure,
+                    $structures,
+                    $defaultStructure,
                     $rules,
                     $rulesVersion,
                     $rulesIdentifier,
                     $rulesPeriod,
-                    $attendanceAgg[$employee->id] ?? null,
-                    $leaveAgg[$employee->id] ?? null
-                );
+                    &$totalGross,
+                    &$totalDeductions,
+                    &$totalNet,
+                    &$totalEmployerCost
+                ): void {
+                    /** @var Collection<int, Employee> $employees */
+                    [$attendanceAgg, $leaveAgg] = $this->workInputAggregator->aggregateWorkInputs($run, $employees);
 
-                $totalGross += (float) $slip->gross_salary;
-                $totalDeductions += (float) $slip->total_deductions;
-                $totalNet += (float) $slip->net_salary;
-                $totalEmployerCost += (float) $slip->total_cost;
-            }
+                    foreach ($employees as $employee) {
+                        // Issue #1587 : la structure salariale est résolue PAR EMPLOYÉ
+                        // (employees.salary_structure_id) avec repli sur la structure
+                        // par défaut de l'entreprise si non affecté — comportement
+                        // historique (première structure active) préservé en fallback.
+                        /** @var SalaryStructure|null $structure */
+                        $structure = $employee->salary_structure_id !== null
+                            ? ($structures->get($employee->salary_structure_id) ?? $defaultStructure)
+                            : $defaultStructure;
+
+                        if ($structure === null) {
+                            continue;
+                        }
+
+                        $slip = $this->calculateSlip(
+                            $run,
+                            $employee,
+                            $structure,
+                            $rules,
+                            $rulesVersion,
+                            $rulesIdentifier,
+                            $rulesPeriod,
+                            $attendanceAgg[$employee->id] ?? null,
+                            $leaveAgg[$employee->id] ?? null
+                        );
+
+                        $totalGross += (float) $slip->gross_salary;
+                        $totalDeductions += (float) $slip->total_deductions;
+                        $totalNet += (float) $slip->net_salary;
+                        $totalEmployerCost += (float) $slip->total_cost;
+                    }
+                });
 
             $run->update([
                 'status' => 'calculated',

@@ -9,7 +9,7 @@ use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Support\CountryDefaults;
 use App\Support\CsvCellSanitizer;
-use Illuminate\Support\Collection;
+use Illuminate\Support\LazyCollection;
 use Throwable;
 
 /**
@@ -27,10 +27,18 @@ class BankExportGenerator
      */
     public function generate(PayrollRun $run, string $format, ?array $companyBank = null): string
     {
+        // #8057 — robustesse mémoire : plus de ->get() (OOM prévisible sur un
+        // conteneur 512 Mo dès que la volumétrie croît). Le nombre de lignes et
+        // le total sont calculés en SQL (agrégats), et les bulletins sont
+        // streamés par lots de 500 via lazyById() — chaque générateur ne les
+        // itère qu'une seule fois.
+        $slipCount = (int) $run->paySlips()->where('status', 'validated')->count();
+        $slipTotal = (float) $run->paySlips()->where('status', 'validated')->sum('net_salary');
+
         $slips = $run->paySlips()
             ->with('employee:id,first_name,last_name,iban,bank_account')
             ->where('status', 'validated')
-            ->get();
+            ->lazyById(500);
 
         // sepa_xml/csv_generic/virement_ma are multi-country formats, so
         // their currency must follow the payroll run's own country. ccp_dz/
@@ -40,12 +48,12 @@ class BankExportGenerator
         $currency = CountryDefaults::for($run->country_code)['currency'];
 
         return match ($format) {
-            'sepa_xml' => $this->generateSepaExport($run, $slips, $currency, $companyBank),
-            'ccp_dz' => $this->generateCcpAlgerie($run, $slips),
-            'cpa_dz' => $this->generateCpaBna($run, $slips, 'CPA'),
-            'bna_dz' => $this->generateCpaBna($run, $slips, 'BNA'),
-            'cnep_dz' => $this->generateCnep($run, $slips),
-            'edx_dz' => $this->generateEdx($run, $slips),
+            'sepa_xml' => $this->generateSepaExport($run, $slips, $slipCount, $slipTotal, $currency, $companyBank),
+            'ccp_dz' => $this->generateCcpAlgerie($run, $slips, $slipCount, $slipTotal),
+            'cpa_dz' => $this->generateCpaBna($run, $slips, $slipCount, $slipTotal, 'CPA'),
+            'bna_dz' => $this->generateCpaBna($run, $slips, $slipCount, $slipTotal, 'BNA'),
+            'cnep_dz' => $this->generateCnep($run, $slips, $slipCount, $slipTotal),
+            'edx_dz' => $this->generateEdx($run, $slips, $slipCount, $slipTotal),
             'virement_ma' => $this->generateCsvGeneric($run, $slips, $currency),
             'csv_generic' => $this->generateCsvGeneric($run, $slips, $currency),
             default => throw new \InvalidArgumentException("Unsupported bank export format: {$format}"),
@@ -91,12 +99,11 @@ class BankExportGenerator
         ];
     }
 
-    /** @param Collection<int, PaySlip> $slips */
     /**
-     * @param  Collection<int, PaySlip>  $slips
+     * @param  LazyCollection<int, PaySlip>  $slips
      * @param  array<string, mixed>|null  $companyBank
      */
-    private function generateSepaExport(PayrollRun $run, Collection $slips, string $currency, ?array $companyBank = null): string
+    private function generateSepaExport(PayrollRun $run, LazyCollection $slips, int $slipCount, float $slipTotal, string $currency, ?array $companyBank = null): string
     {
         $bank = $companyBank ?? $this->companyBankDetails($run);
 
@@ -106,7 +113,7 @@ class BankExportGenerator
             );
         }
 
-        return $this->generateSepaXml($run, $slips, $currency, $bank['iban'], $bank['bic']);
+        return $this->generateSepaXml($run, $slips, $slipCount, $slipTotal, $currency, $bank['iban'], $bank['bic']);
     }
 
     public function fileExtension(string $format): string
@@ -139,9 +146,12 @@ class BankExportGenerator
         };
     }
 
+    /** @param LazyCollection<int, PaySlip> $slips */
     private function generateSepaXml(
         PayrollRun $run,
-        Collection $slips,
+        LazyCollection $slips,
+        int $slipCount,
+        float $slipTotal,
         string $currency = 'EUR',
         ?string $companyIban = null,
         ?string $companyBic = null,
@@ -153,8 +163,8 @@ class BankExportGenerator
         }
 
         $msgId = 'LEO-'.now()->format('YmdHis').'-'.$run->id;
-        $nbTransactions = $slips->count();
-        $totalAmount = $slips->sum('net_salary');
+        $nbTransactions = $slipCount;
+        $totalAmount = $slipTotal;
         $creationDate = now()->toIso8601String();
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
@@ -199,11 +209,12 @@ class BankExportGenerator
         return $xml;
     }
 
-    private function generateCcpAlgerie(PayrollRun $run, Collection $slips): string
+    /** @param LazyCollection<int, PaySlip> $slips */
+    private function generateCcpAlgerie(PayrollRun $run, LazyCollection $slips, int $slipCount, float $slipTotal): string
     {
         $lines = [];
         $lines[] = str_pad('ENTETE', 120);
-        $lines[] = 'H'.str_pad('LEOPARDO', 30).now()->format('dmY').str_pad((string) $slips->count(), 6, '0', STR_PAD_LEFT).str_pad(number_format($slips->sum('net_salary'), 2, '', ''), 15, '0', STR_PAD_LEFT);
+        $lines[] = 'H'.str_pad('LEOPARDO', 30).now()->format('dmY').str_pad((string) $slipCount, 6, '0', STR_PAD_LEFT).str_pad(number_format($slipTotal, 2, '', ''), 15, '0', STR_PAD_LEFT);
 
         $seq = 1;
         foreach ($slips as $slip) {
@@ -216,12 +227,13 @@ class BankExportGenerator
             $seq++;
         }
 
-        $lines[] = 'T'.str_pad((string) $slips->count(), 6, '0', STR_PAD_LEFT).str_pad(number_format($slips->sum('net_salary'), 2, '', ''), 15, '0', STR_PAD_LEFT);
+        $lines[] = 'T'.str_pad((string) $slipCount, 6, '0', STR_PAD_LEFT).str_pad(number_format($slipTotal, 2, '', ''), 15, '0', STR_PAD_LEFT);
 
         return implode("\r\n", $lines)."\r\n";
     }
 
-    private function generateCsvGeneric(PayrollRun $run, Collection $slips, string $currency = 'EUR'): string
+    /** @param LazyCollection<int, PaySlip> $slips */
+    private function generateCsvGeneric(PayrollRun $run, LazyCollection $slips, string $currency = 'EUR'): string
     {
         $csv = "employee_id,first_name,last_name,iban,bank_account,net_salary,currency,period\n";
 
@@ -245,19 +257,20 @@ class BankExportGenerator
         return $csv;
     }
 
-    private function generateCpaBna(PayrollRun $run, Collection $slips, string $bank): string
+    /** @param LazyCollection<int, PaySlip> $slips */
+    private function generateCpaBna(PayrollRun $run, LazyCollection $slips, int $slipCount, float $slipTotal, string $bank): string
     {
         $lines = [];
         $batchDate = now()->format('dmY');
         $batchRef = strtoupper($bank).'-'.now()->format('YmdHis').'-'.$run->id;
-        $totalAmount = $slips->sum('net_salary');
+        $totalAmount = $slipTotal;
 
         $lines[] = implode('|', [
             'HEADER',
             $bank,
             $batchRef,
             $batchDate,
-            (string) $slips->count(),
+            (string) $slipCount,
             number_format($totalAmount, 2, '.', ''),
             'DZD',
             'LEOPARDO RH',
@@ -284,7 +297,7 @@ class BankExportGenerator
 
         $lines[] = implode('|', [
             'FOOTER',
-            (string) $slips->count(),
+            (string) $slipCount,
             number_format($totalAmount, 2, '.', ''),
         ]);
 
@@ -300,21 +313,21 @@ class BankExportGenerator
      * ⚠️ Format à valider avec CNEP Banque avant usage réel (même niveau de
      * confiance `pilot` que les formats ccp_dz/cpa_dz/bna_dz existants).
      *
-     * @param  Collection<int, PaySlip>  $slips
+     * @param  LazyCollection<int, PaySlip>  $slips
      */
-    private function generateCnep(PayrollRun $run, Collection $slips): string
+    private function generateCnep(PayrollRun $run, LazyCollection $slips, int $slipCount, float $slipTotal): string
     {
         $lines = [];
         $batchDate = now()->format('dmY');
         $batchRef = 'CNEP-'.now()->format('YmdHis').'-'.$run->id;
-        $totalAmount = $slips->sum('net_salary');
+        $totalAmount = $slipTotal;
 
         $lines[] = implode('|', [
             'HEADER',
             'CNEP',
             $batchRef,
             $batchDate,
-            (string) $slips->count(),
+            (string) $slipCount,
             number_format($totalAmount, 2, '.', ''),
             'DZD',
             'LEOPARDO RH',
@@ -341,7 +354,7 @@ class BankExportGenerator
 
         $lines[] = implode('|', [
             'FOOTER',
-            (string) $slips->count(),
+            (string) $slipCount,
             number_format($totalAmount, 2, '.', ''),
         ]);
 
@@ -358,18 +371,18 @@ class BankExportGenerator
      * ⚠️ Convention interne documentée — le gabarit exact des colonnes est
      * à confirmer avec la banque émettrice avant usage en production.
      *
-     * @param  Collection<int, PaySlip>  $slips
+     * @param  LazyCollection<int, PaySlip>  $slips
      */
-    private function generateEdx(PayrollRun $run, Collection $slips): string
+    private function generateEdx(PayrollRun $run, LazyCollection $slips, int $slipCount, float $slipTotal): string
     {
         $lines = [];
-        $totalAmount = $slips->sum('net_salary');
+        $totalAmount = $slipTotal;
         $batchRef = 'EDX-'.now()->format('YmdHis').'-'.$run->id;
 
         // Entête : H + référence lot + date (dmY) + nombre + total (15,2).
         $lines[] = 'H'.str_pad(substr($batchRef, 0, 20), 20)
             .str_pad(now()->format('dmY'), 8)
-            .str_pad((string) $slips->count(), 6, '0', STR_PAD_LEFT)
+            .str_pad((string) $slipCount, 6, '0', STR_PAD_LEFT)
             .str_pad(number_format($totalAmount, 2, '.', ''), 15, '0', STR_PAD_LEFT)
             .str_pad('DZD', 3);
 
@@ -389,7 +402,7 @@ class BankExportGenerator
         }
 
         // Fin : F + nombre (6) + total (15,2).
-        $lines[] = 'F'.str_pad((string) $slips->count(), 6, '0', STR_PAD_LEFT)
+        $lines[] = 'F'.str_pad((string) $slipCount, 6, '0', STR_PAD_LEFT)
             .str_pad(number_format($totalAmount, 2, '.', ''), 15, '0', STR_PAD_LEFT);
 
         return implode("\r\n", $lines)."\r\n";

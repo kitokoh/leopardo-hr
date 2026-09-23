@@ -11,6 +11,7 @@ use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\BankExportGenerator;
 use App\Support\SafeErrorMessage;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -32,7 +33,7 @@ use Throwable;
  * `BankExport` row immediately and dispatches this job to do the actual
  * work on the `documents` queue.
  */
-class GenerateBankExportJob implements ShouldQueue, TenantScopedJob
+class GenerateBankExportJob implements ShouldBeUnique, ShouldQueue, TenantScopedJob
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -42,6 +43,18 @@ class GenerateBankExportJob implements ShouldQueue, TenantScopedJob
     public int $tries = 3;
 
     public int $timeout = 120;
+
+    /**
+     * #8057 — deux workers ne doivent jamais générer le même bordereau en
+     * parallèle : verrou d'unicité sur le bank_export_id, tenu au plus
+     * timeout + marge (libéré automatiquement à la fin du job).
+     */
+    public int $uniqueFor = 180;
+
+    public function uniqueId(): string
+    {
+        return (string) $this->bankExportId;
+    }
 
     private ?string $resolvedCompanyId = null;
 

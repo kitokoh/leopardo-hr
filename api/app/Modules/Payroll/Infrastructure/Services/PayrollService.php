@@ -85,16 +85,30 @@ class PayrollService
 
     public function validate(Payroll $payroll, Employee $validator): Payroll
     {
+        // Fast path (hors verrou) : instance déjà connue comme validée.
         if ($payroll->status === 'validated') {
             throw new PayrollAlreadyValidatedException;
         }
 
         DB::transaction(function () use ($payroll, $validator): void {
-            $payroll->update(['status' => 'validated', 'validated_by' => $validator->id, 'validated_at' => Carbon::now()]);
+            // #8057 — TOCTOU : le check ci-dessus est hors transaction ; deux
+            // requêtes concurrentes pouvaient le passer toutes les deux puis
+            // valider deux fois (double déduction d'avance sur salaire). On
+            // re-lit donc le payroll SOUS lockForUpdate() DANS la transaction
+            // et on re-vérifie le statut avant toute écriture — le second
+            // appelant bloque sur le verrou puis reçoit l'exception.
+            /** @var Payroll $locked */
+            $locked = Payroll::query()->whereKey($payroll->getKey())->lockForUpdate()->firstOrFail();
 
-            if ($payroll->advance_deduction > 0) {
-                $remaining = $payroll->advance_deduction;
-                foreach (SalaryAdvance::where('employee_id', $payroll->employee_id)->where('status', 'active')->orderBy('created_at')->lockForUpdate()->get() as $advance) {
+            if ($locked->status === 'validated') {
+                throw new PayrollAlreadyValidatedException;
+            }
+
+            $locked->update(['status' => 'validated', 'validated_by' => $validator->id, 'validated_at' => Carbon::now()]);
+
+            if ($locked->advance_deduction > 0) {
+                $remaining = $locked->advance_deduction;
+                foreach (SalaryAdvance::where('employee_id', $locked->employee_id)->where('status', 'active')->orderBy('created_at')->lockForUpdate()->get() as $advance) {
                     if ($remaining <= 0) {
                         break;
                     }

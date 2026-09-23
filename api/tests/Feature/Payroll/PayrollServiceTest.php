@@ -198,6 +198,55 @@ class PayrollServiceTest extends TestCase
         $this->assertSame('active', $advance->status);
     }
 
+    /**
+     * #8057 — TOCTOU sur la validation : le check de statut initial est hors
+     * transaction. Une seconde requête concurrente (simulée ici par une
+     * instance STALE dont le statut en mémoire est encore `draft`) doit être
+     * rejetée par la re-vérification sous lockForUpdate() DANS la
+     * transaction — et l'avance sur salaire ne doit être déduite qu'UNE fois.
+     */
+    public function test_validate_rejects_concurrent_double_validation_and_deducts_advance_once(): void
+    {
+        $advance = SalaryAdvance::query()->forceCreate([
+            'company_id' => $this->company->id,
+            'employee_id' => $this->employee->id,
+            'amount' => 10000,
+            'status' => 'active',
+            'amount_remaining' => 6000,
+            'monthly_deduction' => 2500,
+            'validation_status' => 'employee_confirmed',
+        ]);
+
+        $service = new PayrollService();
+        $payroll = $service->create($this->manager, [
+            'employee_id' => $this->employee->id,
+            'period_month' => 7,
+            'period_year' => 2026,
+            'gross_salary' => 60000,
+            'advance_deduction' => 2500,
+        ]);
+
+        // Deuxième « requête » : même ligne, instance séparée, statut draft en
+        // mémoire — elle passe le fast-path hors transaction, comme dans la
+        // course réelle.
+        /** @var Payroll $stale */
+        $stale = Payroll::query()->findOrFail($payroll->id);
+
+        $service->validate($payroll, $this->manager);
+
+        try {
+            $service->validate($stale, $this->manager);
+            $this->fail('La seconde validation concurrente aurait dû être rejetée.');
+        } catch (PayrollAlreadyValidatedException) {
+            // attendu — re-check sous verrou dans la transaction.
+        }
+
+        // L'avance n'a été déduite qu'une seule fois (2 500, pas 5 000).
+        $advance->refresh();
+        $this->assertSame(3500.0, $advance->amount_remaining);
+        $this->assertSame('active', $advance->status);
+    }
+
     public function test_delete_removes_draft_and_rejects_validated(): void
     {
         $service = new PayrollService();
