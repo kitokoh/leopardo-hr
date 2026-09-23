@@ -7,9 +7,9 @@ namespace App\Modules\CRM\Application\Services;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Events\CrmTaskOverdue;
 use App\Modules\CRM\Domain\Models\CrmTask;
+use App\Modules\CRM\Domain\Models\CrmTaskReminder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Issue #5720 — Relances internes des tâches CRM en retard (idempotentes).
@@ -44,7 +44,7 @@ class CrmOverdueReminderService
         foreach ($tasks as $task) {
             $remindDate = $this->tenantRemindDate((string) $task->company_id, $now);
 
-            $inserted = DB::table('crm_task_reminders')->insertOrIgnore([
+            $inserted = CrmTaskReminder::query()->insertOrIgnore([
                 'company_id' => $task->company_id,
                 'task_id' => $task->id,
                 'remind_date' => $remindDate,
