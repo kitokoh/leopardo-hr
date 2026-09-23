@@ -127,8 +127,8 @@ export function WhyOpenSourceSection({ locale = 'fr' }: { locale?: AppLocale }) 
       <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(16,185,129,0.14),transparent_36%,rgba(34,211,238,0.10)),linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[length:100%_100%,48px_48px,48px_48px]" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ y: 24 }}
+          whileInView={{ y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="mx-auto max-w-3xl text-center"
@@ -153,8 +153,8 @@ export function WhyOpenSourceSection({ locale = 'fr' }: { locale?: AppLocale }) 
             return (
               <motion.article
                 key={card.title}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ y: 24 }}
+                whileInView={{ y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.55, delay: index * 0.1 }}
                 className="rounded-lg border border-white/10 bg-white/[0.06] p-6 shadow-2xl shadow-black/10 backdrop-blur"
@@ -170,8 +170,8 @@ export function WhyOpenSourceSection({ locale = 'fr' }: { locale?: AppLocale }) 
         </div>
 
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ y: 24 }}
+          whileInView={{ y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.55, delay: 0.2 }}
           className="mt-12 flex flex-wrap items-center justify-center gap-4"

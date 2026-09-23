@@ -63,8 +63,8 @@ export function ProductDemoVideo({ locale = 'fr' }: ProductDemoVideoProps) {
     <section className="relative py-20 overflow-hidden bg-white dark:bg-slate-950">
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ y: 20 }}
+          whileInView={{ y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="text-center mb-10"
@@ -78,8 +78,8 @@ export function ProductDemoVideo({ locale = 'fr' }: ProductDemoVideoProps) {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 30, scale: 0.98 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          initial={{ y: 30, scale: 0.98 }}
+          whileInView={{ y: 0, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.1 }}
           className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200/80 dark:border-slate-800/80 bg-slate-900"
