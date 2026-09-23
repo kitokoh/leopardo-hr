@@ -77,7 +77,7 @@ class PurgeAuditLogsCommand extends Command
                 // seraient alors JAMAIS purgés (violation rétention RGPD).
                 // La purge est une commande de maintenance par schéma —
                 // comportement pré-#7711 conservé : tout le schéma ambiant.
-                $query = AuditLog::query()->withoutGlobalScope('company')->where('created_at', '<', $cutoff);
+                $query = AuditLog::query()->crossTenantForSystemTask('purge retention RGPD par schema ambiant, logs plateforme company_id NULL inclus (#7711, #7960)')->where('created_at', '<', $cutoff);
                 $kept = (int) (clone $query)->count();
                 $deleted = 0;
 
