@@ -144,6 +144,7 @@ class BankExportGenerator
         };
     }
 
+    /** @param Enumerable<int, PaySlip> $slips */
     private function generateSepaXml(
         PayrollRun $run,
         Enumerable $slips,
@@ -204,6 +205,7 @@ class BankExportGenerator
         return $xml;
     }
 
+    /** @param Enumerable<int, PaySlip> $slips */
     private function generateCcpAlgerie(PayrollRun $run, Enumerable $slips): string
     {
         $lines = [];
@@ -226,6 +228,7 @@ class BankExportGenerator
         return implode("\r\n", $lines)."\r\n";
     }
 
+    /** @param Enumerable<int, PaySlip> $slips */
     private function generateCsvGeneric(PayrollRun $run, Enumerable $slips, string $currency = 'EUR'): string
     {
         $csv = "employee_id,first_name,last_name,iban,bank_account,net_salary,currency,period\n";
@@ -250,6 +253,7 @@ class BankExportGenerator
         return $csv;
     }
 
+    /** @param Enumerable<int, PaySlip> $slips */
     private function generateCpaBna(PayrollRun $run, Enumerable $slips, string $bank): string
     {
         $lines = [];
