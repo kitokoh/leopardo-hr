@@ -32,12 +32,7 @@ export { BlogArticle, type BlogArticleProps } from './BlogArticle';
 
 // Social Proof Components
 export { SocialProofMetrics, type SocialProofMetricsProps } from './SocialProofMetrics';
-export { TestimonialHighlight, type TestimonialHighlightProps } from './TestimonialHighlight';
-export { MiniCaseStudies, type MiniCaseStudiesProps } from './MiniCaseStudies';
 export { ProductScreenshots, type ProductScreenshotsProps } from './ProductScreenshots';
-export { MarketingReadinessSection } from './MarketingReadinessSection';
 export { WhyOpenSourceSection } from './WhyOpenSourceSection';
 export { TrustedBrands, type TrustedBrandsProps } from './TrustedBrands';
-export { OperationalProofSection, type OperationalProofSectionProps } from './OperationalProofSection';
-export { LaunchOperatingSystemSection } from './LaunchOperatingSystemSection';
 export { ProductDemoVideo, type ProductDemoVideoProps } from './ProductDemoVideo';

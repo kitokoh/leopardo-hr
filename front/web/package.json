@@ -9,6 +9,8 @@
     "lint": "eslint src --max-warnings 0",
     "lint:e2e": "eslint e2e --max-warnings 0",
     "check:mojibake": "node scripts/check-mojibake.mjs",
+    "check:assets": "node scripts/check-brand-assets.mjs",
+    "check:orphans": "node scripts/check-orphan-pages.mjs",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
