@@ -98,13 +98,14 @@ Si la réponse est **non**, ce document n'a pas sa place ici.
 
 ### Ce qui est exclu
 
-- Templates opérationnels détaillés (CRM, emails, scripts sociaux) — voir `docs/GTM/`
+- Templates opérationnels de vente détaillés (scripts de relance, modèles CRM) — voir `docs/business/vente/`
 - Calendriers éditoriaux spécifiques
 - Contenus publicitaires (ads copy, landing pages)
 - Automatisation marketing produit
 
-Ces éléments opérationnels doivent être dans des dossiers séparés (`docs/GTM/`,
-`docs/STRATEGIE_COMMERCIALE/`, etc.) et non dans le dossier stratégique `GOTO_MARKET`.
+L'exécution **vente** vit dans `docs/business/vente/` (consolidation #7844 phase 1) ; ce
+dossier-ci reste la **stratégie** GTM et accueille aussi les outils de prospection issus
+de l'ancien `docs/GTM/` (`TEMPLATES_PROSPECTION.md`, `CAS_CLIENTS.md`, `GOOD_FIRST_ISSUES.md`).
 
 ---
 

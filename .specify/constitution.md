@@ -1,4 +1,4 @@
-# Leopardo HR Constitution
+# Leopardo Constitution
 
 > Ce document est la loi fondamentale du projet. Il prime sur tout autre document.
 > Tout agent IA doit le lire avant de commencer la moindre tâche.
@@ -154,7 +154,7 @@ Règle : tout PR qui fait passer un pays de `placeholder` → `pilot` doit :
 
 ## X. Produit — Vision Non Négociable
 
-**Leopardo HR est un Company OS mobile-first pour PME terrain (5–250 employés).**
+**Leopardo est un Company OS mobile-first pour PME terrain (5–250 employés) — une suite métier, jamais « logiciel RH » comme catégorie (charte #7428, `docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md`).**
 
 - Mobile employee (`leopardo_employee`) = app prioritaire — builds toujours verts
 - Paie DZ = wedge commercial — conformité maximale avant expansion
