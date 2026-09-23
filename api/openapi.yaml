@@ -41644,7 +41644,9 @@ paths:
         client). Retourne reference (non énumérable) + tracking_code présenté
         UNE seule fois (seul son hash est stocké). Rejeu du même
         idempotency_key -> la même réservation (200, created=false).
-        Overbooking refusé (422). 404 fail-closed comme la fiche.
+        Overbooking refusé (409 HOSPITALITY_NO_AVAILABILITY — même code
+        métier que l'endpoint interne HOSP-004). 404 fail-closed comme la
+        fiche.
       security: []
       parameters:
       - name: slug
@@ -41697,6 +41699,8 @@ paths:
           description: Rejeu idempotent (même idempotency_key) - réservation existante, created=false, tracking_code NON renvoyé
         '404':
           $ref: '#/components/responses/Error404'
+        '409':
+          description: Overbooking refusé - HOSPITALITY_NO_AVAILABILITY (aucune unité disponible du type demandé sur l'intervalle)
         '422':
           $ref: '#/components/responses/Error422'
 

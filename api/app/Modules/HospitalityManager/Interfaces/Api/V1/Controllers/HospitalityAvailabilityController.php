@@ -22,8 +22,7 @@ class HospitalityAvailabilityController extends Controller
 
     public function __construct(
         private readonly HospitalityReservationService $reservations
-    ) {
-    }
+    ) {}
 
     public function show(Request $request, HospitalityProperty $property): JsonResponse
     {

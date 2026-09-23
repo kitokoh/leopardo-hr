@@ -23,8 +23,3 @@ GET /company-integration-requests
 # 2026-09-20). Les routes Laravel correspondantes sont livrées par HOSP-006
 # (#7948, en cours sur un lot parallèle) — purger ces 5 entrées au merge de
 # #7948 (la passe inverse signalera alors des entrées périmées, stale).
-GET /public/hospitality/properties/{param}
-GET /public/hospitality/properties/{param}/availability
-POST /public/hospitality/properties/{param}/reservations
-GET /public/hospitality/reservations/{param}
-POST /public/hospitality/reservations/{param}/cancel

@@ -27,6 +27,7 @@ use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityDash
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityModuleStatusController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityPropertyController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityPropertyStaffController;
+use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityPublicStayController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityReservationController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityRoomTypeController;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers\HospitalityUnitController;
@@ -81,4 +82,29 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
         // ── Tableau de bord (HOSP-004 #7946) ──────────────────────────
         Route::get('/dashboard/kpis', [HospitalityDashboardController::class, 'kpis']);
+    });
+
+// ── HOSP-006 (#7948, spec §6) — vitrine publique /stay ─────────────────
+// Routes isolées SANS auth ni middleware tenant (pattern RESTO-901/902) :
+// seuls les établissements opt-in (`is_public = true`) de sociétés saines
+// avec la verticale activée sont exposés, via DTO public strict et 404
+// fail-closed (`HospitalityPublicPropertyResolver`). Throttle dédié.
+Route::middleware(['throttle:hospitality-public'])
+    ->prefix('public/hospitality')
+    ->group(function (): void {
+        Route::get('/properties/{slug}', [HospitalityPublicStayController::class, 'show'])
+            ->where('slug', '[a-z0-9][a-z0-9\-]{0,159}')
+            ->name('hospitality.public.properties.show');
+        Route::get('/properties/{slug}/availability', [HospitalityPublicStayController::class, 'availability'])
+            ->where('slug', '[a-z0-9][a-z0-9\-]{0,159}')
+            ->name('hospitality.public.properties.availability');
+        Route::post('/properties/{slug}/reservations', [HospitalityPublicStayController::class, 'store'])
+            ->where('slug', '[a-z0-9][a-z0-9\-]{0,159}')
+            ->name('hospitality.public.reservations.store');
+        Route::get('/reservations/{reference}', [HospitalityPublicStayController::class, 'track'])
+            ->where('reference', '[A-Za-z0-9\-]{1,40}')
+            ->name('hospitality.public.reservations.track');
+        Route::post('/reservations/{reference}/cancel', [HospitalityPublicStayController::class, 'cancel'])
+            ->where('reference', '[A-Za-z0-9\-]{1,40}')
+            ->name('hospitality.public.reservations.cancel');
     });

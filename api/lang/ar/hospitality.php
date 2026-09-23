@@ -6,6 +6,7 @@ declare(strict_types=1);
 // HospitalityManager (PA2-I18N-007 : كل الرسائل عبر هذا الفهرس).
 return [
     'solution_inactive' => 'حل HospitalityManager غير مفعّل لهذا المستأجر.',
+    'room_type_unavailable' => 'هذا النوع من الغرف غير متاح لهذا العقار.',
     'no_availability' => 'لا يوجد توفر لهذا النوع من الغرف في هذه الفترة.',
     'invalid_transition' => 'انتقال حجز غير صالح (:from → :target).',
     'checkout_before_checkin' => 'يجب أن يكون تاريخ المغادرة بعد تاريخ الوصول.',
