@@ -7122,5 +7122,59 @@
         "billing": "Facturation"
       }
     }
+  },
+  "stay": {
+    "public": {
+      "notFoundTitle": "Établissement introuvable",
+      "metaDescription": "Découvrez {name} : chambres, tarifs et réservation en ligne, sans compte.",
+      "roomTypesTitle": "Chambres et tarifs",
+      "noRoomTypes": "Les chambres de cet établissement ne sont pas encore publiées.",
+      "pricePerNight": "{price} / nuit",
+      "propertyType": {
+        "hotel": "Hôtel",
+        "residence": "Résidence",
+        "apartment_building": "Immeuble d'appartements",
+        "guesthouse": "Maison d'hôtes"
+      },
+      "bookingTitle": "Réserver en ligne",
+      "checkInLabel": "Arrivée",
+      "checkOutLabel": "Départ",
+      "adultsLabel": "Voyageurs",
+      "searchAvailability": "Voir les disponibilités",
+      "searching": "Recherche…",
+      "datesError": "Choisissez une date d'arrivée et une date de départ valides.",
+      "searchError": "Impossible de récupérer les disponibilités. Réessayez dans un instant.",
+      "noAvailability": "Aucune chambre disponible sur ces dates.",
+      "noAvailabilityError": "Cette chambre n'est plus disponible sur ces dates. Relancez la recherche.",
+      "unitsAvailable": "{count} disponible(s)",
+      "soldOut": "Complet sur ces dates",
+      "guestNameLabel": "Nom du voyageur",
+      "emailLabel": "E-mail (optionnel)",
+      "phoneLabel": "Téléphone (optionnel)",
+      "guestNameError": "Indiquez le nom du voyageur.",
+      "book": "Réserver",
+      "booking": "Réservation…",
+      "bookingError": "La réservation a échoué. Réessayez dans un instant.",
+      "confirmedTitle": "Demande de réservation enregistrée",
+      "referenceLabel": "Référence",
+      "trackingCodeLabel": "Code de suivi",
+      "trackingCodeNotice": "Conservez précieusement ce code : il ne sera plus jamais affiché et permet de suivre ou d'annuler la réservation.",
+      "pendingExpiryNotice": "Sans confirmation de l'établissement sous 30 minutes, la demande expire automatiquement.",
+      "trackTitle": "Suivre ou annuler une réservation",
+      "trackAction": "Rechercher",
+      "trackFormError": "Indiquez la référence et le code de suivi.",
+      "trackNotFound": "Aucune réservation ne correspond à cette référence et ce code.",
+      "cancelAction": "Annuler la réservation",
+      "cancelError": "L'annulation a échoué. Réessayez dans un instant.",
+      "statusLabel": "Statut",
+      "status": {
+        "pending": "En attente de confirmation",
+        "confirmed": "Confirmée",
+        "checked_in": "Séjour en cours",
+        "checked_out": "Séjour terminé",
+        "cancelled": "Annulée",
+        "no_show": "Non présenté"
+      }
+    }
   }
 }
