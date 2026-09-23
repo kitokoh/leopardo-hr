@@ -19,28 +19,28 @@ type HighlightTestimonial = {
 
 const highlightByLocale: Record<AppLocale, HighlightTestimonial> = {
   fr: {
-    quote: "Depuis que nous utilisons Leopardo RH, nous avons reduit de 40% le temps consacre a l'administration RH. La paie multi-pays et le pointage biometrique ont transforme nos operations.",
+    quote: "Depuis que nous utilisons Leopardo, nous avons reduit de 40% le temps consacre a l'administration RH. La paie multi-pays et le pointage biometrique ont transforme nos operations.",
     name: 'Amina Diallo',
     role: 'Directrice des Ressources Humaines',
     company: 'Entreprise IT · 350 employés, 3 pays',
     avatar: 'AD',
   },
   en: {
-    quote: "Since adopting Leopardo RH, we cut HR admin time by 40%. Multi-country payroll and biometric attendance transformed our day-to-day operations across three offices.",
+    quote: "Since adopting Leopardo, we cut HR admin time by 40%. Multi-country payroll and biometric attendance transformed our day-to-day operations across three offices.",
     name: 'Amina Diallo',
     role: 'HR Director',
     company: 'IT Company · 350 employees, 3 countries',
     avatar: 'AD',
   },
   tr: {
-    quote: "Leopardo RH'yi kullanmaya basladigimizdan beri IK yonetim surelerimizi %40 azalttik. Cok ulkeli bordro ve biyometrik devam takibi operasyonlarimizi donusturdu.",
+    quote: "Leopardo'yi kullanmaya basladigimizdan beri IK yonetim surelerimizi %40 azalttik. Cok ulkeli bordro ve biyometrik devam takibi operasyonlarimizi donusturdu.",
     name: 'Amina Diallo',
     role: 'IK Direktoru',
     company: 'BT Şirketi · 350 çalışan, 3 ülke',
     avatar: 'AD',
   },
   ar: {
-    quote: "منذ اعتمادنا Leopardo RH، خفضنا وقت إدارة الموارد البشرية بنسبة 40%. الرواتب متعددة البلدان والحضور البيومتري غيّرا عملياتنا اليومية.",
+    quote: "منذ اعتمادنا Leopardo، خفضنا وقت إدارة الموارد البشرية بنسبة 40%. الرواتب متعددة البلدان والحضور البيومتري غيّرا عملياتنا اليومية.",
     name: 'Amina Diallo',
     role: 'مديرة الموارد البشرية',
     company: 'شركة تقنية · 350 موظف، 3 دول',

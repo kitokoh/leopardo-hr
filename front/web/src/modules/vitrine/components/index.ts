@@ -21,6 +21,8 @@ export { ParticleField } from './ParticleField';
 export { SolutionStack } from './hero/SolutionStack';
 // Leo en visuel d'entrée du héro + la pile 3D en section autonome (#7851).
 export { LeoHeroVisual } from './hero/LeoHeroVisual';
+// #8067 — héro produit-first : screenshot réel + badge GitHub statique.
+export { HeroProductShowcase, HeroGithubBadge } from './hero/HeroProductShowcase';
 export { SolutionStackSection } from './hero/SolutionStackSection';
 export { LegalPageShell } from './LegalPageShell';
 export { GoogleAuthButton } from './GoogleAuthButton';

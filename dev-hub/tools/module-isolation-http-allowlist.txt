@@ -1,0 +1,33 @@
+# Baseline des imports croisés depuis app/Http (issue #8059, audit 2026-09-22,
+# baseline générée le 2026-09-23). Même mécanique que module-isolation-allowlist.txt :
+# toute ligne ici représente une violation EXISTANTE et tolérée — ce fichier est
+# immuable depuis CI, tout NOUVEL import `use App\Modules\X\` sous app/Http
+# fait échouer la PR.
+# Trajectoire de résorption : rapatrier chaque Resource/Controller dans son
+# module propriétaire (Modules/X/Interfaces/Api/V1/Resources) puis retirer la ligne.
+# Format : Http/<sous-dossier> -> Modules/<Cible>
+
+Http/Controllers -> Modules/Attendance
+Http/Controllers -> Modules/HR
+Http/Controllers -> Modules/Payroll
+Http/Controllers -> Modules/Planning
+Http/Controllers -> Modules/Platform
+Http/Middleware -> Modules/Attendance
+Http/Middleware -> Modules/Billing
+Http/Middleware -> Modules/Communication
+Http/Middleware -> Modules/Delivery
+Http/Middleware -> Modules/RestaurantManager
+Http/Middleware -> Modules/Retail
+Http/Middleware -> Modules/Showcase
+Http/Middleware -> Modules/TravelAgency
+Http/Resources -> Modules/Attendance
+Http/Resources -> Modules/Billing
+Http/Resources -> Modules/Cabinet
+Http/Resources -> Modules/Expense
+Http/Resources -> Modules/Fleet
+Http/Resources -> Modules/HR
+Http/Resources -> Modules/Notification
+Http/Resources -> Modules/Payroll
+Http/Resources -> Modules/Planning
+Http/Resources -> Modules/Platform
+Http/Resources -> Modules/Recruitment

@@ -27,6 +27,6 @@ describe('ProductDemoVideo', () => {
 
   it('renders localized copy for the English locale', () => {
     render(<ProductDemoVideo locale="en" />);
-    expect(screen.getByText('See Leopardo RH in action')).toBeInTheDocument();
+    expect(screen.getByText('See Leopardo in action')).toBeInTheDocument();
   });
 });

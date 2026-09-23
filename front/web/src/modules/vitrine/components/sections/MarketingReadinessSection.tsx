@@ -24,7 +24,7 @@ const copyByLocale: Record<AppLocale, ReadinessCopy> = {
     badge: 'Pret pour votre lancement RH',
     title: 'Du premier clic au premier bulletin,',
     highlight: 'tout est relie.',
-    subtitle: 'Leopardo RH transforme votre trafic marketing en espace client actif : demo, guide, inscription, dashboard, mobile et kiosque.',
+    subtitle: 'Leopardo transforme votre trafic marketing en espace client actif : demo, guide, inscription, dashboard, mobile et kiosque.',
     cards: [
       { title: 'Voir le produit en action', text: 'Un parcours demo clair pour comprendre la valeur avant achat.', href: '/demo', cta: 'Planifier une demo' },
       { title: 'Lire les guides RH', text: 'Des contenus concrets pour attirer managers, RH et dirigeants.', href: '/blog', cta: 'Explorer le blog' },
@@ -36,7 +36,7 @@ const copyByLocale: Record<AppLocale, ReadinessCopy> = {
     badge: 'Ready for your HR launch',
     title: 'From first click to first pay slip,',
     highlight: 'everything is connected.',
-    subtitle: 'Leopardo RH turns marketing traffic into an active client workspace: demo, guide, signup, dashboard, mobile, and kiosk.',
+    subtitle: 'Leopardo turns marketing traffic into an active client workspace: demo, guide, signup, dashboard, mobile, and kiosk.',
     cards: [
       { title: 'See the product live', text: 'A clear demo path to understand value before purchase.', href: '/demo', cta: 'Book a demo' },
       { title: 'Read HR guides', text: 'Practical content for managers, HR leaders, and founders.', href: '/blog', cta: 'Explore the blog' },
@@ -48,7 +48,7 @@ const copyByLocale: Record<AppLocale, ReadinessCopy> = {
     badge: 'IK lansmani icin hazir',
     title: 'Ilk tiklamadan ilk bordroya,',
     highlight: 'her sey bagli.',
-    subtitle: 'Leopardo RH pazarlama trafigini aktif musteri deneyimine donusturur: demo, rehber, kayit, panel, mobil ve kiosk.',
+    subtitle: 'Leopardo pazarlama trafigini aktif musteri deneyimine donusturur: demo, rehber, kayit, panel, mobil ve kiosk.',
     cards: [
       { title: 'Urunu canli gorun', text: 'Satinalmadan once degeri anlamak icin net demo akisi.', href: '/demo', cta: 'Demo planla' },
       { title: 'IK rehberlerini okuyun', text: 'Yoneticiler, IK ekipleri ve kurucular icin pratik icerik.', href: '/blog', cta: 'Blogu kesfet' },
@@ -60,7 +60,7 @@ const copyByLocale: Record<AppLocale, ReadinessCopy> = {
     badge: 'جاهز لإطلاق تجربة الموارد البشرية',
     title: 'من أول زيارة إلى أول كشف راتب،',
     highlight: 'كل شيء مترابط.',
-    subtitle: 'يربط Leopardo RH العرض التجريبي، الأدلة، التسجيل، لوحة التحكم، الجوال والكشك في رحلة عميل واحدة.',
+    subtitle: 'يربط Leopardo العرض التجريبي، الأدلة، التسجيل، لوحة التحكم، الجوال والكشك في رحلة عميل واحدة.',
     cards: [
       { title: 'شاهد المنتج', text: 'مسار عرض واضح قبل قرار الشراء.', href: '/demo', cta: 'احجز عرضا' },
       { title: 'اقرأ أدلة الموارد البشرية', text: 'موارد عملية للموارد البشرية والمديرين.', href: '/blog', cta: 'استكشف المدونة' },

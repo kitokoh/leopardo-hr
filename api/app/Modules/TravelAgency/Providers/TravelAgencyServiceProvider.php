@@ -101,7 +101,9 @@ class TravelAgencyServiceProvider extends ServiceProvider
 
         // Commandes artisan du module (hors app/Console/Commands → enregistrement
         // explicite, pattern CRM #5729). travel:outbox-dispatch et
-        // travel:webhook-dispatch sont consommées par le scheduler (bootstrap/app.php)
+        // travel:webhook-dispatch sont consommées par le scheduler
+        // (api/routes/console.php — jamais deux fois : le doublon de
+        // bootstrap/app.php a été retiré le 2026-09-22 pour le quota Neon)
         // et par les tests d'intégration ; l'implémentation canonique vit dans le
         // module (l'ancien doublon racine App\Console\Commands\TravelOutboxDispatchCommand
         // a été supprimé lors de la consolidation CI 2026-09-04).

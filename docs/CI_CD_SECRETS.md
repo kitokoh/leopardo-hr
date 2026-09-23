@@ -58,6 +58,7 @@
 | `BACKUP_AGE_IDENTITY` | `database-backup.yml` | Contenu de la clé privée `age` matérialisée en fichier éphémère du runner pour le drill de restauration mensuel (#7657 — ligne manquante repérée par la garde #7271 lors du lot #7740) | Optional (restore drill) |
 | `BACKUP_AGE_RECIPIENT` | `database-backup.yml` | `age` public recipient for backup encryption | Optional (encryption feature) |
 | `DATABASE_URL` | `database-backup.yml` | Production DB connection string to back up | Required for backups |
+| `B2_KEY_ID` / `B2_APP_KEY` / `B2_BUCKET_NAME` | `db-standby-failover.yml` | Identifiants Backblaze B2 (API **native**) et bucket d'archive des sauvegardes chiffrées (`leopardos`). L'API S3 de B2 refuse la clé applicative du compte (« Malformed Access Key Id », 2026-09-21) : le workflow utilise donc l'API native | Required for off-GitHub backup archives |
 | `STANDBY_DATABASE_URL` | `db-standby-failover.yml` | Chaîne de connexion de la base de **secours** (projet Neon `leopardo-standby`, aws-eu-central-1) — cible de bascule automatique du watchdog quand la base active épuise son quota mensuel ou tombe | Required for auto-failover |
 | `RESTORE_DB_URL` | `database-backup.yml` | Scratch DB connection string used by the monthly restore drill | Required for the restore-drill job only |
 | `CI_SMTP_SERVER` / `CI_SMTP_USERNAME` / `CI_SMTP_PASSWORD` | `tests.yml` | SMTP creds for emailing the CI report | Optional (email step is skipped if unset) |
@@ -179,6 +180,8 @@ le retard de déploiement doit être visible. Runbook : `docs/ops/travel-web-ver
 | `MERGE_DAILY_QUOTA` | `merge-quota-guard.yml` | Nombre maximal de merges sur `main` par 24 h | `25` |
 | `FIX_FEAT_RATIO_DAYS` / `FIX_FEAT_RATIO_WARN` / `FIX_FEAT_RATIO_MAX` / `FIX_FEAT_RATIO_ENFORCE` | `fix-feat-ratio-guard.yml`, `fix-feat-ratio-report.yml` | Fenêtre d'observation, seuils d'alerte, seuil max et activation du blocage du ratio fix/feat | `30` / `2.5` / `3.5` / `false` |
 | `QUEUE_MAX_PENDING` / `QUEUE_MAX_FAILED` / `QUEUE_MAX_STALE_MINUTES` | `queue-supervision.yml` | Seuils d'alerte de la queue (jobs en attente, jobs échoués, ancienneté) | `50` / `10` / `10` |
+| `PROD_CATCHUP_MAX_AGE_HOURS` | `deploy-main-catchup.yml` (job `prod-catch-up`, #8092) | Âge (heures) au-delà duquel un deploy prod live SANS commit lisible (`commit: null`, héritage pré-#8092) est considéré en retard et rattrapé | `6` |
+| `PROD_DRIFT_MAX_AGE_HOURS` | `deploy-drift-guard.yml` (rapport prod↔main, #8092) | Âge (heures) du premier commit non déployé au-delà duquel le rapport prod↔main passe de `::warning` à échec rouge | `24` |
 
 ### Propriété et rotation
 

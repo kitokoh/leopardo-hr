@@ -191,15 +191,22 @@ jobs:
       # #7648 : écart prod ↔ main VISIBLE. Le check « tag » ci-dessus dit si
       # la prod sert le dernier tag publié ; il ne dit PAS de combien main a
       # avancé depuis. Ce rapport mesure les commits/jours entre la version
-      # servie par la prod et origin/main, sans jamais faire échouer le job
-      # (report-only) et sans secret supplémentaire (RENDER_API_KEY inutile :
-      # health public + API GitHub avec github.token).
-      - name: "Rapport #7648 — écart prod ↔ main"
+      # servie par la prod et origin/main, sans secret supplémentaire
+      # (health public + API GitHub avec github.token).
+      # #8092 : le rapport seul ne suffisait pas — la prod a tourné ~2 jours
+      # derrière main sans que personne ne le voie (les ::warning d'un run
+      # planifié vert ne sont lus par personne). Au-delà d'un ÂGE seuil du
+      # retard (heures depuis le PREMIER commit non déployé,
+      # vars.PROD_DRIFT_MAX_AGE_HOURS, défaut 24 h), ce step ÉCHOUE : le run
+      # planifié devient rouge, donc visible. Sous le seuil, il reste
+      # report-only (publier une Release reste une décision propriétaire).
+      - name: "Rapport #7648 / alerte #8092 — écart prod ↔ main"
         if: ${{ !cancelled() && matrix.mode == 'tag' && steps.target.outputs.skip != 'true' }}
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           TARGET_URL: ${{ steps.target.outputs.url }}
+          MAX_AGE_HOURS: ${{ vars.PROD_DRIFT_MAX_AGE_HOURS || 24 }}
         run: |
           set -uo pipefail
 
@@ -236,6 +243,15 @@ jobs:
           if [[ -n "${base_date}" ]]; then
             days=$(( ( $(date -u +%s) - $(date -u -d "${base_date}" +%s) ) / 86400 ))
           fi
+          # #8092 : âge du RETARD = ancienneté du plus VIEUX commit non déployé
+          # (commits[0] du compare), pas celle du commit déployé — un merge
+          # d'il y a 1 h sur une prod déployée il y a 5 jours n'a qu'1 h de
+          # retard.
+          oldest_pending_date="$(jq -r '.commits[0].commit.committer.date // empty' <<<"${compare}")"
+          lag_hours=""
+          if [[ -n "${oldest_pending_date}" ]]; then
+            lag_hours=$(( ( $(date -u +%s) - $(date -u -d "${oldest_pending_date}" +%s) ) / 3600 ))
+          fi
 
           {
             echo "### Écart prod ↔ main (#7648)"
@@ -245,6 +261,7 @@ jobs:
             echo "| Version servie (prod) | \`${deployed}\` (ref \`${ref_used}\`, ${base_sha:0:7}) |"
             echo "| Commits de main non déployés | **${gap:-?}** |"
             echo "| Date du commit déployé | ${base_date:-inconnue}${days:+ (${days} j)} |"
+            echo "| Âge du retard (1er commit non déployé) | ${lag_hours:-—}${lag_hours:+ h} (seuil ${MAX_AGE_HOURS} h — #8092) |"
             echo ""
             if [[ "${gap:-0}" =~ ^[0-9]+$ && "${gap}" -gt 0 ]]; then
               echo "> ⚠️ La prod est **${gap} commit(s)** derrière \`main\`${days:+ (dernier code déployé vieux de ${days} jour(s))}. Déployer = publier une Release (action propriétaire, cf. docs/ops/RENDER_DEV_PROD_TOPOLOGY.md)."
@@ -254,7 +271,11 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
           if [[ "${gap:-0}" =~ ^[0-9]+$ && "${gap}" -gt 0 ]]; then
-            echo "::warning::prod↔main (#7648) : ${gap} commit(s) de main non déployé(s) en prod${days:+ — dernier code déployé vieux de ${days} jour(s)} (version servie : ${deployed}). Publier une Release pour déployer (décision propriétaire)."
+            if [[ -n "${lag_hours}" && "${lag_hours}" -ge "${MAX_AGE_HOURS}" ]]; then
+              echo "::error::prod↔main (#8092) : la prod est ${gap} commit(s) derrière main depuis ${lag_hours} h (seuil ${MAX_AGE_HOURS} h) — déploiement prod requis (Release, ou rattrapage deploy-main-catchup / runbook docs/ops/RENDER_DEV_PROD_TOPOLOGY.md)."
+              exit 1
+            fi
+            echo "::warning::prod↔main (#7648) : ${gap} commit(s) de main non déployé(s) en prod${lag_hours:+ — retard âgé de ${lag_hours} h}${days:+ (dernier code déployé vieux de ${days} jour(s))} (version servie : ${deployed}). Publier une Release pour déployer (décision propriétaire)."
           else
             echo "prod↔main (#7648) : aucun écart (version servie : ${deployed})."
           fi

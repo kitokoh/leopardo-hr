@@ -85,7 +85,7 @@ export const docsCategoriesCopy: Record<AppLocale, DocsCategory[]> = {
       iconKey: 'zap',
       color: 'emerald',
       items: [
-        { title: 'Introduction', desc: "Vue d'ensemble de Leopardo RH — Mobile-First Company OS", href: '/docs#intro' },
+        { title: 'Introduction', desc: "Vue d'ensemble de Leopardo — Mobile-First Company OS", href: '/docs#intro' },
         { title: 'Inscription & premier tenant', desc: 'Créer un compte et configurer votre entreprise', href: '/docs#api-quickstart' },
         { title: 'Inviter votre équipe', desc: 'Ajouter des managers et des employés', href: '/docs#api-quickstart' },
         { title: 'Pointage depuis le kiosque', desc: 'Configurer une borne ZKTeco', href: '/docs#kiosk' },
@@ -187,7 +187,7 @@ export const docsCategoriesCopy: Record<AppLocale, DocsCategory[]> = {
       iconKey: 'zap',
       color: 'emerald',
       items: [
-        { title: 'Introduction', desc: 'Leopardo RH overview — Mobile-First Company OS', href: '/docs#intro' },
+        { title: 'Introduction', desc: 'Leopardo overview — Mobile-First Company OS', href: '/docs#intro' },
         { title: 'Sign up & first tenant', desc: 'Create an account and set up your company', href: '/docs#api-quickstart' },
         { title: 'Invite your team', desc: 'Add managers and employees', href: '/docs#api-quickstart' },
         { title: 'Kiosk check-in', desc: 'Set up a ZKTeco terminal', href: '/docs#kiosk' },
@@ -289,7 +289,7 @@ export const docsCategoriesCopy: Record<AppLocale, DocsCategory[]> = {
       iconKey: 'zap',
       color: 'emerald',
       items: [
-        { title: 'Giriş', desc: 'Leopardo RH genel bakış — Mobile-First Company OS', href: '/docs#intro' },
+        { title: 'Giriş', desc: 'Leopardo genel bakış — Mobile-First Company OS', href: '/docs#intro' },
         { title: 'Kayıt ve ilk kiracı', desc: 'Hesap oluşturun ve şirketinizi yapılandırın', href: '/docs#api-quickstart' },
         { title: 'Ekibinizi davet edin', desc: 'Yönetici ve çalışan ekleyin', href: '/docs#api-quickstart' },
         { title: 'Kiosk girişi', desc: 'ZKTeco terminali kurun', href: '/docs#kiosk' },
@@ -494,8 +494,8 @@ export const docsPageCopy: Record<AppLocale, DocsCopy> = {
     hero: {
       badge: 'Documentation développeurs',
       headlineTop: 'Tout savoir sur',
-      headlineHighlight: 'Leopardo RH',
-      subheadline: 'Guides, références API, webhooks et SDK pour intégrer Leopardo RH à vos outils.',
+      headlineHighlight: 'Leopardo',
+      subheadline: 'Guides, références API, webhooks et SDK pour intégrer Leopardo à vos outils.',
       searchPlaceholder: 'Rechercher dans la documentation…',
       tags: ['API REST', 'Webhooks', 'SDK Flutter', 'Playground', 'Authentification', 'Multi-tenant'],
     },
@@ -580,8 +580,8 @@ export const docsPageCopy: Record<AppLocale, DocsCopy> = {
     hero: {
       badge: 'Developer documentation',
       headlineTop: 'Everything about',
-      headlineHighlight: 'Leopardo RH',
-      subheadline: 'Guides, API reference, webhooks and SDKs to integrate Leopardo RH into your tools.',
+      headlineHighlight: 'Leopardo',
+      subheadline: 'Guides, API reference, webhooks and SDKs to integrate Leopardo into your tools.',
       searchPlaceholder: 'Search the documentation…',
       tags: ['REST API', 'Webhooks', 'Flutter SDK', 'Playground', 'Authentication', 'Multi-tenancy'],
     },
@@ -666,8 +666,8 @@ export const docsPageCopy: Record<AppLocale, DocsCopy> = {
     hero: {
       badge: 'Geliştirici dokümantasyonu',
       headlineTop: 'Her şey',
-      headlineHighlight: 'Leopardo RH',
-      subheadline: 'Leopardo RH\'yi araçlarınıza entegre etmek için rehberler, API referansı, webhooklar ve SDK\'lar.',
+      headlineHighlight: 'Leopardo',
+      subheadline: 'Leopardo\'yi araçlarınıza entegre etmek için rehberler, API referansı, webhooklar ve SDK\'lar.',
       searchPlaceholder: 'Dokümantasyonda ara…',
       tags: ['REST API', 'Webhooks', 'Flutter SDK', 'Playground', 'Kimlik doğrulama', 'Çoklu kiracılık'],
     },
