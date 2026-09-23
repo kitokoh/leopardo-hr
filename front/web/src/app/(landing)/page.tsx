@@ -136,10 +136,8 @@ export default function LandingPage() {
         {/* ─── PRODUCT VISUAL ─── */}
         <ProductScreenshots locale={locale} />
         {/* #8065 : « Pourquoi open source » remplace MarketingReadinessSection
-            (langage de pilotage interne, conservé pour usage interne). */}
+            (langage de pilotage interne — composant retiré par #8075). */}
         <WhyOpenSourceSection locale={locale} />
-
-        {/* ─── DEMO ─── */}
 
         {/* ─── TESTIMONIALS ─── Phase-3 */}
         <TestimonialsSection
