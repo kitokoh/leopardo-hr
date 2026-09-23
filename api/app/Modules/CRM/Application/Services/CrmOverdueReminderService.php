@@ -8,6 +8,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Events\CrmTaskOverdue;
 use App\Modules\CRM\Domain\Models\CrmTask;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -31,7 +32,7 @@ class CrmOverdueReminderService
     {
         $now = Carbon::now();
 
-        /** @var \Illuminate\Support\Collection<int, CrmTask> $tasks */
+        /** @var Collection<int, CrmTask> $tasks */
         $tasks = CrmTask::query()
             ->crossTenantForSystemTask('scheduler rappels taches CRM en retard, itere tous les tenants (#7960)')
             ->whereIn('status', ['todo', 'in_progress'])

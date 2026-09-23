@@ -169,8 +169,8 @@ trait BelongsToCompany
      *
      * @param  Builder<static>  $builder
      * @param  string  $justification  Raison + n° d'issue — ne doit pas être
-     *   vide (vérifié à l'exécution par l'assert ci-dessous : la sonde reste
-     *   non tautologique, doctrine #8014 — pas de `non-empty-string` ici).
+     *                                 vide (vérifié à l'exécution par l'assert ci-dessous : la sonde reste
+     *                                 non tautologique, doctrine #8014 — pas de `non-empty-string` ici).
      * @return Builder<static>
      */
     public function scopeCrossTenantForSystemTask(Builder $builder, string $justification): Builder
