@@ -85,11 +85,27 @@ class PayrollService
 
     public function validate(Payroll $payroll, Employee $validator): Payroll
     {
+        // Fast-fail hors transaction (UX) — la garantie de cohérence est
+        // le re-check SOUS VERROU ci-dessous (#8057).
         if ($payroll->status === 'validated') {
             throw new PayrollAlreadyValidatedException;
         }
 
         DB::transaction(function () use ($payroll, $validator): void {
+            // #8057 (TOCTOU) : re-lire le bulletin avec lockForUpdate DANS la
+            // transaction et re-vérifier le statut avant toute écriture. Sans
+            // cela, deux requêtes concurrentes passaient toutes les deux le
+            // check hors transaction et validaient deux fois → double
+            // déduction d'avance sur salaire (les SalaryAdvance étaient bien
+            // lockForUpdate, mais le payroll lui-même n'était pas re-vérifié
+            // sous verrou).
+            /** @var Payroll $locked */
+            $locked = Payroll::query()->whereKey($payroll->getKey())->lockForUpdate()->firstOrFail();
+
+            if ($locked->status === 'validated') {
+                throw new PayrollAlreadyValidatedException;
+            }
+
             $payroll->update(['status' => 'validated', 'validated_by' => $validator->id, 'validated_at' => Carbon::now()]);
 
             if ($payroll->advance_deduction > 0) {

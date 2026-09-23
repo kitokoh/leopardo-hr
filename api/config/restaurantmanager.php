@@ -78,7 +78,12 @@ return [
     |
     */
     'public_shop' => [
+        // #8054 — vérification serveur réelle du jeton (siteverify,
+        // fail-closed) ; avant, seul le caractère non-vide était exigé.
         'captcha_secret' => env('RESTAURANT_SHOP_CAPTCHA_SECRET'),
+        // Endpoint siteverify du fournisseur (défaut : Cloudflare Turnstile,
+        // même contrat que reCAPTCHA) — voir CaptchaVerifier::DEFAULT_VERIFY_URL.
+        'captcha_verify_url' => env('RESTAURANT_SHOP_CAPTCHA_VERIFY_URL'),
     ],
 
     /*

@@ -34,7 +34,7 @@ export type Integration = {
 export const integrationsByLocale: Record<AppLocale, { title: string; subtitle: string; badge: string; docsNote: string; statusLabels: { available: string; coming_soon: string }; categories: string[]; integrations: Integration[] }> = {
   fr: {
     title: 'Intégrations',
-    subtitle: 'Connectez Leopardo RH à vos outils existants',
+    subtitle: 'Connectez Leopardo à vos outils existants',
     badge: 'Ecosysteme',
     docsNote: 'API publique documentee sur',
     statusLabels: { available: 'Disponible', coming_soon: 'Bientot' },
@@ -48,15 +48,15 @@ export const integrationsByLocale: Record<AppLocale, { title: string; subtitle: 
       { icon: <Globe className="w-6 h-6" />, name: 'API REST publique', description: 'API versionnee (v1) avec documentation OpenAPI. Rate limiting par plan.', status: 'available', category: 'API' },
       { icon: <Webhook className="w-6 h-6" />, name: 'Webhooks', description: 'Notifications HTTP pour les événements RH (embauche, paie, congé, pointage).', status: 'available', category: 'API' },
       { icon: <Shield className="w-6 h-6" />, name: 'SSO SAML/OIDC', description: 'Authentification unique via Azure AD, Google Workspace ou Okta.', status: 'coming_soon', category: 'Sécurité' },
-      { icon: <FileText className="w-6 h-6" />, name: 'Sage Comptabilité', description: 'Export des ecritures de paie vers Sage 50/100. Format FEC compatible.', status: 'coming_soon', category: 'API' },
-      { icon: <FileText className="w-6 h-6" />, name: 'QuickBooks', description: 'Synchronisation des ecritures de paie vers QuickBooks Online.', status: 'coming_soon', category: 'API' },
-      { icon: <Smartphone className="w-6 h-6" />, name: 'Firebase', description: 'Push notifications pour l\'app mobile. Alertes pointage, paie et conges.', status: 'available', category: 'API' },
+      { icon: <FileText className="w-6 h-6" />, name: 'Sage Comptabilité', description: 'Export des écritures de paie vers Sage 50/100. Format FEC compatible.', status: 'coming_soon', category: 'API' },
+      { icon: <FileText className="w-6 h-6" />, name: 'QuickBooks', description: 'Synchronisation des écritures de paie vers QuickBooks Online.', status: 'coming_soon', category: 'API' },
+      { icon: <Smartphone className="w-6 h-6" />, name: 'Firebase', description: 'Push notifications pour l\'app mobile. Alertes pointage, paie et congés.', status: 'available', category: 'API' },
       { icon: <Building2 className="w-6 h-6" />, name: 'Slack / Teams', description: 'Notifications RH dans vos canaux de communication existants.', status: 'coming_soon', category: 'API' },
     ],
   },
   en: {
     title: 'Integrations',
-    subtitle: 'Connect Leopardo RH to your existing tools',
+    subtitle: 'Connect Leopardo to your existing tools',
     badge: 'Ecosystem',
     docsNote: 'Public API documented at',
     statusLabels: { available: 'Available', coming_soon: 'Coming soon' },
@@ -78,7 +78,7 @@ export const integrationsByLocale: Record<AppLocale, { title: string; subtitle: 
   },
   tr: {
     title: 'Entegrasyonlar',
-    subtitle: 'Leopardo RH yi kullandiginiz araclara baglayin',
+    subtitle: 'Leopardo yi kullandiginiz araclara baglayin',
     badge: 'Ekosistem',
     docsNote: 'Herkese acik API dokumani',
     statusLabels: { available: 'Hazir', coming_soon: 'Yakinda' },
@@ -100,7 +100,7 @@ export const integrationsByLocale: Record<AppLocale, { title: string; subtitle: 
   },
   ar: {
     title: 'التكاملات',
-    subtitle: 'اربط Leopardo RH بأدواتك الحالية',
+    subtitle: 'اربط Leopardo بأدواتك الحالية',
     badge: 'النظام البيئي',
     docsNote: 'توثيق API العام على',
     statusLabels: { available: 'متاح', coming_soon: 'قريبا' },

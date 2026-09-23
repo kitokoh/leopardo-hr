@@ -41557,6 +41557,216 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+
+  /public/hospitality/properties/{slug}:
+    get:
+      tags:
+      - Hospitality
+      summary: Fiche publique d'un établissement hôtelier par slug (sans auth)
+      description: >-
+        HOSP-006/008 (#7948/#7950, spec SOLUTION_HOSPITALITY.md §6) - fiche
+        d'un établissement PUBLIÉ (is_public=true, slug global généré au
+        publish) : identité, adresse, étoiles, équipements, géoloc, types de
+        chambres actifs avec prix (base_price_minor + currency). 404
+        fail-closed uniforme : slug inconnu, établissement dé-publié ou
+        inactif, verticale désactivée. Throttle dédié (pattern
+        /public/restaurants). Consommée en SSR par /stay/{slug} (front/web).
+      security: []
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9-]{0,159}$'
+      responses:
+        '200':
+          description: Fiche publique (slug, name, type, adresse, star_rating, amenities, room_types actifs avec prix) - aucun ID de tenant
+        '404':
+          $ref: '#/components/responses/Error404'
+
+  /public/hospitality/properties/{slug}/availability:
+    get:
+      tags:
+      - Hospitality
+      summary: Disponibilités publiques par type de chambre (sans auth)
+      description: >-
+        HOSP-006 (#7948, spec §6) - disponibilités de l'établissement publié
+        sur [from, to) par type de chambre : même calcul que l'endpoint
+        interne HOSP-004 (capacité opérationnelle - réservations tenant
+        l'inventaire, pending expirées exclues). 404 fail-closed comme la
+        fiche ; 422 si dates invalides (to <= from).
+      security: []
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9-]{0,159}$'
+      - name: from
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: adults
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 30
+      responses:
+        '200':
+          description: 'Par type de chambre actif : room_type_id, code, name, capacity, held, available, base_price_minor, currency'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /public/hospitality/properties/{slug}/reservations:
+    post:
+      tags:
+      - Hospitality
+      summary: Réserver en ligne depuis la fiche publique (sans auth)
+      description: >-
+        HOSP-006 (#7948, spec §6) - réservation publique idempotente (pattern
+        CreateBookingAction Travel) : lock d'inventaire, statut pending +
+        expires_at=+30min (commande hospitality:expire-pending-reservations),
+        montant SERVEUR (base_price_minor x nuits - aucun montant accepté du
+        client). Retourne reference (non énumérable) + tracking_code présenté
+        UNE seule fois (seul son hash est stocké). Rejeu du même
+        idempotency_key -> la même réservation (200, created=false).
+        Overbooking refusé (422). 404 fail-closed comme la fiche.
+      security: []
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9-]{0,159}$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [room_type_id, guest_name, check_in, check_out]
+              properties:
+                room_type_id:
+                  type: integer
+                guest_name:
+                  type: string
+                  maxLength: 150
+                contact_email:
+                  type: string
+                  format: email
+                  maxLength: 190
+                contact_phone:
+                  type: string
+                  maxLength: 40
+                check_in:
+                  type: string
+                  format: date
+                check_out:
+                  type: string
+                  format: date
+                adults:
+                  type: integer
+                  minimum: 1
+                  maximum: 30
+                children:
+                  type: integer
+                  minimum: 0
+                  maximum: 30
+                idempotency_key:
+                  type: string
+                  maxLength: 80
+      responses:
+        '201':
+          description: Réservation créée (reference, tracking_code affiché une seule fois, status=pending, expires_at, total_amount_minor, currency, created=true)
+        '200':
+          description: Rejeu idempotent (même idempotency_key) - réservation existante, created=false, tracking_code NON renvoyé
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /public/hospitality/reservations/{reference}:
+    get:
+      tags:
+      - Hospitality
+      summary: Suivre une réservation publique par référence + code (sans auth)
+      description: >-
+        HOSP-006 (#7948, spec §6) - suivi sans compte : la référence non
+        énumérable ET le code de suivi (comparé au hash stocké) sont exigés.
+        Référence inconnue ou code invalide -> 404 uniforme (aucune
+        distinction, anti-énumération). AUCUNE PII au-delà du nom du voyageur
+        porteur du code.
+      security: []
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+          maxLength: 40
+      - name: code
+        in: query
+        required: true
+        schema:
+          type: string
+          maxLength: 80
+      responses:
+        '200':
+          description: Suivi (reference, status, guest_name, check_in/check_out, expires_at, total_amount_minor, currency, property slug+name, room_type code+name)
+        '404':
+          $ref: '#/components/responses/Error404'
+
+  /public/hospitality/reservations/{reference}/cancel:
+    post:
+      tags:
+      - Hospitality
+      summary: Annuler une réservation publique par code (sans auth)
+      description: >-
+        HOSP-006 (#7948, spec §6) - annulation par le voyageur porteur du
+        code : uniquement depuis pending ou confirmed (409 sinon, transition
+        invalide), libère l'inventaire. Référence inconnue ou code invalide ->
+        404 uniforme.
+      security: []
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+          maxLength: 40
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+                  maxLength: 80
+      responses:
+        '200':
+          description: Réservation annulée (reference, status=cancelled)
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
 components:
   securitySchemes:
     BearerAuth:

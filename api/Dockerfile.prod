@@ -41,7 +41,7 @@ RUN install-php-extensions \
 # est un paquet Python requis si AI_TTS_PROVIDER=edge_tts (défaut sans clé
 # ElevenLabs). Sans lui, exec() échouait silencieusement en prod.
 RUN apk add --no-cache python3 py3-pip \
-    && pip3 install --no-cache-dir --break-system-packages edge-tts
+    && pip3 install --no-cache-dir --break-system-packages edge-tts==7.2.8
 
 WORKDIR /app
 

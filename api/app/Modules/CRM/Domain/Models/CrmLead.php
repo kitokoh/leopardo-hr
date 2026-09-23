@@ -7,6 +7,7 @@ namespace App\Modules\CRM\Domain\Models;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * #5714/#5709 — Prospect (lead) CRM client (tenant-scoped).
@@ -36,6 +37,7 @@ use Illuminate\Database\Eloquent\Model;
 class CrmLead extends Model
 {
     use BelongsToCompany;
+    use SoftDeletes;
 
     protected $table = 'crm_leads';
 

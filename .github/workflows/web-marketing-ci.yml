@@ -60,6 +60,21 @@ jobs:
         working-directory: front/web
         run: npm run check:mojibake
 
+      # #8064 — pas de damier de transparence incrusté dans les assets de marque.
+      - name: Check brand assets (no baked-in checkerboard)
+        working-directory: front/web
+        run: npm run check:assets
+
+      # #8075 — aucune page (landing) ne doit être orpheline de liens internes.
+      - name: Check for orphan landing pages
+        working-directory: front/web
+        run: npm run check:orphans
+
+      # #8069 — aucune forme sans accent interdite ne revient dans la copy FR.
+      - name: Check French copy accents (#8069)
+        working-directory: front/web
+        run: npm run check:french-copy
+
   web-marketing-build:
     timeout-minutes: 30
     name: Web Marketing Build
@@ -126,7 +141,7 @@ jobs:
           # (leopardo-rh.com NXDOMAIN) — la var pointe la vitrine live.
           NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
           PLAYWRIGHT_WEB_SERVER_COMMAND: npm run build && npm run start
-        run: npx playwright test e2e/dashboard-mobile-nav.spec.ts e2e/auth-client-smoke.spec.ts e2e/client-feature-gates.spec.ts e2e/client-visual-smoke.spec.ts e2e/kiosk.spec.ts e2e/manager-workday-smoke.spec.ts e2e/marketing-funnel.spec.ts e2e/payroll-compliance.spec.ts e2e/restaurant-kitchen.spec.ts e2e/restaurant-reservations.spec.ts e2e/restaurant-stock.spec.ts e2e/shop-order.spec.ts --project=chromium --workers=1
+        run: npx playwright test e2e/dashboard-mobile-nav.spec.ts e2e/auth-client-smoke.spec.ts e2e/client-feature-gates.spec.ts e2e/client-visual-smoke.spec.ts e2e/kiosk.spec.ts e2e/manager-workday-smoke.spec.ts e2e/marketing-funnel.spec.ts e2e/home-scroll-visibility.spec.ts e2e/payroll-compliance.spec.ts e2e/restaurant-kitchen.spec.ts e2e/restaurant-reservations.spec.ts e2e/restaurant-stock.spec.ts e2e/shop-order.spec.ts --project=chromium --workers=1
 
       - name: Run preview authenticated client smokes
         working-directory: front/web

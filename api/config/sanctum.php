@@ -18,10 +18,15 @@ return [
     // glissante est assurée par TokenAutoRefreshMiddleware (fenêtre
     // `sanctum.auto_refresh_window`, 24 h par défaut) : un utilisateur actif
     // ne voit jamais l'écran de connexion, un utilisateur inactif garde sa
-    // session 30 jours.
+    // session 30 jours. Justification écrite et contrôles compensatoires :
+    // ADR-0025 (#7655 point 3).
     'expiration' => (int) env('SANCTUM_TOKEN_EXPIRATION', 43200),
 
-    'token_prefix' => env('SANCTUM_TOKEN_PREFIX', ''),
+    // #7655 (tranche 2, ADR-0025) — préfixe de détection de fuite : un token
+    // préfixé est repérable par le secret scanning (GitHub & co). Rétro-
+    // compatible : le hash stocké est calculé à la création — les tokens
+    // émis sans préfixe restent valides, seuls les nouveaux le portent.
+    'token_prefix' => env('SANCTUM_TOKEN_PREFIX', 'leo_'),
 
     'middleware' => [
         'authenticate_session' => AuthenticateSession::class,

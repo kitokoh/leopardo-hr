@@ -10,6 +10,7 @@ use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\HR\Domain\Models\Contract;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\Payroll;
+use App\Shared\Support\TenantCache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -27,9 +28,10 @@ class HrReportController extends Controller
         $companyId = (string) $actor->company_id;
         $ttl = max(0, (int) config('performance.cache.hr_headcount_ttl_seconds', 60));
 
+        // #8058 — tenant-cache:via-helper — clé construite par TenantCache::keyFor (préfixe company_id systématique)
         $payload = $ttl > 0
             ? Cache::remember(
-                'hr_report:headcount:'.$companyId,
+                TenantCache::keyFor($companyId, 'hr_report:headcount'),
                 $ttl,
                 fn (): array => $this->computeHeadcountPayload(),
             )

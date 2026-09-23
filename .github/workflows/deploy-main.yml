@@ -567,8 +567,10 @@ jobs:
                 echo "> La cause racine est documentée : budget de polling (30 min) vs timeout du job"
                 echo "> backend de \`tests.yml\` (300 min) — un merge \`api/**\` ne peut pas conclure"
                 echo "> dans le budget. Aucun déploiement n'a été décidé par ce run ;"
-                echo "> \`deploy-drift-guard.yml\` (30 min) échoue si le tier dev dérive, et"
-                echo "> \`deploy-main-catchup.yml\` rejoue le déploiement dès que la suite conclut."
+                echo "> \`deploy-drift-guard.yml\` (30 min) échoue si le tier dev dérive (et, #8092,"
+                echo "> alerte en rouge si la prod a plus de N heures de retard sur main), et"
+                echo "> \`deploy-main-catchup.yml\` rejoue le déploiement dès que la suite conclut"
+                echo "> — dev ET prod Render depuis #8092 (job \`prod-catch-up\`)."
               } >> "$GITHUB_STEP_SUMMARY"
               echo "::notice::Deploy différé pour ${sha} — les workflows requis tournaient encore à l'expiration du budget (#7559)."
               ;;

@@ -162,7 +162,7 @@ export interface CheckoutCopy {
 export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
   fr: {
     meta: {
-      title: 'Souscription — Leopardo HR',
+      title: 'Souscription — Leopardo',
       description:
         'Choisissez votre plan, créez votre compte et lancez votre essai gratuit de 14 jours.',
     },
@@ -368,7 +368,7 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
 
   en: {
     meta: {
-      title: 'Checkout — Leopardo HR',
+      title: 'Checkout — Leopardo',
       description:
         'Pick your plan, create your account and start your 14-day free trial.',
     },
@@ -572,7 +572,7 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
 
   tr: {
     meta: {
-      title: 'Ödeme — Leopardo HR',
+      title: 'Ödeme — Leopardo',
       description:
         'Planınızı seçin, hesabınızı oluşturun ve 14 günlük ücretsiz denemeye başlayın.',
     },
@@ -775,7 +775,7 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
 
   ar: {
     meta: {
-      title: 'إتمام الدفع — Leopardo HR',
+      title: 'إتمام الدفع — Leopardo',
       description: 'اختر باقتك، أنشئ حسابك وابدأ تجربتك المجانية لمدة 14 يوماً.',
     },
     backToPricing: 'العودة إلى الأسعار',

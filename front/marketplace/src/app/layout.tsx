@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import type { ReactNode } from "react";
 
 import { Footer } from "@/components/Footer";
@@ -23,7 +24,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  // #8022 — CSP à nonce par requête (src/middleware.ts) : le nonce n'est
+  // apposé sur les scripts inline de Next que si la page est rendue
+  // DYNAMIQUEMENT. Lire headers() ici force le rendu dynamique de toutes
+  // les routes HTML — même compromis assumé que front/web (#3807/#7650).
+  await headers();
+
   return (
     <html lang="fr">
       <body className="flex min-h-screen flex-col">

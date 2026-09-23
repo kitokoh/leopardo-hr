@@ -45,6 +45,16 @@ export interface HeroSectionProps {
   layout?: 'centered' | 'split';
   /** Optional inline quick-trial form rendered below CTAs (e.g. QuickTrialEmailForm) */
   quickTrialForm?: React.ReactNode;
+  /** #8068 — ligne de réassurance sous les CTA (« Gratuit · Sans CB · … »). */
+  ctaReassurance?: string;
+}
+
+/** Lien externe (GitHub, docs hors site) → nouvel onglet. */
+const EXTERNAL_HREF_RE = /^https?:\/\//i;
+function externalProps(href: string): { target?: string; rel?: string } {
+  return EXTERNAL_HREF_RE.test(href)
+    ? { target: '_blank', rel: 'noopener noreferrer' }
+    : {};
 }
 
 export function HeroSection({
@@ -58,6 +68,7 @@ export function HeroSection({
   animated = true,
   layout = 'centered',
   quickTrialForm,
+  ctaReassurance,
 }: HeroSectionProps) {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
@@ -111,8 +122,8 @@ export function HeroSection({
           <div className={align}>
             {badgeConfig && (
               <motion.div
-                initial={animated ? { opacity: 0, y: 20, filter: 'blur(10px)' } : {}}
-                animate={animated ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+                initial={animated ? { y: 20, filter: 'blur(10px)' } : {}}
+                animate={animated ? { y: 0, filter: 'blur(0px)' } : {}}
                 transition={{ duration: 0.8 }}
                 className="mb-10 inline-flex items-center gap-2.5 rounded-full border border-emerald-500/20 bg-emerald-500/[0.08] px-4 py-2 text-sm font-medium text-emerald-700 backdrop-blur-sm dark:text-emerald-400"
               >
@@ -128,8 +139,8 @@ export function HeroSection({
 
             {/* Heading */}
             <motion.h1
-              initial={animated ? { opacity: 0, y: 30 } : {}}
-              animate={animated ? { opacity: 1, y: 0 } : {}}
+              initial={animated ? { y: 30 } : {}}
+              animate={animated ? { y: 0 } : {}}
               transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
               className={`mb-8 text-balance font-black leading-[0.95] tracking-tight ${
                 isSplit
@@ -144,8 +155,8 @@ export function HeroSection({
 
             {/* Subtitle */}
             <motion.p
-              initial={animated ? { opacity: 0, y: 20 } : {}}
-              animate={animated ? { opacity: 1, y: 0 } : {}}
+              initial={animated ? { y: 20 } : {}}
+              animate={animated ? { y: 0 } : {}}
               transition={{ duration: 0.8, delay: 0.35 }}
               className={`font-light leading-relaxed text-slate-500 dark:text-slate-400 ${
                 isSplit
@@ -159,8 +170,8 @@ export function HeroSection({
             {/* CTAs */}
             {(ctaPrimary || ctaSecondary) && (
               <motion.div
-                initial={animated ? { opacity: 0, y: 20 } : {}}
-                animate={animated ? { opacity: 1, y: 0 } : {}}
+                initial={animated ? { y: 20 } : {}}
+                animate={animated ? { y: 0 } : {}}
                 transition={{ duration: 0.8, delay: 0.5 }}
                 className={`flex flex-col items-center gap-4 sm:flex-row ${
                   isSplit ? 'justify-center lg:justify-start' : 'justify-center'
@@ -169,6 +180,7 @@ export function HeroSection({
                 {ctaPrimary && (
                   <Link
                     href={withLocaleHref(ctaPrimary.href, search)}
+                    {...externalProps(ctaPrimary.href)}
                     className="hero-cta-primary group relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-700 to-emerald-800 px-8 py-4 font-bold text-white transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
                   >
                     <span className="relative z-10 flex items-center gap-2.5 text-base">
@@ -182,6 +194,7 @@ export function HeroSection({
                 {ctaSecondary && (
                   <Link
                     href={withLocaleHref(ctaSecondary.href, search)}
+                    {...externalProps(ctaSecondary.href)}
                     className="group flex items-center gap-3.5 rounded-2xl border border-slate-200 bg-white px-8 py-4 font-semibold text-slate-900 transition-all duration-300 hover:border-emerald-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:hover:border-emerald-800"
                   >
                     {ctaSecondary.icon ? (
@@ -200,6 +213,15 @@ export function HeroSection({
             )}
 
             {/* Optional quick-trial inline form (e.g. QuickTrialEmailForm with source=hero_email_trial) */}
+            {ctaReassurance && (
+              <p
+                className={`text-sm font-medium text-slate-500 dark:text-slate-400 ${
+                  isSplit ? 'text-center lg:text-left' : 'text-center'
+                }`}
+              >
+                {ctaReassurance}
+              </p>
+            )}
             {quickTrialForm}
           </div>
 
@@ -207,8 +229,8 @@ export function HeroSection({
           {visual && (
             isSplit ? (
               <motion.div
-                initial={animated ? { opacity: 0, x: 40, scale: 0.96 } : {}}
-                animate={animated ? { opacity: 1, x: 0, scale: 1 } : {}}
+                initial={animated ? { x: 40, scale: 0.96 } : {}}
+                animate={animated ? { x: 0, scale: 1 } : {}}
                 transition={{ duration: 1, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
                 className="w-full"
               >
@@ -216,8 +238,8 @@ export function HeroSection({
               </motion.div>
             ) : (
               <motion.div
-                initial={animated ? { opacity: 0, y: 40, scale: 0.97 } : {}}
-                animate={animated ? { opacity: 1, y: 0, scale: 1 } : {}}
+                initial={animated ? { y: 40, scale: 0.97 } : {}}
+                animate={animated ? { y: 0, scale: 1 } : {}}
                 transition={{ duration: 1, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 className="mx-auto mt-16 max-w-4xl"
               >
@@ -230,8 +252,8 @@ export function HeroSection({
         {/* Stats */}
         {stats && stats.length > 0 && (
           <motion.div
-            initial={animated ? { opacity: 0, y: 40 } : {}}
-            animate={animated ? { opacity: 1, y: 0 } : {}}
+            initial={animated ? { y: 40 } : {}}
+            animate={animated ? { y: 0 } : {}}
             transition={{ duration: 1, delay: 0.7 }}
             className="mx-auto mt-24 grid max-w-4xl grid-cols-2 gap-8 md:grid-cols-4"
           >

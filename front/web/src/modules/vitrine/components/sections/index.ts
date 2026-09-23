@@ -32,11 +32,10 @@ export { BlogArticle, type BlogArticleProps } from './BlogArticle';
 
 // Social Proof Components
 export { SocialProofMetrics, type SocialProofMetricsProps } from './SocialProofMetrics';
-export { TestimonialHighlight, type TestimonialHighlightProps } from './TestimonialHighlight';
-export { MiniCaseStudies, type MiniCaseStudiesProps } from './MiniCaseStudies';
 export { ProductScreenshots, type ProductScreenshotsProps } from './ProductScreenshots';
-export { MarketingReadinessSection } from './MarketingReadinessSection';
+export { WhyOpenSourceSection } from './WhyOpenSourceSection';
 export { TrustedBrands, type TrustedBrandsProps } from './TrustedBrands';
-export { OperationalProofSection, type OperationalProofSectionProps } from './OperationalProofSection';
-export { LaunchOperatingSystemSection } from './LaunchOperatingSystemSection';
 export { ProductDemoVideo, type ProductDemoVideoProps } from './ProductDemoVideo';
+// #8072 — hook ZKTeco remonté + verticales en cartes cliquables
+export { ZKTecoHookSection, type ZKTecoHookSectionProps } from './ZKTecoHookSection';
+export { VerticalsSection, type VerticalsSectionProps } from './VerticalsSection';

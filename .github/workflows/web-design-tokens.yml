@@ -23,6 +23,12 @@ on:
 permissions:
   contents: read
 
+# #7986 — sérialiser les runs du garde (annulation des runs PR obsolètes
+# uniquement ; jamais sur main, cf. règle #2131).
+concurrency:
+  group: web-design-tokens-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   check-tokens:
     runs-on: ubuntu-latest

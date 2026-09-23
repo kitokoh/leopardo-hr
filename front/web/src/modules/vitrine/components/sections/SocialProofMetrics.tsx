@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Building2, Globe2, Layers, ShieldCheck } from 'lucide-react';
 import type { AppLocale } from '@/lib/i18n';
+import { HeroGithubBadge } from '../hero/HeroProductShowcase';
 
 /**
  * PA2-MKT-006: this section previously showed "500+ active companies",
@@ -59,8 +60,22 @@ export interface SocialProofMetricsProps {
   locale?: AppLocale;
 }
 
+/**
+ * #8070 — bloc sécurité/donnée honnête : uniquement des faits vérifiables
+ * (chiffrement revendiqué par la FAQ produit, choix d'hébergement cloud ou
+ * self-host, conformité locale présentée comme en cours — aucune certification
+ * inventée).
+ */
+const securityLineByLocale: Record<AppLocale, string> = {
+  fr: 'Chiffrement AES-256 & TLS 1.3 · Hébergement cloud ou sur votre serveur · Conformité locale en cours de déploiement',
+  en: 'AES-256 & TLS 1.3 encryption · Cloud hosting or on your own server · Local compliance rolling out',
+  tr: 'AES-256 ve TLS 1.3 şifreleme · Bulutta veya kendi sunucunuzda barındırma · Yerel uyumluluk kademeli olarak geliyor',
+  ar: 'تشفير AES-256 وTLS 1.3 · استضافة سحابية أو على خادمك الخاص · التوافق المحلي قيد التوسيع',
+};
+
 export function SocialProofMetrics({ locale = 'fr' }: SocialProofMetricsProps) {
   const metrics = metricsByLocale[locale] ?? metricsByLocale.fr;
+  const securityLine = securityLineByLocale[locale] ?? securityLineByLocale.fr;
 
   return (
     <section className="relative py-16 overflow-hidden">
@@ -72,8 +87,8 @@ export function SocialProofMetrics({ locale = 'fr' }: SocialProofMetricsProps) {
           {metrics.map((metric, index) => (
             <motion.div
               key={metric.label}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ y: 20 }}
+              whileInView={{ y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="text-center"
@@ -89,6 +104,18 @@ export function SocialProofMetrics({ locale = 'fr' }: SocialProofMetricsProps) {
               </div>
             </motion.div>
           ))}
+        </div>
+
+        {/* #8070 — badge GitHub (stars/forks/licence) + sécurité honnête */}
+        <div className="mt-10 flex flex-col items-center gap-4">
+          <HeroGithubBadge locale={locale} />
+          <p
+            data-testid="social-proof-security-line"
+            className="inline-flex items-center gap-2 text-center text-xs sm:text-sm font-medium text-white/85"
+          >
+            <ShieldCheck className="h-4 w-4 shrink-0" aria-hidden="true" />
+            {securityLine}
+          </p>
         </div>
       </div>
     </section>

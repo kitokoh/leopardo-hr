@@ -6,9 +6,6 @@ import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/providers/core_providers.dart';
 import 'package:leopardo_core/offline/database/edge_database.dart';
 import 'package:leopardo_core/offline/services/sync_service.dart';
-import 'package:leopardo_employee/features/cabinet/data/cabinet_repository.dart';
-import 'package:leopardo_employee/features/evaluations/data/evaluation_repository.dart';
-import 'package:leopardo_employee/features/notifications/data/notification_repository.dart';
 import 'package:leopardo_employee/features/onboarding/data/onboarding_repository.dart';
 import 'package:leopardo_employee/features/payrolls/data/payroll_repository.dart';
 import 'package:leopardo_employee/features/salary_advances/data/salary_advance_repository.dart';
@@ -17,12 +14,15 @@ import 'package:leopardo_employee/features/user_auth/data/user_auth_repository.d
 
 export 'package:leopardo_core/core/providers/core_providers.dart'
     hide
-        cabinetRepositoryProvider,
-        evaluationRepositoryProvider,
-        notificationRepositoryProvider,
         payrollRepositoryProvider,
         salaryAdvanceRepositoryProvider,
         userAuthRepositoryProvider;
+
+// #7652 (tranche 2) — cabinet, évaluations et notifications sont réconciliés :
+// repositories ET providers viennent du core (ré-export ci-dessus), plus aucune
+// redéfinition locale. Restent locaux : payroll, salary_advance et user_auth,
+// dont les repositories employee divergent réellement du core (endpoints
+// « /me/* » côté employee — réconciliation = tranche suivante).
 
 /// Local SQLite (Drift) database used by the Edge/offline module.
 final edgeDatabaseProvider = Provider<EdgeDatabase>((ref) {
@@ -77,21 +77,6 @@ final salaryAdvanceRepositoryProvider = Provider<SalaryAdvanceRepository>((
 final payrollRepositoryProvider = Provider<PayrollRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return PayrollRepository(apiClient);
-});
-
-final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return NotificationRepository(apiClient);
-});
-
-final evaluationRepositoryProvider = Provider<EvaluationRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return EvaluationRepository(apiClient);
-});
-
-final cabinetRepositoryProvider = Provider<CabinetRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return CabinetRepository(apiClient);
 });
 
 final userAuthRepositoryProvider = Provider<UserAuthRepository>((ref) {

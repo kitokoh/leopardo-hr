@@ -47,6 +47,18 @@ class IdempotencyMiddlewareTest extends TestCase
 
                 return response()->json(['attempt' => $attempts], 422);
             });
+
+            // #8052 — simule la réponse d'une route derrière `token.refresh` :
+            // un token Sanctum EN CLAIR est injecté dans le corps (`_auth`).
+            Route::post('/_test/rtmx-auth-leak', fn (): JsonResponse => response()->json([
+                'ok' => true,
+                'id' => (string) Str::uuid(),
+                '_auth' => [
+                    'token_refreshed' => true,
+                    'token' => 'plain-secret-token-8052',
+                    'expires_at' => '2030-01-01T00:00:00+00:00',
+                ],
+            ]));
         });
     }
 
@@ -185,6 +197,30 @@ class IdempotencyMiddlewareTest extends TestCase
             $first->json('id'),
             $second->json('id'),
             'Deux tokens différents ne doivent jamais partager la réponse idempotente.'
+        );
+    }
+
+    public function test_snapshot_never_persists_auth_token_8052(): void
+    {
+        // #8052 — la réponse DIRECTE livre `_auth` au client (canal sûr,
+        // cf. #5581), mais le snapshot mémorisé dans le cache ne doit JAMAIS
+        // contenir le token en clair, et un rejeu ne doit pas le renvoyer.
+        $headers = ['Authorization' => self::AUTH, 'Idempotency-Key' => 'rtmx-auth-strip-001'];
+
+        $first = $this->postJson('/api/_test/rtmx-auth-leak', [], $headers);
+        $first->assertOk();
+        $first->assertHeaderMissing('Idempotent-Replayed');
+        $this->assertSame('plain-secret-token-8052', $first->json('_auth.token'));
+
+        $second = $this->postJson('/api/_test/rtmx-auth-leak', [], $headers);
+        $second->assertOk();
+        $second->assertHeader('Idempotent-Replayed', 'true');
+        $this->assertSame($first->json('id'), $second->json('id'), 'Le corps métier est bien rejoué à l\'identique.');
+        $this->assertNull($second->json('_auth'), 'Le rejeu ne doit jamais contenir `_auth`.');
+        $this->assertStringNotContainsString(
+            'plain-secret-token-8052',
+            (string) $second->getContent(),
+            'Aucun token en clair ne doit être persisté ni rejoué depuis le cache.'
         );
     }
 

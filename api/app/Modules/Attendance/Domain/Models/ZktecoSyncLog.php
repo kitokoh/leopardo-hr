@@ -22,5 +22,9 @@ class ZktecoSyncLog extends Model
         'started_at',
         'completed_at',
     ];
-}
 
+    protected $casts = [
+        'started_at' => 'datetime',
+        'completed_at' => 'datetime',
+    ];
+}
