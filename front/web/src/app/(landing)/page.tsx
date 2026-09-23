@@ -20,6 +20,8 @@ import {
   ProblemSection,
   SolutionSection,
   TestimonialsSection,
+  ZKTecoHookSection,
+  VerticalsSection,
 } from '@/modules/vitrine';
 import { FeaturesSection as ModernFeaturesSection } from '@/modules/vitrine/components/sections/FeaturesSection';
 // PricingSection: keep the self-contained locale-aware version (not the generic sections/ one)
@@ -90,6 +92,11 @@ export default function LandingPage() {
           visual={<HeroProductShowcase locale={locale} />}
         />
 
+        {/* ─── PREUVE SOCIALE + HOOK ZKTECO — remontés juste après le hero (#8072) ─── */}
+        <TrustedBrands locale={locale} />
+        <SocialProofMetrics locale={locale} />
+        <ZKTecoHookSection locale={locale} />
+
         {/* ─── PROBLEM / SOLUTION ─── */}
         <ProblemSection
           badge={{ text: copy.problem.badge }}
@@ -108,10 +115,6 @@ export default function LandingPage() {
 
         {/* ─── PILE LEOPARDO ─── architecture de l'offre, ex-visuel héro (#7851) */}
         <SolutionStackSection locale={locale} />
-
-        {/* ─── SOCIAL PROOF ─── */}
-        <TrustedBrands locale={locale} />
-        <SocialProofMetrics locale={locale} />
 
         {/* ─── PRODUCT DEMO VIDEO ─── #8071 option A : retirée de la home,
             conservée sur /demo et /videos (nouveau poster = dashboard réel) */}
@@ -140,6 +143,9 @@ export default function LandingPage() {
         {/* #8065 : « Pourquoi open source » remplace MarketingReadinessSection
             (langage de pilotage interne — composant retiré par #8075). */}
         <WhyOpenSourceSection locale={locale} />
+
+        {/* ─── VERTICALES en cartes cliquables (#8072) ─── */}
+        <VerticalsSection locale={locale} />
 
         {/* ─── TESTIMONIALS ─── Phase-3 */}
         <TestimonialsSection
