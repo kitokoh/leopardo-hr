@@ -22,7 +22,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $content_redacted
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property int $id
- * @property string|null $moderated_at
+ * @property \Illuminate\Support\Carbon|null $moderated_at
+ * @property \Illuminate\Support\Carbon|null $reported_at
  * @property string $status
  * @property \Illuminate\Support\Carbon|null $updated_at
  */
@@ -36,4 +37,9 @@ class TravelComment extends Model
     protected $table = 'travel_comments';
 
     protected $fillable = ['company_id', 'article_id', 'author_type', 'author_id', 'content_redacted', 'status', 'moderated_by_user_id', 'moderated_at'];
+
+    protected $casts = [
+        'moderated_at' => 'datetime',
+        'reported_at' => 'datetime',
+    ];
 }
