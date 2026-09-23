@@ -3,7 +3,7 @@ import { ForgotPasswordForm } from './ForgotPasswordForm';
 
 export function generateMetadata() {
   // Metadata servie depuis le copy tree (pas de littéral FR en dur — PA2-I18N-014) ;
-  // le template racine « %s | Leopardo RH » complète le titre.
+  // le template racine « %s | Leopardo » complète le titre.
   const copy = getCopy('fr');
   return {
     title: copy.passwordReset.title,

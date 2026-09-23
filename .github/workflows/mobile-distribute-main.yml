@@ -33,8 +33,12 @@ permissions:
   contents: read
   actions: read
 
+# #7986 — le groupe keyé sur github.sha ne sérialisait RIEN (chaque push a
+# un sha distinct) : deux distributions Firebase pouvaient courir en
+# concurrence. Keyé sur le ref, les distributions main se sérialisent ;
+# cancel-in-progress: false reste requis (jamais d'annulation en vol).
 concurrency:
-  group: mobile-distribute-main-${{ github.sha }}
+  group: mobile-distribute-main-${{ github.ref }}
   cancel-in-progress: false
 
 env:

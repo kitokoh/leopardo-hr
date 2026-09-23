@@ -3,7 +3,7 @@
  *
  * Source de vérité : `GET /api/v1/supported-countries` (public depuis #4217,
  * registre `docs/payroll/*_COMPLIANCE.md` + CountryDefaults). Ce fichier est le
- * fallback offline/statique du sélecteur de pays du SignupForm — la liste
+ * fallback hors ligne/statique du sélecteur de pays du SignupForm — la liste
  * reflète les pays `available: true` du registre au 2026-08-16.
  *
  * NB : les libellés sont ceux du registre backend (français international) —

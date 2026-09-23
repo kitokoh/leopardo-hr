@@ -4,33 +4,40 @@
   "private": true,
   "description": "Leopardo — monorepo root convenience scripts (no npm workspaces, each sub-project manages its own lockfile)",
   "scripts": {
-    "web:dev":       "npm run dev      --prefix front/web",
-    "web:build":     "npm run build    --prefix front/web",
-    "web:test":      "npm run test     --prefix front/web",
-    "web:lint":      "npm run lint     --prefix front/web",
-    "web:e2e":       "npm run test:e2e --prefix front/web",
-
-    "travel:dev":    "npm run dev       --prefix front/travel-web",
-    "travel:build":  "npm run build     --prefix front/travel-web",
-    "travel:lint":   "npm run lint      --prefix front/travel-web",
-
-    "admin:dev":     "npm run dev      --prefix front/admin-dashboard",
-    "admin:build":   "npm run build    --prefix front/admin-dashboard",
-    "admin:lint":    "npm run lint     --prefix front/admin-dashboard",
-
+    "web:dev": "npm run dev      --prefix front/web",
+    "web:build": "npm run build    --prefix front/web",
+    "web:test": "npm run test     --prefix front/web",
+    "web:lint": "npm run lint     --prefix front/web",
+    "web:e2e": "npm run test:e2e --prefix front/web",
+    "travel:dev": "npm run dev       --prefix front/travel-web",
+    "travel:build": "npm run build     --prefix front/travel-web",
+    "travel:lint": "npm run lint      --prefix front/travel-web",
+    "admin:dev": "npm run dev      --prefix front/admin-dashboard",
+    "admin:build": "npm run build    --prefix front/admin-dashboard",
+    "admin:lint": "npm run lint     --prefix front/admin-dashboard",
     "mobile:bootstrap": "melos bootstrap",
-    "mobile:analyze":   "melos run analyze",
-    "mobile:format":    "melos run format:fix",
-    "mobile:test":      "melos run test",
-    "mobile:gen":       "melos run gen",
-    "mobile:l10n":      "melos run l10n",
-
-    "lint":    "npm run web:lint && npm run admin:lint",
-    "test":    "npm run web:test",
-    "build":   "npm run web:build && npm run admin:build"
+    "mobile:analyze": "melos run analyze",
+    "mobile:format": "melos run format:fix",
+    "mobile:test": "melos run test",
+    "mobile:gen": "melos run gen",
+    "mobile:l10n": "melos run l10n",
+    "lint": "npm run web:lint && npm run admin:lint && npm run travel:lint && npm run marketplace:lint && npm run offline:lint && npm run kiosk:lint",
+    "test": "npm run web:test && npm run travel:test && npm run offline:test && npm run kiosk:test",
+    "build": "npm run web:build && npm run admin:build && npm run travel:build && npm run marketplace:build && npm run offline:build",
+    "travel:test": "npm run test      --prefix front/travel-web",
+    "travel:typecheck": "npm run typecheck --prefix front/travel-web",
+    "marketplace:dev": "npm run dev       --prefix front/marketplace",
+    "marketplace:build": "npm run build     --prefix front/marketplace",
+    "marketplace:lint": "npm run lint      --prefix front/marketplace",
+    "offline:dev": "npm run dev       --prefix front/web-offline",
+    "offline:build": "npm run build     --prefix front/web-offline",
+    "offline:lint": "npm run lint      --prefix front/web-offline",
+    "offline:test": "npm run test      --prefix front/web-offline",
+    "kiosk:lint": "npm run lint      --prefix front/zkteco-kiosk",
+    "kiosk:test": "npm run test      --prefix front/zkteco-kiosk"
   },
   "engines": {
     "node": ">=20.0.0",
-    "npm":  ">=10.0.0"
+    "npm": ">=10.0.0"
   }
 }

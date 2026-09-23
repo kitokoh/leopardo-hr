@@ -1233,6 +1233,17 @@
         "freePrice": "Free",
         "freeNote": "No credit card · Forever",
         "freeTag": "free"
+      },
+      "selfhost": {
+        "title": "Free forever, on your server",
+        "subtitle": "The code is open (MIT license): deploy Leopardo with Docker, no per-user pricing.",
+        "bullets": {
+          "0": "Open source code (MIT license)",
+          "1": "Docker Compose — up and running in minutes",
+          "2": "Your data stays with you"
+        },
+        "ctaGithub": "View the GitHub repo",
+        "ctaDocs": "Deployment guide"
       }
     },
     "plans": {
@@ -6328,7 +6339,8 @@
       "faq": "FAQ",
       "faqDesc": "Frequently asked questions",
       "support": "Support",
-      "supportDesc": "Contact our team"
+      "supportDesc": "Contact our team",
+      "selfhostDesc": "Docker + source code on GitHub, your data stays with you"
     }
   },
   "commerce": {
@@ -7120,6 +7132,60 @@
       "roleValue": {
         "reception": "Reception",
         "billing": "Billing"
+      }
+    }
+  },
+  "stay": {
+    "public": {
+      "notFoundTitle": "Property not found",
+      "metaDescription": "Discover {name}: rooms, rates and online booking, no account needed.",
+      "roomTypesTitle": "Rooms and rates",
+      "noRoomTypes": "This property's rooms are not published yet.",
+      "pricePerNight": "{price} / night",
+      "propertyType": {
+        "hotel": "Hotel",
+        "residence": "Residence",
+        "apartment_building": "Apartment building",
+        "guesthouse": "Guesthouse"
+      },
+      "bookingTitle": "Book online",
+      "checkInLabel": "Check-in",
+      "checkOutLabel": "Check-out",
+      "adultsLabel": "Guests",
+      "searchAvailability": "Check availability",
+      "searching": "Searching…",
+      "datesError": "Choose valid check-in and check-out dates.",
+      "searchError": "Could not load availability. Please try again shortly.",
+      "noAvailability": "No rooms available for these dates.",
+      "noAvailabilityError": "This room is no longer available for these dates. Search again.",
+      "unitsAvailable": "{count} available",
+      "soldOut": "Sold out for these dates",
+      "guestNameLabel": "Guest name",
+      "emailLabel": "Email (optional)",
+      "phoneLabel": "Phone (optional)",
+      "guestNameError": "Please enter the guest name.",
+      "book": "Book",
+      "booking": "Booking…",
+      "bookingError": "The booking failed. Please try again shortly.",
+      "confirmedTitle": "Booking request received",
+      "referenceLabel": "Reference",
+      "trackingCodeLabel": "Tracking code",
+      "trackingCodeNotice": "Keep this code safe: it will never be shown again and lets you track or cancel the booking.",
+      "pendingExpiryNotice": "Without confirmation from the property within 30 minutes, the request expires automatically.",
+      "trackTitle": "Track or cancel a booking",
+      "trackAction": "Search",
+      "trackFormError": "Enter the reference and the tracking code.",
+      "trackNotFound": "No booking matches this reference and code.",
+      "cancelAction": "Cancel the booking",
+      "cancelError": "The cancellation failed. Please try again shortly.",
+      "statusLabel": "Status",
+      "status": {
+        "pending": "Awaiting confirmation",
+        "confirmed": "Confirmed",
+        "checked_in": "Stay in progress",
+        "checked_out": "Stay completed",
+        "cancelled": "Cancelled",
+        "no_show": "No-show"
       }
     }
   }

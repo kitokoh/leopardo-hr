@@ -177,6 +177,9 @@ jobs:
       - name: Module isolation guard — no new cross-module imports (issue #5584)
         run: bash dev-hub/tools/check-module-isolation.sh api
 
+      - name: Tenant cache keys guard — helper central TenantCache ou exemption justifiée (issue #8058)
+        run: bash dev-hub/tools/check-tenant-cache-keys.sh api
+
       - name: Attendance/Payroll boundary guard — presence events owned by Attendance (ATT-001, issue #6760)
         run: bash dev-hub/tools/check-attendance-boundary.sh api
 

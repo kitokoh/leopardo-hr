@@ -50,7 +50,7 @@ export default function LogoutPage() {
             Déconnexion <span className="text-emerald-500 not-italic font-black">en cours</span>
           </h2>
           <p className="mt-4 text-slate-400 font-bold tracking-[0.1em] text-sm leading-relaxed">
-            Merci de votre visite sur Leopardo RH.<br />
+            Merci de votre visite sur Leopardo.<br />
             Nous sécurisons votre session...
           </p>
 

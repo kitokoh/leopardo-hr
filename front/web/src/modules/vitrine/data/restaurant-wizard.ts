@@ -51,7 +51,7 @@ export const WIZARD_COPY: Record<VitrineLocale, WizardCopy> = {
     downloadTitle: 'Téléchargez votre pack',
     downloadSubtitle: 'Scannez le QR pour installer les apps, ou suivez les liens ci-dessous.',
     qrHint: 'Scannez pour installer',
-    edgeTitle: 'Nœud Edge local (offline)',
+    edgeTitle: 'Nœud Edge local (hors ligne)',
     edgeCmdHint: 'Installez le nœud local sur un mini-PC du restaurant :',
     guideLabel: 'Guide de démarrage',
     includedLabel: 'Inclus dans votre espace',

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Catalog\Infrastructure\Services;
 
+use App\Shared\Support\TenantCache;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -20,27 +21,33 @@ use Illuminate\Support\Facades\Cache;
  */
 final class CatalogPublicCache
 {
-    private const PREFIX = 'catalog:public:v1';
+    // #8058 — construction des clés DÉLÉGUÉE au helper central TenantCache
+    // (préfixe company_id systématique, fail-closed). Le format change par
+    // rapport à l'historique « catalog:public:v1:… » : les anciennes entrées
+    // s'auto-purgent avec le TTL (600 s) — aucune invalidation manuelle.
+    private const SUFFIX = 'catalog:public:v1';
 
     public static function snapshotKey(string $companyId): string
     {
-        return self::PREFIX.':'.$companyId;
+        return TenantCache::keyFor($companyId, self::SUFFIX);
     }
 
     public static function productKey(string $companyId, string $productSlug): string
     {
-        return self::PREFIX.':'.$companyId.':p:'.$productSlug;
+        return TenantCache::keyFor($companyId, self::SUFFIX.':p:'.$productSlug);
     }
 
     /** Invalide le snapshot liste d'un tenant (mutations catégorie, store produit). */
     public static function forgetCompany(string $companyId): void
     {
+        // tenant-cache:via-helper — clé construite par TenantCache::keyFor (#8058)
         Cache::forget(self::snapshotKey($companyId));
     }
 
     /** Invalide la fiche d'un produit ET le snapshot (mutations produit). */
     public static function forgetProduct(string $companyId, string $productSlug): void
     {
+        // tenant-cache:via-helper — clé construite par TenantCache::keyFor (#8058)
         Cache::forget(self::productKey($companyId, $productSlug));
         Cache::forget(self::snapshotKey($companyId));
     }

@@ -5,7 +5,7 @@ import { normalizeLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
 
 /**
- * La 404 reprenait le titre de la page d'accueil (« Leopardo RH - SaaS RH
+ * La 404 reprenait le titre de la page d'accueil (« Leopardo - SaaS RH
  * multilingue… ») : vérifié sur le HTML servi le 2026-09-16. Un onglet qui
  * annonce l'accueil quand la page n'existe pas, et une 404 indexable.
  *

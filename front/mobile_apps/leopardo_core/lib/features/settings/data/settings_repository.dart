@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/models/employee.dart';
@@ -81,7 +82,9 @@ class SettingsRepository {
       timeoutOverride: _actionTimeout,
     );
     final data = extractDataMap(response.data);
-    return (response.data['message'] ?? data['status'] ?? 'Demande envoyee')
+    return (response.data['message'] ??
+            data['status'] ??
+            deviceL10n.settingsRequestSent)
         .toString();
   }
 

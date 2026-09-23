@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Core\Solutions\Interfaces\Api\V1\SolutionSurveyController;
+use App\Core\Solutions\Interfaces\Api\V1\Controllers\SolutionSurveyController;
 use Illuminate\Support\Facades\Route;
 
 /*

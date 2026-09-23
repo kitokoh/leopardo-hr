@@ -36,6 +36,7 @@ final class RestaurantPublicDirectoryCache
      */
     public function remember(string $slug, Closure $resolver): mixed
     {
+        // tenant-cache:shared — annuaire PUBLIC par slug globalement unique, donnée non sensible (#8058)
         return Cache::remember(self::key($slug), now()->addSeconds(self::TTL_SECONDS), $resolver);
     }
 
@@ -45,6 +46,7 @@ final class RestaurantPublicDirectoryCache
             return;
         }
 
+        // tenant-cache:shared — même annuaire public (#8058)
         Cache::forget(self::key($slug));
     }
 }

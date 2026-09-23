@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSsrLang } from '@/modules/vitrine/lib/locale-ssr-provider'
-import { SITE_URL } from '@/lib/site-url'
 // #7307 — chiffres canoniques de la vitrine : une seule source pour toutes les
 // pages et toutes les locales (le nombre de pays de paie était annoncé 21 ici
 // et 6 sur /testimonials).
@@ -21,10 +20,6 @@ import {
 
 const LOCALE_EVENT = 'vitrine-locale-changed'
 
-// L'espace client réellement en ligne (issue #1775 : app.leopardo-rh.com ne
-// résout pas — DNS mort). URL centralisée (src/lib/site-url.ts), priorité à
-// NEXT_PUBLIC_SITE_URL.
-const DEMO_APP_URL = `${SITE_URL}/dashboard`
 
 type LocaleOption = {
   value: AppLocale
@@ -38,10 +33,6 @@ type HeroStat = {
   label: string
 }
 
-type DemoStat = {
-  label: string
-  value: string
-}
 
 type LandingCopy = {
   nav: {
@@ -65,6 +56,8 @@ type LandingCopy = {
     subtitleTail: string
     primaryCta: string
     secondaryCta: string
+    /** #8068 — réassurance sous les CTA (« Gratuit · Sans CB · Code source ouvert »). */
+    ctaReassurance: string
     mobileBadge?: string
     downloadCta?: string
     visualAlt?: string
@@ -96,15 +89,6 @@ type LandingCopy = {
     title: string
     titleHighlight: string
     subtitle: string
-  }
-  demo: {
-    badge: string
-    title: string
-    titleHighlight: string
-    subtitle: string
-    highlights: string[]
-    appUrl: string
-    miniStats: DemoStat[]
   }
   pricing: {
     badge: string
@@ -189,30 +173,35 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       sections: [
         { id: 'fonctionnalites', label: 'Fonctionnalités' },
         { id: 'tarifs', label: 'Tarifs' },
-        { id: 'temoignages', label: 'Temoignages' },
+        { id: 'temoignages', label: 'Témoignages' },
         { id: 'faq', label: 'FAQ' },
       ],
       login: 'Connexion',
-      trial: 'Creer un compte',
+      trial: 'Créer un compte',
       mySpace: 'Mon espace',
-      themeLabel: 'Changer le theme',
+      themeLabel: 'Changer le thème',
       menuLabel: 'Menu',
       localeLabel: 'Langue',
-      brandTagline: 'Suite métier',
+      // #8066 — naming unique : « Leopardo » seul, baseline « suite métier open-source »
+      brandTagline: 'Suite métier open-source',
     },
     hero: {
-      badge: 'Suite métier open-source pour PME terrain',
+      // #8066 — H1 outcome-first : « entreprise » en promesse, paie/pointage en preuve,
+      // « chez vous » porte le self-host sans jargon ; « remplace Excel, WhatsApp et le
+      // papier » (meilleure phrase de la page) remontée en tête de sous-titre.
+      badge: 'Suite métier open-source',
       badgeNew: 'Nouveau',
-      titleTop: 'Vos employés, leurs pointages, leur paie —',
-      titleBottom: 'dans une seule application.',
-      subtitle: 'Leopardo est la suite métier open-source des entreprises de terrain — RH & paie, pointage, absences, CRM, comptabilité et opérations, sur web, mobile et bornes. Elle remplace Excel, WhatsApp et le papier par une seule application.',
+      titleTop: 'Toute votre entreprise — paie, pointage, RH, compta —',
+      titleBottom: 'dans une seule application, chez vous.',
+      subtitle: 'Leopardo remplace Excel, WhatsApp et le papier par une seule application open-source : RH & paie, pointage, absences, CRM, comptabilité et opérations — sur web, mobile et bornes, hébergée par nous ou sur votre serveur.',
       subtitleHighlight: 'Le cockpit mobile de votre entreprise',
       subtitleTail: 'qui relie terrain, RH, managers et direction.',
       mobileBadge: 'Disponible sur mobile',
-      downloadCta: 'Telecharger les apps',
+      downloadCta: 'Télécharger les apps',
       visualAlt: 'Capture du tableau de bord admin Leopardo',
-      primaryCta: 'Creer un compte',
-      secondaryCta: 'Voir la demo',
+      primaryCta: 'Essayer gratuitement',
+      secondaryCta: 'Installer sur votre serveur',
+      ctaReassurance: 'Gratuit · Sans carte bancaire · Code source ouvert',
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'Pays couverts (paie)' },
         { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'Langues (FR/EN/AR/TR)' },
@@ -224,70 +213,51 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       placeholder: 'email@entreprise.com',
       submit: 'Tester maintenant',
       submitting: 'Envoi...',
-      legal: 'Email uniquement. Notre equipe prepare un essai adapte, sans mot de passe ni carte bancaire.',
-      success: "Demande recue. L'equipe Leopardo vous contacte sous 24h ouvrables.",
+      legal: 'Email uniquement. Notre équipe prépare un essai adapté, sans mot de passe ni carte bancaire.',
+      success: "Demande reçue. L'équipe Leopardo vous contacte sous 24 h ouvrées.",
       error: "Impossible d'envoyer la demande pour le moment.",
     },
     problem: {
       badge: 'Le constat',
       title: 'La gestion RH traditionnelle vous freine ?',
-      subtitle: 'Les feuilles de presence papier, les erreurs de paie et le manque de visibilite sur le terrain ralentissent votre croissance.',
+      subtitle: 'Les feuilles de présence papier, les erreurs de paie et le manque de visibilité sur le terrain ralentissent votre croissance.',
       items: [
-        { title: 'Pointage manuel et erreurs', description: 'Les oublis et les saisies manuelles coutent des heures precieuses chaque semaine.' },
-        { title: 'Opacité du terrain', description: 'Difficile de savoir qui est présent et sur quelle tâche en temps reel.' },
-        { title: 'Complexite de la paie', description: 'Le calcul des variables de paie est un casse-tete mensuel sujet aux erreurs.' },
-        { title: 'Documents eparpilles', description: 'Les contrats et justificatifs sont perdus dans des emails ou des classeurs.' },
+        { title: 'Pointage manuel et erreurs', description: 'Les oublis et les saisies manuelles coûtent des heures précieuses chaque semaine.' },
+        { title: 'Opacité du terrain', description: 'Difficile de savoir qui est présent et sur quelle tâche en temps réel.' },
+        { title: 'Complexité de la paie', description: 'Le calcul des variables de paie est un casse-tête mensuel sujet aux erreurs.' },
+        { title: 'Documents éparpillés', description: 'Les contrats et justificatifs sont perdus dans des emails ou des classeurs.' },
       ],
     },
     solution: {
       badge: 'La solution Leopardo',
-      title: 'Un systeme d\'exploitation pour',
+      title: 'Un système d\'exploitation pour',
       subtitle: 'vos opérations terrain.',
       description: 'Leopardo unifie tout votre flux opérationnel dans une plateforme moderne, mobile-first et intuitive.',
       features: [
-        { title: 'Pointage Biometrique & Mobile', description: 'Securisez les entrees avec ZKTeco, QR code ou GPS mobile.' },
-        { title: 'Automatisation de la Paie', description: 'Generez les variables de paie en un clic, sans risque d\'erreur.' },
-        { title: 'Visibilite en Temps Reel', description: 'Dashboards dynamiques pour une prise de decision immediate.' },
-        { title: 'Self-Service Employe', description: 'Donnez de l\'autonomie a vos equipes avec une application dediee.' },
+        { title: 'Pointage biométrique et mobile', description: 'Sécurisez les entrées avec ZKTeco, QR code ou GPS mobile.' },
+        { title: 'Automatisation de la paie', description: 'Générez les variables de paie en un clic, avec moins de ressaisies et moins d\'erreurs.' },
+        { title: 'Visibilité en temps réel', description: 'Des tableaux de bord dynamiques pour une prise de décision immédiate.' },
+        { title: 'Self-service employé', description: 'Donnez de l\'autonomie à vos équipes avec une application dédiée.' },
       ],
     },
     features: {
       badge: 'Fonctionnalités',
       title: 'Tout ce dont vous avez',
       titleHighlight: 'besoin',
-      subtitle: "Une suite complete d'outils RH concue pour simplifier chaque aspect de votre quotidien.",
-    },
-    demo: {
-      badge: 'Interface moderne',
-      title: 'Une experience',
-      titleHighlight: 'revolutionnaire',
-      subtitle: 'Decouvrez une interface pensee pour la productivite. Chaque pixel est concu pour simplifier vos operations RH quotidiennes.',
-      highlights: [
-        'Tableau de bord en temps reel',
-        'Rapports automatises avec IA',
-        'Integration multi-device native',
-        'Notifications intelligentes',
-        'Compatibilite ZKTeco',
-      ],
-      appUrl: DEMO_APP_URL,
-      miniStats: [
-        { label: 'Employes', value: '247' },
-        { label: 'Presents', value: '231' },
-        { label: 'Securite', value: '100%' },
-      ],
+      subtitle: "Une suite complète d'outils RH conçue pour simplifier chaque aspect de votre quotidien.",
     },
     pricing: {
       badge: 'Tarifs',
       title: 'Des offres',
       titleHighlight: 'pour lancer vite',
       subtitle: 'Commencez par un pilote gratuit, puis payez selon vos employés actifs et vos besoins terrain.',
-      recommended: 'Recommande',
+      recommended: 'Recommandé',
       currency: 'EUR',
       annualSavings: "Jusqu'à 17% d'économie",
       toggleBilling: "Basculer la période de facturation",
     },
     testimonials: {
-      badge: 'Temoignages',
+      badge: 'Témoignages',
       title: 'Ils nous font',
       titleHighlight: 'confiance',
       subtitle: 'Les premiers pilotes utilisent Leopardo pour unifier terrain, managers et admin plateforme sans multiplier les outils.',
@@ -295,32 +265,32 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     faq: {
       badge: 'FAQ',
       title: 'Questions',
-      titleHighlight: 'frequentes',
+      titleHighlight: 'fréquentes',
     },
     cta: {
-      badge: 'Pret pour les pilotes terrain',
-      title: 'Pret a transformer',
+      badge: 'Prêt pour les pilotes terrain',
+      title: 'Prêt à transformer',
       titleHighlight: 'votre gestion RH ?',
-      subtitle: 'Commencez votre essai gratuit de 14 jours. Aucune carte de credit requise. Configuration en moins de 5 minutes.',
-      primary: 'Commencer gratuitement',
-      secondary: 'Demander une demo',
+      subtitle: 'Commencez votre essai gratuit de 14 jours. Aucune carte de crédit requise. Configuration en moins de 5 minutes.',
+      primary: 'Essayer gratuitement',
+      secondary: 'Installer sur votre serveur',
     },
     changelog: {
       badge: 'Produit',
       title: 'Journal des',
       titleHighlight: 'versions',
-      subtitle: 'Dernieres livraisons majeures de la plateforme (extrait editorialise).',
-      repoNote: 'Historique detaille : fichier CHANGELOG.md a la racine du depot.',
+      subtitle: 'Dernières livraisons majeures de la plateforme (extrait éditorialisé).',
+      repoNote: 'Historique détaillé : fichier CHANGELOG.md à la racine du dépôt.',
     },
     footer: {
-      description: "Mobile-First Company OS pour gérer votre personnel sur le terrain, en bureau et à distance. Employee, Manager et Platform Admin disponibles sur mobile.",
+      description: "Suite métier mobile-first pour gérer vos équipes sur le terrain, au bureau et à distance. Applications Employé, Manager et Admin plateforme disponibles sur mobile.",
       sections: [
-        { title: 'Produit', links: ['Fonctionnalités', 'Tarifs', 'Intégrations', 'API', 'Changelog', 'Leopardo for Windows', 'À propos', 'Vidéos'] },
-        { title: 'Ressources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Communauté'] },
-        { title: 'Applications mobiles', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
-        { title: 'Legal', links: ['Confidentialité (RGPD)', 'CGU', 'Mentions légales'] },
+        { title: 'Produit', links: ['Fonctionnalités', 'Tarifs', 'Intégrations', 'API', 'Changelog', 'Leopardo for Windows', 'À propos', 'Vidéos', 'Employés', 'Comptabilité', 'Marketing'] },
+        { title: 'Ressources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Communauté', 'Études de cas', 'Témoignages', 'Comparer', 'Restaurateurs', 'Carrières', 'Branding'] },
+        { title: 'Applications mobiles', links: ['Employé (Android)', 'Employé (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Admin plateforme (Android)'] },
+        { title: 'Légal', links: ['Confidentialité (RGPD)', 'CGU', 'Mentions légales'] },
       ],
-      rights: 'Tous droits reserves.',
+      rights: 'Tous droits réservés.',
       newsletter: {
         title: 'Newsletter',
         description: 'Recevez nos conseils RH et mises à jour produit.',
@@ -331,22 +301,22 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       },
     },
     caseStudies: {
-      heroBadge: 'Succes Clients',
+      heroBadge: 'Succès clients',
       catalogTitle: 'Études de cas par métier',
       catalogSubtitle: "Douze cas d'usage détaillés : pointage, paie, documents et marketing, secteur par secteur.",
-      heroTitle: 'Etudes de Cas Clients',
-      heroSubtitle: 'Comment nos clients ont transforme leur gestion RH avec Leopardo',
+      heroTitle: 'Études de cas clients',
+      heroSubtitle: 'Comment nos clients ont transformé leur gestion RH avec Leopardo',
       heroPrimary: 'Démarrer gratuitement',
-      heroSecondary: 'Voir les temoignages',
-      demoBadge: 'Etude illustrative',
-      demoNotice: 'Ces etudes de cas sont des exemples illustratifs (donnees fictives) pour montrer les cas d\'usage de la plateforme.',
-      challenge: 'Le defi',
+      heroSecondary: 'Voir les témoignages',
+      demoBadge: 'Étude illustrative',
+      demoNotice: 'Ces études de cas sont des exemples illustratifs (données fictives) pour montrer les cas d\'usage de la plateforme.',
+      challenge: 'Le défi',
       solution: 'La solution',
-      employees: 'employes',
+      employees: 'employés',
       ctaTitle: 'Votre entreprise pourrait être la prochaine',
-      ctaDescription: 'Decouvrez Leopardo avec un essai gratuit de 14 jours.',
+      ctaDescription: 'Découvrez Leopardo avec un essai gratuit de 14 jours.',
       ctaPrimary: 'Essai gratuit 14 jours',
-      ctaSecondary: 'Demander une demo',
+      ctaSecondary: 'Demander une démo',
     },
   },
   en: {
@@ -363,21 +333,24 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       themeLabel: 'Toggle theme',
       menuLabel: 'Menu',
       localeLabel: 'Language',
-      brandTagline: 'Business suite',
+      // #8066 — single naming: "Leopardo" alone, baseline "open-source business suite"
+      brandTagline: 'Open-source business suite',
     },
     hero: {
-      badge: 'The open-source business suite for field SMBs',
+      // #8066 — outcome-first H1, same intent as FR
+      badge: 'Open-source business suite',
       badgeNew: 'New',
-      titleTop: 'Your employees, their time tracking, their payroll —',
-      titleBottom: 'in one single app.',
-      subtitle: 'Leopardo is the open-source business suite for field-based companies — HR & payroll, attendance, leave, CRM, accounting and operations, on web, mobile and kiosks. It replaces Excel, WhatsApp and paper with one app.',
+      titleTop: 'Your whole business — payroll, time tracking, HR, accounting —',
+      titleBottom: 'in one single app, on your own server.',
+      subtitle: 'Leopardo replaces Excel, WhatsApp and paper with one open-source app: HR & payroll, attendance, leave, CRM, accounting and operations — on web, mobile and kiosks, hosted by us or on your own server.',
       subtitleHighlight: 'The mobile cockpit of your company',
       subtitleTail: 'connecting field staff, HR, managers and leadership.',
       mobileBadge: 'Available on mobile',
       downloadCta: 'Download the apps',
       visualAlt: 'Leopardo admin dashboard screenshot',
-      primaryCta: 'Create an account',
-      secondaryCta: 'Watch demo',
+      primaryCta: 'Try for free',
+      secondaryCta: 'Install on your server',
+      ctaReassurance: 'Free · No credit card · Open source',
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'Payroll countries' },
         { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'Languages (FR/EN/AR/TR)' },
@@ -422,25 +395,6 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       titleHighlight: 'needs',
       subtitle: 'A complete HR suite designed to simplify each operational workflow across web, mobile, and field teams.',
     },
-    demo: {
-      badge: 'Modern interface',
-      title: 'An experience built for',
-      titleHighlight: 'speed',
-      subtitle: 'Discover an interface shaped for productivity, visibility, and daily operational clarity.',
-      highlights: [
-        'Real-time executive dashboard',
-        'AI-assisted automated reports',
-        'Native multi-device experience',
-        'Smart notifications',
-        'ZKTeco-ready attendance',
-      ],
-      appUrl: DEMO_APP_URL,
-      miniStats: [
-        { label: 'Employees', value: '247' },
-        { label: 'Present', value: '231' },
-        { label: 'Security', value: '100%' },
-      ],
-    },
     pricing: {
       badge: 'Pricing',
       title: 'Plans built',
@@ -467,8 +421,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       title: 'Ready to transform',
       titleHighlight: 'your HR operations?',
       subtitle: 'Launch your 14-day free trial. No credit card required. Production setup in under five minutes.',
-      primary: 'Start for free',
-      secondary: 'Request a demo',
+      primary: 'Try for free',
+      secondary: 'Install on your server',
     },
     changelog: {
       badge: 'Product',
@@ -480,10 +434,10 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'Mobile-First Company OS for managing your workforce in the field, at the office and remotely. Employee, Manager and Platform Admin available on mobile.',
       sections: [
-        { title: 'Product', links: ['Features', 'Pricing', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows', 'About', 'Videos'] },
-        { title: 'Resources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Community'] },
-        { title: 'Mobile Apps', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
-        { title: 'Legal', links: ['Privacy (GDPR)', 'Terms', 'Legal notice'] },
+        { title: 'Product', links: ['Features', 'Pricing', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows', 'About', 'Videos', 'Employees', 'Accounting', 'Marketing'] },
+        { title: 'Resources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Community', 'Case studies', 'Testimonials', 'Compare', 'Restaurants', 'Careers', 'Brand assets'] },
+        { title: 'Mobile Apps', links: ['Employé (Android)', 'Employé (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Admin plateforme (Android)'] },
+        { title: 'Légal', links: ['Privacy (GDPR)', 'Terms', 'Legal notice'] },
       ],
       rights: 'All rights reserved.',
       newsletter: {
@@ -528,21 +482,24 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       themeLabel: 'Temayi degistir',
       menuLabel: 'Menu',
       localeLabel: 'Dil',
-      brandTagline: 'İşletme yönetimi paketi',
+      // #8066 — tek adlandırma: yalnız "Leopardo", alt başlık "açık kaynak iş paketi"
+      brandTagline: 'Açık kaynak iş paketi',
     },
     hero: {
-      badge: 'Saha ekipleri için açık kaynaklı işletme yönetimi paketi',
+      // #8066 — FR/EN ile aynı niyet: sonuç odaklı H1
+      badge: 'Açık kaynak iş paketi',
       badgeNew: 'Yeni',
-      titleTop: 'Calisanlariniz, giris-cikislari, bordrolari —',
-      titleBottom: 'tek bir uygulamada.',
-      subtitle: 'Leopardo, saha ekipleri için açık kaynaklı işletme yönetimi paketidir — İK ve bordro, yoklama, izin, CRM, muhasebe ve saha operasyonları; web, mobil ve kiosk üzerinde. Excel, WhatsApp ve kagidi tek bir uygulamayla degistirir.',
+      titleTop: 'Tüm işletmeniz — bordro, yoklama, İK, muhasebe —',
+      titleBottom: 'tek bir uygulamada, kendi sunucunuzda.',
+      subtitle: 'Leopardo, Excel, WhatsApp ve kağıdı tek bir açık kaynak uygulamayla değiştirir: İK ve bordro, yoklama, izin, CRM, muhasebe ve operasyonlar — web, mobil ve kiosk üzerinde; bizde veya kendi sunucunuzda barındırın.',
       subtitleHighlight: 'Employee, Manager, Platform Admin',
       subtitleTail: 'agir ERP olmadan saha pilotu baslatmaniz icin.',
       mobileBadge: 'Mobilde kullanilabilir',
       downloadCta: 'Uygulamalari indir',
       visualAlt: 'Leopardo yonetici paneli ekran goruntusu',
-      primaryCta: '14 gun ucretsiz deneyin',
-      secondaryCta: 'Demoyu izle',
+      primaryCta: 'Ucretsiz dene',
+      secondaryCta: 'Kendi sunucunuza kurun',
+      ctaReassurance: 'Ucretsiz · Kredi karti yok · Acik kaynak',
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'Bordro ulkesi' },
         { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'Dil (FR/EN/AR/TR)' },
@@ -587,25 +544,6 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       titleHighlight: 'her sey',
       subtitle: 'Web, mobil ve saha ekipleri icin gunluk IK operasyonlarini sadeleştiren kapsamli arac paketi.',
     },
-    demo: {
-      badge: 'Modern arayuz',
-      title: 'Hiz icin tasarlanmis',
-      titleHighlight: 'bir deneyim',
-      subtitle: 'Uretkenlik, gorunurluk ve saha kullanimi icin tasarlanmis arayuzu kesfedin.',
-      highlights: [
-        'Gercek zamanli yonetici paneli',
-        'Yapay zekali otomatik raporlar',
-        'Cok cihazli yerel deneyim',
-        'Akilli bildirimler',
-        'ZKTeco uyumlu takip',
-      ],
-      appUrl: DEMO_APP_URL,
-      miniStats: [
-        { label: 'Calisan', value: '247' },
-        { label: 'Mevcut', value: '231' },
-        { label: 'Guvenlik', value: '100%' },
-      ],
-    },
     pricing: {
       badge: 'Fiyatlar',
       title: 'Gercek kurulum',
@@ -632,8 +570,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       title: 'IK sureclerini',
       titleHighlight: 'donusturmeye hazir misiniz?',
       subtitle: '14 gun ucretsiz deneyin. Kredi karti gerekmez. Kurulum bes dakikadan kisa surer.',
-      primary: 'Ucretsiz basla',
-      secondary: 'Demo iste',
+      primary: 'Ucretsiz dene',
+      secondary: 'Kendi sunucunuza kurun',
     },
     changelog: {
       badge: 'Urun',
@@ -645,9 +583,9 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'Saha, ofis ve uzaktan calisanlarinizi yonetmek icin Mobile-First Company OS. Employee, Manager ve Platform Admin mobilde kullanilabilir.',
       sections: [
-        { title: 'Urun', links: ['Ozellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Degisiklikler', 'Windows icin Leopardo', 'Hakkında', 'Videolar'] },
-        { title: 'Kaynaklar', links: ['Dokumantasyon', 'Rehberler', 'Blog', 'Iletisim', 'Topluluk'] },
-        { title: 'Mobil Uygulamalar', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
+        { title: 'Urun', links: ['Ozellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Degisiklikler', 'Windows icin Leopardo', 'Hakkında', 'Videolar', 'Calisanlar', 'Muhasebe', 'Pazarlama'] },
+        { title: 'Kaynaklar', links: ['Dokumantasyon', 'Rehberler', 'Blog', 'Iletisim', 'Topluluk', 'Vaka calismalari', 'Referanslar', 'Karsilastir', 'Restoranlar', 'Kariyer', 'Marka'] },
+        { title: 'Mobil Uygulamalar', links: ['Employé (Android)', 'Employé (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Admin plateforme (Android)'] },
         { title: 'Yasal', links: ['Gizlilik (KVKK/GDPR)', 'Kullanim Kosullari', 'Yasal bildirim'] },
       ],
       rights: 'Tum haklari saklidir.',
@@ -693,21 +631,24 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       themeLabel: 'تبديل السمة',
       menuLabel: 'القائمة',
       localeLabel: 'اللغة',
-      brandTagline: 'حزمة الأعمال',
+      // #8066 — تسمية موحّدة: «Leopardo» فقط، مع الوصف «حزمة أعمال مفتوحة المصدر»
+      brandTagline: 'حزمة أعمال مفتوحة المصدر',
     },
     hero: {
-      badge: 'حزمة الأعمال مفتوحة المصدر للشركات الميدانية',
+      // #8066 — نفس نية العنوان الفرنسي/الإنجليزي: النتيجة أولاً
+      badge: 'حزمة أعمال مفتوحة المصدر',
       badgeNew: 'جديد',
-      titleTop: 'موظفوك، حضورهم، رواتبهم —',
-      titleBottom: 'في تطبيق واحد.',
-      subtitle: 'ليوباردو حزمة الأعمال مفتوحة المصدر للشركات الميدانية — الموارد البشرية والرواتب، الحضور، الإجازات، إدارة العملاء، المحاسبة والعمليات الميدانية، عبر الويب والجوال وأجهزة الحضور. يستبدل Excel وواتساب والورق بتطبيق واحد.',
+      titleTop: 'كل أعمالك — الرواتب، الحضور، الموارد البشرية، المحاسبة —',
+      titleBottom: 'في تطبيق واحد، على خادمك.',
+      subtitle: 'ليوباردو يستبدل Excel وواتساب والورق بتطبيق واحد مفتوح المصدر: الموارد البشرية والرواتب، الحضور، الإجازات، إدارة العملاء، المحاسبة والعمليات — عبر الويب والجوال وأجهزة الحضور، مستضافًا لدينا أو على خادمك الخاص.',
       subtitleHighlight: 'Employee, Manager, Platform Admin',
       subtitleTail: 'لتشغيل تجربة ميدانية بدون نظام ERP ثقيل.',
       mobileBadge: 'متاح على الجوال',
       downloadCta: 'تحميل التطبيقات',
       visualAlt: 'لقطة شاشة للوحة تحكم الإدارة في ليوباردو',
-      primaryCta: 'ابدأ تجربة 14 يوما',
-      secondaryCta: 'شاهد العرض',
+      primaryCta: 'جرّب مجانًا',
+      secondaryCta: 'ثبّت على خادمك',
+      ctaReassurance: 'مجاني · بدون بطاقة بنكية · كود مفتوح المصدر',
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'دول الرواتب' },
         { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'لغات (FR/EN/AR/TR)' },
@@ -752,25 +693,6 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       titleHighlight: 'في مكان واحد',
       subtitle: 'مجموعة متكاملة من ادوات الموارد البشرية للويب والجوال والعمل الميداني.',
     },
-    demo: {
-      badge: 'واجهة حديثة',
-      title: 'تجربة مصممة',
-      titleHighlight: 'للانتاجية',
-      subtitle: 'اكتشف واجهة تساعدك على الرؤية الفورية وسرعة التنفيذ في العمليات اليومية.',
-      highlights: [
-        'لوحة تحكم مباشرة',
-        'تقارير مؤتمتة بالذكاء الاصطناعي',
-        'تجربة اصلية على كل الاجهزة',
-        'اشعارات ذكية',
-        'تكامل جاهز مع ZKTeco',
-      ],
-      appUrl: DEMO_APP_URL,
-      miniStats: [
-        { label: 'الموظفون', value: '247' },
-        { label: 'الحاضرون', value: '231' },
-        { label: 'الامان', value: '100%' },
-      ],
-    },
     pricing: {
       badge: 'الاسعار',
       title: 'باقات',
@@ -797,8 +719,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       title: 'هل انت مستعد',
       titleHighlight: 'لتطوير عمليات الموارد البشرية؟',
       subtitle: 'ابدأ تجربة مجانية لمدة 14 يوما بدون بطاقة ائتمان. التشغيل يتم خلال اقل من خمس دقائق.',
-      primary: 'ابدأ مجانا',
-      secondary: 'اطلب عرضا',
+      primary: 'جرّب مجانًا',
+      secondary: 'ثبّت على خادمك',
     },
     changelog: {
       badge: 'المنتج',
@@ -810,9 +732,9 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'Mobile-First Company OS لإدارة فريقك في الميدان والمكتب وعن بُعد. Employee وManager وPlatform Admin متاحة على الجوال.',
       sections: [
-        { title: 'المنتج', links: ['الميزات', 'الاسعار', 'التكاملات', 'API', 'سجل التغييرات', 'ليوباردو لويندوز', 'من نحن', 'فيديوهات'] },
-        { title: 'الموارد', links: ['التوثيق', 'أدلة', 'المدونة', 'اتصل بنا', 'المجتمع'] },
-        { title: 'تطبيقات الجوال', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
+        { title: 'المنتج', links: ['الميزات', 'الاسعار', 'التكاملات', 'API', 'سجل التغييرات', 'ليوباردو لويندوز', 'من نحن', 'فيديوهات', 'الموظفون', 'المحاسبة', 'التسويق'] },
+        { title: 'الموارد', links: ['التوثيق', 'أدلة', 'المدونة', 'اتصل بنا', 'المجتمع', 'دراسات الحالة', 'الشهادات', 'قارن', 'المطاعم', 'الوظائف', 'الهوية'] },
+        { title: 'تطبيقات الجوال', links: ['Employé (Android)', 'Employé (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Admin plateforme (Android)'] },
         { title: 'قانوني', links: ['الخصوصية (GDPR)', 'الشروط', 'الإشعارات القانونية'] },
       ],
       rights: 'جميع الحقوق محفوظة.',
@@ -848,9 +770,9 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
 
 // #3246 — preuve sociale honnête. Aucun client payant à ce jour
 // (PILOTAGE.md « Clients payants | 0 ») : tout contenu « client » de la
-// vitrine est illustratif. Ces libellés sont consommés par TestimonialCard,
-// TestimonialHighlight et MiniCaseStudies pour marquer explicitement les
-// citations/cas comme des exemples (voir TESTIMONIALS_ARE_DEMO).
+// vitrine est illustratif. Ces libellés sont consommés par TestimonialCard
+// pour marquer explicitement les citations comme des exemples (voir
+// TESTIMONIALS_ARE_DEMO).
 // Régression 2026-08-15 : le merge #3561 a écrasé ce bloc (conflit de
 // rebase) → rétabli tel quel.
 export const ILLUSTRATIVE_EXAMPLE_LABEL: Record<AppLocale, string> = {

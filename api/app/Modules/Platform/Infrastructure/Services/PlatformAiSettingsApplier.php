@@ -53,6 +53,7 @@ final class PlatformAiSettingsApplier
      */
     public static function flush(): void
     {
+        // tenant-cache:shared — réglages IA PLATEFORME (super-admin, cross-tenant par design) (#8058)
         Cache::forget(self::CACHE_KEY);
     }
 
@@ -63,6 +64,7 @@ final class PlatformAiSettingsApplier
     {
         try {
             /** @var array<string, string> $values */
+            // tenant-cache:shared — réglages IA PLATEFORME (#8058)
             $values = Cache::remember(
                 self::CACHE_KEY,
                 self::CACHE_TTL_SECONDS,

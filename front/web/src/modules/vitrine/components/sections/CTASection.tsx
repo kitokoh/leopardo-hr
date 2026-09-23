@@ -85,8 +85,8 @@ export function CTASection({
         {/* Badge */}
         {badge && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ y: 20 }}
+            whileInView={{ y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-sm font-semibold mb-6 backdrop-blur-sm"
@@ -98,8 +98,8 @@ export function CTASection({
 
         {/* Headline */}
         <motion.h2
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ y: 30 }}
+          whileInView={{ y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.1 }}
           className="text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-6 tracking-tight leading-[1.1]"
@@ -110,8 +110,8 @@ export function CTASection({
         {/* Subheadline */}
         {resolvedSubheadline && (
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ y: 20 }}
+            whileInView={{ y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-xl text-white/80 mb-12 max-w-2xl mx-auto leading-relaxed font-light"
@@ -122,8 +122,8 @@ export function CTASection({
 
         {/* CTAs */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ y: 20 }}
+          whileInView={{ y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.3 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
@@ -131,6 +131,7 @@ export function CTASection({
           {resolvedPrimaryCta && (
             <Link
               href={withLocaleHref(resolvedPrimaryCta.href, search)}
+              {...(/^https?:\/\//i.test(resolvedPrimaryCta.href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               className="group relative px-8 py-4 bg-white text-emerald-700 font-bold rounded-2xl overflow-hidden transition-all duration-300 cta-glow-white hover:scale-[1.03] active:scale-[0.98]"
             >
               <span className="relative z-10 flex items-center gap-2.5 text-base">
@@ -143,6 +144,7 @@ export function CTASection({
           {resolvedSecondaryCta && (
             <Link
               href={withLocaleHref(resolvedSecondaryCta.href, search)}
+              {...(/^https?:\/\//i.test(resolvedSecondaryCta.href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               className="group flex items-center gap-2.5 px-8 py-4 bg-white/10 text-white font-semibold rounded-2xl border border-white/20 hover:bg-white/20 transition-all duration-300 backdrop-blur-sm"
             >
               {resolvedSecondaryCta.text}

@@ -1233,6 +1233,17 @@
         "freePrice": "مجاني",
         "freeNote": "بدون بطاقة بنكية · للأبد",
         "freeTag": "مجاني"
+      },
+      "selfhost": {
+        "title": "مجاني للأبد، على خادمك",
+        "subtitle": "الكود مفتوح (رخصة MIT): انشر ليوباردو عبر Docker، بدون تسعير لكل مستخدم.",
+        "bullets": {
+          "0": "كود مفتوح المصدر (رخصة MIT)",
+          "1": "Docker Compose — جاهز في دقائق",
+          "2": "بياناتك تبقى لديك"
+        },
+        "ctaGithub": "اعرض مستودع GitHub",
+        "ctaDocs": "دليل النشر"
       }
     },
     "plans": {
@@ -6328,7 +6339,8 @@
       "faq": "الأسئلة الشائعة",
       "faqDesc": "إجابات سريعة قبل الإطلاق",
       "support": "الدعم",
-      "supportDesc": "تواصل مع فريقنا"
+      "supportDesc": "تواصل مع فريقنا",
+      "selfhostDesc": "Docker + الكود المصدري على GitHub، بياناتك تبقى لديك"
     }
   },
   "commerce": {
@@ -7120,6 +7132,60 @@
       "roleValue": {
         "reception": "استقبال",
         "billing": "فوترة"
+      }
+    }
+  },
+  "stay": {
+    "public": {
+      "notFoundTitle": "المنشأة غير موجودة",
+      "metaDescription": "اكتشف {name}: الغرف والأسعار والحجز عبر الإنترنت دون حساب.",
+      "roomTypesTitle": "الغرف والأسعار",
+      "noRoomTypes": "لم تُنشر غرف هذه المنشأة بعد.",
+      "pricePerNight": "{price} / الليلة",
+      "propertyType": {
+        "hotel": "فندق",
+        "residence": "إقامة فندقية",
+        "apartment_building": "مبنى شقق",
+        "guesthouse": "بيت ضيافة"
+      },
+      "bookingTitle": "احجز عبر الإنترنت",
+      "checkInLabel": "الوصول",
+      "checkOutLabel": "المغادرة",
+      "adultsLabel": "عدد الضيوف",
+      "searchAvailability": "عرض التوفر",
+      "searching": "جارٍ البحث…",
+      "datesError": "اختر تاريخي وصول ومغادرة صالحين.",
+      "searchError": "تعذر تحميل التوفر. حاول مرة أخرى بعد قليل.",
+      "noAvailability": "لا توجد غرف متاحة في هذه التواريخ.",
+      "noAvailabilityError": "هذه الغرفة لم تعد متاحة في هذه التواريخ. أعد البحث.",
+      "unitsAvailable": "{count} متاح",
+      "soldOut": "محجوز بالكامل في هذه التواريخ",
+      "guestNameLabel": "اسم الضيف",
+      "emailLabel": "البريد الإلكتروني (اختياري)",
+      "phoneLabel": "الهاتف (اختياري)",
+      "guestNameError": "يرجى إدخال اسم الضيف.",
+      "book": "احجز",
+      "booking": "جارٍ الحجز…",
+      "bookingError": "فشل الحجز. حاول مرة أخرى بعد قليل.",
+      "confirmedTitle": "تم استلام طلب الحجز",
+      "referenceLabel": "المرجع",
+      "trackingCodeLabel": "رمز المتابعة",
+      "trackingCodeNotice": "احتفظ بهذا الرمز في مكان آمن: لن يُعرض مرة أخرى أبدًا وهو يتيح متابعة الحجز أو إلغاءه.",
+      "pendingExpiryNotice": "دون تأكيد من المنشأة خلال 30 دقيقة، ينتهي الطلب تلقائيًا.",
+      "trackTitle": "متابعة حجز أو إلغاؤه",
+      "trackAction": "بحث",
+      "trackFormError": "أدخل المرجع ورمز المتابعة.",
+      "trackNotFound": "لا يوجد حجز يطابق هذا المرجع وهذا الرمز.",
+      "cancelAction": "إلغاء الحجز",
+      "cancelError": "فشل الإلغاء. حاول مرة أخرى بعد قليل.",
+      "statusLabel": "الحالة",
+      "status": {
+        "pending": "بانتظار التأكيد",
+        "confirmed": "مؤكد",
+        "checked_in": "الإقامة جارية",
+        "checked_out": "انتهت الإقامة",
+        "cancelled": "ملغى",
+        "no_show": "لم يحضر"
       }
     }
   }

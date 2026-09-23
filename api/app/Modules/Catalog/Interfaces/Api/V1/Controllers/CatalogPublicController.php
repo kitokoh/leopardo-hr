@@ -46,6 +46,7 @@ class CatalogPublicController extends Controller
         $company = currentCompany();
 
         /** @var array<string, mixed> $snapshot */
+        // tenant-cache:via-helper — clé construite par TenantCache::keyFor (#8058)
         $snapshot = Cache::remember(
             CatalogPublicCache::snapshotKey($company->id),
             (int) config('catalog.public_cache_ttl', 600),
@@ -73,6 +74,7 @@ class CatalogPublicController extends Controller
     public function sitemap(): \Illuminate\Http\Response
     {
         /** @var string $xml */
+        // tenant-cache:shared — sitemap public GLOBAL (toutes les boutiques publiées), agrégat cross-tenant voulu (#8058)
         $xml = Cache::remember('catalog:public:sitemap', now()->addSeconds((int) config('catalog.public_cache_ttl', 600)), function (): string {
             $lines = [
                 '<?xml version="1.0" encoding="UTF-8"?>',
@@ -127,6 +129,7 @@ class CatalogPublicController extends Controller
         $company = currentCompany();
 
         /** @var array<string, mixed>|null $product */
+        // tenant-cache:via-helper — clé construite par TenantCache::keyFor (#8058)
         $product = Cache::remember(
             CatalogPublicCache::productKey($company->id, $productSlug),
             (int) config('catalog.public_cache_ttl', 600),
