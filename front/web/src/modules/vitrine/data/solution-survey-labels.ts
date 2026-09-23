@@ -43,7 +43,7 @@ export const SOLUTION_LABELS: Record<string, SurveyLocalized> = {
   'solutions.restaurant.package.mobile_manager': { fr: 'App mobile manager', en: 'Manager mobile app', tr: 'Yönetici mobil uygulaması', ar: 'تطبيق المدير للجوال' },
   'solutions.restaurant.package.attendance_mobile': { fr: 'Pointage mobile géolocalisé', en: 'Geolocated mobile attendance', tr: 'Konumlu mobil yoklama', ar: 'تسجيل حضور عبر الجوال مع تحديد الموقع' },
   'solutions.restaurant.package.kiosk': { fr: 'Kiosque de pointage (borne)', en: 'Attendance kiosk', tr: 'Yoklama kiosku', ar: 'كشك تسجيل الحضور' },
-  'solutions.restaurant.package.edge': { fr: 'Nœud Edge local (offline-first)', en: 'Local Edge node (offline-first)', tr: 'Yerel Edge düğümü (çevrimdışı)', ar: 'عقدة Edge محلية (بدون اتصال)' },
+  'solutions.restaurant.package.edge': { fr: 'Nœud Edge local (priorité hors ligne)', en: 'Local Edge node (offline-first)', tr: 'Yerel Edge düğümü (çevrimdışı)', ar: 'عقدة Edge محلية (بدون اتصال)' },
   'solutions.restaurant.package.planning': { fr: 'Planning d\'équipe', en: 'Team scheduling', tr: 'Ekip planlaması', ar: 'جدولة الفرق' },
   'solutions.restaurant.package.payroll': { fr: 'Paie (multi-pays)', en: 'Payroll (multi-country)', tr: 'Maaş bordrosu (çok ülkeli)', ar: 'الرواتب (متعدد الدول)' },
   'solutions.restaurant.package.accounting': { fr: 'Comptabilité', en: 'Accounting', tr: 'Muhasebe', ar: 'المحاسبة' },
