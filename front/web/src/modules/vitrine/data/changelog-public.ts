@@ -1,9 +1,9 @@
 /**
- * Extrait public du CHANGELOG produit (non automatise).
- * A synchroniser ponctuellement avec CHANGELOG.md a la racine du depot.
+ * Extrait public du CHANGELOG produit (non automatisé).
+ * À synchroniser ponctuellement avec CHANGELOG.md à la racine du dépôt.
  *
- * #4610 : contenu localise ×4 locales — avant, les 4 locales recevaient les
- * titres/bullets FR (le chrome de la page et le sitemap etaient deja i18n).
+ * #4610 : contenu localisé ×4 locales — avant, les 4 locales recevaient les
+ * titres/bullets FR (le chrome de la page et le sitemap étaient déjà i18n).
  * `publicChangelogReleases` reste exporte (alias FR) pour compatibilite.
  */
 export type PublicChangelogRelease = {

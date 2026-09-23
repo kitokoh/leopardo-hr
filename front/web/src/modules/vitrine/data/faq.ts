@@ -9,15 +9,15 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
   fr: [
     {
       question: 'Combien de temps faut-il pour déployer Leopardo ?',
-      answer: "Le déploiement standard prend moins de 24 heures. Votre équipe peut commencer à utiliser la plateforme des le premier jour avec notre onboarding guide.",
+      answer: "Le déploiement standard prend moins de 24 heures. Votre équipe peut commencer à utiliser la plateforme dès le premier jour avec notre guide de prise en main.",
     },
     {
       question: 'Est-ce que Leopardo fonctionne hors ligne ?',
-      answer: "Oui, l'application mobile dispose d'un mode offline complet. Les pointages et demandes se synchronisent automatiquement des que la connexion revient.",
+      answer: "Oui, l'application mobile dispose d'un mode hors ligne complet. Les pointages et demandes se synchronisent automatiquement dès que la connexion revient.",
     },
     {
-      question: 'Quelles methodes de pointage sont supportees ?',
-      answer: 'Nous supportons la biometrie faciale, les empreintes, NFC, QR code, geolocalisation et les bornes ZKTeco.',
+      question: 'Quelles méthodes de pointage sont supportées ?',
+      answer: 'Nous supportons la biométrie faciale, les empreintes, NFC, QR code, géolocalisation et les bornes ZKTeco.',
     },
     {
       question: 'Mes données sont-elles sécurisées ?',
@@ -25,7 +25,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
     },
     {
       question: 'Puis-je migrer depuis un autre outil RH ?',
-      answer: 'Oui, nous proposons un accompagnement de migration pour importer vos données sans interrompre vos operations.',
+      answer: 'Oui, nous proposons un accompagnement de migration pour importer vos données sans interrompre vos opérations.',
     },
     {
       question: 'Y a-t-il un engagement minimum ?',
