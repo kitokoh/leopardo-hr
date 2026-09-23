@@ -9,6 +9,7 @@ use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\JobPostingResource;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
+use App\Shared\Support\TenantCache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -102,8 +103,9 @@ class PublicCareerController extends Controller
     {
         $company = $this->resolveCompany($companySlug);
 
+        // #8058 — tenant-cache:via-helper — clé construite par TenantCache::keyFor (préfixe company_id systématique)
         $xml = Cache::remember(
-            "recruitment:feed:{$company->id}",
+            TenantCache::keyFor((string) $company->id, 'recruitment:feed'),
             now()->addMinutes(15),
             fn (): string => $this->tenantManager->withinTenant($company, fn (): string => $this->buildXmlFeed($company))
         );

@@ -174,8 +174,40 @@ class IdempotencyMiddleware
         return [
             'status' => $response->getStatusCode(),
             'content_type' => $response->headers->get('Content-Type'),
-            'body' => (string) $response->getContent(),
+            'body' => $this->sanitizeBodyForStorage((string) $response->getContent()),
         ];
+    }
+
+    /**
+     * #8052 — aucun secret au repos dans le cache : le corps JSON peut porter
+     * `_auth` (token Sanctum EN CLAIR injecté par TokenAutoRefreshMiddleware
+     * après rotation). Le snapshot serait persisté en clair dans Redis/cache
+     * pendant tout le TTL (24 h) et une retentative idempotente pourrait
+     * rejouer un `_auth` périmé vers le client. La clé est donc purgée avant
+     * mémorisation ; le client reçoit toujours le token sur la réponse
+     * DIRECTE (seul canal sûr, cf. #5581) — en cas de rejeu, il conserve son
+     * token courant (un 401 éventuel déclenche sa reconnexion normale).
+     *
+     * Un corps non JSON ou indécodable est mémorisé tel quel :
+     * TokenAutoRefreshMiddleware n'injecte `_auth` que dans un JSON
+     * décodable, il ne peut donc pas s'y cacher de token.
+     */
+    private function sanitizeBodyForStorage(string $body): string
+    {
+        // Court-circuit : évite un json_decode systématique sur les gros corps.
+        if (! str_contains($body, '"_auth"')) {
+            return $body;
+        }
+
+        /** @var array<string, mixed>|null $decoded */
+        $decoded = json_decode($body, true);
+        if (! is_array($decoded) || ! array_key_exists('_auth', $decoded)) {
+            return $body;
+        }
+
+        unset($decoded['_auth']);
+
+        return (string) json_encode($decoded);
     }
 
     /**

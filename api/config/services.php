@@ -29,6 +29,13 @@ return [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URL'),
+        // #8053 — audiences Google Sign-In autorisées (aud) : ces clés sont
+        // lues par GoogleIdentityVerifier::allowedAudiences() — elles
+        // doivent EXISTER ici pour être configurables par env (fail-closed
+        // si toutes vides).
+        'web_client_id' => env('GOOGLE_WEB_CLIENT_ID'),
+        'android_client_id' => env('GOOGLE_ANDROID_CLIENT_ID'),
+        'ios_client_id' => env('GOOGLE_IOS_CLIENT_ID'),
         // #7686 — callback OAuth du module Communication (connexion Gmail par
         // utilisateur, distinct du login Google) : GET
         // /api/v1/communication/integrations/google/callback en absolu.

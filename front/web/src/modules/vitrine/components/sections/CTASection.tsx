@@ -131,6 +131,7 @@ export function CTASection({
           {resolvedPrimaryCta && (
             <Link
               href={withLocaleHref(resolvedPrimaryCta.href, search)}
+              {...(/^https?:\/\//i.test(resolvedPrimaryCta.href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               className="group relative px-8 py-4 bg-white text-emerald-700 font-bold rounded-2xl overflow-hidden transition-all duration-300 cta-glow-white hover:scale-[1.03] active:scale-[0.98]"
             >
               <span className="relative z-10 flex items-center gap-2.5 text-base">
@@ -143,6 +144,7 @@ export function CTASection({
           {resolvedSecondaryCta && (
             <Link
               href={withLocaleHref(resolvedSecondaryCta.href, search)}
+              {...(/^https?:\/\//i.test(resolvedSecondaryCta.href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               className="group flex items-center gap-2.5 px-8 py-4 bg-white/10 text-white font-semibold rounded-2xl border border-white/20 hover:bg-white/20 transition-all duration-300 backdrop-blur-sm"
             >
               {resolvedSecondaryCta.text}

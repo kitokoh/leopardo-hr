@@ -11,6 +11,7 @@
     "check:mojibake": "node scripts/check-mojibake.mjs",
     "check:assets": "node scripts/check-brand-assets.mjs",
     "check:orphans": "node scripts/check-orphan-pages.mjs",
+    "check:french-copy": "node scripts/check-french-copy.mjs",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

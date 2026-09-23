@@ -36,3 +36,6 @@ export { ProductScreenshots, type ProductScreenshotsProps } from './ProductScree
 export { WhyOpenSourceSection } from './WhyOpenSourceSection';
 export { TrustedBrands, type TrustedBrandsProps } from './TrustedBrands';
 export { ProductDemoVideo, type ProductDemoVideoProps } from './ProductDemoVideo';
+// #8072 — hook ZKTeco remonté + verticales en cartes cliquables
+export { ZKTecoHookSection, type ZKTecoHookSectionProps } from './ZKTecoHookSection';
+export { VerticalsSection, type VerticalsSectionProps } from './VerticalsSection';

@@ -1233,6 +1233,17 @@
         "freePrice": "Ücretsiz",
         "freeNote": "Kredi kartı gerekmez · Sonsuza kadar",
         "freeTag": "ücretsiz"
+      },
+      "selfhost": {
+        "title": "Sonsuza kadar ucretsiz, kendi sunucunuzda",
+        "subtitle": "Kod acik (MIT lisansi): Leopardo’yu Docker ile kurun, kullanici basina ucret yok.",
+        "bullets": {
+          "0": "Acik kaynak kod (MIT lisansi)",
+          "1": "Docker Compose — birkac dakikada hazir",
+          "2": "Verileriniz sizde kalir"
+        },
+        "ctaGithub": "GitHub deposunu gor",
+        "ctaDocs": "Kurulum rehberi"
       }
     },
     "plans": {
@@ -6328,7 +6339,8 @@
       "faq": "SSS",
       "faqDesc": "Sık sorulan sorular",
       "support": "Destek",
-      "supportDesc": "Ekibimize ulaşın"
+      "supportDesc": "Ekibimize ulaşın",
+      "selfhostDesc": "GitHub uzerinde Docker + kaynak kodu, verileriniz sizde kalir"
     }
   },
   "commerce": {

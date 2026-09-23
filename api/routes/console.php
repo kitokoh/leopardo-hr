@@ -151,6 +151,11 @@ Schedule::command('billing:generate-invoices')->monthlyOn(1, '02:00');
 Schedule::command('leave:accrue')->monthlyOn(1, '03:00');
 Schedule::command('leave:carry-forward --year='.(now()->year - 1))->yearlyOn(1, 1, '04:00');
 Schedule::command('contracts:alert-expiring')->daily()->at('07:00');
+// #7655 (tranche 2, ADR-0025) — hygiène des tokens Sanctum : purge quotidienne
+// des tokens expirés. Le TTL est de 30 jours glissants (décision propriétaire
+// #7491) : sans cette purge, les hash de tokens expirés s'accumulent
+// indéfiniment dans personal_access_tokens.
+Schedule::command('sanctum:prune-expired --hours=24')->daily()->at('04:30');
 // Digest hebdomadaire manager (issue #5695) — chaque lundi à 07:00.
 Schedule::command('manager:weekly-digest')->weeklyOn(1, '07:00');
 Schedule::command('fuel:alerts-dispatch')->daily()->at('06:30');
