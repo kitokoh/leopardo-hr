@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Modules\Billing\Domain\Models\PartnerLink;
 use App\Modules\Billing\Domain\Models\PartnerClick;
+use App\Modules\Billing\Domain\Models\PartnerLink;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -131,4 +131,3 @@ class PartnerLinkMiddleware
         }
     }
 }
-

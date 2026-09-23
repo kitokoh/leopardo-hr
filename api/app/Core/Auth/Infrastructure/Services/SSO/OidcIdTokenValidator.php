@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Core\Auth\Infrastructure\Services\SSO;
 
 use App\Rules\NotPrivateUrl;
-
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -47,7 +46,7 @@ final class OidcIdTokenValidator
      * @return array<string, mixed> claims validés
      *
      * @throws \RuntimeException quand le token est invalide
-     *         (signature, émetteur, audience, expiration ou nonce).
+     *                           (signature, émetteur, audience, expiration ou nonce).
      *
      * Note : si `audiences` est fourni (liste de client_id acceptés), l'aud
      * du token doit intersecter cette liste ; sinon le contrôle retombe sur

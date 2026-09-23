@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\HR\Domain\Models\Contract;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\Payroll;
+use App\Modules\Planning\Domain\Models\Absence;
 use App\Shared\Support\TenantCache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -196,4 +196,3 @@ class HrReportController extends Controller
         }
     }
 }
-
