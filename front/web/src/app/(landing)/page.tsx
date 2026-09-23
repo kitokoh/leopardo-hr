@@ -9,7 +9,6 @@ import {
   useScrollReveal,
   SocialProofMetrics,
   ProductScreenshots,
-  MarketingReadinessSection,
   TrustedBrands,
   ProductDemoVideo,
   // Phase-3 sections — no more Legacy prefixes
@@ -134,7 +133,9 @@ export default function LandingPage() {
 
         {/* ─── PRODUCT VISUAL ─── */}
         <ProductScreenshots locale={locale} />
-        <MarketingReadinessSection locale={locale} />
+        {/* MarketingReadinessSection retirée de la home publique (#8065) —
+            contenu de pilotage interne ; le composant reste exporté pour un
+            usage interne (dev-hub / page /marketing). */}
 
         {/* ─── DEMO ─── */}
 
