@@ -1233,17 +1233,6 @@
         "freePrice": "Gratuit",
         "freeNote": "Sans carte bancaire · Pour toujours",
         "freeTag": "gratuit"
-      },
-      "selfhost": {
-        "title": "Gratuit pour toujours, sur votre serveur",
-        "subtitle": "Le code est ouvert (licence MIT) : déployez Leopardo avec Docker, sans prix par utilisateur.",
-        "bullets": {
-          "0": "Code source ouvert (licence MIT)",
-          "1": "Docker Compose — en ligne en quelques minutes",
-          "2": "Vos données restent chez vous"
-        },
-        "ctaGithub": "Voir le dépôt GitHub",
-        "ctaDocs": "Guide de déploiement"
       }
     },
     "plans": {
@@ -1279,7 +1268,7 @@
           "6": "Support email sous 48h"
         },
         "period": "/mois",
-        "annualPeriod": "/mois · 290 €/an facturé annuellement"
+        "annualPeriod": "/mois env. · 290 €/an facturé annuellement"
       },
       "operations": {
         "description": "Pour les PME multi-équipes qui pilotent terrain, RH et paie",
@@ -1296,7 +1285,7 @@
           "6": "Support prioritaire sous 24h"
         },
         "period": "/mois",
-        "annualPeriod": "/mois · 790 €/an facturé annuellement"
+        "annualPeriod": "/mois env. · 790 €/an facturé annuellement"
       },
       "enterprise": {
         "description": "Pour groupes multi-pays, franchises, réseaux de sites et exigences fortes",
@@ -1372,7 +1361,9 @@
       "toggleMonthly": "Mensuel",
       "toggleAnnual": "Annuel",
       "toggleAria": "Changer la période de facturation",
-      "fullComparison": "Voir la comparaison complete"
+      "fullComparison": "Voir la comparaison complete",
+      "reassurance": "Sans carte bancaire · Annulable à tout moment",
+      "selfHostNote": "Ou auto-hébergez Leopardo gratuitement — 100 % open source"
     },
     "card": {
       "periodDefault": "/mois",
@@ -6339,8 +6330,7 @@
       "faq": "FAQ",
       "faqDesc": "Questions fréquentes",
       "support": "Support",
-      "supportDesc": "Contactez notre équipe",
-      "selfhostDesc": "Docker + code source sur GitHub, vos données chez vous"
+      "supportDesc": "Contactez notre équipe"
     }
   },
   "commerce": {

@@ -58,8 +58,13 @@ describe('pricing ↔ checkout alignment (#3919)', () => {
       }
       // Prix mensuel/annuel : la vitrine et le checkout affichent le même montant
       expect(Number(plan.price)).toBe(checkout.monthly)
-      // #4791 : prix annuel exact (290/790 €/an ÷ 12) — virgule locale acceptée.
-      expect(Number(plan.annualPrice.replace(',', '.'))).toBe(checkout.annual)
+      // #8074 : la vitrine affiche l'équivalent mensuel ARRONDI à l'euro du
+      // total annuel facturé (24,17 → 24 ; 65,83 → 66) — le total exact
+      // (checkout.annual × 12) reste visible dans annualPeriod (« facturé
+      // N €/an ») et inchangé côté checkout.
+      const annualTotal = Math.round(checkout.annual * 12)
+      expect(plan.annualPrice).toBe(String(Math.round(annualTotal / 12)))
+      expect(plan.annualPeriod).toContain(String(annualTotal))
     }
   })
 

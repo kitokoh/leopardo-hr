@@ -1268,7 +1268,7 @@
           "6": "Support email sous 48h"
         },
         "period": "/mois",
-        "annualPeriod": "/mois · 290 €/an facturé annuellement"
+        "annualPeriod": "/mois env. · 290 €/an facturé annuellement"
       },
       "operations": {
         "description": "Pour les PME multi-équipes qui pilotent terrain, RH et paie",
@@ -1285,7 +1285,7 @@
           "6": "Support prioritaire sous 24h"
         },
         "period": "/mois",
-        "annualPeriod": "/mois · 790 €/an facturé annuellement"
+        "annualPeriod": "/mois env. · 790 €/an facturé annuellement"
       },
       "enterprise": {
         "description": "Pour groupes multi-pays, franchises, réseaux de sites et exigences fortes",
@@ -1361,7 +1361,9 @@
       "toggleMonthly": "Mensuel",
       "toggleAnnual": "Annuel",
       "toggleAria": "Changer la période de facturation",
-      "fullComparison": "Voir la comparaison complete"
+      "fullComparison": "Voir la comparaison complete",
+      "reassurance": "Sans carte bancaire · Annulable à tout moment",
+      "selfHostNote": "Ou auto-hébergez Leopardo gratuitement — 100 % open source"
     },
     "card": {
       "periodDefault": "/mois",

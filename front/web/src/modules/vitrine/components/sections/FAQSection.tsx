@@ -12,6 +12,8 @@ export interface FAQItem {
 }
 
 export interface FAQSectionProps {
+  /** #8073 — id d'ancre pour la navbar (lien #faq) ; laisser undefined sans ancre. */
+  id?: string;
   title: string;
   subtitle: string;
   badge?: {
@@ -25,6 +27,7 @@ export interface FAQSectionProps {
 }
 
 export function FAQSection({
+  id,
   title,
   subtitle,
   badge,
@@ -42,7 +45,9 @@ export function FAQSection({
     : faqItems;
 
   return (
-    <section className="relative py-32 overflow-hidden">
+    // #8073 — scroll-mt-24 : la navbar fixe (h-20) ne recouvre jamais le haut
+    // de section après un saut d'ancre.
+    <section id={id} className="relative py-32 overflow-hidden scroll-mt-24">
       <div className="absolute inset-0 bg-gradient-to-b from-slate-50/50 via-white to-slate-50/50 dark:from-slate-900/50 dark:via-slate-950 dark:to-slate-900/50" />
 
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

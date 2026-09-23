@@ -7,9 +7,15 @@ import { t } from '@/lib/i18n/locale-catalog'
  *
  * Plans canoniques :
  *   free        0 €/mois · 5 employés max · 14 jours d'essai (unifié #4951)
- *   pilot      29 €/mois (24,17 €/mois annuel = 290 €/an) · 30 employés max · 14j
- *   operations 79 €/mois (65,83 €/mois annuel = 790 €/an) · 200 employés max · 14j
+ *   pilot      29 €/mois (290 €/an facturé annuellement, affiché ~24 €/mois) · 30 employés max · 14j
+ *   operations 79 €/mois (790 €/an facturé annuellement, affiché ~66 €/mois) · 200 employés max · 14j
  *   enterprise  sur devis · illimité · 14j
+ *
+ * #8074 : les équivalents mensuels du tarif annuel sont ARRONDIS à l'euro pour
+ * l'affichage (24,17 → 24 ; 65,83 → 66) — règle unique via
+ * approxMonthlyFromAnnualEur(). Le montant exact facturé reste le total annuel
+ * (PLAN_ANNUAL_TOTALS_EUR), affiché dans annualPeriod (« facturé N €/an ») et
+ * utilisé tel quel par le checkout (PlanSeeder).
  *
  * ⚠ Les anciens libellés "Starter" et "Business" sont des alias legacy migrés
  * par PlanSeeder.migrateLegacyPlanNames(). Ne plus les utiliser ici.
@@ -37,6 +43,21 @@ export type PricingPlan = {
   popular: boolean
   gradient: string
   employeeLimit: string
+}
+
+/** #8074 — totaux annuels facturés (source : PlanSeeder.php, ADR-0014). */
+export const PLAN_ANNUAL_TOTALS_EUR = {
+  free: 0,
+  pilot: 290,
+  operations: 790,
+} as const
+
+/**
+ * #8074 — règle unique d'affichage de l'équivalent mensuel d'un tarif annuel :
+ * arrondi à l'euro (jamais de décimales « comptables » sur la vitrine).
+ */
+export function approxMonthlyFromAnnualEur(totalEur: number): string {
+  return String(Math.round(totalEur / 12))
 }
 
 function buildFreePlan(locale: AppLocale): PricingPlan {
@@ -69,7 +90,7 @@ function buildPilotPlan(locale: AppLocale): PricingPlan {
     planCode: 'pilot',
     name: 'Pilot',
     price: '29',
-    annualPrice: '24,17',
+    annualPrice: approxMonthlyFromAnnualEur(PLAN_ANNUAL_TOTALS_EUR.pilot),
     period: t(locale, 'pricing.plans.pilot.period'),
     annualPeriod: t(locale, 'pricing.plans.pilot.annualPeriod'),
     description: t(locale, 'pricing.plans.pilot.description'),
@@ -95,7 +116,7 @@ function buildOperationsPlan(locale: AppLocale): PricingPlan {
     planCode: 'operations',
     name: 'Operations',
     price: '79',
-    annualPrice: '65,83',
+    annualPrice: approxMonthlyFromAnnualEur(PLAN_ANNUAL_TOTALS_EUR.operations),
     period: t(locale, 'pricing.plans.operations.period'),
     annualPeriod: t(locale, 'pricing.plans.operations.annualPeriod'),
     description: t(locale, 'pricing.plans.operations.description'),

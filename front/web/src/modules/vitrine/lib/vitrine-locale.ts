@@ -248,8 +248,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     },
     pricing: {
       badge: 'Tarifs',
-      title: 'Des offres',
-      titleHighlight: 'pour lancer vite',
+      title: 'Des tarifs simples,',
+      titleHighlight: 'un plan gratuit pour commencer',
       subtitle: 'Commencez par un pilote gratuit, puis payez selon vos employés actifs et vos besoins terrain.',
       recommended: 'Recommandé',
       currency: 'EUR',
@@ -397,8 +397,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     },
     pricing: {
       badge: 'Pricing',
-      title: 'Plans built',
-      titleHighlight: 'for real rollout',
+      title: 'Simple pricing,',
+      titleHighlight: 'with a free plan to start',
       subtitle: 'Start with a free pilot, then pay based on active employees and field operations needs.',
       recommended: 'Recommended',
       currency: 'EUR',
@@ -546,8 +546,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     },
     pricing: {
       badge: 'Fiyatlar',
-      title: 'Gercek kurulum',
-      titleHighlight: 'icin paketler',
+      title: 'Basit fiyatlar,',
+      titleHighlight: 'baslamak icin ucretsiz plan',
       subtitle: 'Ucretsiz pilotla baslayin, sonra aktif calisan ve saha ihtiyaclarina gore odeyin.',
       recommended: 'Onerilen',
       currency: 'EUR',
@@ -695,8 +695,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     },
     pricing: {
       badge: 'الاسعار',
-      title: 'باقات',
-      titleHighlight: 'لإطلاق حقيقي',
+      title: 'أسعار بسيطة،',
+      titleHighlight: 'وخطة مجانية للبداية',
       subtitle: 'ابدأ بتشغيل تجريبي مجاني ثم ادفع حسب الموظفين النشطين واحتياجات الميدان.',
       recommended: 'موصى به',
       currency: 'EUR',
