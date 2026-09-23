@@ -513,7 +513,7 @@ class GrowthModuleTest extends TestCase
         return PartnerLink::create(['partner_id' => $partner->id, 'code' => $code, 'is_active' => true]);
     }
 
-    public function test_repeated_hits_from_same_ip_are_counted_once_per_window()
+    public function test_repeated_hits_from_same_ip_are_counted_once_per_window(): void
     {
         $link = $this->makeActiveLink('DEDUP');
 
@@ -528,7 +528,7 @@ class GrowthModuleTest extends TestCase
             'Un seul clic compté par (lien, IP) et par fenêtre de 15 min (#8060).');
     }
 
-    public function test_known_bot_user_agents_are_never_counted()
+    public function test_known_bot_user_agents_are_never_counted(): void
     {
         $link = $this->makeActiveLink('BOT');
 
@@ -540,7 +540,7 @@ class GrowthModuleTest extends TestCase
         $this->assertSame(0, PartnerClick::query()->where('partner_link_id', $link->id)->count());
     }
 
-    public function test_global_per_ip_cap_bounds_writes_across_campaigns()
+    public function test_global_per_ip_cap_bounds_writes_across_campaigns(): void
     {
         // 15 liens DISTINCTS depuis la même IP : la dédup par lien ne borne
         // pas ce scénario — le plafond global /IP/heure prend le relais.

@@ -142,7 +142,6 @@ class OidcIdTokenValidatorHardeningTest extends TestCase
 
         $expected = $this->expected();
         $expected['client_id'] = '';
-        unset($expected['audiences']);
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('audience');
