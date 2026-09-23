@@ -17,7 +17,7 @@ final class DatetimeCastsTest extends TestCase
 {
     public function test_zkteco_sync_log_datetime_casts(): void
     {
-        $casts = (new ZktecoSyncLog())->getCasts();
+        $casts = (new ZktecoSyncLog)->getCasts();
 
         $this->assertSame('datetime', $casts['started_at'] ?? null);
         $this->assertSame('datetime', $casts['completed_at'] ?? null);
@@ -25,7 +25,7 @@ final class DatetimeCastsTest extends TestCase
 
     public function test_travel_comment_datetime_casts(): void
     {
-        $casts = (new TravelComment())->getCasts();
+        $casts = (new TravelComment)->getCasts();
 
         $this->assertSame('datetime', $casts['moderated_at'] ?? null);
         $this->assertSame('datetime', $casts['reported_at'] ?? null);

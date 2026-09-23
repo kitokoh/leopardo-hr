@@ -1,15 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:leopardo_employee/core/providers/core_providers.dart';
-import 'package:leopardo_core/models/absence.dart';
+export 'package:leopardo_core/features/absences/providers/absence_provider.dart'
+    show absencesProvider, leaveBalancesProvider;
 
-final absencesProvider = FutureProvider<List<Absence>>((ref) async {
-  final repo = ref.watch(absenceRepositoryProvider);
-  return await repo.getMyAbsences();
-});
-
-final leaveBalancesProvider = FutureProvider<List<Map<String, dynamic>>>((
-  ref,
-) async {
-  final repo = ref.watch(absenceRepositoryProvider);
-  return await repo.getLeaveBalances();
-});
+/// Leopardo employee — providers absences partagés (leopardo_core, #7652).
