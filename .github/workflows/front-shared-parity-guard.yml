@@ -1,0 +1,55 @@
+name: Front Shared Parity Guard
+
+# Issue #7964 — duplication divergente de fichiers critiques entre fronts
+# Next.js (backend-url.ts md5-identique mais non gardé ; proxies auth déjà
+# divergents à l'audit 2026-09-20). Même doctrine que la garde mobile
+# #7652 (mobile-core-duplication-guard.yml) : la dette de duplication est
+# assumée (fronts autonomes, décision #7305) mais la DÉRIVE est interdite —
+# cette garde rougit dès qu'une paire canonique n'est plus byte-identique.
+# Inventaire et analyse (pourquoi pas encore un workspace npm) :
+# en-tête de dev-hub/tools/check-front-shared-parity.sh.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "front/web/src/lib/backend-url.ts"
+      - "front/travel-web/src/lib/backend-url.ts"
+      - "front/travel-web/src/middleware.ts"
+      - "front/marketplace/src/middleware.ts"
+      - "dev-hub/tools/check-front-shared-parity.sh"
+      - ".github/workflows/front-shared-parity-guard.yml"
+  push:
+    branches: [main]
+    paths:
+      - "front/web/src/lib/backend-url.ts"
+      - "front/travel-web/src/lib/backend-url.ts"
+      - "front/travel-web/src/middleware.ts"
+      - "front/marketplace/src/middleware.ts"
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: front-shared-parity-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    name: Copies partagées front byte-identiques (#7964)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Run front shared parity guard
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bash dev-hub/tools/check-front-shared-parity.sh
