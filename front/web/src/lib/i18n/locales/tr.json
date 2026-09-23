@@ -1233,17 +1233,6 @@
         "freePrice": "Ücretsiz",
         "freeNote": "Kredi kartı gerekmez · Sonsuza kadar",
         "freeTag": "ücretsiz"
-      },
-      "selfhost": {
-        "title": "Sonsuza kadar ucretsiz, kendi sunucunuzda",
-        "subtitle": "Kod acik (MIT lisansi): Leopardo’yu Docker ile kurun, kullanici basina ucret yok.",
-        "bullets": {
-          "0": "Acik kaynak kod (MIT lisansi)",
-          "1": "Docker Compose — birkac dakikada hazir",
-          "2": "Verileriniz sizde kalir"
-        },
-        "ctaGithub": "GitHub deposunu gor",
-        "ctaDocs": "Kurulum rehberi"
       }
     },
     "plans": {
@@ -1279,7 +1268,7 @@
           "6": "48 saat içinde e-posta desteği"
         },
         "period": "/ay",
-        "annualPeriod": "/ay · yıllık 290 € fatura"
+        "annualPeriod": "/ay (yaklaşık) · yıllık 290 € fatura"
       },
       "operations": {
         "description": "Saha ekipleri, İK akışları ve bordro yöneten KOBİ'ler için",
@@ -1296,7 +1285,7 @@
           "6": "24 saat içinde öncelikli destek"
         },
         "period": "/ay",
-        "annualPeriod": "/ay · yıllık 790 € fatura"
+        "annualPeriod": "/ay (yaklaşık) · yıllık 790 € fatura"
       },
       "enterprise": {
         "description": "Çok ülkeli gruplar, franchise'lar, saha ağları ve yüksek yönetişim için",
@@ -1372,7 +1361,9 @@
       "toggleMonthly": "Aylik",
       "toggleAnnual": "Yillik",
       "toggleAria": "Faturalama dönemini değiştir",
-      "fullComparison": "Tam karsilastirmayi gorun"
+      "fullComparison": "Tam karsilastirmayi gorun",
+      "reassurance": "Kredi kartı yok · İstediğinizde iptal",
+      "selfHostNote": "Ya da Leopardo’yu ücretsiz kendi sunucunuzda barındırın — %100 açık kaynak"
     },
     "card": {
       "periodDefault": "/ay",
@@ -6339,8 +6330,7 @@
       "faq": "SSS",
       "faqDesc": "Sık sorulan sorular",
       "support": "Destek",
-      "supportDesc": "Ekibimize ulaşın",
-      "selfhostDesc": "GitHub uzerinde Docker + kaynak kodu, verileriniz sizde kalir"
+      "supportDesc": "Ekibimize ulaşın"
     }
   },
   "commerce": {

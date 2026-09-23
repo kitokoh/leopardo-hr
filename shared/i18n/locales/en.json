@@ -1268,7 +1268,7 @@
           "6": "Email support within 48h"
         },
         "period": "/month",
-        "annualPeriod": "/month · billed 290 €/year"
+        "annualPeriod": "/month approx. · billed 290 €/year"
       },
       "operations": {
         "description": "For SMBs managing field teams, HR workflows and payroll",
@@ -1285,7 +1285,7 @@
           "6": "Priority support within 24h"
         },
         "period": "/month",
-        "annualPeriod": "/month · billed 790 €/year"
+        "annualPeriod": "/month approx. · billed 790 €/year"
       },
       "enterprise": {
         "description": "For multi-country groups, franchises, site networks and strict governance",
@@ -1361,7 +1361,9 @@
       "toggleMonthly": "Monthly",
       "toggleAnnual": "Annual",
       "toggleAria": "Toggle billing period",
-      "fullComparison": "View full comparison"
+      "fullComparison": "View full comparison",
+      "reassurance": "No credit card · Cancel anytime",
+      "selfHostNote": "Or self-host Leopardo for free — 100% open source"
     },
     "card": {
       "periodDefault": "/month",
