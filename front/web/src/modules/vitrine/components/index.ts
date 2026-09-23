@@ -14,13 +14,10 @@ export * from './sections';
 // PricingSection.tsx (locale-aware pricing) are still imported directly
 // by pages from their file paths, not via this barrel, so no alias is
 // re-exported here for them.
-export { DemoSection } from './DemoSection';
 export { ParticleField } from './ParticleField';
 // Visuel « Pile Leopardo » : socle + couche horizontale + verticales métier.
 // WebGL chargé en import dynamique, repli CSS 3D si indisponible.
 export { SolutionStack } from './hero/SolutionStack';
-// Leo en visuel d'entrée du héro + la pile 3D en section autonome (#7851).
-export { LeoHeroVisual } from './hero/LeoHeroVisual';
 // #8067 — héro produit-first : screenshot réel + badge GitHub statique.
 export { HeroProductShowcase, HeroGithubBadge } from './hero/HeroProductShowcase';
 export { SolutionStackSection } from './hero/SolutionStackSection';

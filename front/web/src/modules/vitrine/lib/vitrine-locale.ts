@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSsrLang } from '@/modules/vitrine/lib/locale-ssr-provider'
-import { SITE_URL } from '@/lib/site-url'
 // #7307 — chiffres canoniques de la vitrine : une seule source pour toutes les
 // pages et toutes les locales (le nombre de pays de paie était annoncé 21 ici
 // et 6 sur /testimonials).
@@ -21,10 +20,6 @@ import {
 
 const LOCALE_EVENT = 'vitrine-locale-changed'
 
-// L'espace client réellement en ligne (issue #1775 : app.leopardo-rh.com ne
-// résout pas — DNS mort). URL centralisée (src/lib/site-url.ts), priorité à
-// NEXT_PUBLIC_SITE_URL.
-const DEMO_APP_URL = `${SITE_URL}/dashboard`
 
 type LocaleOption = {
   value: AppLocale
@@ -38,10 +33,6 @@ type HeroStat = {
   label: string
 }
 
-type DemoStat = {
-  label: string
-  value: string
-}
 
 type LandingCopy = {
   nav: {
@@ -96,15 +87,6 @@ type LandingCopy = {
     title: string
     titleHighlight: string
     subtitle: string
-  }
-  demo: {
-    badge: string
-    title: string
-    titleHighlight: string
-    subtitle: string
-    highlights: string[]
-    appUrl: string
-    miniStats: DemoStat[]
   }
   pricing: {
     badge: string
@@ -261,25 +243,6 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       titleHighlight: 'besoin',
       subtitle: "Une suite complete d'outils RH concue pour simplifier chaque aspect de votre quotidien.",
     },
-    demo: {
-      badge: 'Interface moderne',
-      title: 'Une experience',
-      titleHighlight: 'revolutionnaire',
-      subtitle: 'Decouvrez une interface pensee pour la productivite. Chaque pixel est concu pour simplifier vos operations RH quotidiennes.',
-      highlights: [
-        'Tableau de bord en temps reel',
-        'Rapports automatises avec IA',
-        'Integration multi-device native',
-        'Notifications intelligentes',
-        'Compatibilite ZKTeco',
-      ],
-      appUrl: DEMO_APP_URL,
-      miniStats: [
-        { label: 'Employes', value: '247' },
-        { label: 'Presents', value: '231' },
-        { label: 'Securite', value: '100%' },
-      ],
-    },
     pricing: {
       badge: 'Tarifs',
       title: 'Des offres',
@@ -319,8 +282,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: "Mobile-First Company OS pour gérer votre personnel sur le terrain, en bureau et à distance. Employee, Manager et Platform Admin disponibles sur mobile.",
       sections: [
-        { title: 'Produit', links: ['Fonctionnalités', 'Tarifs', 'Intégrations', 'API', 'Changelog', 'Leopardo for Windows', 'À propos', 'Vidéos'] },
-        { title: 'Ressources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Communauté'] },
+        { title: 'Produit', links: ['Fonctionnalités', 'Tarifs', 'Intégrations', 'API', 'Changelog', 'Leopardo for Windows', 'À propos', 'Vidéos', 'Employés', 'Comptabilité', 'Marketing'] },
+        { title: 'Ressources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Communauté', 'Études de cas', 'Témoignages', 'Comparer', 'Restaurateurs', 'Carrières', 'Branding'] },
         { title: 'Applications mobiles', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'Legal', links: ['Confidentialité (RGPD)', 'CGU', 'Mentions légales'] },
       ],
@@ -428,25 +391,6 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       titleHighlight: 'needs',
       subtitle: 'A complete HR suite designed to simplify each operational workflow across web, mobile, and field teams.',
     },
-    demo: {
-      badge: 'Modern interface',
-      title: 'An experience built for',
-      titleHighlight: 'speed',
-      subtitle: 'Discover an interface shaped for productivity, visibility, and daily operational clarity.',
-      highlights: [
-        'Real-time executive dashboard',
-        'AI-assisted automated reports',
-        'Native multi-device experience',
-        'Smart notifications',
-        'ZKTeco-ready attendance',
-      ],
-      appUrl: DEMO_APP_URL,
-      miniStats: [
-        { label: 'Employees', value: '247' },
-        { label: 'Present', value: '231' },
-        { label: 'Security', value: '100%' },
-      ],
-    },
     pricing: {
       badge: 'Pricing',
       title: 'Plans built',
@@ -486,8 +430,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'Mobile-First Company OS for managing your workforce in the field, at the office and remotely. Employee, Manager and Platform Admin available on mobile.',
       sections: [
-        { title: 'Product', links: ['Features', 'Pricing', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows', 'About', 'Videos'] },
-        { title: 'Resources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Community'] },
+        { title: 'Product', links: ['Features', 'Pricing', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows', 'About', 'Videos', 'Employees', 'Accounting', 'Marketing'] },
+        { title: 'Resources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Community', 'Case studies', 'Testimonials', 'Compare', 'Restaurants', 'Careers', 'Brand assets'] },
         { title: 'Mobile Apps', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'Legal', links: ['Privacy (GDPR)', 'Terms', 'Legal notice'] },
       ],
@@ -595,25 +539,6 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       titleHighlight: 'her sey',
       subtitle: 'Web, mobil ve saha ekipleri icin gunluk IK operasyonlarini sadeleştiren kapsamli arac paketi.',
     },
-    demo: {
-      badge: 'Modern arayuz',
-      title: 'Hiz icin tasarlanmis',
-      titleHighlight: 'bir deneyim',
-      subtitle: 'Uretkenlik, gorunurluk ve saha kullanimi icin tasarlanmis arayuzu kesfedin.',
-      highlights: [
-        'Gercek zamanli yonetici paneli',
-        'Yapay zekali otomatik raporlar',
-        'Cok cihazli yerel deneyim',
-        'Akilli bildirimler',
-        'ZKTeco uyumlu takip',
-      ],
-      appUrl: DEMO_APP_URL,
-      miniStats: [
-        { label: 'Calisan', value: '247' },
-        { label: 'Mevcut', value: '231' },
-        { label: 'Guvenlik', value: '100%' },
-      ],
-    },
     pricing: {
       badge: 'Fiyatlar',
       title: 'Gercek kurulum',
@@ -653,8 +578,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'Saha, ofis ve uzaktan calisanlarinizi yonetmek icin Mobile-First Company OS. Employee, Manager ve Platform Admin mobilde kullanilabilir.',
       sections: [
-        { title: 'Urun', links: ['Ozellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Degisiklikler', 'Windows icin Leopardo', 'Hakkında', 'Videolar'] },
-        { title: 'Kaynaklar', links: ['Dokumantasyon', 'Rehberler', 'Blog', 'Iletisim', 'Topluluk'] },
+        { title: 'Urun', links: ['Ozellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Degisiklikler', 'Windows icin Leopardo', 'Hakkında', 'Videolar', 'Calisanlar', 'Muhasebe', 'Pazarlama'] },
+        { title: 'Kaynaklar', links: ['Dokumantasyon', 'Rehberler', 'Blog', 'Iletisim', 'Topluluk', 'Vaka calismalari', 'Referanslar', 'Karsilastir', 'Restoranlar', 'Kariyer', 'Marka'] },
         { title: 'Mobil Uygulamalar', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'Yasal', links: ['Gizlilik (KVKK/GDPR)', 'Kullanim Kosullari', 'Yasal bildirim'] },
       ],
@@ -762,25 +687,6 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       titleHighlight: 'في مكان واحد',
       subtitle: 'مجموعة متكاملة من ادوات الموارد البشرية للويب والجوال والعمل الميداني.',
     },
-    demo: {
-      badge: 'واجهة حديثة',
-      title: 'تجربة مصممة',
-      titleHighlight: 'للانتاجية',
-      subtitle: 'اكتشف واجهة تساعدك على الرؤية الفورية وسرعة التنفيذ في العمليات اليومية.',
-      highlights: [
-        'لوحة تحكم مباشرة',
-        'تقارير مؤتمتة بالذكاء الاصطناعي',
-        'تجربة اصلية على كل الاجهزة',
-        'اشعارات ذكية',
-        'تكامل جاهز مع ZKTeco',
-      ],
-      appUrl: DEMO_APP_URL,
-      miniStats: [
-        { label: 'الموظفون', value: '247' },
-        { label: 'الحاضرون', value: '231' },
-        { label: 'الامان', value: '100%' },
-      ],
-    },
     pricing: {
       badge: 'الاسعار',
       title: 'باقات',
@@ -820,8 +726,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'Mobile-First Company OS لإدارة فريقك في الميدان والمكتب وعن بُعد. Employee وManager وPlatform Admin متاحة على الجوال.',
       sections: [
-        { title: 'المنتج', links: ['الميزات', 'الاسعار', 'التكاملات', 'API', 'سجل التغييرات', 'ليوباردو لويندوز', 'من نحن', 'فيديوهات'] },
-        { title: 'الموارد', links: ['التوثيق', 'أدلة', 'المدونة', 'اتصل بنا', 'المجتمع'] },
+        { title: 'المنتج', links: ['الميزات', 'الاسعار', 'التكاملات', 'API', 'سجل التغييرات', 'ليوباردو لويندوز', 'من نحن', 'فيديوهات', 'الموظفون', 'المحاسبة', 'التسويق'] },
+        { title: 'الموارد', links: ['التوثيق', 'أدلة', 'المدونة', 'اتصل بنا', 'المجتمع', 'دراسات الحالة', 'الشهادات', 'قارن', 'المطاعم', 'الوظائف', 'الهوية'] },
         { title: 'تطبيقات الجوال', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'قانوني', links: ['الخصوصية (GDPR)', 'الشروط', 'الإشعارات القانونية'] },
       ],
@@ -858,9 +764,9 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
 
 // #3246 — preuve sociale honnête. Aucun client payant à ce jour
 // (PILOTAGE.md « Clients payants | 0 ») : tout contenu « client » de la
-// vitrine est illustratif. Ces libellés sont consommés par TestimonialCard,
-// TestimonialHighlight et MiniCaseStudies pour marquer explicitement les
-// citations/cas comme des exemples (voir TESTIMONIALS_ARE_DEMO).
+// vitrine est illustratif. Ces libellés sont consommés par TestimonialCard
+// pour marquer explicitement les citations comme des exemples (voir
+// TESTIMONIALS_ARE_DEMO).
 // Régression 2026-08-15 : le merge #3561 a écrasé ce bloc (conflit de
 // rebase) → rétabli tel quel.
 export const ILLUSTRATIVE_EXAMPLE_LABEL: Record<AppLocale, string> = {
