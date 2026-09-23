@@ -1,0 +1,31 @@
+# Baseline des imports de modules depuis app/Http (issue #8059, audit 2026-09-23).
+# Toute ligne ici représente une violation EXISTANTE et tolérée.
+# Ajouter de nouvelles violations ICI bloque la PR — corriger le code à la place :
+# rapatrier chaque Resource dans son module propriétaire
+# (Modules/X/Interfaces/Api/V1/Resources), Events Shared ou contrats pour le reste.
+# Format : <source> -> <cible>
+
+Http/Controllers -> Modules/Attendance
+Http/Controllers -> Modules/HR
+Http/Controllers -> Modules/Payroll
+Http/Controllers -> Modules/Planning
+Http/Controllers -> Modules/Platform
+Http/Middleware -> Modules/Attendance
+Http/Middleware -> Modules/Billing
+Http/Middleware -> Modules/Communication
+Http/Middleware -> Modules/Delivery
+Http/Middleware -> Modules/RestaurantManager
+Http/Middleware -> Modules/Retail
+Http/Middleware -> Modules/Showcase
+Http/Middleware -> Modules/TravelAgency
+Http/Resources -> Modules/Attendance
+Http/Resources -> Modules/Billing
+Http/Resources -> Modules/Cabinet
+Http/Resources -> Modules/Expense
+Http/Resources -> Modules/Fleet
+Http/Resources -> Modules/HR
+Http/Resources -> Modules/Notification
+Http/Resources -> Modules/Payroll
+Http/Resources -> Modules/Planning
+Http/Resources -> Modules/Platform
+Http/Resources -> Modules/Recruitment
