@@ -12,6 +12,8 @@ return [
         'client_analytics_per_minute' => (int) env('RATE_LIMIT_CLIENT_ANALYTICS_PER_MINUTE', 120),
         'webhooks_inbound_per_minute' => (int) env('RATE_LIMIT_WEBHOOKS_INBOUND_PER_MINUTE', 60),
         'restaurant_shop_public_per_minute' => (int) env('RATE_LIMIT_RESTAURANT_SHOP_PUBLIC_PER_MINUTE', 30),
+        // HOSP-006 #7948 — vitrine publique HospitalityManager (/stay) : fiche, dispos, réservation en ligne.
+        'hospitality_public_per_minute' => (int) env('RATE_LIMIT_HOSPITALITY_PUBLIC_PER_MINUTE', 30),
         // RESTO-902 #7747 — soumission d'avis clients publics (anti-spam, throttle strict dédié).
         'restaurant_reviews_public_per_minute' => (int) env('RATE_LIMIT_RESTAURANT_REVIEWS_PUBLIC_PER_MINUTE', 5),
         // BC-17 #7814 — comptes acheteurs marketplace (register/login, anti-bruteforce par IP).

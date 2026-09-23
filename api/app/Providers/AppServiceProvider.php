@@ -378,6 +378,14 @@ class AppServiceProvider extends ServiceProvider
                 ->by('shop-public:'.$request->ip());
         });
 
+        // HOSP-006 (#7948, spec §6) — vitrine publique HospitalityManager
+        // (/stay) : bucket dédié par IP pour la fiche / disponibilités /
+        // réservation en ligne (pattern `shop-public`, TRAVEL-1001/#6114).
+        RateLimiter::for('hospitality-public', function (Request $request) {
+            return Limit::perMinute((int) config('security.rate_limits.hospitality_public_per_minute', 30))
+                ->by('hospitality-public:'.$request->ip());
+        });
+
         // BC-17 #7814 — comptes acheteurs marketplace : register/login sont
         // des surfaces d'attaque credentials (bruteforce/enumeration) →
         // bucket STRICT dedie par IP, en plus du shop-public du groupe.
