@@ -141,5 +141,4 @@ class ProcessPayrollBatchJob implements ShouldBeUnique, ShouldQueue, TenantScope
             'exception' => $e->getMessage(),
         ]);
     }
-
 }

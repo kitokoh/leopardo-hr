@@ -29,8 +29,8 @@ use Illuminate\Support\Facades\Log;
 final class PayrollWorkInputAggregator
 {
     /**
-     * @param  array{overtime_hours?: float}|null                             $attendanceAgg
-     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null $leaveAgg
+     * @param  array{overtime_hours?: float}|null  $attendanceAgg
+     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null  $leaveAgg
      * @return array{overtime_hours: float, paid_leave_days: float, unpaid_leave_days: float}
      */
     public function collectWorkInputs(
