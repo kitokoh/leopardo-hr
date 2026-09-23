@@ -2,6 +2,17 @@
 > Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
 > Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
 
+> **MAJ 2026-09-23 — #7986 tranche 4 (convention `Controllers/`).** Surface **API** : 5
+> controllers déplacés sous `Interfaces/Api/V1/Controllers/` (`SolutionSurveyController`,
+> `KioskEnrollmentController`, `CabinetFolderController`, `CabinetDocumentController`,
+> `CabinetShareController`) — namespaces et imports de `routes/modules/{solutions,rh,cabinet}.php`
+> mis à jour ; **aucune route, aucun middleware ni contrat modifié** (déplacement mécanique,
+> vérifié par scan exhaustif des références FQCN). Doublon mort
+> `Core/Solutions/.../PlatformSolutionSurveyStatsController` supprimé (0 référence — le vivant
+> est `Modules/Platform/.../Controllers/PlatformSolutionSurveyStatsController`). Scénarios :
+> couverts par les suites existantes (`CabinetDocumentControllerTest`, tests kiosk/solutions) —
+> aucun comportement nouveau à scénariser.
+
 > **MAJ 2026-09-21 — #8020 (suivi #8005/#7973), dernière tranche de la matrice `platform.permission`.**
 > Surface **API** : les 13 routes `/admin` et `/platform` restées sans garde sont armées sans
 > ajouter de permission — `GET /platform/country-defaults` → `companies.view` ;
