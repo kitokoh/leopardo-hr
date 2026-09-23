@@ -1268,7 +1268,7 @@
           "6": "48 saat içinde e-posta desteği"
         },
         "period": "/ay",
-        "annualPeriod": "/ay · yıllık 290 € fatura"
+        "annualPeriod": "/ay (yaklaşık) · yıllık 290 € fatura"
       },
       "operations": {
         "description": "Saha ekipleri, İK akışları ve bordro yöneten KOBİ'ler için",
@@ -1285,7 +1285,7 @@
           "6": "24 saat içinde öncelikli destek"
         },
         "period": "/ay",
-        "annualPeriod": "/ay · yıllık 790 € fatura"
+        "annualPeriod": "/ay (yaklaşık) · yıllık 790 € fatura"
       },
       "enterprise": {
         "description": "Çok ülkeli gruplar, franchise'lar, saha ağları ve yüksek yönetişim için",
@@ -1361,7 +1361,9 @@
       "toggleMonthly": "Aylik",
       "toggleAnnual": "Yillik",
       "toggleAria": "Faturalama dönemini değiştir",
-      "fullComparison": "Tam karsilastirmayi gorun"
+      "fullComparison": "Tam karsilastirmayi gorun",
+      "reassurance": "Kredi kartı yok · İstediğinizde iptal",
+      "selfHostNote": "Ya da Leopardo’yu ücretsiz kendi sunucunuzda barındırın — %100 açık kaynak"
     },
     "card": {
       "periodDefault": "/ay",

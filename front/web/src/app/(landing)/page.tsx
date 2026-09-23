@@ -170,8 +170,9 @@ export default function LandingPage() {
         {/* ─── PRICING ─── locale-aware self-contained component */}
         <LocalePricingSection />
 
-        {/* ─── FAQ ─── Phase-3 */}
+        {/* ─── FAQ ─── Phase-3 — #8073 : id="faq" pour l'ancre navbar */}
         <FAQSection
+          id="faq"
           badge={{ text: copy.faq.badge }}
           title={copy.faq.title}
           subtitle={copy.faq.titleHighlight}
