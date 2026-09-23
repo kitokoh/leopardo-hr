@@ -10,6 +10,7 @@ use App\Events\CompanyCreated;
 use App\Exceptions\DomainException;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Billing\Domain\Models\Partner;
+use App\Modules\Billing\Domain\Models\PartnerClick;
 use App\Modules\Billing\Domain\Models\PartnerLink;
 use App\Modules\Billing\Domain\Models\PartnerPayoutRequest;
 use App\Modules\Billing\Domain\Models\PartnerReferral;
@@ -499,5 +500,56 @@ class GrowthModuleTest extends TestCase
         // Middleware should redirect to signup but without setting the cookie
         $response->assertRedirect('/signup');
         $response->assertCookieMissing('leopardo_referrer_id');
+    }
+
+    // ─── #8060 — écriture PartnerClick bornée (DoS stockage / fraude) ───
+
+    private function makeActiveLink(string $prefix = 'CLK'): PartnerLink
+    {
+        $code = $this->uniqueCode($prefix);
+        $user = User::factory()->create();
+        $partner = Partner::create(['user_id' => $user->id, 'referral_code' => $code, 'status' => 'active']);
+
+        return PartnerLink::create(['partner_id' => $partner->id, 'code' => $code, 'is_active' => true]);
+    }
+
+    public function test_repeated_hits_from_same_ip_are_counted_once_per_window()
+    {
+        $link = $this->makeActiveLink('DEDUP');
+
+        for ($i = 0; $i < 5; $i++) {
+            $response = $this->get('/p/'.$link->code);
+            // La redirection + le cookie d'attribution ne sont JAMAIS impactés.
+            $response->assertRedirect('/signup');
+            $response->assertCookie('leopardo_referrer_id');
+        }
+
+        $this->assertSame(1, PartnerClick::query()->where('partner_link_id', $link->id)->count(),
+            'Un seul clic compté par (lien, IP) et par fenêtre de 15 min (#8060).');
+    }
+
+    public function test_known_bot_user_agents_are_never_counted()
+    {
+        $link = $this->makeActiveLink('BOT');
+
+        $this->get('/p/'.$link->code, ['User-Agent' => 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'])
+            ->assertRedirect('/signup');
+        $this->get('/p/'.$link->code, ['User-Agent' => 'curl/8.5.0'])
+            ->assertRedirect('/signup');
+
+        $this->assertSame(0, PartnerClick::query()->where('partner_link_id', $link->id)->count());
+    }
+
+    public function test_global_per_ip_cap_bounds_writes_across_campaigns()
+    {
+        // 15 liens DISTINCTS depuis la même IP : la dédup par lien ne borne
+        // pas ce scénario — le plafond global /IP/heure prend le relais.
+        for ($i = 0; $i < 15; $i++) {
+            $link = $this->makeActiveLink('CAP'.$i);
+            $this->get('/p/'.$link->code)->assertRedirect('/signup');
+        }
+
+        $this->assertSame(12, PartnerClick::query()->count(),
+            'Plafond global de 12 clics comptés / IP / heure (#8060).');
     }
 }
