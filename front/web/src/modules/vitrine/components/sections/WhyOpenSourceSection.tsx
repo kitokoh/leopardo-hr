@@ -25,7 +25,7 @@ type WhyOpenSourceCopy = {
 const copyByLocale: Record<AppLocale, WhyOpenSourceCopy> = {
   fr: {
     badge: 'Pourquoi open source',
-    title: 'Un logiciel RH qui vous appartient,',
+    title: 'Une suite métier qui vous appartient,',
     highlight: 'vraiment.',
     subtitle:
       'Leopardo RH est open source : vous choisissez le cloud ou vos propres serveurs, sans surprise sur la facture ni dépendance à un éditeur.',
@@ -48,7 +48,7 @@ const copyByLocale: Record<AppLocale, WhyOpenSourceCopy> = {
   },
   en: {
     badge: 'Why open source',
-    title: 'HR software you actually',
+    title: 'A business suite you actually',
     highlight: 'own.',
     subtitle:
       'Leopardo RH is open source: run it in the cloud or on your own servers, with no billing surprises and no vendor dependency.',
