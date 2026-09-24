@@ -6,7 +6,10 @@
 # public/build/manifest.json compilé, le portail est servi SANS aucun style en
 # production (page blanche brute). Cette étape compile app.css (Tailwind) et
 # app.js une seule fois à la construction de l'image.
-FROM node:22-alpine AS assets
+# #7986 (tranche 2) : digest épinglé (règle #3972, alignement sur l'edge) —
+# tag au 2026-09-23 : node:22-alpine. Builds reproductibles, pas de dérive
+# silencieuse de l'image de base entre deux builds prod.
+FROM node:22-alpine@sha256:b6f26b36c8ff49624cfdac716b8ea1138d606df02586a77d364bb5536a634f85 AS assets
 WORKDIR /app
 COPY api/package.json api/package-lock.json ./
 RUN npm ci --no-audit --no-fund
@@ -18,7 +21,9 @@ RUN npm run build
 # Stage 2 — Laravel runtime (FrankenPHP)
 # ──────────────────────────────────────────────────────────────────────────────
 # Base image with FrankenPHP and PHP 8.4
-FROM dunglas/frankenphp:php8.4-alpine
+# #7986 (tranche 2) : digest épinglé (règle #3972) — tag au 2026-09-23 :
+# dunglas/frankenphp:php8.4-alpine.
+FROM dunglas/frankenphp:php8.4-alpine@sha256:1781e41970fdec3ca42e4ecd98921fd7981274a5914a73204b3cf15804dddca1
 
 # Laravel runtime defaults
 ENV APP_ENV=production

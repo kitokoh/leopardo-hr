@@ -26,9 +26,7 @@ final class GoogleIdentityVerifier
 
     private const GOOGLE_JWKS_URI = 'https://www.googleapis.com/oauth2/v3/certs';
 
-    public function __construct(private readonly OidcIdTokenValidator $idTokenValidator)
-    {
-    }
+    public function __construct(private readonly OidcIdTokenValidator $idTokenValidator) {}
 
     /**
      * @return array{google_id: string, email: string, first_name: string, last_name: string, avatar_url: ?string}
