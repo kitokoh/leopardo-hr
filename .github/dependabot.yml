@@ -16,6 +16,10 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "typescript"
+        # TS majeur = lot de migration dédié, pas un bump groupé (#8078)
+        update-types: ["version-update:semver-major"]
     groups:
       backend-frontend-dependencies:
         patterns:
@@ -27,6 +31,10 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "typescript"
+        # TS majeur = lot de migration dédié, pas un bump groupé (#8078)
+        update-types: ["version-update:semver-major"]
     groups:
       web-marketing-dependencies:
         patterns:
@@ -38,6 +46,10 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "typescript"
+        # TS majeur = lot de migration dédié, pas un bump groupé (#8078)
+        update-types: ["version-update:semver-major"]
     groups:
       admin-dashboard-dependencies:
         patterns:
@@ -49,6 +61,10 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "typescript"
+        # TS majeur = lot de migration dédié, pas un bump groupé (#8078)
+        update-types: ["version-update:semver-major"]
     groups:
       web-offline-dependencies:
         patterns:
