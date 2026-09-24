@@ -20,6 +20,11 @@
       "model": "App\\Modules\\HR\\Domain\\Models\\UserEmployeeLink",
       "reason": "Table de liaison User↔Employee résolue au LOGIN, avant tout contexte tenant (#7711) — un scope fail-closed casserait l'authentification.",
       "added": "2026-09-20"
+    },
+    {
+      "model": "App\\Modules\\CRM\\Domain\\Models\\CrmTaskReminder",
+      "reason": "Journal d'idempotence des relances CRM écrit uniquement par le scheduler cross-tenant hors contexte tenant (régime crossTenantForSystemTask, #7960) ; company_id renseigné explicitement à l'insert, jamais lu sur la surface API (#5720).",
+      "added": "2026-09-24"
     }
   ],
   "legacy_pending_review": [

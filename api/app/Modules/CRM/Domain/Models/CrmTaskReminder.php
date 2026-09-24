@@ -12,6 +12,9 @@ use Illuminate\Database\Eloquent\Model;
  * Une ligne par (tâche, jour) — contrainte UNIQUE (task_id, remind_date)
  * portée par la migration `2026_08_28_000400_5720_create_crm_task_reminders_table`.
  *
+ * EXCEPTION TENANT-SCOPE — journal cross-tenant, exception canonique référencée dans
+ * dev-hub/governance/tenant-scope-exceptions.json (#7999).
+ *
  * Modèle volontairement minimal : écriture uniquement, depuis le scheduler
  * cross-tenant (`CrmOverdueReminderService`), via `insertOrIgnore` — jamais
  * de lecture sur la surface API. Pas de trait `BelongsToCompany` : le
