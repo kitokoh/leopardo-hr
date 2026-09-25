@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
+use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Modules\Notification\Infrastructure\Services\ProductionDeliveryGuard;
 use App\Modules\Platform\Infrastructure\Services\QueueObservabilityService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -47,7 +49,7 @@ class HealthController extends Controller
      */
     private const MAIL_CONNECT_TIMEOUT_SECONDS = 2;
 
-    public function __invoke(): JsonResponse
+    public function __invoke(Request $request): JsonResponse
     {
         $version = $this->stringConfigValue(config('app.version'));
 
@@ -61,6 +63,19 @@ class HealthController extends Controller
         $mail = $this->checkMail();
 
         $globalOk = $database['ok'];
+        $statusCode = $globalOk ? 200 : 503;
+
+        // #8125 — surface publique minimale pour les sondes (Render cherche
+        // `"status":"ok"`) : la matrice détaillée (drivers, mémoire, latences,
+        // environnement) cartographierait la stack pour un attaquant. Elle est
+        // réservée aux super admins plateforme (guard `super_admin_api`).
+        if (! $request->user('super_admin_api') instanceof SuperAdmin) {
+            return response()->json([
+                'status' => $globalOk ? 'ok' : 'fail',
+                'version' => $version,
+                'timestamp' => now()->toIso8601String(),
+            ], $statusCode);
+        }
 
         $payload = [
             'status' => $globalOk ? 'ok' : 'fail',
@@ -82,7 +97,7 @@ class HealthController extends Controller
             'timestamp' => now()->toIso8601String(),
         ];
 
-        return response()->json($payload, $globalOk ? 200 : 503);
+        return response()->json($payload, $statusCode);
     }
 
     /**

@@ -2,7 +2,10 @@
 
 namespace Tests\Feature\Notification;
 
+use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Modules\Notification\Infrastructure\Services\ProductionDeliveryGuard;
+use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class ProductionDeliveryGuardTest extends TestCase
@@ -158,9 +161,40 @@ class ProductionDeliveryGuardTest extends TestCase
         );
     }
 
+    /**
+     * #8125 — la matrice détaillée de /health (drivers, mémoire, latences)
+     * est réservée aux super admins plateforme ; la surface publique reste
+     * minimale pour les sondes ({"status":"ok"}).
+     */
+    private function actingAsSuperAdmin(): void
+    {
+        $superAdmin = new SuperAdmin([
+            'name' => 'Platform Admin',
+            'email' => 'admin-health@leopardo.test',
+        ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
+
+        Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
+    }
+
+    public function test_health_public_response_is_minimal(): void
+    {
+        // #8125 — sans authentification, /health n'expose ni la matrice
+        // d'infrastructure ni l'environnement (cartographie de stack).
+        $response = $this->getJson('/api/v1/health');
+
+        $response->assertOk();
+        $response->assertJsonPath('status', 'ok');
+        $response->assertJsonMissingPath('checks');
+        $response->assertJsonMissingPath('environment');
+    }
+
     public function test_health_exposes_delivery_check(): void
     {
         // Outside production the check is skipped (non-blocking, additive).
+        // #8125 : la matrice détaillée exige un super admin authentifié.
+        $this->actingAsSuperAdmin();
+
         $response = $this->getJson('/api/v1/health');
 
         $response->assertOk();
@@ -174,6 +208,8 @@ class ProductionDeliveryGuardTest extends TestCase
         config(['mail.default' => 'log']);
 
         try {
+            $this->actingAsSuperAdmin();
+
             $response = $this->getJson('/api/v1/health');
 
             // HTTP stays 200: the 503 is driven by the database check only.
