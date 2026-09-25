@@ -107,7 +107,6 @@ class CriticalFunnelPayrollE2ETest extends TestCase
             'password' => 'ProvidedPass123!',
             'salary_type' => 'fixed',
             'salary_base' => 60000,
-            'country' => $country,
         ])->assertCreated();
 
         $employee = Employee::query()->where('email', 'yasmine.benali@e2e.leopardo.test')->firstOrFail();

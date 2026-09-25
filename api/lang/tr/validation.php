@@ -105,6 +105,7 @@ return [
     'unique' => ':attribute zaten kullanılıyor.',
     'url' => ':attribute geçerli bir URL olmalıdır.',
     'uuid' => ':attribute geçerli bir UUID olmalıdır.',
+    'unknown_field' => ':attribute alanı bu uç nokta tarafından desteklenmiyor: bilinmeyen alanlar reddedilir (fail-closed).',
     'supported_country' => ':attribute alanı desteklenen bir ülke olmalıdır (:value).',
     'country_without_payroll_rules' => ':attribute alanı bordro kuralları olan bir ülke olmalıdır (:value bordro motoru tarafından desteklenmiyor).',
 ];

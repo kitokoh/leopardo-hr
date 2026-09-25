@@ -51,7 +51,7 @@ class CandidateApplicationController extends Controller
             // base (le catch 23505 couvre la course check/create).
             try {
                 $applicant = app(CreateApplicantAction::class)->execute(
-                    (int) $company->id,
+                    (string) $company->id,
                     $job,
                     [
                         'first_name' => $validated['first_name'],

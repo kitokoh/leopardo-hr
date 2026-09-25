@@ -58,8 +58,6 @@ class EmployeePasswordProvisioningTest extends TestCase
             'email' => 'nadia.kerrouche@acme-qa.test',
             'role' => 'employee',
             'password' => 'ProvidedPass123!',
-            'gross_salary' => 60000,
-            'country' => 'DZ',
         ]);
 
         $response->assertCreated();

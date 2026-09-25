@@ -54,7 +54,6 @@ class EmployeeMailResilienceTest extends TestCase
             'first_name' => 'Zohra',
             'last_name' => 'B',
             'email' => 'zohra@example.dz',
-            'hire_date' => '2026-08-01',
             'role' => 'employee',
             'send_invitation' => true,
         ]);
@@ -92,7 +91,6 @@ class EmployeeMailResilienceTest extends TestCase
             'first_name' => 'Ali',
             'last_name' => 'Said',
             'email' => 'ali.said@example.dz',
-            'hire_date' => '2026-08-01',
             'role' => 'employee',
             'send_invitation' => true,
         ]);

@@ -105,6 +105,7 @@ return [
     'unique' => 'La valeur du champ :attribute est déjà utilisée.',
     'url' => 'Le format de l\'URL de :attribute n\'est pas valide.',
     'uuid' => 'Le champ :attribute doit être un UUID valide.',
+    'unknown_field' => 'Le champ :attribute n\'est pas pris en charge par cet endpoint : les champs inconnus sont refusés (fail-closed).',
     'supported_country' => 'Le champ :attribute doit être un pays supporté (:value).',
     'country_without_payroll_rules' => 'Le champ :attribute doit être un pays disposant de règles de paie (:value n\'est pas supporté par le moteur de paie).',
 ];

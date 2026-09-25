@@ -187,7 +187,7 @@ class RecruitmentController extends Controller
         // que le portail public : un doublon retourne 409 ALREADY_APPLIED.
         try {
             $applicant = app(CreateApplicantAction::class)->execute(
-                (int) $actor->company_id,
+                (string) $actor->company_id,
                 $jobPosting,
                 $validated,
             );

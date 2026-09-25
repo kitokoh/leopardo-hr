@@ -105,6 +105,7 @@ return [
     'unique' => 'The :attribute has already been taken.',
     'url' => 'The :attribute field must be a valid URL.',
     'uuid' => 'The :attribute field must be a valid UUID.',
+    'unknown_field' => 'The :attribute field is not supported by this endpoint: unknown fields are rejected (fail-closed).',
     'supported_country' => 'The :attribute field must be a supported country (:value).',
     'country_without_payroll_rules' => 'The :attribute must be a country with payroll rules (:value is not supported by the payroll engine).',
 ];

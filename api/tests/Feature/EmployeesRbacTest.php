@@ -849,5 +849,75 @@ class EmployeesRbacTest extends TestCase
             'role' => 'employee',
         ]);
     }
-}
 
+    public function test_store_and_update_employee_reject_unknown_fields(): void
+    {
+        // #8126 — fail-closed : un champ non déclaré (ex. department_id) est
+        // refusé en 422, jamais silencieusement ignoré — sinon le client
+        // croirait que l'assignation a été appliquée.
+        $companyA = Company::query()->create([
+            'name' => 'Company FailClosed',
+            'slug' => 'company-failclosed',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'failclosed@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        $managerA = new Employee([
+            'email' => 'manager-failclosed@a.test',
+        ]);
+        $managerA->forceFill(['password_hash' => Hash::make('password123')])->save();
+        $managerA->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
+
+        $token = $managerA->createToken('tests')->plainTextToken;
+
+        // Champ inconnu → 422 (store)
+        $store = $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/v1/employees', [
+                'first_name' => 'Jane',
+                'last_name' => 'Doe',
+                'email' => 'jane.failclosed@a.test',
+                'password' => 'Motdepasse2026Unique',
+                'role' => 'employee',
+                'department_id' => 1,
+            ]);
+        $store->assertStatus(422);
+        $store->assertJsonValidationErrors(['department_id']);
+
+        // Champ légitime nouvellement déclaré (contract_type, #8126) → accepté
+        $ok = $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/v1/employees', [
+                'first_name' => 'Jane',
+                'last_name' => 'Doe',
+                'email' => 'jane.failclosed@a.test',
+                'password' => 'Motdepasse2026Unique',
+                'role' => 'employee',
+                'contract_type' => 'CDD',
+            ]);
+        $ok->assertStatus(201);
+        $this->assertDatabaseHas('employees', [
+            'email' => 'jane.failclosed@a.test',
+            'contract_type' => 'CDD',
+        ]);
+
+        // Champ inconnu → 422 (update)
+        $employeeId = (int) Employee::query()
+            ->where('email', 'jane.failclosed@a.test')
+            ->value('id');
+        $patch = $this->withHeader('Authorization', "Bearer {$token}")
+            ->patchJson("/api/v1/employees/{$employeeId}", [
+                'position_id' => 3,
+            ]);
+        $patch->assertStatus(422);
+        $patch->assertJsonValidationErrors(['position_id']);
+    }
+}
