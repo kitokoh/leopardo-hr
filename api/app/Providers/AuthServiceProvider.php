@@ -40,6 +40,7 @@ use App\Modules\Communication\Domain\Policies\CommunicationPendingReplyPolicy;
 use App\Modules\Communication\Domain\Policies\CommunicationReplyPolicyPolicy;
 use App\Modules\Communication\Domain\Policies\CommunicationThreadPolicy;
 use App\Modules\CRM\Domain\Models\CrmAccount;
+use App\Modules\CRM\Domain\Models\CrmEmailSuppression;
 use App\Modules\CRM\Domain\Models\CrmImport;
 use App\Modules\CRM\Domain\Models\CrmLead;
 use App\Modules\CRM\Policies\CrmImportPolicy;
@@ -307,6 +308,7 @@ use App\Policies\ApprovalRequestPolicy;
 use App\Policies\AttendancePolicy;
 use App\Policies\BillingPolicy;
 use App\Policies\Cameras\CameraPolicy;
+use App\Policies\CrmEmailPolicy;
 use App\Policies\ContractPolicy;
 use App\Policies\DepartmentPolicy;
 use App\Policies\EmployeePolicy;
@@ -560,6 +562,10 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(CrmImport::class, CrmImportPolicy::class);
         Gate::policy(CrmLead::class, CrmLeadPolicy::class);
         Gate::policy(CrmAccount::class, CrmMergePolicy::class);
+        // Canal email CRM : policy liée au modèle marqueur CrmEmailSuppression (#8131)
+        // — sans cet enregistrement, l'auto-découverte cherche CrmEmailSuppressionPolicy
+        // (inexistante) et tous les envois transactionnel/marketing tombent en 403.
+        Gate::policy(CrmEmailSuppression::class, CrmEmailPolicy::class);
 
         // — TravelAgency (consolidation BC-25) & RestaurantManager (BC-22)
         Gate::policy(TravelStation::class, TravelStationPolicy::class);
