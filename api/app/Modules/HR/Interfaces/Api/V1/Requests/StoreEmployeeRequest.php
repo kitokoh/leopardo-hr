@@ -52,6 +52,9 @@ class StoreEmployeeRequest extends FormRequest
                 'integer',
                 Rule::exists('schedules', 'id')->where(fn ($query) => $query->where('company_id', $companyId)),
             ],
+            // #8126 — champ fillable + DTO + service (défaut 'CDI') : déclaré pour
+            // stopper le drop silencieux (fail-closed cohérent de bout en bout).
+            'contract_type' => ['nullable', 'string', Rule::in(['CDI', 'CDD', 'Stage', 'Interim', 'Consultant'])],
             'contract_start' => ['nullable', 'date_format:Y-m-d'],
             'salary_type' => ['nullable', 'in:fixed,hourly,daily'],
             'salary_base' => ['nullable', 'numeric', 'min:0'],
@@ -107,6 +110,17 @@ class StoreEmployeeRequest extends FormRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator): void {
+            // #8126 — fail-closed : tout champ non déclaré est refusé (422),
+            // jamais silencieusement ignoré (le client croirait l'assignation
+            // appliquée, ex. department_id). Corps seul, pas la query string.
+            $unknown = array_diff(
+                array_keys($this->getInputSource()->all()),
+                array_keys($this->rules())
+            );
+            foreach ($unknown as $field) {
+                $validator->errors()->add($field, __('validation.unknown_field'));
+            }
+
             $role = $this->input('role', 'employee');
             $password = $this->input('password');
             $sendInvitation = filter_var($this->input('send_invitation', false), FILTER_VALIDATE_BOOLEAN);

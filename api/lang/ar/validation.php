@@ -105,6 +105,7 @@ return [
     'unique' => 'قيمة :attribute مستخدمة بالفعل.',
     'url' => 'صيغة رابط :attribute غير صالحة.',
     'uuid' => 'يجب أن يكون :attribute معرّف UUID صالحاً.',
+    'unknown_field' => 'الحقل :attribute غير مدعوم في هذه النقطة: الحقول غير المعروفة مرفوضة (fail-closed).',
     'supported_country' => 'يجب أن يكون حقل :attribute دولة مدعومة (:value).',
     'country_without_payroll_rules' => 'يجب أن يكون حقل :attribute دولة ذات قواعد رواتب (:value غير مدعومة بواسطة محرك الرواتب).',
 ];

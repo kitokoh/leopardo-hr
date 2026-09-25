@@ -46,6 +46,9 @@ class UpdateEmployeeRequest extends FormRequest
                 new GlobalEmailUnique((int) $employeeId),
             ],
             'password' => array_merge(['sometimes'], PasswordPolicy::optional()), // #7995 — politique unique #5620
+            // #8126 — champ fillable + DTO + service (défaut 'CDI') : déclaré pour
+            // stopper le drop silencieux (fail-closed cohérent de bout en bout).
+            'contract_type' => ['sometimes', 'nullable', 'string', Rule::in(['CDI', 'CDD', 'Stage', 'Interim', 'Consultant'])],
             'contract_start' => ['sometimes', 'nullable', 'date_format:Y-m-d'],
             'schedule_id' => [
                 'sometimes',
@@ -105,6 +108,16 @@ class UpdateEmployeeRequest extends FormRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator): void {
+            // #8126 — fail-closed : tout champ non déclaré est refusé (422),
+            // jamais silencieusement ignoré (même règle que StoreEmployeeRequest).
+            $unknown = array_diff(
+                array_keys($this->getInputSource()->all()),
+                array_keys($this->rules())
+            );
+            foreach ($unknown as $field) {
+                $validator->errors()->add($field, __('validation.unknown_field'));
+            }
+
             $user = auth('sanctum')->user() ?? $this->user();
 
             if (($this->has('role') || $this->has('manager_role')) &&
