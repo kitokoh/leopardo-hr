@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\RestaurantManager\Domain\Enums\RestaurantRecordStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\Concerns\ScopesRestaurantBranchListings;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantProductRequest;
@@ -52,7 +53,12 @@ class RestaurantProductController extends Controller
             abort(403);
         }
 
-        $product = RestaurantProduct::query()->create($request->validated());
+        // Défaut appliqué côté écriture : la colonne a un DEFAULT 'active' en
+        // base, mais l'instance en mémoire resterait null → status->value 500 (#8132).
+        $validated = $request->validated();
+        $validated['status'] ??= RestaurantRecordStatus::ACTIVE;
+
+        $product = RestaurantProduct::query()->create($validated);
 
         return (new RestaurantProductResource($product))->response()->setStatusCode(201);
     }
