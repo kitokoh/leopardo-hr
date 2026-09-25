@@ -22,7 +22,7 @@ class CreateApplicantAction
      *
      * @throws ApplicantAlreadyAppliedException
      */
-    public function execute(int $companyId, JobPosting $jobPosting, array $data): Applicant
+    public function execute(string $companyId, JobPosting $jobPosting, array $data): Applicant
     {
         $alreadyApplied = Applicant::query()
             ->where('company_id', $companyId)
