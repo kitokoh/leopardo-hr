@@ -5,22 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Pharmacy\Providers;
 
 use App\Core\Solutions\SolutionCatalogue;
-use App\Modules\Pharmacy\Domain\Models\PharmacyPrescriber;
-use App\Modules\Pharmacy\Domain\Models\PharmacyPrescription;
-use App\Modules\Pharmacy\Domain\Models\PharmacyProduct;
-use App\Modules\Pharmacy\Domain\Models\PharmacyPurchaseOrder;
-use App\Modules\Pharmacy\Domain\Models\PharmacySale;
-use App\Modules\Pharmacy\Domain\Models\PharmacyStockMovement;
-use App\Modules\Pharmacy\Domain\Models\PharmacySupplier;
-use App\Modules\Pharmacy\Domain\Policies\PharmacyPrescriberPolicy;
-use App\Modules\Pharmacy\Domain\Policies\PharmacyPrescriptionPolicy;
-use App\Modules\Pharmacy\Domain\Policies\PharmacyProductPolicy;
-use App\Modules\Pharmacy\Domain\Policies\PharmacyPurchaseOrderPolicy;
-use App\Modules\Pharmacy\Domain\Policies\PharmacySalePolicy;
-use App\Modules\Pharmacy\Domain\Policies\PharmacyStockPolicy;
-use App\Modules\Pharmacy\Domain\Policies\PharmacySupplierPolicy;
 use App\Modules\Pharmacy\Domain\Solution\PharmacyManifest;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -29,8 +14,8 @@ use Illuminate\Support\ServiceProvider;
  * Enregistre le manifest de la solution `pharmacy` dans le catalogue
  * (allowlist fail-closed, garde d'isolation #5584 : le catalogue ne
  * référence jamais `App\Modules\*` directement — c'est le module qui
- * s'enregistre) et les policies RBAC du module (composition root
- * décentralisée, PA2-ARCH-003).
+ * s'enregistre). Les policies RBAC du module sont enregistrées dans
+ * AuthServiceProvider (point unique d'enregistrement, PA2-ARCH-008 / #6575).
  */
 class PharmacyServiceProvider extends ServiceProvider
 {
@@ -39,16 +24,5 @@ class PharmacyServiceProvider extends ServiceProvider
         $this->app->resolving(SolutionCatalogue::class, function (SolutionCatalogue $catalogue): void {
             $catalogue->register('pharmacy', static fn (): PharmacyManifest => new PharmacyManifest);
         });
-    }
-
-    public function boot(): void
-    {
-        Gate::policy(PharmacyProduct::class, PharmacyProductPolicy::class);
-        Gate::policy(PharmacyStockMovement::class, PharmacyStockPolicy::class);
-        Gate::policy(PharmacySupplier::class, PharmacySupplierPolicy::class);
-        Gate::policy(PharmacyPurchaseOrder::class, PharmacyPurchaseOrderPolicy::class);
-        Gate::policy(PharmacySale::class, PharmacySalePolicy::class);
-        Gate::policy(PharmacyPrescriber::class, PharmacyPrescriberPolicy::class);
-        Gate::policy(PharmacyPrescription::class, PharmacyPrescriptionPolicy::class);
     }
 }
