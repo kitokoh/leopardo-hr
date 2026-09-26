@@ -115,7 +115,6 @@ use App\Modules\FuelStation\Domain\Policies\FuelCustomerPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelEquipmentPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelImportPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelIncidentPolicy;
-use App\Modules\FuelStation\Domain\Policies\FuelMaintenancePolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelMaintenanceTaskPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelMetricsPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelOutboxPolicy;
@@ -443,61 +442,49 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(HospitalityReservation::class, HospitalityReservationPolicy::class);
         // — FuelStation batch A (FUEL-009 #5803, FUEL-010 #5804, FUEL-011 #5805,
         //   FUEL-016 #5810) : policies deny-by-default.
+        //
+        // ⚠ UNE SEULE inscription par modèle (#8177) : `Gate::policy()` écrase
+        // silencieusement l'enregistrement précédent — la DERNIÈRE ligne gagne.
+        // Historiquement, 7 modèles Fuel étaient inscrits 2 à 3 fois dans deux
+        // blocs contradictoires : la policy effective était un effet d'ordre de
+        // lignes (opérateurs 403 sur le signalement d'incident, managers 403
+        // sur les rapports, TypeError latente sur GET /fuel-station/sites/{id}).
+        // Le garde dev-hub/tools/check-policies-single-point.sh échoue
+        // désormais sur toute inscription en double.
         Gate::policy(FuelStation::class, FuelStationPolicy::class);
         Gate::policy(FuelSite::class, FuelSitePolicy::class);
         Gate::policy(FuelPump::class, FuelEquipmentPolicy::class);
         Gate::policy(FuelProduct::class, FuelProductPolicy::class);
         Gate::policy(FuelStockEntry::class, FuelStockEntryPolicy::class);
+        // FUEL-010 : signalement par tout employé (policy dédiée — la
+        // FuelMaintenancePolicy historique, manager-only et sans les habilités
+        // assign/resolve/close/update, rendait le module inutilisable).
         Gate::policy(FuelIncident::class, FuelIncidentPolicy::class);
         Gate::policy(FuelMaintenanceTask::class, FuelMaintenanceTaskPolicy::class);
         Gate::policy(FuelCustomer::class, FuelCustomerPolicy::class);
         // — FuelStation stocks & rapprochement (FUEL-009 #5803)
         Gate::policy(FuelTankDelivery::class, FuelStockPolicy::class);
         Gate::policy(FuelReconciliationRun::class, FuelStockPolicy::class);
-        Gate::policy(FuelTank::class, FuelStockPolicy::class);
-        // — FuelStation incidents & maintenance (FUEL-010 #5804)
-        Gate::policy(FuelMaintenanceTask::class, FuelIncidentPolicy::class);
-        // — FuelStation référentiel (FUEL-011 #5805)
-        //
-        // NE PAS réenregistrer ici `FuelStation` / `FuelPump` / `FuelProduct` :
-        // `Gate::policy()` écrase silencieusement l'enregistrement précédent,
-        // donc la DERNIÈRE ligne gagne et la policy effective devient un effet
-        // de bord de l'ordre des lignes. C'est ce qui rendait le référentiel
-        // inaccessible à un employé du tenant (403) alors que les policies
-        // concernées documentent « consultation ouverte aux employés du tenant »
-        // (`FuelStationPolicy`, `FuelEquipmentPolicy`, `FuelProductPolicy` :
-        // `viewAny` retourne true, `view` vérifie le `company_id`, et seul le
-        // CRUD exige `isManager()`). Un pompiste ne pouvait donc ni lire sa
-        // station ni ses pompes — or l'écran mobile pompiste appelle
-        // `GET /fuel-station/stations/{station}`.
-        //
-        // Ces trois modèles gardent leur policy de référence, déclarée une
-        // seule fois plus haut. `FuelReferencePolicy` (CRUD manager) reste
-        // utilisée pour les surfaces qui n'ont pas de policy dédiée :
-        // sites, cuves, compteurs, snapshots de reporting, imports.
-        Gate::policy(FuelSite::class, FuelReferencePolicy::class);
-        Gate::policy(FuelTank::class, FuelReferencePolicy::class);
-        Gate::policy(FuelMeterRegister::class, FuelReferencePolicy::class);
-        // — FuelStation intégration CRM (FUEL-016 #5810)
-        Gate::policy(FuelProfessionalAccount::class, FuelCrmPolicy::class);
-        Gate::policy(FuelAccountVisit::class, FuelCrmPolicy::class);
-        // — FuelStation reporting (FUEL-017 #5811)
-        Gate::policy(FuelReportSnapshot::class, FuelReferencePolicy::class);
-        // — FuelStation import/export (FUEL-018 #5812)
-        Gate::policy(FuelImport::class, FuelReferencePolicy::class);
-        // — FuelStation (FUEL-009 #5803 : stocks, livraisons, rapprochements)
         Gate::policy(FuelStockMovement::class, FuelStockPolicy::class);
         Gate::policy(FuelDelivery::class, FuelStockPolicy::class);
         Gate::policy(FuelStockReconciliation::class, FuelStockPolicy::class);
-        // — FuelStation (FUEL-010 #5804 : incidents, maintenance, tâches)
-        Gate::policy(FuelIncident::class, FuelMaintenancePolicy::class);
-        Gate::policy(FuelMaintenanceTask::class, FuelMaintenancePolicy::class);
-        // — FuelStation (FUEL-018 #5812 : imports CSV)
-        Gate::policy(FuelImport::class, FuelImportPolicy::class);
-        // — FuelStation (FUEL-011 #5805 : référentiel manager)
-        Gate::policy(FuelSite::class, FuelStationPolicy::class);
+        // — FuelStation équipements (FUEL-011 #5805) : cuves et compteurs sont
+        //   des équipements — policy dédiée, typée FuelPump|FuelTank|FuelMeterRegister
+        //   (l'inscription FuelStationPolicy historique sur FuelSite, typée
+        //   FuelStation, portait une TypeError latente sur /sites/{id}).
         Gate::policy(FuelTank::class, FuelEquipmentPolicy::class);
         Gate::policy(FuelMeterRegister::class, FuelEquipmentPolicy::class);
+        // — FuelStation intégration CRM (FUEL-016 #5810)
+        Gate::policy(FuelProfessionalAccount::class, FuelCrmPolicy::class);
+        Gate::policy(FuelAccountVisit::class, FuelCrmPolicy::class);
+        // — FuelStation reporting (FUEL-017 #5811) : les contrôleurs autorisent
+        //   `viewReports` sur FuelReportSnapshot — seule FuelReferencePolicy
+        //   porte cette habilité (FuelReportPolicy, réservée aux exports, ne
+        //   l'a pas : les managers recevaient 403 sur les rapports).
+        Gate::policy(FuelReportSnapshot::class, FuelReferencePolicy::class);
+        Gate::policy(FuelReportExport::class, FuelReportPolicy::class);
+        // — FuelStation import/export (FUEL-018 #5812 : policy dédiée)
+        Gate::policy(FuelImport::class, FuelImportPolicy::class);
         // — FuelStation (FUEL-015 #5809 : outbox contrat Accounting)
         Gate::policy(FuelOutboxEvent::class, FuelOutboxPolicy::class);
         // — FuelStation (FUEL-019 #5813 : alertes & préférences)
@@ -505,9 +492,6 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(FuelNotificationPreference::class, FuelAlertPolicy::class);
         // — FuelStation (FUEL-020 #5814 : métriques d'observabilité, sans modèle)
         Gate::define('fuel.metrics', [FuelMetricsPolicy::class, 'viewAny']);
-        // — FuelStation (FUEL-017 #5811 : reporting opérationnel)
-        Gate::policy(FuelReportSnapshot::class, FuelReportPolicy::class);
-        Gate::policy(FuelReportExport::class, FuelReportPolicy::class);
         // — Catalog (BC-28 #6880 : socle domaine — catégories & produits B2B)
         Gate::policy(CatalogCategory::class, CatalogCategoryPolicy::class);
         Gate::policy(CatalogProduct::class, CatalogProductPolicy::class);
