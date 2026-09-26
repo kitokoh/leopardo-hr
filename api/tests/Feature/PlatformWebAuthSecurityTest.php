@@ -85,6 +85,8 @@ class PlatformWebAuthSecurityTest extends TestCase
     {
         $this->superAdmin->forceFill(['two_fa_secret' => (new SuperAdminService)->generateSecret()])->save();
 
+        // Flux en deux étapes (#6530) : identifiants valides → redirection
+        // vers le challenge TOTP, aucune session ouverte.
         $response = $this->from('/platform/login')
             ->withSession($this->csrf())
             ->post('/platform/login', [
@@ -93,7 +95,8 @@ class PlatformWebAuthSecurityTest extends TestCase
                 'password' => 'password123',
             ]);
 
-        $response->assertSessionHasErrors('two_fa_code');
+        $response->assertRedirect(route('platform.login.2fa'));
+        $response->assertSessionHas('platform_2fa_pending');
         $this->assertGuest('super_admin_web');
     }
 
@@ -101,16 +104,22 @@ class PlatformWebAuthSecurityTest extends TestCase
     {
         $this->superAdmin->forceFill(['two_fa_secret' => (new SuperAdminService)->generateSecret()])->save();
 
-        $response = $this->from('/platform/login')
+        $this->from('/platform/login')
             ->withSession($this->csrf())
             ->post('/platform/login', [
                 '_token' => session()->token(),
                 'email' => 'admin@leopardo.test',
                 'password' => 'password123',
-                'two_fa_code' => '123456',
+            ])->assertRedirect(route('platform.login.2fa'));
+
+        $response = $this->from(route('platform.login.2fa'))
+            ->post('/platform/login/2fa', [
+                '_token' => session()->token(),
+                'email' => 'admin@leopardo.test',
+                'code' => '000000',
             ]);
 
-        $response->assertSessionHasErrors('two_fa_code');
+        $response->assertSessionHasErrors('code');
         $this->assertGuest('super_admin_web');
     }
 
@@ -119,13 +128,19 @@ class PlatformWebAuthSecurityTest extends TestCase
         $secret = (new SuperAdminService)->generateSecret();
         $this->superAdmin->forceFill(['two_fa_secret' => $secret])->save();
 
-        $response = $this->from('/platform/login')
+        $this->from('/platform/login')
             ->withSession($this->csrf())
             ->post('/platform/login', [
                 '_token' => session()->token(),
                 'email' => 'admin@leopardo.test',
                 'password' => 'password123',
-                'two_fa_code' => $this->totpCode($secret),
+            ])->assertRedirect(route('platform.login.2fa'));
+
+        $response = $this->from(route('platform.login.2fa'))
+            ->post('/platform/login/2fa', [
+                '_token' => session()->token(),
+                'email' => 'admin@leopardo.test',
+                'code' => $this->totpCode($secret),
             ]);
 
         $response->assertRedirect(route('platform.companies.index'));

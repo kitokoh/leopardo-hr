@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
+use Tests\Support\FixturePasswords;
 use Tests\TestCase;
 
 /**
@@ -48,7 +49,7 @@ class EmployeeNumericCastTest extends TestCase
             'last_name' => 'Said',
             'email' => 'ali.said@x.dz',
             'role' => 'employee',
-            'password' => 'secret1234',
+            'password' => FixturePasswords::VALID,
             'send_invitation' => false,
             'salary_base' => '40000',
             'hourly_rate' => '1500.50',
@@ -73,7 +74,7 @@ class EmployeeNumericCastTest extends TestCase
             'last_name' => 'B',
             'email' => 'zohra.b@x.dz',
             'role' => 'employee',
-            'password' => 'secret1234',
+            'password' => FixturePasswords::VALID,
             'send_invitation' => false,
             'salary_base' => 60000,
         ]);
@@ -96,7 +97,7 @@ class EmployeeNumericCastTest extends TestCase
             'last_name' => 'K',
             'email' => 'lina.k@x.dz',
             'role' => 'employee',
-            'password' => 'secret1234',
+            'password' => FixturePasswords::VALID,
             'send_invitation' => 'on',
             'biometric_face_enabled' => '1',
             'salary_base' => '38000',

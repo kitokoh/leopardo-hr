@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
+use Tests\Support\FixturePasswords;
 use Tests\TestCase;
 
 /**
@@ -249,7 +250,7 @@ class OnboardingE2ETest extends TestCase
         Sanctum::actingAs($rita, ['*']);
         $this->postJson('/api/v1/employees', [
             'first_name' => 'Yacine', 'last_name' => 'Rh',
-            'email' => 'yacine@acme.test', 'password' => 'Yacine!1234',
+            'email' => 'yacine@acme.test', 'password' => FixturePasswords::VALID,
             'role' => 'manager', 'manager_role' => 'rh',
         ])->assertCreated();
 
@@ -257,7 +258,7 @@ class OnboardingE2ETest extends TestCase
         Sanctum::actingAs($rita, ['*']);
         $this->postJson('/api/v1/employees', [
             'first_name' => 'Sami', 'last_name' => 'Employe',
-            'email' => 'sami@acme.test', 'password' => 'Sami!1234',
+            'email' => 'sami@acme.test', 'password' => FixturePasswords::VALID_ALTERNATIVE,
             'role' => 'employee',
         ])->assertCreated();
 
