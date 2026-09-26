@@ -20,6 +20,10 @@ use Illuminate\Support\Facades\Schema;
 
 readonly class AuthService
 {
+    public function __construct(
+        private readonly AccountLockoutNotifier $lockoutNotifier,
+    ) {}
+
     /**
      * @return array{employee: Employee, token: string, token_type: string, token_expires_at: ?string, tenant_schema: ?string}
      */
@@ -159,6 +163,12 @@ readonly class AuthService
                     if ($employee->failed_login_attempts >= 5) {
                         $employee->locked_until = now()->addMinutes(15);
                         $employee->save();
+
+                        // #8163 — le titulaire est notifié du verrouillage
+                        // (canal in-app canonique) et les verrouillages
+                        // répétés du même compte remontent une alerte.
+                        // Best-effort : ne change jamais le contrat 401.
+                        $this->lockoutNotifier->onAccountLocked($employee, $employee->locked_until);
                     }
                 }
                 throw new InvalidCredentialsException;
