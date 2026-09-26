@@ -144,13 +144,13 @@ Artisan::command(
 // ──────────────────────────────────────────────
 use Illuminate\Support\Facades\Schedule;
 
-Schedule::command('billing:check-trials')->daily()->at('08:00');
-Schedule::command('billing:check-overdue')->daily()->at('09:00');
+Schedule::command('billing:check-trials')->daily()->at('08:00')->withoutOverlapping();
+Schedule::command('billing:check-overdue')->daily()->at('09:00')->withoutOverlapping();
 Schedule::command('app:send-drip-emails')->daily()->at('10:00');
-Schedule::command('billing:generate-invoices')->monthlyOn(1, '02:00');
-Schedule::command('leave:accrue')->monthlyOn(1, '03:00');
-Schedule::command('leave:carry-forward --year='.(now()->year - 1))->yearlyOn(1, 1, '04:00');
-Schedule::command('contracts:alert-expiring')->daily()->at('07:00');
+Schedule::command('billing:generate-invoices')->monthlyOn(1, '02:00')->withoutOverlapping();
+Schedule::command('leave:accrue')->monthlyOn(1, '03:00')->withoutOverlapping();
+Schedule::command('leave:carry-forward --year='.(now()->year - 1))->yearlyOn(1, 1, '04:00')->withoutOverlapping();
+Schedule::command('contracts:alert-expiring')->daily()->at('07:00')->withoutOverlapping();
 // #7655 (tranche 2, ADR-0025) — hygiène des tokens Sanctum : purge quotidienne
 // des tokens expirés. Le TTL est de 30 jours glissants (décision propriétaire
 // #7491) : sans cette purge, les hash de tokens expirés s'accumulent
@@ -301,3 +301,122 @@ Artisan::command('super-admin:reset-password {email} {password}', function (stri
 // confirmer avant la clôture (novembre).
 Schedule::command('islamic:check-unconfirmed')
     ->yearlyOn(11, 15, '09:00');
+
+// ────────────────────────────────────────────────────────────────────────
+// BOS-006A (#8139) — SOURCE UNIQUE DE PLANIFICATION
+// ────────────────────────────────────────────────────────────────────────
+// Le scheduler était défini DEUX FOIS : `bootstrap/app.php` (withSchedule)
+// ET ce fichier — Laravel charge les deux, donc 8 commandes tournaient en
+// double avec des horaires/paramètres contradictoires (double acquisition de
+// congés, double génération de factures, deux expireurs Travel publiant deux
+// événements différents). Ce fichier est désormais la SOURCE UNIQUE :
+// `withSchedule()` a été retiré de `bootstrap/app.php`.
+//
+// Règle de résolution appliquée lors de la consolidation (arbitrage documenté) :
+//   1. quand une commande était définie dans les deux fichiers, la définition
+//      de CE fichier (source canonique) est conservée ;
+//   2. quand `bootstrap/app.php` portait des arguments/verrous plus complets
+//      (ex. `attendance:auto-close`, `travel:expire-pending-bookings`),
+//      c'est la définition la PLUS COMPLÈTE qui est conservée ;
+//   3. les entrées présentes UNIQUEMENT dans `bootstrap/app.php` sont migrées
+//      ici à l'identique (+ `withoutOverlapping` pour les commandes sensibles) ;
+//   4. l'expireur Travel LEGACY `travel:expire-bookings`
+//      (`TravelExpireBookingsCommand`) est SUPPRIMÉ : il publiait
+//      `travel.booking.expired.v1` en concurrence avec le canonique
+//      `travel.booking.cancelled.v1` (`travel:expire-pending-bookings`, #6070).
+//
+// Tableau des entrées (source unique — aucun doublon, cf.
+// tests/Feature/Console/SchedulerUniquenessTest.php) :
+//
+//   commande                                  fréquence                 verrou
+//   --------------------------------------------------------------------------
+//   leave:accrue                              mensuelle (1er, 03:00)    oui
+//   leave:carry-forward --year=<n-1>          annuelle (1er jan, 04:00) oui
+//   contracts:alert-expiring                  quotidienne (07:00)       oui
+//   billing:check-trials                      quotidienne (08:00)       oui
+//   billing:check-overdue                     quotidienne (09:00)       oui
+//   billing:generate-invoices                 mensuelle (1er, 02:00)    oui
+//   billing:reconcile-payments                quotidienne               oui
+//   billing:report --json                     quotidienne               oui
+//   sanctum:prune-expired --hours=24          quotidienne (04:30)       non
+//   manager:weekly-digest                     hebdo (lundi 07:00)       non
+//   fuel:alerts-dispatch                      quotidienne (06:30)       non
+//   fuel:outbox-dispatch                      chaque minute             non
+//   monitor:slow-queries --threshold=500      15 min                    non
+//   trial-provisionings:sweep                 15 min                    non
+//   attendance:auto-close --threshold=12 --hours=14  horaire             oui
+//   queue:health-check                        5 min (si redis/database) oui
+//   growth:approve-commissions                quotidienne (04:00)       non
+//   marketing:publish-scheduled-posts         chaque minute             oui
+//   crm:process-campaign-sends                5 min                     oui
+//   announcements:publish-scheduled           chaque minute             oui
+//   travel:outbox-dispatch                    chaque minute             oui
+//   travel:settle-sales                       mensuelle (1er, 02:30)    oui
+//   travel:expire-pending-bookings            5 min                     oui
+//   travel:webhook-dispatch                   chaque minute             oui
+//   travel:expire-adverts                     horaire                   oui
+//   travel:rebuild-report-readmodels          horaire                   non
+//   hospitality:expire-pending-reservations   5 min                     oui
+//   crm:tasks:send-overdue-reminders          30 min                    oui
+//   communication:sync-mailboxes              5 min                     oui
+//   communication:send-follow-ups             15 min                    oui
+//   growth:archive-clicks --days=90           hebdomadaire              non
+//   accounting:purge-expired-shares           quotidienne               non
+//   payroll:precalculate                      quotidienne (02:00)       non
+//   edge:monitor                              30 min                    oui
+//   onboarding:send-reminders                 quotidienne (09:00)       non
+//   tts:purge                                 horaire                   non
+//   restaurant:outbox-dispatch                chaque minute             oui
+//   leopardo:fleet:sync                       */TRACCAR_SYNC_INTERVAL    oui (30 min)
+//   audit:purge                               hebdomadaire              non
+//   biometric:purge-expired                   hebdomadaire              non
+//   islamic:check-unconfirmed                 annuelle (15 nov, 09:00)  non
+//
+// Note de déploiement : les horaires unifiés suppriment les runs de minuit
+// (`daily()` de l'ancien bloc bootstrap) qui doublonnaient les runs explicites
+// de ce fichier. Aucune donnée n'est modifiée ; un déploiement hors fenêtre de
+// run critique (02:00–04:30 UTC : factures, paie, congés, travel) est
+// recommandé pour éviter qu'une commande en cours perde son verrou.
+
+// Facturation — réconciliation recouvrement (DEP-BC21 #6251) et rapport.
+Schedule::command('billing:reconcile-payments')->daily()->withoutOverlapping();
+Schedule::command('billing:report --json')->daily()->withoutOverlapping();
+
+// FuelStation (BC-15) — FUEL-015/019 : dispatch outbox idempotent.
+Schedule::command('fuel:outbox-dispatch')->everyMinute();
+
+// Observabilité — requêtes lentes et provisionings trial bloqués (#4948).
+Schedule::command('monitor:slow-queries --threshold=500')->everyFifteenMinutes();
+Schedule::command('trial-provisionings:sweep')->everyFifteenMinutes();
+
+// TRAVEL-806 (#6097) — webhooks sortants transporteurs (idempotent, retry).
+Schedule::command('travel:webhook-dispatch')->everyMinute()->withoutOverlapping();
+
+// BC-24 TRAVEL — reconstruction des read-models de reporting.
+Schedule::command('travel:rebuild-report-readmodels')->hourly();
+
+// RGPD / espace disque — purge des partages comptables expirés.
+Schedule::command('accounting:purge-expired-shares')->daily();
+
+// PA2-PAY-012 — pré-calcul progressif de la paie (nuit).
+Schedule::command('payroll:precalculate')->dailyAt('02:00');
+
+// Edge (audit Mobile+Edge 2026-07-26, #1288/#1291) — nœuds silencieux et
+// licences hors ligne expirées.
+Schedule::command('edge:monitor')->everyThirtyMinutes()->withoutOverlapping();
+
+// #R12 — rappel d'onboarding J+1 (sociétés créées il y a 20h–28h).
+Schedule::command('onboarding:send-reminders')->dailyAt('09:00');
+
+// Issue #5616 — purge des fichiers TTS temporaires (RGPD + espace disque).
+Schedule::command('tts:purge')->hourly();
+
+// BC-25 RESTAURANT (RESTO-808/#6229) — consommation de l'outbox verticale.
+Schedule::command('restaurant:outbox-dispatch')->everyMinute()->withoutOverlapping();
+
+// #7401 — synchronisation Traccar de la flotte : `TRACCAR_SYNC_INTERVAL`
+// (minutes) est enfin lu ; `withoutOverlapping(30)` borne le verrou.
+$trackingIntervalMinutes = max(1, min(59, (int) config('tracking.sync_interval_minutes', 5)));
+Schedule::command('leopardo:fleet:sync')
+    ->cron("*/{$trackingIntervalMinutes} * * * *")
+    ->withoutOverlapping(30);
