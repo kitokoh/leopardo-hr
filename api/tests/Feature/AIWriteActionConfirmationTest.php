@@ -164,13 +164,33 @@ class AIWriteActionConfirmationTest extends TestCase
         $this->assertDatabaseCount('absences', 0);
     }
 
-    public function test_confirm_approve_absence_updates_status(): void
+    public function test_legacy_approve_absence_write_tool_is_removed(): void
     {
+        // #8145 (BOS-004) — le write-tool legacy `approve_absence` (update()
+        // direct sans Action canonique ni événement AbsenceApproved) est
+        // supprimé : `absence_decision` est l'unique chemin d'approbation IA.
+        // Le chemin canonique (confirmation + événement + refus employé) est
+        // couvert par AbsenceDecisionToolTest ; ici on verrouille le RETRAIT.
         [$company, $manager] = $this->aiFixture();
+
+        // 1. Plus de handler dans le runner → erreur « not implemented »
+        //    gracieuse (jamais de 500, jamais d'effet de bord).
+        $runner = app(\App\AI\WriteActionRunner::class);
+        $result = $runner->run('approve_absence', ['absence_id' => 1], (string) $company->id, (int) $manager->id);
+        $this->assertArrayHasKey('error', $result);
+        $this->assertStringContainsString('not implemented', (string) $result['error']);
+        $this->assertNotContains('approve_absence', \App\AI\WriteActionRunner::supportedWriteToolNames());
+
+        // 2. Retiré de la config (write_tools + matrice de permissions).
+        $this->assertNotContains('approve_absence', config('ai.write_tools', []));
+        $this->assertArrayNotHasKey('approve_absence', config('ai.tool_permissions', []));
+
+        // 3. Un pending action hérité (TTL 15 min — conversation en cours au
+        //    déploiement) échoue proprement à la confirmation : 422 explicite,
+        //    aucune mutation.
         $type = $this->seedAbsenceType($company->id);
         $employee = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
         $this->assertInstanceOf(Employee::class, $employee);
-
         $absence = Absence::create([
             'company_id' => $company->id,
             'employee_id' => $employee->id,
@@ -182,7 +202,6 @@ class AIWriteActionConfirmationTest extends TestCase
         ]);
 
         Sanctum::actingAs($manager);
-
         $pendingId = app(PendingActionStore::class)->store(
             $company->id,
             $manager->id,
@@ -191,13 +210,12 @@ class AIWriteActionConfirmationTest extends TestCase
         );
 
         $this->postJson("/api/v1/ai/actions/{$pendingId}/confirm")
-            ->assertOk()
-            ->assertJsonPath('data.result.status', 'approved');
+            ->assertStatus(422)
+            ->assertJsonPath('error', "Tool 'approve_absence' does not require confirmation.");
 
         $this->assertDatabaseHas('absences', [
             'id' => $absence->id,
-            'status' => 'approved',
-            'approved_by' => $manager->id,
+            'status' => 'pending',
         ]);
     }
 
@@ -280,45 +298,6 @@ class AIWriteActionConfirmationTest extends TestCase
             'required_role' => 'manager',
             'module' => 'rh',
             'active' => true,
-        ]);
-    }
-
-    public function test_employee_cannot_approve_absence_via_ai(): void
-    {
-        // audit(securite) #6533 : approbation d'absence via IA réservée aux
-        // managers (AbsencePolicy::approve) — un employé qui tente d'approuver
-        // reçoit un refus explicite, l'absence reste pending.
-        [$company] = $this->aiFixture();
-        $type = $this->seedAbsenceType($company->id);
-        $employeeActor = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
-        $this->assertInstanceOf(Employee::class, $employeeActor);
-
-        $absence = Absence::create([
-            'company_id' => $company->id,
-            'employee_id' => $employeeActor->id,
-            'absence_type_id' => $type->id,
-            'start_date' => '2026-06-01',
-            'end_date' => '2026-06-02',
-            'days_count' => 2,
-            'status' => 'pending',
-        ]);
-
-        Sanctum::actingAs($employeeActor);
-
-        $pendingId = app(PendingActionStore::class)->store(
-            $company->id,
-            $employeeActor->id,
-            'approve_absence',
-            ['absence_id' => $absence->id],
-        );
-
-        $this->postJson("/api/v1/ai/actions/{$pendingId}/confirm")
-            ->assertStatus(422)
-            ->assertJsonPath('error', 'AI_TOOL_PERMISSION_DENIED');
-
-        $this->assertDatabaseHas('absences', [
-            'id' => $absence->id,
-            'status' => 'pending',
         ]);
     }
 

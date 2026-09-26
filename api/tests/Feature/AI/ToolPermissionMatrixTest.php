@@ -72,7 +72,9 @@ class ToolPermissionMatrixTest extends TestCase
         $response = new AIResponse(
             content: '',
             toolCalls: [
-                new ToolCall('call_1', 'approve_absence', ['absence_id' => 999]),
+                // #8145 : `absence_decision` est l'unique chemin d'approbation
+                // (le legacy `approve_absence` est supprimé) — même matrice.
+                new ToolCall('call_1', 'absence_decision', ['absence_id' => 999, 'decision' => 'approve']),
             ],
         );
 
@@ -90,7 +92,7 @@ class ToolPermissionMatrixTest extends TestCase
         $response = new AIResponse(
             content: '',
             toolCalls: [
-                new ToolCall('call_1', 'approve_absence', ['absence_id' => 1]),
+                new ToolCall('call_1', 'absence_decision', ['absence_id' => 1, 'decision' => 'approve']),
             ],
         );
 
@@ -163,8 +165,8 @@ class ToolPermissionMatrixTest extends TestCase
 
         $engine = app(IntentEngine::class);
         $result = $engine->executeConfirmedWrite(
-            'approve_absence',
-            ['absence_id' => 1],
+            'absence_decision',
+            ['absence_id' => 1, 'decision' => 'approve'],
             $company->id,
             $employee->id,
         );
@@ -183,7 +185,10 @@ class ToolPermissionMatrixTest extends TestCase
         $employeeData = $this->getJson('/api/v1/ai/tools')->json('data');
         $employeeNames = collect($employeeData)->pluck('name')->all();
         $this->assertContains('create_absence', $employeeNames);
+        // #8145 : le legacy `approve_absence` n'est exposé à PERSONNE (retiré),
+        // et la décision d'absence (manager only) reste invisible d'un employé.
         $this->assertNotContains('approve_absence', $employeeNames);
+        $this->assertNotContains('absence_decision', $employeeNames);
         $this->assertNotContains('get_headcount', $employeeNames);
 
         /** @var Employee $manager */
@@ -191,7 +196,8 @@ class ToolPermissionMatrixTest extends TestCase
         /** @var array<int, array<string, mixed>> $managerData */
         $managerData = $this->getJson('/api/v1/ai/tools')->json('data');
         $managerNames = collect($managerData)->pluck('name')->all();
-        $this->assertContains('approve_absence', $managerNames);
+        $this->assertNotContains('approve_absence', $managerNames);
+        $this->assertContains('absence_decision', $managerNames);
         $this->assertContains('get_headcount', $managerNames);
     }
 
@@ -204,7 +210,7 @@ class ToolPermissionMatrixTest extends TestCase
         $this->postJson('/api/v1/ai/chat', ['message' => 'Approuve l absence 1'])
             ->assertOk()
             ->assertJsonPath('data.pending_confirmations', [])
-            ->assertJsonPath('data.tools_used.0', 'approve_absence');
+            ->assertJsonPath('data.tools_used.0', 'absence_decision');
     }
 
     /**
@@ -248,7 +254,7 @@ class ToolPermissionMatrixTest extends TestCase
                 return new AIResponse(
                     content: 'Je prepare la demande.',
                     toolCalls: [
-                        new ToolCall('call_1', 'approve_absence', ['absence_id' => 1]),
+                        new ToolCall('call_1', 'absence_decision', ['absence_id' => 1, 'decision' => 'approve']),
                     ],
                     inputTokens: 5,
                     outputTokens: 8,
@@ -386,8 +392,11 @@ class ToolPermissionMatrixTest extends TestCase
         ]);
 
         $runner = app(WriteActionRunner::class);
-        $result = $runner->run('approve_absence', [
+        // #8145 : via l'unique chemin `absence_decision`, le handler re-vérifie
+        // le rôle (défense en profondeur par-dessus la matrice).
+        $result = $runner->run('absence_decision', [
             'absence_id' => $absence->id,
+            'decision' => 'approve',
         ], (string) $company->id, $employee->id);
 
         $this->assertArrayHasKey('error', $result);

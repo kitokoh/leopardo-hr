@@ -134,20 +134,9 @@ class AIToolRegistrySeeder extends Seeder
                 'required_role' => 'employee',
                 'module' => 'rh',
             ],
-            [
-                'name' => 'approve_absence',
-                'description' => 'Approve a pending absence request.',
-                'parameters' => json_encode([
-                    'type' => 'object',
-                    'properties' => [
-                        'absence_id' => ['type' => 'integer'],
-                    ],
-                    'required' => ['absence_id'],
-                ]),
-                'required_permissions' => '["absences.approve"]',
-                'required_role' => 'manager',
-                'module' => 'rh',
-            ],
+            // #8145 (BOS-004) — l'entrée legacy `approve_absence` est retirée
+            // du seed ; la migration 2026_09_26_000100_8145 nettoie les bases
+            // existantes. Unique chemin d'approbation : `absence_decision`.
             // B3a (#6856) — outil écriture BC-06 LEAVE déclaré au contrat A3
             // (#6850). `parameters` aligné sur l'inputSchema du catalogue
             // Absence (AbsenceDecisionToolCatalog) ; exécution après
