@@ -24,10 +24,28 @@ final class RetailBuyerAccountService
 {
     private const TOKEN_PREFIX = 'mkb_';
 
-    // #7979 : TTL court (7 j, était 30) — la session acheteur vit en
-    // localStorage (lisible par XSS) tant que le cookie HttpOnly n'est pas
-    // livré ; une rotation courte borne la fenêtre d'abus d'un jeton volé.
+    // #7979 : TTL court (7 j, était 30) — une rotation courte borne la
+    // fenêtre d'abus d'un jeton volé.
     private const TOKEN_TTL_DAYS = 7;
+
+    /**
+     * #8096 — cookie de session acheteur (cible du compromis #7979 : la
+     * session ne vit plus en localStorage, lisible par toute XSS).
+     * Posé en `HttpOnly; Secure; SameSite=None` à register/login et au
+     * endpoint de restauration ; le middleware `market.buyer` accepte le
+     * Bearer historique (migration douce) PUIS ce cookie.
+     *
+     * Chemin borné à la surface publique marché : le navigateur n'envoie
+     * le jeton que sur `/api/v1/public/market/*`.
+     */
+    public const SESSION_COOKIE = 'market_buyer_session';
+
+    public const SESSION_COOKIE_PATH = '/api/v1/public/market';
+
+    /**
+     * Durée de vie du cookie = TTL du jeton (minutes, helper cookie()).
+     */
+    public const SESSION_COOKIE_MINUTES = self::TOKEN_TTL_DAYS * 24 * 60;
 
     public function __construct(private readonly Hasher $hasher) {}
 
@@ -71,8 +89,10 @@ final class RetailBuyerAccountService
     }
 
     /**
-     * Resout l'acheteur porte par un jeton Bearer — null si jeton absent,
-     * malforme, inconnu ou expire (fail-closed).
+     * Resout l'acheteur porte par un jeton opaque — null si jeton absent,
+     * malforme, inconnu ou expire (fail-closed). Accepte indifféremment
+     * le Bearer historique et la valeur du cookie HttpOnly (#8096) : c'est
+     * le même jeton opaque, seul le transport change.
      */
     public function buyerForBearerToken(?string $bearer): ?MarketplaceBuyer
     {
@@ -106,7 +126,8 @@ final class RetailBuyerAccountService
     }
 
     /**
-     * Revoque le jeton porte par la requete (logout). Idempotent.
+     * Revoque le jeton porte par la requete, qu'il vienne du header Bearer
+     * ou du cookie HttpOnly (#8096) — logout. Idempotent.
      */
     public function revokeBearerToken(?string $bearer): void
     {

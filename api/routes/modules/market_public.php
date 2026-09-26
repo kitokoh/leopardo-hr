@@ -89,6 +89,10 @@ Route::middleware(['throttle:shop-public'])
         Route::middleware(['market.buyer'])->group(function (): void {
             Route::post('/logout', [RetailMarketAccountController::class, 'logout'])
                 ->name('market.public.account.logout');
+            // #8096 — restauration/refresh : pose le cookie HttpOnly pour un
+            // jeton legacy valide (migration douce localStorage → cookie).
+            Route::post('/session/restore', [RetailMarketAccountController::class, 'restoreSession'])
+                ->name('market.public.account.session.restore');
             Route::get('/me', [RetailMarketAccountController::class, 'me'])
                 ->name('market.public.account.me');
             Route::get('/orders', [RetailMarketAccountController::class, 'orders'])

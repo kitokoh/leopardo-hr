@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Retail\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\Retail\EnsureMarketBuyerAuth;
 use App\Modules\Retail\Application\Services\RetailBuyerAccountService;
 use App\Modules\Retail\Application\Services\RetailMarketplaceService;
 use App\Modules\Retail\Domain\Models\MarketplaceBuyer;
@@ -14,6 +15,7 @@ use App\Modules\Retail\Interfaces\Api\V1\Requests\LoginMarketBuyerRequest;
 use App\Modules\Retail\Interfaces\Api\V1\Requests\RegisterMarketBuyerRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 
 /**
  * Comptes acheteurs PUBLICS de la marketplace Leopardo Marche
@@ -21,11 +23,20 @@ use Illuminate\Http\Request;
  *
  * Routes `/api/v1/public/market/account/*` (`throttle:shop-public` +
  * throttle strict dedie sur register/login) :
- *   POST /account/register  → inscription legere (201 + jeton)
- *   POST /account/login     → connexion (200 + jeton, 401 uniforme)
- *   POST /account/logout    → revocation du jeton courant (auth buyer)
- *   GET  /account/me        → profil du buyer authentifie
- *   GET  /account/orders    → historique cross-tenant des commandes liees
+ *   POST /account/register         → inscription legere (201 + jeton)
+ *   POST /account/login            → connexion (200 + jeton, 401 uniforme)
+ *   POST /account/session/restore  → pose le cookie HttpOnly pour un jeton
+ *                                    legacy valide (migration douce #8096)
+ *   POST /account/logout           → revocation du jeton courant (auth buyer)
+ *   GET  /account/me               → profil du buyer authentifie
+ *   GET  /account/orders           → historique cross-tenant des commandes liees
+ *
+ * #8096 — la session est desormais portee par un cookie
+ * `HttpOnly; Secure; SameSite=None` (front cross-origin) pose a
+ * register/login/restore, borne au chemin `/api/v1/public/market`. Le jeton
+ * reste retourne dans le corps JSON pendant la migration douce (anciens
+ * clients), mais le front marketplace ne le persiste plus (fin du
+ * compromis localStorage #7979).
  *
  * Comptes PLATEFORME (tables centrales, jamais de company_id expose) —
  * DTO publics stricts : reference, vendeur public, totaux, statut
@@ -55,7 +66,7 @@ class RetailMarketAccountController extends Controller
                 'token' => $result['token'],
                 'buyer' => $this->buyerPayload($result['buyer']),
             ],
-        ], 201);
+        ], 201)->withCookie($this->sessionCookie($result['token']));
     }
 
     /**
@@ -78,18 +89,46 @@ class RetailMarketAccountController extends Controller
                 'token' => $result['token'],
                 'buyer' => $this->buyerPayload($result['buyer']),
             ],
-        ]);
+        ])->withCookie($this->sessionCookie($result['token']));
+    }
+
+    /**
+     * POST /public/market/account/session/restore — restauration/refresh de
+     * session (#8096) : pour un jeton legacy valide (Bearer localStorage),
+     * pose le cookie HttpOnly qui prend le relais ; idempotent quand la
+     * requete est deja authentifiee par cookie. Le middleware `market.buyer`
+     * a deja valide le jeton (401 uniforme sinon).
+     */
+    public function restoreSession(Request $request): JsonResponse
+    {
+        $token = EnsureMarketBuyerAuth::requestToken($request);
+
+        if (! is_string($token) || $token === '') {
+            abort(401, 'UNAUTHENTICATED');
+        }
+
+        return response()->json([
+            'data' => [
+                'restored' => true,
+                'buyer' => $this->buyerPayload($this->currentBuyer()),
+            ],
+        ])->withCookie($this->sessionCookie($token));
     }
 
     /**
      * POST /public/market/account/logout — revoque le jeton courant
-     * (idempotent).
+     * (idempotent) et expire le cookie HttpOnly (#8096), quelle que soit la
+     * source du jeton (Bearer ou cookie).
      */
     public function logout(Request $request): JsonResponse
     {
-        $this->accounts->revokeBearerToken($request->bearerToken());
+        $this->accounts->revokeBearerToken(EnsureMarketBuyerAuth::requestToken($request));
 
-        return response()->json(['data' => ['logged_out' => true]]);
+        return response()->json(['data' => ['logged_out' => true]])
+            ->withCookie(Cookie::forget(
+                RetailBuyerAccountService::SESSION_COOKIE,
+                RetailBuyerAccountService::SESSION_COOKIE_PATH,
+            ));
     }
 
     /**
@@ -215,6 +254,29 @@ class RetailMarketAccountController extends Controller
         }
 
         return $buyer;
+    }
+
+    /**
+     * Cookie de session acheteur (#8096) : `HttpOnly` (illisible par le JS
+     * de la page — fin de l'exfiltration XSS par localStorage), `Secure`
+     * (exige par `SameSite=None` ; accepte par les navigateurs sur
+     * localhost en dev), `SameSite=None` car le front marketplace est
+     * servi cross-origin (projet Vercel dedie), chemin borne a la surface
+     * publique marche, duree = TTL du jeton.
+     */
+    private function sessionCookie(string $token): \Symfony\Component\HttpFoundation\Cookie
+    {
+        return cookie(
+            RetailBuyerAccountService::SESSION_COOKIE,
+            $token,
+            RetailBuyerAccountService::SESSION_COOKIE_MINUTES,
+            RetailBuyerAccountService::SESSION_COOKIE_PATH,
+            null,
+            true,
+            true,
+            false,
+            'None',
+        );
     }
 
     /**
