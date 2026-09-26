@@ -14,6 +14,7 @@ use App\Modules\Billing\Application\Actions\RequestTrialSignup;
 use App\Modules\Billing\Application\Actions\VerifyTrialSignup;
 use App\Rules\SupportedCountry;
 use App\Shared\Rules\PasswordPolicy;
+use App\Support\EmailLogId;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -678,17 +679,13 @@ class SelfServiceTrialController extends Controller
 
     /**
      * BOS-002 (#8144) — identifiant de journalisation d'un email (pseudonyme).
-     *
-     * Les logs applicatifs du parcours trial ne doivent JAMAIS porter l'email
-     * du prospect en clair (PII) : on journalise un hachage tronqué, qui
-     * conserve la corrélation entre événements d'un même email sans exposer
-     * la donnée. Maille volontairement courte (16 hex) : suffisante pour
-     * corréler, insuffisante pour être réversible par force brute à l'échelle
-     * des volumes de logs.
+     * Délègue à l'implémentation canonique partagée ({@see EmailLogId}) —
+     * #8164 : le helper est sorti de ce contrôleur pour être réutilisé par
+     * AuthService et tout futur point de log touchant un email.
      */
     private function emailLogId(string $email): string
     {
-        return substr(hash('sha256', mb_strtolower(trim($email))), 0, 16);
+        return EmailLogId::hash($email);
     }
 
     /**

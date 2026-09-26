@@ -94,6 +94,39 @@ class PurgeAiAuditLogsTest extends TestCase
         $this->assertSame(0, (int) DB::table('ai_audit_logs')->count());
     }
 
+    // ── #8164 — rétention de ai_tool_executions ─────────────────────────
+
+    public function test_purges_tool_executions_older_than_the_retention(): void
+    {
+        [$company, $employee] = $this->fixture();
+        $recent = $this->insertToolExecution($company->id, $employee->id, now()->subDay());
+        $old = $this->insertToolExecution($company->id, $employee->id, now()->subDays(91));
+
+        $this->assertSame(0, Artisan::call('ai:purge-audit-logs'));
+
+        $this->assertTrue($this->toolExecutionExists($recent), 'l\'exécution récente (J-1) doit être conservée');
+        $this->assertFalse($this->toolExecutionExists($old), 'l\'exécution au-delà de la rétention (J-91) doit être purgée');
+    }
+
+    public function test_tool_executions_purge_respects_company_scope_and_dry_run(): void
+    {
+        [$companyA, $employeeA] = $this->fixture();
+        [$companyB, $employeeB] = $this->fixture();
+
+        $rowA = $this->insertToolExecution($companyA->id, $employeeA->id, now()->subDays(120));
+        $rowB = $this->insertToolExecution($companyB->id, $employeeB->id, now()->subDays(120));
+
+        // --dry-run : rien n'est supprimé, même sur la table outils.
+        $this->assertSame(0, Artisan::call('ai:purge-audit-logs', ['--dry-run' => true]));
+        $this->assertTrue($this->toolExecutionExists($rowA));
+        $this->assertTrue($this->toolExecutionExists($rowB));
+
+        // --company : seule la société ciblée est purgée.
+        $this->assertSame(0, Artisan::call('ai:purge-audit-logs', ['--company' => (string) $companyA->id]));
+        $this->assertFalse($this->toolExecutionExists($rowA));
+        $this->assertTrue($this->toolExecutionExists($rowB), 'la société non ciblée est intacte');
+    }
+
     public function test_invalid_retention_option_fails(): void
     {
         $this->assertSame(1, Artisan::call('ai:purge-audit-logs', ['--older-than' => 'abc']));
@@ -136,5 +169,28 @@ class PurgeAiAuditLogsTest extends TestCase
     private function exists(int $id): bool
     {
         return DB::table('ai_audit_logs')->where('id', $id)->exists();
+    }
+
+    private function insertToolExecution(string $companyId, int $employeeId, \DateTimeInterface $createdAt): int
+    {
+        return (int) DB::table('ai_tool_executions')->insertGetId([
+            'company_id' => $companyId,
+            'user_id' => $employeeId,
+            'conversation_id' => null,
+            'pending_action_id' => null,
+            'tool_name' => 'search_employees',
+            'tool_input' => json_encode(['query' => '[masqué]']),
+            'stage' => 'executed',
+            'success' => true,
+            'result_summary' => '1 résultat',
+            'error' => null,
+            'source' => 'assistant',
+            'created_at' => $createdAt->format('Y-m-d H:i:sP'),
+        ]);
+    }
+
+    private function toolExecutionExists(int $id): bool
+    {
+        return DB::table('ai_tool_executions')->where('id', $id)->exists();
     }
 }

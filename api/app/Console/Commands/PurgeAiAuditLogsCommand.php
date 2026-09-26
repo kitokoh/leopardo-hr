@@ -17,6 +17,12 @@ use Illuminate\Support\Facades\Log;
  * vieux que la rétention configurée (`config('ai.audit_log_retention_days')`,
  * défaut 90 jours), conformément au principe de limitation de conservation.
  *
+ * #8164 — la purge couvre AUSSI `ai_tool_executions` (journal de l'assistant
+ * IA : `tool_input` sanitizé mais `result_summary`/`error` peuvent porter des
+ * PII issues de résultats d'outils). Même rétention, même cutoff, même
+ * périmètre `--company` : les deux tables relèvent de la même ligne « IA
+ * conversationnelle » du registre RGPD.
+ *
  * Elle est **idempotente** (une seconde exécution ne supprime rien de plus) et
  * ne touche QUE les lignes antérieures au seuil calculé.
  *
@@ -35,7 +41,7 @@ class PurgeAiAuditLogsCommand extends Command
         {--company= : UUID de la societe cible — sinon toutes les societes}
         {--dry-run : Affiche la purge prevue sans rien ecrire}';
 
-    protected $description = 'Purge les logs d\'audit IA plus vieux que la duree de retention configuree (defaut 90 jours)';
+    protected $description = 'Purge les logs d\'audit IA (ai_audit_logs + ai_tool_executions) plus vieux que la duree de retention configuree (defaut 90 jours)';
 
     public function handle(): int
     {
@@ -69,10 +75,27 @@ class PurgeAiAuditLogsCommand extends Command
 
         $candidates = (int) (clone $query)->count();
 
+        $deletedToolExecutions = 0;
+        $toolCandidates = 0;
+        $toolQuery = null;
+
+        // #8164 — `ai_tool_executions` : même politique de rétention. La table
+        // peut être absente (module IA non provisionné) → no-op explicite.
+        if (schemaTableExists('ai_tool_executions')) {
+            $toolQuery = DB::table('ai_tool_executions')->where('created_at', '<', $cutoff);
+
+            if ($companyId !== '') {
+                $toolQuery->where('company_id', $companyId);
+            }
+
+            $toolCandidates = (int) (clone $toolQuery)->count();
+        }
+
         if ($dryRun) {
             $this->info(sprintf(
-                '[dry-run] %d log(s) IA antérieur(s) à %s (rétention %d j) seraient purgés.',
+                '[dry-run] %d log(s) IA + %d exécution(s) d\'outils antérieur(s) à %s (rétention %d j) seraient purgés.',
                 $candidates,
+                $toolCandidates,
                 $cutoff->toIso8601String(),
                 $retentionDays,
             ));
@@ -81,6 +104,7 @@ class PurgeAiAuditLogsCommand extends Command
         }
 
         $deleted = $candidates === 0 ? 0 : (int) $query->delete();
+        $deletedToolExecutions = $toolCandidates === 0 || $toolQuery === null ? 0 : (int) $toolQuery->delete();
 
         // Observabilité sans PII : compteurs, seuil et société — jamais de
         // contenu de prompt/réponse ni d'identifiant de personne.
@@ -88,10 +112,11 @@ class PurgeAiAuditLogsCommand extends Command
             'retention_days' => $retentionDays,
             'cutoff' => $cutoff->toIso8601String(),
             'deleted' => $deleted,
+            'deleted_tool_executions' => $deletedToolExecutions,
             'company_id' => $companyId !== '' ? $companyId : null,
         ]);
 
-        $this->info("Logs d'audit IA purgés : {$deleted} (rétention {$retentionDays} j).");
+        $this->info("Logs d'audit IA purgés : {$deleted} (+ {$deletedToolExecutions} exécutions d'outils) — rétention {$retentionDays} j.");
 
         return self::SUCCESS;
     }

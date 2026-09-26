@@ -11,6 +11,7 @@ use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\CompanyNotFoundException;
 use App\Exceptions\EmployeeNotActiveException;
 use App\Exceptions\InvalidCredentialsException;
+use App\Support\EmailLogId;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -102,7 +103,8 @@ readonly class AuthService
             // en 500 (schéma absent, table partiellement migrée). On journalise en
             // warning structuré et on retombe sur la réponse 401 propre.
             Log::warning('auth.login_employee_resolution_failed', [
-                'email' => $email,
+                // #8164 — jamais d'email en clair dans les logs (PII) : pseudonyme corrélable.
+                'email_hash' => EmailLogId::hash($email),
                 'message' => $e->getMessage(),
             ]);
             $employee = null;
@@ -234,7 +236,8 @@ readonly class AuthService
             // injoignable…) continuent de remonter.
             if ($this->isMissingSchemaOrRelation($e)) {
                 Log::channel('structured')->warning('auth.login.orphaned_tenant', [
-                    'email' => $email,
+                    // #8164 — jamais d'email en clair dans les logs (PII) : pseudonyme corrélable.
+                    'email_hash' => EmailLogId::hash($email),
                     'sqlstate' => $e->getPrevious() instanceof \PDOException
                         ? (string) $e->getPrevious()->getCode()
                         : null,
@@ -425,7 +428,8 @@ readonly class AuthService
             }
         } catch (QueryException $e) {
             Log::warning('auth.resolve_employee_failed', [
-                'email' => $email,
+                // #8164 — jamais d'email en clair dans les logs (PII) : pseudonyme corrélable.
+                'email_hash' => EmailLogId::hash($email),
                 'message' => $e->getMessage(),
             ]);
             $employee = null;
@@ -494,7 +498,8 @@ readonly class AuthService
         } catch (QueryException $e) {
             // #2652 : jamais de 500 sur résolution d'employé (schéma absent/migré partiel).
             Log::warning('auth.login_via_email_employee_resolution_failed', [
-                'email' => $email,
+                // #8164 — jamais d'email en clair dans les logs (PII) : pseudonyme corrélable.
+                'email_hash' => EmailLogId::hash($email),
                 'message' => $e->getMessage(),
             ]);
             $employee = null;
@@ -561,7 +566,8 @@ readonly class AuthService
             // injoignable…) continuent de remonter.
             if ($this->isMissingSchemaOrRelation($e)) {
                 Log::channel('structured')->warning('auth.login.orphaned_tenant', [
-                    'email' => $email,
+                    // #8164 — jamais d'email en clair dans les logs (PII) : pseudonyme corrélable.
+                    'email_hash' => EmailLogId::hash($email),
                     'sqlstate' => $e->getPrevious() instanceof \PDOException
                         ? (string) $e->getPrevious()->getCode()
                         : null,
