@@ -209,6 +209,69 @@ class AiCreditService
     }
 
     /**
+     * BOS-008 (#8143) — décision ATOMIQUE du quota mensuel du plan.
+     *
+     * Incrémente le compteur et retourne l'usage POST-incrément si (et
+     * seulement si) le quota du plan le permettait encore ; retourne `null`
+     * SANS modifier le compteur lorsque le quota est atteint. La décision ne
+     * repose donc jamais sur une lecture périmée : N requêtes concurrentes ne
+     * peuvent pas dépasser la limite (l'ancien check-then-increment laissait
+     * passer toutes les requêtes lues avant le premier incrément).
+     *
+     * L'écriture conditionnelle est portée par la clause `WHERE` de
+     * l'`ON CONFLICT` (PostgreSQL) : insertion si le compteur n'existe pas,
+     * incrément sinon — et AUCUNE ligne retournée si la limite est atteinte.
+     *
+     * @param  int  $limit  quota du plan (requêtes/mois) ; `< 1` → toujours refusé
+     * @return int|null usage post-incrément, ou `null` si le quota est atteint
+     */
+    public function incrementMonthlyUsageIfUnderLimit(string $companyId, string $period, int $limit): ?int
+    {
+        if ($limit < 1) {
+            return null;
+        }
+
+        if (DB::getDriverName() === 'pgsql') {
+            $row = DB::selectOne(
+                'INSERT INTO ai_usage_counters (company_id, period, used, created_at, updated_at) '
+                .'VALUES (?, ?, 1, NOW(), NOW()) '
+                .'ON CONFLICT (company_id, period) '
+                .'DO UPDATE SET used = ai_usage_counters.used + 1, updated_at = NOW() '
+                .'WHERE ai_usage_counters.used < ? '
+                .'RETURNING used',
+                [$companyId, $period, $limit]
+            );
+
+            return $row !== null ? (int) $row->used : null;
+        }
+
+        // Chemin non-PostgreSQL (jamais en CI/prod — conventions §2.6) :
+        // read-modify-write best-effort, la course reste bornée à un aller-retour.
+        $counter = AiUsageCounter::query()
+            ->where('company_id', $companyId)
+            ->where('period', $period)
+            ->first();
+
+        if ($counter === null) {
+            AiUsageCounter::query()->create([
+                'company_id' => $companyId,
+                'period' => $period,
+                'used' => 1,
+            ]);
+
+            return 1;
+        }
+
+        if ((int) $counter->used >= $limit) {
+            return null;
+        }
+
+        $counter->increment('used');
+
+        return (int) $counter->used;
+    }
+
+    /**
      * Usage IA du mois (requêtes) — lecture seule.
      */
     public function monthlyUsage(string $companyId, string $period): int

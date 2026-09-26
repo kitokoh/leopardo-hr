@@ -30,6 +30,12 @@ use Symfony\Component\HttpFoundation\Response;
  *   4. solde de crédits insuffisant → 422 `AI_CREDITS_EXHAUSTED`, FAIL-CLOSED
  *      (même contrat d'erreur que AI_QUOTA/AI_TOKEN_BUDGET : `{error, message,
  *      localized_message}`) — aucun appel LLM, aucun effet de bord.
+ *
+ * BOS-008 (#8143) : le quota du plan est consommé par une **décision
+ * atomique** (`incrementMonthlyUsageIfUnderLimit` : `ON CONFLICT … WHERE
+ * used < limit RETURNING used`) et non plus par un check-then-increment sur
+ * une lecture périmée. Une requête refusée (quota atteint puis crédits à sec)
+ * ne consomme jamais de compteur.
  */
 class AIRateLimiter
 {
@@ -68,9 +74,14 @@ class AIRateLimiter
 
         $used = $this->currentUsage($companyId, $period);
 
-        if ($limit === null || $used < $limit) {
-            $this->incrementUsage($companyId, $period);
+        // BOS-008 (#8143) : la décision est prise sur la valeur ATOMIQUE
+        // post-incrément (`consumePlanQuota`), jamais sur la lecture `$used`
+        // ci-dessus (qui ne sert plus qu'à l'observabilité). L'ancien
+        // check-then-increment laissait passer N requêtes concurrentes lues
+        // avant le premier incrément → dépassement du quota = coût provider.
+        $grantedUsage = $this->consumePlanQuota($companyId, $period, $limit);
 
+        if ($grantedUsage !== null) {
             return $next($request);
         }
 
@@ -91,6 +102,39 @@ class AIRateLimiter
         $this->incrementUsage($companyId, $period);
 
         return $next($request);
+    }
+
+    /**
+     * Consomme une unité de quota du plan SI elle est disponible — décision
+     * atomique (BOS-008 #8143).
+     *
+     * @return int|null usage post-incrément, ou `null` si le quota du plan est
+     *                  atteint (compteur NON modifié : un refus ne consomme rien)
+     */
+    private function consumePlanQuota(string $companyId, string $period, ?int $limit): ?int
+    {
+        // Plan illimité : aucune limite, on compte sans jamais refuser.
+        if ($limit === null) {
+            $this->incrementUsage($companyId, $period);
+
+            return $this->currentUsage($companyId, $period);
+        }
+
+        if (schemaTableExists('ai_usage_counters')) {
+            return $this->aiCredits->incrementMonthlyUsageIfUnderLimit($companyId, $period, $limit);
+        }
+
+        // Fallback volatil (fixtures de test partielles uniquement) :
+        // best-effort, non atomique — jamais en production (migration tenant).
+        $used = (int) Cache::get($this->cacheKey($companyId, $period), 0);
+
+        if ($used >= $limit) {
+            return null;
+        }
+
+        $this->incrementUsage($companyId, $period);
+
+        return $used + 1;
     }
 
     private function currentUsage(string $companyId, string $period): int
