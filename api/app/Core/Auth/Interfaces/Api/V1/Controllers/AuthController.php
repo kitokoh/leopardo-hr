@@ -327,7 +327,10 @@ class AuthController extends Controller
         session()->forget(['google_oauth_intent', 'google_oauth_plan']);
 
         try {
-            $googleUser = Socialite::driver('google')->stateless()->user();
+            /** @var GoogleProvider $google */
+            $google = Socialite::driver('google');
+            /** @var \Laravel\Socialite\Two\User $googleUser */
+            $googleUser = $google->stateless()->user();
         } catch (\Exception $e) {
             Log::error('auth.google.callback_failed', ['error' => $e->getMessage()]);
 
@@ -498,7 +501,10 @@ class AuthController extends Controller
         ]);
 
         try {
-            $googleUser = Socialite::driver('google')->stateless()->userFromToken($validated['access_token']);
+            /** @var GoogleProvider $google */
+            $google = Socialite::driver('google');
+            /** @var \Laravel\Socialite\Two\User $googleUser */
+            $googleUser = $google->stateless()->userFromToken($validated['access_token']);
         } catch (\Exception $e) {
             Log::error('auth.google.token_exchange_failed', ['error' => $e->getMessage()]);
 
