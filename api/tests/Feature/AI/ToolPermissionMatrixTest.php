@@ -66,13 +66,15 @@ class ToolPermissionMatrixTest extends TestCase
 
     public function test_employee_cannot_approve_absence(): void
     {
+        // BOS-004 (#8145) : chemin unique `absence_decision` — un employé
+        // (rôle < manager) est refusé AVANT tout effet de bord.
         [$company, $employee] = $this->aiFixture(role: 'employee');
 
         $engine = app(IntentEngine::class);
         $response = new AIResponse(
             content: '',
             toolCalls: [
-                new ToolCall('call_1', 'approve_absence', ['absence_id' => 999]),
+                new ToolCall('call_1', 'absence_decision', ['absence_id' => 999, 'decision' => 'approve']),
             ],
         );
 
@@ -82,7 +84,7 @@ class ToolPermissionMatrixTest extends TestCase
         $this->assertSame('AI_TOOL_PERMISSION_DENIED', $this->payload($results[0]->content)['error'] ?? null);
     }
 
-    public function test_manager_can_request_confirmation_for_approve_absence(): void
+    public function test_manager_can_request_confirmation_for_absence_decision(): void
     {
         [$company, $manager] = $this->aiFixture(role: 'manager');
 
@@ -90,7 +92,7 @@ class ToolPermissionMatrixTest extends TestCase
         $response = new AIResponse(
             content: '',
             toolCalls: [
-                new ToolCall('call_1', 'approve_absence', ['absence_id' => 1]),
+                new ToolCall('call_1', 'absence_decision', ['absence_id' => 1, 'decision' => 'approve']),
             ],
         );
 
@@ -163,8 +165,8 @@ class ToolPermissionMatrixTest extends TestCase
 
         $engine = app(IntentEngine::class);
         $result = $engine->executeConfirmedWrite(
-            'approve_absence',
-            ['absence_id' => 1],
+            'absence_decision',
+            ['absence_id' => 1, 'decision' => 'approve'],
             $company->id,
             $employee->id,
         );
@@ -183,7 +185,8 @@ class ToolPermissionMatrixTest extends TestCase
         $employeeData = $this->getJson('/api/v1/ai/tools')->json('data');
         $employeeNames = collect($employeeData)->pluck('name')->all();
         $this->assertContains('create_absence', $employeeNames);
-        $this->assertNotContains('approve_absence', $employeeNames);
+        $this->assertNotContains('absence_decision', $employeeNames);
+        $this->assertNotContains('approve_absence', $employeeNames, 'BOS-004 (#8145) : outil legacy retiré du registre');
         $this->assertNotContains('get_headcount', $employeeNames);
 
         /** @var Employee $manager */
@@ -191,11 +194,12 @@ class ToolPermissionMatrixTest extends TestCase
         /** @var array<int, array<string, mixed>> $managerData */
         $managerData = $this->getJson('/api/v1/ai/tools')->json('data');
         $managerNames = collect($managerData)->pluck('name')->all();
-        $this->assertContains('approve_absence', $managerNames);
+        $this->assertContains('absence_decision', $managerNames);
+        $this->assertNotContains('approve_absence', $managerNames, 'BOS-004 (#8145) : outil legacy retiré du registre');
         $this->assertContains('get_headcount', $managerNames);
     }
 
-    public function test_chat_employee_denied_approve_absence_has_no_pending_confirmation(): void
+    public function test_chat_employee_denied_absence_decision_has_no_pending_confirmation(): void
     {
         [$company, $employee] = $this->aiFixture(role: 'employee');
         Sanctum::actingAs($employee);
@@ -204,7 +208,7 @@ class ToolPermissionMatrixTest extends TestCase
         $this->postJson('/api/v1/ai/chat', ['message' => 'Approuve l absence 1'])
             ->assertOk()
             ->assertJsonPath('data.pending_confirmations', [])
-            ->assertJsonPath('data.tools_used.0', 'approve_absence');
+            ->assertJsonPath('data.tools_used.0', 'absence_decision');
     }
 
     /**
@@ -248,7 +252,7 @@ class ToolPermissionMatrixTest extends TestCase
                 return new AIResponse(
                     content: 'Je prepare la demande.',
                     toolCalls: [
-                        new ToolCall('call_1', 'approve_absence', ['absence_id' => 1]),
+                        new ToolCall('call_1', 'absence_decision', ['absence_id' => 1, 'decision' => 'approve']),
                     ],
                     inputTokens: 5,
                     outputTokens: 8,
@@ -375,8 +379,11 @@ class ToolPermissionMatrixTest extends TestCase
         $this->assertSame($employee->id, $result['employee_id'] ?? null);
     }
 
-    public function test_employee_cannot_approve_absence_via_runner(): void
+    public function test_legacy_approve_absence_tool_is_removed_and_canonical_path_denies_employee(): void
     {
+        // BOS-004 (#8145) : le write-tool legacy n'a plus de handler (aucun
+        // chemin d'écriture hors Action canonique) et le chemin canonique
+        // refuse toujours un employé.
         [$company, $employee] = $this->aiFixture(role: 'employee');
         $requestor = Employee::factory()->create(['company_id' => $company->id]);
         $absence = Absence::factory()->create([
@@ -386,12 +393,22 @@ class ToolPermissionMatrixTest extends TestCase
         ]);
 
         $runner = app(WriteActionRunner::class);
-        $result = $runner->run('approve_absence', [
+
+        $legacy = $runner->run('approve_absence', [
             'absence_id' => $absence->id,
         ], (string) $company->id, $employee->id);
 
-        $this->assertArrayHasKey('error', $result);
-        $this->assertStringContainsString('PERMISSION_DENIED', (string) $result['error'], '#6533 : l\'approbation exige le rôle manager');
-        $this->assertSame('pending', $absence->fresh()->status);
+        $this->assertArrayHasKey('error', $legacy);
+        $this->assertStringContainsString('not implemented', (string) $legacy['error'], 'BOS-004 : plus de handler legacy');
+        $this->assertSame('pending', $absence->refresh()->status);
+
+        $canonical = $runner->run('absence_decision', [
+            'absence_id' => $absence->id,
+            'decision' => 'approve',
+        ], (string) $company->id, $employee->id);
+
+        $this->assertArrayHasKey('error', $canonical);
+        $this->assertStringContainsString('PERMISSION_DENIED', (string) $canonical['error'], '#6533 : l\'approbation exige le rôle manager');
+        $this->assertSame('pending', $absence->refresh()->status);
     }
 }
