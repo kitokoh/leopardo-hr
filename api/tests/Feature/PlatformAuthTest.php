@@ -291,6 +291,8 @@ class PlatformAuthTest extends TestCase
         $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])
             ->patchJson('/api/v1/platform/auth/profile', [
                 'email' => 'other-admin@leopardo.test',
+                // #6563 : le changement d'email exige le mot de passe courant.
+                'current_password' => 'password123',
             ]);
 
         $response->assertStatus(422);
@@ -451,13 +453,15 @@ class PlatformAuthTest extends TestCase
         $this->superAdmin->two_fa_secret = 'JBSWY3DPEHPK3PXP';
         $this->superAdmin->save();
 
+        // Flux en deux étapes (#6530) : les identifiants valides ne posent
+        // aucune session, ils redirigent vers le challenge TOTP dédié.
         $response = $this->post('/platform/login', [
             'email' => 'admin@leopardo.test',
             'password' => 'password123',
         ]);
 
-        $response->assertSessionHasErrors('two_fa_code');
-        $response->assertSessionHas('two_fa_required');
+        $response->assertRedirect(route('platform.login.2fa'));
+        $response->assertSessionHas('platform_2fa_pending');
         $this->assertGuest('super_admin_web');
     }
 
@@ -466,13 +470,17 @@ class PlatformAuthTest extends TestCase
         $this->superAdmin->two_fa_secret = 'JBSWY3DPEHPK3PXP';
         $this->superAdmin->save();
 
-        $response = $this->post('/platform/login', [
+        $this->post('/platform/login', [
             'email' => 'admin@leopardo.test',
             'password' => 'password123',
-            'two_fa_code' => '123456', // Code invalide
+        ])->assertRedirect(route('platform.login.2fa'));
+
+        $response = $this->post('/platform/login/2fa', [
+            'email' => 'admin@leopardo.test',
+            'code' => '000000', // Code invalide
         ]);
 
-        $response->assertSessionHasErrors('two_fa_code');
+        $response->assertSessionHasErrors('code');
         $this->assertGuest('super_admin_web');
     }
 
@@ -482,10 +490,14 @@ class PlatformAuthTest extends TestCase
         $this->superAdmin->two_fa_secret = $secret;
         $this->superAdmin->save();
 
-        $response = $this->post('/platform/login', [
+        $this->post('/platform/login', [
             'email' => 'admin@leopardo.test',
             'password' => 'password123',
-            'two_fa_code' => $this->totpAt($secret, time()),
+        ])->assertRedirect(route('platform.login.2fa'));
+
+        $response = $this->post('/platform/login/2fa', [
+            'email' => 'admin@leopardo.test',
+            'code' => $this->totpAt($secret, time()),
         ]);
 
         $response->assertRedirect(route('platform.companies.index'));
