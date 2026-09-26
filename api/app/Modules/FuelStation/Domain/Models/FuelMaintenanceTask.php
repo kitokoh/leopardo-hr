@@ -43,6 +43,12 @@ class FuelMaintenanceTask extends Model
 
     protected $table = 'fuel_maintenance_tasks';
 
+    public const TYPE_PREVENTIVE = 'preventive';
+
+    public const TYPE_CORRECTIVE = 'corrective';
+
+    public const TYPES = [self::TYPE_PREVENTIVE, self::TYPE_CORRECTIVE];
+
     public const STATUS_TODO = 'todo';
 
     public const STATUS_IN_PROGRESS = 'in_progress';
@@ -73,10 +79,14 @@ class FuelMaintenanceTask extends Model
         'priority',
         'status',
         'assigned_to',
+        'due_at',
+        'started_at',
         'scheduled_for',
         'completed_at',
         'completed_by',
         'completion_notes',
+        'created_by',
+        'external_id',
     ];
 
     /** @return array<string, string> */

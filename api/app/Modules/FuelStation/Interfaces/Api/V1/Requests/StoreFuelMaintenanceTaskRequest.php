@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\FuelStation\Interfaces\Api\V1\Requests;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
 
 /**
  * Création d'une tâche de maintenance (FUEL-010, #5804).
@@ -43,7 +43,7 @@ class StoreFuelMaintenanceTaskRequest extends FormRequest
                     fn (Builder $query): Builder => $query->where('company_id', $actor?->company_id)
                 ),
             ],
-            'task_type' => ['nullable', 'in:preventive,corrective'],
+            'task_type' => ['nullable', Rule::in(FuelMaintenanceTask::TYPES)],
             'title' => ['required', 'string', 'max:200'],
             'description' => ['nullable', 'string', 'max:2000'],
             'priority' => ['nullable', 'in:low,medium,high'],
@@ -51,6 +51,4 @@ class StoreFuelMaintenanceTaskRequest extends FormRequest
             'scheduled_for' => ['nullable', 'date'],
         ];
     }
-
-
 }

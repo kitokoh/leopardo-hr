@@ -97,15 +97,15 @@ class FuelImportExportTest extends TestCase
 
         FuelImport::query()->create([
             'company_id' => $company->id,
-            'kind' => FuelImport::KIND_METER_READINGS,
-            'file_name' => 'readings.csv',
-            'status' => FuelImport::STATUS_UPLOADED,
+            'entity_type' => FuelImport::ENTITY_READINGS,
+            'filename' => 'readings.csv',
+            'status' => FuelImport::STATUS_PREVIEWED,
             'created_by' => $this->manager($company)->id,
         ]);
 
         $this->getJson('/api/v1/fuel-station/imports')
             ->assertStatus(200)
-            ->assertJsonPath('data.0.file_name', 'readings.csv')
+            ->assertJsonPath('data.0.filename', 'readings.csv')
             ->assertJsonPath('meta.total', 1);
     }
 }
