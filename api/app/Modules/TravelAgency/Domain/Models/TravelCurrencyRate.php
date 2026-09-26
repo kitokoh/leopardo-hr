@@ -16,11 +16,14 @@ use Illuminate\Database\Eloquent\Model;
  * (unités mineures × rate_minor / 10000) — aucune perte d'arrondi.
  * Valide sur [valid_from, valid_to] (valid_to NULL = période ouverte).
  *
+ * #8168 — contrat UNIQUE du module : les colonnes legacy `base_currency` /
+ * `quote_currency` / `rate` / `valid_until` (service parallèle supprimé)
+ * ont été backfillées puis retirées par la migration 2026_09_26_000200.
+ *
  * @property string $company_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property string|null $from_currency
  * @property int $id
- * @property string|null $rate
  * @property int|null $rate_minor
  * @property string|null $to_currency
  * @property \Illuminate\Support\Carbon|null $updated_at
