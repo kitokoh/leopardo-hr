@@ -28,11 +28,20 @@ base légale (contrat, obligation légale, intérêt légitime), durée de conse
   Purge planifiée **quotidienne** `ai:purge-audit-logs` (idempotente,
   `--older-than`, `--company`, `--dry-run`) — l'appel planifié dépend de la
   fiabilité du scheduler (BOS-003).
+- **`ai_tool_executions`** (journal d'exécution des outils de l'assistant :
+  `tool_input` sanitizé à l'écriture, mais `result_summary`/`error` peuvent
+  porter des PII issues de résultats d'outils) : **même rétention de 90 jours**
+  (#8164) — même classe de données « traces de l'assistant IA », purgée par la
+  MÊME commande planifiée `ai:purge-audit-logs` (mêmes options). 90 jours
+  couvrent l'investigation d'incident sans accumulation indéfinie.
 - **Minimisation à la transmission** : tous les payloads sortants vers les
   fournisseurs LLM cloud (Claude/OpenAI/Groq) sont nettoyés (PII masquées)
   avant envoi (#8141, BOS-001).
 - **Logs applicatifs du parcours trial** : aucun email de prospect en clair —
   les événements sont journalisés avec un identifiant haché (`email_hash`,
   #8144).
+- **Logs applicatifs d'authentification (`AuthService`)** : aucun email de
+  connexion en clair — les événements de résolution employé / tenant orphelin
+  sont journalisés avec un identifiant haché (`email_hash`, #8164).
 - Aucun chiffrement au repos spécifique sur `ai_audit_logs` à ce stade
   (hors périmètre de #8144).

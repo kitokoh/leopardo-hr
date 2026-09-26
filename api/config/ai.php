@@ -59,8 +59,10 @@ return [
         'enterprise' => null,
     ],
 
-    // BOS-002 (#8144) — rétention des logs d'audit IA (`ai_audit_logs` :
-    // prompt + réponse en clair). Purge planifiée `ai:purge-audit-logs` ;
+    // BOS-002 (#8144) — rétention des traces de l'assistant IA
+    // (`ai_audit_logs` : prompt + réponse en clair ; `ai_tool_executions` :
+    // journal d'exécution des outils, #8164 — même rétention, même purge).
+    // Purge planifiée `ai:purge-audit-logs` ;
     // src : docs/RGPD_REGISTRE_TRAITEMENTS.md.
     'audit_log_retention_days' => (int) env('AI_AUDIT_LOG_RETENTION_DAYS', 90),
 

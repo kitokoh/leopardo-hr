@@ -1,3 +1,18 @@
+> **MAJ 2026-09-26 — #8164, 0 email en clair dans les logs d'`AuthService` + rétention de `ai_tool_executions` (suite #8144).**
+> Surface **API HTTP** : aucune route nouvelle ni contrat modifié — le changement touche
+> `api/routes/console.php` en commentaire uniquement (la garde gouvernance surveille
+> `api/routes/**`, d'où cette note) : la planification existante `ai:purge-audit-logs`
+> (quotidienne 04:45) est inchangée, sa portée documentée couvre désormais deux tables.
+> Côté comportement : les 5 points de log d'`AuthService` qui journalisaient l'email en clair
+> journalisent `email_hash` (sha256 tronqué, convention #8144) ; la commande
+> `ai:purge-audit-logs` purge désormais AUSSI `ai_tool_executions` (même rétention 90 j,
+> mêmes options `--older-than`/`--company`/`--dry-run`, idempotence — chaque table purgée
+> indépendamment). Scénarios automatisés : `api/tests/Unit/AuthServiceLogsPiiTest.php`
+> (aucune PII en clair dans les logs de résolution auth, hash exact journalisé) et
+> `api/tests/Feature/AI/PurgeAiAuditLogsTest.php` étendu (seuil commun sur
+> `ai_tool_executions`, scope `--company`, `--dry-run`, idempotence sur les deux tables).
+> Registre RGPD : `docs/RGPD_REGISTRE_TRAITEMENTS.md` mis à jour.
+
 > **MAJ 2026-09-26 — #8144 BOS-002, rétention des logs d'audit IA + logs trial sans PII.**
 > Surface **API HTTP** : aucune route nouvelle ni contrat modifié — le changement touche
 > `api/routes/console.php` (la garde gouvernance surveille `api/routes/**`, d'où cette note) :
