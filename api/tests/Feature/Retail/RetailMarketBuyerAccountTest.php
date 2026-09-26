@@ -261,14 +261,14 @@ class RetailMarketBuyerAccountTest extends TestCase
         [$token, $email] = $this->registerBuyer();
 
         // Le cookie seul (aucun header Authorization) authentifie /me.
-        $me = $this->withCookie('market_buyer_session', $token)
+        $me = $this->withCredentials()->withUnencryptedCookie('market_buyer_session', $token)
             ->getJson('/api/v1/public/market/account/me')
             ->assertStatus(200)
             ->json('data');
         $this->assertSame($email, $me['email']);
 
         // Cookie fantaisiste → 401 uniforme (fail-closed, même contrat que Bearer).
-        $this->withCookie('market_buyer_session', 'mkb_'.str_repeat('0', 64))
+        $this->withCredentials()->withUnencryptedCookie('market_buyer_session', 'mkb_'.str_repeat('0', 64))
             ->getJson('/api/v1/public/market/account/me')
             ->assertStatus(401);
 
@@ -294,7 +294,7 @@ class RetailMarketBuyerAccountTest extends TestCase
         $this->postJson('/api/v1/public/market/account/session/restore')->assertStatus(401);
 
         // Idempotent via le cookie lui-même (refresh).
-        $this->withCookie('market_buyer_session', $token)
+        $this->withCredentials()->withUnencryptedCookie('market_buyer_session', $token)
             ->postJson('/api/v1/public/market/account/session/restore')
             ->assertStatus(200);
     }
@@ -303,14 +303,14 @@ class RetailMarketBuyerAccountTest extends TestCase
     {
         [$token] = $this->registerBuyer();
 
-        $logout = $this->withCookie('market_buyer_session', $token)
+        $logout = $this->withCredentials()->withUnencryptedCookie('market_buyer_session', $token)
             ->postJson('/api/v1/public/market/account/logout')
             ->assertStatus(200);
 
         $logout->assertCookieExpired('market_buyer_session');
 
         // Le jeton révoqué ne passe plus, ni par cookie ni par Bearer.
-        $this->withCookie('market_buyer_session', $token)
+        $this->withCredentials()->withUnencryptedCookie('market_buyer_session', $token)
             ->getJson('/api/v1/public/market/account/me')
             ->assertStatus(401);
         $this->getJson('/api/v1/public/market/account/me', ['Authorization' => 'Bearer '.$token])
@@ -326,7 +326,7 @@ class RetailMarketBuyerAccountTest extends TestCase
 
         // Checkout authentifié PAR COOKIE (aucun Bearer) → commande liée,
         // visible dans l'historique lu via le même cookie.
-        $linked = $this->withCookie('market_buyer_session', $token)
+        $linked = $this->withCredentials()->withUnencryptedCookie('market_buyer_session', $token)
             ->postJson('/api/v1/public/market/orders', [
                 'seller' => (string) $this->companyA->slug,
                 'items' => [['product_id' => (int) $product['id'], 'quantity' => 1]],
@@ -346,7 +346,7 @@ class RetailMarketBuyerAccountTest extends TestCase
             ->firstOrFail();
         $this->assertSame((int) $buyer->id, $order->buyer_id);
 
-        $this->withCookie('market_buyer_session', $token)
+        $this->withCredentials()->withUnencryptedCookie('market_buyer_session', $token)
             ->getJson('/api/v1/public/market/account/orders')
             ->assertStatus(200)
             ->assertJsonCount(1, 'data');
