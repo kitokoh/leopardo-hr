@@ -38,9 +38,16 @@ class TravelCustomerContactController extends Controller
             abort(403);
         }
 
+        // #7655 (tranche 3) : `?search[]=x` (tableau) était concaténé tel quel
+        // dans les motifs `ilike` — PHP convertissait le tableau en "Array" et
+        // la recherche filtrait sur une chaîne parasite au lieu d'être ignorée.
+        // Seule une chaîne non vide est désormais un critère de recherche.
+        $search = $request->query('search');
+        $search = is_string($search) ? trim($search) : '';
+
         $contacts = TravelCustomerContact::query()
             ->where('company_id', $actor->company_id)
-            ->when($request->query('search'), function ($query, $search): void {
+            ->when($search !== '', function ($query) use ($search): void {
                 $query->where(function ($sub) use ($search): void {
                     $sub->where('email', 'ilike', '%'.$search.'%')
                         ->orWhere('first_name', 'ilike', '%'.$search.'%')

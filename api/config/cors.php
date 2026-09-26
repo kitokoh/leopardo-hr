@@ -49,11 +49,22 @@ return [
         // en dur, et les previews Pages sont couvertes par le pattern
         // `https://*.pages.dev` ci-dessous.
         'https://leo-admin.pages.dev',
+        // #8096 : marketplace Leopardo Marché (projet Vercel dédié
+        // `leopardo-marche`, cf. .github/workflows/marketplace-deploy.yml) —
+        // origine exacte exigée pour la session acheteur en cookie HttpOnly
+        // cross-origin (`supports_credentials` interdit tout wildcard).
+        'https://leopardo-marche.vercel.app',
         env('ADMIN_DASHBOARD_URL'),
         env('CORS_EXTRA_ORIGIN'),
     ]),
 
     'allowed_origins_patterns' => [
+        // #8096 : previews Vercel du marketplace — même discipline que
+        // `leo-admin.pages.dev` ci-dessous : restreint au projet connu
+        // (`leopardo-marche` et ses URLs de branche
+        // `leopardo-marche-git-….vercel.app`), jamais `*.vercel.app` en
+        // entier (tout attaquant peut créer un projet Vercel arbitraire).
+        '#^https://leopardo-marche(-[a-z0-9-]+)?\\.vercel\\.app$#i',
         // Issue #2333 : previews Cloudflare Pages du dashboard admin.
         // Chaque preview reçoit un sous-domaine de la forme
         // `<hash-ou-branch>.leo-admin.pages.dev`.

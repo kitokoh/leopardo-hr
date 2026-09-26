@@ -6,7 +6,6 @@ import { useId, useState } from "react";
 import { ApiError, submitReview } from "@/lib/api";
 
 interface ReviewFormProps {
-  token: string;
   orderReference: string;
   productId: number;
   productName: string;
@@ -39,7 +38,6 @@ function messageFor(error: unknown): string {
  * commentaire optionnel (≤ 1000 caractères).
  */
 export function ReviewForm({
-  token,
   orderReference,
   productId,
   productName,
@@ -58,7 +56,8 @@ export function ReviewForm({
     setPending(true);
     setError(null);
     try {
-      await submitReview(token, {
+      // #8096 — le cookie HttpOnly porte la session (plus de jeton).
+      await submitReview({
         order_reference: orderReference,
         product_id: productId,
         rating,

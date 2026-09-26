@@ -20,6 +20,10 @@ use Illuminate\Support\Facades\Schema;
 
 readonly class AuthService
 {
+    public function __construct(
+        private readonly AccountLockoutNotifier $lockoutNotifier,
+    ) {}
+
     /**
      * @return array{employee: Employee, token: string, token_type: string, token_expires_at: ?string, tenant_schema: ?string}
      */
@@ -159,6 +163,12 @@ readonly class AuthService
                     if ($employee->failed_login_attempts >= 5) {
                         $employee->locked_until = now()->addMinutes(15);
                         $employee->save();
+
+                        // #8163 — le titulaire est notifié du verrouillage
+                        // (canal in-app canonique) et les verrouillages
+                        // répétés du même compte remontent une alerte.
+                        // Best-effort : ne change jamais le contrat 401.
+                        $this->lockoutNotifier->onAccountLocked($employee, $employee->locked_until);
                     }
                 }
                 throw new InvalidCredentialsException;
@@ -660,11 +670,25 @@ readonly class AuthService
         return $table?->table_name !== null;
     }
 
+    /**
+     * #7655 (tranche 3) — `DB::selectOne()` renvoie un stdClass non typé :
+     * l'accès direct `$result->search_path` échappait à l'analyse statique
+     * (propriété dynamique) et un driver renvoyant autre chose qu'un objet
+     * faisait un cast silencieux. Lecture explicite et bornée.
+     */
     private function currentSearchPath(): ?string
     {
         $result = DB::selectOne('SHOW search_path');
 
-        return is_object($result) ? (string) $result->search_path : null;
+        if ($result === null) {
+            return null;
+        }
+
+        $values = (array) $result;
+
+        return isset($values['search_path']) && is_string($values['search_path'])
+            ? $values['search_path']
+            : null;
     }
 
     private function setTenantSearchPath(string $schema): void

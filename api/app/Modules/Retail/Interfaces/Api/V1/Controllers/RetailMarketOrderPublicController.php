@@ -7,6 +7,7 @@ namespace App\Modules\Retail\Interfaces\Api\V1\Controllers;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\Retail\EnsureMarketBuyerAuth;
 use App\Modules\Retail\Application\Services\RetailBuyerAccountService;
 use App\Modules\Retail\Application\Services\RetailMarketplaceService;
 use App\Modules\Retail\Application\Services\RetailOnlineOrderService;
@@ -86,7 +87,8 @@ class RetailMarketOrderPublicController extends Controller
         // requete porte un jeton buyer VALIDE, la commande est liee au
         // compte (historique cross-tenant + avis verifies). Jeton absent ou
         // invalide → checkout invite inchange (jamais bloquant).
-        $buyer = $this->accounts->buyerForBearerToken($request->bearerToken());
+        // #8096 — le jeton vient du Bearer (legacy) ou du cookie HttpOnly.
+        $buyer = $this->accounts->buyerForBearerToken(EnsureMarketBuyerAuth::requestToken($request));
 
         app()->instance('tenant_scope_required', true);
 

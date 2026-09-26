@@ -22,8 +22,7 @@ use Illuminate\Support\Facades\DB;
  * NOTE MULTI-TENANT :
  *   Les seeders ci-dessous opèrent UNIQUEMENT sur le schéma public.
  *   Les données tenant (employees, attendance, etc.) sont créées via :
- *   - le provisionnement plateforme (ProvisionCompany / SelfServiceTrial,
- *     onboarding) — NOTA : POST /auth/register crée volontairement un compte
+ *   - le provisionnement plateforme (SelfServiceTrial, onboarding) — NOTA : POST /auth/register crée volontairement un compte
  *     « ordinary » SANS entreprise (choix produit assumé : le tenant est
  *     provisionné via le parcours d'essai/accompagnement, pas à l'inscription)
  *   - DemoCompanySeeder (environnement local uniquement)

@@ -34035,13 +34035,31 @@ paths:
           $ref: '#/components/responses/Validation422'
         '429':
           description: Throttle anti-bruteforce market-account-public
+  /public/market/account/session/restore:
+    post:
+      tags:
+      - Retail
+      summary: Restauration de session acheteur — pose le cookie HttpOnly (migration
+        douce #8096)
+      description: Pour un jeton buyer legacy valide (Bearer historique), pose
+        le cookie de session `market_buyer_session` (HttpOnly, Secure, SameSite=None,
+        chemin borne `/api/v1/public/market`) qui prend le relais du localStorage.
+        Idempotent quand la requete est deja authentifiee par cookie. Middleware
+        market.buyer, 401 fail-closed sans jeton valide.
+      security: []
+      responses:
+        '200':
+          description: Cookie de session pose, profil acheteur retourne
+        '401':
+          description: Jeton buyer absent ou invalide
   /public/market/account/logout:
     post:
       tags:
       - Retail
       summary: Deconnexion de l'acheteur marketplace (jeton buyer, #7814)
       description: Revoque le jeton buyer courant (middleware market.buyer,
-        401 fail-closed sans jeton valide).
+        401 fail-closed sans jeton valide) et expire le cookie HttpOnly de
+        session (#8096).
       security: []
       responses:
         '200':
