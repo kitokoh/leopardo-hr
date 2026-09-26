@@ -8,7 +8,6 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Events\EmployeeCreated;
 use App\Listeners\WebhookListener;
 use App\Modules\Billing\Infrastructure\Services\WebhookDispatcher;
-use Mockery;
 use Tests\TestCase;
 
 /**
@@ -26,13 +25,6 @@ class WebhookListenerTest extends TestCase
 {
     private const COMPANY_ID = '9f1c0a6e-2b4d-4e6a-8f7b-1c2d3e4f5a6b';
 
-    protected function tearDown(): void
-    {
-        Mockery::close();
-
-        parent::tearDown();
-    }
-
     public function test_employee_created_event_dispatches_webhook_with_model_payload(): void
     {
         $employee = (new Employee)->forceFill([
@@ -43,7 +35,7 @@ class WebhookListenerTest extends TestCase
             'email' => 'awa.diop@example.com',
         ]);
 
-        $dispatcher = Mockery::mock(WebhookDispatcher::class);
+        $dispatcher = $this->mock(WebhookDispatcher::class);
         $dispatcher->shouldReceive('dispatch')
             ->once()
             ->withArgs(function (string $companyId, string $event, array $payload): bool {
@@ -54,7 +46,7 @@ class WebhookListenerTest extends TestCase
 
         (new WebhookListener($dispatcher))->handle(new EmployeeCreated($employee));
 
-        $this->assertTrue(true);
+        $dispatcher->shouldHaveReceived('dispatch')->once();
     }
 
     public function test_model_without_company_id_is_not_dispatched(): void
@@ -65,21 +57,22 @@ class WebhookListenerTest extends TestCase
             'last_name' => 'Société',
         ]);
 
-        $dispatcher = Mockery::mock(WebhookDispatcher::class);
+        $dispatcher = $this->mock(WebhookDispatcher::class);
         $dispatcher->shouldNotReceive('dispatch');
 
         (new WebhookListener($dispatcher))->handle(new EmployeeCreated($employee));
 
-        $this->assertTrue(true);
+        // L'absence d'appel est vérifiée par l'expectation Mockery (tearDown).
+        $this->addToAssertionCount(1);
     }
 
     public function test_event_outside_the_map_is_ignored(): void
     {
-        $dispatcher = Mockery::mock(WebhookDispatcher::class);
+        $dispatcher = $this->mock(WebhookDispatcher::class);
         $dispatcher->shouldNotReceive('dispatch');
 
         (new WebhookListener($dispatcher))->handle(new \stdClass);
 
-        $this->assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 }
