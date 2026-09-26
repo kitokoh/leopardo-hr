@@ -152,11 +152,13 @@ class SelfServiceTrialController extends Controller
         try {
             $existingManager = $this->requestTrialSignup->findExistingManager($email);
             if ($existingManager) {
-                Log::info('trial.signup_duplicate_email_uniform_response', ['email' => $email]);
+                // BOS-002 (#8144) — jamais d'email en clair dans les logs :
+                // identifiant haché (corrélation possible, PII non exposée).
+                Log::info('trial.signup_duplicate_email_uniform_response', ['email_hash' => $this->emailLogId($email)]);
             }
         } catch (\Throwable $e) {
             Log::error('trial.signup_duplicate_check_failed', [
-                'email' => $email,
+                'email_hash' => $this->emailLogId($email),
                 'error' => $e->getMessage(),
             ]);
         }
@@ -187,7 +189,7 @@ class SelfServiceTrialController extends Controller
                 ->first();
 
             if ($existingPending) {
-                Log::info('trial.signup_existing_pending_reused', ['email' => $email]);
+                Log::info('trial.signup_existing_pending_reused', ['email_hash' => $this->emailLogId($email)]);
 
                 return new JsonResponse([
                     'success' => true,
@@ -222,7 +224,7 @@ class SelfServiceTrialController extends Controller
                 // (pattern PartnerService #3238) : on récupère la ligne
                 // gagnante et on répond son token — jamais de 500.
                 if ($e->getCode() === '23505') {
-                    Log::warning("Trial provisioning race on {$email} — reusing winner row.");
+                    Log::warning('Trial provisioning race on email_hash '.$this->emailLogId($email).' — reusing winner row.');
 
                     $winner = DB::table('trial_provisionings')
                         ->where('email', $email)
@@ -280,7 +282,7 @@ class SelfServiceTrialController extends Controller
             $sent = $this->requestTrialSignup->execute($validated);
         } catch (\Throwable $e) {
             Log::error('trial.signup_legacy_failed', [
-                'email' => $email,
+                'email_hash' => $this->emailLogId($email),
                 'error' => $e->getMessage(),
             ]);
 
@@ -350,12 +352,12 @@ class SelfServiceTrialController extends Controller
                 if ($winner !== null) {
                     $provisioningToken = (string) $winner->provisioning_token;
                 } else {
-                    Log::warning('trial.self_service.provisioning_row_race_unresolved', ['email' => $email]);
+                    Log::warning('trial.self_service.provisioning_row_race_unresolved', ['email_hash' => $this->emailLogId($email)]);
                 }
             } else {
                 // Jamais bloquant pour l'essai : l'OTP reste le chemin nominal.
                 Log::error('trial.self_service.provisioning_row_failed', [
-                    'email' => $email,
+                    'email_hash' => $this->emailLogId($email),
                     'error' => $e->getMessage(),
                 ]);
             }
@@ -471,7 +473,7 @@ class SelfServiceTrialController extends Controller
             $result = $this->verifyTrialSignup->execute($email, $validated['code']);
         } catch (\Throwable $e) {
             Log::channel('structured')->error('trial.verify.unexpected', [
-                'email' => $email,
+                'email_hash' => $this->emailLogId($email),
                 'exception' => get_class($e),
                 'message' => $e->getMessage(),
             ]);
@@ -523,7 +525,7 @@ class SelfServiceTrialController extends Controller
             $autoLoginToken = $authResult['token'];
         } catch (\Throwable $e) {
             Log::warning('trial.verify.autologin_failed', [
-                'email' => $email,
+                'email_hash' => $this->emailLogId($email),
                 'error' => $e->getMessage(),
             ]);
         }
@@ -672,6 +674,21 @@ class SelfServiceTrialController extends Controller
                     : '/auth/login',
             ],
         ]);
+    }
+
+    /**
+     * BOS-002 (#8144) — identifiant de journalisation d'un email (pseudonyme).
+     *
+     * Les logs applicatifs du parcours trial ne doivent JAMAIS porter l'email
+     * du prospect en clair (PII) : on journalise un hachage tronqué, qui
+     * conserve la corrélation entre événements d'un même email sans exposer
+     * la donnée. Maille volontairement courte (16 hex) : suffisante pour
+     * corréler, insuffisante pour être réversible par force brute à l'échelle
+     * des volumes de logs.
+     */
+    private function emailLogId(string $email): string
+    {
+        return substr(hash('sha256', mb_strtolower(trim($email))), 0, 16);
     }
 
     /**

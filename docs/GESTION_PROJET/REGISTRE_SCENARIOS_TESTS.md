@@ -1,3 +1,14 @@
+> **MAJ 2026-09-26 — #8144 BOS-002, rétention des logs d'audit IA + logs trial sans PII.**
+> Surface **API HTTP** : aucune route nouvelle ni contrat modifié — le changement touche
+> `api/routes/console.php` (la garde gouvernance surveille `api/routes/**`, d'où cette note) :
+> nouvelle entrée planifiée `ai:purge-audit-logs` (quotidienne 04:45, `withoutOverlapping`,
+> idempotente) purgeant les logs d'audit IA au-delà de `ai.audit_log_retention_days`
+> (défaut 90 j). Le parcours trial (`SelfServiceTrialController`) ne journalise plus les
+> e-mails en clair (hachage). Scénarios automatisés : `api/tests/Feature/AI/PurgeAiAuditLogsTest.php`
+> (purge bornée, idempotence) et `api/tests/Feature/Billing/TrialSignupLogsPiiTest.php`
+> (aucune PII en clair dans les logs du parcours trial). Registre RGPD :
+> `docs/RGPD_REGISTRE_TRAITEMENTS.md` mis à jour.
+
 > **MAJ 2026-09-26 — #8139 BOS-006A, scheduler à source unique.** Surface **API HTTP** :
 > aucune (aucune route, middleware ou contrat modifié) — le changement touche `api/routes/console.php`
 > et `api/bootstrap/app.php` (la garde gouvernance surveille `api/routes/**`, d'où cette note).
