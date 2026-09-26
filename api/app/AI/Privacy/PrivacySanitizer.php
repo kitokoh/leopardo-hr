@@ -7,10 +7,15 @@ namespace App\AI\Privacy;
 /**
  * Minimisation RGPD avant envoi vers un driver LLM cloud (issue #6853, P0).
  *
- * Redacte les PII identifiables présentes dans les TEXTE des échanges
- * (conversation + message courant) : emails, téléphones, identifiants
- * nationaux labellisés. Le prompt système et les schémas d'outils ne sont
- * jamais modifiés.
+ * Redacte les PII identifiables présentes dans TOUS les payloads sortants
+ * (conversation + message courant + résultats d'outils) : emails, téléphones,
+ * identifiants nationaux labellisés. La sanitization est RÉCURSIVE (BOS-001
+ * #8141) : la branche Claude envoie ses `tool_result` sous forme de TABLEAUX
+ * de blocs (`[{type: tool_result, content: …}]`) ; ne traiter que les strings
+ * de premier niveau laissait fuiter les PII des résultats d'outils vers
+ * Anthropic. Les CLÉS de structure (`role`, `type`, `tool_use_id`, …) ne sont
+ * jamais réécrites, seules les valeurs textuelles le sont. Le prompt système
+ * et les schémas d'outils ne sont jamais modifiés.
  *
  * Limites assumées (v1) : la minimisation STRUCTURELLE (agrégats plutôt que
  * lignes brutes, jamais de salaire/donnée de santé en clair) est garantie en
@@ -63,10 +68,10 @@ final class PrivacySanitizer
     }
 
     /**
-     * Nettoie une liste de messages LLM ({role, content}) en place (copie) —
-     * le contenu textuel des rôles user/assistant est passé au sanitizer ;
-     * le contenu non textuel (tableaux tool_use/tool_result) n'est pas modifié
-     * en v1 (structuré, généré par les outils côté serveur).
+     * Nettoie une liste de messages LLM ({role, content}) en copie — tout le
+     * contenu textuel est passé au sanitizer, y compris les chaînes imbriquées
+     * dans les tableaux (`tool_use.input`, `tool_result.content`, blocs
+     * multi-part), sur les 3 branches provider.
      *
      * @param  array<int, array{role: string, content: mixed}>  $messages
      * @return array<int, array{role: string, content: mixed}>
@@ -76,10 +81,33 @@ final class PrivacySanitizer
         $cleaned = [];
         foreach ($messages as $message) {
             $copy = $message;
-            if (is_string($copy['content'])) {
-                $copy['content'] = $this->sanitize($copy['content']);
-            }
+            $copy['content'] = $this->sanitizeStructure($copy['content']);
             $cleaned[] = $copy;
+        }
+
+        return $cleaned;
+    }
+
+    /**
+     * BOS-001 (#8141) — sanitization RÉCURSIVE d'une valeur de message :
+     * - string  → règles PII ;
+     * - tableau → chaque VALEUR est nettoyée récursivement, les CLÉS de
+     *   structure sont préservées (réécrire une clé casserait le protocole
+     *   provider : `role`, `type`, `tool_use_id`, `input`, …).
+     */
+    private function sanitizeStructure(mixed $content): mixed
+    {
+        if (is_string($content)) {
+            return $this->sanitize($content);
+        }
+
+        if (! is_array($content)) {
+            return $content;
+        }
+
+        $cleaned = [];
+        foreach ($content as $key => $value) {
+            $cleaned[$key] = $this->sanitizeStructure($value);
         }
 
         return $cleaned;
