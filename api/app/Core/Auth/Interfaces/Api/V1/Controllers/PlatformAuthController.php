@@ -63,13 +63,7 @@ class PlatformAuthController extends Controller
         $attemptKey = $accountKey.':'.$request->ip();
         $lockKey = $accountKey.':lock';
 
-        if (Cache::get($lockKey)) {
-            return new JsonResponse([
-                'error' => 'ACCOUNT_LOCKED',
-                'message' => __('auth.account_locked'),
-                'localized_message' => __('auth.account_locked'),
-            ], 423);
-        }
+        $isLocked = (bool) Cache::get($lockKey);
 
         /** @var SuperAdmin|null $superAdmin */
         $superAdmin = SuperAdmin::query()->where('email', $validated['email'])->first();
@@ -83,7 +77,21 @@ class PlatformAuthController extends Controller
         $hashCheckable = is_string($storedHash) && $storedHash !== ''
             && Hash::check($validated['password'], $storedHash);
 
+        // #8124 — le verrou est décidé APRÈS la vérification du mot de passe :
+        // un attaquant connaissant l'email ne peut plus maintenir le compte
+        // verrouillé indéfiniment (5 échecs / 15 min) et bloquer le titulaire
+        // LÉGITIME, qui recevait 423 même avec le bon mot de passe.
         if (! $superAdmin || ! $hashCheckable) {
+            if ($isLocked) {
+                // Contrat inchangé pour une tentative FAUSSE sur compte
+                // verrouillé (423), sans prolonger le verrou.
+                return new JsonResponse([
+                    'error' => 'ACCOUNT_LOCKED',
+                    'message' => __('auth.account_locked'),
+                    'localized_message' => __('auth.account_locked'),
+                ], 423);
+            }
+
             $attempts = (int) Cache::get($attemptKey, 0) + 1;
             Cache::put($attemptKey, $attempts, now()->addMinutes(15));
 
@@ -97,6 +105,14 @@ class PlatformAuthController extends Controller
                 'message' => 'INVALID_CREDENTIALS',
                 'localized_message' => __('errors.INVALID_CREDENTIALS'),
             ], 401);
+        }
+
+        if ($isLocked) {
+            // #8124 — identifiants VALIDES pendant un verrou : le titulaire
+            // n'est pas puni des échecs d'un tiers ; trace pour l'alerte.
+            Log::warning('platform.login_valid_credentials_override_active_lock', [
+                'super_admin_id' => $superAdmin->id,
+            ]);
         }
 
         Cache::forget($attemptKey);

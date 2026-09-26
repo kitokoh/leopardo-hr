@@ -239,14 +239,25 @@ class PlatformAuthTest extends TestCase
 
         $this->assertTrue(Cache::get('platform_login_admin@leopardo.test:lock'));
 
-        // Même avec le bon mot de passe, le compte est verrouillé 15 min.
+        // #8124 — une tentative FAUSSE pendant le verrou garde le contrat 423…
         $locked = $this->postJson('/api/v1/platform/auth/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'wrong-password',
+        ]);
+        $locked->assertStatus(423);
+        $locked->assertJsonPath('error', 'ACCOUNT_LOCKED');
+
+        // …mais des identifiants VALIDES ne sont plus bloqués : le verrou posé
+        // par les échecs d'un TIERS ne doit pas créer un déni de service ciblé
+        // (avant #8124, le titulaire légitime recevait 423 avec le bon mot de
+        // passe et le compte restait inutilisable).
+        $bypass = $this->postJson('/api/v1/platform/auth/login', [
             'email' => 'admin@leopardo.test',
             'password' => 'password123',
         ]);
 
-        $locked->assertStatus(423);
-        $locked->assertJsonPath('error', 'ACCOUNT_LOCKED');
+        $bypass->assertOk();
+        $this->assertNull(Cache::get('platform_login_admin@leopardo.test:lock'));
     }
 
     public function test_super_admin_successful_login_resets_failure_counter(): void
