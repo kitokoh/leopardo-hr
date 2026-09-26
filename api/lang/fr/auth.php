@@ -8,6 +8,8 @@ return [
     'session_expired' => 'Votre session a expiré. Veuillez vous reconnecter.',
     'account_suspended' => 'Votre compte a été suspendu. Contactez votre responsable.',
     'account_locked' => 'Compte temporairement verrouillé. Réessayez plus tard.',
+    'account_locked_notify_title' => 'Compte temporairement verrouillé',
+    'account_locked_notify_body' => 'Votre compte a été verrouillé après plusieurs échecs de connexion. Il sera déverrouillé dans environ :minutes minutes. Si ce n\'était pas vous, changez votre mot de passe et prévenez votre responsable.',
     'welcome' => 'Bienvenue :name !',
     'password_changed' => 'Mot de passe modifié avec succès.',
     'password_reset_sent' => 'Si un compte existe pour cet email, un lien de réinitialisation a été envoyé.',

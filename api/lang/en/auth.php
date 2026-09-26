@@ -8,6 +8,8 @@ return [
     'session_expired' => 'Your session has expired. Please log in again.',
     'account_suspended' => 'Your account has been suspended. Contact your manager.',
     'account_locked' => 'Account temporarily locked. Please try again later.',
+    'account_locked_notify_title' => 'Account temporarily locked',
+    'account_locked_notify_body' => 'Your account has been locked after several failed login attempts. It will unlock in about :minutes minutes. If this was not you, change your password and tell your manager.',
     'welcome' => 'Welcome :name!',
     'password_changed' => 'Password changed successfully.',
     'password_reset_sent' => 'If an account exists for this email, a reset link has been sent.',

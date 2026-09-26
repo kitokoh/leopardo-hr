@@ -6,6 +6,7 @@ namespace App\Core\Auth\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Events\AccountLocked;
 use App\Exceptions\AccountLockedException;
 use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\CompanyNotFoundException;
@@ -13,6 +14,7 @@ use App\Exceptions\EmployeeNotActiveException;
 use App\Exceptions\InvalidCredentialsException;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -159,6 +161,7 @@ readonly class AuthService
                     if ($employee->failed_login_attempts >= 5) {
                         $employee->locked_until = now()->addMinutes(15);
                         $employee->save();
+                        $this->onAccountLocked($employee, (int) $employee->failed_login_attempts);
                     }
                 }
                 throw new InvalidCredentialsException;
@@ -351,6 +354,49 @@ readonly class AuthService
             'failed_login_attempts',
             'locked_until',
         ]);
+    }
+
+    /**
+     * #8163 (suite #8124) — un verrou vient d'être créé pour ce compte.
+     *
+     * 1. Notification au TITULAIRE via l'événement `AccountLocked` →
+     *    `NotifyAccountLocked` (store canonique `notifications` + push,
+     *    ADR-0013). Best-effort : un échec ne casse jamais le login.
+     * 2. Alerte « verrouillages répétés » (pattern d'attaque) : compteur
+     *    24 h en cache ; à partir de 3 verrous, événement d'observabilité
+     *    structuré — identifiants uniquement, AUCUN email en clair
+     *    (doctrine #8144/#8164).
+     */
+    private function onAccountLocked(Employee $employee, int $failedAttempts): void
+    {
+        $lockedUntil = $employee->locked_until instanceof Carbon
+            ? $employee->locked_until
+            : Carbon::parse((string) $employee->locked_until);
+
+        try {
+            AccountLocked::dispatch($employee, $lockedUntil, $failedAttempts);
+        } catch (\Throwable $exception) {
+            Log::channel('structured')->warning('auth.account_locked_event_failed', [
+                'employee_id' => $employee->id,
+                'company_id' => $employee->company_id,
+                'error' => $exception->getMessage(),
+            ]);
+        }
+
+        $countKey = 'login_lock_count_employee_'.$employee->id;
+        // Cache::add pose la clé avec son TTL 24 h si absente, increment()
+        // est typé int — pas de lecture mixed (PHPStan level 8).
+        Cache::add($countKey, 0, now()->addDay());
+        $locks24h = (int) Cache::increment($countKey);
+
+        if ($locks24h >= 3) {
+            Log::warning('auth.login_repeated_locks_detected', [
+                'employee_id' => $employee->id,
+                'company_id' => $employee->company_id,
+                'locks_24h' => $locks24h,
+                'window' => '24h',
+            ]);
+        }
     }
 
     /**

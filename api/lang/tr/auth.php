@@ -8,6 +8,8 @@ return [
     'session_expired' => 'Oturumunuz sona erdi. Lütfen tekrar giriş yapın.',
     'account_suspended' => 'Hesabınız askıya alındı. Yöneticinizle iletişime geçin.',
     'account_locked' => 'Hesap geçici olarak kilitlendi. Lütfen daha sonra tekrar deneyin.',
+    'account_locked_notify_title' => 'Hesap geçici olarak kilitlendi',
+    'account_locked_notify_body' => 'Hesabınız birkaç başarısız giriş denemesinin ardından kilitlendi. Yaklaşık :minutes dakika içinde açılacaktır. Bu siz değilseniz şifrenizi değiştirin ve yöneticinize bildirin.',
     'welcome' => 'Hoş geldiniz :name!',
     'password_changed' => 'Şifre başarıyla değiştirildi.',
     'password_reset_sent' => 'Bu e-posta icin bir hesap varsa, bir sifirlama baglantisi gonderildi.',

@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Events\AbsenceApproved;
 use App\Events\AbsenceRejected;
 use App\Events\AbsenceRequested;
+use App\Events\AccountLocked;
 use App\Events\AttendanceCheckedIn;
 use App\Events\AttendanceCheckedOut;
 use App\Events\CatalogInquiryErased;
@@ -29,6 +30,7 @@ use App\Listeners\CreateCrmLeadFromCatalogInquiry;
 use App\Listeners\EraseCrmLeadsOnCatalogInquiryErased;
 use App\Listeners\FuelStationAlertListener;
 use App\Listeners\LinkPartnerToNewCompany;
+use App\Listeners\NotifyAccountLocked;
 use App\Listeners\NotifyTaxRateValidation;
 use App\Listeners\ProcessCommissionOnPayment;
 use App\Listeners\SendInvoicePaymentReceipt;
@@ -47,6 +49,12 @@ class EventServiceProvider extends ServiceProvider
         AbsenceApproved::class => [AuditLogger::class, WebhookListener::class],
         AbsenceRejected::class => [AuditLogger::class, WebhookListener::class],
         PayrollValidated::class => [AuditLogger::class, WebhookListener::class],
+
+        // #8163 — verrouillage de compte tenant (anti-brute-force) :
+        // notification au titulaire via le store canonique `notifications`.
+        // Méthode `notify` (hors pattern `handle*` de la découverte
+        // automatique) : tir unique garanti — voir le docblock du listener.
+        AccountLocked::class => [NotifyAccountLocked::class.'@notify'],
         FuelStationAlert::class => [FuelStationAlertListener::class],
         EmployeeRoleAssigned::class => [AuditLogger::class],
         CompanyCreated::class => [LinkPartnerToNewCompany::class],

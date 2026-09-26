@@ -98,6 +98,27 @@ class PlatformAuthController extends Controller
             if ($attempts >= 5) {
                 Cache::put($lockKey, true, now()->addMinutes(15));
                 Cache::forget($attemptKey);
+
+                // #8163 (suite #8124) — alerte « verrouillages répétés »
+                // (pattern d'attaque) : compteur 24 h ; à partir de 3
+                // verrous, événement d'observabilité structuré. Pas de
+                // canal in-app super-admin à ce jour (précédent #1813) :
+                // la notification titulaire est tenant-only. Identifiants
+                // hachés uniquement — jamais d'email en clair (#8144).
+                $lockCountKey = $accountKey.':lock_count';
+                // Cache::add pose la clé avec son TTL 24 h si absente,
+                // increment() est typé int — pas de lecture mixed (level 8).
+                Cache::add($lockCountKey, 0, now()->addDay());
+                $locks24h = (int) Cache::increment($lockCountKey);
+
+                if ($locks24h >= 3) {
+                    Log::warning('platform.login_repeated_locks_detected', [
+                        'super_admin_id' => $superAdmin?->id,
+                        'email_hash' => substr(hash('sha256', mb_strtolower(trim((string) $request->string('email')))), 0, 16),
+                        'locks_24h' => $locks24h,
+                        'window' => '24h',
+                    ]);
+                }
             }
 
             return new JsonResponse([
