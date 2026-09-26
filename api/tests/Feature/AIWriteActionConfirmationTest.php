@@ -13,8 +13,10 @@ use App\AI\PendingActionStore;
 use App\AI\ToolRegistry;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Events\AbsenceApproved;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
+use Illuminate\Support\Facades\Event;
 use Laravel\Sanctum\Sanctum;
 use stdClass;
 use Tests\Support\CreatesMvpSchema;
@@ -164,10 +166,18 @@ class AIWriteActionConfirmationTest extends TestCase
         $this->assertDatabaseCount('absences', 0);
     }
 
-    public function test_confirm_approve_absence_updates_status(): void
+    /**
+     * BOS-004 (#8145) — chemin UNIQUE d'approbation via l'IA : `absence_decision`
+     * passe par l'Action canonique Planning et ÉMET `AbsenceApproved` (l'ancien
+     * outil legacy `approve_absence` faisait un update direct, sans événement).
+     */
+    public function test_confirm_absence_decision_approves_and_emits_event(): void
     {
         [$company, $manager] = $this->aiFixture();
-        $type = $this->seedAbsenceType($company->id);
+        // Type NON déducteur : ce test porte sur le chemin d'exécution et
+        // l'événement, pas sur le solde de congés (le décompte de solde a ses
+        // propres tests — `AbsenceDecisionToolTest`).
+        $type = $this->seedAbsenceType($company->id, false);
         $employee = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
         $this->assertInstanceOf(Employee::class, $employee);
 
@@ -182,12 +192,13 @@ class AIWriteActionConfirmationTest extends TestCase
         ]);
 
         Sanctum::actingAs($manager);
+        Event::fake([AbsenceApproved::class]);
 
         $pendingId = app(PendingActionStore::class)->store(
             $company->id,
             $manager->id,
-            'approve_absence',
-            ['absence_id' => $absence->id],
+            'absence_decision',
+            ['absence_id' => $absence->id, 'decision' => 'approve'],
         );
 
         $this->postJson("/api/v1/ai/actions/{$pendingId}/confirm")
@@ -198,6 +209,50 @@ class AIWriteActionConfirmationTest extends TestCase
             'id' => $absence->id,
             'status' => 'approved',
             'approved_by' => $manager->id,
+        ]);
+        Event::assertDispatched(AbsenceApproved::class);
+    }
+
+    /**
+     * BOS-004 (#8145) — le write-tool legacy `approve_absence` n'existe plus :
+     * une action en attente le référencant ne peut plus être exécutée (elle
+     * retourne une erreur stable au lieu d'écrire en base hors Action canonique).
+     */
+    public function test_legacy_approve_absence_write_tool_is_gone(): void
+    {
+        [$company, $manager] = $this->aiFixture();
+        $type = $this->seedAbsenceType($company->id);
+        $employee = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
+        $this->assertInstanceOf(Employee::class, $employee);
+
+        $absence = Absence::create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'absence_type_id' => $type->id,
+            'start_date' => '2026-06-05',
+            'end_date' => '2026-06-06',
+            'days_count' => 2,
+            'status' => 'pending',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->assertNotContains('approve_absence', config('ai.write_tools', []));
+
+        $pendingId = app(PendingActionStore::class)->store(
+            $company->id,
+            $manager->id,
+            'approve_absence',
+            ['absence_id' => $absence->id],
+        );
+
+        $this->postJson("/api/v1/ai/actions/{$pendingId}/confirm")
+            ->assertStatus(422)
+            ->assertJsonPath('error', "Tool 'approve_absence' does not require confirmation.");
+
+        $this->assertDatabaseHas('absences', [
+            'id' => $absence->id,
+            'status' => 'pending',
         ]);
     }
 
@@ -258,14 +313,14 @@ class AIWriteActionConfirmationTest extends TestCase
         return [$company, $employee];
     }
 
-    private function seedAbsenceType(string $companyId): AbsenceType
+    private function seedAbsenceType(string $companyId, bool $deductsLeave = true): AbsenceType
     {
         return AbsenceType::create([
             'company_id' => $companyId,
             'name' => 'Conges payes',
             'code' => 'CP',
             'is_paid' => true,
-            'deducts_leave' => true,
+            'deducts_leave' => $deductsLeave,
             'requires_proof' => false,
         ]);
     }
@@ -288,6 +343,7 @@ class AIWriteActionConfirmationTest extends TestCase
         // audit(securite) #6533 : approbation d'absence via IA réservée aux
         // managers (AbsencePolicy::approve) — un employé qui tente d'approuver
         // reçoit un refus explicite, l'absence reste pending.
+        // BOS-004 (#8145) : seul le chemin canonique `absence_decision` existe.
         [$company] = $this->aiFixture();
         $type = $this->seedAbsenceType($company->id);
         $employeeActor = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
@@ -308,8 +364,8 @@ class AIWriteActionConfirmationTest extends TestCase
         $pendingId = app(PendingActionStore::class)->store(
             $company->id,
             $employeeActor->id,
-            'approve_absence',
-            ['absence_id' => $absence->id],
+            'absence_decision',
+            ['absence_id' => $absence->id, 'decision' => 'approve'],
         );
 
         $this->postJson("/api/v1/ai/actions/{$pendingId}/confirm")

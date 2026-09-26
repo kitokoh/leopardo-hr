@@ -118,8 +118,8 @@ curl -s -X POST "$API/api/v1/ai/voice/command" \
 Un agent ne fait **que** ce que ses outils permettent. État réel du registre :
 
 - **17 outils de lecture** — employés, pointages, absences, effectifs, paie, rapports…
-- **8 outils d'écriture** — et **tous exigent une confirmation humaine** :
-  - `create_absence`, `approve_absence`, `absence_decision`
+- **7 outils d'écriture** — et **tous exigent une confirmation humaine** :
+  - `create_absence`, `absence_decision` (unique chemin d'approbation/refus d'absence depuis #8145 — le legacy `approve_absence` est retiré)
   - `shift_assign`, `notify_team`
   - `create_employee` (nouveau, #7377)
   - `check_in_employee`, `check_out_employee` (nouveaux, #7378)

@@ -685,11 +685,11 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - Isolation tenant : chaque utilisateur ne voit que ses conversations dans son entreprise
 
 ### Actions write IA avec confirmation
-- Les outils write (`create_absence`, `approve_absence`, etc.) retournent `confirmation_required` avec `pending_action_id` sans mutation immediate
+- Les outils write (`create_absence`, `absence_decision`, etc.) retournent `confirmation_required` avec `pending_action_id` sans mutation immediate
 - `POST /api/v1/ai/actions/{pendingActionId}/confirm` execute l'action apres validation utilisateur
 - `POST /api/v1/ai/actions/{pendingActionId}/reject` annule l'action en attente
 - Isolation : un utilisateur ne peut confirmer que ses propres actions pending dans son tenant
-- Couverture Feature : `AIWriteActionConfirmationTest` (confirmation, rejet, approve_absence, orchestrator pending_confirmations)
+- Couverture Feature : `AIWriteActionConfirmationTest` (confirmation, rejet, retrait du legacy approve_absence #8145, orchestrator pending_confirmations)
 
 ### Tool Registry
 - `GET /api/ai/tools` liste les outils IA actifs (debug/admin)

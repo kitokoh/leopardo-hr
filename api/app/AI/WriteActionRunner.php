@@ -59,7 +59,9 @@ class WriteActionRunner
     {
         return [
             'create_absence',
-            'approve_absence',
+            // BOS-004 (#8145) — `approve_absence` (legacy) SUPPRIMÉ : il faisait
+            // un `->update()` direct en base sans passer par l'Action canonique
+            // et sans émettre `AbsenceApproved`. Chemin unique = `absence_decision`.
             'absence_decision',
             'shift_assign',
             'notify_team',
@@ -96,7 +98,8 @@ class WriteActionRunner
     {
         return [
             'create_absence' => fn (array $arguments): array => $this->createAbsence($companyId, $userId, $arguments),
-            'approve_absence' => fn (array $arguments): array => $this->approveAbsence($companyId, $userId, $arguments),
+            // BOS-004 (#8145) — handler legacy `approve_absence` retiré :
+            // approbation/refus via les Actions canoniques Planning uniquement.
             // B3a (#6856) — décision (approbation/refus motivé) via les Actions
             // canoniques Planning, parité REST AbsenceController approve/reject.
             'absence_decision' => fn (array $arguments): array => $this->decideAbsence($companyId, $userId, $arguments),
@@ -449,51 +452,6 @@ class WriteActionRunner
             'absence_id' => $absence->id,
             'status' => $absence->status,
             'employee_id' => $employeeId,
-        ];
-    }
-
-    /**
-     * @param  array<string, mixed>  $arguments
-     * @return array<string, mixed>
-     */
-    private function approveAbsence(string $companyId, int $userId, array $arguments): array
-    {
-        // audit(securite) #6533 : ré-utilisation des policies REST
-        // (AbsencePolicy::approve = company_id match && isManager) — un
-        // manager dept/superviseur ne peut plus approuver via l'IA hors de son
-        // périmètre, et un employé ne peut pas approuver du tout.
-        /** @var Employee|null $actor */
-        $actor = Employee::query()
-            ->where('company_id', $companyId)
-            ->where('id', $userId)
-            ->first();
-
-        if ($actor === null || ! $actor->isManager()) {
-            return ['error' => 'AI_TOOL_PERMISSION_DENIED', 'message' => 'Manager role required to approve absences'];
-        }
-
-        $absenceId = $this->intArgument($arguments, 'absence_id', 0);
-        $absence = Absence::query()
-            ->where('company_id', $companyId)
-            ->where('id', $absenceId)
-            ->first();
-
-        if ($absence === null) {
-            return ['error' => 'Absence not found'];
-        }
-
-        if ($absence->status !== 'pending') {
-            return ['error' => 'Absence is not pending approval'];
-        }
-
-        $absence->update([
-            'status' => 'approved',
-            'approved_by' => $userId,
-        ]);
-
-        return [
-            'absence_id' => $absence->id,
-            'status' => $absence->status,
         ];
     }
 
