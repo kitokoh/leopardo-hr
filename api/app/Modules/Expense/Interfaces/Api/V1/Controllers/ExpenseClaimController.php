@@ -195,7 +195,10 @@ class ExpenseClaimController extends Controller
         $actor = $request->user();
         // Return 404 for cross-tenant resources (security: don't leak existence)
         abort_unless($expenseClaim->company_id === $actor->company_id, 404);
-        abort_unless($actor->isManager(), 403);
+        // #8159 — la policy enregistrée est la règle effective (avant : seul
+        // isManager() était vérifié, un manager dept/superviseur/marketing
+        // pouvait approuver → écritures comptables générées, #5235).
+        $this->authorize('approve', $expenseClaim);
 
         // Issue #2677 (QA 2026-08-15) — garde de transition : seule une
         // demande soumise peut être approuvée (un brouillon doit d'abord être
@@ -217,7 +220,8 @@ class ExpenseClaimController extends Controller
         $actor = $request->user();
         // Return 404 for cross-tenant resources (security: don't leak existence)
         abort_unless($expenseClaim->company_id === $actor->company_id, 404);
-        abort_unless($actor->isManager(), 403);
+        // #8159 — policy enregistrée (miroir de approve).
+        $this->authorize('reject', $expenseClaim);
 
         // Issue #2677 — garde de transition : on peut rejeter une demande
         // soumise ou déjà approuvée, jamais un brouillon ou un rejet existant.
