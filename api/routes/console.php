@@ -366,7 +366,7 @@ Schedule::command('islamic:check-unconfirmed')
 //   edge:monitor                              30 min                    oui
 //   onboarding:send-reminders                 quotidienne (09:00)       non
 //   tts:purge                                 horaire                   non
-//   ai:purge-audit-logs                       quotidienne (04:45)       oui (BOS-002 #8144)
+//   ai:purge-audit-logs                       quotidienne (04:45)       oui (BOS-002 #8144, #8164 : ai_audit_logs + ai_tool_executions)
 //   restaurant:outbox-dispatch                chaque minute             oui
 //   leopardo:fleet:sync                       */TRACCAR_SYNC_INTERVAL    oui (30 min)
 //   audit:purge                               hebdomadaire              non
@@ -409,8 +409,10 @@ Schedule::command('edge:monitor')->everyThirtyMinutes()->withoutOverlapping();
 // #R12 — rappel d'onboarding J+1 (sociétés créées il y a 20h–28h).
 Schedule::command('onboarding:send-reminders')->dailyAt('09:00');
 
-// BOS-002 (#8144) — rétention des logs d'audit IA : purge quotidienne
-// au-delà de `ai.audit_log_retention_days` (défaut 90 j). Idempotente.
+// BOS-002 (#8144) — rétention des traces de l'assistant IA (ai_audit_logs ;
+// ai_tool_executions depuis #8164 — même commande, même rétention) : purge
+// quotidienne au-delà de `ai.audit_log_retention_days` (défaut 90 j).
+// Idempotente.
 Schedule::command('ai:purge-audit-logs')->dailyAt('04:45')->withoutOverlapping();
 
 // Issue #5616 — purge des fichiers TTS temporaires (RGPD + espace disque).
