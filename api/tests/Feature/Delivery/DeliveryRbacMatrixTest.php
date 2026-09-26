@@ -7,6 +7,8 @@ namespace Tests\Feature\Delivery;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Delivery\Domain\Models\Delivery;
+use App\Modules\Delivery\Domain\Models\DeliveryRoute;
+use App\Modules\Delivery\Domain\Models\DeliveryStop;
 use App\Modules\Delivery\Domain\Support\DeliveryRoleResolver;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -54,7 +56,7 @@ class DeliveryRbacMatrixTest extends TestCase
 
     public function test_role_resolver_matrix(): void
     {
-        $resolver = new DeliveryRoleResolver();
+        $resolver = new DeliveryRoleResolver;
 
         $admin = $this->employee('manager', 'principal');
         self::assertContains('admin', $resolver->rolesFor($admin));
@@ -113,8 +115,32 @@ class DeliveryRbacMatrixTest extends TestCase
             'dropoff_address' => 'Alger',
         ]);
 
-        // Le rider (employé non-manager) enregistre un événement → OK.
-        Sanctum::actingAs($this->employee('employee'));
+        // #8181 — contrat corrigé : la Policy DeliveryPolicy::store borne le
+        // rider aux livraisons de SES tournées (DELIVERY_RBAC.md †, aligné
+        // DeliveryRbacTest) — la version antérieure de ce test attendait 201
+        // sur une livraison NON planifiée, ce que la Policy refuse (403).
+        // La livraison est donc planifiée dans une tournée dont le rider est
+        // le driver.
+        $rider = $this->employee('employee');
+        /** @var DeliveryRoute $route */
+        $route = DeliveryRoute::query()->create([
+            'company_id' => $this->company->id,
+            'route_date' => now()->toDateString(),
+            'driver_id' => $rider->id,
+            'status' => 'assigned',
+        ]);
+        DeliveryStop::query()->create([
+            'company_id' => $this->company->id,
+            'route_id' => $route->id,
+            'delivery_id' => $delivery->id,
+            'sort_order' => 1,
+            'status' => 'pending',
+            'address' => $delivery->dropoff_address,
+        ]);
+
+        // Le rider (employé non-manager) enregistre un événement sur SA
+        // tournée → OK.
+        Sanctum::actingAs($rider);
         $this->postJson('/api/v1/delivery/deliveries/events', [
             'delivery_id' => $delivery->id,
             'type' => 'picked_up',

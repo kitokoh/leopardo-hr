@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -33,6 +34,14 @@ final class DeliveryEventController
     {
         $validated = $request->validated();
         $companyId = $this->companyId($request);
+
+        // BC-26-D05 (#8181) — décision par ressource AVANT toute écriture :
+        // DeliveryPolicy::store borne le rider aux livraisons de SES tournées
+        // (driver_id = employé authentifié) ; dispatcher/admin : tout le
+        // tenant. Sans cet appel, n'importe quel employé authentifié pouvait
+        // tracer des événements sur la tournée d'un collègue.
+        $delivery = $this->findDelivery((int) $validated['delivery_id'], $companyId);
+        Gate::forUser($request->user())->authorize('store', $delivery);
 
         $event = $this->events->record(
             companyId: $companyId,

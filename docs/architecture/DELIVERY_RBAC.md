@@ -75,3 +75,25 @@ la dispatch et la consultation des rapports (`delivery.manager` ⊇
   présente matrice est leur contrat d'autorisation.
 - Le gestionnaire d'erreurs 403 du module répond `DELIVERY_ROLE_REQUIRED`
   (message i18n `fr`).
+
+## Câblage effectif (#8181, 2026-09-26)
+
+La garde `delivery.role` est **câblée** sur les routes du module
+(`routes/modules/delivery.php`) — avant #8181, elle était écrite mais jamais
+enregistrée ni appliquée : `api.manager` générique laissait passer TOUT
+manager (marketing inclus) sur toutes les routes du module. Correspondance
+appliquée :
+
+| Groupe de routes | Garde |
+|---|---|
+| `GET/POST /deliveries`, `GET /deliveries/{id}`, `POST /deliveries/routes*` (store/assign/close), `POST /deliveries/{id}/tracking-link` | `delivery.role:dispatcher` (admin inclus : principal ⊂ dispatcher) |
+| `GET /deliveries/routes/{id}`, `POST /deliveries/events` | `delivery.role:dispatcher,rider` + Policies (rider = SES tournées) |
+| `GET /deliveries/{id}/tracking` | `delivery.role:manager,rider` + Policy |
+| COD (`settlement` create/collect/settle/reconcile, `cod-settlements*`), notifications, rapports, exports (sync/async) | `delivery.role:manager` — settle/reconcile restent en plus réservés à l'admin par `requireAdmin()` côté contrôleur (message 403 figé par `DeliveryCodSettlementApiTest`, defense-in-depth) |
+| `GET /ping`, `GET /deliveries/routes/today`, `POST /deliveries/stops/{stop}/status`, suivi public par token | inchangés (smoke module / périmètre par PROPRIÉTÉ au contrôleur / token = credential) |
+
+`DeliveryEventController::store` invoque désormais
+`DeliveryPolicy::store` via `Gate::forUser()->authorize('store', $delivery)`
+— la Policy existait mais n'était jamais appelée : un rider pouvait tracer
+des événements sur la tournée d'un collègue (403 attendu par
+`DeliveryRbacTest`).
