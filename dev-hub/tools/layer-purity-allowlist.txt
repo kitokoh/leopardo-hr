@@ -94,7 +94,6 @@ api/app/Modules/TravelAgency/Application/Actions/ConfirmBookingAction.php:14:use
 api/app/Modules/TravelAgency/Application/Actions/CreateBookingAction.php:20:use Illuminate\Support\Facades\DB;
 api/app/Modules/TravelAgency/Application/Actions/CreateRentalBookingAction.php:14:use Illuminate\Support\Facades\DB;
 api/app/Modules/TravelAgency/Application/Actions/CreateRoundTripAction.php:13:use Illuminate\Support\Facades\DB;
-api/app/Modules/TravelAgency/Application/Actions/ExpireBookingsAction.php:12:use Illuminate\Support\Facades\DB;
 api/app/Modules/TravelAgency/Application/Actions/GenerateTripSeatsAction.php:10:use Illuminate\Support\Facades\DB;
 api/app/Modules/TravelAgency/Application/Actions/IssueTicketsAction.php:14:use Illuminate\Support\Facades\DB;
 api/app/Modules/TravelAgency/Application/Actions/ParticipateInTravelQuizAction.php:11:use Illuminate\Support\Facades\DB;
