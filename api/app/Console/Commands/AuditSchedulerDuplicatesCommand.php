@@ -11,6 +11,7 @@ use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
 use App\Modules\Planning\Domain\Models\LeavePolicy;
 use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent;
 use Carbon\CarbonImmutable;
+use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -484,11 +485,22 @@ class AuditSchedulerDuplicatesCommand extends Command
     private function canonicalTravelEvent(Collection $group): TravelOutboxEvent
     {
         $keyed = $group->first(
-            static fn (TravelOutboxEvent $event): bool => is_string($event->idempotency_key)
-                && str_starts_with($event->idempotency_key, 'booking-expired-'),
+            static fn (TravelOutboxEvent $event): bool => str_starts_with($event->idempotency_key, 'booking-expired-'),
         );
 
-        return $keyed instanceof TravelOutboxEvent ? $keyed : $group->first();
+        if ($keyed instanceof TravelOutboxEvent) {
+            return $keyed;
+        }
+
+        // Un groupe issu de groupBy n'est jamais vide : le repli « plus
+        // ancien » existe toujours — mais on refuse de retourner null
+        // silencieusement si le contrat était violé (données corrompues).
+        $oldest = $group->first();
+        if (! $oldest instanceof TravelOutboxEvent) {
+            throw new \LogicException('Groupe de doublons Travel vide : impossible de déterminer le canonique.');
+        }
+
+        return $oldest;
     }
 
     // ────────────────────────────────────────────────────────────────────
@@ -501,16 +513,29 @@ class AuditSchedulerDuplicatesCommand extends Command
         $fromRaw = (string) ($this->option('from') ?: self::DEFAULT_FROM);
         $toRaw = (string) ($this->option('to') ?: now()->toDateString());
 
-        $from = CarbonImmutable::createFromFormat('Y-m-d', $fromRaw);
-        $to = CarbonImmutable::createFromFormat('Y-m-d', $toRaw);
+        // Carbon 3 (strict mode) lève InvalidFormatException au lieu de
+        // retourner false quand la chaîne ne correspond pas au format
+        // (ex. « 26/05/2026 » → trailing data) : on convertit en false pour
+        // conserver le refus sûr + message explicite ci-dessous.
+        try {
+            $from = CarbonImmutable::createFromFormat('Y-m-d', $fromRaw);
+        } catch (InvalidFormatException) {
+            $from = false;
+        }
 
-        if ($from === false || $from->format('Y-m-d') !== $fromRaw) {
+        try {
+            $to = CarbonImmutable::createFromFormat('Y-m-d', $toRaw);
+        } catch (InvalidFormatException) {
+            $to = false;
+        }
+
+        if (! $from instanceof CarbonImmutable || $from->format('Y-m-d') !== $fromRaw) {
             $this->error(sprintf('Valeur invalide pour --from="%s" : format YYYY-MM-DD attendu.', $fromRaw));
 
             return [null, null];
         }
 
-        if ($to === false || $to->format('Y-m-d') !== $toRaw) {
+        if (! $to instanceof CarbonImmutable || $to->format('Y-m-d') !== $toRaw) {
             $this->error(sprintf('Valeur invalide pour --to="%s" : format YYYY-MM-DD attendu.', $toRaw));
 
             return [null, null];
