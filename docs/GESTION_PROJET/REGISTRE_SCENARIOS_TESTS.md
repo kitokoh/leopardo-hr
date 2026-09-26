@@ -1,3 +1,15 @@
+> **MAJ 2026-09-26 — #8181, matrice RBAC fine `delivery.role` câblée sur les routes Delivery (BC-26-D05).**
+> Surface **API HTTP** : aucune route nouvelle ni contrat d'URL modifié — les gardes changent
+> (`api/routes/modules/delivery.php` : `api.manager` générique remplacé par la matrice fine
+> `delivery.role:dispatcher|manager|rider` selon `docs/architecture/DELIVERY_RBAC.md`) ;
+> alias `delivery.role` enregistré dans `api/bootstrap/app.php`. Comportement : deny-by-default
+> — un manager hors rôle (ex. marketing) reçoit 403 `DELIVERY_ROLE_REQUIRED` ;
+> `DeliveryEventController::store` invoque `DeliveryPolicy::store` (rider borné à SES tournées).
+> Scénarios automatisés : `api/tests/Feature/Delivery/DeliveryRbacTest.php` et
+> `DeliveryRbacMatrixTest.php` (7 tests précédemment ROUGES dans le sens sécurité, désormais verts),
+> suite `tests/Feature/Delivery` complète 110/110 ; deux assertions d'ancien contrat mises à jour
+> (`DeliveryApiTest` code d'erreur canonique, `DeliveryRbacMatrixTest` rider sur livraison planifiée).
+
 > **MAJ 2026-09-26 — #8096, session acheteur marketplace en cookie HttpOnly.**
 > Surface **API** (module Retail, `routes/modules/market_public.php`) : la session acheteur
 > migre du jeton porté en `localStorage` vers un cookie `market_buyer_session`
