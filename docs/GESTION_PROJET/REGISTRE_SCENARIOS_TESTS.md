@@ -1,3 +1,17 @@
+> **MAJ 2026-09-26 — #8139 BOS-006A, scheduler à source unique.** Surface **API HTTP** :
+> aucune (aucune route, middleware ou contrat modifié) — le changement touche `api/routes/console.php`
+> et `api/bootstrap/app.php` (la garde gouvernance surveille `api/routes/**`, d'où cette note).
+> Le bloc `withSchedule()` de `bootstrap/app.php` est **supprimé** : les 8 commandes planifiées en
+> double (horaires/paramètres contradictoires — `leave:accrue` daily+monthly,
+> `billing:generate-invoices` 02:00+03:00, deux expireurs Travel publiant des événements distincts)
+> vivent désormais **uniquement** dans `routes/console.php`, avec `withoutOverlapping` sur les
+> commandes sensibles. `TravelExpireBookingsCommand` (legacy) est retiré : seul
+> `travel:expire-pending-bookings` publie les expirations (`travel.booking.cancelled.v1`).
+> Scénarios automatisés : `api/tests/Feature/Console/SchedulerUniquenessTest.php` (aucune commande
+> en double dans le scheduler, expireur legacy absent, verrous anti-chevauchement présents).
+> Audit rétrospectif des données historiques (doubles exécutions passées) : tracé séparément
+> dans **#8140 (BOS-006B)**.
+
 > ⚠️ **MAJ 2026-08-17** : l'arborescence mobile historique `front/mobile/` a été supprimée (PR #754).
 > Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
 > Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
