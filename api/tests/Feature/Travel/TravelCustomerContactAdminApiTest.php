@@ -126,6 +126,29 @@ class TravelCustomerContactAdminApiTest extends TestCase
             ->assertJsonPath('data.0.phone', '+237600000002');
     }
 
+    /**
+     * #7655 (tranche 3) — `?search[]=x` (tableau) était concaténé tel quel dans
+     * les motifs `ilike` : PHP le convertissait en "Array" et la liste était
+     * filtrée sur une chaîne parasite (0 résultat) au lieu d'ignorer le critère
+     * invalide. Le paramètre non-scalaire ne doit pas influencer la recherche.
+     */
+    public function test_index_ignores_array_search_param(): void
+    {
+        $this->actingManager();
+
+        $this->tenants->withinTenant($this->company, function (): void {
+            TravelCustomerContact::factory()->create(['email' => 'cible@example.com', 'first_name' => 'Cible']);
+            TravelCustomerContact::factory()->create(['email' => 'autre@example.com', 'first_name' => 'Autre']);
+        });
+
+        // Le contrat de pagination de ce fichier diverge de `meta.total`
+        // (échecs préexistants #8004/#8127) : on verrouille ici le comportement
+        // du filtre, pas la forme de l'enveloppe.
+        $this->getJson('/api/v1/travel/contacts?search[]=cible@example.com')
+            ->assertOk()
+            ->assertJsonCount(2, 'data');
+    }
+
     public function test_index_filters_by_consent_channel(): void
     {
         $this->actingManager();

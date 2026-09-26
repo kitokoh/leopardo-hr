@@ -10,11 +10,12 @@ use App\Events\AbsenceRequested;
 use App\Events\AttendanceCheckedIn;
 use App\Events\AttendanceCheckedOut;
 use App\Events\EmployeeArchived;
-use App\Events\EmployeeDeparted;
 use App\Events\EmployeeCreated;
+use App\Events\EmployeeDeparted;
 use App\Events\PayrollValidated;
 use App\Modules\Billing\Infrastructure\Services\WebhookDispatcher;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 
 class WebhookListener implements ShouldQueue
@@ -66,11 +67,24 @@ class WebhookListener implements ShouldQueue
         }
     }
 
-    private function resolveModel(object $event): ?object
+    /**
+     * #7655 (tranche 3) — le retour était typé `?object` : toute valeur non
+     * modèle exposée par l'événement (scalaire, DTO, tableau) était ensuite
+     * manipulée comme un modèle Eloquent (`->company_id`, `->toArray()`), donc
+     * un lot de webhooks pouvait partir en TypeError sur un événement
+     * inattendu. La garde `instanceof Model` ferme le chemin.
+     */
+    private function resolveModel(object $event): ?Model
     {
         foreach (['employee', 'log', 'absence', 'payroll'] as $prop) {
-            if (property_exists($event, $prop)) {
-                return $event->{$prop};
+            if (! property_exists($event, $prop)) {
+                continue;
+            }
+
+            $model = $event->{$prop};
+
+            if ($model instanceof Model) {
+                return $model;
             }
         }
 

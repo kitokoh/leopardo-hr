@@ -670,11 +670,25 @@ readonly class AuthService
         return $table?->table_name !== null;
     }
 
+    /**
+     * #7655 (tranche 3) — `DB::selectOne()` renvoie un stdClass non typé :
+     * l'accès direct `$result->search_path` échappait à l'analyse statique
+     * (propriété dynamique) et un driver renvoyant autre chose qu'un objet
+     * faisait un cast silencieux. Lecture explicite et bornée.
+     */
     private function currentSearchPath(): ?string
     {
         $result = DB::selectOne('SHOW search_path');
 
-        return is_object($result) ? (string) $result->search_path : null;
+        if ($result === null) {
+            return null;
+        }
+
+        $values = (array) $result;
+
+        return isset($values['search_path']) && is_string($values['search_path'])
+            ? $values['search_path']
+            : null;
     }
 
     private function setTenantSearchPath(string $schema): void
