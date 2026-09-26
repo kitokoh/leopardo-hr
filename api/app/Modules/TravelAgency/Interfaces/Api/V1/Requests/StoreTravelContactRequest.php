@@ -28,13 +28,17 @@ class StoreTravelContactRequest extends FormRequest
      */
     public function rules(): array
     {
+        // Contrat canonique TRAVEL-416/913 (celui du front public, de
+        // `SubmitTravelContactAction` et des tests) — restauré après la
+        // variante `name`/`consent` introduite par la fusion de dette
+        // 6ce743cee, qui rejetait en 422 le formulaire public réel (#8128).
         return [
-            'name' => ['required', 'string', 'max:120'],
-            'email' => ['required_without:phone', 'nullable', 'email:rfc', 'max:190'],
-            'phone' => ['required_without:email', 'nullable', 'string', 'max:40'],
-            'message' => ['required', 'string', 'min:10', 'max:1000'],
-            'consent' => ['required', 'accepted'],
-            'idempotency_key' => ['sometimes', 'string', 'max:64'],
+            'first_name' => ['nullable', 'string', 'max:120'],
+            'last_name' => ['nullable', 'string', 'max:120'],
+            'email' => ['required', 'email:rfc', 'max:190'],
+            'phone' => ['nullable', 'string', 'max:40'],
+            'message' => ['required', 'string', 'min:1', 'max:2000'],
+            'consent_email' => ['required', 'accepted'],
         ];
     }
 

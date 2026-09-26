@@ -52,13 +52,14 @@ class TravelCancellationPolicyApiTest extends TestCase
         $this->activateTravel($company);
         $this->principal($company);
 
+        // Contrat canonique post-consolidation #7452 : `hours_before_departure`
+        // (le legacy `cancel_before_hours` n'est plus alimenté — #8128).
         $this->postJson('/api/v1/travel/cancellation-policies', [
             'penalty_percent' => 25,
-            'cancel_before_hours' => 24,
+            'hours_before_departure' => 24,
             'refundable' => true,
-            'description' => 'Annulation sous 24 h : pénalité 25 %.',
         ])->assertStatus(201)
-            ->assertJsonFragment(['penalty_percent' => 25, 'cancel_before_hours' => 24]);
+            ->assertJsonFragment(['penalty_percent' => 25, 'hours_before_departure' => 24]);
     }
 
     public function test_penalty_percent_is_bounded(): void
@@ -87,8 +88,12 @@ class TravelCancellationPolicyApiTest extends TestCase
         ]);
         Sanctum::actingAs($employee);
 
+        // Payload VALIDE exigé : la validation FormRequest s'exécute avant le
+        // contrôle d'autorisation — un payload invalide produirait un 422 au
+        // lieu du 403 attendu (#8128).
         $this->postJson('/api/v1/travel/cancellation-policies', [
             'penalty_percent' => 10,
+            'hours_before_departure' => 48,
         ])->assertStatus(403);
     }
 

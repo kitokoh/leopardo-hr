@@ -40,6 +40,15 @@ class SubmitTravelContactAction
             abort(404, 'Company introuvable.');
         }
 
+        // Garde de verticale (#8128) : la route publique signée est HORS du
+        // groupe `module.travelagency` — sans ce contrôle, un tenant sans la
+        // feature Travel verrait quand même ses soumissions acceptées. 404
+        // (pas 403) : l'état d'activation de la verticale ne se divulgue
+        // pas sur une surface publique.
+        if (! $company->hasFeature('travelagency')) {
+            abort(404, 'Company introuvable.');
+        }
+
         app(TenantManager::class)->withinTenant($company, function () use ($company, $data, $email): void {
             DB::transaction(function () use ($company, $data, $email): void {
                 /** @var TravelCustomerContact|null $contact */
