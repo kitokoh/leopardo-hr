@@ -292,7 +292,12 @@ class AppServiceProvider extends ServiceProvider
                 return Limit::perMinute($perMinute)->by('webhooks-inbound:sig:'.md5($signature));
             }
 
-            return Limit::perMinute($perMinute)->by('webhooks-inbound:'.$request->ip());
+            // #8134 — fallback sans signature : discriminer par chemin EN PLUS
+            // de l'IP. L'IP seule met stripe/chargily (et tout endpoint public
+            // partageant ce limiter) dans le MÊME bucket — 429 croisés entre
+            // passerelles, contraire à #6555. Le chemin seul créerait un bucket
+            // GLOBAL par endpoint (DoS trivial) : on garde donc l'IP dans la clé.
+            return Limit::perMinute($perMinute)->by('webhooks-inbound:'.$request->path().':'.$request->ip());
         });
 
         // #6555 — ZKTeco : les devices derrière un NAT partagent une IP ; le

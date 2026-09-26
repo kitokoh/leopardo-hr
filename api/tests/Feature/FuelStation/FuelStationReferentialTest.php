@@ -29,7 +29,9 @@ class FuelStationReferentialTest extends TestCase
         parent::setUp();
 
         /** @var Company $company */
-        $company = Company::factory()->create([
+        // #8130 — clé `features` exacte exigée par assertSolutionActive()
+        // (fuel_station) : sans elle, 403 FEATURE_NOT_ENABLED avant tout test.
+        $company = Company::factory()->withFeature('fuel_station')->create([
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'country' => 'DZ',

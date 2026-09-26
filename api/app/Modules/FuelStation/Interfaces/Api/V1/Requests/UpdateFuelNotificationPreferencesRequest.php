@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\FuelStation\Interfaces\Api\V1\Requests;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\FuelStation\Domain\Models\FuelNotificationPreference;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -11,12 +12,18 @@ use Illuminate\Validation\Rule;
 /**
  * Mise à jour des préférences de notification FuelStation (FUEL-019,
  * #5813) — bulk upsert par (event_type, channel[, station_id]).
+ *
+ * L'autorisation (policy managePreferences) est vérifiée ICI, avant la
+ * validation : un opérateur non autorisé reçoit 403, jamais 422 (#8136).
  */
 class UpdateFuelNotificationPreferencesRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $user = $this->user();
+
+        return $user instanceof Employee
+            && $user->can('managePreferences', new FuelNotificationPreference);
     }
 
     /**

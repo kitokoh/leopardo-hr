@@ -32,26 +32,24 @@ class WebhookThrottleIsolationTest extends TestCase
 
     public function test_two_webhook_gateways_from_same_ip_do_not_throttle_each_other(): void
     {
-        // 61 requêtes vers /webhooks/stripe puis 61 vers /webhooks/chargily
-        // depuis la MÊME IP : chaque passerelle a son bucket (60/min) — aucune
-        // 429 illégitime malgré le partage d'IP (contexte multi-tenants).
+        // 60 requêtes vers /webhooks/stripe (sans signature) remplissent le
+        // bucket 60/min de CETTE passerelle depuis cette IP ; la 61ᵉ est 429
+        // (le limiter fonctionne). La passerelle chargily, MÊME IP, ne doit
+        // PAS être throttlée : bucket distinct par passerelle (#6555, #8134).
         $payload = ['event' => 'test'];
 
-        for ($i = 0; $i < 61; $i++) {
+        $limit = 60;
+        for ($i = 0; $i < $limit; $i++) {
             $response = $this->postJson('/api/v1/webhooks/stripe', $payload);
-            if ($i === 60) {
-                // Le point du test est l'ABSENCE de 429 (bucket par passerelle) ;
-                // le statut exact (400/422...) dépend du contrôleur (signature).
-                $this->assertNotSame(429, $response->status());
-            }
+            $this->assertNotSame(429, $response->status(), "Requête stripe #{$i} throttlée avant la limite.");
         }
 
-        for ($i = 0; $i < 61; $i++) {
-            $response = $this->postJson('/api/v1/webhooks/chargily', $payload);
-            if ($i === 60) {
-                $this->assertNotSame(429, $response->status());
-            }
-        }
+        // 61ᵉ requête stripe : le bucket de la passerelle est plein → 429.
+        $this->assertSame(429, $this->postJson('/api/v1/webhooks/stripe', $payload)->status());
+
+        // Même IP, autre passerelle : aucun 429 croisé (point du test).
+        // Le statut exact (400/422...) dépend du contrôleur (signature).
+        $this->assertNotSame(429, $this->postJson('/api/v1/webhooks/chargily', $payload)->status());
     }
 
     public function test_zkteco_devices_behind_same_ip_have_separate_buckets(): void
