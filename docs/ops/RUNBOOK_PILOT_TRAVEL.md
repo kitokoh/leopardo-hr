@@ -54,7 +54,8 @@ php artisan leopardo:travel:pilot-check --tenant=travel-pilot-001
 ## 6. Supervision
 
 - Outbox : `travel:outbox-dispatch` (1 min), dead-letters à surveiller.
-- Jobs : `travel:expire-bookings` (5 min), `leopardo:travel:expire-adverts`,
+- Jobs : `travel:expire-pending-bookings` (5 min — expireur canonique,
+  `travel:expire-bookings` legacy supprimé #8139), `leopardo:travel:expire-adverts`,
   `leopardo:travel:settle-sales` (quotidien).
 - KPIs pilote : réservations/jour, taux de confirmation, écart de caisse,
   remboursements, dead-letter outbox = 0.

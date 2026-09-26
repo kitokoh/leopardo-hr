@@ -36,7 +36,6 @@ use App\Http\Middleware\Web\EnsureManagerRoleMiddleware;
 use App\Modules\RestaurantManager\Domain\Exceptions\PaymentGatewayException as RestaurantPaymentGatewayException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -51,82 +50,14 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
-    ->withSchedule(function (Schedule $schedule) {
-        $schedule->command('leave:accrue')->daily();
-        $schedule->command('leave:carry-forward')->yearlyOn(1, 1, '02:00');
-        $schedule->command('contracts:alert-expiring')->daily();
-        $schedule->command('billing:check-trials')->daily();
-        $schedule->command('billing:check-overdue')->daily();
-        // DEP-BC21 (#6251) : supervision recouvrement — réconciliation
-        // (dry-run) et métriques quotidiennes.
-        $schedule->command('billing:reconcile-payments')->daily()->withoutOverlapping();
-        $schedule->command('billing:report --json')->daily()->withoutOverlapping();
-        $schedule->command('billing:generate-invoices')->monthlyOn(1, '03:00');
-        // FuelStation (BC-15) — FUEL-015/019 : dispatch outbox idempotent.
-        $schedule->command('fuel:outbox-dispatch')->everyMinute();
-        $schedule->command('monitor:slow-queries --threshold=500')->everyFifteenMinutes();
-        // Issue #4948 : trial provisionings bloqués (worker de queue jamais
-        // exécuté) → fail-loud au lieu d'un pending silencieux.
-        $schedule->command('trial-provisionings:sweep')->everyFifteenMinutes();
-        // TRAVEL-418/#6070 — libère les sièges des réservations pending
-        // expirées (job tenant-scoped par compagnie, idempotent).
-        $schedule->command('travel:expire-pending-bookings')->everyFiveMinutes()->withoutOverlapping();
-        // TRAVEL-806/#6097 — webhooks sortants transporteurs (livraison idempotente, retry/backoff).
-        $schedule->command('travel:webhook-dispatch')->everyMinute()->withoutOverlapping();
-        // Plan 64 — Auto-close attendance logs without check-out after 12h
-        $schedule->command('attendance:auto-close')->hourly();
-        $schedule->command('accounting:purge-expired-shares')->daily();
-        // BC-24 TRAVEL — outbox événementielle + expiration des réservations.
-        // (doublon de planification travel:outbox-dispatch supprimé lors de la
-        // consolidation CI 2026-09-04 : une seule passe/minute, limit par défaut 100.)
-        $schedule->command('travel:expire-bookings --limit=100')->everyFiveMinutes()->withoutOverlapping();
-        $schedule->command('travel:rebuild-report-readmodels')->hourly();
-        // PA2-PAY-012 — Nightly progressive payroll pre-calculation
-        $schedule->command('payroll:precalculate')->dailyAt('02:00');
-        // Audit Mobile+Edge 2026-07-26 (issue #1288) — Edge node silence /
-        // license-expiry monitoring was implemented but never scheduled; a
-        // silent/offline Edge node at a client site (or an expiring/expired
-        // offline license) went completely unnoticed in production.
-        //
-        // `edge:detect-silent-nodes` remains available as a non-scheduled
-        // compatibility command for legacy operational scripts/fixtures. It
-        // detects the old node_id schema only; the canonical UUID model is
-        // monitored by `edge:monitor` below. See issue #1291 and
-        // docs/audits/AUDIT_MOBILE_EDGE_2026-07-26.md sections 1.3/1.4.
-        $schedule->command('edge:monitor')->everyThirtyMinutes()->withoutOverlapping();
-        // #R12 — Rappel d'onboarding J+1 : envoyé chaque jour à 09:00 UTC.
-        // Cible les managers dont la société a été créée il y a 20h–28h et
-        // dont l'onboarding comporte encore des étapes requises non complétées.
-        $schedule->command('onboarding:send-reminders')->dailyAt('09:00');
-        // `travel:outbox-dispatch` est planifié UNE seule fois, dans
-        // api/routes/console.php (everyMinute + withoutOverlapping +
-        // onOneServer). Le doublon qui était déclaré ici a été retiré
-        // (quota Neon, 2026-09-22) : deux entrées `everyMinute()` pour la même
-        // commande = deux passes par minute, donc ~1 440 requêtes/jour en plus
-        // sur la base — sur le plan gratuit Neon c'est directement du quota
-        // mensuel du compte consommé pour rien.
-
-        // Issue #5616 — Purge des fichiers TTS temporaires (RGPD + espace disque).
-        // Les URLs signées expirent en 60 s ; purger les fichiers > 60 min suffit
-        // pour garantir qu'aucun fichier accessible ne subsiste sur disque.
-        $schedule->command('tts:purge')->hourly();
-        // BC-25 RESTAURANT (RESTO-808/#6229) — consommation de l'outbox
-        // de la verticale (notifications cuisine/service, fidélité…).
-        $schedule->command('restaurant:outbox-dispatch')->everyMinute()->withoutOverlapping();
-        // #7401 — synchronisation Traccar de la flotte (devices → positions →
-        // trajets). Les trois endpoints `/tracking/sync-*` existaient mais
-        // n'étaient appelés par AUCUNE tâche planifiée : sans un humain qui
-        // clique, aucun appareil n'était appairé, aucune position relevée,
-        // aucun trajet enregistré, alors que TRACCAR_SYNC_INTERVAL (minutes)
-        // était défini et jamais lu. `withoutOverlapping(30)` : une passe lente
-        // (Traccar indisponible, gros historique) ne s'empile pas sur la
-        // suivante, avec une expiration de verrou de 30 min plutôt que les
-        // 24 h par défaut.
-        $trackingIntervalMinutes = max(1, min(59, (int) config('tracking.sync_interval_minutes', 5)));
-        $schedule->command('leopardo:fleet:sync')
-            ->cron("*/{$trackingIntervalMinutes} * * * *")
-            ->withoutOverlapping(30);
-    })
+    // BOS-006A (#8139) — SOURCE UNIQUE DE PLANIFICATION : `routes/console.php`.
+    // Le scheduler était défini DEUX fois (ici via withSchedule ET dans
+    // routes/console.php) : Laravel charge les deux, donc 8 commandes
+    // tournaient en double avec des horaires contradictoires (leave:accrue
+    // daily+monthly → double acquisition le 1er du mois, factures générées
+    // à 02:00 ET 03:00, auto-close des pointages en concurrence…).
+    // Ne JAMAIS rajouter ->withSchedule() ici : toute nouvelle entrée va
+    // dans routes/console.php (tableau documenté en tête de section).
     ->withRouting(
         api: __DIR__.'/../routes/api.php',
         web: __DIR__.'/../routes/web.php',
