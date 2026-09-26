@@ -122,22 +122,7 @@ readonly class AuthService
             // instanceof \DateTimeInterface ne se déclenchait jamais depuis
             // #2838 → le verrouillage de compte était silencieusement désactivé.
             // Parse robuste → Carbon (type-safe pour isFuture()/AccountLockedException).
-            $lockedRaw = $employee->getAttributes()['locked_until'] ?? null;
-            $lockedUntil = null;
-            if (is_string($lockedRaw) && $lockedRaw !== '') {
-                try {
-                    $lockedUntil = Carbon::parse($lockedRaw);
-                } catch (\Throwable) {
-                    $lockedUntil = null;
-                }
-            } elseif ($lockedRaw instanceof \DateTimeInterface) {
-                $lockedUntil = Carbon::instance($lockedRaw);
-            }
-            if ($this->supportsLoginLocking($employee)
-                && $lockedUntil instanceof Carbon
-                && $lockedUntil->isFuture()) {
-                throw new AccountLockedException($lockedUntil);
-            }
+            $activeLock = $this->activeLock($employee);
 
             // QA 2026-08-15 (#2652) : un `password_hash` null/absent ne doit
             // jamais atteindre Hash::check (TypeError → 500 brut). Un compte
@@ -156,7 +141,19 @@ readonly class AuthService
                 $passwordMatches = false;
             }
 
+            // #8124 — l'ORDRE compte : le verrou est évalué APRÈS la
+            // vérification du mot de passe. Avant, `locked_until` était testé
+            // en premier : un attaquant connaissant l'email pouvait maintenir
+            // le compte verrouillé indéfiniment (5 échecs toutes les 15 min) et
+            // le titulaire LÉGITIME recevait 423 même avec le bon mot de passe
+            // — déni de service ciblé sans notification.
             if (! $passwordMatches) {
+                if ($activeLock !== null) {
+                    // Contrat inchangé pour une tentative FAUSSE sur un compte
+                    // verrouillé (423) — et le verrou n'est pas prolongé.
+                    throw new AccountLockedException($activeLock);
+                }
+
                 if ($this->supportsLoginLocking($employee)) {
                     $employee->increment('failed_login_attempts');
                     if ($employee->failed_login_attempts >= 5) {
@@ -165,6 +162,18 @@ readonly class AuthService
                     }
                 }
                 throw new InvalidCredentialsException;
+            }
+
+            if ($activeLock !== null) {
+                // #8124 — identifiants VALIDES pendant un verrou : le titulaire
+                // n'est pas puni des échecs d'un tiers. Le verrou est levé
+                // (reset ci-dessous) et l'événement est tracé pour l'alerte
+                // « verrouillages répétés » (pattern d'attaque).
+                Log::warning('auth.login_valid_credentials_override_active_lock', [
+                    'employee_id' => $employee->id,
+                    'company_id' => $employee->company_id,
+                    'locked_until' => $activeLock->toIso8601String(),
+                ]);
             }
 
             // Reset failed attempts on success
@@ -301,6 +310,36 @@ readonly class AuthService
         $table = DB::selectOne("select to_regclass('public.user_lookups') as table_name");
 
         return $table?->table_name !== null;
+    }
+
+    /**
+     * #8124 — verrou de connexion ACTIF (dans le futur), ou null.
+     *
+     * Extrait la lecture défensive de `locked_until` (#2973 : `getAttributes()`
+     * renvoie la valeur brute, `instanceof \DateTimeInterface` ne se
+     * déclenchait jamais depuis #2838).
+     */
+    private function activeLock(Employee $employee): ?Carbon
+    {
+        if (! $this->supportsLoginLocking($employee)) {
+            return null;
+        }
+
+        $lockedRaw = $employee->getAttributes()['locked_until'] ?? null;
+
+        if ($lockedRaw instanceof \DateTimeInterface) {
+            $lockedUntil = Carbon::instance($lockedRaw);
+        } elseif (is_string($lockedRaw) && $lockedRaw !== '') {
+            try {
+                $lockedUntil = Carbon::parse($lockedRaw);
+            } catch (\Throwable) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+
+        return $lockedUntil->isFuture() ? $lockedUntil : null;
     }
 
     private function supportsLoginLocking(Employee $employee): bool
