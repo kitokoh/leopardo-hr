@@ -134,20 +134,10 @@ class AIToolRegistrySeeder extends Seeder
                 'required_role' => 'employee',
                 'module' => 'rh',
             ],
-            [
-                'name' => 'approve_absence',
-                'description' => 'Approve a pending absence request.',
-                'parameters' => json_encode([
-                    'type' => 'object',
-                    'properties' => [
-                        'absence_id' => ['type' => 'integer'],
-                    ],
-                    'required' => ['absence_id'],
-                ]),
-                'required_permissions' => '["absences.approve"]',
-                'required_role' => 'manager',
-                'module' => 'rh',
-            ],
+            // BOS-004 (#8145) — la ligne `approve_absence` a été RETIRÉE du
+            // registre : le handler legacy (`->update()` direct, sans
+            // `AbsenceApproved`) n'existe plus. La migration tenant
+            // 2026_09_26_000101_8145 supprime la ligne résiduelle en base.
             // B3a (#6856) — outil écriture BC-06 LEAVE déclaré au contrat A3
             // (#6850). `parameters` aligné sur l'inputSchema du catalogue
             // Absence (AbsenceDecisionToolCatalog) ; exécution après
