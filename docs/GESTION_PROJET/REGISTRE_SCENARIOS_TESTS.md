@@ -1,3 +1,12 @@
+> **MAJ 2026-09-26 — #8096, session acheteur marketplace en cookie HttpOnly.**
+> Surface **API** (module Retail, `routes/modules/market_public.php`) : la session acheteur
+> migre du jeton porté en `localStorage` vers un cookie `market_buyer_session`
+> (`HttpOnly; Secure; SameSite=None`, chemin borné `/api/v1/public/market`, valeur opaque
+> hashée côté serveur — tranche cross-stack de #8022). `config/cors.php` autorise les
+> credentials sur la surface publique marché ; `openapi.yaml` aligné. Scénarios automatisés :
+> `api/tests/Feature/Retail/RetailMarketBuyerAccountTest.php` (attributs du cookie, refus
+> sans session, isolation des commandes par acheteur). Surfaces web admin et mobile : aucune.
+
 > **MAJ 2026-09-26 — #8164, 0 email en clair dans les logs d'`AuthService` + rétention de `ai_tool_executions` (suite #8144).**
 > Surface **API HTTP** : aucune route nouvelle ni contrat modifié — le changement touche
 > `api/routes/console.php` en commentaire uniquement (la garde gouvernance surveille

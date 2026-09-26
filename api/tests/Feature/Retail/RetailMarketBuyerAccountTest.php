@@ -355,6 +355,8 @@ class RetailMarketBuyerAccountTest extends TestCase
     /**
      * Cookie `HttpOnly; Secure; SameSite=None`, chemin borné à la surface
      * publique marché, valeur = jeton opaque en clair (hashé côté serveur).
+     *
+     * @param  \Illuminate\Testing\TestResponse<\Illuminate\Http\JsonResponse>  $response
      */
     private function assertSessionCookieAttributes(\Illuminate\Testing\TestResponse $response, string $expectedToken): void
     {
