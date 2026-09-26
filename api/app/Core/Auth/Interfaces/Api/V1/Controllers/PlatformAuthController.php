@@ -98,6 +98,22 @@ class PlatformAuthController extends Controller
             if ($attempts >= 5) {
                 Cache::put($lockKey, true, now()->addMinutes(15));
                 Cache::forget($attemptKey);
+
+                // #8163 — alerte sur les verrouillages RÉPÉTÉS du même compte
+                // (pattern d'attaque) : compteur 24 h ; à partir de 3 verrous
+                // dans la fenêtre, événement d'observabilité exploitable.
+                // Identifiants uniquement — jamais l'email en clair (#8164).
+                $lockoutsKey = $accountKey.':lockouts_24h';
+                Cache::add($lockoutsKey, 0, now()->addHours(24));
+                $lockouts24h = (int) Cache::increment($lockoutsKey);
+
+                if ($lockouts24h >= 3) {
+                    Log::warning('platform.repeated_account_lockouts', [
+                        'super_admin_id' => $superAdmin?->id,
+                        'lockouts_24h' => $lockouts24h,
+                        'window_hours' => 24,
+                    ]);
+                }
             }
 
             return new JsonResponse([
