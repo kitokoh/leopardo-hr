@@ -17,8 +17,8 @@ use Illuminate\Support\Facades\DB;
  * PlatformCompanyLookup (pattern #1952/#1873).
  *
  * Logique extraite de PlatformUsersController (issue #6569, audit DDD M1) —
- * les Actions Application délèguent ici (pattern ProvisionCompany →
- * CompanyProvisioningService, ADR-0020).
+ * les Actions Application délèguent ici (pattern Action Application → Service
+ * Infrastructure, ADR-0020 ; ex. CompanyProvisioningService).
  */
 final class PlatformUserDirectoryService
 {

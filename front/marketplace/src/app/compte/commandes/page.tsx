@@ -48,10 +48,11 @@ export default function AccountOrdersPage() {
   const [openReview, setOpenReview] = useState<string | null>(null);
 
   const load = useCallback(
-    async (token: string) => {
+    async () => {
       setError(null);
       try {
-        const page = await fetchBuyerOrders(token);
+        // #8096 — le cookie HttpOnly porte la session (plus de jeton).
+        const page = await fetchBuyerOrders();
         setOrders(page.data);
       } catch (err) {
         if (handleUnauthorized(err)) {
@@ -73,7 +74,7 @@ export default function AccountOrdersPage() {
     // Fetch-au-montage légitime (synchronisation avec l'API) : la règle
     // « React Compiler readiness » flaguerait le setError synchrone.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    void load(session.token);
+    void load();
   }, [ready, session, router, load]);
 
   if (!ready || (session && orders === null && error === null)) {
@@ -177,7 +178,6 @@ export default function AccountOrdersPage() {
                       </div>
                       {openReview === reviewKey ? (
                         <ReviewForm
-                          token={session.token}
                           orderReference={order.reference}
                           productId={item.product_id}
                           productName={item.product_name}
