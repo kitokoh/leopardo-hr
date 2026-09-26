@@ -4,188 +4,273 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Infrastructure\Services;
 
+use App\Modules\RestaurantManager\Domain\Enums\OrderItemStatus;
+use App\Modules\RestaurantManager\Domain\Enums\PosSessionStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderItem;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPosSession;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantProductIngredient;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTable;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTableSession;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
- * RESTO-701 (#6214) — Rapports agrégés (ventes, occupation, produits, COGS,
- * caisses). Lecture pure, tenant-scopée, agrégats cohérents avec les données
- * sous-jacentes (critère d'acceptation).
+ * RESTO-701/702/703 (#6214/#6215/#6216) — Agrégats de pilotage
+ * RestaurantManager (spec §5.6).
+ *
+ * Tous les agrégats sont calculés SERVEUR à partir des données persistées
+ * (jamais de totaux acceptés du client), bornés par `company_id` et filtrés
+ * par période/branche. Monnaie : minor units entières.
+ *
+ * Périmètre commandes : statuts `paid` et `closed` (ventes constatées — pas
+ * les drafts/cancelled).
+ *
+ * #8180 — les formes de réponse ont été réalignées sur le contrat initial
+ * (tests/Feature/Restaurant/RestaurantReportsTest), perdu lors de la fusion
+ * de dette « PM round 7 » (#6214 réécriture) : ventes par jour, occupation
+ * (sessions clôturées/couverts/tables actives/rotation), COGS détaillé avec
+ * marge, clôtures de caisse avec attendu.
  */
 final class RestaurantReportService
 {
-    /** Statuts de commande comptabilisés dans les rapports. */
     private const REVENUE_STATUSES = ['paid', 'closed'];
 
     /**
-     * @return array{revenue_minor: int, orders_count: int, avg_basket_minor: int, tax_minor: int, discount_minor: int}
+     * Ventes par jour : date, nombre de commandes, chiffre, répartition par
+     * type de commande.
+     *
+     * @return array<int, array{date: string, orders: int, revenue_minor: int, by_type: array<string, int>}>
      */
     public function sales(string $companyId, Carbon $from, Carbon $to, ?int $branchId = null): array
     {
-        $query = RestaurantOrder::query()
-            ->where('company_id', $companyId)
-            ->whereIn('status', self::REVENUE_STATUSES)
-            ->whereBetween('created_at', [$from, $to]);
+        $orders = $this->revenueOrders($companyId, $from, $to, $branchId)
+            ->get(['total_minor', 'order_type', 'created_at']);
 
-        if ($branchId !== null) {
-            $query->where('branch_id', $branchId);
+        /** @var array<string, array{date: string, orders: int, revenue_minor: int, by_type: array<string, int>}> $byDay */
+        $byDay = [];
+
+        foreach ($orders as $order) {
+            $day = $order->created_at?->toDateString() ?? 'unknown';
+
+            $entry = $byDay[$day] ?? ['date' => $day, 'orders' => 0, 'revenue_minor' => 0, 'by_type' => []];
+
+            $entry['orders']++;
+            $entry['revenue_minor'] += (int) $order->total_minor;
+
+            $type = $order->order_type->value;
+            $entry['by_type'][$type] = ($entry['by_type'][$type] ?? 0) + 1;
+
+            $byDay[$day] = $entry;
         }
 
-        $orders = $query->get();
+        ksort($byDay);
 
-        $revenue = (int) $orders->sum('total_minor');
-        $count = $orders->count();
-        $tax = (int) $orders->sum('tax_minor');
-        $discount = (int) $orders->sum('discount_minor');
-
-        return [
-            'revenue_minor' => $revenue,
-            'orders_count' => $count,
-            'avg_basket_minor' => $count > 0 ? intdiv($revenue, $count) : 0,
-            'tax_minor' => $tax,
-            'discount_minor' => $discount,
-        ];
+        return array_values($byDay);
     }
 
     /**
-     * @return array{sessions_count: int, avg_covers: float, avg_duration_minutes: float, rotation: float}
+     * Occupation des tables : sessions clôturées, couverts servis, durée
+     * moyenne, tables actives, rotation (sessions clôturées / tables actives).
+     *
+     * @return array{closed_sessions: int, covers: int, avg_duration_minutes: int, active_tables: int, rotation: float}
      */
     public function occupancy(string $companyId, Carbon $from, Carbon $to, ?int $branchId = null): array
     {
-        $query = RestaurantTableSession::query()
+        $sessions = RestaurantTableSession::query()
             ->where('company_id', $companyId)
-            ->whereBetween('opened_at', [$from, $to]);
+            ->where('status', 'closed')
+            ->when($branchId !== null, fn (Builder $q) => $q->where('branch_id', $branchId))
+            ->where('closed_at', '>=', $from)
+            ->where('closed_at', '<=', $to)
+            ->get(['covers', 'opened_at', 'closed_at']);
 
-        if ($branchId !== null) {
-            $query->where('branch_id', $branchId);
-        }
-
-        $sessions = $query->get();
-        $closed = $sessions->filter(fn ($s) => $s->closed_at !== null);
-        $count = $sessions->count();
-
-        $avgCovers = $count > 0 ? (float) $sessions->avg('covers') : 0.0;
-
-        $avgDuration = 0.0;
-        if ($closed->isNotEmpty()) {
-            $avgDuration = (float) $closed->map(fn ($s) => max(0, $s->opened_at->diffInMinutes($s->closed_at)))->avg();
-        }
-
-        $tablesCount = RestaurantTable::query()
-            ->when($branchId !== null, fn ($q) => $q->where('branch_id', $branchId))
+        $tables = RestaurantTable::query()
             ->where('company_id', $companyId)
+            ->where('status', 'active')
+            ->when($branchId !== null, fn (Builder $q) => $q->where('branch_id', $branchId))
             ->count();
 
+        $totalCovers = 0;
+        $totalMinutes = 0;
+
+        foreach ($sessions as $session) {
+            $totalCovers += (int) $session->covers;
+            $minutes = $session->opened_at?->diffInMinutes($session->closed_at) ?? 0;
+            $totalMinutes += max(0, $minutes);
+        }
+
+        $count = $sessions->count();
+
         return [
-            'sessions_count' => $count,
-            'avg_covers' => round($avgCovers, 2),
-            'avg_duration_minutes' => round($avgDuration, 2),
-            'rotation' => $tablesCount > 0 ? round($count / $tablesCount, 2) : 0.0,
+            'closed_sessions' => $count,
+            'covers' => $totalCovers,
+            'avg_duration_minutes' => $count > 0 ? (int) round($totalMinutes / $count) : 0,
+            'active_tables' => $tables,
+            'rotation' => $tables > 0 ? round($count / $tables, 2) : 0.0,
         ];
     }
 
     /**
-     * Top produits (quantité, CA) sur la période.
+     * Top produits (quantité, CA) sur la période — lignes actives de
+     * commandes payées/clôturées, tri décroissant par chiffre.
      *
-     * @return array<int, array{product_id: int, quantity: string, revenue_minor: int}>
+     * @return array<int, array{product_id: int, product_code: string|null, product_name: string|null, quantity: int, revenue_minor: int}>
      */
     public function topProducts(string $companyId, Carbon $from, Carbon $to, ?int $branchId = null, int $limit = 10): array
     {
-        $query = RestaurantOrderItem::query()
-            ->selectRaw('product_id, SUM(quantity) as qty, SUM(line_total_minor) as revenue')
-            ->where('company_id', $companyId)
-            ->where('status', 'active')
-            ->whereHas('order', function (Builder $q) use ($from, $to, $branchId): void {
-                $q->whereIn('status', self::REVENUE_STATUSES)
-                    ->whereBetween('created_at', [$from, $to]);
+        $orderIds = $this->revenueOrders($companyId, $from, $to, $branchId)->pluck('id');
 
-                if ($branchId !== null) {
-                    $q->where('branch_id', $branchId);
-                }
-            })
-            ->groupBy('product_id')
-            ->orderByDesc('revenue')
-            ->limit($limit)
-            ->get();
-
-        return $query->map(fn ($row) => [
-            'product_id' => (int) $row->product_id,
-            'quantity' => (string) $row->qty,
-            'revenue_minor' => (int) $row->revenue,
-        ])->all();
-    }
-
-    /**
-     * COGS sur la période (même formule que RESTO-506, agrégée).
-     */
-    public function cogs(string $companyId, Carbon $from, Carbon $to, ?int $branchId = null): int
-    {
-        $orders = RestaurantOrder::query()
-            ->where('company_id', $companyId)
-            ->whereIn('status', self::REVENUE_STATUSES)
-            ->whereBetween('created_at', [$from, $to])
-            ->when($branchId !== null, fn ($q) => $q->where('branch_id', $branchId))
-            ->with(['items' => fn ($q) => $q->where('status', 'active'), 'items.product.ingredients'])
-            ->get();
-
-        // Coût moyen par ingrédient (branches du périmètre).
-        $avgCosts = RestaurantStockLevel::query()
-            ->where('company_id', $companyId)
-            ->when($branchId !== null, fn ($q) => $q->where('branch_id', $branchId))
-            ->pluck('avg_cost_minor', 'ingredient_id');
-
-        $total = 0;
-
-        foreach ($orders as $order) {
-            foreach ($order->items as $item) {
-                $product = $item->product;
-
-                if ($product === null) {
-                    continue;
-                }
-
-                $productCogs = 0;
-                /** @var RestaurantProductIngredient $ingredient */
-                foreach ($product->ingredients as $ingredient) {
-                    $avgCost = $avgCosts[$ingredient->ingredient_id] ?? 0;
-                    $productCogs += (int) round((float) $ingredient->quantity * (int) $avgCost);
-                }
-
-                $total += (int) round((float) $item->quantity * $productCogs);
-            }
+        if ($orderIds->isEmpty()) {
+            return [];
         }
 
-        return $total;
+        $items = RestaurantOrderItem::query()
+            ->where('company_id', $companyId)
+            ->whereIn('order_id', $orderIds)
+            ->where('status', OrderItemStatus::ACTIVE->value)
+            ->get(['product_id', 'quantity', 'line_total_minor']);
+
+        /** @var array<int, array{product_id: int, quantity: int, revenue_minor: int}> $aggregates */
+        $aggregates = [];
+
+        foreach ($items as $item) {
+            $productId = (int) $item->product_id;
+
+            $aggregates[$productId] ??= ['product_id' => $productId, 'quantity' => 0, 'revenue_minor' => 0];
+            $aggregates[$productId]['quantity'] += (int) $item->quantity;
+            $aggregates[$productId]['revenue_minor'] += (int) $item->line_total_minor;
+        }
+
+        return collect($aggregates)
+            ->sortByDesc(fn (array $row): int => $row['revenue_minor'])
+            ->take($limit)
+            ->values()
+            ->map(function (array $row): array {
+                $product = RestaurantProduct::query()->find($row['product_id']);
+
+                return [
+                    'product_id' => $row['product_id'],
+                    'product_code' => $product?->code,
+                    'product_name' => $product?->name,
+                    'quantity' => $row['quantity'],
+                    'revenue_minor' => $row['revenue_minor'],
+                ];
+            })
+            ->all();
     }
 
     /**
-     * @return array{sessions_count: int, opening_cash_minor: int, counted_cash_minor: int, variance_minor: int}
+     * COGS & marge : coût matière théorique consommé (recettes × quantité
+     * vendue × coût moyen des ingrédients) par produit, puis totaux.
+     *
+     * @return array{products: array<int, array<string, mixed>>, total_cogs_minor: int, total_revenue_minor: int, margin_minor: int}
+     */
+    public function cogs(string $companyId, Carbon $from, Carbon $to, ?int $branchId = null): array
+    {
+        $orderIds = $this->revenueOrders($companyId, $from, $to, $branchId)->pluck('id');
+
+        if ($orderIds->isEmpty()) {
+            return ['products' => [], 'total_cogs_minor' => 0, 'total_revenue_minor' => 0, 'margin_minor' => 0];
+        }
+
+        $items = RestaurantOrderItem::query()
+            ->where('company_id', $companyId)
+            ->whereIn('order_id', $orderIds)
+            ->where('status', OrderItemStatus::ACTIVE->value)
+            ->get(['product_id', 'quantity', 'line_total_minor']);
+
+        /** @var array<int, int> $quantities */
+        $quantities = [];
+        /** @var array<int, int> $revenues */
+        $revenues = [];
+
+        foreach ($items as $item) {
+            $productId = (int) $item->product_id;
+            $quantities[$productId] = ($quantities[$productId] ?? 0) + (int) $item->quantity;
+            $revenues[$productId] = ($revenues[$productId] ?? 0) + (int) $item->line_total_minor;
+        }
+
+        $products = [];
+        $totalCogs = 0;
+        $totalRevenue = 0;
+
+        foreach ($quantities as $productId => $quantity) {
+            $costMinor = $this->recipeCostMinor($companyId, (int) $productId, (int) $quantity);
+            $revenue = $revenues[$productId] ?? 0;
+            $totalCogs += $costMinor;
+            $totalRevenue += $revenue;
+
+            $product = RestaurantProduct::query()->find($productId);
+
+            $products[] = [
+                'product_id' => $productId,
+                'product_code' => $product?->code,
+                'product_name' => $product?->name,
+                'quantity' => $quantity,
+                'revenue_minor' => $revenue,
+                'cogs_minor' => $costMinor,
+                'margin_minor' => $revenue - $costMinor,
+            ];
+        }
+
+        return [
+            'products' => $products,
+            'total_cogs_minor' => $totalCogs,
+            'total_revenue_minor' => $totalRevenue,
+            'margin_minor' => $totalRevenue - $totalCogs,
+        ];
+    }
+
+    /**
+     * Clôtures de caisse : nombre, fonds, attendu, compté, écart agrégé.
+     *
+     * @return array{closings: int, opening_cash_minor: int, expected_cash_minor: int, counted_cash_minor: int, variance_minor: int}
      */
     public function posSessions(string $companyId, Carbon $from, Carbon $to, ?int $branchId = null): array
     {
-        $query = RestaurantPosSession::query()
+        $sessions = RestaurantPosSession::query()
             ->where('company_id', $companyId)
-            ->where('status', 'closed')
-            ->whereBetween('closed_at', [$from, $to]);
-
-        if ($branchId !== null) {
-            $query->where('branch_id', $branchId);
-        }
-
-        $sessions = $query->get();
+            ->where('status', PosSessionStatus::CLOSED->value)
+            ->when($branchId !== null, fn (Builder $q) => $q->where('branch_id', $branchId))
+            ->where('closed_at', '>=', $from)
+            ->where('closed_at', '<=', $to)
+            ->get(['opening_cash_minor', 'expected_cash_minor', 'counted_cash_minor', 'variance_minor']);
 
         return [
-            'sessions_count' => $sessions->count(),
+            'closings' => $sessions->count(),
             'opening_cash_minor' => (int) $sessions->sum('opening_cash_minor'),
-            'counted_cash_minor' => (int) $sessions->sum('counted_cash_minor'),
-            'variance_minor' => (int) $sessions->sum('variance_minor'),
+            'expected_cash_minor' => (int) $sessions->sum(fn ($s) => (int) ($s->expected_cash_minor ?? 0)),
+            'counted_cash_minor' => (int) $sessions->sum(fn ($s) => (int) ($s->counted_cash_minor ?? 0)),
+            'variance_minor' => (int) $sessions->sum(fn ($s) => (int) ($s->variance_minor ?? 0)),
+        ];
+    }
+
+    /**
+     * KPIs du tableau de bord (spec §5.6) : chiffre du jour, commandes,
+     * panier moyen, occupation des tables, top produits.
+     *
+     * @return array<string, mixed>
+     */
+    public function kpis(string $companyId, ?int $branchId = null): array
+    {
+        $todayStart = Carbon::today();
+        $todayEnd = Carbon::today()->endOfDay();
+
+        $orders = $this->revenueOrders($companyId, $todayStart, $todayEnd, $branchId)
+            ->get(['id', 'total_minor']);
+
+        $revenue = (int) $orders->sum('total_minor');
+        $count = $orders->count();
+
+        return [
+            'date' => Carbon::today()->toDateString(),
+            'revenue_minor' => $revenue,
+            'orders_count' => $count,
+            'avg_basket_minor' => $count > 0 ? intdiv($revenue, $count) : 0,
+            'occupancy' => $this->occupancy($companyId, $todayStart, $todayEnd, $branchId),
+            'top_products' => $this->topProducts($companyId, $todayStart, $todayEnd, $branchId, 5),
         ];
     }
 
@@ -206,60 +291,71 @@ final class RestaurantReportService
         return $this->renderCsv($rows);
     }
 
+    /**
+     * @return array<int, array<int, string>>
+     */
     private function csvSales(string $companyId, Carbon $from, Carbon $to, ?int $branchId): array
     {
-        $rows = [['date', 'orders_count', 'revenue_minor', 'tax_minor', 'discount_minor']];
+        $rows = [['date', 'orders_count', 'revenue_minor']];
 
-        $orders = RestaurantOrder::query()
-            ->where('company_id', $companyId)
-            ->whereIn('status', self::REVENUE_STATUSES)
-            ->whereBetween('created_at', [$from, $to])
-            ->when($branchId !== null, fn ($q) => $q->where('branch_id', $branchId))
-            ->get();
+        foreach ($this->sales($companyId, $from, $to, $branchId) as $day) {
+            $rows[] = [$day['date'], (string) $day['orders'], (string) $day['revenue_minor']];
+        }
 
-        $byDay = $orders->groupBy(fn ($o) => $o->created_at->toDateString());
+        return $rows;
+    }
 
-        foreach ($byDay->sortKeys() as $day => $dayOrders) {
+    /**
+     * @return array<int, array<int, string>>
+     */
+    private function csvProducts(string $companyId, Carbon $from, Carbon $to, ?int $branchId): array
+    {
+        $rows = [['product_id', 'product_code', 'product_name', 'quantity', 'revenue_minor']];
+
+        foreach ($this->topProducts($companyId, $from, $to, $branchId, 1000) as $line) {
             $rows[] = [
-                $day,
-                (string) $dayOrders->count(),
-                (string) (int) $dayOrders->sum('total_minor'),
-                (string) (int) $dayOrders->sum('tax_minor'),
-                (string) (int) $dayOrders->sum('discount_minor'),
+                (string) $line['product_id'],
+                (string) ($line['product_code'] ?? ''),
+                (string) ($line['product_name'] ?? ''),
+                (string) $line['quantity'],
+                (string) $line['revenue_minor'],
             ];
         }
 
         return $rows;
     }
 
-    private function csvProducts(string $companyId, Carbon $from, Carbon $to, ?int $branchId): array
-    {
-        $rows = [['product_id', 'quantity', 'revenue_minor']];
-
-        foreach ($this->topProducts($companyId, $from, $to, $branchId, 1000) as $line) {
-            $rows[] = [(string) $line['product_id'], $line['quantity'], (string) $line['revenue_minor']];
-        }
-
-        return $rows;
-    }
-
+    /**
+     * @return array<int, array<int, string>>
+     */
     private function csvCogs(string $companyId, Carbon $from, Carbon $to, ?int $branchId): array
     {
+        $data = $this->cogs($companyId, $from, $to, $branchId);
+
         return [
-            ['from', 'to', 'cogs_minor'],
-            [$from->toDateString(), $to->toDateString(), (string) $this->cogs($companyId, $from, $to, $branchId)],
+            ['from', 'to', 'cogs_minor', 'revenue_minor', 'margin_minor'],
+            [
+                $from->toDateString(),
+                $to->toDateString(),
+                (string) $data['total_cogs_minor'],
+                (string) $data['total_revenue_minor'],
+                (string) $data['margin_minor'],
+            ],
         ];
     }
 
+    /**
+     * @return array<int, array<int, string>>
+     */
     private function csvPos(string $companyId, Carbon $from, Carbon $to, ?int $branchId): array
     {
         $rows = [['pos_session_id', 'closed_at', 'opening_cash_minor', 'counted_cash_minor', 'variance_minor']];
 
         RestaurantPosSession::query()
             ->where('company_id', $companyId)
-            ->where('status', 'closed')
+            ->where('status', PosSessionStatus::CLOSED->value)
             ->whereBetween('closed_at', [$from, $to])
-            ->when($branchId !== null, fn ($q) => $q->where('branch_id', $branchId))
+            ->when($branchId !== null, fn (Builder $q) => $q->where('branch_id', $branchId))
             ->orderBy('closed_at')
             ->get()
             ->each(function ($session) use (&$rows): void {
@@ -280,16 +376,48 @@ final class RestaurantReportService
      */
     private function renderCsv(array $rows): string
     {
-        $handle = fopen('php://temp', 'r+');
+        return implode("\n", array_map(
+            fn (array $row): string => implode(',', array_map(
+                fn (string $value): string => sprintf('"%s"', str_replace('"', '""', $value)),
+                $row,
+            )),
+            $rows,
+        ))."\n";
+    }
 
-        foreach ($rows as $row) {
-            fputcsv($handle, $row);
+    /**
+     * @return Builder<RestaurantOrder>
+     */
+    private function revenueOrders(string $companyId, Carbon $from, Carbon $to, ?int $branchId): Builder
+    {
+        return RestaurantOrder::query()
+            ->where('company_id', $companyId)
+            ->whereIn('status', self::REVENUE_STATUSES)
+            ->whereBetween('created_at', [$from, $to])
+            ->when($branchId !== null, fn (Builder $q) => $q->where('branch_id', $branchId));
+    }
+
+    /**
+     * Coût matière théorique : Σ (quantité recette × coût moyen ingrédient) ×
+     * quantité vendue (spec D4 — COGS serveur à partir de la composition).
+     */
+    private function recipeCostMinor(string $companyId, int $productId, int $quantitySold): int
+    {
+        $ingredients = DB::table('restaurant_product_ingredients')
+            ->join('restaurant_ingredients', 'restaurant_ingredients.id', '=', 'restaurant_product_ingredients.ingredient_id')
+            ->where('restaurant_product_ingredients.company_id', $companyId)
+            ->where('restaurant_product_ingredients.product_id', $productId)
+            ->get([
+                'restaurant_product_ingredients.quantity',
+                'restaurant_ingredients.avg_cost_minor',
+            ]);
+
+        $unitCost = 0;
+
+        foreach ($ingredients as $row) {
+            $unitCost += (int) round(((float) $row->quantity) * ((int) ($row->avg_cost_minor ?? 0)));
         }
 
-        rewind($handle);
-        $csv = stream_get_contents($handle);
-        fclose($handle);
-
-        return $csv === false ? '' : $csv;
+        return $unitCost * $quantitySold;
     }
 }

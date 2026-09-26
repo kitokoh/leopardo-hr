@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\RestaurantManager\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Tenant\Domain\Models\EmployeeResourceAssignment;
+use App\Modules\RestaurantManager\Domain\Permissions\RestaurantPermissions;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -17,9 +17,15 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  *
  * `POST /restaurant/reports/export` : génère le CSV (colonnes allowlistées,
  * contenu déterministe) et le stocke sous
- * `restaurant/exports/{company}/{hash}.csv` — rejouer les mêmes filtres
- * produit le même hash et réutilise le même fichier (idempotence). La
- * réponse porte une URL **signée éphémère** (10 min, middleware `signed`).
+ * `restaurant/exports/{company}/restaurant_{type}_{from}_{to}_{branch}.csv`
+ * — rejouer les mêmes filtres produit le même nom de fichier et réutilise
+ * le même fichier (idempotence). La réponse porte une URL **signée
+ * éphémère** (10 min, middleware `signed`) ; le paramètre `company` de
+ * l'URL est couvert par la signature (intégrité, pas de traversée tenant).
+ *
+ * #8180 — forme `{filename, download_url}` et chemin de stockage réalignés
+ * sur le contrat initial (RestaurantReportExportTest), perdu lors de la
+ * fusion de dette « PM round 7 ».
  */
 final class RestaurantReportExportService
 {
@@ -29,7 +35,7 @@ final class RestaurantReportExportService
     private const ALLOWED_TYPES = ['sales', 'products', 'cogs', 'pos'];
 
     /**
-     * @return array{export_id: string, filename: string, signed_url: string, reused: bool}
+     * @return array{filename: string, download_url: string, reused: bool}
      */
     public function export(Employee $actor, string $reportType, Carbon $from, Carbon $to, ?int $branchId = null): array
     {
@@ -37,11 +43,15 @@ final class RestaurantReportExportService
             throw new \InvalidArgumentException('Type de rapport inconnu (sales|products|cogs|pos).');
         }
 
-        $hash = sha1(implode('|', [$actor->company_id, $reportType, $from->toDateString(), $to->toDateString(), (string) $branchId]));
+        $filename = sprintf(
+            'restaurant_%s_%s_%s_%s.csv',
+            $reportType,
+            $from->toDateString(),
+            $to->toDateString(),
+            $branchId ?? 'all',
+        );
 
-        // Le hash intègre la company : pas de collision cross-tenant, le
-        // téléchargement signé ne reçoit que le hash.
-        $relative = sprintf('restaurant/exports/%s.csv', $hash);
+        $relative = sprintf('restaurant/exports/%s/%s', $actor->company_id, $filename);
         $disk = Storage::disk('local');
         $reused = $disk->exists($relative);
 
@@ -57,54 +67,50 @@ final class RestaurantReportExportService
             $disk->put($relative, $csv);
         }
 
-        $signedUrl = URL::temporarySignedRoute(
+        $downloadUrl = URL::temporarySignedRoute(
             'restaurant.reports.export.download',
             now()->addMinutes(self::SIGNED_URL_TTL_MINUTES),
-            ['export' => $hash],
+            ['export' => $filename, 'company' => $actor->company_id],
         );
 
         return [
-            'export_id' => $hash,
-            'filename' => $reportType.'-'.$from->toDateString().'_'.$to->toDateString().'.csv',
-            'signed_url' => $signedUrl,
+            'filename' => $filename,
+            'download_url' => $downloadUrl,
             'reused' => $reused,
         ];
     }
 
     /**
-     * Téléchargement du fichier (route signée, hors groupe auth).
+     * Téléchargement du fichier (route signée, hors groupe auth — la
+     * signature couvre `{export}` ET `company`, prouvée par le middleware
+     * `signed` en amont).
      */
-    public function download(string $exportId): StreamedResponse|JsonResponse
+    public function download(string $companyId, string $export): StreamedResponse|JsonResponse
     {
-        $relative = sprintf('restaurant/exports/%s.csv', $exportId);
+        $filename = basename($export);
+        $relative = sprintf('restaurant/exports/%s/%s', $companyId, $filename);
         $disk = Storage::disk('local');
 
-        if (! $disk->exists($relative)) {
+        if ($filename === '' || ! $disk->exists($relative)) {
             return response()->json(['message' => 'Export introuvable ou expiré.'], 404);
         }
 
-        return $disk->download($relative);
+        return $disk->download($relative, $filename, ['Content-Type' => 'text/csv']);
     }
 
     /**
      * Prouve la permission `restaurant.reports` pour la fermeture de la policy.
      *
      * #7599 — les rapports sont un geste de gestion : comportement historique
-     * (`principal`/`rh` — les autres valeurs listées ici étaient mortes, hors
-     * enum `manager_role`) tant qu'aucune assignation `restaurant_branch`
+     * (`principal`/`rh`) tant qu'aucune assignation `restaurant_branch`
      * n'existe, puis niveau `manage` sur au moins une succursale assignée.
+     *
+     * #8180 — délègue à l'implémentation canonique unique
+     * ({@see RestaurantPermissions::canViewReports()}) : la copie locale est
+     * retirée pour éviter la dérive entre les 3 call sites HTTP.
      */
     public static function authorize(Employee $actor): bool
     {
-        if (! $actor->isResourceTypeScoped('restaurant_branch')) {
-            return $actor->hasManagerRole('principal', 'rh');
-        }
-
-        $manageable = $actor->accessibleResourceIds(
-            'restaurant_branch',
-            EmployeeResourceAssignment::LEVEL_MANAGE
-        );
-
-        return $manageable === null || $manageable !== [];
+        return (new RestaurantPermissions)->canViewReports($actor);
     }
 }

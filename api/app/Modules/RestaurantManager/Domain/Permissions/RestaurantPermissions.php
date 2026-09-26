@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Domain\Permissions;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\EmployeeResourceAssignment;
 use App\Modules\RestaurantManager\Domain\Manifests\RestaurantManagerManifest;
 
 /**
@@ -70,5 +72,38 @@ final class RestaurantPermissions
             self::SERVER, self::KITCHEN, self::RIDER, self::REPORTS => ['principal', 'rh', 'manager', 'server', 'kitchen', 'rider'],
             default => [],
         };
+    }
+
+    /**
+     * Règle EFFECTIVE de la permission `restaurant.reports` (#8180) — seule
+     * permission consommée par des call sites HTTP (rapports + export CSV).
+     *
+     * Alignée sur l'architecture d'autorisation canonique du module (#7599,
+     * ressource-scopée) — les valeurs `manager`/`server`/`kitchen`/`rider` du
+     * mapping documentaire ci-dessus sont MORTES pour ce cas : elles ne sont
+     * pas assignables via `manager_role` (trou n°2 de l'épique #7597) :
+     *
+     *  - aucune assignation `restaurant_branch` dans l'entreprise →
+     *    comportement historique : `principal`/`rh` ;
+     *  - assignations présentes (scoping actif, fail-closed) → niveau
+     *    `manage` sur au moins une succursale assignée (le `principal` passe
+     *    toujours via `accessibleResourceIds` = null).
+     *
+     * Les call sites ne doivent JAMAIS utiliser `$actor->can('restaurant.*')`
+     * : aucun Gate n'est défini pour ces capacités (`cannot()` sur capacité
+     * indéfinie = 403 systématique — bug d'origine de #8180).
+     */
+    public function canViewReports(Employee $actor): bool
+    {
+        if (! $actor->isResourceTypeScoped('restaurant_branch')) {
+            return $actor->hasManagerRole('principal', 'rh');
+        }
+
+        $manageable = $actor->accessibleResourceIds(
+            'restaurant_branch',
+            EmployeeResourceAssignment::LEVEL_MANAGE
+        );
+
+        return $manageable === null || $manageable !== [];
     }
 }

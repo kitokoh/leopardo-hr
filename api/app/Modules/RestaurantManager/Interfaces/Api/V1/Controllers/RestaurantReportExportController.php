@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\RestaurantManager\Domain\Permissions\RestaurantPermissions;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantReportExportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,15 +25,15 @@ class RestaurantReportExportController extends Controller
 {
     public function __construct(
         private readonly RestaurantReportExportService $exports,
-    ) {
-    }
+        private readonly RestaurantPermissions $permissions = new RestaurantPermissions,
+    ) {}
 
     public function export(Request $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('restaurant.reports')) {
+        if (! $this->permissions->canViewReports($actor)) {
             abort(403);
         }
 
@@ -66,10 +67,11 @@ class RestaurantReportExportController extends Controller
     }
 
     /**
-     * Route signée (middleware `signed`) — la signature valide l'accès.
+     * Route signée (middleware `signed`) — la signature valide l'accès et
+     * couvre `{export}` + `company` (pas de traversée tenant possible).
      */
     public function download(Request $request, string $export): StreamedResponse|JsonResponse
     {
-        return $this->exports->download($export);
+        return $this->exports->download((string) $request->query('company', ''), $export);
     }
 }
