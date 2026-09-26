@@ -29,6 +29,7 @@ Ce dossier capture les decisions structurantes qui doivent rester stables pour L
 | [0023](0023-admin-dashboard-typage.md) | Proposee | admin-dashboard (Vue 3/JS) : typage TypeScript incremental (JSDoc + checkJs progressif puis vue-tsc), gel du JS nouveau via CI — issue #7849 |
 | [0024](0024-tables-tenant-scoping-transitif-employe.md) | Acceptee | 4 tables tenant scopées employé sans `company_id` (device_tokens, calendar_connections, calendar_events, app_notifications) : statu quo documenté, scoping transitif via employee/user — issue #7984 |
 | [0025](0025-sanctum-ttl-30j-glissants.md) | Proposee | Tokens Sanctum : TTL 30 jours glissants justifie (decision proprietaire #7491) + controles compensatoires (purge quotidienne, prefixe `leo_`) — issue #7655 point 3 |
+| [0026](0026-registre-unifie-modules-features-solutions.md) | Proposee — validation owner requise | Registre unifie modules/features/solutions : source PHP versionnee unique (pas de table), dual-read reversible, parite feature map prouvee, kill switch priorite DB, `metadata.modules` derive — issue #8148 (BOS-010) |
 
 ## Format
 
