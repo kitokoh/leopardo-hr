@@ -17,6 +17,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantTable;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTableSession;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
+use Tests\Support\AssignsResourceAccess;
 use Tests\TestCase;
 
 /**
@@ -25,18 +26,41 @@ use Tests\TestCase;
  * Vérifie que les agrégats sont exacts par rapport aux données sous-jacentes
  * (ventes, occupation, top produits, COGS, caisses, KPIs du jour) et que la
  * permission `restaurant.reports` est exigée.
+ *
+ * #8180 — la permission est prouvée par la règle canonique #7599
+ * (RestaurantPermissions::canViewReports) : un « manager restaurant » est un
+ * employé porteur d'une assignation `manage` sur une succursale (les valeurs
+ * manager/server/kitchen/rider de `manager_role` sont mortes — trou n°2 de
+ * l'épique #7597). Sans aucune assignation dans l'entreprise, le
+ * comportement historique principal/rh s'applique.
  */
 class RestaurantReportsTest extends TestCase
 {
+    use AssignsResourceAccess;
     use RefreshTenantDatabase;
 
-    private function manager(Company $company, string $managerRole = 'manager'): Employee
+    private function manager(Company $company, RestaurantBranch $branch, string $level = 'manage'): Employee
+    {
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+
+        $this->assignResourceAccess($employee, 'restaurant_branch', $branch->id, $level);
+
+        Sanctum::actingAs($employee);
+
+        return $employee;
+    }
+
+    private function principal(Company $company): Employee
     {
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'manager',
-            'manager_role' => $managerRole,
+            'manager_role' => 'principal',
         ]);
 
         Sanctum::actingAs($employee);
@@ -70,20 +94,45 @@ class RestaurantReportsTest extends TestCase
     public function test_reports_require_restaurant_reports_permission(): void
     {
         $company = $this->company();
+        $branch = RestaurantBranch::factory()->create(['company_id' => $company->id]);
         $this->ordinaryEmployee($company);
 
         $this->getJson('/api/v1/restaurant/reports/sales')->assertStatus(403);
         $this->getJson('/api/v1/restaurant/reports/kpis')->assertStatus(403);
         $this->postJson('/api/v1/restaurant/reports/export', ['report_type' => 'sales'])->assertStatus(403);
+
+        // Une assignation `view` (consultation) ne suffit pas : les rapports
+        // sont un geste de gestion (#7599, niveau `manage` requis).
+        $viewer = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+        $this->assignResourceAccess($viewer, 'restaurant_branch', $branch->id, 'view');
+        Sanctum::actingAs($viewer);
+
+        $this->getJson('/api/v1/restaurant/reports/sales')->assertStatus(403);
+    }
+
+    public function test_principal_can_read_reports_without_any_assignment(): void
+    {
+        // Comportement historique : tant qu'aucune assignation
+        // `restaurant_branch` n'existe dans l'entreprise, principal/rh
+        // passent (progressivité #7598 — aucune régression avant la première
+        // assignation).
+        $company = $this->company();
+        $this->principal($company);
+
+        $this->getJson('/api/v1/restaurant/reports/sales')->assertStatus(200);
+        $this->getJson('/api/v1/restaurant/reports/kpis')->assertStatus(200);
     }
 
     public function test_sales_and_occupancy_aggregates_are_exact(): void
     {
         $company = $this->company();
-        $this->manager($company);
 
         /** @var RestaurantBranch $branch */
         $branch = RestaurantBranch::factory()->create(['company_id' => $company->id]);
+        $this->manager($company, $branch);
 
         // Deux commandes payées aujourd'hui (2000 + 3000) + une draft ignorée.
         RestaurantOrder::factory()->create([
@@ -146,10 +195,10 @@ class RestaurantReportsTest extends TestCase
     public function test_products_and_cogs_aggregates_are_exact(): void
     {
         $company = $this->company();
-        $this->manager($company);
 
         /** @var RestaurantBranch $branch */
         $branch = RestaurantBranch::factory()->create(['company_id' => $company->id]);
+        $this->manager($company, $branch);
 
         /** @var RestaurantProduct $product */
         $product = RestaurantProduct::factory()->create([
@@ -206,10 +255,10 @@ class RestaurantReportsTest extends TestCase
     public function test_pos_report_aggregates_closings(): void
     {
         $company = $this->company();
-        $this->manager($company);
 
         /** @var RestaurantBranch $branch */
         $branch = RestaurantBranch::factory()->create(['company_id' => $company->id]);
+        $this->manager($company, $branch);
 
         RestaurantPosSession::factory()->create([
             'company_id' => $company->id,

@@ -94,11 +94,17 @@ class RestaurantReportExportTest extends TestCase
         Storage::disk('local')->assertExists('restaurant/exports/'.$company->id.'/'.$filename);
 
         // Téléchargement via l'URL signée : CSV avec entête + ligne de ventes.
-        $this->get($downloadUrl)
-            ->assertStatus(200)
-            ->assertHeader('content-type', 'text/csv')
-            ->assertSee('"date","orders_count","revenue_minor"', false)
-            ->assertSee('"1","2500"', false);
+        // NB 1 : Symfony normalise tout Content-Type `text/*` en y ajoutant
+        //        le charset (Response::prepare) — forme normalisée attendue.
+        // NB 2 : le téléchargement est STREAMÉ (StreamedResponse) — le corps
+        //        est asserté via l'API dédiée, pas assertSee (getContent vide).
+        $download = $this->get($downloadUrl);
+        $download->assertStatus(200)
+            ->assertHeader('content-type', 'text/csv; charset=utf-8');
+
+        $csv = $download->streamedContent();
+        $this->assertStringContainsString('"date","orders_count","revenue_minor"', $csv);
+        $this->assertStringContainsString('"1","2500"', $csv);
 
         // Signature invalide → 403.
         $this->get($downloadUrl.'&signature=deadbeef')
