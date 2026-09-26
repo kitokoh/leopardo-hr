@@ -15,7 +15,7 @@ use App\Modules\TravelAgency\Domain\Enums\TripStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
-use App\Modules\TravelAgency\Infrastructure\Services\TravelCurrencyService;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelCurrencyConverter;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelShopBookingRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelBookingRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelBookingResource;
@@ -108,7 +108,13 @@ class TravelShopController extends Controller
             return;
         }
 
-        $service = app(TravelCurrencyService::class);
+        // #8168 — convertisseur UNIQUE du module (contrat canonique
+        // from/to/rate_minor) : un taux configuré via l'API est visible par
+        // la boutique. Paire inverse supportée (critère TRAVEL-805), scope
+        // tenant garanti par le middleware `tenant` (global scope
+        // BelongsToCompany), échec 422 fail-closed inchangé.
+        $converter = app(TravelCurrencyConverter::class);
+        $target = strtoupper($currency);
 
         foreach ($trips as $trip) {
             if (! $trip instanceof TravelTrip) {
@@ -116,23 +122,23 @@ class TravelShopController extends Controller
             }
 
             foreach ($trip->prices as $price) {
-                $price->adult_price_minor = $service->convert(
-                    $actor->company_id,
+                $from = strtoupper((string) $price->currency);
+
+                $price->adult_price_minor = $converter->convert(
                     (int) $price->adult_price_minor,
-                    (string) $price->currency,
-                    strtoupper($currency),
-                );
+                    $from,
+                    $target,
+                )['amount_minor'];
 
                 if ($price->child_price_minor !== null) {
-                    $price->child_price_minor = $service->convert(
-                        $actor->company_id,
+                    $price->child_price_minor = $converter->convert(
                         (int) $price->child_price_minor,
-                        (string) $price->currency,
-                        strtoupper($currency),
-                    );
+                        $from,
+                        $target,
+                    )['amount_minor'];
                 }
 
-                $price->currency = strtoupper($currency);
+                $price->currency = $target;
             }
         }
     }
