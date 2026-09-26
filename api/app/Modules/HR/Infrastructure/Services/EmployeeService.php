@@ -138,6 +138,11 @@ class EmployeeService
                 'email',
                 'personal_email',
                 'recovery_email',
+                // #8174 — `phone` (téléphone professionnel) est validé par
+                // UpdateProfileRequest depuis #7861 (« Mon compte » web
+                // l'édite) mais était silencieusement jeté ici : la valeur
+                // acceptée n'était jamais persistée pour un non-manager.
+                'phone',
                 'personal_phone',
                 'password',
             ]);

@@ -66,6 +66,27 @@ class CompanyFactory extends Factory
     // ── États ──────────────────────────────────────────────────────────────
 
     /**
+     * #8130 — company avec un module/verticale activé (`features.<clé>` = true).
+     *
+     * Les middlewares/gates de verticales exigent la clé EXACTE du registre
+     * (`restaurantmanager` sans underscore, `fuel_station`, `delivery`…) :
+     * une fixture qui oublie la clé prend un 403 FEATURE_NOT_ENABLED avant
+     * d'atteindre le comportement testé. Centraliser l'activation ici évite
+     * les fautes de frappe sur la clé et les cartes `features` partielles.
+     *
+     *   Company::factory()->withFeature('fuel_station')->create();
+     */
+    public function withFeature(string $key, bool $enabled = true): static
+    {
+        return $this->state(function (array $attributes) use ($key, $enabled) {
+            $features = $attributes['features'] ?? [];
+            $features[$key] = $enabled;
+
+            return ['features' => $features];
+        });
+    }
+
+    /**
      * Plan spécifique par nom
      */
     public function withPlan(string $planName): static

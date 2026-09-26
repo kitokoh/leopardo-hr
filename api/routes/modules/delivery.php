@@ -46,8 +46,15 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/deliveries/stops/{stop}/status', [DeliveryRiderController::class, 'status'])->whereNumber('stop');
 
         // CRUD livraisons (DELIVERY-201/#6285), tournées (202), tracking (204),
-        // rapports (207) — RBAC manager (la matrice fine est BC-26-D05/#6312).
-        Route::middleware('api.manager')->group(function (): void {
+        // rapports (207) — matrice RBAC fine `delivery.role` câblée (#8181,
+        // BC-26-D05/#6312) selon docs/architecture/DELIVERY_RBAC.md :
+        // deny-by-default, un manager hors rôle (ex. marketing) reçoit 403
+        // DELIVERY_ROLE_REQUIRED. `api.manager` générique n'est plus utilisé
+        // ici : il laissait passer TOUT manager sur toutes les routes.
+
+        // Dispatch (admin + dispatcher) — CRUD livraisons, écriture des
+        // tournées, génération de lien tracking (manager en lecture : ❌ doc).
+        Route::middleware('delivery.role:dispatcher')->group(function (): void {
             Route::get('/deliveries', [DeliveryController::class, 'index']);
             Route::post('/deliveries', [DeliveryController::class, 'store']);
             Route::get('/deliveries/{delivery}', [DeliveryController::class, 'show'])->whereNumber('delivery');
@@ -56,17 +63,30 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
             Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
             Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
-            Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
 
-            // Tracking (DELIVERY-204/#6288) — événements, lien public, timeline.
-            Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
             Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
-            Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
+        });
 
+        // Terrain (dispatcher + rider) — détail d'une tournée et événements de
+        // tracking : le rider est borné à SES tournées par les Policies
+        // (DeliveryRoutePolicy::view / DeliveryPolicy), jamais par le rôle seul.
+        Route::middleware('delivery.role:dispatcher,rider')->group(function (): void {
+            Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
+            Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
+        });
+
+        // Timeline interne (manager + rider sur ses tournées — Policy).
+        Route::middleware('delivery.role:manager,rider')->group(function (): void {
+            Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
+        });
+
+        // Lecture / supervision (manager = principal|manager|rh, admin inclus)
+        // — COD, notifications, rapports, exports. settle/reconcile restent
+        // réservés à l'admin par le check contrôleur requireAdmin()
+        // (message 403 figé par DeliveryCodSettlementApiTest — defense-in-depth).
+        Route::middleware('delivery.role:manager')->group(function (): void {
             // Règlement COD & commissions (DELIVERY-205/#6289) — cycle de vie
-            // pending→collected→settled→reconciled, idempotent. settle/reconcile
-            // sont réservés à l'admin (check contrôleur) ; la matrice RBAC fine
-            // (delivery.role) est portée par BC-26-D05/#6312.
+            // pending→collected→settled→reconciled, idempotent.
             Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])->whereNumber('route');
             Route::post('/deliveries/cod-settlements/{settlement}/collect', [DeliveryCodSettlementController::class, 'collect'])->whereNumber('settlement');
             Route::post('/deliveries/cod-settlements/{settlement}/settle', [DeliveryCodSettlementController::class, 'settle'])->whereNumber('settlement');

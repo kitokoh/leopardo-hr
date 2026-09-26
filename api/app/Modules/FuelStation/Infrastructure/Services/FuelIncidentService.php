@@ -138,7 +138,7 @@ final class FuelIncidentService
             'company_id' => (string) $actor->company_id,
             'station_id' => $data['station_id'] ?? null,
             'incident_id' => $data['incident_id'] ?? null,
-            'task_type' => $data['task_type'] ?? 'preventive',
+            'task_type' => $data['task_type'] ?? FuelMaintenanceTask::TYPE_PREVENTIVE,
             'title' => is_string($data['title'] ?? null) ? $data['title'] : '',
             'description' => $data['description'] ?? null,
             'priority' => $data['priority'] ?? 'medium',
