@@ -110,7 +110,8 @@ return [
     // handler + entrée registre.
     'write_tools' => [
         'create_absence',
-        'approve_absence',
+        // BOS-004 (#8145) — `approve_absence` (legacy) retiré : il contournait
+        // l'Action canonique (update direct, aucun événement AbsenceApproved).
         // B3a (#6856) — décision (approbation/refus motivé) sur une demande
         // d'absence, exécutée via les Actions canoniques Planning après
         // confirmation (flux A4, contrat A3 #6850).
@@ -174,10 +175,12 @@ return [
         // (#8023 : le mode `auto` y est rétrogradé en `confirm`).
         'email_reply_draft' => ['role' => 'employee', 'permissions' => ['communication.reply_draft']],
         'create_absence' => ['role' => 'employee', 'permissions' => ['absences.create']],
-        'approve_absence' => ['role' => 'manager', 'permissions' => ['absences.approve']],
+        // BOS-004 (#8145) — `approve_absence` (legacy) retiré de la matrice :
+        // chemin unique = `absence_decision` (Action canonique + événements).
         // B3a (#6856) — outil écriture BC-06 LEAVE (contrat A3, #6850) :
         // décision sur demande d'absence, permission = policy décision REST
-        // existante (même portée que approve_absence, parité AbsenceController).
+        // existante (même portée que l'ancien approve_absence, parité
+        // AbsenceController).
         'absence_decision' => ['role' => 'manager', 'permissions' => ['absences.approve']],
         // B3b (#6857) — outil écriture BC-05 WORKFORCE (contrat A3, #6850) :
         // affectation d'un shift à un employé, parité REST

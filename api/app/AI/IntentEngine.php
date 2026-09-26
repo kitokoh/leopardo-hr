@@ -210,10 +210,8 @@ class IntentEngine
                 $startDate,
                 $endDate,
             ),
-            'approve_absence' => sprintf(
-                'Approuver l\'absence #%s',
-                $absenceId,
-            ),
+            // BOS-004 (#8145) — `approve_absence` (legacy) SUPPRIMÉ : chemin
+            // unique = `absence_decision` (Action canonique Planning).
             // B3a (#6856) — décision (approbation/refus motivé).
             'absence_decision' => sprintf(
                 '%s la demande d\'absence #%s%s',
