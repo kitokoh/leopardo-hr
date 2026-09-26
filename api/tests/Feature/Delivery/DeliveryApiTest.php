@@ -69,9 +69,12 @@ class DeliveryApiTest extends TestCase
     {
         Sanctum::actingAs($this->employee());
 
+        // #8181 : la matrice fine `delivery.role` (BC-26-D05) a remplacé la
+        // garde générique `api.manager` — le code d'erreur canonique du
+        // deny-by-default est DELIVERY_ROLE_REQUIRED (contrat DeliveryRbac*).
         $this->getJson('/api/v1/delivery/deliveries')
             ->assertStatus(403)
-            ->assertJson(['error' => 'MANAGER_REQUIRED']);
+            ->assertJson(['error' => 'DELIVERY_ROLE_REQUIRED']);
     }
 
     public function test_list_rejects_disabled_feature_flag(): void
