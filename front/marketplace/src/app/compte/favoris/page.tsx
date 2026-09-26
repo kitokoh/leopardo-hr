@@ -28,10 +28,11 @@ export default function AccountFavoritesPage() {
   const [removing, setRemoving] = useState<number | null>(null);
 
   const load = useCallback(
-    async (token: string) => {
+    async () => {
       setError(null);
       try {
-        setFavorites(await fetchFavorites(token));
+        // #8096 — le cookie HttpOnly porte la session (plus de jeton).
+        setFavorites(await fetchFavorites());
       } catch (err) {
         if (handleUnauthorized(err)) {
           router.push("/compte");
@@ -52,14 +53,14 @@ export default function AccountFavoritesPage() {
     // Fetch-au-montage légitime (synchronisation avec l'API) : la règle
     // « React Compiler readiness » flaguerait le setError synchrone.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    void load(session.token);
+    void load();
   }, [ready, session, router, load]);
 
   const remove = async (productId: number) => {
     if (!session || removing !== null) return;
     setRemoving(productId);
     try {
-      await removeFavorite(session.token, productId);
+      await removeFavorite(productId);
       setFavorites((current) =>
         current === null ? current : current.filter((product) => product.id !== productId),
       );

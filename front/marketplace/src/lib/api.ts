@@ -188,7 +188,12 @@ interface RequestOptions {
   body?: unknown;
   query?: Record<string, string | number | undefined>;
   timeoutMs?: number;
-  /** Jeton compte acheteur (#7814) — ajoute `Authorization: Bearer …`. */
+  /**
+   * Jeton compte acheteur LEGACY (#7814) — ajoute `Authorization: Bearer …`.
+   * @deprecated #8096 : la session est portée par le cookie HttpOnly
+   * (`credentials: "include"` ci-dessous) ; ne reste utile que pour la
+   * migration douce (`restoreBuyerSession`).
+   */
   token?: string;
 }
 
@@ -218,6 +223,10 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
       cache: "no-store",
+      // #8096 — la session acheteur voyage dans le cookie HttpOnly posé par
+      // l'API (SameSite=None, front cross-origin) : il faut `include` pour
+      // que le navigateur l'envoie et honore les Set-Cookie des réponses.
+      credentials: "include",
       signal: controller.signal,
     });
   } catch (error) {
@@ -456,8 +465,12 @@ export interface BuyerProfile {
   created_at: string | null;
 }
 
+/**
+ * Session acheteur côté client (#8096) : PLUS DE JETON — le cookie
+ * HttpOnly porte la session, le client ne conserve que le profil public
+ * (indice d'affichage non sensible).
+ */
 export interface BuyerSession {
-  token: string;
   buyer: BuyerProfile;
 }
 
@@ -496,14 +509,37 @@ export interface ProductReviews {
 function normalizeBuyerSession(payload: unknown): BuyerSession {
   const raw = isRecord(payload) && isRecord(payload.data) ? payload.data : {};
   const buyer = isRecord(raw.buyer) ? raw.buyer : {};
+  // #8096 — le jeton opaque reste présent dans la réponse (migration douce
+  // côté API) mais n'est volontairement PLUS lu ni propagé : le cookie
+  // HttpOnly posé par la réponse est le seul porteur de session retenu.
   return {
-    token: typeof raw.token === "string" ? raw.token : "",
     buyer: {
       name: typeof buyer.name === "string" ? buyer.name : "",
       email: typeof buyer.email === "string" ? buyer.email : "",
       phone: typeof buyer.phone === "string" ? buyer.phone : null,
       created_at: typeof buyer.created_at === "string" ? buyer.created_at : null,
     },
+  };
+}
+
+/**
+ * Migration douce (#8096) : échange un jeton legacy (ex-localStorage)
+ * contre le cookie HttpOnly de session. À appeler UNE fois à la détection
+ * d'une ancienne session, juste avant de purger le jeton du stockage.
+ */
+export async function restoreBuyerSession(legacyToken: string): Promise<BuyerProfile> {
+  const payload = await request<unknown>("/public/market/account/session/restore", {
+    method: "POST",
+    token: legacyToken,
+  });
+  const raw = isRecord(payload) && isRecord(payload.data) && isRecord(payload.data.buyer)
+    ? payload.data.buyer
+    : {};
+  return {
+    name: typeof raw.name === "string" ? raw.name : "",
+    email: typeof raw.email === "string" ? raw.email : "",
+    phone: typeof raw.phone === "string" ? raw.phone : null,
+    created_at: typeof raw.created_at === "string" ? raw.created_at : null,
   };
 }
 
@@ -528,12 +564,12 @@ export async function loginBuyer(payload: { email: string; password: string }): 
   return normalizeBuyerSession(response);
 }
 
-export async function logoutBuyer(token: string): Promise<void> {
-  await request<unknown>("/public/market/account/logout", { method: "POST", token });
+export async function logoutBuyer(): Promise<void> {
+  await request<unknown>("/public/market/account/logout", { method: "POST" });
 }
 
-export async function fetchBuyerProfile(token: string): Promise<BuyerProfile> {
-  const payload = await request<unknown>("/public/market/account/me", { token });
+export async function fetchBuyerProfile(): Promise<BuyerProfile> {
+  const payload = await request<unknown>("/public/market/account/me");
   const raw = isRecord(payload) && isRecord(payload.data) ? payload.data : {};
   return {
     name: typeof raw.name === "string" ? raw.name : "",
@@ -543,42 +579,37 @@ export async function fetchBuyerProfile(token: string): Promise<BuyerProfile> {
   };
 }
 
-export async function fetchBuyerOrders(token: string, page = 1): Promise<Paginated<AccountOrder>> {
+export async function fetchBuyerOrders(page = 1): Promise<Paginated<AccountOrder>> {
   const payload = await request<unknown>("/public/market/account/orders", {
-    token,
     query: { page },
   });
   return normalizePaginated<AccountOrder>(payload);
 }
 
-export async function fetchFavorites(token: string): Promise<PublicProduct[]> {
-  const payload = await request<unknown>("/public/market/account/favorites", { token });
+export async function fetchFavorites(): Promise<PublicProduct[]> {
+  const payload = await request<unknown>("/public/market/account/favorites");
   return isRecord(payload) && Array.isArray(payload.data) ? (payload.data as PublicProduct[]) : [];
 }
 
-export async function addFavorite(token: string, productId: number): Promise<void> {
+export async function addFavorite(productId: number): Promise<void> {
   await request<unknown>("/public/market/account/favorites", {
     method: "POST",
     body: { product_id: productId },
-    token,
   });
 }
 
-export async function removeFavorite(token: string, productId: number): Promise<void> {
+export async function removeFavorite(productId: number): Promise<void> {
   await request<unknown>(`/public/market/account/favorites/${productId}`, {
     method: "DELETE",
-    token,
   });
 }
 
 export async function submitReview(
-  token: string,
   payload: { order_reference: string; product_id: number; rating: number; comment?: string },
 ): Promise<void> {
   await request<unknown>("/public/market/account/reviews", {
     method: "POST",
     body: payload,
-    token,
   });
 }
 

@@ -54,7 +54,9 @@ export default function CheckoutPage() {
   const { ready, groups } = useCart();
   // #7814 — session acheteur optionnelle : si connecté, la commande est
   // liée au compte (historique + avis vérifiés), sinon checkout invité.
-  const { session } = useBuyer();
+  // #8096 — plus de jeton côté client : le hook est monté pour la migration
+  // douce + restauration de session, le cookie HttpOnly fait le reste.
+  useBuyer();
   const [form, setForm] = useState<CustomerForm>(EMPTY_FORM);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [submitting, setSubmitting] = useState(false);
@@ -94,7 +96,8 @@ export default function CheckoutPage() {
           },
           payment_method: paymentMethod,
           idempotency_key: key,
-        }, session?.token);
+          // #8096 — session portée par le cookie HttpOnly (plus de jeton).
+        });
         created.push({
           reference: order.reference,
           trackingToken: order.tracking_token,
