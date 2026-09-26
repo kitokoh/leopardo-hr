@@ -1,20 +1,28 @@
 "use client";
 
 /**
- * Hook session acheteur (#7814) — état React synchronisé avec le
- * localStorage via useSyncExternalStore (même pattern que useCart) :
+ * Hook session acheteur (#7814, migration #8096) — état React synchronisé
+ * avec le localStorage via useSyncExternalStore (même pattern que useCart) :
  * même onglet via le CustomEvent émis par writeBuyerSession/clear, autres
  * onglets via l'événement natif `storage`.
+ *
+ * #8096 — la session est portée par le cookie HttpOnly (plus de jeton en
+ * localStorage). Ce hook orchestre au montage :
+ *   1. la migration douce : un jeton legacy détecté est échangé UNE fois
+ *      contre le cookie (`restoreBuyerSession`) puis purgé du stockage ;
+ *   2. la restauration de session : si un indice profil existe, il est
+ *      validé/rafraîchi via `GET /account/me` (cookie) — 401 → purge.
  */
 
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
 
-import { ApiError, logoutBuyer } from "@/lib/api";
+import { ApiError, fetchBuyerProfile, logoutBuyer, restoreBuyerSession } from "@/lib/api";
 import {
   BUYER_EVENT,
   BUYER_STORAGE_KEY,
   clearBuyerSession,
   readBuyerSession,
+  takeLegacyBuyerToken,
   writeBuyerSession,
   type BuyerSessionState,
 } from "@/lib/buyer";
@@ -72,19 +80,70 @@ export function useBuyer(): UseBuyer {
     () => false,
   );
 
+  // Migration douce + restauration de session — une seule fois par montage.
+  const restoredRef = useRef(false);
+  useEffect(() => {
+    if (restoredRef.current) return;
+    restoredRef.current = true;
+
+    let cancelled = false;
+
+    const restore = async () => {
+      // 1. Session legacy (jeton en localStorage, avant #8096) : échange
+      //    contre le cookie HttpOnly. takeLegacyBuyerToken a DÉJÀ purgé le
+      //    jeton du stockage — en cas d'échec réseau, l'utilisateur se
+      //    reconnectera simplement (le jeton serveur reste valide 7 j).
+      const legacyToken = takeLegacyBuyerToken();
+      if (legacyToken !== null) {
+        try {
+          const buyer = await restoreBuyerSession(legacyToken);
+          if (!cancelled) {
+            writeBuyerSession({ buyer });
+            return; // Session migrée et validée — rien d'autre à faire.
+          }
+          return;
+        } catch {
+          // Jeton legacy expiré/révoqué ou réseau KO : pas de session à
+          // restaurer (l'indice profil legacy est déjà géré à l'étape 2
+          // uniquement s'il reste quelque chose de valide).
+          if (!cancelled && legacyToken !== null) {
+            clearBuyerSession();
+          }
+          return;
+        }
+      }
+
+      // 2. Restauration standard : un indice profil existe → validation
+      //    silencieuse contre le cookie (401 → purge ; succès → rafraîchi).
+      if (readBuyerSession() === null) return;
+      try {
+        const buyer = await fetchBuyerProfile();
+        if (!cancelled) writeBuyerSession({ buyer });
+      } catch (error) {
+        if (!cancelled && error instanceof ApiError && error.status === 401) {
+          clearBuyerSession();
+        }
+      }
+    };
+
+    void restore();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const signIn = useCallback((next: BuyerSessionState) => {
     writeBuyerSession(next);
   }, []);
 
   const signOut = useCallback(async () => {
-    const current = readBuyerSession();
     clearBuyerSession();
-    if (current) {
-      try {
-        await logoutBuyer(current.token);
-      } catch {
-        // Révocation best-effort : la session locale est déjà purgée.
-      }
+    try {
+      // Révocation serveur + expiration du cookie HttpOnly (#8096).
+      await logoutBuyer();
+    } catch {
+      // Révocation best-effort : la session locale est déjà purgée.
     }
   }, []);
 
