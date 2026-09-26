@@ -9,13 +9,15 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Planning\Domain\Models\Schedule;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
+use Tests\Support\FixturePasswords;
 use Tests\TestCase;
 
 /**
  * #6546 (RGPD) — extra_data contient des clés sensibles (national_id,
  * tax_identifier, blood_group) : elles ne doivent pas fuir dans la liste
- * /employees et ne sont exposées au détail que pour les rôles autorisés
- * (mêmes règles que les salaires, #5262).
+ * /employees. Correctif #7028 (2026-09-08) : au détail non plus, ces clés
+ * ne sont JAMAIS exposées par l'API, quel que soit le rôle du viewer
+ * (principal/rh/comptable et employé lui-même inclus) — minimisation RGPD.
  */
 final class EmployeeExtraDataMaskingTest extends TestCase
 {
@@ -41,7 +43,7 @@ final class EmployeeExtraDataMaskingTest extends TestCase
             'first_name' => 'Karim',
             'last_name' => 'Confidentiel',
             'email' => 'karim.confidentiel@example.test',
-            'password' => 'password123',
+            'password' => FixturePasswords::VALID,
             'role' => 'employee',
             'schedule_id' => $schedule->id,
             'extra_data' => [
@@ -68,7 +70,7 @@ final class EmployeeExtraDataMaskingTest extends TestCase
         $this->assertArrayNotHasKey('blood_group', (array) $extra);
     }
 
-    public function test_employee_show_exposes_sensitive_extra_data_to_authorized_roles(): void
+    public function test_employee_show_never_exposes_sensitive_extra_data_even_to_authorized_roles(): void
     {
         $company = Company::factory()->create();
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
@@ -82,15 +84,16 @@ final class EmployeeExtraDataMaskingTest extends TestCase
             ],
         ]);
 
-        // Manager RH (hasManagerRole principal/rh/comptable) → accès complet.
+        // #7028 — même un manager autorisé (principal/rh/comptable) ne reçoit
+        // JAMAIS les clés sensibles : seules les clés non sensibles passent.
         Sanctum::actingAs($manager);
         $detail = $this->getJson("/api/v1/employees/{$employee->id}")->assertOk();
 
         $extra = (array) $detail->json('data.extra_data');
         $this->assertSame('Comptable', $extra['job_title'] ?? null);
-        $this->assertSame('NID-87654321', $extra['national_id'] ?? null);
-        $this->assertSame('TAX-112233', $extra['tax_identifier'] ?? null);
-        $this->assertSame('A-', $extra['blood_group'] ?? null);
+        $this->assertArrayNotHasKey('national_id', $extra);
+        $this->assertArrayNotHasKey('tax_identifier', $extra);
+        $this->assertArrayNotHasKey('blood_group', $extra);
     }
 
     public function test_employee_show_masks_sensitive_extra_data_for_regular_employee_viewer(): void

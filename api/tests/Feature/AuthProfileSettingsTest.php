@@ -10,6 +10,7 @@ use App\Shared\Models\Language;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Tests\RefreshTenantDatabase;
+use Tests\Support\FixturePasswords;
 use Tests\TestCase;
 
 class AuthProfileSettingsTest extends TestCase
@@ -205,13 +206,16 @@ class AuthProfileSettingsTest extends TestCase
             'status' => 'active',
         ]);
 
-        CabinetFolder::query()->create([
+        // #7646 : company_id n'est plus mass-assignable sur les modèles
+        // Cabinet (BelongsToCompany) — les fixtures directes passent par
+        // forceCreate (convention établie, cf. CabinetTenantIsolationTest).
+        CabinetFolder::forceCreate([
             'company_id' => $company->id,
             'employee_id' => $employee->id,
             'name' => 'Contrats',
         ]);
 
-        CabinetDocument::query()->create([
+        CabinetDocument::forceCreate([
             'company_id' => $company->id,
             'employee_id' => $employee->id,
             'name' => 'Contrat CDI',
@@ -263,12 +267,12 @@ class AuthProfileSettingsTest extends TestCase
         $response = $this->withHeader('Authorization', "Bearer {$token}")
             ->postJson('/api/v1/auth/change-password', [
                 'current_password' => 'password123',
-                'new_password' => 'password456789',
-                'new_password_confirmation' => 'password456789',
+                'new_password' => FixturePasswords::VALID_ALTERNATIVE,
+                'new_password_confirmation' => FixturePasswords::VALID_ALTERNATIVE,
             ]);
 
         $response->assertOk();
-        $this->assertTrue(Hash::check('password456789', $employee->fresh()->password_hash));
+        $this->assertTrue(Hash::check(FixturePasswords::VALID_ALTERNATIVE, $employee->fresh()->password_hash));
 
         // Sanctum tokens issued before the password change (this request's own
         // token included) must all be revoked, and a fresh token returned for
@@ -326,8 +330,8 @@ class AuthProfileSettingsTest extends TestCase
         $response = $this->withHeader('Authorization', "Bearer {$token}")
             ->postJson('/api/v1/auth/change-password', [
                 'current_password' => 'wrong-password',
-                'new_password' => 'password456789',
-                'new_password_confirmation' => 'password456789',
+                'new_password' => FixturePasswords::VALID_ALTERNATIVE,
+                'new_password_confirmation' => FixturePasswords::VALID_ALTERNATIVE,
             ]);
 
         $response->assertStatus(422);

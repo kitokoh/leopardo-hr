@@ -9,6 +9,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tests\Support\CreatesMvpSchema;
+use Tests\Support\FixturePasswords;
 use Tests\TestCase;
 
 class EmployeesRbacTest extends TestCase
@@ -412,7 +413,7 @@ class EmployeesRbacTest extends TestCase
                 'first_name' => 'John',
                 'last_name' => 'Doe',
                 'email' => 'john.doe@a.test',
-                'password' => 'password123',
+                'password' => FixturePasswords::VALID,
                 'role' => 'employee',
             ]);
 
@@ -481,7 +482,7 @@ class EmployeesRbacTest extends TestCase
                 'first_name' => 'Leila',
                 'last_name' => 'Ait',
                 'email' => 'shared@tenant.test',
-                'password' => 'password123',
+                'password' => FixturePasswords::VALID,
                 'role' => 'employee',
             ]);
 
@@ -545,7 +546,7 @@ class EmployeesRbacTest extends TestCase
                 'first_name' => 'Leila',
                 'last_name' => 'Ait',
                 'email' => 'matricule@tenant.test',
-                'password' => 'password123',
+                'password' => FixturePasswords::VALID,
                 'role' => 'employee',
             ]);
 
@@ -588,7 +589,7 @@ class EmployeesRbacTest extends TestCase
                 'first_name' => 'Sara',
                 'last_name' => 'Comm',
                 'email' => 'sara.marketing@a.test',
-                'password' => 'password123',
+                'password' => FixturePasswords::VALID,
                 'role' => 'manager',
                 'manager_role' => 'marketing',
             ]);
