@@ -188,6 +188,20 @@ use App\Modules\Payroll\Domain\Models\PublicHoliday;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
 use App\Modules\Payroll\Domain\Models\TaxRateChangeLog;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
+use App\Modules\Pharmacy\Domain\Models\PharmacyPrescriber;
+use App\Modules\Pharmacy\Domain\Models\PharmacyPrescription;
+use App\Modules\Pharmacy\Domain\Models\PharmacyProduct;
+use App\Modules\Pharmacy\Domain\Models\PharmacyPurchaseOrder;
+use App\Modules\Pharmacy\Domain\Models\PharmacySale;
+use App\Modules\Pharmacy\Domain\Models\PharmacyStockMovement;
+use App\Modules\Pharmacy\Domain\Models\PharmacySupplier;
+use App\Modules\Pharmacy\Domain\Policies\PharmacyPrescriberPolicy;
+use App\Modules\Pharmacy\Domain\Policies\PharmacyPrescriptionPolicy;
+use App\Modules\Pharmacy\Domain\Policies\PharmacyProductPolicy;
+use App\Modules\Pharmacy\Domain\Policies\PharmacyPurchaseOrderPolicy;
+use App\Modules\Pharmacy\Domain\Policies\PharmacySalePolicy;
+use App\Modules\Pharmacy\Domain\Policies\PharmacyStockPolicy;
+use App\Modules\Pharmacy\Domain\Policies\PharmacySupplierPolicy;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\ExpenseClaim;
 use App\Modules\Planning\Domain\Models\Schedule;
@@ -308,8 +322,8 @@ use App\Policies\ApprovalRequestPolicy;
 use App\Policies\AttendancePolicy;
 use App\Policies\BillingPolicy;
 use App\Policies\Cameras\CameraPolicy;
-use App\Policies\CrmEmailPolicy;
 use App\Policies\ContractPolicy;
+use App\Policies\CrmEmailPolicy;
 use App\Policies\DepartmentPolicy;
 use App\Policies\EmployeePolicy;
 use App\Policies\EvaluationPolicy;
@@ -419,6 +433,16 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(HealthInvoice::class, HealthInvoicePolicy::class);
         Gate::policy(HealthInvoiceItem::class, HealthInvoiceItemPolicy::class);
         Gate::policy(HealthInvoicePayment::class, HealthInvoicePaymentPolicy::class);
+        // — Pharmacy (PharmaManager, PHARMA-001 #7798) : policies enregistrées au
+        //   point unique PA2-ARCH-008 (#8165) — elles vivaient auparavant dans
+        //   PharmacyServiceProvider::boot(), hors d'AuthServiceProvider.
+        Gate::policy(PharmacyProduct::class, PharmacyProductPolicy::class);
+        Gate::policy(PharmacyStockMovement::class, PharmacyStockPolicy::class);
+        Gate::policy(PharmacySupplier::class, PharmacySupplierPolicy::class);
+        Gate::policy(PharmacyPurchaseOrder::class, PharmacyPurchaseOrderPolicy::class);
+        Gate::policy(PharmacySale::class, PharmacySalePolicy::class);
+        Gate::policy(PharmacyPrescriber::class, PharmacyPrescriberPolicy::class);
+        Gate::policy(PharmacyPrescription::class, PharmacyPrescriptionPolicy::class);
         // — BC-32 HOSPITALITY (HOSP-002 #7944) : policies deny-by-default.
         Gate::policy(HospitalityProperty::class, HospitalityPropertyPolicy::class);
         Gate::policy(HospitalityRoomType::class, HospitalityRoomTypePolicy::class);
