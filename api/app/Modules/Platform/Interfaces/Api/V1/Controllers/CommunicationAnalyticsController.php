@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Modules\Notification\Domain\Models\CommunicationEvent;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Controllers\Controller;
+use App\Modules\Communication\Domain\Models\CommunicationEvent;
+use App\Modules\Platform\Interfaces\Api\V1\Requests\CommunicationAnalyticsQueryRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
-use App\Modules\Platform\Interfaces\Api\V1\Requests\CommunicationAnalyticsQueryRequest;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -111,4 +110,3 @@ class CommunicationAnalyticsController extends Controller
             ->all();
     }
 }
-

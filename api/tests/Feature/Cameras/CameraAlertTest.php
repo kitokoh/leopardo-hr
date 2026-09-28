@@ -10,7 +10,7 @@ use App\Jobs\DispatchCommunicationJob;
 use App\Modules\Cameras\Domain\Models\Camera;
 use App\Modules\Cameras\Domain\Models\CameraAlert;
 use App\Modules\Cameras\Domain\Models\CameraEvent;
-use App\Modules\Notification\Domain\Models\CommunicationEvent;
+use App\Modules\Communication\Domain\Models\CommunicationEvent;
 use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Notification\Domain\Models\NotificationPreference;
 use Illuminate\Support\Carbon;

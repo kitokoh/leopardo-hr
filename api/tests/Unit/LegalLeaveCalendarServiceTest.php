@@ -6,6 +6,7 @@ namespace Tests\Unit;
 
 use App\Modules\Planning\Infrastructure\Services\LegalLeaveCalendarService;
 use App\Modules\Planning\Infrastructure\Services\LegalLeaveRulesService;
+use App\Shared\Contracts\Payroll\PublicHolidayCalendar;
 use Database\Seeders\PublicHolidaySeeder;
 use Illuminate\Support\Carbon;
 use Tests\RefreshTenantDatabase;
@@ -27,7 +28,9 @@ class LegalLeaveCalendarServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->service = new LegalLeaveCalendarService;
+        // #8211 (BOS-023) : le service dépend désormais du contrat Shared —
+        // résolu ici via le container (prouve le binding Payroll en passant).
+        $this->service = new LegalLeaveCalendarService($this->app->make(PublicHolidayCalendar::class));
     }
 
     public function test_dz_legal_holidays_include_the_four_fixed_national_days(): void
