@@ -71,6 +71,10 @@ export const PROTECTED_PREFIXES = [
   // #7908 — page « Modules » (statut, auto-activation) : surface d'activation
   // du tenant, jamais servie sans session.
   '/modules',
+  // BOS-035 (#8224) — panneau Assistant Leo IA (chat, confirmations
+  // d'actions, historique) : conversations du tenant, jamais servies sans
+  // session.
+  '/assistant',
 ] as const;
 
 /**
