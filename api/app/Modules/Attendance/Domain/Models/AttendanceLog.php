@@ -23,7 +23,7 @@ use Illuminate\Support\Carbon;
  * @property float|null $hours_worked
  * @property float|null $overtime_hours
  * @property int|null $late_minutes
- * @property int|null $session_number
+ * @property int $session_number
  * @property string|null $status
  * @property string|null $method
  * @property string|null $source_device_code
