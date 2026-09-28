@@ -7,7 +7,7 @@ namespace App\Modules\Notification\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\NotificationPreferenceResource;
-use App\Modules\Notification\Domain\Models\CommunicationEvent;
+use App\Modules\Communication\Domain\Models\CommunicationEvent;
 use App\Modules\Notification\Infrastructure\Services\NotificationPreferenceProvisioner;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
