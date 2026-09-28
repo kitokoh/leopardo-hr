@@ -6,9 +6,13 @@ namespace App\Modules\EduManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\EduManager\Application\Actions\CorrectEduGradeAction;
+use App\Modules\EduManager\Application\Actions\CreateEduAssessmentAction;
+use App\Modules\EduManager\Application\Actions\PublishEduAssessmentAction;
+use App\Modules\EduManager\Application\Actions\PublishEduGradeAction;
+use App\Modules\EduManager\Application\Actions\RecordEduGradeAction;
 use App\Modules\EduManager\Domain\Models\EduAssessment;
 use App\Modules\EduManager\Domain\Models\EduGrade;
-use App\Modules\EduManager\Infrastructure\Services\EduGradeService;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\CorrectEduGradeRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduAssessmentRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduGradeRequest;
@@ -27,7 +31,13 @@ class EduAssessmentController extends Controller
 {
     use ChecksEduSolution;
 
-    public function __construct(private readonly EduGradeService $grades) {}
+    public function __construct(
+        private readonly CreateEduAssessmentAction $createAssessment,
+        private readonly RecordEduGradeAction $recordGrade,
+        private readonly PublishEduGradeAction $publishGrade,
+        private readonly CorrectEduGradeAction $correctGrade,
+        private readonly PublishEduAssessmentAction $publishAssessment,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -68,11 +78,7 @@ class EduAssessmentController extends Controller
         $actor = $request->user();
         $this->authorize('create', EduAssessment::class);
 
-        /** @var EduAssessment $assessment */
-        $assessment = EduAssessment::query()->create(array_merge($request->validated(), [
-            'company_id' => $actor->company_id,
-            'created_by' => $actor->id,
-        ]));
+        $assessment = $this->createAssessment->execute($actor, $request->validated());
 
         return response()->json(['data' => $this->payload($assessment)], 201);
     }
@@ -126,7 +132,7 @@ class EduAssessmentController extends Controller
         $this->assertSameTenant($assessment, $actor->company_id);
         $this->authorize('update', $assessment);
 
-        $grade = $this->grades->grade($actor, $assessment, $request->validated());
+        $grade = $this->recordGrade->execute($actor, $assessment, $request->validated());
 
         return response()->json(['data' => $this->gradePayload($grade)], 201);
     }
@@ -140,7 +146,7 @@ class EduAssessmentController extends Controller
         $this->assertSameTenant($grade, $actor->company_id);
         $this->authorize('update', $grade);
 
-        $published = $this->grades->publish($actor, $grade);
+        $published = $this->publishGrade->execute($actor, $grade);
 
         return response()->json(['data' => $this->gradePayload($published)]);
     }
@@ -154,7 +160,7 @@ class EduAssessmentController extends Controller
         $this->assertSameTenant($grade, $actor->company_id);
         $this->authorize('correct', $grade);
 
-        $corrected = $this->grades->correct($actor, $grade, $request->validated());
+        $corrected = $this->correctGrade->execute($actor, $grade, $request->validated());
 
         return response()->json(['data' => $this->gradePayload($corrected)]);
     }
@@ -204,10 +210,8 @@ class EduAssessmentController extends Controller
         $this->assertSameTenant($assessment, $actor->company_id);
         $this->authorize('update', $assessment);
 
-        if (! $assessment->isPublished()) {
-            $assessment->update(['published_at' => now()]);
-        }
+        $assessment = $this->publishAssessment->execute($assessment);
 
-        return response()->json(['data' => $this->payload($assessment->refresh())]);
+        return response()->json(['data' => $this->payload($assessment)]);
     }
 }

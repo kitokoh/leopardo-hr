@@ -6,10 +6,12 @@ namespace App\Modules\EduManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\EduManager\Application\Actions\CreateEduFeeChargeAction;
+use App\Modules\EduManager\Application\Actions\RecordEduFeePaymentAction;
+use App\Modules\EduManager\Application\Actions\WaiveEduFeeChargeAction;
 use App\Modules\EduManager\Domain\Access\EduAccess;
 use App\Modules\EduManager\Domain\Models\EduFeeCharge;
 use App\Modules\EduManager\Domain\Models\EduFeePayment;
-use App\Modules\EduManager\Infrastructure\Services\EduFeeService;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeeChargeRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeePaymentRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Traits\ChecksEduSolution;
@@ -37,7 +39,11 @@ class EduFeeChargeController extends Controller
 {
     use ChecksEduSolution;
 
-    public function __construct(private readonly EduFeeService $fees) {}
+    public function __construct(
+        private readonly CreateEduFeeChargeAction $createCharge,
+        private readonly RecordEduFeePaymentAction $recordPayment,
+        private readonly WaiveEduFeeChargeAction $waiveCharge,
+    ) {}
 
     public function store(StoreEduFeeChargeRequest $request): JsonResponse
     {
@@ -47,7 +53,7 @@ class EduFeeChargeController extends Controller
         $actor = $request->user();
         $this->assertAdmin($actor);
 
-        $charge = $this->fees->createCharge($actor, $request->validated());
+        $charge = $this->createCharge->execute($actor, $request->validated());
 
         return response()->json(['data' => $this->chargePayload($charge)], 201);
     }
@@ -62,7 +68,7 @@ class EduFeeChargeController extends Controller
 
         $model = $this->resolveCharge($actor, $charge);
 
-        ['payment' => $payment, 'charge' => $updated] = $this->fees->recordPayment(
+        ['payment' => $payment, 'charge' => $updated] = $this->recordPayment->execute(
             $actor,
             $model,
             $request->validated(),
@@ -86,7 +92,7 @@ class EduFeeChargeController extends Controller
 
         $model = $this->resolveCharge($actor, $charge);
 
-        return response()->json(['data' => $this->chargePayload($this->fees->waiveCharge($actor, $model))]);
+        return response()->json(['data' => $this->chargePayload($this->waiveCharge->execute($actor, $model))]);
     }
 
     /**
