@@ -223,7 +223,6 @@ class EmailBounceWebhookControllerTest extends TestCase
         ]);
     }
 
-
     public function test_invalid_payload_422_does_not_orphan_idempotency_reservation(): void
     {
         // #6561 — la validation passe AVANT begin() : un payload invalide doit

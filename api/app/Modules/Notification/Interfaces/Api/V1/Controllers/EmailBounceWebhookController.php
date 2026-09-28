@@ -11,7 +11,6 @@ use App\Modules\Platform\Infrastructure\Services\WebhookEventRegistry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use App\Shared\Services\InboundWebhookVerifier;
 
 /**
  * PA2-COMM-007 - Inbound bounce/complaint notifications from the
@@ -132,6 +131,4 @@ class EmailBounceWebhookController extends Controller
             return new JsonResponse(['received' => false, 'error' => 'processing_error'], 500);
         }
     }
-
-
 }
