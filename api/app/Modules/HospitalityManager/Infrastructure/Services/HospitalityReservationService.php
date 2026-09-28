@@ -10,6 +10,8 @@ use App\Modules\HospitalityManager\Domain\Exceptions\HospitalityNoAvailabilityEx
 use App\Modules\HospitalityManager\Domain\Models\HospitalityReservation;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityRoomType;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityUnit;
+use App\Shared\Services\PublicCommerce\IdempotentGuestWrite;
+use App\Shared\Services\PublicCommerce\TrackingSecretService;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -31,6 +33,11 @@ use Throwable;
  */
 final class HospitalityReservationService
 {
+    public function __construct(
+        private readonly IdempotentGuestWrite $idempotentGuestWrite,
+        private readonly TrackingSecretService $trackingSecrets,
+    ) {}
+
     /**
      * Disponibilités par type de chambre d'un établissement sur [from, to).
      *
@@ -144,75 +151,90 @@ final class HospitalityReservationService
      * existante SANS tracking_code (`created=false`) — le code n'est
      * présenté qu'à la première création.
      *
+     * BOS-050 (#8208, tranche 5) : le rejeu invité est délégué au socle
+     * mutualisé {@see IdempotentGuestWrite} (relecture HORS transaction,
+     * création en transaction propre, course 23505 relue côté gagnant —
+     * remplace le catch `str_contains(23505)` maison, contrat identique) et
+     * le secret de suivi à {@see TrackingSecretService} (`generate()` :
+     * hash sha256 persisté, clair présenté une fois — le code en clair
+     * passe de 48 caractères aléatoires à 64 hex, format non pinné par le
+     * contrat ; colonne `tracking_code_hash` inchangée).
+     *
      * @param  array<string, mixed>  $data
      * @return array{reservation: HospitalityReservation, tracking_code: string|null, created: bool}
      */
     public function createOnlineReservation(string $companyId, array $data): array
     {
-        $idempotencyKey = $data['idempotency_key'] ?? null;
+        $rawKey = $data['idempotency_key'] ?? null;
+        $idempotencyKey = is_string($rawKey) && $rawKey !== '' ? $rawKey : null;
 
-        if (is_string($idempotencyKey) && $idempotencyKey !== '') {
-            $existing = $this->findByIdempotencyKey($companyId, $idempotencyKey);
-            if ($existing !== null) {
-                return ['reservation' => $existing, 'tracking_code' => null, 'created' => false];
-            }
-        }
-
-        try {
-            return DB::transaction(function () use ($companyId, $data, $idempotencyKey): array {
-                $checkIn = CarbonImmutable::parse($data['check_in']);
-                $checkOut = CarbonImmutable::parse($data['check_out']);
-                $roomTypeId = (int) $data['room_type_id'];
-
-                // Verrou du type + comptage transactionnel (anti-overbooking,
-                // spec §3) — identique au guichet.
-                $this->assertAvailabilityFor($companyId, $roomTypeId, $checkIn, $checkOut);
-
-                /** @var HospitalityRoomType $roomType */
-                $roomType = HospitalityRoomType::query()
-                    ->where('company_id', $companyId)
-                    ->whereKey($roomTypeId)
-                    ->firstOrFail();
-
-                $nights = max(1, $checkIn->diffInDays($checkOut));
-                $trackingCode = Str::random(48);
-
-                $reservation = HospitalityReservation::query()->create([
-                    'company_id' => $companyId,
-                    'reference' => $this->generateReference($companyId),
-                    'property_id' => (int) $data['property_id'],
-                    'room_type_id' => $roomTypeId,
-                    'unit_id' => null,
-                    'guest_name' => $data['guest_name'],
-                    'contact_email' => $data['contact_email'] ?? null,
-                    'contact_phone' => $data['contact_phone'] ?? null,
-                    'check_in' => $data['check_in'],
-                    'check_out' => $data['check_out'],
-                    'adults' => $data['adults'] ?? 1,
-                    'children' => $data['children'] ?? 0,
-                    'status' => HospitalityReservation::STATUS_PENDING,
-                    'total_amount_minor' => $roomType->base_price_minor * $nights,
-                    'currency' => $roomType->currency,
-                    'source' => HospitalityReservation::SOURCE_ONLINE,
-                    'expires_at' => now()->addMinutes(30),
-                    'idempotency_key' => is_string($idempotencyKey) && $idempotencyKey !== '' ? $idempotencyKey : null,
-                    'tracking_code_hash' => hash('sha256', $trackingCode),
-                ]);
-
-                return ['reservation' => $reservation, 'tracking_code' => $trackingCode, 'created' => true];
-            });
-        } catch (Throwable $e) {
-            // Course sur la clé d'idempotence (23505) : le premier arrivé a
-            // gagné — rejeu idempotent = son enregistrement, sans le code.
-            if (is_string($idempotencyKey) && $idempotencyKey !== '' && str_contains($e->getMessage(), '23505')) {
-                $existing = $this->findByIdempotencyKey($companyId, $idempotencyKey);
-                if ($existing !== null) {
-                    return ['reservation' => $existing, 'tracking_code' => null, 'created' => false];
+        /** @var array{result: array{reservation: HospitalityReservation, tracking_code: string|null}, created: bool} $replay */
+        $replay = $this->idempotentGuestWrite->replay(
+            function () use ($companyId, $idempotencyKey): ?array {
+                if ($idempotencyKey === null) {
+                    return null;
                 }
-            }
 
-            throw $e;
-        }
+                $existing = $this->findByIdempotencyKey($companyId, $idempotencyKey);
+
+                return $existing !== null
+                    ? ['reservation' => $existing, 'tracking_code' => null]
+                    : null;
+            },
+            function () use ($companyId, $data, $idempotencyKey): array {
+                /** @var array{reservation: HospitalityReservation, tracking_code: string} $created */
+                $created = DB::transaction(function () use ($companyId, $data, $idempotencyKey): array {
+                    $checkIn = CarbonImmutable::parse($data['check_in']);
+                    $checkOut = CarbonImmutable::parse($data['check_out']);
+                    $roomTypeId = (int) $data['room_type_id'];
+
+                    // Verrou du type + comptage transactionnel (anti-overbooking,
+                    // spec §3) — identique au guichet.
+                    $this->assertAvailabilityFor($companyId, $roomTypeId, $checkIn, $checkOut);
+
+                    /** @var HospitalityRoomType $roomType */
+                    $roomType = HospitalityRoomType::query()
+                        ->where('company_id', $companyId)
+                        ->whereKey($roomTypeId)
+                        ->firstOrFail();
+
+                    $nights = max(1, $checkIn->diffInDays($checkOut));
+                    $secret = $this->trackingSecrets->generate();
+
+                    $reservation = HospitalityReservation::query()->create([
+                        'company_id' => $companyId,
+                        'reference' => $this->generateReference($companyId),
+                        'property_id' => (int) $data['property_id'],
+                        'room_type_id' => $roomTypeId,
+                        'unit_id' => null,
+                        'guest_name' => $data['guest_name'],
+                        'contact_email' => $data['contact_email'] ?? null,
+                        'contact_phone' => $data['contact_phone'] ?? null,
+                        'check_in' => $data['check_in'],
+                        'check_out' => $data['check_out'],
+                        'adults' => $data['adults'] ?? 1,
+                        'children' => $data['children'] ?? 0,
+                        'status' => HospitalityReservation::STATUS_PENDING,
+                        'total_amount_minor' => $roomType->base_price_minor * $nights,
+                        'currency' => $roomType->currency,
+                        'source' => HospitalityReservation::SOURCE_ONLINE,
+                        'expires_at' => now()->addMinutes(30),
+                        'idempotency_key' => $idempotencyKey,
+                        'tracking_code_hash' => $secret['hash'],
+                    ]);
+
+                    return ['reservation' => $reservation, 'tracking_code' => $secret['plain']];
+                });
+
+                return $created;
+            },
+        );
+
+        return [
+            'reservation' => $replay['result']['reservation'],
+            'tracking_code' => $replay['result']['tracking_code'],
+            'created' => $replay['created'],
+        ];
     }
 
     /**

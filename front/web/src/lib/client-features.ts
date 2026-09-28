@@ -24,6 +24,7 @@ import {
   Plug,
   Mail,
   School,
+  Sparkles,
   Store,
   Ticket,
   Truck,
@@ -65,6 +66,7 @@ export type ClientModuleKey =
   | 'cameras'
   | 'showcase'
   | 'communication'
+  | 'assistant'
   | 'commerce';
 export type FeatureState = 'available' | 'trial' | 'locked';
 
@@ -433,6 +435,23 @@ export const CLIENT_MODULES: ClientModule[] = [
     featureKeys: ['communication'],
     allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
     upgradeLabel: 'Communication (boîte mail + IA)',
+  },
+  // BOS-035 (#8224) — Assistant Leo IA : panneau conversationnel du portail
+  // (chat, badges des tools utilisés, cartes de confirmation des actions,
+  // historique). Module HORIZONTAL ouvert à tous les rôles authentifiés :
+  // la garde réelle est le feature flag tenant `leo_ai` (features racine de
+  // /auth/me) et le filtrage SERVEUR des tools par rôle — le front n'a
+  // aucune logique de permission propre.
+  {
+    key: 'assistant',
+    href: '/assistant',
+    label: 'Assistant IA',
+    group: 'general',
+    icon: Sparkles,
+    capabilityKeys: ['leo_ai', 'can_view_leo_ai'],
+    featureKeys: ['leo_ai'],
+    allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
+    upgradeLabel: 'Assistant Leo IA',
   },
   {
     key: 'restaurant_kitchen',
@@ -806,6 +825,9 @@ const MANAGER_MODULE_ROLES: Partial<Record<ClientModuleKey, 'any' | string[]>> =
   health_referential: ['', 'principal', 'rh'],
   // BC-19 (#7425) : `api.manager:principal,rh` sur `/cameras` — même miroir.
   cameras: ['principal', 'rh'],
+  // BOS-035 (#8224) : le chat `/ai/*` est ouvert à tout utilisateur du
+  // tenant (les tools, eux, sont filtrés par rôle côté serveur).
+  assistant: 'any',
 };
 /** Grants de session normalisés (payload `/auth/me` → `module_grants`). */
 function sessionGrants(user?: StoredAuthUser | null): string[] {
