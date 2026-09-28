@@ -20,6 +20,8 @@ on:
     paths:
       - "api/database/migrations/**"
       - "dev-hub/tools/check-duplicate-schema-create.py"
+      - "dev-hub/tools/check-migration-destructive-down.py"
+      - "dev-hub/tools/migrations-destructive-down-allowlist.txt"
       - ".github/workflows/migration-duplication-guard.yml"
   push:
     branches: [main]
@@ -77,8 +79,17 @@ jobs:
             *)      python3 dev-hub/tools/check-duplicate-schema-create.py --base origin/main --strict --fail-on-duplicate ;;
           esac
 
+      - name: Run destructive-down guard (#8207)
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          # Garde statique (arbre courant, pas besoin d'historique) : un down()
+          # ne doit détruire que ce que le up() du MÊME fichier a défini.
+          python3 dev-hub/tools/check-migration-destructive-down.py
+
       - name: Rappel du traitement de la dette
         if: failure()
         shell: bash
         run: |
           echo "::notice::Dette de migrations dupliquées — inventaire : docs/audits/MIGRATIONS_DUPLIQUEES_TENANT.md (issues #7452, #7417, #7410)."
+          echo "::notice::Rollback destructeur cross-migration — règle #8207 : un down() ne détruit que ce que son up() a défini ; dette legacy inventoriée dans dev-hub/tools/migrations-destructive-down-allowlist.txt."

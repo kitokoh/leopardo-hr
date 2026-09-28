@@ -32,55 +32,11 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (schemaHasColumn('travel_outbox_events', 'company_id')) {
-            Schema::table('travel_outbox_events', function (Blueprint $table): void {
-                $table->dropColumn('company_id');
-            });
-        }
-        if (schemaHasColumn('travel_outbox_events', 'event_type')) {
-            Schema::table('travel_outbox_events', function (Blueprint $table): void {
-                $table->dropColumn('event_type');
-            });
-        }
-        if (schemaHasColumn('travel_outbox_events', 'payload_redacted')) {
-            Schema::table('travel_outbox_events', function (Blueprint $table): void {
-                $table->dropColumn('payload_redacted');
-            });
-        }
-        if (schemaHasColumn('travel_outbox_events', 'status')) {
-            Schema::table('travel_outbox_events', function (Blueprint $table): void {
-                $table->dropColumn('status');
-            });
-        }
-        if (schemaHasColumn('travel_outbox_events', 'attempts')) {
-            Schema::table('travel_outbox_events', function (Blueprint $table): void {
-                $table->dropColumn('attempts');
-            });
-        }
-        if (schemaHasColumn('travel_outbox_events', 'available_at')) {
-            Schema::table('travel_outbox_events', function (Blueprint $table): void {
-                $table->dropColumn('available_at');
-            });
-        }
-        if (schemaHasColumn('travel_outbox_events', 'last_error')) {
-            Schema::table('travel_outbox_events', function (Blueprint $table): void {
-                $table->dropColumn('last_error');
-            });
-        }
-        if (schemaHasColumn('travel_outbox_events', 'idempotency_key')) {
-            Schema::table('travel_outbox_events', function (Blueprint $table): void {
-                $table->dropColumn('idempotency_key');
-            });
-        }
-        if (schemaHasColumn('travel_outbox_events', 'created_at')) {
-            Schema::table('travel_outbox_events', function (Blueprint $table): void {
-                $table->dropColumn('created_at');
-            });
-        }
-        if (schemaHasColumn('travel_outbox_events', 'updated_at')) {
-            Schema::table('travel_outbox_events', function (Blueprint $table): void {
-                $table->dropColumn('updated_at');
-            });
-        }
+        // #8207 (BOS-018) — no-op, symétrique du up() : cette génération ne
+        // crée ni n'ajoute rien (la table appartient à
+        // `2026_08_29_000610_6024_create_travel_outbox_events_table.php`).
+        // La version précédente droppait les dix colonnes de la table — un
+        // rollback du batch la laissait vivante mais vidée de son schéma,
+        // la migration propriétaire restant « migrée ».
     }
 };
