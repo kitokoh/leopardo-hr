@@ -647,6 +647,17 @@ export default function DashboardPage() {
                     </div>
                   </>
                 )}
+
+                {/* BOS-035 (#8224) — entrée discrète vers le panneau Assistant
+                    Leo IA (chat + confirmations d'actions). */}
+                <Link
+                  href="/assistant"
+                  data-testid="leo-open-assistant"
+                  className="mt-3 flex items-center justify-center gap-1.5 text-xs font-bold text-ia transition-colors hover:text-ia-dark"
+                >
+                  {i18nT(locale, 'assistant.open_assistant')}
+                  <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                </Link>
               </div>
             </GlassCard>
           ) : null}
