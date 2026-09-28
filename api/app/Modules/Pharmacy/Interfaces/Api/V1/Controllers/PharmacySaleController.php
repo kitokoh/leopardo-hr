@@ -6,9 +6,10 @@ namespace App\Modules\Pharmacy\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Pharmacy\Application\Actions\RecordPharmacySaleAction;
+use App\Modules\Pharmacy\Application\Actions\VoidPharmacySaleAction;
 use App\Modules\Pharmacy\Domain\Models\PharmacySale;
 use App\Modules\Pharmacy\Domain\Models\PharmacySaleLine;
-use App\Modules\Pharmacy\Infrastructure\Services\PharmacySaleService;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Requests\StorePharmacySaleRequest;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Requests\VoidPharmacySaleRequest;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Traits\ChecksPharmacySolution;
@@ -26,7 +27,10 @@ class PharmacySaleController extends Controller
 {
     use ChecksPharmacySolution;
 
-    public function __construct(private readonly PharmacySaleService $sales) {}
+    public function __construct(
+        private readonly RecordPharmacySaleAction $recordSale,
+        private readonly VoidPharmacySaleAction $voidSale,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -79,17 +83,7 @@ class PharmacySaleController extends Controller
         /** @var array{payment_method: string, customer_name?: string|null, prescription_id?: int|null, lines: list<array{product_id: int, quantity: int}>} $payload */
         $payload = $request->validated();
 
-        $sale = $this->sales->create(
-            (string) $actor->company_id,
-            array_map(static fn (array $line): array => [
-                'product_id' => (int) $line['product_id'],
-                'quantity' => (int) $line['quantity'],
-            ], $payload['lines']),
-            $payload['payment_method'],
-            $payload['customer_name'] ?? null,
-            isset($payload['prescription_id']) ? (int) $payload['prescription_id'] : null,
-            (int) $actor->getAttribute('id'),
-        );
+        $sale = $this->recordSale->execute($actor, $payload);
 
         return response()->json(['data' => $this->payload($sale->load('lines'))], 201);
     }
@@ -118,7 +112,7 @@ class PharmacySaleController extends Controller
         /** @var array{reason: string} $payload */
         $payload = $request->validated();
 
-        $voided = $this->sales->void($sale, $payload['reason'], (int) $actor->getAttribute('id'));
+        $voided = $this->voidSale->execute($sale, $payload['reason'], $actor);
 
         return response()->json(['data' => $this->payload($voided->load('lines'))]);
     }

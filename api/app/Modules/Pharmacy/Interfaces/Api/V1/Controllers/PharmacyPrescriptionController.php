@@ -6,6 +6,8 @@ namespace App\Modules\Pharmacy\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Pharmacy\Application\Actions\RegisterPharmacyPrescriptionAction;
+use App\Modules\Pharmacy\Application\Actions\UpdatePharmacyPrescriptionAction;
 use App\Modules\Pharmacy\Domain\Models\PharmacyPrescriber;
 use App\Modules\Pharmacy\Domain\Models\PharmacyPrescription;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Requests\StorePharmacyPrescriptionRequest;
@@ -21,6 +23,11 @@ use Illuminate\Http\Request;
 class PharmacyPrescriptionController extends Controller
 {
     use ChecksPharmacySolution;
+
+    public function __construct(
+        private readonly RegisterPharmacyPrescriptionAction $registerPrescription,
+        private readonly UpdatePharmacyPrescriptionAction $updatePrescription,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -86,10 +93,7 @@ class PharmacyPrescriptionController extends Controller
         }
 
         /** @var PharmacyPrescription $prescription */
-        $prescription = PharmacyPrescription::query()->create(array_merge(
-            $request->validated(),
-            ['company_id' => $actor->company_id],
-        ));
+        $prescription = $this->registerPrescription->execute($actor, $request->validated());
 
         return response()->json(['data' => $this->payload($prescription->refresh()->load('prescriber'))], 201);
     }
@@ -129,7 +133,7 @@ class PharmacyPrescriptionController extends Controller
             }
         }
 
-        $prescription->update($payload);
+        $prescription = $this->updatePrescription->execute($prescription, $payload);
 
         return response()->json(['data' => $this->payload($prescription->refresh()->load('prescriber'))]);
     }
