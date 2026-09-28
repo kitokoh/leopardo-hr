@@ -6,17 +6,14 @@ namespace App\Modules\HealthManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\HealthManager\Domain\Access\HealthAccess;
-use App\Modules\HealthManager\Domain\Models\HealthAppointment;
+use App\Modules\HealthManager\Application\Actions\RecordHealthConsultationAction;
+use App\Modules\HealthManager\Application\Actions\UpdateHealthConsultationAction;
 use App\Modules\HealthManager\Domain\Models\HealthConsultation;
-use App\Modules\HealthManager\Domain\Models\HealthPatient;
-use App\Modules\HealthManager\Domain\Models\HealthPractitioner;
 use App\Modules\HealthManager\Interfaces\Api\V1\Requests\StoreHealthConsultationRequest;
 use App\Modules\HealthManager\Interfaces\Api\V1\Requests\UpdateHealthConsultationRequest;
 use App\Modules\HealthManager\Interfaces\Api\V1\Traits\ChecksHealthSolution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 /**
  * API des consultations médicales — HC-005 (#7789, BC-31).
@@ -30,6 +27,11 @@ use Illuminate\Validation\ValidationException;
 class HealthConsultationController extends Controller
 {
     use ChecksHealthSolution;
+
+    public function __construct(
+        private readonly RecordHealthConsultationAction $recordAction,
+        private readonly UpdateHealthConsultationAction $updateAction,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -71,33 +73,7 @@ class HealthConsultationController extends Controller
         $actor = $request->user();
         $this->authorize('create', HealthConsultation::class);
 
-        $validated = $request->validated();
-
-        // Patient du MÊME tenant (cross-tenant → 404 fail-closed).
-        HealthPatient::query()
-            ->where('company_id', $actor->company_id)
-            ->whereKey((int) $validated['patient_id'])
-            ->firstOrFail();
-
-        // Rendez-vous optionnel, même tenant (404 fail-closed).
-        if (isset($validated['appointment_id'])) {
-            HealthAppointment::query()
-                ->where('company_id', $actor->company_id)
-                ->whereKey((int) $validated['appointment_id'])
-                ->firstOrFail();
-        }
-
-        $consultation = HealthConsultation::query()->create(array_merge(
-            $this->medicalAttributes($validated),
-            [
-                'company_id' => $actor->company_id,
-                'patient_id' => (int) $validated['patient_id'],
-                'practitioner_id' => $this->resolvePractitionerId($actor, $validated),
-                'appointment_id' => isset($validated['appointment_id']) ? (int) $validated['appointment_id'] : null,
-                'consulted_at' => $validated['consulted_at'],
-                'reason' => $validated['reason'] ?? null,
-            ]
-        ));
+        $consultation = $this->recordAction->execute($actor, $request->validated());
 
         return response()->json(['data' => $this->payload($consultation)], 201);
     }
@@ -123,72 +99,9 @@ class HealthConsultationController extends Controller
         $this->assertSameTenant($consultation, $actor->company_id);
         $this->authorize('update', $consultation);
 
-        $validated = $request->validated();
-        $attributes = $this->medicalAttributes($validated);
+        $consultation = $this->updateAction->execute($consultation, $request->validated());
 
-        foreach (['consulted_at', 'reason'] as $field) {
-            if (array_key_exists($field, $validated)) {
-                $attributes[$field] = $validated[$field];
-            }
-        }
-
-        $consultation->update($attributes);
-
-        return response()->json(['data' => $this->payload($consultation->refresh())]);
-    }
-
-    /**
-     * Praticien acteur → SA fiche (forcé, jamais celle d'un tiers) ;
-     * la direction peut désigner explicitement un praticien du tenant.
-     *
-     * @param  array<string, mixed>  $validated
-     */
-    private function resolvePractitionerId(Employee $actor, array $validated): int
-    {
-        if (HealthAccess::isAdmin($actor) && isset($validated['practitioner_id'])) {
-            /** @var HealthPractitioner $practitioner */
-            $practitioner = HealthPractitioner::query()
-                ->where('company_id', $actor->company_id)
-                ->whereKey((int) $validated['practitioner_id'])
-                ->firstOrFail();
-
-            return (int) $practitioner->getAttribute('id');
-        }
-
-        $ownId = HealthAccess::practitionerId($actor);
-
-        if ($ownId === null) {
-            throw ValidationException::withMessages([
-                'practitioner_id' => ['Le praticien de la consultation est requis.'],
-            ]);
-        }
-
-        return $ownId;
-    }
-
-    /**
-     * Mappe l'API (clinical_exam, diagnosis, vitals, notes) vers les
-     * colonnes chiffrées au repos (`*_encrypted`).
-     *
-     * @param  array<string, mixed>  $validated
-     * @return array<string, mixed>
-     */
-    private function medicalAttributes(array $validated): array
-    {
-        $attributes = [];
-
-        foreach ([
-            'clinical_exam' => 'clinical_exam_encrypted',
-            'diagnosis' => 'diagnosis_encrypted',
-            'vitals' => 'vitals_encrypted',
-            'notes' => 'notes_encrypted',
-        ] as $input => $column) {
-            if (array_key_exists($input, $validated)) {
-                $attributes[$column] = $validated[$input];
-            }
-        }
-
-        return $attributes;
+        return response()->json(['data' => $this->payload($consultation)]);
     }
 
     /**
