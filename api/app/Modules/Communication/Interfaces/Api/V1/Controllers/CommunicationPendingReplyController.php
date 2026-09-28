@@ -6,12 +6,9 @@ namespace App\Modules\Communication\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\Communication\Domain\Exceptions\GmailRateLimitedException;
-use App\Modules\Communication\Domain\Exceptions\GmailSyncAuthException;
+use App\Modules\Communication\Application\Actions\ApprovePendingReplyAction;
 use App\Modules\Communication\Domain\Models\CommunicationPendingReply;
 use App\Modules\Communication\Domain\Models\CommunicationReplyLog;
-use App\Modules\Communication\Infrastructure\Services\CommunicationReplyGuard;
-use App\Modules\Communication\Infrastructure\Services\GoogleGmailReplySender;
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\Concerns\AssertsTenantScope;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -35,8 +32,7 @@ class CommunicationPendingReplyController extends Controller
     use AssertsTenantScope;
 
     public function __construct(
-        private readonly CommunicationReplyGuard $guard,
-        private readonly GoogleGmailReplySender $sender,
+        private readonly ApprovePendingReplyAction $approveAction,
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -122,80 +118,13 @@ class CommunicationPendingReplyController extends Controller
         $this->assertTenantScope($request, $pendingReply);
         $this->authorize('decide', $pendingReply);
 
-        if (! $pendingReply->isPending()) {
-            return $this->notPending();
-        }
-
         /** @var Employee $employee */
         $employee = $request->user();
 
-        ['verdict' => $verdict, 'reason' => $reason] = $this->guard->evaluate($pendingReply, manual: true);
-
-        if ($verdict !== CommunicationReplyGuard::VERDICT_SEND) {
-            if ($reason === 'missing_send_scope') {
-                return new JsonResponse([
-                    'message' => __('communication.reply_send_scope_required'),
-                    'code' => 'GMAIL_SEND_SCOPE_REQUIRED',
-                ], 422);
-            }
-
-            return new JsonResponse([
-                'message' => __('communication.reply_blocked'),
-                'code' => 'REPLY_BLOCKED',
-                'reason' => $reason,
-            ], 422);
-        }
-
-        try {
-            $sentId = $this->sender->send($pendingReply);
-        } catch (GmailRateLimitedException) {
-            // Quota Gmail : la proposition reste pending, re-essayable.
-            return new JsonResponse([
-                'message' => __('communication.reply_rate_limited'),
-                'code' => 'GMAIL_RATE_LIMITED',
-            ], 429);
-        } catch (GmailSyncAuthException) {
-            return new JsonResponse([
-                'message' => __('communication.reply_auth_failed'),
-                'code' => 'GMAIL_AUTH_FAILED',
-            ], 422);
-        }
-
-        if ($sentId === null) {
-            $pendingReply->forceFill([
-                'status' => CommunicationPendingReply::STATUS_FAILED,
-                'skip_reason' => 'gmail_send_failed',
-                'decided_by' => (int) $employee->id,
-                'decided_at' => now(),
-            ])->save();
-            CommunicationReplyLog::record(
-                $pendingReply,
-                CommunicationReplyLog::ACTION_FAILED,
-                'gmail_send_failed',
-                (int) $employee->id,
-            );
-
-            return new JsonResponse([
-                'message' => __('communication.reply_send_failed'),
-                'code' => 'REPLY_SEND_FAILED',
-            ], 502);
-        }
-
-        $pendingReply->forceFill([
-            'status' => CommunicationPendingReply::STATUS_SENT,
-            'sent_gmail_message_id' => $sentId,
-            'sent_at' => now(),
-            'decided_by' => (int) $employee->id,
-            'decided_at' => now(),
-        ])->save();
-
-        CommunicationReplyLog::record(
-            $pendingReply,
-            CommunicationReplyLog::ACTION_APPROVED,
-            'approved_by_owner',
-            (int) $employee->id,
-        );
-        CommunicationReplyLog::record($pendingReply, CommunicationReplyLog::ACTION_SENT, null, (int) $employee->id);
+        // Délégation du cas d'usage (BOS-024e, #8216) : ré-évaluation des
+        // garde-fous terminaux, envoi Gmail et journalisation — réponses
+        // d'erreur 409/422/429/502 strictement inchangées.
+        $pendingReply = $this->approveAction->execute($pendingReply, $employee);
 
         return new JsonResponse(['data' => $this->present($pendingReply)]);
     }
