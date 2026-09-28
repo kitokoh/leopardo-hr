@@ -1,4 +1,4 @@
-# ADR 0028 — Surfaces publiques : front/web (mono-tenant) vs front/marketplace (agrégation cross-tenant)
+# ADR 0030 — Surfaces publiques : front/web (mono-tenant) vs front/marketplace (agrégation cross-tenant)
 
 ## Statut
 

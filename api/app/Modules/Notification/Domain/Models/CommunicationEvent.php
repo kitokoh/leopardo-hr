@@ -4,61 +4,36 @@ declare(strict_types=1);
 
 namespace App\Modules\Notification\Domain\Models;
 
-use App\Core\Auth\Domain\Models\Employee;
-use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 
 /**
- * @property int $id
- * @property string $company_id
- * @property int|null $employee_id
- * @property int|null $notification_id
- * @property string $event_name
- * @property string $channel
- * @property string $status
- * @property string|null $provider
- * @property string|null $template_key
- * @property array<mixed>|null $metadata
- * @property string|null $error_message
- * @property Carbon $occurred_at
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * Alias de compatibilité — la classe canonique est
+ * {@see \App\Modules\Communication\Domain\Models\CommunicationEvent}
+ * depuis l'ADR 0027 (BOS-025, #8219 : le journal des événements de livraison
+ * relève du module Communication, frontière Notification/Communication).
+ *
+ * La table `communication_events` est inchangée (même nom par convention
+ * Eloquent pour les deux FQCN) ; un `instanceof` sur l'ancien FQCN reste vrai
+ * pour les instances canoniques.
+ *
+ * @deprecated Alias conservé 1 release — ne plus importer dans du code
+ *             nouveau. Retrait planifié à la release suivante (issue de
+ *             suivi référencée dans la PR du lot Z6).
  *
  * @mixin Builder<static>
  */
-class CommunicationEvent extends Model
+class CommunicationEvent extends \App\Modules\Communication\Domain\Models\CommunicationEvent
 {
-    use BelongsToCompany;
-
-    protected $fillable = [
-        'company_id',
-        'employee_id',
-        'notification_id',
-        'event_name',
-        'channel',
-        'status',
-        'provider',
-        'template_key',
-        'metadata',
-        'error_message',
-        'occurred_at',
-    ];
-
-    protected $casts = [
-        'metadata' => 'array',
-        'occurred_at' => 'datetime',
-    ];
-
-    /** @return BelongsTo<Employee, $this> */
-    public function employee(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class, 'employee_id');
-    }
-
-    /** @return BelongsTo<Notification, $this> */
+    /**
+     * Relation historique vers la notification in-app. Jamais lue en
+     * production (vérifié sur `main` au 2026-09-28) ; conservée ici — et pas
+     * sur la classe canonique — pour préserver la compatibilité de l'alias
+     * sans introduire de dépendance Communication → Notification (ADR 0027,
+     * règle 3).
+     *
+     * @return BelongsTo<Notification, $this>
+     */
     public function notification(): BelongsTo
     {
         return $this->belongsTo(Notification::class, 'notification_id');

@@ -1037,3 +1037,15 @@ restent les gates applicables.
   `client-business-flows` (parcours affecter → renommer rôle → retirer).
 - **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
   `restaurant.team.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+
+## Mise à jour 2026-09-28 — assistant IA du portail web (PR #8253, issue #8224, BOS-035)
+
+- **Surface web** : nouvelle page protégée `/assistant` (module `front/web/src/modules/assistant/`)
+  — panneau de chat, badges `tools_used`, cartes de confirmation write (confirm/reject),
+  historique des conversations ; préfixe protégé `/assistant` ajouté (`protected-prefixes.ts`,
+  `proxy.ts`, `sw.js`). Scénarios : e2e Playwright `front/web/e2e/assistant.spec.ts` (question →
+  tool → réponse ; write → confirmation → exécution) + Jest `assistant-panel.test.tsx`.
+- **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue partagé
+  `assistant*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+- **Surface API** : aucun changement backend (consomme les endpoints assistant existants),
+  aucun scénario nouveau requis.
