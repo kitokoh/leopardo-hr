@@ -25,6 +25,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelShopBookingR
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelBookingRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelBookingResource;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelTripResource;
+use App\Shared\Services\PublicCommerce\IdempotentGuestWrite;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -221,8 +222,15 @@ class TravelPublicShopController extends Controller
      * Initiation de paiement EN LIGNE (source `online`, jeton boutique).
      * Réutilise le contrat de passerelle existant (TRAVEL-408) ; le callback
      * de confirmation reste public et signé HMAC (TRAVEL-409).
+     *
+     * BOS-050 (#8208, tranche 6) : le rejeu invité est délégué au socle
+     * mutualisé {@see IdempotentGuestWrite} — contrat identique (rejeu →
+     * 200 avec le MÊME payload, création → 201), avec en sus la gestion de
+     * course : un 23505 sur `travel_payments(company_id, idempotency_key)`
+     * entre la relecture et l'insert relit le paiement du gagnant au lieu
+     * de remonter une erreur.
      */
-    public function initiatePayment(Request $request, PaymentGatewayRegistry $gateways): JsonResponse
+    public function initiatePayment(Request $request, PaymentGatewayRegistry $gateways, IdempotentGuestWrite $idempotentGuestWrite): JsonResponse
     {
         $data = $request->validate([
             'booking_reference' => ['required', 'string', 'max:40'],
@@ -238,40 +246,44 @@ class TravelPublicShopController extends Controller
             abort(404, 'Réservation en ligne introuvable.');
         }
 
-        $existing = TravelPayment::query()
-            ->where('booking_id', $booking->id)
-            ->where('provider_code', $data['provider_code'])
-            ->where('idempotency_key', $data['idempotency_key'])
-            ->first();
+        /** @var array{result: TravelPayment, created: bool} $replay */
+        $replay = $idempotentGuestWrite->replay(
+            function () use ($booking, $data): ?TravelPayment {
+                /** @var TravelPayment|null $existing */
+                $existing = TravelPayment::query()
+                    ->where('booking_id', $booking->id)
+                    ->where('provider_code', $data['provider_code'])
+                    ->where('idempotency_key', $data['idempotency_key'])
+                    ->first();
 
-        if ($existing instanceof TravelPayment) {
-            return response()->json([
-                'data' => [
-                    'reference' => $existing->reference,
-                    'provider_reference' => $existing->provider_reference,
-                    'status' => $existing->status->value,
-                ],
-            ]);
-        }
+                return $existing;
+            },
+            function () use ($booking, $data, $gateways): TravelPayment {
+                $gateway = $gateways->get($data['provider_code']);
 
-        $gateway = $gateways->get($data['provider_code']);
+                $result = $gateway->initiate([
+                    'booking_reference' => $booking->reference,
+                    'amount_minor' => $booking->total_amount_minor,
+                    'currency' => $booking->currency,
+                    'idempotency_key' => $data['idempotency_key'],
+                ]);
 
-        $result = $gateway->initiate([
-            'booking_reference' => $booking->reference,
-            'amount_minor' => $booking->total_amount_minor,
-            'currency' => $booking->currency,
-            'idempotency_key' => $data['idempotency_key'],
-        ]);
+                /** @var TravelPayment $payment */
+                $payment = DB::transaction(fn (): TravelPayment => TravelPayment::query()->create([
+                    'booking_id' => $booking->id,
+                    'provider_code' => $data['provider_code'],
+                    'amount_minor' => $booking->total_amount_minor,
+                    'currency' => $booking->currency,
+                    'status' => PaymentStatus::PENDING,
+                    'provider_reference' => $result['provider_reference'],
+                    'idempotency_key' => $data['idempotency_key'],
+                ]));
 
-        $payment = DB::transaction(fn (): TravelPayment => TravelPayment::query()->create([
-            'booking_id' => $booking->id,
-            'provider_code' => $data['provider_code'],
-            'amount_minor' => $booking->total_amount_minor,
-            'currency' => $booking->currency,
-            'status' => PaymentStatus::PENDING,
-            'provider_reference' => $result['provider_reference'],
-            'idempotency_key' => $data['idempotency_key'],
-        ]));
+                return $payment;
+            },
+        );
+
+        $payment = $replay['result'];
 
         return response()->json([
             'data' => [
@@ -279,7 +291,7 @@ class TravelPublicShopController extends Controller
                 'provider_reference' => $payment->provider_reference,
                 'status' => $payment->status->value,
             ],
-        ])->setStatusCode(201);
+        ])->setStatusCode($replay['created'] ? 201 : 200);
     }
 
     /**
