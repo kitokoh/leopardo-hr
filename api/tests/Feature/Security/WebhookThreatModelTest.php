@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Security;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Notification\Domain\Models\CommunicationEvent;
+use App\Modules\Communication\Domain\Models\CommunicationEvent;
 use App\Modules\Notification\Infrastructure\Services\EmployeeEmailLookupService;
 use App\Shared\Services\InboundWebhookVerifier;
 use Tests\Support\CreatesMvpSchema;
@@ -141,7 +140,8 @@ class WebhookThreatModelTest extends TestCase
 
     private function bindLookupStub(?Employee $employee): void
     {
-        $this->app->bind(EmployeeEmailLookupService::class, fn () => new class($employee) extends EmployeeEmailLookupService {
+        $this->app->bind(EmployeeEmailLookupService::class, fn () => new class($employee) extends EmployeeEmailLookupService
+        {
             public function __construct(private readonly ?Employee $stubbed) {}
 
             public function resolve(string $email): ?Employee
