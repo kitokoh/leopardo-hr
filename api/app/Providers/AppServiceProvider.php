@@ -269,6 +269,11 @@ class AppServiceProvider extends ServiceProvider
         // caller is a third-party payment provider, not a tenant.
         // TRAVEL-1001 (#6114) — boutique publique : throttling renforcé
         // (endpoints publics, sans auth utilisateur) — anti-scraping par IP.
+        // BOS-050 (#8208) — bucket PARTAGÉ par toutes les surfaces publiques
+        // « shop » (travel, catalog, showcase, retail/market, restaurant) :
+        // enregistré UNE SEULE FOIS ici (toute redéfinition écraserait
+        // silencieusement celle-ci — garde : test d'introspection
+        // PublicRateLimiterRegistrationTest).
         RateLimiter::for('shop-public', function (Request $request) {
             return Limit::perMinute((int) config('security.rate_limits.shop_public_per_minute', 30))
                 ->by('shop-public:'.$request->ip());
@@ -373,14 +378,6 @@ class AppServiceProvider extends ServiceProvider
         // dédié 60/min par IP pour la vitrine/onboarding/mobile pré-login.
         RateLimiter::for('public-registry', function (Request $request) {
             return Limit::perMinute(60)->by('public-registry:'.$request->ip());
-        });
-
-        // RESTO-805 (#6226) — boutique publique RestaurantManager : bucket
-        // renforcé (défaut 30/min par IP) pour le menu public / commande en
-        // ligne / kiosque (pattern TRAVEL-1001/#6114, `shop-public`).
-        RateLimiter::for('shop-public', function (Request $request) {
-            return Limit::perMinute((int) config('security.rate_limits.shop_public_per_minute', 30))
-                ->by('shop-public:'.$request->ip());
         });
 
         // HOSP-006 (#7948, spec §6) — vitrine publique HospitalityManager
