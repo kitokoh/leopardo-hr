@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * TRAVEL-907 (#6110) — Annonces payantes (spec §3) : soumission, prix

@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * #6097 (TRAVEL-806) — Abonnements & livraisons de webhooks transporteurs.
