@@ -7,9 +7,11 @@ namespace App\Modules\Platform\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\TenantManager;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceAnomalyService;
 use App\Modules\Onboarding\Application\Services\OnboardingProgressReader;
+use Closure;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -20,7 +22,14 @@ class PlatformCompanyHealthService
     public function __construct(
         private readonly AttendanceAnomalyService $anomalyService,
         private readonly OnboardingProgressReader $onboardingProgress,
+        private readonly TenantManager $tenantManager,
     ) {}
+
+    /**
+     * Search_path unique appliqué à la lecture du portefeuille (#7302) :
+     * tous les tenants partagent `shared_tenants` (ADR-0027).
+     */
+    private const PORTFOLIO_SEARCH_PATH = '"shared_tenants",public';
 
     /**
      * Taille de page par défaut du portefeuille (#7339).
@@ -332,30 +341,18 @@ class PlatformCompanyHealthService
      * Applique un `search_path` unique pour tout le portefeuille (#7302).
      *
      * Tous les tenants partagent le schéma `shared_tenants` (le mode
-     * « un schéma par tenant » est refusé à la création — `Company::booted()`),
-     * il n'est donc pas nécessaire de changer de schéma par société.
+     * « un schéma par tenant » est refusé à la création — `Company::booted()`,
+     * ADR-0027), il n'est donc pas nécessaire de changer de schéma par société.
      *
-     * @param  callable(): void  $callback
+     * BOS-019 (#8204) : la bascule est déléguée à
+     * `TenantManager::withinSearchPath()` — API unique de bascule brute à
+     * restauration garantie (try/finally), y compris sur exception.
+     *
+     * @param  Closure(): void  $callback
      */
-    private function withinPortfolioSearchPath(callable $callback): void
+    private function withinPortfolioSearchPath(Closure $callback): void
     {
-        if (DB::getDriverName() !== 'pgsql') {
-            $callback();
-
-            return;
-        }
-
-        $searchPathRow = DB::selectOne('SHOW search_path');
-        $previous = is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')
-            ? (string) $searchPathRow->search_path
-            : 'public';
-        DB::statement('SET search_path TO "shared_tenants",public');
-
-        try {
-            $callback();
-        } finally {
-            DB::statement("SET search_path TO {$previous}");
-        }
+        $this->tenantManager->withinSearchPath(self::PORTFOLIO_SEARCH_PATH, $callback);
     }
 
     /**
@@ -878,25 +875,13 @@ class PlatformCompanyHealthService
     }
 
     /**
-     * @param  callable(): array<string, mixed>  $callback
+     * @param  Closure(): array<string, mixed>  $callback
      * @return array<string, mixed>
      */
-    private function withTenantSearchPath(Company $company, callable $callback): array // @phpstan-ignore callable.nonCallable
+    private function withTenantSearchPath(Company $company, Closure $callback): array
     {
-        if (DB::getDriverName() !== 'pgsql') {
-            return $callback();
-        }
-
-        $searchPathRow = DB::selectOne('SHOW search_path');
-        $previous = is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')
-            ? (string) $searchPathRow->search_path
-            : 'public';
-        DB::statement('SET search_path TO '.$company->getSafeSearchPath());
-
-        try {
-            return $callback();
-        } finally {
-            DB::statement("SET search_path TO {$previous}");
-        }
+        // BOS-019 (#8204) : bascule déléguée à TenantManager::withinSearchPath
+        // — restauration garantie par try/finally, y compris sur exception.
+        return $this->tenantManager->withinSearchPath($company->getSafeSearchPath(), $callback);
     }
 }

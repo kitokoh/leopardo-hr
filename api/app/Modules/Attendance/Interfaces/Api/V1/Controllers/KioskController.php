@@ -6,6 +6,7 @@ namespace App\Modules\Attendance\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
@@ -35,6 +36,7 @@ class KioskController extends Controller
         private readonly OnboardingQrInterface $onboardingQr,
         private readonly BiometricAuditLogger $biometricAudit,
         private readonly KioskFaceVerificationService $faceVerification,
+        private readonly TenantManager $tenantManager,
     ) {}
 
     public function register(Request $request): JsonResponse
@@ -53,8 +55,6 @@ class KioskController extends Controller
 
     private function doRegister(Request $request, Company $company, Employee $actor): JsonResponse
     {
-        $this->setTenantSearchPath($company);
-
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'location_label' => ['nullable', 'string', 'max:120'],
@@ -164,8 +164,6 @@ class KioskController extends Controller
 
     private function doRoster(Company $company, string $deviceCode): JsonResponse
     {
-        $this->setTenantSearchPath($company);
-
         $hasFaceColumn = Schema::hasColumn('employees', 'biometric_face_enabled');
         $hasFingerprintColumn = Schema::hasColumn('employees', 'biometric_fingerprint_enabled');
 
@@ -223,8 +221,6 @@ class KioskController extends Controller
      */
     private function doSync(AttendanceKiosk $kiosk, array $validated, string $deviceCode, string $plainSyncToken): JsonResponse
     {
-        $this->setTenantSearchPath($kiosk->company);
-
         $result = $this->kioskAttendanceService->syncPunches(
             $kiosk,
             $validated['events'],
@@ -274,8 +270,6 @@ class KioskController extends Controller
      */
     private function doEmployeeInfo(Company $company, array $validated): JsonResponse
     {
-        $this->setTenantSearchPath($company);
-
         $employee = Employee::query()
             ->where('company_id', $company->id)
             ->where(function ($query) use ($validated): void {
@@ -337,8 +331,6 @@ class KioskController extends Controller
 
     private function doAnnouncements(AttendanceKiosk $kiosk, Company $company, string $deviceCode): JsonResponse
     {
-        $this->setTenantSearchPath($company);
-
         if (! Schema::hasTable('kiosk_announcements')) {
             return new JsonResponse(['data' => []]);
         }
@@ -414,8 +406,6 @@ class KioskController extends Controller
      */
     private function doLeaveBalance(Company $company, array $validated): JsonResponse
     {
-        $this->setTenantSearchPath($company);
-
         $employee = Employee::query()
             ->where('company_id', $company->id)
             ->where(function ($query) use ($validated): void {
@@ -465,8 +455,6 @@ class KioskController extends Controller
      */
     private function doQrPunch(AttendanceKiosk $kiosk, Company $company, array $validated): JsonResponse
     {
-        $this->setTenantSearchPath($company);
-
         // #3365 : le QR punch n'accepte QUE le jeton signé+expirant émis par
         // /me/qr-profile (OnboardingQrService, type employee_profile) — les
         // payloads JSON base64 nus (forgeables) sont rejetés.
@@ -593,64 +581,51 @@ class KioskController extends Controller
 
     private function resolveAuthorizedKiosk(Request $request, string $deviceCode): AttendanceKiosk
     {
-        // Issue #2689 (QA 2026-08-15) — le SET search_path doit être annulé
-        // (try/finally) pour ne pas laisser l'état de connexion PostgreSQL
-        // pointer vers shared_tenants sur les requêtes suivantes du même
-        // worker (pattern RequestTrialSignup).
-        // #2973 : lecture du search_path — larastan type selectOne() non-null,
-        // les variantes nullsafe/?? sont refusées par PHPStan strict. Garde
-        // is_object + property_exists, défaut explicite si indisponible.
-        $previous = 'public,shared_tenants';
-        try {
-            $searchPathRow = DB::selectOne('SHOW search_path');
-            if (is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')) {
-                $previous = (string) $searchPathRow->search_path;
-            }
-        } catch (Throwable) {
-            // défaut conservé
-        }
-        DB::statement('SET search_path TO shared_tenants,public');
+        // Issue #2689 (QA 2026-08-15) — la bascule search_path est confiée à
+        // TenantManager::withinSearchPath (BOS-019/#8204) : restauration
+        // garantie par try/finally, y compris sur exception/abort — jamais de
+        // fuite d'état de connexion vers les requêtes suivantes du même worker.
+        return $this->tenantManager->withinSearchPath(
+            'shared_tenants,public',
+            function () use ($request, $deviceCode): AttendanceKiosk {
+                // Issue #5588 : lookup par hash déterministe (le device_code
+                // n'est plus stocké en clair — AttendanceKiosk::hashDeviceCode).
+                $kiosk = AttendanceKiosk::query()
+                    ->where('device_code', AttendanceKiosk::hashDeviceCode($deviceCode))
+                    ->firstOrFail();
 
-        try {
-            // Issue #5588 : lookup par hash déterministe (le device_code
-            // n'est plus stocké en clair — AttendanceKiosk::hashDeviceCode).
-            $kiosk = AttendanceKiosk::query()
-                ->where('device_code', AttendanceKiosk::hashDeviceCode($deviceCode))
-                ->firstOrFail();
+                // BIO-005 (#6766) : un appareil révoqué ne peut plus pointer ni
+                // synchroniser (réponse explicite, pas un 404 ambigu).
+                if ($kiosk->isRevoked()) {
+                    Log::channel('audit')->warning('kiosk_auth.revoked_device', [
+                        'device_code' => $deviceCode,
+                        'company_id' => $kiosk->company_id,
+                        'ip' => $request->ip(),
+                    ]);
+                    abort(403, 'DEVICE_REVOKED');
+                }
 
-            // BIO-005 (#6766) : un appareil révoqué ne peut plus pointer ni
-            // synchroniser (réponse explicite, pas un 404 ambigu).
-            if ($kiosk->isRevoked()) {
-                Log::channel('audit')->warning('kiosk_auth.revoked_device', [
-                    'device_code' => $deviceCode,
-                    'company_id' => $kiosk->company_id,
-                    'ip' => $request->ip(),
-                ]);
-                abort(403, 'DEVICE_REVOKED');
-            }
+                if ($kiosk->company_id !== null) {
+                    $kiosk->setRelation('company', PlatformCompanyLookup::findOrFail((string) $kiosk->company_id));
+                }
 
-            if ($kiosk->company_id !== null) {
-                $kiosk->setRelation('company', PlatformCompanyLookup::findOrFail((string) $kiosk->company_id));
-            }
+                $token = (string) $request->header('X-Kiosk-Token', '');
+                if ($token === '' || ! Hash::check($token, (string) $kiosk->sync_token_hash)) {
+                    // PA2-API-005: security-relevant event, logged to the dedicated
+                    // 'audit' channel so brute-force attempts against a kiosk device
+                    // token are visible independently of the per-minute throttle.
+                    Log::channel('audit')->warning('kiosk_auth.failed', [
+                        'device_code' => $deviceCode,
+                        'ip' => $request->ip(),
+                        'user_agent' => $request->userAgent(),
+                    ]);
 
-            $token = (string) $request->header('X-Kiosk-Token', '');
-            if ($token === '' || ! Hash::check($token, (string) $kiosk->sync_token_hash)) {
-                // PA2-API-005: security-relevant event, logged to the dedicated
-                // 'audit' channel so brute-force attempts against a kiosk device
-                // token are visible independently of the per-minute throttle.
-                Log::channel('audit')->warning('kiosk_auth.failed', [
-                    'device_code' => $deviceCode,
-                    'ip' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                ]);
+                    abort(401, 'INVALID_KIOSK_TOKEN');
+                }
 
-                abort(401, 'INVALID_KIOSK_TOKEN');
-            }
-
-            return $kiosk;
-        } finally {
-            DB::statement('SET search_path TO '.$previous);
-        }
+                return $kiosk;
+            },
+        );
     }
 
     /**
@@ -659,38 +634,39 @@ class KioskController extends Controller
      * try/finally, les workers persistants héritent du schéma du tenant
      * précédent → résolution cross-tenant sur la requête suivante.
      *
+     * BOS-019 (#8204) : la bascule est déléguée à
+     * `TenantManager::withinSearchPath()` — API unique de bascule brute à
+     * restauration garantie. Le middleware `kiosk.search_path`
+     * (`EnsureKioskSearchPathReset`) reste le filet de sécurité.
+     *
      * @param  \Closure(): JsonResponse  $callback
      */
     private function withTenantSearchPath(?Company $company, \Closure $callback): JsonResponse
     {
-        $searchPathRow = DB::selectOne('SHOW search_path');
-        $previous = is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')
-            ? (string) $searchPathRow->search_path
-            : 'public';
-        $this->setTenantSearchPath($company);
-
-        try {
-            return $callback();
-        } finally {
-            DB::statement('SET search_path TO '.$previous);
-        }
+        return $this->tenantManager->withinSearchPath(
+            $this->resolveKioskSearchPath($company),
+            $callback,
+        );
     }
 
-    private function setTenantSearchPath(?Company $company): void
+    /**
+     * Chemin de recherche appliqué aux handlers kiosque.
+     *
+     * Tout tenant récent partage `shared_tenants` (ADR-0027, BOS-005/#8203).
+     * La branche « schema » ne sert que d'éventuels tenants historiques en
+     * schéma dédié — inventaire borné de l'ADR-0027, à retirer avec la
+     * migration additive de nettoyage du mode mort.
+     */
+    private function resolveKioskSearchPath(?Company $company): string
     {
-        if (! $company) {
-            DB::statement('SET search_path TO shared_tenants,public');
-
-            return;
+        if ($company instanceof Company
+            && $company->tenancy_type === 'schema'
+            && trim((string) $company->schema_name) !== ''
+        ) {
+            return $company->getSafeSearchPath();
         }
 
-        if ($company->tenancy_type === 'schema' && $company->schema_name) {
-            DB::statement('SET search_path TO '.$company->getSafeSearchPath());
-
-            return;
-        }
-
-        DB::statement('SET search_path TO shared_tenants,public');
+        return 'shared_tenants,public';
     }
 
     private function serializeKiosk(AttendanceKiosk $kiosk): array
@@ -975,18 +951,16 @@ class KioskController extends Controller
      */
     private function assertKioskProvisionedInPublicContext(AttendanceKiosk $kiosk): void
     {
-        $searchPathRow = DB::selectOne('SHOW search_path');
-        $previous = is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')
-            ? (string) $searchPathRow->search_path
-            : 'shared_tenants,public';
-
-        // Contexte EXACT des routes publiques (resolveAuthorizedKiosk).
-        DB::statement('SET search_path TO shared_tenants,public');
-        $resolvable = AttendanceKiosk::query()
-            ->where('device_code', $kiosk->device_code)
-            ->where('status', 'active')
-            ->exists();
-        DB::statement('SET search_path TO '.$previous);
+        // Contexte EXACT des routes publiques (resolveAuthorizedKiosk) —
+        // bascule déléguée à TenantManager::withinSearchPath (BOS-019/#8204) :
+        // restauration garantie même si la sonde lève une exception.
+        $resolvable = $this->tenantManager->withinSearchPath(
+            'shared_tenants,public',
+            fn (): bool => AttendanceKiosk::query()
+                ->where('device_code', $kiosk->device_code)
+                ->where('status', 'active')
+                ->exists(),
+        );
 
         if ($resolvable) {
             return;
