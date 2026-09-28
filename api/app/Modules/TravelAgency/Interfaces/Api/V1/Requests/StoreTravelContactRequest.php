@@ -42,7 +42,6 @@ class StoreTravelContactRequest extends FormRequest
         ];
     }
 
-
     public function messages(): array
     {
         return [

@@ -110,6 +110,7 @@ class TravelReportApiTest extends TestCase
         ]);
     }
 
+    /** @return array{trip: TravelTrip, booking: TravelBooking} */
     private function confirmedBooking(Company $company, int $amountMinor = 15000): array
     {
         return app(TenantManager::class)->withinTenant($company, function () use ($amountMinor): array {
