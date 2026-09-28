@@ -7,8 +7,8 @@ namespace App\Modules\EduManager\Application\Actions;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\EduManager\Domain\Models\EduClass;
 use App\Modules\EduManager\Domain\Models\EduClassEnrollment;
+use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Cas d'usage : inscription d'un élève à une classe (EDU-011, issue #5827).
@@ -21,6 +21,10 @@ use Illuminate\Support\Facades\DB;
  */
 class EnrollEduStudentAction
 {
+    public function __construct(
+        private readonly DatabaseManager $db,
+    ) {}
+
     /**
      * @param  array<string, mixed>  $data
      */
@@ -41,7 +45,7 @@ class EnrollEduStudentAction
             // contenue pour que la transaction appelante reste utilisable et
             // que le rejeu idempotent ci-dessous aboutisse.
             /** @var EduClassEnrollment $enrollment */
-            $enrollment = DB::transaction(fn (): EduClassEnrollment => EduClassEnrollment::query()->create($payload));
+            $enrollment = $this->db->connection()->transaction(fn (): EduClassEnrollment => EduClassEnrollment::query()->create($payload));
         } catch (UniqueConstraintViolationException) {
             /** @var EduClassEnrollment $enrollment */
             $enrollment = EduClassEnrollment::query()
