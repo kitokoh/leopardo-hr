@@ -4,7 +4,7 @@ Leopardo is built from the ground up as a native multi-tenant SaaS. Our architec
 
 ## 🏗 The Isolation Model — Shared Schema (definitive)
 
-> **Decision:** the shared schema is the **only** tenancy model — see ADR [0027](adr/0027-shared-schema-definitif.md) (BOS-005, #8203), which amends ADR [0001](adr/0001-multi-tenant-postgresql.md). The dedicated-schema mode is locked: creating such a tenant is refused (`Company::booted()` → 422 `COMPANY_SCHEMA_MODE_LOCKED`).
+> **Decision:** the shared schema is the **only** tenancy model — see ADR [0028](adr/0028-shared-schema-definitif.md) (BOS-005, #8203), which amends ADR [0001](adr/0001-multi-tenant-postgresql.md). The dedicated-schema mode is locked: creating such a tenant is refused (`Company::booted()` → 422 `COMPANY_SCHEMA_MODE_LOCKED`).
 
 -   **Storage:** all tenants share the PostgreSQL schema `shared_tenants` (platform registry tables live in `public`).
 -   **Isolation Mechanism:** every business table includes a `company_id` column.
@@ -13,7 +13,7 @@ Leopardo is built from the ground up as a native multi-tenant SaaS. Our architec
 
 ### Legacy dedicated-schema mode (locked, not supported)
 
--   The remaining `tenancy_type = 'schema'` code paths form a **bounded inventory** (historical guard + legacy-row protections) documented in ADR 0027 — they are not a supported mode and no new code may branch on them.
+-   The remaining `tenancy_type = 'schema'` code paths form a **bounded inventory** (historical guard + legacy-row protections) documented in ADR 0028 — they are not a supported mode and no new code may branch on them.
 -   Physical cleanup (column, enum, partial index) is deferred to an additive migration after a production audit.
 
 ---

@@ -1,4 +1,4 @@
-# ADR 0027 — Schéma partagé définitif : le mode « un schéma par tenant » est acté comme mort
+# ADR 0028 — Schéma partagé définitif : le mode « un schéma par tenant » est acté comme mort
 
 ## Statut
 

@@ -27,7 +27,7 @@ class PlatformCompanyHealthService
 
     /**
      * Search_path unique appliqué à la lecture du portefeuille (#7302) :
-     * tous les tenants partagent `shared_tenants` (ADR-0027).
+     * tous les tenants partagent `shared_tenants` (ADR-0028).
      */
     private const PORTFOLIO_SEARCH_PATH = '"shared_tenants",public';
 
@@ -342,7 +342,7 @@ class PlatformCompanyHealthService
      *
      * Tous les tenants partagent le schéma `shared_tenants` (le mode
      * « un schéma par tenant » est refusé à la création — `Company::booted()`,
-     * ADR-0027), il n'est donc pas nécessaire de changer de schéma par société.
+     * ADR-0028), il n'est donc pas nécessaire de changer de schéma par société.
      *
      * BOS-019 (#8204) : la bascule est déléguée à
      * `TenantManager::withinSearchPath()` — API unique de bascule brute à

@@ -652,9 +652,9 @@ class KioskController extends Controller
     /**
      * Chemin de recherche appliqué aux handlers kiosque.
      *
-     * Tout tenant récent partage `shared_tenants` (ADR-0027, BOS-005/#8203).
+     * Tout tenant récent partage `shared_tenants` (ADR-0028, BOS-005/#8203).
      * La branche « schema » ne sert que d'éventuels tenants historiques en
-     * schéma dédié — inventaire borné de l'ADR-0027, à retirer avec la
+     * schéma dédié — inventaire borné de l'ADR-0028, à retirer avec la
      * migration additive de nettoyage du mode mort.
      */
     private function resolveKioskSearchPath(?Company $company): string

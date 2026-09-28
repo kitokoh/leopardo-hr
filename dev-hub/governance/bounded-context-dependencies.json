@@ -804,6 +804,24 @@
       "to": "BC-29",
       "baseline": false,
       "note": "AI → COMMUNICATION : handlers email_classify/email_reply_draft d'IntentEngine (#8004, tranche 1) — classification + préparation de réponses sur les messages du tenant courant (company_id de session, jamais d'args LLM), chaînage idempotent."
+    },
+    {
+      "from": "BC-13",
+      "to": "BC-29",
+      "baseline": true,
+      "note": "BC-13 → BC-29 — NOTIFICATION → COMMUNICATION : le dispatcher de notifications (CommunicationService, controllers Notification) écrit le journal de livraison CommunicationEvent, déplacé vers Communication par ADR 0027 / BOS-025 (#8219, 2026-09-28) — direction canonique, l'inverse est interdit."
+    },
+    {
+      "from": "BC-16",
+      "to": "BC-29",
+      "baseline": true,
+      "note": "BC-16 → BC-29 — EDU → COMMUNICATION : EduNotificationController lit le journal CommunicationEvent (déplacé vers Communication, ADR 0027 / BOS-025 #8219)."
+    },
+    {
+      "from": "BC-01",
+      "to": "BC-29",
+      "baseline": true,
+      "note": "BC-01 → BC-29 — PLATFORM → COMMUNICATION : CommunicationAnalyticsController + observabilité lisent le journal CommunicationEvent (déplacé vers Communication, ADR 0027 / BOS-025 #8219)."
     }
   ]
 }

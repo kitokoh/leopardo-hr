@@ -28,7 +28,7 @@ use Illuminate\Support\Facades\DB;
  * @property string|null $phone
  * @property int|null $plan_id
  * @property string $schema_name
- * @property string $tenancy_type Toujours 'shared' — le mode 'schema' est verrouillé à la création (ADR-0027)
+ * @property string $tenancy_type Toujours 'shared' — le mode 'schema' est verrouillé à la création (ADR-0028)
  * @property string $status
  * @property Carbon|null $subscription_start
  * @property Carbon|null $subscription_end
@@ -444,7 +444,7 @@ class Company extends Model
      *
      * Tout tenant créé depuis le verrouillage partage `shared_tenants` ; un
      * `schema_name` dédié ne peut plus appartenir qu'à d'éventuels tenants
-     * historiques (ADR-0027, BOS-005/#8203).
+     * historiques (ADR-0028, BOS-005/#8203).
      */
     public function getSafeSearchPath(): string
     {
@@ -455,7 +455,7 @@ class Company extends Model
 
     protected static function booted(): void
     {
-        // Garde historique du mode « schema-per-tenant » mort (ADR-0027,
+        // Garde historique du mode « schema-per-tenant » mort (ADR-0028,
         // BOS-005/#8203) : toute création en schéma dédié est refusée.
         // Conservée tant que la colonne companies.tenancy_type existe — son
         // retrait suivra la migration additive de nettoyage, après audit prod.
@@ -474,7 +474,7 @@ class Company extends Model
                 return;
             }
 
-            // Les employes vivent dans le schema partagé 'shared_tenants' (ADR-0027),
+            // Les employes vivent dans le schema partagé 'shared_tenants' (ADR-0028),
             // alors que l update d une company via le super-admin web s execute
             // avec search_path=public. On etend le search_path temporairement
             // pour que la revocation des tokens (Sanctum) voie les relations.
