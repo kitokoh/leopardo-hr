@@ -6,8 +6,8 @@ namespace App\Modules\Communication\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Communication\Application\Actions\CancelFollowUpAction;
 use App\Modules\Communication\Domain\Models\CommunicationFollowUp;
-use App\Modules\Communication\Domain\Models\CommunicationFollowUpLog;
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\Concerns\AssertsTenantScope;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,6 +24,8 @@ use Illuminate\Http\Request;
 class CommunicationFollowUpController extends Controller
 {
     use AssertsTenantScope;
+
+    public function __construct(private readonly CancelFollowUpAction $cancelAction) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -68,19 +70,9 @@ class CommunicationFollowUpController extends Controller
         $this->assertTenantScope($request, $followUp);
         $this->authorize('cancel', $followUp);
 
-        if ($followUp->status !== CommunicationFollowUp::STATUS_PENDING) {
-            return new JsonResponse([
-                'message' => __('communication.follow_up_not_cancellable'),
-                'code' => 'FOLLOW_UP_NOT_CANCELLABLE',
-            ], 409);
-        }
-
-        $followUp->forceFill([
-            'status' => CommunicationFollowUp::STATUS_CANCELLED,
-            'skip_reason' => 'cancelled_by_owner',
-        ])->save();
-
-        CommunicationFollowUpLog::record($followUp, CommunicationFollowUpLog::ACTION_CANCELLED, 'cancelled_by_owner');
+        // Délégation du cas d'usage (BOS-024e, #8216) : refus 409 hors
+        // `pending`, annulation auditée — contrat inchangé.
+        $followUp = $this->cancelAction->execute($followUp);
 
         return new JsonResponse(['data' => $this->present($followUp)]);
     }
