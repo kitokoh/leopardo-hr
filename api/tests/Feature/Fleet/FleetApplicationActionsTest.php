@@ -106,6 +106,15 @@ class FleetApplicationActionsTest extends TestCase
     }
 
     /**
+     * Les rapports agreges exposent des alias SQL non declares sur le modele
+     * (SUM/COUNT) : lecture via getAttribute(), normalisee en float.
+     */
+    private function asFloat(mixed $value): float
+    {
+        return is_numeric($value) ? (float) $value : 0.0;
+    }
+
+    /**
      * @param  array<int, array<string, mixed>>  $positions
      */
     private function fakeTraccar(array $positions): void
@@ -350,9 +359,9 @@ class FleetApplicationActionsTest extends TestCase
             ->execute((string) $this->companyA->id, '2026-05-01', '2026-05-31');
 
         $this->assertCount(1, $rows);
-        $this->assertSame((int) $vehicle->id, (int) $rows->first()->vehicle_id);
-        $this->assertEqualsWithDelta(20.0, (float) $rows->first()->total_fuel, 0.01);
-        $this->assertEqualsWithDelta(201.0, (float) $rows->first()->total_distance, 0.01);
+        $this->assertSame((int) $vehicle->id, (int) $rows->firstOrFail()->vehicle_id);
+        $this->assertEqualsWithDelta(20.0, $this->asFloat($rows->firstOrFail()->getAttribute('total_fuel')), 0.01);
+        $this->assertEqualsWithDelta(201.0, $this->asFloat($rows->firstOrFail()->getAttribute('total_distance')), 0.01);
     }
 
     public function test_mileage_report_groups_and_averages_inside_period(): void
@@ -374,9 +383,9 @@ class FleetApplicationActionsTest extends TestCase
             ->execute((string) $this->companyA->id, '2026-05-01', '2026-05-31');
 
         $this->assertCount(1, $rows);
-        $this->assertSame(2, (int) $rows->first()->trip_count);
-        $this->assertEqualsWithDelta(201.0, (float) $rows->first()->total_km, 0.01);
-        $this->assertEqualsWithDelta(55.0, (float) $rows->first()->avg_speed, 0.01);
+        $this->assertSame(2, (int) $this->asFloat($rows->firstOrFail()->getAttribute('trip_count')));
+        $this->assertEqualsWithDelta(201.0, $this->asFloat($rows->firstOrFail()->getAttribute('total_km')), 0.01);
+        $this->assertEqualsWithDelta(55.0, $this->asFloat($rows->firstOrFail()->getAttribute('avg_speed')), 0.01);
     }
 
     public function test_maintenance_due_returns_only_soonest_window_for_current_tenant(): void
@@ -410,8 +419,8 @@ class FleetApplicationActionsTest extends TestCase
         $due = app(ListVehiclesDueForMaintenanceAction::class)->execute((string) $this->companyA->id);
 
         $this->assertCount(1, $due);
-        $this->assertSame((int) $soon->id, (int) $due->first()->vehicle_id);
-        $this->assertSame('DZ-SOON', (string) $due->first()->vehicle?->plate_number);
+        $this->assertSame((int) $soon->id, (int) $due->firstOrFail()->vehicle_id);
+        $this->assertSame('DZ-SOON', (string) $due->firstOrFail()->vehicle?->plate_number);
     }
 
     public function test_maintenance_due_honours_custom_window(): void

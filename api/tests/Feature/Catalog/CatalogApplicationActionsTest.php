@@ -442,9 +442,9 @@ class CatalogApplicationActionsTest extends TestCase
         $contacted = $action->execute((string) $this->companyA->id, 'contacted');
 
         $this->assertCount(3, $all);
-        $this->assertSame((int) $closed->id, (int) $all->first()->id);
+        $this->assertSame((int) $closed->id, (int) $all->firstOrFail()->id);
         $this->assertCount(1, $contacted);
-        $this->assertSame('deux@exemple.dz', $contacted->first()->email);
+        $this->assertSame('deux@exemple.dz', $contacted->firstOrFail()->email);
         $this->assertNotContains((int) $otherTenant->id, $all->pluck('id')->all());
     }
 
@@ -485,7 +485,7 @@ class CatalogApplicationActionsTest extends TestCase
         $this->assertSame(CatalogInquiryStatus::New, $inquiry->status);
         $this->assertNotNull($inquiry->consent_at);
         $this->assertSame(
-            $inquiry->consent_at?->copy()->addDays(90)->toDateString(),
+            $inquiry->consent_at->copy()->addDays(90)->toDateString(),
             $inquiry->retention_until?->toDateString()
         );
         $this->assertSame(hash('sha256', '203.0.113.7'), $inquiry->ip_hash);
