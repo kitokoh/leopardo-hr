@@ -5,18 +5,14 @@ declare(strict_types=1);
 namespace App\Modules\Communication\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
+use App\Modules\Communication\Application\Actions\CompleteGoogleConnectionAction;
+use App\Modules\Communication\Application\Actions\RevokeIntegrationAction;
+use App\Modules\Communication\Application\Actions\StartGoogleConnectionAction;
 use App\Modules\Communication\Domain\Models\CommunicationIntegration;
-use App\Modules\Communication\Domain\Support\CommunicationFeatures;
-use App\Modules\Communication\Infrastructure\Services\GoogleGmailOAuthService;
-use App\Modules\Communication\Infrastructure\Services\GoogleGmailSyncService;
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\Concerns\AssertsTenantScope;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 /**
  * Connexion Google par utilisateur (BC-29 COMMUNICATION, R1 #7686).
@@ -44,13 +40,10 @@ class CommunicationIntegrationController extends Controller
 {
     use AssertsTenantScope;
 
-    private const STATE_CACHE_PREFIX = 'communication:oauth:state:';
-
-    private const STATE_TTL_MINUTES = 10;
-
     public function __construct(
-        private readonly GoogleGmailOAuthService $google,
-        private readonly GoogleGmailSyncService $sync,
+        private readonly StartGoogleConnectionAction $startAction,
+        private readonly CompleteGoogleConnectionAction $completeAction,
+        private readonly RevokeIntegrationAction $revokeAction,
     ) {}
 
     /**
@@ -82,52 +75,16 @@ class CommunicationIntegrationController extends Controller
     {
         $this->authorize('create', CommunicationIntegration::class);
 
-        if (! $this->google->isConfigured()) {
-            Log::error('communication.google.not_configured', [
-                'client_id' => filled(config('services.google.client_id')),
-                'client_secret' => filled(config('services.google.client_secret')),
-                'redirect' => filled(config('services.google.communication_redirect')),
-            ]);
-
-            return new JsonResponse([
-                'error' => 'GOOGLE_OAUTH_UNAVAILABLE',
-                'message' => 'GOOGLE_OAUTH_UNAVAILABLE',
-            ], 503);
-        }
-
         /** @var Employee $employee */
         $employee = $request->user();
 
-        // R4 (#7689) — activation des relances : le scope `gmail.send` est
-        // demande a la connexion (consentement INCREMENTAL, les scopes deja
-        // accordes restent via include_granted_scopes). R5 (#7690) ajoute
-        // `gmail.compose` au meme geste : la politique `draft` depose des
-        // brouillons dans la boite de l'utilisateur.
-        $scopes = GoogleGmailOAuthService::DEFAULT_SCOPES;
+        // Délégation du cas d'usage (BOS-024e, #8216) : 503
+        // GOOGLE_OAUTH_UNAVAILABLE, state anti-CSRF à usage unique en cache
+        // (10 min), scopes gmail.send/compose demandés à la connexion —
+        // contrat inchangé.
+        $payload = $this->startAction->execute($employee, $request->boolean('with_send'));
 
-        if ($request->boolean('with_send')) {
-            $scopes[] = GoogleGmailOAuthService::GMAIL_SEND_SCOPE;
-            $scopes[] = GoogleGmailOAuthService::GMAIL_COMPOSE_SCOPE;
-        }
-
-        $state = Str::random(40);
-
-        // tenant-cache:shared — état OAuth aléatoire (40 chars), usage unique, company re-validée au callback (#8058)
-        Cache::put(
-            self::STATE_CACHE_PREFIX.$state,
-            [
-                'employee_id' => $employee->id,
-                'company_id' => (string) $employee->company_id,
-            ],
-            now()->addMinutes(self::STATE_TTL_MINUTES)
-        );
-
-        return new JsonResponse([
-            'data' => [
-                'authorization_url' => $this->google->authorizationUrl($state, $scopes),
-                'expires_in' => self::STATE_TTL_MINUTES * 60,
-            ],
-        ]);
+        return new JsonResponse(['data' => $payload]);
     }
 
     /**
@@ -136,110 +93,17 @@ class CommunicationIntegrationController extends Controller
      */
     public function googleCallback(Request $request): JsonResponse
     {
-        $state = $request->query('state');
+        // Délégation du cas d'usage (BOS-024e, #8216) : state à usage
+        // unique = seule preuve d'identité (400), consentement refusé
+        // (400), gate module re-vérifié fail-closed (403), échange du code
+        // (502), tokens chiffrés stockés — contrat inchangé.
+        $payload = $this->completeAction->execute(
+            $request->query('state'),
+            $request->query('error'),
+            $request->query('code'),
+        );
 
-        if (! is_string($state) || $state === '') {
-            return new JsonResponse([
-                'error' => 'OAUTH_STATE_INVALID',
-                'message' => 'OAUTH_STATE_INVALID',
-            ], 400);
-        }
-
-        /** @var array{employee_id: int, company_id: string}|null $context */
-        // tenant-cache:shared — consommation du state ci-dessus (endpoint public, pas de contexte tenant) (#8058)
-        $context = Cache::pull(self::STATE_CACHE_PREFIX.$state);
-
-        if (! is_array($context)) {
-            // State inconnu, expire ou deja consomme : pas de tentative
-            // d'echange (anti-CSRF #2619 transpose au module).
-            return new JsonResponse([
-                'error' => 'OAUTH_STATE_INVALID',
-                'message' => 'OAUTH_STATE_INVALID',
-            ], 400);
-        }
-
-        // L'utilisateur a refuse le consentement (ou Google renvoie une
-        // erreur) : rien n'est stocke.
-        if (is_string($request->query('error'))) {
-            return new JsonResponse([
-                'error' => 'OAUTH_CONSENT_DENIED',
-                'message' => 'OAUTH_CONSENT_DENIED',
-            ], 400);
-        }
-
-        // Fail-closed : la route est publique, le gate module est re-verifie
-        // a la main sur la company portee par le state (kill switch conserve).
-        /** @var Company|null $company */
-        $company = Company::query()->find($context['company_id']);
-
-        if ($company === null || ! $company->hasFeature(CommunicationFeatures::COMMUNICATION)) {
-            return new JsonResponse([
-                'error' => 'FEATURE_NOT_ENABLED',
-                'message' => 'FEATURE_NOT_ENABLED',
-            ], 403);
-        }
-
-        $code = $request->query('code');
-
-        if (! is_string($code) || $code === '') {
-            return new JsonResponse([
-                'error' => 'OAUTH_CODE_MISSING',
-                'message' => 'OAUTH_CODE_MISSING',
-            ], 400);
-        }
-
-        $tokens = $this->google->exchangeCode($code);
-
-        if ($tokens === null) {
-            return new JsonResponse([
-                'error' => 'OAUTH_EXCHANGE_FAILED',
-                'message' => 'OAUTH_EXCHANGE_FAILED',
-            ], 502);
-        }
-
-        $email = $this->google->fetchAccountEmail($tokens['access_token']);
-
-        // Hors surface tenant (pas de middleware `tenant` ici) : le scope
-        // global ne s'applique pas, on borne la requete au tenant du state et
-        // company_id est pose par forceFill (jamais par mass assignment #7646).
-        /** @var CommunicationIntegration $integration */
-        $integration = CommunicationIntegration::query()
-            ->withoutGlobalScope('company')
-            ->where('company_id', $context['company_id'])
-            ->where('employee_id', $context['employee_id'])
-            ->where('provider', CommunicationIntegration::PROVIDER_GOOGLE)
-            ->firstOrNew([]);
-
-        $integration->forceFill([
-            'company_id' => $context['company_id'],
-            'employee_id' => $context['employee_id'],
-            'provider' => CommunicationIntegration::PROVIDER_GOOGLE,
-            'email' => $email,
-            'scopes' => $tokens['scopes'],
-            'access_token' => $tokens['access_token'],
-            // Reconnexion sans nouveau refresh_token : on garde l'ancien.
-            'refresh_token' => $tokens['refresh_token'] ?? $integration->refresh_token,
-            'expires_at' => now()->addSeconds($tokens['expires_in']),
-            'status' => CommunicationIntegration::STATUS_ACTIVE,
-            'connected_at' => now(),
-            'revoked_at' => null,
-            'last_error' => null,
-        ])->save();
-
-        // Audit sans PII sensible : jamais de token, jamais de payload Google.
-        Log::channel('audit')->info('communication.google.connected', [
-            'company_id' => $context['company_id'],
-            'employee_id' => $context['employee_id'],
-            'integration_id' => $integration->id,
-        ]);
-
-        return new JsonResponse([
-            'data' => [
-                'status' => CommunicationIntegration::STATUS_ACTIVE,
-                'provider' => CommunicationIntegration::PROVIDER_GOOGLE,
-                'email' => $email,
-            ],
-        ]);
+        return new JsonResponse(['data' => $payload]);
     }
 
     /**
@@ -256,20 +120,13 @@ class CommunicationIntegrationController extends Controller
         $this->assertTenantScope($request, $integration);
         $this->authorize('delete', $integration);
 
-        $this->google->revoke($integration);
-
-        // Purge R2 : threads + messages (corps chiffres compris) + curseurs
-        // de sync — une reconnexion repart d'une full sync propre.
-        $this->sync->purge($integration);
-
-        Log::channel('audit')->info('communication.google.revoked', [
-            'company_id' => $integration->company_id,
-            'employee_id' => $integration->employee_id,
-            'integration_id' => $integration->id,
-        ]);
+        // Délégation du cas d'usage (BOS-024e, #8216) : révocation Google +
+        // purge complète fils/messages/curseurs (R2) + audit — contrat
+        // inchangé.
+        $integration = $this->revokeAction->execute($integration);
 
         return new JsonResponse([
-            'data' => $this->present($integration->refresh()),
+            'data' => $this->present($integration),
         ]);
     }
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Platform\Infrastructure\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Notification\Domain\Models\CommunicationEvent;
+use App\Modules\Communication\Domain\Models\CommunicationEvent;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
