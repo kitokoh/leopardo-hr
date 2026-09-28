@@ -9,6 +9,7 @@ use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\TravelAgency\Domain\Models\TravelExportAsset;
 use App\Modules\TravelAgency\Infrastructure\Exports\TravelCsvExporter;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -21,8 +22,11 @@ use Throwable;
  * TRAVEL-505 (#6075) — Génération asynchrone d'un export CSV (pattern
  * BankExport : pending → generating → generated/failed, contexte tenant via
  * EnsureTenantContext). Rejeu du job → MÊME fichier (données déterministes).
+ *
+ * #8206 (BOS-017) : `ShouldBeUnique` (clé = TravelExportAsset) — un double
+ * dispatch ne produit qu'une seule exécution.
  */
-class ExportTravelReportJob implements ShouldQueue, TenantScopedJob
+class ExportTravelReportJob implements ShouldBeUnique, ShouldQueue, TenantScopedJob
 {
     public const TYPES = ['sales', 'occupancy', 'revenue', 'cancellations'];
 
@@ -34,6 +38,17 @@ class ExportTravelReportJob implements ShouldQueue, TenantScopedJob
     public int $tries = 3;
 
     public int $timeout = 120;
+
+    /**
+     * #8206 (BOS-017) — verrou d'unicité au niveau queue (pattern
+     * GenerateBankExportJob, TTL aligné sur le timeout).
+     */
+    public int $uniqueFor = 120;
+
+    public function uniqueId(): string
+    {
+        return 'travel-export:'.$this->exportAssetId;
+    }
 
     public function __construct(public readonly int $exportAssetId)
     {
