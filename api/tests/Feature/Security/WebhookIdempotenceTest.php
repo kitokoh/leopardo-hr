@@ -9,7 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Billing\Domain\Models\Subscription;
 use App\Modules\Marketing\Domain\Models\MarketingLead;
-use App\Modules\Notification\Domain\Models\CommunicationEvent;
+use App\Modules\Communication\Domain\Models\CommunicationEvent;
 use App\Modules\Notification\Infrastructure\Services\EmployeeEmailLookupService;
 use App\Modules\Payroll\Domain\Models\Payment;
 use Illuminate\Http\JsonResponse;

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Modules\Notification\Domain\Models\CommunicationEvent;
+use App\Modules\Communication\Domain\Models\CommunicationEvent;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use Laravel\Sanctum\Sanctum;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Notification\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Notification\Domain\Models\CommunicationEvent;
+use App\Modules\Communication\Domain\Models\CommunicationEvent;
 use App\Modules\Notification\Infrastructure\Services\EmployeeEmailLookupService;
 use App\Modules\Platform\Infrastructure\Services\WebhookEventRegistry;
 use Illuminate\Http\JsonResponse;
