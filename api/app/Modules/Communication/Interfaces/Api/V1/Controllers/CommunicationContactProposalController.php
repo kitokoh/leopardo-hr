@@ -6,10 +6,9 @@ namespace App\Modules\Communication\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Communication\Application\Actions\DecideContactProposalAction;
 use App\Modules\Communication\Domain\Models\CommunicationContactProposal;
-use App\Modules\Communication\Domain\Models\CommunicationMessage;
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\Concerns\AssertsTenantScope;
-use App\Shared\Contracts\Crm\EmailContactDirectory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -27,7 +26,7 @@ class CommunicationContactProposalController extends Controller
 {
     use AssertsTenantScope;
 
-    public function __construct(private readonly EmailContactDirectory $contacts) {}
+    public function __construct(private readonly DecideContactProposalAction $decideAction) {}
 
     /**
      * Propositions des boites de l'appelant, en attente d'abord.
@@ -75,13 +74,6 @@ class CommunicationContactProposalController extends Controller
         $this->assertTenantScope($request, $proposal);
         $this->authorize('decide', $proposal);
 
-        if (! $proposal->isPending()) {
-            return new JsonResponse([
-                'message' => __('communication.proposal_already_decided'),
-                'code' => 'PROPOSAL_ALREADY_DECIDED',
-            ], 409);
-        }
-
         /** @var array{suggested_name?: string|null} $validated */
         $validated = $request->validate([
             'suggested_name' => ['sometimes', 'nullable', 'string', 'max:128'],
@@ -90,20 +82,15 @@ class CommunicationContactProposalController extends Controller
         /** @var Employee $employee */
         $employee = $request->user();
 
-        $contactId = $this->contacts->createContact(
-            (string) $proposal->company_id,
-            $proposal->email,
-            $validated['suggested_name'] ?? $proposal->suggested_name,
+        // Délégation du cas d'usage (BOS-024e, #8216) : création du contact
+        // CRM via le contrat partagé, liaison rétroactive des messages,
+        // activité timeline — 409 PROPOSAL_ALREADY_DECIDED inchangé.
+        $proposal = $this->decideAction->execute(
+            $proposal,
+            $employee,
+            DecideContactProposalAction::DECISION_ACCEPT,
+            $validated['suggested_name'] ?? null,
         );
-
-        $proposal->forceFill([
-            'status' => CommunicationContactProposal::STATUS_ACCEPTED,
-            'crm_contact_id' => $contactId,
-            'decided_at' => now(),
-            'decided_by' => (int) $employee->id,
-        ])->save();
-
-        $this->linkMessages($proposal, $contactId);
 
         return new JsonResponse(['data' => $this->present($proposal->refresh())]);
     }
@@ -113,54 +100,14 @@ class CommunicationContactProposalController extends Controller
         $this->assertTenantScope($request, $proposal);
         $this->authorize('decide', $proposal);
 
-        if (! $proposal->isPending()) {
-            return new JsonResponse([
-                'message' => __('communication.proposal_already_decided'),
-                'code' => 'PROPOSAL_ALREADY_DECIDED',
-            ], 409);
-        }
-
         /** @var Employee $employee */
         $employee = $request->user();
 
-        $proposal->forceFill([
-            'status' => CommunicationContactProposal::STATUS_DISMISSED,
-            'decided_at' => now(),
-            'decided_by' => (int) $employee->id,
-        ])->save();
+        // Délégation du cas d'usage (BOS-024e, #8216) : clôture auditée —
+        // 409 PROPOSAL_ALREADY_DECIDED inchangé.
+        $proposal = $this->decideAction->execute($proposal, $employee, DecideContactProposalAction::DECISION_DISMISS);
 
         return new JsonResponse(['data' => $this->present($proposal)]);
-    }
-
-    /**
-     * Liaison retroactive des messages de l'expediteur + UNE activite
-     * timeline sur le message le plus recent (pas une par message).
-     */
-    private function linkMessages(CommunicationContactProposal $proposal, int $contactId): void
-    {
-        /** @var CommunicationMessage|null $latest */
-        $latest = CommunicationMessage::query()
-            ->where('integration_id', $proposal->integration_id)
-            ->whereRaw('LOWER(from_email) = ?', [mb_strtolower($proposal->email)])
-            ->orderByDesc('sent_at')
-            ->first();
-
-        CommunicationMessage::query()
-            ->where('integration_id', $proposal->integration_id)
-            ->whereRaw('LOWER(from_email) = ?', [mb_strtolower($proposal->email)])
-            ->update([
-                'crm_contact_id' => $contactId,
-                'contact_link_status' => CommunicationMessage::CONTACT_LINK_LINKED,
-            ]);
-
-        if ($latest !== null) {
-            $this->contacts->recordEmailActivity(
-                (string) $proposal->company_id,
-                $contactId,
-                $latest->subject,
-                $latest->sent_at ?? now(),
-            );
-        }
     }
 
     /**
