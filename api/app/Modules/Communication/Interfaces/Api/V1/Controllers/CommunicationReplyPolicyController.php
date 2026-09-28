@@ -6,10 +6,8 @@ namespace App\Modules\Communication\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\Communication\Domain\Models\CommunicationIntegration;
-use App\Modules\Communication\Domain\Models\CommunicationPendingReply;
+use App\Modules\Communication\Application\Actions\UpsertReplyPolicyAction;
 use App\Modules\Communication\Domain\Models\CommunicationReplyPolicy;
-use App\Modules\Communication\Infrastructure\Services\CommunicationTaxonomyService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -29,7 +27,7 @@ use Illuminate\Http\Request;
  */
 class CommunicationReplyPolicyController extends Controller
 {
-    public function __construct(private readonly CommunicationTaxonomyService $taxonomy) {}
+    public function __construct(private readonly UpsertReplyPolicyAction $upsertAction) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -68,73 +66,10 @@ class CommunicationReplyPolicyController extends Controller
             'policy' => ['required', 'string', 'in:'.implode(',', CommunicationReplyPolicy::POLICIES)],
         ]);
 
-        /** @var CommunicationIntegration|null $integration */
-        $integration = CommunicationIntegration::query()
-            ->where('employee_id', $employee->id)
-            ->find($validated['integration_id']);
-
-        if ($integration === null) {
-            // Boite inconnue OU appartenant a quelqu'un d'autre : 404 (ne
-            // pas reveler l'existence des boites des autres).
-            return new JsonResponse([
-                'message' => __('communication.reply_mailbox_not_found'),
-                'code' => 'MAILBOX_NOT_FOUND',
-            ], 404);
-        }
-
-        $categoryKey = $validated['category_key'];
-
-        if (! in_array($categoryKey, $this->taxonomy->activeCategoryKeys((string) $employee->company_id), true)) {
-            return new JsonResponse([
-                'message' => __('communication.reply_category_unknown'),
-                'code' => 'REPLY_CATEGORY_UNKNOWN',
-            ], 422);
-        }
-
-        $policyValue = $validated['policy'];
-
-        // Liste bloquee EN DUR (spec §3.5) : jamais d'auto sur finance/RH/juridique.
-        if ($policyValue === CommunicationReplyPolicy::POLICY_AUTO
-            && CommunicationReplyPolicy::isAutoBlockedCategory($categoryKey)) {
-            return new JsonResponse([
-                'message' => __('communication.reply_auto_category_blocked'),
-                'code' => 'REPLY_AUTO_CATEGORY_BLOCKED',
-            ], 422);
-        }
-
-        if (in_array($policyValue, [CommunicationReplyPolicy::POLICY_CONFIRM, CommunicationReplyPolicy::POLICY_AUTO], true)
-            && ! $integration->hasSendScope()) {
-            return new JsonResponse([
-                'message' => __('communication.reply_send_scope_required'),
-                'code' => 'GMAIL_SEND_SCOPE_REQUIRED',
-            ], 422);
-        }
-
-        if ($policyValue === CommunicationPendingReply::MODE_DRAFT && ! $integration->hasComposeScope()) {
-            return new JsonResponse([
-                'message' => __('communication.reply_compose_scope_required'),
-                'code' => 'GMAIL_COMPOSE_SCOPE_REQUIRED',
-            ], 422);
-        }
-
-        /** @var CommunicationReplyPolicy|null $policy */
-        $policy = CommunicationReplyPolicy::query()
-            ->where('integration_id', $integration->id)
-            ->where('category_key', $categoryKey)
-            ->first();
-
-        $created = $policy === null;
-
-        if ($policy === null) {
-            $policy = new CommunicationReplyPolicy;
-            $policy->forceFill([
-                'company_id' => (string) $employee->company_id,
-                'integration_id' => $integration->id,
-                'category_key' => $categoryKey,
-            ]);
-        }
-
-        $policy->forceFill(['policy' => $policyValue])->save();
+        // Délégation du cas d'usage (BOS-024e, #8216) : boîte de l'appelant
+        // (404), taxonomie (422), liste bloquée EN DUR (422), scopes
+        // gmail.send/compose (422), upsert — contrat inchangé.
+        ['policy' => $policy, 'created' => $created] = $this->upsertAction->execute($employee, $validated);
 
         return new JsonResponse(['data' => $this->present($policy)], $created ? 201 : 200);
     }
