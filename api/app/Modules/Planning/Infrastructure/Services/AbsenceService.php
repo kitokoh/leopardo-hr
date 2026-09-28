@@ -9,7 +9,6 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Events\AbsenceApproved;
 use App\Events\AbsenceRejected;
 use App\Events\AbsenceRequested;
-use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use App\Modules\Planning\Domain\Exceptions\AbsenceDateConflictException;
 use App\Modules\Planning\Domain\Exceptions\AbsenceNotPendingException;
 use App\Modules\Planning\Domain\Exceptions\InsufficientLeaveBalanceException;
@@ -17,6 +16,7 @@ use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
+use App\Shared\Contracts\Payroll\PublicHolidayCalendar;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\DB;
 class AbsenceService
 {
     public function __construct(
-        private readonly PublicHolidayService $publicHolidays,
+        private readonly PublicHolidayCalendar $publicHolidays,
     ) {}
 
     /** @param array<string, mixed> $data */
@@ -43,7 +43,7 @@ class AbsenceService
         // du pays de l'entreprise exclus) au lieu des jours calendaires — un
         // congé vendredi→lundi consommait 4 jours. Convention documentée :
         // la déduction de solde et l'indemnité portent sur les jours ouvrés
-        // (calendrier entreprise via PublicHolidayService, fallback week-ends
+        // (calendrier entreprise via le contrat PublicHolidayCalendar, fallback week-ends
         // seuls quand le pays est inconnu ou qu'aucun férié n'est configuré).
         $countryCode = $employee->company->country ?? null;
         $daysCount = $this->publicHolidays->workingDaysBetween(

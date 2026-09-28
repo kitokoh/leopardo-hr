@@ -8,11 +8,18 @@ use App\AI\Support\AIToolDefinitionRegistry;
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Modules\Payroll\Domain\Support\PayrollReadToolCatalog;
 use App\Modules\Payroll\Infrastructure\Listeners\PayrollAccountingEntryObserver;
+use App\Modules\Payroll\Infrastructure\Services\SharedPublicHolidayCalendar;
+use App\Shared\Contracts\Payroll\PublicHolidayCalendar;
 use Illuminate\Support\ServiceProvider;
 
 class PayrollServiceProvider extends ServiceProvider
 {
-    public function register(): void {}
+    public function register(): void
+    {
+        // BOS-023 (#8211) — contrat partagé « jours fériés » : les consommateurs
+        // (Planning, BC-05) ne dépendent plus du module Payroll (#5584).
+        $this->app->bind(PublicHolidayCalendar::class, SharedPublicHolidayCalendar::class);
+    }
 
     public function boot(): void
     {

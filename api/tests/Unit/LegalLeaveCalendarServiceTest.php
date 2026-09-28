@@ -27,7 +27,9 @@ class LegalLeaveCalendarServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->service = new LegalLeaveCalendarService;
+        // #8211 (BOS-023) : le service dépend désormais du contrat partagé
+        // PublicHolidayCalendar (BC-07) — résolution via le conteneur.
+        $this->service = app(LegalLeaveCalendarService::class);
     }
 
     public function test_dz_legal_holidays_include_the_four_fixed_national_days(): void
