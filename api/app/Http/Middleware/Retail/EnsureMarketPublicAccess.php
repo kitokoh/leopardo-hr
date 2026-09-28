@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Middleware\Retail;
 
 use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Tenant\TenantManager;
 use App\Modules\Retail\Domain\Models\RetailOnlineSettings;
 use App\Modules\Retail\Domain\Support\RetailFeatures;
+use App\Shared\Services\PublicCommerce\PublicTenantResolver;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,10 +28,17 @@ use Symfony\Component\HttpFoundation\Response;
  * Fail-closed uniforme 404 (pas de probing) : slug inconnu, company
  * suspendue/expiree, feature flag `retail` absent ou boutique en ligne non
  * activee (l'opt-in n'est jamais divulgue publiquement).
+ *
+ * BOS-050 (#8208, tranche 4) : la resolution du tenant est deleguee au
+ * plumbing mutualise {@see PublicTenantResolver} — invariant identique a
+ * l'implementation historique : `companyBySlug($slug, retail, opt-in)` ou
+ * la garde opt-in (boutique en ligne activee) est exactement le cas prevu
+ * par le socle, puis `withinTenant()` (marqueur `tenant_scope_required`
+ * restaure en `finally`, imbrication sure — seul gain de comportement).
  */
 class EnsureMarketPublicAccess
 {
-    public function __construct(private readonly TenantManager $tenants) {}
+    public function __construct(private readonly PublicTenantResolver $resolver) {}
 
     /**
      * @param  Closure(Request): (Response)  $next
@@ -46,31 +53,16 @@ class EnsureMarketPublicAccess
             return $next($request);
         }
 
-        /** @var Company|null $company */
-        $company = Company::query()->where('slug', $slug)->first();
+        $company = $this->resolver->companyBySlug(
+            $slug,
+            RetailFeatures::RETAIL,
+            fn (Company $company): bool => RetailOnlineSettings::query()
+                ->withoutGlobalScope('company')
+                ->where('company_id', (string) $company->id)
+                ->where('enabled', true)
+                ->exists(),
+        );
 
-        if (! $company instanceof Company
-            || in_array($company->status, ['suspended', 'expired'], true)
-            || ! $company->hasFeature(RetailFeatures::RETAIL)) {
-            abort(404);
-        }
-
-        $enabled = RetailOnlineSettings::query()
-            ->withoutGlobalScope('company')
-            ->where('company_id', (string) $company->id)
-            ->where('enabled', true)
-            ->exists();
-
-        if (! $enabled) {
-            abort(404);
-        }
-
-        app()->instance('tenant_scope_required', true);
-
-        try {
-            return $this->tenants->withinTenant($company, fn (): Response => $next($request));
-        } finally {
-            app()->forgetInstance('tenant_scope_required');
-        }
+        return $this->resolver->withinTenant($company, fn (): Response => $next($request));
     }
 }
