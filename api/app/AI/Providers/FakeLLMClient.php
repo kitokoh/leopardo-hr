@@ -19,7 +19,7 @@ use App\AI\LLMClient;
  */
 class FakeLLMClient implements LLMClient
 {
-    public function chat(array $messages, array $tools = []): AIResponse
+    public function chat(array $messages, array $tools = [], ?array $responseFormat = null): AIResponse
     {
         $lastUser = '';
         foreach (array_reverse($messages) as $message) {
@@ -38,6 +38,7 @@ class FakeLLMClient implements LLMClient
                 ? 'Assistant (fake) : aucune consigne reçue.'
                 : 'Assistant (fake) — réponse simulée à : '.$lastUser,
             model: 'fake',
+            provider: 'fake',
         );
     }
 
