@@ -7,6 +7,16 @@ namespace App\Modules\Delivery\Domain\Contracts;
 /**
  * Contrat de manifest d'une solution verticale (DELIVERY-101, issue #6282).
  *
+ * @deprecated BOS-014 (#8201) — contrat LOCAL dupliqué (anti-pattern
+ *             #7220-bis) : `DeliveryManifest` implémente désormais le contrat
+ *             CORE v2 `App\Core\Solutions\Contracts\SolutionManifest` et est
+ *             enregistré au `SolutionCatalogue` (clé `delivery`). Ce fichier
+ *             est conservé temporairement (note de rollback de l'issue :
+ *             « les anciens contrats locaux ne sont supprimés qu'après
+ *             validation des activations ») ; il n'est plus implémenté ni
+ *             bindé. Ne pas réintroduire d'implémentation : la garde CI
+ *             `check-solution-manifest-conformance.sh` le refuse.
+ *
  * Déclare l'identité, la maturité, les dépendances et les permissions d'une
  * solution opérationnelle activable par tenant. Même contrat que les
  * verticales sœurs TravelAgency (TRAVEL-106/#6011) et RestaurantManager

@@ -432,6 +432,16 @@ jobs:
         # présentes. Échoue avec un message actionnable sinon.
         run: bash dev-hub/tools/check-bounded-context-registry.sh
 
+      - name: Solution manifest conformance guard (BOS-014 / issue #8201)
+        if: needs.detect-changes.outputs.api_changed == 'true'
+        # Anti-pattern #7220-bis verrouillé : tout manifest de solution doit
+        # implémenter le contrat Core App\Core\Solutions\Contracts\SolutionManifest
+        # et être enregistré au SolutionCatalogue ; aucun nouveau contrat local
+        # dupliqué (allowlist legacy Delivery/RestaurantManager, deprecated).
+        run: |
+          bash dev-hub/tools/check-solution-manifest-conformance.sh
+          bash dev-hub/tools/check-solution-manifest-conformance.sh --self-test
+
       - name: Check module isolation (issue #5584)
         if: needs.detect-changes.outputs.api_changed == 'true'
         # Garde archunit-style : bloque TOUT nouvel import croisé
