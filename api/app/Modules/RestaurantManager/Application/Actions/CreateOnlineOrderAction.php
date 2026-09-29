@@ -15,6 +15,8 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderItem;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTaxRate;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
+use App\Shared\Services\PublicCommerce\IdempotentGuestWrite;
+use App\Shared\Services\PublicCommerce\TrackingSecretService;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -38,6 +40,8 @@ final class CreateOnlineOrderAction
     public function __construct(
         private readonly BillCalculator $calculator,
         private readonly RestaurantOutboxPublisher $outbox,
+        private readonly IdempotentGuestWrite $guestWrites,
+        private readonly TrackingSecretService $trackingSecrets,
     ) {}
 
     /**
@@ -56,17 +60,46 @@ final class CreateOnlineOrderAction
         $company = currentCompany();
         $companyId = $company->id;
 
-        if (isset($data['idempotency_key'])) {
-            $existing = RestaurantOrder::query()
-                ->where('company_id', $companyId)
-                ->where('idempotency_key', $data['idempotency_key'])
-                ->first();
+        /** @var RestaurantOrder $order */
+        $order = $this->guestWrites->replay(
+            findExisting: function () use ($companyId, $data): ?RestaurantOrder {
+                if (! isset($data['idempotency_key']) || $data['idempotency_key'] === '') {
+                    return null;
+                }
 
-            if ($existing instanceof RestaurantOrder) {
+                /** @var RestaurantOrder|null $existing */
+                $existing = RestaurantOrder::query()
+                    ->where('company_id', $companyId)
+                    ->where('idempotency_key', $data['idempotency_key'])
+                    ->first();
+
                 return $existing;
-            }
-        }
+            },
+            create: fn (): RestaurantOrder => $this->createOrder($companyId, $data),
+        )['result'];
 
+        return $order;
+    }
+
+    /**
+     * Création effective (rejeu idempotent : uniquement quand la clé est
+     * inédite — course 23505 relue côté gagnant par le socle). BOS-050
+     * (#8208, tranche 7) : chaque commande invitée émet un secret de suivi
+     * — hash persisté, clair exposé transitoirement sur
+     * `RestaurantOrder::$trackingSecretPlain` (présenté une fois).
+     *
+     * @param  array{
+     *     branch_id: int,
+     *     order_type?: string,
+     *     items: array<int, array{product_id: int, quantity: float|string}>,
+     *     customer_name?: string|null,
+     *     customer_phone?: string|null,
+     *     note_redacted?: string|null,
+     *     idempotency_key?: string|null
+     * }  $data
+     */
+    private function createOrder(string $companyId, array $data): RestaurantOrder
+    {
         /** @var RestaurantBranch $branch */
         $branch = RestaurantBranch::query()
             ->where('company_id', $companyId)
@@ -74,7 +107,9 @@ final class CreateOnlineOrderAction
 
         $orderType = $data['order_type'] ?? 'takeaway';
 
-        $order = DB::transaction(function () use ($companyId, $branch, $orderType, $data): RestaurantOrder {
+        $secret = $this->trackingSecrets->generate();
+
+        $order = DB::transaction(function () use ($companyId, $branch, $orderType, $data, $secret): RestaurantOrder {
             /** @var RestaurantOrder $order */
             $order = RestaurantOrder::query()->create([
                 'company_id' => $companyId,
@@ -92,6 +127,9 @@ final class CreateOnlineOrderAction
                 'idempotency_key' => $data['idempotency_key'] ?? null,
                 'version' => 1,
             ]);
+
+            // Hors $fillable : le hash n'est jamais mass-assigné.
+            $order->forceFill(['tracking_secret_hash' => $secret['hash']])->save();
 
             $lineIndex = 0;
             foreach ($data['items'] as $line) {
@@ -166,6 +204,8 @@ final class CreateOnlineOrderAction
             'currency' => $order->currency,
             'branch_id' => $order->branch_id,
         ]);
+
+        $order->trackingSecretPlain = $secret['plain'];
 
         return $order;
     }

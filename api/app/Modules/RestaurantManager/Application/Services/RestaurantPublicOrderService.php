@@ -16,6 +16,8 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderItem;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTaxRate;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
+use App\Shared\Services\PublicCommerce\IdempotentGuestWrite;
+use App\Shared\Services\PublicCommerce\TrackingSecretService;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -35,25 +37,62 @@ final class RestaurantPublicOrderService
     public function __construct(
         private readonly BillCalculator $calculator,
         private readonly RestaurantOutboxPublisher $outbox,
+        private readonly IdempotentGuestWrite $guestWrites,
+        private readonly TrackingSecretService $trackingSecrets,
     ) {}
 
     /**
      * @param  list<array{product_code: string, quantity: float|string, menu_id?: int|null}>  $items
-     * @return array{order: RestaurantOrder, created: bool}
+     * @param  bool  $issueTrackingSecret  BOS-050 (#8208, tranche 7) : `true`
+     *                                     sur les surfaces publiques invitées (boutique par jeton, kiosque)
+     *                                     — un secret de suivi est généré, son hash persisté et le clair
+     *                                     retourné UNE FOIS (`tracking_secret`, création réelle uniquement).
+     *                                     `false` partout ailleurs (webhooks marketplace…) : comportement
+     *                                     inchangé, la commande relève du flux legacy déprécié.
+     * @return array{order: RestaurantOrder, created: bool, tracking_secret: string|null}
      */
-    public function create(string $companyId, OrderSource $source, array $items, ?string $idempotencyKey = null, ?int $branchId = null, ?string $customerPhone = null): array
+    public function create(string $companyId, OrderSource $source, array $items, ?string $idempotencyKey = null, ?int $branchId = null, ?string $customerPhone = null, bool $issueTrackingSecret = false): array
     {
-        if ($idempotencyKey !== null && $idempotencyKey !== '') {
-            $existing = RestaurantOrder::query()
-                ->where('company_id', $companyId)
-                ->where('idempotency_key', $idempotencyKey)
-                ->first();
+        $trackingSecret = null;
 
-            if ($existing instanceof RestaurantOrder) {
-                return ['order' => $existing, 'created' => false];
-            }
-        }
+        $replay = $this->guestWrites->replay(
+            findExisting: function () use ($companyId, $idempotencyKey): ?RestaurantOrder {
+                if ($idempotencyKey === null || $idempotencyKey === '') {
+                    return null;
+                }
 
+                /** @var RestaurantOrder|null $existing */
+                $existing = RestaurantOrder::query()
+                    ->where('company_id', $companyId)
+                    ->where('idempotency_key', $idempotencyKey)
+                    ->first();
+
+                return $existing;
+            },
+            create: function () use ($companyId, $source, $items, $idempotencyKey, $branchId, $customerPhone, $issueTrackingSecret, &$trackingSecret): RestaurantOrder {
+                return $this->createOrder($companyId, $source, $items, $idempotencyKey, $branchId, $customerPhone, $issueTrackingSecret, $trackingSecret);
+            },
+        );
+
+        return [
+            'order' => $replay['result'],
+            'created' => $replay['created'],
+            // Secret présenté UNE SEULE FOIS, à la création réelle — jamais
+            // au rejeu (perdu = la commande n'est plus suivie publiquement).
+            'tracking_secret' => $replay['created'] ? $trackingSecret : null,
+        ];
+    }
+
+    /**
+     * Création effective (appelée par le rejeu idempotent uniquement quand
+     * la clé est inédite ; la course 23505 est relue côté gagnant par le
+     * socle {@see IdempotentGuestWrite}).
+     *
+     * @param  list<array{product_code: string, quantity: float|string, menu_id?: int|null}>  $items
+     * @param  string|null  $trackingSecretPlain  OUT : secret en clair si émis
+     */
+    private function createOrder(string $companyId, OrderSource $source, array $items, ?string $idempotencyKey, ?int $branchId, ?string $customerPhone, bool $issueTrackingSecret, ?string &$trackingSecretPlain): RestaurantOrder
+    {
         if ($items === []) {
             abort(422, 'Panier vide.');
         }
@@ -66,7 +105,9 @@ final class RestaurantPublicOrderService
 
         $branch = $this->resolveBranch($companyId, $branchId);
 
-        $order = DB::transaction(function () use ($company, $branch, $source, $items, $idempotencyKey, $customerPhone): RestaurantOrder {
+        $secret = $issueTrackingSecret ? $this->trackingSecrets->generate() : null;
+
+        $order = DB::transaction(function () use ($company, $branch, $source, $items, $idempotencyKey, $customerPhone, $secret): RestaurantOrder {
             // Statut `open` d'emblée : une commande web/kiosque/marketplace
             // n'a pas de phase brouillon en salle — elle est immédiatement
             // visible en cuisine (start) et payable (machine à états).
@@ -80,6 +121,11 @@ final class RestaurantPublicOrderService
                 'idempotency_key' => $idempotencyKey,
                 'note_redacted' => $customerPhone !== null ? 'Tel client: '.substr($customerPhone, 0, 6).'***' : null,
             ]);
+
+            if ($secret !== null) {
+                // Hors $fillable : le hash n'est jamais mass-assigné.
+                $order->forceFill(['tracking_secret_hash' => $secret['hash']])->save();
+            }
 
             $index = 0;
             foreach ($items as $entry) {
@@ -141,7 +187,12 @@ final class RestaurantPublicOrderService
             idempotencyKey: 'public-order:'.$order->id,
         );
 
-        return ['order' => $order, 'created' => true];
+        if ($secret !== null) {
+            $trackingSecretPlain = $secret['plain'];
+            $order->trackingSecretPlain = $secret['plain'];
+        }
+
+        return $order;
     }
 
     private function resolveBranch(string $companyId, ?int $branchId): RestaurantBranch
