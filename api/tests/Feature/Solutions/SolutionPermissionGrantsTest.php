@@ -97,7 +97,7 @@ class SolutionPermissionGrantsTest extends TestCase
 
         $this->assertSame('edumanager', $log->new_values['solution'] ?? null);
         $this->assertSame(SolutionIndustry::Education->value, $log->new_values['industry'] ?? null);
-        $this->assertSameCanonicalizing($expected, $log->new_values['permissions_installed'] ?? []);
+        $this->assertEqualsCanonicalizing($expected, $log->new_values['permissions_installed'] ?? []);
     }
 
     public function test_activation_is_idempotent_and_never_duplicates_grants(): void

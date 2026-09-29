@@ -64,6 +64,7 @@ class SolutionManifestConformanceTest extends TestCase
             $this->assertContains($manifest->maturity(), ['pilot', 'production', 'placeholder'], "{$code} : maturité hors vocabulaire");
             $this->assertNotSame('', $manifest->description(), "{$code} : description vide");
 
+            /** @var array<mixed, mixed> $permissions volontairement élargi : le test doit échouer si un manifest retourne une liste legacy (clés int) ou des libellés non string. */
             $permissions = $manifest->permissions();
             $this->assertNotSame([], $permissions, "{$code} : aucune permission déclarée");
             foreach ($permissions as $permissionCode => $label) {
@@ -73,7 +74,9 @@ class SolutionManifestConformanceTest extends TestCase
             }
 
             foreach (['requiredModules', 'optionalModules', 'sensitiveData'] as $method) {
-                foreach ($manifest->{$method}() as $entry) {
+                /** @var iterable<mixed> $entries idem : assertion runtime sur le contenu, pas sur le type déclaré. */
+                $entries = $manifest->{$method}();
+                foreach ($entries as $entry) {
                     $this->assertIsString($entry, "{$code} : entrée non string dans {$method}()");
                 }
             }
