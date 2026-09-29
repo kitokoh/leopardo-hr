@@ -13854,6 +13854,15 @@ paths:
       tags:
       - AI
       summary: Envoyer un message au chatbot IA
+      description: >-
+        Orchestrateur IA (`App\AI\Orchestrator::handle`) — la réponse est
+        enveloppée dans `data`. Quand le LLM demande un write-tool soumis à
+        confirmation humaine, la réponse porte `pending_confirmations[]` et
+        AUCUNE écriture n'est exécutée tant que le client n'appelle pas
+        `POST /ai/actions/{pendingActionId}/confirm` (fail-closed ; action en
+        attente conservée ~15 min). Si le driver configuré est un provider
+        cloud et que le tenant n'a pas `ai_cloud_allowed`, `response` contient
+        un refus explicite et aucun appel externe n'a lieu (tokens à 0).
       security:
       - BearerAuth: []
       requestBody:
@@ -13867,25 +13876,129 @@ paths:
               properties:
                 message:
                   type: string
+                  maxLength: 2000
                 conversation_id:
                   type: integer
                   nullable: true
+                  description: Reprend une conversation existante ; omis = nouvelle conversation
       responses:
         '200':
-          description: Reponse IA
+          description: Réponse de l'orchestrateur IA (enveloppe `data`)
           content:
             application/json:
               schema:
                 type: object
+                required:
+                - data
                 properties:
-                  reply:
+                  data:
+                    type: object
+                    required:
+                    - conversation_id
+                    - response
+                    - tools_used
+                    - pending_confirmations
+                    - tokens
+                    properties:
+                      conversation_id:
+                        type: integer
+                        example: 42
+                      response:
+                        type: string
+                        description: Texte final de l'assistant (le champ documenté `reply` n'a jamais existé — le champ réel est `response`)
+                      tools_used:
+                        type: array
+                        description: Noms des outils exécutés ou proposés pendant la requête
+                        items:
+                          type: string
+                        example:
+                        - list_employees
+                      pending_confirmations:
+                        type: array
+                        description: Write-tools en attente de confirmation humaine (aucun effet tant que non confirmés)
+                        items:
+                          type: object
+                          required:
+                          - status
+                          - pending_action_id
+                          - tool
+                          - summary
+                          - arguments
+                          properties:
+                            status:
+                              type: string
+                              enum:
+                              - confirmation_required
+                            pending_action_id:
+                              type: string
+                              format: uuid
+                              description: Identifiant à repasser à /ai/actions/{pendingActionId}/confirm ou /reject
+                            tool:
+                              type: string
+                              example: approve_absence
+                            summary:
+                              type: string
+                              description: Résumé lisible de l'action proposée
+                            arguments:
+                              type: object
+                              description: Arguments du tool call proposé
+                      tokens:
+                        type: object
+                        required:
+                        - input
+                        - output
+                        properties:
+                          input:
+                            type: integer
+                            description: Tokens d'entrée du dernier appel LLM
+                          output:
+                            type: integer
+                            description: Tokens de sortie du dernier appel LLM
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature IA désactivée globalement (`ai.enabled=false`, middleware AIFeatureCheck)
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - error
+                - message
+                properties:
+                  error:
                     type: string
-                  conversation_id:
-                    type: integer
-                  tools_used:
-                    type: array
-                    items:
+                    enum:
+                    - AI_FEATURE_DISABLED
+                  message:
+                    type: string
+                    example: AI_FEATURE_DISABLED
+                  localized_message:
+                    type: string
+        '422':
+          description: Erreur de validation OU quota/budget IA dépassé (fail-closed)
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ValidationErrorResponse'
+                - type: object
+                  required:
+                  - error
+                  - message
+                  properties:
+                    error:
                       type: string
+                      enum:
+                      - AI_CREDITS_EXHAUSTED
+                      - AI_TOKEN_BUDGET_EXCEEDED
+                    message:
+                      type: string
+                      example: AI_CREDITS_EXHAUSTED
+                    localized_message:
+                      type: string
+        '429':
+          $ref: '#/components/responses/Error429'
   /ai/chat/history:
     get:
       tags:
@@ -25085,37 +25198,124 @@ paths:
       tags:
       - AI
       summary: Confirmer une action IA en attente
+      description: >-
+        Exécute le write-tool précédemment proposé dans `pending_confirmations[]`
+        (cycle de confirmation humaine, fail-closed). L'action est consommée au
+        premier appel : inconnue, expirée (~15 min) ou déjà traitée → 404.
+      security:
+      - BearerAuth: []
       parameters:
       - name: pendingActionId
         in: path
         required: true
+        description: UUID de l'action en attente (champ `pending_action_id` de la réponse /ai/chat)
         schema:
-          type: integer
+          type: string
+          format: uuid
       responses:
         '200':
           description: Action exécutée
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - status
+                    - tool
+                    - result
+                    properties:
+                      status:
+                        type: string
+                        enum:
+                        - executed
+                      tool:
+                        type: string
+                        example: approve_absence
+                      result:
+                        type: object
+                        description: Résultat métier du write-tool exécuté
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          description: Feature IA non active (AIFeatureCheck)
+          description: Feature IA non active (AIFeatureCheck → `AI_FEATURE_DISABLED`)
+        '404':
+          description: Action en attente introuvable — inconnue, expirée (~15 min) ou déjà consommée ; le corps rendu est le 404 générique `RESOURCE_NOT_FOUND` (renderer HttpException)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Échec d'exécution du write-tool confirmé (ex. `AI_TOOL_PERMISSION_DENIED`, règle métier)
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - error
+                - data
+                properties:
+                  error:
+                    type: string
+                    example: AI_TOOL_PERMISSION_DENIED
+                  data:
+                    type: object
+                    description: Détail du résultat (contient la clé `error`)
   /ai/actions/{pendingActionId}/reject:
     post:
       tags:
       - AI
       summary: Rejeter une action IA en attente
+      description: >-
+        Refuse le write-tool proposé : l'action est consommée et tracée en audit
+        (stage `rejected`), aucune écriture métier n'a lieu.
+      security:
+      - BearerAuth: []
       parameters:
       - name: pendingActionId
         in: path
         required: true
+        description: UUID de l'action en attente (champ `pending_action_id` de la réponse /ai/chat)
         schema:
-          type: integer
+          type: string
+          format: uuid
       responses:
         '200':
           description: Action rejetée
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - status
+                    - tool
+                    properties:
+                      status:
+                        type: string
+                        enum:
+                        - rejected
+                      tool:
+                        type: string
+                        example: approve_absence
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          description: Feature IA non active
+          description: Feature IA non active (AIFeatureCheck → `AI_FEATURE_DISABLED`)
+        '404':
+          description: Action en attente introuvable — inconnue, expirée (~15 min) ou déjà consommée ; le corps rendu est le 404 générique `RESOURCE_NOT_FOUND` (renderer HttpException)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /ai/voice/transcribe:
     post:
       tags:
