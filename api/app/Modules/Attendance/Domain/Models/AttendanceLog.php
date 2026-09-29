@@ -6,6 +6,7 @@ namespace App\Modules\Attendance\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Planning\Domain\Models\Schedule;
+use App\Shared\Contracts\Attendance\AttendanceLogView;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,6 +23,8 @@ use Illuminate\Support\Carbon;
  * @property float|null $hours_worked
  * @property float|null $overtime_hours
  * @property int|null $late_minutes
+ * @property int $session_number
+ * @property string|null $status
  * @property string|null $method
  * @property string|null $source_device_code
  * @property string|null $external_event_id
@@ -42,9 +45,13 @@ use Illuminate\Support\Carbon;
  * @property-read \App\Core\Auth\Domain\Models\Employee|null $employee
  * @property-read \App\Modules\Planning\Domain\Models\Schedule|null $schedule
  *
+ * Implémente `AttendanceLogView` (#8254, BOS-023 cycle 2) : les modules
+ * consommateurs (Planning — estimations) lisent les journaux via cette
+ * interface partagée au lieu d'importer ce modèle (isolation #5584).
+ *
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
-class AttendanceLog extends Model
+class AttendanceLog extends Model implements AttendanceLogView
 {
     use BelongsToCompany;
     use HasFactory;
@@ -94,6 +101,59 @@ class AttendanceLog extends Model
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    /*
+     * Contrat partagé `AttendanceLogView` (#8254) — vue en lecture seule.
+     * Les casts appliqués ici (`decimal:2` → string côté Eloquent) sont
+     * normalisés en float, comme le faisaient les `(float)` des
+     * consommateurs historiques (EstimationService).
+     */
+
+    public function date(): ?\Carbon\Carbon
+    {
+        return $this->date;
+    }
+
+    public function checkIn(): ?\Carbon\Carbon
+    {
+        return $this->check_in;
+    }
+
+    public function checkOut(): ?\Carbon\Carbon
+    {
+        return $this->check_out;
+    }
+
+    public function sessionNumber(): ?int
+    {
+        $value = $this->getAttribute('session_number');
+
+        return is_numeric($value) ? (int) $value : null;
+    }
+
+    public function hoursWorked(): ?float
+    {
+        $value = $this->getAttribute('hours_worked');
+
+        return is_numeric($value) ? (float) $value : null;
+    }
+
+    public function overtimeHours(): ?float
+    {
+        $value = $this->getAttribute('overtime_hours');
+
+        return is_numeric($value) ? (float) $value : null;
+    }
+
+    public function status(): ?string
+    {
+        return $this->status;
+    }
+
+    public function lateMinutes(): ?int
+    {
+        return $this->late_minutes;
     }
 
     /** @return BelongsTo<Schedule, $this> */

@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace App\Modules\Catalog\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Events\CatalogInquiryErased;
 use App\Http\Controllers\Controller;
-use App\Modules\Catalog\Domain\Enums\CatalogInquiryStatus;
+use App\Modules\Catalog\Application\Actions\EraseCatalogInquiryAction;
+use App\Modules\Catalog\Application\Actions\ExportCatalogInquiriesAction;
+use App\Modules\Catalog\Application\Actions\TransitionCatalogInquiryStatusAction;
+use App\Modules\Catalog\Domain\Exceptions\InvalidInquiryStatusTransitionException;
 use App\Modules\Catalog\Domain\Models\CatalogInquiry;
 use App\Modules\Catalog\Interfaces\Api\V1\Requests\UpdateCatalogInquiryStatusRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -74,29 +75,22 @@ class CatalogInquiryController extends Controller
             abort(404);
         }
 
-        $current = $inquiry->status;
-        $target = CatalogInquiryStatus::tryFrom((string) $request->validated('status'));
-
-        // Matrice de transition stricte (spec §7 ; terminal = immuable).
-        if ($target === null
-            || $current->isTerminal()
-            || ! in_array($target, $current->allowedTransitions(), true)) {
-            return new JsonResponse([
-                'error' => 'INVALID_INQUIRY_STATUS_TRANSITION',
-                'current' => $current->value,
-            ], 422);
-        }
-
+        // Matrice de transition stricte (spec §7 ; terminal = immuable) —
+        // invariant porté par TransitionCatalogInquiryStatusAction.
         $note = $request->validated('note');
 
-        $inquiry->status = $target;
-        if (is_string($note) && trim($note) !== '') {
-            $stamped = '['.$this->stamp().'] '.trim($note);
-            $inquiry->notes = $inquiry->notes !== null && trim($inquiry->notes) !== ''
-                ? $inquiry->notes."\n".$stamped
-                : $stamped;
+        try {
+            $inquiry = app(TransitionCatalogInquiryStatusAction::class)->execute(
+                $inquiry,
+                (string) $request->validated('status'),
+                is_string($note) ? $note : null,
+            );
+        } catch (InvalidInquiryStatusTransitionException $e) {
+            return new JsonResponse([
+                'error' => 'INVALID_INQUIRY_STATUS_TRANSITION',
+                'current' => $e->currentStatus(),
+            ], 422);
         }
-        $inquiry->save();
 
         return response()->json(['data' => $this->payload($inquiry->refresh())]);
     }
@@ -116,12 +110,7 @@ class CatalogInquiryController extends Controller
             abort(404);
         }
 
-        $buyerEmail = (string) $inquiry->email;
-        $inquiryId = (int) $inquiry->id;
-
-        $inquiry->delete();
-
-        event(new CatalogInquiryErased((string) $actor->company_id, $buyerEmail, $inquiryId));
+        app(EraseCatalogInquiryAction::class)->execute($inquiry, (string) $actor->company_id);
 
         return response()->json(['data' => null], 200);
     }
@@ -130,14 +119,10 @@ class CatalogInquiryController extends Controller
     {
         $actor = $this->managerOrAbort($request);
 
-        $inquiries = CatalogInquiry::query()
-            ->where('company_id', $actor->company_id)
-            ->when($request->filled('status'), function ($query) use ($request): void {
-                $query->where('status', (string) $request->input('status'));
-            })
-            ->orderByDesc('id')
-            ->limit(5000)
-            ->get();
+        $inquiries = app(ExportCatalogInquiriesAction::class)->execute(
+            (string) $actor->company_id,
+            $request->filled('status') ? (string) $request->input('status') : null,
+        );
 
         $filename = sprintf('catalog-inquiries-%s-%s.csv', $actor->company_id, now()->format('Ymd-His'));
 
@@ -198,11 +183,6 @@ class CatalogInquiryController extends Controller
         }
 
         return $actor;
-    }
-
-    private function stamp(): string
-    {
-        return Carbon::now()->toIso8601String();
     }
 
     /**

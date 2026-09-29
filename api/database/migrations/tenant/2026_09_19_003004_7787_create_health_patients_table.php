@@ -92,18 +92,18 @@ return new class extends Migration
 
     public function down(): void
     {
-        // Tables dépendantes (FK composites vers `health_patients`) : elles
-        // doivent partir AVANT la table parente (2BP01). Gardé : uniquement
-        // si présentes, recréées par leurs propres migrations.
-        Schema::dropIfExists('health_invoice_payments');
-        Schema::dropIfExists('health_invoice_items');
-        Schema::dropIfExists('health_invoices');
-        Schema::dropIfExists('health_admissions');
-        Schema::dropIfExists('health_prescription_items');
-        Schema::dropIfExists('health_prescriptions');
-        Schema::dropIfExists('health_consultations');
-        Schema::dropIfExists('health_appointments');
-
+        // #8237 (leçon #8207 / BOS-018) — symétrique EXACT de up() : ce fichier
+        // ne crée QUE `health_patients` ; son rollback ne droppe que celle-là.
+        // La version précédente droppait aussi 8 tables sœurs créées par leurs
+        // migrations propriétaires (`health_appointments` → `003005_7788`,
+        // `health_consultations`/`health_prescriptions`/`health_prescription_items`
+        // → `003006_7789`, `health_admissions` → `003007_7790`,
+        // `health_invoices`/`health_invoice_items`/`health_invoice_payments`
+        // → `003009_7791`) — au motif que les dépendantes devaient partir avant
+        // la parente (2BP01) et seraient « recréées par leurs propres
+        // migrations lors du rejeu » : un rollback ciblé ne REJOUE pas les
+        // autres migrations, les tables sœurs restaient supprimées avec leurs
+        // migrations « migrées ».
         Schema::dropIfExists('health_patients');
     }
 };

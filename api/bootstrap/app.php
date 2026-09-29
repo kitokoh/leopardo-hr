@@ -156,9 +156,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'market.public' => \App\Http\Middleware\Retail\EnsureMarketPublicAccess::class,
             // BC-17 #7814 — compte acheteur marketplace (jeton opaque plateforme, 401 fail-closed).
             'market.buyer' => \App\Http\Middleware\Retail\EnsureMarketBuyerAuth::class,
-            'delivery.permission' => \App\Http\Middleware\Delivery\EnsureDeliveryPermissionMiddleware::class,
             // BC-26-D05 (#8181) — garde RBAC fine Delivery câblée sur les routes
             // (matrice docs/architecture/DELIVERY_RBAC.md ; deny-by-default).
+            // #8185 : garde unique — l'alias parallèle `delivery.permission`
+            // (0 route, définitions divergentes) a été retiré.
             'delivery.role' => \App\Http\Middleware\Delivery\EnsureDeliveryRoleMiddleware::class,
             // #7553 — permission interne plateforme (`platform.permission:team.manage`).
             'platform.permission' => \App\Http\Middleware\EnsurePlatformPermissionMiddleware::class,

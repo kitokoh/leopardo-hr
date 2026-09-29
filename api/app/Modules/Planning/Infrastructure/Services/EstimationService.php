@@ -5,12 +5,22 @@ declare(strict_types=1);
 namespace App\Modules\Planning\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Shared\Contracts\Attendance\AttendanceLogReader;
+use App\Shared\Contracts\Attendance\AttendanceLogView;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Estimations d'heures/gains à partir des journaux de pointage.
+ *
+ * #8254 (BOS-023 cycle 2) : les journaux sont lus via les contrats Shared
+ * `AttendanceLogReader`/`AttendanceLogView` — le module Attendance n'est
+ * plus importé directement (règle d'isolation #5584). Les appelants qui
+ * passent des modèles `AttendanceLog` restent compatibles : le modèle
+ * implémente `AttendanceLogView`.
+ */
 class EstimationService
 {
     private const EXPECTED_HOURS_PER_DAY = 8.0;
@@ -18,6 +28,10 @@ class EstimationService
     private const DEFAULT_WORKING_DAYS_PER_MONTH = 22;
 
     private const DEFAULT_OVERTIME_RATE_1 = 1.25;
+
+    public function __construct(
+        private readonly AttendanceLogReader $attendanceLogs,
+    ) {}
 
     /**
      * @return array<string, mixed>
@@ -32,12 +46,7 @@ class EstimationService
 
         $dateKey = $dateLocal->toDateString();
 
-        $logs = AttendanceLog::query()
-            ->select(['id', 'employee_id', 'date', 'session_number', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status', 'work_type', 'late_minutes'])
-            ->where('employee_id', $employee->id)
-            ->where('date', $dateKey)
-            ->orderBy('session_number')
-            ->get();
+        $logs = $this->attendanceLogs->logsForEmployeeOnDate((int) $employee->id, $dateKey);
 
         return $this->dailySummaryFromLogs($employee, $logs, $dateKey);
     }
@@ -52,15 +61,11 @@ class EstimationService
         $fromLocal = (Carbon::createFromFormat('Y-m-d', $from, $company->timezone) ?? now()->setTimezone($company->timezone))->startOfDay();
         $toLocal = (Carbon::createFromFormat('Y-m-d', $to, $company->timezone) ?? now()->setTimezone($company->timezone))->startOfDay();
 
-        $logsByDate = AttendanceLog::query()
-            ->select(['id', 'employee_id', 'date', 'session_number', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status', 'work_type', 'late_minutes'])
-            ->where('employee_id', $employee->id)
-            ->where('date', '>=', $fromLocal->toDateString())
-            ->where('date', '<=', $toLocal->toDateString())
-            ->orderBy('date')
-            ->orderBy('session_number')
-            ->get()
-            ->groupBy(fn (AttendanceLog $log) => $log->date?->format('Y-m-d') ?? 'unknown-date');
+        $logsByDate = collect($this->attendanceLogs->logsForEmployeeBetween(
+            (int) $employee->id,
+            $fromLocal->toDateString(),
+            $toLocal->toDateString(),
+        ))->groupBy(fn (AttendanceLogView $log) => $log->date()?->format('Y-m-d') ?? 'unknown-date');
 
         $workingDays = $this->countWorkingDaysInclusive($employee, $fromLocal, $toLocal);
 
@@ -122,7 +127,7 @@ class EstimationService
     /**
      * @return array<string, mixed>
      */
-    public function dailySummaryFromLog(Employee $employee, ?AttendanceLog $log, ?string $date = null): array
+    public function dailySummaryFromLog(Employee $employee, ?AttendanceLogView $log, ?string $date = null): array
     {
         return $this->dailySummaryFromLogs(
             employee: $employee,
@@ -132,7 +137,8 @@ class EstimationService
     }
 
     /**
-     * @param  iterable<int, AttendanceLog>  $logs
+     * @param  iterable<int, AttendanceLogView>  $logs  journaux (modèles
+     *                                                  `AttendanceLog` acceptés — ils implémentent `AttendanceLogView`)
      * @return array<string, mixed>
      */
     public function dailySummaryFromLogs(Employee $employee, iterable $logs, ?string $date = null): array
@@ -145,8 +151,8 @@ class EstimationService
             : collect($logs)->values();
 
         $sessions = $sessions
-            ->filter(fn (AttendanceLog $log) => $log->check_in !== null)
-            ->sortBy(fn (AttendanceLog $log) => (int) ($log->session_number ?? 1))
+            ->filter(fn (AttendanceLogView $log) => $log->checkIn() !== null)
+            ->sortBy(fn (AttendanceLogView $log) => (int) ($log->sessionNumber() ?? 1))
             ->values();
 
         if ($sessions->isEmpty()) {
@@ -170,35 +176,36 @@ class EstimationService
         }
 
         $nowUtc = now('UTC');
-        /** @var AttendanceLog $firstSession */
+        /** @var AttendanceLogView $firstSession */
         $firstSession = $sessions->first();
-        /** @var AttendanceLog $lastSession */
+        /** @var AttendanceLogView $lastSession */
         $lastSession = $sessions->last();
-        $openSession = $sessions->first(fn (AttendanceLog $log) => $log->check_out === null);
+        $openSession = $sessions->first(fn (AttendanceLogView $log) => $log->checkOut() === null);
 
-        $checkInUtc = $firstSession->check_in;
-        $checkOutUtc = $lastSession->check_out;
+        $checkInUtc = $firstSession->checkIn();
+        $checkOutUtc = $lastSession->checkOut();
 
         $status = $openSession
             ? 'incomplete'
-            : ($sessions->contains(fn (AttendanceLog $log) => $log->status === 'late') ? 'late' : 'complete');
+            : ($sessions->contains(fn (AttendanceLogView $log) => $log->status() === 'late') ? 'late' : 'complete');
 
-        $hoursWorked = round($sessions->sum(function (AttendanceLog $log) use ($nowUtc): float {
-            if ($log->hours_worked !== null) {
-                return (float) $log->hours_worked;
+        $hoursWorked = round($sessions->sum(function (AttendanceLogView $log) use ($nowUtc): float {
+            if ($log->hoursWorked() !== null) {
+                return (float) $log->hoursWorked();
             }
 
-            if (! $log->check_in) {
+            $checkIn = $log->checkIn();
+            if ($checkIn === null) {
                 return 0.0;
             }
 
-            return round(($log->check_out ?? $nowUtc)->diffInMinutes($log->check_in) / 60, 2);
+            return round(($log->checkOut() ?? $nowUtc)->diffInMinutes($checkIn) / 60, 2);
         }), 2);
 
-        $recordedOvertime = round($sessions->sum(fn (AttendanceLog $log): float => (float) ($log->overtime_hours ?? 0)), 2);
+        $recordedOvertime = round($sessions->sum(fn (AttendanceLogView $log): float => $log->overtimeHours() ?? 0.0), 2);
         $thresholdOvertime = max(0.0, round($hoursWorked - self::EXPECTED_HOURS_PER_DAY, 2));
         $overtimeHours = max($recordedOvertime, $thresholdOvertime);
-        $lateMinutes = (int) $sessions->sum(fn (AttendanceLog $log): int => (int) ($log->late_minutes ?? 0));
+        $lateMinutes = (int) $sessions->sum(fn (AttendanceLogView $log): int => $log->lateMinutes() ?? 0);
 
         [$baseHourlyRate, $overtimeRate] = $this->resolveRates($employee);
 
