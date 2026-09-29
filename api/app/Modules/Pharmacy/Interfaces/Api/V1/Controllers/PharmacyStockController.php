@@ -6,16 +6,15 @@ namespace App\Modules\Pharmacy\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Pharmacy\Application\Actions\AdjustPharmacyStockAction;
 use App\Modules\Pharmacy\Domain\Models\PharmacyBatch;
 use App\Modules\Pharmacy\Domain\Models\PharmacyProduct;
 use App\Modules\Pharmacy\Domain\Models\PharmacyStockMovement;
-use App\Modules\Pharmacy\Infrastructure\Services\PharmacyStockService;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Requests\StorePharmacyStockAdjustmentRequest;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Traits\ChecksPharmacySolution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Stock d'officine — PHARMA-003 (#7800).
@@ -27,7 +26,7 @@ class PharmacyStockController extends Controller
 {
     use ChecksPharmacySolution;
 
-    public function __construct(private readonly PharmacyStockService $stock) {}
+    public function __construct(private readonly AdjustPharmacyStockAction $adjustStock) {}
 
     /**
      * Niveaux de stock par produit : disponible = somme des lots non périmés.
@@ -191,14 +190,7 @@ class PharmacyStockController extends Controller
         /** @var array{batch_id: int, quantity_delta: int, reason: string, type?: string|null} $payload */
         $payload = $request->validated();
 
-        $batch = DB::transaction(fn (): PharmacyBatch => $this->stock->adjust(
-            (string) $actor->company_id,
-            $payload['batch_id'],
-            $payload['quantity_delta'],
-            $payload['reason'],
-            (int) $actor->getAttribute('id'),
-            $payload['type'] ?? 'adjustment',
-        ));
+        $batch = $this->adjustStock->execute($actor, $payload);
 
         return response()->json([
             'data' => [
