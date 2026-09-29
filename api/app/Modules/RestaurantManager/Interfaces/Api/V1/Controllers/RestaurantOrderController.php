@@ -57,7 +57,7 @@ class RestaurantOrderController extends Controller
             abort(403);
         }
 
-        $result = $this->createOrderAction->create($actor, $request->validated());
+        $result = $this->createOrderAction->execute($actor, $request->validated());
 
         $response = (new RestaurantOrderResource($result['order']))->response();
 

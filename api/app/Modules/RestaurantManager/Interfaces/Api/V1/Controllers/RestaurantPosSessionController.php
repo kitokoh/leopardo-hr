@@ -39,7 +39,7 @@ class RestaurantPosSessionController extends Controller
 
         /** @var array{opening_cash_minor: int, branch_id: int} $data */
         $data = $request->validated();
-        $session = $this->openAction->open($actor, $data);
+        $session = $this->openAction->execute($actor, $data);
 
         return (new RestaurantPosSessionResource($session))->response()->setStatusCode(201);
     }
@@ -106,7 +106,7 @@ class RestaurantPosSessionController extends Controller
 
         /** @var array{counted_cash_minor: int, variance_reason?: string|null} $data */
         $data = $request->validated();
-        $session = $this->closeAction->close($actor, $restaurantPosSession, $data);
+        $session = $this->closeAction->execute($actor, $restaurantPosSession, $data);
 
         return (new RestaurantPosSessionResource($session))->response();
     }

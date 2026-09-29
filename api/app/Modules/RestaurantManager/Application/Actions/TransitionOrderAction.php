@@ -35,7 +35,7 @@ final class TransitionOrderAction
         private readonly StockDecrementer $stockDecrementer,
     ) {}
 
-    public function transition(Employee $actor, RestaurantOrder $order, OrderStatus $target): RestaurantOrder
+    public function execute(Employee $actor, RestaurantOrder $order, OrderStatus $target): RestaurantOrder
     {
         if ($order->company_id !== $actor->company_id) {
             throw new RuntimeException('Order does not belong to tenant.');

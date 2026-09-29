@@ -29,7 +29,7 @@ final class CreateOrderAction
      * @param  array<string, mixed>  $data
      * @return array{order: RestaurantOrder, created: bool}
      */
-    public function create(Employee $actor, array $data): array
+    public function execute(Employee $actor, array $data): array
     {
         $companyId = $actor->company_id;
 

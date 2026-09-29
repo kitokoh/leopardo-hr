@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
  */
 final class RedeemLoyaltyPointsAction
 {
-    public function redeem(RestaurantLoyaltyCustomer $customer, int $points): void
+    public function execute(RestaurantLoyaltyCustomer $customer, int $points): void
     {
         if ($points <= 0) {
             abort(422, 'Points to redeem must be positive.');

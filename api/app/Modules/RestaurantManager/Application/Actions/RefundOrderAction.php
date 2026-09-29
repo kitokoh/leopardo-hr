@@ -44,7 +44,7 @@ final class RefundOrderAction
     /**
      * @param  array{amount_minor: int, reason_code: string, reason_text?: string|null, payment_id?: int|null, idempotency_key?: string|null}  $data
      */
-    public function refund(Employee $actor, RestaurantOrder $order, array $data): RestaurantRefund
+    public function execute(Employee $actor, RestaurantOrder $order, array $data): RestaurantRefund
     {
         if ($order->company_id !== $actor->company_id) {
             throw new RuntimeException('Order does not belong to tenant.');
