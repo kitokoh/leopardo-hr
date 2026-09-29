@@ -58,7 +58,7 @@ final class FeatureFlagRegistry
     {
         $flags = $this->definitionsSource();
 
-        if (! is_array($flags) || ! array_key_exists($key, $flags)) {
+        if (! array_key_exists($key, $flags)) {
             return null;
         }
 
