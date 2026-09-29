@@ -7,6 +7,17 @@ namespace App\Modules\RestaurantManager\Domain\Contracts;
 /**
  * Contrat de manifest d'une solution verticale (RESTO-106, issue #6163).
  *
+ * @deprecated BOS-014 (#8201) — contrat LOCAL non conforme et jamais
+ *             enregistré au catalogue (anti-pattern #7220-bis vivant) :
+ *             `RestaurantManagerManifest` implémente désormais le contrat
+ *             CORE v2 `App\Core\Solutions\Contracts\SolutionManifest` et est
+ *             enregistré au `SolutionCatalogue` (clé `restaurantmanager`).
+ *             Ce fichier est conservé temporairement (note de rollback de
+ *             l'issue : « les anciens contrats locaux ne sont supprimés
+ *             qu'après validation des activations ») ; il n'est plus
+ *             implémenté ni bindé. Ne pas réintroduire d'implémentation :
+ *             la garde CI `check-solution-manifest-conformance.sh` le refuse.
+ *
  * Déclare l'identité, la maturité, les dépendances et les permissions d'une
  * solution opérationnelle activable par tenant. Implémentation de référence :
  * RestaurantManagerManifest (même contrat que la verticale sœur

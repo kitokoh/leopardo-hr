@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Restaurant\Domain\Solution;
 
 use App\Core\Solutions\Contracts\SolutionManifest;
+use App\Core\Solutions\Enums\SolutionIndustry;
 use App\Modules\Restaurant\Domain\Survey\RestaurantSurvey;
 
 /**
@@ -18,7 +19,16 @@ use App\Modules\Restaurant\Domain\Survey\RestaurantSurvey;
  * (RestaurantSurvey) détermine, selon les réponses du prospect, quels
  * packages de ce pack lui sont suggérés.
  *
+ * Rôle clarifié (BOS-014, #8201) : ce manifest est le DESCRIPTEUR du pack
+ * d'onboarding restaurant (survey, `SECTOR_SOLUTIONS`). La verticale
+ * OPÉRATIONNELLE est `restaurantmanager` (Modules/RestaurantManager, même
+ * industrie `restaurant`) — l'activation par le code `restaurant` y CASCADE
+ * (flag opérationnel + amorçage du référentiel, listener
+ * `RestaurantManagerServiceProvider`). Il n'y a donc qu'UNE verticale
+ * restaurant, décrite une seule fois par contrat Core v2.
+ *
  * @see RestaurantSurvey
+ * @see \App\Modules\RestaurantManager\Domain\Manifests\RestaurantManagerManifest
  * @see docs/specifications/PLATFORM_ONBOARDING_AND_VERTICAL_SOLUTIONS.md
  * @see docs/architecture/RESTAURANT_SOLUTION_SURVEY.md
  */
@@ -37,6 +47,11 @@ final class RestaurantManifest implements SolutionManifest
     public function maturity(): string
     {
         return 'pilot';
+    }
+
+    public function industry(): SolutionIndustry
+    {
+        return SolutionIndustry::Restaurant;
     }
 
     public function description(): string

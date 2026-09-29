@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\HospitalityManager\Domain\Solution;
 
 use App\Core\Solutions\Contracts\SolutionManifest;
+use App\Core\Solutions\Enums\SolutionIndustry;
 
 /**
  * Manifest de la solution sectorielle HospitalityManager — HOSP-001 (issue #7943).
@@ -37,6 +38,11 @@ final class HospitalityManagerManifest implements SolutionManifest
     public function maturity(): string
     {
         return 'pilot';
+    }
+
+    public function industry(): SolutionIndustry
+    {
+        return SolutionIndustry::Hospitality;
     }
 
     public function description(): string

@@ -7,6 +7,7 @@ namespace App\Modules\RestaurantManager\Providers;
 use App\Contracts\Communication\CommunicationServiceInterface;
 use App\Core\Solutions\Contracts\DemoDataKit;
 use App\Core\Solutions\DemoDataRegistry;
+use App\Core\Solutions\SolutionCatalogue;
 use App\Events\SolutionActivated;
 use App\Modules\RestaurantManager\Application\Actions\ActivateRestaurantManagerAction;
 use App\Modules\RestaurantManager\Application\Consumers\KitchenOrderNotificationConsumer;
@@ -27,7 +28,6 @@ use App\Modules\RestaurantManager\Domain\Contracts\RestaurantOrderRepositoryInte
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantPosSessionRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantReservationRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantStockLevelRepositoryInterface;
-use App\Modules\RestaurantManager\Domain\Contracts\SolutionManifest;
 use App\Modules\RestaurantManager\Domain\Manifests\RestaurantManagerManifest;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantBranchRepository;
@@ -71,7 +71,19 @@ class RestaurantManagerServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(SolutionManifest::class, RestaurantManagerManifest::class);
+        // BOS-014 (#8201) — le manifest (contrat Core v2) est enregistré au
+        // catalogue central des solutions (clé d'allowlist
+        // `restaurantmanager`) : la verticale devient activable via
+        // `SolutionActivator` avec installation des permissions déclarées
+        // (BOS-013). Fin du singleton de contrat local non conforme et non
+        // enregistré (anti-pattern #7220-bis).
+        if (! $this->app->bound(SolutionCatalogue::class)) {
+            $this->app->singleton(SolutionCatalogue::class, static fn (): SolutionCatalogue => new SolutionCatalogue);
+        }
+
+        $this->app->resolving(SolutionCatalogue::class, function (SolutionCatalogue $catalogue): void {
+            $catalogue->register('restaurantmanager', static fn (): RestaurantManagerManifest => new RestaurantManagerManifest);
+        });
 
         // #7865 — kit de données de démonstration de la verticale (code de
         // solution `restaurant`, manifest porté par Modules/Restaurant — le
@@ -200,12 +212,27 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         // `SolutionActivated` et pose son flag opérationnel + amorce son
         // référentiel via `ActivateRestaurantManagerAction` (idempotent :
         // setFeature + insertOrIgnore), sans couplage core → module.
+        // BOS-014 (#8201) — le code `restaurantmanager` est désormais AUSSI
+        // enregistré au catalogue (activation directe possible, ex. console
+        // plateforme) : le listener couvre les DEUX codes, la même cascade
+        // idempotente s'applique dans les deux sens.
         Event::listen(SolutionActivated::class, static function (SolutionActivated $event): void {
-            if ($event->solution !== 'restaurant') {
+            if ($event->solution !== 'restaurant' && $event->solution !== 'restaurantmanager') {
                 return;
             }
 
             app(ActivateRestaurantManagerAction::class)->execute($event->company);
+
+            // BOS-013/014 — l'activation par le code DESCRIPTEUR `restaurant`
+            // pose le flag opérationnel via la cascade ci-dessus, SANS passer
+            // par `SolutionActivator::activate('restaurantmanager')` : les
+            // grants des permissions opérationnelles (restaurant.manage, …)
+            // ne seraient jamais installés. Installation idempotente ici —
+            // inutile quand l'événement vient de `restaurantmanager`
+            // (l'activateur l'a déjà fait dans sa transaction).
+            if ($event->solution === 'restaurant') {
+                app(\App\Core\Solutions\SolutionActivator::class)->installPermissionsFor($event->company, 'restaurantmanager');
+            }
         });
 
         // Policies du référentiel branches/zones/tables (RESTO-301, #6182) :
