@@ -765,8 +765,12 @@ class IntentEngine
         return [
             'scope' => ! $actor->isManager() ? 'self' : ($actor->isTeamScoped() ? 'team' : 'company'),
             'total' => $employees->count(),
-            'by_status' => $employees->countBy('status')->all(),
-            'by_contract_type' => $employees->countBy('contract_type')->all(),
+            // Tri déterministe des agrégats (#8261) : countBy() conserve
+            // l'ordre de première occurrence, qui dépend du plan d'exécution
+            // Postgres (aucun ORDER BY sur la requête source) — la sortie
+            // JSON de l'outil devait donc varier d'un appel à l'autre.
+            'by_status' => $employees->countBy('status')->sortKeys()->all(),
+            'by_contract_type' => $employees->countBy('contract_type')->sortKeys()->all(),
             'by_department' => $byDepartment,
         ];
     }
