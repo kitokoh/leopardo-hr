@@ -25,6 +25,12 @@ RUN npm run build
 # ── Serveur statique ───────────────────────────────────────
 FROM nginx:1.27-alpine
 
+# #8267 — la base publiée dérive du repo Alpine entre deux reconstructions
+# upstream (scan hebdo image-scan.yml ROUGE : 40 CVE CRITICAL/HIGH
+# corrigibles au 2026-09-28, correctifs tous publiés en v3.21). Monter les
+# paquets OS au build rend l'image auto-cicatrisante.
+RUN apk upgrade --no-cache
+
 COPY --from=build /app/out /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
