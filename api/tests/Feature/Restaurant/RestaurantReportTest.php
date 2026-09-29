@@ -116,6 +116,45 @@ class RestaurantReportTest extends TestCase
         });
     }
 
+    /**
+     * Couverture unique repêchée du doublon `RestaurantReportsTest` (contrat
+     * plat mort, retiré — #8193) : `/reports/pos` n'était testé QUE là-bas.
+     * Assertions portées sur le contrat vivant enveloppé `data.report.*`
+     * (clés réelles de `RestaurantReportService::posSessions`).
+     */
+    public function test_pos_report_aggregates_closings(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $this->activateRestaurant($company);
+        $this->principal($company);
+
+        app(TenantManager::class)->withinTenant($company, function (): void {
+            $branch = RestaurantBranch::factory()->create();
+
+            // 1 clôture aujourd'hui : écart -100.
+            RestaurantPosSession::factory()->create([
+                'branch_id' => $branch->id,
+                'status' => 'closed',
+                'opening_cash_minor' => 5000,
+                'expected_cash_minor' => 45000,
+                'counted_cash_minor' => 44900,
+                'variance_minor' => -100,
+                'opened_at' => now()->subHours(6),
+                'closed_at' => now()->subHour(),
+            ]);
+            // Une session encore ouverte (défaut factory) ne compte pas.
+            RestaurantPosSession::factory()->create(['branch_id' => $branch->id]);
+
+            $this->getJson('/api/v1/restaurant/reports/pos')
+                ->assertOk()
+                ->assertJsonPath('data.report.sessions_count', 1)
+                ->assertJsonPath('data.report.opening_cash_minor', 5000)
+                ->assertJsonPath('data.report.counted_cash_minor', 44900)
+                ->assertJsonPath('data.report.variance_minor', -100);
+        });
+    }
+
     public function test_ordinary_employee_cannot_read_reports(): void
     {
         /** @var Company $company */
