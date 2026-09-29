@@ -203,7 +203,7 @@ final class ScriptedLlmClient implements LLMClient
         $this->queue = $queue;
     }
 
-    public function chat(array $messages, array $tools = []): AIResponse
+    public function chat(array $messages, array $tools = [], ?array $responseFormat = null): AIResponse
     {
         $this->calls++;
 

@@ -161,7 +161,7 @@ class SocialCommentControllerTest extends TestCase
 
         $this->app->instance(LLMClient::class, new class implements LLMClient
         {
-            public function chat(array $messages, array $tools = []): AIResponse
+            public function chat(array $messages, array $tools = [], ?array $responseFormat = null): AIResponse
             {
                 return new AIResponse(content: 'Merci Jane, ravi que l\'offre vous plaise !', model: 'stub');
             }

@@ -223,7 +223,11 @@ class Orchestrator
                 prompt: $request->message,
                 response: $finalContent,
                 toolsCalled: $toolsUsed,
-                provider: $this->client->provider(),
+                // BOS-031 (#8221, FR-9) — le provider AUDITÉ est celui qui a
+                // réellement servi la réponse (`AIResponse::provider` renseigné
+                // par le décorateur en cas de fallback) ; repli sur le client
+                // configuré quand l'information n'est pas portée.
+                provider: $response->provider ?? $this->client->provider(),
                 model: $response->model,
                 inputTokens: $response->inputTokens,
                 outputTokens: $response->outputTokens,
