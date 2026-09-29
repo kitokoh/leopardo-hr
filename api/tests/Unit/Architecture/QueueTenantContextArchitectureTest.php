@@ -58,6 +58,15 @@ class QueueTenantContextArchitectureTest extends TestCase
         // tenant passe en isolation physique.
         \App\Listeners\AuditLogger::class => 'listener queued : écritures audit filtrées par company_id (dette mode schema)',
         \App\Listeners\WebhookListener::class => 'listener queued : lecture webhooks filtrée par company_id (dette mode schema)',
+
+        // Listeners passés en file par #8206 (BOS-017) : l'événement
+        // transporte le modèle sérialisé et les accès sont filtrés par
+        // company_id — même dette « mode schema » que les listeners
+        // ci-dessus (le middleware de job ne s'applique pas aux listeners
+        // queued, CallQueuedListener ne relaie pas middleware()).
+        \App\Listeners\NotifyTaxRateValidation::class => 'listener queued (#8206) : le handler établit déjà le contexte tenant via TenantManager::withinTenant() + PlatformCompanyLookup (#1994)',
+        \App\Listeners\ProcessCommissionOnPayment::class => 'listener queued (#8206) : écritures commission filtrées par company_id du paiement (dette mode schema)',
+        \App\Listeners\SendInvoicePaymentReceipt::class => 'listener queued (#8206) : lecture facture filtrée par company_id + envoi email, aucune écriture tenant (dette mode schema)',
     ];
 
     public function test_every_queued_job_touching_tenant_data_uses_ensure_tenant_context(): void

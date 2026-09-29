@@ -9,6 +9,7 @@ use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Delivery\Domain\Models\Delivery;
 use App\Modules\Delivery\Domain\Models\DeliveryExport;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -21,8 +22,11 @@ use Throwable;
  * Génération asynchrone de l'export CSV des livraisons (BC-26-D07, issue
  * #6295) — tenant-scoped (pattern GenerateBankExportJob), retry borné (3),
  * file `documents`, observable (pending → generating → done/failed).
+ *
+ * #8206 (BOS-017) : `ShouldBeUnique` (clé = export) — un double-clic ou un
+ * double dispatch ne produit qu'une seule exécution.
  */
-class GenerateDeliveryExportJob implements ShouldQueue, TenantScopedJob
+class GenerateDeliveryExportJob implements ShouldBeUnique, ShouldQueue, TenantScopedJob
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -32,6 +36,18 @@ class GenerateDeliveryExportJob implements ShouldQueue, TenantScopedJob
     public int $tries = 3;
 
     public int $timeout = 120;
+
+    /**
+     * #8206 (BOS-017) — verrou d'unicité au niveau queue : un même export ne
+     * doit jamais être généré par deux workers en parallèle (pattern
+     * GenerateBankExportJob, TTL aligné sur le timeout).
+     */
+    public int $uniqueFor = 120;
+
+    public function uniqueId(): string
+    {
+        return 'delivery-export:'.$this->exportId;
+    }
 
     private ?string $resolvedCompanyId = null;
 

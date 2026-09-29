@@ -9,7 +9,7 @@ use App\Contracts\Communication\MessageProviderInterface;
 use App\Contracts\Communication\RetryableMessageProviderInterface;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Jobs\SendPushNotificationJob;
-use App\Modules\Notification\Domain\Models\CommunicationEvent;
+use App\Modules\Communication\Domain\Models\CommunicationEvent;
 use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Notification\Domain\Models\NotificationPreference;
 use App\Modules\Notification\Infrastructure\Services\Providers\AuditMessageProvider;

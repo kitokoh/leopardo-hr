@@ -14,6 +14,7 @@ use App\Modules\Showcase\Domain\Support\ShowcaseLocales;
 use App\Modules\Showcase\Infrastructure\Services\ShowcasePublicCache;
 use App\Modules\Showcase\Interfaces\Api\V1\Resources\VitrinePublicResource;
 use App\Shared\Contracts\Catalog\PublishedProductsProvider;
+use App\Shared\Services\PublicCommerce\PublicTenantResolver;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
@@ -38,6 +39,17 @@ use Symfony\Component\HttpFoundation\Response;
  *   sans jeton valide ;
  * - `GET /public/vitrine/sitemap.xml` : vitrines publiées uniquement ;
  * - `GET /public/vitrine/robots.txt` : indexation + pointeur sitemap.
+ *
+ * BOS-050 (#8208, tranche 3) : la résolution du tenant de `show()` est
+ * déléguée au plumbing mutualisé {@see PublicTenantResolver} — invariant
+ * partagé des surfaces publiques : fail-closed uniforme 404 (slug
+ * inconnu/vide, société `suspended`/`expired` — la surface historique ne
+ * filtrait que `suspended` : durcissement voulu, aligné sur le socle),
+ * feature `null` (vitrine historique sans flag vertical — cas prévu par le
+ * socle), contexte tenant via `withinTenant()` (marqueur
+ * `tenant_scope_required` + scope BelongsToCompany, état restauré en
+ * `finally`). Cache public par locale, flux d'aperçu `?token=` (jamais
+ * caché, `X-Robots-Tag: noindex`), sitemap/robots et DTO public inchangés.
  */
 final class ShowcasePublicController extends Controller
 {
@@ -45,6 +57,7 @@ final class ShowcasePublicController extends Controller
 
     public function __construct(
         private readonly TenantManager $tenantManager,
+        private readonly PublicTenantResolver $publicTenantResolver,
         private readonly ShowcasePublicCache $cache,
         private readonly PublishedProductsProvider $productsProvider,
     ) {}
@@ -55,22 +68,19 @@ final class ShowcasePublicController extends Controller
         $providedToken = $request->query('token');
         $providedToken = is_string($providedToken) && $providedToken !== '' ? $providedToken : null;
 
+        // BOS-050 (#8208, tranche 3) — résolution fail-closed AVANT toute
+        // lecture de cache : une société suspendue/expirée ne doit jamais
+        // être servie, même depuis une entrée cachée antérieure. Le socle
+        // lève 404 (anti-énumération) au lieu du `null` historique — la
+        // réponse est identique, et les 404 ne sont plus négativement cachés.
+        $company = $this->publicTenantResolver->companyBySlug($slug, null);
+
         /** @var array<string, mixed>|null $payload */
         $payload = null;
         $isPreview = false;
 
-        $resolver = function () use ($request, $slug, $locale, $providedToken, &$isPreview): ?array {
-            /** @var Company|null $company */
-            $company = Company::query()
-                ->where('slug', $slug)
-                ->where('status', '!=', 'suspended')
-                ->first();
-
-            if (! $company instanceof Company) {
-                return null;
-            }
-
-            return $this->tenantManager->withinTenant($company, function () use ($company, $request, $slug, $locale, $providedToken, &$isPreview): ?array {
+        $resolver = function () use ($request, $company, $slug, $locale, $providedToken, &$isPreview): ?array {
+            return $this->publicTenantResolver->withinTenant($company, function () use ($company, $request, $slug, $locale, $providedToken, &$isPreview): ?array {
                 /** @var CompanyShowcase|null $showcase */
                 $showcase = CompanyShowcase::query()
                     ->where('slug', $slug)

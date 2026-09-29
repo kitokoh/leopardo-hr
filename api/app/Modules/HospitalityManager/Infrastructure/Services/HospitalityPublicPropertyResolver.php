@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\HospitalityManager\Infrastructure\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Tenant\TenantManager;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityProperty;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityReservation;
+use App\Shared\Services\PublicCommerce\PublicTenantResolver;
+use App\Shared\Services\PublicCommerce\TrackingSecretService;
 use Closure;
 use Illuminate\Support\Facades\DB;
 
@@ -23,14 +24,25 @@ use Illuminate\Support\Facades\DB;
  *    l'existence de la ressource — anti-énumération).
  *
  * La résolution traverse les tenants du schéma partagé (`shared_tenants`),
- * puis le callback s'exécute DANS le tenant de la ressource via
- * `TenantManager::withinTenant` : le scope BelongsToCompany s'applique —
- * aucun accès inter-tenant possible.
+ * puis le callback s'exécute DANS le tenant de la ressource : le scope
+ * BelongsToCompany s'applique — aucun accès inter-tenant possible.
+ *
+ * BOS-050 (#8208, tranche 5) : l'invariant société (statut
+ * suspended/expired + feature `hospitality`) et la bascule tenant sont
+ * délégués au socle mutualisé {@see PublicTenantResolver}
+ * (`assertAccessible()` + `withinTenant()` — marqueur
+ * `tenant_scope_required` restauré en `finally`, imbrication sûre) ; la
+ * résolution BORNÉE par ressource (établissement par slug, réservation par
+ * référence + secret) reste portée ici, comme prévu par le socle. La
+ * vérification du code de suivi est déléguée à {@see TrackingSecretService}
+ * (comparaison timing-safe, fail-closed — sémantique identique au
+ * `hash('sha256')` + `hash_equals` historique).
  */
 final class HospitalityPublicPropertyResolver
 {
     public function __construct(
-        private readonly TenantManager $tenantManager,
+        private readonly PublicTenantResolver $publicTenants,
+        private readonly TrackingSecretService $trackingSecrets,
     ) {}
 
     /**
@@ -69,16 +81,15 @@ final class HospitalityPublicPropertyResolver
         }
 
         /** @var Company|null $company */
-        $company = Company::query()
-            ->where('id', (string) $companyId)
-            ->whereNotIn('status', ['suspended', 'expired'])
-            ->first();
+        $company = Company::query()->find((string) $companyId);
 
-        if (! $company instanceof Company || ! $company->hasFeature('hospitality')) {
+        if (! $company instanceof Company) {
             abort(404);
         }
 
-        return $this->tenantManager->withinTenant($company, function () use ($propertyId, $callback): mixed {
+        $company = $this->publicTenants->assertAccessible($company, 'hospitality');
+
+        return $this->publicTenants->withinTenant($company, function () use ($propertyId, $callback): mixed {
             /** @var HospitalityProperty|null $property */
             $property = HospitalityProperty::query()
                 ->where('id', (int) $propertyId)
@@ -116,8 +127,6 @@ final class HospitalityPublicPropertyResolver
             abort(404);
         }
 
-        $presentedHash = hash('sha256', $plainCode);
-
         $candidates = DB::table($this->tenantTable('hospitality_reservations'))
             ->where('reference', $reference)
             ->select(['id', 'company_id', 'tracking_code_hash'])
@@ -128,7 +137,7 @@ final class HospitalityPublicPropertyResolver
             $row = get_object_vars($candidate);
             $storedHash = $row['tracking_code_hash'] ?? null;
 
-            if (! is_string($storedHash) || $storedHash === '' || ! hash_equals($storedHash, $presentedHash)) {
+            if (! is_string($storedHash) || ! $this->trackingSecrets->matches($plainCode, $storedHash)) {
                 continue;
             }
 
@@ -140,16 +149,15 @@ final class HospitalityPublicPropertyResolver
             }
 
             /** @var Company|null $company */
-            $company = Company::query()
-                ->where('id', (string) $companyId)
-                ->whereNotIn('status', ['suspended', 'expired'])
-                ->first();
+            $company = Company::query()->find((string) $companyId);
 
-            if (! $company instanceof Company || ! $company->hasFeature('hospitality')) {
+            if (! $company instanceof Company) {
                 abort(404);
             }
 
-            return $this->tenantManager->withinTenant($company, function () use ($reservationId, $callback): mixed {
+            $company = $this->publicTenants->assertAccessible($company, 'hospitality');
+
+            return $this->publicTenants->withinTenant($company, function () use ($reservationId, $callback): mixed {
                 /** @var HospitalityReservation|null $reservation */
                 $reservation = HospitalityReservation::query()
                     ->where('id', (int) $reservationId)
