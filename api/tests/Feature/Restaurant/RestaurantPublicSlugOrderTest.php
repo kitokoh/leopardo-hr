@@ -237,6 +237,11 @@ class RestaurantPublicSlugOrderTest extends TestCase
 
     public function test_public_slug_pay_is_online_only_and_fails_closed(): void
     {
+        // Aligné sur RestaurantPaymentRoutingTest : le sandbox mobile money
+        // (défaut historique `true`) compterait comme provider EN LIGNE
+        // configuré — on le désactive pour éprouver le fail-closed réel.
+        config()->set('restaurantmanager.mobile_money.sandbox', false);
+
         $company = $this->makeTenant();
         $this->makePublicBranch($company, ['public_slug' => 'chez-leo']);
         $product = $this->makePublishedProduct($company, ['code' => 'PLAT-06', 'price_minor' => 3000]);
