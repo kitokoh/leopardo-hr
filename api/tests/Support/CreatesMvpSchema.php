@@ -2135,6 +2135,41 @@ trait CreatesMvpSchema
             });
         }
 
+        // BOS-032 (#8222) — idempotence métier des write-tools IA (miroir de
+        // la migration tenant 2026_09_29_000001_8222 ; sans FK en fixture,
+        // comme ai_tool_executions).
+        if (! Schema::hasTable($this->moduleTable('ai_write_idempotency'))) {
+            Schema::create($this->moduleTable('ai_write_idempotency'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->string('tool', 100);
+                $table->char('idempotency_key', 64);
+                $table->char('arguments_hash', 64);
+                $table->string('pending_action_id', 64)->nullable()->index();
+                $table->unsignedBigInteger('conversation_id')->nullable()->index();
+                $table->json('result');
+                $table->timestampTz('expires_at')->index();
+                $table->timestampTz('created_at')->useCurrent();
+
+                $table->unique(['company_id', 'idempotency_key']);
+            });
+        }
+
+        // BOS-032 (#8222) — backend DB du PendingActionStore (driver cache non
+        // partagé → une action en attente ne disparaît plus selon le worker).
+        if (! Schema::hasTable($this->moduleTable('ai_pending_actions'))) {
+            Schema::create($this->moduleTable('ai_pending_actions'), function (Blueprint $table): void {
+                $table->string('id', 64)->primary();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('user_id');
+                $table->string('tool', 100);
+                $table->json('arguments');
+                $table->unsignedBigInteger('conversation_id')->nullable();
+                $table->timestampTz('expires_at')->index();
+                $table->timestampTz('created_at')->useCurrent();
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('client_events'))) {
             Schema::create($this->moduleTable('client_events'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
@@ -5207,6 +5242,8 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "ai_dead_letter_queue"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ai_exports"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ai_tool_executions"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "ai_write_idempotency"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "ai_pending_actions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ai_audit_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ai_conversations"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ai_tool_registry"'.$cascade);

@@ -33,6 +33,8 @@ class IntentEngine
         private readonly WriteActionRunner $writeActionRunner,
         // BC-23-D05 (issue #6237) : matrice de permissions par outil AI.
         private readonly ToolPermissionPolicy $toolPermissionPolicy,
+        // BOS-032 (#8222) : idempotence métier des write-tools confirmés.
+        private readonly WriteIdempotencyStore $writeIdempotencyStore,
     ) {}
 
     /**
@@ -79,7 +81,7 @@ class IntentEngine
     /**
      * @return array<int, ToolResult>
      */
-    public function executeToolCalls(AIResponse $response, string $companyId, int $userId): array
+    public function executeToolCalls(AIResponse $response, string $companyId, int $userId, ?int $conversationId = null): array
     {
         // BC-23-D05 : le rôle est résolu une seule fois pour toute la boucle
         // de tool calls (évite N requêtes Employee).
@@ -87,13 +89,13 @@ class IntentEngine
         $results = [];
 
         foreach ($response->toolCalls as $toolCall) {
-            $results[] = $this->executeSingleTool($toolCall, $companyId, $userId, $role);
+            $results[] = $this->executeSingleTool($toolCall, $companyId, $userId, $role, $conversationId);
         }
 
         return $results;
     }
 
-    private function executeSingleTool(ToolCall $toolCall, string $companyId, int $userId, string $role): ToolResult
+    private function executeSingleTool(ToolCall $toolCall, string $companyId, int $userId, string $role, ?int $conversationId = null): ToolResult
     {
         // BC-23-D05 : fail-closed — l'appel d'un outil hors matrice (rôle ou
         // permission insuffisante) est refusé AVANT tout effet de bord
@@ -113,7 +115,7 @@ class IntentEngine
         }
 
         if ($this->writeToolPolicy->requiresConfirmation($toolCall->name)) {
-            return $this->pendingConfirmationResult($toolCall, $companyId, $userId);
+            return $this->pendingConfirmationResult($toolCall, $companyId, $userId, $conversationId);
         }
 
         $tool = $this->toolRegistry->findTool($toolCall->name);
@@ -147,10 +149,21 @@ class IntentEngine
     }
 
     /**
+     * Exécute un write-tool APRÈS confirmation humaine.
+     *
+     * BOS-032 (#8222) — idempotence métier : avant toute exécution, la clé
+     * d'intention (conversation + empreinte des arguments) est consultée ;
+     * une intention déjà exécutée retourne son résultat initial avec le
+     * marqueur `idempotent_replay` au lieu de produire un second effet.
+     * Après une exécution réussie, le résultat est persisté (TTL
+     * `ai.write_idempotency_ttl_hours`) pour servir les rejeux — y compris le
+     * retry réseau sur le MÊME pending_action_id (via le contrôleur, qui
+     * consulte findByPendingActionId avant même le pull one-shot).
+     *
      * @param  array<string, mixed>  $arguments
      * @return array<string, mixed>
      */
-    public function executeConfirmedWrite(string $toolName, array $arguments, string $companyId, int $userId): array
+    public function executeConfirmedWrite(string $toolName, array $arguments, string $companyId, int $userId, ?string $pendingActionId = null, ?int $conversationId = null): array
     {
         if (! $this->writeToolPolicy->requiresConfirmation($toolName)) {
             return ['error' => "Tool '{$toolName}' does not require confirmation."];
@@ -167,16 +180,44 @@ class IntentEngine
             ];
         }
 
-        return $this->writeActionRunner->run($toolName, $arguments, $companyId, $userId);
+        $argumentsHash = $this->writeIdempotencyStore->argumentsHash($arguments);
+        $idempotencyKey = $this->writeIdempotencyStore->makeKey($companyId, $conversationId, $pendingActionId, $toolName, $argumentsHash);
+
+        $replay = $this->writeIdempotencyStore->find($companyId, $idempotencyKey);
+        if ($replay !== null) {
+            return $replay['result'] + [
+                'idempotent_replay' => true,
+                'idempotency_key' => $idempotencyKey,
+            ];
+        }
+
+        $result = $this->writeActionRunner->run($toolName, $arguments, $companyId, $userId);
+
+        // Seuls les résultats SANS erreur sont persistés : une erreur n'a
+        // produit aucun effet métier, un retry légitime doit pouvoir retenter.
+        if (($result['error'] ?? null) === null) {
+            $this->writeIdempotencyStore->store(
+                $companyId,
+                $idempotencyKey,
+                $toolName,
+                $argumentsHash,
+                $pendingActionId,
+                $conversationId,
+                $result,
+            );
+        }
+
+        return $result;
     }
 
-    private function pendingConfirmationResult(ToolCall $toolCall, string $companyId, int $userId): ToolResult
+    private function pendingConfirmationResult(ToolCall $toolCall, string $companyId, int $userId, ?int $conversationId = null): ToolResult
     {
         $pendingId = $this->pendingActionStore->store(
             $companyId,
             $userId,
             $toolCall->name,
             $toolCall->arguments,
+            $conversationId,
         );
 
         $payload = [

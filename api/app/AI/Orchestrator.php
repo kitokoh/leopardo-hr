@@ -113,7 +113,7 @@ class Orchestrator
                 $requestTokens += $response->inputTokens + $response->outputTokens;
                 $this->tokenBudgetGuard->assertRequestWithinBudget($requestTokens, 0);
 
-                $results = $this->intentEngine->executeToolCalls($response, $request->companyId, $request->userId);
+                $results = $this->intentEngine->executeToolCalls($response, $request->companyId, $request->userId, $conversationId);
 
                 // A5 (#6852) : chaque outil exécuté ou proposé est journalisé
                 // (ai_tool_executions) avec le contexte de conversation — la

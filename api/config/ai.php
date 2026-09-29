@@ -107,6 +107,17 @@ return [
 
     'pending_action_ttl_minutes' => (int) env('AI_PENDING_ACTION_TTL_MINUTES', 15),
 
+    // BOS-032 (#8222) — backend du PendingActionStore : `cache` (historique),
+    // `database` (table ai_pending_actions) ou `auto` (défaut : database si le
+    // driver de cache n'est PAS partagé entre workers — file/array — car une
+    // action sensible en attente pouvait « disparaître » selon le worker).
+    'pending_action_store' => env('AI_PENDING_ACTION_STORE', 'auto'),
+
+    // BOS-032 (#8222) — durée de vie des empreintes d'idempotence métier des
+    // write-tools (table ai_write_idempotency) : un rejeu dans cette fenêtre
+    // retourne le résultat initial, sans nouvel effet. Purge opportuniste.
+    'write_idempotency_ttl_hours' => (int) env('AI_WRITE_IDEMPOTENCY_TTL_HOURS', 24),
+
     // Tools that mutate data and require explicit user confirmation before execution.
     // Issue #5625 : ne lister QUE les outils réellement implémentés
     // (WriteActionRunner::supportedWriteTools) ET exposés dans ai_tool_registry
