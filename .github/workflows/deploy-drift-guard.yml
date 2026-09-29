@@ -311,6 +311,11 @@ jobs:
             path: front/marketplace
             environment: "Production – leopardo-marche"
     steps:
+      # Le script vit dans le dépôt : sans checkout, le job échouait en
+      # exit 127 (« No such file or directory ») à chaque run planifié
+      # (#8265) au lieu de produire le signal de dérive prévu (#7994 §5).
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
       - name: Vérifier la dérive du front (deployment GitHub ↔ main)
         shell: bash
         env:
