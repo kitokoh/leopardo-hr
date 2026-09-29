@@ -8,6 +8,8 @@ use App\Core\AI\Domain\Contracts\FaceVerificationPort;
 use App\Core\AI\Infrastructure\Adapters\UnavailableFaceVerificationAdapter;
 use App\Modules\Attendance\Domain\Contracts\GeofenceValidatorInterface;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceGeofenceService;
+use App\Modules\Attendance\Infrastructure\Services\AttendanceLogReaderAdapter;
+use App\Shared\Contracts\Attendance\AttendanceLogReader;
 use Illuminate\Support\ServiceProvider;
 use RuntimeException;
 
@@ -22,6 +24,11 @@ class AttendanceServiceProvider extends ServiceProvider
             GeofenceValidatorInterface::class,
             AttendanceGeofenceService::class,
         );
+
+        // BOS-023 cycle 2 (#8254) — contrat partagé de lecture des journaux :
+        // les modules consommateurs (Planning) ne dépendent plus du modèle
+        // `AttendanceLog` directement, uniquement des interfaces Shared.
+        $this->app->bind(AttendanceLogReader::class, AttendanceLogReaderAdapter::class);
 
         // BIO-001 (#6762) : le moteur de vérification faciale est remplaçable
         // par configuration (`ai.models.face_verification.adapter`). Défaut
