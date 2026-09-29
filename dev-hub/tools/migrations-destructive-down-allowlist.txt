@@ -12,9 +12,6 @@
 2026_08_30_000202_5819_create_edu_classes_table.php # edu : down() monolithique — droppe 4 tables sœurs (edu_assessments, edu_attendances, edu_class_enrollments, edu_course_slots)
 2026_08_30_000203_5819_create_edu_subjects_table.php # edu : down() monolithique — droppe edu_course_slots (table sœur)
 2026_08_30_000301_5820_create_edu_admissions_table.php # edu : down() monolithique — droppe edu_admission_followups + edu_fees (tables sœurs)
-2026_08_30_000408_5812_create_fuel_imports_table.php # fuel : migration fantôme (canonique 001550_5812) — down() droppe fuel_imports
-2026_08_30_000500_5803_create_fuel_stock_tables.php # fuel : down() droppe fuel_reconciliation_runs (table sœur)
-2026_08_30_001542_5812_create_fuel_import_tables.php # fuel : migration fantôme (canonique 001550_5812) — down() droppe fuel_imports
 2026_09_19_003001_7786_create_health_departments_rooms_beds_tables.php # health : down() monolithique — droppe 3 tables sœurs (health_admissions, health_appointments, health_practitioners)
 2026_09_19_003004_7787_create_health_patients_table.php # health : down() monolithique — droppe 8 tables sœurs (admissions … prescriptions)
 2026_09_19_003005_7788_create_health_appointments_table.php # health : down() monolithique — droppe health_consultations (table sœur)
