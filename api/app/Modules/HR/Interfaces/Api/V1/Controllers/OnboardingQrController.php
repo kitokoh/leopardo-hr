@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
-use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\Api\V1\EmployeeResource;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
-use App\Rules\GlobalEmailUnique;
-use App\Support\PlatformCompanyLookup;
-use App\Modules\HR\Domain\Contracts\OnboardingQrInterface;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\CompanyRequest;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\EmployeeResource;
+use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
 use App\Modules\HR\Infrastructure\Services\EmployeeService;
+use App\Rules\GlobalEmailUnique;
+use App\Shared\Contracts\HR\OnboardingQrInterface;
+use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -247,4 +247,3 @@ class OnboardingQrController extends Controller
         return is_string($value) && $value !== '' ? $value : null;
     }
 }
-
