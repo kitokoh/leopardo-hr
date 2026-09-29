@@ -10,6 +10,7 @@ use App\Modules\Accounting\Domain\Contracts\PdfRendererInterface;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -28,8 +29,12 @@ use Throwable;
  *
  * TenantScopedJob : tables tenant (accounting_*) — le middleware EnsureTenantContext
  * établit search_path + current_company avant le run (contrat Queue du monorepo).
+ *
+ * #8206 (BOS-017) : retry explicite (`$tries`/`$backoff` — une panne
+ * transitoire du renderer ne perd plus l'archivage) et `ShouldBeUnique`
+ * (clé = document) pour qu'un double dispatch ne produise qu'un archivage.
  */
-final class GenerateDocumentPdf implements ShouldQueue, TenantScopedJob
+final class GenerateDocumentPdf implements ShouldBeUnique, ShouldQueue, TenantScopedJob
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -37,6 +42,28 @@ final class GenerateDocumentPdf implements ShouldQueue, TenantScopedJob
     use SerializesModels;
 
     public const DISK = 'private';
+
+    /**
+     * #8206 (BOS-017) — retry borné avec backoff : 3 tentatives espacées
+     * (10 s, 1 min, 5 min) avant échec définitif.
+     */
+    public int $tries = 3;
+
+    /** @var array<int, int> */
+    public array $backoff = [10, 60, 300];
+
+    public int $timeout = 120;
+
+    /**
+     * Verrou d'unicité au niveau queue (pattern GenerateBankExportJob, TTL
+     * aligné sur le timeout).
+     */
+    public int $uniqueFor = 120;
+
+    public function uniqueId(): string
+    {
+        return 'accounting-document-pdf:'.(string) $this->document->getKey();
+    }
 
     public function __construct(public readonly AccountingDocument $document) {}
 
@@ -50,7 +77,8 @@ final class GenerateDocumentPdf implements ShouldQueue, TenantScopedJob
      */
     public function middleware(): array
     {
-        return [new EnsureTenantContext()];    }
+        return [new EnsureTenantContext];
+    }
 
     public function handle(PdfRendererInterface $renderer): void
     {
