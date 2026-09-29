@@ -55,7 +55,10 @@ class RestaurantReservationTest extends TestCase
     {
         return app(TenantManager::class)->withinTenant($company, function (): array {
             $branch = RestaurantBranch::factory()->create();
-            $table = RestaurantTable::factory()->create(['branch_id' => $branch->id]);
+            // Capacité explicite (#8261) : la factory tire capacity entre 2 et 12,
+            // ce qui rendait le test `covers: 4` flaky (422 dès que capacity < 4).
+            // Toutes les réservations de cette classe restent ≤ 4 couverts.
+            $table = RestaurantTable::factory()->create(['branch_id' => $branch->id, 'capacity' => 8]);
 
             return ['branch' => $branch, 'table' => $table];
         });
