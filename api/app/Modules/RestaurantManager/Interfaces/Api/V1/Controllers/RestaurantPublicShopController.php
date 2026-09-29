@@ -16,6 +16,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPublicShopToken;
 use App\Modules\RestaurantManager\Domain\Payments\InitiatePaymentRequest;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGatewayRegistry;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantPublicTrackingGuard;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -33,7 +34,10 @@ use Illuminate\Support\Str;
  */
 class RestaurantPublicShopController extends Controller
 {
-    public function __construct(private readonly RestaurantPublicOrderService $orders) {}
+    public function __construct(
+        private readonly RestaurantPublicOrderService $orders,
+        private readonly RestaurantPublicTrackingGuard $trackingGuard,
+    ) {}
 
     public function menu(Request $request): JsonResponse
     {
@@ -99,6 +103,7 @@ class RestaurantPublicShopController extends Controller
             idempotencyKey: $key,
             branchId: isset($data['branch_id']) ? (int) $data['branch_id'] : null,
             customerPhone: isset($data['customer_phone']) ? (string) $data['customer_phone'] : null,
+            issueTrackingSecret: true,
         );
 
         $order = $result['order'];
@@ -110,6 +115,10 @@ class RestaurantPublicShopController extends Controller
                 'total_minor' => $order->total_minor,
                 'currency' => $order->currency,
                 'created' => $result['created'],
+                // BOS-050 (#8208, tranche 7) : secret de suivi présenté UNE
+                // FOIS, à la création réelle (null au rejeu) — requis pour
+                // le suivi des nouvelles commandes.
+                'tracking_secret' => $result['tracking_secret'],
                 'track_url' => '/api/v1/public/restaurant/shop/orders/'.$order->reference,
             ],
         ], $result['created'] ? 201 : 200);
@@ -129,7 +138,12 @@ class RestaurantPublicShopController extends Controller
             abort(404, 'Commande introuvable.');
         }
 
-        return response()->json([
+        // BOS-050 (#8208, tranche 7) : secret requis pour les commandes
+        // créées après la tranche ; flux legacy (référence seule) déprécié
+        // mais encore servi (90 j) pour les commandes antérieures.
+        $legacy = $this->trackingGuard->assertTrackable($request, $order);
+
+        return $this->trackingGuard->withDeprecationHeaders(response()->json([
             'data' => [
                 'reference' => $order->reference,
                 'status' => $order->status->value,
@@ -145,7 +159,7 @@ class RestaurantPublicShopController extends Controller
                 ])->values(),
                 'updated_at' => $order->updated_at?->toIso8601String(),
             ],
-        ]);
+        ]), $legacy);
     }
 
     public function initiatePayment(Request $request, string $reference, PaymentGatewayRegistry $gateways): JsonResponse

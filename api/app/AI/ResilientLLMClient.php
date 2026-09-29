@@ -104,13 +104,17 @@ final class ResilientLLMClient implements LLMClient
             error: 'Aucun fournisseur IA disponible pour cette requête (chaîne essayée : '
                 .implode(' → ', $attempted)
                 .'). Vérifiez la configuration des providers et la politique cloud du tenant.',
-            status: $last?->status,
+            status: $last->status,
             provider: $this->provider(),
         );
     }
 
     /**
      * Une tentative + ses retries, avec alimentation du circuit breaker.
+     *
+     * @param  array<int, array{role: string, content: mixed}>  $messages
+     * @param  array<int, array<string, mixed>>  $tools
+     * @param  array<string, mixed>|null  $responseFormat
      */
     private function attemptWithRetries(
         LLMClient $client,
@@ -131,7 +135,7 @@ final class ResilientLLMClient implements LLMClient
                     'provider' => $provider,
                     'role' => $role,
                     'attempt' => $attempt,
-                    'previous_status' => $response?->status,
+                    'previous_status' => $response->status,
                 ]);
             }
 

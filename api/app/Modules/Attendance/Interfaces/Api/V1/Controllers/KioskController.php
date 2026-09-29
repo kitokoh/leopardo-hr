@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Interfaces\Api\V1\Controllers;
 
+use App\Core\AI\Domain\Enums\FaceVerificationStatus;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
@@ -16,10 +17,11 @@ use App\Modules\Attendance\Infrastructure\Services\KioskFaceVerificationService;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\KioskPunchRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\KioskSyncRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\KioskVerifyFaceRequest;
-use App\Modules\HR\Domain\Contracts\OnboardingQrInterface;
+use App\Shared\Contracts\HR\OnboardingQrInterface;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -526,7 +528,7 @@ class KioskController extends Controller
         app()->instance('current_company', $company);
 
         $capture = $request->file('capture');
-        if (! $capture instanceof \Illuminate\Http\UploadedFile) {
+        if (! $capture instanceof UploadedFile) {
             abort(422, 'CAPTURE_REQUIRED');
         }
 
@@ -563,7 +565,7 @@ class KioskController extends Controller
         // Échec facial (rejet, qualité, liveness, indisponibilité, employé
         // non enrôlé) : 422/503 structuré + méthodes de repli — jamais de
         // présence créée, jamais d'absence automatique.
-        $httpStatus = $result['status'] === \App\Core\AI\Domain\Enums\FaceVerificationStatus::ProviderUnavailable
+        $httpStatus = $result['status'] === FaceVerificationStatus::ProviderUnavailable
             ? 503
             : 422;
 
