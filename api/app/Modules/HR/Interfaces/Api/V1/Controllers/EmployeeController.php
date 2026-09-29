@@ -9,7 +9,6 @@ use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
 use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
 use App\Modules\HR\Infrastructure\Services\EmployeeService;
@@ -19,6 +18,8 @@ use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateEmployeeRequest;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Shared\Attributes\ApiFeature;
 use App\Shared\Attributes\RequiresPermission;
+use App\Shared\Contracts\Attendance\AttendanceLogReader;
+use App\Shared\Contracts\Attendance\AttendanceLogView;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -30,6 +31,7 @@ class EmployeeController extends Controller
     public function __construct(
         private readonly EmployeeService $employeeService,
         private readonly DataAccessAuditLogger $dataAccessAuditLogger,
+        private readonly AttendanceLogReader $attendanceLogs,
     ) {}
 
     /**
@@ -216,14 +218,10 @@ class EmployeeController extends Controller
             ->map(fn ($id) => (int) $id)
             ->flip();
 
-        $latestLogs = AttendanceLog::query()
-            ->whereIn('employee_id', $employeeIds)
-            ->when(Schema::hasColumn('attendance_logs', 'date'), fn (Builder $query) => $query->whereDate('date', $today))
-            ->when(Schema::hasColumn('attendance_logs', 'session_number'), fn (Builder $query) => $query->orderByDesc('session_number'))
-            ->when(Schema::hasColumn('attendance_logs', 'check_in'), fn (Builder $query) => $query->orderByDesc('check_in'))
-            ->get()
-            ->groupBy('employee_id')
-            ->map(fn ($logs) => $logs->first());
+        // #8299 (BOS-023 cycle 3) : lecture via le contrat Shared — requête
+        // reprise à l'identique côté adapter Attendance (tris, gardes de
+        // colonnes, regroupement par employé).
+        $latestLogs = $this->attendanceLogs->latestLogsPerEmployeeOnDate($employeeIds, $today);
 
         $employees->each(function (Employee $employee) use ($approvedAbsenceIds, $latestLogs): void {
             if ($employee->status !== 'active') {
@@ -240,8 +238,8 @@ class EmployeeController extends Controller
                 return;
             }
 
-            /** @var AttendanceLog|null $log */
-            $log = $latestLogs->get($employee->id);
+            /** @var AttendanceLogView|null $log */
+            $log = $latestLogs[$employee->id] ?? null;
 
             if (! $log) {
                 $employee->setAttribute('work_state', 'offline');
@@ -250,17 +248,17 @@ class EmployeeController extends Controller
                 return;
             }
 
-            if ($log->status === 'absent') {
+            if ($log->status() === 'absent') {
                 $employee->setAttribute('work_state', 'absent');
                 $employee->setAttribute('work_state_label', __('employees.work_state_absent'));
 
                 return;
             }
 
-            if ($log->check_out === null) {
+            if ($log->checkOut() === null) {
                 $state = match (true) {
-                    $log->work_type === 'break' => 'break',
-                    in_array($log->work_type, ['mission', 'travel'], true) => 'mission',
+                    $log->workType() === 'break' => 'break',
+                    in_array($log->workType(), ['mission', 'travel'], true) => 'mission',
                     default => 'present',
                 };
                 $employee->setAttribute('work_state', $state);

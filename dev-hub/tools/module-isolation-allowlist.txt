@@ -24,7 +24,6 @@ Modules/Expense -> Modules/Planning
 Modules/Fleet -> Modules/Attendance
 Modules/Growth -> Modules/Billing
 Modules/Growth -> Modules/Payroll
-Modules/HR -> Modules/Attendance
 Modules/HR -> Modules/Payroll
 Modules/HR -> Modules/Planning
 Modules/HR -> Modules/Recruitment
