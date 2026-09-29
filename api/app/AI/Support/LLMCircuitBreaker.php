@@ -53,7 +53,7 @@ final class LLMCircuitBreaker
 
         $cooldown = $this->cooldownSeconds();
 
-        if (now()->timestamp - $state['opened_at'] < $cooldown) {
+        if ((int) now()->timestamp - (int) $state['opened_at'] < $cooldown) {
             return true;
         }
 
@@ -69,8 +69,8 @@ final class LLMCircuitBreaker
     public function recordFailure(string $provider): void
     {
         $state = $this->state($provider);
-        $failures = $state['failures'] + 1;
-        $openedAt = $failures >= $this->failureThreshold() ? now()->timestamp : null;
+        $failures = (int) $state['failures'] + 1;
+        $openedAt = $failures >= $this->failureThreshold() ? (int) now()->timestamp : null;
 
         try {
             Cache::put($this->key($provider), ['failures' => $failures, 'opened_at' => $openedAt], self::STATE_TTL_SECONDS);

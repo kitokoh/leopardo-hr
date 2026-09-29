@@ -14,7 +14,6 @@ Modules/Absence -> Modules/Planning
 Modules/Accounting -> Modules/Marketing
 Modules/Accounting -> Modules/Notification
 Modules/Attendance -> Modules/Fleet
-Modules/Attendance -> Modules/HR
 Modules/Attendance -> Modules/Notification
 Modules/Attendance -> Modules/Planning
 Modules/Billing -> Modules/Payroll
