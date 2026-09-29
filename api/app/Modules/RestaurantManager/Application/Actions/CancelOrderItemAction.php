@@ -24,7 +24,7 @@ final class CancelOrderItemAction
 {
     public function __construct(private readonly BillCalculator $calculator) {}
 
-    public function cancel(Employee $actor, RestaurantOrder $order, RestaurantOrderItem $item): RestaurantOrderItem
+    public function execute(Employee $actor, RestaurantOrder $order, RestaurantOrderItem $item): RestaurantOrderItem
     {
         if ($order->company_id !== $actor->company_id || $item->company_id !== $actor->company_id) {
             throw new RuntimeException('Resource does not belong to tenant.');

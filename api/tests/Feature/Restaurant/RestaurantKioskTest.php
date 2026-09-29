@@ -77,9 +77,14 @@ class RestaurantKioskTest extends TestCase
             ->assertJsonStructure(['data' => ['reference', 'ticket_number']]);
 
         $reference = $response->json('data.reference');
+        $trackingSecret = $response->json('data.tracking_secret');
 
+        assert(is_string($reference) && is_string($trackingSecret));
+
+        // BOS-050 (#8208, tranche 7) : le suivi exige le secret présenté à
+        // la création.
         $this->withHeader('X-Restaurant-Shop-Token', $ctx['token'])
-            ->getJson('/api/v1/public/restaurant/kiosk/orders/'.$reference)
+            ->getJson('/api/v1/public/restaurant/kiosk/orders/'.$reference.'?secret='.$trackingSecret)
             ->assertOk()
             ->assertJsonPath('data.status', 'open');
     }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Onboarding\Providers;
 
-use App\Modules\HR\Domain\Contracts\OnboardingQrInterface;
 use App\Modules\Onboarding\Infrastructure\Services\OnboardingQrService;
+use App\Shared\Contracts\HR\OnboardingQrInterface;
 use Illuminate\Support\ServiceProvider;
 
 class OnboardingServiceProvider extends ServiceProvider

@@ -34,7 +34,7 @@ final class AddOrderItemAction
     /**
      * @param  array{product_id: int, quantity: float|string, menu_id?: int|null}  $data
      */
-    public function add(Employee $actor, RestaurantOrder $order, array $data): RestaurantOrderItem
+    public function execute(Employee $actor, RestaurantOrder $order, array $data): RestaurantOrderItem
     {
         if ($order->company_id !== $actor->company_id) {
             throw new RuntimeException('Order does not belong to tenant.');

@@ -7,7 +7,7 @@ namespace App\Modules\Attendance\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Modules\HR\Domain\Models\Department;
+use App\Shared\Contracts\HR\DepartmentDirectory;
 use App\Support\CsvCellSanitizer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Carbon;
@@ -37,6 +37,10 @@ class AttendanceReportService
     public const PERIOD_MONTH = 'month';
 
     public const PERIODS = [self::PERIOD_DAY, self::PERIOD_WEEK, self::PERIOD_MONTH];
+
+    public function __construct(
+        private readonly DepartmentDirectory $departmentDirectory,
+    ) {}
 
     /**
      * @param  array{date?: string, week?: string, month?: string, department_id?: int|null, employee_id?: int|null}  $filters
@@ -90,9 +94,7 @@ class AttendanceReportService
             ->whereIn('employee_id', $employees->pluck('id'))
             ->get();
 
-        $departmentNames = Department::query()
-            ->where('company_id', $company->id)
-            ->pluck('name', 'id');
+        $departmentNames = $this->departmentDirectory->namesByCompany($company->id);
 
         $logsByEmployee = $logs->groupBy('employee_id');
 

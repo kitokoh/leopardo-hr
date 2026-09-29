@@ -8,7 +8,7 @@ use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Modules\HR\Domain\Contracts\OnboardingQrInterface;
+use App\Shared\Contracts\HR\OnboardingQrInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;

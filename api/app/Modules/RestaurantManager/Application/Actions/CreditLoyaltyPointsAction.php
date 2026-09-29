@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\DB;
  */
 final class CreditLoyaltyPointsAction
 {
-    public function creditForPaidOrder(RestaurantOrder $order): void
+    public function execute(RestaurantOrder $order): void
     {
         $program = RestaurantLoyaltyProgram::query()
             ->where('company_id', $order->company_id)

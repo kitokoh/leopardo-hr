@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Onboarding\Infrastructure\Services;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\HR\Domain\Contracts\OnboardingQrInterface;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Shared\Contracts\HR\OnboardingQrInterface;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Validation\ValidationException;
@@ -172,4 +172,3 @@ class OnboardingQrService implements OnboardingQrInterface
         return $decoded;
     }
 }
-
