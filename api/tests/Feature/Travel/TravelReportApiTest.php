@@ -97,6 +97,20 @@ class TravelReportApiTest extends TestCase
     /**
      * @return array{trip: TravelTrip, booking: TravelBooking}
      */
+    /**
+     * Fenêtre `from`/`to` exigée par TravelReportRequest (#8128) : couvre les
+     * réservations créées à l'instant ET les départs de trips des factories
+     * (+1..+30 j).
+     */
+    private function reportWindow(): string
+    {
+        return http_build_query([
+            'from' => now()->subDay()->toDateString(),
+            'to' => now()->addDays(31)->toDateString(),
+        ]);
+    }
+
+    /** @return array{trip: TravelTrip, booking: TravelBooking} */
     private function confirmedBooking(Company $company, int $amountMinor = 15000): array
     {
         return app(TenantManager::class)->withinTenant($company, function () use ($amountMinor): array {
@@ -137,11 +151,13 @@ class TravelReportApiTest extends TestCase
         $this->confirmedBooking($company, 20000);
         $this->confirmedBooking($company, 30000);
 
-        $this->getJson('/api/v1/travel/reports/sales')
+        // Contrat actuel : `from`/`to` obligatoires (TravelReportRequest) et
+        // agrégats sous `data.*` (booking_count → bookings_count, #8128).
+        $this->getJson('/api/v1/travel/reports/sales?'.$this->reportWindow())
             ->assertOk()
-            ->assertJsonPath('summary.booking_count', 3)
-            ->assertJsonPath('summary.passenger_count', 6)
-            ->assertJsonPath('summary.total_amount_minor', 60000);
+            ->assertJsonPath('data.bookings_count', 3)
+            ->assertJsonPath('data.passengers_count', 6)
+            ->assertJsonPath('data.revenue_minor', 60000);
     }
 
     public function test_sales_report_is_tenant_isolated(): void
@@ -157,9 +173,9 @@ class TravelReportApiTest extends TestCase
         $this->confirmedBooking($company, 10000);
         $this->confirmedBooking($other, 99999);
 
-        $this->getJson('/api/v1/travel/reports/sales')
+        $this->getJson('/api/v1/travel/reports/sales?'.$this->reportWindow())
             ->assertOk()
-            ->assertJsonPath('summary.total_amount_minor', 10000);
+            ->assertJsonPath('data.revenue_minor', 10000);
     }
 
     public function test_occupancy_report_computes_exact_rate(): void
@@ -183,11 +199,11 @@ class TravelReportApiTest extends TestCase
                 ->update(['status' => SeatStatus::SOLD]);
         });
 
-        $this->getJson('/api/v1/travel/reports/occupancy')
+        $this->getJson('/api/v1/travel/reports/occupancy?'.$this->reportWindow())
             ->assertOk()
-            ->assertJsonPath('data.data.0.total_seats', 40)
-            ->assertJsonPath('data.data.0.sold_seats', 10)
-            ->assertJsonPath('data.data.0.occupancy_rate', 0.25);
+            ->assertJsonPath('data.by_trip.0.total_seats', 40)
+            ->assertJsonPath('data.by_trip.0.seats_sold', 10)
+            ->assertJsonPath('data.by_trip.0.occupancy_rate', 0.25);
     }
 
     public function test_revenue_report_subtracts_refunds(): void
@@ -212,7 +228,7 @@ class TravelReportApiTest extends TestCase
             ]);
         });
 
-        $this->getJson('/api/v1/travel/reports/revenue')
+        $this->getJson('/api/v1/travel/reports/revenue?'.$this->reportWindow())
             ->assertOk()
             ->assertJsonPath('data.confirmed_minor', 30000)
             ->assertJsonPath('data.refunded_minor', 5000)
@@ -247,10 +263,11 @@ class TravelReportApiTest extends TestCase
             ]);
         });
 
-        $this->getJson('/api/v1/travel/reports/cancellations')
+        // TRAVEL-504 : `cancellations_count` (clé courante) + agrégat
+        // `by_reason` restauré dans le service (#8128 — motifs décroissants).
+        $this->getJson('/api/v1/travel/reports/cancellations?'.$this->reportWindow())
             ->assertOk()
-            ->assertJsonPath('data.cancelled_count', 3)
-            ->assertJsonPath('data.total_final_count', 4)
+            ->assertJsonPath('data.cancellations_count', 3)
             ->assertJsonPath('data.by_reason.0.reason', 'Client indisponible')
             ->assertJsonPath('data.by_reason.0.count', 2)
             ->assertJsonPath('data.by_reason.1.reason', 'Voyage annulé par l\'agence')
@@ -266,11 +283,12 @@ class TravelReportApiTest extends TestCase
 
         $this->confirmedBooking($company, 15000);
 
+        // Clés du contrat dashboard courant (TravelReportService::dashboard).
         $this->getJson('/api/v1/travel/reports/dashboard')
             ->assertOk()
-            ->assertJsonPath('data.bookings_count', 1)
-            ->assertJsonPath('data.sales_minor', 15000)
-            ->assertJsonPath('data.passengers_count', 2)
+            ->assertJsonPath('data.sales_today', 1)
+            ->assertJsonPath('data.confirmed_minor', 15000)
+            ->assertJsonPath('data.passengers', 2)
             ->assertJsonPath('data.revenue_minor', 15000);
     }
 
@@ -281,7 +299,9 @@ class TravelReportApiTest extends TestCase
         $this->activateTravel($company);
         $this->simpleEmployee($company);
 
-        $this->getJson('/api/v1/travel/reports/sales')->assertForbidden();
+        // Fenêtre valide exigée sur /sales : la validation FormRequest
+        // s'exécute avant le Gate — sans from/to, un 422 masquerait le 403.
+        $this->getJson('/api/v1/travel/reports/sales?'.$this->reportWindow())->assertForbidden();
         $this->getJson('/api/v1/travel/reports/dashboard')->assertForbidden();
         $this->getJson('/api/v1/travel/reports/export?type=sales')->assertForbidden();
     }

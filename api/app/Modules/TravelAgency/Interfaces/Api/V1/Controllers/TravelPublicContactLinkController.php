@@ -13,8 +13,13 @@ use Illuminate\Support\Facades\URL;
 /**
  * TRAVEL-913 (#6425) — Génération du lien public signé du formulaire de
  * contact voyageurs (visiteur → demande). Direction uniquement (rôle
- * manager). Le lien porte le `company_id` signé et expire (défaut 24 h,
- * borne 1 h – 168 h). Pattern : RestaurantPublicMenuLinkController (RESTO-805).
+ * manager). Le lien porte le `company` signé — paramètre lu par
+ * `TravelPublicContactController` — et expire (défaut 24 h, borne
+ * 1 h – 168 h). Pattern : RestaurantPublicMenuLinkController (RESTO-805).
+ *
+ * Régression corrigée (#8128) : le lien signait `company_id` alors que le
+ * contrôleur public lit `company` → tout lien généré aboutissait à un 404
+ * (« Company introuvable ») : le formulaire public était mort en prod.
  */
 class TravelPublicContactLinkController extends Controller
 {
@@ -33,7 +38,7 @@ class TravelPublicContactLinkController extends Controller
         $contactUrl = URL::temporarySignedRoute(
             'travel.public.contact.store',
             now()->addHours($expiresInHours),
-            ['company_id' => $actor->company_id],
+            ['company' => $actor->company_id],
         );
 
         return response()->json([

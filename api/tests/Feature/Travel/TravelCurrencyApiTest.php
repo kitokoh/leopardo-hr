@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Application\Actions\GenerateTripSeatsAction;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
+use App\Modules\TravelAgency\Domain\Models\TravelCurrencyRate;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
 use Laravel\Sanctum\Sanctum;
@@ -48,12 +49,16 @@ class TravelCurrencyApiTest extends TestCase
 
     private function storeRate(Company $company, string $base, string $quote, string $rate, string $from, ?string $until = null): void
     {
+        // Contrat canonique post-consolidation #7452 : `from_currency` /
+        // `to_currency` / `rate_minor` (taux entier × RATE_SCALE) /
+        // `valid_to` — les clés legacy `base_currency`/`quote_currency`/
+        // `rate`/`valid_until` ne sont plus acceptées (#8128).
         $this->postJson('/api/v1/travel/currency-rates', [
-            'base_currency' => $base,
-            'quote_currency' => $quote,
-            'rate' => $rate,
+            'from_currency' => $base,
+            'to_currency' => $quote,
+            'rate_minor' => (int) round(((float) $rate) * TravelCurrencyRate::RATE_SCALE),
             'valid_from' => $from,
-            'valid_until' => $until,
+            'valid_to' => $until,
         ])->assertStatus(201);
     }
 
