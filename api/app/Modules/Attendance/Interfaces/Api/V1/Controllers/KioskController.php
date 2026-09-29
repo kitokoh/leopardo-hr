@@ -16,7 +16,7 @@ use App\Modules\Attendance\Infrastructure\Services\KioskFaceVerificationService;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\KioskPunchRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\KioskSyncRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\KioskVerifyFaceRequest;
-use App\Modules\HR\Domain\Contracts\OnboardingQrInterface;
+use App\Shared\Contracts\HR\OnboardingQrInterface;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
