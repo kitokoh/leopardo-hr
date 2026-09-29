@@ -31,8 +31,7 @@ final class FeatureFlagRegistry
     public function __construct(
         private readonly array $config,
         private readonly ?ModuleRegistryGateway $gateway = null,
-    ) {
-    }
+    ) {}
 
     public function version(): string
     {
@@ -58,7 +57,7 @@ final class FeatureFlagRegistry
     {
         $flags = $this->definitionsSource();
 
-        if (! is_array($flags) || ! array_key_exists($key, $flags)) {
+        if (! array_key_exists($key, $flags)) {
             return null;
         }
 
@@ -79,7 +78,14 @@ final class FeatureFlagRegistry
             return filter_var($envValue, FILTER_VALIDATE_BOOL);
         }
 
-        $killSwitches = $this->config['kill_switches'] ?? [];
+        // BOS-011 (#8198) — les kill switches sont relus depuis le REPOSITORY
+        // de config à chaque appel, pas depuis la copie figée à la résolution
+        // du singleton : une coupure d'exploitation posée à chaud doit prendre
+        // effet immédiatement (l'env est déjà relu via getenv). La copie figée
+        // rendait muet tout kill switch posé après la première résolution
+        // (rouge préexistant prouvé sur main :
+        // FeatureFlagKillSwitchTest::test_kill_switch_stops_module_without_deleting_data).
+        $killSwitches = config('feature-flags.kill_switches', []);
 
         return is_array($killSwitches) && (bool) ($killSwitches[$key] ?? false);
     }

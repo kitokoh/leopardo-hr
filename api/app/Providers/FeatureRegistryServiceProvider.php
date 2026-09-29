@@ -43,7 +43,7 @@ class FeatureRegistryServiceProvider extends ServiceProvider
         // switches (consommé par FeatureFlag::enabled/for).
         // BOS-011 (#8198, ADR-0026) — registre unifié + passerelle dual-read
         // (mode legacy par défaut : comportement inchangé).
-        $this->app->singleton(ModuleRegistry::class, fn (): ModuleRegistry => new ModuleRegistry());
+        $this->app->singleton(ModuleRegistry::class, fn (): ModuleRegistry => new ModuleRegistry);
         $this->app->singleton(ModuleRegistryGateway::class, fn ($app): ModuleRegistryGateway => new ModuleRegistryGateway($app->make(ModuleRegistry::class)));
         $this->app->singleton(FeatureFlagRegistry::class, fn ($app): FeatureFlagRegistry => new FeatureFlagRegistry((array) config('feature-flags'), $app->make(ModuleRegistryGateway::class)));
     }

@@ -33,8 +33,7 @@ final class FeatureKillSwitchService
 
     public function __construct(
         private readonly ModuleRegistryGateway $gateway,
-    ) {
-    }
+    ) {}
 
     public function isKilled(string $key): bool
     {

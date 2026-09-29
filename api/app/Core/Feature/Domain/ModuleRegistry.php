@@ -506,13 +506,12 @@ final class ModuleRegistry
 
     /**
      * @param  array<string, ModuleEntry>|null  $entries  Source alternative
-     *         (tests — ex. démonstration « 1 seul enregistrement » du critère
-     *         d'acceptation 1) ; null ⇒ source canonique {@see ENTRIES}.
+     *                                                    (tests — ex. démonstration « 1 seul enregistrement » du critère
+     *                                                    d'acceptation 1) ; null ⇒ source canonique {@see ENTRIES}.
      */
     public function __construct(
         private readonly ?array $entries = null,
-    ) {
-    }
+    ) {}
 
     public function version(): string
     {
