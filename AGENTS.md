@@ -1,5 +1,28 @@
 # AGENTS.md - Guide de travail Leopardo
 
+Derniere mise a jour : 2026-09-28 (#8207 — garde rollbacks destructeurs + doublon 7417/7420)
+
+> Leçon 2026-09-28 (#8207, lot Z11 BOS-017/018) : **(1) une migration fantôme
+> neutralisée garde souvent son `down()` DESTRUCTEUR d'origine** — 10 fichiers
+> du repo avaient un `up()` no-op et un `down()` qui droppait tables/colonnes
+> des migrations canoniques ; un `migrate:rollback` ciblé vidait le schéma sans
+> que rien ne le restaure. Règle : un `down()` ne détruit que ce que le `up()`
+> du MÊME fichier a défini. Garde `dev-hub/tools/check-migration-destructive-down.py`
+> (branchée dans `migration-duplication-guard.yml`) — dette legacy allowlistée
+> dans `migrations-destructive-down-allowlist.txt` (résorption : #8237).
+> **(2) Dédupliquer une migration déjà jouée en prod = NEUTRALISER (no-op
+> documenté), jamais supprimer le fichier** : Laravel résout chaque entrée de la
+> table `migrations` par son fichier au rollback — un fichier manquant casse
+> `migrate:rollback` du batch (doublon 7417/7420 : 7417 neutralisée, 7420
+> canonique idempotente, chaîne préservée, prouvé sur copie PG16).
+> **(3) Tester `ShouldBeUnique` ne exige aucun worker** : le verrou est acquis
+> dans `PendingDispatch::__destruct` — `Queue::fake()` + deux `Job::dispatch()`
+> identiques puis `assertPushedTimes(Job::class, 1)` prouve l'absorption
+> (cache `array` en test). Et le gate PHPStan CI réel = `phpstan.ci.neon`
+> **niveau 8 + 3 baselines** sur fichiers changés (généré dans `tests.yml`,
+> job backend-quality) — `phpstan.neon` seul (level max) produit des findings
+> hors gate (`cast.*` sur mixed).
+
 Derniere mise a jour : 2026-09-23 (#8092 — rattrapage prod Render + alerte de retard)
 
 > Leçon 2026-09-23 (#8092) : **(1) un workflow de rattrapage se juge à sa COUVERTURE réelle,

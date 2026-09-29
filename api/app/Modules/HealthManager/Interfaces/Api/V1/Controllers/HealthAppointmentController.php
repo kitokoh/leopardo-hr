@@ -6,9 +6,11 @@ namespace App\Modules\HealthManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\HealthManager\Application\Actions\ScheduleHealthAppointmentAction;
+use App\Modules\HealthManager\Application\Actions\TransitionHealthAppointmentStatusAction;
+use App\Modules\HealthManager\Application\Actions\UpdateHealthAppointmentAction;
 use App\Modules\HealthManager\Domain\Access\HealthAccess;
 use App\Modules\HealthManager\Domain\Models\HealthAppointment;
-use App\Modules\HealthManager\Infrastructure\Services\HealthAppointmentService;
 use App\Modules\HealthManager\Interfaces\Api\V1\Requests\StoreHealthAppointmentRequest;
 use App\Modules\HealthManager\Interfaces\Api\V1\Requests\TransitionHealthAppointmentRequest;
 use App\Modules\HealthManager\Interfaces\Api\V1\Requests\UpdateHealthAppointmentRequest;
@@ -16,7 +18,6 @@ use App\Modules\HealthManager\Interfaces\Api\V1\Traits\ChecksHealthSolution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 /**
  * API des rendez-vous & agenda — HC-004 (#7788, BC-31).
@@ -31,7 +32,11 @@ class HealthAppointmentController extends Controller
 {
     use ChecksHealthSolution;
 
-    public function __construct(private readonly HealthAppointmentService $service) {}
+    public function __construct(
+        private readonly ScheduleHealthAppointmentAction $scheduleAction,
+        private readonly UpdateHealthAppointmentAction $updateAction,
+        private readonly TransitionHealthAppointmentStatusAction $transitionAction,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -86,23 +91,7 @@ class HealthAppointmentController extends Controller
         // pas ses propres rendez-vous — deny-by-default).
         $this->authorize('create', HealthAppointment::class);
 
-        $payload = $request->validated();
-        $companyId = (string) $actor->company_id;
-        $startsAt = Carbon::parse((string) $payload['starts_at']);
-        $endsAt = Carbon::parse((string) $payload['ends_at']);
-
-        $appointment = DB::transaction(function () use ($payload, $companyId, $startsAt, $endsAt): HealthAppointment {
-            // 409 HEALTH_APPOINTMENT_CONFLICT si chevauchement praticien.
-            $this->service->assertNoConflict($companyId, (int) $payload['practitioner_id'], $startsAt, $endsAt);
-
-            /** @var HealthAppointment $appointment */
-            $appointment = HealthAppointment::query()->create(array_merge($payload, [
-                'company_id' => $companyId,
-                'status' => HealthAppointment::STATUS_SCHEDULED,
-            ]));
-
-            return $appointment;
-        });
+        $appointment = $this->scheduleAction->execute((string) $actor->company_id, $request->validated());
 
         return response()->json(['data' => $this->payload($appointment)], 201);
     }
@@ -170,38 +159,9 @@ class HealthAppointmentController extends Controller
         $this->assertSameTenant($appointment, $actor->company_id);
         $this->authorize('update', $appointment);
 
-        $payload = $request->validated();
+        $appointment = $this->updateAction->execute($appointment, $request->validated());
 
-        $startsAt = isset($payload['starts_at'])
-            ? Carbon::parse((string) $payload['starts_at'])
-            : $appointment->starts_at;
-        $endsAt = isset($payload['ends_at'])
-            ? Carbon::parse((string) $payload['ends_at'])
-            : $appointment->ends_at;
-
-        // Cohérence temporelle re-vérifiée sur l'état FUSIONNÉ (un seul des
-        // deux champs peut bouger) → 422.
-        abort_if($endsAt->lessThanOrEqualTo($startsAt), 422, 'HEALTH_INVALID_TIME_RANGE: ends_at must be after starts_at.');
-
-        $practitionerId = isset($payload['practitioner_id'])
-            ? (int) $payload['practitioner_id']
-            : $appointment->practitioner_id;
-
-        DB::transaction(function () use ($appointment, $payload, $actor, $practitionerId, $startsAt, $endsAt): void {
-            // 409 si le créneau (éventuellement déplacé) chevauche un autre
-            // rendez-vous actif du praticien — le sien est ignoré.
-            $this->service->assertNoConflict(
-                (string) $actor->company_id,
-                $practitionerId,
-                $startsAt,
-                $endsAt,
-                (int) $appointment->getAttribute('id'),
-            );
-
-            $appointment->update($payload);
-        });
-
-        return response()->json(['data' => $this->payload($appointment->refresh())]);
+        return response()->json(['data' => $this->payload($appointment)]);
     }
 
     /**
@@ -221,12 +181,9 @@ class HealthAppointmentController extends Controller
         /** @var string $target */
         $target = $request->validated()['status'];
 
-        // 422 HEALTH_INVALID_TRANSITION hors machine à états.
-        $this->service->assertValidTransition($appointment->status, $target);
+        $appointment = $this->transitionAction->execute($appointment, $target);
 
-        $appointment->update(['status' => $target]);
-
-        return response()->json(['data' => $this->payload($appointment->refresh())]);
+        return response()->json(['data' => $this->payload($appointment)]);
     }
 
     /**

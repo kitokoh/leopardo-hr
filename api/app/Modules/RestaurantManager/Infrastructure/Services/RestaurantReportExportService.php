@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\RestaurantManager\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Tenant\Domain\Models\EmployeeResourceAssignment;
+use App\Modules\RestaurantManager\Domain\Permissions\RestaurantPermissions;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -93,18 +93,14 @@ final class RestaurantReportExportService
      * (`principal`/`rh` — les autres valeurs listées ici étaient mortes, hors
      * enum `manager_role`) tant qu'aucune assignation `restaurant_branch`
      * n'existe, puis niveau `manage` sur au moins une succursale assignée.
+     *
+     * #8180 — délègue à l'implémentation canonique unique
+     * ({@see RestaurantPermissions::canViewReports()}, invoquée par le Gate
+     * `restaurant.reports`) : la copie inline est retirée pour empêcher la
+     * dérive entre les call sites.
      */
     public static function authorize(Employee $actor): bool
     {
-        if (! $actor->isResourceTypeScoped('restaurant_branch')) {
-            return $actor->hasManagerRole('principal', 'rh');
-        }
-
-        $manageable = $actor->accessibleResourceIds(
-            'restaurant_branch',
-            EmployeeResourceAssignment::LEVEL_MANAGE
-        );
-
-        return $manageable === null || $manageable !== [];
+        return (new RestaurantPermissions)->canViewReports($actor);
     }
 }

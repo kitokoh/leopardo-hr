@@ -6,13 +6,12 @@ namespace App\Modules\Communication\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Communication\Application\Actions\SaveFollowUpRuleAction;
 use App\Modules\Communication\Domain\Models\CommunicationFollowUpRule;
 use App\Modules\Communication\Domain\Models\CommunicationFollowUpStep;
-use App\Modules\Communication\Domain\Models\CommunicationIntegration;
 use App\Modules\Communication\Interfaces\Api\V1\Controllers\Concerns\AssertsTenantScope;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Regles de relance automatique (BC-29 COMMUNICATION, R4 #7689, spec §3.4)
@@ -30,6 +29,8 @@ use Illuminate\Support\Facades\DB;
 class CommunicationFollowUpRuleController extends Controller
 {
     use AssertsTenantScope;
+
+    public function __construct(private readonly SaveFollowUpRuleAction $saveAction) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -58,43 +59,12 @@ class CommunicationFollowUpRuleController extends Controller
         /** @var array{integration_id: string, name: string, active?: bool, steps: list<array{delay_days: int, template_key?: string|null}>} $validated */
         $validated = $request->validate($this->rules());
 
-        /** @var CommunicationIntegration|null $integration */
-        $integration = CommunicationIntegration::query()
-            ->where('employee_id', $employee->id)
-            ->find($validated['integration_id']);
+        // Délégation du cas d'usage (BOS-024e, #8216) : boîte de l'appelant
+        // (404 MAILBOX_NOT_FOUND), scope gmail.send (422), création +
+        // séquence en transaction — contrat inchangé.
+        $rule = $this->saveAction->execute($employee, $validated);
 
-        if ($integration === null) {
-            // Boite inconnue OU appartenant a quelqu'un d'autre : 404 (ne
-            // pas reveler l'existence des boites des autres).
-            return new JsonResponse([
-                'message' => __('communication.follow_up_mailbox_not_found'),
-                'code' => 'MAILBOX_NOT_FOUND',
-            ], 404);
-        }
-
-        $active = (bool) ($validated['active'] ?? true);
-
-        if ($active && ! $integration->hasSendScope()) {
-            return $this->sendScopeRequired();
-        }
-
-        /** @var CommunicationFollowUpRule $rule */
-        $rule = DB::transaction(function () use ($employee, $integration, $validated, $active): CommunicationFollowUpRule {
-            $rule = new CommunicationFollowUpRule;
-            $rule->forceFill([
-                'company_id' => (string) $employee->company_id,
-                'integration_id' => $integration->id,
-                'name' => $validated['name'],
-                'active' => $active,
-            ]);
-            $rule->save();
-
-            $this->syncSteps($rule, $validated['steps']);
-
-            return $rule;
-        });
-
-        return new JsonResponse(['data' => $this->present($rule->load(['steps', 'integration']))], 201);
+        return new JsonResponse(['data' => $this->present($rule)], 201);
     }
 
     public function update(Request $request, CommunicationFollowUpRule $rule): JsonResponse
@@ -107,29 +77,15 @@ class CommunicationFollowUpRuleController extends Controller
         /** @var array{name?: string, active?: bool, steps?: list<array{delay_days: int, template_key?: string|null}>} $validated */
         $validated = $request->validate($this->rules(partial: true));
 
-        $active = array_key_exists('active', $validated) ? (bool) $validated['active'] : $rule->active;
+        /** @var Employee $employee */
+        $employee = $request->user();
 
-        if ($active && ! $rule->integration?->hasSendScope()) {
-            return $this->sendScopeRequired();
-        }
+        // Délégation du cas d'usage (BOS-024e, #8216) : scope gmail.send
+        // (422), mise à jour + réécriture transactionnelle des étapes —
+        // contrat inchangé.
+        $rule = $this->saveAction->execute($employee, $validated, $rule);
 
-        DB::transaction(function () use ($rule, $validated, $active): void {
-            $rule->forceFill(array_filter([
-                'name' => $validated['name'] ?? null,
-            ], static fn (?string $value): bool => $value !== null));
-            $rule->forceFill(['active' => $active]);
-            $rule->save();
-
-            if (array_key_exists('steps', $validated)) {
-                CommunicationFollowUpStep::query()
-                    ->where('rule_id', $rule->id)
-                    ->delete();
-
-                $this->syncSteps($rule, $validated['steps']);
-            }
-        });
-
-        return new JsonResponse(['data' => $this->present($rule->refresh()->load(['steps', 'integration']))]);
+        return new JsonResponse(['data' => $this->present($rule)]);
     }
 
     public function destroy(Request $request, CommunicationFollowUpRule $rule): JsonResponse
@@ -159,32 +115,6 @@ class CommunicationFollowUpRuleController extends Controller
             'steps.*.delay_days' => ['required', 'integer', 'min:1', 'max:90'],
             'steps.*.template_key' => ['sometimes', 'nullable', 'string', 'in:communication_follow_up'],
         ];
-    }
-
-    /**
-     * @param  list<array{delay_days: int, template_key?: string|null}>  $steps
-     */
-    private function syncSteps(CommunicationFollowUpRule $rule, array $steps): void
-    {
-        foreach ($steps as $index => $payload) {
-            $step = new CommunicationFollowUpStep;
-            $step->forceFill([
-                'company_id' => $rule->company_id,
-                'rule_id' => $rule->id,
-                'position' => $index + 1,
-                'delay_days' => (int) $payload['delay_days'],
-                'template_key' => $payload['template_key'] ?? 'communication_follow_up',
-            ]);
-            $step->save();
-        }
-    }
-
-    private function sendScopeRequired(): JsonResponse
-    {
-        return new JsonResponse([
-            'message' => __('communication.follow_up_send_scope_required'),
-            'code' => 'GMAIL_SEND_SCOPE_REQUIRED',
-        ], 422);
     }
 
     /**

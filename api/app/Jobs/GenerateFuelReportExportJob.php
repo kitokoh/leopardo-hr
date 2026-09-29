@@ -9,6 +9,7 @@ use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\FuelStation\Domain\Models\FuelReportExport;
 use App\Modules\FuelStation\Infrastructure\Services\FuelReportingService;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -22,8 +23,11 @@ use Throwable;
  *
  * Cycle : pending → generating → generated | failed (avec `expires_at`
  * borné à EXPORT_TTL_HOURS). Tenant-scoped via `EnsureTenantContext`.
+ *
+ * #8206 (BOS-017) : `ShouldBeUnique` (clé = export) — un double dispatch ne
+ * produit qu'une seule exécution.
  */
-class GenerateFuelReportExportJob implements ShouldQueue, TenantScopedJob
+class GenerateFuelReportExportJob implements ShouldBeUnique, ShouldQueue, TenantScopedJob
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -33,6 +37,17 @@ class GenerateFuelReportExportJob implements ShouldQueue, TenantScopedJob
     public int $tries = 3;
 
     public int $timeout = 120;
+
+    /**
+     * #8206 (BOS-017) — verrou d'unicité au niveau queue (pattern
+     * GenerateBankExportJob, TTL aligné sur le timeout).
+     */
+    public int $uniqueFor = 120;
+
+    public function uniqueId(): string
+    {
+        return 'fuel-report-export:'.$this->fuelReportExportId;
+    }
 
     private ?string $resolvedCompanyId = null;
 
