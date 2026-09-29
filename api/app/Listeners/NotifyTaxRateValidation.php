@@ -13,6 +13,7 @@ use App\Events\TaxRateSubmitted;
 use App\Modules\Notification\Application\Actions\SendNotification;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Support\PlatformCompanyLookup;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\DB;
@@ -43,8 +44,15 @@ use Illuminate\Support\Facades\Mail;
  *
  * Les envois email ne doivent JAMAIS casser la transition (try/catch +
  * report, pattern UserInvitationService #1776).
+ *
+ * #8206 (BOS-017) : listener mis en file (`ShouldQueue`, queue `default`) —
+ * les `Mail::raw()` synchrones et la bascule `withinTenant()` sortent du
+ * cycle de la requête admin (approbation/rejet des taux). L'enregistrement
+ * `Class@handleTaxRate*` est compatible : le dispatcher file un
+ * `CallQueuedListener` avec la méthode. Sémantique best-effort inchangée
+ * (chaque branche catch Throwable, le job ne peut pas échouer).
  */
-class NotifyTaxRateValidation
+class NotifyTaxRateValidation implements ShouldQueue
 {
     public function __construct(
         private readonly SendNotification $sendNotification,

@@ -30,54 +30,17 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (schemaHasColumn('travel_tourist_sites', 'company_id')) {
-            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
-                $table->dropColumn('company_id');
-            });
-        }
-        if (schemaHasColumn('travel_tourist_sites', 'name')) {
-            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
-                $table->dropColumn('name');
-            });
-        }
-        if (schemaHasColumn('travel_tourist_sites', 'description_redacted')) {
-            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
-                $table->dropColumn('description_redacted');
-            });
-        }
-        if (schemaHasColumn('travel_tourist_sites', 'city_id')) {
-            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
-                $table->dropColumn('city_id');
-            });
-        }
-        if (schemaHasColumn('travel_tourist_sites', 'latitude')) {
-            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
-                $table->dropColumn('latitude');
-            });
-        }
-        if (schemaHasColumn('travel_tourist_sites', 'longitude')) {
-            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
-                $table->dropColumn('longitude');
-            });
-        }
+        // #8207 (BOS-018) — symétrique EXACT de up() : cette génération ne
+        // rattrape que `image_asset_id`, son rollback ne droppe QUE cette
+        // colonne. La version précédente droppait aussi `company_id`, `name`,
+        // `status`, `created_at`… — des colonnes créées par la migration
+        // propriétaire `2026_08_30_000018_6112_create_travel_tourist_sites_table.php`.
+        // Un rollback du batch laissait donc la table vivante mais vidée de
+        // son schéma (la migration propriétaire restant « migrée », aucun
+        // mécanisme ne restaurait les colonnes).
         if (schemaHasColumn('travel_tourist_sites', 'image_asset_id')) {
             Schema::table('travel_tourist_sites', function (Blueprint $table): void {
                 $table->dropColumn('image_asset_id');
-            });
-        }
-        if (schemaHasColumn('travel_tourist_sites', 'status')) {
-            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
-                $table->dropColumn('status');
-            });
-        }
-        if (schemaHasColumn('travel_tourist_sites', 'created_at')) {
-            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
-                $table->dropColumn('created_at');
-            });
-        }
-        if (schemaHasColumn('travel_tourist_sites', 'updated_at')) {
-            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
-                $table->dropColumn('updated_at');
             });
         }
     }
