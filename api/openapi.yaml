@@ -13867,25 +13867,108 @@ paths:
               properties:
                 message:
                   type: string
+                  maxLength: 2000
                 conversation_id:
                   type: integer
                   nullable: true
       responses:
         '200':
-          description: Reponse IA
+          description: Reponse IA — enveloppe `data` ; le texte de l'assistant est dans `response` (pas de champ `reply`)
           content:
             application/json:
               schema:
                 type: object
+                required:
+                - data
                 properties:
-                  reply:
-                    type: string
-                  conversation_id:
-                    type: integer
-                  tools_used:
-                    type: array
-                    items:
-                      type: string
+                  data:
+                    type: object
+                    required:
+                    - conversation_id
+                    - response
+                    - tools_used
+                    - pending_confirmations
+                    - tokens
+                    properties:
+                      conversation_id:
+                        type: integer
+                      response:
+                        type: string
+                        description: Réponse textuelle de l'assistant
+                      tools_used:
+                        type: array
+                        description: Noms des outils exécutés pendant le tour
+                        items:
+                          type: string
+                      pending_confirmations:
+                        type: array
+                        description: Écritures proposées par l'IA en attente de confirmation humaine explicite (l'IA n'écrit jamais sans confirmation)
+                        items:
+                          type: object
+                          required:
+                          - status
+                          - pending_action_id
+                          - tool
+                          - summary
+                          - arguments
+                          properties:
+                            status:
+                              type: string
+                              enum:
+                              - confirmation_required
+                            pending_action_id:
+                              type: string
+                              format: uuid
+                              description: À repasser à POST /ai/actions/{pendingActionId}/confirm ou /reject
+                            tool:
+                              type: string
+                            summary:
+                              type: string
+                              description: Résumé lisible de l'action proposée
+                            arguments:
+                              type: object
+                              description: Arguments de l'outil (contrat propre à chaque tool)
+                      tokens:
+                        type: object
+                        required:
+                        - input
+                        - output
+                        properties:
+                          input:
+                            type: integer
+                          output:
+                            type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature IA désactivée pour l'espace (AIFeatureCheck) — code stable `AI_FEATURE_DISABLED`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: AI_FEATURE_DISABLED
+                message: AI_FEATURE_DISABLED
+                localized_message: Les fonctionnalités IA sont désactivées pour cet espace.
+        '422':
+          description: Quota IA dépassé — code stable `AI_CREDITS_EXHAUSTED` (crédits épuisés) ou `AI_TOKEN_BUDGET_EXCEEDED` (budget de jetons dépassé)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                credits_exhausted:
+                  summary: Crédits IA épuisés
+                  value:
+                    error: AI_CREDITS_EXHAUSTED
+                    message: AI_CREDITS_EXHAUSTED
+                    localized_message: Crédits IA épuisés. Achetez un pack de crédits depuis l'espace Facturation pour continuer.
+                token_budget_exceeded:
+                  summary: Budget de jetons dépassé
+                  value:
+                    error: AI_TOKEN_BUDGET_EXCEEDED
+                    message: AI_TOKEN_BUDGET_EXCEEDED
+                    localized_message: Budget de jetons IA dépassé. Réduisez la longueur du message ou démarrez une nouvelle conversation.
   /ai/chat/history:
     get:
       tags:
@@ -25085,37 +25168,139 @@ paths:
       tags:
       - AI
       summary: Confirmer une action IA en attente
+      security:
+      - BearerAuth: []
       parameters:
       - name: pendingActionId
         in: path
         required: true
+        description: Identifiant UUID de l'action en attente (fourni dans `pending_confirmations` de POST /ai/chat)
         schema:
-          type: integer
+          type: string
+          format: uuid
       responses:
         '200':
-          description: Action exécutée
+          description: Action exécutée après confirmation humaine
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - status
+                    - tool
+                    - result
+                    properties:
+                      status:
+                        type: string
+                        enum:
+                        - executed
+                      tool:
+                        type: string
+                        description: Nom de l'outil exécuté
+                      result:
+                        type: object
+                        description: Résultat métier de l'exécution (contrat propre à chaque tool)
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          description: Feature IA non active (AIFeatureCheck)
+          description: Feature IA non active (AIFeatureCheck) — code `AI_FEATURE_DISABLED`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: AI_FEATURE_DISABLED
+                message: AI_FEATURE_DISABLED
+                localized_message: Les fonctionnalités IA sont désactivées pour cet espace.
+        '404':
+          description: Action en attente introuvable, expirée ou déjà consommée (le code exposé est le code générique `RESOURCE_NOT_FOUND` — voir description de la PR)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: RESOURCE_NOT_FOUND
+                message: RESOURCE_NOT_FOUND
+                localized_message: Ressource introuvable.
+        '422':
+          description: L'exécution confirmée a échoué — le motif est dans `error`, le résultat partiel éventuel dans `data`
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - error
+                properties:
+                  error:
+                    type: string
+                    description: Motif d'échec renvoyé par l'outil (texte, pas un code stable)
+                  data:
+                    type: object
+                    description: Résultat partiel renvoyé par l'outil
   /ai/actions/{pendingActionId}/reject:
     post:
       tags:
       - AI
       summary: Rejeter une action IA en attente
+      security:
+      - BearerAuth: []
       parameters:
       - name: pendingActionId
         in: path
         required: true
+        description: Identifiant UUID de l'action en attente
         schema:
-          type: integer
+          type: string
+          format: uuid
       responses:
         '200':
-          description: Action rejetée
+          description: Action rejetée (tracée en audit, jamais exécutée)
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - status
+                    - tool
+                    properties:
+                      status:
+                        type: string
+                        enum:
+                        - rejected
+                      tool:
+                        type: string
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          description: Feature IA non active
+          description: Feature IA non active (AIFeatureCheck) — code `AI_FEATURE_DISABLED`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: AI_FEATURE_DISABLED
+                message: AI_FEATURE_DISABLED
+                localized_message: Les fonctionnalités IA sont désactivées pour cet espace.
+        '404':
+          description: Action en attente introuvable, expirée ou déjà consommée (le code exposé est le code générique `RESOURCE_NOT_FOUND`)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: RESOURCE_NOT_FOUND
+                message: RESOURCE_NOT_FOUND
+                localized_message: Ressource introuvable.
   /ai/voice/transcribe:
     post:
       tags:
@@ -43890,6 +44075,9 @@ components:
           - VALIDATION_ERROR
           - RATE_LIMITED
           - NOT_IMPLEMENTED
+          - AI_FEATURE_DISABLED
+          - AI_CREDITS_EXHAUSTED
+          - AI_TOKEN_BUDGET_EXCEEDED
           example: RESOURCE_NOT_FOUND
         message:
           type: string
