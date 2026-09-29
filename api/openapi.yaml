@@ -44638,6 +44638,7 @@ components:
           nullable: true
         tenancy_type:
           type: string
+          description: Mode de tenancy du tenant — toujours `shared` (schéma partagé définitif, ADR-0027) ; la valeur `schema` est verrouillée à la création et ne subsiste que pour d'éventuels tenants historiques.
         status:
           type: string
         language:

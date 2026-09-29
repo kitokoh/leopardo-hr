@@ -6,10 +6,13 @@ namespace App\Modules\Pharmacy\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Pharmacy\Application\Actions\CancelPharmacyPurchaseOrderAction;
+use App\Modules\Pharmacy\Application\Actions\CreatePharmacyPurchaseOrderAction;
+use App\Modules\Pharmacy\Application\Actions\PlacePharmacyPurchaseOrderAction;
+use App\Modules\Pharmacy\Application\Actions\ReceivePharmacyPurchaseOrderAction;
 use App\Modules\Pharmacy\Domain\Models\PharmacyPurchaseOrder;
 use App\Modules\Pharmacy\Domain\Models\PharmacyPurchaseOrderLine;
 use App\Modules\Pharmacy\Domain\Models\PharmacySupplier;
-use App\Modules\Pharmacy\Infrastructure\Services\PharmacyPurchaseOrderService;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Requests\ReceivePharmacyPurchaseOrderRequest;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Requests\StorePharmacyPurchaseOrderRequest;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Traits\ChecksPharmacySolution;
@@ -27,7 +30,12 @@ class PharmacyPurchaseOrderController extends Controller
 {
     use ChecksPharmacySolution;
 
-    public function __construct(private readonly PharmacyPurchaseOrderService $orders) {}
+    public function __construct(
+        private readonly CreatePharmacyPurchaseOrderAction $createOrder,
+        private readonly PlacePharmacyPurchaseOrderAction $placeOrder,
+        private readonly CancelPharmacyPurchaseOrderAction $cancelOrder,
+        private readonly ReceivePharmacyPurchaseOrderAction $receiveOrder,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -83,17 +91,7 @@ class PharmacyPurchaseOrderController extends Controller
         /** @var array{supplier_id: int, notes?: string|null, lines: list<array{product_id: int, quantity_ordered: int, unit_price?: string|null}>} $payload */
         $payload = $request->validated();
 
-        $order = $this->orders->create(
-            (string) $actor->company_id,
-            (int) $supplier->getAttribute('id'),
-            array_map(static fn (array $line): array => [
-                'product_id' => (int) $line['product_id'],
-                'quantity_ordered' => (int) $line['quantity_ordered'],
-                'unit_price' => (string) ($line['unit_price'] ?? '0'),
-            ], $payload['lines']),
-            $payload['notes'] ?? null,
-            (int) $actor->getAttribute('id'),
-        );
+        $order = $this->createOrder->execute($actor, $supplier, $payload);
 
         return response()->json(['data' => $this->payload($order->load('lines'))], 201);
     }
@@ -119,7 +117,7 @@ class PharmacyPurchaseOrderController extends Controller
         $this->assertSameTenant($purchaseOrder, $actor->company_id);
         $this->authorize('update', $purchaseOrder);
 
-        $order = $this->orders->place($purchaseOrder);
+        $order = $this->placeOrder->execute($purchaseOrder);
 
         return response()->json(['data' => $this->payload($order->load('lines'))]);
     }
@@ -133,7 +131,7 @@ class PharmacyPurchaseOrderController extends Controller
         $this->assertSameTenant($purchaseOrder, $actor->company_id);
         $this->authorize('update', $purchaseOrder);
 
-        $order = $this->orders->cancel($purchaseOrder);
+        $order = $this->cancelOrder->execute($purchaseOrder);
 
         return response()->json(['data' => $this->payload($order->load('lines'))]);
     }
@@ -150,17 +148,7 @@ class PharmacyPurchaseOrderController extends Controller
         /** @var array{lines: list<array{line_id: int, quantity: int, batch_number: string, expiry_date: string, unit_cost?: string|null}>} $payload */
         $payload = $request->validated();
 
-        $order = $this->orders->receive(
-            $purchaseOrder,
-            array_map(static fn (array $line): array => [
-                'line_id' => (int) $line['line_id'],
-                'quantity' => (int) $line['quantity'],
-                'batch_number' => (string) $line['batch_number'],
-                'expiry_date' => (string) $line['expiry_date'],
-                'unit_cost' => $line['unit_cost'] ?? null,
-            ], $payload['lines']),
-            (int) $actor->getAttribute('id'),
-        );
+        $order = $this->receiveOrder->execute($purchaseOrder, $payload, $actor);
 
         return response()->json(['data' => $this->payload($order->load('lines'))]);
     }

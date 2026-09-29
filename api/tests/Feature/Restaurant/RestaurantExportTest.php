@@ -9,7 +9,6 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
-use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -78,10 +77,14 @@ class RestaurantExportTest extends TestCase
             $this->assertSame($first['export_id'], $second['export_id']);
 
             // Téléchargement signé → 200 + contenu CSV.
-            $this->get($first['signed_url'])
-                ->assertOk()
-                ->assertHeader('Content-Type', 'text/csv; charset=UTF-8')
-                ->assertSee('revenue_minor');
+            // NB (#8180) : le téléchargement est STREAMÉ (StreamedResponse) —
+            // le corps est asserté via streamedContent(), assertSee() ne voit
+            // qu'un corps vide sur une réponse streamée.
+            $download = $this->get($first['signed_url']);
+            $download->assertOk()
+                ->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
+
+            $this->assertStringContainsString('revenue_minor', $download->streamedContent());
 
             // Signature invalide → 403 (middleware signed).
             $this->get('/api/v1/restaurant/reports/export/'.$first['export_id'])

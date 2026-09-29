@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\AttendanceTodayResource;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceAnomalyService;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceAnomaliesRequest;
 use App\Modules\Planning\Infrastructure\Services\EstimationService;
@@ -39,8 +39,14 @@ class MeController extends Controller
 
         $company = currentCompany();
         $date = $request->input('date');
-        $dateLocal = $date
-            ? Carbon::createFromFormat('Y-m-d', $date, $company->timezone)->startOfDay()
+        // La règle date_format:Y-m-d garantit une date réelle ; si Carbon
+        // échoue malgré tout (strict mode), repli sûr sur « aujourd'hui »
+        // (même sémantique que l'absence de paramètre) plutôt qu'un 500.
+        $parsedDate = is_string($date) && $date !== ''
+            ? Carbon::createFromFormat('Y-m-d', $date, $company->timezone)
+            : null;
+        $dateLocal = $parsedDate instanceof Carbon
+            ? $parsedDate->startOfDay()
             : now('UTC')->setTimezone($company->timezone)->startOfDay();
 
         $dateKey = $dateLocal->toDateString();
@@ -70,7 +76,7 @@ class MeController extends Controller
 
         $validated = $request->validate([
             'from' => ['nullable', 'date_format:Y-m-d'],
-            'to'   => ['nullable', 'date_format:Y-m-d', 'after_or_equal:from'],
+            'to' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:from'],
         ]);
 
         $estimate = $this->estimationService->quickEstimate(
@@ -91,15 +97,21 @@ class MeController extends Controller
         $today = now('UTC')->setTimezone($company->timezone)->startOfDay();
 
         $validated = $request->validate([
-            'year'  => ['nullable', 'integer', 'min:2000', 'max:2100'],
+            'year' => ['nullable', 'integer', 'min:2000', 'max:2100'],
             'month' => ['nullable', 'integer', 'min:1', 'max:12'],
         ]);
 
-        $year  = (int) ($validated['year'] ?? $today->format('Y'));
+        $year = (int) ($validated['year'] ?? $today->format('Y'));
         $month = (int) ($validated['month'] ?? $today->format('m'));
 
-        $from = Carbon::create($year, $month, 1, 0, 0, 0, $company->timezone)->startOfMonth();
-        $to   = $from->copy()->endOfMonth();
+        // year/month sont validés (integer + bornes) ; garde instanceof
+        // défensive — repli sur le mois courant plutôt qu'un 500.
+        $firstOfMonth = Carbon::create($year, $month, 1, 0, 0, 0, $company->timezone);
+        if (! $firstOfMonth instanceof Carbon) {
+            $firstOfMonth = now($company->timezone);
+        }
+        $from = $firstOfMonth->startOfMonth();
+        $to = $from->copy()->endOfMonth();
 
         $estimate = $this->estimationService->quickEstimate(
             employee: $employee,
@@ -109,7 +121,7 @@ class MeController extends Controller
 
         return new JsonResponse([
             'data' => array_merge($estimate, [
-                'year'  => $year,
+                'year' => $year,
                 'month' => $month,
             ]),
         ]);
@@ -137,4 +149,3 @@ class MeController extends Controller
         );
     }
 }
-

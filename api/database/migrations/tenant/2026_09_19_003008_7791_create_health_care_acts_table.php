@@ -60,9 +60,13 @@ return new class extends Migration
 
     public function down(): void
     {
-        // Table dépendante (FK composite care_act_id) : part AVANT (2BP01).
-        Schema::dropIfExists('health_invoice_items');
-
+        // #8237 (leçon #8207 / BOS-018) — symétrique EXACT de up() : ce fichier
+        // ne crée QUE `health_care_acts` ; son rollback ne droppe que celle-là.
+        // La version précédente droppait aussi `health_invoice_items`, créée
+        // par la migration propriétaire
+        // `2026_09_19_003009_7791_create_health_invoices_tables.php` — un
+        // rollback ciblé ne REJOUE pas les autres migrations, la table sœur
+        // restait supprimée avec sa migration « migrée ».
         Schema::dropIfExists('health_care_acts');
     }
 };

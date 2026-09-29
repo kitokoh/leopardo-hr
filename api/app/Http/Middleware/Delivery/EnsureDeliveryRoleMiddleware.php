@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Middleware\Delivery;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Delivery\Domain\Support\DeliveryRoleResolver;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -90,15 +91,18 @@ final class EnsureDeliveryRoleMiddleware
             return false;
         }
 
+        // Les ensembles de manager_role sont définis UNE SEULE FOIS dans
+        // DeliveryRoleResolver (#8185) — la garde les consomme, pas de
+        // duplication/divergence.
         if ($role === 'admin') {
-            return $employee->manager_role === 'principal';
+            return $employee->hasManagerRole(...DeliveryRoleResolver::ADMIN_MANAGER_ROLES);
         }
 
         if ($role === 'dispatcher') {
-            return in_array($employee->manager_role, ['principal', 'manager'], true);
+            return $employee->hasManagerRole(...DeliveryRoleResolver::DISPATCHER_MANAGER_ROLES);
         }
 
         // manager et reports : même périmètre (lecture + rapports).
-        return in_array($employee->manager_role, ['principal', 'manager', 'rh'], true);
+        return $employee->hasManagerRole(...DeliveryRoleResolver::MANAGER_READ_ROLES);
     }
 }
