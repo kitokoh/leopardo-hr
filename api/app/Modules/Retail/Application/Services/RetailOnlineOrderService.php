@@ -16,6 +16,7 @@ use App\Modules\Retail\Domain\Models\RetailOrderItem;
 use App\Modules\Retail\Domain\Models\RetailOrderPayment;
 use App\Modules\Retail\Domain\Models\RetailProduct;
 use App\Modules\Retail\Domain\Models\RetailStockLevel;
+use App\Shared\Services\PublicCommerce\IdempotentGuestWrite;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Carbon;
@@ -49,6 +50,7 @@ final class RetailOnlineOrderService
         private readonly ConnectionInterface $connection,
         private readonly RetailStockService $stockService,
         private readonly Dispatcher $events,
+        private readonly IdempotentGuestWrite $idempotentGuestWrite,
     ) {}
 
     /**
@@ -58,6 +60,13 @@ final class RetailOnlineOrderService
      * `tracking_token` aleatoire (64 hex). Idempotence : si la cle existe
      * deja pour ce tenant, la commande existante est retournee avec
      * `created = false` (rejeu → 200 meme payload cote controleur).
+     * BOS-050 (#8208, tranche 4) : le rejeu est delegue au socle mutualise
+     * {@see IdempotentGuestWrite} — contrat identique (relecture par cle
+     * unique par tenant `retail_orders_company_idempotency_key_unique`),
+     * avec en sus la gestion de course : un 23505 entre la relecture et
+     * l'insert relit le resultat du gagnant (`created = false`) au lieu de
+     * remonter une erreur. Appele HORS transaction ouverte (contrat du
+     * socle) : la creation ouvre sa PROPRE transaction interne.
      * Paiement (#7812) : `payment_method` = `cash` (COD) ou `online`
      * (intent cree en aval par RetailPaymentService), `payment_status`
      * initial `pending` — seul le webhook signe/la reconciliation le passe
@@ -80,102 +89,107 @@ final class RetailOnlineOrderService
         ?int $buyerId = null,
         string $paymentMethod = 'cash',
     ): array {
-        /** @var array{order: RetailOrder, created: bool} $result */
-        $result = $this->connection->transaction(
-            function () use ($companyId, $items, $customer, $delivery, $idempotencyKey, $buyerId, $paymentMethod): array {
+        $replay = $this->idempotentGuestWrite->replay(
+            function () use ($companyId, $idempotencyKey): ?RetailOrder {
                 /** @var RetailOrder|null $existing */
                 $existing = RetailOrder::query()
                     ->where('company_id', $companyId)
                     ->where('idempotency_key', $idempotencyKey)
                     ->first();
 
-                if ($existing instanceof RetailOrder) {
-                    return ['order' => $existing, 'created' => false];
-                }
+                return $existing;
+            },
+            function () use ($companyId, $items, $customer, $delivery, $idempotencyKey, $buyerId, $paymentMethod): RetailOrder {
+                /** @var RetailOrder $created */
+                $created = $this->connection->transaction(
+                    function () use ($companyId, $items, $customer, $delivery, $idempotencyKey, $buyerId, $paymentMethod): RetailOrder {
+                        $location = $this->defaultLocation($companyId);
 
-                $location = $this->defaultLocation($companyId);
+                        $currency = null;
+                        $subtotal = 0;
+                        $itemRows = [];
 
-                $currency = null;
-                $subtotal = 0;
-                $itemRows = [];
+                        foreach ($items as $index => $item) {
+                            /** @var RetailProduct|null $product */
+                            $product = RetailProduct::query()
+                                ->where('company_id', $companyId)
+                                ->find($item['product_id']);
 
-                foreach ($items as $index => $item) {
-                    /** @var RetailProduct|null $product */
-                    $product = RetailProduct::query()
-                        ->where('company_id', $companyId)
-                        ->find($item['product_id']);
+                            if (! $product instanceof RetailProduct
+                                || $product->status !== RetailProductStatus::Published
+                                || ! $product->online_visible) {
+                                // Produit inconnu chez CE vendeur, non publie ou non
+                                // visible en ligne : refus uniforme (pas de probing).
+                                throw ValidationException::withMessages([
+                                    'items.'.$index.'.product_id' => 'PRODUCT_NOT_AVAILABLE',
+                                ]);
+                            }
 
-                    if (! $product instanceof RetailProduct
-                        || $product->status !== RetailProductStatus::Published
-                        || ! $product->online_visible) {
-                        // Produit inconnu chez CE vendeur, non publie ou non
-                        // visible en ligne : refus uniforme (pas de probing).
-                        throw ValidationException::withMessages([
-                            'items.'.$index.'.product_id' => 'PRODUCT_NOT_AVAILABLE',
+                            if ($currency === null) {
+                                $currency = $product->currency;
+                            } elseif ($currency !== $product->currency) {
+                                throw ValidationException::withMessages([
+                                    'items.'.$index.'.product_id' => 'CURRENCY_MISMATCH',
+                                ]);
+                            }
+
+                            $quantity = $item['quantity'];
+                            $lineTotal = $quantity * (int) $product->price_minor;
+                            $subtotal += $lineTotal;
+
+                            $itemRows[] = [
+                                'product_id' => (int) $product->id,
+                                'product_name' => $product->name,
+                                'quantity' => number_format((float) $quantity, 3, '.', ''),
+                                'unit_price_minor' => (int) $product->price_minor,
+                                'line_total_minor' => $lineTotal,
+                                'line_index' => $index,
+                            ];
+                        }
+
+                        $order = RetailOrder::query()->create([
+                            'company_id' => $companyId,
+                            'location_id' => (int) $location->id,
+                            'pos_session_id' => null,
+                            'reference' => $this->generateReference($companyId),
+                            'status' => RetailOrderStatus::Draft->value,
+                            'subtotal_minor' => $subtotal,
+                            'discount_minor' => 0,
+                            'total_minor' => $subtotal,
+                            'currency' => $currency ?? 'DZD',
+                            'source' => RetailOrderSource::Online->value,
+                            'idempotency_key' => $idempotencyKey,
+                            'customer_name' => $customer['name'],
+                            'customer_phone' => $customer['phone'],
+                            'customer_email' => $customer['email'],
+                            'delivery_address' => $delivery['address'],
+                            'delivery_city' => $delivery['city'],
+                            'delivery_notes' => $delivery['notes'],
+                            'fulfillment_status' => RetailFulfillmentStatus::Pending->value,
+                            'tracking_token' => bin2hex(random_bytes(32)),
+                            'payment_method' => $paymentMethod,
+                            'payment_status' => 'pending',
+                            'buyer_id' => $buyerId,
+                            'version' => 1,
                         ]);
+
+                        foreach ($itemRows as $row) {
+                            RetailOrderItem::query()->create([
+                                'company_id' => $companyId,
+                                'order_id' => (int) $order->id,
+                                ...$row,
+                            ]);
+                        }
+
+                        return $order;
                     }
+                );
 
-                    if ($currency === null) {
-                        $currency = $product->currency;
-                    } elseif ($currency !== $product->currency) {
-                        throw ValidationException::withMessages([
-                            'items.'.$index.'.product_id' => 'CURRENCY_MISMATCH',
-                        ]);
-                    }
-
-                    $quantity = $item['quantity'];
-                    $lineTotal = $quantity * (int) $product->price_minor;
-                    $subtotal += $lineTotal;
-
-                    $itemRows[] = [
-                        'product_id' => (int) $product->id,
-                        'product_name' => $product->name,
-                        'quantity' => number_format((float) $quantity, 3, '.', ''),
-                        'unit_price_minor' => (int) $product->price_minor,
-                        'line_total_minor' => $lineTotal,
-                        'line_index' => $index,
-                    ];
-                }
-
-                $order = RetailOrder::query()->create([
-                    'company_id' => $companyId,
-                    'location_id' => (int) $location->id,
-                    'pos_session_id' => null,
-                    'reference' => $this->generateReference($companyId),
-                    'status' => RetailOrderStatus::Draft->value,
-                    'subtotal_minor' => $subtotal,
-                    'discount_minor' => 0,
-                    'total_minor' => $subtotal,
-                    'currency' => $currency ?? 'DZD',
-                    'source' => RetailOrderSource::Online->value,
-                    'idempotency_key' => $idempotencyKey,
-                    'customer_name' => $customer['name'],
-                    'customer_phone' => $customer['phone'],
-                    'customer_email' => $customer['email'],
-                    'delivery_address' => $delivery['address'],
-                    'delivery_city' => $delivery['city'],
-                    'delivery_notes' => $delivery['notes'],
-                    'fulfillment_status' => RetailFulfillmentStatus::Pending->value,
-                    'tracking_token' => bin2hex(random_bytes(32)),
-                    'payment_method' => $paymentMethod,
-                    'payment_status' => 'pending',
-                    'buyer_id' => $buyerId,
-                    'version' => 1,
-                ]);
-
-                foreach ($itemRows as $row) {
-                    RetailOrderItem::query()->create([
-                        'company_id' => $companyId,
-                        'order_id' => (int) $order->id,
-                        ...$row,
-                    ]);
-                }
-
-                return ['order' => $order, 'created' => true];
-            }
+                return $created;
+            },
         );
 
-        return $result;
+        return ['order' => $replay['result'], 'created' => $replay['created']];
     }
 
     /**

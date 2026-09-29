@@ -126,6 +126,8 @@ export type CopyTree = {
       commerce: string;
       /** BC-29 (#7691) — module Communication (boîte mail + IA) */
       communication: string;
+      /** BOS-035 (#8224) — module Assistant Leo IA (libellé localisé du menu) */
+      assistant: string;
     };
     /** #7225 — « Entreprise » (bandeau horizontal transverse) */
     sectionEnterprise: string;
@@ -803,6 +805,7 @@ const copy: Record<AppLocale, CopyTree> = {
         cameras: 'Caméras',
         commerce: 'Commerce',
         communication: 'Communication',
+        assistant: 'Assistant IA',
       },
       sectionEnterprise: 'Entreprise',
       sectionModules: 'Modules & plan',
@@ -1505,6 +1508,7 @@ const copy: Record<AppLocale, CopyTree> = {
         cameras: 'الكاميرات',
         commerce: 'التجارة',
         communication: 'التواصل',
+        assistant: 'المساعد الذكي',
       },
       sectionEnterprise: 'الشركة',
       sectionModules: 'الوحدات والخطة',
@@ -2203,6 +2207,7 @@ const copy: Record<AppLocale, CopyTree> = {
         cameras: 'Kameralar',
         commerce: 'Ticaret',
         communication: 'İletişim',
+        assistant: 'YZ Asistanı',
       },
       sectionEnterprise: 'Şirket',
       sectionModules: 'Modüller ve plan',
@@ -2901,6 +2906,7 @@ const copy: Record<AppLocale, CopyTree> = {
         cameras: 'Cameras',
         commerce: 'Commerce',
         communication: 'Communication',
+        assistant: 'AI Assistant',
       },
       sectionEnterprise: 'Company',
       sectionModules: 'Modules & plan',

@@ -6,8 +6,10 @@ namespace App\Modules\HealthManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\HealthManager\Application\Actions\ArchiveHealthPatientAction;
+use App\Modules\HealthManager\Application\Actions\RegisterHealthPatientAction;
+use App\Modules\HealthManager\Application\Actions\UpdateHealthPatientAction;
 use App\Modules\HealthManager\Domain\Models\HealthPatient;
-use App\Modules\HealthManager\Infrastructure\Services\HealthPatientNumberService;
 use App\Modules\HealthManager\Interfaces\Api\V1\Requests\StoreHealthPatientRequest;
 use App\Modules\HealthManager\Interfaces\Api\V1\Requests\UpdateHealthPatientRequest;
 use App\Modules\HealthManager\Interfaces\Api\V1\Traits\ChecksHealthSolution;
@@ -33,23 +35,11 @@ class HealthPatientController extends Controller
 {
     use ChecksHealthSolution;
 
-    /**
-     * Clairs API ↔ colonnes chiffrées du modèle.
-     *
-     * @var array<string, string>
-     */
-    private const ENCRYPTED_INPUTS = [
-        'birth_date' => 'birth_date_encrypted',
-        'phone' => 'phone_encrypted',
-        'email' => 'email_encrypted',
-        'address' => 'address_encrypted',
-        'emergency_contact_name' => 'emergency_contact_name_encrypted',
-        'emergency_contact_phone' => 'emergency_contact_phone_encrypted',
-        'insurance_provider' => 'insurance_provider_encrypted',
-        'insurance_number' => 'insurance_number_encrypted',
-        'allergies' => 'allergies_encrypted',
-        'medical_history' => 'medical_history_encrypted',
-    ];
+    public function __construct(
+        private readonly RegisterHealthPatientAction $registerAction,
+        private readonly UpdateHealthPatientAction $updateAction,
+        private readonly ArchiveHealthPatientAction $archiveAction,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -87,7 +77,7 @@ class HealthPatientController extends Controller
         ]);
     }
 
-    public function store(StoreHealthPatientRequest $request, HealthPatientNumberService $numberService): JsonResponse
+    public function store(StoreHealthPatientRequest $request): JsonResponse
     {
         $this->assertSolutionActive();
 
@@ -95,11 +85,7 @@ class HealthPatientController extends Controller
         $actor = $request->user();
         $this->authorize('create', HealthPatient::class);
 
-        $payload = $this->mapEncryptedInputs($request->validated());
-        $payload['status'] = HealthPatient::STATUS_ACTIVE;
-
-        // MRN serveur, séquence tenant/année race-safe (transaction + verrou).
-        $patient = $numberService->createWithMrn((string) $actor->company_id, $payload);
+        $patient = $this->registerAction->execute((string) $actor->company_id, $request->validated());
 
         return response()->json(['data' => $this->payload($patient)], 201);
     }
@@ -125,9 +111,9 @@ class HealthPatientController extends Controller
         $this->assertSameTenant($patient, $actor->company_id);
         $this->authorize('update', $patient);
 
-        $patient->update($this->mapEncryptedInputs($request->validated()));
+        $patient = $this->updateAction->execute($patient, $request->validated());
 
-        return response()->json(['data' => $this->payload($patient->refresh())]);
+        return response()->json(['data' => $this->payload($patient)]);
     }
 
     /**
@@ -142,25 +128,9 @@ class HealthPatientController extends Controller
         $this->assertSameTenant($patient, $actor->company_id);
         $this->authorize('delete', $patient);
 
-        $patient->update(['status' => HealthPatient::STATUS_ARCHIVED]);
+        $patient = $this->archiveAction->execute($patient);
 
-        return response()->json(['data' => $this->payload($patient->refresh())]);
-    }
-
-    /**
-     * @param  array<string, mixed>  $validated
-     * @return array<string, mixed>
-     */
-    private function mapEncryptedInputs(array $validated): array
-    {
-        foreach (self::ENCRYPTED_INPUTS as $input => $column) {
-            if (array_key_exists($input, $validated)) {
-                $validated[$column] = $validated[$input];
-                unset($validated[$input]);
-            }
-        }
-
-        return $validated;
+        return response()->json(['data' => $this->payload($patient)]);
     }
 
     /**

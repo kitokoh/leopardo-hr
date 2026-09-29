@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * #6097 (TRAVEL-806) — Abonnements & livraisons de webhooks transporteurs.
@@ -29,7 +28,10 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('travel_webhook_deliveries');
-        Schema::dropIfExists('travel_webhook_subscriptions');
+        // #8207 (BOS-018) — no-op, symétrique du up() : migration fantôme, les
+        // tables canoniques appartiennent à `2026_08_30_000925_6097`. La version
+        // précédente droppait les deux tables — un rollback du batch supprimait
+        // le schéma canonique (abonnements webhooks + livraisons) alors que la
+        // migration propriétaire restait « migrée ».
     }
 };
