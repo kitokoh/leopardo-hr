@@ -112,6 +112,10 @@ class CrmCampaignTest extends TestCase
             'channel' => $channel,
             'status' => 'draft',
             'audience_snapshot' => $audience === [] ? null : $audience,
+            // #7751 : une campagne email doit porter son message avant tout
+            // start (durcissement volontaire) — la fixture l'aligne (#8128).
+            'subject' => $channel === 'email' ? 'Sujet de la campagne de test' : null,
+            'body' => $channel === 'email' ? 'Corps du message de la campagne de test.' : null,
         ]);
 
         return $campaign;

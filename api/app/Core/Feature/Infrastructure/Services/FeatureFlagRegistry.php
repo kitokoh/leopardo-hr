@@ -15,18 +15,30 @@ use App\Core\Tenant\Domain\Models\Company;
  *      sans suppression de données) ;
  *   3. company présente                    → `company.features` (hasFeature) ;
  *   4. sinon                               → défaut versionné du registre.
+ *
+ * BOS-011 (#8198, ADR-0026) : la source des définitions dépend du mode
+ * `module-registry.mode` via {@see ModuleRegistryGateway} —
+ * `legacy` (config `feature-flags.flags`, comportement historique inchangé),
+ * `dual` (les deux chemins calculés, legacy servi, divergences journalisées
+ * sans PII), `registry` (dérivation du ModuleRegistry servie). La parité
+ * des deux sources est gardée en CI pendant la transition.
  */
 final class FeatureFlagRegistry
 {
     /**
      * @param  array<string, mixed>  $config  (config('feature-flags'))
      */
-    public function __construct(private readonly array $config)
-    {
-    }
+    public function __construct(
+        private readonly array $config,
+        private readonly ?ModuleRegistryGateway $gateway = null,
+    ) {}
 
     public function version(): string
     {
+        if ($this->gateway !== null && $this->gateway->mode() === ModuleRegistryGateway::MODE_REGISTRY) {
+            return $this->gateway->registry()->version();
+        }
+
         return (string) ($this->config['version'] ?? '0.0.0');
     }
 
@@ -35,7 +47,7 @@ final class FeatureFlagRegistry
      */
     public function knownKeys(): array
     {
-        return array_map('strval', array_keys($this->config['flags'] ?? []));
+        return array_map('strval', array_keys($this->definitionsSource()));
     }
 
     /**
@@ -43,9 +55,9 @@ final class FeatureFlagRegistry
      */
     public function definition(string $key): ?array
     {
-        $flags = $this->config['flags'] ?? [];
+        $flags = $this->definitionsSource();
 
-        if (! is_array($flags) || ! array_key_exists($key, $flags)) {
+        if (! array_key_exists($key, $flags)) {
             return null;
         }
 
@@ -66,18 +78,112 @@ final class FeatureFlagRegistry
             return filter_var($envValue, FILTER_VALIDATE_BOOL);
         }
 
-        $killSwitches = $this->config['kill_switches'] ?? [];
+        // BOS-011 (#8198) — les kill switches sont relus depuis le REPOSITORY
+        // de config à chaque appel, pas depuis la copie figée à la résolution
+        // du singleton : une coupure d'exploitation posée à chaud doit prendre
+        // effet immédiatement (l'env est déjà relu via getenv). La copie figée
+        // rendait muet tout kill switch posé après la première résolution
+        // (rouge préexistant prouvé sur main :
+        // FeatureFlagKillSwitchTest::test_kill_switch_stops_module_without_deleting_data).
+        $killSwitches = config('feature-flags.kill_switches', []);
 
         return is_array($killSwitches) && (bool) ($killSwitches[$key] ?? false);
     }
 
     public function enabled(string $key, ?Company $company): bool
     {
-        $definition = $this->definition($key);
+        $legacy = $this->resolveFrom($this->legacyFlags(), $key, $company);
 
+        if ($this->gateway === null || $this->gateway->mode() === ModuleRegistryGateway::MODE_LEGACY) {
+            return $legacy;
+        }
+
+        $registryValue = $this->resolveFrom($this->gateway->registry()->flags(), $key, $company);
+
+        if ($this->gateway->mode() === ModuleRegistryGateway::MODE_REGISTRY) {
+            return $registryValue;
+        }
+
+        // Mode dual : legacy servie, divergence journalisée (sans PII).
+        if ($registryValue !== $legacy) {
+            $this->gateway->logDivergence('enabled', $key, $legacy, $registryValue, $company);
+        }
+
+        return $legacy;
+    }
+
+    /**
+     * Carte complète des flags connus, résolus pour la company (ou défauts).
+     *
+     * @return array<string, bool>
+     */
+    public function for(?Company $company): array
+    {
+        $legacy = $this->mapFrom($this->legacyFlags(), $company);
+
+        if ($this->gateway === null || $this->gateway->mode() === ModuleRegistryGateway::MODE_LEGACY) {
+            return $legacy;
+        }
+
+        $registryMap = $this->mapFrom($this->gateway->registry()->flags(), $company);
+
+        if ($this->gateway->mode() === ModuleRegistryGateway::MODE_REGISTRY) {
+            return $registryMap;
+        }
+
+        // Mode dual : divergence de clé OU de valeur journalisée, legacy servie.
+        /** @var array<string, bool|null> $union */
+        $union = $registryMap + $legacy;
+
+        foreach (array_keys($union) as $key) {
+            $legacyValue = $legacy[$key] ?? null;
+            $registryValue = $registryMap[$key] ?? null;
+
+            if ($legacyValue !== $registryValue) {
+                $this->gateway->logDivergence('for', (string) $key, $legacyValue, $registryValue, $company);
+            }
+        }
+
+        return $legacy;
+    }
+
+    /**
+     * Source des définitions exposées (connues) selon le mode — legacy par
+     * défaut, dérivation du registre en mode `registry`, legacy servie en
+     * mode `dual` (la comparaison a lieu à la résolution).
+     *
+     * @return array<string, mixed>
+     */
+    private function definitionsSource(): array
+    {
+        if ($this->gateway !== null && $this->gateway->mode() === ModuleRegistryGateway::MODE_REGISTRY) {
+            return $this->gateway->registry()->flags();
+        }
+
+        return $this->legacyFlags();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function legacyFlags(): array
+    {
+        $flags = $this->config['flags'] ?? [];
+
+        return is_array($flags) ? $flags : [];
+    }
+
+    /**
+     * Résolution fail-closed d'une clé depuis une source de définitions
+     * (ordre contractuel : inconnu → kill switch → tenant → défaut).
+     *
+     * @param  array<string, mixed>  $flags
+     */
+    private function resolveFrom(array $flags, string $key, ?Company $company): bool
+    {
         // Fail-closed : flag inconnu = désactivé (comportement historique de
         // FeatureFlag::enabled, désormais versionné et auditable).
-        if ($definition === null) {
+        if (! array_key_exists($key, $flags) || ! is_array($flags[$key])) {
             return false;
         }
 
@@ -90,22 +196,21 @@ final class FeatureFlagRegistry
             return $company->hasFeature($key);
         }
 
-        return (bool) ($definition['default'] ?? false);
+        return (bool) ($flags[$key]['default'] ?? false);
     }
 
     /**
-     * Carte complète des flags connus, résolus pour la company (ou défauts).
-     *
+     * @param  array<string, mixed>  $flags
      * @return array<string, bool>
      */
-    public function for(?Company $company): array
+    private function mapFrom(array $flags, ?Company $company): array
     {
-        $flags = [];
+        $map = [];
 
-        foreach ($this->knownKeys() as $key) {
-            $flags[$key] = $this->enabled($key, $company);
+        foreach (array_keys($flags) as $key) {
+            $map[(string) $key] = $this->resolveFrom($flags, (string) $key, $company);
         }
 
-        return $flags;
+        return $map;
     }
 }

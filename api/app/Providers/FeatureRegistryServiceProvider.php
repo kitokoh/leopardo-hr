@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Contracts\FeatureDetectorInterface;
 use App\Contracts\FeatureRegistryInterface;
+use App\Core\Feature\Domain\ModuleRegistry;
 use App\Core\Feature\Infrastructure\Services\FeatureFlagRegistry;
 use App\Core\Feature\Infrastructure\Services\FeatureRegistry;
+use App\Core\Feature\Infrastructure\Services\ModuleRegistryGateway;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Support\ServiceProvider;
@@ -39,7 +41,11 @@ class FeatureRegistryServiceProvider extends ServiceProvider
 
         // MAT-010 (#5868) — registre versionné des feature flags + kill
         // switches (consommé par FeatureFlag::enabled/for).
-        $this->app->singleton(FeatureFlagRegistry::class, fn (): FeatureFlagRegistry => new FeatureFlagRegistry((array) config('feature-flags')));
+        // BOS-011 (#8198, ADR-0026) — registre unifié + passerelle dual-read
+        // (mode legacy par défaut : comportement inchangé).
+        $this->app->singleton(ModuleRegistry::class, fn (): ModuleRegistry => new ModuleRegistry);
+        $this->app->singleton(ModuleRegistryGateway::class, fn ($app): ModuleRegistryGateway => new ModuleRegistryGateway($app->make(ModuleRegistry::class)));
+        $this->app->singleton(FeatureFlagRegistry::class, fn ($app): FeatureFlagRegistry => new FeatureFlagRegistry((array) config('feature-flags'), $app->make(ModuleRegistryGateway::class)));
     }
 
     /**

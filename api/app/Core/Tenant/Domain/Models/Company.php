@@ -6,6 +6,7 @@ namespace App\Core\Tenant\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Feature\Infrastructure\Services\FeatureKillSwitchService;
+use App\Core\Feature\Infrastructure\Services\ModuleRegistryGateway;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use Illuminate\Database\Eloquent\Builder;
@@ -28,7 +29,7 @@ use Illuminate\Support\Facades\DB;
  * @property string|null $phone
  * @property int|null $plan_id
  * @property string $schema_name
- * @property string $tenancy_type
+ * @property string $tenancy_type Toujours 'shared' — le mode 'schema' est verrouillé à la création (ADR-0028)
  * @property string $status
  * @property Carbon|null $subscription_start
  * @property Carbon|null $subscription_end
@@ -285,7 +286,11 @@ class Company extends Model
      */
     public function activateHorizontalTool(string $key): bool
     {
-        if (! in_array($key, self::HORIZONTAL_TOOLS, true)) {
+        // BOS-011 (#8198) — allowlist et miroir de flag lus via la passerelle
+        // du registre (dual-read) au lieu des constantes locales.
+        $gateway = app(ModuleRegistryGateway::class);
+
+        if (! in_array($key, $gateway->horizontalTools(), true)) {
             throw new \InvalidArgumentException("Outil horizontal inconnu : {$key}");
         }
 
@@ -298,8 +303,10 @@ class Company extends Model
         $metadata['modules'] = $modules;
         $this->metadata = $metadata;
 
-        if (isset(self::HORIZONTAL_TOOL_FEATURES[$key])) {
-            $this->setFeature(self::HORIZONTAL_TOOL_FEATURES[$key], true);
+        $mirrors = $gateway->horizontalMirrors();
+
+        if (isset($mirrors[$key])) {
+            $this->setFeature($mirrors[$key], true);
         }
 
         return ! $alreadyActive;
@@ -423,7 +430,13 @@ class Company extends Model
         // Sans effet observable aujourd'hui : `rh` est le seul flag en
         // `default => true`, et le cas particulier lui rendait déjà `true`.
         // C'est le piège posé au prochain flag activé par défaut qui est retiré.
-        $default = (bool) config("feature-flags.flags.{$key}.default", false);
+        //
+        // BOS-011 (#8198) — le défaut n'est plus lu en direct dans la config :
+        // il passe par la passerelle du registre (mode `legacy` | `dual` |
+        // `registry`), ce qui branche `hasFeature` sur la source unique et
+        // journalise toute divergence en mode dual-read. En mode `legacy`
+        // (défaut livré), la valeur servie est strictement identique.
+        $default = app(ModuleRegistryGateway::class)->defaultFor($key, $this);
 
         return (bool) ($features[$key] ?? $default);
     }
@@ -441,6 +454,10 @@ class Company extends Model
     /**
      * Retourne une chaine search_path securisee pour PostgreSQL.
      * Echappe le nom du schema (whitelist alphanumeric/underscore) pour eviter les injections SQL.
+     *
+     * Tout tenant créé depuis le verrouillage partage `shared_tenants` ; un
+     * `schema_name` dédié ne peut plus appartenir qu'à d'éventuels tenants
+     * historiques (ADR-0028, BOS-005/#8203).
      */
     public function getSafeSearchPath(): string
     {
@@ -451,6 +468,10 @@ class Company extends Model
 
     protected static function booted(): void
     {
+        // Garde historique du mode « schema-per-tenant » mort (ADR-0028,
+        // BOS-005/#8203) : toute création en schéma dédié est refusée.
+        // Conservée tant que la colonne companies.tenancy_type existe — son
+        // retrait suivra la migration additive de nettoyage, après audit prod.
         static::creating(function (self $company): void {
             if ($company->tenancy_type === 'schema') {
                 abort(422, __('errors.COMPANY_SCHEMA_MODE_LOCKED'));
@@ -466,7 +487,7 @@ class Company extends Model
                 return;
             }
 
-            // Les employes vivent dans le schema tenant ('shared_tenants' en MVP),
+            // Les employes vivent dans le schema partagé 'shared_tenants' (ADR-0028),
             // alors que l update d une company via le super-admin web s execute
             // avec search_path=public. On etend le search_path temporairement
             // pour que la revocation des tokens (Sanctum) voie les relations.

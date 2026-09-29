@@ -8,6 +8,7 @@ use App\Core\Feature\Domain\Models\FeatureKillSwitch;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use InvalidArgumentException;
 
 /**
  * MAT-010 (#5868) — feature flags & kill switch.
@@ -30,6 +31,10 @@ final class FeatureKillSwitchService
 
     private const CACHE_TTL_SECONDS = 60;
 
+    public function __construct(
+        private readonly ModuleRegistryGateway $gateway,
+    ) {}
+
     public function isKilled(string $key): bool
     {
         return in_array($key, $this->activeKilledKeys(), true);
@@ -37,9 +42,27 @@ final class FeatureKillSwitchService
 
     /**
      * Active le kill switch pour une feature (idempotent).
+     *
+     * BOS-011 (#8198, ADR-0026 FR-7) — refus fail-closed, journalisé : une
+     * clé inconnue du registre ou déclarée `killable: false` (socle `rh`)
+     * ne peut pas être killée (aucune écriture).
+     *
+     * @throws InvalidArgumentException clé inconnue ou non killable
      */
     public function kill(string $key, string $reason, ?string $actor = null): void
     {
+        if (! $this->gateway->isKnown($key)) {
+            $this->audit('feature_kill_switch.rejected', $key, $actor, 'unknown_feature_key');
+
+            throw new InvalidArgumentException("Kill switch refusé : clé de feature inconnue « {$key} » (fail-closed, ADR-0026 FR-7).");
+        }
+
+        if (! $this->gateway->isKillable($key)) {
+            $this->audit('feature_kill_switch.rejected', $key, $actor, 'not_killable');
+
+            throw new InvalidArgumentException("Kill switch refusé : « {$key} » est déclaré killable:false (socle non interruptible, ADR-0026 FR-7).");
+        }
+
         $switch = FeatureKillSwitch::query()->firstOrNew(['feature_key' => $key]);
         $wasActive = (bool) $switch->is_active;
 

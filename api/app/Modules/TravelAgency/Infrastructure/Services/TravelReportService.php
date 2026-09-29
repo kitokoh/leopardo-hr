@@ -214,8 +214,9 @@ final class TravelReportService
     }
 
     /**
-     * Annulations sur période (par source/statut — le motif n'est pas porté
-     * par le schéma v1 des réservations).
+     * Annulations sur période (par source + par motif — TRAVEL-504
+     * « annulations + motifs agrégés » ; `cancel_reason` est requêtable
+     * depuis #6074 — le docblock précédent était obsolète, #8128).
      *
      * @return array<string, mixed>
      */
@@ -239,12 +240,14 @@ final class TravelReportService
             $query->where('booking_source', $source);
         }
 
-        $bookings = $query->get(['booking_source', 'passenger_count', 'total_amount_minor']);
+        $bookings = $query->get(['booking_source', 'passenger_count', 'total_amount_minor', 'cancel_reason']);
 
         $count = 0;
         $passengers = 0;
         $amountMinor = 0;
         $bySource = [];
+        /** @var array<string, int> $byReason */
+        $byReason = [];
 
         foreach ($bookings as $booking) {
             $count++;
@@ -253,6 +256,19 @@ final class TravelReportService
 
             $src = $booking->booking_source->value;
             $bySource[$src] = ($bySource[$src] ?? 0) + 1;
+
+            $reason = trim((string) ($booking->cancel_reason ?? ''));
+            if ($reason !== '') {
+                $byReason[$reason] = ($byReason[$reason] ?? 0) + 1;
+            }
+        }
+
+        // Motifs les plus fréquents d'abord (contrat de lecture TRAVEL-504).
+        arsort($byReason);
+
+        $byReasonList = [];
+        foreach ($byReason as $reason => $reasonCount) {
+            $byReasonList[] = ['reason' => $reason, 'count' => $reasonCount];
         }
 
         return [
@@ -264,6 +280,7 @@ final class TravelReportService
             'passengers_count' => $passengers,
             'amount_minor' => $amountMinor,
             'by_source' => $bySource,
+            'by_reason' => $byReasonList,
         ];
     }
 

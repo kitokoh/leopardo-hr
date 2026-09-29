@@ -16,8 +16,9 @@ use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
 use App\Modules\TravelAgency\Domain\Models\TravelTripSeat;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
+use App\Shared\Services\PublicCommerce\IdempotentGuestWrite;
+use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
 
 /**
  * TRAVEL-312 (#6042) — Creation d'une reservation guichet (multi-passagers).
@@ -29,6 +30,14 @@ use Illuminate\Support\Facades\DB;
  * les tarifs du trajet (unite mineures, adulte/enfant), jamais accepte du
  * client. Idempotence : une `idempotency_key` deja utilisee renvoie la
  * reservation existante (pas de doublon).
+ *
+ * BOS-050 (#8208, tranche 6) : le rejeu est delegue au socle mutualise
+ * {@see IdempotentGuestWrite} — contrat identique (relecture par cle AVANT
+ * le controle « trajet publie », unique `(company_id, idempotency_key)`),
+ * avec en sus la gestion de course : un 23505 entre la relecture et
+ * l'insert relit la reservation du gagnant au lieu de remonter une erreur.
+ * L'evenement outbox `travel.booking.pending.v1` reste publie UNIQUEMENT
+ * en creation reelle (jamais en rejeu).
  *
  * @phpstan-type PassengerInput array{
  *     full_name: string,
@@ -42,7 +51,13 @@ use Illuminate\Support\Facades\DB;
  */
 final class CreateBookingAction
 {
-    public function __construct(private readonly TravelOutboxPublisher $outbox) {}
+    public function __construct(
+        private readonly TravelOutboxPublisher $outbox,
+        private readonly IdempotentGuestWrite $idempotentGuestWrite,
+        // Purete de couche (#6568) : aucune facade Laravel dans Application/ —
+        // les transactions passent par la connexion injectee.
+        private readonly ConnectionInterface $db,
+    ) {}
 
     /**
      * @param  list<PassengerInput>  $passengers
@@ -62,97 +77,104 @@ final class CreateBookingAction
         bool $notifyConsent = false,
         ?string $connectionGroupId = null,
     ): TravelBooking {
-        $existing = TravelBooking::query()
-            ->where('trip_id', $trip->id)
-            ->where('idempotency_key', $idempotencyKey)
-            ->first();
+        $replay = $this->idempotentGuestWrite->replay(
+            function () use ($trip, $idempotencyKey): ?TravelBooking {
+                /** @var TravelBooking|null $existing */
+                $existing = TravelBooking::query()
+                    ->where('trip_id', $trip->id)
+                    ->where('idempotency_key', $idempotencyKey)
+                    ->first();
 
-        if ($existing instanceof TravelBooking) {
-            return $existing->load('passengers');
-        }
-
-        if ($trip->status->value !== 'published') {
-            abort(409, 'Ce trajet n\'est pas ouvert a la reservation.');
-        }
-
-        $booking = DB::transaction(function () use ($trip, $passengers, $source, $actor, $idempotencyKey, $customerContactId, $corporateAccountId, $quoteId, $billingDeferred, $contactEmail, $contactPhone, $notifyConsent, $connectionGroupId): TravelBooking {
-            // Verrouille le trajet : empeche deux reservations concurrentes
-            // de lire le meme inventaire.
-            /** @var TravelTrip $lockedTrip */
-            $lockedTrip = TravelTrip::query()
-                ->whereKey($trip->id)
-                ->lockForUpdate()
-                ->firstOrFail();
-
-            // Selection des sieges (explicites ou auto-attribues).
-            $seats = $this->resolveSeats($lockedTrip, $passengers);
-
-            $total = $this->computeTotal($lockedTrip, $passengers);
-
-            $booking = TravelBooking::query()->create([
-                'trip_id' => $lockedTrip->id,
-                'status' => BookingStatus::PENDING,
-                'passenger_count' => count($passengers),
-                'total_amount_minor' => $total,
-                'currency' => $this->resolveCurrency($lockedTrip),
-                'booking_source' => $source,
-                'customer_contact_id' => $customerContactId,
-                'booked_by_user_id' => $actor?->id,
-                'payment_status' => PaymentStatus::PENDING,
-                'expires_at' => now()->addMinutes(15),
-                'idempotency_key' => $idempotencyKey,
-                'corporate_account_id' => $corporateAccountId,
-                'quote_id' => $quoteId,
-                'billing_deferred' => $billingDeferred,
-                'contact_email' => $contactEmail,
-                'contact_phone' => $contactPhone,
-                'notify_consent' => $notifyConsent,
-                'consent_recorded_at' => $notifyConsent ? now() : null,
-                'connection_group_id' => $connectionGroupId,
-            ]);
-
-            foreach ($passengers as $index => $passengerData) {
-                $seat = $seats[$index];
-
-                /** @var TravelPassenger $passenger */
-                $passenger = $booking->passengers()->create([
-                    'full_name' => $passengerData['full_name'],
-                    'birth_date' => $passengerData['birth_date'] ?? null,
-                    'document_type' => $passengerData['document_type'] ?? null,
-                    'age_category' => AgeCategory::from($passengerData['age_category']),
-                    'class_id' => $passengerData['class_id'],
-                    'seat_number' => $seat->seat_number,
-                    'unit_price_minor' => $this->unitPriceFor($lockedTrip, $passengerData),
-                ]);
-
-                if (! empty($passengerData['document_number'])) {
-                    $passenger->setDocumentNumber($passengerData['document_number']);
-                    $passenger->save();
+                return $existing?->load('passengers');
+            },
+            function () use ($trip, $passengers, $source, $actor, $idempotencyKey, $customerContactId, $corporateAccountId, $quoteId, $billingDeferred, $contactEmail, $contactPhone, $notifyConsent, $connectionGroupId): TravelBooking {
+                if ($trip->status->value !== 'published') {
+                    abort(409, 'Ce trajet n\'est pas ouvert a la reservation.');
                 }
 
-                // Reserve le siege : statut reserved + rattachement.
-                $seat->forceFill([
-                    'status' => SeatStatus::RESERVED,
-                    'booking_id' => $booking->id,
-                    'passenger_id' => $passenger->id,
-                    'reserved_until' => now()->addMinutes(15),
-                ])->save();
-            }
+                /** @var TravelBooking $booking */
+                $booking = $this->db->transaction(function () use ($trip, $passengers, $source, $actor, $idempotencyKey, $customerContactId, $corporateAccountId, $quoteId, $billingDeferred, $contactEmail, $contactPhone, $notifyConsent, $connectionGroupId): TravelBooking {
+                    // Verrouille le trajet : empeche deux reservations concurrentes
+                    // de lire le meme inventaire.
+                    /** @var TravelTrip $lockedTrip */
+                    $lockedTrip = TravelTrip::query()
+                        ->whereKey($trip->id)
+                        ->lockForUpdate()
+                        ->firstOrFail();
 
-            return $booking;
-        });
+                    // Selection des sieges (explicites ou auto-attribues).
+                    $seats = $this->resolveSeats($lockedTrip, $passengers);
 
-        $this->outbox->publish($booking->company_id, 'travel.booking.pending.v1', [
-            'booking_reference' => $booking->reference,
-            'trip_id' => $booking->trip_id,
-            'passenger_count' => $booking->passenger_count,
-            'total_amount_minor' => $booking->total_amount_minor,
-            'currency' => $booking->currency,
-            'booking_source' => $source->value,
-            'expires_at' => $booking->expires_at?->toIso8601String(),
-        ]);
+                    $total = $this->computeTotal($lockedTrip, $passengers);
 
-        return $booking->load('passengers');
+                    $booking = TravelBooking::query()->create([
+                        'trip_id' => $lockedTrip->id,
+                        'status' => BookingStatus::PENDING,
+                        'passenger_count' => count($passengers),
+                        'total_amount_minor' => $total,
+                        'currency' => $this->resolveCurrency($lockedTrip),
+                        'booking_source' => $source,
+                        'customer_contact_id' => $customerContactId,
+                        'booked_by_user_id' => $actor?->id,
+                        'payment_status' => PaymentStatus::PENDING,
+                        'expires_at' => now()->addMinutes(15),
+                        'idempotency_key' => $idempotencyKey,
+                        'corporate_account_id' => $corporateAccountId,
+                        'quote_id' => $quoteId,
+                        'billing_deferred' => $billingDeferred,
+                        'contact_email' => $contactEmail,
+                        'contact_phone' => $contactPhone,
+                        'notify_consent' => $notifyConsent,
+                        'consent_recorded_at' => $notifyConsent ? now() : null,
+                        'connection_group_id' => $connectionGroupId,
+                    ]);
+
+                    foreach ($passengers as $index => $passengerData) {
+                        $seat = $seats[$index];
+
+                        /** @var TravelPassenger $passenger */
+                        $passenger = $booking->passengers()->create([
+                            'full_name' => $passengerData['full_name'],
+                            'birth_date' => $passengerData['birth_date'] ?? null,
+                            'document_type' => $passengerData['document_type'] ?? null,
+                            'age_category' => AgeCategory::from($passengerData['age_category']),
+                            'class_id' => $passengerData['class_id'],
+                            'seat_number' => $seat->seat_number,
+                            'unit_price_minor' => $this->unitPriceFor($lockedTrip, $passengerData),
+                        ]);
+
+                        if (! empty($passengerData['document_number'])) {
+                            $passenger->setDocumentNumber($passengerData['document_number']);
+                            $passenger->save();
+                        }
+
+                        // Reserve le siege : statut reserved + rattachement.
+                        $seat->forceFill([
+                            'status' => SeatStatus::RESERVED,
+                            'booking_id' => $booking->id,
+                            'passenger_id' => $passenger->id,
+                            'reserved_until' => now()->addMinutes(15),
+                        ])->save();
+                    }
+
+                    return $booking;
+                });
+
+                $this->outbox->publish($booking->company_id, 'travel.booking.pending.v1', [
+                    'booking_reference' => $booking->reference,
+                    'trip_id' => $booking->trip_id,
+                    'passenger_count' => $booking->passenger_count,
+                    'total_amount_minor' => $booking->total_amount_minor,
+                    'currency' => $booking->currency,
+                    'booking_source' => $source->value,
+                    'expires_at' => $booking->expires_at?->toIso8601String(),
+                ]);
+
+                return $booking->load('passengers');
+            },
+        );
+
+        return $replay['result'];
     }
 
     /**

@@ -176,8 +176,10 @@ class RestaurantLoyaltyTest extends TestCase
         $company = $this->company();
         $this->principal($company);
 
-        $this->postJson('/api/v1/restaurant/loyalty-programs', ['points_per_amount_minor' => 100])->assertStatus(201);
-        $this->postJson('/api/v1/restaurant/loyalty-programs', ['points_per_amount_minor' => 50])->assertStatus(201);
+        // `redeem_rate_minor` est obligatoire (durcissement RESTO-606) —
+        // fixture alignée (#8128).
+        $this->postJson('/api/v1/restaurant/loyalty-programs', ['points_per_amount_minor' => 100, 'redeem_rate_minor' => 100])->assertStatus(201);
+        $this->postJson('/api/v1/restaurant/loyalty-programs', ['points_per_amount_minor' => 50, 'redeem_rate_minor' => 50])->assertStatus(201);
 
         $this->assertSame(
             1,
@@ -191,7 +193,9 @@ class RestaurantLoyaltyTest extends TestCase
         $company = $this->company();
         $this->ordinaryEmployee($company);
 
-        $this->postJson('/api/v1/restaurant/loyalty-programs', ['points_per_amount_minor' => 100])
+        // Payload VALIDE exigé : la validation s'exécute avant la policy —
+        // un payload invalide produirait un 422 au lieu du 403 attendu (#8128).
+        $this->postJson('/api/v1/restaurant/loyalty-programs', ['points_per_amount_minor' => 100, 'redeem_rate_minor' => 100])
             ->assertStatus(403);
     }
 
@@ -200,8 +204,11 @@ class RestaurantLoyaltyTest extends TestCase
         $company = $this->company();
         $this->manager($company);
 
+        // `opt_in` explicite obligatoire (RGPD, RESTO-606) — fixture
+        // alignée (#8128).
         $this->postJson('/api/v1/restaurant/loyalty-customers', [
             'customer_contact_id' => 4242,
+            'opt_in' => true,
         ])->assertStatus(201)
             ->assertJsonFragment(['customer_contact_id' => 4242, 'points' => 0]);
     }
