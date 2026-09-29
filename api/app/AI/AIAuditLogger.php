@@ -191,13 +191,15 @@ class AIAuditLogger
 
     private function estimateCost(string $provider, string $model, int $inputTokens, int $outputTokens): int
     {
-        $rates = [
-            'gpt-4o' => ['input' => 0.25, 'output' => 1.0],
-            'gpt-4o-mini' => ['input' => 0.015, 'output' => 0.06],
-            'claude-sonnet-4-20250514' => ['input' => 0.3, 'output' => 1.5],
-        ];
+        // BOS-031 (#8221) — tarifs externalisés dans `config/ai.php` (costs.*).
+        // Les valeurs par défaut de la config reproduisent à l'identique les
+        // tarifs historiquement codés ici (parité vérifiée par test).
+        /** @var array<string, array{input: float, output: float}> $rates */
+        $rates = config('ai.costs.rates', []);
+        /** @var array{input: float, output: float} $defaultRate */
+        $defaultRate = config('ai.costs.default_rate', ['input' => 0.1, 'output' => 0.3]);
 
-        $rate = $rates[$model] ?? ['input' => 0.1, 'output' => 0.3];
+        $rate = $rates[$model] ?? $defaultRate;
         $costDollars = ($inputTokens / 100_000) * $rate['input'] + ($outputTokens / 100_000) * $rate['output'];
 
         return (int) round($costDollars * 100);

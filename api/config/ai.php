@@ -352,4 +352,37 @@ return [
     'meter_ocr' => [
         'confidence_threshold' => (float) env('METER_OCR_CONFIDENCE_THRESHOLD', 0.92),
     ],
+
+    // BOS-031 (#8221) — résilience LLM (décorateur `ResilientLLMClient`).
+    // Défaut OFF : le client `ai.driver` est servi tel quel (parité stricte,
+    // rollback instantané par simple bascule d'environnement).
+    'resilience' => [
+        'enabled' => (bool) env('AI_RESILIENCE_ENABLED', false),
+        // Chaîne de fallback CSV (`AI_FALLBACK_CHAIN=groq,openai`) — entrées
+        // vides/inconnues ignorées (log d'avertissement au boot du binding).
+        'fallback_chain' => array_values(array_filter(
+            array_map('trim', explode(',', (string) env('AI_FALLBACK_CHAIN', '')))
+        )),
+        'retry' => [
+            'max_retries' => (int) env('AI_RETRY_MAX_RETRIES', 2),
+            'base_delay_ms' => (int) env('AI_RETRY_BASE_DELAY_MS', 200),
+            'max_delay_ms' => (int) env('AI_RETRY_MAX_DELAY_MS', 2000),
+        ],
+        'circuit_breaker' => [
+            'failure_threshold' => (int) env('AI_CB_FAILURE_THRESHOLD', 3),
+            'cooldown_seconds' => (int) env('AI_CB_COOLDOWN_SECONDS', 60),
+        ],
+    ],
+
+    // BOS-031 (#8221) — tarifs de coût externalisés (USD / 100k tokens).
+    // Formule inchangée : (tokens / 100_000) × tarif, arrondi en cents.
+    // Valeurs = celles codées en dur dans AIAuditLogger avant externalisation.
+    'costs' => [
+        'default_rate' => ['input' => (float) env('AI_COST_DEFAULT_INPUT', 0.1), 'output' => (float) env('AI_COST_DEFAULT_OUTPUT', 0.3)],
+        'rates' => [
+            'gpt-4o' => ['input' => 0.25, 'output' => 1.0],
+            'gpt-4o-mini' => ['input' => 0.015, 'output' => 0.06],
+            'claude-sonnet-4-20250514' => ['input' => 0.3, 'output' => 1.5],
+        ],
+    ],
 ];
