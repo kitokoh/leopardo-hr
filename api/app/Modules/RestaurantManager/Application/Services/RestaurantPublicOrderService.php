@@ -18,7 +18,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantTaxRate;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use App\Shared\Services\PublicCommerce\IdempotentGuestWrite;
 use App\Shared\Services\PublicCommerce\TrackingSecretService;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\ConnectionInterface;
 
 /**
  * RESTO-805 (#6226) — Commande en ligne publique (menu public par tenant).
@@ -39,6 +39,7 @@ final class RestaurantPublicOrderService
         private readonly RestaurantOutboxPublisher $outbox,
         private readonly IdempotentGuestWrite $guestWrites,
         private readonly TrackingSecretService $trackingSecrets,
+        private readonly ConnectionInterface $db,
     ) {}
 
     /**
@@ -107,7 +108,7 @@ final class RestaurantPublicOrderService
 
         $secret = $issueTrackingSecret ? $this->trackingSecrets->generate() : null;
 
-        $order = DB::transaction(function () use ($company, $branch, $source, $items, $idempotencyKey, $customerPhone, $secret): RestaurantOrder {
+        $order = $this->db->transaction(function () use ($company, $branch, $source, $items, $idempotencyKey, $customerPhone, $secret): RestaurantOrder {
             // Statut `open` d'emblée : une commande web/kiosque/marketplace
             // n'a pas de phase brouillon en salle — elle est immédiatement
             // visible en cuisine (start) et payable (machine à états).

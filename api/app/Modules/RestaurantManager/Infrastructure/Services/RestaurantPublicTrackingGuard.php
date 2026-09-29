@@ -8,6 +8,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Shared\Services\PublicCommerce\TrackingSecretService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * BOS-050 (#8208, tranche 7) — Garde du suivi public des commandes
@@ -45,7 +46,7 @@ final class RestaurantPublicTrackingGuard
      *              (hash absent — le contrôleur pose alors les en-têtes de
      *              dépréciation via {@see withDeprecationHeaders()})
      *
-     * @throws \Symfony\Component\HttpKernel\Exception\HttpException (404)
+     * @throws HttpException (404)
      */
     public function assertTrackable(Request $request, RestaurantOrder $order): bool
     {

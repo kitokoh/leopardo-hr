@@ -17,7 +17,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantTaxRate;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use App\Shared\Services\PublicCommerce\IdempotentGuestWrite;
 use App\Shared\Services\PublicCommerce\TrackingSecretService;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\ConnectionInterface;
 
 /**
  * RESTO-805 (#6226) — Création d'une commande en ligne publique.
@@ -42,6 +42,7 @@ final class CreateOnlineOrderAction
         private readonly RestaurantOutboxPublisher $outbox,
         private readonly IdempotentGuestWrite $guestWrites,
         private readonly TrackingSecretService $trackingSecrets,
+        private readonly ConnectionInterface $db,
     ) {}
 
     /**
@@ -109,7 +110,7 @@ final class CreateOnlineOrderAction
 
         $secret = $this->trackingSecrets->generate();
 
-        $order = DB::transaction(function () use ($companyId, $branch, $orderType, $data, $secret): RestaurantOrder {
+        $order = $this->db->transaction(function () use ($companyId, $branch, $orderType, $data, $secret): RestaurantOrder {
             /** @var RestaurantOrder $order */
             $order = RestaurantOrder::query()->create([
                 'company_id' => $companyId,
