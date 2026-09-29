@@ -29,7 +29,7 @@ class ModuleRegistryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->registry = new ModuleRegistry();
+        $this->registry = new ModuleRegistry;
     }
 
     public function test_every_entry_is_complete_and_well_formed(): void
