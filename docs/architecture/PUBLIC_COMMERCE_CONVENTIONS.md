@@ -100,10 +100,29 @@ $trackingSecrets->matches($presented, $storedHash); // hash_equals, timing-safe
 | Retail market (`EnsureMarketPublicAccess`) | historique | historique | clair (à hacher) | — |
 | Catalog (`EnsureCatalogPublicAccess`) | historique | n/a (lecture+inquiry) | n/a | — |
 | Showcase (`ShowcasePublicController`) | historique | n/a | token aperçu | — |
-| Restaurant shop (`EnsureRestaurantPublicShopAccess`) | historique | historique | **réf+slug seulement → secret à ajouter** | — |
+| Restaurant shop (`EnsureRestaurantPublicShopAccess`) | socle ✅ (tranche 7) | socle ✅ (tranche 7) | hash ✅ (tranche 7) | 2026-09-29 |
 | Hospitality (`HospitalityPublicPropertyResolver`) | historique | historique | hash ✅ | — |
 
 > Constat documenté (hors périmètre BOS-050, suivi à part) : le bucket
 > `restaurant-shop-public` est enregistré dans `AppServiceProvider` mais
 > n'est utilisé par **aucune** route — les routes restaurant utilisent
 > `shop-public`. Retrait à traiter dans une issue de suivi.
+
+## 4. Dépréciation — ancien flux de suivi restaurant (référence seule)
+
+Avant la tranche 7 (2026-09-29), le suivi public restaurant se faisait par
+la référence seule (boutique/kiosque) ou référence + slug (RESTO-902),
+sans secret — maillon faible identifié dès l'audit. Toute commande créée
+désormais via une surface invitée porte `tracking_secret_hash` (SHA-256)
+et son suivi exige le secret (`?secret=` ou en-tête `X-Tracking-Secret`) ;
+référence inconnue, secret absent et secret invalide produisent le MÊME
+404.
+
+**Fenêtre de transition de 90 jours** : les commandes créées AVANT la
+tranche 7 (hash NULL), ainsi que celles écrites hors surfaces invitées
+(POS, webhooks marketplace — jamais suivies publiquement par le client),
+restent suivies par l'ancien flux ; la réponse porte alors les en-têtes
+`Deprecation: true` et `Sunset: Mon, 28 Dec 2026 00:00:00 GMT`
+(RFC 8594). Après le 2026-12-28, le flux legacy sera fermé (suivi sous
+secret obligatoire, quelle que soit l'ancienneté de la commande) — retrait
+à planifier dans une issue de suivi.

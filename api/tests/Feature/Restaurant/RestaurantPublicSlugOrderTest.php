@@ -185,17 +185,22 @@ class RestaurantPublicSlugOrderTest extends TestCase
         $this->makePublicBranch($company, ['public_slug' => 'chez-leo']);
         $product = $this->makePublishedProduct($company, ['code' => 'PLAT-04', 'name' => 'Poulet DG']);
 
-        $reference = $this->postJson('/api/v1/public/restaurants/chez-leo/orders', [
+        $creation = $this->postJson('/api/v1/public/restaurants/chez-leo/orders', [
             'customer_name' => 'Awa Ndiaye',
             'customer_phone' => '+237690000001',
             'items' => [
                 ['product_code' => $product->code, 'quantity' => 1],
             ],
-        ])->assertCreated()->json('data.reference');
+        ])->assertCreated();
 
-        $this->assertIsString($reference);
+        $reference = $creation->json('data.reference');
+        $trackingSecret = $creation->json('data.tracking_secret');
 
-        $track = $this->getJson('/api/v1/public/restaurants/chez-leo/orders/'.$reference)
+        assert(is_string($reference) && is_string($trackingSecret));
+
+        // BOS-050 (#8208, tranche 7) : le suivi exige le secret présenté à
+        // la création.
+        $track = $this->getJson('/api/v1/public/restaurants/chez-leo/orders/'.$reference.'?secret='.$trackingSecret)
             ->assertOk()
             ->assertJsonPath('data.reference', $reference)
             ->assertJsonPath('data.items.0.name', 'Poulet DG');
@@ -232,6 +237,11 @@ class RestaurantPublicSlugOrderTest extends TestCase
 
     public function test_public_slug_pay_is_online_only_and_fails_closed(): void
     {
+        // Aligné sur RestaurantPaymentRoutingTest : le sandbox mobile money
+        // (défaut historique `true`) compterait comme provider EN LIGNE
+        // configuré — on le désactive pour éprouver le fail-closed réel.
+        config()->set('restaurantmanager.mobile_money.sandbox', false);
+
         $company = $this->makeTenant();
         $this->makePublicBranch($company, ['public_slug' => 'chez-leo']);
         $product = $this->makePublishedProduct($company, ['code' => 'PLAT-06', 'price_minor' => 3000]);
