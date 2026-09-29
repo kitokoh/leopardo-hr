@@ -17,8 +17,8 @@ use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
 use App\Modules\TravelAgency\Domain\Models\TravelTripSeat;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
 use App\Shared\Services\PublicCommerce\IdempotentGuestWrite;
+use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
 
 /**
  * TRAVEL-312 (#6042) — Creation d'une reservation guichet (multi-passagers).
@@ -54,6 +54,9 @@ final class CreateBookingAction
     public function __construct(
         private readonly TravelOutboxPublisher $outbox,
         private readonly IdempotentGuestWrite $idempotentGuestWrite,
+        // Purete de couche (#6568) : aucune facade Laravel dans Application/ —
+        // les transactions passent par la connexion injectee.
+        private readonly ConnectionInterface $db,
     ) {}
 
     /**
@@ -90,7 +93,7 @@ final class CreateBookingAction
                 }
 
                 /** @var TravelBooking $booking */
-                $booking = DB::transaction(function () use ($trip, $passengers, $source, $actor, $idempotencyKey, $customerContactId, $corporateAccountId, $quoteId, $billingDeferred, $contactEmail, $contactPhone, $notifyConsent, $connectionGroupId): TravelBooking {
+                $booking = $this->db->transaction(function () use ($trip, $passengers, $source, $actor, $idempotencyKey, $customerContactId, $corporateAccountId, $quoteId, $billingDeferred, $contactEmail, $contactPhone, $notifyConsent, $connectionGroupId): TravelBooking {
                     // Verrouille le trajet : empeche deux reservations concurrentes
                     // de lire le meme inventaire.
                     /** @var TravelTrip $lockedTrip */
