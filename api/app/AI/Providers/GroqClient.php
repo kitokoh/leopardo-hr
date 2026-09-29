@@ -40,13 +40,16 @@ class GroqClient implements LLMClient
         $this->baseUrl = (string) (config('ai.providers.groq.base_url') ?: 'https://api.groq.com/openai/v1');
     }
 
-    public function chat(array $messages, array $tools = []): AIResponse
+    public function chat(array $messages, array $tools = [], ?array $responseFormat = null): AIResponse
     {
         // Fail-fast actionnable : jamais d'appel réseau sans clé.
         if ($this->apiKey === '') {
             return new AIResponse(
                 content: '',
                 error: 'GROQ_API_KEY non configurée — renseigner config/ai.php (providers.groq.key) ou l’environnement (GROQ_API_KEY).',
+                // 401 : erreur de configuration, jamais réessayable (BOS-031).
+                status: 401,
+                provider: $this->provider(),
             );
         }
 
@@ -62,6 +65,11 @@ class GroqClient implements LLMClient
             $payload['tool_choice'] = 'auto';
         }
 
+        // BOS-031 (#8221) — `response_format` optionnel (API OpenAI-compatible).
+        if ($responseFormat !== null) {
+            $payload['response_format'] = $responseFormat;
+        }
+
         try {
             $response = Http::withToken($this->apiKey)
                 ->timeout(30)
@@ -74,7 +82,12 @@ class GroqClient implements LLMClient
                     default => 'Groq API error: '.$response->status(),
                 };
 
-                return new AIResponse(content: '', error: $message);
+                return new AIResponse(
+                    content: '',
+                    error: $message,
+                    status: $response->status(),
+                    provider: $this->provider(),
+                );
             }
 
             $data = $response->json();
@@ -101,9 +114,17 @@ class GroqClient implements LLMClient
                 inputTokens: (int) ($usage['prompt_tokens'] ?? 0),
                 outputTokens: (int) ($usage['completion_tokens'] ?? 0),
                 model: $this->model,
+                status: $response->status(),
+                provider: $this->provider(),
             );
         } catch (\Throwable $e) {
-            return new AIResponse(content: '', error: 'Groq unreachable: '.$e->getMessage());
+            // 503 : panne de transport → échec réessayable (BOS-031).
+            return new AIResponse(
+                content: '',
+                error: 'Groq unreachable: '.$e->getMessage(),
+                status: 503,
+                provider: $this->provider(),
+            );
         }
     }
 

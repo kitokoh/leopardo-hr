@@ -24,7 +24,13 @@ class ClaudeClient implements LLMClient
         $this->baseUrl = (string) (config('ai.providers.claude.base_url') ?: 'https://api.anthropic.com/v1');
     }
 
-    public function chat(array $messages, array $tools = []): AIResponse
+    /**
+     * `$responseFormat` est accepté pour respecter le contrat `LLMClient`
+     * (BOS-031, #8221) mais n'est PAS transmis : l'API Messages d'Anthropic
+     * n'expose pas d'équivalent `response_format` (le format est obtenu par
+     * instruction + validation applicative, cf. BOS-034).
+     */
+    public function chat(array $messages, array $tools = [], ?array $responseFormat = null): AIResponse
     {
         $systemMessage = '';
         $filteredMessages = [];
@@ -69,6 +75,8 @@ class ClaudeClient implements LLMClient
                 return new AIResponse(
                     content: '',
                     error: 'Claude API error: '.$response->status(),
+                    status: $response->status(),
+                    provider: $this->provider(),
                 );
             }
 
@@ -97,9 +105,12 @@ class ClaudeClient implements LLMClient
                 inputTokens: $usage['input_tokens'] ?? 0,
                 outputTokens: $usage['output_tokens'] ?? 0,
                 model: $this->model,
+                status: $response->status(),
+                provider: $this->provider(),
             );
         } catch (\Throwable $e) {
-            return new AIResponse(content: '', error: $e->getMessage());
+            // 503 : panne de transport → échec réessayable (BOS-031).
+            return new AIResponse(content: '', error: $e->getMessage(), status: 503, provider: $this->provider());
         }
     }
 

@@ -245,7 +245,7 @@ class TokenBudgetTest extends TestCase
                 private readonly int $outputTokens,
             ) {}
 
-            public function chat(array $messages, array $tools = []): AIResponse
+            public function chat(array $messages, array $tools = [], ?array $responseFormat = null): AIResponse
             {
                 return new AIResponse(
                     content: 'Réponse simulée.',
