@@ -13,6 +13,11 @@ declare(strict_types=1);
  *
  * Surcharge d'exploitation : chaque kill switch est overridable par env
  * `FEATURE_FLAG_KILL_<CLE_MAJUSCULE>=1|0` (ex. FEATURE_FLAG_KILL_LEO_AI=1).
+ *
+ * BOS-011 (#8198, ADR-0026) : cette liste est la source LEGACY du dual-read.
+ * La source déclarative unique est `App\Core\Feature\Domain\ModuleRegistry`
+ * (parité gardée en CI — tests/Unit/Core/Feature) ; la bascule se fait par
+ * `MODULE_REGISTRY_MODE` (config/module-registry.php), jamais en big-bang.
  */
 return [
     'version' => '1.0.0',
@@ -219,6 +224,19 @@ return [
             'since' => '4.34.0',
             'killable' => true,
             'description' => 'Solution HospitalityManager (hôtels, résidences, locations : établissements, inventaire, réservations, baux et loyers).',
+        ],
+        // #8198 (BOS-011) — désync vivante corrigée : `fleet` était dans
+        // `Company::KNOWN_MODULES` (gate `module.fleet`, manifests
+        // Delivery/FuelStation) mais ABSENT de ce registre → pas de défaut
+        // versionné, invisible de `FeatureFlag::for()`. Ajout additif en fin
+        // de liste (ordre préservé — contrat /auth/me : la clé apparaît en
+        // dernier, résolue false par défaut comme tout module opt-in).
+        'fleet' => [
+            'scope' => 'module',
+            'default' => false,
+            'since' => '4.34.0',
+            'killable' => true,
+            'description' => 'Module Fleet — flotte & suivi des véhicules (outil horizontal BC-24/#7400 ; gate module.fleet).',
         ],
     ],
 ];

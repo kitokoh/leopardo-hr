@@ -22,9 +22,7 @@ use Illuminate\Http\Request;
  */
 class PlatformFeatureKillSwitchController extends Controller
 {
-    public function __construct(private readonly FeatureKillSwitchService $killSwitches)
-    {
-    }
+    public function __construct(private readonly FeatureKillSwitchService $killSwitches) {}
 
     public function index(): JsonResponse
     {
@@ -41,7 +39,16 @@ class PlatformFeatureKillSwitchController extends Controller
         $featureKey = (string) $validated['feature_key'];
         $reason = isset($validated['reason']) ? (string) $validated['reason'] : '';
 
-        $this->killSwitches->kill($featureKey, $reason, $this->actorId($request));
+        // BOS-011 (#8198, FR-7) : clé inconnue du registre ou killable:false
+        // → refus fail-closed journalisé, 422 (aucune écriture).
+        try {
+            $this->killSwitches->kill($featureKey, $reason, $this->actorId($request));
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse([
+                'error' => 'FEATURE_KILL_SWITCH_REFUSED',
+                'message' => $e->getMessage(),
+            ], 422);
+        }
 
         return new JsonResponse([
             'data' => [

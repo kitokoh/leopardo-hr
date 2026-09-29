@@ -6,7 +6,7 @@ namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Core\Feature\Infrastructure\Services\FeatureFlagAuditRecorder;
-use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Feature\Infrastructure\Services\ModuleRegistryGateway;
 use App\Events\SolutionActivated;
 use App\Http\Controllers\Controller;
 use App\Support\PlatformCompanyLookup;
@@ -18,6 +18,7 @@ class PlatformCompanyFeatureController extends Controller
 {
     public function __construct(
         private readonly FeatureFlagAuditRecorder $auditRecorder,
+        private readonly ModuleRegistryGateway $moduleRegistry,
     ) {}
 
     public function show(string $companyId): JsonResponse
@@ -28,7 +29,7 @@ class PlatformCompanyFeatureController extends Controller
             'data' => [
                 'company_id' => $company->id,
                 'features' => FeatureFlag::for($company),
-                'known_modules' => Company::KNOWN_MODULES,
+                'known_modules' => $this->moduleRegistry->knownModules(),
                 'registry_version' => FeatureFlag::version(),
             ],
         ]);
@@ -52,7 +53,7 @@ class PlatformCompanyFeatureController extends Controller
         $current = FeatureFlag::for($company);
 
         $features = [];
-        foreach (Company::KNOWN_MODULES as $module) {
+        foreach ($this->moduleRegistry->knownModules() as $module) {
             $features[$module] = $module === 'rh'
                 ? true
                 : (bool) ($validated['features'][$module] ?? $current[$module] ?? false);
@@ -118,7 +119,7 @@ class PlatformCompanyFeatureController extends Controller
             'data' => [
                 'company_id' => $company->id,
                 'features' => FeatureFlag::for($company->fresh()),
-                'known_modules' => Company::KNOWN_MODULES,
+                'known_modules' => $this->moduleRegistry->knownModules(),
                 'registry_version' => FeatureFlag::version(),
             ],
         ]);

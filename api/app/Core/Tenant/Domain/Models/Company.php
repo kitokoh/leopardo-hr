@@ -6,6 +6,7 @@ namespace App\Core\Tenant\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Feature\Infrastructure\Services\FeatureKillSwitchService;
+use App\Core\Feature\Infrastructure\Services\ModuleRegistryGateway;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use Illuminate\Database\Eloquent\Builder;
@@ -285,7 +286,11 @@ class Company extends Model
      */
     public function activateHorizontalTool(string $key): bool
     {
-        if (! in_array($key, self::HORIZONTAL_TOOLS, true)) {
+        // BOS-011 (#8198) — allowlist et miroir de flag lus via la passerelle
+        // du registre (dual-read) au lieu des constantes locales.
+        $gateway = app(ModuleRegistryGateway::class);
+
+        if (! in_array($key, $gateway->horizontalTools(), true)) {
             throw new \InvalidArgumentException("Outil horizontal inconnu : {$key}");
         }
 
@@ -298,8 +303,10 @@ class Company extends Model
         $metadata['modules'] = $modules;
         $this->metadata = $metadata;
 
-        if (isset(self::HORIZONTAL_TOOL_FEATURES[$key])) {
-            $this->setFeature(self::HORIZONTAL_TOOL_FEATURES[$key], true);
+        $mirrors = $gateway->horizontalMirrors();
+
+        if (isset($mirrors[$key])) {
+            $this->setFeature($mirrors[$key], true);
         }
 
         return ! $alreadyActive;
@@ -423,7 +430,13 @@ class Company extends Model
         // Sans effet observable aujourd'hui : `rh` est le seul flag en
         // `default => true`, et le cas particulier lui rendait déjà `true`.
         // C'est le piège posé au prochain flag activé par défaut qui est retiré.
-        $default = (bool) config("feature-flags.flags.{$key}.default", false);
+        //
+        // BOS-011 (#8198) — le défaut n'est plus lu en direct dans la config :
+        // il passe par la passerelle du registre (mode `legacy` | `dual` |
+        // `registry`), ce qui branche `hasFeature` sur la source unique et
+        // journalise toute divergence en mode dual-read. En mode `legacy`
+        // (défaut livré), la valeur servie est strictement identique.
+        $default = app(ModuleRegistryGateway::class)->defaultFor($key, $this);
 
         return (bool) ($features[$key] ?? $default);
     }
