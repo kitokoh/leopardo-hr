@@ -264,9 +264,11 @@ class AttendanceAnomalyService
 
     private function rapidDevicePunches(Collection $logs): Collection
     {
+        // Un pointage sans date ne peut pas être groupé par jour : il est
+        // exclu de l'analyse (comme les pointages sans check_in), jamais 500.
         return $logs
-            ->filter(fn (AttendanceLog $log): bool => $log->check_in !== null && $log->source_device_code !== null)
-            ->groupBy(fn (AttendanceLog $log): string => $log->date->format('Y-m-d').'|'.$log->source_device_code)
+            ->filter(fn (AttendanceLog $log): bool => $log->check_in !== null && $log->date !== null && $log->source_device_code !== null)
+            ->groupBy(fn (AttendanceLog $log): string => $log->date?->format('Y-m-d').'|'.$log->source_device_code)
             ->flatMap(function (Collection $group): Collection {
                 $ordered = $group->sortBy('check_in')->values();
                 $anomalies = collect();
@@ -278,6 +280,12 @@ class AttendanceAnomalyService
                     $current = $ordered[$index];
 
                     if ($previous->employee_id === $current->employee_id) {
+                        continue;
+                    }
+
+                    // Garanti non nul par le filtre d'entrée — garde explicite
+                    // (le narrowing ne survit pas au groupBy/sortBy).
+                    if ($previous->check_in === null || $current->check_in === null) {
                         continue;
                     }
 
@@ -311,7 +319,9 @@ class AttendanceAnomalyService
             ->groupBy('employee_id')
             ->flatMap(function (Collection $employeeLogs): Collection {
                 return $employeeLogs
-                    ->groupBy(fn (AttendanceLog $log): string => $log->check_in->format('H:i'))
+                    // check_in garanti non nul par le filtre d'entrée — les
+                    // « unknown » ne se produisent jamais (narrowing post-filtre).
+                    ->groupBy(fn (AttendanceLog $log): string => $log->check_in?->format('H:i') ?? 'unknown')
                     ->filter(fn (Collection $group): bool => $group->count() >= 3)
                     ->flatMap(fn (Collection $group): Collection => $group->map(fn (AttendanceLog $log): array => $this->item(
                         log: $log,
@@ -319,7 +329,7 @@ class AttendanceAnomalyService
                         severity: 'warning',
                         title: 'Heure de pointage trop repetitive',
                         details: [
-                            'check_in_minute' => $log->check_in->format('H:i'),
+                            'check_in_minute' => $log->check_in?->format('H:i'),
                             'occurrences' => $group->count(),
                         ],
                     )));

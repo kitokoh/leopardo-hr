@@ -217,7 +217,9 @@ final class RestaurantReportService
             ->when($branchId !== null, fn ($q) => $q->where('branch_id', $branchId))
             ->get();
 
-        $byDay = $orders->groupBy(fn ($o) => $o->created_at->toDateString());
+        // created_at est NOT NULL en base ; la clé « unknown » couvre le
+        // narrowing du cast nullable sans jamais se produire en pratique.
+        $byDay = $orders->groupBy(fn ($o) => $o->created_at?->toDateString() ?? 'unknown');
 
         foreach ($byDay->sortKeys() as $day => $dayOrders) {
             $rows[] = [
