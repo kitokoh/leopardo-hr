@@ -10361,6 +10361,57 @@ paths:
                     $ref: '#/components/schemas/Kiosk'
         '403':
           $ref: '#/components/responses/Error403'
+  /kiosks/{kiosk}/revoke:
+    post:
+      tags:
+      - Kiosks
+      summary: Revoquer un kiosk (manager)
+      parameters:
+      - name: kiosk
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Kiosk revoque (status=revoked)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Kiosk'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /kiosks/{kiosk}/rotate-token:
+    post:
+      tags:
+      - Kiosks
+      summary: Rotation du secret de synchronisation d'un kiosk (manager)
+      description: Invalide l'ancien token et retourne le nouveau en clair (seule exposition).
+      parameters:
+      - name: kiosk
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Nouveau secret (data.sync_token, retourne une seule fois)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Kiosk'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /kiosks/{deviceCode}/roster:
     get:
       tags:
