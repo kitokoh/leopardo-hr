@@ -15,13 +15,10 @@
 # ne pas renommer « au passage » dans une PR d'un autre sujet.
 
 # Accounting (1 fichier, 2 violations : sans execute() + Service sous Actions/)
-app/Modules/Accounting/Application/Actions/AccountingReportingSnapshotService.php
 
 # Cabinet (1 fichier — méthode handle() au lieu de execute())
-app/Modules/Cabinet/Application/Actions/UploadDocument.php
 
 # Notification (1 fichier — méthode handle() au lieu de execute())
-app/Modules/Notification/Application/Actions/SendNotification.php
 
 # RestaurantManager (20 fichiers — méthodes métier nommées, convention #6570 postérieure)
 app/Modules/RestaurantManager/Application/Actions/AddOrderItemAction.php
@@ -46,6 +43,3 @@ app/Modules/RestaurantManager/Application/Actions/TransitionDeliveryAction.php
 app/Modules/RestaurantManager/Application/Actions/TransitionOrderAction.php
 
 # TravelAgency (3 fichiers — méthodes métier nommées)
-app/Modules/TravelAgency/Application/Actions/ConnectionSearchAction.php
-app/Modules/TravelAgency/Application/Actions/ModerateTravelAdvertAction.php
-app/Modules/TravelAgency/Application/Actions/UpsertCurrencyRateAction.php

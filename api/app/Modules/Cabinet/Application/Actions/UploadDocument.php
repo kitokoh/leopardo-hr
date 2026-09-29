@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Cabinet\Application\Actions;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Cabinet\Domain\Models\CabinetDocument;
 use App\Modules\Cabinet\Infrastructure\Services\CabinetService;
+use Illuminate\Http\UploadedFile;
 
 class UploadDocument
 {
@@ -13,8 +15,11 @@ class UploadDocument
         private readonly CabinetService $cabinetService,
     ) {}
 
-    public function handle(string $folderId, array $fileData, string $uploadedById): CabinetDocument
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    public function execute(Employee $owner, UploadedFile $file, array $data): CabinetDocument
     {
-        return $this->cabinetService->uploadDocument($folderId, $fileData, $uploadedById);
+        return $this->cabinetService->uploadDocument($owner, $file, $data);
     }
 }
