@@ -135,8 +135,64 @@ class FuelStationReferentialTest extends TestCase
             ->assertJsonPath('data.0.variance', '10.00');
     }
 
-    public function test_referential_requires_manager_role(): void
+    /**
+     * #8188 (option 2) — contrat explicite, fin de la zone grise : la
+     * LECTURE du référentiel est volontairement ouverte à tout employé
+     * authentifié du tenant (#7439 : l'écran pompiste web/mobile appelle
+     * GET /fuel-station/stations|stations/{id} en employé simple ;
+     * FuelStationPolicy::viewAny() = true). Ce test échoue si la lecture
+     * redevient manager-only OU si elle fuit hors du tenant courant.
+     */
+    public function test_referential_read_is_open_to_any_tenant_employee(): void
     {
+        $stationId = DB::table('fuel_stations')->insertGetId([
+            'company_id' => $this->company->id,
+            'code' => 'ST-004',
+            'name' => 'Station Hydra',
+            'timezone' => 'Africa/Algiers',
+            'status' => 'active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'employee',
+        ]);
+
+        // Le flag fuel_station est ACTIF (setUp) : un 200 prouve que la
+        // requête atteint réellement la route et la policy dédiée.
+        $this->actingAs($employee)
+            ->getJson('/api/v1/fuel-station/stations')
+            ->assertOk()
+            ->assertJsonPath('data.0.code', 'ST-004')
+            ->assertJsonPath('data.0.name', 'Station Hydra');
+
+        $this->actingAs($employee)
+            ->getJson("/api/v1/fuel-station/stations/{$stationId}")
+            ->assertOk()
+            ->assertJsonPath('data.code', 'ST-004');
+    }
+
+    /**
+     * #8188 — la garde de rôle reste obligatoire sur les ÉCRITURES du
+     * référentiel. Le flag fuel_station est actif (setUp) : le 403 vient
+     * donc du middleware `api.manager` (code MANAGER_REQUIRED), pas du
+     * flag — l'assertion échoue si la garde disparaît du groupe manager.
+     */
+    public function test_referential_write_requires_manager_role(): void
+    {
+        $stationId = DB::table('fuel_stations')->insertGetId([
+            'company_id' => $this->company->id,
+            'code' => 'ST-005',
+            'name' => 'Station Bir Mourad Raïs',
+            'timezone' => 'Africa/Algiers',
+            'status' => 'active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $this->company->id,
@@ -144,7 +200,23 @@ class FuelStationReferentialTest extends TestCase
         ]);
 
         $this->actingAs($employee)
-            ->getJson('/api/v1/fuel-station/stations')
-            ->assertForbidden();
+            ->postJson('/api/v1/fuel-station/stations', [
+                'code' => 'ST-999',
+                'name' => 'Station sauvage',
+            ])
+            ->assertForbidden()
+            ->assertJsonPath('error', 'MANAGER_REQUIRED');
+
+        $this->actingAs($employee)
+            ->putJson("/api/v1/fuel-station/stations/{$stationId}", [
+                'name' => 'Renommée sans droit',
+            ])
+            ->assertForbidden()
+            ->assertJsonPath('error', 'MANAGER_REQUIRED');
+
+        $this->actingAs($employee)
+            ->deleteJson("/api/v1/fuel-station/stations/{$stationId}")
+            ->assertForbidden()
+            ->assertJsonPath('error', 'MANAGER_REQUIRED');
     }
 }

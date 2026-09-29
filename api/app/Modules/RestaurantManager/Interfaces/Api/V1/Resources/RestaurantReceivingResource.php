@@ -30,7 +30,9 @@ class RestaurantReceivingResource extends JsonResource
             'reference' => $this->reference,
             'received_at' => $this->received_at->toIso8601String(),
             'note_redacted' => $this->note_redacted,
-            'created_at' => $this->created_at->toIso8601String(),
+            // created_at (timestamp Eloquent) est typé nullable : représentation
+            // honnête d'une colonne potentiellement absente, jamais 500.
+            'created_at' => $this->created_at?->toIso8601String(),
         ];
     }
 }

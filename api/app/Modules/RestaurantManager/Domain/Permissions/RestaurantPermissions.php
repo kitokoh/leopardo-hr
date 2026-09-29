@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Domain\Permissions;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\EmployeeResourceAssignment;
 use App\Modules\RestaurantManager\Domain\Manifests\RestaurantManagerManifest;
 
 /**
@@ -70,5 +72,42 @@ final class RestaurantPermissions
             self::SERVER, self::KITCHEN, self::RIDER, self::REPORTS => ['principal', 'rh', 'manager', 'server', 'kitchen', 'rider'],
             default => [],
         };
+    }
+
+    /**
+     * Règle EFFECTIVE de la permission `restaurant.reports` (#8180) — seule
+     * permission `restaurant.*` consommée par des call sites HTTP (rapports
+     * agrégés + export CSV, surfaces sans modèle propre).
+     *
+     * Implémentation canonique unique, invoquée par le Gate
+     * `restaurant.reports` enregistré dans `AuthServiceProvider` : les call
+     * sites utilisent `$actor->can()/cannot('restaurant.reports')` et ne
+     * doivent JAMAIS réimplémenter la règle localement (la copie inline des
+     * contrôleurs était devenue un 403 systématique — bug d'origine de
+     * #8180 : capacité indéfinie → `cannot()` vaut toujours true).
+     *
+     * Alignée sur l'architecture d'autorisation canonique du module (#7599,
+     * ressource-scopée) — les valeurs `manager`/`server`/`kitchen`/`rider`
+     * du mapping documentaire ci-dessus sont MORTES pour ce cas : elles ne
+     * sont pas assignables via `manager_role` (trou n°2 de l'épique #7597) :
+     *
+     *  - aucune assignation `restaurant_branch` dans l'entreprise →
+     *    comportement historique : `principal`/`rh` ;
+     *  - assignations présentes (scoping actif, fail-closed) → niveau
+     *    `manage` sur au moins une succursale assignée (le `principal`
+     *    passe toujours via `accessibleResourceIds` = null).
+     */
+    public function canViewReports(Employee $actor): bool
+    {
+        if (! $actor->isResourceTypeScoped('restaurant_branch')) {
+            return $actor->hasManagerRole('principal', 'rh');
+        }
+
+        $manageable = $actor->accessibleResourceIds(
+            'restaurant_branch',
+            EmployeeResourceAssignment::LEVEL_MANAGE
+        );
+
+        return $manageable === null || $manageable !== [];
     }
 }
