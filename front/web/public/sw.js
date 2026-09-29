@@ -48,6 +48,8 @@ const PROTECTED_PREFIXES = [
   '/communication',
   // #7908 — page « Modules » (statut, auto-activation) : zone dashboard.
   '/modules',
+  // BOS-035 (#8224) — panneau Assistant Leo IA (zone dashboard).
+  '/assistant',
 ];
 
 function isProtectedPath(url) {

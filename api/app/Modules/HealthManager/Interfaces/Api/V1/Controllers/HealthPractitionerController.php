@@ -6,15 +6,15 @@ namespace App\Modules\HealthManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\HealthManager\Domain\Exceptions\HealthResourceInUseException;
+use App\Modules\HealthManager\Application\Actions\DeleteHealthPractitionerAction;
+use App\Modules\HealthManager\Application\Actions\RegisterHealthPractitionerAction;
+use App\Modules\HealthManager\Application\Actions\UpdateHealthPractitionerAction;
 use App\Modules\HealthManager\Domain\Models\HealthPractitioner;
-use App\Modules\HealthManager\Domain\Models\HealthPractitionerSpecialty;
 use App\Modules\HealthManager\Interfaces\Api\V1\Requests\StoreHealthPractitionerRequest;
 use App\Modules\HealthManager\Interfaces\Api\V1\Requests\UpdateHealthPractitionerRequest;
 use App\Modules\HealthManager\Interfaces\Api\V1\Traits\ChecksHealthSolution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 /**
  * API des praticiens (référentiel équipe médicale) — HC-002 (#7786).
@@ -26,6 +26,12 @@ use Illuminate\Support\Facades\DB;
 class HealthPractitionerController extends Controller
 {
     use ChecksHealthSolution;
+
+    public function __construct(
+        private readonly RegisterHealthPractitionerAction $registerAction,
+        private readonly UpdateHealthPractitionerAction $updateAction,
+        private readonly DeleteHealthPractitionerAction $deleteAction,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -65,24 +71,9 @@ class HealthPractitionerController extends Controller
         $actor = $request->user();
         $this->authorize('create', HealthPractitioner::class);
 
-        $validated = $request->validated();
-        /** @var list<int|string> $specialtyIds */
-        $specialtyIds = $validated['specialty_ids'] ?? [];
-        unset($validated['specialty_ids']);
+        $practitioner = $this->registerAction->execute((string) $actor->company_id, $request->validated());
 
-        /** @var HealthPractitioner $practitioner */
-        $practitioner = DB::transaction(function () use ($actor, $validated, $specialtyIds): HealthPractitioner {
-            /** @var HealthPractitioner $practitioner */
-            $practitioner = HealthPractitioner::query()->create(array_merge($validated, [
-                'company_id' => $actor->company_id,
-            ]));
-
-            $this->syncSpecialties($practitioner, $specialtyIds, (string) $actor->company_id);
-
-            return $practitioner;
-        });
-
-        return response()->json(['data' => $this->payload($practitioner->refresh())], 201);
+        return response()->json(['data' => $this->payload($practitioner)], 201);
     }
 
     public function show(Request $request, HealthPractitioner $practitioner): JsonResponse
@@ -106,21 +97,9 @@ class HealthPractitionerController extends Controller
         $this->assertSameTenant($practitioner, $actor->company_id);
         $this->authorize('update', $practitioner);
 
-        $validated = $request->validated();
-        $syncSpecialties = array_key_exists('specialty_ids', $validated);
-        /** @var list<int|string> $specialtyIds */
-        $specialtyIds = $validated['specialty_ids'] ?? [];
-        unset($validated['specialty_ids']);
+        $practitioner = $this->updateAction->execute($practitioner, (string) $actor->company_id, $request->validated());
 
-        DB::transaction(function () use ($practitioner, $actor, $validated, $syncSpecialties, $specialtyIds): void {
-            $practitioner->update($validated);
-
-            if ($syncSpecialties) {
-                $this->syncSpecialties($practitioner, $specialtyIds, (string) $actor->company_id);
-            }
-        });
-
-        return response()->json(['data' => $this->payload($practitioner->refresh())]);
+        return response()->json(['data' => $this->payload($practitioner)]);
     }
 
     public function destroy(Request $request, HealthPractitioner $practitioner): JsonResponse
@@ -132,46 +111,9 @@ class HealthPractitionerController extends Controller
         $this->assertSameTenant($practitioner, $actor->company_id);
         $this->authorize('delete', $practitioner);
 
-        // Suppression bloquée si le praticien porte une activité clinique
-        // (rendez-vous ou consultations) — 422 HEALTH_RESOURCE_IN_USE.
-        if ($practitioner->appointments()->exists() || $practitioner->consultations()->exists()) {
-            throw new HealthResourceInUseException;
-        }
-
-        DB::transaction(function () use ($practitioner): void {
-            $practitioner->practitionerSpecialties()->delete();
-            $practitioner->delete();
-        });
+        $this->deleteAction->execute($practitioner);
 
         return response()->json(null, 204);
-    }
-
-    /**
-     * Synchronise le pivot praticien ↔ spécialités (company_id sur chaque
-     * ligne — jamais de rattachement cross-tenant, ids déjà validés).
-     *
-     * @param  list<int|string>  $specialtyIds
-     */
-    private function syncSpecialties(HealthPractitioner $practitioner, array $specialtyIds, string $companyId): void
-    {
-        $ids = array_values(array_unique(array_map(
-            static fn (int|string $id): int => (int) $id,
-            $specialtyIds
-        )));
-
-        HealthPractitionerSpecialty::query()
-            ->where('company_id', $companyId)
-            ->where('practitioner_id', $practitioner->getAttribute('id'))
-            ->whereNotIn('specialty_id', $ids)
-            ->delete();
-
-        foreach ($ids as $specialtyId) {
-            HealthPractitionerSpecialty::query()->firstOrCreate([
-                'company_id' => $companyId,
-                'practitioner_id' => (int) $practitioner->getAttribute('id'),
-                'specialty_id' => $specialtyId,
-            ]);
-        }
     }
 
     /**
