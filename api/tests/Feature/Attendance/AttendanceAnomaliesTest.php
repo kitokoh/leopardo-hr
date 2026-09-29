@@ -223,4 +223,104 @@ class AttendanceAnomaliesTest extends TestCase
         $response->assertJsonPath('data.summary.by_type.repeated_exact_check_in', 3);
         $response->assertJsonPath('data.summary.by_type.out_of_geofence', 1);
     }
+
+    /**
+     * #8179 (famille A) — robustesse de l'analyse sur donnée dégradée : un
+     * pointage sans `check_in` (colonne nullable en base) est exclu des
+     * détecteurs (filtre + gardes), les anomalies réelles restent détectées.
+     * Note : `date` est NOT NULL en base — la garde sur `date` est défense en
+     * profondeur (narrowing PHPStan), non testable via la base.
+     */
+    public function test_anomaly_summary_ignores_logs_without_check_in(): void
+    {
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+        ]);
+        $employeeA = Employee::factory()->create(['company_id' => $company->id]);
+        $employeeB = Employee::factory()->create(['company_id' => $company->id]);
+
+        // Deux pointages valides qui déclenchent rapid_device_sequence…
+        foreach ([$employeeA, $employeeB] as $index => $employee) {
+            AttendanceLog::factory()->create([
+                'company_id' => $company->id,
+                'employee_id' => $employee->id,
+                'date' => '2026-05-10',
+                'check_in' => Carbon::parse('2026-05-10 08:00:0'.$index, 'UTC'),
+                'source_device_code' => 'KIOSK-01',
+                'method' => 'biometric',
+            ]);
+        }
+
+        // … plus une donnée dégradée : même appareil, mais check_in NULL
+        // (session 2 — unicité employee/date/session_number).
+        AttendanceLog::factory()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employeeA->id,
+            'date' => '2026-05-10',
+            'session_number' => 2,
+            'check_in' => null,
+            'check_out' => null,
+            'source_device_code' => 'KIOSK-01',
+            'method' => 'biometric',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->getJson('/api/v1/attendance/anomalies?date_from=2026-05-10&date_to=2026-05-10');
+
+        $response->assertOk();
+        // L'anomalie réelle reste détectée, la ligne dégradée est ignorée.
+        $response->assertJsonPath('data.summary.by_type.rapid_device_sequence', 1);
+    }
+
+    /**
+     * Régression #8179 (famille A) : un check-out sur un pointage `incomplete`
+     * SANS `check_in` (donnée dégradée) plantait en `->copy() on null` (500).
+     * Décision métier : pas d'évaluation de retard sans heure d'arrivée — le
+     * pointage conserve son statut `incomplete`, le check-out aboutit.
+     */
+    public function test_check_out_on_log_without_check_in_does_not_crash(): void
+    {
+        $company = Company::factory()->create(['timezone' => 'UTC']);
+        $schedule = \App\Modules\Planning\Domain\Models\Schedule::query()->create([
+            'company_id' => $company->id,
+            'name' => 'Standard',
+            'start_time' => '08:00:00',
+            'end_time' => '17:00:00',
+            'break_minutes' => 60,
+            'late_tolerance_minutes' => 15,
+            'overtime_threshold_daily' => 8.0,
+            'is_default' => true,
+        ]);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'schedule_id' => $schedule->id,
+        ]);
+
+        $this->travelTo('2026-05-10 17:30:00');
+
+        AttendanceLog::factory()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'date' => '2026-05-10',
+            'check_in' => null,
+            'check_out' => null,
+            'status' => 'incomplete',
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $this->postJson('/api/v1/attendance/check-out', ['gps_lat' => 36.75, 'gps_lng' => 3.05])
+            ->assertOk();
+
+        $log = AttendanceLog::query()->firstOrFail();
+        $this->assertNotNull($log->check_out);
+        // Jamais d'évaluation de retard sans check_in : le statut est conservé.
+        $this->assertSame('incomplete', $log->status);
+        $this->assertSame(0, (int) $log->late_minutes);
+    }
 }

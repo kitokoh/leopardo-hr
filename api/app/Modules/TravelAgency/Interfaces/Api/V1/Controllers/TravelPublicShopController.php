@@ -342,7 +342,7 @@ class TravelPublicShopController extends Controller
             'name' => $token->name,
             'active' => $token->active,
             'token_prefix' => substr((string) $token->token_hash, 0, 8).'…',
-            'created_at' => $token->created_at->toIso8601String(),
+            'created_at' => $token->created_at?->toIso8601String(),
             'last_used_at' => $token->last_used_at?->toIso8601String(),
         ]]);
     }

@@ -25,7 +25,12 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('fuel_imports');
+        // #8237 (leçon #8207 / BOS-018) — symétrique EXACT de up() : migration
+        // fantôme (up() no-op — l'ALTER CHECK visait un schéma abandonné),
+        // donc down() no-op. La version précédente droppait `fuel_imports`,
+        // table créée par la migration canonique
+        // `2026_08_30_001550_5812_create_fuel_imports_table.php` : un rollback
+        // ciblé supprimait la table alors que la canonique restait « migrée ».
     }
 
     private function constraintExists(string $name): bool
