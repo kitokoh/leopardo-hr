@@ -111,11 +111,13 @@ class RestaurantReportController extends Controller
 
         $branchId = $request->query('branch_id') !== null ? (int) $request->query('branch_id') : null;
 
+        // JSON_PRESERVE_ZERO_FRACTION : `rotation` (float) doit rester `2.0`
+        // dans le payload, pas `2` (contrat RestaurantReportTest, #8180).
         return response()->json([
             'data' => [
                 'period' => ['from' => $from->toIso8601String(), 'to' => $to->toIso8601String()],
                 'report' => $fn($actor->company_id, $from, $to, $branchId),
             ],
-        ]);
+        ], 200, [], JSON_PRESERVE_ZERO_FRACTION);
     }
 }
