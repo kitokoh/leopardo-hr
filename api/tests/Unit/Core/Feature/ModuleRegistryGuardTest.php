@@ -39,7 +39,7 @@ class ModuleRegistryGuardTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->registry = new ModuleRegistry();
+        $this->registry = new ModuleRegistry;
         $this->apiRoot = dirname(__DIR__, 4);
     }
 
@@ -263,6 +263,7 @@ class ModuleRegistryGuardTest extends TestCase
 
             if ($middlewareFile === null) {
                 $gates[$alias] = null;
+
                 continue;
             }
 
@@ -270,11 +271,13 @@ class ModuleRegistryGuardTest extends TestCase
 
             if (preg_match('/->hasFeature\(\s*\'([a-z0-9_]+)\'\s*\)/', $source, $keyMatch) === 1) {
                 $gates[$alias] = $keyMatch[1];
+
                 continue;
             }
 
             if (preg_match('/->hasFeature\(\s*([A-Za-z]+)::([A-Z0-9_]+)\s*\)/', $source, $keyMatch) === 1) {
                 $gates[$alias] = $this->resolveConstantValue($keyMatch[1], $keyMatch[2]);
+
                 continue;
             }
 
