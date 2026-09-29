@@ -1,0 +1,39 @@
+# check-actions-convention.sh — dette connue « Application/Actions » (issue #6570).
+# Mesuré sur main le 2026-09-29 (câblage de la garde, #8239) : 27 erreurs sur
+# 26 fichiers (AccountingReportingSnapshotService cumule « sans execute() » +
+# « Service dans Application/Actions/ »).
+#
+# Règles (doctrine #3596) :
+# - Cette liste ne fait que RÉTRÉCIR : corriger un fichier ⇒ purger sa ligne
+#   dans la même PR (la garde échoue sur toute entrée devenue obsolète).
+# - Ne JAMAIS ajouter de nouvelle entrée sans discussion documentée — toute
+#   nouvelle violation doit être corrigée, pas allowlistée.
+# - Résorption module par module (issues filles de #8239) :
+#   RestaurantManager (21 fichiers), TravelAgency (3), Accounting (1),
+#   Cabinet (1), Notification (1).
+app/Modules/Accounting/Application/Actions/AccountingReportingSnapshotService.php
+app/Modules/Cabinet/Application/Actions/UploadDocument.php
+app/Modules/Notification/Application/Actions/SendNotification.php
+app/Modules/RestaurantManager/Application/Actions/AddOrderItemAction.php
+app/Modules/RestaurantManager/Application/Actions/CancelOrderItemAction.php
+app/Modules/RestaurantManager/Application/Actions/ClosePosSessionAction.php
+app/Modules/RestaurantManager/Application/Actions/CloseTableSessionAction.php
+app/Modules/RestaurantManager/Application/Actions/CreateDeliveryAction.php
+app/Modules/RestaurantManager/Application/Actions/CreateMarketplaceOrderAction.php
+app/Modules/RestaurantManager/Application/Actions/CreateOnlineOrderAction.php
+app/Modules/RestaurantManager/Application/Actions/CreateOrderAction.php
+app/Modules/RestaurantManager/Application/Actions/CreditLoyaltyPointsAction.php
+app/Modules/RestaurantManager/Application/Actions/ExportRestaurantReportAction.php
+app/Modules/RestaurantManager/Application/Actions/InventoryCountAction.php
+app/Modules/RestaurantManager/Application/Actions/OpenPosSessionAction.php
+app/Modules/RestaurantManager/Application/Actions/OpenTableSessionAction.php
+app/Modules/RestaurantManager/Application/Actions/PayOrderAction.php
+app/Modules/RestaurantManager/Application/Actions/PurchaseOrderAction.php
+app/Modules/RestaurantManager/Application/Actions/RedeemLoyaltyPointsAction.php
+app/Modules/RestaurantManager/Application/Actions/RefundOrderAction.php
+app/Modules/RestaurantManager/Application/Actions/ReservationAction.php
+app/Modules/RestaurantManager/Application/Actions/TransitionDeliveryAction.php
+app/Modules/RestaurantManager/Application/Actions/TransitionOrderAction.php
+app/Modules/TravelAgency/Application/Actions/ConnectionSearchAction.php
+app/Modules/TravelAgency/Application/Actions/ModerateTravelAdvertAction.php
+app/Modules/TravelAgency/Application/Actions/UpsertCurrencyRateAction.php

@@ -159,6 +159,14 @@ jobs:
       - name: SmartAttendance purge guard (ADR-0016 Phase 5, issue #5356)
         run: bash dev-hub/tools/check-smartattendance-purged.sh
 
+      # #8239 — la garde existait depuis #6570 mais n'était câblée dans AUCUN
+      # workflow (27 erreurs préexistantes accumulées). Mode delta : seules
+      # les NOUVELLES violations échouent ; la dette datée vit dans
+      # check-actions-convention-allowlist.txt (staleness strict #3596 — la
+      # liste ne fait que rétrécir, résorption module par module).
+      - name: Actions convention guard (issue #6570, câblage #8239)
+        run: bash dev-hub/tools/check-actions-convention.sh
+
       - name: MVP schema parity guard — CreatesMvpSchema ↔ migrations tenant (issue #5443)
         run: bash dev-hub/tools/check-mvp-schema-parity.sh api
 
