@@ -1,6 +1,18 @@
 # AGENTS.md - Guide de travail Leopardo
 
-Derniere mise a jour : 2026-09-28 (#8207 — garde rollbacks destructeurs + doublon 7417/7420)
+Derniere mise a jour : 2026-09-29 (#8247 — contrat d'erreur : abort() vs renderer)
+
+> Leçon 2026-09-29 (#8247) : **un `abort(404, 'MON_CODE')` n'expose JAMAIS
+> `MON_CODE` au client API** — le renderer `HttpExceptionInterface` de
+> `bootstrap/app.php` réécrit tout 404 en `{error: RESOURCE_NOT_FOUND}`
+> générique. Pour un code d'erreur stable et documentable
+> (`PENDING_ACTION_NOT_FOUND`…), il faut une `DomainException` (renderer
+> dédié `{error, message, localized_message}`). Corollaire doc : ne jamais
+> documenter dans openapi.yaml un code d'erreur lu dans un `abort()` sans
+> vérifier le renderer — et toujours relire le contrôleur plutôt que faire
+> confiance à la spec existante (le champ `reply` de `/ai/chat` était
+> documenté mais n'a jamais existé ; le champ réel est `response`, enveloppé
+> dans `data`).
 
 > Leçon 2026-09-28 (#8207, lot Z11 BOS-017/018) : **(1) une migration fantôme
 > neutralisée garde souvent son `down()` DESTRUCTEUR d'origine** — 10 fichiers
