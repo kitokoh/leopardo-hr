@@ -89,7 +89,7 @@ class RestaurantPublicSlugOrderController extends Controller
                 ? $validated['idempotency_key']
                 : null;
 
-            $order = $this->createOnlineOrder->create([
+            $order = $this->createOnlineOrder->execute([
                 'branch_id' => (int) $branch->getAttribute('id'),
                 // Alias public `pickup` → `takeaway` interne (enum OrderType).
                 'order_type' => $orderType === 'pickup' ? 'takeaway' : $orderType,

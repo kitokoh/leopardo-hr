@@ -79,7 +79,7 @@ class RestaurantKitchenController extends Controller
             abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
         }
 
-        $order = $this->transitionAction->transition($actor, $restaurantOrder, OrderStatus::IN_PREPARATION);
+        $order = $this->transitionAction->execute($actor, $restaurantOrder, OrderStatus::IN_PREPARATION);
 
         return (new RestaurantKitchenOrderResource($order->load('items.product')))->response();
     }
@@ -97,7 +97,7 @@ class RestaurantKitchenController extends Controller
             abort(403, __('errors.RESOURCE_ACCESS_DENIED'));
         }
 
-        $order = $this->transitionAction->transition($actor, $restaurantOrder, OrderStatus::READY);
+        $order = $this->transitionAction->execute($actor, $restaurantOrder, OrderStatus::READY);
 
         return (new RestaurantKitchenOrderResource($order->load('items.product')))->response();
     }

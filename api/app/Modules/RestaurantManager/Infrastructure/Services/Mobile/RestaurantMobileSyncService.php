@@ -87,7 +87,7 @@ final class RestaurantMobileSyncService
             'idempotency_key' => $key,
         ];
 
-        $result = $this->createOrder->create($actor, $data);
+        $result = $this->createOrder->execute($actor, $data);
 
         $order = $result['order'];
 
@@ -115,7 +115,7 @@ final class RestaurantMobileSyncService
             return ['type' => 'order.add_item', 'status' => 'error', 'error' => __('errors.RESOURCE_ACCESS_DENIED')];
         }
 
-        $this->addItem->add($actor, $order, [
+        $this->addItem->execute($actor, $order, [
             'product_id' => isset($payload['product_id']) ? (int) $payload['product_id'] : 0,
             'quantity' => $payload['quantity'] ?? 1,
             'menu_id' => isset($payload['menu_id']) ? (int) $payload['menu_id'] : null,

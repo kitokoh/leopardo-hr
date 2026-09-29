@@ -38,7 +38,7 @@ final class ClosePosSessionAction
     /**
      * @param  array{counted_cash_minor: int, variance_reason?: string|null}  $data
      */
-    public function close(Employee $actor, RestaurantPosSession $session, array $data): RestaurantPosSession
+    public function execute(Employee $actor, RestaurantPosSession $session, array $data): RestaurantPosSession
     {
         if ($session->company_id !== $actor->company_id) {
             throw new RuntimeException('Session does not belong to tenant.');

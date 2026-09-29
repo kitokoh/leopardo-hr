@@ -48,6 +48,6 @@ final class LoyaltyOrderPaidConsumer implements RestaurantOutboxConsumer
             return;
         }
 
-        $this->creditLoyaltyPoints->creditForPaidOrder($order);
+        $this->creditLoyaltyPoints->execute($order);
     }
 }
