@@ -1,5 +1,19 @@
-> **MAJ 2026-09-26 — #8181, matrice RBAC fine `delivery.role` câblée sur les routes Delivery (BC-26-D05).**
-> Surface **API HTTP** : aucune route nouvelle ni contrat d'URL modifié — les gardes changent
+> **MAJ 2026-09-29 — #8278, routes manager du cycle de vie kiosk restaurées (revoke / rotate-token, Closes #8241).**
+> Surface **API HTTP** (`api/routes/modules/rh.php`) : deux routes nouvelles —
+> `POST /api/v1/kiosks/{kiosk}/revoke` et `POST /api/v1/kiosks/{kiosk}/rotate-token`
+> (manager uniquement : middleware `api.manager` + `whereNumber('kiosk')`, même pile
+> `auth:sanctum`/`tenant` que `POST /kiosks` register) — exposant les méthodes BIO-005
+> (#6766) de `KioskController` qui existaient sans routage (404 sur tout appel manager).
+> Comportement : la révocation passe le kiosk en `status=revoked` (punch/sync de
+> l'appareil ensuite refusés en 403 `DEVICE_REVOKED`, audit biométrique `device.revoked`) ;
+> la rotation invalide l'ancien secret (401) et retourne le nouveau en clair une seule
+> fois (`data.sync_token`, audit `device.token_rotated`) ; résolution scopée tenant
+> (`currentCompany()` + `whereKey`). `openapi.yaml` aligné (2 endpoints documentés).
+> Scénarios automatisés : `api/tests/Feature/Attendance/KioskDeviceLifecycleTest.php`
+> (`revoked kiosk cannot punch nor sync`, `rotate token invalidates the old secret`) et
+> `api/tests/Feature/Attendance/KioskSyncStatusEndpointTest.php` (`revoked device gets
+> 403 device revoked`) — 3 tests chroniquement ROUGES sur `main` (404 route absente),
+> désormais verts (8/8 sur les deux fichiers, 59 assertions).
 > (`api/routes/modules/delivery.php` : `api.manager` générique remplacé par la matrice fine
 > `delivery.role:dispatcher|manager|rider` selon `docs/architecture/DELIVERY_RBAC.md`) ;
 > alias `delivery.role` enregistré dans `api/bootstrap/app.php`. Comportement : deny-by-default
