@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Domain\Manifests;
 
 use App\Core\Solutions\Contracts\SolutionManifest;
+use App\Core\Solutions\Enums\SolutionIndustry;
 
 /**
  * Manifest de la verticale TravelAgency (TRAVEL-106, issue #6011).
@@ -45,6 +46,11 @@ final class TravelAgencyManifest implements SolutionManifest
     public function maturity(): string
     {
         return 'pilot';
+    }
+
+    public function industry(): SolutionIndustry
+    {
+        return SolutionIndustry::Travel;
     }
 
     public function description(): string

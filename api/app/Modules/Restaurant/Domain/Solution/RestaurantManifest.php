@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Restaurant\Domain\Solution;
 
 use App\Core\Solutions\Contracts\SolutionManifest;
+use App\Core\Solutions\Enums\SolutionIndustry;
 use App\Modules\Restaurant\Domain\Survey\RestaurantSurvey;
 
 /**
@@ -37,6 +38,11 @@ final class RestaurantManifest implements SolutionManifest
     public function maturity(): string
     {
         return 'pilot';
+    }
+
+    public function industry(): SolutionIndustry
+    {
+        return SolutionIndustry::Restaurant;
     }
 
     public function description(): string

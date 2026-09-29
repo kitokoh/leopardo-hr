@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\RestaurantManager\Domain\Manifests;
 
 use App\Modules\RestaurantManager\Domain\Contracts\SolutionManifest;
+use App\Core\Solutions\Enums\SolutionIndustry;
 
 /**
  * Manifest de la verticale RestaurantManager (RESTO-106, issue #6163).
@@ -29,6 +30,11 @@ final class RestaurantManagerManifest implements SolutionManifest
     public function maturity(): string
     {
         return 'pilot';
+    }
+
+    public function industry(): SolutionIndustry
+    {
+        return SolutionIndustry::Restaurant;
     }
 
     /**

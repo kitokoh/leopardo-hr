@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Delivery\Domain\Manifests;
 
 use App\Modules\Delivery\Domain\Contracts\SolutionManifest;
+use App\Core\Solutions\Enums\SolutionIndustry;
 
 /**
  * Manifest du module Delivery (DELIVERY-101, issue #6282).
@@ -35,6 +36,11 @@ final class DeliveryManifest implements SolutionManifest
     public function maturity(): string
     {
         return 'pilot';
+    }
+
+    public function industry(): SolutionIndustry
+    {
+        return SolutionIndustry::DeliveryLogistics;
     }
 
     /**
