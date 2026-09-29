@@ -62,8 +62,8 @@ final class EnsurePlatformPermissionMiddleware
 
     /**
      * Laravel éclate déjà les arguments sur la virgule ; on accepte en plus le
-     * séparateur `|` (parité avec `delivery.permission`) et on ignore les
-     * entrées vides.
+     * séparateur `|` (convention historique des gardes fines du dépôt) et on
+     * ignore les entrées vides.
      *
      * @param  array<array-key, string>  $permissions  variadique Laravel
      * @return list<string>

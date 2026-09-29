@@ -141,14 +141,16 @@ return new class extends Migration
 
     public function down(): void
     {
-        // Tables dépendantes (FK composites vers ces référentiels) : elles
-        // doivent partir AVANT les parents, sinon PostgreSQL refuse le DROP
-        // (2BP01). Gardé : uniquement si présentes, recréées par leurs
-        // propres migrations lors du rejeu.
-        Schema::dropIfExists('health_admissions');
-        Schema::dropIfExists('health_appointments');
-        Schema::dropIfExists('health_practitioners');
-
+        // #8237 (leçon #8207 / BOS-018) — symétrique EXACT de up() : ce fichier
+        // ne crée QUE `health_departments`, `health_rooms` et `health_beds` ; son
+        // rollback ne droppe que celles-là. La version précédente droppait aussi
+        // `health_admissions` (propriétaire `2026_09_19_003007_7790`),
+        // `health_appointments` (propriétaire `2026_09_19_003005_7788`) et
+        // `health_practitioners` (propriétaire `2026_09_19_003002_7786`) — au
+        // motif que les dépendantes devaient partir avant les parents (2BP01) et
+        // seraient « recréées par leurs propres migrations lors du rejeu » :
+        // un rollback ciblé ne REJOUE pas les autres migrations, les tables
+        // sœurs restaient supprimées avec leurs migrations « migrées ».
         Schema::dropIfExists('health_beds');
         Schema::dropIfExists('health_rooms');
         Schema::dropIfExists('health_departments');

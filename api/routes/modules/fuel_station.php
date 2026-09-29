@@ -11,10 +11,21 @@ declare(strict_types=1);
  * (contrôle `assertSolutionActive()` dans chaque contrôleur).
  *
  * Chemins : /fuel-station/... (ids numériques bigint, whereNumber).
- * RBAC : CRUD shifts + affectations + rostre présence = manager
- * (middleware api.manager + Policies) ; /fuel-station/me/* = tout
- * employé authentifié (scope employee_id) ; sessions de caisse et
- * ventes = policy par propriétaire (opened_by/employee_id).
+ *
+ * RBAC — contrat explicite (#8188, option 2 : fin de la zone grise) :
+ * - Référentiel (stations/sites/équipements/produits) : LECTURE ouverte
+ *   à tout employé authentifié du tenant (#7439 — l'écran pompiste web
+ *   et mobile appelle GET /fuel-station/stations|equipment en employé
+ *   simple) ; policies dédiées (FuelStationPolicy/FuelSitePolicy/
+ *   FuelEquipmentPolicy/FuelProductPolicy : viewAny = true, view scopé
+ *   au tenant). ÉCRITURE = manager (groupe api.manager ci-dessous).
+ * - Incidents : signalement (POST /fuel-station/incidents) = tout
+ *   employé ; liste, consultation globale et gestion = manager (policy
+ *   effective, voir FuelIncident/FuelMaintenancePolicy).
+ * - CRUD shifts + affectations + roster présence = manager
+ *   (middleware api.manager + Policies) ; /fuel-station/me/* = tout
+ *   employé authentifié (scope employee_id) ; sessions de caisse et
+ *   ventes = policy par propriétaire (opened_by/employee_id).
  */
 
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelAlertController;
