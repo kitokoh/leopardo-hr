@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Fleet\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\VehicleMaintenanceResource;
-use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Fleet\Application\Actions\DeleteVehicleMaintenanceAction;
+use App\Modules\Fleet\Application\Actions\RecordVehicleMaintenanceAction;
+use App\Modules\Fleet\Application\Actions\UpdateVehicleMaintenanceAction;
 use App\Modules\Fleet\Domain\Models\VehicleMaintenance;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -49,9 +52,11 @@ class VehicleMaintenanceController extends Controller
 
         /** @var Employee $user */
         $user = $request->user();
-        $validated['company_id'] = $user->company_id;
 
-        $record = VehicleMaintenance::create($validated);
+        $record = app(RecordVehicleMaintenanceAction::class)->execute(
+            (string) $user->company_id,
+            $validated,
+        );
 
         return (new VehicleMaintenanceResource($record))
             ->response()
@@ -76,9 +81,9 @@ class VehicleMaintenanceController extends Controller
             'provider' => 'nullable|string|max:200',
         ]);
 
-        $record->update($validated);
+        $record = app(UpdateVehicleMaintenanceAction::class)->execute($record, $validated);
 
-        return (new VehicleMaintenanceResource($record->fresh()))->response();
+        return (new VehicleMaintenanceResource($record))->response();
     }
 
     public function destroy(Request $request, int $id): JsonResponse
@@ -86,9 +91,9 @@ class VehicleMaintenanceController extends Controller
         /** @var Employee $user */
         $user = $request->user();
         $record = VehicleMaintenance::where('company_id', $user->company_id)->findOrFail($id);
-        $record->delete();
+
+        app(DeleteVehicleMaintenanceAction::class)->execute($record);
 
         return response()->json(['message' => 'Maintenance record deleted.']);
     }
 }
-
