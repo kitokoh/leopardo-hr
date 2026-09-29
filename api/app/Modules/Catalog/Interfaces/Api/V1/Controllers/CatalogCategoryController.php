@@ -6,13 +6,14 @@ namespace App\Modules\Catalog\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Catalog\Application\Actions\CreateCatalogCategoryAction;
+use App\Modules\Catalog\Application\Actions\DeleteCatalogCategoryAction;
+use App\Modules\Catalog\Application\Actions\UpdateCatalogCategoryAction;
 use App\Modules\Catalog\Domain\Models\CatalogCategory;
-use App\Modules\Catalog\Infrastructure\Services\CatalogPublicCache;
 use App\Modules\Catalog\Interfaces\Api\V1\Requests\StoreCatalogCategoryRequest;
 use App\Modules\Catalog\Interfaces\Api\V1\Requests\UpdateCatalogCategoryRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 /**
  * Gestion des catégories du catalogue B2B (BC-28 CATALOG, #6881).
@@ -60,18 +61,10 @@ class CatalogCategoryController extends Controller
         $actor = $request->user();
         $this->authorize('create', CatalogCategory::class);
 
-        $category = CatalogCategory::query()->create([
-            'company_id' => $actor->company_id,
-            'name' => $request->input('name'),
-            'slug' => $this->uniqueSlug(
-                (string) $request->input('slug', Str::slug((string) $request->input('name'))),
-                (string) $actor->company_id
-            ),
-            'parent_id' => $request->input('parent_id'),
-            'position' => $request->integer('position', 0),
-        ]);
-
-        CatalogPublicCache::forgetCompany((string) $actor->company_id);
+        $category = app(CreateCatalogCategoryAction::class)->execute(
+            (string) $actor->company_id,
+            $request->validated(),
+        );
 
         return response()->json(['data' => $this->payload($category->refresh())], 201);
     }
@@ -101,18 +94,7 @@ class CatalogCategoryController extends Controller
 
         $this->authorize('update', $category);
 
-        CatalogPublicCache::forgetCompany((string) $actor->company_id);
-
-        $category->update([
-            'name' => $request->input('name'),
-            'slug' => $this->uniqueSlug(
-                (string) $request->input('slug', Str::slug((string) $request->input('name'))),
-                (string) $actor->company_id,
-                (int) $category->id
-            ),
-            'parent_id' => $request->input('parent_id'),
-            'position' => $request->integer('position', (int) $category->position),
-        ]);
+        $category = app(UpdateCatalogCategoryAction::class)->execute($category, $request->validated());
 
         return response()->json(['data' => $this->payload($category->refresh())]);
     }
@@ -128,31 +110,9 @@ class CatalogCategoryController extends Controller
 
         $this->authorize('delete', $category);
 
-        CatalogPublicCache::forgetCompany((string) $actor->company_id);
-        $category->delete();
+        app(DeleteCatalogCategoryAction::class)->execute($category);
 
         return response()->json(['data' => null], 200);
-    }
-
-    /**
-     * Slug unique par tenant : suffixe numérique (-2, -3…) en cas de collision.
-     */
-    private function uniqueSlug(string $slug, string $companyId, int $ignoreId = 0): string
-    {
-        $base = $slug;
-        $candidate = $base;
-        $suffix = 2;
-
-        while (CatalogCategory::query()
-            ->where('company_id', $companyId)
-            ->where('slug', $candidate)
-            ->where('id', '!=', $ignoreId)
-            ->exists()) {
-            $candidate = $base.'-'.$suffix;
-            $suffix++;
-        }
-
-        return $candidate;
     }
 
     /**

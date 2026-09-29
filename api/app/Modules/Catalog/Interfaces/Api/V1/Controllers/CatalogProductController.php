@@ -6,14 +6,16 @@ namespace App\Modules\Catalog\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Catalog\Application\Actions\CreateCatalogProductAction;
+use App\Modules\Catalog\Application\Actions\DeleteCatalogProductAction;
+use App\Modules\Catalog\Application\Actions\TransitionCatalogProductStatusAction;
+use App\Modules\Catalog\Application\Actions\UpdateCatalogProductAction;
 use App\Modules\Catalog\Domain\Enums\CatalogProductStatus;
 use App\Modules\Catalog\Domain\Models\CatalogProduct;
-use App\Modules\Catalog\Infrastructure\Services\CatalogPublicCache;
 use App\Modules\Catalog\Interfaces\Api\V1\Requests\StoreCatalogProductRequest;
 use App\Modules\Catalog\Interfaces\Api\V1\Requests\UpdateCatalogProductRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 /**
  * Gestion des produits du catalogue B2B (BC-28 CATALOG, #6881).
@@ -69,25 +71,13 @@ class CatalogProductController extends Controller
         $actor = $request->user();
         $this->authorize('create', CatalogProduct::class);
 
-        $product = CatalogProduct::query()->create([
-            'company_id' => $actor->company_id,
-            'category_id' => $request->input('category_id'),
-            'name' => $request->input('name'),
-            'slug' => $this->uniqueSlug(
-                (string) $request->input('slug', Str::slug((string) $request->input('name'))),
-                (string) $actor->company_id
-            ),
-            'description' => $request->input('description'),
-            'price_minor' => $request->integer('price_minor'),
-            // C-CURRENCY #6886 : devise par défaut = devise du tenant quand
-            // le formulaire n'en fournit pas (spec §8 « par produit ou défaut tenant »).
-            'currency' => $request->input('currency') ?? (string) currentCompany()->currency,
-            'unit' => $request->input('unit', 'piece'),
-            'status' => $request->input('status', CatalogProductStatus::Draft->value),
-            'meta' => $request->input('meta'),
-        ]);
-
-        CatalogPublicCache::forgetCompany((string) $actor->company_id);
+        // C-CURRENCY #6886 : devise par défaut = devise du tenant quand le
+        // formulaire n'en fournit pas (spec §8 « par produit ou défaut tenant »).
+        $product = app(CreateCatalogProductAction::class)->execute(
+            (string) $actor->company_id,
+            $request->validated(),
+            (string) currentCompany()->currency,
+        );
 
         return response()->json(['data' => $this->payload($product->refresh())], 201);
     }
@@ -117,29 +107,7 @@ class CatalogProductController extends Controller
 
         $this->authorize('update', $product);
 
-        $oldSlug = (string) $product->slug;
-        $product->update([
-            'name' => $request->input('name'),
-            'slug' => $this->uniqueSlug(
-                (string) $request->input('slug', Str::slug((string) $request->input('name'))),
-                (string) $actor->company_id,
-                (int) $product->id
-            ),
-            'category_id' => $request->input('category_id'),
-            'description' => $request->input('description'),
-            'price_minor' => $request->integer('price_minor'),
-            'currency' => $request->input('currency') ?? $product->currency,
-            'unit' => $request->input('unit') ?? $product->unit,
-            'status' => $request->input('status') ?? $product->status->value,
-            'meta' => $request->input('meta'),
-        ]);
-
-        $newSlug = (string) $product->refresh()->slug;
-        CatalogPublicCache::forgetProduct((string) $actor->company_id, $oldSlug);
-
-        if ($newSlug !== $oldSlug) {
-            CatalogPublicCache::forgetProduct((string) $actor->company_id, $newSlug);
-        }
+        $product = app(UpdateCatalogProductAction::class)->execute($product, $request->validated());
 
         return response()->json(['data' => $this->payload($product)]);
     }
@@ -155,8 +123,7 @@ class CatalogProductController extends Controller
 
         $this->authorize('delete', $product);
 
-        CatalogPublicCache::forgetProduct((string) $actor->company_id, (string) $product->slug);
-        $product->delete();
+        app(DeleteCatalogProductAction::class)->execute($product);
 
         return response()->json(['data' => null], 200);
     }
@@ -171,27 +138,6 @@ class CatalogProductController extends Controller
         return $this->setStatus($request, $product, CatalogProductStatus::Draft);
     }
 
-    /**
-     * Slug unique par tenant : suffixe numérique (-2, -3…) en cas de collision.
-     */
-    private function uniqueSlug(string $slug, string $companyId, int $ignoreId = 0): string
-    {
-        $base = $slug;
-        $candidate = $base;
-        $suffix = 2;
-
-        while (CatalogProduct::query()
-            ->where('company_id', $companyId)
-            ->where('slug', $candidate)
-            ->where('id', '!=', $ignoreId)
-            ->exists()) {
-            $candidate = $base.'-'.$suffix;
-            $suffix++;
-        }
-
-        return $candidate;
-    }
-
     private function setStatus(Request $request, CatalogProduct $product, CatalogProductStatus $status): JsonResponse
     {
         /** @var Employee $actor */
@@ -203,10 +149,9 @@ class CatalogProductController extends Controller
 
         $this->authorize('publish', $product);
 
-        CatalogPublicCache::forgetProduct((string) $actor->company_id, (string) $product->slug);
-        $product->update(['status' => $status->value]);
+        $product = app(TransitionCatalogProductStatusAction::class)->execute($product, $status);
 
-        return response()->json(['data' => $this->payload($product->refresh())]);
+        return response()->json(['data' => $this->payload($product)]);
     }
 
     /**

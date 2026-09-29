@@ -6,6 +6,9 @@ namespace App\Modules\EduManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\EduManager\Application\Actions\ArchiveEduStudentAction;
+use App\Modules\EduManager\Application\Actions\CreateEduStudentAction;
+use App\Modules\EduManager\Application\Actions\UpdateEduStudentAction;
 use App\Modules\EduManager\Domain\Models\EduStudent;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduStudentRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\UpdateEduStudentRequest;
@@ -22,6 +25,12 @@ use Illuminate\Http\Request;
 class EduStudentController extends Controller
 {
     use ChecksEduSolution;
+
+    public function __construct(
+        private readonly CreateEduStudentAction $createStudent,
+        private readonly UpdateEduStudentAction $updateStudent,
+        private readonly ArchiveEduStudentAction $archiveStudent,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -65,16 +74,7 @@ class EduStudentController extends Controller
         $actor = $request->user();
         $this->authorize('create', EduStudent::class);
 
-        $payload = $request->validated();
-        if (isset($payload['birth_date'])) {
-            $payload['birth_date_encrypted'] = $payload['birth_date'];
-            unset($payload['birth_date']);
-        }
-
-        /** @var EduStudent $student */
-        $student = EduStudent::query()->create(array_merge($payload, [
-            'company_id' => $actor->company_id,
-        ]));
+        $student = $this->createStudent->execute($actor, $request->validated());
 
         return response()->json(['data' => $this->payload($student)], 201);
     }
@@ -100,15 +100,9 @@ class EduStudentController extends Controller
         $this->assertSameTenant($student, $actor->company_id);
         $this->authorize('update', $student);
 
-        $payload = $request->validated();
-        if (isset($payload['birth_date'])) {
-            $payload['birth_date_encrypted'] = $payload['birth_date'];
-            unset($payload['birth_date']);
-        }
+        $student = $this->updateStudent->execute($student, $request->validated());
 
-        $student->update($payload);
-
-        return response()->json(['data' => $this->payload($student->refresh())]);
+        return response()->json(['data' => $this->payload($student)]);
     }
 
     public function destroy(Request $request, EduStudent $student): JsonResponse
@@ -120,8 +114,7 @@ class EduStudentController extends Controller
         $this->assertSameTenant($student, $actor->company_id);
         $this->authorize('delete', $student);
 
-        // Archivage (RGPD) — suppression physique interdite pour les élèves.
-        $student->update(['status' => EduStudent::STATUS_ARCHIVED]);
+        $this->archiveStudent->execute($student);
 
         return response()->json(null, 204);
     }

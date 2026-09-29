@@ -306,7 +306,7 @@ final class RestaurantReportService
             ->whereIn('status', [OrderStatus::PAID->value, OrderStatus::CLOSED->value])
             ->when($branchId !== null, fn ($q) => $q->where('branch_id', $branchId))
             ->when($from !== null, fn ($q) => $q->where('created_at', '>=', $from))
-            ->when($to !== null, fn ($q) => $q->where('created_at', '<=', $to->copy()->endOfDay()));
+            ->when($to !== null, fn ($q) => $q->where('created_at', '<=', $to?->copy()->endOfDay()));
     }
 
     /**

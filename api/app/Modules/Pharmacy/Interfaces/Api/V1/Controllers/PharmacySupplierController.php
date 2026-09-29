@@ -6,6 +6,8 @@ namespace App\Modules\Pharmacy\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Pharmacy\Application\Actions\RegisterPharmacySupplierAction;
+use App\Modules\Pharmacy\Application\Actions\UpdatePharmacySupplierAction;
 use App\Modules\Pharmacy\Domain\Models\PharmacySupplier;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Requests\StorePharmacySupplierRequest;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Requests\UpdatePharmacySupplierRequest;
@@ -20,6 +22,11 @@ use Illuminate\Http\Request;
 class PharmacySupplierController extends Controller
 {
     use ChecksPharmacySolution;
+
+    public function __construct(
+        private readonly RegisterPharmacySupplierAction $registerSupplier,
+        private readonly UpdatePharmacySupplierAction $updateSupplier,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -67,11 +74,7 @@ class PharmacySupplierController extends Controller
         $this->authorize('create', PharmacySupplier::class);
 
         /** @var PharmacySupplier $supplier */
-        $supplier = PharmacySupplier::query()->create(array_merge(
-            ['type' => 'wholesaler', 'status' => 'active'],
-            $request->validated(),
-            ['company_id' => $actor->company_id],
-        ));
+        $supplier = $this->registerSupplier->execute($actor, $request->validated());
 
         return response()->json(['data' => $this->payload($supplier->refresh())], 201);
     }
@@ -97,7 +100,7 @@ class PharmacySupplierController extends Controller
         $this->assertSameTenant($supplier, $actor->company_id);
         $this->authorize('update', $supplier);
 
-        $supplier->update($request->validated());
+        $supplier = $this->updateSupplier->execute($supplier, $request->validated());
 
         return response()->json(['data' => $this->payload($supplier->refresh())]);
     }

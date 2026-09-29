@@ -12,6 +12,11 @@ use App\Http\Resources\Api\V1\VehicleMaintenanceResource;
 use App\Http\Resources\Api\V1\VehicleResource;
 use App\Http\Resources\Api\V1\VehicleTripResource;
 use App\Modules\Attendance\Infrastructure\Services\TraccarService;
+use App\Modules\Fleet\Application\Actions\AssignDriverToVehicleAction;
+use App\Modules\Fleet\Application\Actions\DeleteVehicleAction;
+use App\Modules\Fleet\Application\Actions\RegisterVehicleAction;
+use App\Modules\Fleet\Application\Actions\UnassignDriverFromVehicleAction;
+use App\Modules\Fleet\Application\Actions\UpdateVehicleAction;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -65,9 +70,8 @@ class VehicleController extends Controller
 
         /** @var Employee $user */
         $user = $request->user();
-        $validated['company_id'] = $user->company_id;
 
-        $vehicle = Vehicle::create($validated);
+        $vehicle = app(RegisterVehicleAction::class)->execute((string) $user->company_id, $validated);
 
         return (new VehicleResource($vehicle))
             ->response()
@@ -106,9 +110,9 @@ class VehicleController extends Controller
             'metadata' => 'nullable|array',
         ]);
 
-        $vehicle->update($validated);
+        $vehicle = app(UpdateVehicleAction::class)->execute($vehicle, $validated);
 
-        return (new VehicleResource($vehicle->fresh()))->response();
+        return (new VehicleResource($vehicle))->response();
     }
 
     public function destroy(Request $request, int $id): JsonResponse
@@ -116,7 +120,8 @@ class VehicleController extends Controller
         /** @var Employee $user */
         $user = $request->user();
         $vehicle = Vehicle::where('company_id', $user->company_id)->findOrFail($id);
-        $vehicle->delete();
+
+        app(DeleteVehicleAction::class)->execute($vehicle);
 
         // #4812 : littéral EN déplacé au catalogue errors.*
         return response()->json(['message' => __('errors.VEHICLE_DELETED')]);
@@ -234,16 +239,14 @@ class VehicleController extends Controller
             'reason' => 'nullable|string|max:500',
         ]);
 
-        $vehicle->assignments()->create([
-            'employee_id' => $validated['employee_id'],
-            'company_id' => $user->company_id,
-            'start_date' => $validated['start_date'],
-            'reason' => $validated['reason'] ?? null,
-            'created_by' => $user->id,
-            'created_at' => now(),
-        ]);
-
-        $vehicle->update(['assigned_driver_id' => $validated['employee_id']]);
+        app(AssignDriverToVehicleAction::class)->execute(
+            $vehicle,
+            (string) $user->company_id,
+            (int) $validated['employee_id'],
+            (string) $validated['start_date'],
+            isset($validated['reason']) ? (string) $validated['reason'] : null,
+            (int) $user->id,
+        );
 
         return response()->json(['message' => 'Driver assigned.'], 201);
     }
@@ -254,16 +257,7 @@ class VehicleController extends Controller
         $user = $request->user();
         $vehicle = Vehicle::where('company_id', $user->company_id)->findOrFail($id);
 
-        $currentAssignment = $vehicle->assignments()
-            ->whereNull('end_date')
-            ->latest('start_date')
-            ->first();
-
-        if ($currentAssignment) {
-            $currentAssignment->update(['end_date' => now()->toDateString()]);
-        }
-
-        $vehicle->update(['assigned_driver_id' => null]);
+        app(UnassignDriverFromVehicleAction::class)->execute($vehicle);
 
         return response()->json(['message' => 'Driver unassigned.']);
     }

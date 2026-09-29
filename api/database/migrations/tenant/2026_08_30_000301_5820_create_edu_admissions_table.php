@@ -118,13 +118,13 @@ return new class extends Migration
 
     public function down(): void
     {
-        // Tables dépendantes (FK composites vers `edu_admissions`) : elles
-        // doivent partir AVANT la table parente, sinon PostgreSQL refuse le
-        // DROP (2BP01). Chacune possède sa propre migration, rejouée par le
-        // `up()` du cycle complet. Gardé : uniquement si présente.
-        Schema::dropIfExists('edu_admission_followups');
-        Schema::dropIfExists('edu_fees');
-
+        // #8237 (leçon #8207 / BOS-018) — symétrique EXACT de up() : ce fichier
+        // ne crée QUE `edu_admissions` ; son rollback ne droppe que celle-là.
+        // La version précédente droppait aussi 2 tables sœurs créées par leurs
+        // migrations propriétaires (`edu_admission_followups` → `000503_5831`,
+        // `edu_fees` → `000712_5832`) : un rollback ciblé ne REJOUE pas les
+        // autres migrations, les tables sœurs restaient supprimées avec leurs
+        // migrations « migrées ».
         Schema::dropIfExists('edu_admissions');
     }
 };
