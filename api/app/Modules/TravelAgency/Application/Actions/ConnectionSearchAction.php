@@ -28,7 +28,7 @@ final class ConnectionSearchAction
     /**
      * @return list<array{first: TravelTrip, second: TravelTrip, total_price_minor: int, connection_minutes: int}>
      */
-    public function search(int $originCityId, int $destinationCityId, string $date): array
+    public function execute(int $originCityId, int $destinationCityId, string $date): array
     {
         $firstLegs = $this->legs($originCityId, $date, isOrigin: true);
         $secondLegs = $this->legs($destinationCityId, $date, isOrigin: false);

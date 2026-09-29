@@ -6,8 +6,8 @@ namespace App\Http\Middleware\Restaurant;
 
 use App\Core\Http\Security\CaptchaVerifier;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPublicShopToken;
+use App\Shared\Services\PublicCommerce\PublicTenantResolver;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,12 +22,23 @@ use Symfony\Component\HttpFoundation\Response;
  * `restaurantmanager.public_shop.captcha_secret` est configure, un jeton
  * CAPTCHA (`X-Captcha-Token`) non vide est exige. Pattern identique a
  * EnsurePublicShopAccess (TRAVEL-1001/#6114).
+ *
+ * BOS-050 (#8208, tranche 7) : la bascule tenant est deléguée au socle
+ * mutualisé {@see PublicTenantResolver} (`withinTenant()` — marqueur
+ * `tenant_scope_required` restauré en `finally`, imbrication sûre) et la
+ * garde société à {@see PublicTenantResolver::assertAccessible()} —
+ * durcissement aligné sur l'invariant partagé : une société
+ * `suspended`/`expired` n'est plus servie (401 sur ce chemin jeton) ;
+ * cette surface ne vérifiait historiquement AUCUN statut. La résolution
+ * bornée (jeton boutique SHA-256) reste portée ici, comme prévu par le
+ * socle. La feature verticale n'est volontairement PAS ajoutée : jamais
+ * vérifiée sur cette surface (périmètre minimal).
  */
 class EnsureRestaurantPublicShopAccess
 {
     public function __construct(
-        private readonly TenantManager $tenants,
         private readonly CaptchaVerifier $captcha,
+        private readonly PublicTenantResolver $publicTenants,
     ) {}
 
     public function handle(Request $request, Closure $next): Response
@@ -68,14 +79,12 @@ class EnsureRestaurantPublicShopAccess
             abort(401, 'Tenant introuvable pour ce jeton.');
         }
 
+        // BOS-050 — garde société mutualisée : suspended/expired → 401
+        // (chemin jeton). Feature verticale non vérifiée ici (historique).
+        $this->publicTenants->assertAccessible($company, null, null, 401);
+
         $shopToken->forceFill(['last_used_at' => now()])->save();
 
-        app()->instance('tenant_scope_required', true);
-
-        try {
-            return $this->tenants->withinTenant($company, fn (): Response => $next($request));
-        } finally {
-            app()->forgetInstance('tenant_scope_required');
-        }
+        return $this->publicTenants->withinTenant($company, fn (): Response => $next($request));
     }
 }

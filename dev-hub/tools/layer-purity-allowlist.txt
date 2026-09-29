@@ -7,7 +7,6 @@ api/app/Core/Auth/Domain/Models/Employee.php:34:use Illuminate\Support\Facades\S
 api/app/Core/Tenant/Domain/Models/Company.php:18:use Illuminate\Support\Facades\DB;
 api/app/Core/Tenant/Domain/Models/Company.php:8:use App\Core\Feature\Infrastructure\Services\FeatureKillSwitchService;
 api/app/Core/Tenant/Domain/Models/Company.php:9:use App\Core\Feature\Infrastructure\Services\ModuleRegistryGateway;
-api/app/Modules/Accounting/Application/Actions/AccountingReportingSnapshotService.php:11:use Illuminate\Support\Facades\DB;
 api/app/Modules/Accounting/Application/Listeners/ProvisionAccountingSettings.php:11:use Illuminate\Support\Facades\Log;
 api/app/Modules/Accounting/Application/Listeners/ProvisionChartOfAccounts.php:10:use Illuminate\Support\Facades\Log;
 api/app/Modules/Accounting/Application/Services/DocumentWorkflowService.php:22:use Illuminate\Support\Facades\DB;
@@ -67,7 +66,6 @@ api/app/Modules/RestaurantManager/Application/Actions/ClosePosSessionAction.php:
 api/app/Modules/RestaurantManager/Application/Actions/CloseTableSessionAction.php:11:use Illuminate\Support\Facades\DB;
 api/app/Modules/RestaurantManager/Application/Actions/CreateDeliveryAction.php:14:use Illuminate\Support\Facades\DB;
 api/app/Modules/RestaurantManager/Application/Actions/CreateMarketplaceOrderAction.php:19:use Illuminate\Support\Facades\DB;
-api/app/Modules/RestaurantManager/Application/Actions/CreateOnlineOrderAction.php:18:use Illuminate\Support\Facades\DB;
 api/app/Modules/RestaurantManager/Application/Actions/CreateOrderAction.php:13:use Illuminate\Support\Facades\DB;
 api/app/Modules/RestaurantManager/Application/Actions/CreditLoyaltyPointsAction.php:12:use Illuminate\Support\Facades\DB;
 api/app/Modules/RestaurantManager/Application/Actions/ExportRestaurantReportAction.php:11:use Illuminate\Support\Facades\URL;
@@ -81,7 +79,6 @@ api/app/Modules/RestaurantManager/Application/Actions/RedeemLoyaltyPointsAction.
 api/app/Modules/RestaurantManager/Application/Actions/RefundOrderAction.php:18:use Illuminate\Support\Facades\DB;
 api/app/Modules/RestaurantManager/Application/Actions/TransitionDeliveryAction.php:15:use Illuminate\Support\Facades\DB;
 api/app/Modules/RestaurantManager/Application/Actions/TransitionOrderAction.php:14:use Illuminate\Support\Facades\DB;
-api/app/Modules/RestaurantManager/Application/Services/RestaurantPublicOrderService.php:19:use Illuminate\Support\Facades\DB;
 api/app/Modules/RestaurantManager/Application/Services/RestaurantReportService.php:17:use Illuminate\Support\Facades\DB;
 api/app/Modules/RestaurantManager/Application/Services/RestaurantStockService.php:13:use Illuminate\Support\Facades\DB;
 api/app/Modules/RestaurantManager/Application/Services/RestaurantStockService.php:14:use Illuminate\Support\Facades\Log;

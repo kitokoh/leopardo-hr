@@ -42,7 +42,7 @@ class RestaurantTableSessionController extends Controller
             abort(403);
         }
 
-        $session = $this->openAction->open($actor, $restaurantTable, $request->validated());
+        $session = $this->openAction->execute($actor, $restaurantTable, $request->validated());
 
         return (new RestaurantTableSessionResource($session))->response()->setStatusCode(201);
     }
@@ -71,7 +71,7 @@ class RestaurantTableSessionController extends Controller
             abort(403);
         }
 
-        $session = $this->closeAction->close($actor, $session);
+        $session = $this->closeAction->execute($actor, $session);
 
         return (new RestaurantTableSessionResource($session))->response();
     }

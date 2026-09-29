@@ -32,7 +32,7 @@ final class ExportRestaurantReportAction
     /**
      * @return array{filename: string, download_url: string}
      */
-    public function export(
+    public function execute(
         string $reportType,
         string $companyId,
         ?Carbon $from,

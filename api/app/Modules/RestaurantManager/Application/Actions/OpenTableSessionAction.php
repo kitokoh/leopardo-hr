@@ -23,7 +23,7 @@ final class OpenTableSessionAction
     /**
      * @param  array{covers?: int|null, order_id?: int|null}  $data
      */
-    public function open(Employee $actor, RestaurantTable $table, array $data): RestaurantTableSession
+    public function execute(Employee $actor, RestaurantTable $table, array $data): RestaurantTableSession
     {
         if ($table->company_id !== $actor->company_id) {
             throw new RuntimeException('Table does not belong to tenant.');

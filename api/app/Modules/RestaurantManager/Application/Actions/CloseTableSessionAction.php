@@ -23,7 +23,7 @@ final class CloseTableSessionAction
 
     public function __construct(private readonly RestaurantOutboxPublisher $outbox) {}
 
-    public function close(Employee $actor, RestaurantTableSession $session): RestaurantTableSession
+    public function execute(Employee $actor, RestaurantTableSession $session): RestaurantTableSession
     {
         if ($session->company_id !== $actor->company_id) {
             throw new RuntimeException('Session does not belong to tenant.');

@@ -13,6 +13,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderItem;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantPublicBranchResolver;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantPublicOrderService;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantPublicTrackingGuard;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantPublicSlugOrderRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -51,6 +52,7 @@ class RestaurantPublicSlugOrderController extends Controller
         private readonly RestaurantPublicBranchResolver $resolver,
         private readonly CreateOnlineOrderAction $createOnlineOrder,
         private readonly RestaurantPublicOrderService $publicOrders,
+        private readonly RestaurantPublicTrackingGuard $trackingGuard,
     ) {}
 
     public function store(StoreRestaurantPublicSlugOrderRequest $request, string $slug): JsonResponse
@@ -87,7 +89,7 @@ class RestaurantPublicSlugOrderController extends Controller
                 ? $validated['idempotency_key']
                 : null;
 
-            $order = $this->createOnlineOrder->create([
+            $order = $this->createOnlineOrder->execute([
                 'branch_id' => (int) $branch->getAttribute('id'),
                 // Alias public `pickup` → `takeaway` interne (enum OrderType).
                 'order_type' => $orderType === 'pickup' ? 'takeaway' : $orderType,
@@ -109,17 +111,27 @@ class RestaurantPublicSlugOrderController extends Controller
                     'currency' => $order->currency,
                     'items_count' => $order->items()->count(),
                     'created' => $created,
+                    // BOS-050 (#8208, tranche 7) : secret de suivi présenté
+                    // UNE FOIS, à la création réelle (null au rejeu) —
+                    // requis pour le suivi des nouvelles commandes.
+                    'tracking_secret' => $created ? $order->trackingSecretPlain : null,
                 ],
             ], $created ? 201 : 200);
         });
     }
 
-    public function track(string $slug, string $ref): JsonResponse
+    public function track(Request $request, string $slug, string $ref): JsonResponse
     {
-        return $this->resolver->within($slug, function (RestaurantBranch $branch) use ($ref): JsonResponse {
+        return $this->resolver->within($slug, function (RestaurantBranch $branch) use ($request, $ref): JsonResponse {
             $order = $this->branchOrder($branch, $ref);
 
-            return response()->json([
+            // BOS-050 (#8208, tranche 7) : secret requis pour les commandes
+            // créées après la tranche ; flux legacy (référence + slug
+            // seuls) déprécié mais encore servi (90 j) pour les commandes
+            // antérieures.
+            $legacy = $this->trackingGuard->assertTrackable($request, $order);
+
+            return $this->trackingGuard->withDeprecationHeaders(response()->json([
                 'data' => [
                     'reference' => $order->reference,
                     'status' => $order->status->value,
@@ -139,7 +151,7 @@ class RestaurantPublicSlugOrderController extends Controller
                         ->all(),
                     'updated_at' => $order->updated_at?->toIso8601String(),
                 ],
-            ]);
+            ]), $legacy);
         });
     }
 

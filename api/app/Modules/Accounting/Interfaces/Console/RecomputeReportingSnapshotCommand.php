@@ -6,7 +6,7 @@ namespace App\Modules\Accounting\Interfaces\Console;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Jobs\RecomputeAccountingReportingSnapshotJob;
-use App\Modules\Accounting\Application\Actions\AccountingReportingSnapshotService;
+use App\Modules\Accounting\Infrastructure\Services\AccountingReportingSnapshotService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 

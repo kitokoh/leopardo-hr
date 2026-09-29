@@ -6,10 +6,11 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\TravelAgency\Application\Actions\ModerateTravelAdvertAction;
 use App\Modules\TravelAgency\Application\Actions\PayTravelAdvertAction;
+use App\Modules\TravelAgency\Application\Actions\RejectTravelAdvertAction;
 use App\Modules\TravelAgency\Application\Actions\RenewTravelAdvertAction;
 use App\Modules\TravelAgency\Application\Actions\SubmitTravelAdvertAction;
+use App\Modules\TravelAgency\Application\Actions\ValidateTravelAdvertAction;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvert;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\ModerateTravelAdvertRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelAdvertRequest;
@@ -29,7 +30,8 @@ class TravelAdvertController extends Controller
     public function __construct(
         private readonly SubmitTravelAdvertAction $submit,
         private readonly PayTravelAdvertAction $pay,
-        private readonly ModerateTravelAdvertAction $moderate,
+        private readonly ValidateTravelAdvertAction $validateAdvert,
+        private readonly RejectTravelAdvertAction $rejectAdvert,
         private readonly RenewTravelAdvertAction $renew,
     ) {}
 
@@ -199,7 +201,7 @@ class TravelAdvertController extends Controller
             abort(403);
         }
 
-        $advert = $this->moderate->validate($travelAdvert, $actor);
+        $advert = $this->validateAdvert->execute($travelAdvert, $actor);
 
         return response()->json(['data' => [
             'id' => $advert->id,
@@ -217,7 +219,7 @@ class TravelAdvertController extends Controller
             abort(403);
         }
 
-        $advert = $this->moderate->reject($travelAdvert, $actor, (string) $request->validated('reason'));
+        $advert = $this->rejectAdvert->execute($travelAdvert, $actor, (string) $request->validated('reason'));
 
         return response()->json(['data' => [
             'id' => $advert->id,

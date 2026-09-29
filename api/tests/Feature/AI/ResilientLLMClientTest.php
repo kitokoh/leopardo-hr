@@ -57,36 +57,12 @@ class ResilientLLMClientTest extends TestCase
     /**
      * Double scripté : consomme une réponse par appel, compte les appels et
      * mémorise les `response_format` reçus.
+     *
+     * @param  list<AIResponse>  $responses
      */
-    private function client(string $provider, array $responses): LLMClient
+    private function client(string $provider, array $responses): ScriptedResilientLLMClient
     {
-        return new class($provider, $responses) implements LLMClient
-        {
-            public int $calls = 0;
-
-            /** @var list<array<string, mixed>|null> */
-            public array $responseFormats = [];
-
-            /**
-             * @param  list<AIResponse>  $responses
-             */
-            public function __construct(private readonly string $name, private readonly array $responses) {}
-
-            public function chat(array $messages, array $tools = [], ?array $responseFormat = null): AIResponse
-            {
-                $this->responseFormats[] = $responseFormat;
-
-                $response = $this->responses[min($this->calls, count($this->responses) - 1)];
-                $this->calls++;
-
-                return $response;
-            }
-
-            public function provider(): string
-            {
-                return $this->name;
-            }
-        };
+        return new ScriptedResilientLLMClient($provider, $responses);
     }
 
     private function page(): AIResponse
@@ -124,8 +100,10 @@ class ResilientLLMClientTest extends TestCase
     {
         config(['ai.driver' => 'fake', 'ai.resilience.enabled' => false]);
 
-        $this->assertNotInstanceOf(ResilientLLMClient::class, app(LLMClient::class));
-        $this->assertInstanceOf(FakeLLMClient::class, app(LLMClient::class));
+        $client = app(LLMClient::class);
+
+        $this->assertInstanceOf(FakeLLMClient::class, $client);
+        $this->assertSame(FakeLLMClient::class, $client::class, 'le décorateur ne doit pas être branché quand le flag est OFF');
     }
 
     public function test_flag_on_wraps_the_driver_in_the_decorator(): void
@@ -366,5 +344,40 @@ class ResilientLLMClientTest extends TestCase
     {
         $this->assertInstanceOf(FakeLLMClient::class, $this->providerOf('fake'));
         $this->assertSame('groq', $this->providerOf('groq')->provider());
+    }
+}
+
+/**
+ * Double de test scripté : consomme une réponse par appel, compte les appels
+ * et mémorise les `response_format` reçus (propriétés typées → analyse L8).
+ */
+final class ScriptedResilientLLMClient implements LLMClient
+{
+    public int $calls = 0;
+
+    /** @var list<array<string, mixed>|null> */
+    public array $responseFormats = [];
+
+    /**
+     * @param  list<AIResponse>  $responses
+     */
+    public function __construct(
+        private readonly string $name,
+        private readonly array $responses,
+    ) {}
+
+    public function chat(array $messages, array $tools = [], ?array $responseFormat = null): AIResponse
+    {
+        $this->responseFormats[] = $responseFormat;
+
+        $response = $this->responses[min($this->calls, count($this->responses) - 1)];
+        $this->calls++;
+
+        return $response;
+    }
+
+    public function provider(): string
+    {
+        return $this->name;
     }
 }

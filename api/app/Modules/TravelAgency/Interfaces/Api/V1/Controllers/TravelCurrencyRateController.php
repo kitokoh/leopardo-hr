@@ -6,7 +6,8 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\TravelAgency\Application\Actions\UpsertCurrencyRateAction;
+use App\Modules\TravelAgency\Application\Actions\CreateCurrencyRateAction;
+use App\Modules\TravelAgency\Application\Actions\UpdateCurrencyRateAction;
 use App\Modules\TravelAgency\Domain\Models\TravelCurrencyRate;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelCurrencyConverter;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelCurrencyRateRequest;
@@ -45,7 +46,7 @@ class TravelCurrencyRateController extends Controller
             abort(403);
         }
 
-        $rate = app(UpsertCurrencyRateAction::class)->create($this->validatedData($request));
+        $rate = app(CreateCurrencyRateAction::class)->execute($this->validatedData($request));
 
         return (new TravelCurrencyRateResource($rate))->response()->setStatusCode(201);
     }
@@ -75,7 +76,7 @@ class TravelCurrencyRateController extends Controller
             abort(403);
         }
 
-        $rate = app(UpsertCurrencyRateAction::class)->update($travelCurrencyRate, $this->validatedData($request));
+        $rate = app(UpdateCurrencyRateAction::class)->execute($travelCurrencyRate, $this->validatedData($request));
 
         return (new TravelCurrencyRateResource($rate))->response();
     }

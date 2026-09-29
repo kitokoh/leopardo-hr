@@ -31,6 +31,14 @@ class RestaurantOrder extends Model
     /** @use HasFactory<RestaurantOrderFactory> */
     use HasFactory;
 
+    /**
+     * BOS-050 (#8208, tranche 7) — secret de suivi EN CLAIR, transitoire :
+     * posé par les services de création publique uniquement pour être
+     * présenté UNE FOIS dans la réponse de création. Jamais persisté (seul
+     * le hash SHA-256 `tracking_secret_hash` l'est), jamais relu.
+     */
+    public ?string $trackingSecretPlain = null;
+
     protected $fillable = [
         'company_id',
         'branch_id',
@@ -53,6 +61,10 @@ class RestaurantOrder extends Model
         'idempotency_key',
         'version',
     ];
+
+    // `tracking_secret_hash` est volontairement HORS $fillable : écrit
+    // uniquement par forceFill() dans les services de création publique
+    // (jamais depuis une entrée cliente).
 
     protected $casts = [
         'order_type' => OrderType::class,

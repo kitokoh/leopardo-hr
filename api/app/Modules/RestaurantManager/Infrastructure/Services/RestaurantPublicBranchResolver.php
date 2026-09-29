@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\RestaurantManager\Infrastructure\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Enums\RestaurantRecordStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
+use App\Shared\Services\PublicCommerce\PublicTenantResolver;
 use Closure;
 use Illuminate\Support\Facades\DB;
 
@@ -24,14 +24,19 @@ use Illuminate\Support\Facades\DB;
  *
  * La résolution traverse les tenants du schéma partagé (`shared_tenants`,
  * tenancy « schema » verrouillée — pattern PlatformMetricsOverview), puis le
- * callback s'exécute DANS le tenant de la branche via
- * `TenantManager::withinTenant` : `currentCompany()` est posé, le scope
- * BelongsToCompany s'applique — aucun accès inter-tenant possible.
+ * callback s'exécute DANS le tenant de la branche.
+ *
+ * BOS-050 (#8208, tranche 7) : garde société et bascule tenant déléguées au
+ * socle mutualisé {@see PublicTenantResolver} — `assertAccessible()`
+ * (statut + feature `restaurantmanager`, 404 uniforme) et `withinTenant()`
+ * (`currentCompany()` posé, scope BelongsToCompany actif, marqueur
+ * `tenant_scope_required` restauré en `finally`). La résolution bornée par
+ * ressource (slug de branche) reste portée ici, comme prévu par le socle.
  */
 final class RestaurantPublicBranchResolver
 {
     public function __construct(
-        private readonly TenantManager $tenantManager,
+        private readonly PublicTenantResolver $publicTenants,
     ) {}
 
     /**
@@ -74,11 +79,15 @@ final class RestaurantPublicBranchResolver
             ->whereNotIn('status', ['suspended', 'expired'])
             ->first();
 
-        if (! $company instanceof Company || ! $company->hasFeature('restaurantmanager')) {
+        if (! $company instanceof Company) {
             abort(404);
         }
 
-        return $this->tenantManager->withinTenant($company, function () use ($branchId, $callback): mixed {
+        // BOS-050 — garde société mutualisée : statut + feature verticale,
+        // 404 uniforme anti-énumération.
+        $this->publicTenants->assertAccessible($company, 'restaurantmanager', null, 404);
+
+        return $this->publicTenants->withinTenant($company, function () use ($branchId, $callback): mixed {
             /** @var RestaurantBranch|null $branch */
             $branch = RestaurantBranch::query()
                 ->where('id', (int) $branchId)
