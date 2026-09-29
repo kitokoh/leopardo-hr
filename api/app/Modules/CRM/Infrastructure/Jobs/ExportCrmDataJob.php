@@ -11,6 +11,7 @@ use App\Modules\CRM\Domain\Models\CrmExportJob;
 use App\Modules\CRM\Infrastructure\Services\CrmExportColumns;
 use App\Modules\CRM\Infrastructure\Services\CrmExportSource;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -30,8 +31,12 @@ use Throwable;
  * - `expires_at` posé à la création : le téléchargement est refusé après
  *   expiration (URL/accès expirant).
  * - Audit `crm.export.completed` / `crm.export.failed`.
+ *
+ * #8206 (BOS-017) : `ShouldBeUnique` (clé = CrmExportJob) — un double-clic
+ * ne produit qu'une exécution (un export concurrent écrirait un second
+ * fichier et écraserait la progression).
  */
-final class ExportCrmDataJob implements ShouldQueue, TenantScopedJob
+final class ExportCrmDataJob implements ShouldBeUnique, ShouldQueue, TenantScopedJob
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -39,6 +44,17 @@ final class ExportCrmDataJob implements ShouldQueue, TenantScopedJob
     use SerializesModels;
 
     public int $tries = 1;
+
+    /**
+     * #8206 (BOS-017) — TTL borné à 5 min : couvre la durée réaliste d'un
+     * export (génération CSV + écriture disque) sans verrou permanent.
+     */
+    public int $uniqueFor = 300;
+
+    public function uniqueId(): string
+    {
+        return 'crm-export:'.$this->exportJobId;
+    }
 
     public function __construct(public readonly string $exportJobId) {}
 
@@ -52,7 +68,7 @@ final class ExportCrmDataJob implements ShouldQueue, TenantScopedJob
      */
     public function middleware(): array
     {
-        return [new EnsureTenantContext()];
+        return [new EnsureTenantContext];
     }
 
     public function handle(CrmExportSource $source): void

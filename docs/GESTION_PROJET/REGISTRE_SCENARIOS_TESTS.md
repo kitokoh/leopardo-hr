@@ -1,3 +1,18 @@
+> **MAJ 2026-09-26 — #8188, contrat RBAC du référentiel Fuel rendu explicite (option 2 de l'issue).**
+> Surface **API HTTP** : aucune route nouvelle ni contrat d'URL modifié — le changement
+> touche `api/routes/modules/fuel_station.php` en commentaire uniquement (docblock ; la
+> garde gouvernance surveille `api/routes/**`, d'où cette note). Le contrat effectif est
+> désormais documenté sans zone grise : lecture du référentiel (stations/sites/équipements/
+> produits) ouverte à tout employé authentifié du tenant (#7439 — l'écran pompiste web/mobile
+> appelle ces endpoints en employé simple), écriture réservée au groupe `api.manager`,
+> signalement d'incident (`POST /fuel-station/incidents`) ouvert à tout employé, liste et
+> gestion des incidents réservées au manager via la policy effective. Scénarios automatisés :
+> `api/tests/Feature/FuelStation/FuelStationReferentialTest.php` — le test obsolète
+> `referential_requires_manager_role` (ROUGE sur `main` : 200 vs 403) est remplacé par
+> `test_referential_read_is_open_to_any_tenant_employee` (lecture employé 200 + contenu
+> asserté, flag actif) et `test_referential_write_requires_manager_role` (POST/PUT/DELETE →
+> 403 `MANAGER_REQUIRED`, échoue si la garde `api.manager` disparaît des écritures).
+
 > **MAJ 2026-09-26 — #8181, matrice RBAC fine `delivery.role` câblée sur les routes Delivery (BC-26-D05).**
 > Surface **API HTTP** : aucune route nouvelle ni contrat d'URL modifié — les gardes changent
 > (`api/routes/modules/delivery.php` : `api.manager` générique remplacé par la matrice fine
@@ -1037,3 +1052,15 @@ restent les gates applicables.
   `client-business-flows` (parcours affecter → renommer rôle → retirer).
 - **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
   `restaurant.team.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+
+## Mise à jour 2026-09-28 — assistant IA du portail web (PR #8253, issue #8224, BOS-035)
+
+- **Surface web** : nouvelle page protégée `/assistant` (module `front/web/src/modules/assistant/`)
+  — panneau de chat, badges `tools_used`, cartes de confirmation write (confirm/reject),
+  historique des conversations ; préfixe protégé `/assistant` ajouté (`protected-prefixes.ts`,
+  `proxy.ts`, `sw.js`). Scénarios : e2e Playwright `front/web/e2e/assistant.spec.ts` (question →
+  tool → réponse ; write → confirmation → exécution) + Jest `assistant-panel.test.tsx`.
+- **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue partagé
+  `assistant*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+- **Surface API** : aucun changement backend (consomme les endpoints assistant existants),
+  aucun scénario nouveau requis.

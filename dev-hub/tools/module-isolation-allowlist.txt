@@ -43,7 +43,6 @@ Modules/Payroll -> Modules/Cabinet
 Modules/Payroll -> Modules/Notification
 Modules/Payroll -> Modules/Planning
 Modules/Planning -> Modules/Attendance
-Modules/Planning -> Modules/Payroll
 Modules/Platform -> Modules/Attendance
 Modules/Platform -> Modules/Billing
 Modules/Platform -> Modules/HR
@@ -62,3 +61,12 @@ Modules/Recruitment -> Modules/HR
 # À revisiter si le hub expose un contrat découplé plus large que
 # App\Contracts\Communication\...Interface.
 Modules/EduManager -> Modules/Notification
+
+# ADR 0027 / issue #8219 (BOS-025, 2026-09-28) : `CommunicationEvent` (journal
+# des événements de livraison multi-canal) déplacé de Notification vers
+# Communication — la messagerie externe relève du module Communication.
+# Direction canonique Notification -> Communication (le dispatcher de
+# notifications écrit le journal) ; Communication -> Notification interdite.
+Modules/EduManager -> Modules/Communication
+Modules/Notification -> Modules/Communication
+Modules/Platform -> Modules/Communication

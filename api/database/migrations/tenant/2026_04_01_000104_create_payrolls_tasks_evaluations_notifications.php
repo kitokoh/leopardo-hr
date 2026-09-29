@@ -171,8 +171,15 @@ return new class extends Migration
 
     public function down(): void
     {
+        // #8237 (leçon #8207 / BOS-018) — symétrique EXACT de up() : ce fichier
+        // crée 9 tables (projects, tasks, task_comments, evaluations, payrolls,
+        // payroll_export_batches, payroll_export_items, company_settings,
+        // notifications) et son rollback ne droppe QUE celles-là. La version
+        // précédente droppait aussi `audit_logs`, table créée par la migration
+        // propriétaire `2026_05_10_000001_create_audit_logs_table.php` : un
+        // rollback ciblé de CE fichier supprimait `audit_logs` alors que sa
+        // migration restait « migrée » — aucun mécanisme ne la restaurait.
         Schema::dropIfExists('notifications');
-        Schema::dropIfExists('audit_logs');
         Schema::dropIfExists('company_settings');
         Schema::dropIfExists('payroll_export_items');
         Schema::dropIfExists('payroll_export_batches');

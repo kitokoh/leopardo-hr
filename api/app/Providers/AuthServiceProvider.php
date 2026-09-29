@@ -232,6 +232,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantTableSession;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTaxRate;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantUnit;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantZone;
+use App\Modules\RestaurantManager\Domain\Permissions\RestaurantPermissions;
 use App\Modules\RestaurantManager\Policies\RestaurantBranchPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantBranchStaffPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantCategoryPolicy;
@@ -630,5 +631,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('manage-onboarding', [OnboardingPolicy::class, 'manageSteps']);
         Gate::define('manage-features', [FeatureFlagPolicy::class, 'manageMatrix']);
         Gate::define('export-data', [ExportPolicy::class, 'export']);
+        // #8180 — capacité `restaurant.reports` (rapports & exports CSV,
+        // sans modèle propre) : la règle effective vit dans
+        // RestaurantPermissions::canViewReports() (source unique, #7599).
+        Gate::define('restaurant.reports', [RestaurantPermissions::class, 'canViewReports']);
     }
 }

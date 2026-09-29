@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\Planning\Infrastructure\Services;
 
-use App\Modules\Payroll\Domain\Models\PublicHoliday;
+use App\Shared\Contracts\Payroll\PublicHolidayCalendar;
 use Illuminate\Support\Carbon;
 
 /**
  * Issue #5289 — calendrier des jours fériés LÉGAUX par pays, côté congés.
  *
- * Lecture SEULE de la table globale `public_holidays` (module Payroll —
- * aucun code Payroll modifié, cf. anti-collision #5289) :
+ * Lecture SEULE de la table globale `public_holidays` via le contrat Shared
+ * `PublicHolidayCalendar` (#8211, BOS-023 — le module Payroll, propriétaire
+ * de la table, n'est plus importé directement, règle d'isolation #5584) :
  *  - fériés nationaux : `company_id IS NULL` (lus par tous les tenants du pays) ;
  *  - fériés récurrents : `is_recurring = true` → appliqués à toutes les
  *    années via `month_day` (cf. #1936), pas seulement à l'année stockée ;
@@ -22,6 +23,10 @@ use Illuminate\Support\Carbon;
  */
 final class LegalLeaveCalendarService
 {
+    public function __construct(
+        private readonly PublicHolidayCalendar $publicHolidays,
+    ) {}
+
     /**
      * Fériés légaux (nationaux) d'un pays pour une année.
      *
@@ -29,19 +34,18 @@ final class LegalLeaveCalendarService
      */
     public function legalHolidays(string $countryCode, int $year): array
     {
-        return PublicHoliday::query()
-            ->where('country_code', strtoupper($countryCode))
-            ->whereNull('company_id')
-            ->where(function ($query) use ($year): void {
-                $query->where('year', $year)->orWhere('is_recurring', true);
-            })
-            ->orderBy('date')
-            ->get(['date', 'name', 'holiday_type', 'is_recurring', 'month_day'])
-            ->map(fn (PublicHoliday $holiday): array => [
-                'date' => $this->effectiveDate($holiday, $year),
-                'name' => (string) $holiday->name,
-                'holiday_type' => (string) $holiday->holiday_type,
-            ])
+        return collect($this->publicHolidays->nationalHolidays($countryCode, $year))
+            ->map(
+                /**
+                 * @param  array{date: string, name: string, holiday_type: string, is_recurring: bool, month_day: string|null}  $holiday
+                 * @return array{date: string, name: string, holiday_type: string}
+                 */
+                fn (array $holiday): array => [
+                    'date' => $this->effectiveDate($holiday, $year),
+                    'name' => $holiday['name'],
+                    'holiday_type' => $holiday['holiday_type'],
+                ],
+            )
             ->sortBy('date')
             ->values()
             ->all();
@@ -53,14 +57,16 @@ final class LegalLeaveCalendarService
      * est la première occurrence ; `month_day` porte mois-jour). Les lignes
      * récurrentes legacy sans `month_day` dérivent le mois-jour de la date
      * stockée — sans quoi le férié n'est jamais appliqué hors de son année.
+     *
+     * @param  array{date: string, name: string, holiday_type: string, is_recurring: bool, month_day: string|null}  $holiday
      */
-    private function effectiveDate(PublicHoliday $holiday, int $year): string
+    private function effectiveDate(array $holiday, int $year): string
     {
-        if ($holiday->is_recurring) {
-            return sprintf('%04d-%s', $year, $holiday->month_day ?? $holiday->date->format('m-d'));
+        if ($holiday['is_recurring']) {
+            return sprintf('%04d-%s', $year, $holiday['month_day'] ?? substr($holiday['date'], 5));
         }
 
-        return $holiday->date->toDateString();
+        return $holiday['date'];
     }
 
     /**

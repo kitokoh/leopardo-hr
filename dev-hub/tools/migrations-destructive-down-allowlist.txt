@@ -1,0 +1,9 @@
+# Allowlist legacy — garde check-migration-destructive-down.py (#8207 / BOS-018).
+#
+# Une entrée = un fichier dont le down() viole la règle « ne détruire que ce
+# que son up() a créé ». Dette legacy INVENTORIÉE au 2026-09-28 (13 fichiers,
+# 4 clusters) — hors périmètre du lot #8207, dont le périmètre de correction
+# était le cluster Travel (5 fichiers, corrigés dans le même lot).
+# Résorption : chantier dédié par cluster, suivi dans l'issue #8237, en
+# retirant chaque entrée après correction. Toute violation dans un fichier
+# NON listé ici fait échouer la garde.

@@ -6,9 +6,9 @@ namespace App\Modules\EduManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Communication\Domain\Models\CommunicationEvent;
 use App\Modules\EduManager\Domain\Models\EduStudent;
 use App\Modules\EduManager\Interfaces\Api\V1\Traits\ChecksEduSolution;
-use App\Modules\Notification\Domain\Models\CommunicationEvent;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
