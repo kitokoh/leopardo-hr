@@ -10,12 +10,12 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderItem;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantPosSession;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTable;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTableSession;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
+use Tests\Support\AssignsResourceAccess;
 use Tests\TestCase;
 
 /**
@@ -24,6 +24,7 @@ use Tests\TestCase;
  */
 class RestaurantReportTest extends TestCase
 {
+    use AssignsResourceAccess;
     use RefreshTenantDatabase;
 
     private function principal(Company $company): Employee
@@ -115,6 +116,45 @@ class RestaurantReportTest extends TestCase
         });
     }
 
+    /**
+     * Couverture unique repêchée du doublon `RestaurantReportsTest` (contrat
+     * plat mort, retiré — #8193) : `/reports/pos` n'était testé QUE là-bas.
+     * Assertions portées sur le contrat vivant enveloppé `data.report.*`
+     * (clés réelles de `RestaurantReportService::posSessions`).
+     */
+    public function test_pos_report_aggregates_closings(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $this->activateRestaurant($company);
+        $this->principal($company);
+
+        app(TenantManager::class)->withinTenant($company, function (): void {
+            $branch = RestaurantBranch::factory()->create();
+
+            // 1 clôture aujourd'hui : écart -100.
+            RestaurantPosSession::factory()->create([
+                'branch_id' => $branch->id,
+                'status' => 'closed',
+                'opening_cash_minor' => 5000,
+                'expected_cash_minor' => 45000,
+                'counted_cash_minor' => 44900,
+                'variance_minor' => -100,
+                'opened_at' => now()->subHours(6),
+                'closed_at' => now()->subHour(),
+            ]);
+            // Une session encore ouverte (défaut factory) ne compte pas.
+            RestaurantPosSession::factory()->create(['branch_id' => $branch->id]);
+
+            $this->getJson('/api/v1/restaurant/reports/pos')
+                ->assertOk()
+                ->assertJsonPath('data.report.sessions_count', 1)
+                ->assertJsonPath('data.report.opening_cash_minor', 5000)
+                ->assertJsonPath('data.report.counted_cash_minor', 44900)
+                ->assertJsonPath('data.report.variance_minor', -100);
+        });
+    }
+
     public function test_ordinary_employee_cannot_read_reports(): void
     {
         /** @var Company $company */
@@ -130,5 +170,52 @@ class RestaurantReportTest extends TestCase
 
         $this->getJson('/api/v1/restaurant/reports/sales')->assertStatus(403);
         $this->getJson('/api/v1/restaurant/dashboard/kpis')->assertStatus(403);
+    }
+
+    /**
+     * #8180 — la permission `restaurant.reports` suit la règle canonique
+     * #7599 ({@see RestaurantPermissions::canViewReports()}, invoquée par le
+     * Gate `restaurant.reports`) : dès qu'une assignation `restaurant_branch`
+     * existe, le scoping est actif et fail-closed — niveau `manage` requis,
+     * `view` ne suffit pas, `principal` toujours admis.
+     */
+    public function test_reports_follow_branch_scoped_rbac(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $this->activateRestaurant($company);
+
+        /** @var RestaurantBranch $branch */
+        $branch = RestaurantBranch::factory()->create(['company_id' => $company->id]);
+
+        // Manager de succursale (assignation `manage`) → accès aux rapports.
+        /** @var Employee $manager */
+        $manager = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+        $this->assignResourceAccess($manager, 'restaurant_branch', $branch->id, 'manage');
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/restaurant/reports/sales')->assertOk();
+        $this->getJson('/api/v1/restaurant/dashboard/kpis')->assertOk();
+        $this->postJson('/api/v1/restaurant/reports/export', ['report_type' => 'sales'])->assertOk();
+
+        // Assignation `view` uniquement → 403 (les rapports sont un geste de
+        // gestion, #7599).
+        /** @var Employee $viewer */
+        $viewer = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+        $this->assignResourceAccess($viewer, 'restaurant_branch', $branch->id, 'view');
+        Sanctum::actingAs($viewer);
+
+        $this->getJson('/api/v1/restaurant/reports/sales')->assertStatus(403);
+
+        // Scoping actif mais `principal` → bypass historique conservé.
+        $this->principal($company);
+
+        $this->getJson('/api/v1/restaurant/reports/sales')->assertOk();
     }
 }
