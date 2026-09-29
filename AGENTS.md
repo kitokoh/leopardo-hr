@@ -1,6 +1,18 @@
 # AGENTS.md - Guide de travail Leopardo
 
-Derniere mise a jour : 2026-09-28 (#8207 — garde rollbacks destructeurs + doublon 7417/7420)
+Derniere mise a jour : 2026-09-29 (#8247 — contrat d'erreur : abort() vs renderer)
+
+> Leçon 2026-09-29 (#8247) : **un `abort(404, 'MON_CODE')` n'expose JAMAIS
+> `MON_CODE` au client API** — le renderer `HttpExceptionInterface` de
+> `bootstrap/app.php` réécrit tout 404 en `{error: RESOURCE_NOT_FOUND}`
+> générique. Pour un code d'erreur stable et documentable
+> (`PENDING_ACTION_NOT_FOUND`…), il faut une `DomainException` (renderer
+> dédié `{error, message, localized_message}`). Corollaire doc : ne jamais
+> documenter dans openapi.yaml un code d'erreur lu dans un `abort()` sans
+> vérifier le renderer — et toujours relire le contrôleur plutôt que faire
+> confiance à la spec existante (le champ `reply` de `/ai/chat` était
+> documenté mais n'a jamais existé ; le champ réel est `response`, enveloppé
+> dans `data`).
 
 > Leçon 2026-09-28 (#8207, lot Z11 BOS-017/018) : **(1) une migration fantôme
 > neutralisée garde souvent son `down()` DESTRUCTEUR d'origine** — 10 fichiers
@@ -555,6 +567,11 @@ pour les résoudre au checkout.
 > Les pièges datés (drain de crise 2026-09-16, merge lane 2026-09-08, dérive dev
 > Render 2026-09-15, audits 2026-05-13/14, incidents Vercel…) sont consignés dans
 > `docs/GESTION_PROJET/LECONS_AGENTS.md`.
+
+### Bascules search_path PostgreSQL (BOS-019/#8204, ADR-0027)
+
+- Toute bascule `SET search_path` passe par `TenantManager::withinSearchPath()` (try/finally garanti, validation fail-closed de la chaîne) — jamais de SQL manuel hors `TenantManager` ; le middleware `EnsureKioskSearchPathReset` (#3368) reste un filet, pas une permission.
+- Le mode « un schéma par tenant » est MORT (garde `Company::booted()` conservée) : aucune nouvelle branche `tenancy_type === 'schema'` — inventaire borné des références legacy dans `docs/architecture/adr/0027-shared-schema-definitif.md`.
 
 ### Frontieres routes modules
 

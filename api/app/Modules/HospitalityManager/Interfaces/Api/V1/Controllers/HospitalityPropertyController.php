@@ -6,6 +6,7 @@ namespace App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\HospitalityManager\Application\Actions\DeleteHospitalityPropertyAction;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityProperty;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Requests\StoreHospitalityPropertyRequest;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Requests\UpdateHospitalityPropertyRequest;
@@ -26,6 +27,8 @@ class HospitalityPropertyController extends Controller
 {
     use BoundsPagination;
     use ChecksHospitalitySolution;
+
+    public function __construct(private readonly DeleteHospitalityPropertyAction $deleteProperty) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -120,14 +123,9 @@ class HospitalityPropertyController extends Controller
         $this->assertSameTenant($property, $actor->company_id);
         $this->authorize('delete', $property);
 
-        // Suppression bloquée tant que des types de chambres ou des unités
-        // sont rattachés à l'établissement (même invariant que le référentiel
-        // HealthManager — suppression en cascade silencieuse interdite).
-        if ($property->roomTypes()->exists() || $property->units()->exists()) {
-            abort(422, 'HOSPITALITY_PROPERTY_IN_USE');
-        }
-
-        $property->delete();
+        // 422 HOSPITALITY_PROPERTY_IN_USE tant que des types de chambres ou
+        // des unités sont rattachés (cascade silencieuse interdite).
+        $this->deleteProperty->execute($property);
 
         return response()->json(null, 204);
     }

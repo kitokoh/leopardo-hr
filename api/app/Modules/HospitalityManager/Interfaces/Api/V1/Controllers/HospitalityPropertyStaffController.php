@@ -6,9 +6,11 @@ namespace App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\HospitalityManager\Application\Actions\AssignHospitalityStaffAction;
+use App\Modules\HospitalityManager\Application\Actions\RemoveHospitalityStaffAssignmentAction;
+use App\Modules\HospitalityManager\Application\Actions\UpdateHospitalityStaffAssignmentAction;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityProperty;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityPropertyStaff;
-use App\Modules\HospitalityManager\Infrastructure\Services\HospitalityPropertyStaffService;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Requests\StoreHospitalityPropertyStaffRequest;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Requests\UpdateHospitalityPropertyStaffRequest;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Resources\HospitalityPropertyStaffResource;
@@ -30,7 +32,9 @@ class HospitalityPropertyStaffController extends Controller
     use ChecksHospitalitySolution;
 
     public function __construct(
-        private readonly HospitalityPropertyStaffService $staffService
+        private readonly AssignHospitalityStaffAction $assignStaff,
+        private readonly UpdateHospitalityStaffAssignmentAction $updateAssignment,
+        private readonly RemoveHospitalityStaffAssignmentAction $removeAssignment,
     ) {}
 
     public function index(Request $request, HospitalityProperty $property): JsonResponse
@@ -64,8 +68,7 @@ class HospitalityPropertyStaffController extends Controller
         $this->assertSameTenant($property, $actor->company_id);
         $this->authorize('create', [HospitalityPropertyStaff::class, $property->getKey()]);
 
-        $assignment = $this->staffService->assign($property, $actor, $request->validated());
-        $assignment->load('employee');
+        $assignment = $this->assignStaff->execute($property, $actor, $request->validated());
 
         return (new HospitalityPropertyStaffResource($assignment))->response()->setStatusCode(201);
     }
@@ -79,15 +82,11 @@ class HospitalityPropertyStaffController extends Controller
         $this->assertSameTenant($property, $actor->company_id);
         $this->assertSameTenant($assignment, $actor->company_id);
 
-        // L'affectation doit appartenir à l'établissement de la route.
-        abort_if($assignment->getAttribute('property_id') !== $property->getKey(), 404);
-
         $this->authorize('update', $assignment);
 
-        $assignment->update($request->validated());
-        $assignment->load('employee');
+        $assignment = $this->updateAssignment->execute($property, $assignment, $request->validated());
 
-        return (new HospitalityPropertyStaffResource($assignment->refresh()))->response();
+        return (new HospitalityPropertyStaffResource($assignment))->response();
     }
 
     public function destroy(Request $request, HospitalityProperty $property, HospitalityPropertyStaff $assignment): JsonResponse
@@ -99,11 +98,9 @@ class HospitalityPropertyStaffController extends Controller
         $this->assertSameTenant($property, $actor->company_id);
         $this->assertSameTenant($assignment, $actor->company_id);
 
-        abort_if($assignment->getAttribute('property_id') !== $property->getKey(), 404);
-
         $this->authorize('delete', $assignment);
 
-        $assignment->delete();
+        $this->removeAssignment->execute($property, $assignment);
 
         return response()->json(null, 204);
     }

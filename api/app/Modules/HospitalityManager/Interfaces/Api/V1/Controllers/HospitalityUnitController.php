@@ -6,8 +6,8 @@ namespace App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\HospitalityManager\Application\Actions\DeleteHospitalityUnitAction;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityProperty;
-use App\Modules\HospitalityManager\Domain\Models\HospitalityReservation;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityUnit;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Requests\StoreHospitalityUnitRequest;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Requests\UpdateHospitalityUnitRequest;
@@ -31,6 +31,8 @@ class HospitalityUnitController extends Controller
 {
     use BoundsPagination;
     use ChecksHospitalitySolution;
+
+    public function __construct(private readonly DeleteHospitalityUnitAction $deleteUnit) {}
 
     public function index(Request $request, HospitalityProperty $property): JsonResponse
     {
@@ -108,21 +110,9 @@ class HospitalityUnitController extends Controller
         $this->assertSameTenant($unit, $actor->company_id);
         $this->authorize('delete', $unit);
 
-        // Une unité référencée par une réservation ACTIVE (non terminale)
-        // n'est pas supprimable : la réservation pointerait dans le vide et
-        // l'occupation du jour deviendrait incohérente (même invariant que
-        // `HOSPITALITY_PROPERTY_IN_USE` / `HOSPITALITY_ROOM_TYPE_IN_USE`).
-        $activeReservations = HospitalityReservation::query()
-            ->where('company_id', $actor->company_id)
-            ->where('unit_id', $unit->getKey())
-            ->whereNotIn('status', HospitalityReservation::TERMINAL_STATUSES)
-            ->exists();
-
-        if ($activeReservations) {
-            abort(422, 'HOSPITALITY_UNIT_IN_USE');
-        }
-
-        $unit->delete();
+        // 422 HOSPITALITY_UNIT_IN_USE tant qu'une réservation ACTIVE (non
+        // terminale) référence l'unité.
+        $this->deleteUnit->execute($unit, (string) $actor->company_id);
 
         return response()->json(null, 204);
     }

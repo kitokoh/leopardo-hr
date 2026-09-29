@@ -6,6 +6,7 @@ namespace App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\HospitalityManager\Application\Actions\DeleteHospitalityRoomTypeAction;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityProperty;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityRoomType;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Requests\StoreHospitalityRoomTypeRequest;
@@ -26,6 +27,8 @@ class HospitalityRoomTypeController extends Controller
 {
     use BoundsPagination;
     use ChecksHospitalitySolution;
+
+    public function __construct(private readonly DeleteHospitalityRoomTypeAction $deleteRoomType) {}
 
     public function index(Request $request, HospitalityProperty $property): JsonResponse
     {
@@ -99,12 +102,8 @@ class HospitalityRoomTypeController extends Controller
         $this->assertSameTenant($roomType, $actor->company_id);
         $this->authorize('delete', $roomType);
 
-        // Un type rattaché à des unités n'est pas supprimable silencieusement.
-        if ($roomType->units()->exists()) {
-            abort(422, 'HOSPITALITY_ROOM_TYPE_IN_USE');
-        }
-
-        $roomType->delete();
+        // 422 HOSPITALITY_ROOM_TYPE_IN_USE si des unités sont rattachées.
+        $this->deleteRoomType->execute($roomType);
 
         return response()->json(null, 204);
     }

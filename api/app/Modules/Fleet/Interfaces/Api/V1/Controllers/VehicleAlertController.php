@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Fleet\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\VehicleAlertResource;
-use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Fleet\Application\Actions\AcknowledgeVehicleAlertAction;
 use App\Modules\Fleet\Domain\Models\VehicleAlert;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -41,12 +42,8 @@ class VehicleAlertController extends Controller
         $user = $request->user();
         $alert = VehicleAlert::where('company_id', $user->company_id)->findOrFail($id);
 
-        $alert->update([
-            'acknowledged' => true,
-            'acknowledged_by' => $user->id,
-        ]);
+        $alert = app(AcknowledgeVehicleAlertAction::class)->execute($alert, (int) $user->id);
 
-        return (new VehicleAlertResource($alert->fresh()))->response();
+        return (new VehicleAlertResource($alert))->response();
     }
 }
-
