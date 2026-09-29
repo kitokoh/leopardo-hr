@@ -110,6 +110,13 @@ class AttendanceLog extends Model implements AttendanceLogView
      * consommateurs historiques (EstimationService).
      */
 
+    public function id(): ?int
+    {
+        $value = $this->getAttribute('id');
+
+        return is_numeric($value) ? (int) $value : null;
+    }
+
     public function date(): ?\Carbon\Carbon
     {
         return $this->date;
@@ -154,6 +161,16 @@ class AttendanceLog extends Model implements AttendanceLogView
     public function lateMinutes(): ?int
     {
         return $this->late_minutes;
+    }
+
+    public function workType(): ?string
+    {
+        return $this->work_type;
+    }
+
+    public function punchMeta(): ?array
+    {
+        return $this->punch_meta;
     }
 
     /** @return BelongsTo<Schedule, $this> */

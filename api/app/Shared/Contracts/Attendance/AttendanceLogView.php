@@ -28,6 +28,9 @@ use Carbon\Carbon;
  */
 interface AttendanceLogView
 {
+    /** Identifiant du journal (null si non persisté / non projeté). */
+    public function id(): ?int;
+
     /** Date du journal (jour de pointage, timezone-naïve par conception). */
     public function date(): ?Carbon;
 
@@ -51,4 +54,15 @@ interface AttendanceLogView
 
     /** Minutes de retard enregistrées. */
     public function lateMinutes(): ?int;
+
+    /** Type de travail de la session ('normal', 'break', 'mission', 'travel'…). */
+    public function workType(): ?string;
+
+    /**
+     * Méta-données de pointage (device_timezone, geofence…) — null si
+     * absentes ou non projetées par la requête.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function punchMeta(): ?array;
 }
