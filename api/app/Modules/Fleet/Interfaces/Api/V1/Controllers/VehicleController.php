@@ -11,13 +11,13 @@ use App\Http\Resources\Api\V1\VehicleAssignmentResource;
 use App\Http\Resources\Api\V1\VehicleMaintenanceResource;
 use App\Http\Resources\Api\V1\VehicleResource;
 use App\Http\Resources\Api\V1\VehicleTripResource;
-use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use App\Modules\Fleet\Application\Actions\AssignDriverToVehicleAction;
 use App\Modules\Fleet\Application\Actions\DeleteVehicleAction;
 use App\Modules\Fleet\Application\Actions\RegisterVehicleAction;
 use App\Modules\Fleet\Application\Actions\UnassignDriverFromVehicleAction;
 use App\Modules\Fleet\Application\Actions\UpdateVehicleAction;
 use App\Modules\Fleet\Domain\Models\Vehicle;
+use App\Shared\Contracts\Tracking\VehicleTrackingProvider;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -127,7 +127,7 @@ class VehicleController extends Controller
         return response()->json(['message' => __('errors.VEHICLE_DELETED')]);
     }
 
-    public function position(Request $request, int $id, TraccarService $traccar): JsonResponse
+    public function position(Request $request, int $id, VehicleTrackingProvider $traccar): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
@@ -152,7 +152,7 @@ class VehicleController extends Controller
      * Sécurité #2217 — véhicules assignés à l'employé connecté (app mobile
      * employé). Consomme le même format que `position()`.
      */
-    public function myVehicles(Request $request, TraccarService $traccar): JsonResponse
+    public function myVehicles(Request $request, VehicleTrackingProvider $traccar): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
