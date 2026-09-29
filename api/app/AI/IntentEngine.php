@@ -17,12 +17,14 @@ use App\Modules\Communication\Infrastructure\Services\CommunicationReplyService;
 use App\Modules\Communication\Infrastructure\Services\EmailClassificationService;
 use App\Modules\HR\Domain\Models\Department;
 use App\Modules\Notification\Domain\Models\Notification;
+use App\AI\Support\JsonSchemaValidator;
 use App\Modules\Payroll\Domain\Models\Payroll;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class IntentEngine
 {
@@ -35,6 +37,8 @@ class IntentEngine
         private readonly ToolPermissionPolicy $toolPermissionPolicy,
         // BOS-032 (#8222) : idempotence métier des write-tools confirmés.
         private readonly WriteIdempotencyStore $writeIdempotencyStore,
+        // BOS-034 (#8223) : validation runtime des schémas d'outils.
+        private readonly JsonSchemaValidator $jsonSchemaValidator,
     ) {}
 
     /**
@@ -114,11 +118,30 @@ class IntentEngine
             );
         }
 
+        $tool = $this->toolRegistry->findTool($toolCall->name);
+
+        // BOS-034 (#8223) — validation des ARGUMENTS produits par le LLM
+        // contre le schéma déclaré, AVANT toute proposition ou exécution
+        // (un argument hostile ou malformé ne doit jamais atteindre un
+        // handler). Mode `warn` : audité et laissé passer (1 semaine) ; mode
+        // `strict` : refus fail-closed.
+        if ($tool !== null) {
+            $inputViolation = $this->schemaGate(
+                'input',
+                $toolCall,
+                $this->inputSchemaOf($tool),
+                $toolCall->arguments,
+                $companyId,
+                $userId,
+            );
+            if ($inputViolation !== null) {
+                return $inputViolation;
+            }
+        }
+
         if ($this->writeToolPolicy->requiresConfirmation($toolCall->name)) {
             return $this->pendingConfirmationResult($toolCall, $companyId, $userId, $conversationId);
         }
-
-        $tool = $this->toolRegistry->findTool($toolCall->name);
 
         if ($tool === null) {
             return new ToolResult(
@@ -131,6 +154,21 @@ class IntentEngine
 
         try {
             $result = $this->dispatchToolAction($toolCall->name, $toolCall->arguments, $companyId, $userId);
+
+            // BOS-034 (#8223) — validation de la SORTIE contre l'outputSchema
+            // déclaré (fail-closed en mode strict + audit) : une sortie non
+            // conforme ne repart pas au LLM comme si de rien n'était.
+            $outputViolation = $this->schemaGate(
+                'output',
+                $toolCall,
+                $this->outputSchemaOf($tool),
+                $result,
+                $companyId,
+                $userId,
+            );
+            if ($outputViolation !== null) {
+                return $outputViolation;
+            }
 
             return new ToolResult(
                 toolCallId: $toolCall->id,
@@ -146,6 +184,119 @@ class IntentEngine
                 success: false,
             );
         }
+    }
+
+    /**
+     * BOS-034 (#8223) — garde de validation par schéma (entrée ou sortie).
+     *
+     * Retourne null quand le flux peut continuer (aucune violation, schéma
+     * absent, ou mode `warn`) ; en mode `strict`, toute violation produit un
+     * ToolResult de refus fail-closed. Toute violation est auditée par log
+     * structuré (chemins et règles attendues — jamais les valeurs métier).
+     *
+     * @param  array<string, mixed>  $schema
+     * @param  mixed  $data
+     */
+    private function schemaGate(string $phase, ToolCall $toolCall, array $schema, mixed $data, string $companyId, int $userId): ?ToolResult
+    {
+        $violations = $this->validateAndAudit($phase, $toolCall->name, $schema, $data, $companyId, $userId);
+        if ($violations === [] || $this->schemaValidationMode() !== 'strict') {
+            return null;
+        }
+
+        return new ToolResult(
+            toolCallId: $toolCall->id,
+            name: $toolCall->name,
+            content: json_encode([
+                'error' => $phase === 'input'
+                    ? 'AI_TOOL_INPUT_SCHEMA_VIOLATION'
+                    : 'AI_TOOL_OUTPUT_SCHEMA_VIOLATION',
+                'message' => 'Tool '.$phase.' does not match the declared JSON schema',
+                'violations' => $violations,
+            ]) ?: '{}',
+            success: false,
+        );
+    }
+
+    /**
+     * BOS-034 (#8223) — cœur de la garde : valide `$data` contre `$schema`
+     * et audite TOUTE violation par log structuré `ai.tool_schema_violation`
+     * (chemins et règles attendues — jamais les valeurs métier). Retourne la
+     * liste des violations (vide = conforme ou schéma absent) ; la décision
+     * warn/strict appartient à l'appelant.
+     *
+     * @param  array<string, mixed>  $schema
+     * @return list<string>
+     */
+    private function validateAndAudit(string $phase, string $toolName, array $schema, mixed $data, string $companyId, int $userId): array
+    {
+        if ($schema === []) {
+            return [];
+        }
+
+        $violations = $this->jsonSchemaValidator->validate($data, $schema);
+        if ($violations === []) {
+            return [];
+        }
+
+        Log::warning('ai.tool_schema_violation', [
+            'company_id' => $companyId,
+            'user_id' => $userId,
+            'tool' => $toolName,
+            'phase' => $phase,
+            'mode' => $this->schemaValidationMode(),
+            'violations' => $violations,
+        ]);
+
+        return $violations;
+    }
+
+    /**
+     * Schéma d'entrée de l'outil : celui de l'AIToolDefinition déclarée par
+     * le BC propriétaire en priorité, sinon les `parameters` du registre DB
+     * (le schéma effectivement exposé au LLM).
+     *
+     * @param  array<string, mixed>  $tool
+     * @return array<string, mixed>
+     */
+    private function inputSchemaOf(array $tool): array
+    {
+        $declared = $tool['input_schema'] ?? null;
+        if (is_array($declared) && $declared !== []) {
+            return $declared;
+        }
+
+        $registered = $tool['parameters'] ?? null;
+
+        return is_array($registered) ? $registered : [];
+    }
+
+    /**
+     * Schéma de sortie déclaré (uniquement les outils couverts par une
+     * AIToolDefinition — les outils legacy sans définition restent hors
+     * validation de sortie, documenté dans la PR #8223).
+     *
+     * @param  array<string, mixed>  $tool
+     * @return array<string, mixed>
+     */
+    private function outputSchemaOf(array $tool): array
+    {
+        $declared = $tool['output_schema'] ?? null;
+
+        return is_array($declared) ? $declared : [];
+    }
+
+    /**
+     * Mode de validation des schémas : `warn` (défaut — audit sans blocage,
+     * fenêtre d'observation d'une semaine) ou `strict` (fail-closed).
+     * Bascule par config `ai.tool_schema_validation.mode` /
+     * `AI_TOOL_SCHEMA_VALIDATION_MODE` (critère #3 de l'issue).
+     */
+    private function schemaValidationMode(): string
+    {
+        $configured = config('ai.tool_schema_validation.mode', 'warn');
+
+        return $configured === 'strict' ? 'strict' : 'warn';
     }
 
     /**
@@ -180,6 +331,24 @@ class IntentEngine
             ];
         }
 
+        // BOS-034 (#8223) — défense en profondeur à l'EXÉCUTION confirmée
+        // (le dispatch réel d'un write-tool) : les arguments sont revalidés
+        // contre le schéma déclaré — le rôle/mode a pu changer depuis la
+        // proposition, et un pending stocké hors boucle chat n'est pas passé
+        // par la garde d'executeSingleTool. Mode strict : refus AVANT tout
+        // effet et avant toute entrée d'idempotence.
+        $tool = $this->toolRegistry->findTool($toolName);
+        $inputViolations = $tool !== null
+            ? $this->validateAndAudit('input', $toolName, $this->inputSchemaOf($tool), $arguments, $companyId, $userId)
+            : [];
+        if ($inputViolations !== [] && $this->schemaValidationMode() === 'strict') {
+            return [
+                'error' => 'AI_TOOL_INPUT_SCHEMA_VIOLATION',
+                'message' => 'Tool input does not match the declared JSON schema',
+                'violations' => $inputViolations,
+            ];
+        }
+
         $argumentsHash = $this->writeIdempotencyStore->argumentsHash($arguments);
         $idempotencyKey = $this->writeIdempotencyStore->makeKey($companyId, $conversationId, $pendingActionId, $toolName, $argumentsHash);
 
@@ -205,6 +374,22 @@ class IntentEngine
                 $conversationId,
                 $result,
             );
+
+            // BOS-034 (#8223) — sortie validée contre l'outputSchema déclaré.
+            // L'effet métier A EU LIEU : l'entrée d'idempotence (résultat
+            // réel) reste persistée ci-dessus — en mode strict seule la
+            // RÉPONSE est refusée (fail-closed côté client), jamais l'effet
+            // rejoué (critère « violation → refus + audit »).
+            $outputViolations = $tool !== null
+                ? $this->validateAndAudit('output', $toolName, $this->outputSchemaOf($tool), $result, $companyId, $userId)
+                : [];
+            if ($outputViolations !== [] && $this->schemaValidationMode() === 'strict') {
+                return [
+                    'error' => 'AI_TOOL_OUTPUT_SCHEMA_VIOLATION',
+                    'message' => 'Tool output does not match the declared JSON schema',
+                    'violations' => $outputViolations,
+                ];
+            }
         }
 
         return $result;

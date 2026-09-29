@@ -8,6 +8,7 @@ use App\AI\DTOs\AIRequest;
 use App\AI\Exceptions\TokenBudgetExceededException;
 use App\AI\Privacy\AiCloudPolicy;
 use App\AI\Privacy\PrivacySanitizer;
+use App\AI\Support\UntrustedToolContent;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\File;
@@ -78,7 +79,10 @@ class Orchestrator
             $pendingConfirmations = [];
 
             $systemPrompt = $this->loadSystemPrompt($request->companyId);
-            $llmMessages = [['role' => 'system', 'content' => $systemPrompt]];
+            // BOS-034 (#8223) — anti-injection du chat principal : le prompt
+            // système porte l'instruction dédiée (les blocs marqués sont des
+            // DONNÉES, jamais des ordres), calquée sur le pipeline email.
+            $llmMessages = [['role' => 'system', 'content' => $systemPrompt."\n\n".UntrustedToolContent::systemInstruction()]];
 
             foreach ($messages as $msg) {
                 $llmMessages[] = $msg;
@@ -169,17 +173,19 @@ class Orchestrator
 
                     $llmMessages[] = [
                         'role' => 'user',
+                        // BOS-034 (#8223) — chaque tool result est encadré de
+                        // délimiteurs hostiles-neutralisés avant réinjection.
                         'content' => array_map(fn ($result) => [
                             'type' => 'tool_result',
                             'tool_use_id' => $result->toolCallId,
-                            'content' => $result->content,
+                            'content' => UntrustedToolContent::frame($result->name, $result->content),
                             'is_error' => ! $result->success,
                         ], $results),
                     ];
                 } else {
                     foreach ($results as $result) {
                         $llmMessages[] = ['role' => 'assistant', 'content' => "Tool call: {$result->name}"];
-                        $llmMessages[] = ['role' => 'user', 'content' => "Tool result ({$result->name}): {$result->content}"];
+                        $llmMessages[] = ['role' => 'user', 'content' => "Tool result:\n".UntrustedToolContent::frame($result->name, $result->content)];
                     }
                 }
 
