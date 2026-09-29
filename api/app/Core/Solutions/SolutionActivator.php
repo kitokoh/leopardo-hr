@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Solutions\Exceptions\SolutionMissingDependencyException;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Events\SolutionActivated;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Activation d'une solution sectorielle par tenant — FUEL-001.
@@ -26,6 +27,7 @@ final class SolutionActivator
 {
     public function __construct(
         private readonly SolutionCatalogue $catalogue,
+        private readonly SolutionPermissionInstaller $permissionInstaller,
     ) {}
 
     public function isActive(Company $company, string $code): bool
@@ -100,21 +102,30 @@ final class SolutionActivator
             throw new SolutionMissingDependencyException($missing);
         }
 
-        $company->setFeature($code, true);
-        $company->save();
+        // BOS-013 (#8200) — flag + installation effective des permissions
+        // déclarées par le manifest (grants du principal) + audit enrichi,
+        // dans UNE transaction d'activation : tout est posé, ou rien.
+        DB::transaction(function () use ($company, $code, $manifest, $actorId): void {
+            $company->setFeature($code, true);
+            $company->save();
 
-        AuditLog::create([
-            'company_id' => $company->id,
-            'user_id' => $actorId,
-            'action' => 'solution.activated',
-            'auditable_type' => Company::class,
-            'auditable_id' => null,
-            'old_values' => ['status' => 'inactive'],
-            'new_values' => [
-                'solution' => $code,
-                'required_modules' => $manifest->requiredModules(),
-            ],
-        ]);
+            $installed = $this->permissionInstaller->install($company, $manifest);
+
+            AuditLog::create([
+                'company_id' => $company->id,
+                'user_id' => $actorId,
+                'action' => 'solution.activated',
+                'auditable_type' => Company::class,
+                'auditable_id' => null,
+                'old_values' => ['status' => 'inactive'],
+                'new_values' => [
+                    'solution' => $code,
+                    'industry' => $manifest->industry()->value,
+                    'required_modules' => $manifest->requiredModules(),
+                    'permissions_installed' => $installed,
+                ],
+            ]);
+        });
 
         // Audit 2026-09-14 : poser le flag ne suffit pas à rendre une verticale
         // UTILISABLE. Une solution peut avoir besoin d'un référentiel ou d'une
@@ -125,5 +136,76 @@ final class SolutionActivator
         SolutionActivated::dispatch($company, $code);
 
         return ['code' => $code, 'status' => 'activated', 'missing' => []];
+    }
+
+    /**
+     * Désactivation manuelle d'une solution — BOS-013 (#8200) : retrait
+     * propre des grants installés à l'activation, dans la même logique
+     * transactionnelle (opération inverse), audit symétrique
+     * (`solution.deactivated`). Idempotente : une solution inactive est un
+     * no-op (`already_inactive`) ; code inconnu refusé (fail-closed).
+     *
+     * @return array{code: string, status: string}
+     */
+    public function deactivate(Company $company, string $code, ?int $actorId = null): array
+    {
+        $manifest = $this->catalogue->resolve($code); // 404 si inconnu
+
+        if (! $this->isActive($company, $code)) {
+            return ['code' => $code, 'status' => 'already_inactive'];
+        }
+
+        // Les codes de permission PARTAGÉS avec une autre solution encore
+        // active du tenant sont conservés (ex. `restaurant.manager`, déclaré
+        // par les deux manifests de la verticale restaurant).
+        $keptCodes = [];
+        foreach ($this->catalogue->codes() as $otherCode) {
+            if ($otherCode === $code || ! $this->isActive($company, $otherCode)) {
+                continue;
+            }
+
+            $keptCodes = array_merge($keptCodes, array_keys($this->catalogue->resolve($otherCode)->permissions()));
+        }
+
+        DB::transaction(function () use ($company, $code, $manifest, $actorId, $keptCodes): void {
+            $revoked = $this->permissionInstaller->revoke($company, $manifest, $keptCodes);
+
+            $company->setFeature($code, false);
+            $company->save();
+
+            AuditLog::create([
+                'company_id' => $company->id,
+                'user_id' => $actorId,
+                'action' => 'solution.deactivated',
+                'auditable_type' => Company::class,
+                'auditable_id' => null,
+                'old_values' => ['status' => 'active'],
+                'new_values' => [
+                    'solution' => $code,
+                    'industry' => $manifest->industry()->value,
+                    'permissions_revoked' => $revoked,
+                ],
+            ]);
+        });
+
+        return ['code' => $code, 'status' => 'deactivated'];
+    }
+
+    /**
+     * Installation des permissions d'une solution DÉJÀ active — chemin de la
+     * console plateforme, qui pose le flag directement sans passer par
+     * `activate()`. Idempotent, fail-closed (code inconnu refusé).
+     *
+     * @return list<string> codes nouvellement installés
+     */
+    public function installPermissionsFor(Company $company, string $code): array
+    {
+        return $this->permissionInstaller->install($company, $this->catalogue->resolve($code));
+    }
+
+    /** Le code appartient-il à l'allowlist du catalogue (fail-closed) ? */
+    public function isKnownSolution(string $code): bool
+    {
+        return $this->catalogue->has($code);
     }
 }

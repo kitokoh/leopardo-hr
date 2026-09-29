@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\HealthManager\Domain\Solution;
 
 use App\Core\Solutions\Contracts\SolutionManifest;
+use App\Core\Solutions\Enums\SolutionIndustry;
 
 /**
  * Manifest de la solution sectorielle HealthManager — HC-001 (issue #7785).
@@ -37,6 +38,11 @@ final class HealthManagerManifest implements SolutionManifest
     public function maturity(): string
     {
         return 'pilot';
+    }
+
+    public function industry(): SolutionIndustry
+    {
+        return SolutionIndustry::Health;
     }
 
     public function description(): string
