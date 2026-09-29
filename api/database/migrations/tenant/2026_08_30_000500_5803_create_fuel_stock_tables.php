@@ -79,7 +79,17 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('fuel_reconciliation_runs');
+        // #8237 (leçon #8207 / BOS-018) — symétrique EXACT de up() : ce fichier
+        // ne CRÉE que `fuel_tank_deliveries` (sur fuel_reconciliation_runs il
+        // ne pose qu'un COMMENT — la table est créée par la migration
+        // propriétaire `2026_08_30_000404_5803_create_fuel_stock_tables.php`).
+        // La version précédente droppait aussi `fuel_reconciliation_runs` :
+        // un rollback ciblé supprimait la table alors que sa migration
+        // restait « migrée », sans mécanisme de restauration.
+        // NB : la contrainte UNIQUE posée CONDITIONNELLEMENT sur fuel_tanks
+        // (seulement si FUEL-003/#5797 ne l'a pas déjà créée) n'est volontaire-
+        // ment PAS défaites : impossible de savoir au rollback qui l'a créée ;
+        // reliquat bénin (contrainte UNIQUE additive).
         Schema::dropIfExists('fuel_tank_deliveries');
     }
 
