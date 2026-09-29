@@ -60,9 +60,9 @@ class ResilientLLMClientTest extends TestCase
      *
      * @param  list<AIResponse>  $responses
      */
-    private function client(string $provider, array $responses): ScriptedLLMClient
+    private function client(string $provider, array $responses): ScriptedResilientLLMClient
     {
-        return new ScriptedLLMClient($provider, $responses);
+        return new ScriptedResilientLLMClient($provider, $responses);
     }
 
     private function page(): AIResponse
@@ -351,7 +351,7 @@ class ResilientLLMClientTest extends TestCase
  * Double de test scripté : consomme une réponse par appel, compte les appels
  * et mémorise les `response_format` reçus (propriétés typées → analyse L8).
  */
-final class ScriptedLLMClient implements LLMClient
+final class ScriptedResilientLLMClient implements LLMClient
 {
     public int $calls = 0;
 
