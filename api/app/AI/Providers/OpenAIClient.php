@@ -24,7 +24,7 @@ class OpenAIClient implements LLMClient
         $this->baseUrl = (string) (config('ai.providers.openai.base_url') ?: 'https://api.openai.com/v1');
     }
 
-    public function chat(array $messages, array $tools = []): AIResponse
+    public function chat(array $messages, array $tools = [], ?array $responseFormat = null): AIResponse
     {
         $payload = [
             'model' => $this->model,
@@ -38,6 +38,12 @@ class OpenAIClient implements LLMClient
             $payload['tool_choice'] = 'auto';
         }
 
+        // BOS-031 (#8221) — `response_format` optionnel, transmis tel quel
+        // (OpenAI le supporte nativement : json_object, json_schema…).
+        if ($responseFormat !== null) {
+            $payload['response_format'] = $responseFormat;
+        }
+
         try {
             $response = Http::withToken($this->apiKey)
                 ->timeout(30)
@@ -47,6 +53,8 @@ class OpenAIClient implements LLMClient
                 return new AIResponse(
                     content: '',
                     error: 'OpenAI API error: '.$response->status(),
+                    status: $response->status(),
+                    provider: $this->provider(),
                 );
             }
 
@@ -74,9 +82,12 @@ class OpenAIClient implements LLMClient
                 inputTokens: $usage['prompt_tokens'] ?? 0,
                 outputTokens: $usage['completion_tokens'] ?? 0,
                 model: $this->model,
+                status: $response->status(),
+                provider: $this->provider(),
             );
         } catch (\Throwable $e) {
-            return new AIResponse(content: '', error: $e->getMessage());
+            // 503 : panne de transport → échec réessayable (BOS-031).
+            return new AIResponse(content: '', error: $e->getMessage(), status: 503, provider: $this->provider());
         }
     }
 

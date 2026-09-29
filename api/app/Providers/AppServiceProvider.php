@@ -3,10 +3,13 @@
 namespace App\Providers;
 
 use App\AI\LLMClient;
+use App\AI\Privacy\AiCloudPolicy;
 use App\AI\Providers\ClaudeClient;
 use App\AI\Providers\FakeLLMClient;
 use App\AI\Providers\GroqClient;
 use App\AI\Providers\OpenAIClient;
+use App\AI\ResilientLLMClient;
+use App\AI\Support\LLMCircuitBreaker;
 use App\Core\AI\Domain\Contracts\SpeechToTextPort;
 use App\Core\AI\Infrastructure\Adapters\GroqWhisperAdapter;
 use App\Core\AI\Infrastructure\Adapters\UnavailableSpeechToTextAdapter;
@@ -31,6 +34,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -67,17 +71,29 @@ class AppServiceProvider extends ServiceProvider
             // A1 (#6848) — sélecteur par `ai.driver` (AI_LLM_DRIVER) ;
             // rétrocompat : `ai.provider` legacy (claude → ClaudeClient).
             $driver = (string) config('ai.driver', 'fake');
-            if ($driver === 'claude' || (string) config('ai.provider', 'openai') === 'claude') {
-                return new ClaudeClient;
+            $client = ($driver === 'claude' || (string) config('ai.provider', 'openai') === 'claude')
+                ? new ClaudeClient
+                : $this->llmClientForDriver($driver);
+
+            // BOS-031 (#8221) — décorateur de résilience (retry, fallback,
+            // circuit breaker, politique cloud par candidat), activé par
+            // config. Flag OFF (défaut livré) = client direct : parité
+            // stricte, rollback instantané par bascule d'environnement.
+            if (! (bool) config('ai.resilience.enabled', false)) {
+                return $client;
             }
 
-            return match ($driver) {
-                'fake' => new FakeLLMClient,
-                'groq' => new GroqClient,
-                'claude' => new ClaudeClient,
-                default => new OpenAIClient,
-            };
+            return new ResilientLLMClient(
+                $client,
+                $this->resilienceFallbacks($client->provider()),
+                app(LLMCircuitBreaker::class),
+                app(AiCloudPolicy::class),
+                app(TenantManager::class),
+            );
         });
+
+        $this->app->singleton(LLMCircuitBreaker::class, fn (): LLMCircuitBreaker => new LLMCircuitBreaker);
+        $this->app->singleton(AiCloudPolicy::class, fn (): AiCloudPolicy => new AiCloudPolicy);
 
         // A2 (#6849) — STT : adaptateur explicite (AI_STT_ADAPTER), sinon
         // Groq si GROQ_API_KEY posée, sinon fail-closed Unavailable (503).
@@ -505,5 +521,59 @@ class AppServiceProvider extends ServiceProvider
         } catch (\InvalidArgumentException) {
             return strtolower(trim($plan));
         }
+    }
+
+    /**
+     * BOS-031 (#8221) — client correspondant à un driver connu (mêmes
+     * correspondances que le binding historique `LLMClient`).
+     */
+    private function llmClientForDriver(string $driver): LLMClient
+    {
+        return match ($driver) {
+            'fake' => new FakeLLMClient,
+            'groq' => new GroqClient,
+            'claude' => new ClaudeClient,
+            default => new OpenAIClient,
+        };
+    }
+
+    /**
+     * BOS-031 (#8221) — chaîne de fallback configurée
+     * (`ai.resilience.fallback_chain`) : dédupliquée, primaire exclu,
+     * entrées inconnues ignorées avec un log d'avertissement (jamais
+     * d'exception depuis le binding — spec §4.1).
+     *
+     * @return list<LLMClient>
+     */
+    private function resilienceFallbacks(string $primaryProvider): array
+    {
+        /** @var list<mixed> $chain */
+        $chain = (array) config('ai.resilience.fallback_chain', []);
+        $fallbacks = [];
+        $seen = [$primaryProvider => true];
+
+        foreach ($chain as $driver) {
+            if (! is_string($driver) || $driver === '') {
+                continue;
+            }
+
+            if (! in_array($driver, ['fake', 'groq', 'openai', 'claude'], true)) {
+                Log::warning('ai.resilience.unknown_fallback_driver', ['driver' => $driver]);
+
+                continue;
+            }
+
+            $candidate = $this->llmClientForDriver($driver);
+            $provider = $candidate->provider();
+
+            if (isset($seen[$provider])) {
+                continue;
+            }
+
+            $seen[$provider] = true;
+            $fallbacks[] = $candidate;
+        }
+
+        return $fallbacks;
     }
 }

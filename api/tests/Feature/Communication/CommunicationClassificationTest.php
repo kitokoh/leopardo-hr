@@ -712,7 +712,7 @@ final class ScriptedLlmClient implements LLMClient
     /** @param list<string> $responses */
     public function __construct(private array $responses) {}
 
-    public function chat(array $messages, array $tools = []): AIResponse
+    public function chat(array $messages, array $tools = [], ?array $responseFormat = null): AIResponse
     {
         $this->calls[] = $messages;
         $content = array_shift($this->responses) ?? '';
