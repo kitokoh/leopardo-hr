@@ -105,8 +105,9 @@ class TeamOverviewToolTest extends TestCase
         $data = $this->payload($result);
         $this->assertSame('company', $data['scope'] ?? null);
         $this->assertSame(4, $data['total'] ?? null);
+        // Ordre déterministe garanti par le tri côté outil (#8261).
         $this->assertSame(['active' => 3, 'suspended' => 1], $data['by_status'] ?? null);
-        $this->assertSame(['CDI' => 2, 'CDD' => 1, 'Stage' => 1], $data['by_contract_type'] ?? null);
+        $this->assertSame(['CDD' => 1, 'CDI' => 2, 'Stage' => 1], $data['by_contract_type'] ?? null);
         // Jamais de liste nominative (privacy A6, #6853) : agrégats uniquement.
         $this->assertArrayNotHasKey('employees', $data);
         $this->assertArrayNotHasKey('data', $data);

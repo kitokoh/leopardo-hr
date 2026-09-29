@@ -6,9 +6,10 @@ namespace App\Modules\HealthManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\HealthManager\Application\Actions\AdmitHealthPatientAction;
+use App\Modules\HealthManager\Application\Actions\DischargeHealthAdmissionAction;
+use App\Modules\HealthManager\Application\Actions\TransferHealthAdmissionAction;
 use App\Modules\HealthManager\Domain\Models\HealthAdmission;
-use App\Modules\HealthManager\Domain\Models\HealthPatient;
-use App\Modules\HealthManager\Domain\Models\HealthPractitioner;
 use App\Modules\HealthManager\Infrastructure\Services\HealthAdmissionService;
 use App\Modules\HealthManager\Interfaces\Api\V1\Requests\DischargeHealthAdmissionRequest;
 use App\Modules\HealthManager\Interfaces\Api\V1\Requests\StoreHealthAdmissionRequest;
@@ -31,7 +32,12 @@ class HealthAdmissionController extends Controller
 {
     use ChecksHealthSolution;
 
-    public function __construct(private readonly HealthAdmissionService $service) {}
+    public function __construct(
+        private readonly HealthAdmissionService $service,
+        private readonly AdmitHealthPatientAction $admitAction,
+        private readonly TransferHealthAdmissionAction $transferAction,
+        private readonly DischargeHealthAdmissionAction $dischargeAction,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -73,22 +79,10 @@ class HealthAdmissionController extends Controller
         $actor = $request->user();
         $this->authorize('create', HealthAdmission::class);
 
-        $validated = $request->validated();
-
         $companyId = $actor->company_id;
         abort_if($companyId === null, 404);
 
-        // Patient et praticien référent du MÊME tenant (404 fail-closed).
-        HealthPatient::query()
-            ->where('company_id', $companyId)
-            ->whereKey((int) $validated['patient_id'])
-            ->firstOrFail();
-        HealthPractitioner::query()
-            ->where('company_id', $companyId)
-            ->whereKey((int) $validated['practitioner_id'])
-            ->firstOrFail();
-
-        $admission = $this->service->admit($companyId, $validated);
+        $admission = $this->admitAction->execute($companyId, $request->validated());
 
         return response()->json(['data' => $this->payload($admission)], 201);
     }
@@ -131,7 +125,7 @@ class HealthAdmissionController extends Controller
         $this->assertSameTenant($admission, $actor->company_id);
         $this->authorize('update', $admission);
 
-        $admission = $this->service->transfer($admission, (int) $request->validated()['bed_id']);
+        $admission = $this->transferAction->execute($admission, (int) $request->validated()['bed_id']);
 
         return response()->json(['data' => $this->payload($admission)]);
     }
@@ -147,7 +141,7 @@ class HealthAdmissionController extends Controller
 
         /** @var string|null $notes */
         $notes = $request->validated()['discharge_notes'] ?? null;
-        $admission = $this->service->discharge($admission, $notes);
+        $admission = $this->dischargeAction->execute($admission, $notes);
 
         return response()->json(['data' => $this->payload($admission)]);
     }

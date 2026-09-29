@@ -17,11 +17,14 @@ use Tests\TestCase;
 /**
  * BC-26-D05 (#6294) — Matrice RBAC livreur/dispatcher/manager/admin.
  *
- * - résolveur : principal → admin+dispatcher+manager+reports ; manager simple
- *   → manager+reports ; employé → rider ;
- * - garde `delivery.permission` : 403 DELIVERY_ROLE_REQUIRED sur les
- *   endpoints hors rôle (création de tournée par un rider, rapports par un
- *   rider, événements par n'importe quel employé authentifié OK) ;
+ * - résolveur : principal → admin+dispatcher+manager+reports ; chef ops
+ *   (`manager`) → dispatcher+manager+reports ; `rh` → manager+reports ;
+ *   manager hors matrice (`marketing`…) → aucun rôle ; employé → rider ;
+ * - garde `delivery.role` (câblée #8181, unique depuis #8185 — la garde
+ *   parallèle `delivery.permission`, jamais routée et divergente, a été
+ *   retirée) : 403 DELIVERY_ROLE_REQUIRED sur les endpoints hors rôle
+ *   (création de tournée par un rider, rapports par un rider, événements
+ *   par n'importe quel employé authentifié OK) ;
  * - la création de tournée reste 403 pour le manager non-dispatcher.
  */
 class DeliveryRbacMatrixTest extends TestCase
@@ -69,6 +72,23 @@ class DeliveryRbacMatrixTest extends TestCase
         self::assertNotContains('dispatcher', $resolver->rolesFor($manager));
         self::assertContains('manager', $resolver->rolesFor($manager));
         self::assertContains('reports', $resolver->rolesFor($manager));
+
+        // Chef ops (`manager_role = manager`) : dispatch + lecture, pas admin
+        // (matrice documentée — le résolveur historique le ratait :
+        // dispatcher était `{principal, operations}` au lieu de
+        // `{principal, manager}`).
+        $ops = $this->employee('manager', 'manager');
+        self::assertNotContains('admin', $resolver->rolesFor($ops));
+        self::assertContains('dispatcher', $resolver->rolesFor($ops));
+        self::assertContains('manager', $resolver->rolesFor($ops));
+        self::assertContains('reports', $resolver->rolesFor($ops));
+
+        // Manager hors matrice (marketing) : AUCUN rôle delivery — le
+        // résolveur historique lui donnait manager+reports (« tout manager »),
+        // ce qui levait le scope de propriété dans DeliveryRiderController
+        // et UpdateDeliveryStopStatusAction (fuite d'autorisation, #8185).
+        $marketing = $this->employee('manager', 'marketing');
+        self::assertSame([], $resolver->rolesFor($marketing));
 
         $rider = $this->employee('employee');
         self::assertSame(['rider'], $resolver->rolesFor($rider));

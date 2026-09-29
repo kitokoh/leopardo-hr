@@ -60,8 +60,13 @@ class FuelNotificationTest extends TestCase
         ])->assertStatus(201);
 
         // Dispatch de l'outbox → notification app aux managers.
-        $cmd = $this->artisan('fuel:outbox-dispatch', ['--limit' => 10]);
-        $cmd->assertExitCode(0);
+        // #8177 — bug latent démasqué par la correction des Gate::policy :
+        // `PendingCommand::assertExitCode()` ENREGISTRE le code attendu sans
+        // exécuter la commande — l'exécution n'a lieu qu'au destructeur de
+        // l'objet. Assignée à une variable locale, la commande ne tournait
+        // donc qu'à la fin du test, APRÈS les assertions. Chaînée (temporaire
+        // détruit en fin d'instruction), elle s'exécute immédiatement.
+        $this->artisan('fuel:outbox-dispatch', ['--limit' => 10])->assertExitCode(0);
 
         $notifications = Notification::query()
             ->where('company_id', $company->id)

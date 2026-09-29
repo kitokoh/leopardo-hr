@@ -6,7 +6,7 @@ namespace Tests\Feature\Travel;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
-use App\Modules\Notification\Domain\Models\CommunicationEvent;
+use App\Modules\Communication\Domain\Models\CommunicationEvent;
 use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelNotificationService;
