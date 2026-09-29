@@ -189,7 +189,7 @@ class ModuleRegistryDualReadTest extends TestCase
 
         foreach ([ModuleRegistryGateway::MODE_LEGACY, ModuleRegistryGateway::MODE_DUAL, ModuleRegistryGateway::MODE_REGISTRY] as $mode) {
             config(['module-registry.mode' => $mode]);
-            self::assertFalse($company->fresh()->hasFeature('leo_ai'), "kill DB prioritaire (mode {$mode}).");
+            self::assertFalse($company->refresh()->hasFeature('leo_ai'), "kill DB prioritaire (mode {$mode}).");
 
             /** @var array<string, bool> $map */
             $map = FeatureFlag::for($company->fresh());
@@ -202,7 +202,7 @@ class ModuleRegistryDualReadTest extends TestCase
 
         // Désactivation ⇒ retour à l'état antérieur (idempotent).
         $killSwitches->revive('leo_ai', 'test');
-        self::assertTrue($company->fresh()->hasFeature('leo_ai'));
+        self::assertTrue($company->refresh()->hasFeature('leo_ai'));
     }
 
     public function test_kill_switch_refuses_non_killable_and_unknown_keys(): void

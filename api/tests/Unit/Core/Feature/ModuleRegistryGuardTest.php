@@ -64,7 +64,7 @@ class ModuleRegistryGuardTest extends TestCase
 
                 if (preg_match_all($pattern, $source, $matches, PREG_SET_ORDER) !== false) {
                     foreach ($matches as $match) {
-                        if ($method === 'hasFeature' && in_array($match['receiver'], $legacyRegistryReceivers, true)) {
+                        if ($method === 'hasFeature' && in_array($match['receiver'] ?? '', $legacyRegistryReceivers, true)) {
                             continue;
                         }
 
