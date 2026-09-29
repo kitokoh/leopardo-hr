@@ -34,4 +34,20 @@ if [[ -n "${OFFENDERS}" ]]; then
   exit 1
 fi
 
-echo "OK — tous les Gate::policy vivent dans ${CANONICAL} (issue #6575)."
+# Doublons d'inscription DANS le fichier canonique (issue #8177) :
+# `Gate::policy()` écrase silencieusement l'enregistrement précédent — la
+# DERNIÈRE ligne gagne, donc un modèle inscrit 2× rend la policy effective
+# dépendante de l'ordre des lignes (incident production : 7 modèles Fuel
+# inscrits 2 à 3 fois, opérateurs 403 sur le signalement d'incident).
+DUPLICATES=$(
+  rg -o '^\s*Gate::policy\(([A-Za-z0-9_]+)::class' "${CANONICAL}" -r '$1' \
+    | sort | uniq -d || true
+)
+
+if [[ -n "${DUPLICATES}" ]]; then
+  echo "::error::Gate::policy en double dans ${CANONICAL} — écrasement silencieux (issue #8177), un seul enregistrement par modèle :" >&2
+  printf '%s\n' "${DUPLICATES}" | sed 's/^/  /' >&2
+  exit 1
+fi
+
+echo "OK — tous les Gate::policy vivent dans ${CANONICAL} (issue #6575) et aucun modèle n'est inscrit en double (issue #8177)."

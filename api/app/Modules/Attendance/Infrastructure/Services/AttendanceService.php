@@ -9,14 +9,14 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Events\AttendanceCheckedIn;
 use App\Events\AttendanceCheckedOut;
+use App\Modules\Attendance\Application\DTOs\CheckInDTO;
 use App\Modules\Attendance\Domain\Exceptions\AlreadyCheckedInException;
 use App\Modules\Attendance\Domain\Exceptions\MissingCheckInException;
-use App\Modules\Attendance\Application\DTOs\CheckInDTO;
 use App\Modules\Attendance\Domain\Exceptions\PunchPhotoRequiredException;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\Attendance\Domain\Models\AttendanceModeSettings;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\Planning\Domain\Models\Schedule;
-use App\Modules\Attendance\Domain\Models\AttendanceModeSettings;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -182,7 +182,9 @@ class AttendanceService
         }
         $log->punch_meta = array_merge($log->punch_meta ?? [], $punchMeta);
 
-        if ($log->status === 'incomplete' && $schedule) {
+        // Un pointage sans check_in ne peut pas être évalué en retard :
+        // il conserve le statut 'incomplete' (avant : 500 sur ->copy()).
+        if ($log->status === 'incomplete' && $schedule && $log->check_in !== null) {
             $checkInLocal = $log->check_in->copy()->setTimezone($this->timezoneFor($company));
             $startLocal = Carbon::parse($today.' '.$schedule->start_time, $this->timezoneFor($company));
             $assessment = $this->calculator->lateAssessment(

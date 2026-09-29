@@ -6,8 +6,10 @@ namespace App\Modules\HospitalityManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\HospitalityManager\Application\Actions\CreateDeskReservationAction;
+use App\Modules\HospitalityManager\Application\Actions\TransitionHospitalityReservationAction;
+use App\Modules\HospitalityManager\Application\Actions\UpdateHospitalityReservationAction;
 use App\Modules\HospitalityManager\Domain\Models\HospitalityReservation;
-use App\Modules\HospitalityManager\Infrastructure\Services\HospitalityReservationService;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Requests\StoreHospitalityReservationRequest;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Requests\UpdateHospitalityReservationRequest;
 use App\Modules\HospitalityManager\Interfaces\Api\V1\Traits\BoundsPagination;
@@ -28,7 +30,9 @@ class HospitalityReservationController extends Controller
     use ChecksHospitalitySolution;
 
     public function __construct(
-        private readonly HospitalityReservationService $reservations
+        private readonly CreateDeskReservationAction $createReservation,
+        private readonly UpdateHospitalityReservationAction $updateReservation,
+        private readonly TransitionHospitalityReservationAction $transitionReservation,
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -91,7 +95,7 @@ class HospitalityReservationController extends Controller
         $actor = $request->user();
         $this->authorize('create', [HospitalityReservation::class, (int) $request->input('property_id')]);
 
-        $reservation = $this->reservations->createDeskReservation((string) $actor->company_id, $request->validated());
+        $reservation = $this->createReservation->execute((string) $actor->company_id, $request->validated());
 
         // Rejeu idempotent (clé déjà connue) → 200 avec l'existant, pas 201.
         $status = $reservation->wasRecentlyCreated ? 201 : 200;
@@ -120,7 +124,7 @@ class HospitalityReservationController extends Controller
         $this->assertSameTenant($reservation, $actor->company_id);
         $this->authorize('update', $reservation);
 
-        $reservation = $this->reservations->updateReservation($reservation, $request->validated());
+        $reservation = $this->updateReservation->execute($reservation, $request->validated());
 
         return response()->json(['data' => $this->payload($reservation)]);
     }
@@ -159,7 +163,7 @@ class HospitalityReservationController extends Controller
         $this->assertSameTenant($reservation, $actor->company_id);
         $this->authorize('transition', $reservation);
 
-        $reservation = $this->reservations->transition($reservation, $target);
+        $reservation = $this->transitionReservation->execute($reservation, $target);
 
         return response()->json(['data' => $this->payload($reservation)]);
     }

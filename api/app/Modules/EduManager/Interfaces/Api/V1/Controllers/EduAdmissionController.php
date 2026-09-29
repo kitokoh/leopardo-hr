@@ -6,8 +6,9 @@ namespace App\Modules\EduManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\EduManager\Application\Actions\ConvertEduAdmissionToStudentAction;
+use App\Modules\EduManager\Application\Actions\CreateEduAdmissionAction;
 use App\Modules\EduManager\Domain\Models\EduAdmission;
-use App\Modules\EduManager\Infrastructure\Services\EduAdmissionService;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\ConvertEduAdmissionRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduAdmissionRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Traits\ChecksEduSolution;
@@ -24,7 +25,10 @@ class EduAdmissionController extends Controller
 {
     use ChecksEduSolution;
 
-    public function __construct(private readonly EduAdmissionService $admissions) {}
+    public function __construct(
+        private readonly CreateEduAdmissionAction $createAdmission,
+        private readonly ConvertEduAdmissionToStudentAction $convertAdmissionToStudent,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -65,7 +69,7 @@ class EduAdmissionController extends Controller
         $actor = $request->user();
         $this->authorize('create', EduAdmission::class);
 
-        $admission = $this->admissions->create($actor, $request->validated());
+        $admission = $this->createAdmission->execute($actor, $request->validated());
 
         return response()->json(['data' => $this->payload($admission)], 201);
     }
@@ -91,7 +95,7 @@ class EduAdmissionController extends Controller
         $this->assertSameTenant($admission, $actor->company_id);
         $this->authorize('convert', $admission);
 
-        $student = $this->admissions->convertToStudent($actor, $admission, $request->validated());
+        $student = $this->convertAdmissionToStudent->execute($actor, $admission, $request->validated());
 
         return response()->json([
             'data' => [
