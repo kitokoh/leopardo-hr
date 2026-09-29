@@ -5,7 +5,7 @@
     "policy": "deny-by-default",
     "registry": "dev-hub/governance/bounded-context-registry.json",
     "guard": "dev-hub/tools/check-bounded-context-dependencies.sh",
-    "updated": "2026-09-05"
+    "updated": "2026-09-29"
   },
   "edges": [
     {
@@ -157,12 +157,6 @@
       "to": "BC-04",
       "baseline": true,
       "note": "WORKFORCE → HR"
-    },
-    {
-      "from": "BC-05",
-      "to": "BC-07",
-      "baseline": true,
-      "note": "WORKFORCE → PAYROLL"
     },
     {
       "from": "BC-05",
