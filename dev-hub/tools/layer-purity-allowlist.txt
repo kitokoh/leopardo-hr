@@ -7,7 +7,6 @@ api/app/Core/Auth/Domain/Models/Employee.php:34:use Illuminate\Support\Facades\S
 api/app/Core/Tenant/Domain/Models/Company.php:18:use Illuminate\Support\Facades\DB;
 api/app/Core/Tenant/Domain/Models/Company.php:8:use App\Core\Feature\Infrastructure\Services\FeatureKillSwitchService;
 api/app/Core/Tenant/Domain/Models/Company.php:9:use App\Core\Feature\Infrastructure\Services\ModuleRegistryGateway;
-api/app/Modules/Accounting/Application/Actions/AccountingReportingSnapshotService.php:11:use Illuminate\Support\Facades\DB;
 api/app/Modules/Accounting/Application/Listeners/ProvisionAccountingSettings.php:11:use Illuminate\Support\Facades\Log;
 api/app/Modules/Accounting/Application/Listeners/ProvisionChartOfAccounts.php:10:use Illuminate\Support\Facades\Log;
 api/app/Modules/Accounting/Application/Services/DocumentWorkflowService.php:22:use Illuminate\Support\Facades\DB;
