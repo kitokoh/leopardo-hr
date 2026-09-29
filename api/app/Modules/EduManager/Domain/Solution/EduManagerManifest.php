@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\EduManager\Domain\Solution;
 
 use App\Core\Solutions\Contracts\SolutionManifest;
+use App\Core\Solutions\Enums\SolutionIndustry;
 
 /**
  * Manifest de la solution sectorielle EduManager — EDU-001.
@@ -35,6 +36,11 @@ final class EduManagerManifest implements SolutionManifest
     public function maturity(): string
     {
         return 'pilot';
+    }
+
+    public function industry(): SolutionIndustry
+    {
+        return SolutionIndustry::Education;
     }
 
     public function description(): string

@@ -41,7 +41,7 @@ final class TransitionDeliveryAction
     /**
      * @param  array{rider_id?: int|null, delivered_to_contact?: string|null}  $data
      */
-    public function transition(Employee $actor, RestaurantDelivery $delivery, DeliveryStatus $to, array $data = []): RestaurantDelivery
+    public function execute(Employee $actor, RestaurantDelivery $delivery, DeliveryStatus $to, array $data = []): RestaurantDelivery
     {
         if ($delivery->company_id !== $actor->company_id) {
             throw new RuntimeException('Delivery does not belong to tenant.');

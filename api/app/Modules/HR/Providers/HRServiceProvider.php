@@ -7,7 +7,9 @@ namespace App\Modules\HR\Providers;
 use App\AI\Support\AIToolDefinitionRegistry;
 use App\Modules\HR\Domain\Contracts\ApplicantPipelineReaderInterface;
 use App\Modules\HR\Domain\Support\HrReadToolCatalog;
+use App\Modules\HR\Infrastructure\Services\DepartmentDirectoryAdapter;
 use App\Modules\Recruitment\Infrastructure\Services\ApplicantPipelineReader;
+use App\Shared\Contracts\HR\DepartmentDirectory;
 use Illuminate\Support\ServiceProvider;
 
 class HRServiceProvider extends ServiceProvider
@@ -19,6 +21,10 @@ class HRServiceProvider extends ServiceProvider
         // directly in its controllers. Bindings below wire the existing
         // implementations from those modules (reused, not duplicated).
         $this->app->bind(ApplicantPipelineReaderInterface::class, ApplicantPipelineReader::class);
+
+        // BOS-023 cycle 3 (#8211) : HR expose l'annuaire des départements via
+        // le contrat partagé — Attendance ne l'importe plus directement.
+        $this->app->bind(DepartmentDirectory::class, DepartmentDirectoryAdapter::class);
     }
 
     public function boot(): void

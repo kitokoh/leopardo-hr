@@ -119,6 +119,6 @@ final class RestaurantMobileManagerService
             abort(403);
         }
 
-        return $this->closePosSession->close($actor, $session, $data);
+        return $this->closePosSession->execute($actor, $session, $data);
     }
 }

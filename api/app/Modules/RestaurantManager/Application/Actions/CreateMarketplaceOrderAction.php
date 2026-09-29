@@ -38,7 +38,7 @@ final class CreateMarketplaceOrderAction
     ) {
     }
 
-    public function create(string $companyId, MarketplaceInboundOrder $inbound): RestaurantOrder
+    public function execute(string $companyId, MarketplaceInboundOrder $inbound): RestaurantOrder
     {
         /** @var RestaurantBranch $branch */
         $branch = $this->resolveBranch($companyId, $inbound->branchCode);

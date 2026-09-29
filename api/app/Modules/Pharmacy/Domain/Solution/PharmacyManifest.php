@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Pharmacy\Domain\Solution;
 
 use App\Core\Solutions\Contracts\SolutionManifest;
+use App\Core\Solutions\Enums\SolutionIndustry;
 
 /**
  * Manifest de la solution sectorielle PharmaManager — PHARMA-001 (#7798).
@@ -36,6 +37,11 @@ final class PharmacyManifest implements SolutionManifest
     public function maturity(): string
     {
         return 'pilot';
+    }
+
+    public function industry(): SolutionIndustry
+    {
+        return SolutionIndustry::Pharmacy;
     }
 
     public function description(): string

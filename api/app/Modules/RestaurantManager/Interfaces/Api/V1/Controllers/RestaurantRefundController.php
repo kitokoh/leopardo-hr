@@ -39,7 +39,7 @@ class RestaurantRefundController extends Controller
 
         /** @var array{amount_minor: int, reason_code: string, reason_text?: string|null, payment_id?: int|null, idempotency_key?: string|null} $data */
         $data = $request->validated();
-        $refund = $this->refundAction->refund($actor, $restaurantOrder, $data);
+        $refund = $this->refundAction->execute($actor, $restaurantOrder, $data);
 
         return (new RestaurantRefundResource($refund))->response()->setStatusCode(201);
     }

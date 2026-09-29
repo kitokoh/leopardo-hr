@@ -10,6 +10,7 @@ use App\Modules\RestaurantManager\Domain\Enums\OrderSource;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPublicShopToken;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantPublicTrackingGuard;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -27,7 +28,10 @@ use Illuminate\Support\Str;
  */
 class RestaurantKioskController extends Controller
 {
-    public function __construct(private readonly RestaurantPublicOrderService $orders) {}
+    public function __construct(
+        private readonly RestaurantPublicOrderService $orders,
+        private readonly RestaurantPublicTrackingGuard $trackingGuard,
+    ) {}
 
     public function menu(Request $request): JsonResponse
     {
@@ -80,6 +84,7 @@ class RestaurantKioskController extends Controller
             items: $data['items'],
             idempotencyKey: $key,
             branchId: isset($data['branch_id']) ? (int) $data['branch_id'] : null,
+            issueTrackingSecret: true,
         );
 
         $order = $result['order'];
@@ -92,6 +97,9 @@ class RestaurantKioskController extends Controller
                 'total_minor' => $order->total_minor,
                 'currency' => $order->currency,
                 'created' => $result['created'],
+                // BOS-050 (#8208, tranche 7) : secret de suivi présenté UNE
+                // FOIS, à la création réelle (null au rejeu).
+                'tracking_secret' => $result['tracking_secret'],
             ],
         ], $result['created'] ? 201 : 200);
     }
@@ -106,7 +114,11 @@ class RestaurantKioskController extends Controller
             abort(404, 'Commande introuvable.');
         }
 
-        return response()->json([
+        // BOS-050 (#8208, tranche 7) : secret requis pour les nouvelles
+        // commandes ; flux legacy (référence seule) déprécié (90 j).
+        $legacy = $this->trackingGuard->assertTrackable($request, $order);
+
+        return $this->trackingGuard->withDeprecationHeaders(response()->json([
             'data' => [
                 'reference' => $order->reference,
                 'ticket_number' => (string) $order->id,
@@ -115,7 +127,7 @@ class RestaurantKioskController extends Controller
                 'currency' => $order->currency,
                 'updated_at' => $order->updated_at?->toIso8601String(),
             ],
-        ]);
+        ]), $legacy);
     }
 
     /**

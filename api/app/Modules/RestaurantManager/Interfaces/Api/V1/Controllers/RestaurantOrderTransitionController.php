@@ -61,7 +61,7 @@ class RestaurantOrderTransitionController extends Controller
             abort(403);
         }
 
-        $updated = $this->transitionAction->transition($actor, $order, $target);
+        $updated = $this->transitionAction->execute($actor, $order, $target);
 
         return (new RestaurantOrderResource($updated))->response();
     }

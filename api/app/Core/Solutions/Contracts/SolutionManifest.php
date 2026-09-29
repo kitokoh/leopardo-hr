@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Solutions\Contracts;
 
+use App\Core\Solutions\Enums\SolutionIndustry;
+
 /**
  * Manifest d'une solution sectorielle (FuelStation, EduManager, …).
  *
@@ -24,6 +26,13 @@ interface SolutionManifest
 
     /** Niveau de maturité : `pilot` | `production` | `placeholder`. */
     public function maturity(): string;
+
+    /** Industrie de la solution (registre fermé versionné) — BOS-013 (#8200).
+     *
+     * Sert au référentiel de solutions et à l'onboarding intelligent (Léa) ;
+     * distincte du `code()` : deux solutions peuvent partager une industrie.
+     */
+    public function industry(): SolutionIndustry;
 
     /** Description courte (affichage onboarding). */
     public function description(): string;

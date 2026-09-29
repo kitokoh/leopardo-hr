@@ -153,40 +153,43 @@ class RestaurantPublicPerformanceTest extends TestCase
 
         $ctx = $this->shopContext($company, 5);
 
-        $reference = function (array $codes) use ($ctx): string {
+        $reference = function (array $codes) use ($ctx): array {
             $items = array_map(
                 static fn (string $code): array => ['product_code' => $code, 'quantity' => 1],
                 $codes,
             );
 
-            $reference = $this->withHeader('X-Restaurant-Shop-Token', $ctx['token'])
+            $response = $this->withHeader('X-Restaurant-Shop-Token', $ctx['token'])
                 ->postJson('/api/v1/public/restaurant/shop/orders', [
                     'branch_id' => $ctx['branch']->getAttribute('id'),
                     'items' => $items,
                 ])
-                ->assertStatus(201)
-                ->json('data.reference');
+                ->assertStatus(201);
 
-            $this->assertIsString($reference);
+            $reference = $response->json('data.reference');
+            $secret = $response->json('data.tracking_secret');
 
-            return $reference;
+            assert(is_string($reference) && is_string($secret));
+
+            // BOS-050 (#8208, tranche 7) : suivi sous secret.
+            return [$reference, $secret];
         };
 
-        $singleReference = $reference([$ctx['codes'][0]]);
-        $manyReference = $reference($ctx['codes']);
+        [$singleReference, $singleSecret] = $reference([$ctx['codes'][0]]);
+        [$manyReference, $manySecret] = $reference($ctx['codes']);
 
-        $oneItem = $this->queryCount(function () use ($ctx, $singleReference): void {
+        $oneItem = $this->queryCount(function () use ($ctx, $singleReference, $singleSecret): void {
             $this->withHeader('X-Restaurant-Shop-Token', $ctx['token'])
-                ->getJson('/api/v1/public/restaurant/shop/orders/'.$singleReference)
+                ->getJson('/api/v1/public/restaurant/shop/orders/'.$singleReference.'?secret='.$singleSecret)
                 ->assertOk()
                 ->assertJsonCount(1, 'data.items')
                 ->assertJsonPath('data.items.0.product_code', 'PERF-01')
                 ->assertJsonPath('data.items.0.name', 'Plat 1');
         });
 
-        $fiveItems = $this->queryCount(function () use ($ctx, $manyReference): void {
+        $fiveItems = $this->queryCount(function () use ($ctx, $manyReference, $manySecret): void {
             $this->withHeader('X-Restaurant-Shop-Token', $ctx['token'])
-                ->getJson('/api/v1/public/restaurant/shop/orders/'.$manyReference)
+                ->getJson('/api/v1/public/restaurant/shop/orders/'.$manyReference.'?secret='.$manySecret)
                 ->assertOk()
                 ->assertJsonCount(5, 'data.items')
                 ->assertJsonPath('data.items.4.product_code', 'PERF-05')
@@ -208,38 +211,41 @@ class RestaurantPublicPerformanceTest extends TestCase
 
         $ctx = $this->slugContext($company, 5);
 
-        $reference = function (array $codes) use ($ctx): string {
+        $reference = function (array $codes) use ($ctx): array {
             $items = array_map(
                 static fn (string $code): array => ['product_code' => $code, 'quantity' => 1],
                 $codes,
             );
 
-            $reference = $this->postJson('/api/v1/public/restaurants/'.$ctx['slug'].'/orders', [
+            $response = $this->postJson('/api/v1/public/restaurants/'.$ctx['slug'].'/orders', [
                 'customer_name' => 'Awa Ndiaye',
                 'customer_phone' => '+237690000001',
                 'order_type' => 'pickup',
                 'items' => $items,
             ])
-                ->assertStatus(201)
-                ->json('data.reference');
+                ->assertStatus(201);
 
-            $this->assertIsString($reference);
+            $reference = $response->json('data.reference');
+            $secret = $response->json('data.tracking_secret');
 
-            return $reference;
+            assert(is_string($reference) && is_string($secret));
+
+            // BOS-050 (#8208, tranche 7) : suivi sous secret.
+            return [$reference, $secret];
         };
 
-        $singleReference = $reference([$ctx['codes'][0]]);
-        $manyReference = $reference($ctx['codes']);
+        [$singleReference, $singleSecret] = $reference([$ctx['codes'][0]]);
+        [$manyReference, $manySecret] = $reference($ctx['codes']);
 
-        $oneItem = $this->queryCount(function () use ($ctx, $singleReference): void {
-            $this->getJson('/api/v1/public/restaurants/'.$ctx['slug'].'/orders/'.$singleReference)
+        $oneItem = $this->queryCount(function () use ($ctx, $singleReference, $singleSecret): void {
+            $this->getJson('/api/v1/public/restaurants/'.$ctx['slug'].'/orders/'.$singleReference.'?secret='.$singleSecret)
                 ->assertOk()
                 ->assertJsonCount(1, 'data.items')
                 ->assertJsonPath('data.items.0.name', 'Plat slug 1');
         });
 
-        $fiveItems = $this->queryCount(function () use ($ctx, $manyReference): void {
-            $this->getJson('/api/v1/public/restaurants/'.$ctx['slug'].'/orders/'.$manyReference)
+        $fiveItems = $this->queryCount(function () use ($ctx, $manyReference, $manySecret): void {
+            $this->getJson('/api/v1/public/restaurants/'.$ctx['slug'].'/orders/'.$manyReference.'?secret='.$manySecret)
                 ->assertOk()
                 ->assertJsonCount(5, 'data.items')
                 ->assertJsonPath('data.items.4.name', 'Plat slug 5');

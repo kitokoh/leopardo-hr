@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\FuelStation\Domain\Solution;
 
 use App\Core\Solutions\Contracts\SolutionManifest;
+use App\Core\Solutions\Enums\SolutionIndustry;
 
 /**
  * Manifest de la solution sectorielle FuelStation — FUEL-001.
@@ -31,6 +32,11 @@ final class FuelStationManifest implements SolutionManifest
     public function maturity(): string
     {
         return 'pilot';
+    }
+
+    public function industry(): SolutionIndustry
+    {
+        return SolutionIndustry::EnergyFuel;
     }
 
     public function description(): string
