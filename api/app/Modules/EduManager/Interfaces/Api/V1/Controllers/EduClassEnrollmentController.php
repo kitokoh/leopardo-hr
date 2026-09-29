@@ -6,15 +6,15 @@ namespace App\Modules\EduManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\EduManager\Application\Actions\EnrollEduStudentAction;
+use App\Modules\EduManager\Application\Actions\UnenrollEduStudentAction;
 use App\Modules\EduManager\Domain\Access\EduAccess;
 use App\Modules\EduManager\Domain\Models\EduClass;
 use App\Modules\EduManager\Domain\Models\EduClassEnrollment;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduClassEnrollmentRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Traits\ChecksEduSolution;
-use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 /**
  * API des inscriptions aux classes — EDU-011 (issue #5827).
@@ -27,6 +27,11 @@ use Illuminate\Support\Facades\DB;
 class EduClassEnrollmentController extends Controller
 {
     use ChecksEduSolution;
+
+    public function __construct(
+        private readonly EnrollEduStudentAction $enrollStudent,
+        private readonly UnenrollEduStudentAction $unenrollStudent,
+    ) {}
 
     public function index(Request $request, EduClass $class): JsonResponse
     {
@@ -83,31 +88,7 @@ class EduClassEnrollmentController extends Controller
         $this->assertSameTenant($class, $actor->company_id);
         abort_unless(EduAccess::isAdmin($actor), 403, 'EDU_ADMIN_ONLY');
 
-        $data = $request->validated();
-        $payload = [
-            'company_id' => $actor->company_id,
-            'class_id' => (int) $class->getAttribute('id'),
-            'student_id' => (int) $data['student_id'],
-            'academic_year_id' => (int) $data['academic_year_id'],
-            'enrolled_at' => $data['enrolled_at'] ?? now(),
-            'status' => EduClassEnrollment::STATUS_ACTIVE,
-            'enrolled_by' => $actor->id,
-        ];
-
-        try {
-            // SAVEPOINT (cf. 25P02) : la violation d'unicité doit être
-            // contenue pour que la transaction appelante reste utilisable et
-            // que le rejeu idempotent ci-dessous aboutisse.
-            /** @var EduClassEnrollment $enrollment */
-            $enrollment = DB::transaction(fn (): EduClassEnrollment => EduClassEnrollment::query()->create($payload));
-        } catch (UniqueConstraintViolationException) {
-            /** @var EduClassEnrollment $enrollment */
-            $enrollment = EduClassEnrollment::query()
-                ->where('company_id', $actor->company_id)
-                ->where('class_id', $class->getAttribute('id'))
-                ->where('student_id', $data['student_id'])
-                ->firstOrFail();
-        }
+        $enrollment = $this->enrollStudent->execute($actor, $class, $request->validated());
 
         return response()->json([
             'data' => [
@@ -129,7 +110,7 @@ class EduClassEnrollmentController extends Controller
         $this->assertSameTenant($enrollment, $actor->company_id);
         $this->authorize('delete', $enrollment);
 
-        $enrollment->update(['status' => EduClassEnrollment::STATUS_INACTIVE]);
+        $enrollment = $this->unenrollStudent->execute($enrollment);
 
         return response()->json(['data' => ['enrollment_id' => (int) $enrollment->getAttribute('id'), 'status' => $enrollment->status]]);
     }

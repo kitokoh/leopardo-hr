@@ -42,7 +42,6 @@ Modules/Payroll -> Modules/Billing
 Modules/Payroll -> Modules/Cabinet
 Modules/Payroll -> Modules/Notification
 Modules/Payroll -> Modules/Planning
-Modules/Planning -> Modules/Attendance
 Modules/Platform -> Modules/Attendance
 Modules/Platform -> Modules/Billing
 Modules/Platform -> Modules/HR

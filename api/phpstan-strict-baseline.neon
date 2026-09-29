@@ -1320,17 +1320,7 @@ parameters:
 			count: 1
 			path: app/Modules/Attendance/Domain/Models/AttendanceLog.php
 
-		-
-			message: '#^Cannot call method diffInSeconds\(\) on Illuminate\\Support\\Carbon\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Modules/Attendance/Infrastructure/Services/AttendanceAnomalyService.php
 
-		-
-			message: '#^Cannot call method format\(\) on Illuminate\\Support\\Carbon\|null\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: app/Modules/Attendance/Infrastructure/Services/AttendanceAnomalyService.php
 
 		-
 			message: '#^Method App\\Modules\\Attendance\\Infrastructure\\Services\\AttendanceAnomalyService\:\:excessiveOvertime\(\) has parameter \$logs with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
@@ -1446,11 +1436,6 @@ parameters:
 			count: 1
 			path: app/Modules/Attendance/Infrastructure/Services/AttendanceRegularityService.php
 
-		-
-			message: '#^Cannot call method copy\(\) on Illuminate\\Support\\Carbon\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Modules/Attendance/Infrastructure/Services/AttendanceService.php
 
 		-
 			message: '#^Method App\\Modules\\Attendance\\Infrastructure\\Services\\AttendanceService\:\:recalculateLog\(\) should return App\\Modules\\Attendance\\Domain\\Models\\AttendanceLog but returns App\\Modules\\Attendance\\Domain\\Models\\AttendanceLog\|null\.$#'
@@ -2586,17 +2571,7 @@ parameters:
 			count: 1
 			path: app/Modules/HR/Interfaces/Api/V1/Controllers/InvitationController.php
 
-		-
-			message: '#^Cannot call method startOfDay\(\) on Illuminate\\Support\\Carbon\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Modules/HR/Interfaces/Api/V1/Controllers/MeController.php
 
-		-
-			message: '#^Cannot call method startOfMonth\(\) on Illuminate\\Support\\Carbon\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Modules/HR/Interfaces/Api/V1/Controllers/MeController.php
 
 		-
 			message: '#^Parameter \#1 \$companyId of method App\\Modules\\Attendance\\Infrastructure\\Services\\AttendanceAnomalyService\:\:summarize\(\) expects string, string\|null given\.$#'
@@ -3420,11 +3395,6 @@ parameters:
 			count: 1
 			path: app/Modules/Recruitment/Interfaces/Api/V1/Requests/StoreJobPostingRequest.php
 
-		-
-			message: '#^Cannot call method toIso8601String\(\) on Carbon\\Carbon\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Modules/RestaurantManager/Application/Actions/ClosePosSessionAction.php
 
 		-
 			message: '#^Parameter \#1 \$order of method App\\Modules\\RestaurantManager\\Application\\Actions\\PayOrderAction\:\:markOrderPaid\(\) expects App\\Modules\\RestaurantManager\\Domain\\Models\\RestaurantOrder, App\\Modules\\RestaurantManager\\Domain\\Models\\RestaurantOrder\|null given\.$#'
@@ -3438,11 +3408,6 @@ parameters:
 			count: 1
 			path: app/Modules/RestaurantManager/Application/Actions/PayOrderAction.php
 
-		-
-			message: '#^Cannot call method copy\(\) on Illuminate\\Support\\Carbon\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Modules/RestaurantManager/Application/Services/RestaurantReportService.php
 
 		-
 			message: '#^Expression on left side of \?\? is not nullable\.$#'
@@ -3666,11 +3631,6 @@ parameters:
 			count: 1
 			path: app/Modules/RestaurantManager/Infrastructure/Services/RestaurantReportService.php
 
-		-
-			message: '#^Cannot call method toDateString\(\) on Carbon\\Carbon\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Modules/RestaurantManager/Infrastructure/Services/RestaurantReportService.php
 
 		-
 			message: '#^Method App\\Modules\\RestaurantManager\\Infrastructure\\Services\\RestaurantReportService\:\:csvCogs\(\) return type has no value type specified in iterable type array\.$#'
@@ -3882,11 +3842,6 @@ parameters:
 			count: 1
 			path: app/Modules/RestaurantManager/Interfaces/Api/V1/Requests/StoreRestaurantReservationRequest.php
 
-		-
-			message: '#^Cannot call method toIso8601String\(\) on Carbon\\Carbon\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Modules/RestaurantManager/Interfaces/Api/V1/Resources/RestaurantReceivingResource.php
 
 		-
 			message: '#^Method App\\Modules\\RestaurantManager\\Policies\\RestaurantLoyaltyPolicy\:\:update\(\) has parameter \$model with no type specified\.$#'
@@ -4098,11 +4053,6 @@ parameters:
 			count: 1
 			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelPdvController.php
 
-		-
-			message: '#^Cannot call method toIso8601String\(\) on Carbon\\Carbon\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelPublicShopController.php
 
 		-
 			message: '#^Cannot cast array\|string to string\.$#'

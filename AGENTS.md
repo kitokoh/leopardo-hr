@@ -568,6 +568,11 @@ pour les résoudre au checkout.
 > Render 2026-09-15, audits 2026-05-13/14, incidents Vercel…) sont consignés dans
 > `docs/GESTION_PROJET/LECONS_AGENTS.md`.
 
+### Bascules search_path PostgreSQL (BOS-019/#8204, ADR-0027)
+
+- Toute bascule `SET search_path` passe par `TenantManager::withinSearchPath()` (try/finally garanti, validation fail-closed de la chaîne) — jamais de SQL manuel hors `TenantManager` ; le middleware `EnsureKioskSearchPathReset` (#3368) reste un filet, pas une permission.
+- Le mode « un schéma par tenant » est MORT (garde `Company::booted()` conservée) : aucune nouvelle branche `tenancy_type === 'schema'` — inventaire borné des références legacy dans `docs/architecture/adr/0027-shared-schema-definitif.md`.
+
 ### Frontieres routes modules
 
 - `routes/modules/rh.php` porte le socle RH transverse (employes, contrats, absences, rapports courants) alors que `routes/modules/hr_extended.php` porte les extensions post-MVP. Avant de deplacer une route, verifier le controller et le scenario de test associe.
