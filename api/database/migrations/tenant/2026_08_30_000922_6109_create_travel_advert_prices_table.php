@@ -42,11 +42,12 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (schemaHasColumn('travel_advert_prices', 'company_id')) {
-            Schema::table('travel_advert_prices', function (Blueprint $table): void {
-                $table->dropColumn('company_id');
-            });
-        }
+        // #8207 (BOS-018) — symétrique EXACT de up() : ne droppe que les
+        // colonnes que cette génération peut avoir ajoutées
+        // (`advert_type_id`, `advert_position_id`, `created_at`, `updated_at`).
+        // La version précédente droppait aussi `company_id`,
+        // `price_per_image_minor`, `price_per_character_minor`, `currency` —
+        // des colonnes créées par `2026_08_30_000017_6110_create_travel_advert_tables.php`.
         if (schemaHasColumn('travel_advert_prices', 'advert_type_id')) {
             Schema::table('travel_advert_prices', function (Blueprint $table): void {
                 $table->dropColumn('advert_type_id');
@@ -55,21 +56,6 @@ return new class extends Migration
         if (schemaHasColumn('travel_advert_prices', 'advert_position_id')) {
             Schema::table('travel_advert_prices', function (Blueprint $table): void {
                 $table->dropColumn('advert_position_id');
-            });
-        }
-        if (schemaHasColumn('travel_advert_prices', 'price_per_image_minor')) {
-            Schema::table('travel_advert_prices', function (Blueprint $table): void {
-                $table->dropColumn('price_per_image_minor');
-            });
-        }
-        if (schemaHasColumn('travel_advert_prices', 'price_per_character_minor')) {
-            Schema::table('travel_advert_prices', function (Blueprint $table): void {
-                $table->dropColumn('price_per_character_minor');
-            });
-        }
-        if (schemaHasColumn('travel_advert_prices', 'currency')) {
-            Schema::table('travel_advert_prices', function (Blueprint $table): void {
-                $table->dropColumn('currency');
             });
         }
         if (schemaHasColumn('travel_advert_prices', 'created_at')) {

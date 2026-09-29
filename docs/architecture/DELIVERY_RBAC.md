@@ -97,3 +97,23 @@ appliquée :
 — la Policy existait mais n'était jamais appelée : un rider pouvait tracer
 des événements sur la tournée d'un collègue (403 attendu par
 `DeliveryRbacTest`).
+
+## Garde unique (#8185, 2026-09-26)
+
+Deux gardes RBAC parallèles coexistaient : `delivery.role` (câblée,
+conforme à la présente matrice) et `delivery.permission`
+(`EnsureDeliveryPermissionMiddleware`, enregistrée mais appliquée à **0
+route**) appuyée sur `DeliveryRoleResolver` dont les définitions
+**divergeaient** : dispatcher `{principal, operations}` (un
+`manager_role = operations` inexistant — le chef ops `manager` ne dispachait
+pas) et manager/reports « tout manager » (un manager `marketing` passait les
+dérogations de scope de `DeliveryRiderController::today` et
+`UpdateDeliveryStopStatusAction::canOperate`).
+
+Désormais **une seule garde** (`delivery.role`) et **une seule définition**
+des correspondances : les ensembles de `manager_role` sont des constantes
+publiques de `DeliveryRoleResolver` consommées par
+`EnsureDeliveryRoleMiddleware`. `EnsureDeliveryPermissionMiddleware` et
+l'alias `delivery.permission` sont supprimés. Le masquage RGPD de
+`DeliveryNotificationController` (numéro visible en clair = `admin` =
+`principal` uniquement) est inchangé.

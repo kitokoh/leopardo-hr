@@ -151,6 +151,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::post('/biometric-enrollment-requests/{id}/approve', [BiometricEnrollmentController::class, 'approve'])->middleware('api.manager');
     Route::post('/biometric-enrollment-requests/{id}/reject', [BiometricEnrollmentController::class, 'reject'])->middleware('api.manager');
     Route::post('/kiosks', [KioskController::class, 'register'])->middleware('api.manager');
+    // BIO-005 (#6766) — cycle de vie manager : revocation + rotation de secret.
+    // Les methodes du controleur existaient sans etre exposees (#8241).
+    Route::post('/kiosks/{kiosk}/revoke', [KioskController::class, 'revoke'])->middleware('api.manager')->whereNumber('kiosk');
+    Route::post('/kiosks/{kiosk}/rotate-token', [KioskController::class, 'rotateToken'])->middleware('api.manager')->whereNumber('kiosk');
 
     // ── Module 1 — Absences ───────────────────────────────────────────────────
     // PA2-ARCH-011 : les routes /absences/* sont la source unique dans

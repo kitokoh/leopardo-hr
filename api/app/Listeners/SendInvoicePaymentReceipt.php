@@ -6,6 +6,7 @@ namespace App\Listeners;
 
 use App\Events\InvoicePaid;
 use App\Modules\Billing\Infrastructure\Services\InvoiceMailer;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -16,8 +17,13 @@ use Throwable;
  * L'échec d'envoi est journalisé mais ne remonte JAMAIS : un email ne doit
  * pas faire échouer un webhook de paiement (sémantique 500 → retry provider,
  * #2668) ni invalider la transition déjà persistée.
+ *
+ * #8206 (BOS-017) : listener mis en file (`ShouldQueue`, queue `default`
+ * consommée par les workers) — la génération du PDF et l'envoi SMTP sortent
+ * du cycle du webhook de paiement. Le handler reste best-effort (catch
+ * Throwable) : le job ne peut pas échouer sur une erreur d'envoi.
  */
-class SendInvoicePaymentReceipt
+class SendInvoicePaymentReceipt implements ShouldQueue
 {
     public function __construct(private readonly InvoiceMailer $mailer) {}
 
