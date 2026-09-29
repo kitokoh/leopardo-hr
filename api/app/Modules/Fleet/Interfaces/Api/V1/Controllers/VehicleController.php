@@ -143,7 +143,7 @@ class VehicleController extends Controller
             return response()->json(['message' => 'No tracker linked to this vehicle.'], 404);
         }
 
-        $position = $traccar->getLastPosition($vehicle->traccar_device_id);
+        $position = $traccar->getLastPosition((int) $vehicle->traccar_device_id);
 
         return response()->json(['data' => $position]);
     }

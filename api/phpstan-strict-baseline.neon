@@ -2056,12 +2056,6 @@ parameters:
 			path: app/Modules/Expense/Interfaces/Api/V1/Controllers/ExpenseClaimController.php
 
 		-
-			message: '#^Parameter \#1 \$deviceId of method App\\Modules\\Attendance\\Infrastructure\\Services\\TraccarService\:\:getLastPosition\(\) expects int, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Fleet/Interfaces/Api/V1/Controllers/VehicleController.php
-
-		-
 			message: '#^Call to an undefined method App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:isManager\(\)\.$#'
 			identifier: method.notFound
 			count: 1
