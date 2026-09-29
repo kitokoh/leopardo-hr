@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * TRAVEL-907 (#6110) — Annonces payantes (spec §3) : soumission, prix
@@ -24,6 +23,10 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('travel_adverts');
+        // #8207 (BOS-018) — no-op, symétrique du up() : migration fantôme
+        // neutralisée, le schéma canonique de `travel_adverts` appartient à
+        // `2026_08_30_001548_*`. La version précédente droppait la table — un
+        // rollback du batch supprimait le schéma canonique des annonces
+        // alors que la migration propriétaire restait « migrée ».
     }
 };
