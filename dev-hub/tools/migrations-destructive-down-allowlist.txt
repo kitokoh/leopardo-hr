@@ -8,11 +8,6 @@
 # retirant chaque entrée après correction. Toute violation dans un fichier
 # NON listé ici fait échouer la garde.
 2026_04_01_000104_create_payrolls_tasks_evaluations_notifications.php # payroll : down() droppe aussi audit_logs (table créée par une autre migration)
-2026_08_30_000103_5818_create_edu_guardians_table.php # edu : down() monolithique — droppe 4 tables sœurs (edu_guardian_access_*, edu_portal_access_logs)
-2026_08_30_000201_5819_create_edu_academic_years_table.php # edu : down() monolithique — droppe 4 tables sœurs (edu_accounting_entries, edu_fee_*)
-2026_08_30_000202_5819_create_edu_classes_table.php # edu : down() monolithique — droppe 4 tables sœurs (edu_assessments, edu_attendances, edu_class_enrollments, edu_course_slots)
-2026_08_30_000203_5819_create_edu_subjects_table.php # edu : down() monolithique — droppe edu_course_slots (table sœur)
-2026_08_30_000301_5820_create_edu_admissions_table.php # edu : down() monolithique — droppe edu_admission_followups + edu_fees (tables sœurs)
 2026_08_30_000408_5812_create_fuel_imports_table.php # fuel : migration fantôme (canonique 001550_5812) — down() droppe fuel_imports
 2026_08_30_000500_5803_create_fuel_stock_tables.php # fuel : down() droppe fuel_reconciliation_runs (table sœur)
 2026_08_30_001542_5812_create_fuel_import_tables.php # fuel : migration fantôme (canonique 001550_5812) — down() droppe fuel_imports
