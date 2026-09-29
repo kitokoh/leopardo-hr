@@ -1,0 +1,46 @@
+name: Actions Convention Guard
+
+# Garde « couche Application/Actions saine » (issue #6570, audit DDD M2) :
+# « 1 action = 1 execute() », suffixe `Action`, aucun Service/Job sous
+# Application/Actions/.
+#
+# Le script dev-hub/tools/check-actions-convention.sh existait mais n'était
+# exécuté par AUCUN workflow (constat #8239, 2026-09-28 : 27 violations
+# préexistantes invisibles en CI — même classe de panne que #6571).
+#
+# BLOQUANT sur la violation NOUVELLE uniquement : la dette legacy (27 cas,
+# 5 modules) vit dans dev-hub/tools/actions-convention-allowlist.txt et est
+# résorbée module par module (action 2 de #8239). Une entrée d'allowlist
+# devenue orpheline (violation corrigée) fait échouer la garde : la purge de
+# la ligne fait partie du correctif (anti-régression #3596).
+
+on:
+  pull_request:
+    paths:
+      - "api/app/Modules/**"
+      - "dev-hub/tools/check-actions-convention.sh"
+      - "dev-hub/tools/actions-convention-allowlist.txt"
+      - ".github/workflows/actions-convention-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: actions-convention-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  actions-convention:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    name: Convention Actions (1 action = 1 execute())
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Run actions convention guard
+        shell: bash
+        run: bash dev-hub/tools/check-actions-convention.sh
