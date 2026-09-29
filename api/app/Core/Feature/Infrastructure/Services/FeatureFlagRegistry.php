@@ -31,8 +31,7 @@ final class FeatureFlagRegistry
     public function __construct(
         private readonly array $config,
         private readonly ?ModuleRegistryGateway $gateway = null,
-    ) {
-    }
+    ) {}
 
     public function version(): string
     {

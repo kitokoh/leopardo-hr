@@ -22,9 +22,7 @@ use Illuminate\Http\Request;
  */
 class PlatformFeatureKillSwitchController extends Controller
 {
-    public function __construct(private readonly FeatureKillSwitchService $killSwitches)
-    {
-    }
+    public function __construct(private readonly FeatureKillSwitchService $killSwitches) {}
 
     public function index(): JsonResponse
     {

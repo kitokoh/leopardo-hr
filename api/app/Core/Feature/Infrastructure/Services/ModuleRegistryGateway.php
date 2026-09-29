@@ -35,8 +35,7 @@ final class ModuleRegistryGateway
 
     public function __construct(
         private readonly ModuleRegistry $registry,
-    ) {
-    }
+    ) {}
 
     public function registry(): ModuleRegistry
     {
