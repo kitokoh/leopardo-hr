@@ -6,7 +6,7 @@ namespace App\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
 use App\Jobs\Middleware\EnsureTenantContext;
-use App\Modules\Accounting\Application\Actions\AccountingReportingSnapshotService;
+use App\Modules\Accounting\Infrastructure\Services\AccountingReportingSnapshotService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

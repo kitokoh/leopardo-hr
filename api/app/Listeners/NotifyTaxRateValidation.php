@@ -153,7 +153,7 @@ class NotifyTaxRateValidation implements ShouldQueue
                 }
 
                 try {
-                    $this->sendNotification->handle(
+                    $this->sendNotification->execute(
                         (int) $submitter->id,
                         'tax_rate_validation',
                         $title,

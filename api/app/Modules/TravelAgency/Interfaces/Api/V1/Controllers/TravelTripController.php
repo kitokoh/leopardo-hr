@@ -321,7 +321,7 @@ class TravelTripController extends Controller
             abort(422, 'origin_city_id, destination_city_id et date sont requis.');
         }
 
-        $results = $action->search($origin, $destination, $date);
+        $results = $action->execute($origin, $destination, $date);
 
         return response()->json(['data' => array_map(function (array $result): array {
             return [

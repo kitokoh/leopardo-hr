@@ -6,7 +6,7 @@ namespace App\Modules\Accounting\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Accounting\Infrastructure\Services\AccountingDashboardService;
-use App\Modules\Accounting\Application\Actions\AccountingReportingSnapshotService;
+use App\Modules\Accounting\Infrastructure\Services\AccountingReportingSnapshotService;
 use App\Modules\Accounting\Interfaces\Api\V1\Requests\AccountingDashboardRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
