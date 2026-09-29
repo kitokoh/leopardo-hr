@@ -1,0 +1,51 @@
+# actions-convention-allowlist.txt — dette legacy « couche Application/Actions »
+# (issue #6570, inventoriée et datée par #8239 le 2026-09-28 sur main @ 32243bd).
+#
+# Règles identiques aux autres listes d'exclusion du dépôt (openapi-coverage,
+# migrations-destructive-down) :
+#   - chaque entrée est un chemin relatif à api/ (ex. app/Modules/<M>/...) ;
+#   - une entrée dont la violation disparaît DOIT être purgée (anti-régression,
+#     la garde échoue aussi sur une entrée orpheline — voir le script) ;
+#   - toute violation NOUVELLE (fichier absent de cette liste) est bloquante.
+#
+# Dette : Actions écrites avec une méthode métier nommée (`close()`, `handle()`,
+# `recompute()`) au lieu du `execute()` imposé par #6570, et un Service placé
+# sous Application/Actions/. La résorption se fait module par module — chaque
+# module = sa propre issue/PR (action 2 de #8239, frontières type BOS-024x) ;
+# ne pas renommer « au passage » dans une PR d'un autre sujet.
+
+# Accounting (1 fichier, 2 violations : sans execute() + Service sous Actions/)
+app/Modules/Accounting/Application/Actions/AccountingReportingSnapshotService.php
+
+# Cabinet (1 fichier — méthode handle() au lieu de execute())
+app/Modules/Cabinet/Application/Actions/UploadDocument.php
+
+# Notification (1 fichier — méthode handle() au lieu de execute())
+app/Modules/Notification/Application/Actions/SendNotification.php
+
+# RestaurantManager (20 fichiers — méthodes métier nommées, convention #6570 postérieure)
+app/Modules/RestaurantManager/Application/Actions/AddOrderItemAction.php
+app/Modules/RestaurantManager/Application/Actions/CancelOrderItemAction.php
+app/Modules/RestaurantManager/Application/Actions/ClosePosSessionAction.php
+app/Modules/RestaurantManager/Application/Actions/CloseTableSessionAction.php
+app/Modules/RestaurantManager/Application/Actions/CreateDeliveryAction.php
+app/Modules/RestaurantManager/Application/Actions/CreateMarketplaceOrderAction.php
+app/Modules/RestaurantManager/Application/Actions/CreateOnlineOrderAction.php
+app/Modules/RestaurantManager/Application/Actions/CreateOrderAction.php
+app/Modules/RestaurantManager/Application/Actions/CreditLoyaltyPointsAction.php
+app/Modules/RestaurantManager/Application/Actions/ExportRestaurantReportAction.php
+app/Modules/RestaurantManager/Application/Actions/InventoryCountAction.php
+app/Modules/RestaurantManager/Application/Actions/OpenPosSessionAction.php
+app/Modules/RestaurantManager/Application/Actions/OpenTableSessionAction.php
+app/Modules/RestaurantManager/Application/Actions/PayOrderAction.php
+app/Modules/RestaurantManager/Application/Actions/PurchaseOrderAction.php
+app/Modules/RestaurantManager/Application/Actions/RedeemLoyaltyPointsAction.php
+app/Modules/RestaurantManager/Application/Actions/RefundOrderAction.php
+app/Modules/RestaurantManager/Application/Actions/ReservationAction.php
+app/Modules/RestaurantManager/Application/Actions/TransitionDeliveryAction.php
+app/Modules/RestaurantManager/Application/Actions/TransitionOrderAction.php
+
+# TravelAgency (3 fichiers — méthodes métier nommées)
+app/Modules/TravelAgency/Application/Actions/ConnectionSearchAction.php
+app/Modules/TravelAgency/Application/Actions/ModerateTravelAdvertAction.php
+app/Modules/TravelAgency/Application/Actions/UpsertCurrencyRateAction.php

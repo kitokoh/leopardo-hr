@@ -6,10 +6,10 @@ namespace App\Http\Middleware;
 
 use App\Core\Http\Security\CaptchaVerifier;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelPublicShopToken;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
+use App\Shared\Services\PublicCommerce\PublicTenantResolver;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,12 +30,24 @@ use Symfony\Component\HttpFoundation\Response;
  * CODE DE VALIDATION du billet (secret partagé), vérifié par le contrôleur
  * AVANT toute donnée (404/403 sinon). Les routes non bornées (recherche,
  * réservation, paiement) exigent toujours le jeton boutique.
+ *
+ * BOS-050 (#8208, tranche 6) : la bascule tenant est déléguée au socle
+ * mutualisé {@see PublicTenantResolver} (`withinTenant()` — marqueur
+ * `tenant_scope_required` restauré en `finally`, imbrication sûre) et la
+ * garde société à {@see PublicTenantResolver::assertAccessible()} —
+ * durcissement aligné sur l'invariant partagé des surfaces publiques : une
+ * société `suspended`/`expired` n'est plus servie (401 sur le chemin jeton,
+ * 404 anti-énumération sur le chemin ressource) ; cette surface ne
+ * vérifiait historiquement AUCUN statut. La résolution bornée (jeton
+ * boutique SHA-256, ressource passager par référence/billet) reste portée
+ * ici, comme prévu par le socle. La feature verticale n'est volontairement
+ * PAS ajoutée : jamais vérifiée sur cette surface (périmètre minimal).
  */
 class EnsurePublicShopAccess
 {
     public function __construct(
-        private readonly TenantManager $tenants,
         private readonly CaptchaVerifier $captcha,
+        private readonly PublicTenantResolver $publicTenants,
     ) {}
 
     public function handle(Request $request, Closure $next): Response
@@ -67,13 +79,7 @@ class EnsurePublicShopAccess
             }
         }
 
-        app()->instance('tenant_scope_required', true);
-
-        try {
-            return $this->tenants->withinTenant($company, fn (): Response => $next($request));
-        } finally {
-            app()->forgetInstance('tenant_scope_required');
-        }
+        return $this->publicTenants->withinTenant($company, fn (): Response => $next($request));
     }
 
     /**
@@ -99,7 +105,8 @@ class EnsurePublicShopAccess
 
         $shopToken->forceFill(['last_used_at' => now()])->save();
 
-        return $company;
+        // BOS-050 : garde société mutualisée (suspended/expired → 401).
+        return $this->publicTenants->assertAccessible($company, null, null, 401);
     }
 
     /**
@@ -130,7 +137,7 @@ class EnsurePublicShopAccess
                 abort(404);
             }
 
-            return Company::query()->find($booking->company_id);
+            return $this->accessibleCompany($booking->company_id);
         }
 
         $ticket = $request->route('ticket');
@@ -139,7 +146,7 @@ class EnsurePublicShopAccess
         // résoudre le billet (SubstituteBindings fait partie du groupe `api`,
         // exécuté AVANT les middlewares de route) : on accepte les deux formes.
         if ($ticket instanceof TravelTicket) {
-            return Company::query()->find($ticket->company_id);
+            return $this->accessibleCompany($ticket->company_id);
         }
 
         if (is_string($ticket) && ctype_digit($ticket)) {
@@ -152,9 +159,26 @@ class EnsurePublicShopAccess
                 abort(404);
             }
 
-            return Company::query()->find($model->company_id);
+            return $this->accessibleCompany($model->company_id);
         }
 
         return null;
+    }
+
+    /**
+     * Société d'une ressource bornée, avec la garde mutualisée BOS-050
+     * (suspended/expired → 404 anti-énumération ; société introuvable →
+     * 404, jamais de sélection arbitraire).
+     */
+    private function accessibleCompany(mixed $companyId): Company
+    {
+        /** @var Company|null $company */
+        $company = Company::query()->find(is_scalar($companyId) ? (string) $companyId : null);
+
+        if (! $company instanceof Company) {
+            abort(404);
+        }
+
+        return $this->publicTenants->assertAccessible($company, null, null, 404);
     }
 }

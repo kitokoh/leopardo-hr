@@ -1,5 +1,40 @@
 # AGENTS.md - Guide de travail Leopardo
 
+Derniere mise a jour : 2026-09-29 (#8247 — contrat d'erreur : abort() vs renderer)
+
+> Leçon 2026-09-29 (#8247) : **un `abort(404, 'MON_CODE')` n'expose JAMAIS
+> `MON_CODE` au client API** — le renderer `HttpExceptionInterface` de
+> `bootstrap/app.php` réécrit tout 404 en `{error: RESOURCE_NOT_FOUND}`
+> générique. Pour un code d'erreur stable et documentable
+> (`PENDING_ACTION_NOT_FOUND`…), il faut une `DomainException` (renderer
+> dédié `{error, message, localized_message}`). Corollaire doc : ne jamais
+> documenter dans openapi.yaml un code d'erreur lu dans un `abort()` sans
+> vérifier le renderer — et toujours relire le contrôleur plutôt que faire
+> confiance à la spec existante (le champ `reply` de `/ai/chat` était
+> documenté mais n'a jamais existé ; le champ réel est `response`, enveloppé
+> dans `data`).
+
+> Leçon 2026-09-28 (#8207, lot Z11 BOS-017/018) : **(1) une migration fantôme
+> neutralisée garde souvent son `down()` DESTRUCTEUR d'origine** — 10 fichiers
+> du repo avaient un `up()` no-op et un `down()` qui droppait tables/colonnes
+> des migrations canoniques ; un `migrate:rollback` ciblé vidait le schéma sans
+> que rien ne le restaure. Règle : un `down()` ne détruit que ce que le `up()`
+> du MÊME fichier a défini. Garde `dev-hub/tools/check-migration-destructive-down.py`
+> (branchée dans `migration-duplication-guard.yml`) — dette legacy allowlistée
+> dans `migrations-destructive-down-allowlist.txt` (résorption : #8237).
+> **(2) Dédupliquer une migration déjà jouée en prod = NEUTRALISER (no-op
+> documenté), jamais supprimer le fichier** : Laravel résout chaque entrée de la
+> table `migrations` par son fichier au rollback — un fichier manquant casse
+> `migrate:rollback` du batch (doublon 7417/7420 : 7417 neutralisée, 7420
+> canonique idempotente, chaîne préservée, prouvé sur copie PG16).
+> **(3) Tester `ShouldBeUnique` ne exige aucun worker** : le verrou est acquis
+> dans `PendingDispatch::__destruct` — `Queue::fake()` + deux `Job::dispatch()`
+> identiques puis `assertPushedTimes(Job::class, 1)` prouve l'absorption
+> (cache `array` en test). Et le gate PHPStan CI réel = `phpstan.ci.neon`
+> **niveau 8 + 3 baselines** sur fichiers changés (généré dans `tests.yml`,
+> job backend-quality) — `phpstan.neon` seul (level max) produit des findings
+> hors gate (`cast.*` sur mixed).
+
 Derniere mise a jour : 2026-09-23 (#8092 — rattrapage prod Render + alerte de retard)
 
 > Leçon 2026-09-23 (#8092) : **(1) un workflow de rattrapage se juge à sa COUVERTURE réelle,
@@ -532,6 +567,11 @@ pour les résoudre au checkout.
 > Les pièges datés (drain de crise 2026-09-16, merge lane 2026-09-08, dérive dev
 > Render 2026-09-15, audits 2026-05-13/14, incidents Vercel…) sont consignés dans
 > `docs/GESTION_PROJET/LECONS_AGENTS.md`.
+
+### Bascules search_path PostgreSQL (BOS-019/#8204, ADR-0027)
+
+- Toute bascule `SET search_path` passe par `TenantManager::withinSearchPath()` (try/finally garanti, validation fail-closed de la chaîne) — jamais de SQL manuel hors `TenantManager` ; le middleware `EnsureKioskSearchPathReset` (#3368) reste un filet, pas une permission.
+- Le mode « un schéma par tenant » est MORT (garde `Company::booted()` conservée) : aucune nouvelle branche `tenancy_type === 'schema'` — inventaire borné des références legacy dans `docs/architecture/adr/0027-shared-schema-definitif.md`.
 
 ### Frontieres routes modules
 

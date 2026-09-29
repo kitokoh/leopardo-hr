@@ -68,7 +68,11 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('travel_adverts');
+        // #8207 (BOS-018) — `travel_adverts` retirée du rollback : elle est
+        // créée par la migration canonique `2026_08_30_001548_*` (pas par ce
+        // fichier) ; la dropper ici détruisait le schéma d'une autre
+        // migration. Ce down() ne détruit que les trois tables créées par
+        // son up().
         Schema::dropIfExists('travel_advert_prices');
         Schema::dropIfExists('travel_advert_positions');
         Schema::dropIfExists('travel_advert_types');

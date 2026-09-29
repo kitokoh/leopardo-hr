@@ -1,3 +1,34 @@
+> **MAJ 2026-09-29 — #8278, routes manager du cycle de vie kiosk restaurées (revoke / rotate-token, Closes #8241).**
+> Surface **API HTTP** (`api/routes/modules/rh.php`) : deux routes nouvelles —
+> `POST /api/v1/kiosks/{kiosk}/revoke` et `POST /api/v1/kiosks/{kiosk}/rotate-token`
+> (manager uniquement : middleware `api.manager` + `whereNumber('kiosk')`, même pile
+> `auth:sanctum`/`tenant` que `POST /kiosks` register) — exposant les méthodes BIO-005
+> (#6766) de `KioskController` qui existaient sans routage (404 sur tout appel manager).
+> Comportement : la révocation passe le kiosk en `status=revoked` (punch/sync de
+> l'appareil ensuite refusés en 403 `DEVICE_REVOKED`, audit biométrique `device.revoked`) ;
+> la rotation invalide l'ancien secret (401) et retourne le nouveau en clair une seule
+> fois (`data.sync_token`, audit `device.token_rotated`) ; résolution scopée tenant
+> (`currentCompany()` + `whereKey`). `openapi.yaml` aligné (2 endpoints documentés).
+> Scénarios automatisés : `api/tests/Feature/Attendance/KioskDeviceLifecycleTest.php`
+> (`revoked kiosk cannot punch nor sync`, `rotate token invalidates the old secret`) et
+> `api/tests/Feature/Attendance/KioskSyncStatusEndpointTest.php` (`revoked device gets
+> 403 device revoked`) — 3 tests chroniquement ROUGES sur `main` (404 route absente),
+> désormais verts (8/8 sur les deux fichiers, 59 assertions).
+> **MAJ 2026-09-26 — #8188, contrat RBAC du référentiel Fuel rendu explicite (option 2 de l'issue).**
+> Surface **API HTTP** : aucune route nouvelle ni contrat d'URL modifié — le changement
+> touche `api/routes/modules/fuel_station.php` en commentaire uniquement (docblock ; la
+> garde gouvernance surveille `api/routes/**`, d'où cette note). Le contrat effectif est
+> désormais documenté sans zone grise : lecture du référentiel (stations/sites/équipements/
+> produits) ouverte à tout employé authentifié du tenant (#7439 — l'écran pompiste web/mobile
+> appelle ces endpoints en employé simple), écriture réservée au groupe `api.manager`,
+> signalement d'incident (`POST /fuel-station/incidents`) ouvert à tout employé, liste et
+> gestion des incidents réservées au manager via la policy effective. Scénarios automatisés :
+> `api/tests/Feature/FuelStation/FuelStationReferentialTest.php` — le test obsolète
+> `referential_requires_manager_role` (ROUGE sur `main` : 200 vs 403) est remplacé par
+> `test_referential_read_is_open_to_any_tenant_employee` (lecture employé 200 + contenu
+> asserté, flag actif) et `test_referential_write_requires_manager_role` (POST/PUT/DELETE →
+> 403 `MANAGER_REQUIRED`, échoue si la garde `api.manager` disparaît des écritures).
+
 > **MAJ 2026-09-26 — #8181, matrice RBAC fine `delivery.role` câblée sur les routes Delivery (BC-26-D05).**
 > Surface **API HTTP** : aucune route nouvelle ni contrat d'URL modifié — les gardes changent
 > (`api/routes/modules/delivery.php` : `api.manager` générique remplacé par la matrice fine
@@ -1037,3 +1068,15 @@ restent les gates applicables.
   `client-business-flows` (parcours affecter → renommer rôle → retirer).
 - **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
   `restaurant.team.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+
+## Mise à jour 2026-09-28 — assistant IA du portail web (PR #8253, issue #8224, BOS-035)
+
+- **Surface web** : nouvelle page protégée `/assistant` (module `front/web/src/modules/assistant/`)
+  — panneau de chat, badges `tools_used`, cartes de confirmation write (confirm/reject),
+  historique des conversations ; préfixe protégé `/assistant` ajouté (`protected-prefixes.ts`,
+  `proxy.ts`, `sw.js`). Scénarios : e2e Playwright `front/web/e2e/assistant.spec.ts` (question →
+  tool → réponse ; write → confirmation → exécution) + Jest `assistant-panel.test.tsx`.
+- **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue partagé
+  `assistant*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+- **Surface API** : aucun changement backend (consomme les endpoints assistant existants),
+  aucun scénario nouveau requis.

@@ -90,12 +90,13 @@ final class TenantManager
      * Exécute une closure dans le contexte d'un tenant, puis restaure.
      *
      * @template T
+     *
      * @param  Closure(): T  $cb
      * @return T
      */
     public function withinTenant(Company $company, Closure $cb): mixed
     {
-        $oldPath    = 'public';
+        $oldPath = 'public';
         $oldCompany = app()->bound('current_company') ? app('current_company') : null;
 
         if ($this->isPostgres()) {
@@ -113,6 +114,49 @@ final class TenantManager
 
             $this->restoreCompanyContext($oldCompany);
             $this->previousCompany = null;
+        }
+    }
+
+    /**
+     * Exécute une closure sous un `search_path` PostgreSQL explicite, puis
+     * restaure systématiquement le précédent (try/finally) — BOS-019 (#8204).
+     *
+     * C'est l'API UNIQUE de bascule « brute » de search_path, pour les
+     * traitements qui ne changent PAS le contexte tenant (`current_company`) :
+     * surfaces publiques (kiosk), vues portefeuille plateforme, sondes. Tout
+     * `SET search_path` manuel hors de cette classe est un motif de refus en
+     * revue (filet de sécurité : `EnsureKioskSearchPathReset`, #3368).
+     *
+     * Pour une bascule de tenant complète (company + search_path), utiliser
+     * `withinTenant()`.
+     *
+     * @template T
+     *
+     * @param  Closure(): T  $cb
+     * @return T
+     */
+    public function withinSearchPath(string $searchPath, Closure $cb): mixed
+    {
+        if (! $this->isPostgres()) {
+            return $cb();
+        }
+
+        $previous = $this->currentSearchPath();
+        DB::statement('SET search_path TO '.$this->assertSafeSearchPath($searchPath));
+
+        try {
+            return $cb();
+        } finally {
+            try {
+                DB::statement('SET search_path TO '.$previous);
+            } catch (QueryException $exception) {
+                // Même garde que resetToPrevious() : ne pas laisser un 25P02 de
+                // nettoyage masquer l'exception d'origine — la transaction est
+                // déjà morte et sera rollbackée par le scope amont.
+                if ($exception->getCode() !== '25P02') {
+                    throw $exception;
+                }
+            }
         }
     }
 
@@ -161,6 +205,20 @@ final class TenantManager
         return DB::getDriverName() === 'pgsql';
     }
 
+    /**
+     * Validation fail-closed d'une chaîne search_path : identifiants
+     * PostgreSQL simples, guillemets et virgules uniquement — jamais
+     * d'interpolation libre dans un `SET search_path` (BOS-019).
+     */
+    private function assertSafeSearchPath(string $searchPath): string
+    {
+        if (preg_match('/^[a-zA-Z0-9_",\s]+$/', $searchPath) !== 1) {
+            throw new \InvalidArgumentException('search_path invalide : caractères non autorisés');
+        }
+
+        return $searchPath;
+    }
+
     private function currentSearchPath(): string
     {
         /** @var object{search_path: string}|null $row */
@@ -169,4 +227,3 @@ final class TenantManager
         return $row->search_path ?? 'public';
     }
 }
-

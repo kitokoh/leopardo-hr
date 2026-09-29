@@ -6,6 +6,9 @@ namespace App\Modules\Pharmacy\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Pharmacy\Application\Actions\ArchivePharmacyProductAction;
+use App\Modules\Pharmacy\Application\Actions\CreatePharmacyProductAction;
+use App\Modules\Pharmacy\Application\Actions\UpdatePharmacyProductAction;
 use App\Modules\Pharmacy\Domain\Models\PharmacyProduct;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Requests\StorePharmacyProductRequest;
 use App\Modules\Pharmacy\Interfaces\Api\V1\Requests\UpdatePharmacyProductRequest;
@@ -23,6 +26,12 @@ use Illuminate\Http\Request;
 class PharmacyProductController extends Controller
 {
     use ChecksPharmacySolution;
+
+    public function __construct(
+        private readonly CreatePharmacyProductAction $createProduct,
+        private readonly UpdatePharmacyProductAction $updateProduct,
+        private readonly ArchivePharmacyProductAction $archiveProduct,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -79,21 +88,7 @@ class PharmacyProductController extends Controller
         $this->authorize('create', PharmacyProduct::class);
 
         /** @var PharmacyProduct $product */
-        $product = PharmacyProduct::query()->create(array_merge(
-            [
-                'category' => 'medicament',
-                'unit' => 'unite',
-                'prescription_required' => false,
-                'is_controlled' => false,
-                'purchase_price' => 0,
-                'sale_price' => 0,
-                'tax_rate' => 0,
-                'min_stock_level' => 0,
-                'status' => 'active',
-            ],
-            $request->validated(),
-            ['company_id' => $actor->company_id],
-        ));
+        $product = $this->createProduct->execute($actor, $request->validated());
 
         return response()->json(['data' => $this->payload($product->refresh())], 201);
     }
@@ -119,7 +114,7 @@ class PharmacyProductController extends Controller
         $this->assertSameTenant($product, $actor->company_id);
         $this->authorize('update', $product);
 
-        $product->update($request->validated());
+        $product = $this->updateProduct->execute($product, $request->validated());
 
         return response()->json(['data' => $this->payload($product->refresh())]);
     }
@@ -137,7 +132,7 @@ class PharmacyProductController extends Controller
         $this->assertSameTenant($product, $actor->company_id);
         $this->authorize('update', $product);
 
-        $product->update(['status' => 'archived']);
+        $product = $this->archiveProduct->execute($product);
 
         return response()->json(['data' => $this->payload($product->refresh())]);
     }

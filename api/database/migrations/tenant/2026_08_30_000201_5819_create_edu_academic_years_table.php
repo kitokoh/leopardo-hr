@@ -67,16 +67,15 @@ return new class extends Migration
 
     public function down(): void
     {
-        // Tables dépendantes créées par d'AUTRES migrations du même module
-        // (elles référencent cette table par FK composite) : PostgreSQL
-        // refuse de dropper un parent encore référencé (2BP01). Leur
-        // `down()` n'étant pas dans le lot canonique rejoué par les tests
-        // d'inventaire, on les supprime ici — gardé, et recréé par leurs
-        // propres migrations (le cycle de test est transactionnel).
-        Schema::dropIfExists('edu_accounting_entries');
-        Schema::dropIfExists('edu_fee_payments');
-        Schema::dropIfExists('edu_fee_charges');
-        Schema::dropIfExists('edu_fee_types');
+        // #8237 (leçon #8207 / BOS-018) — symétrique EXACT de up() : ce fichier
+        // ne crée QUE `edu_academic_years` ; son rollback ne droppe que
+        // celle-là. La version précédente droppait aussi 4 tables sœurs créées
+        // par leur migration propriétaire
+        // `2026_08_30_001517_5832_create_edu_fee_tables.php`
+        // (`edu_fee_types`, `edu_fee_charges`, `edu_fee_payments`,
+        // `edu_accounting_entries`) : un rollback ciblé ne REJOUE pas les
+        // autres migrations, les tables sœurs restaient supprimées avec leur
+        // migration « migrée ».
         Schema::dropIfExists('edu_academic_years');
     }
 };
