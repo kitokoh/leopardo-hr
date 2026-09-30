@@ -127,15 +127,18 @@ class PendingActionStore
         // concurrente — le delete est idempotent.
         DB::table('ai_pending_actions')->where('id', $id)->delete();
 
+        /** @var array<string, mixed> $record */
+        $record = (array) $row;
+
         /** @var array<string, mixed>|null $arguments */
-        $arguments = json_decode((string) $row->arguments, true);
+        $arguments = json_decode((string) $record['arguments'], true);
 
         return [
-            'company_id' => (string) $row->company_id,
-            'user_id' => (int) $row->user_id,
-            'tool' => (string) $row->tool,
+            'company_id' => (string) $record['company_id'],
+            'user_id' => (int) $record['user_id'],
+            'tool' => (string) $record['tool'],
             'arguments' => is_array($arguments) ? $arguments : [],
-            'conversation_id' => $row->conversation_id !== null ? (int) $row->conversation_id : null,
+            'conversation_id' => $record['conversation_id'] !== null ? (int) $record['conversation_id'] : null,
         ];
     }
 

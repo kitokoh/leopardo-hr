@@ -160,7 +160,7 @@ class ToolResultFramingTest extends TestCase
         // il retombe sur la confirmation humaine (critère #1 de l'issue).
         $response->assertJsonPath('data.pending_confirmations.0.status', 'confirmation_required')
             ->assertJsonPath('data.pending_confirmations.0.tool', 'absence_decision');
-        $this->assertSame('pending', $absence->fresh()->status, 'aucun write non demandé exécuté');
+        $this->assertSame('pending', $absence->refresh()->status, 'aucun write non demandé exécuté');
     }
 }
 

@@ -110,7 +110,7 @@ final class JsonSchemaValidator
         $additional = $schema['additionalProperties'] ?? true;
         if ($additional === false && is_array($properties)) {
             foreach (array_keys($data) as $key) {
-                if (! is_string($key) || ! array_key_exists($key, $properties)) {
+                if (! array_key_exists($key, $properties)) {
                     $violations[] = $this->at($path).": clé « {$key} » non déclarée (additionalProperties: false)";
                 }
             }

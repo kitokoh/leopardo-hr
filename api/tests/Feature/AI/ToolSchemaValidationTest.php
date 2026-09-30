@@ -15,7 +15,6 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use Database\Seeders\AIToolRegistrySeeder;
 use Illuminate\Support\Facades\Log;
-use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -105,6 +104,7 @@ class ToolSchemaValidationTest extends TestCase
         // AVANT tout effet de bord).
         $this->assertNull($payload['pending_action_id'] ?? null);
 
+        // @phpstan-ignore-next-line staticMethod.notFound (Log::spy → MockInterface dynamique)
         Log::shouldHaveReceived('warning')->withArgs(
             static fn (string $message, array $context): bool => $message === 'ai.tool_schema_violation'
                 && ($context['tool'] ?? null) === 'absence_decision'
@@ -155,6 +155,7 @@ class ToolSchemaValidationTest extends TestCase
         // Mode warn : la proposition de confirmation suit son cours normal.
         $this->assertSame('confirmation_required', $payload['status'] ?? null);
 
+        // @phpstan-ignore-next-line staticMethod.notFound (Log::spy → MockInterface dynamique)
         Log::shouldHaveReceived('warning')->withArgs(
             static fn (string $message, array $context): bool => $message === 'ai.tool_schema_violation'
                 && ($context['phase'] ?? null) === 'input'
@@ -205,6 +206,7 @@ class ToolSchemaValidationTest extends TestCase
 
         $this->assertSame('AI_TOOL_OUTPUT_SCHEMA_VIOLATION', $payload['error'] ?? null);
 
+        // @phpstan-ignore-next-line staticMethod.notFound (Log::spy → MockInterface dynamique)
         Log::shouldHaveReceived('warning')->withArgs(
             static fn (string $message, array $context): bool => $message === 'ai.tool_schema_violation'
                 && ($context['phase'] ?? null) === 'output',
@@ -238,6 +240,7 @@ class ToolSchemaValidationTest extends TestCase
 
         $this->assertNull($payload['error'] ?? null, 'mode warn : la sortie non conforme passe');
 
+        // @phpstan-ignore-next-line staticMethod.notFound (Log::spy → MockInterface dynamique)
         Log::shouldHaveReceived('warning')->withArgs(
             static fn (string $message, array $context): bool => $message === 'ai.tool_schema_violation'
                 && ($context['phase'] ?? null) === 'output'

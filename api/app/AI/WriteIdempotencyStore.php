@@ -73,7 +73,7 @@ class WriteIdempotencyStore
             ->where('expires_at', '>', now())
             ->first();
 
-        return $row === null ? null : $this->hydrate($row);
+        return $row === null ? null : $this->hydrate((array) $row);
     }
 
     /**
@@ -90,7 +90,7 @@ class WriteIdempotencyStore
             ->where('expires_at', '>', now())
             ->first();
 
-        return $row === null ? null : $this->hydrate($row);
+        return $row === null ? null : $this->hydrate((array) $row);
     }
 
     /**
@@ -145,18 +145,19 @@ class WriteIdempotencyStore
     }
 
     /**
+     * @param  array<string, mixed>  $row
      * @return array{tool: string, result: array<string, mixed>, pending_action_id: string|null, conversation_id: int|null}
      */
-    private function hydrate(object $row): array
+    private function hydrate(array $row): array
     {
         /** @var array<string, mixed>|null $decoded */
-        $decoded = json_decode((string) $row->result, true);
+        $decoded = json_decode((string) $row['result'], true);
 
         return [
-            'tool' => (string) $row->tool,
+            'tool' => (string) $row['tool'],
             'result' => is_array($decoded) ? $decoded : [],
-            'pending_action_id' => $row->pending_action_id !== null ? (string) $row->pending_action_id : null,
-            'conversation_id' => $row->conversation_id !== null ? (int) $row->conversation_id : null,
+            'pending_action_id' => $row['pending_action_id'] !== null ? (string) $row['pending_action_id'] : null,
+            'conversation_id' => $row['conversation_id'] !== null ? (int) $row['conversation_id'] : null,
         ];
     }
 

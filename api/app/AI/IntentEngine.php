@@ -195,7 +195,6 @@ class IntentEngine
      * structuré (chemins et règles attendues — jamais les valeurs métier).
      *
      * @param  array<string, mixed>  $schema
-     * @param  mixed  $data
      */
     private function schemaGate(string $phase, ToolCall $toolCall, array $schema, mixed $data, string $companyId, int $userId): ?ToolResult
     {

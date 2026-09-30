@@ -85,9 +85,6 @@ class WriteIdempotencyTest extends TestCase
         );
     }
 
-    /**
-     * @param  array<string, mixed>  $arguments
-     */
     private function conversationId(Company $company, Employee $actor): int
     {
         return (int) DB::table('ai_conversations')->insertGetId([
@@ -177,7 +174,7 @@ class WriteIdempotencyTest extends TestCase
             ->assertJsonPath('data.result.absence_id', $absence->id)
             ->assertJsonPath('data.result.status', 'approved');
 
-        $this->assertSame('approved', $absence->fresh()->status);
+        $this->assertSame('approved', $absence->refresh()->status);
     }
 
     public function test_reconfirmation_in_the_same_conversation_replays_without_a_second_effect(): void
