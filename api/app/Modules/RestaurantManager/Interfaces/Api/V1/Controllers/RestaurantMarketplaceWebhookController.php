@@ -10,8 +10,6 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantMarketplaceEvent;
 use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppRegistry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use RuntimeException;
 
 /**
  * RESTO-806 (#6227) — Webhooks entrants des apps de livraison.
@@ -28,8 +26,7 @@ class RestaurantMarketplaceWebhookController extends Controller
     public function __construct(
         private readonly DeliveryAppRegistry $registry,
         private readonly CreateMarketplaceOrderAction $createOrder,
-    ) {
-    }
+    ) {}
 
     public function handle(string $provider, Request $request): JsonResponse
     {
@@ -75,7 +72,7 @@ class RestaurantMarketplaceWebhookController extends Controller
         }
 
         try {
-            $order = $this->createOrder->create($companyId, $inbound);
+            $order = $this->createOrder->execute($companyId, $inbound);
 
             $this->recordEvent(
                 companyId: $companyId,

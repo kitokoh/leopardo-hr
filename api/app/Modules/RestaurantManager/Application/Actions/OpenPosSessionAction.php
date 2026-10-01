@@ -26,7 +26,7 @@ final class OpenPosSessionAction
     /**
      * @param  array{opening_cash_minor: int, branch_id: int}  $data
      */
-    public function open(Employee $actor, array $data): RestaurantPosSession
+    public function execute(Employee $actor, array $data): RestaurantPosSession
     {
         $branch = RestaurantBranch::query()
             ->where('company_id', $actor->company_id)

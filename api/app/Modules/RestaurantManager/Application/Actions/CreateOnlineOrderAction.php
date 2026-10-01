@@ -56,7 +56,7 @@ final class CreateOnlineOrderAction
      *     idempotency_key?: string|null
      * }  $data
      */
-    public function create(array $data): RestaurantOrder
+    public function execute(array $data): RestaurantOrder
     {
         $company = currentCompany();
         $companyId = $company->id;

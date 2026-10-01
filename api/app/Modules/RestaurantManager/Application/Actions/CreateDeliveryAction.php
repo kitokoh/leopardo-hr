@@ -37,7 +37,7 @@ final class CreateDeliveryAction
     /**
      * @param  array{zone_id?: int|null}  $data
      */
-    public function create(Employee $actor, RestaurantOrder $order, array $data): RestaurantDelivery
+    public function execute(Employee $actor, RestaurantOrder $order, array $data): RestaurantDelivery
     {
         if ($order->company_id !== $actor->company_id) {
             throw new RuntimeException('Order does not belong to tenant.');
