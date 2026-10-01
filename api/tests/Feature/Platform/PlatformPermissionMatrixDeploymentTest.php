@@ -130,7 +130,25 @@ class PlatformPermissionMatrixDeploymentTest extends TestCase
         $this->actingAsPlatform(PlatformRole::Support);
         $this->getJson('/api/v1/admin/webhooks')->assertForbidden();
         $this->postJson('/api/v1/admin/webhooks', [])->assertForbidden();
-        $this->deleteJson('/api/v1/admin/webhooks/1')->assertForbidden();
+        // #8021 — le binding implicite {webhookEndpoint} s'exécute AVANT les
+        // middlewares de route : un DELETE sur un id absent répond 404, pas
+        // 403. La garde se prouve donc ici au niveau définition de route.
+        $deleteRoute = null;
+        foreach (Route::getRoutes()->getRoutes() as $candidate) {
+            if ($candidate->uri() === 'api/v1/admin/webhooks/{webhookEndpoint}' && in_array('DELETE', $candidate->methods(), true)) {
+                $deleteRoute = $candidate;
+                break;
+            }
+        }
+        self::assertNotNull($deleteRoute, 'Route introuvable : DELETE api/v1/admin/webhooks/{webhookEndpoint}');
+        $guarded = false;
+        foreach ($deleteRoute->gatherMiddleware() as $middleware) {
+            if (str_contains((string) $middleware, 'platform.permission:webhooks.manage')) {
+                $guarded = true;
+                break;
+            }
+        }
+        self::assertTrue($guarded, 'DELETE api/v1/admin/webhooks/{webhookEndpoint} doit porter platform.permission:webhooks.manage');
 
         $this->actingAsPlatform(PlatformRole::Marketing);
         $this->getJson('/api/v1/admin/webhooks')->assertForbidden();

@@ -206,6 +206,9 @@ final class PlatformAcquisitionFunnelController extends Controller
                     ],
                 ],
             ],
-        ]);
+        ], 200, [], JSON_PRESERVE_ZERO_FRACTION);
+        // JSON_PRESERVE_ZERO_FRACTION : `conversion_rate` (float) doit rester
+        // `1.0`/`0.0` dans le payload, pas `1`/`0` (contrat stats, #8293 —
+        // même pattern que RestaurantReportController, #8180).
     }
 }
