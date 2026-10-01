@@ -13,14 +13,12 @@ Core/Tenant -> Modules/Attendance
 Modules/Absence -> Modules/Planning
 Modules/Accounting -> Modules/Marketing
 Modules/Accounting -> Modules/Notification
-Modules/Attendance -> Modules/Fleet
 Modules/Attendance -> Modules/Notification
 Modules/Attendance -> Modules/Planning
 Modules/Billing -> Modules/Payroll
 Modules/Billing -> Modules/Platform
 Modules/Cabinet -> Modules/HR
 Modules/Expense -> Modules/Planning
-Modules/Fleet -> Modules/Attendance
 Modules/Growth -> Modules/Billing
 Modules/Growth -> Modules/Payroll
 Modules/HR -> Modules/Payroll

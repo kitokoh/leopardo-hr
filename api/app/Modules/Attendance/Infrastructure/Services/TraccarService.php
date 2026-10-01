@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Infrastructure\Services;
 
+use App\Shared\Contracts\Tracking\VehicleTrackingProvider;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 
-class TraccarService
+class TraccarService implements VehicleTrackingProvider
 {
     private string $baseUrl = '';
 

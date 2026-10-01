@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Fleet\Infrastructure\Services;
 
-use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\Fleet\Domain\Models\VehiclePosition;
 use App\Modules\Fleet\Domain\Models\VehicleTrip;
+use App\Shared\Contracts\Fleet\FleetTrackingSynchronizer;
+use App\Shared\Contracts\Tracking\VehicleTrackingProvider;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 
@@ -32,7 +33,7 @@ use Illuminate\Support\Carbon;
  * une requête HTTP (contexte déjà posé par `TenantMiddleware`) comme depuis une
  * commande.
  */
-final class FleetTrackingSyncService
+final class FleetTrackingSyncService implements FleetTrackingSynchronizer
 {
     /** Traccar exprime les vitesses en nœuds ; le contrat de stockage est en km/h. */
     public const KNOTS_TO_KMH = 1.852;
@@ -46,7 +47,7 @@ final class FleetTrackingSyncService
     /** Plafond de trajets écrits par appareil et par passe. */
     public const MAX_TRIPS_PER_DEVICE = 500;
 
-    public function __construct(private readonly TraccarService $traccar) {}
+    public function __construct(private readonly VehicleTrackingProvider $traccar) {}
 
     /**
      * Liste des appareils Traccar (un seul appel HTTP, partagé par tous les
