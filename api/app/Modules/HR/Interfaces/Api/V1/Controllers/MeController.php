@@ -7,10 +7,10 @@ namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\AttendanceTodayResource;
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Modules\Attendance\Infrastructure\Services\AttendanceAnomalyService;
-use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceAnomaliesRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\OwnAttendanceAnomaliesRequest;
 use App\Modules\Planning\Infrastructure\Services\EstimationService;
+use App\Shared\Contracts\Attendance\AttendanceAnomalySummarizer;
+use App\Shared\Contracts\Attendance\AttendanceLogReader;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -26,6 +26,8 @@ class MeController extends Controller
 {
     public function __construct(
         private readonly EstimationService $estimationService,
+        private readonly AttendanceLogReader $attendanceLogs,
+        private readonly AttendanceAnomalySummarizer $anomalySummarizer,
     ) {}
 
     public function dailySummary(Request $request): JsonResponse
@@ -51,13 +53,9 @@ class MeController extends Controller
 
         $dateKey = $dateLocal->toDateString();
 
-        $log = AttendanceLog::query()
-            ->select(['id', 'employee_id', 'date', 'session_number', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status', 'work_type', 'late_minutes'])
-            ->where('employee_id', $employee->id)
-            ->where('date', $dateKey)
-            ->orderByRaw('CASE WHEN check_out IS NULL THEN 1 ELSE 0 END DESC')
-            ->orderByDesc('session_number')
-            ->first();
+        // #8299 (BOS-023 cycle 3) : lecture via le contrat Shared — requête
+        // reprise à l'identique côté adapter Attendance (colonnes, tris).
+        $log = $this->attendanceLogs->latestLogForEmployeeOnDate($employee->id, $dateKey);
 
         $summary = $this->estimationService->dailySummary($employee, $dateKey);
 
@@ -135,17 +133,16 @@ class MeController extends Controller
      * regular employee can never read another employee's anomalies through
      * this endpoint.
      */
-    public function attendanceAnomalies(AttendanceAnomaliesRequest $request, AttendanceAnomalyService $anomalyService): JsonResponse
+    public function attendanceAnomalies(OwnAttendanceAnomaliesRequest $request): JsonResponse
     {
         /** @var Employee $employee */
         $employee = $request->user();
 
-        $this->authorize('viewOwnAnomalies', AttendanceLog::class);
-
-        $filters = array_merge($request->validated(), ['employee_id' => $employee->id]);
-
+        // #8299 (BOS-023 cycle 3) : autorisation `viewOwnAnomalies` et merge
+        // forcé de employee_id exécutés côté adapter Attendance (séquence
+        // historique identique, 403/422 inchangés).
         return new JsonResponse(
-            $anomalyService->summarize($employee->company_id, $filters, null)
+            $this->anomalySummarizer->summarizeOwnAnomalies($employee, $request->validated())
         );
     }
 }

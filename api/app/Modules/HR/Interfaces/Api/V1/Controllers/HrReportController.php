@@ -6,10 +6,10 @@ namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\HR\Domain\Models\Contract;
 use App\Modules\Payroll\Domain\Models\Payroll;
 use App\Modules\Planning\Domain\Models\Absence;
+use App\Shared\Contracts\Attendance\AttendanceLogReader;
 use App\Shared\Support\TenantCache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,6 +19,10 @@ use Illuminate\Support\Facades\DB;
 
 class HrReportController extends Controller
 {
+    public function __construct(
+        private readonly AttendanceLogReader $attendanceLogs,
+    ) {}
+
     public function headcount(Request $request): JsonResponse
     {
         $this->authorizeManager($request);
@@ -166,18 +170,13 @@ class HrReportController extends Controller
         $periodStart = Carbon::createFromDate($year, $month, 1)->startOfDay();
         $periodEnd = $periodStart->copy()->endOfMonth();
 
-        $overtimeData = AttendanceLog::where('date', '>=', $periodStart->toDateString())
-            ->where('date', '<=', $periodEnd->toDateString())
-            ->where('overtime_hours', '>', 0)
-            ->select([
-                'employee_id',
-                DB::raw('sum(overtime_hours) as total_overtime'),
-                DB::raw('count(*) as days_with_overtime'),
-            ])
-            ->groupBy('employee_id')
-            ->orderByDesc('total_overtime')
-            ->limit(50)
-            ->get();
+        // #8299 (BOS-023 cycle 3) : agrégat via le contrat Shared — requête
+        // reprise à l'identique côté adapter Attendance (filtres, tri,
+        // limite 50, valeurs brutes du driver).
+        $overtimeData = $this->attendanceLogs->overtimeTotalsBetween(
+            $periodStart->toDateString(),
+            $periodEnd->toDateString(),
+        );
 
         return response()->json([
             'data' => [

@@ -6,15 +6,23 @@ namespace App\Modules\HR\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Planning\Domain\Models\Absence;
+use App\Shared\Contracts\Attendance\AttendanceLogReader;
 
 /**
  * Construit une experience mobile coherente a partir du role utilisateur
  * et des modules reellement exposes par l API.
+ *
+ * #8299 (BOS-023 cycle 3) : les journaux de presence sont lus via le
+ * contrat Shared `AttendanceLogReader` — le module Attendance n'est plus
+ * importe directement (regle d'isolation #5584).
  */
 class MobileExperienceService
 {
+    public function __construct(
+        private readonly AttendanceLogReader $attendanceLogs,
+    ) {}
+
     /**
      * @return array{
      *     stage: string,
@@ -92,9 +100,7 @@ class MobileExperienceService
             return 'new';
         }
 
-        $hasActivity = AttendanceLog::where('company_id', $employee->company_id)
-            ->where('employee_id', $employee->id)
-            ->exists()
+        $hasActivity = $this->attendanceLogs->hasAnyLogForEmployee($employee->company_id, $employee->id)
             || Absence::where('company_id', $employee->company_id)
                 ->where('employee_id', $employee->id)
                 ->exists();
