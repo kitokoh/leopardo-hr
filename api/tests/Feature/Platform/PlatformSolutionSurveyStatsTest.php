@@ -65,7 +65,7 @@ class PlatformSolutionSurveyStatsTest extends TestCase
             'solution' => 'restaurant',
             'answers' => ['size' => '11-50', 'delivery' => true],
             'packages' => ['manager_app', 'kiosk'],
-        ], convertedCompanyId: 'company-1');
+        ], convertedCompanyId: '00000000-0000-0000-0000-000000000001');
 
         $this->createLead([
             'solution' => 'restaurant',
