@@ -6,7 +6,7 @@ namespace App\Modules\Attendance\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\Fleet\Infrastructure\Services\FleetTrackingSyncService;
+use App\Shared\Contracts\Fleet\FleetTrackingSynchronizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -15,7 +15,8 @@ use Illuminate\Support\Carbon;
  * Synchronisations Traccar déclenchées **manuellement** depuis l'API.
  *
  * #7401 : ces trois endpoints ne portent plus la logique de synchronisation —
- * ils délèguent à `FleetTrackingSyncService`, exactement le même code que la
+ * ils délèguent à `FleetTrackingSynchronizer` (contrat Shared, #8298), exactement
+ * le même code que la
  * commande planifiée `leopardo:fleet:sync`. Avant, `syncPositions()` se
  * contentait de **compter** les véhicules ayant une dernière position connue
  * sans jamais rien écrire (le nom de l'endpoint était trompeur) : il persiste
@@ -29,7 +30,7 @@ use Illuminate\Support\Carbon;
  */
 class TrackingSyncController extends Controller
 {
-    public function syncDevices(Request $request, FleetTrackingSyncService $sync): JsonResponse
+    public function syncDevices(Request $request, FleetTrackingSynchronizer $sync): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
@@ -43,7 +44,7 @@ class TrackingSyncController extends Controller
         ]);
     }
 
-    public function syncPositions(Request $request, FleetTrackingSyncService $sync): JsonResponse
+    public function syncPositions(Request $request, FleetTrackingSynchronizer $sync): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
@@ -58,7 +59,7 @@ class TrackingSyncController extends Controller
         ]);
     }
 
-    public function syncTrips(Request $request, FleetTrackingSyncService $sync): JsonResponse
+    public function syncTrips(Request $request, FleetTrackingSynchronizer $sync): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
@@ -75,7 +76,7 @@ class TrackingSyncController extends Controller
             return response()->json(['error' => 'The to date cannot be in the future.'], 422);
         }
 
-        if ($from->diffInDays($to) > FleetTrackingSyncService::MAX_WINDOW_DAYS) {
+        if ($from->diffInDays($to) > FleetTrackingSynchronizer::MAX_WINDOW_DAYS) {
             return response()->json(['error' => 'The date range cannot exceed 90 days.'], 422);
         }
 

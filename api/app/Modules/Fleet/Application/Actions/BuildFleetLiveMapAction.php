@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Fleet\Application\Actions;
 
-use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use App\Modules\Fleet\Domain\Models\Vehicle;
+use App\Shared\Contracts\Tracking\VehicleTrackingProvider;
 
 /**
  * Cas d'usage « carte temps reel de la flotte » (BOS-024g, #8218).
@@ -18,7 +18,7 @@ use App\Modules\Fleet\Domain\Models\Vehicle;
  */
 final class BuildFleetLiveMapAction
 {
-    public function __construct(private readonly TraccarService $traccar) {}
+    public function __construct(private readonly VehicleTrackingProvider $traccar) {}
 
     /**
      * @return list<array<string, mixed>>

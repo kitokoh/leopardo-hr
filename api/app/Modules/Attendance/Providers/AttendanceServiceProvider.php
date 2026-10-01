@@ -10,8 +10,10 @@ use App\Modules\Attendance\Domain\Contracts\GeofenceValidatorInterface;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceAnomalySummarizerAdapter;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceGeofenceService;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceLogReaderAdapter;
+use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use App\Shared\Contracts\Attendance\AttendanceAnomalySummarizer;
 use App\Shared\Contracts\Attendance\AttendanceLogReader;
+use App\Shared\Contracts\Tracking\VehicleTrackingProvider;
 use Illuminate\Support\ServiceProvider;
 use RuntimeException;
 
@@ -36,6 +38,11 @@ class AttendanceServiceProvider extends ServiceProvider
         // HR (MeController) ne dépend plus du service ni de la classe du modèle,
         // l'autorisation `viewOwnAnomalies` reste appliquée côté Attendance.
         $this->app->bind(AttendanceAnomalySummarizer::class, AttendanceAnomalySummarizerAdapter::class);
+
+        // BOS-023 cycle Fleet↔Attendance (#8298) — contrat partagé de tracking :
+        // les modules consommateurs (Fleet) ne dépendent plus de `TraccarService`
+        // directement, uniquement de l'interface Shared.
+        $this->app->bind(VehicleTrackingProvider::class, TraccarService::class);
 
         // BIO-001 (#6762) : le moteur de vérification faciale est remplaçable
         // par configuration (`ai.models.face_verification.adapter`). Défaut
