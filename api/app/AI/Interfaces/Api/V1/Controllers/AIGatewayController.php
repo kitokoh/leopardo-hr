@@ -11,6 +11,7 @@ use App\AI\Orchestrator;
 use App\AI\PendingActionStore;
 use App\AI\ToolPermissionPolicy;
 use App\AI\ToolRegistry;
+use App\AI\WriteIdempotencyStore;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
@@ -24,6 +25,8 @@ class AIGatewayController extends Controller
         private readonly IntentEngine $intentEngine,
         private readonly PendingActionStore $pendingActionStore,
         private readonly AIAuditLogger $auditLogger,
+        // BOS-032 (#8222) — rejeu idempotent des confirmations (retry réseau).
+        private readonly WriteIdempotencyStore $writeIdempotencyStore,
     ) {}
 
     public function chat(Request $request): JsonResponse
@@ -95,6 +98,37 @@ class AIGatewayController extends Controller
         /** @var Employee $user */
         $user = $request->user();
 
+        // BOS-032 (#8222) — retry réseau sur le MÊME pending après
+        // consommation : le résultat initial est servi depuis le store
+        // d'idempotence (marqueur idempotent_replay) au lieu d'un 404, sans
+        // jamais ré-exécuter l'effet métier.
+        $replayed = $this->writeIdempotencyStore->findByPendingActionId(
+            (string) $user->company_id,
+            $pendingActionId,
+        );
+
+        if ($replayed !== null) {
+            $this->auditLogger->logToolExecution(
+                companyId: (string) $user->company_id,
+                userId: (int) $user->id,
+                conversationId: $replayed['conversation_id'],
+                pendingActionId: $pendingActionId,
+                toolName: $replayed['tool'],
+                toolInput: [],
+                stage: 'idempotent_replay',
+                success: true,
+                resultSummary: (json_encode($replayed['result'], JSON_UNESCAPED_UNICODE) ?: null),
+            );
+
+            return response()->json([
+                'data' => [
+                    'status' => 'executed',
+                    'tool' => $replayed['tool'],
+                    'result' => $replayed['result'] + ['idempotent_replay' => true],
+                ],
+            ]);
+        }
+
         $pending = $this->pendingActionStore->pull(
             $pendingActionId,
             (string) $user->company_id,
@@ -110,6 +144,8 @@ class AIGatewayController extends Controller
             $pending['arguments'],
             (string) $user->company_id,
             (int) $user->id,
+            $pendingActionId,
+            $pending['conversation_id'] ?? null,
         );
 
         // A5 (#6852) : l'exécution confirmée est journalisée — la chaîne se

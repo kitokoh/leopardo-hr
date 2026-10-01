@@ -8,6 +8,7 @@ use App\AI\DTOs\AIResponse;
 use App\AI\DTOs\ToolCall;
 use App\AI\DTOs\ToolResult;
 use App\AI\Exceptions\ToolPermissionDeniedException;
+use App\AI\Support\JsonSchemaValidator;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Communication\Domain\Models\CommunicationMessage;
@@ -23,6 +24,7 @@ use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class IntentEngine
 {
@@ -33,6 +35,10 @@ class IntentEngine
         private readonly WriteActionRunner $writeActionRunner,
         // BC-23-D05 (issue #6237) : matrice de permissions par outil AI.
         private readonly ToolPermissionPolicy $toolPermissionPolicy,
+        // BOS-032 (#8222) : idempotence métier des write-tools confirmés.
+        private readonly WriteIdempotencyStore $writeIdempotencyStore,
+        // BOS-034 (#8223) : validation runtime des schémas d'outils.
+        private readonly JsonSchemaValidator $jsonSchemaValidator,
     ) {}
 
     /**
@@ -79,7 +85,7 @@ class IntentEngine
     /**
      * @return array<int, ToolResult>
      */
-    public function executeToolCalls(AIResponse $response, string $companyId, int $userId): array
+    public function executeToolCalls(AIResponse $response, string $companyId, int $userId, ?int $conversationId = null): array
     {
         // BC-23-D05 : le rôle est résolu une seule fois pour toute la boucle
         // de tool calls (évite N requêtes Employee).
@@ -87,13 +93,13 @@ class IntentEngine
         $results = [];
 
         foreach ($response->toolCalls as $toolCall) {
-            $results[] = $this->executeSingleTool($toolCall, $companyId, $userId, $role);
+            $results[] = $this->executeSingleTool($toolCall, $companyId, $userId, $role, $conversationId);
         }
 
         return $results;
     }
 
-    private function executeSingleTool(ToolCall $toolCall, string $companyId, int $userId, string $role): ToolResult
+    private function executeSingleTool(ToolCall $toolCall, string $companyId, int $userId, string $role, ?int $conversationId = null): ToolResult
     {
         // BC-23-D05 : fail-closed — l'appel d'un outil hors matrice (rôle ou
         // permission insuffisante) est refusé AVANT tout effet de bord
@@ -112,11 +118,30 @@ class IntentEngine
             );
         }
 
-        if ($this->writeToolPolicy->requiresConfirmation($toolCall->name)) {
-            return $this->pendingConfirmationResult($toolCall, $companyId, $userId);
+        $tool = $this->toolRegistry->findTool($toolCall->name);
+
+        // BOS-034 (#8223) — validation des ARGUMENTS produits par le LLM
+        // contre le schéma déclaré, AVANT toute proposition ou exécution
+        // (un argument hostile ou malformé ne doit jamais atteindre un
+        // handler). Mode `warn` : audité et laissé passer (1 semaine) ; mode
+        // `strict` : refus fail-closed.
+        if ($tool !== null) {
+            $inputViolation = $this->schemaGate(
+                'input',
+                $toolCall,
+                $this->inputSchemaOf($tool),
+                $toolCall->arguments,
+                $companyId,
+                $userId,
+            );
+            if ($inputViolation !== null) {
+                return $inputViolation;
+            }
         }
 
-        $tool = $this->toolRegistry->findTool($toolCall->name);
+        if ($this->writeToolPolicy->requiresConfirmation($toolCall->name)) {
+            return $this->pendingConfirmationResult($toolCall, $companyId, $userId, $conversationId);
+        }
 
         if ($tool === null) {
             return new ToolResult(
@@ -129,6 +154,21 @@ class IntentEngine
 
         try {
             $result = $this->dispatchToolAction($toolCall->name, $toolCall->arguments, $companyId, $userId);
+
+            // BOS-034 (#8223) — validation de la SORTIE contre l'outputSchema
+            // déclaré (fail-closed en mode strict + audit) : une sortie non
+            // conforme ne repart pas au LLM comme si de rien n'était.
+            $outputViolation = $this->schemaGate(
+                'output',
+                $toolCall,
+                $this->outputSchemaOf($tool),
+                $result,
+                $companyId,
+                $userId,
+            );
+            if ($outputViolation !== null) {
+                return $outputViolation;
+            }
 
             return new ToolResult(
                 toolCallId: $toolCall->id,
@@ -147,10 +187,133 @@ class IntentEngine
     }
 
     /**
+     * BOS-034 (#8223) — garde de validation par schéma (entrée ou sortie).
+     *
+     * Retourne null quand le flux peut continuer (aucune violation, schéma
+     * absent, ou mode `warn`) ; en mode `strict`, toute violation produit un
+     * ToolResult de refus fail-closed. Toute violation est auditée par log
+     * structuré (chemins et règles attendues — jamais les valeurs métier).
+     *
+     * @param  array<string, mixed>  $schema
+     */
+    private function schemaGate(string $phase, ToolCall $toolCall, array $schema, mixed $data, string $companyId, int $userId): ?ToolResult
+    {
+        $violations = $this->validateAndAudit($phase, $toolCall->name, $schema, $data, $companyId, $userId);
+        if ($violations === [] || $this->schemaValidationMode() !== 'strict') {
+            return null;
+        }
+
+        return new ToolResult(
+            toolCallId: $toolCall->id,
+            name: $toolCall->name,
+            content: json_encode([
+                'error' => $phase === 'input'
+                    ? 'AI_TOOL_INPUT_SCHEMA_VIOLATION'
+                    : 'AI_TOOL_OUTPUT_SCHEMA_VIOLATION',
+                'message' => 'Tool '.$phase.' does not match the declared JSON schema',
+                'violations' => $violations,
+            ]) ?: '{}',
+            success: false,
+        );
+    }
+
+    /**
+     * BOS-034 (#8223) — cœur de la garde : valide `$data` contre `$schema`
+     * et audite TOUTE violation par log structuré `ai.tool_schema_violation`
+     * (chemins et règles attendues — jamais les valeurs métier). Retourne la
+     * liste des violations (vide = conforme ou schéma absent) ; la décision
+     * warn/strict appartient à l'appelant.
+     *
+     * @param  array<string, mixed>  $schema
+     * @return list<string>
+     */
+    private function validateAndAudit(string $phase, string $toolName, array $schema, mixed $data, string $companyId, int $userId): array
+    {
+        if ($schema === []) {
+            return [];
+        }
+
+        $violations = $this->jsonSchemaValidator->validate($data, $schema);
+        if ($violations === []) {
+            return [];
+        }
+
+        Log::warning('ai.tool_schema_violation', [
+            'company_id' => $companyId,
+            'user_id' => $userId,
+            'tool' => $toolName,
+            'phase' => $phase,
+            'mode' => $this->schemaValidationMode(),
+            'violations' => $violations,
+        ]);
+
+        return $violations;
+    }
+
+    /**
+     * Schéma d'entrée de l'outil : celui de l'AIToolDefinition déclarée par
+     * le BC propriétaire en priorité, sinon les `parameters` du registre DB
+     * (le schéma effectivement exposé au LLM).
+     *
+     * @param  array<string, mixed>  $tool
+     * @return array<string, mixed>
+     */
+    private function inputSchemaOf(array $tool): array
+    {
+        $declared = $tool['input_schema'] ?? null;
+        if (is_array($declared) && $declared !== []) {
+            return $declared;
+        }
+
+        $registered = $tool['parameters'] ?? null;
+
+        return is_array($registered) ? $registered : [];
+    }
+
+    /**
+     * Schéma de sortie déclaré (uniquement les outils couverts par une
+     * AIToolDefinition — les outils legacy sans définition restent hors
+     * validation de sortie, documenté dans la PR #8223).
+     *
+     * @param  array<string, mixed>  $tool
+     * @return array<string, mixed>
+     */
+    private function outputSchemaOf(array $tool): array
+    {
+        $declared = $tool['output_schema'] ?? null;
+
+        return is_array($declared) ? $declared : [];
+    }
+
+    /**
+     * Mode de validation des schémas : `warn` (défaut — audit sans blocage,
+     * fenêtre d'observation d'une semaine) ou `strict` (fail-closed).
+     * Bascule par config `ai.tool_schema_validation.mode` /
+     * `AI_TOOL_SCHEMA_VALIDATION_MODE` (critère #3 de l'issue).
+     */
+    private function schemaValidationMode(): string
+    {
+        $configured = config('ai.tool_schema_validation.mode', 'warn');
+
+        return $configured === 'strict' ? 'strict' : 'warn';
+    }
+
+    /**
+     * Exécute un write-tool APRÈS confirmation humaine.
+     *
+     * BOS-032 (#8222) — idempotence métier : avant toute exécution, la clé
+     * d'intention (conversation + empreinte des arguments) est consultée ;
+     * une intention déjà exécutée retourne son résultat initial avec le
+     * marqueur `idempotent_replay` au lieu de produire un second effet.
+     * Après une exécution réussie, le résultat est persisté (TTL
+     * `ai.write_idempotency_ttl_hours`) pour servir les rejeux — y compris le
+     * retry réseau sur le MÊME pending_action_id (via le contrôleur, qui
+     * consulte findByPendingActionId avant même le pull one-shot).
+     *
      * @param  array<string, mixed>  $arguments
      * @return array<string, mixed>
      */
-    public function executeConfirmedWrite(string $toolName, array $arguments, string $companyId, int $userId): array
+    public function executeConfirmedWrite(string $toolName, array $arguments, string $companyId, int $userId, ?string $pendingActionId = null, ?int $conversationId = null): array
     {
         if (! $this->writeToolPolicy->requiresConfirmation($toolName)) {
             return ['error' => "Tool '{$toolName}' does not require confirmation."];
@@ -167,16 +330,78 @@ class IntentEngine
             ];
         }
 
-        return $this->writeActionRunner->run($toolName, $arguments, $companyId, $userId);
+        // BOS-034 (#8223) — défense en profondeur à l'EXÉCUTION confirmée
+        // (le dispatch réel d'un write-tool) : les arguments sont revalidés
+        // contre le schéma déclaré — le rôle/mode a pu changer depuis la
+        // proposition, et un pending stocké hors boucle chat n'est pas passé
+        // par la garde d'executeSingleTool. Mode strict : refus AVANT tout
+        // effet et avant toute entrée d'idempotence.
+        $tool = $this->toolRegistry->findTool($toolName);
+        $inputViolations = $tool !== null
+            ? $this->validateAndAudit('input', $toolName, $this->inputSchemaOf($tool), $arguments, $companyId, $userId)
+            : [];
+        if ($inputViolations !== [] && $this->schemaValidationMode() === 'strict') {
+            return [
+                'error' => 'AI_TOOL_INPUT_SCHEMA_VIOLATION',
+                'message' => 'Tool input does not match the declared JSON schema',
+                'violations' => $inputViolations,
+            ];
+        }
+
+        $argumentsHash = $this->writeIdempotencyStore->argumentsHash($arguments);
+        $idempotencyKey = $this->writeIdempotencyStore->makeKey($companyId, $conversationId, $pendingActionId, $toolName, $argumentsHash);
+
+        $replay = $this->writeIdempotencyStore->find($companyId, $idempotencyKey);
+        if ($replay !== null) {
+            return $replay['result'] + [
+                'idempotent_replay' => true,
+                'idempotency_key' => $idempotencyKey,
+            ];
+        }
+
+        $result = $this->writeActionRunner->run($toolName, $arguments, $companyId, $userId);
+
+        // Seuls les résultats SANS erreur sont persistés : une erreur n'a
+        // produit aucun effet métier, un retry légitime doit pouvoir retenter.
+        if (($result['error'] ?? null) === null) {
+            $this->writeIdempotencyStore->store(
+                $companyId,
+                $idempotencyKey,
+                $toolName,
+                $argumentsHash,
+                $pendingActionId,
+                $conversationId,
+                $result,
+            );
+
+            // BOS-034 (#8223) — sortie validée contre l'outputSchema déclaré.
+            // L'effet métier A EU LIEU : l'entrée d'idempotence (résultat
+            // réel) reste persistée ci-dessus — en mode strict seule la
+            // RÉPONSE est refusée (fail-closed côté client), jamais l'effet
+            // rejoué (critère « violation → refus + audit »).
+            $outputViolations = $tool !== null
+                ? $this->validateAndAudit('output', $toolName, $this->outputSchemaOf($tool), $result, $companyId, $userId)
+                : [];
+            if ($outputViolations !== [] && $this->schemaValidationMode() === 'strict') {
+                return [
+                    'error' => 'AI_TOOL_OUTPUT_SCHEMA_VIOLATION',
+                    'message' => 'Tool output does not match the declared JSON schema',
+                    'violations' => $outputViolations,
+                ];
+            }
+        }
+
+        return $result;
     }
 
-    private function pendingConfirmationResult(ToolCall $toolCall, string $companyId, int $userId): ToolResult
+    private function pendingConfirmationResult(ToolCall $toolCall, string $companyId, int $userId, ?int $conversationId = null): ToolResult
     {
         $pendingId = $this->pendingActionStore->store(
             $companyId,
             $userId,
             $toolCall->name,
             $toolCall->arguments,
+            $conversationId,
         );
 
         $payload = [
