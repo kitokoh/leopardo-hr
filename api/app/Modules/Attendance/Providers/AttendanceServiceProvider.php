@@ -7,9 +7,11 @@ namespace App\Modules\Attendance\Providers;
 use App\Core\AI\Domain\Contracts\FaceVerificationPort;
 use App\Core\AI\Infrastructure\Adapters\UnavailableFaceVerificationAdapter;
 use App\Modules\Attendance\Domain\Contracts\GeofenceValidatorInterface;
+use App\Modules\Attendance\Infrastructure\Services\AttendanceAnomalySummarizerAdapter;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceGeofenceService;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceLogReaderAdapter;
 use App\Modules\Attendance\Infrastructure\Services\TraccarService;
+use App\Shared\Contracts\Attendance\AttendanceAnomalySummarizer;
 use App\Shared\Contracts\Attendance\AttendanceLogReader;
 use App\Shared\Contracts\Tracking\VehicleTrackingProvider;
 use Illuminate\Support\ServiceProvider;
@@ -31,6 +33,11 @@ class AttendanceServiceProvider extends ServiceProvider
         // les modules consommateurs (Planning) ne dépendent plus du modèle
         // `AttendanceLog` directement, uniquement des interfaces Shared.
         $this->app->bind(AttendanceLogReader::class, AttendanceLogReaderAdapter::class);
+
+        // BOS-023 cycle 3 (#8299) — contrat partagé des anomalies self-service :
+        // HR (MeController) ne dépend plus du service ni de la classe du modèle,
+        // l'autorisation `viewOwnAnomalies` reste appliquée côté Attendance.
+        $this->app->bind(AttendanceAnomalySummarizer::class, AttendanceAnomalySummarizerAdapter::class);
 
         // BOS-023 cycle Fleet↔Attendance (#8298) — contrat partagé de tracking :
         // les modules consommateurs (Fleet) ne dépendent plus de `TraccarService`
