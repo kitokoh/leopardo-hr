@@ -63,8 +63,7 @@ final class SetupInterviewPlanner
 
     /**
      * Secteur déclaré → code de solution verticale (`SolutionCatalogue`).
-     * `commerce`/`services`/`other` n'ont pas de verticale : outils
-     * horizontaux uniquement.
+     * `services`/`other` n'ont pas de verticale : outils horizontaux uniquement.
      *
      * @var array<string, string>
      */
@@ -73,6 +72,7 @@ final class SetupInterviewPlanner
         'fuel_station' => 'fuel_station',
         'education' => 'edumanager',
         'travel' => 'travelagency',
+        'commerce' => 'retail',
     ];
 
     /**
