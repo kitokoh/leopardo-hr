@@ -15,6 +15,7 @@ publiées sont taguées selon le [Semantic Versioning](https://semver.org/lang/f
 > (`git log -p 0bba16974c1b032a9b9bf19bd4b1db7e9bbc6da2 -- CHANGELOG.md`).
 
 ## [Unreleased]
+- refactor(front): extraction du package partagé @leopardo/shared-web pour factoriser backend-url (#7964)
 - refactor(crm): durcissement ADR-CRM-005, endpoints POST /crm/leads, /crm/contacts, /crm/accounts et allowlists directory (#8195)
 - **refactor(notification): retrait de l'alias déprécié CommunicationEvent sous Notification (Closes #8251, ADR 0027).** Conformément à l'ADR 0027 (§5, release N+1), suppression du fichier alias `api/app/Modules/Notification/Domain/Models/CommunicationEvent.php`. La classe canonique `App\Modules\Communication\Domain\Models\CommunicationEvent` est la seule référence active ; aucun import résiduel.
 - **refactor(restaurant): 4 dernières Actions RestaurantManager alignées sur execute() — résorption #8291 tranche 2/2 (Closes #8291).** Convention #6570 « 1 action = 1 execute() » complétée sur RestaurantManager : ajout de la méthode `execute()` délégant aux méthodes métier existantes sur `InventoryCountAction` (submit), `PayOrderAction` (pay), `PurchaseOrderAction` (send), `ReservationAction` (confirm). Allowlist `actions-convention-allowlist.txt` entièrement purgée (0 entrée restante, dette 100 % résorbée). Preuve : vérification syntaxique PHP 8.4 sans erreur, garde actions-convention verte.
