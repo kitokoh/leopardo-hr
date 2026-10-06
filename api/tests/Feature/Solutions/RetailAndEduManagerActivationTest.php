@@ -10,7 +10,6 @@ use App\Core\Solutions\Enums\SolutionIndustry;
 use App\Core\Solutions\SolutionActivator;
 use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Tenant\Domain\Models\EmployeeModuleGrant;
 use App\Modules\EduManager\Domain\Models\EduAcademicYear;
 use App\Modules\EduManager\Domain\Models\EduCampus;
 use App\Modules\Onboarding\Domain\Services\SetupInterviewPlanner;
