@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Modules\EduManager\Providers;
 
 use App\Core\Solutions\SolutionCatalogue;
-use App\Modules\EduManager\Domain\Solution\EduManagerManifest;
+use App\Events\SolutionActivated;
+use App\Modules\EduManager\Application\Actions\SeedMinimalEduManagerAction;
 use App\Modules\EduManager\Console\Commands\EduOutboxDispatchCommand;
+use App\Modules\EduManager\Domain\Solution\EduManagerManifest;
 use App\Modules\EduManager\Infrastructure\Services\EduOutboxConsumerRegistry;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -19,9 +22,9 @@ class EduManagerServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(SolutionCatalogue::class, function (): SolutionCatalogue {
-            return new SolutionCatalogue;
-        });
+        if (! $this->app->bound(SolutionCatalogue::class)) {
+            $this->app->singleton(SolutionCatalogue::class, static fn (): SolutionCatalogue => new SolutionCatalogue);
+        }
 
         $this->app->resolving(SolutionCatalogue::class, function (SolutionCatalogue $catalogue): void {
             $catalogue->register('edumanager', static fn (): EduManagerManifest => new EduManagerManifest);
@@ -35,6 +38,16 @@ class EduManagerServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // BOS-016 (#8205) — amorçage minimal de l'établissement (campus + année scolaire par défaut)
+        // déclenché à l'activation de la solution edumanager.
+        Event::listen(SolutionActivated::class, static function (SolutionActivated $event): void {
+            if ($event->solution !== 'edumanager') {
+                return;
+            }
+
+            app(SeedMinimalEduManagerAction::class)->execute($event->company);
+        });
+
         // Rien à booter tant que l'API EduManager n'existe pas (EDU-006/EDU-010).
         $this->commands([
             EduOutboxDispatchCommand::class,

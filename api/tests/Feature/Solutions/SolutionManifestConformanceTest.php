@@ -33,7 +33,7 @@ class SolutionManifestConformanceTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    /** Les 9 codes de solution de l'allowlist (triés). */
+    /** Les 10 codes de solution de l'allowlist (triés). */
     private const EXPECTED_CODES = [
         'delivery',
         'edumanager',
@@ -43,10 +43,11 @@ class SolutionManifestConformanceTest extends TestCase
         'pharmacy',
         'restaurant',
         'restaurantmanager',
+        'retail',
         'travelagency',
     ];
 
-    public function test_nine_manifests_are_registered_and_conform_to_core_contract_v2(): void
+    public function test_ten_manifests_are_registered_and_conform_to_core_contract_v2(): void
     {
         $catalogue = app(SolutionCatalogue::class);
 
