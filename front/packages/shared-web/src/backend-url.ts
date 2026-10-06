@@ -42,7 +42,7 @@
  * `NEXT_PUBLIC_`, donc jamais inlinée dans le bundle navigateur).
  */
 
-import { PHASE_PRODUCTION_BUILD } from "next/constants";
+export const PHASE_PRODUCTION_BUILD = "phase-production-build";
 
 /**
  * Repli dev/test UNIQUEMENT (#7963) : le backend Laravel local
