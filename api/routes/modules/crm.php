@@ -22,6 +22,7 @@ use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmConsentController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmDashboardController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmDedupController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmDirectoryController;
+use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmDirectoryWriteController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmEmailController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmEmailWebhookController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmExportController;
@@ -75,6 +76,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
     // ── Import CSV (issue #5714) ─────────────────────────────────────────────
     Route::post('/imports', [CrmImportController::class, 'store']);
+    Route::post('/imports/preview', [CrmImportController::class, 'store']);
     Route::get('/imports/{crmImport}', [CrmImportController::class, 'show']);
     Route::post('/imports/{crmImport}/commit', [CrmImportController::class, 'commit']);
     Route::post('/imports/{crmImport}/cancel', [CrmImportController::class, 'cancel']);
@@ -115,8 +117,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     // pipeline`) ; lecture = managers du tenant (RBAC ADR-CRM-002).
     Route::middleware('api.manager:module:crm')->group(function (): void {
         Route::get('/leads', [CrmDirectoryController::class, 'leads']);
+        Route::post('/leads', [CrmDirectoryWriteController::class, 'storeLead']);
+        Route::get('/leads/{lead}', [CrmDirectoryWriteController::class, 'showLead'])->whereNumber('lead');
+        Route::put('/leads/{lead}', [CrmDirectoryWriteController::class, 'updateLead'])->whereNumber('lead');
+
         Route::get('/accounts', [CrmDirectoryController::class, 'accounts']);
+        Route::post('/accounts', [CrmDirectoryWriteController::class, 'storeAccount']);
+        Route::get('/accounts/{account}', [CrmDirectoryWriteController::class, 'showAccount'])->whereNumber('account');
+
         Route::get('/contacts', [CrmDirectoryController::class, 'contacts']);
+        Route::post('/contacts', [CrmDirectoryWriteController::class, 'storeContact']);
+        Route::get('/contacts/{contact}', [CrmDirectoryWriteController::class, 'showContact'])->whereNumber('contact');
+
         Route::get('/opportunities', [CrmDirectoryController::class, 'opportunities']);
     });
 
