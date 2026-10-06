@@ -128,18 +128,18 @@ class CrmDirectoryController extends Controller
         if ($request->has('sort_by')) {
             $sort = (string) $request->input('sort_by');
             if (! in_array($sort, $allowedSorts, true)) {
-                abort(422, "Paramètre sort_by « {$sort} » non autorisé.");
+                abort(422, "Invalid sort_by parameter.");
             }
         }
 
         if ($request->has('filter')) {
             $filters = $request->input('filter');
             if (! is_array($filters)) {
-                abort(422, 'Le paramètre filter doit être un tableau clé-valeur.');
+                abort(422, 'Filter parameter must be a key-value array.');
             }
             foreach (array_keys($filters) as $filterKey) {
                 if (! in_array((string) $filterKey, $allowedFilters, true)) {
-                    abort(422, "Filtre « {$filterKey} » non autorisé.");
+                    abort(422, "Invalid filter parameter.");
                 }
             }
         }
@@ -147,7 +147,7 @@ class CrmDirectoryController extends Controller
         if ($request->has('status')) {
             $status = (string) $request->input('status');
             if (! in_array($status, $allowedStatuses, true)) {
-                abort(422, "Statut « {$status} » non autorisé.");
+                abort(422, "Invalid status parameter.");
             }
         }
     }
@@ -157,7 +157,7 @@ class CrmDirectoryController extends Controller
         if ($request->has('per_page')) {
             $rawPerPage = $request->input('per_page');
             if (! is_numeric($rawPerPage) || (int) $rawPerPage < 1 || (int) $rawPerPage > 100) {
-                abort(422, 'La pagination per_page doit être comprise entre 1 et 100.');
+                abort(422, 'Pagination per_page must be between 1 and 100.');
             }
         }
     }
