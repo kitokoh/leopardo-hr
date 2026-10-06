@@ -21,9 +21,7 @@ use Illuminate\Support\Carbon;
  *
  * Direction de dépendance : Notification → Communication autorisée (le
  * dispatcher de notifications écrit ce journal) ; Communication ne dépend
- * jamais de Notification — la relation historique `notification()` n'existe
- * donc que sur l'alias déprécié
- * {@see \App\Modules\Notification\Domain\Models\CommunicationEvent}.
+ * jamais de Notification.
  *
  * @property int $id
  * @property string $company_id
