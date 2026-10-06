@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Retail\Providers;
 
+use App\Core\Solutions\SolutionCatalogue;
 use App\Events\RetailOnlineOrderDeliveryCreated;
 use App\Modules\Retail\Application\Listeners\StoreRetailOrderDeliveryReference;
+use App\Modules\Retail\Domain\Manifests\RetailManifest;
 use App\Modules\Retail\Infrastructure\Payments\ChargilyProvider;
 use App\Modules\Retail\Infrastructure\Payments\MockProvider;
 use App\Modules\Retail\Infrastructure\Payments\RetailPaymentProviderRegistry;
@@ -32,6 +34,14 @@ class RetailServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        if (! $this->app->bound(SolutionCatalogue::class)) {
+            $this->app->singleton(SolutionCatalogue::class, static fn (): SolutionCatalogue => new SolutionCatalogue);
+        }
+
+        $this->app->resolving(SolutionCatalogue::class, function (SolutionCatalogue $catalogue): void {
+            $catalogue->register(RetailManifest::CODE, static fn (): RetailManifest => new RetailManifest);
+        });
+
         $this->app->singleton(RetailPaymentProviderRegistry::class, function (): RetailPaymentProviderRegistry {
             $registry = new RetailPaymentProviderRegistry;
             $registry->register(new ChargilyProvider);

@@ -29,4 +29,5 @@ enum SolutionIndustry: string
     case Restaurant = 'restaurant';
     case Travel = 'travel';
     case DeliveryLogistics = 'delivery_logistics';
+    case Retail = 'retail';
 }
