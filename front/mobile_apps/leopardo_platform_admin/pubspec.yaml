@@ -27,7 +27,7 @@ dependencies:
   firebase_core: ^4.15.0
   firebase_messaging: ^16.7.0
   flutter_local_notifications: ^22.3.1
-  sentry_flutter: ^9.29.0
+  sentry_flutter: ^9.30.1
   google_sign_in: ^7.2.0
   leopardo_core:
     path: ../leopardo_core
