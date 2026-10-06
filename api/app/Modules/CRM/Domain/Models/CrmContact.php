@@ -53,6 +53,8 @@ class CrmContact extends Model
     ];
 
     protected $casts = [
+        'email' => 'encrypted',
+        'phone' => 'encrypted',
         'is_primary' => 'boolean',
         'archived_at' => 'datetime',
     ];
