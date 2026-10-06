@@ -20,10 +20,6 @@
 
 # Notification (1 fichier — méthode handle() au lieu de execute())
 
-# RestaurantManager (20 fichiers — méthodes métier nommées, convention #6570 postérieure)
-app/Modules/RestaurantManager/Application/Actions/InventoryCountAction.php
-app/Modules/RestaurantManager/Application/Actions/PayOrderAction.php
-app/Modules/RestaurantManager/Application/Actions/PurchaseOrderAction.php
-app/Modules/RestaurantManager/Application/Actions/ReservationAction.php
+# RestaurantManager (0 fichier — résorption #8291 complète)
 
-# TravelAgency (3 fichiers — méthodes métier nommées)
+# TravelAgency (0 fichier)

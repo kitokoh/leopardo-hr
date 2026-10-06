@@ -24,6 +24,11 @@ final class PurchaseOrderAction
 {
     public function __construct(private readonly ReceivingService $receiving) {}
 
+    public function execute(Employee $actor, RestaurantPurchaseOrder $po): RestaurantPurchaseOrder
+    {
+        return $this->send($actor, $po);
+    }
+
     public function send(Employee $actor, RestaurantPurchaseOrder $po): RestaurantPurchaseOrder
     {
         if ($po->company_id !== $actor->company_id) {
