@@ -44,6 +44,14 @@ final class PayOrderAction
     /**
      * @param  array{provider_code: string, amount_minor: int, tip_minor?: int|null, idempotency_key?: string|null}  $data
      */
+    public function execute(Employee $actor, RestaurantOrder $order, array $data): RestaurantOrderPayment
+    {
+        return $this->pay($actor, $order, $data);
+    }
+
+    /**
+     * @param  array{provider_code: string, amount_minor: int, tip_minor?: int|null, idempotency_key?: string|null}  $data
+     */
     public function pay(Employee $actor, RestaurantOrder $order, array $data): RestaurantOrderPayment
     {
         if ($order->company_id !== $actor->company_id) {

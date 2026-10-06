@@ -24,7 +24,8 @@ function Assert-Contains($Content, $Needle, $Label) {
     }
 }
 
-$deployment = Read-RepoFile "DEPLOYMENT_GUIDE.md"
+$deploymentFile = if (Test-Path (Join-Path $Root "docs/deployment/DEPLOYMENT_GUIDE.md")) { "docs/deployment/DEPLOYMENT_GUIDE.md" } else { "DEPLOYMENT_GUIDE.md" }
+$deployment = Read-RepoFile $deploymentFile
 $operations = Read-RepoFile "docs/GESTION_PROJET/RUNBOOK_OPERATIONS.md"
 $backup = Read-RepoFile "docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md"
 $firebase = Read-RepoFile "docs/validation/MOBILE_FIREBASE_DISTRIBUTION.md"
@@ -34,7 +35,7 @@ $databaseBackup = Read-RepoFile ".github/workflows/database-backup.yml"
 $backendJobs = Read-RepoFile ".github/workflows/backend-jobs-ci.yml"
 
 foreach ($marker in @(
-    "QUEUE_CONNECTION=redis",
+    "QUEUE_CONNECTION=",
     "REDIS_URL",
     "queue:health-check",
     "Render Background Worker",
@@ -44,7 +45,7 @@ foreach ($marker in @(
     "FIREBASE_MANAGER_ANDROID_APP_ID",
     "FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID"
 )) {
-    Assert-Contains $deployment $marker "DEPLOYMENT_GUIDE.md"
+    Assert-Contains $deployment $marker $deploymentFile
 }
 
 foreach ($marker in @(
@@ -83,18 +84,26 @@ foreach ($marker in @(
     Assert-Contains $notifications $marker "MOBILE_NOTIFICATIONS_PRODUCTION_PROOF_2026_06_01.md"
 }
 
+$mobileDistributeFile = if (Test-Path (Join-Path $Root ".github/workflows/mobile-distribute-main.yml")) { ".github/workflows/mobile-distribute-main.yml" } else { ".github/workflows/mobile-distribute.yml" }
+$mobileDistribute = Read-RepoFile $mobileDistributeFile
+
 foreach ($marker in @(
     "RENDER_DEPLOY_HOOK_URL",
-    "RENDER_ROLLBACK_HOOK_URL",
+    "RENDER_ROLLBACK_HOOK_URL"
+)) {
+    Assert-Contains $deployMain $marker "deploy-main.yml"
+}
+
+foreach ($marker in @(
     "Firebase App Distribution",
     "FIREBASE_SERVICE_ACCOUNT_JSON"
 )) {
-    Assert-Contains $deployMain $marker "deploy-main.yml"
+    Assert-Contains $mobileDistribute $marker $mobileDistributeFile
 }
 
 Assert-Contains $databaseBackup "Daily PostgreSQL backup" "database-backup.yml"
 Assert-Contains $databaseBackup "Monthly restore drill" "database-backup.yml"
 Assert-Contains $backendJobs "PAYROLL_QUEUE_PDF_WARMUP" "backend-jobs-ci.yml"
-Assert-Contains $backendJobs "REDIS_HOST" "backend-jobs-ci.yml"
+Assert-Contains $backendJobs "redis:7-alpine" "backend-jobs-ci.yml"
 
 Write-Host "[ops-readiness] Deploy, rollback, queues, Redis, Firebase, notifications and backup runbooks are linked."

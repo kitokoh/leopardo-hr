@@ -25,6 +25,11 @@ final class InventoryCountAction
 {
     public function __construct(private readonly StockMovementService $movements) {}
 
+    public function execute(Employee $actor, RestaurantInventoryCount $count): RestaurantInventoryCount
+    {
+        return $this->submit($actor, $count);
+    }
+
     public function submit(Employee $actor, RestaurantInventoryCount $count): RestaurantInventoryCount
     {
         if ($count->company_id !== $actor->company_id) {

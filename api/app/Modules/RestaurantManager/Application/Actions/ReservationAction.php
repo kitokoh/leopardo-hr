@@ -24,6 +24,11 @@ final class ReservationAction
 
     public function __construct(private readonly RestaurantOutboxPublisher $outbox) {}
 
+    public function execute(Employee $actor, RestaurantReservation $reservation): RestaurantReservation
+    {
+        return $this->confirm($actor, $reservation);
+    }
+
     public function confirm(Employee $actor, RestaurantReservation $reservation): RestaurantReservation
     {
         return $this->transition($actor, $reservation, ReservationStatus::CONFIRMED);
