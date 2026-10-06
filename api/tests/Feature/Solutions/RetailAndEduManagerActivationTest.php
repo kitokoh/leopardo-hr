@@ -25,6 +25,7 @@ class RetailAndEduManagerActivationTest extends TestCase
 {
     use RefreshTenantDatabase;
 
+    /** @param array<string, mixed> $features */
     private function createCompany(array $features = []): Company
     {
         /** @var Company $company */
@@ -80,7 +81,10 @@ class RetailAndEduManagerActivationTest extends TestCase
         $result = app(SolutionActivator::class)->activate($company, 'retail');
 
         $this->assertSame('activated', $result['status']);
-        $this->assertTrue($company->fresh()->hasFeature('retail'));
+        
+        $freshCompany = $company->fresh();
+        $this->assertNotNull($freshCompany);
+        $this->assertTrue($freshCompany->hasFeature('retail'));
 
         foreach (array_keys(app(SolutionCatalogue::class)->resolve('retail')->permissions()) as $perm) {
             $this->assertDatabaseHas('employee_module_grants', [
@@ -147,6 +151,6 @@ class RetailAndEduManagerActivationTest extends TestCase
             'main_priority' => 'payroll',
         ]);
 
-        $this->assertContains('retail', $plan['suggested_solutions']);
+        $this->assertContains('retail', $plan['solutions']);
     }
 }
