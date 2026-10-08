@@ -51,7 +51,14 @@ class EmailBounceWebhookController extends Controller
             Log::warning('Email bounce webhook: invalid or missing shared secret');
 
             return new JsonResponse(['error' => 'Invalid signature'], 400);
+        }
 
+        // #5740 — frontière hostile : bornes d'entrée AVANT tout traitement
+        // (l'idempotence est persistée ensuite, l'ordre begin → traitement
+        // reste inchangé). Le secret partagé seul authentifie ; la taille et
+        // la forme du payload sont bornées ; la fenêtre de rejeu est
+        // optionnelle (providers legacy sans horodatage) mais vérifiée si
+        // l'en-tête est présent.
         $rawPayload = $request->getContent();
 
         if (! InboundWebhookVerifier::payloadWithinLimit($rawPayload)) {
@@ -73,7 +80,6 @@ class EmailBounceWebhookController extends Controller
 
             return new JsonResponse(['error' => 'Expired timestamp'], 400);
         }
-        }
 
         // #5444 — idempotence persistée : le registre clé (payload brut) sert de
         // verrou anti-rejeu AVANT tout traitement (begin → complete/release).
@@ -92,7 +98,6 @@ class EmailBounceWebhookController extends Controller
             'reason' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $rawPayload = $request->getContent();
         $eventId = $this->registry->eventId($rawPayload);
         $replay = $this->registry->begin('email-bounce', $eventId, hash('sha256', $rawPayload));
 
@@ -146,6 +151,7 @@ class EmailBounceWebhookController extends Controller
             return new JsonResponse(['received' => true]);
         } catch (\Throwable $e) {
             $this->registry->release('email-bounce', $eventId);
+
             Log::error('Email bounce webhook: error handling event', [
                 'event' => $event,
                 'error' => $e->getMessage(),
