@@ -245,10 +245,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::post('/fuel-station/reports/exports', [FuelReportController::class, 'createExport'])->middleware('throttle:fuel-sensitive');
     Route::get('/fuel-station/reports/exports', [FuelReportController::class, 'exports']);
     Route::get('/fuel-station/reports/exports/{export}/download', [FuelReportController::class, 'download'])->whereNumber('export');
+    Route::get('/fuel-station/reports/{type}/export', [FuelImportController::class, 'export'])->whereIn('type', ['pump_volumes', 'sales', 'shifts', 'variances', 'stock', 'station_performance']);
     // Issue #7398 — `FuelImportController@store` n'existe pas : l'entrée d'un
     // import CSV est l'action `preview` (création du journal d'import +
     // validation ligne à ligne, sans effet sur les tables cibles).
     Route::post('/fuel-station/imports', [FuelImportController::class, 'preview'])->middleware('throttle:fuel-sensitive');
+    Route::post('/fuel-station/imports/preview', [FuelImportController::class, 'preview'])->middleware('throttle:fuel-sensitive');
+    Route::post('/fuel-station/imports/{import}/commit', [FuelImportController::class, 'commit'])->whereNumber('import')->middleware('throttle:fuel-sensitive');
+    Route::post('/fuel-station/imports/{import}/cancel', [FuelImportController::class, 'cancel'])->whereNumber('import')->middleware('throttle:fuel-sensitive');
     Route::get('/fuel-station/imports/{import}', [FuelImportController::class, 'show'])->whereNumber('import');
     Route::get('/fuel-station/health/metrics', [FuelMetricsController::class, 'metrics'])
         ->middleware('throttle:metrics');

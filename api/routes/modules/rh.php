@@ -308,6 +308,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 Route::middleware(['throttle:kiosk-punch', 'kiosk.search_path'])->group(function (): void {
     Route::get('/kiosks/{deviceCode}/roster', [KioskController::class, 'roster']);
     Route::post('/kiosks/{deviceCode}/punch', [KioskController::class, 'punch']);
+    Route::post('/kiosks/{deviceCode}/verify-face', [KioskController::class, 'verifyFace']);
     Route::post('/kiosks/{deviceCode}/sync', [KioskController::class, 'sync']);
 
     // ── ATT-004 (#6769) : surface kiosque versionnée ─────────────────────────

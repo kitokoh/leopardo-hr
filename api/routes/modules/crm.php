@@ -86,6 +86,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
     // ── Déduplication & fusion supervisée (issue #5718) ──────────────────────
     Route::get('/dedup/suggestions', [CrmDedupController::class, 'suggestions']);
+    Route::get('/duplicates/suggestions', [CrmDedupController::class, 'suggestions']);
     Route::get('/merge/preview', [CrmDedupController::class, 'preview']);
     Route::post('/merge', [CrmDedupController::class, 'merge']);
 
