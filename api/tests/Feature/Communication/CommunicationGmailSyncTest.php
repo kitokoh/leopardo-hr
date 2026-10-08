@@ -495,7 +495,7 @@ class CommunicationGmailSyncTest extends TestCase
 
         $sync = $this->artisan('communication:sync-mailboxes');
         $this->assertInstanceOf(PendingCommand::class, $sync);
-        $sync->assertExitCode(0);
+        $sync->assertExitCode(0)->run();
 
         Queue::assertPushed(SyncGmailMailboxJob::class, 1);
         Queue::assertPushedOn('communication', SyncGmailMailboxJob::class);
@@ -508,7 +508,7 @@ class CommunicationGmailSyncTest extends TestCase
         // des jobs upsert (le WithoutOverlapping par boite protege l'execution).
         $replay = $this->artisan('communication:sync-mailboxes');
         $this->assertInstanceOf(PendingCommand::class, $replay);
-        $replay->assertExitCode(0);
+        $replay->assertExitCode(0)->run();
         Queue::assertPushed(SyncGmailMailboxJob::class, 2);
         $this->assertNotNull($active->refresh());
     }

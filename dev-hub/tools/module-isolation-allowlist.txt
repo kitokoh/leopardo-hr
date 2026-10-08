@@ -65,3 +65,4 @@ Modules/EduManager -> Modules/Notification
 Modules/EduManager -> Modules/Communication
 Modules/Notification -> Modules/Communication
 Modules/Platform -> Modules/Communication
+Modules/TravelAgency -> Modules/Communication
