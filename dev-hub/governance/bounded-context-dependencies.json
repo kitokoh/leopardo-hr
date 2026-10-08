@@ -816,6 +816,12 @@
       "to": "BC-29",
       "baseline": true,
       "note": "BC-01 → BC-29 — PLATFORM → COMMUNICATION : CommunicationAnalyticsController + observabilité lisent le journal CommunicationEvent (déplacé vers Communication, ADR 0027 / BOS-025 #8219)."
+    },
+    {
+      "from": "BC-24",
+      "to": "BC-29",
+      "baseline": true,
+      "note": "BC-24 → BC-29 — TravelNotificationService (TRAVEL-415 #6067) écrit CommunicationEvent déplacé sous BC-29 par ADR 0027 (#8219, #8250)"
     }
   ]
 }
