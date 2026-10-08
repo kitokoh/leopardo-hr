@@ -431,6 +431,50 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::put('/tourist-sites/{site}', [TravelTouristSiteController::class, 'update']);
         Route::delete('/tourist-sites/{site}', [TravelTouristSiteController::class, 'destroy']);
         Route::get('/quizzes/{travelQuiz}/results', [TravelQuizController::class, 'results']);
+
+        // ── Alias /travel/community/* rétro-compatibles pour la suite Feature (#8127) ──
+        Route::prefix('community')->group(function (): void {
+            Route::get('/categories', [TravelArticleController::class, 'indexCategories']);
+            Route::post('/categories', [TravelArticleController::class, 'storeCategory']);
+            Route::put('/categories/{category}', [TravelArticleController::class, 'updateCategory']);
+            Route::delete('/categories/{category}', [TravelArticleController::class, 'destroyCategory']);
+
+            Route::get('/articles', [TravelArticleController::class, 'index']);
+            Route::post('/articles', [TravelArticleController::class, 'store']);
+            Route::get('/articles/{article}', [TravelArticleController::class, 'show']);
+            Route::put('/articles/{article}', [TravelArticleController::class, 'update']);
+            Route::delete('/articles/{article}', [TravelArticleController::class, 'destroy']);
+            Route::post('/articles/{article}/publish', [TravelArticleController::class, 'publish']);
+            Route::post('/articles/{article}/moderate', [TravelArticleController::class, 'moderate']);
+
+            Route::get('/articles/{article}/comments', [TravelCommentController::class, 'index']);
+            Route::post('/articles/{article}/comments', [TravelCommentController::class, 'store']);
+            Route::delete('/comments/{comment}', [TravelCommentController::class, 'destroy']);
+            Route::post('/comments/{comment}/approve', [TravelCommentController::class, 'approve']);
+            Route::post('/comments/{comment}/reject', [TravelCommentController::class, 'reject']);
+            Route::post('/comments/{comment}/report', [TravelCommentController::class, 'report']);
+
+            Route::post('/articles/{article}/like', [TravelEngagementController::class, 'like']);
+            Route::post('/articles/{article}/unlike', [TravelEngagementController::class, 'unlike']);
+            Route::post('/articles/{article}/share', [TravelEngagementController::class, 'share']);
+            Route::post('/articles/{article}/rate', [TravelEngagementController::class, 'rate']);
+            Route::get('/articles/{article}/engagement', [TravelEngagementController::class, 'summary']);
+
+            Route::get('/quizzes/{quiz}', [TravelQuizController::class, 'show']);
+            Route::post('/quizzes/{quiz}/publish', [TravelQuizController::class, 'publish']);
+            Route::post('/quizzes/{quiz}/questions', [TravelQuizController::class, 'storeQuestion']);
+            Route::delete('/quiz-questions/{question}', [TravelQuizController::class, 'destroyQuestion']);
+            Route::post('/quizzes/{quiz}/participate', [TravelQuizController::class, 'participate']);
+            Route::get('/quizzes/{quiz}/results', [TravelQuizController::class, 'results']);
+
+            Route::post('/tourist-sites', [TravelTouristSiteController::class, 'store']);
+            Route::get('/tourist-sites/search', [TravelTouristSiteController::class, 'search']);
+            Route::put('/tourist-sites/{site}', [TravelTouristSiteController::class, 'update']);
+            Route::delete('/tourist-sites/{site}', [TravelTouristSiteController::class, 'destroy']);
+        });
+
         Route::get('/contacts', [TravelCustomerContactController::class, 'index']);
+        Route::patch('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent'])->whereNumber('travelCustomerContact');
+        Route::put('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent'])->whereNumber('travelCustomerContact');
         Route::post('/contacts/{travelCustomerContact}/notify', [TravelCustomerContactController::class, 'notify']);
     });
