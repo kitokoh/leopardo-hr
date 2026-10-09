@@ -9,6 +9,7 @@ use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Onboarding\Domain\Services\SetupInterviewPlanner;
 use App\Modules\Onboarding\Infrastructure\Services\CompanyActivationSurfaceWriter;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Use Case : clôture de l'entretien de préparation (#7493) — traduit les
@@ -45,7 +46,12 @@ final class CompleteSetupInterview
      *     status: string,
      *     already_completed: bool,
      *     completed_at: string,
-     *     activated: array{solutions: list<string>, tools: list<string>, failed: list<string>}
+     *     activated: array{
+     *         solutions: list<string>,
+     *         tools: list<string>,
+     *         failed: list<string>,
+     *         failed_details: list<array{code: string, reason: string}>
+     *     }
      * }
      */
     public function execute(Company $company, ?int $actorId = null): array
@@ -69,6 +75,7 @@ final class CompleteSetupInterview
                     'solutions' => array_values((array) ($activated['solutions'] ?? [])),
                     'tools' => array_values((array) ($activated['tools'] ?? [])),
                     'failed' => array_values((array) ($activated['failed'] ?? [])),
+                    'failed_details' => array_values((array) ($activated['failed_details'] ?? [])),
                 ],
             ];
         }
@@ -88,6 +95,12 @@ final class CompleteSetupInterview
         // Solutions verticales — chemin canonique, non bloquant en cas d'échec.
         $solutions = [];
         $failed = [];
+        // RESTO-ONBOARDING — l'échec d'activation n'est plus AVALÉ : il reste
+        // non bloquant pour l'entretien (l'espace demeure utilisable), mais il
+        // est désormais JOURNALISÉ (alerte support) et REMONTÉ au client dans
+        // `failed_details` — sans quoi l'utilisateur découvrait un espace sans
+        // module, sans message ni trace exploitable.
+        $failedDetails = [];
         foreach ($plan['solutions'] as $code) {
             if (! $this->catalogue->has($code)) {
                 continue; // fail-closed : code hors catalogue, jamais activé
@@ -99,15 +112,30 @@ final class CompleteSetupInterview
                     $solutions[] = $code;
                 } else {
                     $failed[] = $code;
+                    $failedDetails[] = ['code' => $code, 'reason' => 'status:'.$result['status']];
                 }
-            } catch (\Throwable) {
+            } catch (\Throwable $e) {
                 // Non bloquant pour l'entretien : tracé pour le support.
                 $failed[] = $code;
+                $failedDetails[] = ['code' => $code, 'reason' => $e->getMessage()];
+
+                Log::error('setup_interview.solution_activation_failed', [
+                    'company_id' => (string) $source->id,
+                    'solution' => $code,
+                    'actor_id' => $actorId,
+                    'exception' => $e::class,
+                    'message' => $e->getMessage(),
+                ]);
             }
         }
 
         $completedAt = now()->toIso8601String();
-        $activated = ['solutions' => $solutions, 'tools' => $tools, 'failed' => $failed];
+        $activated = [
+            'solutions' => $solutions,
+            'tools' => $tools,
+            'failed' => $failed,
+            'failed_details' => $failedDetails,
+        ];
 
         // #7853 — le nom d'entreprise n'est plus demandé à l'inscription : le
         // signup provisionne un nom PROVISOIRE (dérivé de l'e-mail) et
