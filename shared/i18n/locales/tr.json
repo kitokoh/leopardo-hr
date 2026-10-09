@@ -4441,7 +4441,18 @@
       "payments": "Tahsilat",
       "paymentsDesc": "Çevrimiçi ödeme, Stripe ve mobil para profilleri",
       "team": "Ekip",
-      "teamDesc": "Çalışanların şubelere atanması, roller"
+      "teamDesc": "Çalışanların şubelere atanması, roller",
+      "emptyTitle": "Restoranınız kurulmaya hazır",
+      "emptyBody": "İşletmenizi oluşturarak başlayın, ardından aşağıdaki sırayı izleyin. Serbestçe keşfetmek için bir demo veri seti de kurabilirsiniz.",
+      "setupBranch": "İşletmenizi oluşturun (şube)",
+      "setupTables": "Masalarınızı ve bölgelerinizi tanımlayın",
+      "setupProducts": "Ürünlerinizi ve malzemelerinizi ekleyin",
+      "setupMenu": "Menünüzü oluşturun ve yayınlayın",
+      "demoImport": "Demo verilerini kur",
+      "demoImporting": "İçe aktarılıyor…",
+      "demoImported": "Demo verileri kuruldu.",
+      "demoUnavailable": "Çalışma alanınız için demo veri seti yok.",
+      "demoError": "Şu anda içe aktarma mümkün değil."
     },
     "crud": {
       "search": "Ara...",
@@ -4550,7 +4561,13 @@
       "poError": "Sipariş oluşturma başarısız.",
       "actionError": "Siparişte işlem başarısız.",
       "rcvError": "Teslim alma başarısız.",
-      "supplierPlaceholder": "Tedarikçi…"
+      "supplierPlaceholder": "Tedarikçi…",
+      "colBranch": "Şube",
+      "colIngredient": "Malzeme",
+      "colSupplier": "Tedarikçi",
+      "ingredientPlaceholder": "Malzeme…",
+      "qtyPlaceholder": "Miktar",
+      "unitPricePlaceholder": "Birim fiyat (minor)"
     },
     "del": {
       "title": "Teslimat ve sadakat",
@@ -4584,7 +4601,14 @@
       "loadError": "Teslimat/sadakat verileri yüklenemedi.",
       "createError": "Teslimat oluşturma başarısız.",
       "actionError": "İşlem başarısız.",
-      "riderPrompt": "Atanacak kurye ID'si:"
+      "riderPrompt": "Atanacak kurye ID'si:",
+      "colOrder": "Sipariş",
+      "colRider": "Kurye",
+      "orderPlaceholder": "Sipariş (teslimat tipi)…",
+      "riderPlaceholder": "Kurye…",
+      "feePlaceholder": "Ücret (minor)",
+      "confirmAssign": "Onayla",
+      "cancelAssign": "İptal"
     },
     "reports": {
       "title": "Raporlar",

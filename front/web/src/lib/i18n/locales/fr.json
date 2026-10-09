@@ -4441,7 +4441,18 @@
       "payments": "Encaissement",
       "paymentsDesc": "Paiement en ligne, profils Stripe & mobile money",
       "team": "Équipe",
-      "teamDesc": "Affectations des employés aux succursales, rôles"
+      "teamDesc": "Affectations des employés aux succursales, rôles",
+      "emptyTitle": "Votre restaurant est prêt à être configuré",
+      "emptyBody": "Commencez par créer votre établissement, puis suivez l’ordre ci-dessous. Vous pouvez aussi installer un jeu de démonstration pour explorer librement.",
+      "setupBranch": "Créer votre établissement (branche)",
+      "setupTables": "Déclarer vos tables et zones",
+      "setupProducts": "Ajouter vos produits et ingrédients",
+      "setupMenu": "Composer votre menu et le publier",
+      "demoImport": "Installer les données de démo",
+      "demoImporting": "Import en cours…",
+      "demoImported": "Données de démonstration installées.",
+      "demoUnavailable": "Aucun jeu de démonstration disponible pour votre espace.",
+      "demoError": "Import impossible pour le moment."
     },
     "crud": {
       "search": "Rechercher...",
@@ -4550,7 +4561,13 @@
       "poError": "Erreur de création du bon.",
       "actionError": "Action impossible sur le bon.",
       "rcvError": "Erreur de réception.",
-      "supplierPlaceholder": "Fournisseur…"
+      "supplierPlaceholder": "Fournisseur…",
+      "colBranch": "Branche",
+      "colIngredient": "Ingrédient",
+      "colSupplier": "Fournisseur",
+      "ingredientPlaceholder": "Ingrédient…",
+      "qtyPlaceholder": "Quantité",
+      "unitPricePlaceholder": "Prix unitaire (minor)"
     },
     "del": {
       "title": "Livraison & fidélité",
@@ -4584,7 +4601,14 @@
       "loadError": "Impossible de charger les données livraison/fidélité.",
       "createError": "Erreur de création de la livraison.",
       "actionError": "Action impossible.",
-      "riderPrompt": "ID du livreur à assigner :"
+      "riderPrompt": "ID du livreur à assigner :",
+      "colOrder": "Commande",
+      "colRider": "Livreur",
+      "orderPlaceholder": "Commande (type livraison)…",
+      "riderPlaceholder": "Livreur…",
+      "feePlaceholder": "Frais (minor)",
+      "confirmAssign": "Confirmer",
+      "cancelAssign": "Annuler"
     },
     "reports": {
       "title": "Rapports",

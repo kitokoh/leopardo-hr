@@ -4441,7 +4441,18 @@
       "payments": "Payments",
       "paymentsDesc": "Online payment, Stripe & mobile money profiles",
       "team": "Team",
-      "teamDesc": "Employee assignments to branches, roles"
+      "teamDesc": "Employee assignments to branches, roles",
+      "emptyTitle": "Your restaurant is ready to be set up",
+      "emptyBody": "Start by creating your establishment, then follow the order below. You can also install a demo dataset to explore freely.",
+      "setupBranch": "Create your establishment (branch)",
+      "setupTables": "Declare your tables and areas",
+      "setupProducts": "Add your products and ingredients",
+      "setupMenu": "Build your menu and publish it",
+      "demoImport": "Install demo data",
+      "demoImporting": "Importing…",
+      "demoImported": "Demo data installed.",
+      "demoUnavailable": "No demo dataset is available for your workspace.",
+      "demoError": "Import is not possible right now."
     },
     "crud": {
       "search": "Search...",
@@ -4550,7 +4561,13 @@
       "poError": "Purchase order creation failed.",
       "actionError": "Action failed on the order.",
       "rcvError": "Receiving failed.",
-      "supplierPlaceholder": "Supplier…"
+      "supplierPlaceholder": "Supplier…",
+      "colBranch": "Branch",
+      "colIngredient": "Ingredient",
+      "colSupplier": "Supplier",
+      "ingredientPlaceholder": "Ingredient…",
+      "qtyPlaceholder": "Quantity",
+      "unitPricePlaceholder": "Unit price (minor)"
     },
     "del": {
       "title": "Delivery & loyalty",
@@ -4584,7 +4601,14 @@
       "loadError": "Unable to load delivery/loyalty data.",
       "createError": "Delivery creation failed.",
       "actionError": "Action failed.",
-      "riderPrompt": "Rider ID to assign:"
+      "riderPrompt": "Rider ID to assign:",
+      "colOrder": "Order",
+      "colRider": "Rider",
+      "orderPlaceholder": "Order (delivery type)…",
+      "riderPlaceholder": "Rider…",
+      "feePlaceholder": "Fee (minor)",
+      "confirmAssign": "Confirm",
+      "cancelAssign": "Cancel"
     },
     "reports": {
       "title": "Reports",
