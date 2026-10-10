@@ -117,6 +117,9 @@ tags:
   description: 'BC-32 HOSPITALITY — solution verticale HospitalityManager (hôtels, résidences, gestion locative multi-sites, HOSP-001 #7943 → HOSP-008 #7950) : établissements, inventaire, réservations guichet et en ligne, baux et loyers.'
 - name: Geo
   description: 'BC-33 GEO — core géospatial transverse (GEO-05 #8354) : distance géodésique, recherche « les plus proches » (registry opt-in geo.searchables), diagnostic PostGIS. Réutilisable par toute verticale (VTC en premier, BC-34).'
+- name: Vtc
+  description: 'BC-34 VTC — verticale VTC/taxi (spec MODULE_GEOCORE_ET_VERTICAL_VTC, VTC-01 #8357 → VTC-07 #8363) : estimation de tarif, réservation idempotente, dispatch au chauffeur le plus proche via le core geo (BC-33), cycle de course complet, console de répartition, administration (chauffeurs, véhicules, profils tarifaires). RBAC deny-by-default (docs/architecture/VTC_RBAC.md).'
+
 paths:
   /travel/distributor-keys:
     get:
@@ -42235,6 +42238,867 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /vtc/ping:
+    get:
+      tags:
+      - Vtc
+      summary: Smoke test de la verticale VTC (VTC-01 #8357)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Module vtc opérationnel pour le tenant courant
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /vtc/rides/estimate:
+    post:
+      tags:
+      - Vtc
+      summary: Estimation de tarif d'une course (VTC-03 #8359)
+      description: >-
+        Devis avant réservation : distance géodésique (core geo BC-33),
+        distance routière estimée (coefficient vtc.road_factor), durée
+        estimée et prix selon le profil tarifaire (défaut du tenant si
+        fare_profile_id absent). Throttle renforcé : 30 requêtes/minute.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pickup, dropoff]
+              properties:
+                pickup:
+                  $ref: '#/components/schemas/VtcGeoPointInput'
+                dropoff:
+                  $ref: '#/components/schemas/VtcGeoPointInput'
+                fare_profile_id:
+                  type: integer
+                  minimum: 1
+                  nullable: true
+      responses:
+        '200':
+          description: Estimation calculée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VtcFareEstimate'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /vtc/rides:
+    post:
+      tags:
+      - Vtc
+      summary: Création idempotente d'une course (VTC-03 #8359)
+      description: >-
+        Demande de course passager. L'idempotence est garantie par
+        idempotency_key (UUID, unique par tenant) : un renvoi de la même
+        clé retourne la course existante sans en créer une nouvelle.
+        La course passe en dispatch (matching chauffeur le plus proche
+        via le core geo). Throttle renforcé : 10 requêtes/minute.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [idempotency_key, pickup, dropoff]
+              properties:
+                idempotency_key:
+                  type: string
+                  format: uuid
+                pickup:
+                  $ref: '#/components/schemas/VtcGeoPointInput'
+                pickup_address:
+                  type: string
+                  maxLength: 500
+                  nullable: true
+                dropoff:
+                  $ref: '#/components/schemas/VtcGeoPointInput'
+                dropoff_address:
+                  type: string
+                  maxLength: 500
+                  nullable: true
+                passenger_name:
+                  type: string
+                  maxLength: 120
+                  nullable: true
+                passenger_phone:
+                  type: string
+                  maxLength: 40
+                  nullable: true
+                fare_profile_id:
+                  type: integer
+                  minimum: 1
+                  nullable: true
+      responses:
+        '201':
+          description: Course créée (ou rejouée via idempotency_key)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VtcRide'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /vtc/rides/{id}:
+    get:
+      tags:
+      - Vtc
+      summary: Détail d'une course (VTC-03 #8359)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Course du tenant courant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VtcRide'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /vtc/rides/{id}/cancel:
+    post:
+      tags:
+      - Vtc
+      summary: Annulation d'une course par le passager (VTC-03 #8359)
+      description: >-
+        Motif obligatoire (tracé dans le journal vtc_ride_events). Seules
+        les courses non terminées sont annulables (state machine VTC,
+        InvalidRideTransitionException sinon → 409).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  minLength: 3
+                  maxLength: 200
+      responses:
+        '200':
+          description: Course annulée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VtcRide'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /vtc/driver/offers:
+    get:
+      tags:
+      - Vtc
+      summary: Offres de course en attente du chauffeur courant (VTC-05 #8361)
+      description: >-
+        Rôle vtc.driver requis. Périmètre strictement limité aux offres
+        adressées à la fiche chauffeur de l'employé authentifié (cascade
+        de dispatch, metadata.pending_offer).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Offres courantes du chauffeur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VtcDriverOffer'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /vtc/driver/rides/{id}/accept:
+    post:
+      tags:
+      - Vtc
+      summary: Acceptation de l'offre par le chauffeur (VTC-05 #8361)
+      description: >-
+        L'offre doit être courante (VtcOfferNotCurrentException → 409).
+        Assigne le chauffeur à la course (statut accepted) et stoppe la
+        cascade de dispatch.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Course acceptée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VtcRide'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+  /vtc/driver/rides/{id}/decline:
+    post:
+      tags:
+      - Vtc
+      summary: Déclinaison de l'offre par le chauffeur (VTC-05 #8361)
+      description: La cascade de dispatch passe immédiatement au chauffeur suivant.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Offre déclinée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+  /vtc/driver/rides/{id}/arrive:
+    post:
+      tags:
+      - Vtc
+      summary: Chauffeur arrivé au point de prise en charge (VTC-05 #8361)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Transition accepted → arrived tracée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VtcRide'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+  /vtc/driver/rides/{id}/start:
+    post:
+      tags:
+      - Vtc
+      summary: Début de la course (VTC-05 #8361)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Transition arrived → in_progress tracée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VtcRide'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+  /vtc/driver/rides/{id}/complete:
+    post:
+      tags:
+      - Vtc
+      summary: Clôture de la course + tarif final (VTC-05 #8361)
+      description: >-
+        Recalcule final_price_minor sur le trajet réel (positions ingérées)
+        et émet l'événement VtcRideCompleted (intégration Billing en
+        évolution, hors scope v1).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Course clôturée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VtcRide'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+  /vtc/driver/position:
+    post:
+      tags:
+      - Vtc
+      summary: Ingestion d'une position chauffeur (VTC-05 #8361)
+      description: >-
+        Idempotente sur (driver_id, recorded_at) — un renvoi de la même
+        position est un no-op. Donnée personnelle (RGPD) : rétention
+        vtc.positions_retention_days (30 j par défaut) + purge planifiée.
+        Throttle strict : 30 requêtes/minute.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [lat, lng]
+              properties:
+                lat:
+                  type: number
+                  minimum: -90
+                  maximum: 90
+                lng:
+                  type: number
+                  minimum: -180
+                  maximum: 180
+                recorded_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                source:
+                  type: string
+                  enum: [app, traccar]
+                  nullable: true
+      responses:
+        '200':
+          description: Position enregistrée (ou rejouée)
+        '201':
+          description: Position enregistrée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /vtc/driver/availability:
+    post:
+      tags:
+      - Vtc
+      summary: Bascule de disponibilité du chauffeur (VTC-05 #8361)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [available]
+              properties:
+                available:
+                  type: boolean
+      responses:
+        '200':
+          description: Disponibilité mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VtcDriver'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /vtc/dispatch/rides:
+    get:
+      tags:
+      - Vtc
+      summary: Console dispatch — courses actives (VTC-06 #8362)
+      description: >-
+        Rôle vtc.dispatcher requis. Courses non clôturées du tenant
+        (hors completed/expired/cancelled), plus récentes d'abord, avec
+        l'offre en cours (pending_offer_driver_id). Polling v1.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Courses actives du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VtcDispatchRide'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /vtc/dispatch/drivers:
+    get:
+      tags:
+      - Vtc
+      summary: Console dispatch — chauffeurs et positions (VTC-06 #8362)
+      description: >-
+        Rôle vtc.dispatcher requis. Chauffeurs du tenant avec dernière
+        position connue (carte temps réel, polling v1). Accès audité
+        (données personnelles RGPD).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Chauffeurs du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VtcDriver'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /vtc/fare-profiles:
+    get:
+      tags:
+      - Vtc
+      summary: Profils tarifaires du tenant (VTC-06 #8362, rôle vtc.admin)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des profils tarifaires
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VtcFareProfile'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Vtc
+      summary: Création d'un profil tarifaire (VTC-06 #8362, rôle vtc.admin)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VtcFareProfileInput'
+      responses:
+        '201':
+          description: Profil créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VtcFareProfile'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /vtc/fare-profiles/{id}:
+    put:
+      tags:
+      - Vtc
+      summary: Mise à jour d'un profil tarifaire (VTC-06 #8362, rôle vtc.admin)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VtcFareProfileInput'
+      responses:
+        '200':
+          description: Profil mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VtcFareProfile'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - Vtc
+      summary: Suppression d'un profil tarifaire (VTC-06 #8362, rôle vtc.admin)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Profil supprimé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+  /vtc/vehicles:
+    get:
+      tags:
+      - Vtc
+      summary: Véhicules de la flotte VTC (VTC-06 #8362, rôle vtc.admin)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des véhicules
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VtcVehicle'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Vtc
+      summary: Création d'un véhicule (VTC-06 #8362, rôle vtc.admin)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VtcVehicleInput'
+      responses:
+        '201':
+          description: Véhicule créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VtcVehicle'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /vtc/vehicles/{id}:
+    put:
+      tags:
+      - Vtc
+      summary: Mise à jour d'un véhicule (VTC-06 #8362, rôle vtc.admin)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VtcVehicleInput'
+      responses:
+        '200':
+          description: Véhicule mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VtcVehicle'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - Vtc
+      summary: Retrait d'un véhicule (VTC-06 #8362, rôle vtc.admin)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Véhicule retiré
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+  /vtc/drivers:
+    get:
+      tags:
+      - Vtc
+      summary: Chauffeurs VTC du tenant (VTC-06 #8362, rôle vtc.admin)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des chauffeurs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VtcDriver'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Vtc
+      summary: Création d'une fiche chauffeur (VTC-06 #8362, rôle vtc.admin)
+      description: >-
+        user_id relie la fiche à un employé (accès API chauffeur,
+        deny-by-default : sans fiche rattachée, aucune surface driver).
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VtcDriverInput'
+      responses:
+        '201':
+          description: Chauffeur créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VtcDriver'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /vtc/drivers/{id}:
+    put:
+      tags:
+      - Vtc
+      summary: Mise à jour d'une fiche chauffeur (VTC-06 #8362, rôle vtc.admin)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VtcDriverInput'
+      responses:
+        '200':
+          description: Chauffeur mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VtcDriver'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - Vtc
+      summary: Suppression d'une fiche chauffeur (VTC-06 #8362, rôle vtc.admin)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Chauffeur supprimé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+
 components:
   securitySchemes:
     BearerAuth:
@@ -42418,6 +43282,349 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    VtcGeoPointInput:
+      type: object
+      required: [lat, lng]
+      properties:
+        lat:
+          type: number
+          minimum: -90
+          maximum: 90
+        lng:
+          type: number
+          minimum: -180
+          maximum: 180
+    VtcFareEstimate:
+      type: object
+      properties:
+        distance_m:
+          type: integer
+          description: Distance géodésique (core geo BC-33)
+        road_distance_m:
+          type: integer
+          description: Distance routière estimée (coefficient vtc.road_factor)
+        duration_s:
+          type: integer
+        price_minor:
+          type: integer
+          nullable: true
+          description: Prix estimé en unités mineures (null si aucun profil tarifaire)
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        fare_profile_id:
+          type: integer
+          nullable: true
+    VtcRide:
+      type: object
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+          description: Référence lisible (VO RideReference)
+        status:
+          type: string
+          enum: [requested, dispatching, accepted, arrived, in_progress, completed, expired, cancelled]
+        passenger_name:
+          type: string
+          nullable: true
+        passenger_phone:
+          type: string
+          nullable: true
+        pickup:
+          $ref: '#/components/schemas/VtcRidePoint'
+        dropoff:
+          $ref: '#/components/schemas/VtcRidePoint'
+        driver_id:
+          type: integer
+          nullable: true
+        fare_profile_id:
+          type: integer
+          nullable: true
+        estimated_distance_m:
+          type: integer
+          nullable: true
+        estimated_duration_s:
+          type: integer
+          nullable: true
+        estimated_price_minor:
+          type: integer
+          nullable: true
+        final_price_minor:
+          type: integer
+          nullable: true
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        cancel_reason:
+          type: string
+          nullable: true
+        requested_at:
+          type: string
+          format: date-time
+          nullable: true
+        accepted_at:
+          type: string
+          format: date-time
+          nullable: true
+        arrived_at:
+          type: string
+          format: date-time
+          nullable: true
+        started_at:
+          type: string
+          format: date-time
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        cancelled_at:
+          type: string
+          format: date-time
+          nullable: true
+        expired_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+    VtcRidePoint:
+      type: object
+      properties:
+        latitude:
+          type: number
+          nullable: true
+        longitude:
+          type: number
+          nullable: true
+        address:
+          type: string
+          nullable: true
+    VtcDriverOffer:
+      type: object
+      properties:
+        ride_id:
+          type: integer
+        reference:
+          type: string
+        pickup:
+          $ref: '#/components/schemas/VtcRidePoint'
+        dropoff:
+          $ref: '#/components/schemas/VtcRidePoint'
+        estimated_distance_m:
+          type: integer
+          nullable: true
+        estimated_price_minor:
+          type: integer
+          nullable: true
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+    VtcDispatchRide:
+      type: object
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+        status:
+          type: string
+          enum: [requested, dispatching, accepted, arrived, in_progress]
+        driver_id:
+          type: integer
+          nullable: true
+        pending_offer_driver_id:
+          type: integer
+          nullable: true
+        pickup:
+          $ref: '#/components/schemas/VtcRidePoint'
+        dropoff:
+          $ref: '#/components/schemas/VtcRidePoint'
+        requested_at:
+          type: string
+          format: date-time
+          nullable: true
+    VtcDriver:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+          nullable: true
+        name:
+          type: string
+        phone:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [offline, available, busy, suspended]
+        vehicle_id:
+          type: integer
+          nullable: true
+        current_latitude:
+          type: number
+          nullable: true
+        current_longitude:
+          type: number
+          nullable: true
+        location_updated_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+    VtcDriverInput:
+      type: object
+      required: [name]
+      properties:
+        user_id:
+          type: integer
+          minimum: 1
+          nullable: true
+        name:
+          type: string
+          maxLength: 120
+        phone:
+          type: string
+          maxLength: 40
+          nullable: true
+        status:
+          type: string
+          enum: [offline, available, busy, suspended]
+          nullable: true
+        vehicle_id:
+          type: integer
+          minimum: 1
+          nullable: true
+    VtcVehicle:
+      type: object
+      properties:
+        id:
+          type: integer
+        plate:
+          type: string
+        brand:
+          type: string
+          nullable: true
+        model:
+          type: string
+          nullable: true
+        color:
+          type: string
+          nullable: true
+        seats:
+          type: integer
+          nullable: true
+        category:
+          type: string
+          enum: [berline, van, moto]
+        status:
+          type: string
+          enum: [active, inactive]
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+    VtcVehicleInput:
+      type: object
+      required: [plate]
+      properties:
+        plate:
+          type: string
+          maxLength: 20
+        brand:
+          type: string
+          maxLength: 60
+          nullable: true
+        model:
+          type: string
+          maxLength: 60
+          nullable: true
+        color:
+          type: string
+          maxLength: 40
+          nullable: true
+        seats:
+          type: integer
+          minimum: 1
+          maximum: 60
+          nullable: true
+        category:
+          type: string
+          enum: [berline, van, moto]
+          nullable: true
+        status:
+          type: string
+          enum: [active, inactive]
+          nullable: true
+    VtcFareProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        base_minor:
+          type: integer
+        per_km_minor:
+          type: integer
+        per_minute_minor:
+          type: integer
+        minimum_minor:
+          type: integer
+        is_default:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+    VtcFareProfileInput:
+      type: object
+      required: [name, currency, base_minor, per_km_minor, per_minute_minor, minimum_minor]
+      properties:
+        name:
+          type: string
+          maxLength: 80
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          pattern: '^[A-Za-z]{3}$'
+        base_minor:
+          type: integer
+          minimum: 0
+        per_km_minor:
+          type: integer
+          minimum: 0
+        per_minute_minor:
+          type: integer
+          minimum: 0
+        minimum_minor:
+          type: integer
+          minimum: 0
+        is_default:
+          type: boolean
+          nullable: true
+
     PharmacyProduct:
       type: object
       description: Produit d'officine (BC-31 PHARMACY, #7799) — DCI, forme, dosage, regulation, prix decimal.
