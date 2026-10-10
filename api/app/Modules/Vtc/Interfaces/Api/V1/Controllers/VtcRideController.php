@@ -32,8 +32,7 @@ final class VtcRideController
     public function __construct(
         private readonly RequestRideAction $requestRide,
         private readonly CancelRideAction $cancelRide,
-    ) {
-    }
+    ) {}
 
     public function store(RideStoreRequest $request): JsonResponse
     {

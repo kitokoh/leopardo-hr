@@ -427,8 +427,6 @@ class RestaurantPublicDirectoryController extends Controller
      * ces ids et ordonnée par la distance fournie par le core — comportement
      * identique au repli legacy (rayon défaut 10 km, max 50, tri croissant,
      * `distance_km` exposé). Bindings paramétrés partout (spec §7).
-     *
-     * @param  Builder  $query
      */
     private function applyGeoCoreNear(Builder $query, GeoPoint $center, float $radiusKm): void
     {

@@ -57,7 +57,7 @@ final class VtcVehicle extends Model
         ];
     }
 
-    /** @return HasMany<VtcDriver> */
+    /** @return HasMany<VtcDriver, $this> */
     public function drivers(): HasMany
     {
         return $this->hasMany(VtcDriver::class, 'vehicle_id');

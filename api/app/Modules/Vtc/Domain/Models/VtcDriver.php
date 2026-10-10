@@ -67,19 +67,19 @@ final class VtcDriver extends Model implements GeoLocatable
         ];
     }
 
-    /** @return BelongsTo<VtcVehicle, VtcDriver> */
+    /** @return BelongsTo<VtcVehicle, $this> */
     public function vehicle(): BelongsTo
     {
         return $this->belongsTo(VtcVehicle::class, 'vehicle_id');
     }
 
-    /** @return HasMany<VtcRide> */
+    /** @return HasMany<VtcRide, $this> */
     public function rides(): HasMany
     {
         return $this->hasMany(VtcRide::class, 'driver_id');
     }
 
-    /** @return HasMany<VtcDriverPosition> */
+    /** @return HasMany<VtcDriverPosition, $this> */
     public function positions(): HasMany
     {
         return $this->hasMany(VtcDriverPosition::class, 'driver_id');

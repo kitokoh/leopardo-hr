@@ -25,6 +25,5 @@ class VtcRideRequested
         public readonly int $rideId,
         public readonly string $reference,
         public readonly ?int $passengerUserId,
-    ) {
-    }
+    ) {}
 }

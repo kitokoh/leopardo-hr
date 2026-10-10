@@ -27,8 +27,8 @@ final class VtcVehicleResource extends JsonResource
             'model' => $this->model,
             'color' => $this->color,
             'seats' => $this->seats,
-            'category' => $this->category?->value,
-            'status' => $this->status?->value,
+            'category' => $this->category->value,
+            'status' => $this->status->value,
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }

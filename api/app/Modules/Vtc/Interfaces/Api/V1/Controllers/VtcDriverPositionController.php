@@ -20,8 +20,7 @@ final class VtcDriverPositionController extends VtcDriverBaseController
 {
     public function __construct(
         private readonly RecordVtcDriverPositionAction $recordPosition,
-    ) {
-    }
+    ) {}
 
     public function store(DriverPositionRequest $request): JsonResponse
     {
@@ -30,7 +29,7 @@ final class VtcDriverPositionController extends VtcDriverBaseController
         /** @var array{lat: numeric-string, lng: numeric-string, recorded_at?: string|null, source?: string|null} $validated */
         $validated = $request->validated();
 
-        $recordedAt = isset($validated['recorded_at']) && is_string($validated['recorded_at'])
+        $recordedAt = isset($validated['recorded_at'])
             ? Carbon::parse($validated['recorded_at'])
             : Carbon::now();
 

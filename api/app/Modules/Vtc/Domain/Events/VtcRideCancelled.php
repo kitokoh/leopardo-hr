@@ -25,6 +25,5 @@ class VtcRideCancelled
         public readonly string $reference,
         public readonly string $reason,
         public readonly string $cancelledBy,
-    ) {
-    }
+    ) {}
 }

@@ -30,8 +30,7 @@ final class EstimateRideFareAction
     public function __construct(
         private readonly GeoServiceContract $geo,
         private readonly VtcFareCalculator $calculator,
-    ) {
-    }
+    ) {}
 
     public function execute(GeoPoint $pickup, GeoPoint $dropoff, ?int $fareProfileId = null): VtcFareEstimate
     {

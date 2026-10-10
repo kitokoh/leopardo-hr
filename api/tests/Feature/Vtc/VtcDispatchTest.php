@@ -275,7 +275,7 @@ class VtcDispatchTest extends TestCase
             VtcDriver::factory()->availableAt(4.0512, 9.7680)->create(['name' => 'Chauffeur B tres proche']);
         });
 
-        $this->withTenantContext($companyA, function () use ($companyA): void {
+        $this->withTenantContext($companyA, function (): void {
             Queue::fake();
             Event::fake([VtcRideExpired::class]);
 

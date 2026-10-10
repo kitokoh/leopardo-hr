@@ -21,8 +21,7 @@ final class GeoDistanceController
 {
     public function __construct(
         private readonly GeoServiceContract $geo,
-    ) {
-    }
+    ) {}
 
     public function __invoke(DistanceRequest $request): JsonResponse
     {

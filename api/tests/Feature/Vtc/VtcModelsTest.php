@@ -6,6 +6,7 @@ namespace Tests\Feature\Vtc;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Vtc\Domain\Enums\VtcDriverStatus;
+use App\Modules\Vtc\Domain\Enums\VtcRideEventType;
 use App\Modules\Vtc\Domain\Enums\VtcRideStatus;
 use App\Modules\Vtc\Domain\Models\VtcDriver;
 use App\Modules\Vtc\Domain\Models\VtcDriverPosition;
@@ -13,7 +14,6 @@ use App\Modules\Vtc\Domain\Models\VtcFareProfile;
 use App\Modules\Vtc\Domain\Models\VtcRide;
 use App\Modules\Vtc\Domain\Models\VtcRideEvent;
 use App\Modules\Vtc\Domain\Models\VtcVehicle;
-use App\Modules\Vtc\Domain\Enums\VtcRideEventType;
 use Tests\RefreshTenantDatabase;
 use Tests\Support\SwitchesTenantContext;
 use Tests\TestCase;

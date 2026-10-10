@@ -49,7 +49,7 @@ final class VtcDriverPosition extends Model
         ];
     }
 
-    /** @return BelongsTo<VtcDriver, VtcDriverPosition> */
+    /** @return BelongsTo<VtcDriver, $this> */
     public function driver(): BelongsTo
     {
         return $this->belongsTo(VtcDriver::class, 'driver_id');

@@ -22,8 +22,7 @@ final class GeoCapabilitiesController
     public function __construct(
         private readonly GeoCapabilities $capabilities,
         private readonly GeoServiceContract $geo,
-    ) {
-    }
+    ) {}
 
     public function show(): JsonResponse
     {

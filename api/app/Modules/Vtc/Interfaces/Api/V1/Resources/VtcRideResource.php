@@ -23,7 +23,7 @@ final class VtcRideResource extends JsonResource
         return [
             'id' => $this->id,
             'reference' => $this->reference,
-            'status' => $this->status?->value,
+            'status' => $this->status->value,
             'passenger_name' => $this->passenger_name,
             'passenger_phone' => $this->passenger_phone,
             'pickup' => [

@@ -17,8 +17,7 @@ final class RideReference
 {
     private const PATTERN = '/^VTC-\d{4}-\d{6}$/';
 
-    private function __construct(private readonly string $value) {
-    }
+    private function __construct(private readonly string $value) {}
 
     /**
      * Génère la référence pour une année et un séquenceur.

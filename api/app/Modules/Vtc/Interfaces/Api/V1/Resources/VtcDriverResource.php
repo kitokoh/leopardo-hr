@@ -29,7 +29,7 @@ final class VtcDriverResource extends JsonResource
             'user_id' => $this->user_id,
             'name' => $this->name,
             'phone' => $this->phone,
-            'status' => $this->status?->value,
+            'status' => $this->status->value,
             'vehicle_id' => $this->vehicle_id,
             'current_latitude' => $this->current_latitude,
             'current_longitude' => $this->current_longitude,

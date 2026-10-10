@@ -58,7 +58,7 @@ final class VtcFareProfile extends Model
         ];
     }
 
-    /** @return HasMany<VtcRide> */
+    /** @return HasMany<VtcRide, $this> */
     public function rides(): HasMany
     {
         return $this->hasMany(VtcRide::class, 'fare_profile_id');

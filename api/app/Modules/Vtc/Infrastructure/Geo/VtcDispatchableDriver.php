@@ -41,7 +41,7 @@ final class VtcDispatchableDriver extends Model implements GeoLocatable
      */
     protected static function booted(): void
     {
-        static::addGlobalScope('dispatchable', function (Builder $query): void {
+        self::addGlobalScope('dispatchable', function (Builder $query): void {
             $query->where('status', VtcDriverStatus::Available->value);
         });
     }

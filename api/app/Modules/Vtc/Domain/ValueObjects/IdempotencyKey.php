@@ -17,8 +17,7 @@ use InvalidArgumentException;
  */
 final class IdempotencyKey
 {
-    private function __construct(private readonly string $value) {
-    }
+    private function __construct(private readonly string $value) {}
 
     public static function generate(): self
     {

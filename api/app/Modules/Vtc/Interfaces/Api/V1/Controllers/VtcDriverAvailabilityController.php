@@ -19,8 +19,7 @@ final class VtcDriverAvailabilityController extends VtcDriverBaseController
 {
     public function __construct(
         private readonly UpdateVtcDriverAvailabilityAction $updateAvailability,
-    ) {
-    }
+    ) {}
 
     public function update(DriverAvailabilityRequest $request): JsonResponse
     {

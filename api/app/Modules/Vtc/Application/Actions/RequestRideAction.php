@@ -37,8 +37,7 @@ final class RequestRideAction
 
     public function __construct(
         private readonly EstimateRideFareAction $estimateFare,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{passenger_user_id: int|null, passenger_name: string|null, passenger_phone: string|null, pickup_address: string|null, dropoff_address: string|null, fare_profile_id: int|null}  $data

@@ -119,19 +119,19 @@ final class VtcRide extends Model
         ];
     }
 
-    /** @return BelongsTo<VtcDriver, VtcRide> */
+    /** @return BelongsTo<VtcDriver, $this> */
     public function driver(): BelongsTo
     {
         return $this->belongsTo(VtcDriver::class, 'driver_id');
     }
 
-    /** @return BelongsTo<VtcFareProfile, VtcRide> */
+    /** @return BelongsTo<VtcFareProfile, $this> */
     public function fareProfile(): BelongsTo
     {
         return $this->belongsTo(VtcFareProfile::class, 'fare_profile_id');
     }
 
-    /** @return HasMany<VtcRideEvent> */
+    /** @return HasMany<VtcRideEvent, $this> */
     public function events(): HasMany
     {
         return $this->hasMany(VtcRideEvent::class, 'ride_id');

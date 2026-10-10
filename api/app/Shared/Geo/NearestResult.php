@@ -17,8 +17,7 @@ final class NearestResult
     public function __construct(
         public readonly GeoLocatable $locatable,
         public readonly Distance $distance,
-    ) {
-    }
+    ) {}
 
     /**
      * Représentation API (GEO-05) : identifiant si le locatable est un modèle

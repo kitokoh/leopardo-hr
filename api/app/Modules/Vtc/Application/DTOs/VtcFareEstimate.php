@@ -20,8 +20,7 @@ final class VtcFareEstimate
         public readonly ?int $priceMinor,
         public readonly string $currency,
         public readonly ?int $fareProfileId,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{distance_m: int, road_distance_m: int, duration_s: int, price_minor: int|null, currency: string, fare_profile_id: int|null}

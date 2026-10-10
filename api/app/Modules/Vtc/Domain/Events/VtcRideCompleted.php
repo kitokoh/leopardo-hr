@@ -26,6 +26,5 @@ class VtcRideCompleted
         public readonly int $driverId,
         public readonly ?int $finalPriceMinor,
         public readonly string $currency,
-    ) {
-    }
+    ) {}
 }

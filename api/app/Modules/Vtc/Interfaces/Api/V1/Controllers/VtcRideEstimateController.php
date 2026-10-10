@@ -20,8 +20,7 @@ final class VtcRideEstimateController
 {
     public function __construct(
         private readonly EstimateRideFareAction $estimateFare,
-    ) {
-    }
+    ) {}
 
     public function __invoke(RideEstimateRequest $request): JsonResponse
     {

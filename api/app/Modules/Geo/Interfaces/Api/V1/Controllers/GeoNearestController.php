@@ -23,8 +23,7 @@ final class GeoNearestController
 {
     public function __construct(
         private readonly GeoServiceContract $geo,
-    ) {
-    }
+    ) {}
 
     public function index(NearestRequest $request): AnonymousResourceCollection
     {

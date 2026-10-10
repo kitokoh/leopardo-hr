@@ -51,8 +51,7 @@ final class VtcDispatchService
     public function __construct(
         private readonly GeoServiceContract $geo,
         private readonly VtcRideStateMachine $stateMachine,
-    ) {
-    }
+    ) {}
 
     /**
      * Offre la course au chauffeur disponible le plus proche n'ayant pas

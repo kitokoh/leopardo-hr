@@ -33,8 +33,7 @@ final class EloquentNearestSearch implements NearestSearchInterface
     public function __construct(
         private readonly SearchableRegistry $registry,
         private readonly GeoCapabilities $capabilities,
-    ) {
-    }
+    ) {}
 
     public function nearest(string $type, GeoPoint $center, ?float $radiusKm = null, ?int $limit = null): array
     {
@@ -112,7 +111,7 @@ final class EloquentNearestSearch implements NearestSearchInterface
         $query->whereBetween($this->rawIdentifier($lng), [$center->longitude - $lngDelta, $center->longitude + $lngDelta]);
 
         $haversine = '(2 * '.self::EARTH_RADIUS_METERS." * ASIN(SQRT(POWER(SIN(RADIANS(? - {$lat}) / 2), 2)"
-            . " + COS(RADIANS(?)) * COS(RADIANS({$lat})) * POWER(SIN(RADIANS(? - {$lng}) / 2), 2))))";
+            ." + COS(RADIANS(?)) * COS(RADIANS({$lat})) * POWER(SIN(RADIANS(? - {$lng}) / 2), 2))))";
 
         $query->whereRaw(
             "{$haversine} <= ?",

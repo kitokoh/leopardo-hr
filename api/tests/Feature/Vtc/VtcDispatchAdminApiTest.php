@@ -6,13 +6,11 @@ namespace Tests\Feature\Vtc;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Vtc\Domain\Enums\VtcDriverStatus;
 use App\Modules\Vtc\Domain\Enums\VtcRideStatus;
 use App\Modules\Vtc\Domain\Models\VtcDriver;
 use App\Modules\Vtc\Domain\Models\VtcDriverPosition;
 use App\Modules\Vtc\Domain\Models\VtcFareProfile;
 use App\Modules\Vtc\Domain\Models\VtcRide;
-use App\Modules\Vtc\Domain\Models\VtcVehicle;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;

@@ -58,7 +58,7 @@ final class RestaurantGeoBranch extends Model implements GeoLocatable
      */
     protected static function booted(): void
     {
-        static::addGlobalScope('public_directory', function (Builder $query): void {
+        self::addGlobalScope('public_directory', function (Builder $query): void {
             $table = $query->getModel()->getTable();
 
             $query->where($table.'.is_public', true)

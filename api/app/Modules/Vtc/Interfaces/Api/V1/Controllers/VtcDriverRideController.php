@@ -27,8 +27,7 @@ final class VtcDriverRideController extends VtcDriverBaseController
     public function __construct(
         private readonly VtcDispatchService $dispatch,
         private readonly VtcDriverRideService $driverRides,
-    ) {
-    }
+    ) {}
 
     public function accept(Request $request, int $id): VtcRideResource
     {

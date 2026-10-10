@@ -24,8 +24,7 @@ final class GeoService implements GeoServiceContract
         private readonly DistanceCalculatorInterface $calculator,
         private readonly NearestSearchInterface $nearestSearch,
         private readonly SearchableRegistry $registry,
-    ) {
-    }
+    ) {}
 
     public function distanceMeters(GeoPoint $from, GeoPoint $to): int
     {

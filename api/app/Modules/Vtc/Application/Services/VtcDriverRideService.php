@@ -40,8 +40,7 @@ final class VtcDriverRideService
         private readonly GeoServiceContract $geo,
         private readonly VtcRideStateMachine $stateMachine,
         private readonly VtcFareCalculator $fareCalculator,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws InvalidRideTransitionException

@@ -26,8 +26,7 @@ final class CancelRideAction
 {
     public function __construct(
         private readonly VtcRideStateMachine $stateMachine,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws InvalidRideTransitionException

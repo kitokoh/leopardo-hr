@@ -24,6 +24,5 @@ class VtcRideExpired
         public readonly int $rideId,
         public readonly string $reference,
         public readonly string $reason,
-    ) {
-    }
+    ) {}
 }

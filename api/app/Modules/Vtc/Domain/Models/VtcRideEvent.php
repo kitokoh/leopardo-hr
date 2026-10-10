@@ -50,7 +50,7 @@ final class VtcRideEvent extends Model
         ];
     }
 
-    /** @return BelongsTo<VtcRide, VtcRideEvent> */
+    /** @return BelongsTo<VtcRide, $this> */
     public function ride(): BelongsTo
     {
         return $this->belongsTo(VtcRide::class, 'ride_id');
