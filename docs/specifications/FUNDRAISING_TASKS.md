@@ -77,5 +77,5 @@
 |---|---|---|
 | FUND-100 | Front public (page cagnotte, partage OG, QR) | ⬜ |
 | FUND-101 | Adaptateurs production mobile money (CinetPay/PayDunya/PVIT) | ⬜ |
-| FUND-102 | openapi.yaml + SDK dev-hub | ⬜ |
+| FUND-102 | openapi.yaml + SDK dev-hub | 🚧 openapi.yaml livré (#8379 reprise CI) — SDK dev-hub reste à faire |
 | FUND-103 | KYC bénéficiaire, remboursements, dons récurrents, reçus PDF | ⬜ |
