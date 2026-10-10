@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Middleware\Fundraising;
+namespace App\Modules\Fundraising\Interfaces\Http\Middleware;
 
 use App\Modules\Fundraising\Domain\Support\FundraisingFeatures;
 use Closure;
@@ -22,6 +22,10 @@ use Symfony\Component\HttpFoundation\Response;
  * gestion, sans toucher aux données. La surface publique n'emprunte PAS
  * ce middleware : elle applique ses propres gardes fail-closed
  * (PublicTenantResolver, 404 uniforme si flag coupé — argent = strict).
+ *
+ * Vit dans le module propriétaire (#8059) : tout `use App\Modules\X\`
+ * depuis app/Http est un couplage croisé refusé par la garde CI #5584 —
+ * les gates `module.*` nouvelles se déclarent dans leur module.
  */
 class EnsureFundraisingModuleMiddleware
 {

@@ -268,7 +268,6 @@ return [
     'INVALID_CONTRIBUTION_AMOUNT' => 'Montant de contribution invalide.',
     'PAYOUT_AMOUNT_EXCEEDS_BALANCE' => 'Le montant du reversement dépasse le solde disponible de la cagnotte.',
     'PAYOUT_NOT_FOUND' => 'Reversement introuvable.',
-    'WEBHOOK_SIGNATURE_INVALID' => 'Signature du webhook invalide.',
     'DOCUMENT_NOT_SENDABLE' => 'Ce document ne peut pas être payé en ligne (non émis ou déjà soldé).',
     'PAYMENT_AMOUNT_MISMATCH' => 'Le montant notifié par la passerelle ne correspond pas au solde du document.',
     'WEBHOOK_SIGNATURE_INVALID' => 'Signature de webhook invalide ou absente.',

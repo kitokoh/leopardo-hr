@@ -150,15 +150,20 @@ class FundraisingWebhookTest extends TestCase
             'CONTENT_TYPE' => 'application/json',
         ], $payload)->assertStatus(401)
             ->assertJsonPath('error', 'WEBHOOK_SIGNATURE_INVALID');
+    }
 
-        // Secret absent ⇒ rejet également (fail-closed #2614).
+    public function test_missing_webhook_secret_is_rejected_fail_closed(): void
+    {
+        // Secret absent ⇒ rejet également (fail-closed #2614). Config vidée
+        // AVANT l'unique appel du test : la factory relit config/fundraising
+        // à chaque requête, aucun état partagé avec un appel précédent.
         config(['fundraising.stripe.webhook_secret' => '']);
-        [$payload2, $signature2] = $this->signedStripePayload('evt_nosecret', 'cs_test_fundraising_1');
+        [$payload, $signature] = $this->signedStripePayload('evt_nosecret', 'cs_test_fundraising_1');
 
         $this->call('POST', '/api/v1/webhooks/fundraising/stripe', [], [], [], [
-            'HTTP_Stripe-Signature' => $signature2,
+            'HTTP_Stripe-Signature' => $signature,
             'CONTENT_TYPE' => 'application/json',
-        ], $payload2)->assertStatus(401);
+        ], $payload)->assertStatus(401);
     }
 
     public function test_unknown_provider_reference_is_ignored_with_200(): void
@@ -219,7 +224,7 @@ class FundraisingWebhookTest extends TestCase
 
         $status = app(TenantManager::class)->withinTenant(
             $this->company,
-            fn (): ?string => FundraisingContribution::query()->where('reference', 'FC-MMTEST1234')->value('status')
+            fn (): ?string => FundraisingContribution::query()->where('reference', 'FC-MMTEST1234')->value('status')?->value
         );
         $this->assertSame('completed', $status);
     }

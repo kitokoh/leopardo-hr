@@ -29,8 +29,8 @@ use Illuminate\Support\Carbon;
  * @property PayoutStatus $status
  * @property string|null $provider_reference
  * @property string|null $failure_reason
- * @property string|null $requested_by
- * @property string|null $processed_by
+ * @property int|null $requested_by
+ * @property int|null $processed_by
  * @property Carbon|null $processed_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at

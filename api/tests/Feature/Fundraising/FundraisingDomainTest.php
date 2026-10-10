@@ -92,8 +92,6 @@ class FundraisingDomainTest extends TestCase
         $this->assertTrue(Schema::hasTable('fundraising_contributions'));
         $this->assertTrue(Schema::hasTable('fundraising_payouts'));
         $this->assertTrue(Schema::hasTable('fundraising_payment_events'));
-        $this->assertTrue(Schema::hasTable('fundraiser_public_links'));
-        $this->assertTrue(Schema::hasTable('fundraising_payment_routes'));
 
         $schema = DB::selectOne(
             'SELECT table_schema FROM information_schema.tables WHERE table_name = ? LIMIT 1',
@@ -101,11 +99,16 @@ class FundraisingDomainTest extends TestCase
         );
         $this->assertSame('shared_tenants', $schema->table_schema ?? null, 'fundraisers absente du schéma tenant');
 
-        $schemaPublic = DB::selectOne(
-            'SELECT table_schema FROM information_schema.tables WHERE table_name = ? LIMIT 1',
-            ['fundraiser_public_links']
-        );
-        $this->assertSame('public', $schemaPublic->table_schema ?? null, 'fundraiser_public_links absente du schéma public');
+        // Les annuaires publics vivent dans le schéma public (landlord) :
+        // Schema::hasTable ne sonde que le schéma courant (shared_tenants),
+        // vérification directe dans information_schema.
+        foreach (['fundraiser_public_links', 'fundraising_payment_routes'] as $table) {
+            $schemaPublic = DB::selectOne(
+                'SELECT table_schema FROM information_schema.tables WHERE table_name = ? LIMIT 1',
+                [$table]
+            );
+            $this->assertSame('public', $schemaPublic->table_schema ?? null, $table.' absente du schéma public');
+        }
     }
 
     public function test_fundraiser_defaults_and_company_id_not_null(): void

@@ -42,8 +42,8 @@ return new class extends Migration
                 $table->string('provider_reference', 190)->nullable();
                 $table->string('failure_reason', 500)->nullable();
 
-                $table->uuid('requested_by')->nullable();
-                $table->uuid('processed_by')->nullable();
+                $table->unsignedBigInteger('requested_by')->nullable();
+                $table->unsignedBigInteger('processed_by')->nullable();
                 $table->timestamp('processed_at')->nullable();
 
                 $table->timestamps();

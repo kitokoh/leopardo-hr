@@ -267,7 +267,6 @@ return [
     'INVALID_CONTRIBUTION_AMOUNT' => 'مبلغ المساهمة غير صالح.',
     'PAYOUT_AMOUNT_EXCEEDS_BALANCE' => 'مبلغ السحب يتجاوز الرصيد المتاح لحملة التبرع.',
     'PAYOUT_NOT_FOUND' => 'عملية السحب غير موجودة.',
-    'WEBHOOK_SIGNATURE_INVALID' => 'توقيع webhook غير صالح.',
     'DOCUMENT_NOT_SENDABLE' => 'لا يمكن دفع هذا المستند عبر الإنترنت (غير مصدر أو مسدد بالكامل).',
     'PAYMENT_AMOUNT_MISMATCH' => 'المبلغ المُبلغ من البوابة لا يطابق رصيد المستند.',
     'WEBHOOK_SIGNATURE_INVALID' => 'توقيع الويب هوك غير صالح أو مفقود.',

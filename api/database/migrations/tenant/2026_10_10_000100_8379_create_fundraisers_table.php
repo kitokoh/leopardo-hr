@@ -54,7 +54,7 @@ return new class extends Migration
                 $table->timestamp('starts_at')->nullable();
                 $table->timestamp('ends_at')->nullable();
                 $table->timestamp('published_at')->nullable();
-                $table->uuid('created_by')->nullable();
+                $table->unsignedBigInteger('created_by')->nullable();
 
                 $table->timestamps();
 
