@@ -44,6 +44,12 @@ final class EloquentNearestSearch implements NearestSearchInterface
         /** @var Builder<Model> $query */
         $query = $modelClass::query();
 
+        // `selectRaw(distance_m)` ci-dessous AJOUTE sa colonne à la liste : sans
+        // sélection explicite préalable, la requête ne remonterait QUE la
+        // distance (modèle hydraté sans id/name/lat/lng → geoLabel()/geoPoint()
+        // en TypeError). Toutes les colonnes métier + la distance calculée.
+        $query->select('*');
+
         $latitudeColumn = $modelClass::geoLatitudeColumn();
         $longitudeColumn = $modelClass::geoLongitudeColumn();
         $lat = $this->wrapColumn($query, $latitudeColumn);
