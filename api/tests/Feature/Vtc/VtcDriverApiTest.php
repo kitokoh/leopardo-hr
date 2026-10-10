@@ -165,17 +165,24 @@ class VtcDriverApiTest extends TestCase
         $company = $this->createCompany(enableVtc: true);
         [$driverEmployee, $driver] = $this->createLinkedDriver($company);
 
-        $this->withTenantContext($company, function (): void {
-            VtcFareProfile::factory()->create([
+        /** @var VtcFareProfile $profile */
+        $profile = $this->withTenantContext(
+            $company,
+            fn (): VtcFareProfile => VtcFareProfile::factory()->create([
                 'base_minor' => 500_00,
                 'per_km_minor' => 250_00,
                 'per_minute_minor' => 50_00,
                 'minimum_minor' => 1_000_00,
                 'is_default' => true,
-            ]);
-        });
+            ])
+        );
 
-        $ride = $this->createRideWithOfferFor($company, $driver);
+        // Le recalcul du prix final exige une grille liée + un devis (sinon
+        // computeFinalPrice retombe sur estimated_price_minor — null ici).
+        $ride = $this->createRideWithOfferFor($company, $driver, [
+            'fare_profile_id' => $profile->id,
+            'estimated_price_minor' => 1_000_00,
+        ]);
 
         Sanctum::actingAs($driverEmployee);
 
@@ -395,16 +402,19 @@ class VtcDriverApiTest extends TestCase
      * Course `dispatching` dont l'offre courante appartient au chauffeur
      * (dispatch réel exécuté via le service — file faked en setUp).
      */
-    private function createRideWithOfferFor(Company $company, VtcDriver $driver): VtcRide
+    /**
+     * @param  array<string, mixed>  $rideAttributes
+     */
+    private function createRideWithOfferFor(Company $company, VtcDriver $driver, array $rideAttributes = []): VtcRide
     {
-        return $this->withTenantContext($company, function (): VtcRide {
+        return $this->withTenantContext($company, function () use ($rideAttributes): VtcRide {
             /** @var VtcRide $ride */
-            $ride = VtcRide::factory()->create([
+            $ride = VtcRide::factory()->create(array_merge([
                 'status' => VtcRideStatus::Dispatching->value,
                 'pickup_latitude' => 4.0511,
                 'pickup_longitude' => 9.7679,
                 'requested_at' => now(),
-            ]);
+            ], $rideAttributes));
 
             /** @var VtcDispatchService $dispatch */
             $dispatch = $this->app->make(VtcDispatchService::class);

@@ -11,7 +11,7 @@ use App\Modules\Vtc\Domain\Exceptions\InvalidRideTransitionException;
 use App\Modules\Vtc\Domain\Models\VtcRide;
 use App\Modules\Vtc\Domain\Models\VtcRideEvent;
 use App\Modules\Vtc\Domain\Support\VtcRideStateMachine;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\DatabaseManager;
 
 /**
  * Annulation d'une course VTC par le PASSAGER (BC-34 VTC, VTC-03/#8359).
@@ -26,6 +26,7 @@ final class CancelRideAction
 {
     public function __construct(
         private readonly VtcRideStateMachine $stateMachine,
+        private readonly DatabaseManager $db,
     ) {}
 
     /**
@@ -42,7 +43,7 @@ final class CancelRideAction
 
         $this->stateMachine->assertCanTransitionTo($from, VtcRideStatus::Cancelled);
 
-        DB::transaction(function () use ($ride, $reason, $cancelledBy): void {
+        $this->db->transaction(function () use ($ride, $reason, $cancelledBy): void {
             $ride->forceFill([
                 'status' => VtcRideStatus::Cancelled->value,
                 'cancelled_at' => now(),

@@ -13,7 +13,7 @@ use App\Modules\Vtc\Domain\ValueObjects\IdempotencyKey;
 use App\Modules\Vtc\Domain\ValueObjects\RideReference;
 use App\Shared\Geo\GeoPoint;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\DatabaseManager;
 
 /**
  * Création IDEMPOTENTE d'une course VTC (BC-34 VTC, VTC-03/#8359).
@@ -37,6 +37,7 @@ final class RequestRideAction
 
     public function __construct(
         private readonly EstimateRideFareAction $estimateFare,
+        private readonly DatabaseManager $db,
     ) {}
 
     /**
@@ -55,7 +56,7 @@ final class RequestRideAction
 
         for ($attempt = 1; $attempt <= self::MAX_ATTEMPTS; $attempt++) {
             try {
-                $ride = DB::transaction(function () use ($data, $pickup, $dropoff, $key, $estimate): VtcRide {
+                $ride = $this->db->transaction(function () use ($data, $pickup, $dropoff, $key, $estimate): VtcRide {
                     /** @var VtcRide $ride */
                     $ride = VtcRide::query()->create([
                         'reference' => $this->nextReference()->toString(),

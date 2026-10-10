@@ -18,7 +18,7 @@ use App\Modules\Vtc\Domain\Support\VtcRideStateMachine;
 use App\Modules\Vtc\Infrastructure\Jobs\ExpireVtcOfferJob;
 use App\Shared\Contracts\Geo\GeoServiceContract;
 use App\Shared\Geo\GeoPoint;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\DatabaseManager;
 
 /**
  * Moteur de dispatch VTC (BC-34 VTC, VTC-04/#8360) — le cœur métier.
@@ -51,6 +51,7 @@ final class VtcDispatchService
     public function __construct(
         private readonly GeoServiceContract $geo,
         private readonly VtcRideStateMachine $stateMachine,
+        private readonly DatabaseManager $db,
     ) {}
 
     /**
@@ -83,7 +84,7 @@ final class VtcDispatchService
         $driverId = $candidate['driver_id'];
         $timeoutSeconds = $this->offerTimeoutSeconds();
 
-        $offered = DB::transaction(function () use ($ride, $driverId, $seq, $candidate, $timeoutSeconds): bool {
+        $offered = $this->db->transaction(function () use ($ride, $driverId, $seq, $candidate, $timeoutSeconds): bool {
             /** @var VtcRide|null $locked */
             $locked = VtcRide::query()->whereKey($ride->id)->lockForUpdate()->first();
 
@@ -167,7 +168,7 @@ final class VtcDispatchService
      */
     public function acceptOffer(VtcRide $ride, int $driverId): VtcRide
     {
-        $accepted = DB::transaction(function () use ($ride, $driverId): VtcRide {
+        $accepted = $this->db->transaction(function () use ($ride, $driverId): VtcRide {
             /** @var VtcRide|null $locked */
             $locked = VtcRide::query()->whereKey($ride->id)->lockForUpdate()->first();
 
@@ -226,7 +227,7 @@ final class VtcDispatchService
      */
     public function expireRide(VtcRide $ride, string $reason): void
     {
-        $expired = DB::transaction(function () use ($ride, $reason): ?VtcRide {
+        $expired = $this->db->transaction(function () use ($ride, $reason): ?VtcRide {
             /** @var VtcRide|null $locked */
             $locked = VtcRide::query()->whereKey($ride->id)->lockForUpdate()->first();
 
@@ -325,7 +326,7 @@ final class VtcDispatchService
         int $seq,
         VtcRideEventType $eventType,
     ): ?VtcRide {
-        return DB::transaction(function () use ($rideId, $driverId, $seq, $eventType): ?VtcRide {
+        return $this->db->transaction(function () use ($rideId, $driverId, $seq, $eventType): ?VtcRide {
             /** @var VtcRide|null $locked */
             $locked = VtcRide::query()->whereKey($rideId)->lockForUpdate()->first();
 

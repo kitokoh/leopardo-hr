@@ -17,7 +17,7 @@ use App\Modules\Vtc\Domain\Support\VtcFareCalculator;
 use App\Modules\Vtc\Domain\Support\VtcRideStateMachine;
 use App\Shared\Contracts\Geo\GeoServiceContract;
 use App\Shared\Geo\GeoPoint;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\DatabaseManager;
 
 /**
  * Transitions de course portées par le chauffeur (BC-34 VTC, VTC-05/#8361).
@@ -40,6 +40,7 @@ final class VtcDriverRideService
         private readonly GeoServiceContract $geo,
         private readonly VtcRideStateMachine $stateMachine,
         private readonly VtcFareCalculator $fareCalculator,
+        private readonly DatabaseManager $db,
     ) {}
 
     /**
@@ -66,7 +67,7 @@ final class VtcDriverRideService
      */
     public function complete(VtcRide $ride): VtcRide
     {
-        $completed = DB::transaction(function () use ($ride): VtcRide {
+        $completed = $this->db->transaction(function () use ($ride): VtcRide {
             /** @var VtcRide $locked */
             $locked = VtcRide::query()->whereKey($ride->id)->lockForUpdate()->firstOrFail();
 
@@ -127,7 +128,7 @@ final class VtcDriverRideService
         string $timestampColumn,
         VtcRideEventType $eventType,
     ): VtcRide {
-        return DB::transaction(function () use ($ride, $to, $timestampColumn, $eventType): VtcRide {
+        return $this->db->transaction(function () use ($ride, $to, $timestampColumn, $eventType): VtcRide {
             /** @var VtcRide $locked */
             $locked = VtcRide::query()->whereKey($ride->id)->lockForUpdate()->firstOrFail();
 
