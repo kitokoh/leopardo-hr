@@ -12,8 +12,8 @@ use App\Modules\Vtc\Domain\Models\VtcRideEvent;
 use App\Modules\Vtc\Domain\ValueObjects\IdempotencyKey;
 use App\Modules\Vtc\Domain\ValueObjects\RideReference;
 use App\Shared\Geo\GeoPoint;
-use Illuminate\Database\QueryException;
 use Illuminate\Database\DatabaseManager;
+use Illuminate\Database\QueryException;
 
 /**
  * Création IDEMPOTENTE d'une course VTC (BC-34 VTC, VTC-03/#8359).
