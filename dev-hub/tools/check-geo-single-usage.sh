@@ -10,10 +10,12 @@
 # `api/app/Modules/Geo/` est une duplication à faire migrer vers
 # App\Shared\Contracts\Geo\GeoServiceContract.
 #
-# Mode WARNING par défaut (non bloquant — le temps que les consommateurs
-# legacy migrent, spec §9 tâche 9) : les violations produisent des
-# annotations ::warning sans faire échouer la CI. Durcissement prévu (issue
-# de suivi) : GEO_SINGLE_USAGE_STRICT=1 → échec CI sur toute violation.
+# Mode WARNING par défaut en local (annotations ::warning) ; la CI câble
+# GEO_SINGLE_USAGE_STRICT=1 (GEO-07b #8380, architecture-check.yml) → échec
+# sur toute violation. Prérequis du durcissement résorbés au 2026-10-10 :
+# zéro violation détectée, exemptions ci-dessous justifiées (maintenues tant
+# que le flag `geo` n'est pas généralisé et que la refonte geofence ADR-0016
+# n'est pas planifiée).
 #
 # Exemptions documentées (consommateurs legacy, migration planifiée) :
 #   - Attendance geofence (ADR-0016) : GeoSessionManager, GeofenceZoneService
