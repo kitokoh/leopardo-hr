@@ -50,7 +50,7 @@ final class EstimateRideFareAction
             $roadDistanceMeters,
             $durationSeconds,
             $priceMinor,
-            $profile?->currency ?? $this->defaultCurrency(),
+            $profile instanceof VtcFareProfile ? $profile->currency : $this->defaultCurrency(),
             $profile?->id,
         );
     }
