@@ -272,7 +272,7 @@ return [
     'FUNDRAISER_NOT_ACTIVE' => 'This fundraiser is not accepting contributions right now.',
     'CONTRIBUTION_NOT_FOUND' => 'Contribution not found.',
     'INVALID_CONTRIBUTION_AMOUNT' => 'Invalid contribution amount.',
-    'PAYOUT_AMOUNT_EXCEEDS_BALANCE' => 'The payout amount exceeds the fundraiser's available balance.',
+    'PAYOUT_AMOUNT_EXCEEDS_BALANCE' => 'The payout amount exceeds the fundraiser\'s available balance.',
     'PAYOUT_NOT_FOUND' => 'Payout not found.',
     'WEBHOOK_SIGNATURE_INVALID' => 'Invalid webhook signature.',
     'DOCUMENT_NOT_SENDABLE' => 'This document cannot be paid online (not issued or already settled).',

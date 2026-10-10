@@ -95,3 +95,6 @@
 /api/app/Modules/Pharmacy/ @kitokoh
 /api/app/Modules/Restaurant/ @kitokoh
 /api/app/Modules/Showcase/  @kitokoh
+
+# BC-33 FUNDRAISING — verticale cagnottes solidaires (spec docs/specifications/SOLUTION_FUNDRAISING.md)
+/api/app/Modules/Fundraising/ @kitokoh

@@ -3,7 +3,7 @@
   "title": "Bounded Context Registry — Leopardo HR",
   "description": "Registre canonique machine-readable des bounded contexts (MAT-001, issue #5859). Référence humaine : docs/architecture/BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md (plan de gouvernance, PR agent-readiness).",
   "maintained_by": "dev-hub/tools/check-bounded-context-registry.sh (garde CI)",
-  "updated": "2026-09-06"
+  "updated": "2026-10-10"
  },
  "_shared_exceptions": [
   {
@@ -1011,6 +1011,33 @@
     "BC-02",
     "BC-03"
    ]
+  },
+  {
+   "code": "BC-33",
+   "name": "FUNDRAISING",
+   "context": "Fundraising",
+   "responsibility": "Cagnottes solidaires : cycle de vie des collectes (draft→active→completed→closed), contributions publiques par lien court (carte Stripe, mobile money agrégateur, manuel), webhooks idempotents, reversements au bénéficiaire, annuaires publics cross-tenant (slug→tenant, routage paiements).",
+   "owner": "Agent 33 — BC-FUNDRAISING",
+   "priority": "P1",
+   "status": "active",
+   "paths": [
+    {
+     "path": "api/app/Modules/Fundraising",
+     "status": "active"
+    }
+   ],
+   "routes": [
+    "api/routes/modules/fundraising.php"
+   ],
+   "migrations": [
+    "api/database/migrations/tenant",
+    "api/database/migrations/public"
+   ],
+   "events": [],
+   "dependencies": [
+    "BC-01"
+   ],
+   "spec": "docs/specifications/SOLUTION_FUNDRAISING.md"
   }
  ]
 }

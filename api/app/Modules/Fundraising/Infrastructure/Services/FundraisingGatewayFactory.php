@@ -32,7 +32,7 @@ final class FundraisingGatewayFactory
             ContributionMethod::MOBILE_MONEY => new MobileMoneyGateway(
                 is_array($this->config['mobile_money'] ?? null) ? $this->config['mobile_money'] : []
             ),
-            ContributionMethod::CASH, ContributionMethod::BANK_TRANSFER => new ManualGateway(),
+            ContributionMethod::CASH, ContributionMethod::BANK_TRANSFER => new ManualGateway,
         };
     }
 
