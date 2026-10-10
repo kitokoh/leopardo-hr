@@ -2,7 +2,7 @@
 
 # Leopardo
 
-### The open-source business suite for field-based companies
+### The Business OS for field-based companies
 
 Leopardo is the business suite for field-based companies — HR & payroll, attendance, leave, CRM, accounting and operations, on web, mobile and kiosks.
 
@@ -18,13 +18,13 @@ Leopardo is the business suite for field-based companies — HR & payroll, atten
 
 </div>
 
-![Leopardo — open-source modular business operations platform](assets/branding/og-banner.png)
+![Leopardo — Business OS pour les opérations des entreprises de terrain](assets/branding/og-banner.png)
 
 ---
 
 ## What is Leopardo?
 
-Leopardo is an **open-source, self-hostable and SaaS-ready business suite** for companies that manage people, sites, schedules, customers and operational processes across multiple locations.
+Leopardo is the **Business OS for field-based companies** — one platform for people, sites, schedules, customers and operational processes across multiple locations, in the cloud or self-hosted.
 
 Its historical foundation is HR and payroll: employee records, attendance, leave, documents, payroll preparation and workforce operations. The suite extends that foundation with accounting, customer relationship management, marketing integrations, an API ecosystem — and **tenant-activable vertical solutions** for sector-specific operations (travel agencies, restaurants and delivery, fuel stations, schools, healthcare, pharmacies).
 
@@ -244,7 +244,7 @@ Read the [security policy](SECURITY.md), [authentication documentation](docs/sec
 
 ## Project status
 
-Leopardo is an active and evolving open-source project. The repository contains production-oriented foundations, but not every module has the same maturity. Check the relevant specification and pilot status before using a domain for a critical production workflow.
+Leopardo is an active and evolving project. The repository contains production-oriented foundations, but not every module has the same maturity. Check the relevant specification and pilot status before using a domain for a critical production workflow.
 
 | Status | Meaning |
 | :--- | :--- |
