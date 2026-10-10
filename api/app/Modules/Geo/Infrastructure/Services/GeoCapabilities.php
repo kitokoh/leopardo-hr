@@ -29,7 +29,10 @@ final class GeoCapabilities
             return false;
         }
 
+        // Capacité d'INFRASTRUCTURE de la base : identique pour tous les tenants
+        // d'une même connexion, aucune donnée métier tenant n'est stockée.
         /** @var bool $available */
+        // tenant-cache:shared — extension PostGIS installée ou non (#8058).
         $available = Cache::remember(
             self::CACHE_KEY_AVAILABLE,
             $this->cacheTtl(),
@@ -46,6 +49,7 @@ final class GeoCapabilities
         }
 
         /** @var string|null $version */
+        // tenant-cache:shared — version de l'extension, infrastructure partagée (#8058).
         $version = Cache::remember(
             self::CACHE_KEY_VERSION,
             $this->cacheTtl(),
@@ -60,6 +64,7 @@ final class GeoCapabilities
      */
     public function forget(): void
     {
+        // tenant-cache:shared — invalidation des clés d'infrastructure ci-dessus (#8058).
         Cache::forget(self::CACHE_KEY_AVAILABLE);
         Cache::forget(self::CACHE_KEY_VERSION);
     }
