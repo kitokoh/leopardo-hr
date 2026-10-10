@@ -932,3 +932,57 @@ POST /v1/showcase/media
 DELETE /v1/showcase/media/{param}
 GET /v1/public/vitrine/{param}/media/{param}
 # Règle (issue #1473) : toute route absente d'openapi.yaml ET de ce fichier
+# Drift pré-existant main (#8345, restauration routes suite Feature #8127) :
+# routes CRM (imports/duplicates/leads/accounts/contacts), fuel-station
+# (exports/imports), RH (verify-face) et travel community restaurées sans
+# contrat OpenAPI. Gap connu ajouté ici selon la règle #1473 (même régime
+# que les gaps historiques) — documentation OpenAPI à fournir par les
+# verticales concernées (suivi EPIC #6528 côté travel).
+POST /v1/crm/imports/preview
+GET /v1/crm/duplicates/suggestions
+POST /v1/crm/leads
+GET /v1/crm/leads/{param}
+PUT /v1/crm/leads/{param}
+POST /v1/crm/accounts
+GET /v1/crm/accounts/{param}
+POST /v1/crm/contacts
+GET /v1/crm/contacts/{param}
+GET /v1/fuel-station/reports/{param}/export
+POST /v1/fuel-station/imports/preview
+POST /v1/fuel-station/imports/{param}/commit
+POST /v1/fuel-station/imports/{param}/cancel
+POST /v1/kiosks/{param}/verify-face
+GET /v1/travel/community/categories
+POST /v1/travel/community/categories
+PUT /v1/travel/community/categories/{param}
+DELETE /v1/travel/community/categories/{param}
+GET /v1/travel/community/articles
+POST /v1/travel/community/articles
+GET /v1/travel/community/articles/{param}
+PUT /v1/travel/community/articles/{param}
+DELETE /v1/travel/community/articles/{param}
+POST /v1/travel/community/articles/{param}/publish
+POST /v1/travel/community/articles/{param}/moderate
+GET /v1/travel/community/articles/{param}/comments
+POST /v1/travel/community/articles/{param}/comments
+DELETE /v1/travel/community/comments/{param}
+POST /v1/travel/community/comments/{param}/approve
+POST /v1/travel/community/comments/{param}/reject
+POST /v1/travel/community/comments/{param}/report
+POST /v1/travel/community/articles/{param}/like
+POST /v1/travel/community/articles/{param}/unlike
+POST /v1/travel/community/articles/{param}/share
+POST /v1/travel/community/articles/{param}/rate
+GET /v1/travel/community/articles/{param}/engagement
+GET /v1/travel/community/quizzes/{param}
+POST /v1/travel/community/quizzes/{param}/publish
+POST /v1/travel/community/quizzes/{param}/questions
+DELETE /v1/travel/community/quiz-questions/{param}
+POST /v1/travel/community/quizzes/{param}/participate
+GET /v1/travel/community/quizzes/{param}/results
+POST /v1/travel/community/tourist-sites
+GET /v1/travel/community/tourist-sites/search
+PUT /v1/travel/community/tourist-sites/{param}
+DELETE /v1/travel/community/tourist-sites/{param}
+PATCH /v1/travel/contacts/{param}/consent
+PUT /v1/travel/contacts/{param}/consent
