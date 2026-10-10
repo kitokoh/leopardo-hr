@@ -48,14 +48,14 @@ class VtcDispatchAdminApiTest extends TestCase
         $company = $this->createCompany(enableVtc: true);
 
         // Chauffeur (employé actif) : pas dispatcher → 403.
-        $this->actingAs($company, 'employee');
+        $this->actingAsVtcUser($company, 'employee');
 
         $this->getJson('/api/v1/vtc/dispatch/rides')
             ->assertStatus(403)
             ->assertJson(['error' => 'VTC_ROLE_REQUIRED']);
 
         // Manager principal : dispatcher → 200.
-        $this->actingAs($company, 'manager', 'principal');
+        $this->actingAsVtcUser($company, 'manager', 'principal');
 
         $this->getJson('/api/v1/vtc/dispatch/rides')->assertOk();
         $this->getJson('/api/v1/vtc/dispatch/drivers')->assertOk();
@@ -66,14 +66,14 @@ class VtcDispatchAdminApiTest extends TestCase
         $company = $this->createCompany(enableVtc: true);
 
         // Manager non principal : dispatcher mais PAS admin → 403.
-        $this->actingAs($company, 'manager', 'manager');
+        $this->actingAsVtcUser($company, 'manager', 'manager');
 
         $this->getJson('/api/v1/vtc/fare-profiles')
             ->assertStatus(403)
             ->assertJson(['error' => 'VTC_ROLE_REQUIRED']);
 
         // Manager principal : admin → 200.
-        $this->actingAs($company, 'manager', 'principal');
+        $this->actingAsVtcUser($company, 'manager', 'principal');
 
         $this->getJson('/api/v1/vtc/fare-profiles')->assertOk();
         $this->getJson('/api/v1/vtc/vehicles')->assertOk();
@@ -97,7 +97,7 @@ class VtcDispatchAdminApiTest extends TestCase
             VtcDriver::factory()->availableAt(4.0511, 9.7679)->create(['name' => 'Chauffeur B']);
         });
 
-        $this->actingAs($companyA, 'manager', 'manager');
+        $this->actingAsVtcUser($companyA, 'manager', 'manager');
 
         // Courses : seules les ACTIVES du tenant A (course B jamais visible).
         $rides = $this->getJson('/api/v1/vtc/dispatch/rides')->assertOk()->json('data');
@@ -113,7 +113,7 @@ class VtcDispatchAdminApiTest extends TestCase
     public function test_fare_profiles_crud_and_single_default(): void
     {
         $company = $this->createCompany(enableVtc: true);
-        $this->actingAs($company, 'manager', 'principal');
+        $this->actingAsVtcUser($company, 'manager', 'principal');
 
         $payload = [
             'name' => 'Standard',
@@ -172,7 +172,7 @@ class VtcDispatchAdminApiTest extends TestCase
     public function test_vehicles_crud_plate_unique_and_assignment_guard(): void
     {
         $company = $this->createCompany(enableVtc: true);
-        $this->actingAs($company, 'manager', 'principal');
+        $this->actingAsVtcUser($company, 'manager', 'principal');
 
         $vehicle = $this->postJson('/api/v1/vtc/vehicles', [
             'plate' => 'lt-001-aa',
@@ -206,7 +206,7 @@ class VtcDispatchAdminApiTest extends TestCase
     public function test_drivers_crud_references_and_history_guard(): void
     {
         $company = $this->createCompany(enableVtc: true);
-        $this->actingAs($company, 'manager', 'principal');
+        $this->actingAsVtcUser($company, 'manager', 'principal');
 
         /** @var Employee $linked */
         $linked = Employee::factory()->create(['company_id' => $company->id, 'role' => 'employee']);
@@ -276,6 +276,8 @@ class VtcDispatchAdminApiTest extends TestCase
 
         /** @var VtcDriverPosition|null $kept */
         $kept = VtcDriverPosition::query()->withoutGlobalScopes()->first();
+        self::assertNotNull($kept);
+        self::assertNotNull($kept->recorded_at);
         self::assertTrue($kept->recorded_at->greaterThan(now()->subDays(30)));
 
         // Idempotente : seconde exécution sans nouvelle suppression.
@@ -299,7 +301,7 @@ class VtcDispatchAdminApiTest extends TestCase
         return $company;
     }
 
-    private function actingAs(Company $company, string $role, ?string $managerRole = null): Employee
+    private function actingAsVtcUser(Company $company, string $role, ?string $managerRole = null): Employee
     {
         /** @var Employee $employee */
         $employee = Employee::factory()->create(array_filter([

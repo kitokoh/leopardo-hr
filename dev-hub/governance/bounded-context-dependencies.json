@@ -5,7 +5,7 @@
     "policy": "deny-by-default",
     "registry": "dev-hub/governance/bounded-context-registry.json",
     "guard": "dev-hub/tools/check-bounded-context-dependencies.sh",
-    "updated": "2026-09-29"
+    "updated": "2026-10-10"
   },
   "edges": [
     {
@@ -822,6 +822,18 @@
       "to": "BC-29",
       "baseline": true,
       "note": "BC-24 → BC-29 — TravelNotificationService (TRAVEL-415 #6067) écrit CommunicationEvent déplacé sous BC-29 par ADR 0027 (#8219, #8250)"
+    },
+    {
+      "from": "BC-34",
+      "to": "BC-03",
+      "baseline": false,
+      "note": "VTC → IDENTITY — acteur Employee (chauffeurs/dispatchers authentifiés, contrôleurs VtcRideController/VtcDriverAdminController — VTC-01 #8357, pattern BC-28/#6880)"
+    },
+    {
+      "from": "BC-34",
+      "to": "BC-14",
+      "baseline": false,
+      "note": "VTC → INTEGRATION — jobs du dispatch (OfferRideToNearestDriverJob, ExpireVtcOfferJob) : contrat queue partagé App\\Contracts\\Queue\\TenantScopedJob + middleware EnsureTenantContext (VTC-04 #8360, pattern #5706)"
     }
   ]
 }

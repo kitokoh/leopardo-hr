@@ -285,10 +285,12 @@ class DocumentWorkflowNumberingTest extends TestCase
     {
         $workflow = new DocumentWorkflowService(new SequentialDocumentNumbering);
 
-        $overdue = $this->makeDocument(overrides: ['due_date' => '2026-07-31']);
+        // Dates RELATIVES : un « futur » figé (2026-09-30) est devenu passé
+        // le 2026-10-01 et faisait échouer le test (bombe calendaire).
+        $overdue = $this->makeDocument(overrides: ['due_date' => now()->subMonths(2)->toDateString()]);
         $workflow->transition($overdue, DocumentStatus::Sent);
 
-        $future = $this->makeDocument(overrides: ['due_date' => '2026-09-30']);
+        $future = $this->makeDocument(overrides: ['due_date' => now()->addMonth()->toDateString()]);
         $workflow->transition($future, DocumentStatus::Sent);
 
         $count = $workflow->refreshOverdue($this->company->id); // #6572 : signature refreshOverdue(string \$companyId) — le seuil « aujourd'hui » est now()

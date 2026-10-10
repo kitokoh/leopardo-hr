@@ -42,7 +42,9 @@ class PostgisCapabilityTest extends TestCase
 
         self::assertInstanceOf(Migration::class, $migration);
 
+        // @phpstan-ignore-next-line method.notFound (classe de migration anonyme — up() défini à l'inclusion)
         $migration->up();
+        // @phpstan-ignore-next-line method.notFound (classe de migration anonyme — up() défini à l'inclusion)
         $migration->up();
 
         $row = DB::selectOne("SELECT extname FROM pg_extension WHERE extname = 'postgis'");
@@ -56,6 +58,7 @@ class PostgisCapabilityTest extends TestCase
             $this->markTestSkipped('PostGIS n\'est testé que sur PostgreSQL.');
         }
 
+        // @phpstan-ignore-next-line method.nonObject (artisan() retourne PendingCommand|int)
         $this->artisan('geo:check-postgis')->assertSuccessful();
     }
 }

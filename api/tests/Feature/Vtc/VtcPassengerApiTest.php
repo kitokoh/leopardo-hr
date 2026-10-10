@@ -6,6 +6,7 @@ namespace Tests\Feature\Vtc;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Vtc\Domain\Enums\VtcRideEventType;
 use App\Modules\Vtc\Domain\Enums\VtcRideStatus;
 use App\Modules\Vtc\Domain\Events\VtcRideRequested;
 use App\Modules\Vtc\Domain\Models\VtcFareProfile;
@@ -136,11 +137,12 @@ class VtcPassengerApiTest extends TestCase
         self::assertNotNull($ride->requested_at);
         self::assertSame($key, $ride->idempotency_key);
 
-        // Journal append-only : demande + démarrage du dispatch (pluck =
-        // valeurs brutes, sans cast enum).
+        // Journal append-only : demande + démarrage du dispatch (pluck
+        // applique le cast enum Laravel 12 → mapping explicite des valeurs).
         self::assertSame(
             ['ride.requested', 'dispatch.started'],
-            $ride->events()->orderBy('id')->pluck('type')->all()
+            $ride->events()->orderBy('id')->pluck('type')
+                ->map(static fn (VtcRideEventType $type): string => $type->value)->all()
         );
 
         Event::assertDispatched(VtcRideRequested::class, static fn (VtcRideRequested $event): bool => $event->rideId === $ride->id);

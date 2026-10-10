@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Vtc\Application\Services\VtcDispatchService;
 use App\Modules\Vtc\Domain\Enums\VtcDriverStatus;
+use App\Modules\Vtc\Domain\Enums\VtcRideEventType;
 use App\Modules\Vtc\Domain\Enums\VtcRideStatus;
 use App\Modules\Vtc\Domain\Models\VtcDriver;
 use App\Modules\Vtc\Domain\Models\VtcDriverPosition;
@@ -216,8 +217,10 @@ class VtcDriverApiTest extends TestCase
         // Le chauffeur est libéré → available.
         self::assertSame(VtcDriverStatus::Available, $driver->refresh()->status);
 
-        // Journal complet du cycle de vie.
-        $types = $ride->refresh()->events()->orderBy('id')->pluck('type')->all();
+        // Journal complet du cycle de vie (pluck applique le cast enum
+        // Laravel 12 → mapping explicite des valeurs).
+        $types = $ride->refresh()->events()->orderBy('id')->pluck('type')
+            ->map(static fn (VtcRideEventType $type): string => $type->value)->all();
         self::assertContains('ride.accepted', $types);
         self::assertContains('ride.driver_arrived', $types);
         self::assertContains('ride.started', $types);

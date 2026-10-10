@@ -7,6 +7,7 @@ namespace Tests\Feature\Vtc;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Vtc\Application\Services\VtcDispatchService;
 use App\Modules\Vtc\Domain\Enums\VtcDriverStatus;
+use App\Modules\Vtc\Domain\Enums\VtcRideEventType;
 use App\Modules\Vtc\Domain\Enums\VtcRideStatus;
 use App\Modules\Vtc\Domain\Events\VtcRideAccepted;
 use App\Modules\Vtc\Domain\Events\VtcRideExpired;
@@ -72,9 +73,9 @@ class VtcDispatchTest extends TestCase
             // Le plus proche DISPONIBLE est sollicité en premier (busy et
             // offline exclus structurellement, hors rayon écarté par le geo).
             $offer = $ride->events()->where('type', 'dispatch.offer_sent')->sole();
-            self::assertSame($near->id, $offer->payload['driver_id']);
-            self::assertSame(1, $offer->payload['seq']);
-            self::assertIsInt($offer->payload['distance_meters']);
+            self::assertSame($near->id, $offer->payload['driver_id'] ?? null);
+            self::assertSame(1, $offer->payload['seq'] ?? null);
+            self::assertIsInt($offer->payload['distance_meters'] ?? null);
 
             // L'offre courante est posée en metadata (source de vérité).
             $pending = $ride->refresh()->metadata['pending_offer'] ?? null;
@@ -89,7 +90,7 @@ class VtcDispatchTest extends TestCase
     {
         $company = $this->createCompany();
 
-        $this->withTenantContext($company, function (): void {
+        $this->withTenantContext($company, function () use ($company): void {
             Queue::fake();
 
             $near = VtcDriver::factory()->availableAt(4.0515, 9.7682)->create(['name' => 'Proche']);
@@ -103,7 +104,8 @@ class VtcDispatchTest extends TestCase
             // Timeout de la première offre → cascade sur le second.
             $dispatch->expireOffer((string) $company->id, $ride->id, $near->id, 1);
 
-            $types = $ride->events()->orderBy('id')->pluck('type')->all();
+            $types = $ride->events()->orderBy('id')->pluck('type')
+                ->map(static fn (VtcRideEventType $type): string => $type->value)->all();
             self::assertSame(['dispatch.offer_sent', 'dispatch.offer_expired', 'dispatch.offer_sent'], $types);
 
             $pending = $ride->refresh()->metadata['pending_offer'] ?? null;
@@ -116,7 +118,7 @@ class VtcDispatchTest extends TestCase
     {
         $company = $this->createCompany();
 
-        $this->withTenantContext($company, function (): void {
+        $this->withTenantContext($company, function () use ($company): void {
             Queue::fake();
 
             $near = VtcDriver::factory()->availableAt(4.0515, 9.7682)->create();
@@ -156,7 +158,8 @@ class VtcDispatchTest extends TestCase
             $dispatch->offerToNextCandidate($ride);
             $dispatch->declineOffer($ride->refresh(), $near->id);
 
-            $types = $ride->events()->orderBy('id')->pluck('type')->all();
+            $types = $ride->events()->orderBy('id')->pluck('type')
+                ->map(static fn (VtcRideEventType $type): string => $type->value)->all();
             self::assertSame(['dispatch.offer_sent', 'dispatch.offer_declined', 'dispatch.offer_sent'], $types);
 
             $pending = $ride->refresh()->metadata['pending_offer'] ?? null;
@@ -189,7 +192,7 @@ class VtcDispatchTest extends TestCase
                 $dispatch->acceptOffer($ride->refresh(), $far->id);
                 self::fail('VtcOfferNotCurrentException attendue.');
             } catch (VtcOfferNotCurrentException) {
-                self::assertTrue(true);
+                $this->addToAssertionCount(1);
             }
 
             $accepted = $dispatch->acceptOffer($ride->refresh(), $near->id);
@@ -231,7 +234,7 @@ class VtcDispatchTest extends TestCase
             self::assertNotNull($expired->expired_at);
 
             $exhausted = $ride->events()->where('type', 'dispatch.exhausted')->sole();
-            self::assertSame('no_available_driver_in_radius', $exhausted->payload['reason']);
+            self::assertSame('no_available_driver_in_radius', $exhausted->payload['reason'] ?? null);
 
             Event::assertDispatched(VtcRideExpired::class, static fn (VtcRideExpired $event): bool => $event->rideId === $ride->id);
         });
@@ -241,7 +244,7 @@ class VtcDispatchTest extends TestCase
     {
         $company = $this->createCompany();
 
-        $this->withTenantContext($company, function (): void {
+        $this->withTenantContext($company, function () use ($company): void {
             Queue::fake();
             config()->set('vtc.dispatch.max_offers', 2);
 
@@ -261,8 +264,8 @@ class VtcDispatchTest extends TestCase
             self::assertSame(VtcRideStatus::Expired, $expired->status);
 
             $exhausted = $ride->events()->where('type', 'dispatch.exhausted')->sole();
-            self::assertSame('max_offers_reached', $exhausted->payload['reason']);
-            self::assertSame(2, $exhausted->payload['offers_sent']);
+            self::assertSame('max_offers_reached', $exhausted->payload['reason'] ?? null);
+            self::assertSame(2, $exhausted->payload['offers_sent'] ?? null);
         });
     }
 

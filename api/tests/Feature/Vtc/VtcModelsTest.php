@@ -54,14 +54,19 @@ class VtcModelsTest extends TestCase
             $freshRide = VtcRide::query()->findOrFail($ride->id);
 
             self::assertSame(VtcRideStatus::Accepted, $freshRide->status);
+            self::assertNotNull($freshRide->driver);
             self::assertSame($driver->id, $freshRide->driver->id);
+            self::assertNotNull($freshRide->fareProfile);
             self::assertSame($fareProfile->id, $freshRide->fareProfile->id);
             self::assertCount(1, $freshRide->events);
-            self::assertSame(VtcRideEventType::RideAccepted, $freshRide->events->first()->type);
+            $event = $freshRide->events->first();
+            self::assertNotNull($event);
+            self::assertSame(VtcRideEventType::RideAccepted, $event->type);
 
             $freshDriver = VtcDriver::query()->findOrFail($driver->id);
 
             self::assertSame(VtcDriverStatus::Available, $freshDriver->status);
+            self::assertNotNull($freshDriver->vehicle);
             self::assertSame($vehicle->id, $freshDriver->vehicle->id);
             self::assertCount(1, $freshDriver->rides);
         });
