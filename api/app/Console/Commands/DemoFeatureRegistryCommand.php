@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Contracts\ApiEndpointRegistryInterface;
 use App\Contracts\FeatureRegistryInterface;
 use App\Modules\Billing\Domain\Models\Feature;
 use Illuminate\Console\Command;
@@ -18,7 +19,7 @@ class DemoFeatureRegistryCommand extends Command
 
     protected $description = 'Demonstration complete du systeme Feature Registry';
 
-    public function handle(FeatureRegistryInterface $registry): int
+    public function handle(ApiEndpointRegistryInterface $registry): int
     {
         $this->info('Demonstration du Feature Registry');
         $this->newLine();
@@ -64,7 +65,7 @@ class DemoFeatureRegistryCommand extends Command
         $this->newLine();
     }
 
-    private function createDemoFeatures(FeatureRegistryInterface $registry): void
+    private function createDemoFeatures(ApiEndpointRegistryInterface $registry): void
     {
         foreach ($this->demoFeatures() as $featureData) {
             $feature = new Feature($featureData);
@@ -76,7 +77,7 @@ class DemoFeatureRegistryCommand extends Command
         $this->newLine();
     }
 
-    private function displayStatistics(FeatureRegistryInterface $registry): void
+    private function displayStatistics(ApiEndpointRegistryInterface $registry): void
     {
         $stats = $registry->getStatistics();
 
@@ -101,7 +102,7 @@ class DemoFeatureRegistryCommand extends Command
         $this->newLine();
     }
 
-    private function testFeatureRetrieval(FeatureRegistryInterface $registry): void
+    private function testFeatureRetrieval(ApiEndpointRegistryInterface $registry): void
     {
         $allFeatures = $registry->getFeatures();
         $this->line('  Total des fonctionnalites: '.$allFeatures->count());
@@ -117,7 +118,7 @@ class DemoFeatureRegistryCommand extends Command
         $this->newLine();
     }
 
-    private function testMobileCompatibility(FeatureRegistryInterface $registry): void
+    private function testMobileCompatibility(ApiEndpointRegistryInterface $registry): void
     {
         $mobileVersion = $this->optionString('mobile-version', '1.0.0');
 
@@ -135,7 +136,7 @@ class DemoFeatureRegistryCommand extends Command
         $this->newLine();
     }
 
-    private function generateAndDisplayManifest(FeatureRegistryInterface $registry): void
+    private function generateAndDisplayManifest(ApiEndpointRegistryInterface $registry): void
     {
         $mobileVersion = $this->optionString('mobile-version', '1.0.0');
         $manifest = $registry->getManifest($mobileVersion);
@@ -162,7 +163,7 @@ class DemoFeatureRegistryCommand extends Command
         $this->newLine();
     }
 
-    private function testSynchronization(FeatureRegistryInterface $registry): void
+    private function testSynchronization(ApiEndpointRegistryInterface $registry): void
     {
         $this->line('  Lancement de la synchronisation...');
 
@@ -184,7 +185,7 @@ class DemoFeatureRegistryCommand extends Command
         $this->newLine();
     }
 
-    private function testCaching(FeatureRegistryInterface $registry): void
+    private function testCaching(ApiEndpointRegistryInterface $registry): void
     {
         $this->line('  Test du cache...');
 

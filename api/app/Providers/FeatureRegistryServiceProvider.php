@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Contracts\ApiEndpointRegistryInterface;
 use App\Contracts\FeatureDetectorInterface;
 use App\Contracts\FeatureRegistryInterface;
 use App\Core\Feature\Domain\ModuleRegistry;
+use App\Core\Feature\Infrastructure\Services\ApiEndpointRegistry;
 use App\Core\Feature\Infrastructure\Services\FeatureFlagRegistry;
 use App\Core\Feature\Infrastructure\Services\FeatureRegistry;
 use App\Core\Feature\Infrastructure\Services\ModuleRegistryGateway;
@@ -13,7 +15,7 @@ use Illuminate\Cache\TaggableStore;
 use Illuminate\Support\ServiceProvider;
 
 /**
- * Service Provider pour le registre des fonctionnalités
+ * Service Provider pour le registre des fonctionnalités (et endpoints API BOS-015 #8202)
  *
  * Enregistre les services liés au registre des fonctionnalités
  * dans le conteneur de services Laravel.
@@ -38,6 +40,16 @@ class FeatureRegistryServiceProvider extends ServiceProvider
 
         // Alias pour faciliter l'injection
         $this->app->alias(FeatureRegistryInterface::class, 'feature.registry');
+
+        // BOS-015 (#8202) — Enregistrement canonique ApiEndpointRegistry
+        $this->app->bind(ApiEndpointRegistryInterface::class, ApiEndpointRegistry::class);
+        $this->app->singleton(ApiEndpointRegistry::class, function ($app) {
+            return new ApiEndpointRegistry(
+                $app->make(FeatureDetectorInterface::class),
+                $app->make(CacheManager::class)
+            );
+        });
+        $this->app->alias(ApiEndpointRegistryInterface::class, 'api.endpoint.registry');
 
         // MAT-010 (#5868) — registre versionné des feature flags + kill
         // switches (consommé par FeatureFlag::enabled/for).
@@ -68,6 +80,9 @@ class FeatureRegistryServiceProvider extends ServiceProvider
             FeatureRegistryInterface::class,
             FeatureRegistry::class,
             'feature.registry',
+            ApiEndpointRegistryInterface::class,
+            ApiEndpointRegistry::class,
+            'api.endpoint.registry',
         ];
     }
 }
