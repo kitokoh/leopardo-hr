@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-09-28T09:00:00Z",
+  "_updated_at": "2026-10-10T00:00:00Z",
   "_locale": "tr",
   "app": {
     "title": "Leopardo — İşletme Yönetimi Paketi"
@@ -7219,5 +7219,50 @@
         "no_show": "Gelmedi"
       }
     }
+  },
+  "vtc": {
+    "title": "VTC & taksi",
+    "subtitle": "Yolculuk ataması ve gerçek zamanlı sürücü takibi",
+    "rides": "Yolculuklar",
+    "drivers": "Sürücüler",
+    "openDrivers": "Sürücüleri gör",
+    "openRides": "Yolculukları gör",
+    "rideCount": "aktif yolculuk",
+    "driverCount": "sürücü",
+    "loading": "Yükleniyor…",
+    "retry": "Yenile",
+    "autoRefresh": "15 sn’de bir otomatik yenileme",
+    "loadError": "VTC atama panosu yüklenemedi",
+    "moduleDisabled": "VTC modülü bu şirket için etkin değil.",
+    "emptyRides": "Aktif yolculuk yok",
+    "emptyRidesHint": "Yolcu API’sinden istenen yolculuklar burada gerçek zamanlı görünecek.",
+    "emptyDrivers": "Kayıtlı sürücü yok",
+    "emptyDriversHint": "Sürücü kayıtları yönetici API’sinden oluşturulur (POST /vtc/drivers).",
+    "reference": "Referans",
+    "pickup": "Alış noktası",
+    "dropoff": "Varış noktası",
+    "driver": "Sürücü",
+    "pendingOffer": "Bekleyen teklif",
+    "unassigned": "Atanmadı",
+    "estimatedPrice": "Tahmini ücret",
+    "requestedAt": "İsteme zamanı",
+    "lastPosition": "Son konum",
+    "positionUnavailable": "Konum bildirilmedi",
+    "updatedAt": "Son güncelleme",
+    "vehicle": "Araç",
+    "phone": "Telefon",
+    "statusRequested": "İstendi",
+    "statusDispatching": "Atanıyor",
+    "statusAccepted": "Kabul edildi",
+    "statusArrived": "Sürücü geldi",
+    "statusInProgress": "Devam ediyor",
+    "statusCompleted": "Tamamlandı",
+    "statusExpired": "Süresi doldu",
+    "statusCancelled": "İptal edildi",
+    "statusUnknown": "Bilinmeyen durum",
+    "driverOffline": "Çevrimdışı",
+    "driverAvailable": "Müsait",
+    "driverBusy": "Yolculukta",
+    "driverSuspended": "Askıya alındı"
   }
 }

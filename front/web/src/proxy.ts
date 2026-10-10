@@ -82,6 +82,8 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/modules',
   // BOS-035 (#8224) — panneau Assistant Leo IA : zone dashboard.
   '/assistant',
+  // BC-34 VTC (#8349, VTC-07/#8363) — console dispatch : zone dashboard.
+  '/vtc',
 ];
 
 export function proxy(request: NextRequest) {
@@ -219,6 +221,7 @@ export const config = {
     '/communication/:path*', // BC-29 (#7691) boîte connectée — gate session
     '/modules/:path*', // #7908 page Modules (statut, auto-activation) — gate session
     '/assistant/:path*', // BOS-035 (#8224) assistant Leo IA — gate session
+    '/vtc/:path*', // BC-34 VTC (#8349, VTC-07/#8363) console dispatch — gate session
     // Vitrine landing — ?lang= → en-tête x-vitrine-lang (issue #4004).
     // Routes statiques (exactes) + préfixes dynamiques (source
     // VITRINE_LANG_PREFIXES, garde protected-prefixes.test.ts).

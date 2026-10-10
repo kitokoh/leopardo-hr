@@ -50,6 +50,8 @@ const PROTECTED_PREFIXES = [
   '/modules',
   // BOS-035 (#8224) — panneau Assistant Leo IA (zone dashboard).
   '/assistant',
+  // BC-34 VTC (#8349, VTC-07/#8363) — console dispatch (zone dashboard).
+  '/vtc',
 ];
 
 function isProtectedPath(url) {

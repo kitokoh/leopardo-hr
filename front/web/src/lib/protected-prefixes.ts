@@ -75,6 +75,10 @@ export const PROTECTED_PREFIXES = [
   // d'actions, historique) : conversations du tenant, jamais servies sans
   // session.
   '/assistant',
+  // BC-34 VTC (épic #8349, VTC-07/#8363) — console dispatch (courses,
+  // chauffeurs, positions) : données opérationnelles du tenant, jamais
+  // servies sans session.
+  '/vtc',
 ] as const;
 
 /**

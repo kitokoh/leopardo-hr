@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-09-28T09:00:00Z",
+  "_updated_at": "2026-10-10T00:00:00Z",
   "_locale": "ar",
   "app": {
     "title": "ليوباردو — حزمة الأعمال"
@@ -7219,5 +7219,50 @@
         "no_show": "لم يحضر"
       }
     }
+  },
+  "vtc": {
+    "title": "النقل الخاص والتاكسي",
+    "subtitle": "توزيع الرحلات وتتبع السائقين في الوقت الحقيقي",
+    "rides": "الرحلات",
+    "drivers": "السائقون",
+    "openDrivers": "عرض السائقين",
+    "openRides": "عرض الرحلات",
+    "rideCount": "رحلة/رحلات نشطة",
+    "driverCount": "سائق/سائقون",
+    "loading": "جارٍ التحميل…",
+    "retry": "تحديث",
+    "autoRefresh": "تحديث تلقائي كل 15 ثانية",
+    "loadError": "تعذر تحميل لوحة توزيع الرحلات",
+    "moduleDisabled": "وحدة النقل الخاص غير مفعّلة لهذه الشركة.",
+    "emptyRides": "لا توجد رحلات نشطة",
+    "emptyRidesHint": "ستظهر هنا الرحلات المطلوبة عبر واجهة الركاب في الوقت الحقيقي.",
+    "emptyDrivers": "لا يوجد سائقون مسجلون",
+    "emptyDriversHint": "تُنشأ ملفات السائقين من واجهة الإدارة (POST /vtc/drivers).",
+    "reference": "المرجع",
+    "pickup": "نقطة الانطلاق",
+    "dropoff": "الوجهة",
+    "driver": "السائق",
+    "pendingOffer": "عرض قيد الانتظار",
+    "unassigned": "غير معيّن",
+    "estimatedPrice": "السعر التقديري",
+    "requestedAt": "طُلبت في",
+    "lastPosition": "آخر موقع",
+    "positionUnavailable": "لا يوجد موقع مسجل",
+    "updatedAt": "آخر تحديث",
+    "vehicle": "المركبة",
+    "phone": "الهاتف",
+    "statusRequested": "مطلوبة",
+    "statusDispatching": "قيد التوزيع",
+    "statusAccepted": "مقبولة",
+    "statusArrived": "وصل السائق",
+    "statusInProgress": "قيد التنفيذ",
+    "statusCompleted": "مكتملة",
+    "statusExpired": "منتهية",
+    "statusCancelled": "ملغاة",
+    "statusUnknown": "حالة غير معروفة",
+    "driverOffline": "غير متصل",
+    "driverAvailable": "متاح",
+    "driverBusy": "في رحلة",
+    "driverSuspended": "موقوف"
   }
 }
