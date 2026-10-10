@@ -6,10 +6,13 @@ namespace App\Modules\Geo\Providers;
 
 use App\Modules\Geo\Console\Commands\CheckPostgisCommand;
 use App\Modules\Geo\Domain\Contracts\DistanceCalculatorInterface;
+use App\Modules\Geo\Domain\Contracts\NearestSearchInterface;
+use App\Modules\Geo\Infrastructure\Services\EloquentNearestSearch;
 use App\Modules\Geo\Infrastructure\Services\GeoCapabilities;
 use App\Modules\Geo\Infrastructure\Services\GeoService;
 use App\Modules\Geo\Infrastructure\Services\HaversineDistanceCalculator;
 use App\Modules\Geo\Infrastructure\Services\PostgisDistanceCalculator;
+use App\Modules\Geo\Infrastructure\Services\SearchableRegistry;
 use App\Shared\Contracts\Geo\GeoServiceContract;
 use Illuminate\Support\ServiceProvider;
 
@@ -41,10 +44,13 @@ class GeoServiceProvider extends ServiceProvider
             return new HaversineDistanceCalculator;
         });
 
+        // GEO-04 (#8353) — registry opt-in des types recherchables (singleton :
+        // les verticales s'enregistrent au boot, l'endpoint nearest lit ensuite).
+        $this->app->singleton(SearchableRegistry::class);
+        $this->app->bind(NearestSearchInterface::class, EloquentNearestSearch::class);
+
         // GEO-03 (#8352) — façade transverse résolue par les verticales.
         $this->app->bind(GeoServiceContract::class, GeoService::class);
-
-        // GEO-04 (#8353) : NearestSearchInterface → EloquentNearestSearch.
     }
 
     public function boot(): void
