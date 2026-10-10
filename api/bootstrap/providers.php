@@ -33,6 +33,7 @@ use App\Modules\RestaurantManager\Providers\RestaurantManagerServiceProvider;
 use App\Modules\Retail\Providers\RetailServiceProvider;
 use App\Modules\Showcase\Providers\ShowcaseServiceProvider;
 use App\Modules\TravelAgency\Providers\TravelAgencyServiceProvider;
+use App\Modules\Vtc\Providers\VtcServiceProvider;
 use App\Providers\AppServiceProvider;
 use App\Providers\AuthServiceProvider;
 use App\Providers\EventServiceProvider;
@@ -85,4 +86,7 @@ return [
     HospitalityManagerServiceProvider::class,
     // BC-33 GEO (GEO-02/#8351) — core géospatial transverse (PostGIS).
     GeoServiceProvider::class,
+    // BC-34 VTC (VTC-01/#8357) — verticale VTC/taxi : enregistre le manifest
+    // `vtc` au catalogue des solutions (module requis : geo).
+    VtcServiceProvider::class,
 ];

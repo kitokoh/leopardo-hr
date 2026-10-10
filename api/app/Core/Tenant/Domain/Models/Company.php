@@ -201,6 +201,13 @@ class Company extends Model
         // plateforme ne peut jamais activer le module). Fail-closed conservé
         // (défaut false) ; gate serveur `module.geo` sur /api/v1/geo/*.
         'geo',
+        // BC-34 VTC (VTC-01/#8357) — verticale VTC/taxi (code du VtcManifest,
+        // flag posé par SolutionActivator ; module requis : geo). Enregistrée
+        // ici DÈS la création (leçon #7220/#7235 : sans cette entrée, l'admin
+        // plateforme ne peut jamais activer la verticale). Fail-closed
+        // conservé (défaut false) ; gate serveur `module.vtc` sur
+        // /api/v1/vtc/*.
+        'vtc',
     ];
 
     /**

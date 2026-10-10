@@ -71,8 +71,9 @@ final class ModuleRegistry
      * changement de défaut la fait monter). 1.1.0 : entrée `fleet` ajoutée
      * (désync corrigée), `delivery`/`b2b_catalog` enregistrés (garde FR-6).
      * 1.2.0 : entrée `geo` (BC-33, GEO-02/#8351) ajoutée.
+     * 1.3.0 : entrée `vtc` (BC-34, VTC-01/#8357) ajoutée.
      */
-    public const VERSION = '1.2.0';
+    public const VERSION = '1.3.0';
 
     /**
      * Source déclarative unique. L'ordre de déclaration reproduit l'ordre
@@ -521,6 +522,25 @@ final class ModuleRegistry
             'horizontal_order' => null,
             'known_order' => 21,
             'description' => 'Core géospatial transverse (BC-33, GEO-02/#8351 ; gate `module.geo`) : calculs de positionnement PostGIS — distance, plus-proches, dans-un-rayon — réutilisables par toutes les verticales (VTC en premier, BC-34).',
+        ],
+        // BC-34 VTC (VTC-01/#8357) — ajout additif en fin de liste (ordre
+        // préservé — contrat /auth/me). Code du VtcManifest : activation
+        // refusée si `geo` inactif (SolutionActivator fail-closed).
+        // Enregistrement simultané dans config/feature-flags.php +
+        // Company::KNOWN_MODULES (parité imposée par tests/Unit/Core/Feature).
+        'vtc' => [
+            'kind' => 'solution',
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.35.0',
+            'killable' => true,
+            'platform_flag' => true,
+            'exposed_in_flags' => true,
+            'platform_exposable' => true,
+            'metadata_mirror' => null,
+            'horizontal_order' => null,
+            'known_order' => 22,
+            'description' => 'Solution VTC/taxi (BC-34, VTC-01/#8357 ; gate `module.vtc`) : réservation de courses, dispatch au plus proche chauffeur via le core géospatial `geo` (requis), tarification et suivi.',
         ],
     ];
 

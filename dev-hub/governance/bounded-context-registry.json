@@ -1039,6 +1039,34 @@
    "dependencies": [
     "BC-02"
    ]
+  },
+  {
+   "code": "BC-34",
+   "name": "VTC",
+   "context": "Vtc",
+   "responsibility": "Verticale VTC/taxi (épic #8349) : réservation de courses (passager), estimation de tarif, dispatch au chauffeur disponible le plus proche (via le core géospatial BC-33 — jamais de calcul local), cycle de vie de course, positions chauffeurs (RGPD), console dispatch.",
+   "owner": "Agent 34 — BC-VTC",
+   "priority": "P1",
+   "status": "active",
+   "paths": [
+    {
+     "path": "api/app/Modules/Vtc",
+     "status": "active"
+    }
+   ],
+   "routes": [
+    "api/routes/modules/vtc.php"
+   ],
+   "migrations": [
+    "api/database/migrations/tenant"
+   ],
+   "events": [
+    "App\\Modules\\Vtc\\Domain\\Events"
+   ],
+   "dependencies": [
+    "BC-02",
+    "BC-33"
+   ]
   }
  ]
 }

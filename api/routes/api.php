@@ -523,6 +523,9 @@ Route::prefix('v1')->group(function (): void {
     // BC-33 GEO — core géospatial transverse (GEO-02/#8351), feature flag `geo` (fail-closed).
     require __DIR__.'/modules/geo.php';
 
+    // BC-34 VTC — verticale VTC/taxi (VTC-01/#8357), feature flag `vtc` posé par SolutionActivator.
+    require __DIR__.'/modules/vtc.php';
+
     // IA Module — fichier requis DANS le groupe v1 (prefix /api/v1) :
     // chemins réels /api/v1/ai/* (drift doc #4936)
     require __DIR__.'/ai.php';

@@ -252,5 +252,19 @@ return [
             'killable' => true,
             'description' => 'Core géospatial transverse (BC-33) : calculs de positionnement PostGIS réutilisables par toutes les verticales (VTC en premier).',
         ],
+        // BC-34 VTC (VTC-01/#8357) — verticale VTC/taxi : réservation de
+        // courses, dispatch au chauffeur disponible le plus proche (via le
+        // core `geo`), tarification, cycle complet. Code du VtcManifest ;
+        // activation refusée si `geo` inactif (SolutionActivator fail-closed).
+        // Enregistré ici ET dans `Company::KNOWN_MODULES` + `ModuleRegistry`
+        // dès la création (leçon #7220/#7235). Fail-closed : défaut false,
+        // gate serveur `module.vtc` sur les routes /api/v1/vtc/*.
+        'vtc' => [
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.35.0',
+            'killable' => true,
+            'description' => 'Solution VTC/taxi (BC-34) : réservation de courses, dispatch au plus proche chauffeur via le core géospatial, tarification et suivi.',
+        ],
     ],
 ];

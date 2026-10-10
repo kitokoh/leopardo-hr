@@ -4,7 +4,7 @@
 **Auteur** : Zentor (agent) pour @kitokoh
 **Couche(s)** : TRANSVERSE (`geo`) + VERTICALE (`vtc`)
 **Exception freeze** : #8348 (`[FREEZE-EXCEPTION]` approuvée par le fondateur le 2026-10-10)
-**Épic** : #8349 · **Tâches** : #8350 → #8364 · **Branche** : `feat/8349-geo-core-vtc`
+**Épic** : #8349 · **Tâches** : #8350 → #8364 · **Branche** : `feat/geo-core-vtc` (canonique après consolidation des deux sessions du 2026-10-10 ; ex-`feat/8349-geo-core-vtc` supprimée)
 **Références** : `docs/architecture/business-os/03_TARGET_ARCHITECTURE.md`, ADR-0026, `docs/architecture/MIGRATIONS_CONVENTIONS.md`, ADR-0016 (geofence single-usage), module Delivery (blueprint)
 
 ---
@@ -27,7 +27,7 @@ Alignée sur `03_TARGET_ARCHITECTURE.md` :
 | `geo` | TRANSVERSE (comme Notification/Delivery) | **BC-33 GEO** | `geo` | module | `false` | oui | non (moteur, pas une solution) |
 | `vtc` | VERTICALE (1 verticale = 1 manifest = 1 flag) | **BC-34 VTC** | `vtc` | solution | `false` | oui | `VtcManifest`, industrie `mobility` |
 
-Dépendances déclarées dans le manifest VTC (`required_modules`) : `geo`, `notifications`. L'activateur de solutions refuse l'activation de `vtc` si `geo` est inactif (mécanisme existant `SolutionActivator`, fail-closed).
+Dépendances déclarées dans le manifest VTC : `geo` en `required_modules` (dépendance dure — distances et dispatch), `notifications`, `fleet`, `billing` en `optional_modules` (activation possible sur tenant frais, dégradation gracieuse — le flag `notifications` n'étant pas au registre de flags, le mettre en requis rendrait l'activation impossible). L'activateur de solutions refuse l'activation de `vtc` si `geo` est inactif (mécanisme existant `SolutionActivator`, fail-closed).
 
 Règles d'isolation respectées :
 - Aucun import direct entre verticales : `vtc` consomme `geo` via `App\Shared\Contracts\Geo\*` (contrats partagés), pas via `App\Modules\Geo` directement côté Domain.
@@ -162,7 +162,7 @@ RBAC deny-by-default : rôles `vtc.dispatcher`, `vtc.driver`, `vtc.admin` (matri
 
 ### 5.6 Manifest & activation
 
-`VtcManifest implements SolutionManifest` : code `vtc`, industrie mobilité, `required_modules: [geo, notifications]`, permissions déclarées (installées par `SolutionPermissionInstaller`), données de démo via `DemoDataRegistry`.
+`VtcManifest implements SolutionManifest` : code `vtc`, industrie `mobility` (nouvelle case du registre fermé `SolutionIndustry`), `requiredModules: [geo]`, `optionalModules: [notifications, fleet, billing]`, permissions déclarées (installées par `SolutionPermissionInstaller`), données de démo via `DemoDataRegistry`.
 
 ## 6. Points d'enregistrement (checklist d'implémentation)
 
