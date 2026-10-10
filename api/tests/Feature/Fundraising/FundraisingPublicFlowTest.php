@@ -395,10 +395,13 @@ class FundraisingPublicFlowTest extends TestCase
         ])->assertOk()
             ->assertJsonPath('data.status', 'paid');
 
-        // Le solde disponible tombe à zéro.
-        $this->getJson('/api/v1/fundraising/fundraisers/'.$fundraiserId)
+        // Le solde disponible tombe à zéro. Comparaison numérique souple :
+        // JSON ne distingue pas 0 de 0.0 (assertJsonPath est strict sur le
+        // type décodé, qui varie selon la sérialisation du runtime).
+        $balance = $this->getJson('/api/v1/fundraising/fundraisers/'.$fundraiserId)
             ->assertOk()
-            ->assertJsonPath('data.available_balance', 0.0);
+            ->json('data.available_balance');
+        $this->assertEquals(0.0, (float) $balance);
     }
 
     public function test_manual_contribution_confirmed_by_manager(): void

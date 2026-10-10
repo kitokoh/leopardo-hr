@@ -5,6 +5,11 @@
 > Convention de statut : ✅ fait · 🚧 en cours · ✅ à faire
 > Découpage : chaque tâche = un commit poussé sur la branche.
 > État au 2026-10-10 : lots A→G livrés et poussés (9 commits). Phase 2 hors périmètre.
+> Reprise CI (2026-10-10, suite revue avant merge #8378) : isolation cross-tenant
+> 404 sur les endpoints privés (garde explicite — SubstituteBindings s'exécute
+> avant le middleware `tenant`), test feature flag persisté (setFeature + save),
+> assertion `available_balance` numérique souple (JSON 0 vs 0.0), allowlist
+> OpenAPI drift pré-existant #8345, baseline garde #7960 alignée sur BOS-015.
 
 ## Lot A — Conception
 

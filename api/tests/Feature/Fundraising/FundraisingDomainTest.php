@@ -209,7 +209,12 @@ class FundraisingDomainTest extends TestCase
     {
         $this->assertFalse($this->companyA->hasFeature('fundraising'));
 
+        // setFeature() ne fait que modifier l'attribut en mémoire (toggle
+        // explicite réservé super-admin / console — l'appelant persiste) :
+        // sans save(), le refresh() recharge la carte `features` depuis la
+        // base et le flag reste à false.
         $this->companyA->setFeature('fundraising', true);
+        $this->companyA->save();
         $this->assertTrue($this->companyA->refresh()->hasFeature('fundraising'));
     }
 

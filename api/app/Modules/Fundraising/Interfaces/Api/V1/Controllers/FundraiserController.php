@@ -74,6 +74,8 @@ final class FundraiserController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
+        $this->ownTenantOr404($actor, $fundraiser->company_id);
+
         if ($actor->cannot('view', $fundraiser)) {
             abort(403);
         }
@@ -85,6 +87,8 @@ final class FundraiserController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+
+        $this->ownTenantOr404($actor, $fundraiser->company_id);
 
         if ($actor->cannot('update', $fundraiser)) {
             abort(403);
@@ -120,6 +124,8 @@ final class FundraiserController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
+        $this->ownTenantOr404($actor, $fundraiser->company_id);
+
         if ($actor->cannot('view', $fundraiser)) {
             abort(403);
         }
@@ -146,6 +152,8 @@ final class FundraiserController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
+        $this->ownTenantOr404($actor, $contribution->company_id);
+
         /** @var Fundraiser|null $fundraiser */
         $fundraiser = Fundraiser::query()->find($contribution->fundraiser_id);
 
@@ -167,6 +175,8 @@ final class FundraiserController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
+        $this->ownTenantOr404($actor, $fundraiser->company_id);
+
         if ($actor->cannot('publish', $fundraiser)) {
             abort(403);
         }
@@ -180,5 +190,24 @@ final class FundraiserController extends Controller
         };
 
         return (new FundraiserResource($fundraiser))->response();
+    }
+
+    /**
+     * Garde cross-tenant — 404, convention plateforme (pattern
+     * ShowcaseSectionController) : SubstituteBindings s'exécute AVANT le
+     * middleware `tenant`, donc le scope global BelongsToCompany est inactif
+     * lors de la résolution implicite du modèle lié à la route. Sans cette
+     * re-vérification, une ressource d'un AUTRE tenant serait adressable et
+     * la policy répondrait 403 — révélant son existence. Ici : 404 (la
+     * cagnotte « n'existe pas » pour ce tenant) ; le 403 reste réservé au
+     * refus de rôle à l'intérieur du tenant.
+     *
+     * @param  string|int|null  $resourceCompanyId  company_id de la ressource liée
+     */
+    private function ownTenantOr404(Employee $actor, string|int|null $resourceCompanyId): void
+    {
+        if ((string) $resourceCompanyId !== (string) $actor->company_id) {
+            abort(404);
+        }
     }
 }

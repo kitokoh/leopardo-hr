@@ -33,6 +33,8 @@ final class FundraisingPayoutController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
+        $this->ownTenantOr404($actor, $fundraiser->company_id);
+
         if ($actor->cannot('view', $fundraiser)) {
             abort(403);
         }
@@ -49,6 +51,8 @@ final class FundraisingPayoutController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+
+        $this->ownTenantOr404($actor, $fundraiser->company_id);
 
         if ($actor->cannot('create', FundraisingPayout::class)) {
             abort(403);
@@ -88,6 +92,8 @@ final class FundraisingPayoutController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
+        $this->ownTenantOr404($actor, $payout->company_id);
+
         if ($actor->cannot('update', $payout)) {
             abort(403);
         }
@@ -111,5 +117,23 @@ final class FundraisingPayoutController extends Controller
         };
 
         return (new PayoutResource($payout))->response();
+    }
+
+    /**
+     * Garde cross-tenant — 404, convention plateforme : SubstituteBindings
+     * s'exécute AVANT le middleware `tenant`, donc le scope global
+     * BelongsToCompany est inactif lors de la résolution implicite du modèle
+     * lié à la route. Sans cette re-vérification, un reversement d'un AUTRE
+     * tenant serait adressable et la policy répondrait 403 — révélant son
+     * existence. Ici : 404 ; le 403 reste réservé au refus de rôle à
+     * l'intérieur du tenant (même garde que FundraiserController).
+     *
+     * @param  string|int|null  $resourceCompanyId  company_id de la ressource liée
+     */
+    private function ownTenantOr404(Employee $actor, string|int|null $resourceCompanyId): void
+    {
+        if ((string) $resourceCompanyId !== (string) $actor->company_id) {
+            abort(404);
+        }
     }
 }
