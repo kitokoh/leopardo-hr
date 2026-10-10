@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Middleware\Vtc;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Vtc\Domain\Support\VtcRoleResolver;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

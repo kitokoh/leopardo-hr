@@ -2,12 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Vtc\Domain\Support;
+namespace App\Http\Middleware\Vtc;
 
 use App\Core\Auth\Domain\Models\Employee;
 
 /**
  * Résolution des rôles VTC d'un employé (BC-34 VTC, VTC-05/#8361).
+ *
+ * Placée dans app/Http (canal de la garde) et non dans Modules/Vtc : la
+ * garde d'isolation #5584/#8059 interdit tout import `App\Modules\Vtc`
+ * depuis app/Http. La classe n'est consommée que par la garde RBAC
+ * `EnsureVtcRoleMiddleware` (le périmètre chauffeur est résolu dans les
+ * contrôleurs du module, qui ont l'identifiant chauffeur en main).
  *
  * SOURCE UNIQUE de la correspondance rôles vtc ↔ profil employé (matrice
  * `docs/architecture/VTC_RBAC.md`, VTC-06) — même pattern que

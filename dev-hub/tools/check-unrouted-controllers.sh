@@ -15,6 +15,12 @@
 # file — whether via a `use` import + short name, or a fully-qualified
 # reference.
 #
+# Exclusion (2026-10-10, épic #8349 / BC-34 VTC) : les classes `abstract`
+# ne sont pas routables par définition — une base abstraite de contrôleurs
+# (ex. VtcDriverBaseController, factorisation de la résolution du chauffeur
+# courant) serait faussement signalée orpheline. Elles sont ignorées.
+# reference.
+#
 # Usage: dev-hub/tools/check-unrouted-controllers.sh [api_dir]
 
 set -euo pipefail
@@ -46,6 +52,11 @@ while IFS= read -r -d '' controller_file; do
 
   if [ -z "$namespace" ]; then
     echo "⚠️  Skipping (no namespace declaration): $controller_file"
+    continue
+  fi
+
+  # Les classes abstraites ne sont pas routables : exclues de la garde.
+  if grep -qP '^abstract\s+class\s' "$controller_file"; then
     continue
   fi
 
