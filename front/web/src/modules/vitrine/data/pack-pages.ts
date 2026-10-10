@@ -453,3 +453,55 @@ export const PACKS_HUB_COPY: Record<AppLocale, PacksHubCopy> = {
 export function packsHubCardHref(slug: PacksHubCopy['cards'][number]['slug']): string {
   return slug === 'restaurant' ? '/restaurateur' : `/packs/${slug}`;
 }
+
+// ── Bannière « Pack offert » de la page tarifs ─────────────────────────────
+// Remplace l'ancienne colonne « Self-host » (#8068) : la page tarifs pousse
+// désormais l'entrée grand public du Business OS — un pack métier OFFERT —
+// au même niveau que les plans cloud payants.
+export type PricingPackBannerCopy = {
+  badge: string;
+  title: string;
+  subtitle: string;
+  bullets: [string, string, string];
+  ctaPrimary: string;
+  ctaSecondary: string;
+};
+
+export const PRICING_PACK_BANNER: Record<AppLocale, PricingPackBannerCopy> = {
+  fr: {
+    badge: 'Pack métier offert',
+    title: 'Votre métier a son pack Leopardo — il est offert.',
+    subtitle:
+      'Restauration, station-service, école, agence de voyage… Les apps, les parcours et les réglages de votre secteur, activés gratuitement dans votre espace Leopardo.',
+    bullets: ['Activé à l’inscription', 'Sans carte bancaire', 'Enrichi à chaque version'],
+    ctaPrimary: 'Découvrir les packs offerts',
+    ctaSecondary: 'Composer le pack Restaurant',
+  },
+  en: {
+    badge: 'Free trade pack',
+    title: 'Your trade has its Leopardo pack — and it is free.',
+    subtitle:
+      'Restaurant, fuel station, school, travel agency… Your industry’s apps, flows and defaults, activated free in your Leopardo workspace.',
+    bullets: ['Activated on signup', 'No credit card', 'Improved every release'],
+    ctaPrimary: 'Explore the free packs',
+    ctaSecondary: 'Build the Restaurant pack',
+  },
+  tr: {
+    badge: 'Ücretsiz meslek paketi',
+    title: 'Mesleğinizin Leopardo paketi var — üstelik ücretsiz.',
+    subtitle:
+      'Restoran, akaryakıt istasyonu, okul, seyahat acentesi… Sektörünüzün uygulamaları, akışları ve ayarları, Leopardo çalışma alanınızda ücretsiz etkinleşir.',
+    bullets: ['Kayıtta etkinleşir', 'Kredi kartı yok', 'Her sürümde zenginleşir'],
+    ctaPrimary: 'Ücretsiz paketleri keşfedin',
+    ctaSecondary: 'Restoran paketini oluşturun',
+  },
+  ar: {
+    badge: 'حزمة مهنية مجانية',
+    title: 'لمهنتك حزمة Leopardo — وهي مجانية.',
+    subtitle:
+      'مطعم، محطة وقود، مدرسة، وكالة سفر… تطبيقات قطاعك ومساراته وإعداداته تُفعَّل مجانًا في مساحة ليوباردو الخاصة بك.',
+    bullets: ['تُفعَّل عند التسجيل', 'بدون بطاقة بنكية', 'تُثريها كل نسخة'],
+    ctaPrimary: 'اكتشف الحزم المجانية',
+    ctaSecondary: 'أنشئ حزمة المطعم',
+  },
+};

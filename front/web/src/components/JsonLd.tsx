@@ -23,11 +23,13 @@ const SITE_URL = getSiteUrl();
  *
  * Consolidation d'entité : c'est le signal qui rattache les mentions de
  * « Leopardo RH » sur le web à une même organisation pour les moteurs et les
- * LLM. Seul le dépôt GitHub est vérifié (cf. Footer.tsx — le LinkedIn
- * `linkedin.com/company/leopardo` renvoyait 404 au 2026-09-10 et a été
- * retiré ; ne PAS l'ajouter tant qu'il n'est pas de nouveau résolvable).
+ * LLM. AUCUN profil n'est listé aujourd'hui : le LinkedIn de #7192 renvoyait
+ * 404 (2026-09-10), le compte X est inexistant, et le dépôt GitHub — orienté
+ * développeurs — ne doit plus porter l'entité de marque depuis le
+ * repositionnement grand public « Business OS » (cf. Footer.tsx).
+ * Ne réintroduire une URL qu'avec un profil officiel réellement vérifié.
  */
-const SAME_AS = ['https://github.com/kitokoh/leopardo-hr'] as const;
+const SAME_AS: readonly string[] = [];
 
 export function JsonLd({ data }: JsonLdProps) {
   return (

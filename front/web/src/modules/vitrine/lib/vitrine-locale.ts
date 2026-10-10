@@ -200,7 +200,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       downloadCta: 'Télécharger les apps',
       visualAlt: 'Capture du tableau de bord admin Leopardo',
       primaryCta: 'Essayer gratuitement',
-      secondaryCta: 'Installer sur votre serveur',
+      secondaryCta: 'Découvrir les packs offerts',
       ctaReassurance: 'Gratuit · Sans carte bancaire · Vos données, chez vous',
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'Pays couverts (paie)' },
@@ -273,7 +273,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       titleHighlight: 'votre gestion RH ?',
       subtitle: 'Commencez votre essai gratuit de 14 jours. Aucune carte de crédit requise. Configuration en moins de 5 minutes.',
       primary: 'Essayer gratuitement',
-      secondary: 'Installer sur votre serveur',
+      secondary: 'Découvrir les packs offerts',
     },
     changelog: {
       badge: 'Produit',
@@ -349,7 +349,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       downloadCta: 'Download the apps',
       visualAlt: 'Leopardo admin dashboard screenshot',
       primaryCta: 'Try for free',
-      secondaryCta: 'Install on your server',
+      secondaryCta: 'Explore the free packs',
       ctaReassurance: 'Free · No credit card · Your data, your server',
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'Payroll countries' },
@@ -422,7 +422,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       titleHighlight: 'your HR operations?',
       subtitle: 'Launch your 14-day free trial. No credit card required. Production setup in under five minutes.',
       primary: 'Try for free',
-      secondary: 'Install on your server',
+      secondary: 'Explore the free packs',
     },
     changelog: {
       badge: 'Product',
@@ -498,7 +498,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       downloadCta: 'Uygulamalari indir',
       visualAlt: 'Leopardo yonetici paneli ekran goruntusu',
       primaryCta: 'Ucretsiz dene',
-      secondaryCta: 'Kendi sunucunuza kurun',
+      secondaryCta: 'Ücretsiz paketleri keşfedin',
       ctaReassurance: 'Ucretsiz · Kredi karti yok · Verileriniz sizde',
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'Bordro ulkesi' },
@@ -571,7 +571,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       titleHighlight: 'donusturmeye hazir misiniz?',
       subtitle: '14 gun ucretsiz deneyin. Kredi karti gerekmez. Kurulum bes dakikadan kisa surer.',
       primary: 'Ucretsiz dene',
-      secondary: 'Kendi sunucunuza kurun',
+      secondary: 'Ücretsiz paketleri keşfedin',
     },
     changelog: {
       badge: 'Urun',
@@ -647,7 +647,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       downloadCta: 'تحميل التطبيقات',
       visualAlt: 'لقطة شاشة للوحة تحكم الإدارة في ليوباردو',
       primaryCta: 'جرّب مجانًا',
-      secondaryCta: 'ثبّت على خادمك',
+      secondaryCta: 'اكتشف الحزم المجانية',
       ctaReassurance: 'مجاني · بدون بطاقة بنكية · بياناتك عندك',
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'دول الرواتب' },
@@ -720,7 +720,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       titleHighlight: 'لتطوير عمليات الموارد البشرية؟',
       subtitle: 'ابدأ تجربة مجانية لمدة 14 يوما بدون بطاقة ائتمان. التشغيل يتم خلال اقل من خمس دقائق.',
       primary: 'جرّب مجانًا',
-      secondary: 'ثبّت على خادمك',
+      secondary: 'اكتشف الحزم المجانية',
     },
     changelog: {
       badge: 'المنتج',

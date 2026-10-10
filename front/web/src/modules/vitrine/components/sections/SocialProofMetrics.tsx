@@ -106,7 +106,7 @@ export function SocialProofMetrics({ locale = 'fr' }: SocialProofMetricsProps) {
           ))}
         </div>
 
-        {/* #8070 — badge GitHub (stars/forks/licence) + sécurité honnête */}
+        {/* Réassurance « cloud ou auto-hébergé » + sécurité honnête (#8070) */}
         <div className="mt-10 flex flex-col items-center gap-4">
           <HeroTrustBadge locale={locale} />
           <p

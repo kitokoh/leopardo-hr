@@ -25,7 +25,6 @@ import {
   Moon,
   PenTool,
   Plane,
-  Server,
   Smartphone,
   Sun,
   Users,
@@ -34,7 +33,6 @@ import {
 } from 'lucide-react'
 import { useVitrineLocale } from '../lib/vitrine-locale'
 import { t } from '@/lib/i18n/locale-catalog'
-import { GITHUB_REPO_URL } from '@/modules/vitrine/data/github-repo'
 import type { AppLocale } from '@/lib/i18n'
 import { getEnvConfig } from '../lib/env'
 
@@ -130,9 +128,6 @@ function buildNavEntries(locale: AppLocale): NavEntry[] {
         { href: '/download?platform=macos', icon: <Laptop className="w-4 h-4" />, label: 'macOS', description: nav('macosDesc') },
         { href: '/download?platform=android', icon: <Smartphone className="w-4 h-4" />, label: 'Android', description: nav('androidDesc') },
         { href: '/download?platform=ios', icon: <Smartphone className="w-4 h-4" />, label: 'iPhone', description: nav('iosDesc') },
-        // #8068 — double funnel : l'install self-host (Docker, dépôt public)
-        // rejoint les apps dans le menu « Installer Leopardo ».
-        { href: GITHUB_REPO_URL, icon: <Server className="w-4 h-4" />, label: 'Self-host', description: nav('selfhostDesc') },
       ],
     },
     {

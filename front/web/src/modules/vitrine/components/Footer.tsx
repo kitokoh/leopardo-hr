@@ -2,17 +2,16 @@
 
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { Globe } from 'lucide-react'
+import { Gift, Globe } from 'lucide-react'
 import { useVitrineLocale } from '../lib/vitrine-locale'
+import { t } from '@/lib/i18n/locale-catalog'
 
-const SOCIAL_LINKS = [
-  // Compte X/Twitter @leopardo_hr inexistant (404 constaté 2026-08-15, session
-  // QA expert) — remplacé par GitHub pour garder un lien social vivant.
-  // #7192 : lien LinkedIn `https://linkedin.com/company/leopardo` retiré —
-  // 404 vérifié le 2026-09-10 (`www.linkedin.com/company/leopardo` → 404).
-  // Ne réintroduire une entrée LinkedIn qu'avec une page d'entreprise réelle.
-  { label: 'Gh', href: 'https://github.com/kitokoh/leopardo-hr', title: 'GitHub' },
-]
+// Pas de lien social dans le footer : le compte X @leopardo_hr est inexistant
+// (404 constaté 2026-08-15) et la page LinkedIn de #7192 aussi (404 vérifié
+// 2026-09-10). Le lien GitHub, orienté développeurs, a été retiré lors du
+// repositionnement grand public « Business OS » — la place est réinvestie en
+// rappel de l'offre d'entrée : les packs métiers offerts.
+// Ne réintroduire un réseau social qu'avec un compte officiel réellement actif.
 import { CookieSettingsButton } from '@/modules/vitrine/components/CookieSettingsButton';
 import { NewsletterForm } from './NewsletterForm'
 import { getEnvConfig } from '../lib/env'
@@ -104,18 +103,14 @@ export function Footer() {
             </Link>
             <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-xs mb-6">{copy.footer.description}</p>
             <div className="flex items-center gap-4">
-              {SOCIAL_LINKS.map((social) => (
-                <Link
-                  key={social.label}
-                  href={social.href}
-                  title={social.title}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-600 hover:bg-emerald-100 hover:text-emerald-800 dark:text-slate-400 dark:hover:bg-emerald-900/30 dark:hover:text-emerald-400 transition-colors"
-                >
-                  {social.label}
-                </Link>
-              ))}
+              <Link
+                href="/packs"
+                title={t(locale, 'vitrine.nav.packs')}
+                className="inline-flex items-center gap-2 rounded-lg bg-emerald-100 px-3 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900/50 transition-colors"
+              >
+                <Gift className="w-3.5 h-3.5" aria-hidden="true" />
+                {t(locale, 'vitrine.nav.packs')}
+              </Link>
             </div>
           </div>
 

@@ -59,7 +59,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
       // Intention paie locale / mobile money AFFICHÉE mais honnête (#8076) :
       // « bientôt » explicite, aucune capacité inexistante présentée comme dispo.
       question: 'La paie locale et le mobile money sont-ils gérés ?',
-      answer: "Le catalogue de paie couvre 21 pays (Afrique de l'Ouest et centrale, Europe, Turquie, Amérique du Nord). Les paiements par mobile money (Orange Money, Wave, MTN MoMo) ne sont pas encore disponibles : l'intégration est à l'étude dans la roadmap publique sur GitHub, sans date promise.",
+      answer: "Le catalogue de paie couvre 21 pays (Afrique de l'Ouest et centrale, Europe, Turquie, Amérique du Nord). Les paiements par mobile money (Orange Money, Wave, MTN MoMo) ne sont pas encore disponibles : l'intégration est à l'étude dans la roadmap produit, sans date promise.",
     },
   ],
   en: [
@@ -109,7 +109,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
     },
     {
       question: 'Are local payroll and mobile money supported?',
-      answer: 'The payroll catalog covers 21 countries (West and Central Africa, Europe, Turkey, North America). Mobile money payouts (Orange Money, Wave, MTN MoMo) are not available yet: integration is under consideration on the public GitHub roadmap, with no promised date.',
+      answer: 'The payroll catalog covers 21 countries (West and Central Africa, Europe, Turkey, North America). Mobile money payouts (Orange Money, Wave, MTN MoMo) are not available yet: integration is under consideration on the product roadmap, with no promised date.',
     },
   ],
   tr: [
@@ -159,7 +159,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
     },
     {
       question: 'Yerel bordro ve mobil para destekleniyor mu?',
-      answer: 'Bordro katalogu 21 ulkeyi kapsar (Bati ve Orta Afrika, Avrupa, Turkiye, Kuzey Amerika). Mobil para ile odeme (Orange Money, Wave, MTN MoMo) henuz mevcut degil: entegrasyon GitHub uzerindeki herkese acik yol haritasinda degerlendiriliyor, soz verilen bir tarih yok.',
+      answer: 'Bordro katalogu 21 ulkeyi kapsar (Bati ve Orta Afrika, Avrupa, Turkiye, Kuzey Amerika). Mobil para ile odeme (Orange Money, Wave, MTN MoMo) henuz mevcut degil: entegrasyon ürün yol haritasında değerlendiriliyor, söz verilen bir tarih yok.',
     },
   ],
   ar: [
@@ -209,7 +209,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
     },
     {
       question: 'هل تُدار الرواتب المحلية والأموال عبر الجوال؟',
-      answer: 'يغطي كتالوج الرواتب 21 دولة (غرب ووسط أفريقيا وأوروبا وتركيا وأمريكا الشمالية). مدفوعات الأموال عبر الجوال (Orange Money و Wave و MTN MoMo) غير متاحة بعد: التكامل قيد الدراسة في خارطة الطريق العامة على GitHub دون وعد بتاريخ.',
+      answer: 'يغطي كتالوج الرواتب 21 دولة (غرب ووسط أفريقيا وأوروبا وتركيا وأمريكا الشمالية). مدفوعات الأموال عبر الجوال (Orange Money و Wave و MTN MoMo) غير متاحة بعد: التكامل قيد الدراسة في خارطة طريق المنتج دون وعد بتاريخ.',
     },
   ],
 }
