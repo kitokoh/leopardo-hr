@@ -57,7 +57,7 @@ final class FundraisingPayoutController extends Controller
         $payout = $this->requestPayout->execute(
             $fundraiser,
             $request->validated(),
-            is_scalar($actor->id ?? null) ? (string) $actor->id : null,
+            is_numeric($actor->id ?? null) ? (int) $actor->id : null,
         );
 
         return (new PayoutResource($payout))->response()->setStatusCode(201);
@@ -92,7 +92,7 @@ final class FundraisingPayoutController extends Controller
             abort(403);
         }
 
-        $actorId = is_scalar($actor->id ?? null) ? (string) $actor->id : null;
+        $actorId = is_numeric($actor->id ?? null) ? (int) $actor->id : null;
 
         $payout = match ($verb) {
             'process' => $this->transitions->process($payout, $actorId),

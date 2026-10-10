@@ -21,7 +21,7 @@ final class CreateFundraiserAction
     /**
      * @param  array<string, mixed>  $data  payload validé (StoreFundraiserRequest)
      */
-    public function execute(array $data, ?string $createdBy = null): Fundraiser
+    public function execute(array $data, ?int $createdBy = null): Fundraiser
     {
         /** @var Fundraiser $fundraiser */
         $fundraiser = Fundraiser::query()->create([

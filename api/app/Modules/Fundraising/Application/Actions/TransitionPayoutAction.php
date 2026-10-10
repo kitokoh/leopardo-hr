@@ -23,7 +23,7 @@ final class TransitionPayoutAction
      *
      * @param  array{provider_reference?: ?string, reason?: ?string}  $options
      */
-    public function execute(FundraisingPayout $payout, string $verb, array $options = [], ?string $processedBy = null): FundraisingPayout
+    public function execute(FundraisingPayout $payout, string $verb, array $options = [], ?int $processedBy = null): FundraisingPayout
     {
         return match ($verb) {
             'process' => $this->process($payout, $processedBy),
@@ -34,7 +34,7 @@ final class TransitionPayoutAction
         };
     }
 
-    public function process(FundraisingPayout $payout, ?string $processedBy = null): FundraisingPayout
+    public function process(FundraisingPayout $payout, ?int $processedBy = null): FundraisingPayout
     {
         if ($payout->status !== PayoutStatus::REQUESTED) {
             throw FundraisingException::invalidStatusTransition($payout->status->value, PayoutStatus::PROCESSING->value);
@@ -48,7 +48,7 @@ final class TransitionPayoutAction
         return $payout;
     }
 
-    public function markPaid(FundraisingPayout $payout, ?string $providerReference = null, ?string $processedBy = null): FundraisingPayout
+    public function markPaid(FundraisingPayout $payout, ?string $providerReference = null, ?int $processedBy = null): FundraisingPayout
     {
         if ($payout->status !== PayoutStatus::PROCESSING) {
             throw FundraisingException::invalidStatusTransition($payout->status->value, PayoutStatus::PAID->value);
@@ -63,7 +63,7 @@ final class TransitionPayoutAction
         return $payout;
     }
 
-    public function fail(FundraisingPayout $payout, string $reason, ?string $processedBy = null): FundraisingPayout
+    public function fail(FundraisingPayout $payout, string $reason, ?int $processedBy = null): FundraisingPayout
     {
         if ($payout->status !== PayoutStatus::PROCESSING) {
             throw FundraisingException::invalidStatusTransition($payout->status->value, PayoutStatus::FAILED->value);

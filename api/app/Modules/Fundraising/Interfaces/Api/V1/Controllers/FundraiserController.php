@@ -63,7 +63,7 @@ final class FundraiserController extends Controller
 
         $fundraiser = $this->createFundraiser->execute(
             $request->validated(),
-            is_scalar($actor->id ?? null) ? (string) $actor->id : null,
+            is_numeric($actor->id ?? null) ? (int) $actor->id : null,
         );
 
         return (new FundraiserResource($fundraiser))->response()->setStatusCode(201);

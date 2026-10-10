@@ -38,7 +38,7 @@ security:
 - BearerAuth: []
 tags:
 - name: Fundraising
-  description: 'BC-35 FUNDRAISING (#8379) — verticale Cagnottes solidaires : liens publics de collecte, contributions carte et mobile money, reversements au bénéficiaire.'
+  description: 'BC-33 FUNDRAISING (#8379) — verticale Cagnottes solidaires : liens publics de collecte, contributions carte et mobile money, reversements au bénéficiaire.'
 - name: Health
   description: Groupe d'opérations Health
 - name: Auth
@@ -124,7 +124,7 @@ paths:
       - Fundraising
       summary: Fiche publique d'une cagnotte
       description: >-
-        BC-35 FUNDRAISING (#8379) — surface publique isolée (aucun auth,
+        BC-33 FUNDRAISING (#8379) — surface publique isolée (aucun auth,
         throttle `shop-public`) : résolution du tenant par annuaire public
         (slug → company), garde 404 uniforme si le flag `fundraising` est
         coupé ou si la cagnotte n'est pas publiée. DTO public allowlist :

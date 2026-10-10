@@ -25,7 +25,7 @@ final class RequestPayoutAction
     /**
      * @param  array<string, mixed>  $data  payload validé (RequestPayoutRequest)
      */
-    public function execute(Fundraiser $fundraiser, array $data, ?string $requestedBy = null): FundraisingPayout
+    public function execute(Fundraiser $fundraiser, array $data, ?int $requestedBy = null): FundraisingPayout
     {
         if (! $fundraiser->status->allowsPayout()) {
             throw FundraisingException::invalidStatusTransition($fundraiser->status->value, 'payout');
