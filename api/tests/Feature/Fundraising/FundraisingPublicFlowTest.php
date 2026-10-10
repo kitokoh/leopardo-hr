@@ -11,6 +11,7 @@ use App\Modules\Fundraising\Domain\Enums\FundraiserStatus;
 use App\Modules\Fundraising\Domain\Models\Fundraiser;
 use App\Modules\Fundraising\Domain\Models\FundraiserPublicLink;
 use App\Modules\Fundraising\Domain\Models\FundraisingContribution;
+use Illuminate\Support\Facades\Http;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -214,8 +215,17 @@ class FundraisingPublicFlowTest extends TestCase
         $company = $this->company();
         $this->publishedFundraiser($company);
 
+        // Une contribution en cours AVANT le kill switch.
+        $contribute = $this->postJson('/api/v1/public/fundraisers/aide-fatou-abc123/contribute', [
+            'amount' => 5000,
+            'payment_method' => 'mobile_money',
+            'contributor_phone' => '+221770000009',
+        ])->assertStatus(201);
+        $reference = $contribute->json('data.reference');
+
         // Kill switch : la verticale est coupée → la surface d'encaissement
-        // tombe en 404 uniforme (argent = strict, spec §6).
+        // tombe en 404 uniforme (argent = strict, spec §6), y compris le
+        // polling (qui déclenche la re-conciliation = encaissement).
         $company->setFeature('fundraising', false);
         $company->save();
 
@@ -225,6 +235,105 @@ class FundraisingPublicFlowTest extends TestCase
             'payment_method' => 'mobile_money',
             'contributor_phone' => '+221770000004',
         ])->assertStatus(404);
+        $this->getJson('/api/v1/public/contributions/'.$reference)->assertStatus(404);
+    }
+
+    /**
+     * Régression (revue statique, blocker) : le polling d'une session
+     * Stripe encore OUVERTE ne doit JAMAIS solder la contribution en échec
+     * — sinon le webhook de succès ultérieur serait refusé (argent encaissé
+     * jamais crédité). La vérification active ne tranche que sur état
+     * terminal (complete+paid / expired).
+     */
+    public function test_polling_open_stripe_session_keeps_contribution_pending_then_webhook_credits(): void
+    {
+        config(['fundraising.stripe.secret_key' => 'sk_test_fake']);
+        config(['fundraising.stripe.webhook_secret' => 'whsec_open_test']);
+
+        $company = $this->company();
+        $this->publishedFundraiser($company);
+
+        // Initiation carte : Checkout Session créée (mockée).
+        Http::fake([
+            'api.stripe.com/v1/checkout/sessions' => Http::response([
+                'id' => 'cs_open_1',
+                'url' => 'https://checkout.stripe.com/pay/cs_open_1',
+            ], 200),
+        ]);
+
+        $contribute = $this->postJson('/api/v1/public/fundraisers/aide-fatou-abc123/contribute', [
+            'amount' => 5000,
+            'payment_method' => 'card',
+            'contributor_name' => 'Payeur Carte',
+        ]);
+
+        $contribute->assertStatus(201)
+            ->assertJsonPath('data.status', 'pending')
+            ->assertJsonPath('data.payment.redirect_url', 'https://checkout.stripe.com/pay/cs_open_1');
+
+        $reference = $contribute->json('data.reference');
+
+        // Le client est ENCORE sur la page Checkout : session `open`.
+        Http::fake([
+            'api.stripe.com/v1/checkout/sessions/cs_open_1' => Http::response([
+                'id' => 'cs_open_1',
+                'status' => 'open',
+                'payment_status' => 'unpaid',
+            ], 200),
+        ]);
+
+        // Polling : aucun verdict → toujours pending (JAMAIS failed).
+        $this->getJson('/api/v1/public/contributions/'.$reference)
+            ->assertOk()
+            ->assertJsonPath('data.status', 'pending');
+
+        // Le client paie : le webhook `checkout.session.completed` crédite.
+        $payload = (string) json_encode([
+            'id' => 'evt_open_1',
+            'type' => 'checkout.session.completed',
+            'data' => ['object' => ['id' => 'cs_open_1', 'created' => time()]],
+        ]);
+        $timestamp = (string) time();
+        $signature = 't='.$timestamp.',v1='.hash_hmac('sha256', $timestamp.'.'.$payload, 'whsec_open_test');
+
+        $this->call('POST', '/api/v1/webhooks/fundraising/stripe', [], [], [], [
+            'HTTP_Stripe-Signature' => $signature,
+            'CONTENT_TYPE' => 'application/json',
+        ], $payload)->assertOk()->assertJsonPath('status', 'applied');
+
+        $this->getJson('/api/v1/public/contributions/'.$reference)
+            ->assertOk()
+            ->assertJsonPath('data.status', 'completed');
+    }
+
+    /**
+     * Objectif atteint (`completed`) : la collecte CONTINUE jusqu'à
+     * `closed` (décision produit façon GoFundMe, spec §3.1).
+     */
+    public function test_contributions_still_accepted_after_goal_reached(): void
+    {
+        $company = $this->company();
+        $this->publishedFundraiser($company); // goal 20000
+
+        $first = $this->postJson('/api/v1/public/fundraisers/aide-fatou-abc123/contribute', [
+            'amount' => 20000,
+            'payment_method' => 'mobile_money',
+            'contributor_phone' => '+221770000010',
+        ])->assertStatus(201);
+        $this->getJson('/api/v1/public/contributions/'.$first->json('data.reference'))->assertOk();
+
+        // L'objectif est atteint : la cagnotte passe `completed`…
+        $this->getJson('/api/v1/public/fundraisers/aide-fatou-abc123')
+            ->assertOk()
+            ->assertJsonPath('data.status', 'completed')
+            ->assertJsonPath('data.accepts_contributions', true);
+
+        // …et continue d'accepter les contributions.
+        $this->postJson('/api/v1/public/fundraisers/aide-fatou-abc123/contribute', [
+            'amount' => 5000,
+            'payment_method' => 'mobile_money',
+            'contributor_phone' => '+221770000011',
+        ])->assertStatus(201);
     }
 
     public function test_payout_workflow_and_balance_rule(): void

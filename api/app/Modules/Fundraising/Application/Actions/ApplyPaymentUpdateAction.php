@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\Fundraising\Application\Actions;
 
 use App\Modules\Fundraising\Domain\DTOs\GatewayPaymentUpdate;
-use App\Modules\Fundraising\Domain\Enums\ContributionStatus;
 use App\Modules\Fundraising\Domain\Models\FundraisingContribution;
 use App\Modules\Fundraising\Domain\Models\FundraisingPaymentEvent;
 use App\Modules\Fundraising\Infrastructure\Services\ContributionSettlement;
@@ -53,6 +52,16 @@ final class ApplyPaymentUpdateAction
             ->where('provider', $provider)
             ->where('provider_reference', $update->providerReference)
             ->first();
+
+        // Repli : certains événements provider (ex. Stripe
+        // `payment_intent.payment_failed`) portent la RÉFÉRENCE PUBLIQUE de
+        // la contribution (FC-…) plutôt que la référence provider (session).
+        if (! $contribution instanceof FundraisingContribution) {
+            $contribution = FundraisingContribution::query()
+                ->where('provider', $provider)
+                ->where('reference', $update->providerReference)
+                ->first();
+        }
 
         if (! $contribution instanceof FundraisingContribution) {
             $this->logger->warning('Fundraising: payment update for unknown contribution', [

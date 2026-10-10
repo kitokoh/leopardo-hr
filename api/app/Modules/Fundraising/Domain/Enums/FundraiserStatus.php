@@ -33,10 +33,14 @@ enum FundraiserStatus: string
         };
     }
 
-    /** La cagnotte accepte-t-elle des contributions ? */
+    /**
+     * La cagnotte accepte-t-elle des contributions ? `completed` (objectif
+     * atteint) continue de collecter jusqu'à `closed` — décision produit
+     * façon GoFundMe (spec §3.1).
+     */
     public function acceptsContributions(): bool
     {
-        return $this === self::ACTIVE;
+        return in_array($this, [self::ACTIVE, self::COMPLETED], true);
     }
 
     /** La cagnotte est-elle visible publiquement ? (closed reste lisible) */
@@ -49,5 +53,11 @@ enum FundraiserStatus: string
     public function allowsPayout(): bool
     {
         return in_array($this, [self::ACTIVE, self::COMPLETED, self::CLOSED], true);
+    }
+
+    /** Peut être annulée (uniquement tant que rien n'a été collecté). */
+    public function isCancellable(): bool
+    {
+        return in_array($this, [self::DRAFT, self::ACTIVE, self::PAUSED], true);
     }
 }

@@ -56,6 +56,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/fundraisers/{fundraiser}/publish', [FundraiserController::class, 'publish'])->whereNumber('fundraiser');
         Route::post('/fundraisers/{fundraiser}/pause', [FundraiserController::class, 'pause'])->whereNumber('fundraiser');
         Route::post('/fundraisers/{fundraiser}/close', [FundraiserController::class, 'close'])->whereNumber('fundraiser');
+        Route::post('/fundraisers/{fundraiser}/cancel', [FundraiserController::class, 'cancel'])->whereNumber('fundraiser');
 
         // Contributions
         Route::get('/fundraisers/{fundraiser}/contributions', [FundraiserController::class, 'contributions'])->whereNumber('fundraiser');

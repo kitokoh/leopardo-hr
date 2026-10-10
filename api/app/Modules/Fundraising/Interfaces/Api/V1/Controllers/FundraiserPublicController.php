@@ -133,16 +133,30 @@ final class FundraiserPublicController extends Controller
 
         // Annuaire de routage paiement (schema PUBLIC, hors contexte
         // tenant) : webhooks + polling. Idempotent sur la référence.
-        FundraisingPaymentRoute::query()->firstOrCreate(
-            [
-                'provider' => $contribution->provider,
-                'provider_reference' => (string) $contribution->provider_reference,
-            ],
-            [
-                'company_id' => $contribution->company_id,
-                'contribution_reference' => $contribution->reference,
-            ],
-        );
+        // Critique : sans cette ligne, un paiement initié ne pourra JAMAIS
+        // être rapproché (webhook `ignored`) — échec = alerte immédiate.
+        try {
+            FundraisingPaymentRoute::query()->firstOrCreate(
+                [
+                    'provider' => $contribution->provider,
+                    'provider_reference' => (string) $contribution->provider_reference,
+                ],
+                [
+                    'company_id' => $contribution->company_id,
+                    'contribution_reference' => $contribution->reference,
+                ],
+            );
+        } catch (\Throwable $exception) {
+            \Illuminate\Support\Facades\Log::critical(
+                'Fundraising: échec d\'écriture de la route paiement — rapprochement webhook impossible pour cette contribution',
+                [
+                    'reference' => $contribution->reference,
+                    'provider' => $contribution->provider,
+                    'provider_reference' => $contribution->provider_reference,
+                    'exception' => $exception::class,
+                ]
+            );
+        }
 
         /** @var \App\Modules\Fundraising\Domain\DTOs\GatewayPaymentInitiation $initiation */
         $initiation = $result['initiation'];
@@ -181,6 +195,14 @@ final class FundraiserPublicController extends Controller
         if (! $company instanceof Company) {
             abort(404);
         }
+
+        // Kill switch strict (argent) : même garde fail-closed que le reste
+        // de la surface publique — verticale coupée ou société suspendue ⇒
+        // 404 uniforme, JAMAIS de règlement déclenché pour un tenant coupé.
+        $this->publicTenantResolver->assertAccessible(
+            $company,
+            FundraisingFeatures::FUNDRAISING,
+        );
 
         $payload = $this->tenantManager->withinTenant($company, function () use ($reference): ?array {
             /** @var FundraisingContribution|null $contribution */

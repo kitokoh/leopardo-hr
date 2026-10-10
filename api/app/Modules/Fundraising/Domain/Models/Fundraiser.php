@@ -88,6 +88,7 @@ class Fundraiser extends Model
             'status' => FundraiserStatus::class,
             'category' => FundraisingCategory::class,
             'suggested_amounts' => 'array',
+            'contributions_count' => 'integer',
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',
             'published_at' => 'datetime',

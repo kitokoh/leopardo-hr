@@ -32,6 +32,7 @@ final class TransitionFundraiserAction
             'publish' => $this->publish($fundraiser),
             'pause' => $this->pause($fundraiser),
             'close' => $this->close($fundraiser),
+            'cancel' => $this->cancel($fundraiser),
             default => throw FundraisingException::invalidStatusTransition($fundraiser->status->value, $verb),
         };
     }
@@ -78,6 +79,29 @@ final class TransitionFundraiserAction
         // si l'entrée n'existe pas (ex. paused→closed), on la recrée en
         // statut miroir pour garder la transparence de la collecte.
         $this->upsertPublicLink($fundraiser);
+
+        return $fundraiser;
+    }
+
+    /**
+     * Annulation définitive : `draft|active|paused → cancelled`, UNIQUEMENT
+     * tant que rien n'a été collecté (les remboursements arrivent en phase
+     * 2 — spec §3.1/§9). L'entrée d'annuaire est retirée (404 public).
+     */
+    public function cancel(Fundraiser $fundraiser): Fundraiser
+    {
+        if (! $fundraiser->status->isCancellable()) {
+            throw FundraisingException::invalidStatusTransition($fundraiser->status->value, FundraiserStatus::CANCELLED->value);
+        }
+
+        if ((float) $fundraiser->collected_amount > 0) {
+            throw FundraisingException::invalidStatusTransition($fundraiser->status->value.'(collecte non nulle)', FundraiserStatus::CANCELLED->value);
+        }
+
+        $fundraiser->status = FundraiserStatus::CANCELLED;
+        $fundraiser->save();
+
+        $this->removePublicLink($fundraiser);
 
         return $fundraiser;
     }

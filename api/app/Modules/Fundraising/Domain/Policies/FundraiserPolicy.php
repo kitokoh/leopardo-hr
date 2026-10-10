@@ -10,11 +10,13 @@ use App\Modules\Fundraising\Domain\Models\Fundraiser;
 /**
  * RBAC des cagnottes d'un tenant (verticale FUNDRAISING — spec §5.2).
  *
- * Gestion (création, édition, publication, clôture) réservée au
- * responsable du tenant (sous-rôles `principal`/`rh`) ; lecture ouverte
- * aux membres du tenant (scope `company_id` vérifié). deny-by-default.
- * La consultation publique n'emprunte pas cette policy — DTO public dédié
- * sur routes isolées (spec §5.1).
+ * Gestion (création, édition, publication, clôture, annulation) réservée
+ * au responsable du tenant (sous-rôles `principal`/`rh`) — le groupe de
+ * routes applique `api.manager:principal,rh` à TOUS les verbes, lecture
+ * comprise (pattern showcase : la policy reste le filet sous le
+ * middleware ; `view`/`viewAny` vérifient l'appartenance au tenant).
+ * deny-by-default. La consultation publique n'emprunte pas cette policy —
+ * DTO public dédié sur routes isolées (spec §5.1).
  */
 class FundraiserPolicy
 {

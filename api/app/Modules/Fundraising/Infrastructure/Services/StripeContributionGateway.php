@@ -79,6 +79,10 @@ final class StripeContributionGateway implements FundraisingGatewayInterface
                 'cancel_url' => $baseUrl.'/cagnottes/'.($fundraiser->slug ?? '').'?annule=1',
                 'metadata[contribution_reference]' => $contribution->reference,
                 'metadata[company_id]' => (string) $contribution->company_id,
+                // Propagé au PaymentIntent : permet de clore proprement un
+                // paiement échoué (`payment_intent.payment_failed`) en
+                // retrouvant la contribution par sa référence publique.
+                'payment_intent_data[metadata][contribution_reference]' => $contribution->reference,
             ]);
 
         if (! $response->successful()) {
@@ -124,19 +128,25 @@ final class StripeContributionGateway implements FundraisingGatewayInterface
         }
 
         $elements = [];
+        $v1Signatures = [];
         foreach (explode(',', $signatureHeader) as $part) {
             $part = trim($part);
             if ($part === '' || ! str_contains($part, '=')) {
                 continue;
             }
             [$key, $value] = explode('=', $part, 2);
+            if ($key === 'v1') {
+                // Rotation de secret Stripe : PLUSIEURS v1 peuvent être
+                // présents — une signature valide suffit (jamais d'écrasement).
+                $v1Signatures[] = $value;
+                continue;
+            }
             $elements[$key] = $value;
         }
 
         $timestamp = (string) ($elements['t'] ?? '');
-        $signature = (string) ($elements['v1'] ?? '');
 
-        if ($timestamp === '' || $signature === '') {
+        if ($timestamp === '' || $v1Signatures === []) {
             return null;
         }
 
@@ -148,7 +158,15 @@ final class StripeContributionGateway implements FundraisingGatewayInterface
 
         $expected = hash_hmac('sha256', $timestamp.'.'.$payload, $this->webhookSecret);
 
-        if (! hash_equals($expected, $signature)) {
+        $signatureValid = false;
+        foreach ($v1Signatures as $signature) {
+            if (hash_equals($expected, $signature)) {
+                $signatureValid = true;
+                break;
+            }
+        }
+
+        if (! $signatureValid) {
             Log::warning('Fundraising Stripe: webhook signature mismatch');
 
             return null;
@@ -198,6 +216,18 @@ final class StripeContributionGateway implements FundraisingGatewayInterface
                 paid: false,
                 paidAt: null,
             ),
+            // Carte refusée : le PaymentIntent porte la référence publique
+            // (posée à l'initiation) — `ApplyPaymentUpdate` retombe sur la
+            // recherche par `reference` quand `provider_reference` ne match
+            // pas (la session Stripe reste l'identifiant canonique).
+            'payment_intent.payment_failed' => ($metadataReference = (string) ($object['metadata']['contribution_reference'] ?? '')) !== ''
+                ? new GatewayPaymentUpdate(
+                    eventId: $eventId,
+                    providerReference: $metadataReference,
+                    paid: false,
+                    paidAt: null,
+                )
+                : null,
             default => null,
         };
     }
@@ -205,6 +235,12 @@ final class StripeContributionGateway implements FundraisingGatewayInterface
     /**
      * Vérification active : état de la Checkout Session (re-conciliation
      * si le webhook tarde — même rôle que `PvitPaymentGateway::verify`).
+     *
+     * NE TRANCHE QUE SUR ÉTAT TERMINAL : `complete`+`paid` ⇒ payé,
+     * `expired` ⇒ échoué, TOUT LE RESTE ⇒ null (aucune mise à jour). Une
+     * session encore `open` (client sur la page Checkout) ne doit JAMAIS
+     * être soldée en échec — sinon le webhook de succès ultérieur serait
+     * refusé (argent encaissé, jamais crédité — leçon revue statique).
      */
     public function verify(string $providerReference): ?GatewayPaymentUpdate
     {
@@ -222,7 +258,17 @@ final class StripeContributionGateway implements FundraisingGatewayInterface
         $status = (string) $response->json('status', '');
         $paymentStatus = (string) $response->json('payment_status', '');
 
+        if ($status === 'open') {
+            // Paiement potentiellement en cours — pas de verdict.
+            return null;
+        }
+
         $paid = $status === 'complete' && $paymentStatus === 'paid';
+
+        if (! $paid && $status !== 'expired') {
+            // État intermédiaire inconnu : pas de verdict non plus.
+            return null;
+        }
 
         return new GatewayPaymentUpdate(
             // Événement synthétique DÉTERMINISTE : la re-vérification d'une

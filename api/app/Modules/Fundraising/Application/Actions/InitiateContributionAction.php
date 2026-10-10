@@ -7,7 +7,6 @@ namespace App\Modules\Fundraising\Application\Actions;
 use App\Modules\Fundraising\Domain\DTOs\GatewayPaymentInitiation;
 use App\Modules\Fundraising\Domain\Enums\ContributionMethod;
 use App\Modules\Fundraising\Domain\Enums\ContributionStatus;
-use App\Modules\Fundraising\Domain\Enums\FundraiserStatus;
 use App\Modules\Fundraising\Domain\Exceptions\FundraisingException;
 use App\Modules\Fundraising\Domain\Models\Fundraiser;
 use App\Modules\Fundraising\Domain\Models\FundraisingContribution;
@@ -53,7 +52,7 @@ final class InitiateContributionAction
         }
 
         if (
-            $fundraiser->status !== FundraiserStatus::ACTIVE
+            ! $fundraiser->status->acceptsContributions()
             || ! $fundraiser->isWithinCollectionWindow()
         ) {
             throw FundraisingException::fundraiserNotActive();

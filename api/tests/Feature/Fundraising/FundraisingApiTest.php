@@ -168,6 +168,32 @@ class FundraisingApiTest extends TestCase
         $this->assertNull(FundraiserPublicLink::query()->where('slug', $slug)->first());
     }
 
+    public function test_cancel_requires_zero_collected(): void
+    {
+        $company = $this->company();
+        $this->principal($company);
+
+        // Brouillon → annulation OK, entrée d'annuaire absente.
+        $id = $this->postJson('/api/v1/fundraising/fundraisers', $this->payload())->json('data.id');
+
+        $this->postJson('/api/v1/fundraising/fundraisers/'.$id.'/cancel')
+            ->assertOk()
+            ->assertJsonPath('data.status', 'cancelled');
+
+        // Annulée = état final : aucune re-publication.
+        $this->postJson('/api/v1/fundraising/fundraisers/'.$id.'/publish')
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'INVALID_STATUS_TRANSITION');
+
+        // Collecte non nulle → annulation refusée (remboursements phase 2).
+        $id2 = $this->postJson('/api/v1/fundraising/fundraisers', $this->payload(['title' => 'Avec collecte']))->json('data.id');
+        \App\Modules\Fundraising\Domain\Models\Fundraiser::query()->whereKey($id2)->update(['collected_amount' => 100]);
+
+        $this->postJson('/api/v1/fundraising/fundraisers/'.$id2.'/cancel')
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'INVALID_STATUS_TRANSITION');
+    }
+
     public function test_feature_flag_fail_closed(): void
     {
         $company = $this->company(false); // verticale NON activée

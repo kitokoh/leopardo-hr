@@ -110,6 +110,11 @@ final class FundraiserController extends Controller
         return $this->transition($request, $fundraiser, 'close');
     }
 
+    public function cancel(Request $request, Fundraiser $fundraiser): JsonResponse
+    {
+        return $this->transition($request, $fundraiser, 'cancel');
+    }
+
     public function contributions(Request $request, Fundraiser $fundraiser): JsonResponse
     {
         /** @var Employee $actor */
@@ -170,6 +175,7 @@ final class FundraiserController extends Controller
             'publish' => $this->transitions->publish($fundraiser),
             'pause' => $this->transitions->pause($fundraiser),
             'close' => $this->transitions->close($fundraiser),
+            'cancel' => $this->transitions->cancel($fundraiser),
             default => $fundraiser,
         };
 
