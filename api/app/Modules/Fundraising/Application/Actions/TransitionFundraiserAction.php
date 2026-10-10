@@ -23,6 +23,19 @@ use App\Modules\Fundraising\Domain\Models\FundraiserPublicLink;
  */
 final class TransitionFundraiserAction
 {
+    /**
+     * Point d'entrée convention #6570 : délègue au verbe demandé.
+     */
+    public function execute(Fundraiser $fundraiser, string $verb): Fundraiser
+    {
+        return match ($verb) {
+            'publish' => $this->publish($fundraiser),
+            'pause' => $this->pause($fundraiser),
+            'close' => $this->close($fundraiser),
+            default => throw FundraisingException::invalidStatusTransition($fundraiser->status->value, $verb),
+        };
+    }
+
     public function publish(Fundraiser $fundraiser): Fundraiser
     {
         if (! in_array($fundraiser->status, [FundraiserStatus::DRAFT, FundraiserStatus::PAUSED], true)) {

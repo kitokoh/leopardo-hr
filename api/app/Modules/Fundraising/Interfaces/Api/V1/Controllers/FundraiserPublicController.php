@@ -120,7 +120,7 @@ final class FundraiserPublicController extends Controller
                     return null;
                 }
 
-                return $this->initiateContribution->handle($fundraiser, $request->validated());
+                return $this->initiateContribution->execute($fundraiser, $request->validated());
             }
         );
 
@@ -144,7 +144,7 @@ final class FundraiserPublicController extends Controller
             ],
         );
 
-        /** @var \App\Modules\Fundraising\Application\DTOs\GatewayPaymentInitiation $initiation */
+        /** @var \App\Modules\Fundraising\Domain\DTOs\GatewayPaymentInitiation $initiation */
         $initiation = $result['initiation'];
 
         return response()->json([
@@ -203,7 +203,7 @@ final class FundraiserPublicController extends Controller
                     $update = $gateway->verify((string) $contribution->provider_reference);
 
                     if ($update !== null) {
-                        $this->applyPaymentUpdate->handle($gateway->gatewayName(), $update);
+                        $this->applyPaymentUpdate->execute($gateway->gatewayName(), $update);
                         $contribution->refresh();
                     }
                 } catch (\InvalidArgumentException) {

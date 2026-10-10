@@ -81,7 +81,7 @@ final class FundraisingWebhookController extends Controller
 
         $result = $this->tenantManager->withinTenant(
             $company,
-            fn (): array => $this->applyPaymentUpdate->handle($gateway->gatewayName(), $update)
+            fn (): array => $this->applyPaymentUpdate->execute($gateway->gatewayName(), $update)
         );
 
         return response()->json(['status' => $result['status']]);

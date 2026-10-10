@@ -5,26 +5,27 @@ declare(strict_types=1);
 namespace App\Modules\Fundraising\Application\Actions;
 
 use App\Modules\Fundraising\Domain\Enums\PayoutMethod;
-use App\Modules\Fundraising\Domain\Enums\PayoutStatus;
 use App\Modules\Fundraising\Domain\Exceptions\FundraisingException;
 use App\Modules\Fundraising\Domain\Models\Fundraiser;
 use App\Modules\Fundraising\Domain\Models\FundraisingPayout;
-use App\Modules\Fundraising\Domain\Support\ReferenceGenerator;
-use Illuminate\Support\Facades\DB;
+use App\Modules\Fundraising\Infrastructure\Services\PayoutPlacement;
 
 /**
  * Demande de reversement au bénéficiaire (verticale FUNDRAISING — spec
- * §3.3) : la règle de solde (Σ payouts requested|processing|paid ≤
- * collected_amount) est vérifiée DANS une transaction avec verrou ligne
- * sur la cagnotte — deux demandes concurrentes ne peuvent pas se
- * chevaucher.
+ * §3.3) : validation du statut de la cagnotte et du montant, puis
+ * placement transactionnel (règle de solde sous verrou ligne) délégué à
+ * `PayoutPlacement` (Infrastructure — les facades y sont autorisées).
  */
 final class RequestPayoutAction
 {
+    public function __construct(
+        private readonly PayoutPlacement $placement,
+    ) {}
+
     /**
      * @param  array<string, mixed>  $data  payload validé (RequestPayoutRequest)
      */
-    public function handle(Fundraiser $fundraiser, array $data, ?string $requestedBy = null): FundraisingPayout
+    public function execute(Fundraiser $fundraiser, array $data, ?string $requestedBy = null): FundraisingPayout
     {
         if (! $fundraiser->status->allowsPayout()) {
             throw FundraisingException::invalidStatusTransition($fundraiser->status->value, 'payout');
@@ -36,28 +37,11 @@ final class RequestPayoutAction
             throw FundraisingException::payoutExceedsBalance();
         }
 
-        return DB::transaction(function () use ($fundraiser, $data, $amount, $requestedBy): FundraisingPayout {
-            /** @var Fundraiser $locked */
-            $locked = Fundraiser::query()->whereKey($fundraiser->id)->lockForUpdate()->firstOrFail();
-
-            if ($amount > $locked->availableBalance() + 0.0001) {
-                throw FundraisingException::payoutExceedsBalance();
-            }
-
-            /** @var FundraisingPayout $payout */
-            $payout = FundraisingPayout::query()->create([
-                'fundraiser_id' => $locked->id,
-                'reference' => ReferenceGenerator::payout(),
-                'amount' => $amount,
-                'currency' => (string) $locked->currency,
-                'method' => PayoutMethod::from((string) $data['method']),
-                'recipient_name' => (string) $data['recipient_name'],
-                'recipient_account' => (string) $data['recipient_account'],
-                'status' => PayoutStatus::REQUESTED,
-                'requested_by' => $requestedBy,
-            ]);
-
-            return $payout;
-        });
+        return $this->placement->place($fundraiser, [
+            'amount' => $amount,
+            'method' => PayoutMethod::from((string) $data['method']),
+            'recipient_name' => (string) $data['recipient_name'],
+            'recipient_account' => (string) $data['recipient_account'],
+        ], $requestedBy);
     }
 }

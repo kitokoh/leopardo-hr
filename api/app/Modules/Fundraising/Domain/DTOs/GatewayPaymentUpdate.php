@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Fundraising\Application\DTOs;
+namespace App\Modules\Fundraising\Domain\DTOs;
 
 /**
  * Mise à jour de paiement extraite d'un webhook vérifié ou d'une

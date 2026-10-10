@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Modules\Fundraising\Application\Actions;
 
-use App\Modules\Fundraising\Application\DTOs\GatewayPaymentUpdate;
+use App\Modules\Fundraising\Domain\DTOs\GatewayPaymentUpdate;
 use App\Modules\Fundraising\Domain\Enums\ContributionStatus;
 use App\Modules\Fundraising\Domain\Models\FundraisingContribution;
 use App\Modules\Fundraising\Domain\Models\FundraisingPaymentEvent;
 use App\Modules\Fundraising\Infrastructure\Services\ContributionSettlement;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Log;
+use Psr\Log\LoggerInterface;
 
 /**
  * Application d'une mise à jour de paiement (webhook vérifié ou
@@ -31,12 +31,13 @@ final class ApplyPaymentUpdateAction
 {
     public function __construct(
         private readonly ContributionSettlement $settlement,
+        private readonly LoggerInterface $logger,
     ) {}
 
     /**
      * @return array{status: 'applied'|'duplicate'|'ignored', contribution: FundraisingContribution|null}
      */
-    public function handle(string $provider, GatewayPaymentUpdate $update): array
+    public function execute(string $provider, GatewayPaymentUpdate $update): array
     {
         $alreadyProcessed = FundraisingPaymentEvent::query()
             ->where('provider', $provider)
@@ -54,7 +55,7 @@ final class ApplyPaymentUpdateAction
             ->first();
 
         if (! $contribution instanceof FundraisingContribution) {
-            Log::warning('Fundraising: payment update for unknown contribution', [
+            $this->logger->warning('Fundraising: payment update for unknown contribution', [
                 'provider' => $provider,
                 'provider_reference' => $update->providerReference,
             ]);
@@ -94,7 +95,7 @@ final class ApplyPaymentUpdateAction
                 'processed_at' => now(),
             ]);
         } catch (QueryException $exception) {
-            Log::info('Fundraising: duplicate payment event absorbed', [
+            $this->logger->info('Fundraising: duplicate payment event absorbed', [
                 'provider' => $provider,
                 'event_id' => $update->eventId,
             ]);

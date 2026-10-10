@@ -20,7 +20,7 @@ final class UpdateFundraiserAction
     /**
      * @param  array<string, mixed>  $data  payload validé (UpdateFundraiserRequest)
      */
-    public function handle(Fundraiser $fundraiser, array $data): Fundraiser
+    public function execute(Fundraiser $fundraiser, array $data): Fundraiser
     {
         if (in_array($fundraiser->status, [FundraiserStatus::CLOSED, FundraiserStatus::CANCELLED], true)) {
             throw FundraisingException::invalidStatusTransition($fundraiser->status->value, 'updated');

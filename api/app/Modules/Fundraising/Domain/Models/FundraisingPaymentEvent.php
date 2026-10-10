@@ -13,8 +13,12 @@ use Illuminate\Support\Carbon;
  * — spec §3.4). `(provider, event_id)` unique : une double livraison est
  * acquittée (200) sans retraitement — aucune double comptabilisation.
  *
- * Non scopé tenant (le webhook arrive hors contexte tenant) : `company_id`
- * est une dénormalisation nullable pour l'audit.
+ * Table TENANT (shared_tenants) écrite dans le contexte du propriétaire
+ * (withinTenant). EXCEPTION TENANT-SCOPE canonique (#7999, liste
+ * dev-hub/governance/tenant-scope-exceptions.json) : `company_id` NULLABLE
+ * y est une dénormalisation d'audit — l'événement peut être journalisé
+ * avant résolution complète du contexte — pas une clé d'isolation ;
+ * BelongsToCompany est donc inapplicable.
  *
  * @property int $id
  * @property string|null $company_id

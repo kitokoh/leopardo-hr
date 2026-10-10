@@ -54,7 +54,7 @@ final class FundraisingPayoutController extends Controller
             abort(403);
         }
 
-        $payout = $this->requestPayout->handle(
+        $payout = $this->requestPayout->execute(
             $fundraiser,
             $request->validated(),
             is_scalar($actor->id ?? null) ? (string) $actor->id : null,

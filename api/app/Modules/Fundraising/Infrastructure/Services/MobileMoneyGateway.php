@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Fundraising\Infrastructure\Services;
 
-use App\Modules\Fundraising\Application\DTOs\GatewayPaymentInitiation;
-use App\Modules\Fundraising\Application\DTOs\GatewayPaymentUpdate;
+use App\Modules\Fundraising\Domain\DTOs\GatewayPaymentInitiation;
+use App\Modules\Fundraising\Domain\DTOs\GatewayPaymentUpdate;
 use App\Modules\Fundraising\Domain\Contracts\FundraisingGatewayInterface;
 use App\Modules\Fundraising\Domain\Models\FundraisingContribution;
 use Illuminate\Support\Facades\Log;

@@ -61,7 +61,7 @@ final class FundraiserController extends Controller
             abort(403);
         }
 
-        $fundraiser = $this->createFundraiser->handle(
+        $fundraiser = $this->createFundraiser->execute(
             $request->validated(),
             is_scalar($actor->id ?? null) ? (string) $actor->id : null,
         );
@@ -91,7 +91,7 @@ final class FundraiserController extends Controller
         }
 
         return (new FundraiserResource(
-            $this->updateFundraiser->handle($fundraiser, $request->validated())
+            $this->updateFundraiser->execute($fundraiser, $request->validated())
         ))->response();
     }
 
@@ -153,7 +153,7 @@ final class FundraiserController extends Controller
         }
 
         return (new ContributionResource(
-            $this->confirmManual->handle($contribution)
+            $this->confirmManual->execute($contribution)
         ))->response();
     }
 

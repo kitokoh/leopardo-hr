@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Fundraising\Application\DTOs;
+namespace App\Modules\Fundraising\Domain\DTOs;
 
 /**
  * Résultat de l'initiation d'un paiement de contribution (verticale

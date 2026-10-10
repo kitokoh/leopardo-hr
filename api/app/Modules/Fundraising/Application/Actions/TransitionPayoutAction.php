@@ -18,6 +18,22 @@ use App\Modules\Fundraising\Domain\Models\FundraisingPayout;
  */
 final class TransitionPayoutAction
 {
+    /**
+     * Point d'entrée convention #6570 : délègue au verbe demandé.
+     *
+     * @param  array{provider_reference?: ?string, reason?: ?string}  $options
+     */
+    public function execute(FundraisingPayout $payout, string $verb, array $options = [], ?string $processedBy = null): FundraisingPayout
+    {
+        return match ($verb) {
+            'process' => $this->process($payout, $processedBy),
+            'markPaid' => $this->markPaid($payout, $options['provider_reference'] ?? null, $processedBy),
+            'fail' => $this->fail($payout, (string) ($options['reason'] ?? 'échec déclaré par le responsable'), $processedBy),
+            'cancel' => $this->cancel($payout),
+            default => throw FundraisingException::invalidStatusTransition($payout->status->value, $verb),
+        };
+    }
+
     public function process(FundraisingPayout $payout, ?string $processedBy = null): FundraisingPayout
     {
         if ($payout->status !== PayoutStatus::REQUESTED) {

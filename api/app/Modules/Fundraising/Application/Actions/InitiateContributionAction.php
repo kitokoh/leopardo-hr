@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Fundraising\Application\Actions;
 
-use App\Modules\Fundraising\Application\DTOs\GatewayPaymentInitiation;
+use App\Modules\Fundraising\Domain\DTOs\GatewayPaymentInitiation;
 use App\Modules\Fundraising\Domain\Enums\ContributionMethod;
 use App\Modules\Fundraising\Domain\Enums\ContributionStatus;
 use App\Modules\Fundraising\Domain\Enums\FundraiserStatus;
@@ -45,7 +45,7 @@ final class InitiateContributionAction
      * @param  array<string, mixed>  $data  payload validé (InitiateContributionRequest)
      * @return array{contribution: FundraisingContribution, initiation: GatewayPaymentInitiation}
      */
-    public function handle(Fundraiser $fundraiser, array $data): array
+    public function execute(Fundraiser $fundraiser, array $data): array
     {
         // Honeypot anti-bot (champ leurre invisible pour les humains).
         if (! empty($data['website'])) {

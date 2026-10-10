@@ -25,7 +25,7 @@ final class ConfirmManualContributionAction
         private readonly ContributionSettlement $settlement,
     ) {}
 
-    public function handle(FundraisingContribution $contribution): FundraisingContribution
+    public function execute(FundraisingContribution $contribution): FundraisingContribution
     {
         if ($contribution->provider !== 'manual') {
             throw FundraisingException::invalidStatusTransition($contribution->provider, 'manual_confirm');
