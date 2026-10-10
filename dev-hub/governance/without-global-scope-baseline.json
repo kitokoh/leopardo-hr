@@ -11,7 +11,7 @@
     "app/Core/Auth/Domain/Models/Employee.php": 1,
     "app/Core/Auth/Infrastructure/Services/AuthService.php": 8,
     "app/Core/Auth/Interfaces/Api/V1/Controllers/PasswordResetController.php": 2,
-    "app/Core/Feature/Infrastructure/Services/FeatureRegistry.php": 8,
+    "app/Core/Feature/Infrastructure/Services/ApiEndpointRegistry.php": 8,
     "app/Core/Tenant/Domain/Exceptions/TenantContextMissingException.php": 1,
     "app/Core/Tenant/Domain/Models/Company.php": 2,
     "app/Http/Controllers/Web/PlatformCompanyController.php": 1,

@@ -145,21 +145,22 @@ class ModuleRegistryGuardTest extends TestCase
     }
 
     /**
-     * Variables d'un fichier typées `FeatureRegistryInterface` /
-     * `FeatureRegistry` (ancien registre d'inventaire API) — leurs appels
-     * hasFeature() ne visent pas les flags tenant.
+     * Variables d'un fichier typées `ApiEndpointRegistryInterface` /
+     * `ApiEndpointRegistry` (registre d'inventaire des endpoints API —
+     * BOS-015/#8202, ex-`FeatureRegistry*`) — leurs appels hasFeature()
+     * ne visent pas les flags tenant.
      *
      * @return list<string>
      */
     private function legacyRegistryReceivers(string $source): array
     {
-        if (! str_contains($source, 'FeatureRegistryInterface') && ! str_contains($source, 'FeatureRegistry')) {
+        if (! str_contains($source, 'ApiEndpointRegistry') && ! str_contains($source, 'FeatureRegistry')) {
             return [];
         }
 
         $receivers = [];
 
-        if (preg_match_all('/(?:FeatureRegistryInterface|FeatureRegistry)\s+(\$[A-Za-z_][A-Za-z0-9_]*)/', $source, $matches) !== false) {
+        if (preg_match_all('/(?:ApiEndpointRegistryInterface|ApiEndpointRegistry|FeatureRegistryInterface|FeatureRegistry)\s+(\$[A-Za-z_][A-Za-z0-9_]*)/', $source, $matches) !== false) {
             foreach ($matches[1] as $variable) {
                 $receivers[] = $variable;
             }

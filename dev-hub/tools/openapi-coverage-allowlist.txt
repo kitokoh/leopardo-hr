@@ -931,4 +931,61 @@ GET /v1/showcase/media
 POST /v1/showcase/media
 DELETE /v1/showcase/media/{param}
 GET /v1/public/vitrine/{param}/media/{param}
+
+# Drift pré-existant constaté le 2026-10-10 (#8381) : 48 routes mergées sur
+# main sans documentation OpenAPI entre le 2026-09-29 (dernier run vert,
+# e1be891e) et le 2026-10-08 — travel/community (36), crm leads/accounts/
+# contacts/imports (9, via 147faf1b #5731/#8195), fuel-station imports/reports
+# (4), rh kiosk verify-face (1). Exclusion TEMPORAIRE le temps de la
+# remédiation tracée dans #8381 : documenter ces routes dans api/openapi.yaml
+# puis purger cette section. Détecté pendant l'épic #8349 — hors scope GEO+VTC.
+DELETE /v1/travel/community/articles/{param}
+DELETE /v1/travel/community/categories/{param}
+DELETE /v1/travel/community/comments/{param}
+DELETE /v1/travel/community/quiz-questions/{param}
+DELETE /v1/travel/community/tourist-sites/{param}
+GET /v1/crm/accounts/{param}
+GET /v1/crm/contacts/{param}
+GET /v1/crm/duplicates/suggestions
+GET /v1/crm/leads/{param}
+GET /v1/fuel-station/reports/{param}/export
+GET /v1/travel/community/articles
+GET /v1/travel/community/articles/{param}
+GET /v1/travel/community/articles/{param}/comments
+GET /v1/travel/community/articles/{param}/engagement
+GET /v1/travel/community/categories
+GET /v1/travel/community/quizzes/{param}
+GET /v1/travel/community/quizzes/{param}/results
+GET /v1/travel/community/tourist-sites/search
+PATCH /v1/travel/contacts/{param}/consent
+POST /v1/crm/accounts
+POST /v1/crm/contacts
+POST /v1/crm/imports/preview
+POST /v1/crm/leads
+POST /v1/fuel-station/imports/preview
+POST /v1/fuel-station/imports/{param}/cancel
+POST /v1/fuel-station/imports/{param}/commit
+POST /v1/kiosks/{param}/verify-face
+POST /v1/travel/community/articles
+POST /v1/travel/community/articles/{param}/comments
+POST /v1/travel/community/articles/{param}/like
+POST /v1/travel/community/articles/{param}/moderate
+POST /v1/travel/community/articles/{param}/publish
+POST /v1/travel/community/articles/{param}/rate
+POST /v1/travel/community/articles/{param}/share
+POST /v1/travel/community/articles/{param}/unlike
+POST /v1/travel/community/categories
+POST /v1/travel/community/comments/{param}/approve
+POST /v1/travel/community/comments/{param}/reject
+POST /v1/travel/community/comments/{param}/report
+POST /v1/travel/community/quizzes/{param}/participate
+POST /v1/travel/community/quizzes/{param}/publish
+POST /v1/travel/community/quizzes/{param}/questions
+POST /v1/travel/community/tourist-sites
+PUT /v1/crm/leads/{param}
+PUT /v1/travel/community/articles/{param}
+PUT /v1/travel/community/categories/{param}
+PUT /v1/travel/community/tourist-sites/{param}
+PUT /v1/travel/contacts/{param}/consent
+
 # Règle (issue #1473) : toute route absente d'openapi.yaml ET de ce fichier

@@ -111,6 +111,11 @@ trait RefreshTenantDatabase
                     JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
                     WHERE n.nspname = 'public'
                       AND c.relkind IN ('r', 'p')
+                      -- PostGIS (BC-33, #8350) : spatial_ref_sys appartient à
+                      -- l'extension postgis — la dropper lève 2BP01
+                      -- (dependent_objects_still_exist). Même exclusion que le
+                      -- `dont_drop` par défaut de `db:wipe` côté Laravel.
+                      AND c.relname <> 'spatial_ref_sys'
                 LOOP
                     EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.relname) || ' CASCADE';
                 END LOOP;

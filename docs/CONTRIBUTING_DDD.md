@@ -15,7 +15,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | ~~`api/app/Services/`~~ — répertoire **supprimé** (2026-08-11, #1728), ne rien y ajouter | `Modules/<Name>/Infrastructure/Services/` |
 | `api/app/Exceptions/` (base `DomainException` partagée, encore étendue par des modules) | `Modules/<Name>/Domain/Exceptions/` |
 
-## Modules existants (32 modules)
+## Modules existants (34 modules)
 
 | Module | Domaine couvert |
 |---|---|
@@ -40,6 +40,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Expense` | Notes de frais employés |
 | `Fleet` | Véhicules, trajets, affectations |
 | `FuelStation` | Verticale station-service — stations, pompes, cuves, compteurs, shifts, caisse, ventes (FUEL-001..008) |
+| `Geo` | Core géospatial transverse (BC-33) — PostGIS, distance, plus-proches (GEO-01..07) |
 | `Growth` | Programme partenaires, référencement, payout |
 | `HR` | Employés, départements, contrats, évaluations, formations |
 | `Marketing` | Vitrine, leads, campagnes |
@@ -54,6 +55,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Restaurant` | Solution sectorielle restaurant : questionnaire de pré-qualification public, pack suggéré (manifest Core/Solutions) |
 | `Accounting` | Comptabilité : plan comptable, grand livre, écritures, facturation, export FEC |
 | `TravelAgency` | Verticale agences de voyages : référentiel pays/villes/gare/bureaux, manifest de solution activable par tenant (TRAVEL-101..108, 201..203) |
+| `Vtc` | Verticale VTC/taxi (BC-34) : réservation de courses, dispatch au chauffeur disponible le plus proche via le core `geo`, tarification, suivi temps réel (VTC-01..07) |
 | `Pharmacy` | Verticale officines de pharmacie (BC-30) : référentiel produits (DCI, formes, dosages), stock par lots/péremptions FEFO, achats fournisseurs, ventes comptoir, ordonnances et ordonnancier des produits contrôlés (PHARMA-001..007) |
 | `Accounting` | Comptabilité : plan comptable, grand livre, écritures, facturation, export FEC |
 | `Delivery` | Livraisons dernier-kilomètre : colis, tournées, livreurs, POD, tracking, COD, rapports (BC-26 DELIVERY) |

@@ -47,6 +47,8 @@
 /api/app/Modules/Billing/   @kitokoh
 /api/app/Modules/Fleet/     @kitokoh
 /api/app/Modules/Delivery/  @kitokoh
+/api/app/Modules/Geo/       @kitokoh
+/api/app/Modules/Vtc/       @kitokoh
 /api/app/AI/                @kitokoh
 /api/app/Core/AI/           @kitokoh
 

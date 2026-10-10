@@ -60,7 +60,8 @@ class SetupInterviewPlannerTest extends TestCase
             'priorities' => ['accounting', 'crm', 'cameras'],
         ]);
 
-        $this->assertSame([], $plan['solutions']);
+        // BOS-016 (#8205) : le secteur « commerce » active la solution Retail.
+        $this->assertSame(['retail'], $plan['solutions']);
         foreach (['accounting', 'crm', 'cameras', 'employees', 'attendance'] as $tool) {
             $this->assertContains($tool, $plan['tools']);
         }

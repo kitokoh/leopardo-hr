@@ -4,6 +4,7 @@ import {
   Building2,
   Calculator,
   CalendarX,
+  CarTaxiFront,
   ChefHat,
   Clock,
   Contact,
@@ -67,7 +68,8 @@ export type ClientModuleKey =
   | 'showcase'
   | 'communication'
   | 'assistant'
-  | 'commerce';
+  | 'commerce'
+  | 'vtc';
 export type FeatureState = 'available' | 'trial' | 'locked';
 
 /**
@@ -76,7 +78,7 @@ export type FeatureState = 'available' | 'trial' | 'locked';
  * (#7225 — audit 2026-09-10 : le menu listait « Restaurant » à une agence de
  * voyage car les modules métier étaient rangés dans les groupes transverses.)
  */
-export type BusinessVertical = 'restaurant' | 'travel' | 'education' | 'fuel' | 'health' | 'commerce';
+export type BusinessVertical = 'restaurant' | 'travel' | 'education' | 'fuel' | 'health' | 'commerce' | 'mobility';
 
 /**
  * Portée d'un module :
@@ -532,6 +534,23 @@ export const CLIENT_MODULES: ClientModule[] = [
     upgradeLabel: 'Station-service (pompes, volumes, écarts)',
     scope: 'business',
     vertical: 'fuel',
+  },
+  // BC-34 VTC (épic #8349, VTC-07/#8363) — verticale VTC/taxi : console
+  // dispatch web (courses actives + chauffeurs, polling v1) adossée aux
+  // endpoints VTC-06. Flag `vtc` posé par SolutionActivator (module requis :
+  // `geo`, BC-33) ; gate serveur `module.vtc` fail-closed sur /api/v1/vtc/*.
+  {
+    key: 'vtc',
+    href: '/vtc',
+    label: 'VTC & taxi',
+    group: 'general',
+    icon: CarTaxiFront,
+    capabilityKeys: ['vtc', 'can_view_vtc'],
+    featureKeys: ['vtc'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'VTC & taxi (courses, dispatch, chauffeurs)',
+    scope: 'business',
+    vertical: 'mobility',
   },
   // BC-16 EDU — EduManager (EDU-011/012/013, #5827/#5828/#5829). Navigation
   // rôle-aware, portée par la feature flag `edumanager` (activation tenant

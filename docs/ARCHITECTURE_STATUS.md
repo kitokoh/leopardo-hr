@@ -2,7 +2,7 @@
 
 > Mis à jour le 2026-09-05 (audit vérité docs) | Phase 5 terminée — nettoyage legacy (PR #824)
 
-## 1. Tableau de l'état DDD — 32 modules actifs
+## 1. Tableau de l'état DDD — 34 modules actifs
 
 | Module          | Domain | Contracts | Exceptions | Application | DTOs | Infra | Interfaces | Providers | Tests |
 |-----------------|:------:|:---------:|:----------:|:-----------:|:----:|:-----:|:----------:|:---------:|:-----:|
@@ -21,6 +21,7 @@
 | **Expense** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **Fleet** | ✅ | — | ✅ | — | — | — | ✅ | ✅ | ⚠️ |
 | **FuelStation** | ✅ | ✅ | ✅ | — | — | ✅ | ✅ | ✅ | ✅ |
+| **Geo** | ✅ | ✅ | ✅ | ✅ | — | — | ✅ | ✅ | ✅ |
 | **Growth** | ✅ | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ |
 | **HealthManager** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **HospitalityManager** | ✅ | — | ✅ | — | — | — | ✅ | ✅ | ✅ |
@@ -38,6 +39,7 @@
 | **Retail** | ✅ | — | — | — | — | — | ✅ | ✅ | ✅ |
 | **Showcase** | ✅ | — | — | — | — | — | — | ✅ | ✅ |
 | **TravelAgency** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **Vtc** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 
 > Tableau **régénéré depuis le disque** le 2026-09-05 (audit vérité — doublons CRM ×2, Restaurant ×3,
 > RestaurantManager ×3, Accounting ×3, Delivery/EduManager ×2 et titre dupliqué supprimés).

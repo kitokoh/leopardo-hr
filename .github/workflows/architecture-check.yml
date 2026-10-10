@@ -156,6 +156,16 @@ jobs:
       - name: Geofence single usage path guard (ADR-0016 Phase 2, issue #5353)
         run: bash dev-hub/tools/check-geofence-single-usage.sh
 
+      # GEO-07b (issue #8380, BC-33 GEO, suite de GEO-07 #8356) — mode STRICT :
+      # bloquant sur toute violation. Prérequis résorbés au 2026-10-10 (zéro
+      # violation détectée, exemptions legacy justifiées dans l'en-tête du
+      # script : geofence Attendance ADR-0016, repli Restaurant GEO-06 tant que
+      # le flag `geo` n'est pas généralisé, contrat partagé).
+      - name: Geo single distance calculator guard (GEO-07b #8380, BC-33, strict)
+        env:
+          GEO_SINGLE_USAGE_STRICT: "1"
+        run: bash dev-hub/tools/check-geo-single-usage.sh
+
       - name: SmartAttendance purge guard (ADR-0016 Phase 5, issue #5356)
         run: bash dev-hub/tools/check-smartattendance-purged.sh
 

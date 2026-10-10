@@ -3524,6 +3524,133 @@ trait CreatesMvpSchema
                 $table->index(['company_id', 'delivery_id'], 'delivery_tracking_shares_company_delivery_idx');
             });
         }
+        // ── BC-34 VTC (vtc_vehicles) ─────────────────────────────────────────────────
+        // Parité fixture ↔ migrations tenant VTC-02 (#8358, garde #5443) —
+        // mêmes colonnes que les migrations, sans FKs (style fixture).
+        if (! Schema::hasTable($this->moduleTable('vtc_vehicles'))) {
+            Schema::create($this->moduleTable('vtc_vehicles'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('plate', 20);
+                $table->string('brand', 60)->nullable();
+                $table->string('model', 60)->nullable();
+                $table->string('color', 40)->nullable();
+                $table->unsignedTinyInteger('seats')->default(4);
+                $table->string('category', 20)->default('berline');
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+                $table->unique(['company_id', 'plate'], 'vtc_vehicles_company_plate_unique');
+                $table->index(['company_id', 'status'], 'vtc_vehicles_company_status_idx');
+            });
+        }
+
+        // ── BC-34 VTC (vtc_drivers) ──────────────────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('vtc_drivers'))) {
+            Schema::create($this->moduleTable('vtc_drivers'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('user_id')->nullable();
+                $table->string('name', 120);
+                $table->string('phone', 40)->nullable();
+                $table->string('status', 20)->default('offline');
+                $table->unsignedBigInteger('vehicle_id')->nullable();
+                $table->decimal('current_latitude', 10, 7)->nullable();
+                $table->decimal('current_longitude', 10, 7)->nullable();
+                $table->timestamp('location_updated_at')->nullable();
+                $table->timestamps();
+                $table->index(['company_id', 'status'], 'vtc_drivers_company_status_idx');
+                $table->index(['company_id', 'user_id'], 'vtc_drivers_company_user_idx');
+                $table->index(['company_id', 'vehicle_id'], 'vtc_drivers_company_vehicle_idx');
+            });
+        }
+
+        // ── BC-34 VTC (vtc_fare_profiles) ────────────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('vtc_fare_profiles'))) {
+            Schema::create($this->moduleTable('vtc_fare_profiles'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 80);
+                $table->string('currency', 3);
+                $table->unsignedInteger('base_minor')->default(0);
+                $table->unsignedInteger('per_km_minor')->default(0);
+                $table->unsignedInteger('per_minute_minor')->default(0);
+                $table->unsignedInteger('minimum_minor')->default(0);
+                $table->boolean('is_default')->default(false);
+                $table->timestamps();
+                $table->index(['company_id', 'is_default'], 'vtc_fare_profiles_company_default_idx');
+            });
+        }
+
+        // ── BC-34 VTC (vtc_rides) ────────────────────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('vtc_rides'))) {
+            Schema::create($this->moduleTable('vtc_rides'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('reference', 40);
+                $table->unsignedBigInteger('passenger_user_id')->nullable();
+                $table->string('passenger_name', 120)->nullable();
+                $table->string('passenger_phone', 40)->nullable();
+                $table->decimal('pickup_latitude', 10, 7);
+                $table->decimal('pickup_longitude', 10, 7);
+                $table->text('pickup_address')->nullable();
+                $table->decimal('dropoff_latitude', 10, 7);
+                $table->decimal('dropoff_longitude', 10, 7);
+                $table->text('dropoff_address')->nullable();
+                $table->string('status', 20)->default('requested');
+                $table->unsignedBigInteger('fare_profile_id')->nullable();
+                $table->unsignedInteger('estimated_distance_m')->nullable();
+                $table->unsignedInteger('estimated_duration_s')->nullable();
+                $table->unsignedInteger('estimated_price_minor')->nullable();
+                $table->unsignedInteger('final_price_minor')->nullable();
+                $table->string('currency', 3);
+                $table->unsignedBigInteger('driver_id')->nullable();
+                $table->timestamp('requested_at')->nullable();
+                $table->timestamp('accepted_at')->nullable();
+                $table->timestamp('arrived_at')->nullable();
+                $table->timestamp('started_at')->nullable();
+                $table->timestamp('completed_at')->nullable();
+                $table->timestamp('cancelled_at')->nullable();
+                $table->timestamp('expired_at')->nullable();
+                $table->string('cancel_reason', 200)->nullable();
+                $table->uuid('idempotency_key')->nullable();
+                $table->json('metadata')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'reference'], 'vtc_rides_company_reference_unique');
+                $table->unique(['company_id', 'idempotency_key'], 'vtc_rides_company_idempotency_unique');
+                $table->index(['company_id', 'status', 'created_at'], 'vtc_rides_company_status_date_idx');
+                $table->index(['company_id', 'driver_id'], 'vtc_rides_company_driver_idx');
+                $table->index(['company_id', 'passenger_user_id'], 'vtc_rides_company_passenger_idx');
+            });
+        }
+
+        // ── BC-34 VTC (vtc_ride_events) ──────────────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('vtc_ride_events'))) {
+            Schema::create($this->moduleTable('vtc_ride_events'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('ride_id');
+                $table->string('type', 60);
+                $table->json('payload')->nullable();
+                $table->timestamp('created_at')->useCurrent();
+                $table->index(['company_id', 'ride_id', 'created_at'], 'vtc_ride_events_company_ride_at_idx');
+            });
+        }
+
+        // ── BC-34 VTC (vtc_driver_positions) ─────────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('vtc_driver_positions'))) {
+            Schema::create($this->moduleTable('vtc_driver_positions'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('driver_id');
+                $table->decimal('latitude', 10, 7);
+                $table->decimal('longitude', 10, 7);
+                $table->timestamp('recorded_at');
+                $table->string('source', 20)->default('app');
+                $table->timestamps();
+                $table->unique(['company_id', 'driver_id', 'recorded_at'], 'vtc_driver_positions_company_driver_at_unique');
+            });
+        }
+
         // — FuelStation (solution verticale, FUEL-002..008, issues #5795..#5802) :
         // parité fixture ↔ migrations tenant récentes (garde #5443) — mêmes
         // colonnes que les migrations (PK bigint, company_id uuid indexé),

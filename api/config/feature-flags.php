@@ -238,5 +238,33 @@ return [
             'killable' => true,
             'description' => 'Module Fleet — flotte & suivi des véhicules (outil horizontal BC-24/#7400 ; gate module.fleet).',
         ],
+        // BC-33 GEO (GEO-02/#8351) — core géospatial transverse (PostGIS) :
+        // distance / plus-proches / dans-un-rayon pour toutes les verticales
+        // (VTC en premier, BC-34). Enregistré ici ET dans
+        // `Company::KNOWN_MODULES` + `ModuleRegistry` dès la création (leçon
+        // #7220/#7235 : catalogue + feature-flags + KNOWN_MODULES = les 3
+        // points d'enregistrement obligatoires). Fail-closed : défaut false,
+        // gate serveur `module.geo` sur les routes /api/v1/geo/*.
+        'geo' => [
+            'scope' => 'module',
+            'default' => false,
+            'since' => '4.35.0',
+            'killable' => true,
+            'description' => 'Core géospatial transverse (BC-33, GEO-02/#8351 ; gate `module.geo`) : calculs de positionnement PostGIS — distance, plus-proches, dans-un-rayon — réutilisables par toutes les verticales (VTC en premier, BC-34).',
+        ],
+        // BC-34 VTC (VTC-01/#8357) — verticale VTC/taxi : réservation de
+        // courses, dispatch au chauffeur disponible le plus proche (via le
+        // core `geo`), tarification, cycle complet. Code du VtcManifest ;
+        // activation refusée si `geo` inactif (SolutionActivator fail-closed).
+        // Enregistré ici ET dans `Company::KNOWN_MODULES` + `ModuleRegistry`
+        // dès la création (leçon #7220/#7235). Fail-closed : défaut false,
+        // gate serveur `module.vtc` sur les routes /api/v1/vtc/*.
+        'vtc' => [
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.35.0',
+            'killable' => true,
+            'description' => 'Solution VTC/taxi (BC-34, VTC-01/#8357 ; gate `module.vtc`) : réservation de courses, dispatch au plus proche chauffeur via le core géospatial `geo` (requis), tarification et suivi.',
+        ],
     ],
 ];

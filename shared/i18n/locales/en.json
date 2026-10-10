@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-09-28T09:00:00Z",
+  "_updated_at": "2026-10-10T00:00:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo — Business Suite"
@@ -7219,5 +7219,50 @@
         "no_show": "No-show"
       }
     }
+  },
+  "vtc": {
+    "title": "Ride-hailing & taxi",
+    "subtitle": "Ride dispatch and real-time driver tracking",
+    "rides": "Rides",
+    "drivers": "Drivers",
+    "openDrivers": "View drivers",
+    "openRides": "View rides",
+    "rideCount": "active ride(s)",
+    "driverCount": "driver(s)",
+    "loading": "Loading…",
+    "retry": "Refresh",
+    "autoRefresh": "Auto-refresh every 15 s",
+    "loadError": "Unable to load the ride-hailing dispatch",
+    "moduleDisabled": "The ride-hailing module is not enabled for this company.",
+    "emptyRides": "No active rides",
+    "emptyRidesHint": "Rides requested through the passenger API will appear here in real time.",
+    "emptyDrivers": "No registered drivers",
+    "emptyDriversHint": "Driver profiles are created from the admin API (POST /vtc/drivers).",
+    "reference": "Reference",
+    "pickup": "Pickup",
+    "dropoff": "Dropoff",
+    "driver": "Driver",
+    "pendingOffer": "Pending offer",
+    "unassigned": "Unassigned",
+    "estimatedPrice": "Estimated price",
+    "requestedAt": "Requested at",
+    "lastPosition": "Last position",
+    "positionUnavailable": "No position reported",
+    "updatedAt": "Last update",
+    "vehicle": "Vehicle",
+    "phone": "Phone",
+    "statusRequested": "Requested",
+    "statusDispatching": "Dispatching",
+    "statusAccepted": "Accepted",
+    "statusArrived": "Driver arrived",
+    "statusInProgress": "In progress",
+    "statusCompleted": "Completed",
+    "statusExpired": "Expired",
+    "statusCancelled": "Cancelled",
+    "statusUnknown": "Unknown status",
+    "driverOffline": "Offline",
+    "driverAvailable": "Available",
+    "driverBusy": "On a ride",
+    "driverSuspended": "Suspended"
   }
 }
