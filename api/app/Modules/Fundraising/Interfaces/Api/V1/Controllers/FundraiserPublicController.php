@@ -148,7 +148,7 @@ final class FundraiserPublicController extends Controller
             );
         } catch (\Throwable $exception) {
             \Illuminate\Support\Facades\Log::critical(
-                'Fundraising: echec d\'ecriture de la route paiement — rapprochement webhook impossible pour cette contribution',
+                'Fundraising: echec d\'ecriture de la route paiement - rapprochement webhook impossible pour cette contribution',
                 [
                     'reference' => $contribution->reference,
                     'provider' => $contribution->provider,
