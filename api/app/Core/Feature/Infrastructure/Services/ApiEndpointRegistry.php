@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Feature\Infrastructure\Services;
 
-use App\Contracts\ApiEndpointRegistryInterface;
 use App\Contracts\FeatureDetectorInterface;
+use App\Contracts\ApiEndpointRegistryInterface;
 use App\Contracts\FeatureRegistryInterface;
 use App\Exceptions\FeatureSynchronizationException;
 use App\Modules\Billing\Domain\Models\Feature;
@@ -17,10 +17,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
- * BOS-015 (#8202) — Registre centralisé des endpoints API pour le manifeste mobile.
+ * Implémentation du registre centralisé des fonctionnalités API
  *
- * Maintient l'inventaire des endpoints API déclarés pour les applications mobiles
- * (versioning, compatibilité mobile_version_min/max, réponse schéma).
+ * Maintient un inventaire complet de toutes les fonctionnalités API disponibles
+ * avec système de cache intelligent et support du versioning.
  */
 class ApiEndpointRegistry implements ApiEndpointRegistryInterface, FeatureRegistryInterface
 {
@@ -47,25 +47,30 @@ class ApiEndpointRegistry implements ApiEndpointRegistryInterface, FeatureRegist
         try {
             DB::beginTransaction();
 
+            // Vérifier si la fonctionnalité existe déjà
             $existingFeature = Feature::withoutGlobalScope('company')->where('key', $feature->key)->first();
 
             if ($existingFeature) {
+                // Mettre à jour la fonctionnalité existante
                 $existingFeature->update($feature->toArray());
                 Log::info('Feature updated in registry', ['key' => $feature->key]);
             } else {
+                // Créer une nouvelle fonctionnalité
                 $feature->save();
                 Log::info('Feature registered in registry', ['key' => $feature->key]);
             }
 
             DB::commit();
-            $this->invalidateCache($feature->key);
+
+            // Invalider le cache
+            $this->invalidateCache();
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to register feature in registry', [
+            Log::error('Failed to register feature', [
                 'key' => $feature->key,
                 'error' => $e->getMessage(),
             ]);
-
             throw new FeatureSynchronizationException(
                 "Failed to register feature {$feature->key}: {$e->getMessage()}"
             );
@@ -84,24 +89,17 @@ class ApiEndpointRegistry implements ApiEndpointRegistryInterface, FeatureRegist
             $query = Feature::withoutGlobalScope('company')->active();
 
             if ($version) {
-                $query->where('api_version', $version);
+                $query->forApiVersion($version);
             }
 
-            return $query->orderBy('key')->get();
-        });
+            $features = $query->orderBy('title')->get();
 
-        return $result;
-    }
+            Log::debug('Features retrieved from database', [
+                'count' => $features->count(),
+                'version' => $version,
+            ]);
 
-    public function getFeature(string $key): ?Feature
-    {
-        $cacheKey = $this->buildCacheKey(self::FEATURES_CACHE_KEY, 'single', $key);
-
-        /** @var Feature|null $result */
-        $result = $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($key): ?Feature {
-            return Feature::withoutGlobalScope('company')
-                ->where('key', $key)
-                ->first();
+            return $features;
         });
 
         return $result;
@@ -110,31 +108,59 @@ class ApiEndpointRegistry implements ApiEndpointRegistryInterface, FeatureRegist
     /**
      * {@inheritdoc}
      */
+    public function getFeature(string $key): ?Feature
+    {
+        $cacheKey = $this->buildCacheKey(self::FEATURES_CACHE_KEY, 'single', $key);
+
+        /** @var Feature|null $result */
+        $result = $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($key): ?Feature {
+            return Feature::withoutGlobalScope('company')->where('key', $key)->first();
+        });
+
+        return $result;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @param  array<string, mixed>  $metadata
+     */
     public function updateFeature(string $key, array $metadata): void
     {
         try {
             DB::beginTransaction();
 
-            /** @var Feature $feature */
             $feature = Feature::withoutGlobalScope('company')->where('key', $key)->firstOrFail();
-            $feature->update($metadata);
+
+            // Fusionner les nouvelles métadonnées avec les existantes
+            /** @var array<string, mixed> $existingMetadata */
+            $existingMetadata = $feature->metadata ?? [];
+            $updatedMetadata = array_merge($existingMetadata, $metadata);
+
+            $feature->update([
+                'metadata' => $updatedMetadata,
+                'updated_at' => now(),
+            ]);
 
             DB::commit();
+
+            Log::info('Feature metadata updated', ['key' => $key]);
+
+            // Invalider le cache pour cette fonctionnalité
             $this->invalidateCache($key);
 
-            Log::info('Feature metadata updated in registry', ['key' => $key]);
-        } catch (ModelNotFoundException) {
+        } catch (ModelNotFoundException $e) {
             DB::rollBack();
             Log::warning('Attempted to update non-existent feature', ['key' => $key]);
-
-            throw new FeatureSynchronizationException("Feature {$key} not found");
+            throw new FeatureSynchronizationException(
+                "Feature {$key} not found for update"
+            );
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to update feature metadata', [
+            Log::error('Failed to update feature', [
                 'key' => $key,
                 'error' => $e->getMessage(),
             ]);
-
             throw new FeatureSynchronizationException(
                 "Failed to update feature {$key}: {$e->getMessage()}"
             );
@@ -151,23 +177,24 @@ class ApiEndpointRegistry implements ApiEndpointRegistryInterface, FeatureRegist
 
             $deleted = Feature::withoutGlobalScope('company')->where('key', $key)->delete();
 
-            if (! $deleted) {
+            if ($deleted > 0) {
+                Log::info('Feature removed from registry', ['key' => $key]);
+            } else {
                 Log::warning('Attempted to remove non-existent feature', ['key' => $key]);
-
-                return;
             }
 
             DB::commit();
+
+            // Invalider le cache (global et spécifique à la fonctionnalité)
+            $this->invalidateCache();
             $this->invalidateCache($key);
 
-            Log::info('Feature removed from registry', ['key' => $key]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to remove feature from registry', [
+            Log::error('Failed to remove feature', [
                 'key' => $key,
                 'error' => $e->getMessage(),
             ]);
-
             throw new FeatureSynchronizationException(
                 "Failed to remove feature {$key}: {$e->getMessage()}"
             );
@@ -175,17 +202,16 @@ class ApiEndpointRegistry implements ApiEndpointRegistryInterface, FeatureRegist
     }
 
     /**
-     * @return array<string, mixed>
+     * {@inheritdoc}
      */
     public function getManifest(?string $mobileVersion = null): array
     {
         $cacheKey = $this->buildCacheKey(self::MANIFEST_CACHE_KEY, $mobileVersion);
 
         /** @var array<string, mixed> $manifest */
-        $manifest = $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($mobileVersion): array {
-            $features = $mobileVersion
-                ? $this->getCompatibleFeatures($mobileVersion)
-                : $this->getFeatures();
+        $manifest = (array) $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($mobileVersion): array {
+            /** @var Collection<int, Feature> $features */
+            $features = $this->getCompatibleFeatures($mobileVersion ?? '1.0.0');
 
             $data = [
                 'version' => $this->getCurrentApiVersion(),
@@ -248,10 +274,12 @@ class ApiEndpointRegistry implements ApiEndpointRegistryInterface, FeatureRegist
     public function invalidateCache(?string $key = null): void
     {
         if ($key) {
+            // Invalider le cache pour une fonctionnalité spécifique
             $patterns = [
                 $this->buildCacheKey(self::FEATURES_CACHE_KEY, 'single', $key),
             ];
         } else {
+            // Invalider tout le cache du registre
             $patterns = [
                 self::MANIFEST_CACHE_KEY.'*',
                 self::FEATURES_CACHE_KEY.'*',
@@ -261,13 +289,14 @@ class ApiEndpointRegistry implements ApiEndpointRegistryInterface, FeatureRegist
 
         foreach ($patterns as $pattern) {
             if (str_contains($pattern, '*')) {
+                // Utiliser flush pour les patterns avec wildcards
                 $this->cache->tags([self::CACHE_PREFIX])->flush();
             } else {
                 $this->cache->forget($pattern);
             }
         }
 
-        Log::debug('Api endpoint registry cache invalidated', ['key' => $key]);
+        Log::debug('Feature registry cache invalidated', ['key' => $key]);
     }
 
     /**
@@ -275,7 +304,7 @@ class ApiEndpointRegistry implements ApiEndpointRegistryInterface, FeatureRegist
      */
     public function synchronize(): array
     {
-        Log::info('Starting api endpoint registry synchronization');
+        Log::info('Starting feature registry synchronization');
 
         try {
             DB::beginTransaction();
@@ -287,6 +316,7 @@ class ApiEndpointRegistry implements ApiEndpointRegistryInterface, FeatureRegist
                 'errors' => [],
             ];
 
+            // Détecter les nouvelles fonctionnalités
             $newFeatures = $this->detector->detectNewFeatures();
             foreach ($newFeatures as $featureData) {
                 try {
@@ -299,12 +329,12 @@ class ApiEndpointRegistry implements ApiEndpointRegistryInterface, FeatureRegist
                 }
             }
 
+            // Détecter les changements
             $changes = $this->detector->detectChanges();
             foreach ($changes as $change) {
                 try {
                     /** @var array{type: string, feature_key: string, current_metadata?: array<string, mixed>} $change */
                     $featureKey = (string) $change['feature_key'];
-
                     switch ($change['type']) {
                         case 'modified':
                             /** @var array<string, mixed> $currentMetadata */
@@ -312,6 +342,7 @@ class ApiEndpointRegistry implements ApiEndpointRegistryInterface, FeatureRegist
                             $this->updateFeature($featureKey, $currentMetadata);
                             $result['updated']++;
                             break;
+
                         case 'removed':
                             $this->removeFeature($featureKey);
                             $result['removed']++;
@@ -324,15 +355,16 @@ class ApiEndpointRegistry implements ApiEndpointRegistryInterface, FeatureRegist
 
             DB::commit();
 
+            // Invalider tout le cache après synchronisation
             $this->invalidateCache();
 
-            Log::info('Api endpoint registry synchronization completed', $result);
+            Log::info('Feature registry synchronization completed', $result);
 
             return $result;
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Api endpoint registry synchronization failed', ['error' => $e->getMessage()]);
-
+            Log::error('Feature registry synchronization failed', ['error' => $e->getMessage()]);
             throw new FeatureSynchronizationException(
                 "Synchronization failed: {$e->getMessage()}"
             );
@@ -348,7 +380,6 @@ class ApiEndpointRegistry implements ApiEndpointRegistryInterface, FeatureRegist
         $stats = $this->cache->remember(self::STATISTICS_CACHE_KEY, self::CACHE_TTL, function (): array {
             /** @var \Illuminate\Database\Eloquent\Builder<Feature> $baseQuery */
             $baseQuery = Feature::withoutGlobalScope('company')->newQuery();
-
             $totalFeatures = (clone $baseQuery)->count();
             $activeFeatures = (clone $baseQuery)->active()->count();
 
@@ -382,21 +413,33 @@ class ApiEndpointRegistry implements ApiEndpointRegistryInterface, FeatureRegist
         return $stats;
     }
 
+    /**
+     * Construit une clé de cache avec préfixe et paramètres
+     */
     private function buildCacheKey(?string ...$parts): string
     {
         return implode(':', array_filter($parts));
     }
 
+    /**
+     * Récupère la version actuelle de l'API
+     */
     private function getCurrentApiVersion(): string
     {
         return (string) config('app.api_version', 'v1');
     }
 
+    /**
+     * Récupère la version mobile minimale supportée
+     */
     private function getMinimumMobileVersion(): string
     {
         return (string) (Feature::withoutGlobalScope('company')->min('mobile_version_min') ?? '1.0.0');
     }
 
+    /**
+     * Récupère l'heure de la dernière synchronisation
+     */
     private function getLastSynchronizationTime(): ?string
     {
         $lastSync = $this->cache->get(self::CACHE_PREFIX.':last_sync');
@@ -405,6 +448,8 @@ class ApiEndpointRegistry implements ApiEndpointRegistryInterface, FeatureRegist
     }
 
     /**
+     * Récupère le statut du cache
+     *
      * @return array<string, mixed>
      */
     private function getCacheStatus(): array

@@ -1,114 +1,108 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Console\Commands;
 
 use App\Contracts\ApiEndpointRegistryInterface;
+use App\Contracts\FeatureRegistryInterface;
 use App\Modules\Billing\Domain\Models\Feature;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 /**
- * BOS-015 (#8202) : commande console d'inventaire API endpoints (manifeste mobile).
+ * Commande Artisan pour gerer le registre des fonctionnalites API.
  */
 class FeatureRegistryCommand extends Command
 {
     /**
-     * The name and signature of the console command.
-     *
      * @var string
      */
-    protected $signature = 'features:registry 
-                            {action : Action à exécuter (sync, list, stats, clear-cache)}
-                            {--version= : Version de l\'API ou de l\'application mobile}
+    protected $signature = 'features:registry
+                            {action : Action a effectuer (sync, list, stats, clear-cache)}
+                            {--api-version= : Version API specifique}
+                            {--mobile-version= : Version mobile pour la compatibilite}
                             {--format=table : Format de sortie (table, json)}';
 
     /**
-     * The console command description.
-     *
      * @var string
      */
-    protected $description = 'Gère le registre des fonctionnalités API pour les applications mobiles';
+    protected $description = 'Gere le registre des fonctionnalites API';
 
     public function handle(ApiEndpointRegistryInterface $registry): int
     {
-        $action = $this->argument('action');
-
-        return match ($action) {
-            'sync' => $this->handleSync($registry),
-            'list' => $this->handleList($registry),
-            'stats' => $this->handleStats($registry),
-            'clear-cache' => $this->handleClearCache($registry),
-            default => $this->handleUnknownAction((string) $action),
-        };
-    }
-
-    private function handleSync(ApiEndpointRegistryInterface $registry): int
-    {
-        $this->info('Démarrage de la synchronisation du registre des fonctionnalités...');
+        $action = $this->argumentString('action');
 
         try {
-            $result = $registry->synchronize();
-
-            $this->info('Synchronisation terminée avec succès :');
-            $this->table(
-                ['Type', 'Nombre'],
-                [
-                    ['Nouvelles fonctionnalités', $result['new']],
-                    ['Fonctionnalités mises à jour', $result['updated']],
-                    ['Fonctionnalités supprimées', $result['removed']],
-                    ['Erreurs', count($result['errors'])],
-                ]
-            );
-
-            if (! empty($result['errors'])) {
-                $this->warn('Erreurs rencontrées lors de la synchronisation :');
-                foreach ($result['errors'] as $error) {
-                    $this->error("- {$error}");
-                }
-            }
-
-            return Command::SUCCESS;
+            return match ($action) {
+                'sync' => $this->handleSync($registry),
+                'list' => $this->handleList($registry),
+                'stats' => $this->handleStats($registry),
+                'clear-cache' => $this->handleClearCache($registry),
+                default => $this->handleUnknownAction($action),
+            };
         } catch (\Exception $e) {
-            $this->error("Erreur lors de la synchronisation : {$e->getMessage()}");
+            $this->error("Erreur lors de l'execution: {$e->getMessage()}");
+            Log::error('Feature registry command failed', [
+                'action' => $action,
+                'error' => $e->getMessage(),
+            ]);
 
             return Command::FAILURE;
         }
     }
 
+    private function handleSync(ApiEndpointRegistryInterface $registry): int
+    {
+        $this->info('Synchronisation du registre des fonctionnalites...');
+
+        $result = $registry->synchronize();
+
+        $this->info('Synchronisation terminee:');
+        $this->line('  - Nouvelles fonctionnalites: '.$result['new']);
+        $this->line('  - Fonctionnalites mises a jour: '.$result['updated']);
+        $this->line('  - Fonctionnalites supprimees: '.$result['removed']);
+
+        if ($result['errors'] !== []) {
+            $this->warn('Erreurs rencontrees:');
+            foreach ($result['errors'] as $error) {
+                $this->line("  - {$error}");
+            }
+        }
+
+        return Command::SUCCESS;
+    }
+
     private function handleList(ApiEndpointRegistryInterface $registry): int
     {
-        $version = $this->option('version');
-        $format = $this->option('format');
+        $version = $this->optionString('api-version');
+        $mobileVersion = $this->optionString('mobile-version');
+        $format = $this->optionString('format', 'table');
 
-        $features = $version
-            ? $registry->getFeatures((string) $version)
-            : $registry->getFeatures();
+        if ($mobileVersion !== null) {
+            $features = $registry->getCompatibleFeatures($mobileVersion);
+            $this->info("Fonctionnalites compatibles avec la version mobile {$mobileVersion}:");
+        } else {
+            $features = $registry->getFeatures($version);
+            $title = $version !== null ? "Fonctionnalites pour l'API {$version}:" : 'Toutes les fonctionnalites:';
+            $this->info($title);
+        }
 
         if ($features->isEmpty()) {
-            $this->warn('Aucune fonctionnalité trouvée.');
+            $this->warn('Aucune fonctionnalite trouvee.');
 
             return Command::SUCCESS;
         }
 
         if ($format === 'json') {
-            $this->line(json_encode($features->map(fn (Feature $f) => $f->toManifestArray()), JSON_PRETTY_PRINT) ?: '');
+            $this->line($this->jsonLine($features->toArray()));
 
             return Command::SUCCESS;
         }
 
-        $headers = ['Clé', 'Titre', 'Endpoint', 'Version API', 'Version Mobile Min', 'Statut'];
-        $rows = $features->map(fn (Feature $feature) => [
-            $feature->key,
-            $feature->title,
-            $feature->endpoint,
-            $feature->api_version,
-            $feature->mobile_version_min,
-            $feature->status,
-        ])->toArray();
+        $headers = ['Cle', 'Titre', 'Endpoint', 'Methodes', 'Version API', 'Statut'];
+        /** @var array<int, array<int, string|null>> $rows */
+        $rows = $features->map(fn (Feature $feature): array => $this->featureRow($feature))->toArray();
 
         $this->table($headers, $rows);
-        $this->info("Total : {$features->count()} fonctionnalité(s)");
 
         return Command::SUCCESS;
     }
@@ -116,77 +110,137 @@ class FeatureRegistryCommand extends Command
     private function handleStats(ApiEndpointRegistryInterface $registry): int
     {
         $stats = $registry->getStatistics();
-        $format = $this->option('format');
+        $format = $this->optionString('format', 'table');
 
         if ($format === 'json') {
-            $this->line(json_encode($stats, JSON_PRETTY_PRINT) ?: '');
+            $this->line($this->jsonLine($stats));
 
             return Command::SUCCESS;
         }
 
-        $this->info('Statistiques du Registre des Fonctionnalités :');
+        $this->info('Statistiques du registre des fonctionnalites:');
+        $this->line('  Total des fonctionnalites: '.$this->statInt($stats, 'total_features'));
+        $this->line('  Fonctionnalites actives: '.$this->statInt($stats, 'active_features'));
+        $this->line('  Fonctionnalites inactives: '.$this->statInt($stats, 'inactive_features'));
+        $this->line('  Mises a jour recentes (7 jours): '.$this->statInt($stats, 'recently_updated'));
 
-        $this->table(
-            ['Métrique', 'Valeur'],
-            [
-                ['Total des fonctionnalités', $stats['total_features']],
-                ['Fonctionnalités actives', $stats['active_features']],
-                ['Fonctionnalités inactives', $stats['inactive_features']],
-                ['Modifiées récemment (7j)', $stats['recently_updated']],
-                ['Dernière synchronisation', $stats['last_synchronization'] ?? 'Jamais'],
-            ]
-        );
-
-        if (! empty($stats['by_api_version'])) {
-            $this->info("\nRépartition par version d'API :");
-            $this->table(
-                ['Version API', 'Nombre'],
-                collect($stats['by_api_version'])->map(fn ($count, $version) => [$version, $count])->toArray()
-            );
+        $byApiVersion = $this->statArray($stats, 'by_api_version');
+        if ($byApiVersion !== []) {
+            $this->line("\nPar version API:");
+            foreach ($byApiVersion as $version => $count) {
+                $this->line('  - '.(string) $version.': '.(string) $count);
+            }
         }
 
-        if (! empty($stats['by_status'])) {
-            $this->info("\nRépartition par statut :");
-            $this->table(
-                ['Statut', 'Nombre'],
-                collect($stats['by_status'])->map(fn ($count, $status) => [$status, $count])->toArray()
-            );
+        $byStatus = $this->statArray($stats, 'by_status');
+        if ($byStatus !== []) {
+            $this->line("\nPar statut:");
+            foreach ($byStatus as $status => $count) {
+                $this->line('  - '.(string) $status.': '.(string) $count);
+            }
         }
 
-        $this->info("\nÉtat du cache :");
-        $this->table(
-            ['Composant', 'En cache'],
-            [
-                ['Manifeste', $stats['cache_status']['manifest_cached'] ? 'Oui' : 'Non'],
-                ['Fonctionnalités', $stats['cache_status']['features_cached'] ? 'Oui' : 'Non'],
-                ['Driver de cache', $stats['cache_status']['cache_driver']],
-            ]
-        );
+        $cacheStatus = $this->statArray($stats, 'cache_status');
+        $this->line("\nCache:");
+        $this->line('  - Driver: '.(string) ($cacheStatus['cache_driver'] ?? 'unknown'));
+        $this->line('  - Manifeste en cache: '.$this->boolLabel($cacheStatus['manifest_cached'] ?? false));
+        $this->line('  - Fonctionnalites en cache: '.$this->boolLabel($cacheStatus['features_cached'] ?? false));
+
+        $lastSynchronization = $stats['last_synchronization'] ?? null;
+        if (is_scalar($lastSynchronization) && (string) $lastSynchronization !== '') {
+            $this->line("\nDerniere synchronisation: {$lastSynchronization}");
+        }
 
         return Command::SUCCESS;
     }
 
+    /**
+     * @return array<int, string|null>
+     */
+    private function featureRow(Feature $feature): array
+    {
+        return [
+            $feature->key,
+            $feature->title,
+            $feature->endpoint,
+            implode(', ', array_map('strval', $feature->http_methods ?? [])),
+            $feature->api_version,
+            $feature->status,
+        ];
+    }
+
     private function handleClearCache(ApiEndpointRegistryInterface $registry): int
     {
-        $this->info('Vidage du cache du registre des fonctionnalités...');
+        $this->info('Suppression du cache du registre...');
 
-        try {
-            $registry->invalidateCache();
-            $this->info('Cache vidé avec succès.');
+        $registry->invalidateCache();
 
-            return Command::SUCCESS;
-        } catch (\Exception $e) {
-            $this->error("Erreur lors du vidage du cache : {$e->getMessage()}");
+        $this->info('Cache supprime avec succes.');
 
-            return Command::FAILURE;
-        }
+        return Command::SUCCESS;
     }
 
     private function handleUnknownAction(string $action): int
     {
-        $this->error("Action inconnue : '{$action}'");
-        $this->info('Actions disponibles : sync, list, stats, clear-cache');
+        $this->error("Action inconnue: {$action}");
+        $this->info('Actions disponibles: sync, list, stats, clear-cache');
 
-        return Command::INVALID;
+        return Command::FAILURE;
+    }
+
+    private function argumentString(string $key): string
+    {
+        $value = $this->argument($key);
+
+        return is_scalar($value) ? (string) $value : '';
+    }
+
+    private function optionString(string $key, ?string $default = null): ?string
+    {
+        $value = $this->option($key);
+
+        if ($value === null || $value === false || is_array($value)) {
+            return $default;
+        }
+
+        $value = trim((string) $value);
+
+        return $value === '' ? $default : $value;
+    }
+
+    /**
+     * @param  array<array-key, mixed>  $value
+     */
+    private function jsonLine(array $value): string
+    {
+        $encoded = json_encode($value, JSON_PRETTY_PRINT);
+
+        return $encoded === false ? '{}' : $encoded;
+    }
+
+    /**
+     * @param  array<string, mixed>  $stats
+     */
+    private function statInt(array $stats, string $key): int
+    {
+        $value = $stats[$key] ?? 0;
+
+        return is_numeric($value) ? (int) $value : 0;
+    }
+
+    /**
+     * @param  array<string, mixed>  $stats
+     * @return array<string|int, mixed>
+     */
+    private function statArray(array $stats, string $key): array
+    {
+        $value = $stats[$key] ?? [];
+
+        return is_array($value) ? $value : [];
+    }
+
+    private function boolLabel(mixed $value): string
+    {
+        return filter_var($value, FILTER_VALIDATE_BOOL) ? 'Oui' : 'Non';
     }
 }

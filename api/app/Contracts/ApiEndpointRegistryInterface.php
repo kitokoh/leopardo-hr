@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Contracts;
 
 use App\Exceptions\FeatureSynchronizationException;
@@ -9,10 +7,7 @@ use App\Modules\Billing\Domain\Models\Feature;
 use Illuminate\Support\Collection;
 
 /**
- * BOS-015 (#8202) — Interface du registre d'endpoints API (manifeste mobile).
- *
- * Renommé depuis FeatureRegistryInterface pour lever l'ambiguïté avec le
- * ModuleRegistry / feature-gating tenant (BOS-011).
+ * Interface pour le registre centralise des fonctionnalites API.
  */
 interface ApiEndpointRegistryInterface
 {
