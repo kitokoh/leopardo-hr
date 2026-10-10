@@ -49,12 +49,12 @@ export function getFooterHref(sectionIndex: number, linkIndex: number): string |
     '1-3': '/contact',
     '1-4': '/contact?topic=community',
     // #8075 : pages orphelines liées (case-studies et restaurateur méritent
-    // le trafic, cf. issue) ; /branding repositionné en '1-10' (il occupait
+    // le trafic, cf. issue) ; '1-8' sert désormais le hub /packs (offre grand public) ; /branding repositionné en '1-10' (il occupait
     // '1-5' alors qu'aucune locale n'a de 6e libellé Ressources).
     '1-5': '/case-studies',
     '1-6': '/testimonials',
     '1-7': '/alternatives',
-    '1-8': '/restaurateur',
+    '1-8': '/packs',
     '1-9': '/careers',
     '1-10': '/branding',
     '2-0': '/download#mobile-apps',

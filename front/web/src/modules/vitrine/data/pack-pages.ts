@@ -368,3 +368,88 @@ export const PACK_PAGES: Record<PackVerticalSlug, Record<AppLocale, PackPageCopy
 export function isPackVertical(value: string): value is PackVerticalSlug {
   return (PACK_VERTICALS as string[]).includes(value);
 }
+
+
+/** Copy du hub /packs — la vitrine de l'offre d'entrée grand public :
+ *  un pack métier OFFERT par corps de métier. */
+export type PacksHubCopy = {
+  badge: string;
+  title: string;
+  highlight: string;
+  subtitle: string;
+  points: string[];
+  cards: Array<{ slug: 'restaurant' | PackVerticalSlug; name: string; line: string; linkLabel: string }>;
+  freeBadge: string;
+  note: string;
+};
+
+export const PACKS_HUB_COPY: Record<AppLocale, PacksHubCopy> = {
+  fr: {
+    badge: 'Packs métiers offerts',
+    title: 'Un pack offert',
+    highlight: 'pour votre métier.',
+    subtitle:
+      'Restaurateur, gérant de station-service, directeur d’école, agent de voyage : votre pack Leopardo réunit les apps, les parcours et les réglages de votre secteur — activé gratuitement dans votre espace.',
+    points: ['Pack offert', 'Sans carte bancaire', 'Activé en quelques minutes'],
+    cards: [
+      { slug: 'restaurant', name: 'Restaurants', line: 'Caisse, cuisine, réservations, stock — composé en 3 questions.', linkLabel: 'Composer mon pack' },
+      { slug: 'station-service', name: 'Stations-service', line: 'Rotations 3×8, pointage par poste, majorations vers la paie.', linkLabel: 'Découvrir le pack' },
+      { slug: 'ecole', name: 'Écoles & formation', line: 'Présence du personnel, remplacements, paie calendrier scolaire.', linkLabel: 'Découvrir le pack' },
+      { slug: 'agence-de-voyage', name: 'Agences de voyage', line: 'Dossiers clients, billetterie, commissions, paie des équipes.', linkLabel: 'Découvrir le pack' },
+    ],
+    freeBadge: 'Offert',
+    note: 'Chaque pack s’active gratuitement à la création de votre espace Leopardo. Aucun engagement.',
+  },
+  en: {
+    badge: 'Free business packs',
+    title: 'A free pack',
+    highlight: 'for your trade.',
+    subtitle:
+      'Restaurant owner, fuel station manager, school director, travel agent: your Leopardo pack bundles the apps, flows and defaults of your industry — activated free in your workspace.',
+    points: ['Free pack', 'No credit card', 'Activated in minutes'],
+    cards: [
+      { slug: 'restaurant', name: 'Restaurants', line: 'POS, kitchen, reservations, stock — built in 3 questions.', linkLabel: 'Build my pack' },
+      { slug: 'station-service', name: 'Fuel stations', line: '3×8 rotations, per-post clock-ins, overtime to payroll.', linkLabel: 'See the pack' },
+      { slug: 'ecole', name: 'Schools & training', line: 'Staff attendance, replacements, school-calendar payroll.', linkLabel: 'See the pack' },
+      { slug: 'agence-de-voyage', name: 'Travel agencies', line: 'Client files, ticketing, commissions, team payroll.', linkLabel: 'See the pack' },
+    ],
+    freeBadge: 'Free',
+    note: 'Every pack is activated free when you create your Leopardo workspace. No commitment.',
+  },
+  tr: {
+    badge: 'Ücretsiz iş paketleri',
+    title: 'Sektörünüz için',
+    highlight: 'ücretsiz paket.',
+    subtitle:
+      'Restorancı, istasyon müdürü, okul müdürü, seyahat acentesi: Leopardo paketiniz sektörünüzün uygulamalarını, akışlarını ve ayarlarını bir araya getirir — çalışma alanınızda ücretsiz etkinleşir.',
+    points: ['Ücretsiz paket', 'Kredi kartı yok', 'Dakikalar içinde aktif'],
+    cards: [
+      { slug: 'restaurant', name: 'Restoranlar', line: 'Kasa, mutfak, rezervasyon, stok — 3 soruda oluşturun.', linkLabel: 'Paketimi oluştur' },
+      { slug: 'station-service', name: 'Akaryakıt istasyonları', line: '3×8 vardiyalar, posta bazlı yoklama, fazla mesai bordroya.', linkLabel: 'Paketi gör' },
+      { slug: 'ecole', name: 'Okullar & eğitim', line: 'Personel yoklaması, yerine geçmeler, okul takvimi bordrosu.', linkLabel: 'Paketi gör' },
+      { slug: 'agence-de-voyage', name: 'Seyahat acenteleri', line: 'Müşteri dosyaları, biletleme, komisyonlar, ekip bordrosu.', linkLabel: 'Paketi gör' },
+    ],
+    freeBadge: 'Ücretsiz',
+    note: 'Her paket, Leopardo çalışma alanınızı oluştururken ücretsiz etkinleşir. Taahhüt yok.',
+  },
+  ar: {
+    badge: 'حزم الأعمال مجانية',
+    title: 'حزمة مجانية',
+    highlight: 'لمهنتك.',
+    subtitle:
+      'صاحب مطعم، مدير محطة وقود، مدير مدرسة، وكيل سفر: حزمتك من ليوباردو تجمع تطبيقات قطاعك ومساراته وإعداداته — وتُفعَّل مجانًا في مساحتك.',
+    points: ['حزمة مجانية', 'بدون بطاقة بنكية', 'تُفعَّل في دقائق'],
+    cards: [
+      { slug: 'restaurant', name: 'المطاعم', line: 'نقاط البيع والمطبخ والحجوزات والمخزون — أنشئها في 3 أسئلة.', linkLabel: 'أنشئ حزمتي' },
+      { slug: 'station-service', name: 'محطات الوقود', line: 'مناوبات 3×8، حضور حسب الموضع، الإضافي إلى الرواتب.', linkLabel: 'شاهد الحزمة' },
+      { slug: 'ecole', name: 'المدارس والتكوين', line: 'حضور الطاقم والبدلاء ورواتب التقويم المدرسي.', linkLabel: 'شاهد الحزمة' },
+      { slug: 'agence-de-voyage', name: 'وكالات السفر', line: 'ملفات العملاء والتذاكر والعمولات ورواتب الفريق.', linkLabel: 'شاهد الحزمة' },
+    ],
+    freeBadge: 'مجانًا',
+    note: 'تُفعَّل كل حزمة مجانًا عند إنشاء مساحة ليوباردو الخاصة بك. بلا التزام.',
+  },
+};
+
+export function packsHubCardHref(slug: PacksHubCopy['cards'][number]['slug']): string {
+  return slug === 'restaurant' ? '/restaurateur' : `/packs/${slug}`;
+}

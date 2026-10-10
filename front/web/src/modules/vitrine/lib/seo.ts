@@ -258,6 +258,20 @@ export const pageMetadata = {
     ogImage: `${siteUrl}/og/default.png`,
   },
 
+  packs: {
+    title: "Un pack offert pour votre métier",
+    description:
+      "Un pack Leopardo offert par métier : restaurant, station-service, école, agence de voyage. Apps, parcours et réglages de votre secteur — activés gratuitement, sans carte bancaire.",
+    keywords: [
+      "pack métier offert",
+      "logiciel gratuit restaurant",
+      "logiciel station-service",
+      "logiciel école",
+      "logiciel agence de voyage",
+    ],
+    ogImage: `${siteUrl}/og/default.png`,
+  },
+
   'packs-station-service': {
     title: "Gestion station-service — pack offert",
     description:
@@ -626,6 +640,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     marketing: { title: "HR marketing: email, SMS & social", description: "Complete marketing tools: email, SMS, social media. Automation, analytics and integrated campaigns for your business." },
     integrations: { title: "Integrations & Connectors", description: "Accounting connectors and Leopardo API: Sage, QuickBooks, public API, webhooks and more." },
     restaurateur: { title: "Restaurant management software — free pack", description: "Reservations, POS, kitchen, stock and delivery: the Leopardo Restaurant Pack is free — build it in 3 questions, for single and multi-site restaurants." },
+    packs: { title: "A free pack for your trade", description: "A free Leopardo pack per trade: restaurant, fuel station, school, travel agency. Apps, flows and defaults of your industry — activated free, no credit card." },
     'packs-station-service': { title: "Fuel station crew management — free pack", description: "Per-post clock-ins, 3×8 rotations, hours and overtime to payroll: the Leopardo Fuel Station Pack is free — activated in minutes." },
     'packs-ecole': { title: "School staff management — free pack", description: "Staff attendance, leave, replacements and payroll aligned with the school calendar: the Leopardo School Pack is free — activated in minutes." },
     'packs-agence-voyage': { title: "Travel agency management — free pack", description: "Client files, ticketing, commissions and team payroll in one place: the Leopardo Travel Agency Pack is free — activated in minutes." },
@@ -660,6 +675,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     marketing: { title: "İK pazarlaması: e-posta, SMS, sosyal", description: "Eksiksiz pazarlama araçları: e-posta, SMS, sosyal medya. Otomasyon, analitik ve entegre kampanyalar." },
     integrations: { title: "Entegrasyonlar & Bağlayıcılar", description: "Muhasebe bağlayıcıları ve Leopardo API'si: Sage, QuickBooks, genel API, webhook'lar ve daha fazlası." },
     restaurateur: { title: "Restoran yönetim yazılımı — ücretsiz paket", description: "Rezervasyon, kasa, mutfak, stok ve teslimat: Leopardo Restoran Paketi ücretsiz — 3 soruda oluşturun, tek ve çok şubeli restoranlar için." },
+    packs: { title: "Sektörünüz için ücretsiz paket", description: "Her sektöre ücretsiz Leopardo paketi: restoran, akaryakıt istasyonu, okul, seyahat acentesi. Sektörünüzün uygulamaları ve ayarları — ücretsiz, kredi kartsız." },
     'packs-station-service': { title: "Akaryakıt istasyonu — ücretsiz paket", description: "Posta bazlı yoklama, 3×8 vardiyalar, saatler ve fazla mesai bordroya: Leopardo Akaryakıt İstasyonu Paketi ücretsiz — dakikalar içinde aktif." },
     'packs-ecole': { title: "Okul personeli yönetimi — ücretsiz paket", description: "Personel yoklaması, izinler, yerine geçmeler ve okul takvimiyle uyumlu bordro: Leopardo Okul Paketi ücretsiz — dakikalar içinde aktif." },
     'packs-agence-voyage': { title: "Seyahat acentesi yönetimi — ücretsiz paket", description: "Müşteri dosyaları, biletleme, komisyonlar ve ekip bordrosu tek yerde: Leopardo Seyahat Acentesi Paketi ücretsiz — dakikalar içinde aktif." },
@@ -694,6 +710,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     marketing: { title: "تسويق الموارد البشرية: بريد ورسائل وتواصل", description: "أدوات تسويق كاملة: البريد الإلكتروني والرسائل النصية ووسائل التواصل الاجتماعي. أتمتة وتحليلات وحملات متكاملة." },
     integrations: { title: "التكاملات والموصلات وواجهة API", description: "موصلات محاسبية وواجهة برمجة ليوباردو: Sage وQuickBooks وواجهة عامة وwebhooks والمزيد." },
     restaurateur: { title: "برنامج إدارة المطاعم — حزمة مجانية", description: "الحجوزات ونقاط البيع والمطبخ والمخزون والتوصيل: حزمة المطعم من ليوباردو مجانية — أنشئها في 3 أسئلة، للمطاعم بفرع واحد أو عدة فروع." },
+    packs: { title: "حزمة مجانية لمهنتك", description: "حزمة ليوباردو مجانية لكل مهنة: مطعم، محطة وقود، مدرسة، وكالة سفر. تطبيقات قطاعك وإعداداته — مجانًا وبدون بطاقة بنكية." },
     'packs-station-service': { title: "إدارة طاقم محطة الوقود — حزمة مجانية", description: "حضور حسب الموضع، مناوبات 3×8، الساعات والإضافي إلى الرواتب: حزمة محطة الوقود من ليوباردو مجانية — تُفعَّل في دقائق." },
     'packs-ecole': { title: "إدارة طاقم المدرسة — حزمة مجانية", description: "حضور الموظفين والغيابات والبدلاء ورواتب متوافقة مع التقويم المدرسي: حزمة المدرسة من ليوباردو مجانية — تُفعَّل في دقائق." },
     'packs-agence-voyage': { title: "إدارة وكالة السفر والتذاكر — حزمة مجانية", description: "ملفات العملاء وإصدار التذاكر والعمولات ورواتب الفريق في مكان واحد: حزمة وكالة السفر من ليوباردو مجانية — تُفعَّل في دقائق." },
