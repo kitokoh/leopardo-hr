@@ -28,6 +28,7 @@ return [
     // (moteur d'itinéraire réel = hors scope v1, spec §5.4).
     'pricing' => [
         'road_factor' => (float) env('VTC_ROAD_FACTOR', 1.3),
+        'avg_speed_kmh' => (float) env('VTC_AVG_SPEED_KMH', 22),
         'default_currency' => env('VTC_DEFAULT_CURRENCY', 'XAF'),
     ],
 
