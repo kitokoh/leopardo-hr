@@ -238,5 +238,19 @@ return [
             'killable' => true,
             'description' => 'Module Fleet — flotte & suivi des véhicules (outil horizontal BC-24/#7400 ; gate module.fleet).',
         ],
+        // BC-33 GEO (GEO-02/#8351) — core géospatial transverse (PostGIS) :
+        // distance / plus-proches / dans-un-rayon pour toutes les verticales
+        // (VTC en premier, BC-34). Enregistré ici ET dans
+        // `Company::KNOWN_MODULES` + `ModuleRegistry` dès la création (leçon
+        // #7220/#7235 : catalogue + feature-flags + KNOWN_MODULES = les 3
+        // points d'enregistrement obligatoires). Fail-closed : défaut false,
+        // gate serveur `module.geo` sur les routes /api/v1/geo/*.
+        'geo' => [
+            'scope' => 'module',
+            'default' => false,
+            'since' => '4.35.0',
+            'killable' => true,
+            'description' => 'Core géospatial transverse (BC-33) : calculs de positionnement PostGIS réutilisables par toutes les verticales (VTC en premier).',
+        ],
     ],
 ];

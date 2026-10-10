@@ -3,7 +3,7 @@
   "title": "Bounded Context Registry — Leopardo HR",
   "description": "Registre canonique machine-readable des bounded contexts (MAT-001, issue #5859). Référence humaine : docs/architecture/BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md (plan de gouvernance, PR agent-readiness).",
   "maintained_by": "dev-hub/tools/check-bounded-context-registry.sh (garde CI)",
-  "updated": "2026-09-06"
+  "updated": "2026-10-10"
  },
  "_shared_exceptions": [
   {
@@ -1010,6 +1010,34 @@
     "BC-01",
     "BC-02",
     "BC-03"
+   ]
+  },
+  {
+   "code": "BC-33",
+   "name": "GEO",
+   "context": "Geo",
+   "responsibility": "Core géospatial transverse (épic #8349) : détection PostGIS, calculs de distance (PostGIS + fallback Haversine), recherche des plus proches dans un rayon (registry geo.searchables) — réutilisable par toutes les verticales (vtc, pharmacy, restaurant, fleet, delivery).",
+   "owner": "Agent 33 — BC-GEO",
+   "priority": "P1",
+   "status": "active",
+   "paths": [
+    {
+     "path": "api/app/Modules/Geo",
+     "status": "active"
+    }
+   ],
+   "routes": [
+    "api/routes/modules/geo.php"
+   ],
+   "migrations": [
+    "api/database/migrations/public",
+    "api/database/migrations/tenant"
+   ],
+   "events": [
+    "App\\Modules\\Geo\\Domain\\Events"
+   ],
+   "dependencies": [
+    "BC-02"
    ]
   }
  ]

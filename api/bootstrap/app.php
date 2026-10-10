@@ -144,6 +144,8 @@ return Application::configure(basePath: dirname(__DIR__))
             // TRAVEL-1001 (#6114) — boutique publique (jeton tenant signé).
             'travel.public.shop' => \App\Http\Middleware\EnsurePublicShopAccess::class,
             'module.delivery' => EnsureDeliveryModuleMiddleware::class,
+            // BC-33 GEO (GEO-02/#8351) — gate feature flag geo (core géospatial transverse).
+            'module.geo' => \App\Http\Middleware\Geo\EnsureGeoModuleMiddleware::class,
             // BC-28 CATALOG — gate feature flag b2b_catalog (#6881).
             'module.catalog' => \App\Http\Middleware\Catalog\EnsureCatalogModuleMiddleware::class,
             // BC-17 RETAIL — gate feature flag retail (#7672).

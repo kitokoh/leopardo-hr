@@ -194,6 +194,13 @@ class Company extends Model
         // (leçon #7220/#7235 : sans cette entrée, l'admin plateforme ne peut
         // jamais activer la verticale). Fail-closed conservé (défaut false).
         'hospitality',
+        // BC-33 GEO (GEO-02/#8351) — core géospatial transverse (PostGIS,
+        // distance / plus-proches / dans-un-rayon), consommé par la verticale
+        // VTC et toute verticale ayant besoin de positionnement. Enregistré
+        // ici DÈS la création (leçon #7220/#7235 : sans cette entrée, l'admin
+        // plateforme ne peut jamais activer le module). Fail-closed conservé
+        // (défaut false) ; gate serveur `module.geo` sur /api/v1/geo/*.
+        'geo',
     ];
 
     /**
