@@ -19,7 +19,7 @@ export { ParticleField } from './ParticleField';
 // WebGL chargé en import dynamique, repli CSS 3D si indisponible.
 export { SolutionStack } from './hero/SolutionStack';
 // #8067 — héro produit-first : screenshot réel + badge GitHub statique.
-export { HeroProductShowcase, HeroGithubBadge } from './hero/HeroProductShowcase';
+export { HeroProductShowcase, HeroTrustBadge } from './hero/HeroProductShowcase';
 export { SolutionStackSection } from './hero/SolutionStackSection';
 export { LegalPageShell } from './LegalPageShell';
 export { GoogleAuthButton } from './GoogleAuthButton';

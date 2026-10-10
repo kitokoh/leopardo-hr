@@ -6,7 +6,7 @@
  * Flow : profil → questions (depuis le backend) → pack suggéré (cocher/
  * décocher avec raisons) → téléchargement (QR + liens + Edge + guide).
  *
- * 100 % open source côté front : framer-motion (déjà en deps), lib `qrcode`
+ * 100 % couvert par les deps existantes côté front : framer-motion, lib `qrcode`
  * (déjà en deps), pas d'API payante.
  *
  * Squelette pédagogique : chaque étape est volontairement simple à lire et

@@ -1404,7 +1404,7 @@
       "toggleAria": "Toggle billing period",
       "fullComparison": "View full comparison",
       "reassurance": "No credit card · Cancel anytime",
-      "selfHostNote": "Or self-host Leopardo for free — 100% open source"
+      "selfHostNote": "Or self-host Leopardo for free — your data, your server"
     },
     "card": {
       "periodDefault": "/month",

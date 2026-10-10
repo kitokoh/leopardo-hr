@@ -56,7 +56,7 @@ type LandingCopy = {
     subtitleTail: string
     primaryCta: string
     secondaryCta: string
-    /** #8068 — réassurance sous les CTA (« Gratuit · Sans CB · Code source ouvert »). */
+    /** #8068 — réassurance sous les CTA (« Gratuit · Sans CB · Vos données, chez vous »). */
     ctaReassurance: string
     mobileBadge?: string
     downloadCta?: string
@@ -182,18 +182,18 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       themeLabel: 'Changer le thème',
       menuLabel: 'Menu',
       localeLabel: 'Langue',
-      // #8066 — naming unique : « Leopardo » seul, baseline « suite métier open-source »
-      brandTagline: 'Suite métier open-source',
+      // Positionnement unique : « Leopardo » seul, baseline « Business OS ».
+      brandTagline: 'Business OS de terrain',
     },
     hero: {
       // #8066 — H1 outcome-first : « entreprise » en promesse, paie/pointage en preuve,
       // « chez vous » porte le self-host sans jargon ; « remplace Excel, WhatsApp et le
       // papier » (meilleure phrase de la page) remontée en tête de sous-titre.
-      badge: 'Suite métier open-source',
+      badge: 'Business OS de terrain',
       badgeNew: 'Nouveau',
       titleTop: 'Toute votre entreprise — paie, pointage, RH, compta —',
       titleBottom: 'dans une seule application, chez vous.',
-      subtitle: 'Leopardo remplace Excel, WhatsApp et le papier par une seule application open-source : RH & paie, pointage, absences, CRM, comptabilité et opérations — sur web, mobile et bornes, hébergée par nous ou sur votre serveur.',
+      subtitle: 'Leopardo remplace Excel, WhatsApp et le papier par une seule application : RH & paie, pointage, absences, CRM, comptabilité et opérations — sur web, mobile et bornes, hébergée par nous ou sur votre serveur.',
       subtitleHighlight: 'Le cockpit mobile de votre entreprise',
       subtitleTail: 'qui relie terrain, RH, managers et direction.',
       mobileBadge: 'Disponible sur mobile',
@@ -201,7 +201,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       visualAlt: 'Capture du tableau de bord admin Leopardo',
       primaryCta: 'Essayer gratuitement',
       secondaryCta: 'Installer sur votre serveur',
-      ctaReassurance: 'Gratuit · Sans carte bancaire · Code source ouvert',
+      ctaReassurance: 'Gratuit · Sans carte bancaire · Vos données, chez vous',
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'Pays couverts (paie)' },
         { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'Langues (FR/EN/AR/TR)' },
@@ -333,16 +333,16 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       themeLabel: 'Toggle theme',
       menuLabel: 'Menu',
       localeLabel: 'Language',
-      // #8066 — single naming: "Leopardo" alone, baseline "open-source business suite"
-      brandTagline: 'Open-source business suite',
+      // Single naming: "Leopardo" alone, baseline "Business OS".
+      brandTagline: 'Field Business OS',
     },
     hero: {
       // #8066 — outcome-first H1, same intent as FR
-      badge: 'Open-source business suite',
+      badge: 'Field Business OS',
       badgeNew: 'New',
       titleTop: 'Your whole business — payroll, time tracking, HR, accounting —',
       titleBottom: 'in one single app, on your own server.',
-      subtitle: 'Leopardo replaces Excel, WhatsApp and paper with one open-source app: HR & payroll, attendance, leave, CRM, accounting and operations — on web, mobile and kiosks, hosted by us or on your own server.',
+      subtitle: 'Leopardo replaces Excel, WhatsApp and paper with one app: HR & payroll, attendance, leave, CRM, accounting and operations — on web, mobile and kiosks, hosted by us or on your own server.',
       subtitleHighlight: 'The mobile cockpit of your company',
       subtitleTail: 'connecting field staff, HR, managers and leadership.',
       mobileBadge: 'Available on mobile',
@@ -350,7 +350,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       visualAlt: 'Leopardo admin dashboard screenshot',
       primaryCta: 'Try for free',
       secondaryCta: 'Install on your server',
-      ctaReassurance: 'Free · No credit card · Open source',
+      ctaReassurance: 'Free · No credit card · Your data, your server',
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'Payroll countries' },
         { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'Languages (FR/EN/AR/TR)' },
@@ -482,16 +482,16 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       themeLabel: 'Temayi degistir',
       menuLabel: 'Menu',
       localeLabel: 'Dil',
-      // #8066 — tek adlandırma: yalnız "Leopardo", alt başlık "açık kaynak iş paketi"
-      brandTagline: 'Açık kaynak iş paketi',
+      // Tek adlandırma: yalnız "Leopardo", alt başlık "Business OS".
+      brandTagline: 'Saha Business OS',
     },
     hero: {
       // #8066 — FR/EN ile aynı niyet: sonuç odaklı H1
-      badge: 'Açık kaynak iş paketi',
+      badge: 'Saha Business OS',
       badgeNew: 'Yeni',
       titleTop: 'Tüm işletmeniz — bordro, yoklama, İK, muhasebe —',
       titleBottom: 'tek bir uygulamada, kendi sunucunuzda.',
-      subtitle: 'Leopardo, Excel, WhatsApp ve kağıdı tek bir açık kaynak uygulamayla değiştirir: İK ve bordro, yoklama, izin, CRM, muhasebe ve operasyonlar — web, mobil ve kiosk üzerinde; bizde veya kendi sunucunuzda barındırın.',
+      subtitle: 'Leopardo, Excel, WhatsApp ve kağıdı tek bir uygulamayla değiştirir: İK ve bordro, yoklama, izin, CRM, muhasebe ve operasyonlar — web, mobil ve kiosk üzerinde; bizde veya kendi sunucunuzda barındırın.',
       subtitleHighlight: 'Employee, Manager, Platform Admin',
       subtitleTail: 'agir ERP olmadan saha pilotu baslatmaniz icin.',
       mobileBadge: 'Mobilde kullanilabilir',
@@ -499,7 +499,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       visualAlt: 'Leopardo yonetici paneli ekran goruntusu',
       primaryCta: 'Ucretsiz dene',
       secondaryCta: 'Kendi sunucunuza kurun',
-      ctaReassurance: 'Ucretsiz · Kredi karti yok · Acik kaynak',
+      ctaReassurance: 'Ucretsiz · Kredi karti yok · Verileriniz sizde',
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'Bordro ulkesi' },
         { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'Dil (FR/EN/AR/TR)' },
@@ -631,16 +631,16 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       themeLabel: 'تبديل السمة',
       menuLabel: 'القائمة',
       localeLabel: 'اللغة',
-      // #8066 — تسمية موحّدة: «Leopardo» فقط، مع الوصف «حزمة أعمال مفتوحة المصدر»
-      brandTagline: 'حزمة أعمال مفتوحة المصدر',
+      // تسمية موحّدة: «Leopardo» فقط، مع الوصف «نظام تشغيل الأعمال».
+      brandTagline: 'نظام تشغيل الأعمال',
     },
     hero: {
       // #8066 — نفس نية العنوان الفرنسي/الإنجليزي: النتيجة أولاً
-      badge: 'حزمة أعمال مفتوحة المصدر',
+      badge: 'نظام تشغيل الأعمال',
       badgeNew: 'جديد',
       titleTop: 'كل أعمالك — الرواتب، الحضور، الموارد البشرية، المحاسبة —',
       titleBottom: 'في تطبيق واحد، على خادمك.',
-      subtitle: 'ليوباردو يستبدل Excel وواتساب والورق بتطبيق واحد مفتوح المصدر: الموارد البشرية والرواتب، الحضور، الإجازات، إدارة العملاء، المحاسبة والعمليات — عبر الويب والجوال وأجهزة الحضور، مستضافًا لدينا أو على خادمك الخاص.',
+      subtitle: 'ليوباردو يستبدل Excel وواتساب والورق بتطبيق واحد: الموارد البشرية والرواتب، الحضور، الإجازات، إدارة العملاء، المحاسبة والعمليات — عبر الويب والجوال وأجهزة الحضور، مستضافًا لدينا أو على خادمك الخاص.',
       subtitleHighlight: 'Employee, Manager, Platform Admin',
       subtitleTail: 'لتشغيل تجربة ميدانية بدون نظام ERP ثقيل.',
       mobileBadge: 'متاح على الجوال',
@@ -648,7 +648,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       visualAlt: 'لقطة شاشة للوحة تحكم الإدارة في ليوباردو',
       primaryCta: 'جرّب مجانًا',
       secondaryCta: 'ثبّت على خادمك',
-      ctaReassurance: 'مجاني · بدون بطاقة بنكية · كود مفتوح المصدر',
+      ctaReassurance: 'مجاني · بدون بطاقة بنكية · بياناتك عندك',
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'دول الرواتب' },
         { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'لغات (FR/EN/AR/TR)' },

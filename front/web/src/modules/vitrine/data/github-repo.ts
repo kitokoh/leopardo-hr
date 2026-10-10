@@ -1,5 +1,5 @@
 /**
- * #8067 — signal open-source du héro : chiffres du dépôt public, STATIQUES au
+ * #8067 — signal « self-host » : chiffres du dépôt public, STATIQUES au
  * build (pas d'appel client à l'API GitHub — exigence de l'issue, pattern
  * Frappe HR). Rafraîchir manuellement (ou via script CI) à chaque campagne :
  *   curl -s https://api.github.com/repos/kitokoh/leopardo-hr | jq '.stargazers_count,.forks_count'

@@ -2,33 +2,31 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, Database, GitFork, Unlock, Users } from 'lucide-react';
+import { ArrowRight, Database, Package, Unlock, Users } from 'lucide-react';
 import type { AppLocale } from '@/lib/i18n';
 
-// #8065 : remplace MarketingReadinessSection (langage de pilotage interne) sur la
-// home publique par un bloc « Pourquoi open source » qui parle au client final —
-// 3 arguments business (pattern Odoo / Frappe HR) : vos données chez vous,
-// pas de prix par utilisateur, zéro lock-in.
+// Bloc « Pourquoi Leopardo » qui parle au client final — 3 arguments business :
+// vos données chez vous, pas de prix par utilisateur, zéro lock-in. Le
+// positionnement est « Business OS » : on vend la maîtrise de l'outil, pas
+// une licence ni un modèle de développement.
 
-const GITHUB_URL = 'https://github.com/kitokoh/leopardo-hr';
-
-type WhyOpenSourceCopy = {
+type WhyLeopardoCopy = {
   badge: string;
   title: string;
   highlight: string;
   subtitle: string;
   cards: Array<{ title: string; text: string }>;
   ctaPrimary: { label: string; href: string };
-  ctaGithub: string;
+  ctaSecondary: { label: string; href: string };
 };
 
-const copyByLocale: Record<AppLocale, WhyOpenSourceCopy> = {
+const copyByLocale: Record<AppLocale, WhyLeopardoCopy> = {
   fr: {
-    badge: 'Pourquoi open source',
-    title: 'Une suite métier qui vous appartient,',
+    badge: 'Pourquoi Leopardo',
+    title: 'Un Business OS qui vous appartient,',
     highlight: 'vraiment.',
     subtitle:
-      'Leopardo RH est open source : vous choisissez le cloud ou vos propres serveurs, sans surprise sur la facture ni dépendance à un éditeur.',
+      'Avec Leopardo, vous choisissez le cloud ou vos propres serveurs — sans surprise sur la facture ni dépendance à un éditeur.',
     cards: [
       {
         title: 'Vos données chez vous',
@@ -40,18 +38,18 @@ const copyByLocale: Record<AppLocale, WhyOpenSourceCopy> = {
       },
       {
         title: 'Zéro lock-in',
-        text: 'Code source public, données exportables, API ouverte. Si vous partez un jour, vous partez avec tout — mais rien ne vous y oblige.',
+        text: 'Données exportables, API ouverte, hébergement au choix. Si vous partez un jour, vous partez avec tout — mais rien ne vous y oblige.',
       },
     ],
     ctaPrimary: { label: 'Comparer cloud et auto-hébergement', href: '/pricing' },
-    ctaGithub: 'Voir le code sur GitHub',
+    ctaSecondary: { label: 'Découvrir les packs métiers', href: '/restaurateur' },
   },
   en: {
-    badge: 'Why open source',
-    title: 'A business suite you actually',
+    badge: 'Why Leopardo',
+    title: 'A Business OS you actually',
     highlight: 'own.',
     subtitle:
-      'Leopardo RH is open source: run it in the cloud or on your own servers, with no billing surprises and no vendor dependency.',
+      'With Leopardo, you choose the cloud or your own servers — no billing surprises and no vendor dependency.',
     cards: [
       {
         title: 'Your data stays yours',
@@ -63,18 +61,18 @@ const copyByLocale: Record<AppLocale, WhyOpenSourceCopy> = {
       },
       {
         title: 'Zero lock-in',
-        text: 'Public source code, exportable data, open API. If you ever leave, you leave with everything — but nothing forces you to.',
+        text: 'Exportable data, open API, hosting of your choice. If you ever leave, you leave with everything — but nothing forces you to.',
       },
     ],
     ctaPrimary: { label: 'Compare cloud vs self-hosting', href: '/pricing' },
-    ctaGithub: 'View the code on GitHub',
+    ctaSecondary: { label: 'Explore the business packs', href: '/restaurateur' },
   },
   tr: {
-    badge: 'Neden açık kaynak',
-    title: 'Gerçekten size ait olan',
-    highlight: 'İK yazılımı.',
+    badge: 'Neden Leopardo',
+    title: 'Gerçekten size ait bir',
+    highlight: 'Business OS.',
     subtitle:
-      'Leopardo RH açık kaynaktır: bulutta veya kendi sunucularınızda çalıştırın; fatura sürprizi ve tedarikçi bağımlılığı yok.',
+      'Leopardo ile bulutu veya kendi sunucularınızı seçersiniz — fatura sürprizi yok, tedarikçi bağımlılığı yok.',
     cards: [
       {
         title: 'Verileriniz sizde kalır',
@@ -86,18 +84,18 @@ const copyByLocale: Record<AppLocale, WhyOpenSourceCopy> = {
       },
       {
         title: 'Sıfır bağımlılık',
-        text: 'Açık kaynak kod, dışa aktarılabilir veri, açık API. Bir gün ayrılırsanız her şeyinizle ayrılırsınız — ama hiçbir şey sizi zorlamaz.',
+        text: 'Dışa aktarılabilir veri, açık API, dilediğiniz barındırma. Bir gün ayrılırsanız her şeyinizle ayrılırsınız — ama hiçbir şey sizi zorlamaz.',
       },
     ],
     ctaPrimary: { label: 'Bulut ve kendi sunucunuzu karşılaştırın', href: '/pricing' },
-    ctaGithub: "GitHub'da kodu görün",
+    ctaSecondary: { label: 'İş paketlerini keşfedin', href: '/restaurateur' },
   },
   ar: {
-    badge: 'لماذا مفتوح المصدر',
-    title: 'برنامج موارد بشرية',
-    highlight: 'تملكه فعلا.',
+    badge: 'لماذا ليوباردو',
+    title: 'نظام تشغيل أعمال',
+    highlight: 'تملكه فعلاً.',
     subtitle:
-      'Leopardo RH مفتوح المصدر: شغّله في السحابة أو على خوادمك، دون مفاجآت في الفاتورة ودون الارتباط بمزوّد واحد.',
+      'مع ليوباردو تختار السحابة أو خوادمك الخاصة — دون مفاجآت في الفاتورة ودون الارتباط بمورّد واحد.',
     cards: [
       {
         title: 'بياناتك تبقى عندك',
@@ -109,17 +107,17 @@ const copyByLocale: Record<AppLocale, WhyOpenSourceCopy> = {
       },
       {
         title: 'صفر احتكار',
-        text: 'كود مصدري علني، بيانات قابلة للتصدير، وواجهة API مفتوحة. إن غادرت يوما تغادر بكل شيء — ولا شيء يجبرك على ذلك.',
+        text: 'بيانات قابلة للتصدير، واجهة API مفتوحة، واستضافة من اختيارك. إن غادرت يوما تغادر بكل شيء — ولا شيء يجبرك على ذلك.',
       },
     ],
     ctaPrimary: { label: 'قارن بين السحابة والاستضافة الذاتية', href: '/pricing' },
-    ctaGithub: 'شاهد الكود على GitHub',
+    ctaSecondary: { label: 'اكتشف حزم الأعمال', href: '/restaurateur' },
   },
 };
 
 const icons = [Database, Users, Unlock];
 
-export function WhyOpenSourceSection({ locale = 'fr' }: { locale?: AppLocale }) {
+export function WhyLeopardoSection({ locale = 'fr' }: { locale?: AppLocale }) {
   const copy = copyByLocale[locale] ?? copyByLocale.fr;
 
   return (
@@ -134,7 +132,7 @@ export function WhyOpenSourceSection({ locale = 'fr' }: { locale?: AppLocale }) 
           className="mx-auto max-w-3xl text-center"
         >
           <div className="mb-6 inline-flex items-center gap-2 rounded-lg border border-emerald-300/20 bg-emerald-300/10 px-4 py-2 text-sm font-semibold text-emerald-100">
-            <GitFork className="h-4 w-4" aria-hidden="true" />
+            <Package className="h-4 w-4" aria-hidden="true" />
             {copy.badge}
           </div>
           <h2 className="text-4xl font-black tracking-tight sm:text-5xl">
@@ -183,15 +181,13 @@ export function WhyOpenSourceSection({ locale = 'fr' }: { locale?: AppLocale }) 
             {copy.ctaPrimary.label}
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
-          <a
-            href={GITHUB_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href={copy.ctaSecondary.href}
             className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-6 py-3 text-sm font-bold text-white transition hover:bg-white/10"
           >
-            <GitFork className="h-4 w-4" aria-hidden="true" />
-            {copy.ctaGithub}
-          </a>
+            <Package className="h-4 w-4" aria-hidden="true" />
+            {copy.ctaSecondary.label}
+          </Link>
         </motion.div>
       </div>
     </section>

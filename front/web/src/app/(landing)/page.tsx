@@ -9,7 +9,7 @@ import {
   useScrollReveal,
   SocialProofMetrics,
   ProductScreenshots,
-  WhyOpenSourceSection,
+  WhyLeopardoSection,
   TrustedBrands,
   // Phase-3 sections — no more Legacy prefixes
   HeroSection,
@@ -140,9 +140,9 @@ export default function LandingPage() {
 
         {/* ─── PRODUCT VISUAL ─── */}
         <ProductScreenshots locale={locale} />
-        {/* #8065 : « Pourquoi open source » remplace MarketingReadinessSection
-            (langage de pilotage interne — composant retiré par #8075). */}
-        <WhyOpenSourceSection locale={locale} />
+        {/* « Pourquoi Leopardo » : maîtrise de l'outil (données, coût, lock-in)
+            — le positionnement Business OS, sans jargon de licence. */}
+        <WhyLeopardoSection locale={locale} />
 
         {/* ─── VERTICALES en cartes cliquables (#8072) ─── */}
         <VerticalsSection locale={locale} />
