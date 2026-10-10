@@ -25,7 +25,7 @@ final class PayoutPlacement
     /**
      * @param  array{amount: float, method: PayoutMethod, recipient_name: string, recipient_account: string}  $attributes
      */
-    public function place(Fundraiser $fundraiser, array $attributes, ?string $requestedBy = null): FundraisingPayout
+    public function place(Fundraiser $fundraiser, array $attributes, ?int $requestedBy = null): FundraisingPayout
     {
         return DB::transaction(function () use ($fundraiser, $attributes, $requestedBy): FundraisingPayout {
             /** @var Fundraiser $locked */
