@@ -84,7 +84,7 @@ final class VtcFareProfileAdminController
 
         if ($profile->rides()->exists()) {
             throw new DomainException(
-                'Grille tarifaire référencée par des courses : suppression impossible (les courses conservent leur devis historisé).',
+                (string) __('vtc.fare_profile_delete_in_use'),
                 409,
                 'VTC_FARE_PROFILE_IN_USE'
             );

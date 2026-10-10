@@ -68,7 +68,7 @@ final class VtcVehicleAdminController
 
         if ($vehicle->drivers()->exists()) {
             throw new DomainException(
-                'Véhicule encore affecté à un chauffeur : retirer l\'affectation avant suppression.',
+                (string) __('vtc.vehicle_delete_assigned'),
                 409,
                 'VTC_VEHICLE_ASSIGNED'
             );
@@ -99,7 +99,7 @@ final class VtcVehicleAdminController
     private function duplicatePlate(string $plate): DomainException
     {
         return new DomainException(
-            "La plaque {$plate} est déjà enregistrée pour ce tenant.",
+            (string) __('vtc.vehicle_plate_taken', ['plate' => $plate]),
             422,
             'VTC_VEHICLE_PLATE_TAKEN'
         );

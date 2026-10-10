@@ -78,7 +78,7 @@ final class VtcDriverAdminController
 
         if ($driver->rides()->exists()) {
             throw new DomainException(
-                'Chauffeur ayant des courses : suppression impossible (préférer la suspension — l\'historique est conservé).',
+                (string) __('vtc.driver_delete_has_rides'),
                 409,
                 'VTC_DRIVER_HAS_RIDES'
             );
@@ -102,14 +102,14 @@ final class VtcDriverAdminController
         if (isset($validated['user_id'])
             && ! Employee::query()->whereKey($validated['user_id'])->exists()) {
             throw ValidationException::withMessages([
-                'user_id' => ['Compte employé introuvable dans ce tenant.'],
+                'user_id' => [(string) __('vtc.driver_user_not_found')],
             ]);
         }
 
         if (isset($validated['vehicle_id'])
             && ! VtcVehicle::query()->whereKey($validated['vehicle_id'])->exists()) {
             throw ValidationException::withMessages([
-                'vehicle_id' => ['Véhicule introuvable dans ce tenant.'],
+                'vehicle_id' => [(string) __('vtc.driver_vehicle_not_found')],
             ]);
         }
     }

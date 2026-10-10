@@ -29,7 +29,13 @@ final class PurgeVtcDriverPositionsCommand extends Command
         {--days= : Rétention en jours (défaut : vtc.positions_retention_days)}
         {--chunk=10000 : Taille des lots de suppression (protection du journal)}';
 
-    protected $description = 'Purge RGPD des positions chauffeurs VTC au-delà de la rétention (idempotente, auditée).';
+    public function __construct()
+    {
+        parent::__construct();
+
+        // PA2-I18N-007 : description via le catalogue (jamais d'accentué en dur).
+        $this->description = (string) __('vtc.purge_positions_description');
+    }
 
     public function handle(): int
     {
@@ -55,13 +61,13 @@ final class PurgeVtcDriverPositionsCommand extends Command
             $deleted += $batch;
         } while ($batch === $chunk);
 
-        Log::info('vtc:purge-positions — purge RGPD des positions chauffeurs exécutée.', [
+        Log::info((string) __('vtc.purge_positions_done_log'), [
             'retention_days' => $days,
             'cutoff' => $cutoff->toIso8601String(),
             'deleted_rows' => $deleted,
         ]);
 
-        $this->info(sprintf('Purge VTC terminée : %d position(s) supprimée(s) (rétention %d j, cutoff %s).', $deleted, $days, $cutoff->toDateTimeString()));
+        $this->info((string) __('vtc.purge_positions_done_cli', ['deleted' => $deleted, 'days' => $days, 'cutoff' => $cutoff->toDateTimeString()]));
 
         return self::SUCCESS;
     }

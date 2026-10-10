@@ -26,7 +26,7 @@ final class UpdateVtcDriverAvailabilityAction
     {
         if (in_array($driver->status, [VtcDriverStatus::Busy, VtcDriverStatus::Suspended], true)) {
             throw new DomainException(
-                "Disponibilité non modifiable depuis le statut {$driver->status->value} (clôturer la course ou contacter l'exploitant).",
+                (string) __('vtc.availability_locked', ['status' => $driver->status->value]),
                 409,
                 'VTC_AVAILABILITY_LOCKED'
             );

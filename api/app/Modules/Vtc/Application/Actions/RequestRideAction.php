@@ -116,7 +116,7 @@ final class RequestRideAction
         }
 
         // Inatteignable (la boucle retourne ou lève) — garde PHPStan.
-        throw new \RuntimeException('Création de course VTC impossible après '.self::MAX_ATTEMPTS.' tentatives.');
+        throw new \RuntimeException((string) __('vtc.ride_creation_failed', ['attempts' => self::MAX_ATTEMPTS]));
     }
 
     private function findByIdempotencyKey(IdempotencyKey $key): ?VtcRide
