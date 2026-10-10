@@ -8,8 +8,8 @@ use App\Modules\Fundraising\Domain\DTOs\GatewayPaymentUpdate;
 use App\Modules\Fundraising\Domain\Models\FundraisingContribution;
 use App\Modules\Fundraising\Domain\Models\FundraisingPaymentEvent;
 use App\Modules\Fundraising\Infrastructure\Services\ContributionSettlement;
-use Carbon\CarbonImmutable;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Carbon;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -73,7 +73,7 @@ final class ApplyPaymentUpdateAction
         }
 
         if ($update->paid) {
-            $paidAt = $update->paidAt !== null ? CarbonImmutable::parse($update->paidAt) : null;
+            $paidAt = $update->paidAt !== null ? Carbon::parse($update->paidAt) : null;
             $applied = $this->settlement->settle($contribution, $paidAt);
         } else {
             $applied = $this->settlement->fail($contribution);

@@ -29,8 +29,6 @@ class FundraisingWebhookTest extends TestCase
 
     private Company $company;
 
-    private FundraisingContribution $contribution;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -43,7 +41,7 @@ class FundraisingWebhookTest extends TestCase
         $company->save();
         $this->company = $company;
 
-        $this->contribution = app(TenantManager::class)->withinTenant($company, function () use ($company): FundraisingContribution {
+        app(TenantManager::class)->withinTenant($company, function () use ($company): void {
             /** @var Fundraiser $fundraiser */
             $fundraiser = Fundraiser::query()->create([
                 'company_id' => $company->id,
@@ -55,8 +53,7 @@ class FundraisingWebhookTest extends TestCase
                 'published_at' => now(),
             ]);
 
-            /** @var FundraisingContribution $contribution */
-            $contribution = FundraisingContribution::query()->create([
+            FundraisingContribution::query()->create([
                 'company_id' => $company->id,
                 'fundraiser_id' => $fundraiser->id,
                 'reference' => 'FC-WHKTEST123',
@@ -67,8 +64,6 @@ class FundraisingWebhookTest extends TestCase
                 'provider_reference' => 'cs_test_fundraising_1',
                 'status' => ContributionStatus::PENDING,
             ]);
-
-            return $contribution;
         });
 
         FundraisingPaymentRoute::query()->create([

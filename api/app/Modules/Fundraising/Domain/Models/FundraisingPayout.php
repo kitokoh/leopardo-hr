@@ -75,7 +75,7 @@ class FundraisingPayout extends Model
     }
 
     /**
-     * @return BelongsTo<Fundraiser, FundraisingPayout>
+     * @return BelongsTo<Fundraiser, $this>
      */
     public function fundraiser(): BelongsTo
     {

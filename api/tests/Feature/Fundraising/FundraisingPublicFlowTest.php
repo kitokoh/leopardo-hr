@@ -42,6 +42,9 @@ class FundraisingPublicFlowTest extends TestCase
         return $company;
     }
 
+    /**
+     * @param  array<string, mixed>  $overrides
+     */
     private function publishedFundraiser(Company $company, array $overrides = []): Fundraiser
     {
         $fundraiser = app(TenantManager::class)->withinTenant($company, function () use ($company, $overrides): Fundraiser {

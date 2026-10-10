@@ -96,7 +96,7 @@ class Fundraiser extends Model
     }
 
     /**
-     * @return HasMany<FundraisingContribution>
+     * @return HasMany<FundraisingContribution, $this>
      */
     public function contributions(): HasMany
     {
@@ -104,7 +104,7 @@ class Fundraiser extends Model
     }
 
     /**
-     * @return HasMany<FundraisingPayout>
+     * @return HasMany<FundraisingPayout, $this>
      */
     public function payouts(): HasMany
     {

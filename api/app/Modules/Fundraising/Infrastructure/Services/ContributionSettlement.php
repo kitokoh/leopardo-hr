@@ -9,7 +9,7 @@ use App\Modules\Fundraising\Domain\Enums\FundraiserStatus;
 use App\Modules\Fundraising\Domain\Models\Fundraiser;
 use App\Modules\Fundraising\Domain\Models\FundraiserPublicLink;
 use App\Modules\Fundraising\Domain\Models\FundraisingContribution;
-use Carbon\CarbonImmutable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -37,7 +37,7 @@ final class ContributionSettlement
      * @return bool true si le crédit a été appliqué, false si la
      *              contribution était déjà soldée (double livraison)
      */
-    public function settle(FundraisingContribution $contribution, ?CarbonImmutable $paidAt = null): bool
+    public function settle(FundraisingContribution $contribution, ?Carbon $paidAt = null): bool
     {
         return DB::transaction(function () use ($contribution, $paidAt): bool {
             /** @var FundraisingContribution|null $locked */
@@ -56,7 +56,7 @@ final class ContributionSettlement
             }
 
             $locked->status = ContributionStatus::COMPLETED;
-            $locked->paid_at = $paidAt ?? CarbonImmutable::now();
+            $locked->paid_at = $paidAt ?? Carbon::now();
             $locked->save();
 
             /** @var Fundraiser|null $fundraiser */

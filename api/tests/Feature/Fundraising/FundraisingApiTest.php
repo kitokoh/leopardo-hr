@@ -64,6 +64,7 @@ class FundraisingApiTest extends TestCase
     }
 
     /**
+     * @param  array<string, mixed>  $overrides
      * @return array<string, mixed>
      */
     private function payload(array $overrides = []): array
@@ -135,7 +136,9 @@ class FundraisingApiTest extends TestCase
         $slug = $this->postJson('/api/v1/fundraising/fundraisers', $this->payload(['title' => 'Autre cagnotte']))->json('data.slug');
 
         // draft : pas d'entrée d'annuaire.
-        $firstSlug = Fundraiser::query()->findOrFail($id)->slug;
+        /** @var Fundraiser $firstFundraiser */
+        $firstFundraiser = Fundraiser::query()->findOrFail($id);
+        $firstSlug = $firstFundraiser->slug;
         $this->assertNull(FundraiserPublicLink::query()->where('slug', $firstSlug)->first());
 
         $this->postJson('/api/v1/fundraising/fundraisers/'.$id.'/publish')
