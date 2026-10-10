@@ -25,6 +25,8 @@ type Copy = {
   badge: string;
   title: string;
   subtitle: string;
+  /** Pastille affichée sur chaque carte : le pack métier est offert. */
+  freeBadge: string;
   cards: VerticalCard[];
 };
 
@@ -35,7 +37,8 @@ const copyByLocale: Record<AppLocale, Copy> = {
     badge: 'Verticales métier',
     title: 'Une plateforme, vos métiers',
     subtitle:
-      'Chaque verticale se branche sur le socle commun — pointage, paie, RH, compta — avec ses modules dédiés.',
+      'Chaque verticale se branche sur le socle commun — pointage, paie, RH, compta — avec ses modules dédiés, et le pack de démarrage est offert.',
+    freeBadge: 'Pack offert',
     cards: [
       {
         icon: <UtensilsCrossed className={iconClass} />,
@@ -71,7 +74,8 @@ const copyByLocale: Record<AppLocale, Copy> = {
     badge: 'Industry verticals',
     title: 'One platform, your industries',
     subtitle:
-      'Each vertical plugs into the shared foundation — attendance, payroll, HR, accounting — with its own dedicated modules.',
+      'Each vertical plugs into the shared foundation — attendance, payroll, HR, accounting — with its own dedicated modules, and the starter pack is free.',
+    freeBadge: 'Free pack',
     cards: [
       {
         icon: <UtensilsCrossed className={iconClass} />,
@@ -107,7 +111,8 @@ const copyByLocale: Record<AppLocale, Copy> = {
     badge: 'Sektör çözümleri',
     title: 'Tek platform, sizin sektörleriniz',
     subtitle:
-      'Her dikey çözüm ortak temele — yoklama, bordro, İK, muhasebe — kendi modülleriyle bağlanır.',
+      'Her dikey çözüm ortak temele — yoklama, bordro, İK, muhasebe — kendi modülleriyle bağlanır; başlangıç paketi ücretsizdir.',
+    freeBadge: 'Ücretsiz paket',
     cards: [
       {
         icon: <UtensilsCrossed className={iconClass} />,
@@ -143,7 +148,8 @@ const copyByLocale: Record<AppLocale, Copy> = {
     badge: 'حلول حسب القطاع',
     title: 'منصة واحدة، قطاعاتكم',
     subtitle:
-      'كل حل قطاعي يتصل بالأساس المشترك — الحضور، الرواتب، الموارد البشرية، المحاسبة — مع وحداته الخاصة.',
+      'كل حل قطاعي يتصل بالأساس المشترك — الحضور، الرواتب، الموارد البشرية، المحاسبة — مع وحداته الخاصة، وحزمة البداية مجانية.',
+    freeBadge: 'حزمة مجانية',
     cards: [
       {
         icon: <UtensilsCrossed className={iconClass} />,
@@ -229,9 +235,14 @@ export function VerticalsSection({ locale = 'fr' }: VerticalsSectionProps) {
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 mb-4">
                   {card.icon}
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
-                  {card.name}
-                </h3>
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                    {card.name}
+                  </h3>
+                  <span className="inline-flex shrink-0 items-center rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-emerald-700 ring-1 ring-emerald-500/25 dark:text-emerald-300">
+                    {copy.freeBadge}
+                  </span>
+                </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 flex-1">
                   {card.benefit}
                 </p>

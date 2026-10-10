@@ -245,9 +245,9 @@ export const pageMetadata = {
   },
 
   restaurateur: {
-    title: "Logiciel de gestion pour restaurants",
+    title: "Logiciel restaurant — pack offert",
     description:
-      "Réservations, caisse, cuisine, stock et livraison : découvrez la solution Leopardo pour les restaurants mono et multi-sites.",
+      "Réservations, caisse, cuisine, stock et livraison : le pack Restaurant Leopardo est offert — composez-le en 3 questions, pour les restaurants mono et multi-sites.",
     keywords: [
       "logiciel restaurant",
       "gestion restaurant",
@@ -586,7 +586,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     comptabilite: { title: "Automated payroll & payslip generation", description: "Automated payroll with exact calculations and compliance support. Generated payslips, social declarations and bank exports." },
     marketing: { title: "HR marketing: email, SMS & social", description: "Complete marketing tools: email, SMS, social media. Automation, analytics and integrated campaigns for your business." },
     integrations: { title: "Integrations & Connectors", description: "Accounting connectors and Leopardo API: Sage, QuickBooks, public API, webhooks and more." },
-    restaurateur: { title: "Restaurant management software", description: "Reservations, POS, kitchen, stock and delivery: discover the Leopardo solution for single and multi-site restaurants." },
+    restaurateur: { title: "Restaurant management software — free pack", description: "Reservations, POS, kitchen, stock and delivery: the Leopardo Restaurant Pack is free — build it in 3 questions, for single and multi-site restaurants." },
     pricing: { title: "Transparent Pricing | Flexible Plans", description: "Simple pricing: Free €0 (5 emp.), Pilot €29/month (30 emp.), Operations €79/month (200 emp.), Enterprise on quote. 14-day free trial." },
     about: { title: "About Us | Our Mission and Team", description: "Discover our mission, team and values. We help SMBs manage their employees with a mobile-first HR platform." },
     blog: { title: "Blog & Resources | HR Guides and Tips", description: "Guides, articles and webinars about HR management, payroll and productivity for SMBs." },
@@ -617,7 +617,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     comptabilite: { title: "Otomatik bordro ve maaş bordrosu", description: "Hassas hesaplamalar ve garantili uyumlulukla otomatik maaş işlemleri. Oluşturulan bordrolar, sosyal bildirimler ve banka ihracatları." },
     marketing: { title: "İK pazarlaması: e-posta, SMS, sosyal", description: "Eksiksiz pazarlama araçları: e-posta, SMS, sosyal medya. Otomasyon, analitik ve entegre kampanyalar." },
     integrations: { title: "Entegrasyonlar & Bağlayıcılar", description: "Muhasebe bağlayıcıları ve Leopardo API'si: Sage, QuickBooks, genel API, webhook'lar ve daha fazlası." },
-    restaurateur: { title: "Restoran yönetim yazılımı", description: "Rezervasyon, kasa, mutfak, stok ve teslimat: tek ve çok şubeli restoranlar için Leopardo çözümünü keşfedin." },
+    restaurateur: { title: "Restoran yönetim yazılımı — ücretsiz paket", description: "Rezervasyon, kasa, mutfak, stok ve teslimat: Leopardo Restoran Paketi ücretsiz — 3 soruda oluşturun, tek ve çok şubeli restoranlar için." },
     pricing: { title: "Şeffaf Fiyatlandırma | Esnek Planlar", description: "Basit fiyatlandırma: Free 0 € (5 çalışan), Pilot ayda 29 € (30 çalışan), Operations ayda 79 € (200 çalışan), Enterprise teklif. 14 gün ücretsiz deneme." },
     about: { title: "Hakkımızda | Misyonumuz ve Ekibimiz", description: "Misyonumuzu, ekibimizi ve değerlerimizi keşfedin. Saha KOBİ'leri için mobil öncelikli bir İK platformu inşa ediyoruz." },
     blog: { title: "Blog & Kaynaklar | İK Rehberleri ve İpuçları", description: "KOBİ'ler için İK yönetimi, maaş ve üretkenlik üzerine rehberler, makaleler ve webinarlar." },
@@ -648,7 +648,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     comptabilite: { title: "أتمتة الرواتب وإصدار كشوف الرواتب", description: "رواتب آلية بحسابات دقيقة وامتثال مضمون. كشوف رواتب مولّدة وتصريحات اجتماعية وتصديرات بنكية." },
     marketing: { title: "تسويق الموارد البشرية: بريد ورسائل وتواصل", description: "أدوات تسويق كاملة: البريد الإلكتروني والرسائل النصية ووسائل التواصل الاجتماعي. أتمتة وتحليلات وحملات متكاملة." },
     integrations: { title: "التكاملات والموصلات وواجهة API", description: "موصلات محاسبية وواجهة برمجة ليوباردو: Sage وQuickBooks وواجهة عامة وwebhooks والمزيد." },
-    restaurateur: { title: "برنامج إدارة المطاعم", description: "الحجوزات ونقاط البيع والمطبخ والمخزون والتوصيل: اكتشف حل ليوباردو للمطاعم بفرع واحد أو عدة فروع." },
+    restaurateur: { title: "برنامج إدارة المطاعم — حزمة مجانية", description: "الحجوزات ونقاط البيع والمطبخ والمخزون والتوصيل: حزمة المطعم من ليوباردو مجانية — أنشئها في 3 أسئلة، للمطاعم بفرع واحد أو عدة فروع." },
     pricing: { title: "تسعير شفاف | خطط مرنة", description: "تسعير شفاف: Free مجاني (5 موظفين)، Pilot بـ 29 يورو/شهر (30 موظفًا)، Operations بـ 79 يورو/شهر (200 موظف)، Enterprise حسب الطلب. تجربة مجانية 14 يومًا." },
     about: { title: "من نحن | مهمتنا وفريقنا", description: "اكتشف مهمتنا وفريقنا وقيمنا. نساعد الشركات الصغيرة والمتوسطة في إدارة موظفيها عبر منصة موارد بشرية متنقلة." },
     blog: { title: "المدونة والموارد | أدلة ونصائح الموارد البشرية", description: "أدلة ومقالات وندوات عبر الإنترنت حول إدارة الموارد البشرية والرواتب والإنتاجية للشركات الصغيرة." },
