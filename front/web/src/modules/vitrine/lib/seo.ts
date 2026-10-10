@@ -258,6 +258,45 @@ export const pageMetadata = {
     ogImage: `${siteUrl}/og/default.png`,
   },
 
+  'packs-station-service': {
+    title: "Gestion station-service — pack offert",
+    description:
+      "Pointage par poste, rotations 3×8, heures et majorations vers la paie : le pack Station-service Leopardo est offert — activé en quelques minutes.",
+    keywords: [
+      "gestion station-service",
+      "pointage équipes tournantes",
+      "planning station essence",
+      "paie station-service",
+    ],
+    ogImage: `${siteUrl}/og/default.png`,
+  },
+
+  'packs-ecole': {
+    title: "Gestion du personnel scolaire — pack offert",
+    description:
+      "Présence du personnel, absences, remplacements et paie alignée sur le calendrier scolaire : le pack École Leopardo est offert — activé en quelques minutes.",
+    keywords: [
+      "gestion école",
+      "présence personnel scolaire",
+      "paie enseignants",
+      "logiciel école privée",
+    ],
+    ogImage: `${siteUrl}/og/default.png`,
+  },
+
+  'packs-agence-voyage': {
+    title: "Logiciel agence de voyage — pack offert",
+    description:
+      "Dossiers clients, billetterie, commissions et paie des équipes au même endroit : le pack Agence de voyage Leopardo est offert — activé en quelques minutes.",
+    keywords: [
+      "logiciel agence de voyage",
+      "billetterie agence",
+      "CRM voyage",
+      "gestion commissions voyage",
+    ],
+    ogImage: `${siteUrl}/og/default.png`,
+  },
+
   pricing: {
     title: "Tarification Transparente | Plans Flexibles",
     description:
@@ -587,6 +626,9 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     marketing: { title: "HR marketing: email, SMS & social", description: "Complete marketing tools: email, SMS, social media. Automation, analytics and integrated campaigns for your business." },
     integrations: { title: "Integrations & Connectors", description: "Accounting connectors and Leopardo API: Sage, QuickBooks, public API, webhooks and more." },
     restaurateur: { title: "Restaurant management software — free pack", description: "Reservations, POS, kitchen, stock and delivery: the Leopardo Restaurant Pack is free — build it in 3 questions, for single and multi-site restaurants." },
+    'packs-station-service': { title: "Fuel station crew management — free pack", description: "Per-post clock-ins, 3×8 rotations, hours and overtime to payroll: the Leopardo Fuel Station Pack is free — activated in minutes." },
+    'packs-ecole': { title: "School staff management — free pack", description: "Staff attendance, leave, replacements and payroll aligned with the school calendar: the Leopardo School Pack is free — activated in minutes." },
+    'packs-agence-voyage': { title: "Travel agency management — free pack", description: "Client files, ticketing, commissions and team payroll in one place: the Leopardo Travel Agency Pack is free — activated in minutes." },
     pricing: { title: "Transparent Pricing | Flexible Plans", description: "Simple pricing: Free €0 (5 emp.), Pilot €29/month (30 emp.), Operations €79/month (200 emp.), Enterprise on quote. 14-day free trial." },
     about: { title: "About Us | Our Mission and Team", description: "Discover our mission, team and values. We help SMBs manage their employees with a mobile-first HR platform." },
     blog: { title: "Blog & Resources | HR Guides and Tips", description: "Guides, articles and webinars about HR management, payroll and productivity for SMBs." },
@@ -618,6 +660,9 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     marketing: { title: "İK pazarlaması: e-posta, SMS, sosyal", description: "Eksiksiz pazarlama araçları: e-posta, SMS, sosyal medya. Otomasyon, analitik ve entegre kampanyalar." },
     integrations: { title: "Entegrasyonlar & Bağlayıcılar", description: "Muhasebe bağlayıcıları ve Leopardo API'si: Sage, QuickBooks, genel API, webhook'lar ve daha fazlası." },
     restaurateur: { title: "Restoran yönetim yazılımı — ücretsiz paket", description: "Rezervasyon, kasa, mutfak, stok ve teslimat: Leopardo Restoran Paketi ücretsiz — 3 soruda oluşturun, tek ve çok şubeli restoranlar için." },
+    'packs-station-service': { title: "Akaryakıt istasyonu — ücretsiz paket", description: "Posta bazlı yoklama, 3×8 vardiyalar, saatler ve fazla mesai bordroya: Leopardo Akaryakıt İstasyonu Paketi ücretsiz — dakikalar içinde aktif." },
+    'packs-ecole': { title: "Okul personeli yönetimi — ücretsiz paket", description: "Personel yoklaması, izinler, yerine geçmeler ve okul takvimiyle uyumlu bordro: Leopardo Okul Paketi ücretsiz — dakikalar içinde aktif." },
+    'packs-agence-voyage': { title: "Seyahat acentesi yönetimi — ücretsiz paket", description: "Müşteri dosyaları, biletleme, komisyonlar ve ekip bordrosu tek yerde: Leopardo Seyahat Acentesi Paketi ücretsiz — dakikalar içinde aktif." },
     pricing: { title: "Şeffaf Fiyatlandırma | Esnek Planlar", description: "Basit fiyatlandırma: Free 0 € (5 çalışan), Pilot ayda 29 € (30 çalışan), Operations ayda 79 € (200 çalışan), Enterprise teklif. 14 gün ücretsiz deneme." },
     about: { title: "Hakkımızda | Misyonumuz ve Ekibimiz", description: "Misyonumuzu, ekibimizi ve değerlerimizi keşfedin. Saha KOBİ'leri için mobil öncelikli bir İK platformu inşa ediyoruz." },
     blog: { title: "Blog & Kaynaklar | İK Rehberleri ve İpuçları", description: "KOBİ'ler için İK yönetimi, maaş ve üretkenlik üzerine rehberler, makaleler ve webinarlar." },
@@ -649,6 +694,9 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     marketing: { title: "تسويق الموارد البشرية: بريد ورسائل وتواصل", description: "أدوات تسويق كاملة: البريد الإلكتروني والرسائل النصية ووسائل التواصل الاجتماعي. أتمتة وتحليلات وحملات متكاملة." },
     integrations: { title: "التكاملات والموصلات وواجهة API", description: "موصلات محاسبية وواجهة برمجة ليوباردو: Sage وQuickBooks وواجهة عامة وwebhooks والمزيد." },
     restaurateur: { title: "برنامج إدارة المطاعم — حزمة مجانية", description: "الحجوزات ونقاط البيع والمطبخ والمخزون والتوصيل: حزمة المطعم من ليوباردو مجانية — أنشئها في 3 أسئلة، للمطاعم بفرع واحد أو عدة فروع." },
+    'packs-station-service': { title: "إدارة طاقم محطة الوقود — حزمة مجانية", description: "حضور حسب الموضع، مناوبات 3×8، الساعات والإضافي إلى الرواتب: حزمة محطة الوقود من ليوباردو مجانية — تُفعَّل في دقائق." },
+    'packs-ecole': { title: "إدارة طاقم المدرسة — حزمة مجانية", description: "حضور الموظفين والغيابات والبدلاء ورواتب متوافقة مع التقويم المدرسي: حزمة المدرسة من ليوباردو مجانية — تُفعَّل في دقائق." },
+    'packs-agence-voyage': { title: "إدارة وكالة السفر والتذاكر — حزمة مجانية", description: "ملفات العملاء وإصدار التذاكر والعمولات ورواتب الفريق في مكان واحد: حزمة وكالة السفر من ليوباردو مجانية — تُفعَّل في دقائق." },
     pricing: { title: "تسعير شفاف | خطط مرنة", description: "تسعير شفاف: Free مجاني (5 موظفين)، Pilot بـ 29 يورو/شهر (30 موظفًا)، Operations بـ 79 يورو/شهر (200 موظف)، Enterprise حسب الطلب. تجربة مجانية 14 يومًا." },
     about: { title: "من نحن | مهمتنا وفريقنا", description: "اكتشف مهمتنا وفريقنا وقيمنا. نساعد الشركات الصغيرة والمتوسطة في إدارة موظفيها عبر منصة موارد بشرية متنقلة." },
     blog: { title: "المدونة والموارد | أدلة ونصائح الموارد البشرية", description: "أدلة ومقالات وندوات عبر الإنترنت حول إدارة الموارد البشرية والرواتب والإنتاجية للشركات الصغيرة." },
