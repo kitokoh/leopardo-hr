@@ -19,7 +19,13 @@
  * Référence : docs/specifications/MODULE_GEOCORE_ET_VERTICAL_VTC.md (§5).
  */
 
+use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcDriverAvailabilityController;
+use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcDriverOfferController;
+use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcDriverPositionController;
+use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcDriverRideController;
 use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcHealthController;
+use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcRideController;
+use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcRideEstimateController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.vtc'])
@@ -27,4 +33,36 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     ->group(function (): void {
         // Smoke test du module (VTC-01/#8357) — lecture pure.
         Route::get('/ping', [VtcHealthController::class, 'ping']);
+
+        // VTC-03 (#8359) — API passager : devis + demande de course
+        // idempotente + consultation/annulation (throttle renforcé sur la
+        // création, spec §7).
+        Route::post('/rides/estimate', VtcRideEstimateController::class)
+            ->middleware('throttle:30,1');
+        Route::post('/rides', [VtcRideController::class, 'store'])
+            ->middleware('throttle:10,1');
+        Route::get('/rides/{id}', [VtcRideController::class, 'show'])
+            ->whereNumber('id');
+        Route::post('/rides/{id}/cancel', [VtcRideController::class, 'cancel'])
+            ->whereNumber('id');
+
+        // VTC-05 (#8361) — API chauffeur : offres, transitions de course,
+        // positions (throttle strict + idempotence), disponibilité — rôle
+        // vtc.driver (deny-by-default, périmètre = SES courses).
+        Route::middleware('vtc.role:driver')->group(function (): void {
+            Route::get('/driver/offers', [VtcDriverOfferController::class, 'index']);
+            Route::post('/driver/rides/{id}/accept', [VtcDriverRideController::class, 'accept'])
+                ->whereNumber('id');
+            Route::post('/driver/rides/{id}/decline', [VtcDriverRideController::class, 'decline'])
+                ->whereNumber('id');
+            Route::post('/driver/rides/{id}/arrive', [VtcDriverRideController::class, 'arrive'])
+                ->whereNumber('id');
+            Route::post('/driver/rides/{id}/start', [VtcDriverRideController::class, 'start'])
+                ->whereNumber('id');
+            Route::post('/driver/rides/{id}/complete', [VtcDriverRideController::class, 'complete'])
+                ->whereNumber('id');
+            Route::post('/driver/position', [VtcDriverPositionController::class, 'store'])
+                ->middleware('throttle:30,1');
+            Route::post('/driver/availability', [VtcDriverAvailabilityController::class, 'update']);
+        });
     });
