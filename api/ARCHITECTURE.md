@@ -133,6 +133,7 @@ restent libres. `Modules/CRM` existe et est complet (`CrmServiceProvider`) ; la 
 | `Modules/Cameras` | ✅ routes/modules/cameras.php | ✅ complet | `CamerasServiceProvider` |
 | `Modules/CRM` | ✅ routes/modules/crm.php | ✅ complet (CRM client, ADR-CRM-DUAL-CONTEXTS) | `CrmServiceProvider` |
 | `Modules/FuelStation` | ✅ routes/modules/fuel_station.php | 🔶 Application vide (0 PHP) — Domain/Infrastructure/Interfaces/Providers complets | `FuelStationServiceProvider` |
+| `Modules/Geo` | ✅ routes/modules/geo.php | 🟢 core transverse BC-33 (GEO-01..07 : PostGIS, capacités, distance, plus-proches) — squelette GEO-02 posé | `GeoServiceProvider` |
 | `Modules/Delivery` | ✅ routes/modules/delivery.php | 🟢 verticale BC-26 consolidée (#6757, PHPStan assaini #6759) | `DeliveryServiceProvider` |
 | `Modules/EdgeSync` | ✅ module routes | ✅ complet | `EdgeSyncServiceProvider` |
 | `Modules/TravelAgency` | ✅ routes partagées + publiques shop | 🟢 fondations verticale BC-24 (TRAVEL-101..108, 201..203 + shop/e-billets) | `TravelAgencyServiceProvider` |
