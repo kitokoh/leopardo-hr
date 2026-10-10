@@ -48,7 +48,7 @@ final class InitiateContributionAction
     {
         // Honeypot anti-bot (champ leurre invisible pour les humains).
         if (! empty($data['website'])) {
-            throw FundraisingException::invalidContributionAmount('requête rejetée');
+            throw FundraisingException::invalidContributionAmount('requete rejetee (honeypot)');
         }
 
         if (
@@ -64,7 +64,7 @@ final class InitiateContributionAction
         $method = ContributionMethod::from((string) $data['payment_method']);
 
         if ($method === ContributionMethod::MOBILE_MONEY && empty($data['contributor_phone'])) {
-            throw FundraisingException::invalidContributionAmount('numéro mobile money requis');
+            throw FundraisingException::invalidContributionAmount('numero mobile money requis');
         }
 
         $gateway = $this->gatewayFactory->forMethod($method);

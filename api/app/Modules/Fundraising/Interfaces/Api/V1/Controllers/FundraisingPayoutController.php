@@ -103,7 +103,7 @@ final class FundraisingPayoutController extends Controller
             ),
             'fail' => $this->transitions->fail(
                 $payout,
-                (string) $request->input('reason', 'échec déclaré par le responsable'),
+                (string) $request->input('reason', __('errors.PAYOUT_FAILED_DEFAULT_REASON')),
                 $actorId,
             ),
             'cancel' => $this->transitions->cancel($payout),

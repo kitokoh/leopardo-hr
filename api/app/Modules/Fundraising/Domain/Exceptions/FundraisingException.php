@@ -38,12 +38,12 @@ final class FundraisingException extends DomainException
 
     public static function gatewayNotConfigured(string $gateway): self
     {
-        return new self('La passerelle de paiement « '.$gateway.' » n\'est pas configurée.', 503, 'PAYMENT_GATEWAY_NOT_CONFIGURED');
+        return new self(__('errors.PAYMENT_GATEWAY_NOT_CONFIGURED'), 503, 'PAYMENT_GATEWAY_NOT_CONFIGURED');
     }
 
     public static function payoutExceedsBalance(): self
     {
-        return new self('Le montant du reversement dépasse le solde disponible de la cagnotte.', 422, 'PAYOUT_AMOUNT_EXCEEDS_BALANCE');
+        return new self(__('errors.PAYOUT_AMOUNT_EXCEEDS_BALANCE'), 422, 'PAYOUT_AMOUNT_EXCEEDS_BALANCE');
     }
 
     public static function payoutNotFound(): self

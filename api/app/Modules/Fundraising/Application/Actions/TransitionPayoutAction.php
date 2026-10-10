@@ -28,7 +28,7 @@ final class TransitionPayoutAction
         return match ($verb) {
             'process' => $this->process($payout, $processedBy),
             'markPaid' => $this->markPaid($payout, $options['provider_reference'] ?? null, $processedBy),
-            'fail' => $this->fail($payout, (string) ($options['reason'] ?? 'échec déclaré par le responsable'), $processedBy),
+            'fail' => $this->fail($payout, (string) ($options['reason'] ?? __('errors.PAYOUT_FAILED_DEFAULT_REASON')), $processedBy),
             'cancel' => $this->cancel($payout),
             default => throw FundraisingException::invalidStatusTransition($payout->status->value, $verb),
         };

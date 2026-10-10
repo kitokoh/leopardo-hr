@@ -267,6 +267,7 @@ return [
     'INVALID_CONTRIBUTION_AMOUNT' => 'Geçersiz katkı tutarı.',
     'PAYOUT_AMOUNT_EXCEEDS_BALANCE' => 'Ödeme tutarı, kampanyanın kullanılabilir bakiyesini aşıyor.',
     'PAYOUT_NOT_FOUND' => 'Ödeme bulunamadı.',
+    'PAYOUT_FAILED_DEFAULT_REASON' => 'Sorumlu tarafından bildirilen hata.',
     'DOCUMENT_NOT_SENDABLE' => 'Bu belge çevrimiçi ödenemez (düzenlenmemiş veya zaten ödenmiş).',
     'PAYMENT_AMOUNT_MISMATCH' => 'Sağlayıcı tarafından bildirilen tutar, belge bakiyesiyle eşleşmiyor.',
     'WEBHOOK_SIGNATURE_INVALID' => 'Geçersiz veya eksik webhook imzası.',
