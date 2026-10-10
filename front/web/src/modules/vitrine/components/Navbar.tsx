@@ -12,7 +12,10 @@ import {
   ChevronDown,
   Download,
   FileText,
+  Fuel,
+  Gift,
   Globe,
+  GraduationCap,
   HelpCircle,
   Laptop,
   Mail,
@@ -21,10 +24,12 @@ import {
   Monitor,
   Moon,
   PenTool,
+  Plane,
   Server,
   Smartphone,
   Sun,
   Users,
+  UtensilsCrossed,
   X,
 } from 'lucide-react'
 import { useVitrineLocale } from '../lib/vitrine-locale'
@@ -98,6 +103,16 @@ function buildNavEntries(locale: AppLocale): NavEntry[] {
   const nav = (key: string) => t(locale, `vitrine.nav.${key}`)
   return [
     { href: '/pricing', label: nav('pricing') },
+    {
+      label: nav('packs'),
+      items: [
+        { href: '/packs', icon: <Gift className="w-4 h-4" />, label: nav('packsHub'), description: nav('packsHubDesc') },
+        { href: '/restaurateur', icon: <UtensilsCrossed className="w-4 h-4" />, label: nav('packsRestaurant'), description: nav('packsRestaurantDesc') },
+        { href: '/packs/station-service', icon: <Fuel className="w-4 h-4" />, label: nav('packsFuel'), description: nav('packsFuelDesc') },
+        { href: '/packs/ecole', icon: <GraduationCap className="w-4 h-4" />, label: nav('packsEdu'), description: nav('packsEduDesc') },
+        { href: '/packs/agence-de-voyage', icon: <Plane className="w-4 h-4" />, label: nav('packsTravel'), description: nav('packsTravelDesc') },
+      ],
+    },
     {
       label: nav('resources'),
       items: [
