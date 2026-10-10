@@ -11,6 +11,7 @@ use App\Modules\Vtc\Domain\Events\VtcRideRequested;
 use App\Modules\Vtc\Domain\Models\VtcFareProfile;
 use App\Modules\Vtc\Domain\Models\VtcRide;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -33,6 +34,17 @@ class VtcPassengerApiTest extends TestCase
 {
     use RefreshTenantDatabase;
     use SwitchesTenantContext;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Le listener VtcRideRequested (VTC-04) enfile le job de dispatch —
+        // faked ici : ces tests couvrent la surface passager, pas le moteur
+        // (sync driver exécuterait le job immédiatement et expirerait les
+        // courses sans chauffeur seedé).
+        Queue::fake();
+    }
 
     public function test_endpoints_require_authentication(): void
     {
