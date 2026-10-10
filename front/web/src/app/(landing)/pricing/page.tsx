@@ -13,6 +13,7 @@ import {
 import { getPricingPlans, showsCurrency } from '@/modules/vitrine/data/pricing';
 import { CURRENCY_OPTIONS, DEFAULT_CURRENCY_OPTION, convertEurPrice, type CurrencyOption } from '@/modules/vitrine/data/currency';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { HeroScene3D } from '@/modules/vitrine/components/hero/HeroScene3D';
 import type { AppLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
 import {
@@ -449,6 +450,9 @@ export default function PricingPage() {
       <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden pt-24 pb-20">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 dark:from-slate-950 dark:via-indigo-950 dark:to-slate-900" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(99,102,241,0.15),transparent)]" />
+        {/* Constellation WebGL « Business OS » en fond (repli particules 2D) —
+            la page de conversion aussi doit être vivante. */}
+        <HeroScene3D />
         <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-violet-500/10 rounded-full blur-[140px] animate-pulse" />
         <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[100px] animate-pulse [animation-delay:2s]" />
         <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
