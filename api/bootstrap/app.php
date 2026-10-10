@@ -146,6 +146,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.delivery' => EnsureDeliveryModuleMiddleware::class,
             // BC-33 GEO (GEO-02/#8351) — gate feature flag geo (core géospatial transverse).
             'module.geo' => \App\Http\Middleware\Geo\EnsureGeoModuleMiddleware::class,
+            // BC-33 GEO (GEO-05/#8354) — garde admin tenant (supervision geo).
+            'geo.admin' => \App\Http\Middleware\Geo\EnsureGeoAdminMiddleware::class,
             // BC-34 VTC (VTC-01/#8357) — gate feature flag vtc (verticale VTC/taxi).
             'module.vtc' => \App\Http\Middleware\Vtc\EnsureVtcModuleMiddleware::class,
             // BC-28 CATALOG — gate feature flag b2b_catalog (#6881).

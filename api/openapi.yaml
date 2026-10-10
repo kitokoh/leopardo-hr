@@ -115,6 +115,8 @@ tags:
   description: 'BC-31 HEALTHMANAGER — solution verticale hôpitaux & cliniques privées (HC-001 #7785 à HC-008 #7792) : structure, patients, rendez-vous, consultations, ordonnances, hospitalisations, facturation des soins.'
 - name: Hospitality
   description: 'BC-32 HOSPITALITY — solution verticale HospitalityManager (hôtels, résidences, gestion locative multi-sites, HOSP-001 #7943 → HOSP-008 #7950) : établissements, inventaire, réservations guichet et en ligne, baux et loyers.'
+- name: Geo
+  description: 'BC-33 GEO — core géospatial transverse (GEO-05 #8354) : distance géodésique, recherche « les plus proches » (registry opt-in geo.searchables), diagnostic PostGIS. Réutilisable par toute verticale (VTC en premier, BC-34).'
 paths:
   /travel/distributor-keys:
     get:
@@ -42040,6 +42042,199 @@ paths:
           $ref: '#/components/responses/Error404'
         '409':
           $ref: '#/components/responses/Error409'
+  /geo/ping:
+    get:
+      tags:
+      - Geo
+      summary: Smoke test du module geo (GEO-02 #8351)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Module geo opérationnel pour le tenant courant
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /geo/distance:
+    post:
+      tags:
+      - Geo
+      summary: Distance géodésique entre deux points (GEO-05 #8354)
+      description: >-
+        Distance « à vol d'oiseau » en mètres, calculée par le core géospatial
+        (PostGIS ST_Distance sur geography si l'extension est disponible,
+        repli Haversine sinon — choix du moteur invisible de l'appelant).
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [from, to]
+              properties:
+                from:
+                  type: object
+                  required: [lat, lng]
+                  properties:
+                    lat:
+                      type: number
+                      minimum: -90
+                      maximum: 90
+                    lng:
+                      type: number
+                      minimum: -180
+                      maximum: 180
+                to:
+                  type: object
+                  required: [lat, lng]
+                  properties:
+                    lat:
+                      type: number
+                      minimum: -90
+                      maximum: 90
+                    lng:
+                      type: number
+                      minimum: -180
+                      maximum: 180
+      responses:
+        '200':
+          description: Distance calculée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      distance_m:
+                        type: integer
+                        description: Distance en mètres (arrondi)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /geo/nearest:
+    get:
+      tags:
+      - Geo
+      summary: Entités les plus proches d'un point (GEO-05 #8354)
+      description: >-
+        Recherche « les plus proches » limitée aux types enregistrés dans la
+        registry opt-in geo.searchables (fail-closed : un type inconnu est
+        refusé 422 GEO_UNKNOWN_SEARCHABLE_TYPE — aucune donnée tenant n'est
+        exposée sans enregistrement explicite). Résultats triés par distance
+        croissante, bornés au tenant courant.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: type
+        in: query
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-z][a-z0-9_-]*$'
+      - name: lat
+        in: query
+        required: true
+        schema:
+          type: number
+          minimum: -90
+          maximum: 90
+      - name: lng
+        in: query
+        required: true
+        schema:
+          type: number
+          minimum: -180
+          maximum: 180
+      - name: radius_km
+        in: query
+        required: false
+        schema:
+          type: number
+          minimum: 0.1
+          maximum: 50
+          default: 10
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Résultats triés par distance croissante
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          nullable: true
+                        label:
+                          type: string
+                        distance_meters:
+                          type: integer
+                        latitude:
+                          type: number
+                          nullable: true
+                        longitude:
+                          type: number
+                          nullable: true
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /geo/capabilities:
+    get:
+      tags:
+      - Geo
+      summary: Diagnostic des capacités géospatiales (GEO-05 #8354, admin tenant)
+      description: >-
+        État de l'extension PostGIS et moteur de distance actif (postgis |
+        haversine). Réservé au manager principal du tenant (garde geo.admin,
+        deny-by-default). Aucune donnée métier exposée.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Capacités du moteur géospatial
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      postgis_available:
+                        type: boolean
+                      postgis_version:
+                        type: string
+                        nullable: true
+                      distance_engine:
+                        type: string
+                        enum: [postgis, haversine]
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
 components:
   securitySchemes:
     BearerAuth:
