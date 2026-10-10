@@ -19,13 +19,17 @@
  * Référence : docs/specifications/MODULE_GEOCORE_ET_VERTICAL_VTC.md (§5).
  */
 
+use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcDispatchController;
+use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcDriverAdminController;
 use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcDriverAvailabilityController;
 use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcDriverOfferController;
 use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcDriverPositionController;
 use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcDriverRideController;
+use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcFareProfileAdminController;
 use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcHealthController;
 use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcRideController;
 use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcRideEstimateController;
+use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcVehicleAdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.vtc'])
@@ -64,5 +68,37 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/driver/position', [VtcDriverPositionController::class, 'store'])
                 ->middleware('throttle:30,1');
             Route::post('/driver/availability', [VtcDriverAvailabilityController::class, 'update']);
+        });
+
+        // VTC-06 (#8362) — console de répartition (polling v1) : rôle
+        // vtc.dispatcher, isolation tenant par scope BelongsToCompany.
+        Route::middleware('vtc.role:dispatcher')->group(function (): void {
+            Route::get('/dispatch/rides', [VtcDispatchController::class, 'rides']);
+            Route::get('/dispatch/drivers', [VtcDispatchController::class, 'drivers']);
+        });
+
+        // VTC-06 (#8362) — administration de la verticale : rôle vtc.admin
+        // (matrice docs/architecture/VTC_RBAC.md).
+        Route::middleware('vtc.role:admin')->group(function (): void {
+            Route::get('/fare-profiles', [VtcFareProfileAdminController::class, 'index']);
+            Route::post('/fare-profiles', [VtcFareProfileAdminController::class, 'store']);
+            Route::put('/fare-profiles/{id}', [VtcFareProfileAdminController::class, 'update'])
+                ->whereNumber('id');
+            Route::delete('/fare-profiles/{id}', [VtcFareProfileAdminController::class, 'destroy'])
+                ->whereNumber('id');
+
+            Route::get('/vehicles', [VtcVehicleAdminController::class, 'index']);
+            Route::post('/vehicles', [VtcVehicleAdminController::class, 'store']);
+            Route::put('/vehicles/{id}', [VtcVehicleAdminController::class, 'update'])
+                ->whereNumber('id');
+            Route::delete('/vehicles/{id}', [VtcVehicleAdminController::class, 'destroy'])
+                ->whereNumber('id');
+
+            Route::get('/drivers', [VtcDriverAdminController::class, 'index']);
+            Route::post('/drivers', [VtcDriverAdminController::class, 'store']);
+            Route::put('/drivers/{id}', [VtcDriverAdminController::class, 'update'])
+                ->whereNumber('id');
+            Route::delete('/drivers/{id}', [VtcDriverAdminController::class, 'destroy'])
+                ->whereNumber('id');
         });
     });

@@ -61,8 +61,14 @@ class VtcServiceProvider extends ServiceProvider
         // `vtc`, la création reste synchrone).
         Event::listen(VtcRideRequested::class, StartVtcDispatchListener::class);
 
-        // Les commandes du module (VTC-06 : `vtc:purge-positions`, rétention
-        // RGPD des positions chauffeurs) seront enregistrées ici — leçon
-        // #8004 : seul app/Console/Commands est auto-découvert.
+        // VTC-06 (#8362) — `vtc:purge-positions` (rétention RGPD des
+        // positions chauffeurs, planifiée daily) : les commandes du module
+        // ne sont pas auto-découvertes (leçon #8004 : seul
+        // app/Console/Commands l'est) — enregistrement explicite.
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                \App\Modules\Vtc\Console\Commands\PurgeVtcDriverPositionsCommand::class,
+            ]);
+        }
     }
 }

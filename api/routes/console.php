@@ -159,6 +159,14 @@ Schedule::command('sanctum:prune-expired --hours=24')->daily()->at('04:30');
 // Digest hebdomadaire manager (issue #5695) — chaque lundi à 07:00.
 Schedule::command('manager:weekly-digest')->weeklyOn(1, '07:00');
 Schedule::command('fuel:alerts-dispatch')->daily()->at('06:30');
+// BC-34 VTC (VTC-06/#8362) — purge RGPD quotidienne des positions
+// chauffeurs (rétention vtc.positions_retention_days, défaut 30 j) :
+// idempotente, auditée par log, withoutOverlapping + onOneServer.
+Schedule::command('vtc:purge-positions')
+    ->daily()
+    ->at('03:15')
+    ->withoutOverlapping()
+    ->onOneServer();
 // Fermeture automatique unique (ADR-0016 Phase 4, #5355) : pointages sans
 // check-out + sessions GPS orphelines — une seule commande, même cycle.
 Schedule::command('attendance:auto-close --threshold=12 --hours=14')
