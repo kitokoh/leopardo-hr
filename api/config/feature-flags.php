@@ -177,6 +177,21 @@ return [
         // l'ignorait donc et /auth/me ne remontait jamais la clé (même classe de
         // défaut que #7235 pour accounting/crm/travel). Déclaré ici, le module
         // devient activable par l'admin plateforme et visible côté client.
+        // FUNDRAISING — verticale « Cagnottes solidaires » (lien public de
+        // collecte, contributions carte + mobile money, reversements au
+        // bénéficiaire, spec docs/specifications/SOLUTION_FUNDRAISING.md).
+        // Déclarée ici ET dans `Company::KNOWN_MODULES` dès la création
+        // (leçon #7220/#7235/company_showcase : catalogue + feature-flags +
+        // KNOWN_MODULES = les 3 points d'enregistrement obligatoires).
+        // Fail-closed : défaut false, gate serveur `module.fundraising` sur
+        // /api/v1/fundraising/* + garde 404 sur la surface publique.
+        'fundraising' => [
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.35.0',
+            'killable' => true,
+            'description' => 'Verticale Cagnottes solidaires : liens publics de collecte, contributions carte et mobile money, reversements au bénéficiaire.',
+        ],
         'company_showcase' => [
             'scope' => 'module',
             'default' => false,

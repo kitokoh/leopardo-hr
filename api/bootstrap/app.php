@@ -150,6 +150,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.retail' => \App\Http\Middleware\Retail\EnsureRetailModuleMiddleware::class,
             // BC-29 COMMUNICATION — gate feature flag communication (R0 #7685).
             'module.communication' => EnsureCommunicationModuleMiddleware::class,
+            'module.fundraising' => \App\Http\Middleware\Fundraising\EnsureFundraisingModuleMiddleware::class,
             // C-PUBLIC #6882 — accès public par slug (catalogue vitrine).
             'catalog.public' => \App\Http\Middleware\Catalog\EnsureCatalogPublicAccess::class,
             // BC-17 #7807 — marketplace publique Leopardo Marché (slug vendeur, fail-closed 404).
