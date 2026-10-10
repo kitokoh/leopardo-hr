@@ -42,6 +42,8 @@ final class FundraiserPublicController extends Controller
         private readonly TenantManager $tenantManager,
         private readonly PublicTenantResolver $publicTenantResolver,
         private readonly InitiateContributionAction $initiateContribution,
+        private readonly \App\Modules\Fundraising\Infrastructure\Services\FundraisingGatewayFactory $gatewayFactory,
+        private readonly \App\Modules\Fundraising\Application\Actions\ApplyPaymentUpdateAction $applyPaymentUpdate,
     ) {}
 
     /**
@@ -188,6 +190,25 @@ final class FundraiserPublicController extends Controller
 
             if (! $contribution instanceof FundraisingContribution) {
                 return null;
+            }
+
+            // Re-conciliation active (spec §4.3) : si la contribution est
+            // encore `pending`, on interroge la passerelle (mobile money
+            // sandbox/production, session Stripe) — les webhooks peuvent
+            // tarder ; l'événement synthétique est déterministe et
+            // idempotent, jamais de double crédit.
+            if ($contribution->status === \App\Modules\Fundraising\Domain\Enums\ContributionStatus::PENDING) {
+                try {
+                    $gateway = $this->gatewayFactory->forProvider($contribution->provider);
+                    $update = $gateway->verify((string) $contribution->provider_reference);
+
+                    if ($update !== null) {
+                        $this->applyPaymentUpdate->handle($gateway->gatewayName(), $update);
+                        $contribution->refresh();
+                    }
+                } catch (\InvalidArgumentException) {
+                    // Provider inconnu (manuel…) : pas de vérification active.
+                }
             }
 
             /** @var Fundraiser|null $fundraiser */
