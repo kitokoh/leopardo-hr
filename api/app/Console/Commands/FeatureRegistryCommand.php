@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Contracts\ApiEndpointRegistryInterface;
 use App\Contracts\FeatureRegistryInterface;
 use App\Modules\Billing\Domain\Models\Feature;
 use Illuminate\Console\Command;
@@ -26,7 +27,7 @@ class FeatureRegistryCommand extends Command
      */
     protected $description = 'Gere le registre des fonctionnalites API';
 
-    public function handle(FeatureRegistryInterface $registry): int
+    public function handle(ApiEndpointRegistryInterface $registry): int
     {
         $action = $this->argumentString('action');
 
@@ -49,7 +50,7 @@ class FeatureRegistryCommand extends Command
         }
     }
 
-    private function handleSync(FeatureRegistryInterface $registry): int
+    private function handleSync(ApiEndpointRegistryInterface $registry): int
     {
         $this->info('Synchronisation du registre des fonctionnalites...');
 
@@ -70,7 +71,7 @@ class FeatureRegistryCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function handleList(FeatureRegistryInterface $registry): int
+    private function handleList(ApiEndpointRegistryInterface $registry): int
     {
         $version = $this->optionString('api-version');
         $mobileVersion = $this->optionString('mobile-version');
@@ -106,7 +107,7 @@ class FeatureRegistryCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function handleStats(FeatureRegistryInterface $registry): int
+    private function handleStats(ApiEndpointRegistryInterface $registry): int
     {
         $stats = $registry->getStatistics();
         $format = $this->optionString('format', 'table');
@@ -168,7 +169,7 @@ class FeatureRegistryCommand extends Command
         ];
     }
 
-    private function handleClearCache(FeatureRegistryInterface $registry): int
+    private function handleClearCache(ApiEndpointRegistryInterface $registry): int
     {
         $this->info('Suppression du cache du registre...');
 

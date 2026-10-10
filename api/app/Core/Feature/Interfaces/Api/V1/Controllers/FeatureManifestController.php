@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Feature\Interfaces\Api\V1\Controllers;
 
-use App\Contracts\FeatureRegistryInterface;
+use App\Contracts\ApiEndpointRegistryInterface;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -14,12 +14,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Contrôleur pour l'API du manifeste des fonctionnalités
+ * Contrôleur pour l'API du manifeste des fonctionnalités (BOS-015 #8202)
  */
 class FeatureManifestController extends Controller
 {
     public function __construct(
-        private readonly FeatureRegistryInterface $registry,
+        private readonly ApiEndpointRegistryInterface $registry,
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -27,13 +27,14 @@ class FeatureManifestController extends Controller
         try {
             /** @var string|null $mobileVersion */
             $mobileVersion = $request->query('mobile_version', '1.0.0');
+
             /** @var Employee $user */
             $user = Auth::user();
 
             Log::info('Feature manifest requested', [
-                'user_id'       => $user->id,
+                'user_id'        => $user->id,
                 'mobile_version' => $mobileVersion,
-                'user_agent'    => $request->userAgent(),
+                'user_agent'     => $request->userAgent(),
             ]);
 
             /** @var array<string, mixed> $manifest */
@@ -41,6 +42,7 @@ class FeatureManifestController extends Controller
 
             /** @var array<int|string, mixed> $features */
             $features = is_array($manifest['features'] ?? null) ? $manifest['features'] : [];
+
             $manifest['features']       = $this->filterFeaturesByPermissions($features, $user);
             $manifest['total_features'] = count($manifest['features']);
             $manifest['user_id']        = $user->id;
@@ -188,8 +190,6 @@ class FeatureManifestController extends Controller
         return array_values(array_filter($features, function (mixed $feature) use ($user): bool {
             /** @var array<string, mixed> $featureArr */
             $featureArr          = is_array($feature) ? $feature : [];
-            // Feature::toManifestArray() expose la cle 'permissions' (pas
-            // 'required_permissions', qui n'existe sur aucun modele de ce module).
             $requiredPermissions = is_array($featureArr['permissions'] ?? null)
                 ? $featureArr['permissions']
                 : [];
