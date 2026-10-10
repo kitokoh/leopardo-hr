@@ -17,6 +17,8 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantReview;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantPublicDirectoryCache;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantPublicBranchResource;
+use App\Shared\Contracts\Geo\GeoServiceContract;
+use App\Shared\Geo\GeoPoint;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -64,6 +66,7 @@ class RestaurantPublicDirectoryController extends Controller
     public function __construct(
         private readonly TenantManager $tenantManager,
         private readonly RestaurantPublicDirectoryCache $cache,
+        private readonly GeoServiceContract $geo,
     ) {}
 
     /**
@@ -153,11 +156,21 @@ class RestaurantPublicDirectoryController extends Controller
                 ? min((float) $filters['radius_km'], 50.0)
                 : self::DEFAULT_RADIUS_KM;
 
-            $query->selectRaw(self::HAVERSINE_SQL.' as distance_km', [$lat, $lng, $lat])
-                ->whereNotNull('b.latitude')
-                ->whereNotNull('b.longitude')
-                ->whereRaw(self::HAVERSINE_SQL.' <= ?', [$lat, $lng, $lat, $radiusKm])
-                ->orderBy('distance_km');
+            if ($this->geoPilotEnabled()) {
+                // GEO-06 (#8355, BC-33 GEO) — calcul délégué au core
+                // géospatial (moteur PostGIS ou repli Haversine INTERNE au
+                // module geo, jamais de SQL local) : ids + distances, puis
+                // contrainte de la requête annuaire (bindings paramétrés).
+                $this->applyGeoCoreNear($query, new GeoPoint($lat, $lng), $radiusKm);
+            } else {
+                // Repli legacy (pilote inactif) — retiré à la généralisation
+                // du core geo (garde GEO-07 #8356, durcissement #8380).
+                $query->selectRaw(self::HAVERSINE_SQL.' as distance_km', [$lat, $lng, $lat])
+                    ->whereNotNull('b.latitude')
+                    ->whereNotNull('b.longitude')
+                    ->whereRaw(self::HAVERSINE_SQL.' <= ?', [$lat, $lng, $lat, $radiusKm])
+                    ->orderBy('distance_km');
+            }
         } else {
             $query->orderBy('b.name');
         }
@@ -393,6 +406,70 @@ class RestaurantPublicDirectoryController extends Controller
     private function isPostgres(): bool
     {
         return DB::getDriverName() === 'pgsql';
+    }
+
+    /**
+     * Pilote GEO-06 (#8355) : l'annuaire délègue ses calculs de proximité
+     * au core géospatial (BC-33) — kill switch opérationnel de rollout
+     * (config `geo.pilots.restaurant_directory`, défaut off).
+     */
+    private function geoPilotEnabled(): bool
+    {
+        return (bool) config('geo.pilots.restaurant_directory', false);
+    }
+
+    /**
+     * GEO-06 (#8355, BC-33 GEO) — recherche par proximité via le core geo.
+     *
+     * Le moteur `geo` (type `restaurant` de la registry, vue d'adaptation
+     * scopée « annuaire public ») retourne les branches dans le rayon,
+     * triées par distance ; la requête annuaire est ensuite contrainte à
+     * ces ids et ordonnée par la distance fournie par le core — comportement
+     * identique au repli legacy (rayon défaut 10 km, max 50, tri croissant,
+     * `distance_km` exposé). Bindings paramétrés partout (spec §7).
+     *
+     * @param  Builder  $query
+     */
+    private function applyGeoCoreNear(Builder $query, GeoPoint $center, float $radiusKm): void
+    {
+        $results = $this->geo->nearest('restaurant', $center, $radiusKm, 100);
+
+        /** @var array<int, float> $distancesKmById */
+        $distancesKmById = [];
+
+        foreach ($results as $result) {
+            $payload = $result->toArray();
+            $id = $payload['id'];
+
+            if (is_int($id)) {
+                $distancesKmById[$id] = round($payload['distance_meters'] / 1000.0, 2);
+            }
+        }
+
+        if ($distancesKmById === []) {
+            // Aucune branche publique dans le rayon → page vide garantie.
+            $query->whereRaw('1 = 0');
+
+            return;
+        }
+
+        // Distance par branche en CASE paramétré (select + tri identiques au
+        // contrat legacy `distance_km`, bindings uniquement).
+        $caseSql = 'case b.id '.implode(' ', array_fill(0, count($distancesKmById), 'when ? then ?')).' end';
+
+        /** @var list<int|float> $caseBindings */
+        $caseBindings = [];
+
+        foreach ($distancesKmById as $branchId => $distanceKm) {
+            $caseBindings[] = $branchId;
+            $caseBindings[] = $distanceKm;
+        }
+
+        $query->whereNotNull('b.latitude')
+            ->whereNotNull('b.longitude')
+            ->whereIn('b.id', array_keys($distancesKmById))
+            ->selectRaw($caseSql.' as distance_km', $caseBindings)
+            ->orderByRaw($caseSql, $caseBindings);
     }
 
     /**

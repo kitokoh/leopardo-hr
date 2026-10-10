@@ -29,4 +29,14 @@ return [
     // éligible à l'endpoint « le plus proche ». Opt-in par verticale —
     // aucune donnée tenant n'est exposée sans enregistrement explicite.
     'searchables' => [],
+
+    // Pilotes de migration des consommateurs legacy vers le core (kill
+    // switch opérationnel — rollout progressif, spec §10).
+    'pilots' => [
+        // GEO-06 (#8355) : l'annuaire public Restaurant délègue ses calculs
+        // de proximité au core geo (PostGIS ou repli Haversine INTERNE au
+        // module). Inactif → HAVERSINE_SQL local legacy conservé (retiré à
+        // la généralisation — garde GEO-07, durcissement #8380).
+        'restaurant_directory' => env('GEO_PILOT_RESTAURANT_DIRECTORY', false),
+    ],
 ];

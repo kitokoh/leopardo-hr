@@ -99,6 +99,16 @@ class RestaurantManagerServiceProvider extends ServiceProvider
             $registry->register('restaurant', fn (): DemoDataKit => $this->app->make(RestaurantDemoSeederService::class));
         });
 
+        // GEO-06 (#8355, BC-33 GEO) — type recherchable `restaurant` de la
+        // registry opt-in `geo.searchables` : vue d'adaptation publique des
+        // branches (scope « annuaire public » fail-closed). Enregistrement
+        // paresseux via la façade transverse partagée — jamais d'import du
+        // module Geo lui-même (garde d'isolation #5584, inversion de
+        // dépendance : la verticale s'enregistre, le core ne la connaît pas).
+        $this->app->resolving(\App\Shared\Contracts\Geo\GeoServiceContract::class, function (\App\Shared\Contracts\Geo\GeoServiceContract $geo): void {
+            $geo->registerSearchable('restaurant', \App\Modules\RestaurantManager\Infrastructure\Geo\RestaurantGeoBranch::class);
+        });
+
         // Ports & adapters de persistance (RESTO-215, issue #6180) : les
         // implémentations Eloquent sont résolues en singleton derrière leur
         // contrat, conformément au pattern CrmLeadRepository.
