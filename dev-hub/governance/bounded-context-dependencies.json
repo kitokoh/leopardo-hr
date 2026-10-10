@@ -5,7 +5,7 @@
     "policy": "deny-by-default",
     "registry": "dev-hub/governance/bounded-context-registry.json",
     "guard": "dev-hub/tools/check-bounded-context-dependencies.sh",
-    "updated": "2026-09-29"
+    "updated": "2026-10-10"
   },
   "edges": [
     {
@@ -822,6 +822,18 @@
       "to": "BC-29",
       "baseline": true,
       "note": "BC-24 → BC-29 — TravelNotificationService (TRAVEL-415 #6067) écrit CommunicationEvent déplacé sous BC-29 par ADR 0027 (#8219, #8250)"
+    },
+    {
+      "from": "BC-33",
+      "to": "BC-02",
+      "baseline": false,
+      "note": "BC-33 → BC-02 — surface publique des cagnottes (routes isolées, hors middleware tenant) : FundraiserPublicController résout le tenant via l'annuaire public (slug→company) puis recharge App\\Core\\Tenant\\Domain\\Models\\Company / TenantManager (pattern BC-27 vitrine / BC-28 catalogue / BC-29 OAuth, #8379)"
+    },
+    {
+      "from": "BC-33",
+      "to": "BC-03",
+      "baseline": false,
+      "note": "BC-33 → BC-03 — acteur Employee dans les contrôleurs de gestion (autorisation policy) et les policies Fundraiser/FundraisingPayout (pattern RBAC standard de tous les modules métier, #8379)"
     }
   ]
 }

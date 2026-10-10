@@ -509,6 +509,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(RetailOnlineSettings::class, RetailOnlineSettingsPolicy::class);
         // — Showcase (BC-27 #6865 : socle domaine — vitrine entreprise)
         Gate::policy(CompanyShowcase::class, CompanyShowcasePolicy::class);
+        Gate::policy(\App\Modules\Fundraising\Domain\Models\Fundraiser::class, \App\Modules\Fundraising\Domain\Policies\FundraiserPolicy::class);
+        Gate::policy(\App\Modules\Fundraising\Domain\Models\FundraisingPayout::class, \App\Modules\Fundraising\Domain\Policies\FundraisingPayoutPolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Position::class, PositionPolicy::class);
         Gate::policy(Schedule::class, SchedulePolicy::class);

@@ -155,6 +155,13 @@ class Company extends Model
         // l'admin plateforme (`PlatformCompanyFeatureController::update`)
         // reconstruise et expose la clé, au même titre que `accounting`/#7235.
         'company_showcase',
+        // FUNDRAISING — verticale « Cagnottes solidaires » (spec
+        // docs/specifications/SOLUTION_FUNDRAISING.md) : enregistrée ici DÈS
+        // la création (leçon #7220/#7235 : catalogue + feature-flags +
+        // KNOWN_MODULES = les 3 points obligatoires, sinon l'admin
+        // plateforme ne peut jamais activer la verticale). Fail-closed
+        // (défaut false), gate `module.fundraising`.
+        'fundraising',
         // #7432 — Formation : outil HORIZONTAL (toute entreprise forme, quel que
         // soit son secteur). Il était déjà dans `HORIZONTAL_TOOLS` et dans le
         // sous-menu RH de la barre client, mais ABSENT de ce registre : comme

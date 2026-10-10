@@ -60,6 +60,7 @@ Les modules sont activés par company via `companies.features`. Chaque client pe
 | **Ön Muhasebe** (comptabilité Turquie) | À spec ultérieurement | Web principalement | Demande client marché TR |
 | **Leo IA** (home conversationnelle réelle) | `docs/vision/01_architecture_produit/Leopardo_RH_APV_v2.pdf` Ch.4 | Mobile + Web | Budget IA confirmé + modération testée |
 | **PharmaManager** (verticale officines de pharmacie, flag `pharmacy`) | Issues PHARMA-001→007 (#7798–#7804) | Web (gestion) + API | Activation par tenant via `SolutionActivator` (manifest `pharmacy`) |
+| **Fundraising** (verticale cagnottes solidaires, flag `fundraising`) | `docs/specifications/SOLUTION_FUNDRAISING.md` | API publique (lien de collecte) + Web gestion (phase 2) | Activation par tenant via PATCH features plateforme |
 
 ### Règles d'activation
 - Un module Phase 2 **ne rentre jamais dans `main`** tant que les 3 pilotes MVP ne sont pas déployés en production.

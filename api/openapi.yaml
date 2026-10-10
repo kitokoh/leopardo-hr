@@ -37,6 +37,8 @@ servers:
 security:
 - BearerAuth: []
 tags:
+- name: Fundraising
+  description: 'BC-33 FUNDRAISING (#8379) — verticale Cagnottes solidaires : liens publics de collecte, contributions carte et mobile money, reversements au bénéficiaire.'
 - name: Health
   description: Groupe d'opérations Health
 - name: Auth
@@ -116,6 +118,570 @@ tags:
 - name: Hospitality
   description: 'BC-32 HOSPITALITY — solution verticale HospitalityManager (hôtels, résidences, gestion locative multi-sites, HOSP-001 #7943 → HOSP-008 #7950) : établissements, inventaire, réservations guichet et en ligne, baux et loyers.'
 paths:
+  /public/fundraisers/{slug}:
+    get:
+      tags:
+      - Fundraising
+      summary: Fiche publique d'une cagnotte
+      description: >-
+        BC-33 FUNDRAISING (#8379) — surface publique isolée (aucun auth,
+        throttle `shop-public`) : résolution du tenant par annuaire public
+        (slug → company), garde 404 uniforme si le flag `fundraising` est
+        coupé ou si la cagnotte n'est pas publiée. DTO public allowlist :
+        jamais company_id ni identifiants internes.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[A-Za-z0-9\-_]{1,160}$'
+      responses:
+        '200':
+          description: Fiche publique (titre, description, objectif, collecté, nombre de contributions, montants suggérés)
+        '404':
+          description: Cagnotte introuvable, non publiée ou verticale désactivée
+  /public/fundraisers/{slug}/supporters:
+    get:
+      tags:
+      - Fundraising
+      summary: Mur public des soutiens d'une cagnotte
+      description: >-
+        Liste publique des contributions confirmées : prénom masqué par
+        défaut, montant exposé uniquement si le donateur l'a accepté.
+        Pagination standard.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[A-Za-z0-9\-_]{1,160}$'
+      responses:
+        '200':
+          description: Soutiens confirmés (nom d'affichage, montant public ou masqué, message, date)
+        '404':
+          description: Cagnotte introuvable, non publiée ou verticale désactivée
+  /public/fundraisers/{slug}/contribute:
+    post:
+      tags:
+      - Fundraising
+      summary: Initier une contribution publique
+      description: >-
+        Initiation d'une contribution : garde-fous montant min/max et
+        fenêtre de collecte (422), honeypot anti-bot. Méthodes :
+        `card` → session Stripe Checkout (URL de redirection) ;
+        `mobile_money` → push USSD/opérateur (référence à poller) ;
+        `cash` / `bank_transfer` → instructions de règlement manuel,
+        confirmation par le responsable du tenant.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[A-Za-z0-9\-_]{1,160}$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - amount
+              - method
+              properties:
+                amount:
+                  type: number
+                  description: Montant en unité mineure de la devise de la cagnotte
+                method:
+                  type: string
+                  enum: [card, mobile_money, cash, bank_transfer]
+                supporter_name:
+                  type: string
+                supporter_contact:
+                  type: string
+                is_anonymous:
+                  type: boolean
+                is_amount_public:
+                  type: boolean
+                message:
+                  type: string
+                website:
+                  type: string
+                  description: Honeypot anti-bot — doit rester vide
+      responses:
+        '201':
+          description: Contribution initiée (référence `FC-…`, payload propre à la passerelle)
+        '404':
+          description: Cagnotte introuvable, non publiée ou verticale désactivée
+        '422':
+          description: Montant hors bornes, cagnotte inactive ou fenêtre de collecte dépassée
+  /public/contributions/{reference}:
+    get:
+      tags:
+      - Fundraising
+      summary: Statut public d'une contribution (polling)
+      description: >-
+        Polling du statut d'une contribution par sa référence publique
+        `FC-…` (pending → completed/failed). Aucune donnée sensible exposée.
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^FC-[A-Z0-9]{1,32}$'
+      responses:
+        '200':
+          description: Statut courant de la contribution
+        '404':
+          description: Référence inconnue
+  /fundraising/fundraisers:
+    get:
+      tags:
+      - Fundraising
+      summary: Liste des cagnottes du tenant
+      description: >-
+        Gestion tenant (auth Sanctum + gate `module.fundraising`
+        fail-closed + RBAC `api.manager:principal,rh`). Filtrable par
+        statut. Isolation tenant fail-closed.
+      responses:
+        '200':
+          description: Cagnottes du tenant (paginé)
+        '401':
+          description: Non authentifié
+        '403':
+          description: Verticale non activée ou acteur non autorisé
+    post:
+      tags:
+      - Fundraising
+      summary: Créer une cagnotte
+      description: >-
+        Création en brouillon : titre, bénéficiaire, catégorie, objectif
+        optionnel, montants suggérés, bornes min/max, fenêtre de collecte.
+        Slug public généré côté serveur (unique tenant).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - title
+              - beneficiary_name
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                beneficiary_name:
+                  type: string
+                beneficiary_contact:
+                  type: string
+                category:
+                  type: string
+                goal_amount:
+                  type: number
+                currency:
+                  type: string
+                suggested_amounts:
+                  type: array
+                  items:
+                    type: number
+                min_amount:
+                  type: number
+                max_amount:
+                  type: number
+                starts_at:
+                  type: string
+                  format: date-time
+                ends_at:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: Cagnotte créée (brouillon)
+        '401':
+          description: Non authentifié
+        '403':
+          description: Verticale non activée ou acteur non autorisé
+        '422':
+          description: Payload invalide
+  /fundraising/fundraisers/{fundraiser}:
+    get:
+      tags:
+      - Fundraising
+      summary: Détail d'une cagnotte
+      parameters:
+      - name: fundraiser
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Cagnotte (compteurs temps réel inclus)
+        '401':
+          description: Non authentifié
+        '403':
+          description: Verticale non activée ou acteur non autorisé
+        '404':
+          description: Introuvable (ou autre tenant)
+    put:
+      tags:
+      - Fundraising
+      summary: Mettre à jour une cagnotte
+      description: Mise à jour tant que la cagnotte n'est pas clôturée/annulée.
+      parameters:
+      - name: fundraiser
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Cagnotte mise à jour
+        '401':
+          description: Non authentifié
+        '403':
+          description: Verticale non activée ou acteur non autorisé
+        '404':
+          description: Introuvable (ou autre tenant)
+        '422':
+          description: Transition d'état interdite ou payload invalide
+  /fundraising/fundraisers/{fundraiser}/publish:
+    post:
+      tags:
+      - Fundraising
+      summary: Publier une cagnotte
+      description: Brouillon → active ; crée l'entrée de l'annuaire public (slug → tenant).
+      parameters:
+      - name: fundraiser
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Cagnotte publiée
+        '401':
+          description: Non authentifié
+        '403':
+          description: Verticale non activée ou acteur non autorisé
+        '404':
+          description: Introuvable (ou autre tenant)
+        '422':
+          description: Transition d'état interdite
+  /fundraising/fundraisers/{fundraiser}/pause:
+    post:
+      tags:
+      - Fundraising
+      summary: Mettre une cagnotte en pause
+      description: Active → en pause ; la surface publique répond 404 tant que la pause est active.
+      parameters:
+      - name: fundraiser
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Cagnotte en pause
+        '401':
+          description: Non authentifié
+        '403':
+          description: Verticale non activée ou acteur non autorisé
+        '404':
+          description: Introuvable (ou autre tenant)
+        '422':
+          description: Transition d'état interdite
+  /fundraising/fundraisers/{fundraiser}/close:
+    post:
+      tags:
+      - Fundraising
+      summary: Clôturer une cagnotte
+      description: Clôture définitive de la collecte ; les reversements restent possibles sur le solde.
+      parameters:
+      - name: fundraiser
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Cagnotte clôturée
+        '401':
+          description: Non authentifié
+        '403':
+          description: Verticale non activée ou acteur non autorisé
+        '404':
+          description: Introuvable (ou autre tenant)
+        '422':
+          description: Transition d'état interdite
+  /fundraising/fundraisers/{fundraiser}/cancel:
+    post:
+      tags:
+      - Fundraising
+      summary: Annuler une cagnotte
+      description: >-
+        Annulation refusée dès qu'une contribution est confirmée
+        (argent = strict) — réservée aux brouillons et cagnottes sans
+        encaissement.
+      parameters:
+      - name: fundraiser
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Cagnotte annulée
+        '401':
+          description: Non authentifié
+        '403':
+          description: Verticale non activée ou acteur non autorisé
+        '404':
+          description: Introuvable (ou autre tenant)
+        '422':
+          description: Annulation refusée (contributions confirmées)
+  /fundraising/fundraisers/{fundraiser}/contributions:
+    get:
+      tags:
+      - Fundraising
+      summary: Contributions d'une cagnotte
+      parameters:
+      - name: fundraiser
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Contributions (paginé, filtrable par statut/méthode)
+        '401':
+          description: Non authentifié
+        '403':
+          description: Verticale non activée ou acteur non autorisé
+        '404':
+          description: Introuvable (ou autre tenant)
+  /fundraising/contributions/{contribution}/confirm:
+    post:
+      tags:
+      - Fundraising
+      summary: Confirmer un règlement manuel
+      description: >-
+        Confirmation par le responsable d'une contribution `cash` /
+        `bank_transfer` reçue : règlement transactionnel (compteurs
+        cagnotte, auto-clôture à objectif atteint).
+      parameters:
+      - name: contribution
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Contribution confirmée
+        '401':
+          description: Non authentifié
+        '403':
+          description: Verticale non activée ou acteur non autorisé
+        '404':
+          description: Introuvable (ou autre tenant)
+        '422':
+          description: Contribution déjà réglée ou méthode non manuelle
+  /fundraising/fundraisers/{fundraiser}/payouts:
+    get:
+      tags:
+      - Fundraising
+      summary: Reversements d'une cagnotte
+      parameters:
+      - name: fundraiser
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Reversements (paginé)
+        '401':
+          description: Non authentifié
+        '403':
+          description: Verticale non activée ou acteur non autorisé
+        '404':
+          description: Introuvable (ou autre tenant)
+    post:
+      tags:
+      - Fundraising
+      summary: Demander un reversement
+      description: >-
+        Règle métier : montant ≤ solde disponible de la cagnotte
+        (confirmé − déjà reversé/réservé), sinon 422
+        `PAYOUT_AMOUNT_EXCEEDS_BALANCE`. Méthodes : `mobile_money`,
+        `bank_transfer`, `cash`.
+      parameters:
+      - name: fundraiser
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - amount
+              - method
+              - destination
+              properties:
+                amount:
+                  type: number
+                method:
+                  type: string
+                  enum: [mobile_money, bank_transfer, cash]
+                destination:
+                  type: string
+                  description: Numéro mobile money, IBAN ou consignes de remise
+                note:
+                  type: string
+      responses:
+        '201':
+          description: Reversement demandé (statut pending)
+        '401':
+          description: Non authentifié
+        '403':
+          description: Verticale non activée ou acteur non autorisé
+        '404':
+          description: Introuvable (ou autre tenant)
+        '422':
+          description: Montant supérieur au solde disponible
+  /fundraising/payouts/{payout}/process:
+    post:
+      tags:
+      - Fundraising
+      summary: Marquer un reversement en cours
+      parameters:
+      - name: payout
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Reversement en cours de traitement
+        '401':
+          description: Non authentifié
+        '403':
+          description: Verticale non activée ou acteur non autorisé
+        '404':
+          description: Introuvable (ou autre tenant)
+        '422':
+          description: Transition d'état interdite
+  /fundraising/payouts/{payout}/mark-paid:
+    post:
+      tags:
+      - Fundraising
+      summary: Marquer un reversement payé
+      description: Clôture comptable du reversement (preuve/référence externe optionnelle).
+      parameters:
+      - name: payout
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Reversement payé
+        '401':
+          description: Non authentifié
+        '403':
+          description: Verticale non activée ou acteur non autorisé
+        '404':
+          description: Introuvable (ou autre tenant)
+        '422':
+          description: Transition d'état interdite
+  /fundraising/payouts/{payout}/fail:
+    post:
+      tags:
+      - Fundraising
+      summary: Marquer un reversement échoué
+      description: Le montant redevient disponible pour un nouveau reversement.
+      parameters:
+      - name: payout
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Reversement marqué échoué
+        '401':
+          description: Non authentifié
+        '403':
+          description: Verticale non activée ou acteur non autorisé
+        '404':
+          description: Introuvable (ou autre tenant)
+        '422':
+          description: Transition d'état interdite
+  /fundraising/payouts/{payout}/cancel:
+    post:
+      tags:
+      - Fundraising
+      summary: Annuler un reversement
+      description: Réservé aux reversements non traités ; le montant redevient disponible.
+      parameters:
+      - name: payout
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Reversement annulé
+        '401':
+          description: Non authentifié
+        '403':
+          description: Verticale non activée ou acteur non autorisé
+        '404':
+          description: Introuvable (ou autre tenant)
+        '422':
+          description: Transition d'état interdite
+  /webhooks/fundraising/{provider}:
+    post:
+      tags:
+      - Fundraising
+      summary: Webhook provider de paiement (carte / mobile money)
+      description: >-
+        Réception des notifications providers (`stripe` : HMAC
+        `Stripe-Signature` v1 avec rotation, tolérance ±300 s ;
+        `mobile_money` : HMAC `X-Signature`). Signature invalide ou secret
+        absent → 401 `WEBHOOK_SIGNATURE_INVALID` (fail-closed) ; provider
+        inconnu → 404 ; référence inconnue ou événement inactionnable →
+        200 `ignored`. Application idempotente `(provider, event_id)` :
+        double livraison sans double crédit.
+      parameters:
+      - name: provider
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [stripe, mobile_money]
+      responses:
+        '200':
+          description: Événement appliqué (`applied`) ou ignoré (`ignored`)
+        '401':
+          description: Signature invalide ou secret absent
+        '404':
+          description: Provider inconnu
   /travel/distributor-keys:
     get:
       tags:

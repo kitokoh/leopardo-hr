@@ -12,11 +12,12 @@ use App\Modules\CRM\Providers\CrmServiceProvider;
 use App\Modules\Delivery\Providers\DeliveryServiceProvider;
 use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
 use App\Modules\EduManager\Providers\EduManagerServiceProvider;
-use App\Modules\HealthManager\Providers\HealthManagerServiceProvider;
 use App\Modules\Expense\Providers\ExpenseServiceProvider;
 use App\Modules\Fleet\Providers\FleetServiceProvider;
 use App\Modules\FuelStation\Providers\FuelStationServiceProvider;
+use App\Modules\Fundraising\Providers\FundraisingServiceProvider;
 use App\Modules\Growth\Providers\GrowthServiceProvider;
+use App\Modules\HealthManager\Providers\HealthManagerServiceProvider;
 use App\Modules\HospitalityManager\Providers\HospitalityManagerServiceProvider;
 use App\Modules\HR\Providers\HRServiceProvider;
 use App\Modules\Marketing\Providers\MarketingServiceProvider;
@@ -69,6 +70,7 @@ return [
     AccountingServiceProvider::class,
     DeliveryServiceProvider::class,
     FuelStationServiceProvider::class,
+    FundraisingServiceProvider::class,
     TravelAgencyServiceProvider::class,
     // PHARMA-001 (#7798) — verticale PharmaManager (officines de pharmacie).
     PharmacyServiceProvider::class,

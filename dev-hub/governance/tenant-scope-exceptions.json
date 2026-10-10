@@ -25,6 +25,21 @@
       "model": "App\\Modules\\CRM\\Domain\\Models\\CrmTaskReminder",
       "reason": "Journal d'idempotence des relances CRM écrit uniquement par le scheduler cross-tenant hors contexte tenant (régime crossTenantForSystemTask, #7960) ; company_id renseigné explicitement à l'insert, jamais lu sur la surface API (#5720).",
       "added": "2026-09-24"
+    },
+    {
+      "model": "App\\Modules\\Fundraising\\Domain\\Models\\FundraiserPublicLink",
+      "reason": "Annuaire plateforme (schema public) de resolution slug -> tenant pour les liens publics de cagnottes : company_id est un pointeur de routage, pas une cle d'isolation. Trait inapplicable.",
+      "added": "2026-10-10"
+    },
+    {
+      "model": "App\\Modules\\Fundraising\\Domain\\Models\\FundraisingPaymentRoute",
+      "reason": "Annuaire plateforme (schema public) de routage des webhooks/polling paiement vers le schema tenant : company_id est un pointeur de routage, pas une cle d'isolation. Trait inapplicable.",
+      "added": "2026-10-10"
+    },
+    {
+      "model": "App\\Modules\\Fundraising\\Domain\\Models\\FundraisingPaymentEvent",
+      "reason": "Journal d'idempotence webhook : company_id NULLABLE est une denormalisation d'audit (l'evenement peut etre journalise avant resolution tenant), pas une cle d'isolation stricte.",
+      "added": "2026-10-10"
     }
   ],
   "legacy_pending_review": [

@@ -295,6 +295,10 @@ Route::prefix('v1')->group(function (): void {
         // Pas de contrainte whereIn : la passerelle inconnue est rejetée par le
         // service (401 WEBHOOK_SIGNATURE_INVALID, fail-closed).
         Route::post('/accounting/payment-webhooks/{gateway}', AccountingPaymentWebhookController::class);
+        // FUNDRAISING — webhooks des paiements de contributions (public,
+        // signature HMAC fail-closed vérifiée dans le contrôleur, tenant
+        // résolu par annuaire fundraising_payment_routes, idempotent).
+        Route::post('/webhooks/fundraising/{provider}', \App\Modules\Fundraising\Interfaces\Api\V1\Controllers\FundraisingWebhookController::class);
         // PA2-COMM-007 - Email provider bounce/complaint notifications
         // (Postmark, SES, Mailgun, ...), protected by a shared secret header
         // instead of Sanctum since the caller is a third-party mail provider.
@@ -519,6 +523,10 @@ Route::prefix('v1')->group(function (): void {
 
     // BC-26 DELIVERY — module de livraison générique (DELIVERY-101/#6282)
     require __DIR__.'/modules/delivery.php';
+
+    // FUNDRAISING — verticale cagnottes solidaires : API privée derrière
+    // le feature flag `fundraising` (fail-closed) + API publique isolée.
+    require __DIR__.'/modules/fundraising.php';
 
     // IA Module — fichier requis DANS le groupe v1 (prefix /api/v1) :
     // chemins réels /api/v1/ai/* (drift doc #4936)
