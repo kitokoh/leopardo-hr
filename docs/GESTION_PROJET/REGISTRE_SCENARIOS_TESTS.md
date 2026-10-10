@@ -1,3 +1,30 @@
+> **MAJ 2026-10-10 — #8349 (épic, PR #8377), core géospatial `geo` (BC-33) + verticale VTC/taxi `vtc` (BC-34).**
+> Surface **API HTTP** : deux modules nouveaux, chacun derrière son middleware de feature
+> flag fail-closed (`module.geo` / `module.vtc`, alias `api/bootstrap/app.php`) —
+> `api/routes/modules/geo.php` : `GET /v1/geo/ping`, `POST /v1/geo/distance`,
+> `GET /v1/geo/nearest` (registry opt-in `geo.searchables`), `GET /v1/geo/capabilities`
+> (admin tenant) ; `api/routes/modules/vtc.php` : passager (`POST /v1/vtc/rides/estimate`,
+> `POST /v1/vtc/rides` idempotent par `idempotency_key`, `GET /v1/vtc/rides/{id}`,
+> `POST /v1/vtc/rides/{id}/cancel`), chauffeur rôle `vtc.driver` (`GET /v1/vtc/driver/offers`,
+> `POST /v1/vtc/driver/rides/{id}/accept|decline|arrive|start|complete`,
+> `POST /v1/vtc/driver/position` throttle 30/min + idempotent sur (driver, recorded_at),
+> `POST /v1/vtc/driver/availability`), dispatcher rôle `vtc.dispatcher`
+> (`GET /v1/vtc/dispatch/rides|drivers`, polling v1), admin rôle `vtc.admin` (CRUD
+> `vtc/fare-profiles`, `vtc/vehicles`, `vtc/drivers`). Règle d'architecture : `vtc` ne
+> calcule jamais une distance — tout passe par le core `geo` (contrats
+> `App\Shared\Contracts\Geo`), garde CI `check-geo-single-usage.sh` en warning (GEO-07
+> #8356) puis bloquante (GEO-07b #8380). Pilote GEO-06 (#8355) : annuaire public Restaurant
+> servi par `geo` derrière le flag `GEO_PILOT_RESTAURANT_DIRECTORY`. RBAC vtc deny-by-default
+> (matrice `docs/architecture/VTC_RBAC.md`) ; `openapi.yaml` aligné (4 endpoints geo + 27
+> endpoints vtc documentés). Scénarios automatisés : `api/tests/Unit/Geo` (GeoPoint,
+> calculateurs PostGIS/Haversine, registry), `api/tests/Unit/Vtc` (state machine, tarif,
+> value objects), `api/tests/Feature/Geo` (distance, nearest, capabilities, flags, pilote
+> Restaurant `RestaurantPublicDirectoryGeoPilotTest`), `api/tests/Feature/Vtc`
+> (activation, schéma tenant, manifest, API passager `VtcPassengerApiTest`, dispatch
+> `VtcDispatchTest` + admin `VtcDispatchAdminApiTest`, API chauffeur `VtcDriverApiTest`,
+> flags) — isolation tenant croisée et 403 `MODULE_DISABLED` flag off couverts dans
+> chaque suite.
+
 > **MAJ 2026-09-29 — #8278, routes manager du cycle de vie kiosk restaurées (revoke / rotate-token, Closes #8241).**
 > Surface **API HTTP** (`api/routes/modules/rh.php`) : deux routes nouvelles —
 > `POST /api/v1/kiosks/{kiosk}/revoke` et `POST /api/v1/kiosks/{kiosk}/rotate-token`
