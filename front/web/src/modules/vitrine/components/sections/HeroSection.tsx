@@ -6,7 +6,7 @@ import { ArrowRight, Play, Sparkles } from 'lucide-react';
 import { useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { withLocaleHref } from '../../lib/locale-href';
-import { ParticleField } from '../ParticleField';
+import { HeroScene3D } from '../hero/HeroScene3D';
 
 export interface HeroSectionProps {
   headline: string;
@@ -98,7 +98,9 @@ export function HeroSection({
         }}
       />
 
-      {animated && <ParticleField />}
+      {/* Fond vivant : constellation WebGL « Business OS » si possible,
+          champ de particules 2D sinon (même rôle, deux niveaux d'exigence). */}
+      {animated && <HeroScene3D />}
 
       {/* Gradient orbs */}
       <div className="absolute top-1/4 -left-32 w-[500px] h-[500px] bg-emerald-400/15 rounded-full blur-[120px] animate-pulse" />

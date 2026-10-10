@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { Building2, Globe2, Layers, ShieldCheck } from 'lucide-react';
 import type { AppLocale } from '@/lib/i18n';
-import { HeroGithubBadge } from '../hero/HeroProductShowcase';
+import { HeroTrustBadge } from '../hero/HeroProductShowcase';
 
 /**
  * PA2-MKT-006: this section previously showed "500+ active companies",
@@ -106,9 +106,9 @@ export function SocialProofMetrics({ locale = 'fr' }: SocialProofMetricsProps) {
           ))}
         </div>
 
-        {/* #8070 — badge GitHub (stars/forks/licence) + sécurité honnête */}
+        {/* Réassurance « cloud ou auto-hébergé » + sécurité honnête (#8070) */}
         <div className="mt-10 flex flex-col items-center gap-4">
-          <HeroGithubBadge locale={locale} />
+          <HeroTrustBadge locale={locale} />
           <p
             data-testid="social-proof-security-line"
             className="inline-flex items-center gap-2 text-center text-xs sm:text-sm font-medium text-white/85"

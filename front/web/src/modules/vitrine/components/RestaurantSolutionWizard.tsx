@@ -6,7 +6,7 @@
  * Flow : profil → questions (depuis le backend) → pack suggéré (cocher/
  * décocher avec raisons) → téléchargement (QR + liens + Edge + guide).
  *
- * 100 % open source côté front : framer-motion (déjà en deps), lib `qrcode`
+ * 100 % couvert par les deps existantes côté front : framer-motion, lib `qrcode`
  * (déjà en deps), pas d'API payante.
  *
  * Squelette pédagogique : chaque étape est volontairement simple à lire et
@@ -31,6 +31,7 @@ import {
   WifiOff,
 } from 'lucide-react';
 import QRCode from 'qrcode';
+import { Input, Button } from '@/modules/vitrine/components/common';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { mobileDownloadTarget, type MobileAppSlug } from '@/modules/vitrine/lib/mobile-download';
 import { EDGE_INSTALL_CMD, LEAD_COPY, WIZARD_COPY } from '@/modules/vitrine/data/restaurant-wizard';
@@ -524,13 +525,17 @@ export function RestaurantSolutionWizard() {
               ) : (
                 <>
                   <h3 className="font-semibold text-slate-900 dark:text-white">{lc.title}</h3>
-                  <input
-                    type="email"
-                    value={leadEmail}
-                    onChange={(e) => setLeadEmail(e.target.value)}
-                    placeholder={lc.emailPlaceholder}
-                    className="mt-3 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
+                  <div className="mt-3">
+                    <Input
+                      id="wizard-lead-email"
+                      type="email"
+                      value={leadEmail}
+                      onChange={(e) => setLeadEmail(e.target.value)}
+                      placeholder={lc.emailPlaceholder}
+                      icon={<Mail className="w-4 h-4" />}
+                      error={leadStatus === 'error' ? lc.error : undefined}
+                    />
+                  </div>
                   <label className="mt-3 flex items-start gap-2 text-xs text-slate-600 dark:text-slate-300">
                     <input
                       type="checkbox"
@@ -540,27 +545,17 @@ export function RestaurantSolutionWizard() {
                     />
                     <span>{lc.consent}</span>
                   </label>
-                  {leadStatus === 'error' && (
-                    <p className="mt-2 text-xs text-rose-600 dark:text-rose-400">{lc.error}</p>
-                  )}
-                  <button
+                  <Button
                     type="button"
                     onClick={() => void submitLead()}
-                    disabled={leadStatus === 'sending' || !leadEmail.trim() || !leadConsent}
-                    className="mt-4 inline-flex items-center gap-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-semibold px-6 py-2.5 text-sm transition-colors"
+                    loading={leadStatus === 'sending'}
+                    disabled={!leadEmail.trim() || !leadConsent}
+                    icon={<Mail className="w-4 h-4" />}
+                    iconPosition="left"
+                    className="mt-4"
                   >
-                    {leadStatus === 'sending' ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        {lc.sending}
-                      </>
-                    ) : (
-                      <>
-                        <Mail className="w-4 h-4" />
-                        {lc.submit}
-                      </>
-                    )}
-                  </button>
+                    {leadStatus === 'sending' ? lc.sending : lc.submit}
+                  </Button>
                   <p className="mt-3 text-xs text-slate-400">{lc.skip}</p>
                 </>
               )}

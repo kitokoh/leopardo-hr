@@ -81,6 +81,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // BC-25 : vitrine « Je suis restaurateur » — page publique indexable, elle
     // avait une route mais ni métadonnées dédiées ni entrée sitemap.
     page('/restaurateur', 'monthly', 0.6),
+    page('/packs', 'monthly', 0.7),
+    // Pages « Pack offert » par métier (station-service, école, agence de
+    // voyage) — même promesse d'entrée grand public que /restaurateur.
+    page('/packs/station-service', 'monthly', 0.6),
+    page('/packs/ecole', 'monthly', 0.6),
+    page('/packs/agence-de-voyage', 'monthly', 0.6),
     // RESTO-903 (#7748) : annuaire public des restaurants (page SSR indexable).
     page('/restaurants', 'daily', 0.8),
     page('/privacy', 'yearly', 0.4, false),

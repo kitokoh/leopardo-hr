@@ -18,8 +18,10 @@ export { ParticleField } from './ParticleField';
 // Visuel « Pile Leopardo » : socle + couche horizontale + verticales métier.
 // WebGL chargé en import dynamique, repli CSS 3D si indisponible.
 export { SolutionStack } from './hero/SolutionStack';
-// #8067 — héro produit-first : screenshot réel + badge GitHub statique.
-export { HeroProductShowcase, HeroGithubBadge } from './hero/HeroProductShowcase';
+// Fond vivant du héro : constellation WebGL « Business OS » (repli particules 2D).
+export { HeroScene3D } from './hero/HeroScene3D';
+// Héro produit-first : screenshot réel + badge de réassurance cloud/self-host.
+export { HeroProductShowcase, HeroTrustBadge } from './hero/HeroProductShowcase';
 export { SolutionStackSection } from './hero/SolutionStackSection';
 export { LegalPageShell } from './LegalPageShell';
 export { GoogleAuthButton } from './GoogleAuthButton';

@@ -13,6 +13,8 @@ import {
 import { getPricingPlans, showsCurrency } from '@/modules/vitrine/data/pricing';
 import { CURRENCY_OPTIONS, DEFAULT_CURRENCY_OPTION, convertEurPrice, type CurrencyOption } from '@/modules/vitrine/data/currency';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { HeroScene3D } from '@/modules/vitrine/components/hero/HeroScene3D';
+import { PRICING_PACK_BANNER } from '@/modules/vitrine/data/pack-pages';
 import type { AppLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
 import {
@@ -29,9 +31,7 @@ import {
   Rocket,
   Crown,
   Gift,
-  Server,
 } from 'lucide-react';
-import { GITHUB_REPO_URL } from '@/modules/vitrine/data/github-repo';
 
 /* ─────────────────────────────────────────────────────────────────────────
  * #7305 — FAQ tarifs : `AnimatePresence` sans `mode="wait"`
@@ -405,6 +405,7 @@ export default function PricingPage() {
   const vitrine = useVitrineLocale();
   const { locale, direction } = vitrine;
   const copy = getPricingPageCopy(locale);
+  const packBanner = PRICING_PACK_BANNER[locale] ?? PRICING_PACK_BANNER.fr;
   const annualSavingsLabel = vitrine.copy.pricing.annualSavings;
   const toggleBillingLabel = vitrine.copy.pricing.toggleBilling;
   const plans = getPricingPlans(locale);
@@ -449,6 +450,9 @@ export default function PricingPage() {
       <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden pt-24 pb-20">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 dark:from-slate-950 dark:via-indigo-950 dark:to-slate-900" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(99,102,241,0.15),transparent)]" />
+        {/* Constellation WebGL « Business OS » en fond (repli particules 2D) —
+            la page de conversion aussi doit être vivante. */}
+        <HeroScene3D />
         <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-violet-500/10 rounded-full blur-[140px] animate-pulse" />
         <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[100px] animate-pulse [animation-delay:2s]" />
         <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
@@ -777,8 +781,8 @@ export default function PricingPage() {
             {copy.plans.trialNote}
           </motion.p>
 
-          {/* #8068 — double funnel : la colonne « Self-host — gratuit pour
-              toujours » à côté des plans cloud (pattern Frappe). */}
+          {/* L'offre d'entrée grand public : un pack métier OFFERT,
+              au même niveau que les plans cloud payants. */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -786,41 +790,39 @@ export default function PricingPage() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mt-12 max-w-4xl mx-auto"
           >
-            <div className="relative rounded-3xl border-2 border-dashed border-emerald-500/40 bg-emerald-500/[0.04] p-8 dark:border-emerald-500/30 dark:bg-emerald-500/[0.06]">
+            <div className="relative rounded-3xl border-2 border-emerald-500/50 bg-gradient-to-br from-emerald-500/[0.07] to-cyan-500/[0.05] p-8 dark:border-emerald-500/40">
               <div className="flex flex-col items-center text-center gap-4">
                 <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-700 text-white text-xs font-black uppercase tracking-wider">
-                  <Server className="w-3.5 h-3.5" />
-                  Self-host
+                  <Gift className="w-3.5 h-3.5" />
+                  {packBanner.badge}
                 </span>
                 <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-                  {t(locale, 'pricing.page.selfhost.title')}
+                  {packBanner.title}
                 </h3>
                 <p className="text-slate-600 dark:text-slate-400 max-w-xl">
-                  {t(locale, 'pricing.page.selfhost.subtitle')}
+                  {packBanner.subtitle}
                 </p>
                 <ul className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-sm font-medium text-slate-700 dark:text-slate-300">
-                  {[0, 1, 2].map((i) => (
-                    <li key={i} className="flex items-center gap-2">
+                  {packBanner.bullets.map((bullet) => (
+                    <li key={bullet} className="flex items-center gap-2">
                       <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
-                      {t(locale, `pricing.page.selfhost.bullets.${i}`)}
+                      {bullet}
                     </li>
                   ))}
                 </ul>
                 <div className="flex flex-col sm:flex-row items-center gap-3 mt-2">
-                  <a
-                    href={GITHUB_REPO_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold px-6 py-3 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
-                  >
-                    {t(locale, 'pricing.page.selfhost.ctaGithub')}
-                    <ArrowRight className="w-4 h-4" />
-                  </a>
                   <Link
-                    href="/docs"
+                    href="/packs"
+                    className="inline-flex items-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    {packBanner.ctaPrimary}
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                  <Link
+                    href="/restaurateur"
                     className="inline-flex items-center gap-2 rounded-2xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold px-6 py-3 transition-all duration-300 hover:border-emerald-400 dark:hover:border-emerald-600"
                   >
-                    {t(locale, 'pricing.page.selfhost.ctaDocs')}
+                    {packBanner.ctaSecondary}
                   </Link>
                 </div>
               </div>
