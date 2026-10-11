@@ -233,4 +233,23 @@ class AppColors {
   static const Color cyan800 = Color(0xFF155E75);
   static const Color cyan900 = Color(0xFF164E63);
   static const Color cyan950 = Color(0xFF083344);
+
+  // Échelle emerald (palette Tailwind par défaut) — tokens déclarés pour la
+  // parité L.07 avec docs/REFERENTIEL_PRODUIT/COULEURS.md (garde
+  // check-design-token-sync.py), sur le modèle de l'échelle cyan ci-dessus.
+  // Les steps 500/100/700 existent déjà comme tokens métier [rh], [rhLight]
+  // et [rhDark] ; les constantes ci-dessous complètent l'échelle documentée
+  // (usage mobile si besoin — sinon échelle réservée web/admin et scènes 3D
+  // de la vitrine, dont l'émissif sombre emerald900 #064E3B).
+  static const Color emerald50 = Color(0xFFECFDF5);
+  static const Color emerald100 = Color(0xFFD1FAE5);
+  static const Color emerald200 = Color(0xFFA7F3D0);
+  static const Color emerald300 = Color(0xFF6EE7B7);
+  static const Color emerald400 = Color(0xFF34D399);
+  static const Color emerald500 = Color(0xFF10B981);
+  static const Color emerald600 = Color(0xFF059669);
+  static const Color emerald700 = Color(0xFF047857);
+  static const Color emerald800 = Color(0xFF065F46);
+  static const Color emerald900 = Color(0xFF064E3B);
+  static const Color emerald950 = Color(0xFF022C22);
 }
