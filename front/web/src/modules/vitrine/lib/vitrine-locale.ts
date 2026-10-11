@@ -183,13 +183,13 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       menuLabel: 'Menu',
       localeLabel: 'Langue',
       // Positionnement unique : « Leopardo » seul, baseline « Business OS ».
-      brandTagline: 'Business OS de terrain',
+      brandTagline: 'Business OS',
     },
     hero: {
       // #8066 — H1 outcome-first : « entreprise » en promesse, paie/pointage en preuve,
       // « chez vous » porte le self-host sans jargon ; « remplace Excel, WhatsApp et le
       // papier » (meilleure phrase de la page) remontée en tête de sous-titre.
-      badge: 'Business OS de terrain',
+      badge: 'Business OS',
       badgeNew: 'Nouveau',
       titleTop: 'Toute votre entreprise — paie, pointage, RH, compta —',
       titleBottom: 'dans une seule application, chez vous.',
@@ -334,11 +334,11 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       menuLabel: 'Menu',
       localeLabel: 'Language',
       // Single naming: "Leopardo" alone, baseline "Business OS".
-      brandTagline: 'Field Business OS',
+      brandTagline: 'Business OS',
     },
     hero: {
       // #8066 — outcome-first H1, same intent as FR
-      badge: 'Field Business OS',
+      badge: 'Business OS',
       badgeNew: 'New',
       titleTop: 'Your whole business — payroll, time tracking, HR, accounting —',
       titleBottom: 'in one single app, on your own server.',
@@ -483,11 +483,11 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       menuLabel: 'Menu',
       localeLabel: 'Dil',
       // Tek adlandırma: yalnız "Leopardo", alt başlık "Business OS".
-      brandTagline: 'Saha Business OS',
+      brandTagline: 'Business OS',
     },
     hero: {
       // #8066 — FR/EN ile aynı niyet: sonuç odaklı H1
-      badge: 'Saha Business OS',
+      badge: 'Business OS',
       badgeNew: 'Yeni',
       titleTop: 'Tüm işletmeniz — bordro, yoklama, İK, muhasebe —',
       titleBottom: 'tek bir uygulamada, kendi sunucunuzda.',
@@ -632,11 +632,11 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       menuLabel: 'القائمة',
       localeLabel: 'اللغة',
       // تسمية موحّدة: «Leopardo» فقط، مع الوصف «نظام تشغيل الأعمال».
-      brandTagline: 'نظام تشغيل الأعمال',
+      brandTagline: 'Business OS',
     },
     hero: {
       // #8066 — نفس نية العنوان الفرنسي/الإنجليزي: النتيجة أولاً
-      badge: 'نظام تشغيل الأعمال',
+      badge: 'Business OS',
       badgeNew: 'جديد',
       titleTop: 'كل أعمالك — الرواتب، الحضور، الموارد البشرية، المحاسبة —',
       titleBottom: 'في تطبيق واحد، على خادمك.',
