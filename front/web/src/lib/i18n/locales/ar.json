@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-09-28T09:00:00Z",
+  "_updated_at": "2026-10-10T00:00:00Z",
   "_locale": "ar",
   "app": {
     "title": "ليوباردو — حزمة الأعمال"
@@ -1404,7 +1404,7 @@
       "toggleAria": "تغيير فترة الفوترة",
       "fullComparison": "عرض المقارنة الكاملة",
       "reassurance": "بدون بطاقة بنكية · إلغاء في أي وقت",
-      "selfHostNote": "أو استضف Leopardo مجاناً على خادمك — بياناتك عندك"
+      "selfHostNote": "أو استضف Leopardo مجاناً على خادمك — مفتوح المصدر 100%"
     },
     "card": {
       "periodDefault": "/شهر",
@@ -6351,17 +6351,6 @@
     },
     "nav": {
       "pricing": "الأسعار",
-      "packs": "حزم مجانية",
-      "packsHub": "كل الحزم",
-      "packsHubDesc": "حزمة مجانية لكل مهنة — اكتشف العرض",
-      "packsRestaurant": "المطاعم",
-      "packsRestaurantDesc": "نقاط البيع والمطبخ والحجوزات — حزمة في 3 أسئلة",
-      "packsFuel": "محطات الوقود",
-      "packsFuelDesc": "مناوبات 3×8 وحضور حسب الموضع والإضافي للرواتب",
-      "packsEdu": "المدارس والتكوين",
-      "packsEduDesc": "حضور الطاقم والبدلاء ورواتب المدرسة",
-      "packsTravel": "وكالات السفر",
-      "packsTravelDesc": "ملفات العملاء والتذاكر والعمولات والرواتب",
       "resources": "الموارد",
       "guides": "الأدلة",
       "guidesDesc": "ممارسات عملية للموارد البشرية والفرق الميدانية",
@@ -7231,5 +7220,50 @@
         "no_show": "لم يحضر"
       }
     }
+  },
+  "vtc": {
+    "title": "النقل الخاص والتاكسي",
+    "subtitle": "توزيع الرحلات وتتبع السائقين في الوقت الحقيقي",
+    "rides": "الرحلات",
+    "drivers": "السائقون",
+    "openDrivers": "عرض السائقين",
+    "openRides": "عرض الرحلات",
+    "rideCount": "رحلة/رحلات نشطة",
+    "driverCount": "سائق/سائقون",
+    "loading": "جارٍ التحميل…",
+    "retry": "تحديث",
+    "autoRefresh": "تحديث تلقائي كل 15 ثانية",
+    "loadError": "تعذر تحميل لوحة توزيع الرحلات",
+    "moduleDisabled": "وحدة النقل الخاص غير مفعّلة لهذه الشركة.",
+    "emptyRides": "لا توجد رحلات نشطة",
+    "emptyRidesHint": "ستظهر هنا الرحلات المطلوبة عبر واجهة الركاب في الوقت الحقيقي.",
+    "emptyDrivers": "لا يوجد سائقون مسجلون",
+    "emptyDriversHint": "تُنشأ ملفات السائقين من واجهة الإدارة (POST /vtc/drivers).",
+    "reference": "المرجع",
+    "pickup": "نقطة الانطلاق",
+    "dropoff": "الوجهة",
+    "driver": "السائق",
+    "pendingOffer": "عرض قيد الانتظار",
+    "unassigned": "غير معيّن",
+    "estimatedPrice": "السعر التقديري",
+    "requestedAt": "طُلبت في",
+    "lastPosition": "آخر موقع",
+    "positionUnavailable": "لا يوجد موقع مسجل",
+    "updatedAt": "آخر تحديث",
+    "vehicle": "المركبة",
+    "phone": "الهاتف",
+    "statusRequested": "مطلوبة",
+    "statusDispatching": "قيد التوزيع",
+    "statusAccepted": "مقبولة",
+    "statusArrived": "وصل السائق",
+    "statusInProgress": "قيد التنفيذ",
+    "statusCompleted": "مكتملة",
+    "statusExpired": "منتهية",
+    "statusCancelled": "ملغاة",
+    "statusUnknown": "حالة غير معروفة",
+    "driverOffline": "غير متصل",
+    "driverAvailable": "متاح",
+    "driverBusy": "في رحلة",
+    "driverSuspended": "موقوف"
   }
 }

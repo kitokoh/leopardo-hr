@@ -30,4 +30,8 @@ enum SolutionIndustry: string
     case Travel = 'travel';
     case DeliveryLogistics = 'delivery_logistics';
     case Retail = 'retail';
+    // BC-35 VTC (VTC-01/#8357) — extension par nouvelle case uniquement
+    // (registre fermé, jamais de renommage) : verticale VTC/taxi et futures
+    // solutions de mobilité.
+    case Mobility = 'mobility';
 }

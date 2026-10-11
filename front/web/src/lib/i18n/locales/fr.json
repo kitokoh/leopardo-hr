@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-09-28T09:00:00Z",
+  "_updated_at": "2026-10-10T00:00:00Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo — suite métier"
@@ -1404,7 +1404,7 @@
       "toggleAria": "Changer la période de facturation",
       "fullComparison": "Voir la comparaison complete",
       "reassurance": "Sans carte bancaire · Annulable à tout moment",
-      "selfHostNote": "Ou auto-hébergez Leopardo gratuitement — vos données, chez vous"
+      "selfHostNote": "Ou auto-hébergez Leopardo gratuitement — 100 % open source"
     },
     "card": {
       "periodDefault": "/mois",
@@ -6351,17 +6351,6 @@
     },
     "nav": {
       "pricing": "Tarifs",
-      "packs": "Packs offerts",
-      "packsHub": "Tous les packs",
-      "packsHubDesc": "Un pack offert par métier — découvrez l'offre",
-      "packsRestaurant": "Restaurants",
-      "packsRestaurantDesc": "Caisse, cuisine, réservations — pack composé en 3 questions",
-      "packsFuel": "Stations-service",
-      "packsFuelDesc": "Rotations 3×8, pointage par poste, majorations vers la paie",
-      "packsEdu": "Écoles & formation",
-      "packsEduDesc": "Présence du personnel, remplacements, paie scolaire",
-      "packsTravel": "Agences de voyage",
-      "packsTravelDesc": "Dossiers clients, billetterie, commissions, paie",
       "resources": "Ressources",
       "guides": "Guides",
       "guidesDesc": "Bonnes pratiques RH et tutoriels",
@@ -7231,5 +7220,50 @@
         "no_show": "Non présenté"
       }
     }
+  },
+  "vtc": {
+    "title": "VTC & taxi",
+    "subtitle": "Dispatch des courses et suivi des chauffeurs en temps réel",
+    "rides": "Courses",
+    "drivers": "Chauffeurs",
+    "openDrivers": "Voir les chauffeurs",
+    "openRides": "Voir les courses",
+    "rideCount": "course(s) active(s)",
+    "driverCount": "chauffeur(s)",
+    "loading": "Chargement…",
+    "retry": "Actualiser",
+    "autoRefresh": "Actualisation automatique toutes les 15 s",
+    "loadError": "Impossible de charger le dispatch VTC",
+    "moduleDisabled": "Le module VTC n’est pas activé pour cette entreprise.",
+    "emptyRides": "Aucune course active",
+    "emptyRidesHint": "Les courses demandées via l’API passager apparaîtront ici en temps réel.",
+    "emptyDrivers": "Aucun chauffeur enregistré",
+    "emptyDriversHint": "Les fiches chauffeurs se créent depuis l’API admin (POST /vtc/drivers).",
+    "reference": "Référence",
+    "pickup": "Prise en charge",
+    "dropoff": "Destination",
+    "driver": "Chauffeur",
+    "pendingOffer": "Offre en cours",
+    "unassigned": "Non assigné",
+    "estimatedPrice": "Prix estimé",
+    "requestedAt": "Demandée à",
+    "lastPosition": "Dernière position",
+    "positionUnavailable": "Aucune position relevée",
+    "updatedAt": "Dernier relevé",
+    "vehicle": "Véhicule",
+    "phone": "Téléphone",
+    "statusRequested": "Demandée",
+    "statusDispatching": "En dispatch",
+    "statusAccepted": "Acceptée",
+    "statusArrived": "Chauffeur arrivé",
+    "statusInProgress": "En cours",
+    "statusCompleted": "Terminée",
+    "statusExpired": "Expirée",
+    "statusCancelled": "Annulée",
+    "statusUnknown": "Statut inconnu",
+    "driverOffline": "Hors ligne",
+    "driverAvailable": "Disponible",
+    "driverBusy": "En course",
+    "driverSuspended": "Suspendu"
   }
 }

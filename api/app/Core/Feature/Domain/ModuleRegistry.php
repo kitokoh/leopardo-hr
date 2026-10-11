@@ -72,8 +72,10 @@ final class ModuleRegistry
      * (désync corrigée), `delivery`/`b2b_catalog` enregistrés (garde FR-6).
      * 1.2.0 : entrée `fundraising` ajoutée (#8379 — verticale Cagnottes
      * solidaires), `known_order` des entrées postérieures décalé.
+     * 1.3.0 : entrée `geo` (BC-34, GEO-02/#8351) ajoutée.
+     * 1.4.0 : entrée `vtc` (BC-35, VTC-01/#8357) ajoutée.
      */
-    public const VERSION = '1.2.0';
+    public const VERSION = '1.4.0';
 
     /**
      * Source déclarative unique. L'ordre de déclaration reproduit l'ordre
@@ -523,6 +525,34 @@ final class ModuleRegistry
             'horizontal_order' => 10,
             'known_order' => null,
             'description' => 'Outil horizontal Marketing — vit dans metadata.modules, aucun flag plateforme.',
+        ],
+        'geo' => [
+            'kind' => 'module',
+            'scope' => 'module',
+            'default' => false,
+            'since' => '4.35.0',
+            'killable' => true,
+            'platform_flag' => true,
+            'exposed_in_flags' => true,
+            'platform_exposable' => true,
+            'metadata_mirror' => null,
+            'horizontal_order' => null,
+            'known_order' => 22,
+            'description' => 'Core géospatial transverse (BC-34, GEO-02/#8351 ; gate `module.geo`) : calculs de positionnement PostGIS — distance, plus-proches, dans-un-rayon — réutilisables par toutes les verticales (VTC en premier, BC-35).',
+        ],
+        'vtc' => [
+            'kind' => 'solution',
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.35.0',
+            'killable' => true,
+            'platform_flag' => true,
+            'exposed_in_flags' => true,
+            'platform_exposable' => true,
+            'metadata_mirror' => null,
+            'horizontal_order' => null,
+            'known_order' => 23,
+            'description' => 'Solution VTC/taxi (BC-35, VTC-01/#8357 ; gate `module.vtc`) : réservation de courses, dispatch au plus proche chauffeur via le core géospatial `geo` (requis), tarification et suivi.',
         ],
     ];
 

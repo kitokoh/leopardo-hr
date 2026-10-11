@@ -145,9 +145,10 @@ class ModuleRegistryGuardTest extends TestCase
     }
 
     /**
-     * Variables d'un fichier typées `FeatureRegistryInterface` /
-     * `FeatureRegistry` (ancien registre d'inventaire API) — leurs appels
-     * hasFeature() ne visent pas les flags tenant.
+     * Variables d'un fichier typées `ApiEndpointRegistryInterface` /
+     * `ApiEndpointRegistry` (registre d'inventaire des endpoints API —
+     * BOS-015/#8202, ex-`FeatureRegistry*`) — leurs appels hasFeature()
+     * ne visent pas les flags tenant.
      *
      * @return list<string>
      */

@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-09-28T09:00:00Z",
+  "_updated_at": "2026-10-10T00:00:00Z",
   "_locale": "tr",
   "app": {
     "title": "Leopardo — İşletme Yönetimi Paketi"
@@ -1404,7 +1404,7 @@
       "toggleAria": "Faturalama dönemini değiştir",
       "fullComparison": "Tam karsilastirmayi gorun",
       "reassurance": "Kredi kartı yok · İstediğinizde iptal",
-      "selfHostNote": "Ya da Leopardo’yu ücretsiz kendi sunucunuzda barındırın — verileriniz sizde"
+      "selfHostNote": "Ya da Leopardo’yu ücretsiz kendi sunucunuzda barındırın — %100 açık kaynak"
     },
     "card": {
       "periodDefault": "/ay",
@@ -6351,17 +6351,6 @@
     },
     "nav": {
       "pricing": "Fiyatlar",
-      "packs": "Ücretsiz paketler",
-      "packsHub": "Tüm paketler",
-      "packsHubDesc": "Her sektöre ücretsiz paket — teklifi keşfedin",
-      "packsRestaurant": "Restoranlar",
-      "packsRestaurantDesc": "Kasa, mutfak, rezervasyon — 3 soruda paket",
-      "packsFuel": "Akaryakıt istasyonları",
-      "packsFuelDesc": "3×8 vardiyalar, posta yoklaması, fazla mesai bordroya",
-      "packsEdu": "Okullar & eğitim",
-      "packsEduDesc": "Personel yoklaması, yerine geçme, okul bordrosu",
-      "packsTravel": "Seyahat acenteleri",
-      "packsTravelDesc": "Müşteri dosyaları, biletleme, komisyonlar, bordro",
       "resources": "Kaynaklar",
       "guides": "Rehberler",
       "guidesDesc": "İK için en iyi uygulamalar",
@@ -7231,5 +7220,50 @@
         "no_show": "Gelmedi"
       }
     }
+  },
+  "vtc": {
+    "title": "VTC & taksi",
+    "subtitle": "Yolculuk ataması ve gerçek zamanlı sürücü takibi",
+    "rides": "Yolculuklar",
+    "drivers": "Sürücüler",
+    "openDrivers": "Sürücüleri gör",
+    "openRides": "Yolculukları gör",
+    "rideCount": "aktif yolculuk",
+    "driverCount": "sürücü",
+    "loading": "Yükleniyor…",
+    "retry": "Yenile",
+    "autoRefresh": "15 sn’de bir otomatik yenileme",
+    "loadError": "VTC atama panosu yüklenemedi",
+    "moduleDisabled": "VTC modülü bu şirket için etkin değil.",
+    "emptyRides": "Aktif yolculuk yok",
+    "emptyRidesHint": "Yolcu API’sinden istenen yolculuklar burada gerçek zamanlı görünecek.",
+    "emptyDrivers": "Kayıtlı sürücü yok",
+    "emptyDriversHint": "Sürücü kayıtları yönetici API’sinden oluşturulur (POST /vtc/drivers).",
+    "reference": "Referans",
+    "pickup": "Alış noktası",
+    "dropoff": "Varış noktası",
+    "driver": "Sürücü",
+    "pendingOffer": "Bekleyen teklif",
+    "unassigned": "Atanmadı",
+    "estimatedPrice": "Tahmini ücret",
+    "requestedAt": "İsteme zamanı",
+    "lastPosition": "Son konum",
+    "positionUnavailable": "Konum bildirilmedi",
+    "updatedAt": "Son güncelleme",
+    "vehicle": "Araç",
+    "phone": "Telefon",
+    "statusRequested": "İstendi",
+    "statusDispatching": "Atanıyor",
+    "statusAccepted": "Kabul edildi",
+    "statusArrived": "Sürücü geldi",
+    "statusInProgress": "Devam ediyor",
+    "statusCompleted": "Tamamlandı",
+    "statusExpired": "Süresi doldu",
+    "statusCancelled": "İptal edildi",
+    "statusUnknown": "Bilinmeyen durum",
+    "driverOffline": "Çevrimdışı",
+    "driverAvailable": "Müsait",
+    "driverBusy": "Yolculukta",
+    "driverSuspended": "Askıya alındı"
   }
 }
