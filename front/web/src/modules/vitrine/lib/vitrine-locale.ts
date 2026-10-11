@@ -191,8 +191,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       // papier » (meilleure phrase de la page) remontée en tête de sous-titre.
       badge: 'Business OS',
       badgeNew: 'Nouveau',
-      titleTop: 'Toute votre entreprise — paie, pointage, RH, compta —',
-      titleBottom: 'dans une seule application, chez vous.',
+      titleTop: 'Toute votre entreprise,',
+      titleBottom: 'dans une seule application.',
       subtitle: 'Leopardo remplace Excel, WhatsApp et le papier par une seule application : RH & paie, pointage, absences, CRM, comptabilité et opérations — sur web, mobile et bornes, hébergée par nous ou sur votre serveur.',
       subtitleHighlight: 'Le cockpit mobile de votre entreprise',
       subtitleTail: 'qui relie terrain, RH, managers et direction.',
@@ -340,8 +340,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       // #8066 — outcome-first H1, same intent as FR
       badge: 'Business OS',
       badgeNew: 'New',
-      titleTop: 'Your whole business — payroll, time tracking, HR, accounting —',
-      titleBottom: 'in one single app, on your own server.',
+      titleTop: 'Your whole business,',
+      titleBottom: 'in one single app.',
       subtitle: 'Leopardo replaces Excel, WhatsApp and paper with one app: HR & payroll, attendance, leave, CRM, accounting and operations — on web, mobile and kiosks, hosted by us or on your own server.',
       subtitleHighlight: 'The mobile cockpit of your company',
       subtitleTail: 'connecting field staff, HR, managers and leadership.',
@@ -489,8 +489,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       // #8066 — FR/EN ile aynı niyet: sonuç odaklı H1
       badge: 'Business OS',
       badgeNew: 'Yeni',
-      titleTop: 'Tüm işletmeniz — bordro, yoklama, İK, muhasebe —',
-      titleBottom: 'tek bir uygulamada, kendi sunucunuzda.',
+      titleTop: 'Tüm işletmeniz,',
+      titleBottom: 'tek bir uygulamada.',
       subtitle: 'Leopardo, Excel, WhatsApp ve kağıdı tek bir uygulamayla değiştirir: İK ve bordro, yoklama, izin, CRM, muhasebe ve operasyonlar — web, mobil ve kiosk üzerinde; bizde veya kendi sunucunuzda barındırın.',
       subtitleHighlight: 'Employee, Manager, Platform Admin',
       subtitleTail: 'agir ERP olmadan saha pilotu baslatmaniz icin.',
@@ -638,8 +638,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       // #8066 — نفس نية العنوان الفرنسي/الإنجليزي: النتيجة أولاً
       badge: 'Business OS',
       badgeNew: 'جديد',
-      titleTop: 'كل أعمالك — الرواتب، الحضور، الموارد البشرية، المحاسبة —',
-      titleBottom: 'في تطبيق واحد، على خادمك.',
+      titleTop: 'كل أعمالك،',
+      titleBottom: 'في تطبيق واحد.',
       subtitle: 'ليوباردو يستبدل Excel وواتساب والورق بتطبيق واحد: الموارد البشرية والرواتب، الحضور، الإجازات، إدارة العملاء، المحاسبة والعمليات — عبر الويب والجوال وأجهزة الحضور، مستضافًا لدينا أو على خادمك الخاص.',
       subtitleHighlight: 'Employee, Manager, Platform Admin',
       subtitleTail: 'لتشغيل تجربة ميدانية بدون نظام ERP ثقيل.',
