@@ -14,6 +14,7 @@ use App\Modules\Vtc\Domain\Models\VtcFareProfile;
 use App\Modules\Vtc\Domain\Models\VtcRide;
 use App\Modules\Vtc\Domain\Models\VtcRideEvent;
 use App\Modules\Vtc\Domain\Models\VtcVehicle;
+use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\Support\SwitchesTenantContext;
 use Tests\TestCase;
@@ -132,16 +133,18 @@ class VtcModelsTest extends TestCase
             ]);
 
             // Même (driver_id, recorded_at) : la contrainte unique rejette le
-            // doublon (ingestion idempotente, VTC-05).
+            // doublon (ingestion idempotente, VTC-05). Savepoint #4978 : la
+            // violation attendue ne doit pas avorter la transaction globale
+            // RefreshDatabase (25P02 au tearDown sinon).
             $this->expectException(\Illuminate\Database\QueryException::class);
 
-            VtcDriverPosition::create([
+            DB::transaction(fn () => VtcDriverPosition::create([
                 'driver_id' => $driver->id,
                 'latitude' => 4.0520,
                 'longitude' => 9.7680,
                 'recorded_at' => '2026-10-10 12:00:00',
                 'source' => 'app',
-            ]);
+            ]));
         });
     }
 

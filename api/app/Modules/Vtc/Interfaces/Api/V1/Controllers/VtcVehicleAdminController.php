@@ -13,6 +13,7 @@ use App\Modules\Vtc\Interfaces\Api\V1\Resources\VtcVehicleResource;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * CRUD des véhicules (BC-35 VTC, VTC-06/#8362, rôle vtc.admin).
@@ -37,8 +38,11 @@ final class VtcVehicleAdminController
         $validated = $request->validated();
 
         try {
+            // Savepoint #4978 : la violation unique (plaque dupliquée) ne doit
+            // pas avorter une transaction englobante (tests RefreshDatabase) —
+            // le catch rendrait alors une 429 via 25P02 au lieu de la 422.
             /** @var VtcVehicle $vehicle */
-            $vehicle = VtcVehicle::query()->create($this->attributes($validated));
+            $vehicle = DB::transaction(fn () => VtcVehicle::query()->create($this->attributes($validated)));
         } catch (QueryException) {
             throw $this->duplicatePlate((string) $validated['plate']);
         }
@@ -54,7 +58,7 @@ final class VtcVehicleAdminController
         $validated = $request->validated();
 
         try {
-            $vehicle->forceFill($this->attributes($validated))->save();
+            DB::transaction(fn () => $vehicle->forceFill($this->attributes($validated))->save());
         } catch (QueryException) {
             throw $this->duplicatePlate((string) $validated['plate']);
         }

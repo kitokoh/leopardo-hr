@@ -250,8 +250,12 @@ class VtcDispatchTest extends TestCase
 
             $first = VtcDriver::factory()->availableAt(4.0515, 9.7682)->create();
             $second = VtcDriver::factory()->availableAt(4.0611, 9.7779)->create();
-            // Un troisième candidat ne sera jamais sollicité (cascade bornée).
-            VtcDriver::factory()->availableAt(4.0550, 9.7700)->create();
+            // Un troisième candidat ne sera jamais sollicité (cascade bornée
+            // à max_offers=2). Il DOIT rester dans le rayon (≈3,1 km < 5 km)
+            // mais plus loin du pickup que $second (≈1,6 km) : la cascade
+            // offre par proximité — à (4.0550, 9.7700) il était à ≈492 m et
+            // recevait l'offre nº2 à la place de $second.
+            VtcDriver::factory()->availableAt(4.0711, 9.7879)->create();
 
             $ride = $this->createDispatchingRide();
             $dispatch = $this->dispatch();
