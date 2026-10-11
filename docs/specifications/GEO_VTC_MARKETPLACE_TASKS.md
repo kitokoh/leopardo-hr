@@ -97,7 +97,9 @@ c. **Offres VTC/taxi réservables sur `front/travel-web`** : la marketplace publ
 
 | ID | Tâche | Fichiers | Statut |
 |---|---|---|---|
-| M-30 | Parcours « VTC & Taxi » : opérateurs → géoloc/adresses → devis → réservation invitée → suivi | `front/travel-web` (pages, composants, client API) + i18n fr/en/ar/tr + `versions.json` | ⬜ |
+| M-30 | Parcours « VTC & Taxi » : opérateurs → géoloc/adresses → devis → réservation invitée → suivi | `front/travel-web` (pages, composants, client API) + i18n fr/en *(voir note)* | ✅ |
+
+> **Note M-30 (i18n)** : livré en **fr/en**, les deux seules locales supportées par `front/travel-web` à ce jour — son catalogue TypeScript typé (`src/lib/i18n.ts`) réserve explicitement l'extension ar/tr (RTL) à un lot ultérieur de l'épic #7736 ; ajouter ar/tr au seul parcours VTC aurait créé une incohérence de périmètre (aucune page de l'app n'est traduite ar/tr). `versions.json` (shared/i18n) non concerné : le catalogue de travel-web est autonome. L'i18n backend des notifications M-20 est, elle, bien livrée ×4 locales.
 
 ### Phase 5 — Documentation
 
