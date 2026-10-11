@@ -12,6 +12,7 @@ use App\Modules\Fundraising\Domain\Models\Fundraiser;
 use App\Modules\Fundraising\Domain\Models\FundraisingContribution;
 use App\Modules\Fundraising\Domain\Support\ReferenceGenerator;
 use App\Modules\Fundraising\Infrastructure\Services\FundraisingGatewayFactory;
+use App\Modules\Fundraising\Infrastructure\Services\FundraisingSettingsResolver;
 
 /**
  * Initiation d'une contribution publique (verticale FUNDRAISING — spec
@@ -38,6 +39,7 @@ final class InitiateContributionAction
 {
     public function __construct(
         private readonly FundraisingGatewayFactory $gatewayFactory,
+        private readonly FundraisingSettingsResolver $settings,
     ) {}
 
     /**
@@ -63,8 +65,24 @@ final class InitiateContributionAction
 
         $method = ContributionMethod::from((string) $data['payment_method']);
 
+        // Paramétrage tenant (FUND-070) : la méthode doit être offerte par
+        // le responsable (settings → PUT /fundraising/settings).
+        if (! $this->settings->isMethodEnabled($method)) {
+            throw FundraisingException::contributionMethodDisabled($method->value);
+        }
+
         if ($method === ContributionMethod::MOBILE_MONEY && empty($data['contributor_phone'])) {
             throw FundraisingException::invalidContributionAmount('numero mobile money requis');
+        }
+
+        $settings = $this->settings->forCurrentCompany();
+
+        if (! $settings->allow_anonymous && ! empty($data['is_anonymous'])) {
+            throw FundraisingException::contributionOptionDisabled('is_anonymous');
+        }
+
+        if (! $settings->allow_messages && ! empty($data['message'])) {
+            throw FundraisingException::contributionOptionDisabled('message');
         }
 
         $gateway = $this->gatewayFactory->forMethod($method);
@@ -103,14 +121,9 @@ final class InitiateContributionAction
 
     private function assertAmountWithinLimits(Fundraiser $fundraiser, float $amount): void
     {
-        /** @var array<string, mixed> $limits */
-        $limits = config('fundraising.limits', []);
-        $min = $fundraiser->min_amount !== null
-            ? (float) $fundraiser->min_amount
-            : (float) ($limits['default_min_amount'] ?? 100);
-        $max = $fundraiser->max_amount !== null
-            ? (float) $fundraiser->max_amount
-            : (float) ($limits['default_max_amount'] ?? 10000000);
+        // Chaîne de fallback FUND-070 : cagnotte → settings tenant → config.
+        $min = $this->settings->minAmount($fundraiser->min_amount !== null ? (float) $fundraiser->min_amount : null);
+        $max = $this->settings->maxAmount($fundraiser->max_amount !== null ? (float) $fundraiser->max_amount : null);
 
         if ($amount < $min) {
             throw FundraisingException::invalidContributionAmount('minimum '.$min.' '.$fundraiser->currency);

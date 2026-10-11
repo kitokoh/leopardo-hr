@@ -48,3 +48,4 @@
 # les tokens tenant quand le module branding sera tokenisé (P05).
 #2563eb — blue-600, couleur d'accent PAR DÉFAUT renvoyée par l'API company/branding (front/web/src/app/(dashboard)/settings/branding/page.tsx)
 #000000 — repli purement technique de l'input type=color quand le champ hex est invalide (front/web/src/app/(dashboard)/settings/branding/page.tsx)
+#064e3b — emerald-900, échelle emerald par défaut de Tailwind (front/admin-dashboard/tailwind.config.js, front/web/tailwind.config.ts) — présent sur main avant FUND-070, toléré comme emerald-700 #047857 ci-dessus

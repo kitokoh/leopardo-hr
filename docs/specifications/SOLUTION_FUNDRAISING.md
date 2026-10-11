@@ -287,6 +287,18 @@ Codes d'erreur stables via `DomainException` (leçon #8247 : jamais
   `fundraising_payment_events` pour toute entrée d'argent.
 - **Config** : `config/fundraising.php` (clés Stripe, agrégateur mobile
   money, mode sandbox) — **aucun secret en dur**, `.env.example` documenté.
+- **Paramétrage tenant (FUND-070)** : table `fundraising_settings` (une
+  ligne unique par entreprise, pattern `accounting_settings` #5232),
+  exposée au responsable via `GET/PUT /api/v1/fundraising/settings` et à
+  l'admin (page « Cagnottes solidaires — Paramétrage » de la console) :
+  **moyens de paiement offerts** (`enabled_methods` — carte / mobile money
+  / virement / espèces, consommé par `InitiateContributionAction` qui
+  refuse une méthode désactivée en 422 `CONTRIBUTION_METHOD_DISABLED` et
+  exposé à la surface publique), **garde-fous par défaut**
+  (`default_min/max_amount` — chaîne cagnotte → settings → config),
+  **montants suggérés par défaut** (pré-remplis à la création), **options
+  publiques** (`allow_anonymous`, `allow_messages`, `show_supporters` —
+  mur des soutiens masqué ⇒ 404 uniforme anti-énumération).
 
 ---
 

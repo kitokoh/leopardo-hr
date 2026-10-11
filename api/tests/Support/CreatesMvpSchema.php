@@ -3955,6 +3955,28 @@ trait CreatesMvpSchema
             });
         }
 
+        // ── BC-33 FUNDRAISING (#8379, FUND-070) — fundraising_settings ─────
+        // Parité fixture ↔ migration tenant (garde #5443) : migration
+        // 2026_10_11_000100_8379_create_fundraising_settings_table — mêmes
+        // colonnes, sans FK (style fixture, les vraies migrations couvrent
+        // les contraintes via RefreshTenantDatabase).
+        if (! Schema::hasTable($this->moduleTable('fundraising_settings'))) {
+            Schema::create($this->moduleTable('fundraising_settings'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id');
+                $table->json('enabled_methods');
+                $table->decimal('default_min_amount', 15, 2)->nullable();
+                $table->decimal('default_max_amount', 15, 2)->nullable();
+                $table->json('default_suggested_amounts')->nullable();
+                $table->boolean('allow_anonymous')->default(true);
+                $table->boolean('allow_messages')->default(true);
+                $table->boolean('show_supporters')->default(true);
+                $table->timestamps();
+
+                $table->unique('company_id', 'fundraising_settings_company_unique');
+            });
+        }
+
     }
 
     private function createVerticalParityTables(): void

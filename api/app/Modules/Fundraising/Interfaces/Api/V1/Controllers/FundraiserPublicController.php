@@ -15,6 +15,7 @@ use App\Modules\Fundraising\Domain\Models\FundraiserPublicLink;
 use App\Modules\Fundraising\Domain\Models\FundraisingContribution;
 use App\Modules\Fundraising\Domain\Models\FundraisingPaymentRoute;
 use App\Modules\Fundraising\Domain\Support\FundraisingFeatures;
+use App\Modules\Fundraising\Infrastructure\Services\FundraisingSettingsResolver;
 use App\Modules\Fundraising\Interfaces\Api\V1\Requests\InitiateContributionRequest;
 use App\Modules\Fundraising\Interfaces\Api\V1\Resources\FundraiserPublicResource;
 use App\Modules\Fundraising\Interfaces\Api\V1\Resources\SupporterResource;
@@ -44,6 +45,7 @@ final class FundraiserPublicController extends Controller
         private readonly InitiateContributionAction $initiateContribution,
         private readonly \App\Modules\Fundraising\Infrastructure\Services\FundraisingGatewayFactory $gatewayFactory,
         private readonly \App\Modules\Fundraising\Application\Actions\ApplyPaymentUpdateAction $applyPaymentUpdate,
+        private readonly FundraisingSettingsResolver $settingsResolver,
     ) {}
 
     /**
@@ -68,7 +70,15 @@ final class FundraiserPublicController extends Controller
             abort(404);
         }
 
-        return (new FundraiserPublicResource($fundraiser))->response();
+        // Settings tenant (FUND-070) exposés à la surface publique :
+        // méthodes offertes + options de contribution — le front de
+        // cagnotte (v1.1) rend exactement ce que le responsable autorise.
+        $settings = $this->tenantManager->withinTenant(
+            $company,
+            fn () => $this->settingsResolver->forCurrentCompany(),
+        );
+
+        return (new FundraiserPublicResource($fundraiser, $settings))->response();
     }
 
     /**
@@ -84,6 +94,13 @@ final class FundraiserPublicController extends Controller
             $fundraiser = Fundraiser::query()->where('slug', $slug)->first();
 
             if (! $fundraiser instanceof Fundraiser || ! $fundraiser->status->isPubliclyVisible()) {
+                return null;
+            }
+
+            // FUND-070 : le mur des soutiens peut être désactivé par le
+            // paramétrage tenant → 404 uniforme (anti-énumération, même
+            // régime qu'une cagnotte non publique).
+            if (! $this->settingsResolver->forCurrentCompany()->show_supporters) {
                 return null;
             }
 

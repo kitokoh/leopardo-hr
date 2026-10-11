@@ -470,6 +470,7 @@ import {
   BuildingStorefrontIcon,
   PaperAirplaneIcon,
   ChartBarIcon,
+  GiftIcon,
   ArrowTopRightOnSquareIcon,
 } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
@@ -555,6 +556,9 @@ const VERTICAL_SURFACES = [
   // `cameras` : la surface web client est livrée par #7425 (Web client), pas
   // par la console d'admin — aucune surface admin n'est prévue ici.
   { key: 'cameras', path: null },
+  // FUNDRAISING (FUND-070) : paramétrage tenant de la verticale cagnottes
+  // solidaires (moyens de paiement, garde-fous, options publiques).
+  { key: 'fundraising', path: '/fundraising/settings' },
 ]
 const activeVerticals = computed(() =>
   VERTICAL_SURFACES.filter((vertical) => featuresForm.value[vertical.key] === true)
@@ -766,6 +770,7 @@ function formatFeatureName(key) {
     travelagency: 'companyDetail.features.travelagency',
     accounting: 'companyDetail.features.accounting',
     company_showcase: 'companyDetail.features.company_showcase',
+    fundraising: 'companyDetail.features.fundraising',
     biometric: 'subscriptions.features.biometric',
     tasks: 'subscriptions.features.tasks',
     advanced_reports: 'subscriptions.features.advanced_reports',
@@ -855,6 +860,7 @@ function getFeatureIcon(key) {
     travelagency: PaperAirplaneIcon,
     accounting: ChartBarIcon,
     company_showcase: GlobeAltIcon,
+    fundraising: GiftIcon,
   }
   return icons[key] || SparklesIcon
 }

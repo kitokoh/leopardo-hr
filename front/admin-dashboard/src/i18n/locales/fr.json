@@ -1055,7 +1055,8 @@
       "restaurant": "Restauration",
       "travelagency": "Agence de voyage",
       "accounting": "Comptabilité",
-      "company_showcase": "Site vitrine"
+      "company_showcase": "Site vitrine",
+      "fundraising": "Cagnottes solidaires"
     },
     "tabOverview": "Vue d'ensemble",
     "tabModules": "Modules & verticales",
@@ -5566,6 +5567,7 @@
     "accountingSettings": "Comptabilité — Paramétrage",
     "fuelStation": "Stations-service",
     "travelAgency": "Agence de voyage",
+    "fundraising": "Cagnottes solidaires",
     "surveyStats": "Surveys de solutions",
     "solutionSurveys": "Surveys de solutions",
     "travel": "Agence de voyage",
@@ -5679,6 +5681,40 @@
   "attendanceDailyEstimate": "Gain estimé du jour",
   "back": "Retour",
   "settingsRecoveryEmailLabel": "Email de recuperation",
+  "fundraising": {
+    "settings": {
+      "title": "Cagnottes solidaires — Paramétrage",
+      "subtitle": "Moyens de paiement offerts, garde-fous et options de la surface publique de vos cagnottes.",
+      "disabled_title": "Verticale Cagnottes solidaires non activée",
+      "disabled_body": "Le flag fundraising n’est pas activé pour ce tenant. Contactez un administrateur plateforme pour l’activer.",
+      "payments_title": "Moyens de paiement offerts",
+      "payments_subtitle": "Les contributeurs ne verront que les moyens cochés sur la page publique de la cagnotte.",
+      "method_card": "Carte bancaire (Stripe)",
+      "method_mobile_money": "Mobile money (Orange, MTN, Wave, Moov)",
+      "method_bank_transfer": "Virement bancaire (confirmation manuelle)",
+      "method_cash": "Espèces (confirmation manuelle)",
+      "methods_required": "Sélectionnez au moins un moyen de paiement.",
+      "limits_title": "Garde-fous montants",
+      "limits_subtitle": "Bornes par défaut appliquées quand une cagnotte ne définit pas ses propres limites.",
+      "default_min_amount": "Montant minimum par défaut",
+      "default_max_amount": "Montant maximum par défaut",
+      "suggested_title": "Montants suggérés par défaut",
+      "suggested_subtitle": "Pré-remplis à la création d’une cagnotte (modifiables par cagnotte).",
+      "suggested_hint": "Montants séparés par des virgules, dans la devise de la cagnotte.",
+      "public_title": "Surface publique",
+      "public_subtitle": "Ce que les contributeurs peuvent faire et voir sur le lien public.",
+      "allow_anonymous": "Contributions anonymes",
+      "allow_anonymous_hint": "Le nom du contributeur n’apparaît pas sur le mur des soutiens.",
+      "allow_messages": "Messages des contributeurs",
+      "allow_messages_hint": "Un message de soutien peut accompagner chaque contribution.",
+      "show_supporters": "Mur des soutiens public",
+      "show_supporters_hint": "La liste des contributions confirmées est visible sur le lien public.",
+      "save": "Enregistrer le paramétrage",
+      "saved": "Paramétrage enregistré.",
+      "load_error": "Impossible de charger le paramétrage.",
+      "save_error": "Impossible d’enregistrer le paramétrage."
+    }
+  },
   "travel": {
     "common": {
       "retry": "Réessayer",

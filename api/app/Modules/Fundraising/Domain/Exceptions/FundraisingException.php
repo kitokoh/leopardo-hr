@@ -36,6 +36,25 @@ final class FundraisingException extends DomainException
         return new self('Montant de contribution invalide : '.$reason, 422, 'INVALID_CONTRIBUTION_AMOUNT');
     }
 
+    /**
+     * Moyen de paiement refusé par le paramétrage tenant (FUND-070) :
+     * distinct de INVALID_CONTRIBUTION_AMOUNT pour que le front public
+     * puisse rafraîchir les méthodes offertes sur code stable.
+     */
+    public static function contributionMethodDisabled(string $method): self
+    {
+        return new self(__('errors.CONTRIBUTION_METHOD_DISABLED'), 422, 'CONTRIBUTION_METHOD_DISABLED');
+    }
+
+    /**
+     * Option de contribution refusée par le paramétrage tenant
+     * (anonymat ou message contributeur désactivé).
+     */
+    public static function contributionOptionDisabled(string $option): self
+    {
+        return new self(__('errors.CONTRIBUTION_OPTION_DISABLED'), 422, 'CONTRIBUTION_OPTION_DISABLED');
+    }
+
     public static function gatewayNotConfigured(string $gateway): self
     {
         return new self(__('errors.PAYMENT_GATEWAY_NOT_CONFIGURED'), 503, 'PAYMENT_GATEWAY_NOT_CONFIGURED');

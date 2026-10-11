@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Fundraising\Interfaces\Api\V1\Resources;
 
 use App\Modules\Fundraising\Domain\Models\Fundraiser;
+use App\Modules\Fundraising\Domain\Models\FundraisingSettings;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,6 +21,13 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 final class FundraiserPublicResource extends JsonResource
 {
+    public function __construct(
+        mixed $resource,
+        private readonly ?FundraisingSettings $settings = null,
+    ) {
+        parent::__construct($resource);
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -55,6 +63,13 @@ final class FundraiserPublicResource extends JsonResource
             'ends_at' => $fundraiser->ends_at?->toIso8601String(),
             'published_at' => $fundraiser->published_at?->toIso8601String(),
             'public_path' => '/cagnottes/'.$fundraiser->slug,
+            // Paramétrage tenant exposé (FUND-070) : le front de cagnotte
+            // n'affiche que ce que le responsable a réellement activé —
+            // défauts de FundraisingSettings::defaults() si non résolu.
+            'enabled_methods' => $this->settings->enabled_methods ?? FundraisingSettings::defaults()['enabled_methods'],
+            'allow_anonymous' => $this->settings->allow_anonymous ?? true,
+            'allow_messages' => $this->settings->allow_messages ?? true,
+            'show_supporters' => $this->settings->show_supporters ?? true,
         ];
     }
 }

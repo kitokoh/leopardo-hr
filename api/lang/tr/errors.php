@@ -265,6 +265,8 @@ return [
     'FUNDRAISER_NOT_ACTIVE' => 'Bu bağış kampanyası şu anda katkı kabul etmiyor.',
     'CONTRIBUTION_NOT_FOUND' => 'Katkı bulunamadı.',
     'INVALID_CONTRIBUTION_AMOUNT' => 'Geçersiz katkı tutarı.',
+    'CONTRIBUTION_METHOD_DISABLED' => 'Bu ödeme yöntemi bu bağış kampanyası için sunulmuyor.',
+    'CONTRIBUTION_OPTION_DISABLED' => 'Bu katkı seçeneği bu bağış kampanyası için devre dışı.',
     'PAYOUT_AMOUNT_EXCEEDS_BALANCE' => 'Ödeme tutarı, kampanyanın kullanılabilir bakiyesini aşıyor.',
     'PAYOUT_NOT_FOUND' => 'Ödeme bulunamadı.',
     'PAYOUT_FAILED_DEFAULT_REASON' => 'Sorumlu tarafından bildirilen hata.',
