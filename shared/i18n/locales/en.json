@@ -7438,6 +7438,14 @@
       "mobile_money": "Mobile money",
       "bank_transfer": "Bank transfer",
       "cash": "Cash"
+    },
+    "showContributions": "Contributions",
+    "hideContributions": "Hide contributions",
+    "contributionList": {
+      "empty": "No contributions for this fundraiser yet.",
+      "confirm": "Confirm",
+      "anonymous": "Anonymous",
+      "confirmed": "Contribution confirmed."
     }
   }
 }

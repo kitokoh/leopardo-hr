@@ -7438,6 +7438,14 @@
       "mobile_money": "Mobil para",
       "bank_transfer": "Havale",
       "cash": "Nakit"
+    },
+    "showContributions": "Katkılar",
+    "hideContributions": "Katkıları gizle",
+    "contributionList": {
+      "empty": "Bu bağış kampanyası için henüz katkı yok.",
+      "confirm": "Onayla",
+      "anonymous": "Anonim",
+      "confirmed": "Katkı onaylandı."
     }
   }
 }

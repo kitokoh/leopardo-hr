@@ -8851,6 +8851,14 @@
       "mobile_money": "موبايل موني",
       "bank_transfer": "تحويل بنكي",
       "cash": "نقداً"
+    },
+    "showContributions": "المساهمات",
+    "hideContributions": "إخفاء المساهمات",
+    "contributionList": {
+      "empty": "لا توجد مساهمات لهذه الحملة بعد.",
+      "confirm": "تأكيد",
+      "anonymous": "مجهول",
+      "confirmed": "تم تأكيد المساهمة."
     }
   },
   "cagnotte": {
