@@ -48,4 +48,9 @@
 # les tokens tenant quand le module branding sera tokenisé (P05).
 #2563eb — blue-600, couleur d'accent PAR DÉFAUT renvoyée par l'API company/branding (front/web/src/app/(dashboard)/settings/branding/page.tsx)
 #000000 — repli purement technique de l'input type=color quand le champ hex est invalide (front/web/src/app/(dashboard)/settings/branding/page.tsx)
-#064e3b — emerald-900, échelle emerald par défaut de Tailwind (front/admin-dashboard/tailwind.config.js, front/web/tailwind.config.ts) — présent sur main avant FUND-070, toléré comme emerald-700 #047857 ci-dessus
+# Héro WebGL vitrine (#8382, merge 2026-10-11) — emerald-900, déjà déclaré comme
+# primary.900 dans les deux configs tailwind (front/web + admin-dashboard) mais
+# utilisé en littéral dans la scène 3D ; dette vitrine à résorber quand la scène
+# consommera les tokens (garde rouge sur main 89e7e8dde, constatée en merge #8349 ;
+# présent sur main avant FUND-070, toléré comme emerald-700 #047857 ci-dessus).
+#064e3b — emerald-900, héro WebGL vitrine (front/web/src/modules/vitrine/components/hero/HeroBusinessOS3D.tsx, site/gh-pages/index.html ; configs tailwind front/admin-dashboard + front/web)

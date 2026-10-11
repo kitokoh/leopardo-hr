@@ -56,14 +56,29 @@ class SetupInterviewPlannerTest extends TestCase
     {
         $plan = $this->planner->plan([
             'company_type' => 'team',
-            'sector' => 'commerce',
+            // `services` n'a AUCUNE verticale (contrairement à `commerce`,
+            // mappé à `retail` depuis BOS-016 / #8331) — ce test vise les
+            // outils horizontaux, pas le mapping sectoriel.
+            'sector' => 'services',
             'priorities' => ['accounting', 'crm', 'cameras'],
         ]);
 
-        $this->assertSame([], $plan['solutions']);
+        // BOS-016 (#8205) : le secteur « commerce » active la solution Retail.
+        $this->assertSame(['retail'], $plan['solutions']);
         foreach (['accounting', 'crm', 'cameras', 'employees', 'attendance'] as $tool) {
             $this->assertContains($tool, $plan['tools']);
         }
+    }
+
+    public function test_commerce_active_la_solution_retail(): void
+    {
+        // BOS-016 (#8331) : le secteur `commerce` active la verticale Retail.
+        $plan = $this->planner->plan([
+            'company_type' => 'team',
+            'sector' => 'commerce',
+        ]);
+
+        $this->assertSame(['retail'], $plan['solutions']);
     }
 
     public function test_reponse_inconnue_ne_produit_jamais_d_activation(): void
@@ -128,5 +143,25 @@ class SetupInterviewPlannerTest extends TestCase
         $plan = $this->planner->plan(['company_name' => 'restaurant']);
 
         $this->assertSame(['solutions' => [], 'tools' => []], $plan);
+    }
+
+    public function test_association_active_la_solution_fundraising(): void
+    {
+        // FUND-080 (#8400) : le secteur `association` (ONG, mutuelle,
+        // entreprise citoyenne) active la verticale « Cagnottes solidaires ».
+        $plan = $this->planner->plan([
+            'company_type' => 'team',
+            'sector' => 'association',
+        ]);
+
+        $this->assertSame(['fundraising'], $plan['solutions']);
+    }
+
+    public function test_sector_association_est_accepte_par_sanitize(): void
+    {
+        $result = $this->planner->sanitize(['sector' => 'association']);
+
+        $this->assertSame(['sector' => 'association'], $result['answers']);
+        $this->assertSame([], $result['rejected']);
     }
 }

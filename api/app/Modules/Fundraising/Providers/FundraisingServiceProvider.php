@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Fundraising\Providers;
 
+use App\Core\Solutions\SolutionCatalogue;
+use App\Modules\Fundraising\Domain\Manifests\FundraisingManifest;
 use App\Modules\Fundraising\Infrastructure\Services\FundraisingGatewayFactory;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,6 +27,19 @@ class FundraisingServiceProvider extends ServiceProvider
         $this->app->bind(FundraisingGatewayFactory::class, fn (): FundraisingGatewayFactory => new FundraisingGatewayFactory(
             is_array(config('fundraising')) ? config('fundraising') : []
         ));
+
+        // FUND-080 : manifest au catalogue des solutions — sans lui,
+        // `SolutionActivator` (fail-closed) refusait toute activation de la
+        // verticale au provisioning (onboarding) ; seul l'admin plateforme
+        // pouvait poser le flag. Pattern identique aux autres verticales
+        // (Restaurant, Retail, …).
+        if (! $this->app->bound(SolutionCatalogue::class)) {
+            $this->app->singleton(SolutionCatalogue::class, static fn (): SolutionCatalogue => new SolutionCatalogue);
+        }
+
+        $this->app->resolving(SolutionCatalogue::class, function (SolutionCatalogue $catalogue): void {
+            $catalogue->register(FundraisingManifest::CODE, static fn (): FundraisingManifest => new FundraisingManifest);
+        });
     }
 
     public function boot(): void

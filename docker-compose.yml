@@ -78,7 +78,7 @@ services:
     restart: unless-stopped
 
   postgres:
-    image: postgres:16-alpine
+    image: postgis/postgis:16-3.5-alpine
     container_name: leopardo-postgres
     environment:
       POSTGRES_DB: leopardo

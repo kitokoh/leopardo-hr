@@ -679,7 +679,23 @@ propagation i18n du 2026-09-14 (PR #7350).
 - Parité et checksums i18n (`validate.js`), garde « no new hardcoded strings » (diff), parité catalogues backend ×4.
 
 
-## Addendum 2026-10-11 — visibilité vitrine de la verticale « Cagnottes solidaires » (PR à venir, issue #8414, FUND-095)
+## Addendum 2026-10-11 — secteur « Association / ONG » de l'entretien de préparation (PR #8401, issue #8400, FUND-080)
+
+**Surface** : l'entretien de préparation (`SetupInterview.tsx`, parcours post-signup) propose une nouvelle valeur de secteur « Association / ONG » (`association`) — mappée côté `SetupInterviewPlanner` à la solution `fundraising` (manifest `FundraisingManifest` enregistré au `SolutionCatalogue`, industrie `SolutionIndustry::Solidarity`).
+
+### Scénarios de recette
+
+1. Tenant qui choisit « Association / ONG » à l'entretien : à la complétion (`POST /setup-interview`), la verticale `fundraising` est activée (feature flag tenant) — le module « Cagnottes solidaires » devient accessible (API privée `/fundraising/*`, console de paramétrage).
+2. Repli fail-closed : une valeur de secteur inconnue reste ignorée (aucune activation), la valeur `association` passe le `sanitize` (allowlist étendue).
+3. i18n : le libellé de l'option passe par le catalogue (`setupInterview.questions.sector.options.association` × fr/en/ar/tr), zéro littéral hardcodé.
+
+### Vérification automatique
+
+- Unitaires `SetupInterviewPlannerTest` : mapping `association → fundraising` + `sanitize` du nouveau secteur.
+- Feature `SolutionManifestConformanceTest` : 11 manifests enregistrés et conformes au contrat Core v2.
+- Parité i18n (`validate.js`), catalogues mobiles `.arb` régénérés (`sync-mobile.js`).
+
+## Addendum 2026-10-11 — visibilité vitrine de la verticale « Cagnottes solidaires » (PR #8415, issue #8414, FUND-095)
 
 **Surface** : section « Verticales métier » de la home vitrine — nouvelle carte « Cagnottes solidaires » (icône Gift) pointant vers la nouvelle page pack `/packs/cagnottes` (mécanisme data-driven `pack-pages.ts`).
 
