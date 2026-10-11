@@ -253,7 +253,7 @@ services:
 #     dockerCommand: >-
 #       sh -c 'php artisan schedule:work >&2 &
 #       exec php artisan queue:work
-#       --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default
+#       --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,vtc,delivery,communication,reconciliation,default
 #       --tries=3
 #       --timeout=300
 #       --sleep=3

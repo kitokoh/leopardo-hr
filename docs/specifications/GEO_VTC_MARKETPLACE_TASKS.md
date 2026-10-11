@@ -69,7 +69,7 @@ c. **Offres VTC/taxi réservables sur `front/travel-web`** : la marketplace publ
 
 | ID | Tâche | Fichiers | Statut |
 |---|---|---|---|
-| M-01 | Workers : consommer la file `vtc` (+ `delivery`, `communication`, `reconciliation`) sur toutes les topologies déployées | `render.yaml`, `render.prod.yaml`, `docker-compose.yml` | ⬜ |
+| M-01 | Workers : consommer la file `vtc` (+ `delivery`, `communication`, `reconciliation`) sur toutes les topologies déployées | `render.yaml`, `render.prod.yaml`, `docker-compose.yml`, `api/docker-entrypoint.sh` | ✅ |
 | M-02 | Garde d'autorisation par type sur `GET /v1/geo/nearest` (positions chauffeurs non lisibles par tout employé) | `GeoNearestController`, `NearestRequest`, config `geo.searchables` (policy par type) | ⬜ |
 | M-03 | Externaliser les 2 chaînes EN en dur de `VtcDriverBaseController` vers `vtc.*` | `VtcDriverBaseController.php`, 4 locales (fr/en/ar/tr) + `versions.json` | ⬜ |
 | M-04 | `VtcDriverOfferController::index` : remplacer le scan PHP complet par un filtre JSONB | `VtcDriverOfferController.php` (`where metadata->pending_offer`) | ⬜ |
