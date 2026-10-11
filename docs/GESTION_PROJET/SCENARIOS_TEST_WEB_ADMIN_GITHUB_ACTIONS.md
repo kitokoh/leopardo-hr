@@ -661,3 +661,19 @@ propagation i18n du 2026-09-14 (PR #7350).
 ## Note de conservation — marque « Leopardo » dans la console (PR #7715, issue #7709, 2026-09-19)
 
 **Aucun changement de comportement de la console admin.** Le diff ne touche que des chaînes d'affichage (title `index.html`, suffixe de `document.title` du routeur, en-têtes Login/Logout, fallback Growth, catalogues i18n fr/en/tr/ar, aria-labels SVG) : la marque affichée devient « Leopardo » seul (positionnement P03 étape 5, `docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md`). Les scénarios existants restent valides tels quels, à une exception près : toute assertion e2e qui verrouillait le libellé « Leopardo RH » (titre de page, heading de connexion) doit attendre « Leopardo » — les regex des specs ont été mises à jour dans la même PR. URLs, clés de storage et identifiants inchangés (§4).
+
+## Addendum 2026-10-11 — verticale « Cagnottes solidaires — Paramétrage » (PR #8383, issue #8395, FUND-070)
+
+**Surface** : nouvelle page protégée `/fundraising/settings` dans la console admin (pattern `AccountingSettingsView`), plus entrée nommée et iconée « Cagnottes solidaires » sur la fiche entreprise (verticale `fundraising` du registre des modules).
+
+### Scénarios de recette
+
+1. Tenant avec flag `fundraising` actif : la fiche entreprise affiche « Cagnottes solidaires » (jamais la clé brute) ; la page `/fundraising/settings` affiche moyens de paiement offerts (`enabled_methods`), garde-fous min/max par défaut, montants suggérés, options publiques (anonymat, messages contributeurs, mur des soutiens).
+2. Sauvegarde du formulaire : `PUT /api/v1/fundraising/settings` → 200 ; au rechargement, les valeurs persistées sont relues (ligne unique par entreprise — jamais d'id dans l'URL).
+3. Tenant sans le flag `fundraising` : la page affiche la bannière dédiée « verticale non activée » (pas d'erreur brute).
+4. i18n : les libellés de la page passent par le catalogue (30 clés × fr/en/ar/tr), zéro littéral hardcodé.
+
+### Vérification automatique
+
+- Check requis « Frontend — ESLint + TypeScript » sur la page et la fiche entreprise ; build `vite` + garde CSP.
+- Parité et checksums i18n (`validate.js`), garde « no new hardcoded strings » (diff), parité catalogues backend ×4.
