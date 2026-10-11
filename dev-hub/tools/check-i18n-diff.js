@@ -82,6 +82,12 @@ const ignorePathFragments = [
   // que vitrine-locale.ts) ; RestaurantSolutionWizard.tsx contient le COPY
   // localisé ×4 de l'UI du wizard (pattern des pages vitrine existantes).
   '/vitrine/lib/solution-survey.ts', '/vitrine/components/RestaurantSolutionWizard.tsx',
+  // Cartes verticales de la home (issue #8414) : VerticalsSection.tsx porte
+  // tout son copy localisé ×4 en inline (copyByLocale, Record<AppLocale, Copy>)
+  // — même mécanique que case-studies.ts et RestaurantSolutionWizard.tsx : ce
+  // fichier EST le catalogue, pas des chaînes hardcodées hors i18n. La
+  // complétude des 4 langues reste couverte par validate-and-sync.
+  '/vitrine/components/sections/VerticalsSection.tsx',
   // Chargement des traceurs (consentement, #7593) : ce fichier ne rend AUCUN
   // texte — il injecte les scripts de mesure, dont le bootstrap tiers de
   // Mixpanel (« (stub) », liste des méthodes de l'API, URL du CDN) et celui de
