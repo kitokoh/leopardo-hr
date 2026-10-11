@@ -30,4 +30,5 @@ enum SolutionIndustry: string
     case Travel = 'travel';
     case DeliveryLogistics = 'delivery_logistics';
     case Retail = 'retail';
+    case Solidarity = 'solidarity';
 }

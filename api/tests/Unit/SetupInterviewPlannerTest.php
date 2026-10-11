@@ -129,4 +129,24 @@ class SetupInterviewPlannerTest extends TestCase
 
         $this->assertSame(['solutions' => [], 'tools' => []], $plan);
     }
+
+    public function test_association_active_la_solution_fundraising(): void
+    {
+        // FUND-080 (#8400) : le secteur `association` (ONG, mutuelle,
+        // entreprise citoyenne) active la verticale « Cagnottes solidaires ».
+        $plan = $this->planner->plan([
+            'company_type' => 'team',
+            'sector' => 'association',
+        ]);
+
+        $this->assertSame(['fundraising'], $plan['solutions']);
+    }
+
+    public function test_sector_association_est_accepte_par_sanitize(): void
+    {
+        $result = $this->planner->sanitize(['sector' => 'association']);
+
+        $this->assertSame(['sector' => 'association'], $result['answers']);
+        $this->assertSame([], $result['rejected']);
+    }
 }

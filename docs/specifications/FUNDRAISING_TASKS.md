@@ -87,6 +87,14 @@
 | FUND-074 | Console admin : page « Cagnottes solidaires — Paramétrage » + route + entrée fiche entreprise (label, icône, surface) + i18n ×4 | ✅ |
 | FUND-075 | Tests `FundraisingSettingsTest` (défauts, upsert unique, validation, RBAC/flag, consommation publique) + OpenAPI | ✅ |
 
+## Lot I — Activation onboarding (branche `feat/fundraising-onboarding-activation`)
+
+| ID | Tâche | Statut |
+|---|---|---|
+| FUND-080 | Manifest `FundraisingManifest` (contrat Core v2) enregistré au `SolutionCatalogue` + industrie `SolutionIndustry::Solidarity` | ✅ |
+| FUND-081 | Secteur `association` de l'entretien de préparation → solution `fundraising` (planner + front + i18n ×4) | ✅ |
+| FUND-082 | Tests : conformité 11 manifests, mapping `association → fundraising`, sanitize | ✅ |
+
 ## Phase 2 (hors ce lot)
 
 | ID | Tâche | Statut |

@@ -39,7 +39,7 @@ final class SetupInterviewPlanner
         'company_name' => [],
         'company_type' => ['solo', 'team'],
         'team_size' => ['1-10', '11-50', '51-200', '201-500', '500+'],
-        'sector' => ['restaurant', 'fuel_station', 'education', 'commerce', 'services', 'travel', 'other'],
+        'sector' => ['restaurant', 'fuel_station', 'education', 'commerce', 'services', 'travel', 'association', 'other'],
         'premises' => ['single', 'multiple', 'mobile', 'none'],
         'priorities' => ['attendance', 'payroll', 'accounting', 'crm', 'cameras', 'showcase'],
         'scheduled_hours' => ['yes', 'no'],
@@ -73,6 +73,9 @@ final class SetupInterviewPlanner
         'education' => 'edumanager',
         'travel' => 'travelagency',
         'commerce' => 'retail',
+        // FUND-080 (#8400) : association / ONG / mutuelle → verticale
+        // « Cagnottes solidaires » (collecte de fonds par lien public).
+        'association' => 'fundraising',
     ];
 
     /**

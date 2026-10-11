@@ -63,7 +63,7 @@ const QUESTIONS: QuestionDef[] = [
     options: ['1-10', '11-50', '51-200', '201-500', '500+'],
     visible: (a) => !isSolo(a),
   },
-  { key: 'sector', options: ['restaurant', 'fuel_station', 'education', 'commerce', 'services', 'travel', 'other'] },
+  { key: 'sector', options: ['restaurant', 'fuel_station', 'education', 'commerce', 'services', 'travel', 'association', 'other'] },
   { key: 'premises', options: ['single', 'multiple', 'mobile', 'none'] },
   {
     key: 'priorities',
