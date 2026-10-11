@@ -347,4 +347,7 @@ return [
     // #8019 — HospitalityManager: business rule surfaced by a DomainException
     // (the localized message comes from the errors.* catalogue).
     'CHECKOUT_BEFORE_CHECKIN' => 'Check-out date must be after the check-in date.',
+
+    // #8423 (M-02) — Geo: nearest search on a role-restricted type (e.g. driver positions).
+    'GEO_SEARCHABLE_TYPE_FORBIDDEN' => 'Your role does not allow this proximity search.',
 ];

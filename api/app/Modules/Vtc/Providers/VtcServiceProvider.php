@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Vtc\Providers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Solutions\SolutionCatalogue;
+use App\Http\Middleware\Vtc\VtcRoleResolver;
 use App\Modules\Vtc\Application\Listeners\StartVtcDispatchListener;
 use App\Modules\Vtc\Domain\Events\VtcRideRequested;
 use App\Modules\Vtc\Domain\Manifests\VtcManifest;
@@ -49,8 +51,22 @@ class VtcServiceProvider extends ServiceProvider
         // Enregistrement paresseux via la façade transverse — inversion de
         // dépendance, garde d'isolation #5584 (le core ne connaît pas la
         // verticale, la verticale s'enregistre).
+        // #8423 (M-02) — garde d'autorisation : la recherche HTTP « plus
+        // proche chauffeur » expose les POSITIONS des chauffeurs — réservée
+        // aux rôles vtc admin/dispatcher (console ops). Pas de périmètre
+        // « chauffeur pour lui-même » : l'endpoint retourne une LISTE de
+        // chauffeurs dans un rayon, pas une fiche individuelle. La garde ne
+        // s'applique qu'à la couche HTTP — le dispatch interne (worker,
+        // sans utilisateur authentifié) n'est jamais bloqué.
         $this->app->resolving(GeoServiceContract::class, function (GeoServiceContract $geo): void {
-            $geo->registerSearchable('vtc_driver', VtcDispatchableDriver::class);
+            $geo->registerSearchable(
+                'vtc_driver',
+                VtcDispatchableDriver::class,
+                static fn (Employee $employee): bool => array_intersect(
+                    (new VtcRoleResolver)->rolesFor($employee),
+                    ['admin', 'dispatcher'],
+                ) !== [],
+            );
         });
     }
 
