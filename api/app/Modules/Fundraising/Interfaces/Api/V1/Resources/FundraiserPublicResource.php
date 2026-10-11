@@ -66,10 +66,10 @@ final class FundraiserPublicResource extends JsonResource
             // Paramétrage tenant exposé (FUND-070) : le front de cagnotte
             // n'affiche que ce que le responsable a réellement activé —
             // défauts de FundraisingSettings::defaults() si non résolu.
-            'enabled_methods' => $this->settings?->enabled_methods ?? FundraisingSettings::defaults()['enabled_methods'],
-            'allow_anonymous' => $this->settings?->allow_anonymous ?? true,
-            'allow_messages' => $this->settings?->allow_messages ?? true,
-            'show_supporters' => $this->settings?->show_supporters ?? true,
+            'enabled_methods' => $this->settings->enabled_methods ?? FundraisingSettings::defaults()['enabled_methods'],
+            'allow_anonymous' => $this->settings->allow_anonymous ?? true,
+            'allow_messages' => $this->settings->allow_messages ?? true,
+            'show_supporters' => $this->settings->show_supporters ?? true,
         ];
     }
 }
