@@ -1049,7 +1049,8 @@
       "restaurant": "المطاعم",
       "travelagency": "وكالة سفر",
       "accounting": "المحاسبة",
-      "company_showcase": "موقع تعريفي"
+      "company_showcase": "موقع تعريفي",
+      "fundraising": "حملات التبرع التضامنية"
     },
     "tabOverview": "نظرة عامة",
     "tabModules": "الوحدات والقطاعات",
@@ -5560,6 +5561,7 @@
     "accountingSettings": "المحاسبة — الإعدادات",
     "fuelStation": "محطات الوقود",
     "travelAgency": "وكالة السفر",
+    "fundraising": "حملات التبرع التضامنية",
     "surveyStats": "استبيانات الحلول",
     "solutionSurveys": "استبيانات الحلول",
     "travel": "وكالة السفر",
@@ -5673,6 +5675,40 @@
   "attendanceDailyEstimate": "الأرباح اليومية التقديرية",
   "back": "رجوع",
   "settingsRecoveryEmailLabel": "البريد الإلكتروني للاسترداد",
+  "fundraising": {
+    "settings": {
+      "title": "حملات التبرع التضامنية — الإعدادات",
+      "subtitle": "طرق الدفع وحدود المبالغ وخيارات الصفحة العامة لحملاتكم.",
+      "disabled_title": "لم يتم تفعيل خاصية حملات التبرع",
+      "disabled_body": "علم fundraising غير مفعّل لهذا المستأجر. اتصل بمسؤول المنصة لتفعيله.",
+      "payments_title": "طرق الدفع المتاحة",
+      "payments_subtitle": "لن يرى المساهمون إلا الطرق المحددة في الصفحة العامة للحملة.",
+      "method_card": "بطاقة بنكية (Stripe)",
+      "method_mobile_money": "الدفع عبر الهاتف (Orange، MTN، Wave، Moov)",
+      "method_bank_transfer": "تحويل بنكي (تأكيد يدوي)",
+      "method_cash": "نقداً (تأكيد يدوي)",
+      "methods_required": "اختر طريقة دفع واحدة على الأقل.",
+      "limits_title": "حدود المبالغ",
+      "limits_subtitle": "الحدود الافتراضية المطبقة عندما لا تحدد الحملة حدودها الخاصة.",
+      "default_min_amount": "الحد الأدنى الافتراضي للمبلغ",
+      "default_max_amount": "الحد الأقصى الافتراضي للمبلغ",
+      "suggested_title": "المبالغ المقترحة الافتراضية",
+      "suggested_subtitle": "تُملأ مسبقاً عند إنشاء حملة (قابلة للتعديل لكل حملة).",
+      "suggested_hint": "مبالغ مفصولة بفواصل، بعملة الحملة.",
+      "public_title": "الواجهة العامة",
+      "public_subtitle": "ما يمكن للمساهمين فعله ورؤيته على الرابط العام.",
+      "allow_anonymous": "مساهمات مجهولة",
+      "allow_anonymous_hint": "لا يظهر اسم المساهم في جدار الداعمين.",
+      "allow_messages": "رسائل المساهمين",
+      "allow_messages_hint": "يمكن أن ترافق رسالة دعم كل مساهمة.",
+      "show_supporters": "جدار الداعمين العام",
+      "show_supporters_hint": "قائمة المساهمات المؤكدة مرئية على الرابط العام.",
+      "save": "حفظ الإعدادات",
+      "saved": "تم حفظ الإعدادات.",
+      "load_error": "تعذر تحميل الإعدادات.",
+      "save_error": "تعذر حفظ الإعدادات."
+    }
+  },
   "travel": {
     "loading": "جارٍ التحميل…",
     "section": {

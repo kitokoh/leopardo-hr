@@ -1049,7 +1049,8 @@
       "restaurant": "Restaurant",
       "travelagency": "Travel agency",
       "accounting": "Accounting",
-      "company_showcase": "Showcase website"
+      "company_showcase": "Showcase website",
+      "fundraising": "Solidarity fundraisers"
     },
     "tabOverview": "Overview",
     "tabModules": "Modules & verticals",
@@ -5560,6 +5561,7 @@
     "accountingSettings": "Accounting — Settings",
     "fuelStation": "Fuel stations",
     "travelAgency": "Travel agency",
+    "fundraising": "Solidarity fundraisers",
     "surveyStats": "Solution surveys",
     "solutionSurveys": "Solution surveys",
     "travel": "Travel Agency",
@@ -5673,6 +5675,40 @@
   "attendanceDailyEstimate": "Estimated daily earnings",
   "back": "Back",
   "settingsRecoveryEmailLabel": "Recovery email",
+  "fundraising": {
+    "settings": {
+      "title": "Solidarity fundraisers — Settings",
+      "subtitle": "Payment methods, amount guardrails and public page options for your fundraisers.",
+      "disabled_title": "Fundraising vertical not enabled",
+      "disabled_body": "The fundraising flag is not enabled for this tenant. Contact a platform administrator to enable it.",
+      "payments_title": "Payment methods offered",
+      "payments_subtitle": "Contributors will only see the checked methods on the fundraiser’s public page.",
+      "method_card": "Bank card (Stripe)",
+      "method_mobile_money": "Mobile money (Orange, MTN, Wave, Moov)",
+      "method_bank_transfer": "Bank transfer (manual confirmation)",
+      "method_cash": "Cash (manual confirmation)",
+      "methods_required": "Select at least one payment method.",
+      "limits_title": "Amount guardrails",
+      "limits_subtitle": "Default bounds applied when a fundraiser does not set its own limits.",
+      "default_min_amount": "Default minimum amount",
+      "default_max_amount": "Default maximum amount",
+      "suggested_title": "Default suggested amounts",
+      "suggested_subtitle": "Pre-filled when creating a fundraiser (editable per fundraiser).",
+      "suggested_hint": "Comma-separated amounts, in the fundraiser’s currency.",
+      "public_title": "Public surface",
+      "public_subtitle": "What contributors can do and see on the public link.",
+      "allow_anonymous": "Anonymous contributions",
+      "allow_anonymous_hint": "The contributor’s name does not appear on the supporters wall.",
+      "allow_messages": "Contributor messages",
+      "allow_messages_hint": "A support message can accompany each contribution.",
+      "show_supporters": "Public supporters wall",
+      "show_supporters_hint": "The list of confirmed contributions is visible on the public link.",
+      "save": "Save settings",
+      "saved": "Settings saved.",
+      "load_error": "Could not load settings.",
+      "save_error": "Could not save settings."
+    }
+  },
   "travel": {
     "common": {
       "retry": "Retry",

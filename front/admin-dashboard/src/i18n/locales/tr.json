@@ -1055,7 +1055,8 @@
       "restaurant": "Restoran",
       "travelagency": "Seyahat acentesi",
       "accounting": "Muhasebe",
-      "company_showcase": "Tanıtım sitesi"
+      "company_showcase": "Tanıtım sitesi",
+      "fundraising": "Dayanışma kampanyaları"
     },
     "tabOverview": "Genel bakış",
     "tabModules": "Modüller ve dikeyler",
@@ -5566,6 +5567,7 @@
     "accountingSettings": "Muhasebe — Ayarlar",
     "fuelStation": "Akaryakıt istasyonları",
     "travelAgency": "Seyahat acentesi",
+    "fundraising": "Dayanışma kampanyaları",
     "surveyStats": "Çözüm anketleri",
     "solutionSurveys": "Çözüm anketleri",
     "travel": "Seyahat acentesi",
@@ -5679,6 +5681,40 @@
   "attendanceDailyEstimate": "Tahmini günlük kazanç",
   "back": "Geri",
   "settingsRecoveryEmailLabel": "Kurtarma e-postası",
+  "fundraising": {
+    "settings": {
+      "title": "Dayanışma kampanyaları — Ayarlar",
+      "subtitle": "Kampanyalarınız için ödeme yöntemleri, tutar sınırları ve herkese açık sayfa seçenekleri.",
+      "disabled_title": "Bağış kampanyası modülü etkin değil",
+      "disabled_body": "Bu kiracı için fundraising bayrağı etkin değil. Etkinleştirmek için bir platform yöneticisine başvurun.",
+      "payments_title": "Sunulan ödeme yöntemleri",
+      "payments_subtitle": "Katkıda bulunanlar kampanyanın herkese açık sayfasında yalnızca işaretli yöntemleri görür.",
+      "method_card": "Banka kartı (Stripe)",
+      "method_mobile_money": "Mobil para (Orange, MTN, Wave, Moov)",
+      "method_bank_transfer": "Banka havalesi (manuel onay)",
+      "method_cash": "Nakit (manuel onay)",
+      "methods_required": "En az bir ödeme yöntemi seçin.",
+      "limits_title": "Tutar sınırları",
+      "limits_subtitle": "Kampanya kendi sınırlarını belirlemediğinde uygulanan varsayılanlar.",
+      "default_min_amount": "Varsayılan minimum tutar",
+      "default_max_amount": "Varsayılan maksimum tutar",
+      "suggested_title": "Varsayılan önerilen tutarlar",
+      "suggested_subtitle": "Kampanya oluştururken önceden doldurulur (kampanya başına düzenlenebilir).",
+      "suggested_hint": "Kampanyanın para biriminde, virgülle ayrılmış tutarlar.",
+      "public_title": "Herkese açık yüzey",
+      "public_subtitle": "Katkıda bulunanların herkese açık bağlantıda yapabilecekleri ve görebilecekleri.",
+      "allow_anonymous": "Anonim katkılar",
+      "allow_anonymous_hint": "Katkıda bulunanın adı destekçi duvarında görünmez.",
+      "allow_messages": "Katkı mesajları",
+      "allow_messages_hint": "Her katkıya bir destek mesajı eşlik edebilir.",
+      "show_supporters": "Herkese açık destekçi duvarı",
+      "show_supporters_hint": "Onaylanan katkıların listesi herkese açık bağlantıda görünür.",
+      "save": "Ayarları kaydet",
+      "saved": "Ayarlar kaydedildi.",
+      "load_error": "Ayarlar yüklenemedi.",
+      "save_error": "Ayarlar kaydedilemedi."
+    }
+  },
   "travel": {
     "loading": "Yükleniyor…",
     "section": {
