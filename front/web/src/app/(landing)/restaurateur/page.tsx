@@ -31,7 +31,7 @@ export default function RestaurantPage() {
         {/* Même constellation « Business OS » que /packs : la page phare du
             pack offert reste vivante (canvas en fond, pointer-events:none —
             le wizard juste en dessous garde toute priorité). */}
-        <HeroScene3D />
+        <HeroScene3D dimmed />
         <div className="absolute top-24 left-1/2 -translate-x-1/2 w-[36rem] h-72 rounded-full bg-emerald-400/10 blur-3xl" />
 
         <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">

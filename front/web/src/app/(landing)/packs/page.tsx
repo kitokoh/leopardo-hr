@@ -34,7 +34,7 @@ export default function PacksHubPage() {
 
       <section className="relative overflow-hidden pt-32 pb-20">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-emerald-50/30 to-cyan-50/20 dark:from-slate-950 dark:via-emerald-950/20 dark:to-cyan-950/10" />
-        <HeroScene3D />
+        <HeroScene3D dimmed />
 
         <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
           <motion.div

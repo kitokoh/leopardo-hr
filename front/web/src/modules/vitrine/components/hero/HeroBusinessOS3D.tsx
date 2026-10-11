@@ -11,8 +11,9 @@
  * Interactions :
  *   • parallaxe souris — la constellation suit doucement le pointeur ;
  *   • survol d'un module — il s'illumine et grossit ;
- *   • clic sur un module — impulsion (flash + onde), sans navigation : le
- *     canvas reste un fond, le contenu du héro garde la priorité.
+ *   • clic sur un module — impulsion (flash + onde) ; avec `moduleLinks`
+ *     (#8390), le clic navigue vers la page du module (packs, entrées clés).
+ *     Sans liens (fond de page), aucun clic n'est intercepté.
  *
  * Performance / robustesse (mêmes règles que `SolutionStack3D`) :
  *   • three.js en imports nommés, monté uniquement par `HeroScene3D`
@@ -24,6 +25,7 @@
  */
 
 import { useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   ACESFilmicToneMapping,
   AmbientLight,
@@ -55,6 +57,21 @@ import {
 export interface HeroBusinessOS3DProps {
   /** Neutralise rotation continue et parallaxe (accessibilité). */
   reducedMotion?: boolean;
+  /**
+   * #8390 — un href par module orbital (index = ordre de création) : le clic
+   * sur un module navigue vers sa page (packs en anneau intérieur, entrées
+   * clés de la plateforme en anneau extérieur). Le canvas devient alors
+   * cliquable (pointer-events actifs + curseur pointer au survol). À n'activer
+   * QUE quand la scène n'est PAS derrière du contenu (colonne dédiée du héro
+   * d'accueil) : en fond de page, un clic sur le contenu ne doit jamais être
+   * détourné par un module situé « derrière ».
+   */
+  moduleLinks?: string[];
+  /**
+   * Estompe la scène (usage « fond de page ») : le texte par-dessus reste
+   * lisible — retour propriétaire 2026-10-11 (#8389).
+   */
+  dimmed?: boolean;
 }
 
 // ── Composition de la constellation ──────────────────────────────────────
@@ -77,12 +94,21 @@ type ModuleNode = {
   baseScale: number;
   hoverT: number;
   pulse: number;
+  href?: string;
 };
 
-export function HeroBusinessOS3D({ reducedMotion = false }: HeroBusinessOS3DProps) {
+export function HeroBusinessOS3D({ reducedMotion = false, moduleLinks, dimmed = false }: HeroBusinessOS3DProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const reducedRef = useRef(reducedMotion);
   reducedRef.current = reducedMotion;
+  const router = useRouter();
+  const routerRef = useRef(router);
+  routerRef.current = router;
+  // Les liens sont figés au montage (la scène ne se reconstruit pas) — passage
+  // par ref pour garder l'effet en deps [] sans warning exhaustive-deps.
+  const linksRef = useRef(moduleLinks);
+  const interactive = Boolean(moduleLinks && moduleLinks.length > 0);
+  const interactiveRef = useRef(interactive);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -167,7 +193,16 @@ export function HeroBusinessOS3D({ reducedMotion = false }: HeroBusinessOS3DProp
         });
         const mesh = new Mesh(nodeGeo, material);
         const angle = (i / count) * Math.PI * 2 + ringIndex * 0.7;
-        nodes.push({ mesh, ring: ringIndex, angle, baseScale: 1, hoverT: 0, pulse: 0 });
+        const nodeIndex = nodes.length;
+        nodes.push({
+          mesh,
+          ring: ringIndex,
+          angle,
+          baseScale: 1,
+          hoverT: 0,
+          pulse: 0,
+          href: linksRef.current?.[nodeIndex],
+        });
         world.add(mesh);
       }
     });
@@ -227,7 +262,13 @@ export function HeroBusinessOS3D({ reducedMotion = false }: HeroBusinessOS3DProp
     };
 
     const onPointerDown = (): void => {
-      if (hovered) hovered.pulse = 1;
+      if (!hovered) return;
+      hovered.pulse = 1;
+      // #8390 — clic sur un module lié : navigation (locale conservée via la
+      // query courante, même règle que `withLocaleHref`).
+      if (hovered.href) {
+        routerRef.current.push(`${hovered.href}${window.location.search}`);
+      }
     };
 
     window.addEventListener('pointermove', onPointerMove, { passive: true });
@@ -304,6 +345,10 @@ export function HeroBusinessOS3D({ reducedMotion = false }: HeroBusinessOS3DProp
       const hits = raycaster.intersectObjects(nodeMeshes, false);
       const hit = hits.length > 0 ? hits[0].object : null;
       hovered = nodes.find((n) => n.mesh === hit) ?? null;
+      // Curseur pointer au survol d'un module cliquable (canvas interactif).
+      if (interactiveRef.current) {
+        host.style.cursor = hovered?.href ? 'pointer' : '';
+      }
 
       renderer.render(scene, camera);
     };
@@ -353,7 +398,7 @@ export function HeroBusinessOS3D({ reducedMotion = false }: HeroBusinessOS3DProp
     <div
       ref={hostRef}
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 overflow-hidden"
+      className={`absolute inset-0 overflow-hidden ${moduleLinks && moduleLinks.length > 0 ? '' : 'pointer-events-none'} ${dimmed ? 'opacity-[0.55]' : ''}`}
     />
   );
 }
