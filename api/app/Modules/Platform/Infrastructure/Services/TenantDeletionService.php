@@ -93,6 +93,15 @@ final class TenantDeletionService
         // référentiels du tenant créés côté `public`.
         'password_reset_tokens',
         'crm_webhook_channel_lookup',
+        // #8426 — Verticale FUNDRAISING (#8379) : l'annuaire public des
+        // cagnottes (slug → tenant) et le routage paiement (provider_ref →
+        // tenant) sont des données du tenant, purgées avec lui.
+        'fundraiser_public_links',
+        'fundraising_payment_routes',
+        // #8426 — Marketplace (#7814) : favoris et avis rattachés au tenant,
+        // purgés avec lui.
+        'marketplace_favorites',
+        'marketplace_reviews',
     ];
 
     /**
