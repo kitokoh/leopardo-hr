@@ -46,6 +46,8 @@ Route::middleware(['throttle:shop-public'])
     ->group(function (): void {
         // M-11 — annuaire des opérateurs VTC opt-in (DTO strict).
         Route::get('/operators', [VtcMarketplaceController::class, 'operators']);
+        // M-12 — devis public (tenant résolu par slug opérateur).
+        Route::post('/estimate', [VtcMarketplaceController::class, 'estimate']);
     });
 
 // ── Privée (gestion tenant) ─────────────────────────────────────────────────
