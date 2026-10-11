@@ -7653,7 +7653,8 @@
           "commerce": "Ticaret",
           "services": "Hizmetler",
           "travel": "Seyahat acentesi",
-          "other": "Sektörüm listede yok"
+          "other": "Sektörüm listede yok",
+          "association": "Dernek / STK"
         }
       },
       "premises": {

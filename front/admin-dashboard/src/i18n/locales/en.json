@@ -7514,7 +7514,8 @@
           "commerce": "Retail",
           "services": "Services",
           "travel": "Travel agency",
-          "other": "My sector is not listed"
+          "other": "My sector is not listed",
+          "association": "Nonprofit / NGO"
         }
       },
       "premises": {

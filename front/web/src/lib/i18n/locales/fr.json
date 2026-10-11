@@ -6253,6 +6253,7 @@
           "commerce": "Commerce",
           "services": "Services",
           "travel": "Agence de voyage",
+          "association": "Association / ONG",
           "other": "Mon secteur n'est pas listé"
         }
       },

@@ -7520,7 +7520,8 @@
           "commerce": "Commerce",
           "services": "Services",
           "travel": "Agence de voyage",
-          "other": "Mon secteur n'est pas listé"
+          "other": "Mon secteur n'est pas listé",
+          "association": "Association / ONG"
         }
       },
       "premises": {
