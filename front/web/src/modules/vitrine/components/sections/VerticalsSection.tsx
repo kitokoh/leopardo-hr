@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowRight, Fuel, GraduationCap, Plane, UtensilsCrossed } from 'lucide-react';
+import { ArrowRight, Fuel, Gift, GraduationCap, Plane, UtensilsCrossed } from 'lucide-react';
 import type { AppLocale } from '@/lib/i18n';
 
 /**
@@ -68,6 +68,13 @@ const copyByLocale: Record<AppLocale, Copy> = {
         href: '/packs/station-service',
         linkLabel: 'Voir le pack offert',
       },
+      {
+        icon: <Gift className={iconClass} />,
+        name: 'Cagnottes solidaires',
+        benefit: 'Lancez une cagnotte en 2 minutes, collectez par carte et mobile money, reversez au bénéficiaire.',
+        href: '/packs/cagnottes',
+        linkLabel: 'Voir le pack offert',
+      },
     ],
   },
   en: {
@@ -103,6 +110,13 @@ const copyByLocale: Record<AppLocale, Copy> = {
         name: 'Fuel stations',
         benefit: 'Rotating crews clocked on site, hours and overtime straight to payroll.',
         href: '/packs/station-service',
+        linkLabel: 'See the free pack',
+      },
+      {
+        icon: <Gift className={iconClass} />,
+        name: 'Solidarity fundraisers',
+        benefit: 'Launch a fundraiser in 2 minutes, collect by card and mobile money, pay out to the beneficiary.',
+        href: '/packs/cagnottes',
         linkLabel: 'See the free pack',
       },
     ],
@@ -142,6 +156,13 @@ const copyByLocale: Record<AppLocale, Copy> = {
         href: '/packs/station-service',
         linkLabel: 'Ücretsiz paketi görün',
       },
+      {
+        icon: <Gift className={iconClass} />,
+        name: 'Dayanışma kampanyaları',
+        benefit: '2 dakikada kampanya başlatın, kart ve mobil para ile toplayın, hak sahibine aktarın.',
+        href: '/packs/cagnottes',
+        linkLabel: 'Ücretsiz paketi görün',
+      },
     ],
   },
   ar: {
@@ -177,6 +198,13 @@ const copyByLocale: Record<AppLocale, Copy> = {
         name: 'محطات الوقود',
         benefit: 'فرق المناوبة تسجل حضورها في الموقع، والساعات والإضافي تذهب للرواتب.',
         href: '/packs/station-service',
+        linkLabel: 'شاهد الحزمة المجانية',
+      },
+      {
+        icon: <Gift className={iconClass} />,
+        name: 'حملات التضامن',
+        benefit: 'أطلق حملة في دقيقتين، واجمع التبرعات بالبطاقة والموبايل موني، وحوّلها للمستفيد.',
+        href: '/packs/cagnottes',
         linkLabel: 'شاهد الحزمة المجانية',
       },
     ],

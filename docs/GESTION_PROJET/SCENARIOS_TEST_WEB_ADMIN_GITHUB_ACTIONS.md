@@ -677,3 +677,19 @@ propagation i18n du 2026-09-14 (PR #7350).
 
 - Check requis « Frontend — ESLint + TypeScript » sur la page et la fiche entreprise ; build `vite` + garde CSP.
 - Parité et checksums i18n (`validate.js`), garde « no new hardcoded strings » (diff), parité catalogues backend ×4.
+
+
+## Addendum 2026-10-11 — visibilité vitrine de la verticale « Cagnottes solidaires » (PR à venir, issue #8414, FUND-095)
+
+**Surface** : section « Verticales métier » de la home vitrine — nouvelle carte « Cagnottes solidaires » (icône Gift) pointant vers la nouvelle page pack `/packs/cagnottes` (mécanisme data-driven `pack-pages.ts`).
+
+### Scénarios de recette
+
+1. La home affiche 5 cartes verticales dont « Cagnottes solidaires » ; le lien mène à `/packs/cagnottes` (×4 locales fr/en/ar/tr).
+2. `/packs/cagnottes` présente la promesse (lien public de collecte, carte + mobile money, reversement au bénéficiaire), les bénéfices, le contenu inclus et les CTA (création d'espace / conseiller) ; un slug inconnu reste en 404 (`isPackVertical`).
+3. i18n : copy ×4 complète via `pack-pages.ts` (chemin exempté PA2-I18N-014), zéro régression sur les 3 packs existants.
+
+### Vérification automatique
+
+- Jest `VerticalsAndZKTeco.test.tsx` (carte présente + lien `/packs/cagnottes`) — check « Frontend — ESLint + TypeScript ».
+- Gardes vitrine : mojibake, french-copy, pages orphelines (`/packs/cagnottes` référencé depuis la home).

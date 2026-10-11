@@ -10,12 +10,13 @@
 
 import type { AppLocale } from '@/lib/i18n';
 
-export type PackVerticalSlug = 'station-service' | 'ecole' | 'agence-de-voyage';
+export type PackVerticalSlug = 'station-service' | 'ecole' | 'agence-de-voyage' | 'cagnottes';
 
 export const PACK_VERTICALS: PackVerticalSlug[] = [
   'station-service',
   'ecole',
   'agence-de-voyage',
+  'cagnottes',
 ];
 
 export type PackBenefitIcon =
@@ -45,6 +46,111 @@ export type PackPageCopy = {
 };
 
 export const PACK_PAGES: Record<PackVerticalSlug, Record<AppLocale, PackPageCopy>> = {
+  // FUND-095 (#8414) — pack « Cagnottes solidaires » : la verticale de
+  // collecte de fonds (lien public, carte + mobile money, reversements)
+  // rejoint l'offre d'entrée grand public de la vitrine.
+  cagnottes: {
+    fr: {
+      badge: 'Pack Cagnottes solidaires offert',
+      title: 'Lancez votre cagnotte en 2 minutes,',
+      highlight: 'le pack est offert.',
+      subtitle:
+        'Créez une cagnotte pour une personne ou une cause, partagez son lien public et collectez par carte bancaire et mobile money — puis reversez les fonds au bénéficiaire. Activez votre pack Cagnottes solidaires gratuitement.',
+      points: ['Pack offert', 'Sans carte bancaire', 'Lien de collecte immédiat'],
+      benefitsTitle: 'Pensé pour les cagnottes solidaires',
+      benefits: [
+        { icon: 'ticket', title: 'Lien public de collecte', text: 'Chaque cagnotte publie une page de don partageable (WhatsApp, réseaux, QR code) — aucun compte requis pour donner.' },
+        { icon: 'wallet', title: 'Carte et mobile money', text: 'Vos contributeurs paient par carte bancaire ou mobile money, avec montants suggérés et garde-fous configurables.' },
+        { icon: 'users', title: 'Reversement au bénéficiaire', text: 'Suivez la collecte en temps réel et reversez le solde au bénéficiaire, en toute traçabilité.' },
+      ],
+      includedTitle: 'Inclus dans le pack',
+      included: [
+        'Cagnottes illimitées (brouillon, publication, pause, clôture)',
+        'Page publique de don i18n fr/en/ar/tr avec mur des soutiens',
+        'Contributions carte bancaire (Stripe) et mobile money',
+        'Reversements au bénéficiaire (mobile money ou virement)',
+        'Paramétrage complet : méthodes, montants, anonymat, messages',
+      ],
+      ctaPrimary: 'Créer ma cagnotte',
+      ctaSecondary: 'Parler à un conseiller',
+      note: 'Activation gratuite à la création de votre espace — répondez « Association / ONG » à l\'entretien de préparation. Aucun engagement.',
+    },
+    en: {
+      badge: 'Free Solidarity Fundraisers Pack',
+      title: 'Launch your fundraiser in 2 minutes,',
+      highlight: 'the pack is free.',
+      subtitle:
+        'Create a fundraiser for a person or a cause, share its public link and collect by bank card and mobile money — then pay out the funds to the beneficiary. Activate your Solidarity Fundraisers Pack for free.',
+      points: ['Free pack', 'No credit card', 'Instant collection link'],
+      benefitsTitle: 'Built for solidarity fundraisers',
+      benefits: [
+        { icon: 'ticket', title: 'Public collection link', text: 'Every fundraiser publishes a shareable donation page (WhatsApp, socials, QR code) — no account needed to give.' },
+        { icon: 'wallet', title: 'Card and mobile money', text: 'Your contributors pay by bank card or mobile money, with suggested amounts and configurable limits.' },
+        { icon: 'users', title: 'Payout to the beneficiary', text: 'Track the collection in real time and pay out the balance to the beneficiary, fully audited.' },
+      ],
+      includedTitle: 'Included in the pack',
+      included: [
+        'Unlimited fundraisers (draft, publish, pause, close)',
+        'Public donation page i18n fr/en/ar/tr with supporters wall',
+        'Bank card (Stripe) and mobile money contributions',
+        'Payouts to the beneficiary (mobile money or bank transfer)',
+        'Full settings: methods, amounts, anonymity, messages',
+      ],
+      ctaPrimary: 'Create my fundraiser',
+      ctaSecondary: 'Talk to an advisor',
+      note: 'Free activation when you create your workspace — answer "Nonprofit / NGO" in the setup interview. No commitment.',
+    },
+    tr: {
+      badge: 'Ücretsiz Dayanışma Kampanyası Paketi',
+      title: 'Kampanyanızı 2 dakikada başlatın,',
+      highlight: 'paket ücretsiz.',
+      subtitle:
+        'Bir kişi veya amaç için kampanya oluşturun, herkese açık bağlantısını paylaşın ve banka kartı ve mobil para ile toplayın — sonra parayı hak sahibine aktarın. Dayanışma Kampanyası Paketinizi ücretsiz etkinleştirin.',
+      points: ['Ücretsiz paket', 'Kredi kartı yok', 'Anında bağış bağlantısı'],
+      benefitsTitle: 'Dayanışma kampanyaları için tasarlandı',
+      benefits: [
+        { icon: 'ticket', title: 'Herkese açık bağış bağlantısı', text: 'Her kampanya paylaşılabilir bir bağış sayfası yayınlar (WhatsApp, sosyal medya, QR kod) — bağış için hesap gerekmez.' },
+        { icon: 'wallet', title: 'Kart ve mobil para', text: 'Katkıda bulunanlar banka kartı veya mobil para ile öder; önerilen tutarlar ve yapılandırılabilir limitlerle.' },
+        { icon: 'users', title: 'Hak sahibine ödeme', text: 'Bağışı gerçek zamanlı takip edin ve bakiyeyi tam denetim iziyle hak sahibine aktarın.' },
+      ],
+      includedTitle: 'Pakete dahil olanlar',
+      included: [
+        'Sınırsız kampanya (taslak, yayın, duraklatma, kapatma)',
+        'Destekçi duvarlı fr/en/ar/tr bağış sayfası',
+        'Banka kartı (Stripe) ve mobil para katkıları',
+        'Hak sahibine ödemeler (mobil para veya havale)',
+        'Tam ayarlar: yöntemler, tutarlar, anonimlik, mesajlar',
+      ],
+      ctaPrimary: 'Kampanyamı oluştur',
+      ctaSecondary: 'Bir danışmanla konuş',
+      note: 'Alanınızı oluştururken ücretsiz etkinleştirme — kurulum görüşmesinde "Dernek / STK" yanıtını verin. Taahhüt yok.',
+    },
+    ar: {
+      badge: 'حزمة حملات التضامن المجانية',
+      title: 'أطلق حملتك في دقيقتين،',
+      highlight: 'الحزمة مجانية.',
+      subtitle:
+        'أنشئ حملة لشخص أو قضية، وشارك رابطها العام واجمع التبرعات بالبطاقة البنكية والموبايل موني — ثم حوّل الأموال إلى المستفيد. فعّل حزمة حملات التضامن مجاناً.',
+      points: ['حزمة مجانية', 'بدون بطاقة بنكية', 'رابط جمع فوري'],
+      benefitsTitle: 'مصممة لحملات التضامن',
+      benefits: [
+        { icon: 'ticket', title: 'رابط جمع عام', text: 'كل حملة تنشر صفحة تبرع قابلة للمشاركة (واتساب، الشبكات، رمز QR) — لا حساب مطلوب للتبرع.' },
+        { icon: 'wallet', title: 'البطاقة والموبايل موني', text: 'يدفع المتبرعون بالبطاقة البنكية أو الموبايل موني، مع مبالغ مقترحة وحدود قابلة للضبط.' },
+        { icon: 'users', title: 'التحويل إلى المستفيد', text: 'تابع الجمع لحظة بلحظة وحوّل الرصيد إلى المستفيد بتتبع كامل.' },
+      ],
+      includedTitle: 'مشمول في الحزمة',
+      included: [
+        'حملات غير محدودة (مسودة، نشر، إيقاف، إغلاق)',
+        'صفحة تبرع عامة بأربع لغات مع قائمة الداعمين',
+        'مساهمات بالبطاقة البنكية (Stripe) والموبايل موني',
+        'تحويلات إلى المستفيد (موبايل موني أو تحويل بنكي)',
+        'إعدادات كاملة: الوسائل، المبالغ، إخفاء الهوية، الرسائل',
+      ],
+      ctaPrimary: 'إنشاء حملتي',
+      ctaSecondary: 'التحدث إلى مستشار',
+      note: 'تفعيل مجاني عند إنشاء مساحتك — أجب «جمعية / منظمة غير حكومية» في مقابلة الإعداد. بدون التزام.',
+    },
+  },
   'station-service': {
     fr: {
       badge: 'Pack Station-service offert',

@@ -87,6 +87,12 @@
 | FUND-074 | Console admin : page « Cagnottes solidaires — Paramétrage » + route + entrée fiche entreprise (label, icône, surface) + i18n ×4 | ✅ |
 | FUND-075 | Tests `FundraisingSettingsTest` (défauts, upsert unique, validation, RBAC/flag, consommation publique) + OpenAPI | ✅ |
 
+## Lot K — Visibilité vitrine (branche `feat/vitrine-cagnottes`)
+
+| ID | Tâche | Statut |
+|---|---|---|
+| FUND-095 | Carte « Cagnottes solidaires » home vitrine + page pack `/packs/cagnottes` (×4 locales) | ✅ |
+
 ## Phase 2 (hors ce lot)
 
 | ID | Tâche | Statut |

@@ -36,12 +36,20 @@ describe('ZKTecoHookSection (#8072)', () => {
 });
 
 describe('VerticalsSection (#8072)', () => {
-  it('affiche les 4 verticales en cartes', () => {
+  it('affiche les 5 verticales en cartes (dont Cagnottes solidaires — FUND-095)', () => {
     render(<VerticalsSection locale="fr" />);
     expect(screen.getByText('Restaurants')).toBeInTheDocument();
     expect(screen.getByText('Agences de voyage')).toBeInTheDocument();
     expect(screen.getByText('Écoles & formation')).toBeInTheDocument();
     expect(screen.getByText('Stations-service')).toBeInTheDocument();
+    expect(screen.getByText('Cagnottes solidaires')).toBeInTheDocument();
+  });
+
+  it('la carte Cagnottes solidaires pointe vers /packs/cagnottes', () => {
+    render(<VerticalsSection locale="fr" />);
+    expect(
+      screen.getByRole('link', { name: /Cagnottes solidaires — Voir le pack offert/i }),
+    ).toHaveAttribute('href', '/packs/cagnottes');
   });
 
   it('la carte restaurants pointe vers /restaurateur (page orpheline relinkée)', () => {
