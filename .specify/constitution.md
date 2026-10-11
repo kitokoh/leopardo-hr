@@ -163,6 +163,12 @@ Règle : tout PR qui fait passer un pays de `placeholder` → `pilot` doit :
 
 ---
 
+## XI. Intelligence Artificielle & Automatisation — L'IA Propose, le Moteur Décide
+**Aucun modèle d'intelligence artificielle n'a le droit d'effectuer d'écritures directes en base de données ou de déclencher des activations sans validation explicite d'un utilisateur.**
+- **IA Propose, Moteur Décide** : L'IA traduit du langage naturel ou des signaux métier vers des DTOs/plans d'actions stricts et validés contre une allowlist déterministe.
+- **Fail-Closed & Fallback** : Tout échec d'inférence, de parsing ou de validation bascule immédiatement et de façon transparente vers l'interface ou le workflow standard sans bloquer l'utilisateur.
+- **Tables de Connaissances & Vecteurs (Knowledge Base)** : Toute future table de données augmentées ou base vectorielle doit porter nativement `company_id`, être soumise au contrôle d'accès strict (ACL / RBAC) et définir une politique de rétention et purge dès sa conception.
+
 ## Gouvernance
 
 Cette Constitution prime sur `AGENTS.md`, `CONVENTIONS.md`, et tout autre document.

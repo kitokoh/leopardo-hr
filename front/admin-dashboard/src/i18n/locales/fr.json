@@ -7695,7 +7695,12 @@
       "packsEduDesc": "Présence du personnel, remplacements, paie scolaire",
       "packsTravel": "Agences de voyage",
       "packsTravelDesc": "Dossiers clients, billetterie, commissions, paie",
-      "comparer": "Comparer"
+      "comparer": "Comparer",
+      "careers": "Carrières"
+    },
+    "hero3d": {
+      "hint": "Cliquez sur un module pour explorer",
+      "demo": "Démo"
     }
   },
   "brandingPage": {

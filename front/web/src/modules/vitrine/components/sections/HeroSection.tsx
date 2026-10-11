@@ -108,8 +108,11 @@ export function HeroSection({
 
       {/* Fond vivant : constellation WebGL « Business OS » si possible,
           champ de particules 2D sinon (même rôle, deux niveaux d'exigence).
-          Désactivable (#8389) quand la scène est placée en colonne visuelle. */}
-      {animated && backgroundScene && <HeroScene3D />}
+          Désactivable (#8389) quand la scène est placée en colonne visuelle.
+          #8410 — TOUJOURS estompée en fond : le texte du héro reste lisible
+          sur toutes les pages (clair et sombre), la 3D ne passe plus jamais
+          « devant » le propos. */}
+      {animated && backgroundScene && <HeroScene3D dimmed />}
 
       {/* Gradient orbs */}
       <div className="absolute top-1/4 -left-32 w-[500px] h-[500px] bg-emerald-400/15 rounded-full blur-[120px] animate-pulse" />
@@ -125,12 +128,16 @@ export function HeroSection({
         <div
           className={
             isSplit
-              ? 'grid grid-cols-1 items-center gap-14 lg:grid-cols-2 lg:gap-12 xl:gap-16'
+              ? // #8403 — la colonne visuelle (constellation 3D) s'élargit
+                // (ratio 2:3 via grid-cols-5 — tokens standard, garde i18n)
+                // et s'aligne en HAUT avec le récit : la 3D porte la première
+                // page, au niveau du texte de gauche, pas centrée mollement.
+                'grid grid-cols-1 items-center gap-14 lg:grid-cols-5 lg:items-start lg:gap-10 xl:gap-12'
               : 'mx-auto max-w-5xl'
           }
         >
           {/* ── Colonne « récit » ─────────────────────────────────────── */}
-          <div className={align}>
+          <div className={isSplit ? `${align} lg:col-span-2` : align}>
             {badgeConfig && (
               <motion.div
                 initial={animated ? { y: 20, filter: 'blur(10px)' } : {}}
@@ -243,7 +250,9 @@ export function HeroSection({
                 initial={animated ? { x: 40, scale: 0.96 } : {}}
                 animate={animated ? { x: 0, scale: 1 } : {}}
                 transition={{ duration: 1, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                className="w-full"
+                // #8403 — léger retrait vers le haut : la constellation
+                // « monte » au niveau du badge/titre de gauche.
+                className="w-full lg:-mt-8 lg:col-span-3"
               >
                 {visual}
               </motion.div>

@@ -1117,3 +1117,18 @@ restent les gates applicables.
   `assistant*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
 - **Surface API** : aucun changement backend (consomme les endpoints assistant existants),
   aucun scénario nouveau requis.
+
+## Mise à jour 2026-10-11 — vitrine vague 2 : héro 3D étiquetée et premium, navbar « Carrières », newsletter compacte, connexion harmonisée (PR #8416, issues #8403 → #8410)
+
+- **Surface web** : pages `/`, `/signup`, `/auth/login`, navbar et footer — constellation
+  3D agrandie et alignée haut avec étiquettes de modules orbitaux et indice d'interaction
+  (#8403, #8404), rendu premium de la scène (#8405), entrée navbar « Carrières » à la
+  place de « Contact » (#8406), newsletter footer compacte (#8407), page de connexion
+  harmonisée sur la grammaire de /signup (#8408, #8409), scène 3D de fond toujours
+  estompée (#8410). UI/i18n uniquement, aucun flux fonctionnel nouveau : les suites Jest
+  vitrine existantes couvrent le périmètre (156 suites / 1332 tests vertes — Navbar,
+  HeroSection, HeroScene3D, SignupForm, login) ; aucun scénario e2e nouveau requis.
+- **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
+  partagé `vitrine.nav.careers`, `vitrine.hero3d.*`), aucun contrat mobile modifié —
+  aucun scénario mobile nouveau requis.
+- **Surface API** : aucun changement backend — aucun scénario nouveau requis.

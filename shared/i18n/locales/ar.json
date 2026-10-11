@@ -6374,6 +6374,7 @@
       "changelogDesc": "آخر تحديثات المنتج",
       "contact": "اتصل بنا",
       "comparer": "قارِن",
+      "careers": "الوظائف",
       "install": "تثبيت Leopardo",
       "windowsDesc": "عميل سطح المكتب للمزامنة وأجهزة ZKTeco",
       "macosDesc": "مساحة عمل للفرق الميدانية",
@@ -6385,6 +6386,10 @@
       "faqDesc": "إجابات سريعة قبل الإطلاق",
       "support": "الدعم",
       "supportDesc": "تواصل مع فريقنا"
+    },
+    "hero3d": {
+      "hint": "انقر على وحدة للاستكشاف",
+      "demo": "عرض توضيحي"
     }
   },
   "commerce": {

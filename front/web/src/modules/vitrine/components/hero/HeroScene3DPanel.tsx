@@ -10,10 +10,19 @@
  * disponible pour d'autres sections). Et #8390 : les modules orbitaux sont
  * cliquables et mènent aux pages packs / entrées clés.
  *
+ * Retour propriétaire 2026-10-11, vague 2 (#8403) : la scène doit IMPRESSIONNER
+ * dès le premier écran — panneau nettement agrandi (jusqu'à 660 px), aligné en
+ * haut avec le récit de gauche (voir `HeroSection`, items-start), la 3D porte
+ * la première page. Et #8404 : chaque losange porte son étiquette (pack ou
+ * entrée) + un indice « cliquez pour explorer », sinon rien ne dit que les
+ * modules sont cliquables.
+ *
  * Le conteneur a une hauteur propre : la scène (absolute inset-0) le remplit.
  */
 
 import { HeroScene3D } from './HeroScene3D';
+import { useVitrineLocale } from '../../lib/vitrine-locale';
+import { t } from '@/lib/i18n/locale-catalog';
 
 /**
  * Un href par module (ordre de création : anneau intérieur ×4 puis anneau
@@ -35,10 +44,34 @@ const MODULE_LINKS: string[] = [
   '/contact',
 ];
 
+/**
+ * #8404 — clé i18n du libellé de chaque module, dans le MÊME ordre que
+ * `MODULE_LINKS`. Les noms de packs/entrées réutilisent les clés existantes
+ * (`vitrine.nav.*`, source unique) ; seuls « Démo » et l'indice sont nouveaux
+ * (`vitrine.hero3d.*`, ×4 locales, P03).
+ */
+const MODULE_LABEL_KEYS: string[] = [
+  'vitrine.nav.packsRestaurant',
+  'vitrine.nav.packsFuel',
+  'vitrine.nav.packsEdu',
+  'vitrine.nav.packsTravel',
+  'vitrine.nav.packsHub',
+  'vitrine.nav.pricing',
+  'vitrine.hero3d.demo',
+  'vitrine.nav.contact',
+];
+
 export function HeroScene3DPanel() {
+  const { locale } = useVitrineLocale();
+  const moduleLabels = MODULE_LABEL_KEYS.map((key) => t(locale, key));
+
   return (
-    <div className="relative h-[380px] w-full sm:h-[460px] lg:h-[560px]">
-      <HeroScene3D moduleLinks={MODULE_LINKS} />
+    <div className="relative h-[420px] w-full sm:h-[540px] lg:h-[600px] xl:h-[660px]">
+      <HeroScene3D
+        moduleLinks={MODULE_LINKS}
+        moduleLabels={moduleLabels}
+        hint={t(locale, 'vitrine.hero3d.hint')}
+      />
     </div>
   );
 }

@@ -7828,7 +7828,12 @@
       "packsEduDesc": "Personel yoklaması, yerine geçme, okul bordrosu",
       "packsTravel": "Seyahat acenteleri",
       "packsTravelDesc": "Müşteri dosyaları, biletleme, komisyonlar, bordro",
-      "comparer": "Karşılaştır"
+      "comparer": "Karşılaştır",
+      "careers": "Kariyer"
+    },
+    "hero3d": {
+      "hint": "Keşfetmek için bir modüle tıklayın",
+      "demo": "Demo"
     }
   },
   "brandingPage": {

@@ -6374,6 +6374,7 @@
       "changelogDesc": "Latest product updates",
       "contact": "Contact",
       "comparer": "Compare",
+      "careers": "Careers",
       "install": "Install Leopardo",
       "windowsDesc": "Desktop client for ZKTeco and sync",
       "macosDesc": "Desktop workspace for field teams",
@@ -6385,6 +6386,10 @@
       "faqDesc": "Frequently asked questions",
       "support": "Support",
       "supportDesc": "Contact our team"
+    },
+    "hero3d": {
+      "hint": "Click a module to explore",
+      "demo": "Demo"
     }
   },
   "commerce": {

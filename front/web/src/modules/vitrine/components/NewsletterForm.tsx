@@ -50,38 +50,45 @@ export function NewsletterForm() {
     }
   }
 
+  // #8407 — la newsletter adopte la grammaire des colonnes du footer (et non
+  // l'inverse) : titre identique aux h4 des colonnes, formulaire sur UNE ligne,
+  // notice RGPD conservée mais discrète et HORS du flux flex (elle y cassait la
+  // ligne avec `basis-full` et gonflait le bloc — « espace anormalement gros »).
   return (
-    <div className="w-full max-w-md">
-      <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-2">{t.title}</h4>
-      <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">{t.description}</p>
+    <div className="w-full max-w-xs">
+      <h4 className="mb-4 text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">{t.title}</h4>
+      <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">{t.description}</p>
       {status === 'success' ? (
         <p className="text-sm text-emerald-700 dark:text-emerald-400 font-medium">{message}</p>
       ) : (
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <HoneypotField />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder={t.placeholder}
-            aria-label={t.title}
-            aria-invalid={status === 'error' ? true : undefined}
-            aria-describedby={status === 'error' ? 'newsletter-footer-error' : undefined}
-            required
-            className="flex-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-          />
-          {/* #7593 — finalité et base légale au moment de la collecte. */}
-          <div className="basis-full">
+        <>
+          <form onSubmit={handleSubmit} className="flex gap-2">
+            <HoneypotField />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t.placeholder}
+              aria-label={t.title}
+              aria-invalid={status === 'error' ? true : undefined}
+              aria-describedby={status === 'error' ? 'newsletter-footer-error' : undefined}
+              required
+              className="min-w-0 flex-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            />
+            <button
+              type="submit"
+              disabled={status === 'loading'}
+              className="shrink-0 rounded-lg bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800 disabled:opacity-50 transition-colors"
+            >
+              {status === 'loading' ? '...' : t.button}
+            </button>
+          </form>
+          {/* #7593 — finalité et base légale au moment de la collecte, version
+              discrète sous le formulaire (pas un bloc à part entière). */}
+          <div className="[&_p]:mt-2 [&_p]:text-[11px] [&_p]:leading-snug [&_p]:text-slate-400 dark:[&_p]:text-slate-500">
             <FormDataNotice purpose="newsletter" />
           </div>
-          <button
-            type="submit"
-            disabled={status === 'loading'}
-            className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800 disabled:opacity-50 transition-colors"
-          >
-            {status === 'loading' ? '...' : t.button}
-          </button>
-        </form>
+        </>
       )}
       {status === 'error' && <p id="newsletter-footer-error" role="alert" aria-live="polite" className="mt-1 text-xs text-red-500">{message}</p>}
     </div>

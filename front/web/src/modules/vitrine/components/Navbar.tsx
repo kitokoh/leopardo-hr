@@ -108,7 +108,11 @@ function buildNavEntries(locale: AppLocale): NavEntry[] {
       ],
     },
     { href: '/alternatives', label: nav('comparer') },
-    { href: '/contact', label: nav('contact') },
+    // Retour propriétaire 2026-10-11 (#8406) : « Contact » vit déjà au footer
+    // (colonne Ressources) — sa place en navbar est réinvestie en « Carrières »
+    // (/careers, page existante mais sans lien en haut), levier de marque
+    // employeur. La barre reste ≤ 7 entrées (#8387).
+    { href: '/careers', label: nav('careers') },
   ]
 }
 

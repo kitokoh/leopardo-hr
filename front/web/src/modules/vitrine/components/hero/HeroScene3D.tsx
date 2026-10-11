@@ -43,10 +43,16 @@ function hasWebGL(): boolean {
 
 export function HeroScene3D({
   moduleLinks,
+  moduleLabels,
+  hint,
   dimmed = false,
 }: {
   /** #8390 — href par module orbital : rend la scène cliquable (colonne héro). */
   moduleLinks?: string[];
+  /** #8404 — libellé par module orbital (affordance, même ordre que les liens). */
+  moduleLabels?: string[];
+  /** #8404 — indice d'interaction sous la scène (mode interactif uniquement). */
+  hint?: string;
   /** #8389 — estompe la scène en fond de page : le texte reste lisible. */
   dimmed?: boolean;
 }) {
@@ -88,7 +94,15 @@ export function HeroScene3D({
   }, []);
 
   if (enhanced) {
-    return <HeroBusinessOS3D reducedMotion={reducedMotion} moduleLinks={moduleLinks} dimmed={dimmed} />;
+    return (
+      <HeroBusinessOS3D
+        reducedMotion={reducedMotion}
+        moduleLinks={moduleLinks}
+        moduleLabels={moduleLabels}
+        hint={hint}
+        dimmed={dimmed}
+      />
+    );
   }
   return <ParticleField />;
 }

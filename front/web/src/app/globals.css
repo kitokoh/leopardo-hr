@@ -232,6 +232,13 @@ html {
     linear-gradient(to bottom, rgba(255, 255, 255, 0.9) 1px, transparent 1px);
   background-size: 26px 26px;
 }
+/* #8408 — motif de points du fond de /auth/login : déplacé du style inline
+   vers une classe (garde i18n-diff sur les littéraux en expression + règle
+   « aucune valeur visuelle en dur hors tokens » P05). Couleur emerald-500. */
+.login-grid-pattern {
+  background-image: radial-gradient(#10b981 0.5px, transparent 0.5px);
+  background-size: 24px 24px;
+}
 .signup-art-halo {
   background: radial-gradient(circle at 50% 45%, rgba(16, 185, 129, 0.22), transparent 62%);
 }

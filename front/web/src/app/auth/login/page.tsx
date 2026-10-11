@@ -566,12 +566,12 @@ function LoginInner() {
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-emerald-500/10 rounded-full blur-[120px] animate-pulse-slow" style={{ animationDelay: '1.5s' }}></div>
       </div>
 
-      {/* Grid Pattern overlay */}
-      <div className="absolute inset-0 z-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#14b8a6 0.5px, transparent 0.5px)', backgroundSize: '24px 24px' }}></div>
+      {/* Grid Pattern overlay — classe dédiée (globals.css), plus de style inline. */}
+      <div className="absolute inset-0 z-0 opacity-10 login-grid-pattern"></div>
 
       <div className="mx-auto grid min-h-[calc(100vh-3rem)] w-full max-w-6xl overflow-hidden rounded-[28px] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 backdrop-blur-xl shadow-2xl shadow-slate-200/70 dark:shadow-black/50 lg:grid-cols-[0.95fr_1.05fr] relative z-10 animate-fade-in">
         <section className="relative hidden flex-col justify-between bg-slate-950 p-10 text-white lg:flex overflow-hidden">
-          <div className="absolute inset-0 opacity-70 [background:radial-gradient(circle_at_18%_12%,rgba(45,212,191,0.20),transparent_32%),radial-gradient(circle_at_84%_20%,rgba(56,189,248,0.18),transparent_30%)]" />
+          <div className="absolute inset-0 opacity-70 [background:radial-gradient(circle_at_18%_12%,rgba(16,185,129,0.20),transparent_32%),radial-gradient(circle_at_84%_20%,rgba(56,189,248,0.18),transparent_30%)]" />
 
           {/* Internal section decoration */}
           <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-emerald-500/20 rounded-full blur-3xl"></div>
@@ -582,7 +582,7 @@ function LoginInner() {
               {labels.login.back}
             </Link>
             <div className="mt-16 space-y-5">
-              <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/30 bg-teal-300/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-teal-100">
+              <span className="inline-flex items-center gap-2 rounded-full border border-emerald-300/30 bg-emerald-300/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-emerald-100">
                 <ShieldCheck className="h-4 w-4" aria-hidden="true" />
                 {labels.login.secureBadge}
               </span>
@@ -625,11 +625,11 @@ function LoginInner() {
             </div>
 
             <div className="space-y-3">
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">{labels.login.clientSpace}</p>
-              <h2 className="text-3xl font-black tracking-tight text-slate-950 dark:text-white uppercase italic">
-                {labels.login.title.split(' ')[0]} <span className="text-emerald-600 not-italic font-black">{labels.login.title.split(' ').slice(1).join(' ')}</span>
+              <p className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">{labels.login.clientSpace}</p>
+              <h2 className="text-3xl font-black tracking-tight text-slate-950 dark:text-white">
+                {labels.login.title.split(' ')[0]} <span className="text-emerald-600 dark:text-emerald-400">{labels.login.title.split(' ').slice(1).join(' ')}</span>
               </h2>
-              <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{labels.login.subtitle}</p>
+              <p className="text-sm leading-6 text-slate-600 dark:text-slate-400">{labels.login.subtitle}</p>
             </div>
 
             {loginMode === 'code' ? (
@@ -638,17 +638,17 @@ function LoginInner() {
                   <h3 className="text-lg font-black text-slate-950 dark:text-white">
                     {i18nT(locale, 'loginCode.title')}
                   </h3>
-                  <p className="text-sm text-slate-500">{i18nT(locale, 'loginCode.hint')}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{i18nT(locale, 'loginCode.hint')}</p>
                 </div>
 
                 {error ? (
-                  <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800">
+                  <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200">
                     {error}
                   </div>
                 ) : null}
 
-                <div className="space-y-4">
-                  <label htmlFor="login-code-email" className="block text-sm font-semibold text-slate-800">
+                <div className="space-y-2">
+                  <label htmlFor="login-code-email" className="block text-sm font-semibold text-slate-900 dark:text-white">
                     {i18nT(locale, 'loginCode.emailLabel')}
                   </label>
                   <input
@@ -658,7 +658,7 @@ function LoginInner() {
                     autoComplete="email"
                     required
                     disabled={codeEmailSent}
-                    className="block h-12 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-transparent/50 dark:bg-slate-800/50 px-4 text-slate-950 dark:text-white shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 font-bold text-sm disabled:opacity-60"
+                    className="block h-12 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 text-sm font-medium text-slate-950 dark:text-white shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 disabled:opacity-60"
                     placeholder={i18nT(locale, 'loginCode.emailPlaceholder')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -667,11 +667,11 @@ function LoginInner() {
 
                 {codeEmailSent ? (
                   <>
-                    <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                    <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200">
                       {i18nT(locale, 'loginCode.sentInfo')}
                     </p>
-                    <div className="space-y-4">
-                      <label htmlFor="login-code" className="block text-sm font-semibold text-slate-800">
+                    <div className="space-y-2">
+                      <label htmlFor="login-code" className="block text-sm font-semibold text-slate-900 dark:text-white">
                         {i18nT(locale, 'loginCode.codeLabel')}
                       </label>
                       <input
@@ -683,7 +683,7 @@ function LoginInner() {
                         pattern="[0-9]{6}"
                         maxLength={6}
                         required
-                        className="block h-12 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-transparent/50 dark:bg-slate-800/50 px-4 text-center text-lg font-black tracking-[0.4em] text-slate-950 dark:text-white shadow-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                        className="block h-12 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 text-center text-lg font-black tracking-[0.4em] text-slate-950 dark:text-white shadow-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                         value={loginCode}
                         onChange={(e) => setLoginCode(e.target.value.replace(/[^0-9]/g, ''))}
                       />
@@ -695,7 +695,7 @@ function LoginInner() {
                   type="submit"
                   loading={submitting}
                   fullWidth
-                  className="h-12 rounded-2xl bg-emerald-600 px-4 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-brand-500/20 hover:bg-emerald-500 focus:ring-emerald-500 focus:ring-offset-2"
+                  className="h-12 rounded-xl bg-gradient-to-r from-emerald-700 to-emerald-800 px-4 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 hover:from-emerald-800 hover:to-emerald-900 focus:ring-emerald-500 focus:ring-offset-2"
                 >
                   {codeEmailSent
                     ? (submitting ? i18nT(locale, 'loginCode.verifying') : i18nT(locale, 'loginCode.verifyCta'))
@@ -707,7 +707,7 @@ function LoginInner() {
                     <button
                       type="button"
                       onClick={() => { setCodeEmailSent(false); setLoginCode(''); setError(null); }}
-                      className="font-semibold text-teal-700 transition hover:text-teal-900"
+                      className="font-semibold text-emerald-700 transition hover:text-emerald-900"
                     >
                       {i18nT(locale, 'loginCode.resend')}
                     </button>
@@ -715,7 +715,7 @@ function LoginInner() {
                   <button
                     type="button"
                     onClick={() => { setLoginMode('password'); setCodeEmailSent(false); setLoginCode(''); setError(null); }}
-                    className="font-semibold text-slate-600 transition hover:text-slate-900"
+                    className="font-semibold text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                   >
                     {i18nT(locale, 'loginCode.backToPassword')}
                   </button>
@@ -724,7 +724,7 @@ function LoginInner() {
             ) : (
             <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
               {registered && (
-                <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 flex items-center gap-2">
+                <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 flex items-center gap-2 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200">
                   <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   {registeredPlan === 'free'
                     ? labels.login.accountCreatedFree
@@ -740,7 +740,7 @@ function LoginInner() {
                   role="status"
                   aria-live="polite"
                   data-testid="session-unavailable"
-                  className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+                  className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200"
                 >
                   <p className="font-semibold">{labels.login.errors.sessionUnavailable}</p>
                   <p className="mt-1">{labels.login.errors.sessionUnavailableHint}</p>
@@ -748,7 +748,7 @@ function LoginInner() {
                     type="button"
                     data-testid="session-retry"
                     onClick={retrySessionLoad}
-                    className="mt-3 rounded-xl border border-amber-300 bg-white px-4 py-2 text-sm font-semibold text-amber-900 transition hover:bg-amber-100"
+                    className="mt-3 rounded-xl border border-amber-300 bg-white px-4 py-2 text-sm font-semibold text-amber-900 transition hover:bg-amber-100 dark:border-amber-700 dark:bg-amber-900/40 dark:text-amber-200 dark:hover:bg-amber-900/60"
                   >
                     {labels.login.errors.retrySession}
                   </button>
@@ -757,7 +757,7 @@ function LoginInner() {
               {(error ?? urlError) ? (
                 <div
                   role="alert"
-                  className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
+                  className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200"
                 >
                   <p>{error ?? urlError}</p>
                   {showGoogleSignupCta && !error ? (
@@ -774,8 +774,8 @@ function LoginInner() {
                 </div>
               ) : null}
 
-              <div className="space-y-4">
-                <label htmlFor="email-address" className="block text-sm font-semibold text-slate-800">
+              <div className="space-y-2">
+                <label htmlFor="email-address" className="block text-sm font-semibold text-slate-900 dark:text-white">
                   {labels.login.email}
                 </label>
                 <input
@@ -784,15 +784,15 @@ function LoginInner() {
                   type="email"
                   autoComplete="email"
                   required
-                  className="block h-12 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-transparent/50 dark:bg-slate-800/50 px-4 text-slate-950 dark:text-white shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 font-bold text-sm"
+                  className="block h-12 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 text-sm font-medium text-slate-950 dark:text-white shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                   placeholder="manager@company.com"
                   value={email}
                   onChange={(e) => { setEmail(e.target.value); setUrlError(null); setShowGoogleSignupCta(false); }}
                 />
               </div>
 
-              <div className="space-y-4">
-                <label htmlFor="password" className="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">
+              <div className="space-y-2">
+                <label htmlFor="password" className="block text-sm font-semibold text-slate-900 dark:text-white">
                   {labels.login.password}
                 </label>
                 <div className="relative">
@@ -802,7 +802,7 @@ function LoginInner() {
                     type={showPassword ? 'text' : 'password'}
                     autoComplete="current-password"
                     required
-                    className="block h-12 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-transparent/50 dark:bg-slate-800/50 px-4 pr-12 text-slate-950 dark:text-white shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 font-bold text-sm"
+                    className="block h-12 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 pr-12 text-sm font-medium text-slate-950 dark:text-white shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                     placeholder={labels.login.password}
                     value={password}
                     onChange={(e) => { setPassword(e.target.value); setUrlError(null); setShowGoogleSignupCta(false); }}
@@ -810,7 +810,7 @@ function LoginInner() {
                   <button
                     type="button"
                     aria-label={showPassword ? labels.login.hidePassword : labels.login.showPassword}
-                    className="absolute inset-y-0 right-2 my-auto flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+                    className="absolute inset-y-0 right-2 my-auto flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
                     onClick={() => setShowPassword((value) => !value)}
                   >
                     {showPassword ? <EyeOff className="h-5 w-5" aria-hidden="true" /> : <Eye className="h-5 w-5" aria-hidden="true" />}
@@ -819,17 +819,17 @@ function LoginInner() {
               </div>
 
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <label className="flex items-center gap-2 text-sm text-slate-700">
+                <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                   <input
                     id="remember-me"
                     name="remember-me"
                     type="checkbox"
-                    className="h-4 w-4 rounded border-slate-300 text-teal-700 focus:ring-teal-600"
+                    className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
                   />
                   {labels.login.remember}
                 </label>
 
-                <Link href="/auth/forgot-password" className="text-sm font-semibold text-teal-700 transition hover:text-teal-900">
+                <Link href="/auth/forgot-password" className="text-sm font-semibold text-emerald-700 transition hover:text-emerald-900">
                   {labels.login.forgot}
                 </Link>
               </div>
@@ -840,7 +840,7 @@ function LoginInner() {
                   type="button"
                   data-testid="login-code-toggle"
                   onClick={() => { setLoginMode('code'); setError(null); setUrlError(null); }}
-                  className="text-sm font-semibold text-teal-700 underline-offset-4 transition hover:text-teal-900 hover:underline"
+                  className="text-sm font-semibold text-emerald-700 underline-offset-4 transition hover:text-emerald-900 hover:underline"
                 >
                   {i18nT(locale, 'loginCode.linkLabel')}
                 </button>
@@ -850,14 +850,14 @@ function LoginInner() {
                 type="submit"
                 loading={submitting}
                 fullWidth
-                className="h-12 rounded-2xl bg-emerald-600 px-4 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-brand-500/20 hover:bg-emerald-500 focus:ring-emerald-500 focus:ring-offset-2"
+                className="h-12 rounded-xl bg-gradient-to-r from-emerald-700 to-emerald-800 px-4 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 hover:from-emerald-800 hover:to-emerald-900 focus:ring-emerald-500 focus:ring-offset-2"
               >
                 {submitting ? labels.login.loading : labels.login.submit}
               </Button>
 
               <a
                 href={googleAuthHref()}
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 shadow-sm transition hover:border-slate-300 hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-bold text-slate-800 shadow-sm transition hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
               >
                 <GoogleGlyph />
                 {i18nT(locale, 'auth.continue_with_google')}
@@ -866,7 +866,7 @@ function LoginInner() {
               {/* Entrée permanente vers la création de compte : elle n’existait
                   qu’en cas d’erreur Google (« aucun compte ») — impossible de
                   démarrer un essai depuis l’écran de connexion (#7231). */}
-              <p className="text-center text-sm text-slate-600">
+              <p className="text-center text-sm text-slate-600 dark:text-slate-400">
                 <Link
                   href="/signup"
                   className="font-black text-emerald-700 underline-offset-4 transition hover:text-emerald-900 hover:underline"
@@ -876,7 +876,7 @@ function LoginInner() {
               </p>
 
               {coldStartHint && submitting ? (
-                <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 space-y-2">
+                <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 space-y-2 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
                   <p className="font-medium">
                     {locale === 'fr'
                       ? 'Le serveur de demo se reveille, cela peut prendre jusqu\'a 60 secondes...'
@@ -917,9 +917,9 @@ function LoginInner() {
                 </p>
               ) : null}
 
-              <p className="text-center text-xs leading-5 text-slate-500">
+              <p className="text-center text-xs leading-5 text-slate-500 dark:text-slate-400">
                 {labels.login.supportCopy}{' '}
-                <Link href="/contact" className="font-semibold text-slate-800 underline-offset-4 hover:underline">
+                <Link href="/contact" className="font-semibold text-slate-800 underline-offset-4 hover:underline dark:text-slate-200">
                   {labels.login.supportLink}
                 </Link>
               </p>
@@ -931,16 +931,16 @@ function LoginInner() {
                 className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4"
                 onClick={(e) => { if (e.target === e.currentTarget) setShowDemoModal(false); }}
               >
-                <div className="max-h-[84vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
-                  <div className="sticky top-0 flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-6 py-5">
+                <div className="max-h-[84vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-2xl dark:bg-slate-900">
+                  <div className="sticky top-0 flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-6 py-5 dark:border-slate-800 dark:bg-slate-900">
                     <div>
-                      <h3 className="text-lg font-bold text-slate-950">{labels.login.demoTitle}</h3>
-                      <p className="mt-1 text-sm text-slate-500">{labels.login.demoSubtitle}</p>
+                      <h3 className="text-lg font-bold text-slate-950 dark:text-white">{labels.login.demoTitle}</h3>
+                      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{labels.login.demoSubtitle}</p>
                     </div>
                     <button
                       type="button"
                       aria-label={labels.login.close}
-                      className="flex h-10 w-10 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+                      className="flex h-10 w-10 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
                       onClick={() => setShowDemoModal(false)}
                     >
                       <X className="h-5 w-5" aria-hidden="true" />
@@ -949,7 +949,7 @@ function LoginInner() {
                   <div className="space-y-5 p-6">
                     {demoCompanies.map((company) => (
                       <div key={company.slug}>
-                        <h4 className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+                        <h4 className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
                           {company.name} ({company.country})
                         </h4>
                         <div className="grid gap-2">
@@ -957,16 +957,16 @@ function LoginInner() {
                             <button
                               key={user.email}
                               type="button"
-                              className="w-full rounded-xl border border-slate-200 p-4 text-left transition hover:border-teal-300 hover:bg-teal-50/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+                              className="w-full rounded-xl border border-slate-200 p-4 text-left transition hover:border-emerald-300 hover:bg-emerald-50/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 dark:border-slate-700 dark:hover:border-emerald-700 dark:hover:bg-emerald-950/40"
                               onClick={() => selectDemoUser(user.email, user.password, user.managerRole ?? user.role, company.country)}
                             >
                               <div className="flex items-center justify-between gap-3">
-                                <span className="font-semibold text-slate-950">{user.name}</span>
-                                <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">
+                                <span className="font-semibold text-slate-950 dark:text-white">{user.name}</span>
+                                <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                                   {user.managerRole ?? user.role}
                                 </span>
                               </div>
-                              <span className="mt-1 block text-sm text-slate-500">{user.email}</span>
+                              <span className="mt-1 block text-sm text-slate-500 dark:text-slate-400">{user.email}</span>
                             </button>
                           ))}
                         </div>

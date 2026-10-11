@@ -7689,7 +7689,12 @@
       "packsEduDesc": "Staff attendance, replacements, school payroll",
       "packsTravel": "Travel agencies",
       "packsTravelDesc": "Client files, ticketing, commissions, payroll",
-      "comparer": "Compare"
+      "comparer": "Compare",
+      "careers": "Careers"
+    },
+    "hero3d": {
+      "hint": "Click a module to explore",
+      "demo": "Demo"
     }
   },
   "brandingPage": {

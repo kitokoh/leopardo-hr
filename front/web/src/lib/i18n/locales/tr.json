@@ -6374,6 +6374,7 @@
       "changelogDesc": "Son ürün güncellemeleri",
       "contact": "İletişim",
       "comparer": "Karşılaştır",
+      "careers": "Kariyer",
       "install": "Leopardo'yu Kur",
       "windowsDesc": "ZKTeco ve senkronizasyon için masaüstü istemcisi",
       "macosDesc": "Saha ekipleri için masaüstü çalışma alanı",
@@ -6385,6 +6386,10 @@
       "faqDesc": "Sık sorulan sorular",
       "support": "Destek",
       "supportDesc": "Ekibimize ulaşın"
+    },
+    "hero3d": {
+      "hint": "Keşfetmek için bir modüle tıklayın",
+      "demo": "Demo"
     }
   },
   "commerce": {

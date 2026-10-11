@@ -6374,6 +6374,7 @@
       "changelogDesc": "Dernières mises à jour produit",
       "contact": "Contact",
       "comparer": "Comparer",
+      "careers": "Carrières",
       "install": "Installer Leopardo",
       "windowsDesc": "Client desktop pour ZKTeco et synchronisation",
       "macosDesc": "Espace bureau pour les équipes terrain",
@@ -6385,6 +6386,10 @@
       "faqDesc": "Questions fréquentes",
       "support": "Support",
       "supportDesc": "Contactez notre équipe"
+    },
+    "hero3d": {
+      "hint": "Cliquez sur un module pour explorer",
+      "demo": "Démo"
     }
   },
   "commerce": {
