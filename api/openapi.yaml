@@ -43164,6 +43164,98 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+  /vtc/driver/rides/{id}/cancel:
+    post:
+      tags:
+      - Vtc
+      summary: Annulation d'une course par le chauffeur assigné (#8423, M-21)
+      description: >-
+        Rôle vtc.driver requis. Le chauffeur n'annule que SA course après
+        acceptation (404 uniforme sinon) ; motif obligatoire (tracé dans
+        le journal vtc_ride_events, acteur `driver`). Le chauffeur est
+        libéré (available) à l'annulation. State machine VTC :
+        InvalidRideTransitionException sur état terminal → 409.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  minLength: 3
+                  maxLength: 200
+      responses:
+        '200':
+          description: Course annulée (acteur `driver` tracé)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Course introuvable ou non assignée à ce chauffeur
+        '409':
+          description: État terminal — transition invalide
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /vtc/dispatch/rides/{id}/cancel:
+    post:
+      tags:
+      - Vtc
+      summary: Annulation d'une course par le dispatch/admin (#8423, M-21)
+      description: >-
+        Rôle vtc.dispatcher ou vtc.admin requis. Annulation de toute
+        course à état non terminal ; l'acteur réel est tracé
+        (`cancelled_by` = `admin` si manager principal, sinon
+        `dispatcher`). Le chauffeur assigné est libéré (available).
+        State machine VTC : état terminal → 409.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  minLength: 3
+                  maxLength: 200
+      responses:
+        '200':
+          description: Course annulée (acteur ops tracé)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Course introuvable
+        '409':
+          description: État terminal — transition invalide
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
   /vtc/rides/{id}/cancel:
     post:
       tags:
