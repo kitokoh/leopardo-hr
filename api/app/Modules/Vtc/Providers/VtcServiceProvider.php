@@ -7,7 +7,13 @@ namespace App\Modules\Vtc\Providers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Solutions\SolutionCatalogue;
 use App\Http\Middleware\Vtc\VtcRoleResolver;
+use App\Modules\Vtc\Application\Listeners\NotifyVtcRideAcceptedListener;
+use App\Modules\Vtc\Application\Listeners\NotifyVtcRideCompletedListener;
+use App\Modules\Vtc\Application\Listeners\NotifyVtcRideExpiredListener;
 use App\Modules\Vtc\Application\Listeners\StartVtcDispatchListener;
+use App\Modules\Vtc\Domain\Events\VtcRideAccepted;
+use App\Modules\Vtc\Domain\Events\VtcRideCompleted;
+use App\Modules\Vtc\Domain\Events\VtcRideExpired;
 use App\Modules\Vtc\Domain\Events\VtcRideRequested;
 use App\Modules\Vtc\Domain\Manifests\VtcManifest;
 use App\Modules\Vtc\Infrastructure\Geo\VtcDispatchableDriver;
@@ -76,6 +82,15 @@ class VtcServiceProvider extends ServiceProvider
         // (découplage par événement : la cascade d'offres vit dans la file
         // `vtc`, la création reste synchrone).
         Event::listen(VtcRideRequested::class, StartVtcDispatchListener::class);
+
+        // #8423 (M-20) — notifications de cycle de vie : ces événements
+        // étaient ORPHELINS (aucun listener). Le passager est tenu informé
+        // (acceptation, expiration, clôture) et le chauffeur reçoit son
+        // récapitulatif — dégradation gracieuse, jamais d'échec de course
+        // pour un push indisponible.
+        Event::listen(VtcRideAccepted::class, NotifyVtcRideAcceptedListener::class);
+        Event::listen(VtcRideExpired::class, NotifyVtcRideExpiredListener::class);
+        Event::listen(VtcRideCompleted::class, NotifyVtcRideCompletedListener::class);
 
         // VTC-06 (#8362) — `vtc:purge-positions` (rétention RGPD des
         // positions chauffeurs, planifiée daily) : les commandes du module

@@ -90,7 +90,7 @@ c. **Offres VTC/taxi réservables sur `front/travel-web`** : la marketplace publ
 
 | ID | Tâche | Fichiers | Statut |
 |---|---|---|---|
-| M-20 | Listeners `VtcRideAccepted`/`VtcRideExpired`/`VtcRideCompleted` → notifications passager/chauffeur, dégradation gracieuse (mail/FCM indispo ≠ échec course) | `app/Modules/Vtc/Application/Listeners`, providers | ⬜ |
+| M-20 | Listeners `VtcRideAccepted`/`VtcRideExpired`/`VtcRideCompleted` → notifications passager/chauffeur, dégradation gracieuse (mail/FCM indispo ≠ échec course) | `app/Modules/Vtc/Application/Listeners`, providers | ✅ |
 | M-21 | Annulation dispatcher/admin/driver exposée (`CancelRideAction`, champ `cancelled_by` + acteur) | `CancelRideAction`, controller, migration tenant si colonne absente | ✅ |
 
 ### Phase 4 — Front travel-web

@@ -46,4 +46,14 @@ return [
     'edu_absence_recorded_title' => 'Absence enregistrée',
     'edu_absence_recorded_body' => ':student_name est :status le :date.',
     'edu_report_card_published_title' => 'Bulletin publié',
-    'edu_report_card_published_body' => 'Le bulletin :period de :student_name a été publié.', ];
+    'edu_report_card_published_body' => 'Le bulletin :period de :student_name a été publié.',
+
+    // #8423 (M-20) — notifications de cycle de vie des courses VTC.
+    'vtc_ride_accepted_title' => 'Chauffeur en route',
+    'vtc_ride_accepted_body' => ':driver a accepté votre course :reference.',
+    'vtc_ride_expired_title' => 'Aucun chauffeur disponible',
+    'vtc_ride_expired_body' => 'Votre course :reference n\'a pas trouvé de chauffeur pour le moment. Réessayez dans quelques minutes.',
+    'vtc_ride_completed_title' => 'Course terminée',
+    'vtc_ride_completed_body' => 'Votre course :reference est terminée. Montant : :price.',
+    'vtc_ride_completed_driver_body' => 'Course :reference terminée — montant :price.',
+];
