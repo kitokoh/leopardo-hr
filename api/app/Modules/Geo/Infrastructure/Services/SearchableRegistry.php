@@ -45,8 +45,8 @@ final class SearchableRegistry
      *
      * @param  class-string  $modelClass
      * @param  null|Closure(\App\Core\Auth\Domain\Models\Employee): bool  $authorizer
-     *         Garde optionnelle : reçoit l'employé authentifié et autorise
-     *         (true) ou refuse (false → 403) la recherche HTTP sur ce type.
+     *                                                                                 Garde optionnelle : reçoit l'employé authentifié et autorise
+     *                                                                                 (true) ou refuse (false → 403) la recherche HTTP sur ce type.
      */
     public function register(string $type, string $modelClass, ?Closure $authorizer = null): void
     {

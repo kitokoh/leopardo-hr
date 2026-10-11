@@ -70,9 +70,9 @@ final class VtcMarketplaceService
      */
     public function eligibleCompanyIds(): array
     {
-        return $this->eligibleOperators()
+        return array_values($this->eligibleOperators()
             ->map(fn (Company $company): string => (string) $company->id)
-            ->all();
+            ->all());
     }
 
     /**
@@ -88,8 +88,22 @@ final class VtcMarketplaceService
         return $this->publicTenants->companyBySlug(
             $slug,
             'vtc',
-            fn (Company $company): bool => $company->isVtcMarketplaceOperator(),
+            fn (Company $company): bool => $this->isPublishedOperator($company),
         );
+    }
+
+    /**
+     * Opt-in marketplace d'une société : ligne d'annuaire `active`
+     * (#8423, M-10). La vérification vit ICI (module propriétaire de
+     * l'annuaire) — jamais sur `Company` (règle d'isolation #5584 :
+     * Core/Tenant n'importe pas un module).
+     */
+    private function isPublishedOperator(Company $company): bool
+    {
+        return VtcMarketplaceOperator::query()
+            ->active()
+            ->where('company_id', $company->id)
+            ->exists();
     }
 
     /**
@@ -160,7 +174,7 @@ final class VtcMarketplaceService
             $company = $this->publicTenants->assertAccessible(
                 $company,
                 'vtc',
-                fn (Company $candidateCompany): bool => $candidateCompany->isVtcMarketplaceOperator(),
+                fn (Company $candidateCompany): bool => $this->isPublishedOperator($candidateCompany),
             );
 
             return $this->publicTenants->withinTenant($company, function () use ($rideId, $callback): mixed {

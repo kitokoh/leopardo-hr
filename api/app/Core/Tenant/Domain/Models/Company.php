@@ -9,13 +9,11 @@ use App\Core\Feature\Infrastructure\Services\FeatureKillSwitchService;
 use App\Core\Feature\Infrastructure\Services\ModuleRegistryGateway;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
-use App\Modules\Vtc\Domain\Models\VtcMarketplaceOperator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -550,32 +548,5 @@ class Company extends Model
     public function attendanceKiosks(): HasMany
     {
         return $this->hasMany(AttendanceKiosk::class, 'company_id');
-    }
-
-    /**
-     * Publication marketplace VTC (#8423, M-10) — annuaire PUBLIC des
-     * opérateurs opt-in (pointeur de routage, jamais de donnée métier).
-     *
-     * @return HasOne<VtcMarketplaceOperator, $this>
-     */
-    public function vtcMarketplaceOperator(): HasOne
-    {
-        return $this->hasOne(VtcMarketplaceOperator::class, 'company_id');
-    }
-
-    /**
-     * La société est-elle publiée sur la marketplace publique VTC ?
-     * Opt-in = ligne d'annuaire `active` — les gardes plateforme (statut
-     * société, feature `vtc`) restent appliquées par l'appelant
-     * (fail-closed, pattern annuaire FUNDRAISING #8379).
-     */
-    public function isVtcMarketplaceOperator(): bool
-    {
-        $operator = $this->relationLoaded('vtcMarketplaceOperator')
-            ? $this->getRelation('vtcMarketplaceOperator')
-            : $this->vtcMarketplaceOperator()->first();
-
-        return $operator instanceof VtcMarketplaceOperator
-            && $operator->status === VtcMarketplaceOperator::STATUS_ACTIVE;
     }
 }
