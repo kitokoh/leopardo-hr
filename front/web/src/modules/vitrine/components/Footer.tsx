@@ -112,6 +112,11 @@ export function Footer() {
                 {t(locale, 'vitrine.nav.packs')}
               </Link>
             </div>
+            {/* #8386 — la newsletter vit SOUS la colonne de marque (flux de
+                lecture naturel), plus en bandeau centré séparé. */}
+            <div className="mt-8">
+              <NewsletterForm />
+            </div>
           </div>
 
           {copy.footer.sections.map((section, index) => (
@@ -140,10 +145,6 @@ export function Footer() {
               </ul>
             </div>
           ))}
-        </div>
-
-        <div className="mb-8 flex justify-center">
-          <NewsletterForm />
         </div>
 
         <div className="pt-8 border-t border-slate-200/80 dark:border-slate-800/80 flex flex-col md:flex-row items-center justify-between gap-4">

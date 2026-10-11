@@ -290,18 +290,24 @@ export function SignupForm({
     }
   };
 
-  // QA onboarding 2026-09-14 — reprise après rechargement. Le token de
-  // provisioning était déjà persisté en sessionStorage, mais l'UI repartait
-  // systématiquement de l'étape « profil » : recharger la page pendant la
-  // création de l'espace faisait perdre le parcours (l'utilisateur devait
-  // re-saisir le formulaire). On reprend le suivi au MONTAGE uniquement — un
-  // token obtenu en cours de session doit suivre le parcours normal (écran OTP
-  // puis suivi explicite), pas court-circuiter les étapes.
+  // Retour propriétaire 2026-10-11 (#8384) : une navigation fraîche sur
+  // /signup doit TOUJOURS afficher le formulaire complet. Avant, tout token
+  // résiduel en sessionStorage (essai commencé plus tôt dans l'onglet)
+  // court-circuitait le tunnel au montage → l'utilisateur tombait sur l'écran
+  // « mot de passe seul » au lieu du formulaire. La reprise du suivi reste
+  // possible, mais uniquement via un paramètre d'URL explicite (?token=…,
+  // ex. lien de suivi partagé) ; un token résiduel est simplement oublié.
   const mountHandledRef = useRef(false);
   useEffect(() => {
     if (mountHandledRef.current) return;
     mountHandledRef.current = true;
-    if (!trialToken) return;
+    if (typeof window === 'undefined') return;
+    const urlToken = new URLSearchParams(window.location.search).get('token');
+    if (!urlToken) {
+      if (trialToken) forgetTrialToken();
+      return;
+    }
+    persistTrialToken(urlToken);
     setIsTracking(true);
     setTrialStatus('pending');
     setTrialTimedOut(false);

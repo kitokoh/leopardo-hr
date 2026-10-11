@@ -1,3 +1,13 @@
+> **MAJ 2026-10-11 — #8394, vague vitrine « retours propriétaire » (#8384-#8392).**
+> Surface **web admin** (`front/admin-dashboard/src/i18n/locales/*.json`) : catalogues
+> resynchronisés après ajout de la clé navbar `vitrine.nav.comparer` et passage de la
+> baseline à « Business OS » seule (×4 locales) — aucun parcours admin modifié, aucun
+> nouveau scénario requis (clés de traduction additives, parité ×4 vérifiée par la
+> garde i18n). Surface **mobile** (`leopardo_core`) : tokens `emerald50…emerald950`
+> ajoutés dans `app_colors.dart` (parité L.07 avec COULEURS.md) — constantes additives,
+> détail dans le journal de `SCENARIOS_TEST_MOBILE_FLUTTER.md`. Surface **vitrine
+> (front/web)** : hors périmètre de cette garde — vérifications dédiées dans la PR
+> (typecheck, 621 tests vitrine, build 163 routes, E2E funnel, captures navigateur).
 > **MAJ 2026-10-10 — #8349 (épic, PR #8377), core géospatial `geo` (BC-34) + verticale VTC/taxi `vtc` (BC-35).**
 > Surface **API HTTP** : deux modules nouveaux, chacun derrière son middleware de feature
 > flag fail-closed (`module.geo` / `module.vtc`, alias `api/bootstrap/app.php`) —

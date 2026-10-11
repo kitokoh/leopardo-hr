@@ -76,6 +76,17 @@
 | FUND-061 | Tests Unit : générateurs, factory, garde-fous | ✅ |
 | FUND-062 | `CHANGELOG.md` [Unreleased] + `ARCHITECTURE.md` (33 modules) | ✅ |
 
+## Lot H — Paramétrage tenant & surface admin (branche `feat/fundraising-admin-settings`)
+
+| ID | Tâche | Statut |
+|---|---|---|
+| FUND-070 | Table `fundraising_settings` (ligne unique tenant, pattern accounting_settings) + modèle Domain | ✅ |
+| FUND-071 | `FundraisingSettingsResolver` (défauts sans persistance, mémoïsation requête, fallback min/max) | ✅ |
+| FUND-072 | API `GET/PUT /fundraising/settings` (module gate + api.manager:principal,rh, validation min<max, codes erreur 4 langues) | ✅ |
+| FUND-073 | Consommation : méthode désactivée 422, garde-fous tenant, anonymat/messages, mur des soutiens 404, montants suggérés par défaut | ✅ |
+| FUND-074 | Console admin : page « Cagnottes solidaires — Paramétrage » + route + entrée fiche entreprise (label, icône, surface) + i18n ×4 | ✅ |
+| FUND-075 | Tests `FundraisingSettingsTest` (défauts, upsert unique, validation, RBAC/flag, consommation publique) + OpenAPI | ✅ |
+
 ## Phase 2 (hors ce lot)
 
 | ID | Tâche | Statut |

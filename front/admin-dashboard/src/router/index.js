@@ -397,6 +397,23 @@ const routes = [
         }
       },
       {
+        // Verticale FUNDRAISING (cagnottes solidaires) — surface admin du
+        // paramétrage tenant (FUND-070) : moyens de paiement offerts,
+        // garde-fous, montants suggérés, options de la surface publique.
+        // S'ouvre depuis la fiche entreprise (VERTICAL_SURFACES, #7429).
+        path: '/fundraising',
+        redirect: { name: 'fundraising-settings' }
+      },
+      {
+        path: '/fundraising/settings',
+        name: 'fundraising-settings',
+        component: () => import('@/views/fundraising/FundraisingSettingsView.vue'),
+        meta: {
+          title: 'navigation.fundraising',
+          icon: 'GiftIcon'
+        }
+      },
+      {
         path: '/travel/referential',
         name: 'travel-referential',
         component: () => import('../views/travel/TravelReferentialView.vue'),

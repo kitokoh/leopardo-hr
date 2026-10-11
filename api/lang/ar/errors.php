@@ -265,6 +265,8 @@ return [
     'FUNDRAISER_NOT_ACTIVE' => 'حملة التبرع هذه لا تقبل المساهمات حالياً.',
     'CONTRIBUTION_NOT_FOUND' => 'المساهمة غير موجودة.',
     'INVALID_CONTRIBUTION_AMOUNT' => 'مبلغ المساهمة غير صالح.',
+    'CONTRIBUTION_METHOD_DISABLED' => 'طريقة الدفع هذه غير متاحة لهذه الحملة.',
+    'CONTRIBUTION_OPTION_DISABLED' => 'هذا الخيار من خيارات المساهمة معطّل لهذه الحملة.',
     'PAYOUT_AMOUNT_EXCEEDS_BALANCE' => 'مبلغ السحب يتجاوز الرصيد المتاح لحملة التبرع.',
     'PAYOUT_NOT_FOUND' => 'عملية السحب غير موجودة.',
     'PAYOUT_FAILED_DEFAULT_REASON' => 'فشل معلن من طرف المسؤول.',

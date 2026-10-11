@@ -47,6 +47,28 @@ Voir `docs/REFERENTIEL_PRODUIT/STATUTS.md` pour l'association statut ↔ couleur
 | Bordure | `#E2E8F0` | `AppColors.border` | `border-slate-200` |
 | Bordure (sombre) | `#334155` | `AppColors.borderDark` | `border-slate-700` |
 
+## Échelle emerald — couleur de marque RH (documentée le 2026-10-11)
+
+> Référence actée : **palette emerald par défaut de Tailwind**, identique sur la vitrine
+> web (`front/web/tailwind.config.ts`) et l'admin (`front/admin-dashboard/tailwind.config.js`).
+> Le step 500 (`#10B981`) est la couleur RH/Succès (tableaux ci-dessus) ; le step 900
+> (`#064E3B`) sert d'émissif sombre dans les scènes 3D de la vitrine
+> (`HeroBusinessOS3D`, `site/gh-pages/index.html`) et de fond profond aux surfaces emerald.
+
+| step | Hex (web & admin) | Usage typique |
+|---|---|---|
+| 50 | `#ECFDF5` | fonds de section emerald très clair |
+| 100 | `#D1FAE5` | fonds de chips / badges (`AppColors.rhLight`) |
+| 200 | `#A7F3D0` | bordures douces |
+| 300 | `#6EE7B7` | accents sur fond clair |
+| 400 | `#34D399` | accents |
+| 500 | `#10B981` | emerald primaire (`AppColors.rh` / `AppColors.success`) |
+| 600 | `#059669` | hover / actif |
+| 700 | `#047857` | texte sur fond clair |
+| 800 | `#065F46` | texte / fonds sombres |
+| 900 | `#064E3B` | émissif 3D vitrine, fonds emerald profonds |
+| 950 | `#022C22` | fonds emerald très sombres |
+
 ## Échelle cyan — surface secondaire / liens (décision 2026-09-09, issue #7129)
 
 > Référence actée : **palette cyan par défaut de Tailwind**, identique sur la vitrine web

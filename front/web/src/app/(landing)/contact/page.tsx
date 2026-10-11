@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import { FormDataNotice } from '@/modules/vitrine/components/FormDataNotice';
+import { SignupArtwork } from '@/modules/vitrine/components/SignupArtwork';
 import { antispamFields } from '@/modules/vitrine/lib/antispam-client';
 import { HoneypotField } from '@/modules/vitrine/components/common/HoneypotField';
 import { Input, Textarea, Button } from '@/modules/vitrine/components/common';
@@ -255,6 +256,11 @@ function ContactPageInner() {
                     {copy.info.responseTime}
                   </p>
                 </div>
+
+                {/* #8385 — harmonisation des formulaires : le visuel 3D de
+                    /signup (référence propriétaire) habille aussi la colonne
+                    info de contact. Aucun texte, rien à traduire. */}
+                <SignupArtwork className="mt-10 hidden max-w-[300px] lg:flex" />
               </motion.div>
             </div>
 

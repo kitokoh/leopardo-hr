@@ -7,27 +7,18 @@ import { withLocaleHref } from '../lib/locale-href'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowRight,
-  Book,
-  BookOpen,
   ChevronDown,
   Download,
-  FileText,
   Fuel,
   Gift,
   Globe,
   GraduationCap,
-  HelpCircle,
-  Laptop,
   Mail,
   Menu,
-  MessageCircle,
   Monitor,
   Moon,
-  PenTool,
   Plane,
-  Smartphone,
   Sun,
-  Users,
   UtensilsCrossed,
   X,
 } from 'lucide-react'
@@ -99,6 +90,11 @@ function filterNavEntries(entries: NavEntry[]): NavEntry[] {
  */
 function buildNavEntries(locale: AppLocale): NavEntry[] {
   const nav = (key: string) => t(locale, `vitrine.nav.${key}`)
+  // Retour propriétaire 2026-10-11 (#8387) : 7 entrées max. « Ressources »,
+  // « Installer Leopardo » et « Communauté » quittent la barre du haut — tous
+  // leurs liens restent accessibles au footer (sections Ressources, Légal et
+  // Applications mobiles) ; « Comparer » (/alternatives) monte en entrée
+  // directe, c'est un argument de vente.
   return [
     { href: '/pricing', label: nav('pricing') },
     {
@@ -111,33 +107,8 @@ function buildNavEntries(locale: AppLocale): NavEntry[] {
         { href: '/packs/agence-de-voyage', icon: <Plane className="w-4 h-4" />, label: nav('packsTravel'), description: nav('packsTravelDesc') },
       ],
     },
-    {
-      label: nav('resources'),
-      items: [
-        { href: '/guides/rh-startup', icon: <BookOpen className="w-4 h-4" />, label: nav('guides'), description: nav('guidesDesc') },
-        { href: '/blog', icon: <PenTool className="w-4 h-4" />, label: nav('insights'), description: nav('insightsDesc') },
-        { href: '/docs', icon: <Book className="w-4 h-4" />, label: nav('apiDocs'), description: nav('apiDocsDesc') },
-        { href: '/changelog', icon: <FileText className="w-4 h-4" />, label: nav('changelog'), description: nav('changelogDesc') },
-      ],
-    },
+    { href: '/alternatives', label: nav('comparer') },
     { href: '/contact', label: nav('contact') },
-    {
-      label: nav('install'),
-      items: [
-        { href: '/download?platform=windows', icon: <Monitor className="w-4 h-4" />, label: 'Windows', description: nav('windowsDesc') },
-        { href: '/download?platform=macos', icon: <Laptop className="w-4 h-4" />, label: 'macOS', description: nav('macosDesc') },
-        { href: '/download?platform=android', icon: <Smartphone className="w-4 h-4" />, label: 'Android', description: nav('androidDesc') },
-        { href: '/download?platform=ios', icon: <Smartphone className="w-4 h-4" />, label: 'iPhone', description: nav('iosDesc') },
-      ],
-    },
-    {
-      label: nav('community'),
-      items: [
-        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: nav('community'), description: nav('communityDesc') },
-        { href: '/faq', icon: <HelpCircle className="w-4 h-4" />, label: nav('faq'), description: nav('faqDesc') },
-        { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: nav('support'), description: nav('supportDesc') },
-      ],
-    },
   ]
 }
 

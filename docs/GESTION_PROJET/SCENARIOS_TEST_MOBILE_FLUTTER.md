@@ -5,6 +5,13 @@
 
 ## Journal des mises à jour de surface (`front/mobile_apps/`)
 
+- **2026-10-11 (#8394)** — `leopardo_core/lib/core/theme/app_colors.dart` : échelle
+  emerald complète (`emerald50…emerald950`) déclarée pour la parité L.07 avec
+  `docs/REFERENTIEL_PRODUIT/COULEURS.md` (garde check-design-token-sync) — le step
+  900 `#064E3B` est l'émissif sombre des scènes 3D de la vitrine. Aucune surface
+  fonctionnelle modifiée : constantes purement additives, aucun nouveau scénario
+  de test requis (les steps 500/100/700 restent portés par les tokens métier
+  `rh`/`rhLight`/`rhDark`, valeurs inchangées).
 - **2026-09-20 (#7963)** — `leopardo_core/lib/core/api/api_client.dart` : message du
   fail-fast release aligné (build release sans define `API_BASE_URL` → `StateError`
   explicite au démarrage, comportement #4524 inchangé ; mention de l'ancienne instance

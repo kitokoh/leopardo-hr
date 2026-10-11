@@ -153,12 +153,13 @@ beforeAll(() => {
 
 
 describe('SignupForm Component', () => {
-  // QA onboarding 2026-09-14 : le composant reprend désormais le suivi au
-  // montage quand un provisioning_token est présent en sessionStorage. Sans
-  // nettoyage systématique, un token posé par un test de suivi « fuit » vers
-  // les tests suivants (qui attendent l'écran de profil).
+  // #8384 — la reprise du suivi au montage exige désormais un `?token=`
+  // explicite dans l'URL ; un token en sessionStorage seul est ignoré (et
+  // nettoyé). Sans nettoyage systématique, un token posé par un test « fuit »
+  // vers les suivants (qui attendent le formulaire complet) ; l'URL aussi.
   beforeEach(() => {
     sessionStorage.clear();
+    window.history.replaceState({}, '', '/signup');
     // #7542 — les jalons du funnel sont comptés par test : sans ce nettoyage,
     // les appels des tests précédents feraient échouer les assertions d'ordre.
     mockedTrackFunnelStep.mockClear();
@@ -340,8 +341,8 @@ describe('SignupForm Component', () => {
       expect(screen.getByRole('button', { name: /suivre l'état de mon espace/i })).toBeInTheDocument();
     });
 
-    it('reprend le suivi au montage quand un token est déjà en sessionStorage (après rechargement)', async () => {
-      sessionStorage.setItem('lp_trial_provisioning_token', 'r'.repeat(64));
+    it('reprend le suivi au montage quand l\'URL porte un ?token= explicite (#8384)', async () => {
+      window.history.replaceState({}, '', `/signup?token=${'r'.repeat(64)}`);
       (fetchTrialStatus as jest.Mock).mockResolvedValue({
         success: true,
         data: { status: 'ready', login_url: '/auth/login', password_set: false, access_sent: false },
@@ -355,8 +356,18 @@ describe('SignupForm Component', () => {
       expect(screen.queryByRole('button', { name: /créer mon espace/i })).not.toBeInTheDocument();
     });
 
+    it('ignore un token résiduel en sessionStorage : formulaire complet affiché, token oublié (#8384)', async () => {
+      sessionStorage.setItem('lp_trial_provisioning_token', 'r'.repeat(64));
+
+      renderAtFormStep();
+
+      expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument();
+      expect(fetchTrialStatus).not.toHaveBeenCalled();
+      expect(sessionStorage.getItem('lp_trial_provisioning_token')).toBeNull();
+    });
+
     it('affiche un écran d\'échec actionnable et permet de repartir du formulaire', async () => {
-      sessionStorage.setItem('lp_trial_provisioning_token', 'f'.repeat(64));
+      window.history.replaceState({}, '', `/signup?token=${'f'.repeat(64)}`);
       (fetchTrialStatus as jest.Mock).mockResolvedValue({
         success: true,
         data: { status: 'failed', provisioned_at: null, password_set: false, access_sent: false },

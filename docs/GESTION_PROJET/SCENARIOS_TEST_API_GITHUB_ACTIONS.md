@@ -2283,3 +2283,18 @@ Couverture : `api/tests/Feature/Restaurant/RestaurantPublicSlugOrderTest.php` (8
 Côté tenant (#7999, reliquat #7730) : `BelongsToCompany` ajouté à `MarketplaceReview` et `MarketplaceFavorite` (scope fail-closed #3727 sur surface tenant, no-op sur les routes publiques `/market/*`) ; `company_id` retiré des `$fillable` de `MarketplaceReview` (leçon #7646 — posé en affectation directe par `RetailBuyerReviewService`). Exceptions canoniques justifiées dans `dev-hub/governance/tenant-scope-exceptions.json` (`MarketplaceBuyer` sans colonne, `MarketingLead`/`converted_company_id` pointeur de conversion, `TaxRateChangeLog` company_id nullable légal national, `UserEmployeeLink` résolu au login) — garde `check-tenant-scope-models.sh` : tout NOUVEAU modèle à `company_id` hors trait et hors liste = échec.
 
 Couverture : `api/tests/Feature/Auth/PasswordPolicyTest.php` (4 cas : rejet 422 d'un mot de passe faible sur chacune des 4 surfaces).
+
+## Addendum 2026-10-11 — Paramétrage tenant de la verticale Cagnottes solidaires (PR #8383, FUND-070)
+
+`GET /api/v1/fundraising/settings` et `PUT /api/v1/fundraising/settings` — module Fundraising (BC-33), table `fundraising_settings` à ligne unique par entreprise (pattern `accounting_settings` #5232, résolution via la compagnie courante, zéro fuite cross-tenant). Gates : flag `module.fundraising` (fail-closed) + `api.manager:principal,rh`.
+
+| Cas | Attendu |
+|---|---|
+| lecture sans ligne settings existante | 200, défauts `FundraisingSettings::defaults()` (rien de persisté) |
+| mise à jour par un manager principal/rh | 200, ligne unique créée/mise à jour pour la compagnie courante |
+| accès hors manager ou flag inactif | 403 / 404 fail-closed |
+| méthode de paiement désactivée dans les settings utilisée à la contribution | 422 `CONTRIBUTION_METHOD_DISABLED` (code stable, 4 langues) |
+| garde-fous min/max et montants suggérés | chaîne de fallback cagnotte → settings → config ; montants suggérés pré-remplis à la création |
+| mur des soutiens masqué dans les settings | 404 uniforme sur la surface publique (kill switch) |
+
+Couverture : `api/tests/Feature/Fundraising/FundraisingSettingsTest.php` (8 cas : défauts non persistés, lecture/écriture manager, RBAC, isolation tenant, méthode désactivée 422, fallback min/max, montants suggérés, mur masqué 404).

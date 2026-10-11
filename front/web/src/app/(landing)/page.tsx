@@ -12,7 +12,6 @@ import {
   TrustedBrands,
   // Phase-3 sections — no more Legacy prefixes
   HeroSection,
-  HeroProductShowcase,
   SolutionStackSection,
   FAQSection,
   CTASection,
@@ -31,6 +30,7 @@ import { getFaqItems } from '@/modules/vitrine/data/faq';
 import { getTestimonials, TESTIMONIALS_ARE_DEMO } from '@/modules/vitrine/data/testimonials';
 import { StickyMobileCTA } from '@/components/StickyMobileCTA';
 import { QuickTrialEmailForm } from '@/modules/vitrine/components/HeroSection';
+import { HeroScene3DPanel } from '@/modules/vitrine/components/hero/HeroScene3DPanel';
 
 const STAT_ICONS = [TrendingUp, Users, Zap, Star] as const;
 
@@ -87,8 +87,11 @@ export default function LandingPage() {
             <QuickTrialEmailForm locale={locale} copy={copy.heroQuickTrial} />
           }
           layout="split"
-          // #8067 — produit-first : screenshot réel + badge GitHub à la place de la mascotte (LeoHeroVisual reste dispo en marque secondaire)
-          visual={<HeroProductShowcase locale={locale} />}
+          // #8389 — la constellation 3D vit en colonne de droite (modules
+          // cliquables, #8390) ; plus de scène plein cadre derrière le texte.
+          // Le screenshot admin sort du héro (HeroProductShowcase reste dispo).
+          backgroundScene={false}
+          visual={<HeroScene3DPanel />}
         />
 
         {/* ─── PREUVE SOCIALE + HOOK ZKTECO — remontés juste après le hero (#8072) ─── */}

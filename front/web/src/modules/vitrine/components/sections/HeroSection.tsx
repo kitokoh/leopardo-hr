@@ -47,6 +47,13 @@ export interface HeroSectionProps {
   quickTrialForm?: React.ReactNode;
   /** #8068 — ligne de réassurance sous les CTA (« Gratuit · Sans CB · … »). */
   ctaReassurance?: string;
+  /**
+   * #8389 — `false` retire la scène 3D plein cadre derrière le texte (page
+   * d'accueil : la constellation vit dans la colonne visuelle à droite, via
+   * `HeroScene3DPanel` — le texte reste 100 % lisible). Défaut `true` :
+   * comportement historique inchangé pour les autres pages.
+   */
+  backgroundScene?: boolean;
 }
 
 /** Lien externe (GitHub, docs hors site) → nouvel onglet. */
@@ -69,6 +76,7 @@ export function HeroSection({
   layout = 'centered',
   quickTrialForm,
   ctaReassurance,
+  backgroundScene = true,
 }: HeroSectionProps) {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
@@ -99,8 +107,9 @@ export function HeroSection({
       />
 
       {/* Fond vivant : constellation WebGL « Business OS » si possible,
-          champ de particules 2D sinon (même rôle, deux niveaux d'exigence). */}
-      {animated && <HeroScene3D />}
+          champ de particules 2D sinon (même rôle, deux niveaux d'exigence).
+          Désactivable (#8389) quand la scène est placée en colonne visuelle. */}
+      {animated && backgroundScene && <HeroScene3D />}
 
       {/* Gradient orbs */}
       <div className="absolute top-1/4 -left-32 w-[500px] h-[500px] bg-emerald-400/15 rounded-full blur-[120px] animate-pulse" />

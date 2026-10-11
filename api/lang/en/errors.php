@@ -272,6 +272,8 @@ return [
     'FUNDRAISER_NOT_ACTIVE' => 'This fundraiser is not accepting contributions right now.',
     'CONTRIBUTION_NOT_FOUND' => 'Contribution not found.',
     'INVALID_CONTRIBUTION_AMOUNT' => 'Invalid contribution amount.',
+    'CONTRIBUTION_METHOD_DISABLED' => 'This payment method is not offered for this fundraiser.',
+    'CONTRIBUTION_OPTION_DISABLED' => 'This contribution option is disabled for this fundraiser.',
     'PAYOUT_AMOUNT_EXCEEDS_BALANCE' => 'The payout amount exceeds the fundraiser\'s available balance.',
     'PAYOUT_NOT_FOUND' => 'Payout not found.',
     'PAYOUT_FAILED_DEFAULT_REASON' => 'Failure declared by the manager.',
