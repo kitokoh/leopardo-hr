@@ -7,7 +7,7 @@ namespace App\Shared\Geo\Exceptions;
 use App\Exceptions\DomainException;
 
 /**
- * GEO-03 (#8352, BC-33 GEO) — coordonnée géographique invalide (fail-closed).
+ * GEO-03 (#8352, BC-34 GEO) — coordonnée géographique invalide (fail-closed).
  *
  * Levée par GeoPoint dès qu'une latitude sort de [-90, 90], une longitude
  * de [-180, 180], ou qu'une coordonnée manque : aucune coordonnée non

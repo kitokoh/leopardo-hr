@@ -1,4 +1,4 @@
-> **MAJ 2026-10-10 — #8349 (épic, PR #8377), core géospatial `geo` (BC-33) + verticale VTC/taxi `vtc` (BC-34).**
+> **MAJ 2026-10-10 — #8349 (épic, PR #8377), core géospatial `geo` (BC-34) + verticale VTC/taxi `vtc` (BC-35).**
 > Surface **API HTTP** : deux modules nouveaux, chacun derrière son middleware de feature
 > flag fail-closed (`module.geo` / `module.vtc`, alias `api/bootstrap/app.php`) —
 > `api/routes/modules/geo.php` : `GET /v1/geo/ping`, `POST /v1/geo/distance`,

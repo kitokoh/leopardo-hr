@@ -26,6 +26,7 @@ import { Navbar, Footer } from '@/modules/vitrine';
 import { getCurrentLocale, useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { FREE_GUIDED_TRIAL_HREF, getCheckoutCopy, type CheckoutPlanKey } from '@/modules/vitrine/data/checkout';
 import { getApiBaseUrl } from '@/lib/backend-url';
+import { Input, Button } from '@/modules/vitrine/components/common';
 // #7594 — validation carte côté client (Luhn, expiration, cohérence CVC).
 import { luhnCheck, isCardExpiryValid, isCardCvcValid } from '@/modules/vitrine/lib/validation';
 
@@ -448,11 +449,6 @@ function StepAccount({
     if (validate()) onNext();
   }
 
-  const inputBase =
-    'w-full px-4 py-3 rounded-xl border bg-white dark:bg-slate-900 text-sm font-medium text-slate-900 dark:text-white outline-none transition focus:ring-4 placeholder:text-slate-400';
-  const inputOk = 'border-slate-200 dark:border-slate-700 focus:border-emerald-500 focus:ring-emerald-500/10';
-  const inputErr = 'border-red-400 focus:border-red-400 focus:ring-red-500/10';
-
   return (
     <motion.div
       initial={{ opacity: 0, x: 30 }}
@@ -488,105 +484,68 @@ function StepAccount({
       <div className="space-y-4">
         {/* Name */}
         <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label htmlFor="checkout-firstName" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              {copy.account.firstName} <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input
-                id="checkout-firstName"
-                type="text"
-                value={data.firstName}
-                onChange={(e) => onChange({ firstName: e.target.value })}
-                placeholder={copy.account.placeholders.firstName}
-                aria-invalid={errors.firstName ? true : undefined}
-                aria-describedby={errors.firstName ? 'checkout-firstName-error' : undefined}
-                className={`${inputBase} pl-10 ${errors.firstName ? inputErr : inputOk}`}
-              />
-            </div>
-            {errors.firstName && <p id="checkout-firstName-error" aria-live="polite" className="mt-1 text-xs text-red-500">{errors.firstName}</p>}
-          </div>
-          <div>
-            <label htmlFor="checkout-lastName" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              {copy.account.lastName} <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="checkout-lastName"
-              type="text"
-              value={data.lastName}
-              onChange={(e) => onChange({ lastName: e.target.value })}
-              placeholder={copy.account.placeholders.lastName}
-              aria-invalid={errors.lastName ? true : undefined}
-              aria-describedby={errors.lastName ? 'checkout-lastName-error' : undefined}
-              className={`${inputBase} ${errors.lastName ? inputErr : inputOk}`}
-            />
-            {errors.lastName && <p id="checkout-lastName-error" aria-live="polite" className="mt-1 text-xs text-red-500">{errors.lastName}</p>}
-          </div>
+          <Input
+            id="checkout-firstName"
+            type="text"
+            value={data.firstName}
+            onChange={(e) => onChange({ firstName: e.target.value })}
+            placeholder={copy.account.placeholders.firstName}
+            label={copy.account.firstName}
+            required
+            icon={<User className="w-4 h-4" />}
+            error={errors.firstName}
+          />
+          <Input
+            id="checkout-lastName"
+            type="text"
+            value={data.lastName}
+            onChange={(e) => onChange({ lastName: e.target.value })}
+            placeholder={copy.account.placeholders.lastName}
+            label={copy.account.lastName}
+            required
+            error={errors.lastName}
+          />
         </div>
 
         {/* Email */}
-        <div>
-          <label htmlFor="checkout-email" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-            {copy.account.email} <span className="text-red-500">*</span>
-          </label>
-          <div className="relative">
-            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              id="checkout-email"
-              type="email"
-              value={data.email}
-              onChange={(e) => onChange({ email: e.target.value })}
-              placeholder={copy.account.placeholders.email}
-              aria-invalid={errors.email ? true : undefined}
-              aria-describedby={errors.email ? 'checkout-email-error' : undefined}
-              className={`${inputBase} pl-10 ${errors.email ? inputErr : inputOk}`}
-            />
-          </div>
-          {errors.email && <p id="checkout-email-error" aria-live="polite" className="mt-1 text-xs text-red-500">{errors.email}</p>}
-        </div>
+        <Input
+          id="checkout-email"
+          type="email"
+          value={data.email}
+          onChange={(e) => onChange({ email: e.target.value })}
+          placeholder={copy.account.placeholders.email}
+          label={copy.account.email}
+          required
+          icon={<Mail className="w-4 h-4" />}
+          error={errors.email}
+        />
 
         {/* Company */}
-        <div>
-          <label htmlFor="checkout-company" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-            {copy.account.company} <span className="text-red-500">*</span>
-          </label>
-          <div className="relative">
-            <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              id="checkout-company"
-              type="text"
-              value={data.company}
-              onChange={(e) => onChange({ company: e.target.value })}
-              placeholder={copy.account.placeholders.company}
-              aria-invalid={errors.company ? true : undefined}
-              aria-describedby={errors.company ? 'checkout-company-error' : undefined}
-              className={`${inputBase} pl-10 ${errors.company ? inputErr : inputOk}`}
-            />
-          </div>
-          {errors.company && <p id="checkout-company-error" aria-live="polite" className="mt-1 text-xs text-red-500">{errors.company}</p>}
-        </div>
+        <Input
+          id="checkout-company"
+          type="text"
+          value={data.company}
+          onChange={(e) => onChange({ company: e.target.value })}
+          placeholder={copy.account.placeholders.company}
+          label={copy.account.company}
+          required
+          icon={<Building2 className="w-4 h-4" />}
+          error={errors.company}
+        />
 
         {/* Phone + Employees */}
         <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label htmlFor="checkout-phone" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              {copy.account.phone}
-            </label>
-            <div className="relative">
-              <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input
-                id="checkout-phone"
-                type="tel"
-                value={data.phone}
-                onChange={(e) => onChange({ phone: e.target.value })}
-                placeholder={copy.account.placeholders.phone}
-                className={`${inputBase} pl-10 ${inputOk}`}
-              />
-            </div>
-          </div>
-          <div>
-            <label htmlFor="checkout-employees" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+          <Input
+            id="checkout-phone"
+            type="tel"
+            value={data.phone}
+            onChange={(e) => onChange({ phone: e.target.value })}
+            placeholder={copy.account.placeholders.phone}
+            label={copy.account.phone}
+            icon={<Phone className="w-4 h-4" />}
+          />
+          <div className="w-full">
+            <label htmlFor="checkout-employees" className="block text-sm font-semibold text-slate-900 dark:text-white mb-2">
               <Users className="inline w-3.5 h-3.5 mr-1" />
               {copy.account.employees}
             </label>
@@ -594,7 +553,7 @@ function StepAccount({
               id="checkout-employees"
               value={data.employees}
               onChange={(e) => onChange({ employees: e.target.value })}
-              className={`${inputBase} ${inputOk}`}
+              className="w-full px-4 py-2.5 text-sm font-medium bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-slate-900 dark:text-white"
             >
               <option value="">{copy.account.choose}</option>
               <option value="1-10">1-10</option>
@@ -607,13 +566,15 @@ function StepAccount({
         </div>
       </div>
 
-      <button
+      <Button
         onClick={handleNext}
-        className="mt-8 w-full flex items-center justify-center gap-2.5 py-4 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white font-black rounded-2xl hover:from-emerald-800 hover:to-cyan-700 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:scale-[1.01] active:scale-[0.99] text-base"
+        size="lg"
+        fullWidth
+        icon={<ArrowRight className="w-5 h-5" />}
+        className="mt-8 rounded-2xl"
       >
         {copy.account.next}
-        <ArrowRight className="w-5 h-5" />
-      </button>
+      </Button>
     </motion.div>
   );
 }
@@ -736,8 +697,10 @@ function StepPayment({
     }
   }
 
+  // Champs carte alignés sur le design system commun (Input) : mêmes
+  // paddings, focus ring-2 émeraude et bordures que les autres formulaires.
   const inputBase =
-    'w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-medium text-slate-900 dark:text-white outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 placeholder:text-slate-400';
+    'w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-medium text-slate-900 dark:text-white outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:border-transparent placeholder:text-slate-400';
 
   return (
     <motion.div
@@ -928,28 +891,17 @@ function StepPayment({
         </div>
 
         {/* Submit */}
-        <button
+        <Button
           type="submit"
-          disabled={loading}
-          className="w-full flex items-center justify-center gap-2.5 py-4 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white font-black rounded-2xl hover:from-emerald-800 hover:to-cyan-700 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.01] active:scale-[0.99] text-base disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
+          size="lg"
+          fullWidth
+          loading={loading}
+          icon={loading ? undefined : <Lock className="w-4 h-4" />}
+          iconPosition="left"
+          className="rounded-2xl"
         >
-          {loading ? (
-            <>
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
-              />
-              {copy.payment.processing}
-            </>
-          ) : (
-            <>
-              <Lock className="w-4 h-4" />
-              {copy.payment.submitCta}
-              <ArrowRight className="w-5 h-5" />
-            </>
-          )}
-        </button>
+          {loading ? copy.payment.processing : copy.payment.submitCta}
+        </Button>
 
         <p className="text-center text-xs text-slate-400">
           {copy.payment.legal.prefix}{' '}

@@ -17,10 +17,10 @@ use App\Shared\Contracts\Geo\GeoServiceContract;
 use Illuminate\Support\ServiceProvider;
 
 /**
- * GEO-02 (#8351, BC-33 GEO) — provider du module transverse Geo.
+ * GEO-02 (#8351, BC-34 GEO) — provider du module transverse Geo.
  *
  * Core géospatial réutilisable (distance, plus-proches, dans-un-rayon)
- * consommé par les verticales (VTC en premier, BC-34) via les contrats
+ * consommé par les verticales (VTC en premier, BC-35) via les contrats
  * partagés `App\Shared\Contracts\Geo\*` et les VOs `App\Shared\Geo\*` —
  * jamais d'import direct entre verticales (garde #5584). Les routes du
  * module sont chargées depuis routes/api.php (groupe /v1, gate

@@ -9,7 +9,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * GEO-03 (#8352, BC-33 GEO) — comportement du value object Distance.
+ * GEO-03 (#8352, BC-34 GEO) — comportement du value object Distance.
  */
 class DistanceTest extends TestCase
 {

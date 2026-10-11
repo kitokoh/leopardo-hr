@@ -10,7 +10,7 @@ use App\Shared\Geo\GeoPoint;
 use Illuminate\Http\JsonResponse;
 
 /**
- * Calcul de distance (GEO-05, issue #8354, BC-33 GEO).
+ * Calcul de distance (GEO-05, issue #8354, BC-34 GEO).
  *
  * `POST /v1/geo/distance` `{from:{lat,lng}, to:{lat,lng}}` →
  * `{data:{distance_m}}`. Le calcul est délégué à la façade transverse

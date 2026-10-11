@@ -22,7 +22,7 @@ use Tests\Support\SwitchesTenantContext;
 use Tests\TestCase;
 
 /**
- * VTC-05 (#8361, BC-34 VTC) — API chauffeur : offres, transitions de
+ * VTC-05 (#8361, BC-35 VTC) — API chauffeur : offres, transitions de
  * course, positions idempotentes, disponibilité.
  *
  *   - rôle vtc.driver exigé partout (403 deny-by-default sinon) ;

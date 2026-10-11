@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * #8358 (VTC-02) — BC-34 VTC : table tenant `vtc_rides` (agrégat racine).
+ * #8358 (VTC-02) — BC-35 VTC : table tenant `vtc_rides` (agrégat racine).
  *
  * Courses VTC/taxi : référence `VTC-YYYY-NNNNNN` unique par tenant, passager
  * (compte nullable OU invité nom/téléphone), points de prise en charge et de

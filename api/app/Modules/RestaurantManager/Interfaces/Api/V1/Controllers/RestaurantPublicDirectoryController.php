@@ -157,7 +157,7 @@ class RestaurantPublicDirectoryController extends Controller
                 : self::DEFAULT_RADIUS_KM;
 
             if ($this->geoPilotEnabled()) {
-                // GEO-06 (#8355, BC-33 GEO) — calcul délégué au core
+                // GEO-06 (#8355, BC-34 GEO) — calcul délégué au core
                 // géospatial (moteur PostGIS ou repli Haversine INTERNE au
                 // module geo, jamais de SQL local) : ids + distances, puis
                 // contrainte de la requête annuaire (bindings paramétrés).
@@ -410,7 +410,7 @@ class RestaurantPublicDirectoryController extends Controller
 
     /**
      * Pilote GEO-06 (#8355) : l'annuaire délègue ses calculs de proximité
-     * au core géospatial (BC-33) — kill switch opérationnel de rollout
+     * au core géospatial (BC-34) — kill switch opérationnel de rollout
      * (config `geo.pilots.restaurant_directory`, défaut off).
      */
     private function geoPilotEnabled(): bool
@@ -419,7 +419,7 @@ class RestaurantPublicDirectoryController extends Controller
     }
 
     /**
-     * GEO-06 (#8355, BC-33 GEO) — recherche par proximité via le core geo.
+     * GEO-06 (#8355, BC-34 GEO) — recherche par proximité via le core geo.
      *
      * Le moteur `geo` (type `restaurant` de la registry, vue d'adaptation
      * scopée « annuaire public ») retourne les branches dans le rayon,

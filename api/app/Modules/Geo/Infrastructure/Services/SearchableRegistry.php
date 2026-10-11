@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 
 /**
- * GEO-04 (#8353, BC-33 GEO) — registry des types recherchables « le plus
+ * GEO-04 (#8353, BC-34 GEO) — registry des types recherchables « le plus
  * proche » (opt-in, fail-closed).
  *
  * Deux sources fusionnées :

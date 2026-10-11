@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Vtc\Domain\Enums;
 
 /**
- * Types d'événements du journal append-only `vtc_ride_events` (BC-34 VTC,
+ * Types d'événements du journal append-only `vtc_ride_events` (BC-35 VTC,
  * VTC-02/#8358). Une entrée par transition de la state machine et par étape
  * du dispatch (offre, déclinaison, timeout) — audit complet du cycle de vie
  * (spec §5.2, VTC-04).

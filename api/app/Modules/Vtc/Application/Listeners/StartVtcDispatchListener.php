@@ -8,7 +8,7 @@ use App\Modules\Vtc\Domain\Events\VtcRideRequested;
 use App\Modules\Vtc\Infrastructure\Jobs\OfferRideToNearestDriverJob;
 
 /**
- * Démarrage du dispatch sur demande de course (BC-34 VTC, VTC-04/#8360).
+ * Démarrage du dispatch sur demande de course (BC-35 VTC, VTC-04/#8360).
  *
  * Découplage par événement (spec §2) : RequestRideAction émet
  * VtcRideRequested, ce listener enfile le job de matching — la création de

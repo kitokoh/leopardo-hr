@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Throwable;
 
 /**
- * GEO-01 (#8350, BC-33 GEO) — détection runtime de la capacité PostGIS.
+ * GEO-01 (#8350, BC-34 GEO) — détection runtime de la capacité PostGIS.
  *
  * Le module `geo` fonctionne en mode dégradé (calculateur Haversine, GEO-03)
  * lorsque l'extension est absente — environnement non provisionné, base de

@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * Véhicule VTC/taxi (BC-34 VTC, VTC-02/#8358).
+ * Véhicule VTC/taxi (BC-35 VTC, VTC-02/#8358).
  *
  * Isolation tenant : trait BelongsToCompany (scope global + auto-remplissage
  * de company_id, fail-closed). Plaque unique par tenant.

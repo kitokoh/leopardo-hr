@@ -1,4 +1,4 @@
-# VTC_RBAC — Matrice d'autorisation BC-34 VTC
+# VTC_RBAC — Matrice d'autorisation BC-35 VTC
 
 > **VTC-06 (issue #8362)** — RBAC de la verticale VTC/taxi. Spec :
 > `docs/specifications/MODULE_GEOCORE_ET_VERTICAL_VTC.md` §5.5. Manifest :
@@ -70,4 +70,4 @@
   `vtc.positions_retention_days` (défaut 30 j) + purge planifiée
   `vtc:purge-positions` (daily 03:15, idempotente, auditée par log).
 - **Diagnostic plateforme** : `GET /api/v1/geo/capabilities` (core geo
-  BC-33) reste réservé au rôle admin tenant (garde `geo.admin`, GEO-05).
+  BC-34) reste réservé au rôle admin tenant (garde `geo.admin`, GEO-05).

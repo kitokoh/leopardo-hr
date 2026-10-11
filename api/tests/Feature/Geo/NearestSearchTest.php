@@ -19,7 +19,7 @@ use Tests\Support\SwitchesTenantContext;
 use Tests\TestCase;
 
 /**
- * GEO-04 (#8353, BC-33 GEO) — moteur « le plus proche » sur un modèle
+ * GEO-04 (#8353, BC-34 GEO) — moteur « le plus proche » sur un modèle
  * factice enregistré : tri par distance, borne de rayon, isolation tenant.
  *
  * Tourne sur les deux stratégies (PostGIS en CI PG16, repli Haversine

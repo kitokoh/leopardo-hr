@@ -7,7 +7,7 @@ namespace App\Modules\Vtc\Interfaces\Api\V1\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Demande de course VTC (BC-34 VTC, VTC-03/#8359).
+ * Demande de course VTC (BC-35 VTC, VTC-03/#8359).
  *
  * Contrat `POST /v1/vtc/rides` — en-tête **Idempotency-Key (UUID v4)
  * OBLIGATOIRE** (anti-double-course, spec §7) : il est rabattu dans le

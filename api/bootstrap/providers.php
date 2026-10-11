@@ -15,6 +15,7 @@ use App\Modules\EduManager\Providers\EduManagerServiceProvider;
 use App\Modules\Expense\Providers\ExpenseServiceProvider;
 use App\Modules\Fleet\Providers\FleetServiceProvider;
 use App\Modules\FuelStation\Providers\FuelStationServiceProvider;
+use App\Modules\Fundraising\Providers\FundraisingServiceProvider;
 use App\Modules\Geo\Providers\GeoServiceProvider;
 use App\Modules\Growth\Providers\GrowthServiceProvider;
 use App\Modules\HealthManager\Providers\HealthManagerServiceProvider;
@@ -71,6 +72,7 @@ return [
     AccountingServiceProvider::class,
     DeliveryServiceProvider::class,
     FuelStationServiceProvider::class,
+    FundraisingServiceProvider::class,
     TravelAgencyServiceProvider::class,
     // PHARMA-001 (#7798) — verticale PharmaManager (officines de pharmacie).
     PharmacyServiceProvider::class,
@@ -84,7 +86,7 @@ return [
     // HOSP-001 (#7943) — verticale HospitalityManager (BC-32, hôtels &
     // résidences) : enregistre le manifest `hospitality` au catalogue.
     HospitalityManagerServiceProvider::class,
-    // BC-33 GEO (GEO-02/#8351) — core géospatial transverse (PostGIS).
+    // BC-34 GEO (GEO-02/#8351) — core géospatial transverse (PostGIS).
     GeoServiceProvider::class,
     // BC-34 VTC (VTC-01/#8357) — verticale VTC/taxi : enregistre le manifest
     // `vtc` au catalogue des solutions (module requis : geo).

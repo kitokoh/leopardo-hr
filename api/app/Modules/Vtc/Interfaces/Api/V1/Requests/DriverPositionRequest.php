@@ -7,7 +7,7 @@ namespace App\Modules\Vtc\Interfaces\Api\V1\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Ingestion d'une position chauffeur (BC-34 VTC, VTC-05/#8361).
+ * Ingestion d'une position chauffeur (BC-35 VTC, VTC-05/#8361).
  *
  * Contrat `POST /v1/vtc/driver/position` : `{lat, lng, recorded_at?,
  * source?}` — idempotence portée par (driver_id, recorded_at) ; défaut

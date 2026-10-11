@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// BC-34 VTC (VTC-02..06, #8358-#8362) — messages de la verticale VTC/taxi
+// BC-35 VTC (VTC-02..06, #8358-#8362) — messages de la verticale VTC/taxi
 // (PA2-I18N-007 : jamais de français en dur, tout passe par ce catalogue).
 return [
     'ride_creation_failed' => 'Création de course VTC impossible après :attempts tentatives.',

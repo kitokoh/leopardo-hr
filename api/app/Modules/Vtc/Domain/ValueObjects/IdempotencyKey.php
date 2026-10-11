@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 /**
- * Clé d'idempotence (UUID v4) de la création de course (BC-34 VTC,
+ * Clé d'idempotence (UUID v4) de la création de course (BC-35 VTC,
  * VTC-02/#8358). Unique par tenant (contrainte
  * UNIQUE(company_id, idempotency_key)) — un double POST avec le même
  * en-tête Idempotency-Key retourne la course existante, jamais de doublon

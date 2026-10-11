@@ -7,7 +7,7 @@ namespace App\Modules\Geo\Interfaces\Api\V1\Controllers;
 use Illuminate\Http\JsonResponse;
 
 /**
- * Point de contrôle du module Geo (GEO-02/#8351, BC-33 GEO).
+ * Point de contrôle du module Geo (GEO-02/#8351, BC-34 GEO).
  *
  * Route de smoke test `GET /api/v1/geo/ping` : prouve que le module est
  * chargé, que le feature flag `geo` est actif pour le tenant courant et que

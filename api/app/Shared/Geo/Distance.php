@@ -7,7 +7,7 @@ namespace App\Shared\Geo;
 use InvalidArgumentException;
 
 /**
- * GEO-03 (#8352, BC-33 GEO) — distance en mètres (entier non signé).
+ * GEO-03 (#8352, BC-34 GEO) — distance en mètres (entier non signé).
  *
  * Value object immuable partagé (même raison que GeoPoint : garde #5584) —
  * évite la confusion d'unités (mètres vs kilomètres) dans les signatures

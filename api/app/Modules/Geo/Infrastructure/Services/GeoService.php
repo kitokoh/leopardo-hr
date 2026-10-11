@@ -11,7 +11,7 @@ use App\Shared\Geo\Distance;
 use App\Shared\Geo\GeoPoint;
 
 /**
- * GEO-03 (#8352, BC-33 GEO) — implémentation de la façade transverse.
+ * GEO-03 (#8352, BC-34 GEO) — implémentation de la façade transverse.
  *
  * Délègue au calculateur et au moteur « le plus proche » sélectionnés par le
  * provider (PostGIS si disponible, Haversine sinon) : les verticales ne

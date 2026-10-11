@@ -11,7 +11,7 @@ use App\Modules\Vtc\Domain\Manifests\VtcManifest;
 use Tests\TestCase;
 
 /**
- * VTC-01 (#8357, BC-34 VTC) — Manifest de la verticale VTC/taxi.
+ * VTC-01 (#8357, BC-35 VTC) — Manifest de la verticale VTC/taxi.
  *
  * Le manifest implémente le contrat CORE v2 (BOS-014) et est enregistré au
  * `SolutionCatalogue` (clé `vtc`). Couvre : enregistrement catalogue,

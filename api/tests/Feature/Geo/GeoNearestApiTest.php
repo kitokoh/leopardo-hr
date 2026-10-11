@@ -18,7 +18,7 @@ use Tests\Support\SwitchesTenantContext;
 use Tests\TestCase;
 
 /**
- * GEO-05 (#8354, BC-33 GEO) — endpoint `GET /api/v1/geo/nearest`.
+ * GEO-05 (#8354, BC-34 GEO) — endpoint `GET /api/v1/geo/nearest`.
  *
  *   - 401 sans authentification ;
  *   - 403 quand le feature flag `geo` est inactif ;

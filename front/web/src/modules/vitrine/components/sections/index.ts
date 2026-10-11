@@ -33,7 +33,7 @@ export { BlogArticle, type BlogArticleProps } from './BlogArticle';
 // Social Proof Components
 export { SocialProofMetrics, type SocialProofMetricsProps } from './SocialProofMetrics';
 export { ProductScreenshots, type ProductScreenshotsProps } from './ProductScreenshots';
-export { WhyOpenSourceSection } from './WhyOpenSourceSection';
+export { WhyLeopardoSection } from './WhyLeopardoSection';
 export { TrustedBrands, type TrustedBrandsProps } from './TrustedBrands';
 export { ProductDemoVideo, type ProductDemoVideoProps } from './ProductDemoVideo';
 // #8072 — hook ZKTeco remonté + verticales en cartes cliquables

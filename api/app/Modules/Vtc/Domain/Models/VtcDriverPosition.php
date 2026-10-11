@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Position horodatée d'un chauffeur (BC-34 VTC, VTC-02/#8358).
+ * Position horodatée d'un chauffeur (BC-35 VTC, VTC-02/#8358).
  *
  * Donnée personnelle (RGPD) : rétention bornée `vtc.positions_retention_days`
  * (défaut 30 j) + purge planifiée `vtc:purge-positions` (VTC-06). Ingestion

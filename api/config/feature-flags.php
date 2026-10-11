@@ -177,6 +177,21 @@ return [
         // l'ignorait donc et /auth/me ne remontait jamais la clé (même classe de
         // défaut que #7235 pour accounting/crm/travel). Déclaré ici, le module
         // devient activable par l'admin plateforme et visible côté client.
+        // FUNDRAISING — verticale « Cagnottes solidaires » (lien public de
+        // collecte, contributions carte + mobile money, reversements au
+        // bénéficiaire, spec docs/specifications/SOLUTION_FUNDRAISING.md).
+        // Déclarée ici ET dans `Company::KNOWN_MODULES` dès la création
+        // (leçon #7220/#7235/company_showcase : catalogue + feature-flags +
+        // KNOWN_MODULES = les 3 points d'enregistrement obligatoires).
+        // Fail-closed : défaut false, gate serveur `module.fundraising` sur
+        // /api/v1/fundraising/* + garde 404 sur la surface publique.
+        'fundraising' => [
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.35.0',
+            'killable' => true,
+            'description' => 'Verticale Cagnottes solidaires : liens publics de collecte, contributions carte et mobile money, reversements au bénéficiaire.',
+        ],
         'company_showcase' => [
             'scope' => 'module',
             'default' => false,
@@ -238,9 +253,9 @@ return [
             'killable' => true,
             'description' => 'Module Fleet — flotte & suivi des véhicules (outil horizontal BC-24/#7400 ; gate module.fleet).',
         ],
-        // BC-33 GEO (GEO-02/#8351) — core géospatial transverse (PostGIS) :
+        // BC-34 GEO (GEO-02/#8351) — core géospatial transverse (PostGIS) :
         // distance / plus-proches / dans-un-rayon pour toutes les verticales
-        // (VTC en premier, BC-34). Enregistré ici ET dans
+        // (VTC en premier, BC-35). Enregistré ici ET dans
         // `Company::KNOWN_MODULES` + `ModuleRegistry` dès la création (leçon
         // #7220/#7235 : catalogue + feature-flags + KNOWN_MODULES = les 3
         // points d'enregistrement obligatoires). Fail-closed : défaut false,
@@ -250,9 +265,9 @@ return [
             'default' => false,
             'since' => '4.35.0',
             'killable' => true,
-            'description' => 'Core géospatial transverse (BC-33, GEO-02/#8351 ; gate `module.geo`) : calculs de positionnement PostGIS — distance, plus-proches, dans-un-rayon — réutilisables par toutes les verticales (VTC en premier, BC-34).',
+            'description' => 'Core géospatial transverse (BC-34, GEO-02/#8351 ; gate `module.geo`) : calculs de positionnement PostGIS — distance, plus-proches, dans-un-rayon — réutilisables par toutes les verticales (VTC en premier, BC-35).',
         ],
-        // BC-34 VTC (VTC-01/#8357) — verticale VTC/taxi : réservation de
+        // BC-35 VTC (VTC-01/#8357) — verticale VTC/taxi : réservation de
         // courses, dispatch au chauffeur disponible le plus proche (via le
         // core `geo`), tarification, cycle complet. Code du VtcManifest ;
         // activation refusée si `geo` inactif (SolutionActivator fail-closed).
@@ -264,7 +279,7 @@ return [
             'default' => false,
             'since' => '4.35.0',
             'killable' => true,
-            'description' => 'Solution VTC/taxi (BC-34, VTC-01/#8357 ; gate `module.vtc`) : réservation de courses, dispatch au plus proche chauffeur via le core géospatial `geo` (requis), tarification et suivi.',
+            'description' => 'Solution VTC/taxi (BC-35, VTC-01/#8357 ; gate `module.vtc`) : réservation de courses, dispatch au plus proche chauffeur via le core géospatial `geo` (requis), tarification et suivi.',
         ],
     ],
 ];

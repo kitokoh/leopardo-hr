@@ -67,7 +67,7 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe('Console dispatch VTC (BC-34, VTC-07/#8363)', () => {
+describe('Console dispatch VTC (BC-35, VTC-07/#8363)', () => {
   it('liste les courses actives avec statut, adresses et offre en cours', async () => {
     mockedApiFetch.mockResolvedValueOnce(jsonResponse(ridesPayload));
 

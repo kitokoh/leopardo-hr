@@ -25,8 +25,8 @@ use Tests\Support\SwitchesTenantContext;
 use Tests\TestCase;
 
 /**
- * VTC-04 (#8360, BC-34 VTC) — moteur de dispatch : matching du chauffeur
- * disponible le plus proche (via le core geo BC-33), cascade d'offres
+ * VTC-04 (#8360, BC-35 VTC) — moteur de dispatch : matching du chauffeur
+ * disponible le plus proche (via le core geo BC-34), cascade d'offres
  * séquentielles (timeout 30 s), acceptation sous verrou, expiration.
  *
  * Le driver de file est `sync` en test : Queue::fake() capture les jobs

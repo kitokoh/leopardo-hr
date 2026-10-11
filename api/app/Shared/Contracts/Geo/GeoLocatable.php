@@ -7,7 +7,7 @@ namespace App\Shared\Contracts\Geo;
 use App\Shared\Geo\GeoPoint;
 
 /**
- * GEO-04 (#8353, BC-33 GEO) — entité exposant une position géographique.
+ * GEO-04 (#8353, BC-34 GEO) — entité exposant une position géographique.
  *
  * Contrat PARTAGÉ (jamais dans le module Geo) : un modèle Eloquent de
  * n'importe quelle verticale (VtcDriver, branche de pharmacie, restaurant…)

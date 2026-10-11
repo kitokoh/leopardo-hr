@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * #8358 (VTC-02) — BC-34 VTC : table tenant `vtc_vehicles`.
+ * #8358 (VTC-02) — BC-35 VTC : table tenant `vtc_vehicles`.
  *
  * Véhicules de la flotte VTC/taxi : plaque unique par tenant, catégorie
  * (berline/van/moto), capacité, statut opérationnel. Tenant-first :

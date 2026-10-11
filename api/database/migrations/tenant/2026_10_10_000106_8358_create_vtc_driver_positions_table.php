@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * #8358 (VTC-02) — BC-34 VTC : table tenant `vtc_driver_positions`.
+ * #8358 (VTC-02) — BC-35 VTC : table tenant `vtc_driver_positions`.
  *
  * Historique des positions chauffeurs (données personnelles — RGPD :
  * rétention `vtc.positions_retention_days`, purge planifiée VTC-06).

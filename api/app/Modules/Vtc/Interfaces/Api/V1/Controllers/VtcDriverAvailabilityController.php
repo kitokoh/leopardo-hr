@@ -9,7 +9,7 @@ use App\Modules\Vtc\Interfaces\Api\V1\Requests\DriverAvailabilityRequest;
 use Illuminate\Http\JsonResponse;
 
 /**
- * Disponibilité du chauffeur (BC-34 VTC, VTC-05/#8361).
+ * Disponibilité du chauffeur (BC-35 VTC, VTC-05/#8361).
  *
  * `POST /v1/vtc/driver/availability` : passage available ⇄ offline —
  * `available` rend le chauffeur éligible au dispatch (VTC-04). Les statuts

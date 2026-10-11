@@ -7,7 +7,7 @@ namespace App\Http\Middleware\Vtc;
 use App\Core\Auth\Domain\Models\Employee;
 
 /**
- * Résolution des rôles VTC d'un employé (BC-34 VTC, VTC-05/#8361).
+ * Résolution des rôles VTC d'un employé (BC-35 VTC, VTC-05/#8361).
  *
  * Placée dans app/Http (canal de la garde) et non dans Modules/Vtc : la
  * garde d'isolation #5584/#8059 interdit tout import `App\Modules\Vtc`

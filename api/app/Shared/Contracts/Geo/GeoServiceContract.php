@@ -10,7 +10,7 @@ use App\Shared\Geo\NearestResult;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * GEO-03 (#8352, BC-33 GEO) — façade transverse du core géospatial.
+ * GEO-03 (#8352, BC-34 GEO) — façade transverse du core géospatial.
  *
  * SEUL point d'entrée des verticales (VTC, Pharmacy, Delivery…) vers les
  * calculs de positionnement : aucune verticale n'importe les implémentations

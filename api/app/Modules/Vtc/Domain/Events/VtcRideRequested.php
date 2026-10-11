@@ -8,7 +8,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Course VTC demandée (BC-34 VTC, VTC-03/#8359).
+ * Course VTC demandée (BC-35 VTC, VTC-03/#8359).
  *
  * Événement de découplage : le dispatch (VTC-04) écoute cet événement pour
  * lancer le matching du chauffeur le plus proche ; les intégrations futures

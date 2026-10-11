@@ -13,7 +13,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\DB;
 
 /**
- * CRUD des grilles tarifaires (BC-34 VTC, VTC-06/#8362, rôle vtc.admin).
+ * CRUD des grilles tarifaires (BC-35 VTC, VTC-06/#8362, rôle vtc.admin).
  *
  * Une seule grille `is_default` par tenant : poser le drapeau sur une
  * grille le retire des autres dans la même transaction. La suppression

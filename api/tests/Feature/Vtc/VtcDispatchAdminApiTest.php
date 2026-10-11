@@ -19,7 +19,7 @@ use Tests\Support\SwitchesTenantContext;
 use Tests\TestCase;
 
 /**
- * VTC-06 (#8362, BC-34 VTC) — console dispatcher + administration + purge
+ * VTC-06 (#8362, BC-35 VTC) — console dispatcher + administration + purge
  * RGPD des positions.
  *
  *   - matrice RBAC deny-by-default (dispatcher vs admin vs driver, cf.

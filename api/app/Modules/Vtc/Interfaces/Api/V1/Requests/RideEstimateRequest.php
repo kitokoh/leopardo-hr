@@ -7,7 +7,7 @@ namespace App\Modules\Vtc\Interfaces\Api\V1\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Devis d'une course VTC (BC-34 VTC, VTC-03/#8359).
+ * Devis d'une course VTC (BC-35 VTC, VTC-03/#8359).
  *
  * Contrat `POST /v1/vtc/rides/estimate` : `{pickup:{lat,lng},
  * dropoff:{lat,lng}, fare_profile_id?}`. Validation stricte des bornes

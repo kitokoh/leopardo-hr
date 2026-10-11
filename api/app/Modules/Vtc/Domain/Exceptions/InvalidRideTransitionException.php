@@ -8,7 +8,7 @@ use App\Exceptions\DomainException;
 use App\Modules\Vtc\Domain\Enums\VtcRideStatus;
 
 /**
- * Transition de course invalide (BC-34 VTC, VTC-03/#8359).
+ * Transition de course invalide (BC-35 VTC, VTC-03/#8359).
  *
  * Levée par VtcRideStateMachine quand une transition sort du cycle de vie
  * autorisé (spec §5.2) — 409 fail-closed, code stable

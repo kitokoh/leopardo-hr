@@ -8,7 +8,7 @@ use App\Shared\Geo\GeoPoint;
 use App\Shared\Geo\NearestResult;
 
 /**
- * GEO-04 (#8353, BC-33 GEO) — moteur de recherche « le plus proche ».
+ * GEO-04 (#8353, BC-34 GEO) — moteur de recherche « le plus proche ».
  *
  * Implémentation unique : EloquentNearestSearch (ST_DWithin + tri KNN
  * PostGIS si disponible, repli Haversine SQL avec pré-filtre bounding-box).

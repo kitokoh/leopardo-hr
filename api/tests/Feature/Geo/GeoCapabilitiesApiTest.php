@@ -11,7 +11,7 @@ use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
- * GEO-05 (#8354, BC-33 GEO) — endpoint `GET /api/v1/geo/capabilities`.
+ * GEO-05 (#8354, BC-34 GEO) — endpoint `GET /api/v1/geo/capabilities`.
  *
  * Réservé admin tenant (garde `geo.admin`, deny-by-default) :
  *   - 401 sans authentification ;

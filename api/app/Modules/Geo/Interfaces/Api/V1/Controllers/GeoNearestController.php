@@ -11,7 +11,7 @@ use App\Shared\Geo\GeoPoint;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
- * Recherche « les plus proches » (GEO-05, issue #8354, BC-33 GEO).
+ * Recherche « les plus proches » (GEO-05, issue #8354, BC-34 GEO).
  *
  * `GET /v1/geo/nearest?type=&lat=&lng=&radius_km=&limit=` → liste triée par
  * distance croissante, limitée aux types ENREGISTRÉS dans la registry

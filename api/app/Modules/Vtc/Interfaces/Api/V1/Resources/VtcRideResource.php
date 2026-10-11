@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * Course VTC (BC-34 VTC, VTC-03/#8359) — allowlistée.
+ * Course VTC (BC-35 VTC, VTC-03/#8359) — allowlistée.
  *
  * @mixin VtcRide
  */

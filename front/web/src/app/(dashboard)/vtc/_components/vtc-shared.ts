@@ -2,7 +2,7 @@ import type { AppLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
 
 /**
- * BC-34 VTC (épic #8349, VTC-07/#8363) — types et helpers partagés de la
+ * BC-35 VTC (épic #8349, VTC-07/#8363) — types et helpers partagés de la
  * console dispatch web. Shapes alignées sur les endpoints VTC-06
  * (`VtcDispatchController::rides/drivers`, contrat openapi.yaml).
  */

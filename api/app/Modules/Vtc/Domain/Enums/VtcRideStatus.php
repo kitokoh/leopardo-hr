@@ -7,7 +7,7 @@ namespace App\Modules\Vtc\Domain\Enums;
 use App\Modules\Vtc\Domain\Support\VtcRideStateMachine;
 
 /**
- * Statut d'une course VTC (BC-34 VTC, VTC-02/#8358).
+ * Statut d'une course VTC (BC-35 VTC, VTC-02/#8358).
  *
  * Cycle de vie (spec §5.2) : requested → dispatching → accepted → arrived →
  * in_progress → completed ; expired (aucun chauffeur dans la fenêtre) et

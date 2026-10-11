@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Routes du module transverse Geo (BC-33 GEO ; GEO-01/#8350, GEO-02/#8351).
+ * Routes du module transverse Geo (BC-34 GEO ; GEO-01/#8350, GEO-02/#8351).
  *
  * Chargé depuis routes/api.php à l'intérieur du groupe /v1 — ne JAMAIS
  * re-préfixer `v1` (règle AGENTS.md).
@@ -14,8 +14,8 @@
  *   - throttle:api-plan→ limite selon le plan tarifaire
  *   - module.geo       → feature flag companies.features.geo
  *
- * BC-33 GEO : core géospatial transverse (PostGIS) — distance, plus-proches,
- * dans-un-rayon — réutilisable par toute verticale (VTC en premier, BC-34).
+ * BC-34 GEO : core géospatial transverse (PostGIS) — distance, plus-proches,
+ * dans-un-rayon — réutilisable par toute verticale (VTC en premier, BC-35).
  * Référence : docs/specifications/MODULE_GEOCORE_ET_VERTICAL_VTC.md (§4).
  */
 

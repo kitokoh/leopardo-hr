@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leopardo — The business suite for field-based companies</title>
-<meta name="description" content="Leopardo is the business suite for field-based companies — HR & payroll, attendance, leave, CRM, accounting and operations, on web, mobile and kiosks. Open source, MIT licensed, self-hostable.">
-<meta property="og:title" content="Leopardo — The business suite for field-based companies">
-<meta property="og:description" content="HR & payroll · attendance · leave · CRM · accounting · operations — on web, mobile and kiosks. Open source, MIT licensed.">
+<title>Leopardo — The Business OS for field-based companies</title>
+<meta name="description" content="Leopardo is the Business OS for field-based companies — HR & payroll, attendance, leave, CRM, accounting and operations, on web, mobile and kiosks. Cloud or self-hosted, with free business packs.">
+<meta property="og:title" content="Leopardo — The Business OS for field-based companies">
+<meta property="og:description" content="HR & payroll · attendance · leave · CRM · accounting · operations — on web, mobile and kiosks. Free business packs for your trade.">
 <!-- og:image DOIT être une URL absolue : les crawlers sociaux (LinkedIn, X,
      Slack…) n'acceptent pas un chemin relatif — l'aperçu restait vide. -->
 <meta property="og:image" content="https://kitokoh.github.io/leopardo-hr/assets/og-banner.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Leopardo — the business suite for field-based companies">
+<meta property="og:image:alt" content="Leopardo — the Business OS for field-based companies">
 <meta property="og:url" content="https://kitokoh.github.io/leopardo-hr/">
 <meta property="og:site_name" content="Leopardo">
 <meta property="og:locale" content="en_US">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Leopardo — The business suite for field-based companies">
-<meta name="twitter:description" content="HR &amp; payroll · attendance · leave · CRM · accounting · operations — on web, mobile and kiosks. Open source, MIT licensed.">
+<meta name="twitter:title" content="Leopardo — The Business OS for field-based companies">
+<meta name="twitter:description" content="HR &amp; payroll · attendance · leave · CRM · accounting · operations — on web, mobile and kiosks. Free business packs for your trade.">
 <meta name="twitter:image" content="https://kitokoh.github.io/leopardo-hr/assets/og-banner.jpg">
 <link rel="canonical" href="https://kitokoh.github.io/leopardo-hr/">
 <link rel="icon" type="image/png" href="assets/logo-240.png">
@@ -34,28 +34,29 @@
     </a>
     <div class="nav-links">
       <a href="#suite" data-i18n="nav.suite">The suite</a>
-      <a href="#audiences" data-i18n="nav.audiences">Who it's for</a>
+      <a href="#packs" data-i18n="nav.packs">Free packs</a>
       <a href="#apps" data-i18n="nav.apps">Apps</a>
       <a href="#demo" data-i18n="nav.demo">Live demo</a>
-      <a href="#opensource" data-i18n="nav.opensource">Open source</a>
-      <a class="btn btn-ghost" href="https://github.com/kitokoh/leopardo-hr" target="_blank" rel="noopener">GitHub ★</a>
+      <a href="#businessos" data-i18n="nav.businessos">Business OS</a>
+      <a class="btn btn-ghost" href="https://leopardo-prod.vercel.app/restaurateur" target="_blank" rel="noopener" data-i18n="nav.cta">Get the free pack</a>
       <button class="btn lang-toggle" id="langToggle" aria-label="Switch language">FR</button>
     </div>
   </div>
 </nav>
 
 <header class="hero" id="top">
+  <canvas id="hero3d" aria-hidden="true"></canvas>
   <div class="container hero-grid">
     <div class="hero-text">
-      <p class="hero-eyebrow" data-i18n="hero.eyebrow">Open source · MIT · Self-hosted or cloud</p>
-      <h1 data-i18n="hero.title">The <span class="teal">business suite</span> for field-based companies</h1>
-      <p class="hero-sub" data-i18n="hero.sub">Leopardo is the business suite for field-based companies — HR &amp; payroll, attendance, leave, CRM, accounting and operations, on web, mobile and kiosks.</p>
+      <p class="hero-eyebrow" data-i18n="hero.eyebrow">Business OS · Cloud or self-hosted</p>
+      <h1 data-i18n="hero.title">The <span class="teal">Business OS</span> for field-based companies</h1>
+      <p class="hero-sub" data-i18n="hero.sub">Leopardo replaces Excel, WhatsApp and paper with one app — HR &amp; payroll, attendance, leave, CRM, accounting and operations, on web, mobile and kiosks.</p>
       <div class="hero-cta">
         <a class="btn btn-solid btn-lg" href="https://leopardo-prod.vercel.app" target="_blank" rel="noopener" data-i18n="hero.cta1">See the live demo</a>
+        <a class="btn btn-ghost btn-lg" href="https://leopardo-prod.vercel.app/restaurateur" target="_blank" rel="noopener" data-i18n="hero.cta2">Get the free Restaurant pack</a>
         <a class="btn btn-ghost btn-lg" href="https://leopardo-prod.vercel.app/contact" target="_blank" rel="noopener" data-i18n="hero.ctaContact">Contact / Get a demo</a>
-        <a class="btn btn-ghost btn-lg" href="https://github.com/kitokoh/leopardo-hr" target="_blank" rel="noopener" data-i18n="hero.cta2">Star on GitHub</a>
       </div>
-      <p class="hero-note" data-i18n="hero.note">14-day free trial, no credit card · guided demo · onboarding in under 30 minutes</p>
+      <p class="hero-note" data-i18n="hero.note">14-day free trial, no credit card · free business packs · onboarding in under 30 minutes</p>
       <div class="hero-tags">
         <span data-i18n="hero.tag1">Mobile-first multi-country payroll</span>
         <span data-i18n="hero.tag2">Biometric kiosks (ZKTeco)</span>
@@ -74,7 +75,7 @@
     <div class="stat"><strong>1,120</strong><span data-i18n="stats.tests">Backend test files</span></div>
     <div class="stat"><strong>8</strong><span data-i18n="stats.apps">Flutter apps + shared core</span></div>
     <div class="stat"><strong>21</strong><span data-i18n="stats.countries">Countries with payroll rules (pilot)</span></div>
-    <div class="stat"><strong>MIT</strong><span data-i18n="stats.opensource">100% open-source license</span></div>
+    <div class="stat"><strong>0&nbsp;€</strong><span data-i18n="stats.packs">Free vertical packs</span></div>
   </div>
   <p class="stats-note" data-i18n="stats.measured">Metrics measured 2026-09-20 on the public repository · countries measured 2026-09-09</p>
 </section>
@@ -90,12 +91,58 @@
       <div class="card"><div class="card-icon">📇</div><h3 data-i18n="suite.crm.h">CRM &amp; accounting, built in</h3><p data-i18n="suite.crm.p">Leads, pipeline, invoicing and receivables tracking live in the same suite as your workforce data — one login, one source of truth.</p></div>
       <div class="card"><div class="card-icon">🏪</div><h3 data-i18n="suite.vert.h">Business verticals</h3><p data-i18n="suite.vert.p">Dedicated flows for restaurants, gas stations, travel agencies and education — an evolving catalog that grows release by release.</p></div>
       <div class="card"><div class="card-icon">🔌</div><h3 data-i18n="suite.api.h">Open API</h3><p data-i18n="suite.api.p">A contract-first OpenAPI spec, webhooks and SDKs — 994 endpoints (measured 2026-09-20) ready to integrate with your stack.</p></div>
-      <div class="card"><div class="card-icon">🔐</div><h3 data-i18n="suite.sec.h">Multi-tenant &amp; self-hostable</h3><p data-i18n="suite.sec.p">Strict tenant isolation, RBAC and encrypted sensitive data — run it in the cloud or self-host the whole MIT-licensed stack.</p></div>
+      <div class="card"><div class="card-icon">🔐</div><h3 data-i18n="suite.sec.h">Multi-tenant &amp; self-hostable</h3><p data-i18n="suite.sec.p">Strict tenant isolation, RBAC and encrypted sensitive data — run it in the cloud or self-host the whole stack, with no hidden costs.</p></div>
     </div>
   </div>
 </section>
 
-<section class="section alt" id="audiences">
+<section class="section alt" id="packs">
+  <div class="container">
+    <p class="kicker" data-i18n="packs.kicker">Free business packs</p>
+    <h2 data-i18n="packs.title">A free pack for your trade</h2>
+    <p class="section-sub" data-i18n="packs.sub">Each pack bundles the apps, flows and defaults of your industry — activated free in your Leopardo workspace. No credit card, no catch.</p>
+    <div class="grid-3 packs-grid">
+      <a class="card link-card pack-card" href="https://leopardo-prod.vercel.app/restaurateur" target="_blank" rel="noopener">
+        <span class="pack-badge" data-i18n="packs.badge">Free pack</span>
+        <div class="card-icon">🍽️</div>
+        <h3 data-i18n="packs.rest.h">Restaurants</h3>
+        <p data-i18n="packs.rest.p">POS, kitchen, reservations, stock and delivery — plus attendance and payroll for your crews. Built in 3 questions.</p>
+      </a>
+      <a class="card link-card pack-card" href="https://leopardo-prod.vercel.app/packs/agence-de-voyage" target="_blank" rel="noopener">
+        <span class="pack-badge" data-i18n="packs.badge">Free pack</span>
+        <div class="card-icon">✈️</div>
+        <h3 data-i18n="packs.travel.h">Travel agencies</h3>
+        <p data-i18n="packs.travel.p">Client files, ticketing, commissions and team payroll in one place — your pack activated free on signup.</p>
+      </a>
+      <a class="card link-card pack-card" href="https://leopardo-prod.vercel.app/packs/ecole" target="_blank" rel="noopener">
+        <span class="pack-badge" data-i18n="packs.badge">Free pack</span>
+        <div class="card-icon">🎓</div>
+        <h3 data-i18n="packs.edu.h">Schools &amp; training</h3>
+        <p data-i18n="packs.edu.p">Staff attendance, leave and payroll aligned with the school calendar — your pack activated free on signup.</p>
+      </a>
+      <a class="card link-card pack-card" href="https://leopardo-prod.vercel.app/packs/station-service" target="_blank" rel="noopener">
+        <span class="pack-badge" data-i18n="packs.badge">Free pack</span>
+        <div class="card-icon">⛽</div>
+        <h3 data-i18n="packs.fuel.h">Fuel stations</h3>
+        <p data-i18n="packs.fuel.p">Rotating crews clocked on site, hours and overtime straight to payroll — your pack activated free on signup.</p>
+      </a>
+      <a class="card link-card pack-card" href="https://leopardo-prod.vercel.app/contact" target="_blank" rel="noopener">
+        <span class="pack-badge" data-i18n="packs.badge">Free pack</span>
+        <div class="card-icon">🏥</div>
+        <h3 data-i18n="packs.health.h">Healthcare</h3>
+        <p data-i18n="packs.health.p">Care teams, shifts and sensitive records managed with care — a free custom pack, tell us about your activity.</p>
+      </a>
+      <a class="card link-card pack-card" href="https://leopardo-prod.vercel.app/contact" target="_blank" rel="noopener">
+        <span class="pack-badge" data-i18n="packs.badge">Free pack</span>
+        <div class="card-icon">💊</div>
+        <h3 data-i18n="packs.pharma.h">Pharmacies</h3>
+        <p data-i18n="packs.pharma.p">Counter teams, schedules and payroll in one compliant place — a free custom pack, tell us about your activity.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="audiences">
   <div class="container">
     <p class="kicker" data-i18n="aud.kicker">For the whole team</p>
     <h2 data-i18n="aud.title">Built for every role in the company</h2>
@@ -104,13 +151,13 @@
       <div class="card"><div class="card-icon">🏗</div><h3 data-i18n="aud.mgr.h">Managers &amp; ops</h3><p data-i18n="aud.mgr">Real-time attendance, team schedules, approvals and alerts across multiple sites.</p></div>
       <div class="card"><div class="card-icon">🧮</div><h3 data-i18n="aud.acc.h">Accountants</h3><p data-i18n="aud.acc">Payroll preparation with multi-country rules (pilot), validation workflows, export and audit trail.</p></div>
       <div class="card"><div class="card-icon">💻</div><h3 data-i18n="aud.dev.h">Developers</h3><p data-i18n="aud.dev">A clean DDD modular monolith — 994 documented endpoints (measured 2026-09-20), webhooks and CI/CD.</p></div>
-      <div class="card"><div class="card-icon">🎓</div><h3 data-i18n="aud.stu.h">Students</h3><p data-i18n="aud.stu">A real-world open codebase to study: architecture, testing, CI/CD and mobile apps.</p></div>
+      <div class="card"><div class="card-icon">🧭</div><h3 data-i18n="aud.own.h">Owners &amp; GMs</h3><p data-i18n="aud.own">One dashboard for people, money and operations — decide on facts, not on WhatsApp threads.</p></div>
       <div class="card"><div class="card-icon">📱</div><h3 data-i18n="aud.emp.h">Employees</h3><p data-i18n="aud.emp">Native apps for attendance, leave requests, payslips and self-service.</p></div>
     </div>
   </div>
 </section>
 
-<section class="section" id="apps">
+<section class="section alt" id="apps">
   <div class="container">
     <p class="kicker" data-i18n="apps.kicker">Web · mobile · kiosks</p>
     <h2 data-i18n="apps.title">Omnichannel by design</h2>
@@ -128,7 +175,7 @@
   </div>
 </section>
 
-<section class="section alt" id="demo">
+<section class="section" id="demo">
   <div class="container">
     <p class="kicker" data-i18n="demo.kicker">See it running</p>
     <h2 data-i18n="demo.title">Try the live ecosystem</h2>
@@ -141,25 +188,25 @@
   </div>
 </section>
 
-<section class="section" id="opensource">
+<section class="section alt" id="businessos">
   <div class="container os-panel">
-    <p class="kicker" data-i18n="os.kicker">MIT licensed</p>
-    <h2 data-i18n="os.title">Open source from day one</h2>
-    <p class="section-sub center" data-i18n="os.sub">MIT licensed, self-hostable, community-driven. No vendor lock-in, no closed core — and a 14-day free trial with no credit card if you'd rather not host it yourself.</p>
+    <p class="kicker" data-i18n="os.kicker">Business OS</p>
+    <h2 data-i18n="os.title">Yours to run, yours to keep</h2>
+    <p class="section-sub center" data-i18n="os.sub">Cloud or self-hosted, exportable data, open API — no vendor lock-in, no hidden tiers. And a 14-day free trial with no credit card if you'd rather not host it yourself.</p>
     <div class="center-cta">
-      <a class="btn btn-solid btn-lg" href="https://github.com/kitokoh/leopardo-hr" target="_blank" rel="noopener">github.com/kitokoh/leopardo-hr ★</a>
-      <a class="btn btn-ghost btn-lg" href="https://github.com/kitokoh/leopardo-hr/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" data-i18n="os.cta2">Contributing guide</a>
+      <a class="btn btn-solid btn-lg" href="https://leopardo-prod.vercel.app/restaurateur" target="_blank" rel="noopener" data-i18n="os.cta1">Get the free pack</a>
+      <a class="btn btn-ghost btn-lg" href="https://leopardo-prod.vercel.app" target="_blank" rel="noopener" data-i18n="os.cta2">See the live demo</a>
     </div>
   </div>
 </section>
 
 <footer class="footer">
   <div class="container">
-    <p><strong>Leopardo</strong> — <span data-i18n="footer.tagline">the business suite for field-based companies. Open source, MIT licensed.</span></p>
+    <p><strong>Leopardo</strong> — <span data-i18n="footer.tagline">the Business OS for field-based companies.</span></p>
     <p class="foot-links">
-      <a href="https://github.com/kitokoh/leopardo-hr" target="_blank" rel="noopener">GitHub</a> ·
-      <a href="https://github.com/kitokoh/leopardo-hr/tree/main/docs" target="_blank" rel="noopener" data-i18n="footer.docs">Documentation</a> ·
-      <a href="https://github.com/kitokoh/leopardo-hr/security" target="_blank" rel="noopener" data-i18n="footer.security">Security</a> ·
+      <a href="#packs" data-i18n="footer.packs">Free packs</a> ·
+      <a href="https://leopardo-prod.vercel.app" target="_blank" rel="noopener" data-i18n="footer.demo">Live demo</a> ·
+      <a href="https://leopardo-prod.vercel.app/docs" target="_blank" rel="noopener" data-i18n="footer.docs">Documentation</a> ·
       <a href="https://leopardo-prod.vercel.app/contact" target="_blank" rel="noopener" data-i18n="footer.contact">Contact / Get a demo</a>
     </p>
   </div>
@@ -168,16 +215,16 @@
 <script>
 const I18N = {
   en: {
-    "nav.suite":"The suite","nav.audiences":"Who it's for","nav.apps":"Apps","nav.demo":"Live demo","nav.opensource":"Open source",
-    "hero.eyebrow":"Open source · MIT · Self-hosted or cloud",
-    "hero.title":"The <span class=\"teal\">business suite</span> for field-based companies",
-    "hero.sub":"Leopardo is the business suite for field-based companies — HR &amp; payroll, attendance, leave, CRM, accounting and operations, on web, mobile and kiosks.",
-    "hero.cta1":"See the live demo","hero.cta2":"Star on GitHub","hero.ctaContact":"Contact / Get a demo",
-    "hero.note":"14-day free trial, no credit card · guided demo · onboarding in under 30 minutes",
+    "nav.suite":"The suite","nav.packs":"Free packs","nav.apps":"Apps","nav.demo":"Live demo","nav.businessos":"Business OS","nav.cta":"Get the free pack",
+    "hero.eyebrow":"Business OS · Cloud or self-hosted",
+    "hero.title":"The <span class=\"teal\">Business OS</span> for field-based companies",
+    "hero.sub":"Leopardo replaces Excel, WhatsApp and paper with one app — HR &amp; payroll, attendance, leave, CRM, accounting and operations, on web, mobile and kiosks.",
+    "hero.cta1":"See the live demo","hero.cta2":"Get the free Restaurant pack","hero.ctaContact":"Contact / Get a demo",
+    "hero.note":"14-day free trial, no credit card · free business packs · onboarding in under 30 minutes",
     "hero.tag1":"Mobile-first multi-country payroll","hero.tag2":"Biometric kiosks (ZKTeco)","hero.tag3":"Offline edge mode","hero.tag4":"Multi-tenant",
     "stats.modules":"DDD business modules","stats.endpoints":"API endpoints (OpenAPI)","stats.tests":"Backend test files",
-    "stats.apps":"Flutter apps + shared core","stats.countries":"Countries with payroll rules (pilot)","stats.opensource":"100% open-source license",
-    "stats.measured":"Metrics measured 2026-09-20 on the public repository · countries measured 2026-09-09",
+    "stats.apps":"Flutter apps + shared core","stats.countries":"Countries with payroll rules (pilot)","stats.packs":"Free vertical packs",
+    "stats.measured":"Metrics measured 2026-09-20 on the production platform · countries measured 2026-09-09",
     "suite.kicker":"One suite, every operation","suite.title":"Run the whole company, not just HR",
     "suite.sub":"Leopardo brings the tools field-based teams actually use into one multi-tenant platform — no glue code, no per-module vendors.",
     "suite.pay.h":"HR &amp; payroll",
@@ -191,13 +238,22 @@ const I18N = {
     "suite.api.h":"Open API",
     "suite.api.p":"A contract-first OpenAPI spec, webhooks and SDKs — 994 endpoints (measured 2026-09-20) ready to integrate with your stack.",
     "suite.sec.h":"Multi-tenant &amp; self-hostable",
-    "suite.sec.p":"Strict tenant isolation, RBAC and encrypted sensitive data — run it in the cloud or self-host the whole MIT-licensed stack.",
+    "suite.sec.p":"Strict tenant isolation, RBAC and encrypted sensitive data — run it in the cloud or self-host the whole stack, with no hidden costs.",
+    "packs.kicker":"Free business packs","packs.title":"A free pack for your trade",
+    "packs.sub":"Each pack bundles the apps, flows and defaults of your industry — activated free in your Leopardo workspace. No credit card, no catch.",
+    "packs.badge":"Free pack",
+    "packs.rest.h":"Restaurants","packs.rest.p":"POS, kitchen, reservations, stock and delivery — plus attendance and payroll for your crews. Built in 3 questions.",
+    "packs.travel.h":"Travel agencies","packs.travel.p":"Client files, ticketing, commissions and team payroll in one place — your pack activated free on signup.",
+    "packs.edu.h":"Schools &amp; training","packs.edu.p":"Staff attendance, leave and payroll aligned with the school calendar — your pack activated free on signup.",
+    "packs.fuel.h":"Fuel stations","packs.fuel.p":"Rotating crews clocked on site, hours and overtime straight to payroll — your pack activated free on signup.",
+    "packs.health.h":"Healthcare","packs.health.p":"Care teams, shifts and sensitive records managed with care — a free custom pack, tell us about your activity.",
+    "packs.pharma.h":"Pharmacies","packs.pharma.p":"Counter teams, schedules and payroll in one compliant place — a free custom pack, tell us about your activity.",
     "aud.kicker":"For the whole team","aud.title":"Built for every role in the company",
     "aud.hr.h":"HR teams","aud.hr":"No more spreadsheet chasing — records, leave, schedules and documents in one place.",
     "aud.mgr.h":"Managers &amp; ops","aud.mgr":"Real-time attendance, team schedules, approvals and alerts across multiple sites.",
     "aud.acc.h":"Accountants","aud.acc":"Payroll preparation with multi-country rules (pilot), validation workflows, export and audit trail.",
     "aud.dev.h":"Developers","aud.dev":"A clean DDD modular monolith — 994 documented endpoints (measured 2026-09-20), webhooks and CI/CD.",
-    "aud.stu.h":"Students","aud.stu":"A real-world open codebase to study: architecture, testing, CI/CD and mobile apps.",
+    "aud.own.h":"Owners &amp; GMs","aud.own":"One dashboard for people, money and operations — decide on facts, not on WhatsApp threads.",
     "aud.emp.h":"Employees","aud.emp":"Native apps for attendance, leave requests, payslips and self-service.",
     "apps.kicker":"Web · mobile · kiosks","apps.title":"Omnichannel by design",
     "apps.sub":"Web dashboards, eight native Flutter apps built on a shared core, and a biometric kiosk path — all connected to one backend.",
@@ -212,24 +268,24 @@ const I18N = {
     "demo.kicker":"See it running","demo.title":"Try the live ecosystem",
     "demo.sub":"Official public deployments (free-tier infrastructure — first load can take a moment):",
     "demo.api.h":"API Backend","demo.web.h":"Corporate Web","demo.admin.h":"Admin Panel",
-    "os.kicker":"MIT licensed","os.title":"Open source from day one",
-    "os.sub":"MIT licensed, self-hostable, community-driven. No vendor lock-in, no closed core — and a 14-day free trial with no credit card if you'd rather not host it yourself.",
-    "os.cta2":"Contributing guide",
-    "footer.tagline":"the business suite for field-based companies. Open source, MIT licensed.",
-    "footer.docs":"Documentation","footer.security":"Security","footer.contact":"Contact / Get a demo",
+    "os.kicker":"Business OS","os.title":"Yours to run, yours to keep",
+    "os.sub":"Cloud or self-hosted, exportable data, open API — no vendor lock-in, no hidden tiers. And a 14-day free trial with no credit card if you'd rather not host it yourself.",
+    "os.cta1":"Get the free pack","os.cta2":"See the live demo",
+    "footer.tagline":"the Business OS for field-based companies.",
+    "footer.packs":"Free packs","footer.demo":"Live demo","footer.docs":"Documentation","footer.contact":"Contact / Get a demo",
     "lang.toggleAria":"Switch the site to French"
   },
   fr: {
-    "nav.suite":"La suite","nav.audiences":"Pour qui","nav.apps":"Apps","nav.demo":"Démo live","nav.opensource":"Open source",
-    "hero.eyebrow":"Open source · MIT · Auto-hébergé ou cloud",
-    "hero.title":"La <span class=\"teal\">suite métier</span> des entreprises de terrain",
-    "hero.sub":"Leopardo est la suite métier des entreprises de terrain — RH &amp; paie, pointage, absences, CRM, comptabilité et opérations, sur web, mobile et bornes.",
-    "hero.cta1":"Voir la démo live","hero.cta2":"Star sur GitHub","hero.ctaContact":"Contact / Demander une démo",
-    "hero.note":"Essai gratuit 14 jours sans CB · démo guidée · onboarding en moins de 30 minutes",
+    "nav.suite":"La suite","nav.packs":"Packs offerts","nav.apps":"Apps","nav.demo":"Démo live","nav.businessos":"Business OS","nav.cta":"Recevoir le pack offert",
+    "hero.eyebrow":"Business OS · Cloud ou auto-hébergé",
+    "hero.title":"Le <span class=\"teal\">Business OS</span> des entreprises de terrain",
+    "hero.sub":"Leopardo remplace Excel, WhatsApp et le papier par une seule application — RH &amp; paie, pointage, absences, CRM, comptabilité et opérations, sur web, mobile et bornes.",
+    "hero.cta1":"Voir la démo live","hero.cta2":"Recevoir le pack Restaurant offert","hero.ctaContact":"Contact / Demander une démo",
+    "hero.note":"Essai 14 jours sans CB · packs métiers offerts · onboarding en moins de 30 minutes",
     "hero.tag1":"Paie multi-pays mobile-first","hero.tag2":"Bornes biométriques (ZKTeco)","hero.tag3":"Mode edge hors-ligne","hero.tag4":"Multi-tenant",
     "stats.modules":"modules métier DDD","stats.endpoints":"endpoints API (OpenAPI)","stats.tests":"fichiers de tests backend",
-    "stats.apps":"apps Flutter + core partagé","stats.countries":"pays avec règles de paie (pilote)","stats.opensource":"licence 100 % open source",
-    "stats.measured":"Métriques mesurées le 2026-09-20 sur le dépôt public · pays mesurés le 2026-09-09",
+    "stats.apps":"apps Flutter + core partagé","stats.countries":"pays avec règles de paie (pilote)","stats.packs":"Packs métiers offerts",
+    "stats.measured":"Métriques mesurées le 2026-09-20 sur la plateforme en production · pays mesurés le 2026-09-09",
     "suite.kicker":"Une suite, toutes les opérations","suite.title":"Pilotez toute l'entreprise, pas seulement les RH",
     "suite.sub":"Leopardo réunit les outils que les équipes de terrain utilisent vraiment dans une plateforme multi-tenant — sans colle logicielle ni fournisseur par module.",
     "suite.pay.h":"RH &amp; paie",
@@ -243,13 +299,22 @@ const I18N = {
     "suite.api.h":"API ouverte",
     "suite.api.p":"Une spec OpenAPI contract-first, des webhooks et des SDK — 994 endpoints (mesure 2026-09-20) prêts à s'intégrer à votre stack.",
     "suite.sec.h":"Multi-tenant &amp; auto-hébergeable",
-    "suite.sec.p":"Isolation stricte des tenants, RBAC et données sensibles chiffrées — dans le cloud ou auto-hébergé, avec toute la stack sous licence MIT.",
+    "suite.sec.p":"Isolation stricte des tenants, RBAC et données sensibles chiffrées — dans le cloud ou auto-hébergé, sans coûts cachés.",
+    "packs.kicker":"Packs métiers offerts","packs.title":"Un pack offert pour votre métier",
+    "packs.sub":"Chaque pack réunit les apps, les parcours et les réglages de votre secteur — activés gratuitement dans votre espace Leopardo. Sans carte bancaire, sans piège.",
+    "packs.badge":"Pack offert",
+    "packs.rest.h":"Restaurants","packs.rest.p":"Caisse, cuisine, réservations, stock et livraison — plus le pointage et la paie de vos équipes. Composé en 3 questions.",
+    "packs.travel.h":"Agences de voyage","packs.travel.p":"Dossiers clients, billetterie, commissions et paie des équipes au même endroit — votre pack activé gratuitement à l'inscription.",
+    "packs.edu.h":"Écoles &amp; formation","packs.edu.p":"Présence du personnel, absences et paie alignées sur le calendrier scolaire — votre pack activé gratuitement à l'inscription.",
+    "packs.fuel.h":"Stations-service","packs.fuel.p":"Équipes tournantes pointées sur site, heures et majorations vers la paie — votre pack activé gratuitement à l'inscription.",
+    "packs.health.h":"Santé","packs.health.p":"Équipes soignantes, gardes et dossiers sensibles gérés avec soin — un pack sur mesure offert, parlez-nous de votre activité.",
+    "packs.pharma.h":"Pharmacies","packs.pharma.p":"Équipes comptoir, plannings et paie dans un cadre conforme — un pack sur mesure offert, parlez-nous de votre activité.",
     "aud.kicker":"Pour toute l'équipe","aud.title":"Conçu pour chaque rôle de l'entreprise",
     "aud.hr.h":"Équipes RH","aud.hr":"Fini la chasse aux fichiers Excel — dossiers, congés, horaires et documents au même endroit.",
     "aud.mgr.h":"Managers &amp; ops","aud.mgr":"Pointage en temps réel, horaires d'équipe, approbations et alertes multi-sites.",
     "aud.acc.h":"Comptables","aud.acc":"Préparation de paie multi-pays (pilote), workflows de validation, export et piste d'audit.",
     "aud.dev.h":"Développeurs","aud.dev":"Un monolithe modulaire DDD propre — 994 endpoints documentés (mesure 2026-09-20), webhooks et CI/CD.",
-    "aud.stu.h":"Étudiants","aud.stu":"Un codebase réel et ouvert à étudier : architecture, tests, CI/CD et apps mobiles.",
+    "aud.own.h":"Dirigeants","aud.own":"Un seul tableau de bord pour les équipes, l'argent et les opérations — décidez sur des faits, pas sur des fils WhatsApp.",
     "aud.emp.h":"Employés","aud.emp":"Apps natives pour le pointage, les demandes de congé, les bulletins et le self-service.",
     "apps.kicker":"Web · mobile · bornes","apps.title":"Omnicanal par conception",
     "apps.sub":"Dashboards web, huit apps natives Flutter bâties sur un core partagé, et un parcours borne biométrique — tous connectés au même backend.",
@@ -264,11 +329,11 @@ const I18N = {
     "demo.kicker":"Voyez-le tourner","demo.title":"Essayez l'écosystème live",
     "demo.sub":"Déploiements publics officiels (infrastructure gratuite — le premier chargement peut prendre un moment) :",
     "demo.api.h":"API Backend","demo.web.h":"Web corporate","demo.admin.h":"Panneau admin",
-    "os.kicker":"Licence MIT","os.title":"Open source depuis le premier jour",
-    "os.sub":"Licence MIT, auto-hébergeable, porté par la communauté. Aucun verrouillage, aucun cœur fermé — et un essai gratuit de 14 jours sans CB si vous préférez ne pas l'héberger vous-même.",
-    "os.cta2":"Guide de contribution",
-    "footer.tagline":"la suite métier des entreprises de terrain. Open source, sous licence MIT.",
-    "footer.docs":"Documentation","footer.security":"Sécurité","footer.contact":"Contact / Demander une démo",
+    "os.kicker":"Business OS","os.title":"À vous de le piloter, à vous de le garder",
+    "os.sub":"Cloud ou auto-hébergé, données exportables, API ouverte — aucun verrouillage, aucun niveau caché. Et un essai gratuit de 14 jours sans CB si vous préférez ne pas l'héberger vous-même.",
+    "os.cta1":"Recevoir le pack offert","os.cta2":"Voir la démo live",
+    "footer.tagline":"le Business OS des entreprises de terrain.",
+    "footer.packs":"Packs offerts","footer.demo":"Démo live","footer.docs":"Documentation","footer.contact":"Contact / Demander une démo",
     "lang.toggleAria":"Passer le site en anglais"
   }
 };
@@ -306,6 +371,203 @@ document.getElementById("langToggle").addEventListener("click", () => {
   applyLang();
 });
 applyLang();
+</script>
+
+<script type="module">
+/**
+ * Héro 3D « constellation Business OS » — version statique (CDN, sans build).
+ *
+ * Un noyau (la plateforme) et 8 modules métier en orbite, reliés au noyau ;
+ * parallaxe souris, survol qui illumine, clic = impulsion. Le canvas est un
+ * fond : pointer-events:none, écoute sur window.
+ *
+ * Repli gracieux : si le CDN, WebGL ou l'init échoue, le canvas reste caché
+ * et le dégradé CSS du héro fait le travail. prefers-reduced-motion fige la
+ * scène (rendu unique, sans boucle).
+ */
+(async () => {
+  const canvas = document.getElementById('hero3d');
+  if (!canvas) return;
+  const reduced = window.matchMedia
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  try {
+    const THREE = await import('https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js');
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 60);
+    camera.position.set(0, 0.4, 9.2);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+    const key = new THREE.DirectionalLight(0xffffff, 1.1);
+    key.position.set(4, 6, 8);
+    scene.add(key);
+    const glow = new THREE.PointLight(0x2dd4bf, 16, 14);
+    scene.add(glow);
+
+    const world = new THREE.Group();
+    scene.add(world);
+
+    const EMERALD = new THREE.Color('#2dd4bf');
+    const CYAN = new THREE.Color('#22d3ee');
+
+    const core = new THREE.Mesh(
+      new THREE.IcosahedronGeometry(1.05, 1),
+      new THREE.MeshStandardMaterial({
+        color: '#0d9488', emissive: '#064e3b', emissiveIntensity: 0.55,
+        metalness: 0.35, roughness: 0.32, transparent: true, opacity: 0.92,
+      }),
+    );
+    world.add(core);
+    core.add(new THREE.LineSegments(
+      new THREE.EdgesGeometry(core.geometry),
+      new THREE.LineBasicMaterial({ color: EMERALD, transparent: true, opacity: 0.35 }),
+    ));
+
+    const RADII = [2.3, 3.5];
+    const TILT = [0.42, -0.28];
+    const SPEED = [0.00022, -0.00015];
+    RADII.forEach((radius, i) => {
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(radius, 0.008, 8, 96),
+        new THREE.MeshBasicMaterial({ color: i === 0 ? EMERALD : CYAN, transparent: true, opacity: 0.16 }),
+      );
+      ring.rotation.x = Math.PI / 2 + TILT[i];
+      world.add(ring);
+    });
+
+    const nodes = [];
+    const nodeGeo = new THREE.OctahedronGeometry(0.21, 0);
+    RADII.forEach((radius, ring) => {
+      for (let i = 0; i < 4; i += 1) {
+        const tint = (ring + i) % 2 === 0 ? EMERALD : CYAN;
+        const mesh = new THREE.Mesh(nodeGeo, new THREE.MeshStandardMaterial({
+          color: tint, emissive: tint, emissiveIntensity: 0.35, metalness: 0.4, roughness: 0.3,
+        }));
+        nodes.push({ mesh, ring, angle: (i / 4) * Math.PI * 2 + ring * 0.7, hoverT: 0, pulse: 0 });
+        world.add(mesh);
+      }
+    });
+
+    const linkPos = new Float32Array(nodes.length * 6);
+    const linkGeo = new THREE.BufferGeometry();
+    linkGeo.setAttribute('position', new THREE.Float32BufferAttribute(linkPos, 3));
+    world.add(new THREE.LineSegments(linkGeo, new THREE.LineBasicMaterial({
+      color: EMERALD, transparent: true, opacity: 0.22,
+    })));
+
+    const dustGeo = new THREE.BufferGeometry();
+    const dustPos = new Float32Array(140 * 3);
+    for (let i = 0; i < 140; i += 1) {
+      const r = 4.5 + Math.random() * 4;
+      const t = Math.random() * Math.PI * 2;
+      const p = Math.acos(2 * Math.random() - 1);
+      dustPos[i * 3] = r * Math.sin(p) * Math.cos(t);
+      dustPos[i * 3 + 1] = r * Math.sin(p) * Math.sin(t) * 0.6;
+      dustPos[i * 3 + 2] = r * Math.cos(p) * 0.5 - 2;
+    }
+    dustGeo.setAttribute('position', new THREE.Float32BufferAttribute(dustPos, 3));
+    const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({
+      color: CYAN, size: 0.045, transparent: true, opacity: 0.55,
+    }));
+    world.add(dust);
+
+    const hero = document.querySelector('.hero');
+    const pointerNdc = new THREE.Vector2(-10, -10);
+    const raycaster = new THREE.Raycaster();
+    const nodeMeshes = nodes.map(n => n.mesh);
+    let hovered = null;
+    let targetX = 0; let targetY = 0;
+
+    window.addEventListener('pointermove', (event) => {
+      const rect = hero.getBoundingClientRect();
+      if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+      const nx = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      const ny = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
+      pointerNdc.set(nx, ny);
+      if (!reduced) { targetY = nx * 0.45; targetX = -ny * 0.22; }
+    }, { passive: true });
+    window.addEventListener('pointerdown', () => { if (hovered) hovered.pulse = 1; }, { passive: true });
+
+    function resize() {
+      const w = hero.clientWidth || 1;
+      const h = hero.clientHeight || 1;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      world.scale.setScalar(Math.max(0.62, Math.min(1, w / 860)));
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    canvas.style.opacity = '1';
+    let inView = true;
+    let visible = !document.hidden;
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => { inView = entries[0].isIntersecting; }, { threshold: 0.02 }).observe(hero);
+    }
+    document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
+
+    function frame() {
+      nodes.forEach((node, index) => {
+        if (!reduced) node.angle += SPEED[node.ring] * (node.ring === 0 ? 1.6 : 1);
+        const radius = RADII[node.ring];
+        const tilt = TILT[node.ring];
+        const x = Math.cos(node.angle) * radius;
+        const z = Math.sin(node.angle) * radius * Math.cos(tilt);
+        const y = Math.sin(node.angle) * radius * Math.sin(tilt);
+        node.mesh.position.set(x, y, z);
+        if (!reduced) node.mesh.rotation.y += 0.006;
+
+        const want = hovered === node ? 1 : 0;
+        node.hoverT += (want - node.hoverT) * 0.12;
+        if (node.pulse > 0) node.pulse = Math.max(0, node.pulse - 0.03);
+        node.mesh.scale.setScalar(1 + node.hoverT * 0.55 + node.pulse * 0.9);
+        node.mesh.material.emissiveIntensity = 0.35 + node.hoverT * 0.8 + node.pulse * 1.6;
+
+        linkPos[index * 6 + 3] = x;
+        linkPos[index * 6 + 4] = y;
+        linkPos[index * 6 + 5] = z;
+      });
+      linkGeo.attributes.position.needsUpdate = true;
+
+      world.rotation.y += (targetY - world.rotation.y) * 0.045;
+      world.rotation.x += (targetX - world.rotation.x) * 0.045;
+      if (!reduced) {
+        world.rotation.y += 0.0016;
+        const t = performance.now() * 0.001;
+        core.scale.setScalar(1 + Math.sin(t * 1.4) * 0.03);
+        glow.intensity = 16 + Math.sin(t * 1.4) * 3;
+        dust.rotation.y += 0.0004;
+      }
+
+      raycaster.setFromCamera(pointerNdc, camera);
+      const hits = raycaster.intersectObjects(nodeMeshes, false);
+      hovered = hits.length ? nodes.find(n => n.mesh === hits[0].object) : null;
+
+      renderer.render(scene, camera);
+    }
+
+    if (reduced) {
+      // Un seul rendu statique, repositionné au resize.
+      frame();
+      window.addEventListener('resize', frame);
+    } else {
+      (function loop() {
+        requestAnimationFrame(loop);
+        if (!inView || !visible) return;
+        frame();
+      })();
+    }
+  } catch (e) {
+    // CDN / WebGL indisponible : le héro garde son dégradé CSS, rien ne casse.
+    canvas.style.display = 'none';
+  }
+})();
 </script>
 </body>
 </html>

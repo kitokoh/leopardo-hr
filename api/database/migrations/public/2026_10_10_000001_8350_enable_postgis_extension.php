@@ -6,7 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
 /**
- * GEO-01 (#8350, épic #8349, BC-33 GEO) — activation de l'extension PostGIS.
+ * GEO-01 (#8350, épic #8349, BC-34 GEO) — activation de l'extension PostGIS.
  *
  * Première introduction de PostGIS dans le dépôt : jusqu'ici, la géo était
  * assurée par des colonnes décimales + Haversine (geofencing Attendance,

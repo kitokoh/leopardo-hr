@@ -12,7 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
- * Console de répartition — polling v1 (BC-34 VTC, VTC-06/#8362, rôle
+ * Console de répartition — polling v1 (BC-35 VTC, VTC-06/#8362, rôle
  * vtc.dispatcher).
  *
  *   - `GET /v1/vtc/dispatch/rides` : courses ACTIVES (non terminales) du

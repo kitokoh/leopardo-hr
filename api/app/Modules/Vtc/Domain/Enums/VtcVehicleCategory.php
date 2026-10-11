@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Vtc\Domain\Enums;
 
 /**
- * Catégorie d'un véhicule VTC (BC-34 VTC, VTC-02/#8358) — berline, van ou
+ * Catégorie d'un véhicule VTC (BC-35 VTC, VTC-02/#8358) — berline, van ou
  * moto (spec §5.1). La catégorie pourra affiner le matching et la
  * tarification en évolution (hors scope v1).
  */

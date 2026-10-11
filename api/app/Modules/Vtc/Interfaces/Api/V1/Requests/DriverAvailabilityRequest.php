@@ -7,7 +7,7 @@ namespace App\Modules\Vtc\Interfaces\Api\V1\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Bascule de disponibilité chauffeur (BC-34 VTC, VTC-05/#8361).
+ * Bascule de disponibilité chauffeur (BC-35 VTC, VTC-05/#8361).
  *
  * Contrat `POST /v1/vtc/driver/availability` : `{available: boolean}` —
  * available → éligible au dispatch ; sinon offline. Les statuts `busy`

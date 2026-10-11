@@ -7,7 +7,7 @@ namespace App\Modules\Vtc\Domain\Support;
 use App\Modules\Vtc\Domain\Models\VtcFareProfile;
 
 /**
- * Calculateur de tarif VTC (BC-34 VTC, VTC-03/#8359).
+ * Calculateur de tarif VTC (BC-35 VTC, VTC-03/#8359).
  *
  * Formule de la spec §5.4 : prix = max(minimum, base + per_km × distance_km
  * + per_minute × durée_min) — montants en MINOR UNITS, arrondi au plus

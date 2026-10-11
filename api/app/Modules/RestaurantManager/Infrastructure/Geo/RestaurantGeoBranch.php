@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 /**
- * GEO-06 (#8355, BC-33 GEO) — « vue d'adaptation » GeoLocatable des branches
+ * GEO-06 (#8355, BC-34 GEO) — « vue d'adaptation » GeoLocatable des branches
  * restaurant pour le core géospatial.
  *
  * L'annuaire public Restaurant est TRANS-TENANT par conception (surface

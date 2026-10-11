@@ -8,7 +8,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Course VTC annulée (BC-34 VTC, VTC-03/#8359).
+ * Course VTC annulée (BC-35 VTC, VTC-03/#8359).
  *
  * Motif tracé (spec §5.2) : passager avant acceptation, chauffeur ou
  * exploitant ensuite — le dispatch (VTC-04) l'écoute pour stopper la

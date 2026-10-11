@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Purge RGPD des positions chauffeurs (BC-34 VTC, VTC-06/#8362).
+ * Purge RGPD des positions chauffeurs (BC-35 VTC, VTC-06/#8362).
  *
  * Les positions sont des DONNÉES PERSONNELLES : rétention bornée par
  * `vtc.positions_retention_days` (défaut 30 j, spec §7) puis suppression —

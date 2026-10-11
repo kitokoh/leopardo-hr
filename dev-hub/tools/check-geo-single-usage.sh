@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Garde GEO-07 (issue #8356, BC-33 GEO) — calculs de distance UNIQUEMENT dans
+# Garde GEO-07 (issue #8356, BC-34 GEO) — calculs de distance UNIQUEMENT dans
 # le module `geo` (core géospatial transverse).
 #
 # Même risque que ADR-0016 (geofence single-usage, #5353) : avant le core
 # `geo`, chaque module calculait ses distances (Haversine PHP dans
 # Attendance, HAVERSINE_SQL brut dans l'annuaire public Restaurant). Le core
-# BC-33 est désormais l'unique source de calculs de positionnement — toute
+# BC-34 est désormais l'unique source de calculs de positionnement — toute
 # NOUVELLE implémentation locale (Haversine, ST_Distance, ST_DWithin) hors
 # `api/app/Modules/Geo/` est une duplication à faire migrer vers
 # App\Shared\Contracts\Geo\GeoServiceContract.
@@ -61,9 +61,9 @@ while IFS= read -r file; do
   if grep -iE "haversine|st_distance|st_dwithin" "$file" \
     | grep -vE '^\s*(//|\*|/\*)' | grep -q .; then
     if [[ "$STRICT" == "1" ]]; then
-      echo "::error file=$rel::Calcul de distance hors module geo (BC-33). Passez par App\\Shared\\Contracts\\Geo\\GeoServiceContract (GEO-07 #8356)."
+      echo "::error file=$rel::Calcul de distance hors module geo (BC-34). Passez par App\\Shared\\Contracts\\Geo\\GeoServiceContract (GEO-07 #8356)."
     else
-      echo "::warning file=$rel::Calcul de distance hors module geo détecté (BC-33) — à migrer vers GeoServiceContract (GEO-07 #8356, mode warning)."
+      echo "::warning file=$rel::Calcul de distance hors module geo détecté (BC-34) — à migrer vers GeoServiceContract (GEO-07 #8356, mode warning)."
     fi
     violations=$((violations + 1))
   fi
@@ -71,7 +71,7 @@ done < <(grep -rliE "haversine|st_distance|st_dwithin" "$SCOPE" --include="*.php
 
 if [[ "$violations" -gt 0 ]]; then
   if [[ "$STRICT" == "1" ]]; then
-    echo "::error::Geo : $violations fichier(s) implémentent un calcul de distance hors module geo (BC-33, GEO-07 #8356)."
+    echo "::error::Geo : $violations fichier(s) implémentent un calcul de distance hors module geo (BC-34, GEO-07 #8356)."
     exit 1
   fi
   echo "::warning::Geo : $violations fichier(s) avec calcul de distance hors module geo (mode warning — durcissement GEO_SINGLE_USAGE_STRICT ultérieur, GEO-07 #8356)."

@@ -65,7 +65,7 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe('Vue chauffeurs VTC (BC-34, VTC-07/#8363)', () => {
+describe('Vue chauffeurs VTC (BC-35, VTC-07/#8363)', () => {
   it('liste les chauffeurs avec statut et dernière position connue', async () => {
     mockedApiFetch.mockResolvedValueOnce(jsonResponse(driversPayload));
 

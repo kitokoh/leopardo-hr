@@ -15,7 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
- * CRUD des véhicules (BC-34 VTC, VTC-06/#8362, rôle vtc.admin).
+ * CRUD des véhicules (BC-35 VTC, VTC-06/#8362, rôle vtc.admin).
  *
  * Plaque unique par tenant : un doublon est renvoyé en 422 propre (jamais
  * une 500). La suppression d'un véhicule encore affecté à un chauffeur est

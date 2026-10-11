@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * Grille tarifaire VTC (BC-34 VTC, VTC-06/#8362) — allowlistée.
+ * Grille tarifaire VTC (BC-35 VTC, VTC-06/#8362) — allowlistée.
  *
  * @mixin VtcFareProfile
  */

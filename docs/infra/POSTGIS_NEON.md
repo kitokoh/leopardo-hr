@@ -1,4 +1,4 @@
-# PostGIS sur Neon — runbook (BC-33 GEO)
+# PostGIS sur Neon — runbook (BC-34 GEO)
 
 **Références** : GEO-01 (#8350), spec `docs/specifications/MODULE_GEOCORE_ET_VERTICAL_VTC.md` (décision D1).
 

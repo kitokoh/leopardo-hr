@@ -11,7 +11,7 @@ use App\Modules\Vtc\Interfaces\Api\V1\Resources\VtcRideResource;
 use Illuminate\Http\Request;
 
 /**
- * Transitions de course côté chauffeur (BC-34 VTC, VTC-05/#8361).
+ * Transitions de course côté chauffeur (BC-35 VTC, VTC-05/#8361).
  *
  *   - accept / decline : réponse à l'offre COURANTE du dispatch (VTC-04 —
  *   verrou lockForUpdate, double acceptation impossible, déclinaison →

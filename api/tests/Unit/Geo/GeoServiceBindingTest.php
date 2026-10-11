@@ -13,7 +13,7 @@ use App\Shared\Geo\GeoPoint;
 use Tests\TestCase;
 
 /**
- * GEO-03 (#8352, BC-33 GEO) — sélection du calculateur via GeoCapabilities
+ * GEO-03 (#8352, BC-34 GEO) — sélection du calculateur via GeoCapabilities
  * et binding de la façade transverse GeoServiceContract.
  */
 class GeoServiceBindingTest extends TestCase

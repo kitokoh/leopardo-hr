@@ -21,11 +21,11 @@ use App\Shared\Geo\GeoPoint;
 use Illuminate\Database\DatabaseManager;
 
 /**
- * Moteur de dispatch VTC (BC-34 VTC, VTC-04/#8360) — le cœur métier.
+ * Moteur de dispatch VTC (BC-35 VTC, VTC-04/#8360) — le cœur métier.
  *
  * Matching (spec §5.3) : chauffeurs `available` du MÊME TENANT dans le rayon
  * `vtc.dispatch.radius_km`, triés du plus proche au plus lointain par le
- * CORE GÉOSPATIAL (BC-33 — type `vtc_driver` de la registry, PostGIS
+ * CORE GÉOSPATIAL (BC-34 — type `vtc_driver` de la registry, PostGIS
  * ST_DWithin + KNN ou repli interne ; vtc ne calcule JAMAIS de distance).
  *
  * Cascade d'offres séquentielles :

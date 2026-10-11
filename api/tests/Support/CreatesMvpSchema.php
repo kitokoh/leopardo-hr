@@ -3524,7 +3524,7 @@ trait CreatesMvpSchema
                 $table->index(['company_id', 'delivery_id'], 'delivery_tracking_shares_company_delivery_idx');
             });
         }
-        // ── BC-34 VTC (vtc_vehicles) ─────────────────────────────────────────────────
+        // ── BC-35 VTC (vtc_vehicles) ─────────────────────────────────────────────────
         // Parité fixture ↔ migrations tenant VTC-02 (#8358, garde #5443) —
         // mêmes colonnes que les migrations, sans FKs (style fixture).
         if (! Schema::hasTable($this->moduleTable('vtc_vehicles'))) {
@@ -3544,7 +3544,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-34 VTC (vtc_drivers) ──────────────────────────────────────────────────
+        // ── BC-35 VTC (vtc_drivers) ──────────────────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('vtc_drivers'))) {
             Schema::create($this->moduleTable('vtc_drivers'), function (Blueprint $table): void {
                 $table->id();
@@ -3564,7 +3564,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-34 VTC (vtc_fare_profiles) ────────────────────────────────────────────
+        // ── BC-35 VTC (vtc_fare_profiles) ────────────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('vtc_fare_profiles'))) {
             Schema::create($this->moduleTable('vtc_fare_profiles'), function (Blueprint $table): void {
                 $table->id();
@@ -3581,7 +3581,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-34 VTC (vtc_rides) ────────────────────────────────────────────────────
+        // ── BC-35 VTC (vtc_rides) ────────────────────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('vtc_rides'))) {
             Schema::create($this->moduleTable('vtc_rides'), function (Blueprint $table): void {
                 $table->id();
@@ -3623,7 +3623,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-34 VTC (vtc_ride_events) ──────────────────────────────────────────────
+        // ── BC-35 VTC (vtc_ride_events) ──────────────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('vtc_ride_events'))) {
             Schema::create($this->moduleTable('vtc_ride_events'), function (Blueprint $table): void {
                 $table->id();
@@ -3636,7 +3636,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-34 VTC (vtc_driver_positions) ─────────────────────────────────────────
+        // ── BC-35 VTC (vtc_driver_positions) ─────────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('vtc_driver_positions'))) {
             Schema::create($this->moduleTable('vtc_driver_positions'), function (Blueprint $table): void {
                 $table->id();

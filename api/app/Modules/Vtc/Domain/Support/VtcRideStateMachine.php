@@ -8,7 +8,7 @@ use App\Modules\Vtc\Domain\Enums\VtcRideStatus;
 use App\Modules\Vtc\Domain\Exceptions\InvalidRideTransitionException;
 
 /**
- * Machine à états d'une course VTC (BC-34 VTC, VTC-03/#8359 — consommée par
+ * Machine à états d'une course VTC (BC-35 VTC, VTC-03/#8359 — consommée par
  * le dispatch VTC-04 et l'API chauffeur VTC-05).
  *
  * Verrouille les invariants du cycle de vie (spec §5.2) :

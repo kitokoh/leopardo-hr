@@ -15,11 +15,11 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Entrée de la cascade de dispatch (BC-34 VTC, VTC-04/#8360).
+ * Entrée de la cascade de dispatch (BC-35 VTC, VTC-04/#8360).
  *
  * Enfilé par StartVtcDispatchListener sur VtcRideRequested : délègue à
  * VtcDispatchService::offerToNextCandidate (matching chauffeur disponible le
- * plus proche via le core geo BC-33). Idempotent : une course sortie de
+ * plus proche via le core geo BC-34). Idempotent : une course sortie de
  * `dispatching` (annulée, acceptée, expirée) est ignorée sans effet.
  * Tenant-scoped (EnsureTenantContext — spec ops : `queue:work --queue=vtc`).
  */

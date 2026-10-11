@@ -9,7 +9,7 @@ use App\Modules\Vtc\Domain\Models\VtcRide;
 use Illuminate\Http\Request;
 
 /**
- * Base des surfaces chauffeur (BC-34 VTC, VTC-05/#8361).
+ * Base des surfaces chauffeur (BC-35 VTC, VTC-05/#8361).
  *
  * Résout la fiche chauffeur de l'employé authentifié (`user_id` — deny-by-
  * default : aucun accès « chauffeur » sans fiche rattachée, 403

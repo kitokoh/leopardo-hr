@@ -10,7 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Offres de dispatch du chauffeur (BC-34 VTC, VTC-05/#8361).
+ * Offres de dispatch du chauffeur (BC-35 VTC, VTC-05/#8361).
  *
  * `GET /v1/vtc/driver/offers` : courses `dispatching` dont l'offre COURANTE
  * (metadata.pending_offer, source de vérité du dispatch VTC-04) appartient

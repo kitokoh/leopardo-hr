@@ -10,9 +10,9 @@ use App\Shared\Geo\GeoPoint;
 use Illuminate\Http\JsonResponse;
 
 /**
- * Devis d'une course (BC-34 VTC, VTC-03/#8359).
+ * Devis d'une course (BC-35 VTC, VTC-03/#8359).
  *
- * `POST /v1/vtc/rides/estimate` : distance via le core géospatial (BC-33,
+ * `POST /v1/vtc/rides/estimate` : distance via le core géospatial (BC-34,
  * jamais de calcul local), coefficient routier `vtc.pricing.road_factor`,
  * grille `vtc_fare_profiles` (demandée ou par défaut) → devis normalisé.
  */

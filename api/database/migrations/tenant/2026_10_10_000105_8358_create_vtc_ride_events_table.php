@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * #8358 (VTC-02) — BC-34 VTC : table tenant `vtc_ride_events`.
+ * #8358 (VTC-02) — BC-35 VTC : table tenant `vtc_ride_events`.
  *
  * Journal APPEND-ONLY du cycle de vie d'une course : chaque transition de
  * la state machine (VTC-04) et chaque offre du dispatch y écrit une ligne

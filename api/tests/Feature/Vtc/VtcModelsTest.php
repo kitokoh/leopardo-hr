@@ -19,9 +19,9 @@ use Tests\Support\SwitchesTenantContext;
 use Tests\TestCase;
 
 /**
- * VTC-02 (#8358, BC-34 VTC) — modèles Eloquent du domaine : casts enums,
+ * VTC-02 (#8358, BC-35 VTC) — modèles Eloquent du domaine : casts enums,
  * relations, scope tenant (un tenant ne voit jamais les données d'un
- * autre), GeoLocatable du chauffeur (contrat du core geo BC-33).
+ * autre), GeoLocatable du chauffeur (contrat du core geo BC-34).
  */
 class VtcModelsTest extends TestCase
 {

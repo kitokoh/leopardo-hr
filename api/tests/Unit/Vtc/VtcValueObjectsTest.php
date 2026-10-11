@@ -12,7 +12,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * VTC-02 (#8358, BC-34 VTC) — value objects et enums du domaine.
+ * VTC-02 (#8358, BC-35 VTC) — value objects et enums du domaine.
  */
 class VtcValueObjectsTest extends TestCase
 {

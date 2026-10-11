@@ -14,9 +14,9 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 /**
- * VTC-01 (#8357, BC-34 VTC) — provider de la verticale VTC/taxi.
+ * VTC-01 (#8357, BC-35 VTC) — provider de la verticale VTC/taxi.
  *
- * Première verticale consommatrice du core géospatial `geo` (BC-33) : le
+ * Première verticale consommatrice du core géospatial `geo` (BC-34) : le
  * dispatch au chauffeur disponible le plus proche et les estimations de
  * distance passent par `App\Shared\Contracts\Geo\GeoServiceContract` (GEO-03)
  * — jamais de calcul local, jamais d'import direct d'une autre verticale
@@ -45,7 +45,7 @@ class VtcServiceProvider extends ServiceProvider
 
         // VTC-04 (#8360) — type recherchable `vtc_driver` de la registry
         // opt-in `geo.searchables` : vue d'adaptation des chauffeurs
-        // `available` (dispatch au plus proche via le core geo BC-33).
+        // `available` (dispatch au plus proche via le core geo BC-34).
         // Enregistrement paresseux via la façade transverse — inversion de
         // dépendance, garde d'isolation #5584 (le core ne connaît pas la
         // verticale, la verticale s'enregistre).

@@ -14,7 +14,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Timeout d'une offre de dispatch (BC-34 VTC, VTC-04/#8360).
+ * Timeout d'une offre de dispatch (BC-35 VTC, VTC-04/#8360).
  *
  * Programmé avec délai (`vtc.dispatch.offer_timeout_s`, défaut 30 s) à
  * chaque offre envoyée : consomme l'offre SI elle est encore la courante

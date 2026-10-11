@@ -12,7 +12,7 @@ import { DriverCard } from '../_components/DriverCard';
 import type { VtcDriver } from '../_components/vtc-shared';
 
 /**
- * BC-34 VTC (épic #8349, VTC-07/#8363) — vue chauffeurs de la console
+ * BC-35 VTC (épic #8349, VTC-07/#8363) — vue chauffeurs de la console
  * dispatch : statuts et dernières positions connues, polling 15 s.
  *
  * Source : `GET /v1/vtc/dispatch/drivers` (VTC-06, rôle vtc.dispatcher).

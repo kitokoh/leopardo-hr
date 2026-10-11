@@ -15,7 +15,7 @@
 # file — whether via a `use` import + short name, or a fully-qualified
 # reference.
 #
-# Exclusion (2026-10-10, épic #8349 / BC-34 VTC) : les classes `abstract`
+# Exclusion (2026-10-10, épic #8349 / BC-35 VTC) : les classes `abstract`
 # ne sont pas routables par définition — une base abstraite de contrôleurs
 # (ex. VtcDriverBaseController, factorisation de la résolution du chauffeur
 # courant) serait faussement signalée orpheline. Elles sont ignorées.

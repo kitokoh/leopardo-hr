@@ -11,7 +11,7 @@ use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
- * GEO-06 (#8355, BC-33 GEO) — pilote : annuaire public Restaurant migré sur
+ * GEO-06 (#8355, BC-34 GEO) — pilote : annuaire public Restaurant migré sur
  * le core géospatial (config `geo.pilots.restaurant_directory`).
  *
  * Comportement IDENTIQUE au repli legacy HAVERSINE_SQL (tests

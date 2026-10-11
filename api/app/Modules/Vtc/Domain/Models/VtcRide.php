@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * Course VTC/taxi — agrégat racine (BC-34 VTC, VTC-02/#8358).
+ * Course VTC/taxi — agrégat racine (BC-35 VTC, VTC-02/#8358).
  *
  * Référence `VTC-YYYY-NNNNNN` unique par tenant, `idempotency_key` unique
  * par tenant (zéro doublon de création, VTC-03), estimation persistée en

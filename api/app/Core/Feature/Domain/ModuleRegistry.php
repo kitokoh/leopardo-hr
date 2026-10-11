@@ -70,10 +70,12 @@ final class ModuleRegistry
      * Version du registre (semver contenu : toute addition/retrait de clé ou
      * changement de défaut la fait monter). 1.1.0 : entrée `fleet` ajoutée
      * (désync corrigée), `delivery`/`b2b_catalog` enregistrés (garde FR-6).
-     * 1.2.0 : entrée `geo` (BC-33, GEO-02/#8351) ajoutée.
-     * 1.3.0 : entrée `vtc` (BC-34, VTC-01/#8357) ajoutée.
+     * 1.2.0 : entrée `fundraising` ajoutée (#8379 — verticale Cagnottes
+     * solidaires), `known_order` des entrées postérieures décalé.
+     * 1.3.0 : entrée `geo` (BC-34, GEO-02/#8351) ajoutée.
+     * 1.4.0 : entrée `vtc` (BC-35, VTC-01/#8357) ajoutée.
      */
-    public const VERSION = '1.3.0';
+    public const VERSION = '1.4.0';
 
     /**
      * Source déclarative unique. L'ordre de déclaration reproduit l'ordre
@@ -179,7 +181,7 @@ final class ModuleRegistry
             'platform_exposable' => true,
             'metadata_mirror' => 'training',
             'horizontal_order' => 6,
-            'known_order' => 16,
+            'known_order' => 17,
             'description' => 'Module Formation — outil horizontal (BC-04 HR) : catalogue, sessions, inscriptions.',
         ],
         'fuel_station' => [
@@ -308,6 +310,26 @@ final class ModuleRegistry
             'known_order' => 13,
             'description' => 'Solution PharmaManager (référentiel produits, stock par lots, achats, ventes comptoir, ordonnancier).',
         ],
+        // #8379 — verticale « Cagnottes solidaires » (spec
+        // docs/specifications/SOLUTION_FUNDRAISING.md) : lien public de
+        // collecte, contributions carte + mobile money, reversements au
+        // bénéficiaire. Enregistrée ici en plus des 3 points historiques
+        // (config/feature-flags, Company::KNOWN_MODULES, catalogue) — le
+        // registre est la source déclarative unique (FR-6). Fail-closed.
+        'fundraising' => [
+            'kind' => 'solution',
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.35.0',
+            'killable' => true,
+            'platform_flag' => true,
+            'exposed_in_flags' => true,
+            'platform_exposable' => true,
+            'metadata_mirror' => null,
+            'horizontal_order' => null,
+            'known_order' => 16,
+            'description' => 'Verticale Cagnottes solidaires : liens publics de collecte, contributions carte et mobile money, reversements au bénéficiaire.',
+        ],
         'company_showcase' => [
             'kind' => 'horizontal_tool',
             'scope' => 'module',
@@ -333,7 +355,7 @@ final class ModuleRegistry
             'platform_exposable' => true,
             'metadata_mirror' => null,
             'horizontal_order' => null,
-            'known_order' => 18,
+            'known_order' => 19,
             'description' => 'Module Retail — vendeur générique (BC-17) : produits, catégories, publication.',
         ],
         'communication' => [
@@ -347,7 +369,7 @@ final class ModuleRegistry
             'platform_exposable' => true,
             'metadata_mirror' => null,
             'horizontal_order' => null,
-            'known_order' => 19,
+            'known_order' => 20,
             'description' => 'Communication (boîte mail connectée + IA) : intégrations Gmail, classification, relances et réponses assistées.',
         ],
         'hospitality' => [
@@ -361,7 +383,7 @@ final class ModuleRegistry
             'platform_exposable' => true,
             'metadata_mirror' => null,
             'horizontal_order' => null,
-            'known_order' => 20,
+            'known_order' => 21,
             'description' => 'Solution HospitalityManager (hôtels, résidences, locations : établissements, inventaire, réservations, baux et loyers).',
         ],
         'fleet' => [
@@ -375,7 +397,7 @@ final class ModuleRegistry
             'platform_exposable' => true,
             'metadata_mirror' => null,
             'horizontal_order' => null,
-            'known_order' => 17,
+            'known_order' => 18,
             'description' => 'Module Fleet — flotte & suivi des véhicules (outil horizontal BC-24/#7400 ; gate module.fleet).',
         ],
         'delivery' => [
@@ -504,12 +526,7 @@ final class ModuleRegistry
             'known_order' => null,
             'description' => 'Outil horizontal Marketing — vit dans metadata.modules, aucun flag plateforme.',
         ],
-        // BC-33 GEO (GEO-02/#8351) — ajout additif en fin de liste (ordre
-        // préservé — contrat /auth/me : la clé apparaît en dernier, résolue
-        // false par défaut comme tout module opt-in). Enregistrement
-        // simultané dans config/feature-flags.php + Company::KNOWN_MODULES
-        // (leçon #7220/#7235 ; parité imposée par tests/Unit/Core/Feature).
-        'geo' => [
+o' => [
             'kind' => 'module',
             'scope' => 'module',
             'default' => false,
@@ -520,14 +537,9 @@ final class ModuleRegistry
             'platform_exposable' => true,
             'metadata_mirror' => null,
             'horizontal_order' => null,
-            'known_order' => 21,
-            'description' => 'Core géospatial transverse (BC-33, GEO-02/#8351 ; gate `module.geo`) : calculs de positionnement PostGIS — distance, plus-proches, dans-un-rayon — réutilisables par toutes les verticales (VTC en premier, BC-34).',
+            'known_order' => 22,
+            'description' => 'Core géospatial transverse (BC-34, GEO-02/#8351 ; gate `module.geo`) : calculs de positionnement PostGIS — distance, plus-proches, dans-un-rayon — réutilisables par toutes les verticales (VTC en premier, BC-35).',
         ],
-        // BC-34 VTC (VTC-01/#8357) — ajout additif en fin de liste (ordre
-        // préservé — contrat /auth/me). Code du VtcManifest : activation
-        // refusée si `geo` inactif (SolutionActivator fail-closed).
-        // Enregistrement simultané dans config/feature-flags.php +
-        // Company::KNOWN_MODULES (parité imposée par tests/Unit/Core/Feature).
         'vtc' => [
             'kind' => 'solution',
             'scope' => 'solution',
@@ -539,8 +551,8 @@ final class ModuleRegistry
             'platform_exposable' => true,
             'metadata_mirror' => null,
             'horizontal_order' => null,
-            'known_order' => 22,
-            'description' => 'Solution VTC/taxi (BC-34, VTC-01/#8357 ; gate `module.vtc`) : réservation de courses, dispatch au plus proche chauffeur via le core géospatial `geo` (requis), tarification et suivi.',
+            'known_order' => 23,
+            'description' => 'Solution VTC/taxi (BC-35, VTC-01/#8357 ; gate `module.vtc`) : réservation de courses, dispatch au plus proche chauffeur via le core géospatial `geo` (requis), tarification et suivi.',
         ],
     ];
 

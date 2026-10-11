@@ -12,7 +12,7 @@ import { RideCard } from './_components/RideCard';
 import type { VtcDispatchRide } from './_components/vtc-shared';
 
 /**
- * BC-34 VTC (épic #8349, VTC-07/#8363) — console dispatch : courses actives
+ * BC-35 VTC (épic #8349, VTC-07/#8363) — console dispatch : courses actives
  * du tenant, rafraîchies par polling (15 s — v1 sans websocket, spec §5.5).
  *
  * Source : `GET /v1/vtc/dispatch/rides` (VTC-06, rôle vtc.dispatcher).

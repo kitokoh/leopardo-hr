@@ -7,7 +7,7 @@ namespace App\Modules\Vtc\Domain\Exceptions;
 use App\Exceptions\DomainException;
 
 /**
- * Offre de dispatch inexistante ou périmée (BC-34 VTC, VTC-04/#8360).
+ * Offre de dispatch inexistante ou périmée (BC-35 VTC, VTC-04/#8360).
  *
  * Levée quand un chauffeur répond à une offre qui n'est plus l'offre
  * courante de la course (jamais faite, déjà expirée, déclinée ou course

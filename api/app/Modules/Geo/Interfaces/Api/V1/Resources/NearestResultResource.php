@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * Un résultat « le plus proche » (GEO-05, issue #8354, BC-33 GEO).
+ * Un résultat « le plus proche » (GEO-05, issue #8354, BC-34 GEO).
  *
  * Enveloppe HTTP du value object partagé NearestResult : la représentation
  * (id, label, distance_meters, latitude, longitude) est définie UNE SEULE

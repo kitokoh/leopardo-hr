@@ -9,7 +9,7 @@ use App\Shared\Geo\GeoPoint;
 use PHPUnit\Framework\TestCase;
 
 /**
- * GEO-03 (#8352, BC-33 GEO) — validation des bornes du value object GeoPoint.
+ * GEO-03 (#8352, BC-34 GEO) — validation des bornes du value object GeoPoint.
  */
 class GeoPointTest extends TestCase
 {

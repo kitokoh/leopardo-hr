@@ -13,7 +13,7 @@ use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
- * GEO-03 (#8352, BC-33 GEO) — calculateur PostGIS de référence et écart
+ * GEO-03 (#8352, BC-34 GEO) — calculateur PostGIS de référence et écart
  * avec le fallback Haversine (< 1 % sous 100 km, critère de l'issue).
  *
  * Skippé hors PostgreSQL provisionné (le fallback est couvert en unitaire).

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// BC-34 VTC (VTC-02..06, #8358-#8362) — VTC/taksi dikey modülü mesajları
+// BC-35 VTC (VTC-02..06, #8358-#8362) — VTC/taksi dikey modülü mesajları
 // (PA2-I18N-007: sabit metin yok, her şey bu katalogdan geçer).
 return [
     'ride_creation_failed' => ':attempts denemeden sonra VTC yolculuğu oluşturulamadı.',

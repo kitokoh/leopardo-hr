@@ -155,6 +155,13 @@ class Company extends Model
         // l'admin plateforme (`PlatformCompanyFeatureController::update`)
         // reconstruise et expose la clé, au même titre que `accounting`/#7235.
         'company_showcase',
+        // FUNDRAISING — verticale « Cagnottes solidaires » (spec
+        // docs/specifications/SOLUTION_FUNDRAISING.md) : enregistrée ici DÈS
+        // la création (leçon #7220/#7235 : catalogue + feature-flags +
+        // KNOWN_MODULES = les 3 points obligatoires, sinon l'admin
+        // plateforme ne peut jamais activer la verticale). Fail-closed
+        // (défaut false), gate `module.fundraising`.
+        'fundraising',
         // #7432 — Formation : outil HORIZONTAL (toute entreprise forme, quel que
         // soit son secteur). Il était déjà dans `HORIZONTAL_TOOLS` et dans le
         // sous-menu RH de la barre client, mais ABSENT de ce registre : comme
@@ -194,14 +201,14 @@ class Company extends Model
         // (leçon #7220/#7235 : sans cette entrée, l'admin plateforme ne peut
         // jamais activer la verticale). Fail-closed conservé (défaut false).
         'hospitality',
-        // BC-33 GEO (GEO-02/#8351) — core géospatial transverse (PostGIS,
+        // BC-34 GEO (GEO-02/#8351) — core géospatial transverse (PostGIS,
         // distance / plus-proches / dans-un-rayon), consommé par la verticale
         // VTC et toute verticale ayant besoin de positionnement. Enregistré
         // ici DÈS la création (leçon #7220/#7235 : sans cette entrée, l'admin
         // plateforme ne peut jamais activer le module). Fail-closed conservé
         // (défaut false) ; gate serveur `module.geo` sur /api/v1/geo/*.
         'geo',
-        // BC-34 VTC (VTC-01/#8357) — verticale VTC/taxi (code du VtcManifest,
+        // BC-35 VTC (VTC-01/#8357) — verticale VTC/taxi (code du VtcManifest,
         // flag posé par SolutionActivator ; module requis : geo). Enregistrée
         // ici DÈS la création (leçon #7220/#7235 : sans cette entrée, l'admin
         // plateforme ne peut jamais activer la verticale). Fail-closed

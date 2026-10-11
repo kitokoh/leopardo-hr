@@ -16,7 +16,7 @@ use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\QueryException;
 
 /**
- * Création IDEMPOTENTE d'une course VTC (BC-34 VTC, VTC-03/#8359).
+ * Création IDEMPOTENTE d'une course VTC (BC-35 VTC, VTC-03/#8359).
  *
  * Garanties (spec §5.1/§7) :
  *  - même Idempotency-Key → la course EXISTANTE est retournée (rejeu

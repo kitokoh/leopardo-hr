@@ -13,7 +13,7 @@ use InvalidArgumentException;
 use Tests\TestCase;
 
 /**
- * GEO-04 (#8353, BC-33 GEO) — registry opt-in des types recherchables :
+ * GEO-04 (#8353, BC-34 GEO) — registry opt-in des types recherchables :
  * enregistrement, résolution, refus fail-closed des types inconnus.
  */
 class SearchableRegistryTest extends TestCase

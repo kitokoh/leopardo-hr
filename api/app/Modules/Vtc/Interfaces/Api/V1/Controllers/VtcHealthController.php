@@ -7,7 +7,7 @@ namespace App\Modules\Vtc\Interfaces\Api\V1\Controllers;
 use Illuminate\Http\JsonResponse;
 
 /**
- * Point de contrôle de la verticale VTC (VTC-01/#8357, BC-34 VTC).
+ * Point de contrôle de la verticale VTC (VTC-01/#8357, BC-35 VTC).
  *
  * Route de smoke test `GET /api/v1/vtc/ping` : prouve que le module est
  * chargé, que le feature flag `vtc` est actif pour le tenant courant et que

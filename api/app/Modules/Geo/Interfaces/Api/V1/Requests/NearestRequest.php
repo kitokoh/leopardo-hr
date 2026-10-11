@@ -7,7 +7,7 @@ namespace App\Modules\Geo\Interfaces\Api\V1\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Recherche « les plus proches » (GEO-05, issue #8354, BC-33 GEO).
+ * Recherche « les plus proches » (GEO-05, issue #8354, BC-34 GEO).
  *
  * Contrat `GET /v1/geo/nearest?type=&lat=&lng=&radius_km=&limit=`. Le rayon
  * est borné par la configuration `geo.nearest` (défaut 10 km, max 50 km) :

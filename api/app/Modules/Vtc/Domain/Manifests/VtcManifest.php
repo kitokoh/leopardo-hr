@@ -8,11 +8,11 @@ use App\Core\Solutions\Contracts\SolutionManifest;
 use App\Core\Solutions\Enums\SolutionIndustry;
 
 /**
- * Manifest de la verticale VTC/taxi (VTC-01, issue #8357, BC-34 VTC).
+ * Manifest de la verticale VTC/taxi (VTC-01, issue #8357, BC-35 VTC).
  *
  * Identité : code `vtc` (feature flag companies.features.vtc), industrie
  * `mobility` (nouvelle case du registre fermé SolutionIndustry), maturité
- * `pilot`, module requis `geo` (BC-33 — le dispatch au chauffeur le plus
+ * `pilot`, module requis `geo` (BC-34 — le dispatch au chauffeur le plus
  * proche et les estimations passent EXCLUSIVEMENT par le core géospatial,
  * spec docs/specifications/MODULE_GEOCORE_ET_VERTICAL_VTC.md §5), données
  * sensibles PII passagers + localisation + paiements, permissions vtc.*.

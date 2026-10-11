@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Vtc\Application\DTOs;
 
 /**
- * Estimation de course VTC (BC-34 VTC, VTC-03/#8359).
+ * Estimation de course VTC (BC-35 VTC, VTC-03/#8359).
  *
  * DTO immuable partagé entre EstimateRideFareAction, RequestRideAction
  * (persistance du devis sur la course) et l'API passager (réponse

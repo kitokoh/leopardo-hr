@@ -14,7 +14,7 @@ use App\Modules\Vtc\Domain\Support\VtcRideStateMachine;
 use Illuminate\Database\DatabaseManager;
 
 /**
- * Annulation d'une course VTC par le PASSAGER (BC-34 VTC, VTC-03/#8359).
+ * Annulation d'une course VTC par le PASSAGER (BC-35 VTC, VTC-03/#8359).
  *
  * Règle métier (spec §5.2) : le passager ne peut annuler qu'AVANT
  * l'acceptation par un chauffeur (requested/dispatching) — après, la course

@@ -7,7 +7,7 @@ namespace App\Modules\Vtc\Interfaces\Api\V1\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Création/mise à jour d'une grille tarifaire VTC (BC-34 VTC, VTC-06/#8362).
+ * Création/mise à jour d'une grille tarifaire VTC (BC-35 VTC, VTC-06/#8362).
  *
  * Montants en MINOR UNITS (entiers ≥ 0). `is_default` est exclusif par
  * tenant : poser une grille par défaut retire le drapeau des autres

@@ -25,6 +25,8 @@ type Copy = {
   badge: string;
   title: string;
   subtitle: string;
+  /** Pastille affichée sur chaque carte : le pack métier est offert. */
+  freeBadge: string;
   cards: VerticalCard[];
 };
 
@@ -35,7 +37,8 @@ const copyByLocale: Record<AppLocale, Copy> = {
     badge: 'Verticales métier',
     title: 'Une plateforme, vos métiers',
     subtitle:
-      'Chaque verticale se branche sur le socle commun — pointage, paie, RH, compta — avec ses modules dédiés.',
+      'Chaque verticale se branche sur le socle commun — pointage, paie, RH, compta — avec ses modules dédiés, et le pack de démarrage est offert.',
+    freeBadge: 'Pack offert',
     cards: [
       {
         icon: <UtensilsCrossed className={iconClass} />,
@@ -48,22 +51,22 @@ const copyByLocale: Record<AppLocale, Copy> = {
         icon: <Plane className={iconClass} />,
         name: 'Agences de voyage',
         benefit: 'Dossiers clients, commissions et paie des équipes au même endroit.',
-        href: '/case-studies',
-        linkLabel: 'Voir les cas par métier',
+        href: '/packs/agence-de-voyage',
+        linkLabel: 'Voir le pack offert',
       },
       {
         icon: <GraduationCap className={iconClass} />,
         name: 'Écoles & formation',
         benefit: 'Présence du personnel, absences et paie alignées sur le calendrier scolaire.',
-        href: '/case-studies',
-        linkLabel: 'Voir les cas par métier',
+        href: '/packs/ecole',
+        linkLabel: 'Voir le pack offert',
       },
       {
         icon: <Fuel className={iconClass} />,
         name: 'Stations-service',
         benefit: 'Équipes tournantes pointées sur site, heures et majorations vers la paie.',
-        href: '/case-studies',
-        linkLabel: 'Voir les cas par métier',
+        href: '/packs/station-service',
+        linkLabel: 'Voir le pack offert',
       },
     ],
   },
@@ -71,7 +74,8 @@ const copyByLocale: Record<AppLocale, Copy> = {
     badge: 'Industry verticals',
     title: 'One platform, your industries',
     subtitle:
-      'Each vertical plugs into the shared foundation — attendance, payroll, HR, accounting — with its own dedicated modules.',
+      'Each vertical plugs into the shared foundation — attendance, payroll, HR, accounting — with its own dedicated modules, and the starter pack is free.',
+    freeBadge: 'Free pack',
     cards: [
       {
         icon: <UtensilsCrossed className={iconClass} />,
@@ -84,22 +88,22 @@ const copyByLocale: Record<AppLocale, Copy> = {
         icon: <Plane className={iconClass} />,
         name: 'Travel agencies',
         benefit: 'Client files, commissions and team payroll in one place.',
-        href: '/case-studies',
-        linkLabel: 'See case studies by industry',
+        href: '/packs/agence-de-voyage',
+        linkLabel: 'See the free pack',
       },
       {
         icon: <GraduationCap className={iconClass} />,
         name: 'Schools & training',
         benefit: 'Staff attendance, leave and payroll aligned with the school calendar.',
-        href: '/case-studies',
-        linkLabel: 'See case studies by industry',
+        href: '/packs/ecole',
+        linkLabel: 'See the free pack',
       },
       {
         icon: <Fuel className={iconClass} />,
         name: 'Fuel stations',
         benefit: 'Rotating crews clocked on site, hours and overtime straight to payroll.',
-        href: '/case-studies',
-        linkLabel: 'See case studies by industry',
+        href: '/packs/station-service',
+        linkLabel: 'See the free pack',
       },
     ],
   },
@@ -107,7 +111,8 @@ const copyByLocale: Record<AppLocale, Copy> = {
     badge: 'Sektör çözümleri',
     title: 'Tek platform, sizin sektörleriniz',
     subtitle:
-      'Her dikey çözüm ortak temele — yoklama, bordro, İK, muhasebe — kendi modülleriyle bağlanır.',
+      'Her dikey çözüm ortak temele — yoklama, bordro, İK, muhasebe — kendi modülleriyle bağlanır; başlangıç paketi ücretsizdir.',
+    freeBadge: 'Ücretsiz paket',
     cards: [
       {
         icon: <UtensilsCrossed className={iconClass} />,
@@ -120,22 +125,22 @@ const copyByLocale: Record<AppLocale, Copy> = {
         icon: <Plane className={iconClass} />,
         name: 'Seyahat acenteleri',
         benefit: 'Müşteri dosyaları, komisyonlar ve ekip bordrosu tek yerde.',
-        href: '/case-studies',
-        linkLabel: 'Sektöre göre vakaları görün',
+        href: '/packs/agence-de-voyage',
+        linkLabel: 'Ücretsiz paketi görün',
       },
       {
         icon: <GraduationCap className={iconClass} />,
         name: 'Okullar & eğitim',
         benefit: 'Personel yoklaması, izinler ve bordro okul takvimiyle uyumlu.',
-        href: '/case-studies',
-        linkLabel: 'Sektöre göre vakaları görün',
+        href: '/packs/ecole',
+        linkLabel: 'Ücretsiz paketi görün',
       },
       {
         icon: <Fuel className={iconClass} />,
         name: 'Akaryakıt istasyonları',
         benefit: 'Vardiyalı ekipler sahada yoklanır, saatler ve fazla mesai bordroya akar.',
-        href: '/case-studies',
-        linkLabel: 'Sektöre göre vakaları görün',
+        href: '/packs/station-service',
+        linkLabel: 'Ücretsiz paketi görün',
       },
     ],
   },
@@ -143,7 +148,8 @@ const copyByLocale: Record<AppLocale, Copy> = {
     badge: 'حلول حسب القطاع',
     title: 'منصة واحدة، قطاعاتكم',
     subtitle:
-      'كل حل قطاعي يتصل بالأساس المشترك — الحضور، الرواتب، الموارد البشرية، المحاسبة — مع وحداته الخاصة.',
+      'كل حل قطاعي يتصل بالأساس المشترك — الحضور، الرواتب، الموارد البشرية، المحاسبة — مع وحداته الخاصة، وحزمة البداية مجانية.',
+    freeBadge: 'حزمة مجانية',
     cards: [
       {
         icon: <UtensilsCrossed className={iconClass} />,
@@ -156,22 +162,22 @@ const copyByLocale: Record<AppLocale, Copy> = {
         icon: <Plane className={iconClass} />,
         name: 'وكالات السفر',
         benefit: 'ملفات العملاء والعمولات ورواتب الفرق في مكان واحد.',
-        href: '/case-studies',
-        linkLabel: 'شاهد الحالات حسب القطاع',
+        href: '/packs/agence-de-voyage',
+        linkLabel: 'شاهد الحزمة المجانية',
       },
       {
         icon: <GraduationCap className={iconClass} />,
         name: 'المدارس والتكوين',
         benefit: 'حضور الموظفين والغيابات والرواتب بما يناسب التقويم المدرسي.',
-        href: '/case-studies',
-        linkLabel: 'شاهد الحالات حسب القطاع',
+        href: '/packs/ecole',
+        linkLabel: 'شاهد الحزمة المجانية',
       },
       {
         icon: <Fuel className={iconClass} />,
         name: 'محطات الوقود',
         benefit: 'فرق المناوبة تسجل حضورها في الموقع، والساعات والإضافي تذهب للرواتب.',
-        href: '/case-studies',
-        linkLabel: 'شاهد الحالات حسب القطاع',
+        href: '/packs/station-service',
+        linkLabel: 'شاهد الحزمة المجانية',
       },
     ],
   },
@@ -229,9 +235,14 @@ export function VerticalsSection({ locale = 'fr' }: VerticalsSectionProps) {
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 mb-4">
                   {card.icon}
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
-                  {card.name}
-                </h3>
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                    {card.name}
+                  </h3>
+                  <span className="inline-flex shrink-0 items-center rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-emerald-700 ring-1 ring-emerald-500/25 dark:text-emerald-300">
+                    {copy.freeBadge}
+                  </span>
+                </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 flex-1">
                   {card.benefit}
                 </p>

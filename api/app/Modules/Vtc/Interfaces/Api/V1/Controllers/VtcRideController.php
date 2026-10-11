@@ -17,7 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Courses VTC — surface passager (BC-34 VTC, VTC-03/#8359).
+ * Courses VTC — surface passager (BC-35 VTC, VTC-03/#8359).
  *
  *   - `POST /v1/vtc/rides` : création IDEMPOTENTE (Idempotency-Key → rejeu
  *     transparent, 200 la course existante ; 201 sinon) ;

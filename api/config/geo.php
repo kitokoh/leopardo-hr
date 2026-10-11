@@ -5,7 +5,7 @@ declare(strict_types=1);
 return [
     /*
     |--------------------------------------------------------------------------
-    | Geo — Core géospatial transverse (BC-33, GEO-01/#8350)
+    | Geo — Core géospatial transverse (BC-34, GEO-01/#8350)
     |--------------------------------------------------------------------------
     |
     | Aucun secret ici. Le comportement du mode dégradé (PostGIS absent →

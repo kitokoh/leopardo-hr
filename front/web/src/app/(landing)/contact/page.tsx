@@ -10,6 +10,7 @@ import { Mail, Phone, MapPin, Clock, Send, CheckCircle, AlertCircle } from 'luci
 import { FormDataNotice } from '@/modules/vitrine/components/FormDataNotice';
 import { antispamFields } from '@/modules/vitrine/lib/antispam-client';
 import { HoneypotField } from '@/modules/vitrine/components/common/HoneypotField';
+import { Input, Textarea, Button } from '@/modules/vitrine/components/common';
 // #7594 — le schéma zod était mort (référencé uniquement par ses tests) : la
 // validation client se limitait au HTML5, dans la langue du navigateur. Il est
 // branché ici, avec des messages dans la locale du SITE (×4).
@@ -275,74 +276,48 @@ function ContactPageInner() {
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <HoneypotField />
                     <div className="grid sm:grid-cols-2 gap-6">
-                      <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                          {copy.form.name} <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="name" name="name" required value={form.name} onChange={handleChange}
-                          aria-invalid={fieldErrors.name ? true : undefined}
-                          aria-describedby={fieldErrors.name ? 'name-error' : undefined}
-                          className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                        />
-                        <p id="name-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.name}</p>
-                      </div>
-                      <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                          {copy.form.email} <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="email" name="email" type="email" required value={form.email} onChange={handleChange}
-                          aria-invalid={fieldErrors.email ? true : undefined}
-                          aria-describedby={fieldErrors.email ? 'email-error' : undefined}
-                          className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                        />
-                        <p id="email-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.email}</p>
-                      </div>
+                      <Input
+                        id="name" name="name" required value={form.name} onChange={handleChange}
+                        label={copy.form.name} error={fieldErrors.name}
+                      />
+                      <Input
+                        id="email" name="email" type="email" required value={form.email} onChange={handleChange}
+                        label={copy.form.email} error={fieldErrors.email}
+                      />
                     </div>
 
                     <div className="grid sm:grid-cols-2 gap-6">
-                      <div>
-                        <label htmlFor="company" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{copy.form.company}</label>
-                        <input
-                          id="company" name="company" value={form.company} onChange={handleChange}
-                          aria-invalid={fieldErrors.company ? true : undefined}
-                          aria-describedby={fieldErrors.company ? 'company-error' : undefined}
-                          className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                        />
-                        <p id="company-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.company}</p>
-                      </div>
-                      <div>
-                        <label htmlFor="subject" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                          {copy.form.subject} <span className="text-red-500">*</span>
+                      <Input
+                        id="company" name="company" value={form.company} onChange={handleChange}
+                        label={copy.form.company} error={fieldErrors.company}
+                      />
+                      <div className="w-full">
+                        <label htmlFor="subject" className="block text-sm font-semibold text-slate-900 dark:text-white mb-2">
+                          {copy.form.subject} <span className="text-red-500 ml-1">*</span>
                         </label>
                         <select
                           id="subject" name="subject" required value={form.subject} onChange={handleChange}
                           aria-invalid={fieldErrors.subject ? true : undefined}
                           aria-describedby={fieldErrors.subject ? 'subject-error' : undefined}
-                          className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                          className={`w-full px-4 py-2.5 text-sm font-medium bg-white dark:bg-slate-900 border rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-slate-900 dark:text-white ${fieldErrors.subject ? 'border-red-500 focus:ring-red-500' : 'border-slate-300 dark:border-slate-700'}`}
                         >
                           <option value="">{copy.form.subjectPlaceholder}</option>
                           {SUBJECT_IDS.map(id => (
                             <option key={id} value={SUBJECT_LABELS[locale][id]}>{SUBJECT_LABELS[locale][id]}</option>
                           ))}
                         </select>
-                        <p id="subject-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.subject}</p>
+                        {fieldErrors.subject && (
+                          <p id="subject-error" role="alert" className="flex items-center gap-1.5 mt-2 text-sm text-red-600 dark:text-red-400">
+                            <AlertCircle className="w-4 h-4 flex-shrink-0" />{fieldErrors.subject}
+                          </p>
+                        )}
                       </div>
                     </div>
 
-                    <div>
-                      <label htmlFor="message" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                        {copy.form.message} <span className="text-red-500">*</span>
-                      </label>
-                      <textarea
-                        id="message" name="message" required rows={5} value={form.message} onChange={handleChange}
-                        aria-invalid={fieldErrors.message ? true : undefined}
-                        aria-describedby={fieldErrors.message ? 'message-error' : undefined}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
-                      />
-                      <p id="message-error" aria-live="polite" className="mt-1 text-xs text-red-500">{fieldErrors.message}</p>
-                    </div>
+                    <Textarea
+                      id="message" name="message" required rows={5} value={form.message} onChange={handleChange}
+                      label={copy.form.message} error={fieldErrors.message} className="resize-none"
+                    />
 
                     {error && (
                       <div className="flex items-center gap-2 text-red-600 dark:text-red-400 text-sm" role="alert" aria-live="assertive">
@@ -352,14 +327,16 @@ function ContactPageInner() {
 
                     <FormDataNotice purpose="contact" />
 
-                    <button
+                    <Button
                       type="submit"
-                      disabled={isSubmitting}
-                      className="w-full sm:w-auto px-8 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl transition-colors disabled:opacity-50 flex items-center gap-2"
+                      size="lg"
+                      loading={isSubmitting}
+                      icon={<Send className="w-4 h-4" />}
+                      iconPosition="left"
+                      className="w-full sm:w-auto"
                     >
-                      <Send className="w-4 h-4" />
                       {isSubmitting ? copy.form.sending : copy.form.send}
-                    </button>
+                    </Button>
                   </form>
                 )}
               </motion.div>

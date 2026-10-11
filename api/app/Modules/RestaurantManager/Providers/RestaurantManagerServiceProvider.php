@@ -99,7 +99,7 @@ class RestaurantManagerServiceProvider extends ServiceProvider
             $registry->register('restaurant', fn (): DemoDataKit => $this->app->make(RestaurantDemoSeederService::class));
         });
 
-        // GEO-06 (#8355, BC-33 GEO) — type recherchable `restaurant` de la
+        // GEO-06 (#8355, BC-34 GEO) — type recherchable `restaurant` de la
         // registry opt-in `geo.searchables` : vue d'adaptation publique des
         // branches (scope « annuaire public » fail-closed). Enregistrement
         // paresseux via la façade transverse partagée — jamais d'import du

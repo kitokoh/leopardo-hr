@@ -8,7 +8,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Course VTC clôturée (BC-34 VTC, VTC-05/#8361).
+ * Course VTC clôturée (BC-35 VTC, VTC-05/#8361).
  *
  * Émise à la transition in_progress → completed avec le prix final (minor
  * units) recalculé sur le trajet réel — point d'intégration prévu pour la

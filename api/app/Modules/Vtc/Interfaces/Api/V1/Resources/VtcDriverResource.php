@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * Chauffeur VTC (BC-34 VTC, VTC-06/#8362) — allowlisté.
+ * Chauffeur VTC (BC-35 VTC, VTC-06/#8362) — allowlisté.
  *
  * Exposé à la console dispatch (positions temps réel, polling v1) et au
  * CRUD admin. Les positions historisées (données personnelles, RGPD)

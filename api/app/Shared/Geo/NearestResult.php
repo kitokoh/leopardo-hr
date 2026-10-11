@@ -7,7 +7,7 @@ namespace App\Shared\Geo;
 use App\Shared\Contracts\Geo\GeoLocatable;
 
 /**
- * GEO-04 (#8353, BC-33 GEO) — un résultat de recherche « le plus proche ».
+ * GEO-04 (#8353, BC-34 GEO) — un résultat de recherche « le plus proche ».
  *
  * Value object partagé (garde #5584) : l'entité localisée + sa distance au
  * centre de recherche, triés par distance croissante par le moteur.

@@ -16,7 +16,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Validation\ValidationException;
 
 /**
- * CRUD des chauffeurs (BC-34 VTC, VTC-06/#8362, rôle vtc.admin).
+ * CRUD des chauffeurs (BC-35 VTC, VTC-06/#8362, rôle vtc.admin).
  *
  * `user_id` rattache la fiche à un compte employé DU TENANT (surface API
  * chauffeur VTC-05) — l'existence du compte et du véhicule dans le tenant

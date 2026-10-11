@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Événement du journal append-only d'une course (BC-34 VTC, VTC-02/#8358).
+ * Événement du journal append-only d'une course (BC-35 VTC, VTC-02/#8358).
  *
  * IMMUABLE : `created_at` seul, aucune mise à jour — chaque transition de la
  * state machine et chaque étape du dispatch y écrit une ligne (VTC-04).

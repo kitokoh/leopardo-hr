@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 /**
- * GEO-03 (#8352, BC-33 GEO) — calculateur de référence PostGIS.
+ * GEO-03 (#8352, BC-34 GEO) — calculateur de référence PostGIS.
  *
  * ST_Distance sur `geography(Point, 4326)` (ellipsoïde WGS 84) — précision
  * de référence du projet. Bindings paramétrés exclusivement (jamais

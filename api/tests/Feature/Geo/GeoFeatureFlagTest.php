@@ -11,7 +11,7 @@ use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
- * GEO-02 (#8351, BC-33 GEO) — gate du module Geo.
+ * GEO-02 (#8351, BC-34 GEO) — gate du module Geo.
  *
  * La route de smoke test `GET /api/v1/geo/ping` doit être :
  *   - inaccessible sans authentification (401) ;

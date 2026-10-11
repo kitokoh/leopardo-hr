@@ -72,9 +72,9 @@ export const alternativePages: AlternativePage[] = [
     competitor: 'Odoo',
     title: 'Alternative à Odoo — Leopardo, la suite métier des entreprises de terrain',
     metaDescription:
-      "Vous cherchez une alternative à Odoo pour la RH, la paie, le pointage et les opérations terrain ? Comparez Odoo et Leopardo : open source, paie Afrique francophone, biométrie, mode hors ligne.",
+      "Vous cherchez une alternative à Odoo pour la RH, la paie, le pointage et les opérations terrain ? Comparez Odoo et Leopardo : Business OS auto-hébergeable, paie Afrique francophone, biométrie, mode hors ligne.",
     intro:
-      "Odoo est un ERP open source très complet (ventes, achats, stock, comptabilité, RH…), largement déployé dans le monde et au Maghreb via un réseau d'intégrateurs. Sa force est sa couverture fonctionnelle généraliste ; sa mise en œuvre passe souvent par l'édition Enterprise payante et un projet d'intégration. Leopardo prend l'angle inverse : une suite métier prête à l'emploi pour les entreprises de terrain — RH & paie, pointage, absences, CRM, comptabilité et opérations — pensée d'abord pour l'Afrique francophone, le Maghreb et la Turquie.",
+      "Odoo est un ERP très complet (ventes, achats, stock, comptabilité, RH…), largement déployé dans le monde et au Maghreb via un réseau d'intégrateurs. Sa force est sa couverture fonctionnelle généraliste ; sa mise en œuvre passe souvent par l'édition Enterprise payante et un projet d'intégration. Leopardo prend l'angle inverse : une suite métier prête à l'emploi pour les entreprises de terrain — RH & paie, pointage, absences, CRM, comptabilité et opérations — pensée d'abord pour l'Afrique francophone, le Maghreb et la Turquie.",
     competitorStrengths: [
       "Vous avez besoin d'un ERP généraliste profond (achats, stock, fabrication, e-commerce) au-delà de la gestion des équipes et de la paie.",
       "Vous disposez d'un intégrateur et d'un budget projet pour configurer la solution à votre organisation.",
@@ -85,10 +85,10 @@ export const alternativePages: AlternativePage[] = [
       `Vous payez des salariés en Afrique francophone ou au Maghreb : ${PAYROLL_PILOT_NOTE}`,
       "Vous voulez une suite prête à l'emploi, sans projet d'intégration : essai 14 jours, onboarding en moins de 30 minutes.",
       "Vous exploitez un secteur couvert par les solutions verticales activables : agence de voyage, restauration et livraison, station-service, école (statut pilote).",
-      "Vous tenez à l'open source de bout en bout : licence MIT, auto-hébergement sans édition « Enterprise » fermée.",
+      "Vous tenez à la maîtrise totale de l'outil : auto-hébergement libre, sans édition « Enterprise » fermée ni coût caché.",
     ],
     criteria: [
-      { label: 'Licence & auto-hébergement', competitor: 'Community LGPL + édition Enterprise propriétaire payante', leopardo: 'MIT, 100 % open source, auto-hébergeable' },
+      { label: 'Licence & auto-hébergement', competitor: 'Community LGPL + édition Enterprise propriétaire payante', leopardo: 'Auto-hébergement libre, sans coût caché' },
       { label: 'Paie Afrique francophone (DZ, MA, TN, SN, CI…)', competitor: 'Via localisations et modules d\'intégrateurs, selon pays', leopardo: '21 pays couverts (mesuré 2026-09-09, statut pilote)' },
       { label: 'Pointage terrain (QR, GPS, biométrie)', competitor: 'Présences de base ; biométrie via modules tiers', leopardo: 'QR, GPS et bornes ZKTeco natifs' },
       { label: 'Mode hors ligne', competitor: 'Non documenté', leopardo: 'Mode edge hors ligne avec synchronisation' },
@@ -114,23 +114,23 @@ export const alternativePages: AlternativePage[] = [
     competitor: 'Sage',
     title: 'Alternative à Sage Paie & RH — Leopardo pour les PME d\'Afrique francophone',
     metaDescription:
-      "Alternative à Sage pour la paie et la gestion des équipes en Afrique francophone : Leopardo est open source, mobile-first, avec pointage biométrique et mode hors ligne. Essai 14 jours.",
+      "Alternative à Sage pour la paie et la gestion des équipes en Afrique francophone : Leopardo est mobile-first et auto-hébergeable, avec pointage biométrique et mode hors ligne. Essai 14 jours.",
     intro:
-      "Sage est l'éditeur historique de la comptabilité et de la paie pour PME, très implanté en France et en Afrique francophone à travers un réseau de revendeurs et d'intégrateurs. Ses produits sont éprouvés, souvent déployés sur site avec licence et prestation. Leopardo propose une approche différente : une suite métier open source et mobile-first qui réunit RH & paie, pointage, absences, CRM, comptabilité et opérations — sans licence propriétaire ni dépendance à un revendeur.",
+      "Sage est l'éditeur historique de la comptabilité et de la paie pour PME, très implanté en France et en Afrique francophone à travers un réseau de revendeurs et d'intégrateurs. Ses produits sont éprouvés, souvent déployés sur site avec licence et prestation. Leopardo propose une approche différente : une suite métier mobile-first qui réunit RH & paie, pointage, absences, CRM, comptabilité et opérations — sans licence propriétaire ni dépendance à un revendeur.",
     competitorStrengths: [
       'Vous voulez un éditeur établi de longue date, avec un réseau local de revendeurs et de cabinets formés à ses produits.',
       'Votre priorité est une comptabilité générale profonde et éprouvée, davantage que la gestion des équipes de terrain.',
       'Votre organisation exige un fournisseur historique référencé dans les appels d\'offres.',
     ],
     leopardoStrengths: [
-      "Vous voulez sortir du modèle licence + intégrateur : Leopardo est open source (MIT), auto-hébergeable, ou en SaaS par employé/mois avec essai 14 jours sans CB.",
+      "Vous voulez sortir du modèle licence + intégrateur : Leopardo est auto-hébergeable gratuitement, ou en SaaS par employé/mois avec essai 14 jours sans CB.",
       `Vous gérez la paie dans plusieurs pays africains à la fois : ${PAYROLL_PILOT_NOTE}`,
       'Vos équipes pointent sur le terrain : QR, GPS, bornes biométriques ZKTeco et mode hors ligne natifs.',
       'Vous voulez des applications mobiles par rôle (employé, manager, RH…) plutôt qu\'un poste de travail fixe.',
       'Vous voulez une API ouverte et documentée pour intégrer vos autres outils (798 endpoints OpenAPI, mesuré 2026-09-18).',
     ],
     criteria: [
-      { label: 'Licence & auto-hébergement', competitor: 'Propriétaire (licences / abonnement)', leopardo: 'MIT, open source, auto-hébergeable' },
+      { label: 'Licence & auto-hébergement', competitor: 'Propriétaire (licences / abonnement)', leopardo: 'Auto-hébergement libre, sans coût caché' },
       { label: 'Paie multi-pays Afrique francophone', competitor: 'Produits paie par pays, via revendeurs locaux', leopardo: '21 pays dans une seule suite (mesuré 2026-09-09, statut pilote)' },
       { label: 'Pointage terrain (QR, GPS, biométrie)', competitor: 'Non documenté sur les gammes PME', leopardo: 'QR, GPS et bornes ZKTeco natifs' },
       { label: 'Mode hors ligne', competitor: 'Applications desktop historiques ; offline mobile non documenté', leopardo: 'Mode edge hors ligne avec synchronisation' },
@@ -156,7 +156,7 @@ export const alternativePages: AlternativePage[] = [
     competitor: 'PayFit',
     title: 'Alternative à PayFit — Leopardo, paie et équipes terrain multi-pays',
     metaDescription:
-      "Vous cherchez une alternative à PayFit hors de France ou pour des équipes terrain ? Leopardo : open source, paie multi-pays (Afrique, Turquie), pointage biométrique, CRM et comptabilité.",
+      "Vous cherchez une alternative à PayFit hors de France ou pour des équipes terrain ? Leopardo : Business OS auto-hébergeable, paie multi-pays (Afrique, Turquie), pointage biométrique, CRM et comptabilité.",
     intro:
       "PayFit est une référence du SaaS de paie pour les PME en France (et sur quelques marchés européens) : excellente expérience utilisateur et forte automatisation des déclarations françaises. Si votre besoin est la paie française clé en main, c'est un choix solide. Leopardo répond à un autre besoin : une suite métier complète — RH & paie, pointage, absences, CRM, comptabilité, opérations — pour des entreprises de terrain présentes en Afrique francophone, au Maghreb, en Turquie ou sur plusieurs pays à la fois.",
     competitorStrengths: [
@@ -168,11 +168,11 @@ export const alternativePages: AlternativePage[] = [
       `Vos effectifs sont en Afrique francophone, au Maghreb ou en Turquie : ${PAYROLL_PILOT_NOTE}`,
       'Vous gérez des équipes de terrain multi-sites : pointage QR/GPS/biométrique, planning et mode hors ligne natifs.',
       'Vous voulez plus que la paie : CRM, comptabilité, notes de frais et opérations dans la même suite.',
-      'Vous voulez la liberté open source : code MIT, auto-hébergement possible, pas de dépendance éditeur.',
+      'Vous voulez une liberté totale : auto-hébergement possible, pas de dépendance éditeur.',
       'Votre budget est serré : self-host gratuit, ou SaaS facturé par employé/mois adapté aux PME.',
     ],
     criteria: [
-      { label: 'Licence & auto-hébergement', competitor: 'SaaS propriétaire uniquement', leopardo: 'MIT, open source, auto-hébergeable' },
+      { label: 'Licence & auto-hébergement', competitor: 'SaaS propriétaire uniquement', leopardo: 'Auto-hébergement libre, sans coût caché' },
       { label: 'Couverture paie', competitor: 'France et quelques pays européens', leopardo: '21 pays dont Afrique francophone et Turquie (mesuré 2026-09-09, statut pilote)' },
       { label: 'Automatisation déclarative France (DSN)', competitor: 'Oui, cœur du produit', leopardo: 'Préparation de paie et exports ; déclarations FR non automatisées à ce jour' },
       { label: 'Pointage terrain (QR, GPS, biométrie)', competitor: 'Suivi des temps de base ; biométrie non documentée', leopardo: 'QR, GPS et bornes ZKTeco natifs' },
@@ -196,11 +196,11 @@ export const alternativePages: AlternativePage[] = [
   {
     slug: 'orangehrm',
     competitor: 'OrangeHRM',
-    title: 'Alternative à OrangeHRM — Leopardo, la suite open source qui va jusqu\'à la paie',
+    title: 'Alternative à OrangeHRM — Leopardo, la suite métier qui va jusqu\'à la paie',
     metaDescription:
-      "Alternative open source à OrangeHRM : Leopardo ajoute la paie multi-pays, le pointage biométrique, le CRM et la comptabilité — MIT, self-host ou SaaS. Essai 14 jours.",
+      "Alternative à OrangeHRM : Leopardo ajoute la paie multi-pays, le pointage biométrique, le CRM et la comptabilité — auto-hébergement gratuit ou SaaS. Essai 14 jours.",
     intro:
-      "OrangeHRM est l'un des SIRH open source les plus connus au monde : sa version Starter gratuite couvre le dossier salarié, les congés et le suivi des temps, avec des éditions payantes plus complètes. C'est un bon point d'entrée RH généraliste. Leopardo joue dans une autre catégorie : une suite métier open source (MIT) qui va du dossier salarié jusqu'à la préparation de paie multi-pays, au pointage biométrique de terrain, au CRM et à la comptabilité.",
+      "OrangeHRM est l'un des SIRH les plus connus au monde : sa version Starter gratuite couvre le dossier salarié, les congés et le suivi des temps, avec des éditions payantes plus complètes. C'est un bon point d'entrée RH généraliste. Leopardo joue dans une autre catégorie : une suite métier qui va du dossier salarié jusqu'à la préparation de paie multi-pays, au pointage biométrique de terrain, au CRM et à la comptabilité.",
     competitorStrengths: [
       'Vous cherchez un SIRH généraliste éprouvé, avec une grande communauté internationale et une longue histoire.',
       'Votre besoin se limite au dossier salarié, aux congés et aux entretiens — sans paie ni opérations de terrain.',
@@ -210,12 +210,12 @@ export const alternativePages: AlternativePage[] = [
       `Vous voulez aller jusqu'à la paie dans le même outil : ${PAYROLL_PILOT_NOTE}`,
       'Vos équipes sont sur le terrain : pointage QR, GPS, bornes biométriques ZKTeco et mode hors ligne natifs.',
       'Vous voulez une suite complète : CRM, comptabilité, notes de frais et solutions verticales activables (voyage, resto, carburant, école — statut pilote).',
-      'Vous voulez une licence MIT sans édition fermée : tout le code est open source, y compris les modules avancés.',
+      'Vous voulez un outil sans édition fermée : tous les modules avancés sont inclus, sans niveau caché.',
       'Vous êtes en Afrique francophone, au Maghreb ou en Turquie : langues FR/EN/TR/AR et paiements locaux.',
     ],
     criteria: [
-      { label: 'Licence', competitor: 'Open source (Starter) + éditions propriétaires payantes', leopardo: 'MIT — tout le code est ouvert' },
-      { label: 'Paie', competitor: 'Non incluse dans la version open source', leopardo: 'Préparation de paie multi-pays — 21 pays (mesuré 2026-09-09, statut pilote)' },
+      { label: 'Éditions', competitor: 'Starter gratuite + éditions propriétaires payantes', leopardo: 'Tout est inclus, auto-hébergeable' },
+      { label: 'Paie', competitor: 'Non incluse dans la version Starter', leopardo: 'Préparation de paie multi-pays — 21 pays (mesuré 2026-09-09, statut pilote)' },
       { label: 'Pointage terrain (QR, GPS, biométrie)', competitor: 'Suivi des temps de base ; biométrie non documentée', leopardo: 'QR, GPS et bornes ZKTeco natifs' },
       { label: 'Mode hors ligne', competitor: 'Non documenté', leopardo: 'Mode edge hors ligne avec synchronisation' },
       { label: 'CRM & comptabilité', competitor: 'Non', leopardo: 'Inclus dans la suite' },
@@ -240,9 +240,9 @@ export const alternativePages: AlternativePage[] = [
     competitor: 'Connecteam',
     title: 'Alternative à Connecteam — Leopardo, du pointage terrain jusqu\'à la paie',
     metaDescription:
-      "Alternative à Connecteam pour les équipes terrain : Leopardo ajoute la paie multi-pays, la comptabilité et le CRM au pointage GPS et biométrique. Open source, essai 14 jours.",
+      "Alternative à Connecteam pour les équipes terrain : Leopardo ajoute la paie multi-pays, la comptabilité et le CRM au pointage GPS et biométrique. Auto-hébergeable, essai 14 jours.",
     intro:
-      "Connecteam est une application SaaS appréciée pour la gestion des équipes sans bureau : planning, pointage GPS, communication interne, formulaires et checklists, avec une très bonne expérience mobile. Leopardo partage cet ADN terrain — pointage QR/GPS/biométrique, planning multi-sites, mode hors ligne — mais va au bout de la chaîne : préparation de paie multi-pays, comptabilité, CRM et solutions verticales, en open source auto-hébergeable.",
+      "Connecteam est une application SaaS appréciée pour la gestion des équipes sans bureau : planning, pointage GPS, communication interne, formulaires et checklists, avec une très bonne expérience mobile. Leopardo partage cet ADN terrain — pointage QR/GPS/biométrique, planning multi-sites, mode hors ligne — mais va au bout de la chaîne : préparation de paie multi-pays, comptabilité, CRM et solutions verticales, en auto-hébergement libre ou en SaaS.",
     competitorStrengths: [
       'Votre besoin premier est la communication interne et les checklists opérationnelles, avec une prise en main immédiate.',
       'Vous êtes sur un marché anglophone et vos règles de paie sont gérées ailleurs (comptable, autre outil).',
@@ -253,10 +253,10 @@ export const alternativePages: AlternativePage[] = [
       'Vous utilisez des bornes biométriques : intégration ZKTeco native, en plus du QR et du GPS.',
       'Votre connectivité est irrégulière : mode edge hors ligne avec synchronisation.',
       'Vous voulez aussi le CRM, la comptabilité et les notes de frais dans la même suite.',
-      'Vous tenez à la souveraineté des données : open source MIT, auto-hébergement possible, langues FR/EN/TR/AR.',
+      'Vous tenez à la souveraineté des données : auto-hébergement possible, langues FR/EN/TR/AR.',
     ],
     criteria: [
-      { label: 'Licence & auto-hébergement', competitor: 'SaaS propriétaire uniquement', leopardo: 'MIT, open source, auto-hébergeable' },
+      { label: 'Licence & auto-hébergement', competitor: 'SaaS propriétaire uniquement', leopardo: 'Auto-hébergement libre, sans coût caché' },
       { label: 'Pointage terrain (QR, GPS)', competitor: 'Oui, cœur du produit', leopardo: 'Oui, natif' },
       { label: 'Bornes biométriques', competitor: 'Non documenté', leopardo: 'ZKTeco natif (kiosque dédié)' },
       { label: 'Paie', competitor: 'Non (exports vers outils de paie)', leopardo: 'Préparation de paie 21 pays (mesuré 2026-09-09, statut pilote)' },
@@ -280,11 +280,11 @@ export const alternativePages: AlternativePage[] = [
   {
     slug: 'talenteo',
     competitor: 'Talenteo',
-    title: 'Alternative à Talenteo — Leopardo, suite métier open source pour l\'Algérie et au-delà',
+    title: 'Alternative à Talenteo — Leopardo, suite métier pour l\'Algérie et au-delà',
     metaDescription:
-      "Alternative à Talenteo en Algérie : Leopardo couvre RH & paie (IRG, CNAS), pointage biométrique, CRM et comptabilité — open source, self-host ou SaaS, essai 14 jours.",
+      "Alternative à Talenteo en Algérie : Leopardo couvre RH & paie (IRG, CNAS), pointage biométrique, CRM et comptabilité — auto-hébergement gratuit ou SaaS, essai 14 jours.",
     intro:
-      "Talenteo est un SIRH algérien en SaaS qui couvre la gestion RH et la paie locale (IRG, CNAS) pour les entreprises en Algérie. C'est un acteur local pertinent pour un besoin RH/paie centré sur le marché algérien. Leopardo adresse le même terrain — la paie algérienne fait partie des règles couvertes — mais avec un périmètre plus large : pointage biométrique et GPS, CRM, comptabilité, opérations et solutions verticales, en open source, pour les entreprises présentes en Algérie et dans d'autres pays.",
+      "Talenteo est un SIRH algérien en SaaS qui couvre la gestion RH et la paie locale (IRG, CNAS) pour les entreprises en Algérie. C'est un acteur local pertinent pour un besoin RH/paie centré sur le marché algérien. Leopardo adresse le même terrain — la paie algérienne fait partie des règles couvertes — mais avec un périmètre plus large : pointage biométrique et GPS, CRM, comptabilité, opérations et solutions verticales, en auto-hébergement libre ou SaaS, pour les entreprises présentes en Algérie et dans d'autres pays.",
     competitorStrengths: [
       'Vous voulez un éditeur 100 % local, avec un accompagnement de proximité en Algérie.',
       'Votre besoin se limite à la RH et à la paie algérienne, sans pointage terrain ni comptabilité intégrée.',
@@ -298,7 +298,7 @@ export const alternativePages: AlternativePage[] = [
       'Vous payez en dinars via Chargily sur l\'offre SaaS, ou rien du tout en auto-hébergement.',
     ],
     criteria: [
-      { label: 'Licence & auto-hébergement', competitor: 'SaaS propriétaire', leopardo: 'MIT, open source, auto-hébergeable' },
+      { label: 'Licence & auto-hébergement', competitor: 'SaaS propriétaire', leopardo: 'Auto-hébergement libre, sans coût caché' },
       { label: 'Paie Algérie (IRG, CNAS)', competitor: 'Oui, cœur du produit', leopardo: 'Oui (statut pilote — vérification par le gestionnaire de paie)' },
       { label: 'Paie autres pays (MA, TN, SN, CI, TR…)', competitor: 'Non documenté', leopardo: '21 pays (mesuré 2026-09-09, statut pilote)' },
       { label: 'Pointage terrain (QR, GPS, biométrie)', competitor: 'Non documenté', leopardo: 'QR, GPS et bornes ZKTeco natifs' },
@@ -333,32 +333,32 @@ const localizedAlternativePages: Partial<
     odoo: {
       title: 'Odoo alternative — Leopardo, the business suite for field-based companies',
       metaDescription:
-        'Looking for an Odoo alternative for HR, payroll, attendance and field operations? Compare Odoo and Leopardo: open source, African payroll rules, biometric kiosks, offline mode.',
+        'Looking for an Odoo alternative for HR, payroll, attendance and field operations? Compare Odoo and Leopardo: self-hostable Business OS, African payroll rules, biometric kiosks, offline mode.',
     },
     sage: {
       title: 'Sage alternative — Leopardo for SMEs in French-speaking Africa',
       metaDescription:
-        'An open-source alternative to Sage for payroll and workforce management in French-speaking Africa: mobile-first, biometric attendance, offline mode. 14-day free trial.',
+        'A self-hostable alternative to Sage for payroll and workforce management in French-speaking Africa: mobile-first, biometric attendance, offline mode. 14-day free trial.',
     },
     payfit: {
       title: 'PayFit alternative — Leopardo, multi-country payroll and field teams',
       metaDescription:
-        'Looking for a PayFit alternative outside France or for field teams? Leopardo: open source, multi-country payroll (Africa, Turkey), biometric attendance, CRM and accounting.',
+        'Looking for a PayFit alternative outside France or for field teams? Leopardo: Business OS, multi-country payroll (Africa, Turkey), biometric attendance, CRM and accounting.',
     },
     orangehrm: {
-      title: 'OrangeHRM alternative — Leopardo, the open-source suite that includes payroll',
+      title: 'OrangeHRM alternative — Leopardo, the business suite that includes payroll',
       metaDescription:
-        'An open-source OrangeHRM alternative: Leopardo adds multi-country payroll, biometric attendance, CRM and accounting — MIT licensed, self-hosted or SaaS. 14-day trial.',
+        'An OrangeHRM alternative: Leopardo adds multi-country payroll, biometric attendance, CRM and accounting — free self-hosting or SaaS. 14-day trial.',
     },
     connecteam: {
       title: 'Connecteam alternative — Leopardo, from field attendance to payroll',
       metaDescription:
-        'A Connecteam alternative for field teams: Leopardo adds multi-country payroll, accounting and CRM to GPS and biometric attendance. Open source, 14-day free trial.',
+        'A Connecteam alternative for field teams: Leopardo adds multi-country payroll, accounting and CRM to GPS and biometric attendance. Self-hostable, 14-day free trial.',
     },
     talenteo: {
-      title: 'Talenteo alternative — Leopardo, the open-source business suite for Algeria and beyond',
+      title: 'Talenteo alternative — Leopardo, the business suite for Algeria and beyond',
       metaDescription:
-        'A Talenteo alternative in Algeria: Leopardo covers HR & payroll (IRG, CNAS), biometric attendance, CRM and accounting — open source, self-hosted or SaaS. 14-day trial.',
+        'A Talenteo alternative in Algeria: Leopardo covers HR & payroll (IRG, CNAS), biometric attendance, CRM and accounting — free self-hosting or SaaS. 14-day trial.',
     },
   },
 };
@@ -540,22 +540,22 @@ export const alternativesHubSeo: Record<AppLocale, { title: string; description:
   fr: {
     title: 'Alternatives & comparatifs — Leopardo face aux solutions du marché',
     description:
-      "Comparez Leopardo aux solutions établies (Odoo, Sage, PayFit, OrangeHRM, Connecteam, Talenteo) : open source, paie multi-pays, pointage terrain, mode hors ligne. Comparatifs honnêtes, essai 14 jours.",
+      "Comparez Leopardo aux solutions établies (Odoo, Sage, PayFit, OrangeHRM, Connecteam, Talenteo) : Business OS auto-hébergeable, paie multi-pays, pointage terrain, mode hors ligne. Comparatifs honnêtes, essai 14 jours.",
   },
   en: {
     title: 'Alternatives & comparisons — Leopardo vs established solutions',
     description:
-      'Compare Leopardo with established solutions (Odoo, Sage, PayFit, OrangeHRM, Connecteam, Talenteo): open source, multi-country payroll, field attendance, offline mode. Honest comparisons, 14-day trial.',
+      'Compare Leopardo with established solutions (Odoo, Sage, PayFit, OrangeHRM, Connecteam, Talenteo): self-hostable Business OS, multi-country payroll, field attendance, offline mode. Honest comparisons, 14-day trial.',
   },
   tr: {
     title: 'Alternatifler ve karşılaştırmalar — Leopardo ve yerleşik çözümler',
     description:
-      'Leopardo ile yerleşik çözümleri karşılaştırın (Odoo, Sage, PayFit, OrangeHRM, Connecteam): açık kaynak, çok ülkeli bordro, saha yoklaması, çevrimdışı mod. 14 gün deneme.',
+      'Leopardo ile yerleşik çözümleri karşılaştırın (Odoo, Sage, PayFit, OrangeHRM, Connecteam): Business OS, çok ülkeli bordro, saha yoklaması, çevrimdışı mod. 14 gün deneme.',
   },
   ar: {
     title: 'البدائل والمقارنات — ليوباردو مقابل الحلول الراسخة',
     description:
-      'قارن ليوباردو بالحلول الراسخة (Odoo وSage وPayFit وOrangeHRM وConnecteam): مفتوح المصدر، رواتب متعددة البلدان، حضور ميداني، وضع دون اتصال. تجربة 14 يومًا.',
+      'قارن ليوباردو بالحلول الراسخة (Odoo وSage وPayFit وOrangeHRM وConnecteam): نظام تشغيل أعمال، رواتب متعددة البلدان، حضور ميداني، وضع دون اتصال. تجربة 14 يومًا.',
   },
 };
 

@@ -9,7 +9,7 @@ use App\Modules\Vtc\Domain\Support\VtcFareCalculator;
 use PHPUnit\Framework\TestCase;
 
 /**
- * VTC-03 (#8359, BC-34 VTC) — calcul de tarif : formule de la spec §5.4
+ * VTC-03 (#8359, BC-35 VTC) — calcul de tarif : formule de la spec §5.4
  * (max(minimum, base + km×per_km + min×per_minute), minor units, arrondi
  * half-up) et estimation de durée à vitesse moyenne.
  */

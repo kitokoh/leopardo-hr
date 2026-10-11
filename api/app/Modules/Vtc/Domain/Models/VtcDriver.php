@@ -15,11 +15,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * Chauffeur VTC/taxi (BC-34 VTC, VTC-02/#8358).
+ * Chauffeur VTC/taxi (BC-35 VTC, VTC-02/#8358).
  *
  * Isolation tenant : trait BelongsToCompany (fail-closed). Implémente
  * GeoLocatable : la dernière position connue (colonnes décimales WGS 84) est
- * requêtable par le core géospatial BC-33 — type `vtc_driver` de la registry
+ * requêtable par le core géospatial BC-34 — type `vtc_driver` de la registry
  * `geo.searchables`, enregistré dans VtcServiceProvider (dispatch VTC-04 :
  * chauffeur disponible le plus proche, jamais de calcul local).
  *

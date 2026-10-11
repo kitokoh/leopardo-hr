@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Garde admin tenant du module Geo (GEO-05, issue #8354, BC-33 GEO).
+ * Garde admin tenant du module Geo (GEO-05, issue #8354, BC-34 GEO).
  *
  * Réservée aux endpoints de supervision (ex. `GET /v1/geo/capabilities`) :
  * seul un manager `principal` (propriétaire/exploitant du tenant) y accède

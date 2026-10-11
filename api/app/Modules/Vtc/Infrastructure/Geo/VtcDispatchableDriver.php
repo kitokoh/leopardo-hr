@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * « Vue d'adaptation » dispatch des chauffeurs (BC-34 VTC, VTC-04/#8360).
+ * « Vue d'adaptation » dispatch des chauffeurs (BC-35 VTC, VTC-04/#8360).
  *
  * Type `vtc_driver` de la registry `geo.searchables` : SEULS les chauffeurs
  * `available` (en service et libres) sont candidats au matching — le scope
@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * Les positions sont lues depuis les colonnes décimales WGS 84 du modèle
  * (dérivation v1 documentée en migration 000102) — la géographie est
- * reconstruite à la volée par le core geo BC-33.
+ * reconstruite à la volée par le core geo BC-34.
  *
  * @property int $id
  * @property string $company_id

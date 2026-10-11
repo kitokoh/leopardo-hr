@@ -7,7 +7,7 @@ namespace App\Modules\Geo\Interfaces\Api\V1\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Calcul de distance entre deux points (GEO-05, issue #8354, BC-33 GEO).
+ * Calcul de distance entre deux points (GEO-05, issue #8354, BC-34 GEO).
  *
  * Contrat `POST /v1/geo/distance` : `{from:{lat,lng}, to:{lat,lng}}` →
  * `{data:{distance_m}}`. Validation stricte des bornes WGS 84 — les

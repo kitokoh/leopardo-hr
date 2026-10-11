@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * #8358 (VTC-02) — BC-34 VTC : table tenant `vtc_drivers`.
+ * #8358 (VTC-02) — BC-35 VTC : table tenant `vtc_drivers`.
  *
  * Chauffeurs VTC/taxi : identité, statut (offline/available/busy/suspended),
  * véhicule courant (nullable), dernière position connue en colonnes
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Schema;
  *
  * DÉVIATION v1 DOCUMENTÉE (spec §5.1) : les positions sont stockées en
  * `decimal(10,7)` et non en `geography(Point,4326)` — le core géospatial
- * (BC-33) reconstruit la géographie À LA VOLÉE en requête
+ * (BC-34) reconstruit la géographie À LA VOLÉE en requête
  * (ST_SetSRID(ST_MakePoint(...)) via EloquentNearestSearch), ce qui garde
  * PostGIS au cœur du matching SANS écriture SQL brute côté Eloquent
  * (décision D3 : zéro nouvelle dépendance composer). Migration vers
@@ -50,7 +50,7 @@ return new class extends Migration
                 $table->index(['company_id', 'vehicle_id'], 'vtc_drivers_company_vehicle_idx');
             });
 
-            DB::statement("COMMENT ON TABLE vtc_drivers IS 'Chauffeurs VTC/taxi - statut dispatch, derniere position connue (decimal WGS 84, geography reconstruite par le core geo BC-33) (VTC-02/#8358).';");
+            DB::statement("COMMENT ON TABLE vtc_drivers IS 'Chauffeurs VTC/taxi - statut dispatch, derniere position connue (decimal WGS 84, geography reconstruite par le core geo BC-34) (VTC-02/#8358).';");
         }
     }
 

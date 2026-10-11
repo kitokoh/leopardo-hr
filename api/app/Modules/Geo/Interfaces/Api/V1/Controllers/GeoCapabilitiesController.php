@@ -9,7 +9,7 @@ use App\Shared\Contracts\Geo\GeoServiceContract;
 use Illuminate\Http\JsonResponse;
 
 /**
- * Diagnostic des capacités géospatiales (GEO-05, issue #8354, BC-33 GEO).
+ * Diagnostic des capacités géospatiales (GEO-05, issue #8354, BC-34 GEO).
  *
  * `GET /v1/geo/capabilities` (réservé admin tenant, garde `geo.admin`) →
  * état de l'extension PostGIS et moteur de distance actif. Endpoint de

@@ -10,7 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 
 /**
- * Ingestion des positions chauffeurs (BC-34 VTC, VTC-05/#8361).
+ * Ingestion des positions chauffeurs (BC-35 VTC, VTC-05/#8361).
  *
  * `POST /v1/vtc/driver/position` (throttle strict, spec §7) : idempotente
  * par (driver_id, recorded_at) — un rejeu retourne 200 sans doublon ; la

@@ -7,7 +7,7 @@ namespace App\Modules\Vtc\Domain\ValueObjects;
 use InvalidArgumentException;
 
 /**
- * Référence lisible d'une course VTC (BC-34 VTC, VTC-02/#8358).
+ * Référence lisible d'une course VTC (BC-35 VTC, VTC-02/#8358).
  *
  * Format `VTC-YYYY-NNNNNN` (ex. VTC-2026-000123), unique par tenant
  * (contrainte UNIQUE(company_id, reference)). Immuable — même pattern que

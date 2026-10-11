@@ -9,7 +9,7 @@ use App\Modules\Vtc\Domain\Enums\VtcDriverStatus;
 use App\Modules\Vtc\Domain\Models\VtcDriver;
 
 /**
- * Bascule de disponibilité d'un chauffeur (BC-34 VTC, VTC-05/#8361).
+ * Bascule de disponibilité d'un chauffeur (BC-35 VTC, VTC-05/#8361).
  *
  *   - available=true  : offline → available (le dispatch VTC-04 peut
  *     solliciter) ; interdit depuis `suspended` (décision exploitant) ou

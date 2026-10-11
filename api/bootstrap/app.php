@@ -144,13 +144,13 @@ return Application::configure(basePath: dirname(__DIR__))
             // TRAVEL-1001 (#6114) — boutique publique (jeton tenant signé).
             'travel.public.shop' => \App\Http\Middleware\EnsurePublicShopAccess::class,
             'module.delivery' => EnsureDeliveryModuleMiddleware::class,
-            // BC-33 GEO (GEO-02/#8351) — gate feature flag geo (core géospatial transverse).
+            // BC-34 GEO (GEO-02/#8351) — gate feature flag geo (core géospatial transverse).
             'module.geo' => \App\Http\Middleware\Geo\EnsureGeoModuleMiddleware::class,
-            // BC-33 GEO (GEO-05/#8354) — garde admin tenant (supervision geo).
+            // BC-34 GEO (GEO-05/#8354) — garde admin tenant (supervision geo).
             'geo.admin' => \App\Http\Middleware\Geo\EnsureGeoAdminMiddleware::class,
-            // BC-34 VTC (VTC-01/#8357) — gate feature flag vtc (verticale VTC/taxi).
+            // BC-35 VTC (VTC-01/#8357) — gate feature flag vtc (verticale VTC/taxi).
             'module.vtc' => \App\Http\Middleware\Vtc\EnsureVtcModuleMiddleware::class,
-            // BC-34 VTC (VTC-05/#8361) — matrice RBAC vtc.role (driver/dispatcher/admin).
+            // BC-35 VTC (VTC-05/#8361) — matrice RBAC vtc.role (driver/dispatcher/admin).
             'vtc.role' => \App\Http\Middleware\Vtc\EnsureVtcRoleMiddleware::class,
             // BC-28 CATALOG — gate feature flag b2b_catalog (#6881).
             'module.catalog' => \App\Http\Middleware\Catalog\EnsureCatalogModuleMiddleware::class,
@@ -158,6 +158,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.retail' => \App\Http\Middleware\Retail\EnsureRetailModuleMiddleware::class,
             // BC-29 COMMUNICATION — gate feature flag communication (R0 #7685).
             'module.communication' => EnsureCommunicationModuleMiddleware::class,
+            'module.fundraising' => \App\Modules\Fundraising\Interfaces\Http\Middleware\EnsureFundraisingModuleMiddleware::class,
             // C-PUBLIC #6882 — accès public par slug (catalogue vitrine).
             'catalog.public' => \App\Http\Middleware\Catalog\EnsureCatalogPublicAccess::class,
             // BC-17 #7807 — marketplace publique Leopardo Marché (slug vendeur, fail-closed 404).

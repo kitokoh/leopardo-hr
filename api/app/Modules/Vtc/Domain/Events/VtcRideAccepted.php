@@ -8,7 +8,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Course VTC acceptée par un chauffeur (BC-34 VTC, VTC-04/#8360).
+ * Course VTC acceptée par un chauffeur (BC-35 VTC, VTC-04/#8360).
  *
  * Émise sous verrou après la transition dispatching → accepted : la cascade
  * d'offres est close, le passager peut être notifié (intégrations futures —

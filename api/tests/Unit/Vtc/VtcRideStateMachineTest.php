@@ -10,7 +10,7 @@ use App\Modules\Vtc\Domain\Support\VtcRideStateMachine;
 use PHPUnit\Framework\TestCase;
 
 /**
- * VTC-03 (#8359, BC-34 VTC) — machine à états du cycle de course : golden
+ * VTC-03 (#8359, BC-35 VTC) — machine à états du cycle de course : golden
  * path complet, toutes les transitions invalides rejetées, états terminaux
  * définitifs (spec §5.2).
  */

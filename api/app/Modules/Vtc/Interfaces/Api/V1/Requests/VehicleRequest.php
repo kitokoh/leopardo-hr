@@ -10,7 +10,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 /**
- * Création/mise à jour d'un véhicule VTC (BC-34 VTC, VTC-06/#8362).
+ * Création/mise à jour d'un véhicule VTC (BC-35 VTC, VTC-06/#8362).
  *
  * La plaque est unique par tenant (contrainte DB — un doublon est renvoyé
  * en 422 propre côté contrôleur, jamais une 500).

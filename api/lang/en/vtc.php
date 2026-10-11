@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// BC-34 VTC (VTC-02..06, #8358-#8362) — VTC/taxi vertical messages
+// BC-35 VTC (VTC-02..06, #8358-#8362) — VTC/taxi vertical messages
 // (PA2-I18N-007: no hardcoded strings, everything goes through this catalog).
 return [
     'ride_creation_failed' => 'Unable to create the VTC ride after :attempts attempts.',

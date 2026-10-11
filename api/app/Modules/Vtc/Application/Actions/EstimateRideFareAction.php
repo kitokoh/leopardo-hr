@@ -11,10 +11,10 @@ use App\Shared\Contracts\Geo\GeoServiceContract;
 use App\Shared\Geo\GeoPoint;
 
 /**
- * Estimation de tarif d'une course (BC-34 VTC, VTC-03/#8359).
+ * Estimation de tarif d'une course (BC-35 VTC, VTC-03/#8359).
  *
  * Chaîne de calcul (spec §5.4) :
- *   1. distance à vol d'oiseau via le CORE GÉOSPATIAL (BC-33) — jamais de
+ *   1. distance à vol d'oiseau via le CORE GÉOSPATIAL (BC-34) — jamais de
  *      calcul local (principe fondateur : vtc ne calcule pas de distance) ;
  *   2. distance routière estimée = vol d'oiseau × `vtc.pricing.road_factor`
  *      (défaut 1.3 — moteur d'itinéraire réel hors scope v1) ;

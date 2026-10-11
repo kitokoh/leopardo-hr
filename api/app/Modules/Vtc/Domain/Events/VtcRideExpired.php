@@ -8,7 +8,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Dispatch VTC épuisé — course expirée (BC-34 VTC, VTC-04/#8360).
+ * Dispatch VTC épuisé — course expirée (BC-35 VTC, VTC-04/#8360).
  *
  * Aucun chauffeur disponible n'a accepté dans la fenêtre (cascade d'offres
  * épuisée ou rayon sans candidat) : le passager doit être notifié

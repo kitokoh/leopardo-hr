@@ -9,7 +9,7 @@ use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
- * VTC-02 (#8358) — Harness de test BC-34 : schéma tenant complet.
+ * VTC-02 (#8358) — Harness de test BC-35 : schéma tenant complet.
  *
  * Garantit que les 6 tables du module Vtc sont créées par le runner de
  * migrations tenant (`leopardo:migrate`) et donc disponibles dans tous les

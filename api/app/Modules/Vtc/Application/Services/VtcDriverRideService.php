@@ -20,13 +20,13 @@ use App\Shared\Geo\GeoPoint;
 use Illuminate\Database\DatabaseManager;
 
 /**
- * Transitions de course portées par le chauffeur (BC-34 VTC, VTC-05/#8361).
+ * Transitions de course portées par le chauffeur (BC-35 VTC, VTC-05/#8361).
  *
  *   - arrive   : accepted → arrived (chauffeur sur place) ;
  *   - start    : arrived → in_progress (course démarrée) ;
  *   - complete : in_progress → completed — prix final recalculé sur le
  *     TRAJET RÉEL (somme des distances entre positions ingérées pendant la
- *     course via le core geo BC-33, × road_factor, durée réelle) ; à moins
+ *     course via le core geo BC-34, × road_factor, durée réelle) ; à moins
  *     de deux positions ingérées, l'estimation devient le prix final
  *     (dégradation honnête, spec §5.4). Le chauffeur redevient `available`.
  *

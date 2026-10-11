@@ -11,7 +11,7 @@ use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
- * VTC-01 (#8357, BC-34 VTC) — gate de la verticale VTC/taxi.
+ * VTC-01 (#8357, BC-35 VTC) — gate de la verticale VTC/taxi.
  *
  * La route de smoke test `GET /api/v1/vtc/ping` doit être :
  *   - inaccessible sans authentification (401) ;

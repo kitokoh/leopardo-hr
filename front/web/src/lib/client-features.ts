@@ -535,10 +535,10 @@ export const CLIENT_MODULES: ClientModule[] = [
     scope: 'business',
     vertical: 'fuel',
   },
-  // BC-34 VTC (épic #8349, VTC-07/#8363) — verticale VTC/taxi : console
+  // BC-35 VTC (épic #8349, VTC-07/#8363) — verticale VTC/taxi : console
   // dispatch web (courses actives + chauffeurs, polling v1) adossée aux
   // endpoints VTC-06. Flag `vtc` posé par SolutionActivator (module requis :
-  // `geo`, BC-33) ; gate serveur `module.vtc` fail-closed sur /api/v1/vtc/*.
+  // `geo`, BC-34) ; gate serveur `module.vtc` fail-closed sur /api/v1/vtc/*.
   {
     key: 'vtc',
     href: '/vtc',

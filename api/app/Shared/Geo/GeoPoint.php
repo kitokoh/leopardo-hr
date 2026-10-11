@@ -7,7 +7,7 @@ namespace App\Shared\Geo;
 use App\Shared\Geo\Exceptions\InvalidGeoPointException;
 
 /**
- * GEO-03 (#8352, BC-33 GEO) — point géodésique validé (WGS 84).
+ * GEO-03 (#8352, BC-34 GEO) — point géodésique validé (WGS 84).
  *
  * Value object immuable : SEULE façon de passer des coordonnées au core
  * géospatial (validation centralisée, fail-closed via

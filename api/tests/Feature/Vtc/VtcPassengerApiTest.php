@@ -20,7 +20,7 @@ use Tests\Support\SwitchesTenantContext;
 use Tests\TestCase;
 
 /**
- * VTC-03 (#8359, BC-34 VTC) — API passager : devis, création idempotente,
+ * VTC-03 (#8359, BC-35 VTC) — API passager : devis, création idempotente,
  * consultation, annulation.
  *
  *   - 401 sans authentification, 403 flag `vtc` inactif ;

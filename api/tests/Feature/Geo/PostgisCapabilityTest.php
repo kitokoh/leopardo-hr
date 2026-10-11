@@ -10,7 +10,7 @@ use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
- * GEO-01 (#8350, BC-33 GEO) — extension PostGIS et diagnostic.
+ * GEO-01 (#8350, BC-34 GEO) — extension PostGIS et diagnostic.
  *
  * Sur PostgreSQL (CI PG16), la migration publique #8350 installe
  * l'extension : elle doit être présente, rejouable sans erreur, et la

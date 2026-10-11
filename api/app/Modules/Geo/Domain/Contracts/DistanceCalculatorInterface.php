@@ -8,7 +8,7 @@ use App\Shared\Geo\Distance;
 use App\Shared\Geo\GeoPoint;
 
 /**
- * GEO-03 (#8352, BC-33 GEO) — calculateur de distance entre deux points.
+ * GEO-03 (#8352, BC-34 GEO) — calculateur de distance entre deux points.
  *
  * Deux implémentations interchangeables, sélectionnées par le provider via
  * GeoCapabilities : PostgisDistanceCalculator (ST_Distance sur geography,

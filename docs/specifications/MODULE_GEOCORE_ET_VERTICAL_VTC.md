@@ -1,4 +1,4 @@
-# Conception — Core Géospatial (BC-33) & Verticale VTC/Taxi (BC-34)
+# Conception — Core Géospatial (BC-34) & Verticale VTC/Taxi (BC-35)
 
 **Statut** : Validée par le fondateur (demande directe du 2026-10-10)
 **Auteur** : Zentor (agent) pour @kitokoh
@@ -24,8 +24,8 @@ Alignée sur `03_TARGET_ARCHITECTURE.md` :
 
 | Module | Couche | BC | Flag | Scope flag | Défaut | Killable | Manifest |
 |---|---|---|---|---|---|---|---|
-| `geo` | TRANSVERSE (comme Notification/Delivery) | **BC-33 GEO** | `geo` | module | `false` | oui | non (moteur, pas une solution) |
-| `vtc` | VERTICALE (1 verticale = 1 manifest = 1 flag) | **BC-34 VTC** | `vtc` | solution | `false` | oui | `VtcManifest`, industrie `mobility` |
+| `geo` | TRANSVERSE (comme Notification/Delivery) | **BC-34 GEO** | `geo` | module | `false` | oui | non (moteur, pas une solution) |
+| `vtc` | VERTICALE (1 verticale = 1 manifest = 1 flag) | **BC-35 VTC** | `vtc` | solution | `false` | oui | `VtcManifest`, industrie `mobility` |
 
 Dépendances déclarées dans le manifest VTC : `geo` en `required_modules` (dépendance dure — distances et dispatch), `notifications`, `fleet`, `billing` en `optional_modules` (activation possible sur tenant frais, dégradation gracieuse — le flag `notifications` n'étant pas au registre de flags, le mettre en requis rendrait l'activation impossible). L'activateur de solutions refuse l'activation de `vtc` si `geo` est inactif (mécanisme existant `SolutionActivator`, fail-closed).
 
@@ -63,7 +63,7 @@ Règles d'isolation respectées :
 - **Idempotence** : clés d'idempotence sur la création de course et l'ingestion de positions (pattern `Delivery\Domain\ValueObjects\IdempotencyKey`).
 - **State machine** : transitions de course centralisées, exceptions dédiées (pattern `DeliveryStateMachine`).
 
-## 4. Module `geo` (BC-33)
+## 4. Module `geo` (BC-34)
 
 ### 4.1 Arborescence (squelette `api/stubs/module-template/`)
 
@@ -113,7 +113,7 @@ LIMIT :limit;
 
 `<->` (KNN) exploite l'index GIST ; `ST_DWithin` filtre avant tri. `company_id` toujours en tête de filtre (isolation tenant).
 
-## 5. Verticale `vtc` (BC-34)
+## 5. Verticale `vtc` (BC-35)
 
 ### 5.1 Modèle de données (migrations tenant, `company_id` UUID non nul + index tenant-first partout)
 
@@ -175,7 +175,7 @@ Pour chaque module (leçon HC-001..008) :
 5. Middleware `Ensure*ModuleMiddleware` + alias `module.geo` / `module.vtc` dans `api/bootstrap/app.php`
 6. `require routes/modules/{geo,vtc}.php` dans `api/routes/api.php` (groupe `/v1` existant)
 7. Manifest dans `SolutionCatalogue` via le provider (vtc uniquement)
-8. `CODEOWNERS` (`/api/app/Modules/Geo/`, `/api/app/Modules/Vtc/`) + `dev-hub/governance/bounded-context-registry.json` (BC-33, BC-34) + labels GitHub `BC-33 GEO`, `BC-34 VTC`
+8. `CODEOWNERS` (`/api/app/Modules/Geo/`, `/api/app/Modules/Vtc/`) + `dev-hub/governance/bounded-context-registry.json` (BC-34, BC-35) + labels GitHub `BC-34 GEO`, `BC-35 VTC`
 
 ## 7. Sécurité & conformité
 
@@ -197,7 +197,7 @@ Pour chaque module (leçon HC-001..008) :
 | # | Titre | Portée | Taille |
 |---|---|---|---|
 | 1 | `[FREEZE-EXCEPTION]` Core géospatial + verticale VTC | gouvernance | XS |
-| 2 | `[EPIC] Core géospatial (geo, BC-33) + verticale VTC (vtc, BC-34)` | suivi | — |
+| 2 | `[EPIC] Core géospatial (geo, BC-34) + verticale VTC (vtc, BC-35)` | suivi | — |
 | 3 | GEO-01 PostGIS : migration extension + `GeoCapabilities` + runbook Neon | backend, database | S |
 | 4 | GEO-02 Squelette module `geo` : provider, flag, middleware, routes, enregistrements | backend | S |
 | 5 | GEO-03 Domaine `geo` : `GeoPoint`, calculateurs (PostGIS + fallback) + tests unitaires | backend | S |

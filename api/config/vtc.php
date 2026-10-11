@@ -5,11 +5,11 @@ declare(strict_types=1);
 return [
     /*
     |--------------------------------------------------------------------------
-    | VTC & Taxi — Configuration de la verticale (BC-34, VTC-01/#8357)
+    | VTC & Taxi — Configuration de la verticale (BC-35, VTC-01/#8357)
     |--------------------------------------------------------------------------
     |
     | Aucun secret ici. Toutes les distances proviennent du core géospatial
-    | `geo` (BC-33) — cette config ne définit JAMAIS de calcul local (spec
+    | `geo` (BC-34) — cette config ne définit JAMAIS de calcul local (spec
     | docs/specifications/MODULE_GEOCORE_ET_VERTICAL_VTC.md §5).
     |
     */

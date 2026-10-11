@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 
 /**
- * GEO-04 (#8353, BC-33 GEO) — recherche « le plus proche » sur modèles
+ * GEO-04 (#8353, BC-34 GEO) — recherche « le plus proche » sur modèles
  * Eloquent enregistrés (GeoLocatable).
  *
  * Stratégie SQL selon la capacité détectée (décision D1) :

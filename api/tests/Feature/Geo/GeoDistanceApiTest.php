@@ -11,7 +11,7 @@ use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
- * GEO-05 (#8354, BC-33 GEO) — endpoint `POST /api/v1/geo/distance`.
+ * GEO-05 (#8354, BC-34 GEO) — endpoint `POST /api/v1/geo/distance`.
  *
  *   - 401 sans authentification ;
  *   - 403 quand le feature flag `geo` est inactif ;

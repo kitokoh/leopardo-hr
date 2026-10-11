@@ -7,7 +7,7 @@ namespace App\Modules\Geo\Domain\Exceptions;
 use App\Exceptions\DomainException;
 
 /**
- * GEO-04 (#8353, BC-33 GEO) — type recherchable inconnu (fail-closed).
+ * GEO-04 (#8353, BC-34 GEO) — type recherchable inconnu (fail-closed).
  *
  * La registry `geo.searchables` est opt-in : interroger `/geo/nearest` avec
  * un type non enregistré est refusé (aucune donnée tenant n'est exposée sans

@@ -128,7 +128,7 @@ export type CopyTree = {
       communication: string;
       /** BOS-035 (#8224) — module Assistant Leo IA (libellé localisé du menu) */
       assistant: string;
-      /** BC-34 VTC (#8349, VTC-07/#8363) — verticale VTC/taxi (console dispatch) */
+      /** BC-35 VTC (#8349, VTC-07/#8363) — verticale VTC/taxi (console dispatch) */
       vtc: string;
     };
     /** #7225 — « Entreprise » (bandeau horizontal transverse) */

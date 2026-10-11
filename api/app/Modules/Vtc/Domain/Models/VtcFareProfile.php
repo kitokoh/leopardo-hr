@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * Grille tarifaire VTC (BC-34 VTC, VTC-02/#8358).
+ * Grille tarifaire VTC (BC-35 VTC, VTC-02/#8358).
  *
  * Montants en MINOR UNITS (base, par km, par minute, minimum) — le calcul de
  * prix (VTC-03) applique max(minimum, base + km×per_km + min×per_minute).

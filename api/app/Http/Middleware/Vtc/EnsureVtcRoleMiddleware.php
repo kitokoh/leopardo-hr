@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Garde RBAC de la verticale VTC (BC-34 VTC, VTC-05/#8361).
+ * Garde RBAC de la verticale VTC (BC-35 VTC, VTC-05/#8361).
  *
  * Matrice deny-by-default (docs/architecture/VTC_RBAC.md) :
  *

@@ -8,7 +8,7 @@ use App\Modules\Geo\Infrastructure\Services\GeoCapabilities;
 use Illuminate\Console\Command;
 
 /**
- * GEO-01 (#8350, BC-33 GEO) — diagnostic PostGIS.
+ * GEO-01 (#8350, BC-34 GEO) — diagnostic PostGIS.
  *
  * `php artisan geo:check-postgis` : affiche la disponibilité et la version de
  * l'extension PostGIS. Toujours en sortie SUCCESS : l'absence de PostGIS est

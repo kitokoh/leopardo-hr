@@ -9,7 +9,7 @@ use App\Shared\Geo\Distance;
 use App\Shared\Geo\GeoPoint;
 
 /**
- * GEO-03 (#8352, BC-33 GEO) — calculateur de repli Haversine (PHP pur).
+ * GEO-03 (#8352, BC-34 GEO) — calculateur de repli Haversine (PHP pur).
  *
  * Utilisé lorsque PostGIS est absent (environnement non provisionné, base de
  * test) : le mode dégradé ne casse jamais les verticales consommatrices

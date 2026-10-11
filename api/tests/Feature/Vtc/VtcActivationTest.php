@@ -11,10 +11,10 @@ use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
- * VTC-01 (#8357, BC-34 VTC) — activation de la verticale VTC/taxi.
+ * VTC-01 (#8357, BC-35 VTC) — activation de la verticale VTC/taxi.
  *
  * Fail-closed : l'activation est refusée tant que le core géospatial `geo`
- * (module requis du manifest, BC-33) n'est pas actif sur le tenant ; sinon
+ * (module requis du manifest, BC-34) n'est pas actif sur le tenant ; sinon
  * elle pose le flag `vtc` et installe les permissions déclarées (BOS-013).
  */
 class VtcActivationTest extends TestCase

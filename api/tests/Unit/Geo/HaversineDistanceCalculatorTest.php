@@ -9,7 +9,7 @@ use App\Shared\Geo\GeoPoint;
 use PHPUnit\Framework\TestCase;
 
 /**
- * GEO-03 (#8352, BC-33 GEO) — exactitude du calculateur de repli Haversine
+ * GEO-03 (#8352, BC-34 GEO) — exactitude du calculateur de repli Haversine
  * sur des distances connues (villes, zéro, antipodes).
  */
 class HaversineDistanceCalculatorTest extends TestCase

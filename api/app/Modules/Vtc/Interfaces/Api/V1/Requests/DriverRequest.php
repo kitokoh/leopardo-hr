@@ -9,7 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 /**
- * Création/mise à jour d'un chauffeur VTC (BC-34 VTC, VTC-06/#8362).
+ * Création/mise à jour d'un chauffeur VTC (BC-35 VTC, VTC-06/#8362).
  *
  * `user_id` rattache la fiche à un compte employé du tenant (surface API
  * chauffeur, VTC-05) — l'existence du véhicule et du compte dans le tenant

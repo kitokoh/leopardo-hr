@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * #8358 (VTC-02) — BC-34 VTC : table tenant `vtc_fare_profiles`.
+ * #8358 (VTC-02) — BC-35 VTC : table tenant `vtc_fare_profiles`.
  *
  * Grilles tarifaires : devise + montants en MINOR UNITS (base, par km, par
  * minute, minimum) — `is_default` désigne la grille appliquée par défaut
