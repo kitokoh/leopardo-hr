@@ -1,7 +1,7 @@
 import { getFaqItems } from '../faq';
 
 /**
- * #8076 — la FAQ de la landing lève les objections d'un produit open-source /
+ * La FAQ de la landing lève les objections classiques d'un Business OS /
  * self-host vendu à des PME non techniques, et affiche l'intention paie
  * locale / mobile money SANS promettre ce qui n'existe pas.
  */

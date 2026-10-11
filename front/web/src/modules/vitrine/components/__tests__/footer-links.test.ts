@@ -14,7 +14,7 @@ describe('getFooterHref', () => {
     expect(getFooterHref(1, 5)).toBe('/case-studies')
     expect(getFooterHref(1, 6)).toBe('/testimonials')
     expect(getFooterHref(1, 7)).toBe('/alternatives')
-    expect(getFooterHref(1, 8)).toBe('/restaurateur')
+    expect(getFooterHref(1, 8)).toBe('/packs')
     expect(getFooterHref(1, 9)).toBe('/careers')
     expect(getFooterHref(1, 10)).toBe('/branding')
   })

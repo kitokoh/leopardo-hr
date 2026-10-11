@@ -41,7 +41,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
     },
     {
       question: 'Cloud ou mon propre serveur — que choisir ?',
-      answer: "Le cloud si vous voulez zéro maintenance : mises à jour, sauvegardes et sécurité sont gérées pour vous. L'auto-hébergement si vous voulez garder vos données chez vous : Leopardo est 100 % open source (licence MIT), l'installation est gratuite et vous gardez le contrôle total — en échange, vous administrez sauvegardes et mises à jour.",
+      answer: "Le cloud si vous voulez zéro maintenance : mises à jour, sauvegardes et sécurité sont gérées pour vous. L'auto-hébergement si vous voulez garder vos données chez vous : l'installation est gratuite et vous gardez le contrôle total — en échange, vous administrez sauvegardes et mises à jour.",
     },
     {
       question: 'Puis-je migrer depuis Excel ou Sage ?',
@@ -49,7 +49,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
     },
     {
       question: "Que se passe-t-il si j'arrête ?",
-      answer: "Vous repartez avec vos données : elles sont exportables en CSV à tout moment, sans enfermement. Leopardo étant open source, vous pouvez même poursuivre en auto-hébergement après un abonnement cloud.",
+      answer: "Vous repartez avec vos données : elles sont exportables en CSV à tout moment, sans enfermement. Vous pouvez même poursuivre en auto-hébergement après un abonnement cloud — votre outil vous suit, pas l'inverse.",
     },
     {
       question: 'Combien coûte vraiment Leopardo (cloud ou auto-hébergement) ?',
@@ -59,7 +59,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
       // Intention paie locale / mobile money AFFICHÉE mais honnête (#8076) :
       // « bientôt » explicite, aucune capacité inexistante présentée comme dispo.
       question: 'La paie locale et le mobile money sont-ils gérés ?',
-      answer: "Le catalogue de paie couvre 21 pays (Afrique de l'Ouest et centrale, Europe, Turquie, Amérique du Nord). Les paiements par mobile money (Orange Money, Wave, MTN MoMo) ne sont pas encore disponibles : l'intégration est à l'étude dans la roadmap publique sur GitHub, sans date promise.",
+      answer: "Le catalogue de paie couvre 21 pays (Afrique de l'Ouest et centrale, Europe, Turquie, Amérique du Nord). Les paiements par mobile money (Orange Money, Wave, MTN MoMo) ne sont pas encore disponibles : l'intégration est à l'étude dans la roadmap produit, sans date promise.",
     },
   ],
   en: [
@@ -93,7 +93,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
     },
     {
       question: 'Cloud or my own server — which should I choose?',
-      answer: 'Choose the cloud for zero maintenance: updates, backups and security are handled for you. Choose self-hosting to keep your data in-house: Leopardo is 100% open source (MIT license), installation is free and you keep full control — in exchange, you run backups and updates yourself.',
+      answer: 'Choose the cloud for zero maintenance: updates, backups and security are handled for you. Choose self-hosting to keep your data in-house: installation is free and you keep full control — in exchange, you run backups and updates yourself.',
     },
     {
       question: 'Can I migrate from Excel or Sage?',
@@ -101,7 +101,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
     },
     {
       question: 'What happens if I cancel?',
-      answer: 'You leave with your data: it can be exported to CSV at any time, with no lock-in. Because Leopardo is open source, you can even keep running it self-hosted after a cloud subscription.',
+      answer: 'You leave with your data: it can be exported to CSV at any time, with no lock-in. You can even keep running Leopardo self-hosted after a cloud subscription — your tool follows you, not the other way around.',
     },
     {
       question: 'What does Leopardo really cost (cloud vs self-hosting)?',
@@ -109,7 +109,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
     },
     {
       question: 'Are local payroll and mobile money supported?',
-      answer: 'The payroll catalog covers 21 countries (West and Central Africa, Europe, Turkey, North America). Mobile money payouts (Orange Money, Wave, MTN MoMo) are not available yet: integration is under consideration on the public GitHub roadmap, with no promised date.',
+      answer: 'The payroll catalog covers 21 countries (West and Central Africa, Europe, Turkey, North America). Mobile money payouts (Orange Money, Wave, MTN MoMo) are not available yet: integration is under consideration on the product roadmap, with no promised date.',
     },
   ],
   tr: [
@@ -143,7 +143,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
     },
     {
       question: 'Bulut mu, kendi sunucum mu — hangisini secmeliyim?',
-      answer: 'Sifir bakim istiyorsaniz bulutu secin: guncellemeler, yedekler ve guvenlik sizin icin yonetilir. Verilerinizi kendi bunyesinde tutmak istiyorsaniz kendi sunucunuzu secin: Leopardo %100 acik kaynak (MIT lisansi), kurulum ucretsizdir ve tam kontrol sizde kalir — karsiliginda yedek ve guncellemeleri siz yonetirsiniz.',
+      answer: 'Sifir bakim istiyorsaniz bulutu secin: guncellemeler, yedekler ve guvenlik sizin icin yonetilir. Verilerinizi kendi bunyesinde tutmak istiyorsaniz kendi sunucunuzu secin: kurulum ucretsizdir ve tam kontrol sizde kalir — karsiliginda yedek ve guncellemeleri siz yonetirsiniz.',
     },
     {
       question: 'Excel veya Sage uzerinden gecebilir miyim?',
@@ -151,7 +151,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
     },
     {
       question: 'Vazgecersem ne olur?',
-      answer: 'Verileriniz sizinle gider: istediginiz an CSV olarak disa aktarilabilir, kilitlenme yoktur. Leopardo acik kaynak oldugu icin bulut aboneliginden sonra kendi sunucunuzda bile calistirmaya devam edebilirsiniz.',
+      answer: 'Verileriniz sizinle gider: istediginiz an CSV olarak disa aktarilabilir, kilitlenme yoktur. Bulut aboneliginden sonra kendi sunucunuzda calistirmaya devam edebilirsiniz — araciniz sizi takip eder, tersi degil.',
     },
     {
       question: 'Leopardo gercekte kaca mal olur (bulut / kendi sunucum)?',
@@ -159,7 +159,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
     },
     {
       question: 'Yerel bordro ve mobil para destekleniyor mu?',
-      answer: 'Bordro katalogu 21 ulkeyi kapsar (Bati ve Orta Afrika, Avrupa, Turkiye, Kuzey Amerika). Mobil para ile odeme (Orange Money, Wave, MTN MoMo) henuz mevcut degil: entegrasyon GitHub uzerindeki herkese acik yol haritasinda degerlendiriliyor, soz verilen bir tarih yok.',
+      answer: 'Bordro katalogu 21 ulkeyi kapsar (Bati ve Orta Afrika, Avrupa, Turkiye, Kuzey Amerika). Mobil para ile odeme (Orange Money, Wave, MTN MoMo) henuz mevcut degil: entegrasyon ürün yol haritasında değerlendiriliyor, söz verilen bir tarih yok.',
     },
   ],
   ar: [
@@ -193,7 +193,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
     },
     {
       question: 'السحابة أم خادمي الخاص — ماذا أختار؟',
-      answer: 'اختاروا السحابة لصيانة صفرية: التحديثات والنسخ الاحتياطية والأمن مُدارة لصالحكم. واختاروا الاستضافة الذاتية للاحتفاظ ببياناتكم لديكم: Leopardo مفتوح المصدر 100% (رخصة MIT)، التثبيت مجاني وتحتفظون بالسيطرة الكاملة — مقابل إدارتكم للنسخ والتحديثات.',
+      answer: 'اختاروا السحابة لصيانة صفرية: التحديثات والنسخ الاحتياطية والأمن مُدارة لصالحكم. واختاروا الاستضافة الذاتية للاحتفاظ ببياناتكم لديكم: التثبيت مجاني وتحتفظون بالسيطرة الكاملة — مقابل إدارتكم للنسخ والتحديثات.',
     },
     {
       question: 'هل يمكنني الانتقال من Excel أو Sage؟',
@@ -201,7 +201,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
     },
     {
       question: 'ماذا يحدث إذا توقفت عن الاشتراك؟',
-      answer: 'تغادرون وبياناتكم معكم: يمكن تصديرها إلى CSV في أي وقت ودون أي احتجاز. ولأن Leopardo مفتوح المصدر، يمكنكم حتى مواصلة تشغيله ذاتياً بعد اشتراك سحابي.',
+      answer: 'تغادرون وبياناتكم معكم: يمكن تصديرها إلى CSV في أي وقت ودون أي احتجاز. ويمكنكم حتى مواصلة تشغيل ليوباردو ذاتياً بعد اشتراك سحابي — أداتكم تتبعكم لا العكس.',
     },
     {
       question: 'كم تبلغ التكلفة الحقيقية لـ Leopardo (السحابة أم الاستضافة الذاتية)؟',
@@ -209,7 +209,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
     },
     {
       question: 'هل تُدار الرواتب المحلية والأموال عبر الجوال؟',
-      answer: 'يغطي كتالوج الرواتب 21 دولة (غرب ووسط أفريقيا وأوروبا وتركيا وأمريكا الشمالية). مدفوعات الأموال عبر الجوال (Orange Money و Wave و MTN MoMo) غير متاحة بعد: التكامل قيد الدراسة في خارطة الطريق العامة على GitHub دون وعد بتاريخ.',
+      answer: 'يغطي كتالوج الرواتب 21 دولة (غرب ووسط أفريقيا وأوروبا وتركيا وأمريكا الشمالية). مدفوعات الأموال عبر الجوال (Orange Money و Wave و MTN MoMo) غير متاحة بعد: التكامل قيد الدراسة في خارطة طريق المنتج دون وعد بتاريخ.',
     },
   ],
 }

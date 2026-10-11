@@ -12,7 +12,10 @@ import {
   ChevronDown,
   Download,
   FileText,
+  Fuel,
+  Gift,
   Globe,
+  GraduationCap,
   HelpCircle,
   Laptop,
   Mail,
@@ -21,15 +24,15 @@ import {
   Monitor,
   Moon,
   PenTool,
-  Server,
+  Plane,
   Smartphone,
   Sun,
   Users,
+  UtensilsCrossed,
   X,
 } from 'lucide-react'
 import { useVitrineLocale } from '../lib/vitrine-locale'
 import { t } from '@/lib/i18n/locale-catalog'
-import { GITHUB_REPO_URL } from '@/modules/vitrine/data/github-repo'
 import type { AppLocale } from '@/lib/i18n'
 import { getEnvConfig } from '../lib/env'
 
@@ -99,6 +102,16 @@ function buildNavEntries(locale: AppLocale): NavEntry[] {
   return [
     { href: '/pricing', label: nav('pricing') },
     {
+      label: nav('packs'),
+      items: [
+        { href: '/packs', icon: <Gift className="w-4 h-4" />, label: nav('packsHub'), description: nav('packsHubDesc') },
+        { href: '/restaurateur', icon: <UtensilsCrossed className="w-4 h-4" />, label: nav('packsRestaurant'), description: nav('packsRestaurantDesc') },
+        { href: '/packs/station-service', icon: <Fuel className="w-4 h-4" />, label: nav('packsFuel'), description: nav('packsFuelDesc') },
+        { href: '/packs/ecole', icon: <GraduationCap className="w-4 h-4" />, label: nav('packsEdu'), description: nav('packsEduDesc') },
+        { href: '/packs/agence-de-voyage', icon: <Plane className="w-4 h-4" />, label: nav('packsTravel'), description: nav('packsTravelDesc') },
+      ],
+    },
+    {
       label: nav('resources'),
       items: [
         { href: '/guides/rh-startup', icon: <BookOpen className="w-4 h-4" />, label: nav('guides'), description: nav('guidesDesc') },
@@ -115,9 +128,6 @@ function buildNavEntries(locale: AppLocale): NavEntry[] {
         { href: '/download?platform=macos', icon: <Laptop className="w-4 h-4" />, label: 'macOS', description: nav('macosDesc') },
         { href: '/download?platform=android', icon: <Smartphone className="w-4 h-4" />, label: 'Android', description: nav('androidDesc') },
         { href: '/download?platform=ios', icon: <Smartphone className="w-4 h-4" />, label: 'iPhone', description: nav('iosDesc') },
-        // #8068 — double funnel : l'install self-host (Docker, dépôt public)
-        // rejoint les apps dans le menu « Installer Leopardo ».
-        { href: GITHUB_REPO_URL, icon: <Server className="w-4 h-4" />, label: 'Self-host', description: nav('selfhostDesc') },
       ],
     },
     {
