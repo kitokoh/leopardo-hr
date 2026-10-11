@@ -18,6 +18,7 @@ import {
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { GoogleGlyph } from '@/components/GoogleGlyph';
+import { SignupArtwork } from '@/modules/vitrine/components/SignupArtwork';
 import { Button } from '@/components/ui/Button';
 import { trackClientEvent } from '@/lib/client-analytics';
 import {
@@ -589,6 +590,13 @@ function LoginInner() {
                 {labels.login.heroTitle}
               </h1>
             </div>
+          </div>
+
+          {/* #8385 — même idée que /signup (le formulaire de référence) : le
+              visuel 3D isométrique occupe la colonne de gauche. CSS 3D natif,
+              aucun texte (rien à traduire), lisible sur ce panneau sombre. */}
+          <div className="relative mt-8 flex flex-1 items-center justify-center">
+            <SignupArtwork className="max-w-[380px]" />
           </div>
         </section>
 
