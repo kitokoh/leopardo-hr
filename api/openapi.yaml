@@ -655,6 +655,72 @@ paths:
           description: Introuvable (ou autre tenant)
         '422':
           description: Transition d'état interdite
+  /fundraising/settings:
+    get:
+      tags:
+      - Fundraising
+      summary: Paramétrage du module Fundraising
+      description: |
+        Réglages tenant de la verticale (moyens de paiement offerts,
+        garde-fous par défaut, montants suggérés, options de la surface
+        publique). Une ligne unique par entreprise, résolue via la compagnie
+        courante — les défauts sont servis tant que rien n'a été enregistré.
+      responses:
+        '200':
+          description: Paramétrage courant (persisté ou défauts)
+        '401':
+          description: Non authentifié
+        '403':
+          description: Verticale non activée ou acteur non autorisé
+    put:
+      tags:
+      - Fundraising
+      summary: Enregistrer le paramétrage Fundraising
+      description: |
+        Upsert de la ligne unique du tenant. `enabled_methods` doit rester
+        non vide (méthodes connues : card, mobile_money, bank_transfer,
+        cash) ; `default_max_amount` doit être supérieur à
+        `default_min_amount` quand les deux sont fournis.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [enabled_methods]
+              properties:
+                enabled_methods:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: string
+                    enum: [card, mobile_money, bank_transfer, cash]
+                default_min_amount:
+                  type: number
+                  nullable: true
+                default_max_amount:
+                  type: number
+                  nullable: true
+                default_suggested_amounts:
+                  type: array
+                  nullable: true
+                  items:
+                    type: number
+                allow_anonymous:
+                  type: boolean
+                allow_messages:
+                  type: boolean
+                show_supporters:
+                  type: boolean
+      responses:
+        '200':
+          description: Paramétrage enregistré
+        '401':
+          description: Non authentifié
+        '403':
+          description: Verticale non activée ou acteur non autorisé
+        '422':
+          description: Payload invalide
   /webhooks/fundraising/{provider}:
     post:
       tags:

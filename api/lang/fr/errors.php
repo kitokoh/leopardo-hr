@@ -266,6 +266,8 @@ return [
     'FUNDRAISER_NOT_ACTIVE' => 'Cette cagnotte n\'accepte pas de contributions actuellement.',
     'CONTRIBUTION_NOT_FOUND' => 'Contribution introuvable.',
     'INVALID_CONTRIBUTION_AMOUNT' => 'Montant de contribution invalide.',
+    'CONTRIBUTION_METHOD_DISABLED' => 'Ce moyen de paiement n\'est pas proposé pour cette cagnotte.',
+    'CONTRIBUTION_OPTION_DISABLED' => 'Cette option de contribution est désactivée pour cette cagnotte.',
     'PAYOUT_AMOUNT_EXCEEDS_BALANCE' => 'Le montant du reversement dépasse le solde disponible de la cagnotte.',
     'PAYOUT_NOT_FOUND' => 'Reversement introuvable.',
     'PAYOUT_FAILED_DEFAULT_REASON' => 'Échec déclaré par le responsable.',

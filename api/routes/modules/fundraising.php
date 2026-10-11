@@ -28,6 +28,7 @@ declare(strict_types=1);
 use App\Modules\Fundraising\Interfaces\Api\V1\Controllers\FundraiserController;
 use App\Modules\Fundraising\Interfaces\Api\V1\Controllers\FundraiserPublicController;
 use App\Modules\Fundraising\Interfaces\Api\V1\Controllers\FundraisingPayoutController;
+use App\Modules\Fundraising\Interfaces\Api\V1\Controllers\FundraisingSettingsController;
 use Illuminate\Support\Facades\Route;
 
 // ── Publique (isolée, sans auth ni tenant) ──────────────────────────────────
@@ -48,6 +49,11 @@ Route::middleware(['throttle:shop-public'])
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.fundraising', 'api.manager:principal,rh'])
     ->prefix('fundraising')
     ->group(function (): void {
+        // Paramétrage du module (FUND-070) — ligne unique par tenant,
+        // résolue via la compagnie courante (jamais d'id d'URL, #3727).
+        Route::get('/settings', [FundraisingSettingsController::class, 'show']);
+        Route::put('/settings', [FundraisingSettingsController::class, 'update']);
+
         // Cagnottes
         Route::get('/fundraisers', [FundraiserController::class, 'index']);
         Route::post('/fundraisers', [FundraiserController::class, 'store']);

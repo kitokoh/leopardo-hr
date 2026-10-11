@@ -7,6 +7,7 @@ namespace App\Modules\Fundraising\Application\Actions;
 use App\Modules\Fundraising\Domain\Enums\FundraiserStatus;
 use App\Modules\Fundraising\Domain\Models\Fundraiser;
 use App\Modules\Fundraising\Domain\Support\SlugGenerator;
+use App\Modules\Fundraising\Infrastructure\Services\FundraisingSettingsResolver;
 
 /**
  * Création d'une cagnotte en `draft` (verticale FUNDRAISING — spec §5.2).
@@ -18,6 +19,10 @@ use App\Modules\Fundraising\Domain\Support\SlugGenerator;
  */
 final class CreateFundraiserAction
 {
+    public function __construct(
+        private readonly FundraisingSettingsResolver $settings,
+    ) {}
+
     /**
      * @param  array<string, mixed>  $data  payload validé (StoreFundraiserRequest)
      */
@@ -33,7 +38,9 @@ final class CreateFundraiserAction
             'category' => $data['category'] ?? 'other',
             'goal_amount' => $data['goal_amount'] ?? null,
             'currency' => strtoupper((string) ($data['currency'] ?? 'XOF')),
-            'suggested_amounts' => $data['suggested_amounts'] ?? null,
+            // FUND-070 : montants suggérés par défaut du paramétrage tenant
+            // quand le responsable n'en fournit pas à la création.
+            'suggested_amounts' => $data['suggested_amounts'] ?? $this->settings->defaultSuggestedAmounts(),
             'min_amount' => $data['min_amount'] ?? null,
             'max_amount' => $data['max_amount'] ?? null,
             'status' => FundraiserStatus::DRAFT,
