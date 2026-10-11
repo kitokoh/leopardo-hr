@@ -83,8 +83,10 @@ class VtcRideCancellationApiTest extends TestCase
             ->where('ride_id', $ride->id)
             ->where('type', VtcRideEventType::RideCancelled->value)
             ->firstOrFail();
-        self::assertSame('driver', $journalEntry->payload['cancelled_by']);
-        self::assertSame('Panne du véhicule', $journalEntry->payload['reason']);
+        /** @var array{cancelled_by: string, reason: string} $payload */
+        $payload = $journalEntry->payload;
+        self::assertSame('driver', $payload['cancelled_by']);
+        self::assertSame('Panne du véhicule', $payload['reason']);
 
         Event::assertDispatched(
             VtcRideCancelled::class,
@@ -194,7 +196,9 @@ class VtcRideCancellationApiTest extends TestCase
             ->where('ride_id', $accepted->id)
             ->where('type', VtcRideEventType::RideCancelled->value)
             ->firstOrFail();
-        self::assertSame('dispatcher', $journalEntry->payload['cancelled_by']);
+        /** @var array{cancelled_by: string} $payload */
+        $payload = $journalEntry->payload;
+        self::assertSame('dispatcher', $payload['cancelled_by']);
     }
 
     public function test_admin_principal_cancel_is_traced_as_admin(): void
@@ -217,7 +221,9 @@ class VtcRideCancellationApiTest extends TestCase
             ->where('ride_id', $ride->id)
             ->where('type', VtcRideEventType::RideCancelled->value)
             ->firstOrFail();
-        self::assertSame('admin', $journalEntry->payload['cancelled_by']);
+        /** @var array{cancelled_by: string} $payload */
+        $payload = $journalEntry->payload;
+        self::assertSame('admin', $payload['cancelled_by']);
     }
 
     // ── Gardes ──────────────────────────────────────────────────────────

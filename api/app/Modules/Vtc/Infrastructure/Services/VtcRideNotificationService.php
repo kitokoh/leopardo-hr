@@ -51,7 +51,7 @@ final class VtcRideNotificationService
             'vtc_ride_accepted_title',
             'vtc_ride_accepted_body',
             [
-                'driver' => $ride->driver?->name ?? '',
+                'driver' => $ride->driver->name ?? '',
                 'reference' => $ride->reference,
             ],
             $this->metadata($ride, 'vtc.ride.accepted'),
