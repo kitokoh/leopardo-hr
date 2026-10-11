@@ -801,7 +801,6 @@ function formatFeatureName(key) {
     travelagency: 'Agence de voyage',
     accounting: 'Comptabilité',
     company_showcase: 'Site vitrine',
-    fundraising: 'Cagnottes solidaires',
     biometric: 'Biométrie',
     tasks: 'Tâches',
     advanced_reports: 'Rapports avancés',
