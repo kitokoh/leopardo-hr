@@ -4,26 +4,63 @@ declare(strict_types=1);
 
 namespace App\Modules\Vtc\Application\Actions;
 
+use App\Modules\Vtc\Domain\Enums\VtcDriverStatus;
 use App\Modules\Vtc\Domain\Enums\VtcRideEventType;
 use App\Modules\Vtc\Domain\Enums\VtcRideStatus;
 use App\Modules\Vtc\Domain\Events\VtcRideCancelled;
 use App\Modules\Vtc\Domain\Exceptions\InvalidRideTransitionException;
+use App\Modules\Vtc\Domain\Models\VtcDriver;
 use App\Modules\Vtc\Domain\Models\VtcRide;
 use App\Modules\Vtc\Domain\Models\VtcRideEvent;
 use App\Modules\Vtc\Domain\Support\VtcRideStateMachine;
 use Illuminate\Database\DatabaseManager;
+use InvalidArgumentException;
 
 /**
- * Annulation d'une course VTC par le PASSAGER (BC-35 VTC, VTC-03/#8359).
+ * Annulation d'une course VTC (BC-35 VTC, VTC-03/#8359 — étendue #8423
+ * M-21 aux acteurs ops : chauffeur, dispatcher, admin).
  *
- * Règle métier (spec §5.2) : le passager ne peut annuler qu'AVANT
- * l'acceptation par un chauffeur (requested/dispatching) — après, la course
- * appartient au cycle chauffeur/dispatcher. Le motif est toujours tracé
- * (colonne + journal append-only + événement de domaine, écouté par le
- * dispatch VTC-04 pour stopper la cascade d'offres).
+ * Règle métier (spec §5.2), déclinée PAR ACTEUR :
+ *  - passager : annulation AVANT acceptation uniquement
+ *    (requested/dispatching) — après, la course appartient au cycle
+ *    chauffeur/dispatcher ;
+ *  - chauffeur : après acceptation (accepted/arrived — panne, empêchement)
+ *    sur SA course uniquement (périmètre porté par le contrôleur) ;
+ *  - dispatcher/admin : tout état non terminal (arbitrage ops console).
+ *
+ * Le motif et l'acteur sont toujours tracés (colonne + journal append-only
+ * `cancelled_by` + événement de domaine, écouté par le dispatch VTC-04
+ * pour stopper la cascade d'offres). Un chauffeur assigné est LIBÉRÉ
+ * (→ available) quelle que soit l'annulation — miroir de la clôture
+ * (VtcDriverRideService::complete), sinon il resterait `busy` sur une
+ * course morte.
  */
 final class CancelRideAction
 {
+    public const ACTOR_PASSENGER = 'passenger';
+
+    public const ACTOR_DRIVER = 'driver';
+
+    public const ACTOR_DISPATCHER = 'dispatcher';
+
+    public const ACTOR_ADMIN = 'admin';
+
+    /**
+     * États sources autorisés PAR ACTEUR (spec §5.2 + #8423 M-21). Les
+     * cases d'enum ne sont pas des expressions constantes en PHP 8.1 —
+     * valeurs string, miroir explicite de VtcRideStateMachine (qui reste
+     * le filet de sécurité : `cancelled` n'est atteignable que depuis un
+     * état non terminal, jamais depuis in_progress).
+     *
+     * @var array<string, list<string>>
+     */
+    private const ALLOWED_FROM_BY_ACTOR = [
+        self::ACTOR_PASSENGER => ['requested', 'dispatching'],
+        self::ACTOR_DRIVER => ['accepted', 'arrived'],
+        self::ACTOR_DISPATCHER => ['requested', 'dispatching', 'accepted', 'arrived'],
+        self::ACTOR_ADMIN => ['requested', 'dispatching', 'accepted', 'arrived'],
+    ];
+
     public function __construct(
         private readonly VtcRideStateMachine $stateMachine,
         private readonly DatabaseManager $db,
@@ -31,13 +68,20 @@ final class CancelRideAction
 
     /**
      * @throws InvalidRideTransitionException
+     * @throws InvalidArgumentException acteur inconnu (défaut interne —
+     *         jamais une entrée client : les contrôleurs passent les
+     *         constantes ACTOR_*)
      */
-    public function execute(VtcRide $ride, string $reason, string $cancelledBy = 'passenger'): VtcRide
+    public function execute(VtcRide $ride, string $reason, string $cancelledBy = self::ACTOR_PASSENGER): VtcRide
     {
+        $allowedFrom = self::ALLOWED_FROM_BY_ACTOR[$cancelledBy]
+            ?? throw new InvalidArgumentException("Acteur d'annulation VTC inconnu : {$cancelledBy}.");
+
         $from = $ride->status;
 
-        // Règle passager : annulation avant accepted uniquement.
-        if (! in_array($from, [VtcRideStatus::Requested, VtcRideStatus::Dispatching], true)) {
+        // Règle par acteur (spec §5.2) : refus uniforme 409 avant le filet
+        // de la state machine.
+        if (! in_array($from->value, $allowedFrom, true)) {
             throw new InvalidRideTransitionException($from, VtcRideStatus::Cancelled);
         }
 
@@ -49,6 +93,14 @@ final class CancelRideAction
                 'cancelled_at' => now(),
                 'cancel_reason' => $reason,
             ])->save();
+
+            // Chauffeur assigné sur la course annulée : il est libéré —
+            // jamais de chauffeur `busy` orphelin d'une course morte.
+            if ($ride->driver_id !== null) {
+                VtcDriver::query()
+                    ->whereKey($ride->driver_id)
+                    ->update(['status' => VtcDriverStatus::Available->value]);
+            }
 
             VtcRideEvent::create([
                 'ride_id' => $ride->id,

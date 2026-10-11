@@ -93,6 +93,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
                 ->whereNumber('id');
             Route::post('/driver/rides/{id}/complete', [VtcDriverRideController::class, 'complete'])
                 ->whereNumber('id');
+            // #8423 (M-21) — annulation par le chauffeur : SA course, après
+            // acceptation uniquement (accepted/arrived, motif obligatoire).
+            Route::post('/driver/rides/{id}/cancel', [VtcDriverRideController::class, 'cancel'])
+                ->whereNumber('id');
             Route::post('/driver/position', [VtcDriverPositionController::class, 'store'])
                 ->middleware('throttle:30,1');
             Route::post('/driver/availability', [VtcDriverAvailabilityController::class, 'update']);
@@ -103,6 +107,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::middleware('vtc.role:dispatcher')->group(function (): void {
             Route::get('/dispatch/rides', [VtcDispatchController::class, 'rides']);
             Route::get('/dispatch/drivers', [VtcDispatchController::class, 'drivers']);
+            // #8423 (M-21) — annulation ops : dispatcher ET admin (le manager
+            // `principal` matche aussi le rôle dispatcher — matrice
+            // VtcRoleResolver ; l'acteur réel est tracé par le contrôleur).
+            Route::post('/dispatch/rides/{id}/cancel', [VtcDispatchController::class, 'cancel'])
+                ->whereNumber('id');
         });
 
         // VTC-06 (#8362) — administration de la verticale : rôle vtc.admin
