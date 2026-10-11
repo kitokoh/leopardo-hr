@@ -43,10 +43,32 @@ class VerifyTrialSignup
      */
     public function execute(string $email, string $code): array
     {
-        if (DB::getDriverName() === 'pgsql') {
-            DB::statement('SET search_path TO public');
+        if (DB::getDriverName() !== 'pgsql') {
+            return $this->executeInPublicSchema($email, $code);
         }
 
+        // Le travail de vérification touche les tables plateforme (public) —
+        // mais un `SET search_path` session-level ne doit JAMAIS fuiter au-delà
+        // de l'action : sous connexion partagée (tests RefreshDatabase, worker
+        // de queue, Octane), il empoisonnerait les requêtes suivantes (les
+        // tables tenant de `shared_tenants` deviennent introuvables, ex.
+        // `employees` dans POST /trial/set-password — 42P01). Save/restore
+        // (pattern Company::booted #ADR-0028).
+        $previous = DB::selectOne('SHOW search_path')->search_path ?? 'public';
+        DB::statement('SET search_path TO public');
+
+        try {
+            return $this->executeInPublicSchema($email, $code);
+        } finally {
+            DB::statement("SET search_path TO {$previous}");
+        }
+    }
+
+    /**
+     * @return array{success: true, company: Company, manager: Employee, manager_email: string, first_name: string, last_name: string, temp_password: string}|array{success: false, error: string, message: string, status: int}
+     */
+    private function executeInPublicSchema(string $email, string $code): array
+    {
         // #6547 (audit) : verrouillage anti-brute-force — après 5 mauvais
         // codes, l'email est bloqué 15 minutes (le throttle IP ne protège
         // pas contre la rotation d'IP).
