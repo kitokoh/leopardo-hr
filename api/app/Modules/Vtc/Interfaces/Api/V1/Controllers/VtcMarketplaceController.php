@@ -7,10 +7,14 @@ namespace App\Modules\Vtc\Interfaces\Api\V1\Controllers;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Modules\Vtc\Application\Actions\EstimateRideFareAction;
+use App\Modules\Vtc\Application\Actions\RequestRideAction;
 use App\Modules\Vtc\Application\DTOs\VtcFareEstimate;
+use App\Modules\Vtc\Domain\ValueObjects\IdempotencyKey;
 use App\Modules\Vtc\Infrastructure\Services\VtcMarketplaceService;
 use App\Modules\Vtc\Interfaces\Api\V1\Requests\MarketplaceEstimateRequest;
+use App\Modules\Vtc\Interfaces\Api\V1\Requests\MarketplaceRideStoreRequest;
 use App\Modules\Vtc\Interfaces\Api\V1\Resources\VtcMarketplaceOperatorResource;
+use App\Modules\Vtc\Interfaces\Api\V1\Resources\VtcMarketplaceRideResource;
 use App\Shared\Geo\GeoPoint;
 use App\Shared\Services\PublicCommerce\PublicTenantResolver;
 use Illuminate\Http\JsonResponse;
@@ -44,6 +48,7 @@ final class VtcMarketplaceController extends Controller
         private readonly VtcMarketplaceService $marketplace,
         private readonly PublicTenantResolver $publicTenants,
         private readonly EstimateRideFareAction $estimateFare,
+        private readonly RequestRideAction $requestRide,
     ) {}
 
     /**
@@ -91,5 +96,56 @@ final class VtcMarketplaceController extends Controller
                 'currency' => $estimate->currency,
             ],
         ]);
+    }
+
+    /**
+     * Réservation INVITÉE d'une course (M-13) : tenant résolu par slug
+     * opérateur, puis délégation à `RequestRideAction` (BC-35 — création
+     * idempotente, devis persisté, journal, événement `VtcRideRequested`
+     * qui déclenche le dispatch existant ; `passenger_user_id` null —
+     * invité — est déjà supporté par toute la chaîne).
+     *
+     * Contrat d'idempotence (pattern HOSP-006/#7948) : 201 + `tracking_code`
+     * en clair à la CRÉATION (présenté une seule fois — seul son hash
+     * SHA-256 est persisté) ; 200 au rejeu (même clé Idempotency-Key) avec
+     * le MÊME corps de course, SANS le code (present-once BOS-050).
+     */
+    public function storeRide(MarketplaceRideStoreRequest $request): JsonResponse
+    {
+        /** @var array{operator: string, idempotency_key: string, pickup: array<string, mixed>, dropoff: array<string, mixed>, pickup_address?: string|null, dropoff_address?: string|null, passenger_name: string, passenger_phone: string} $validated */
+        $validated = $request->validated();
+
+        $company = $this->marketplace->operatorBySlug($validated['operator']);
+
+        /** @var array{0: \App\Modules\Vtc\Domain\Models\VtcRide, 1: bool, 2: string|null} $result */
+        $result = $this->publicTenants->withinTenant(
+            $company,
+            fn (): array => $this->requestRide->execute(
+                [
+                    'passenger_user_id' => null,
+                    'passenger_name' => $validated['passenger_name'],
+                    'passenger_phone' => $validated['passenger_phone'],
+                    'pickup_address' => $validated['pickup_address'] ?? null,
+                    'dropoff_address' => $validated['dropoff_address'] ?? null,
+                    // Grille : toujours la grille par défaut de l'opérateur —
+                    // jamais un fare_profile_id client (config interne).
+                    'fare_profile_id' => null,
+                ],
+                GeoPoint::fromArray($validated['pickup']),
+                GeoPoint::fromArray($validated['dropoff']),
+                IdempotencyKey::fromString($validated['idempotency_key']),
+            ),
+        );
+
+        [$ride, $replayed, $trackingCode] = $result;
+
+        /** @var array<string, mixed> $data */
+        $data = (new VtcMarketplaceRideResource($ride))->resolve($request);
+
+        if (! $replayed && $trackingCode !== null) {
+            $data['tracking_code'] = $trackingCode;
+        }
+
+        return response()->json(['data' => $data], $replayed ? 200 : 201);
     }
 }

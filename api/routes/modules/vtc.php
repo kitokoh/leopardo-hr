@@ -48,6 +48,11 @@ Route::middleware(['throttle:shop-public'])
         Route::get('/operators', [VtcMarketplaceController::class, 'operators']);
         // M-12 — devis public (tenant résolu par slug opérateur).
         Route::post('/estimate', [VtcMarketplaceController::class, 'estimate']);
+        // M-13 — réservation invitée idempotente : throttle renforcé en plus
+        // du bucket shop-public (miroir de la création authentifiée VTC,
+        // throttle:10,1 — anti-spam de courses invitées).
+        Route::post('/rides', [VtcMarketplaceController::class, 'storeRide'])
+            ->middleware('throttle:10,1');
     });
 
 // ── Privée (gestion tenant) ─────────────────────────────────────────────────
