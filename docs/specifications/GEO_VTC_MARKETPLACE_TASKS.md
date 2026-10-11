@@ -80,7 +80,7 @@ c. **Offres VTC/taxi réservables sur `front/travel-web`** : la marketplace publ
 | ID | Tâche | Fichiers | Statut |
 |---|---|---|---|
 | M-10 | Opt-in société marketplace VTC : migration **public** (flag/annuaire `companies`, pattern travel) | migration public + modèle/config société | ✅ |
-| M-11 | `GET /public/vtc/marketplace/operators` — annuaire des sociétés VTC opt-in (DTO strict) | controller + Resource publics, `routes/modules/vtc.php` | ⬜ |
+| M-11 | `GET /public/vtc/marketplace/operators` — annuaire des sociétés VTC opt-in (DTO strict) | controller + Resource publics, `routes/modules/vtc.php` | ✅ |
 | M-12 | `POST /public/vtc/marketplace/estimate` — devis public, wrapper d'`EstimateRideFareAction` | controller + Request + Resource publics | ⬜ |
 | M-13 | `POST /public/vtc/marketplace/rides` — réservation invitée (idempotence, throttle `shop-public`, wrapper de `RequestRideAction`) | controller + Request + Resource publics | ⬜ |
 | M-14 | `GET /public/vtc/marketplace/rides/{reference}` — suivi invité par référence + `tracking_code` | controller + Resource publics, migration **tenant** (`tracking_code`) | ⬜ |
