@@ -1,6 +1,7 @@
 ﻿'use client';
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import type { AppLocale } from '@/lib/i18n';
 import type { ComponentType } from 'react';
 
@@ -13,8 +14,15 @@ import type { ComponentType } from 'react';
  * laissent place à des **glyphes symboliques** : géométrie abstraite (orbe,
  * treillis, arcs, nœuds, flux, hexagone, paliers). Aucune image d'objet ne peut
  * donc plus être lue comme un client ou un secteur « déjà servi » — le risque
- * de confusion qui motivait PA2-MKT-011. Le défilement est conservé (vivant) et
- * complété par une respiration douce, coupée si `prefers-reduced-motion`.
+ * de confusion qui motivait PA2-MKT-011. Respiration douce sur les glyphes,
+ * coupée si `prefers-reduced-motion`.
+ *
+ * #8392 — retour propriétaire (2026-10-11) : TROIS secteurs affichés à la
+ * fois ; le ruban à défilement continu (jugé démodé) est remplacé par une
+ * ROTATION ALÉATOIRE — toutes les ~4 s, une carte est remplacée par un autre
+ * secteur tiré au hasard (transition framer-motion). Premier rendu
+ * déterministe (hydratation), rotation au montage seulement, jamais si
+ * `prefers-reduced-motion`.
  */
 function IconLattice({ className }: { className?: string }) {
   return (
@@ -197,15 +205,13 @@ const copyByLocale: Record<AppLocale, Copy> = {
 function SectorCard({ sector, label }: { sector: Sector; label: string }) {
   const { Icon } = sector;
   return (
-    <div className="flex-shrink-0 mx-3">
-      <div className="flex items-center gap-3 px-5 py-3 rounded-xl border bg-gradient-to-br from-emerald-500/10 to-cyan-500/5 border-emerald-500/20 backdrop-blur-sm hover:scale-105 transition-transform duration-300">
-        <div className="w-10 h-10 rounded-lg bg-white/80 dark:bg-white/10 flex items-center justify-center shadow-sm">
-          <Icon className="w-5 h-5 text-emerald-700 dark:text-emerald-400 symbol-breathe" />
-        </div>
-        <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 whitespace-nowrap">
-          {label}
-        </span>
+    <div className="flex items-center justify-center gap-3 px-5 py-3 rounded-xl border bg-gradient-to-br from-emerald-500/10 to-cyan-500/5 border-emerald-500/20 backdrop-blur-sm hover:scale-105 transition-transform duration-300">
+      <div className="w-10 h-10 rounded-lg bg-white/80 dark:bg-white/10 flex items-center justify-center shadow-sm shrink-0">
+        <Icon className="w-5 h-5 text-emerald-700 dark:text-emerald-400 symbol-breathe" />
       </div>
+      <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 whitespace-nowrap">
+        {label}
+      </span>
     </div>
   );
 }
@@ -214,9 +220,35 @@ export interface TrustedBrandsProps {
   locale?: AppLocale;
 }
 
+/** Intervalle de rotation d'une carte (#8392). */
+const ROTATION_INTERVAL_MS = 3600;
+
 export function TrustedBrands({ locale = 'fr' }: TrustedBrandsProps) {
   const copy = copyByLocale[locale] ?? copyByLocale.fr;
-  const duplicated = [...sectors, ...sectors];
+  // #8392 — retour propriétaire : TROIS secteurs à la fois, et le contenu
+  // CHANGE aléatoirement (remplacement d'une carte par tirage) au lieu du
+  // ruban qui défile en continu, jugé démodé. Premier rendu déterministe
+  // (pas de mismatch d'hydratation), la rotation ne démarre qu'au montage.
+  const [visible, setVisible] = useState<number[]>([0, 1, 2]);
+  const reducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (reducedMotion) return undefined;
+    const id = setInterval(() => {
+      setVisible((current) => {
+        const slot = Math.floor(Math.random() * current.length);
+        const candidates = sectors
+          .map((_, index) => index)
+          .filter((index) => !current.includes(index));
+        if (candidates.length === 0) return current;
+        const next = candidates[Math.floor(Math.random() * candidates.length)];
+        const updated = [...current];
+        updated[slot] = next;
+        return updated;
+      });
+    }, ROTATION_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, [reducedMotion]);
 
   return (
     <section className="relative py-16 overflow-hidden bg-transparent dark:bg-slate-900/50">
@@ -237,34 +269,27 @@ export function TrustedBrands({ locale = 'fr' }: TrustedBrandsProps) {
         </motion.div>
       </div>
 
-      <div className="relative">
-        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-slate-50 dark:from-slate-900/50 to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-slate-50 dark:from-slate-900/50 to-transparent z-10 pointer-events-none" />
-
-        <div className="flex marquee-scroll">
-          {duplicated.map((sector, idx) => (
-            <SectorCard key={`${sector.key}-${idx}`} sector={sector} label={copy.sectorLabels[sector.key] ?? sector.key} />
-          ))}
-        </div>
+      <div className="mx-auto grid max-w-4xl grid-cols-1 gap-4 px-4 sm:grid-cols-3 sm:px-6">
+        <AnimatePresence mode="popLayout">
+          {visible.map((sectorIndex) => {
+            const sector = sectors[sectorIndex];
+            return (
+              <motion.div
+                key={sector.key}
+                layout
+                initial={{ opacity: 0, scale: 0.85, y: 12 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.85, y: -12 }}
+                transition={{ duration: 0.45, ease: 'easeOut' }}
+              >
+                <SectorCard sector={sector} label={copy.sectorLabels[sector.key] ?? sector.key} />
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
       </div>
 
       <style jsx>{`
-        .marquee-scroll {
-          display: flex;
-          width: max-content;
-          animation: marquee-rtl 60s linear infinite;
-        }
-        @keyframes marquee-rtl {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-        .marquee-scroll:hover {
-          animation-play-state: paused;
-        }
         .symbol-breathe {
           animation: symbol-breathe 4.5s ease-in-out infinite;
         }
@@ -280,7 +305,6 @@ export function TrustedBrands({ locale = 'fr' }: TrustedBrandsProps) {
           }
         }
         @media (prefers-reduced-motion: reduce) {
-          .marquee-scroll,
           .symbol-breathe {
             animation: none;
           }
