@@ -110,7 +110,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:16
+        image: postgis/postgis:16-3.5
         env:
           POSTGRES_DB: leopardo_test
           POSTGRES_USER: leopardo_user

@@ -60,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16
+        image: postgis/postgis:16-3.5
         env:
           POSTGRES_DB: leopardo_test
           POSTGRES_USER: leopardo_user
@@ -115,7 +115,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16
+        image: postgis/postgis:16-3.5
         env:
           POSTGRES_DB: leopardo_test
           POSTGRES_USER: leopardo_user
@@ -171,7 +171,7 @@ jobs:
     # coverage < 80 % fait échouer la PR.
     services:
       postgres:
-        image: postgres:16
+        image: postgis/postgis:16-3.5
         env:
           POSTGRES_DB: leopardo_test
           POSTGRES_USER: leopardo_user

@@ -47,6 +47,8 @@
 /api/app/Modules/Billing/   @kitokoh
 /api/app/Modules/Fleet/     @kitokoh
 /api/app/Modules/Delivery/  @kitokoh
+/api/app/Modules/Geo/       @kitokoh
+/api/app/Modules/Vtc/       @kitokoh
 /api/app/AI/                @kitokoh
 /api/app/Core/AI/           @kitokoh
 
@@ -96,5 +98,5 @@
 /api/app/Modules/Restaurant/ @kitokoh
 /api/app/Modules/Showcase/  @kitokoh
 
-# BC-33 FUNDRAISING — verticale cagnottes solidaires (spec docs/specifications/SOLUTION_FUNDRAISING.md)
+# BC-34@@FUND@@ — verticale cagnottes solidaires (spec docs/specifications/SOLUTION_FUNDRAISING.md)
 /api/app/Modules/Fundraising/ @kitokoh

@@ -33,7 +33,7 @@ class SolutionManifestConformanceTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    /** Les 11 codes de solution de l'allowlist (triés) — `fundraising` ajouté (FUND-080, #8400). */
+    /** Les 12 codes de solution de l'allowlist (triés) — `fundraising` ajouté (FUND-080, #8400), `vtc` ajouté (VTC-01, #8377). */
     private const EXPECTED_CODES = [
         'delivery',
         'edumanager',
@@ -46,9 +46,10 @@ class SolutionManifestConformanceTest extends TestCase
         'restaurantmanager',
         'retail',
         'travelagency',
+        'vtc',
     ];
 
-    public function test_eleven_manifests_are_registered_and_conform_to_core_contract_v2(): void
+    public function test_twelve_manifests_are_registered_and_conform_to_core_contract_v2(): void
     {
         $catalogue = app(SolutionCatalogue::class);
 

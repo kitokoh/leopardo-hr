@@ -87,8 +87,15 @@ class RequestTrialSignup
         // « aucun manager existant » (sinon l'entreprise peut être créée deux
         // fois) : seules les recherches sans résultat renvoient null, les
         // erreurs remontent.
+        $previous = null;
+
         try {
             if (DB::getDriverName() === 'pgsql') {
+                // Save/restore du search_path PRÉCÉDENT (jamais un `public`
+                // en dur : il effacerait `shared_tenants` du chemin pour le
+                // reste de la connexion partagée — 42P01 ensuite, pattern
+                // Company::booted #ADR-0028).
+                $previous = DB::selectOne('SHOW search_path')->search_path ?? 'public';
                 DB::statement('SET search_path TO shared_tenants, public');
             }
 
@@ -97,8 +104,8 @@ class RequestTrialSignup
                 ->where('role', 'manager')
                 ->first();
         } finally {
-            if (DB::getDriverName() === 'pgsql') {
-                DB::statement('SET search_path TO public');
+            if ($previous !== null) {
+                DB::statement("SET search_path TO {$previous}");
             }
         }
     }
@@ -221,8 +228,13 @@ class RequestTrialSignup
      */
     private function createPendingCompanyRequest(array $validated, string $email, string $otp): void
     {
+        $previous = null;
+
         try {
             if (DB::getDriverName() === 'pgsql') {
+                // Save/restore du search_path PRÉCÉDENT (même raison que
+                // findExistingManager — jamais de fuite session-level).
+                $previous = DB::selectOne('SHOW search_path')->search_path ?? 'public';
                 DB::statement('SET search_path TO public');
             }
 
@@ -253,6 +265,10 @@ class RequestTrialSignup
             ]);
 
             throw $e;
+        } finally {
+            if ($previous !== null) {
+                DB::statement("SET search_path TO {$previous}");
+            }
         }
     }
 }

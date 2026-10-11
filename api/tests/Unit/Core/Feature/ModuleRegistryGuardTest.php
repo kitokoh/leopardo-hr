@@ -145,21 +145,28 @@ class ModuleRegistryGuardTest extends TestCase
     }
 
     /**
-     * Variables d'un fichier typées `FeatureRegistryInterface` /
-     * `FeatureRegistry` (ancien registre d'inventaire API) — leurs appels
-     * hasFeature() ne visent pas les flags tenant.
+     * Variables d'un fichier typées `ApiEndpointRegistryInterface` /
+     * `ApiEndpointRegistry` (registre d'inventaire des endpoints API —
+     * BOS-015/#8202, ex-`FeatureRegistry*`) — leurs appels hasFeature()
+     * ne visent pas les flags tenant.
      *
      * @return list<string>
      */
     private function legacyRegistryReceivers(string $source): array
     {
-        if (! str_contains($source, 'FeatureRegistryInterface') && ! str_contains($source, 'FeatureRegistry')) {
+        if (! str_contains($source, 'FeatureRegistryInterface') && ! str_contains($source, 'FeatureRegistry')
+            && ! str_contains($source, 'ApiEndpointRegistryInterface') && ! str_contains($source, 'ApiEndpointRegistry')
+        ) {
             return [];
         }
 
         $receivers = [];
 
-        if (preg_match_all('/(?:FeatureRegistryInterface|FeatureRegistry)\s+(\$[A-Za-z_][A-Za-z0-9_]*)/', $source, $matches) !== false) {
+        // BOS-015 (#8347) : l'ancien registre d'inventaire API a été renommé
+        // FeatureRegistry(Interface) → ApiEndpointRegistry(Interface) — les
+        // deux familles de noms restent exclues de la garde FR-6 (leurs clés,
+        // ex. demo_employee_management, ne sont PAS des flags tenant).
+        if (preg_match_all('/(?:FeatureRegistryInterface|FeatureRegistry|ApiEndpointRegistryInterface|ApiEndpointRegistry)\s+(\$[A-Za-z_][A-Za-z0-9_]*)/', $source, $matches) !== false) {
             foreach ($matches[1] as $variable) {
                 $receivers[] = $variable;
             }
