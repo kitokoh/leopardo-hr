@@ -16,14 +16,13 @@ use App\Modules\Fundraising\Domain\Models\FundraisingSettings;
  * servis SANS créer de ligne — l'upsert n'arrive qu'au premier PUT
  * explicite du responsable.
  *
- * Mémoïsée par instance (une requête = un contexte tenant) : les actions
- * publiques (initiation de contribution, surface publique) ne paient
- * qu'une seule lecture.
+ * Aucune mémoïsation : chaque appel relit la ligne (1 SELECT simple). Un
+ * paramétrage modifié par le responsable doit être visible immédiatement —
+ * y compris dans un worker longue durée (Octane, files) où une instance
+ * mémoïsée survivrait au changement (leçon du test « mur des soutiens »).
  */
 final class FundraisingSettingsResolver
 {
-    private ?FundraisingSettings $memoized = null;
-
     /**
      * Settings du tenant courant (persistés ou défauts non sauvegardés).
      * Doit être appelé DANS un contexte tenant (middleware `tenant` ou
@@ -32,10 +31,6 @@ final class FundraisingSettingsResolver
      */
     public function forCurrentCompany(): FundraisingSettings
     {
-        if ($this->memoized instanceof FundraisingSettings) {
-            return $this->memoized;
-        }
-
         /** @var FundraisingSettings|null $settings */
         $settings = FundraisingSettings::query()->first();
 
@@ -44,7 +39,7 @@ final class FundraisingSettingsResolver
             $settings->forceFill(FundraisingSettings::defaults());
         }
 
-        return $this->memoized = $settings;
+        return $settings;
     }
 
     public function isMethodEnabled(ContributionMethod $method): bool

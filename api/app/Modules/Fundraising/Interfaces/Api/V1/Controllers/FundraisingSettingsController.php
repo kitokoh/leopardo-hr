@@ -52,7 +52,12 @@ final class FundraisingSettingsController extends Controller
         $settings->fill($this->payload($request->validated()));
         $settings->save();
 
-        return (new FundraisingSettingsResource($settings->refresh()))->response();
+        // Upsert idempotent → toujours 200 (pattern AccountingSettingsController
+        // #5232) : sans statut explicite, JsonResource sert 201 quand le modèle
+        // enveloppé vient d'être créé (wasRecentlyCreated au premier PUT).
+        return (new FundraisingSettingsResource($settings->refresh()))
+            ->response()
+            ->setStatusCode(200);
     }
 
     /**
