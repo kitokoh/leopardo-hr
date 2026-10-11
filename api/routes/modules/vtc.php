@@ -53,6 +53,10 @@ Route::middleware(['throttle:shop-public'])
         // throttle:10,1 — anti-spam de courses invitées).
         Route::post('/rides', [VtcMarketplaceController::class, 'storeRide'])
             ->middleware('throttle:10,1');
+        // M-14 — suivi invité par référence + code de suivi (?code=) : 404
+        // uniforme anti-énumération (référence inconnue = mauvais code).
+        Route::get('/rides/{reference}', [VtcMarketplaceController::class, 'trackRide'])
+            ->where('reference', 'VTC-[0-9]{4}-[0-9]{6}');
     });
 
 // ── Privée (gestion tenant) ─────────────────────────────────────────────────

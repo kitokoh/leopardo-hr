@@ -5793,6 +5793,7 @@
   "vtcDriverbusy": "Yolculukta",
   "vtcDriversuspended": "Askıya alındı",
   "vtcDrivernotlinked": "Bu hesaba bağlı bir VTC sürücü profili bulunmuyor.",
+  "vtcMarketplacetrackingcoderequired": "Takip kodu gerekli (?code= parametresi).",
   "cagnottesmoduleTitle": "Dayanışma kampanyaları",
   "cagnottesmoduleSubtitle": "Herkese açık bağlantıyla toplayın — banka kartı ve mobil para — sonra hak sahibine aktarın.",
   "cagnottesmoduleTabsCagnottes": "Kampanyalar",

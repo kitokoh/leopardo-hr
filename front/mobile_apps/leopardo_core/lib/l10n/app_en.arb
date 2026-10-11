@@ -5793,6 +5793,7 @@
   "vtcDriverbusy": "On a ride",
   "vtcDriversuspended": "Suspended",
   "vtcDrivernotlinked": "No VTC driver profile is linked to this account.",
+  "vtcMarketplacetrackingcoderequired": "Tracking code required (?code= parameter).",
   "cagnottesmoduleTitle": "Solidarity fundraisers",
   "cagnottesmoduleSubtitle": "Collect via a public link — bank card and mobile money — then pay out to the beneficiary.",
   "cagnottesmoduleTabsCagnottes": "Fundraisers",

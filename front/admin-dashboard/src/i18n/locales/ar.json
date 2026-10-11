@@ -8955,6 +8955,7 @@
     "driverAvailable": "متاح",
     "driverBusy": "في رحلة",
     "driverSuspended": "موقوف",
-    "driverNotLinked": "لا يوجد ملف سائق VTC مرتبط بهذا الحساب."
+    "driverNotLinked": "لا يوجد ملف سائق VTC مرتبط بهذا الحساب.",
+    "marketplaceTrackingCodeRequired": "رمز التتبع مطلوب (المعامل ?code=)."
   }
 }

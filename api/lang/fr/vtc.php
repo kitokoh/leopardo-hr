@@ -17,4 +17,9 @@ return [
     'fare_profile_delete_in_use' => 'Grille tarifaire référencée par des courses : suppression impossible (les courses conservent leur devis historisé).',
     'vehicle_delete_assigned' => 'Véhicule encore affecté à un chauffeur : retirer l\'affectation avant suppression.',
     'vehicle_plate_taken' => 'La plaque :plate est déjà enregistrée pour ce tenant.',
+
+    // #8423 (Phase 2) — marketplace publique VTC (suivi invité, M-14).
+    'marketplace' => [
+        'tracking_code_required' => 'Code de suivi requis (paramètre ?code=).',
+    ],
 ];

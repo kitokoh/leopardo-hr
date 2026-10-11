@@ -9,15 +9,18 @@ use App\Http\Controllers\Controller;
 use App\Modules\Vtc\Application\Actions\EstimateRideFareAction;
 use App\Modules\Vtc\Application\Actions\RequestRideAction;
 use App\Modules\Vtc\Application\DTOs\VtcFareEstimate;
+use App\Modules\Vtc\Domain\Models\VtcRide;
 use App\Modules\Vtc\Domain\ValueObjects\IdempotencyKey;
 use App\Modules\Vtc\Infrastructure\Services\VtcMarketplaceService;
 use App\Modules\Vtc\Interfaces\Api\V1\Requests\MarketplaceEstimateRequest;
 use App\Modules\Vtc\Interfaces\Api\V1\Requests\MarketplaceRideStoreRequest;
 use App\Modules\Vtc\Interfaces\Api\V1\Resources\VtcMarketplaceOperatorResource;
 use App\Modules\Vtc\Interfaces\Api\V1\Resources\VtcMarketplaceRideResource;
+use App\Modules\Vtc\Interfaces\Api\V1\Resources\VtcMarketplaceRideStatusResource;
 use App\Shared\Geo\GeoPoint;
 use App\Shared\Services\PublicCommerce\PublicTenantResolver;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
@@ -147,5 +150,32 @@ final class VtcMarketplaceController extends Controller
         }
 
         return response()->json(['data' => $data], $replayed ? 200 : 201);
+    }
+
+    /**
+     * Suivi invité d'une course (M-14) : référence + code de suivi
+     * (query `?code=`). Paramètre absent → 422 (défaut de forme) ; code
+     * FOURNI invalide, référence inconnue ou course hors marketplace →
+     * 404 uniforme (anti-énumération — jamais de distinction entre
+     * « référence inconnue » et « mauvais code », pattern #7395). DTO
+     * strict minimal : statut + ETA approximatif, JAMAIS de position
+     * chauffeur.
+     */
+    public function trackRide(Request $request, string $reference): JsonResponse
+    {
+        $code = $request->query('code', '');
+        $code = is_string($code) ? trim($code) : '';
+
+        if ($code === '') {
+            abort(422, __('vtc.marketplace.tracking_code_required'));
+        }
+
+        return $this->marketplace->withinRide(
+            $reference,
+            $code,
+            fn (VtcRide $ride): JsonResponse => response()->json([
+                'data' => (new VtcMarketplaceRideStatusResource($ride))->resolve($request),
+            ]),
+        );
     }
 }

@@ -17,4 +17,9 @@ return [
     'fare_profile_delete_in_use' => 'Yolculuklarla ilişkili tarife profili: silme mümkün değil (yolculuklar geçmiş fiyat teklifini korur).',
     'vehicle_delete_assigned' => 'Araç hâlâ bir sürücüye atanmış: silmeden önce atamayı kaldırın.',
     'vehicle_plate_taken' => ':plate plakası bu kiracı için zaten kayıtlı.',
+
+    // #8423 (Faz 2) — herkese açık VTC pazaryeri (misafir takibi, M-14).
+    'marketplace' => [
+        'tracking_code_required' => 'Takip kodu gerekli (?code= parametresi).',
+    ],
 ];

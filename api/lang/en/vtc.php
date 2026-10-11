@@ -17,4 +17,9 @@ return [
     'fare_profile_delete_in_use' => 'Fare profile referenced by rides: deletion not allowed (rides keep their historical quote).',
     'vehicle_delete_assigned' => 'Vehicle still assigned to a driver: remove the assignment before deletion.',
     'vehicle_plate_taken' => 'Plate :plate is already registered for this tenant.',
+
+    // #8423 (Phase 2) — public VTC marketplace (guest tracking, M-14).
+    'marketplace' => [
+        'tracking_code_required' => 'Tracking code required (?code= parameter).',
+    ],
 ];

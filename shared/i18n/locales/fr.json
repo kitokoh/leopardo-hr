@@ -7340,7 +7340,8 @@
     "driverAvailable": "Disponible",
     "driverBusy": "En course",
     "driverSuspended": "Suspendu",
-    "driverNotLinked": "Aucun profil chauffeur VTC n'est rattaché à ce compte."
+    "driverNotLinked": "Aucun profil chauffeur VTC n'est rattaché à ce compte.",
+    "marketplaceTrackingCodeRequired": "Code de suivi requis (paramètre ?code=)."
   },
   "cagnottesModule": {
     "title": "Cagnottes solidaires",

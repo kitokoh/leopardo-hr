@@ -7340,7 +7340,8 @@
     "driverAvailable": "Müsait",
     "driverBusy": "Yolculukta",
     "driverSuspended": "Askıya alındı",
-    "driverNotLinked": "Bu hesaba bağlı bir VTC sürücü profili bulunmuyor."
+    "driverNotLinked": "Bu hesaba bağlı bir VTC sürücü profili bulunmuyor.",
+    "marketplaceTrackingCodeRequired": "Takip kodu gerekli (?code= parametresi)."
   },
   "cagnottesModule": {
     "title": "Dayanışma kampanyaları",

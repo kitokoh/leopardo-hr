@@ -82,8 +82,8 @@ c. **Offres VTC/taxi réservables sur `front/travel-web`** : la marketplace publ
 | M-10 | Opt-in société marketplace VTC : migration **public** (flag/annuaire `companies`, pattern travel) | migration public + modèle/config société | ✅ |
 | M-11 | `GET /public/vtc/marketplace/operators` — annuaire des sociétés VTC opt-in (DTO strict) | controller + Resource publics, `routes/modules/vtc.php` | ✅ |
 | M-12 | `POST /public/vtc/marketplace/estimate` — devis public, wrapper d'`EstimateRideFareAction` | controller + Request + Resource publics | ✅ |
-| M-13 | `POST /public/vtc/marketplace/rides` — réservation invitée (idempotence, throttle `shop-public`, wrapper de `RequestRideAction`) | controller + Request + Resource publics | ⬜ |
-| M-14 | `GET /public/vtc/marketplace/rides/{reference}` — suivi invité par référence + `tracking_code` | controller + Resource publics, migration **tenant** (`tracking_code`) | ⬜ |
+| M-13 | `POST /public/vtc/marketplace/rides` — réservation invitée (idempotence, throttle `shop-public`, wrapper de `RequestRideAction`) ; migration tenant `tracking_code_hash` livrée ici (le code est retourné dès la création — voir M-14) | controller + Request + Resource publics | ✅ |
+| M-14 | `GET /public/vtc/marketplace/rides/{reference}` — suivi invité par référence + `tracking_code` | controller + Resource publics, migration **tenant** (`tracking_code_hash` — livrée au commit M-13, requise dès la création) | ✅ |
 | M-15 | Tests Feature des endpoints publics (agrégation opt-in, isolation cross-tenant 404, idempotence, throttle) | `api/tests/Feature/Vtc/` | ⬜ |
 
 ### Phase 3 — Notifications & ops

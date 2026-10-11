@@ -8822,6 +8822,7 @@
     "driverAvailable": "Available",
     "driverBusy": "On a ride",
     "driverSuspended": "Suspended",
-    "driverNotLinked": "No VTC driver profile is linked to this account."
+    "driverNotLinked": "No VTC driver profile is linked to this account.",
+    "marketplaceTrackingCodeRequired": "Tracking code required (?code= parameter)."
   }
 }
