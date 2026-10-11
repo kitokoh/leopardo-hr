@@ -1404,7 +1404,7 @@
       "toggleAria": "Toggle billing period",
       "fullComparison": "View full comparison",
       "reassurance": "No credit card · Cancel anytime",
-      "selfHostNote": "Or self-host Leopardo for free — 100% open source"
+      "selfHostNote": "Or self-host Leopardo for free — your data, your server"
     },
     "card": {
       "periodDefault": "/month",
@@ -6351,6 +6351,17 @@
     },
     "nav": {
       "pricing": "Pricing",
+      "packs": "Free packs",
+      "packsHub": "All packs",
+      "packsHubDesc": "A free pack per trade — discover the offer",
+      "packsRestaurant": "Restaurants",
+      "packsRestaurantDesc": "POS, kitchen, reservations — pack built in 3 questions",
+      "packsFuel": "Fuel stations",
+      "packsFuelDesc": "3×8 rotations, per-post clock-ins, overtime to payroll",
+      "packsEdu": "Schools & training",
+      "packsEduDesc": "Staff attendance, replacements, school payroll",
+      "packsTravel": "Travel agencies",
+      "packsTravelDesc": "Client files, ticketing, commissions, payroll",
       "resources": "Resources",
       "guides": "Guides",
       "guidesDesc": "HR best practices and tutorials",
