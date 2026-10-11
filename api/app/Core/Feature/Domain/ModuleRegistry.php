@@ -526,7 +526,7 @@ final class ModuleRegistry
             'known_order' => null,
             'description' => 'Outil horizontal Marketing — vit dans metadata.modules, aucun flag plateforme.',
         ],
-o' => [
+        'geo' => [
             'kind' => 'module',
             'scope' => 'module',
             'default' => false,
