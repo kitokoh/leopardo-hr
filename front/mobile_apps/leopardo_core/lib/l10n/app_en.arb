@@ -4936,6 +4936,7 @@
   "setupinterviewQuestionsSectorOptionsCommerce": "Retail",
   "setupinterviewQuestionsSectorOptionsServices": "Services",
   "setupinterviewQuestionsSectorOptionsTravel": "Travel agency",
+  "setupinterviewQuestionsSectorOptionsAssociation": "Nonprofit / NGO",
   "setupinterviewQuestionsSectorOptionsOther": "My sector is not listed",
   "setupinterviewQuestionsPremisesLabel": "Do you have one or more physical locations?",
   "setupinterviewQuestionsPremisesOptionsSingle": "One location",

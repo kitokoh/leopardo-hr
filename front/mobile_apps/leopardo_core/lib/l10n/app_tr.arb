@@ -4936,6 +4936,7 @@
   "setupinterviewQuestionsSectorOptionsCommerce": "Ticaret",
   "setupinterviewQuestionsSectorOptionsServices": "Hizmetler",
   "setupinterviewQuestionsSectorOptionsTravel": "Seyahat acentesi",
+  "setupinterviewQuestionsSectorOptionsAssociation": "Dernek / STK",
   "setupinterviewQuestionsSectorOptionsOther": "Sektörüm listede yok",
   "setupinterviewQuestionsPremisesLabel": "Bir veya birden fazla fiziksel mekânınız var mı?",
   "setupinterviewQuestionsPremisesOptionsSingle": "Tek mekân",

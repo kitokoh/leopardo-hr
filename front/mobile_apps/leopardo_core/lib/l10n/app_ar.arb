@@ -4936,6 +4936,7 @@
   "setupinterviewQuestionsSectorOptionsCommerce": "تجارة",
   "setupinterviewQuestionsSectorOptionsServices": "خدمات",
   "setupinterviewQuestionsSectorOptionsTravel": "وكالة سفر",
+  "setupinterviewQuestionsSectorOptionsAssociation": "جمعية / منظمة غير حكومية",
   "setupinterviewQuestionsSectorOptionsOther": "قطاعي غير مدرج",
   "setupinterviewQuestionsPremisesLabel": "هل لديك موقع فعلي واحد أو أكثر؟",
   "setupinterviewQuestionsPremisesOptionsSingle": "موقع واحد",

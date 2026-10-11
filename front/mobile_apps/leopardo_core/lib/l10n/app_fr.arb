@@ -4936,6 +4936,7 @@
   "setupinterviewQuestionsSectorOptionsCommerce": "Commerce",
   "setupinterviewQuestionsSectorOptionsServices": "Services",
   "setupinterviewQuestionsSectorOptionsTravel": "Agence de voyage",
+  "setupinterviewQuestionsSectorOptionsAssociation": "Association / ONG",
   "setupinterviewQuestionsSectorOptionsOther": "Mon secteur n'est pas listé",
   "setupinterviewQuestionsPremisesLabel": "Avez-vous un ou plusieurs lieux physiques ?",
   "setupinterviewQuestionsPremisesOptionsSingle": "Un local",
