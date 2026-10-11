@@ -1,3 +1,13 @@
+> **MAJ 2026-10-11 — #8394, vague vitrine « retours propriétaire » (#8384-#8392).**
+> Surface **web admin** (`front/admin-dashboard/src/i18n/locales/*.json`) : catalogues
+> resynchronisés après ajout de la clé navbar `vitrine.nav.comparer` et passage de la
+> baseline à « Business OS » seule (×4 locales) — aucun parcours admin modifié, aucun
+> nouveau scénario requis (clés de traduction additives, parité ×4 vérifiée par la
+> garde i18n). Surface **mobile** (`leopardo_core`) : tokens `emerald50…emerald950`
+> ajoutés dans `app_colors.dart` (parité L.07 avec COULEURS.md) — constantes additives,
+> détail dans le journal de `SCENARIOS_TEST_MOBILE_FLUTTER.md`. Surface **vitrine
+> (front/web)** : hors périmètre de cette garde — vérifications dédiées dans la PR
+> (typecheck, 621 tests vitrine, build 163 routes, E2E funnel, captures navigateur).
 > **MAJ 2026-09-29 — #8278, routes manager du cycle de vie kiosk restaurées (revoke / rotate-token, Closes #8241).**
 > Surface **API HTTP** (`api/routes/modules/rh.php`) : deux routes nouvelles —
 > `POST /api/v1/kiosks/{kiosk}/revoke` et `POST /api/v1/kiosks/{kiosk}/rotate-token`
