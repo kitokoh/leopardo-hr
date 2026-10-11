@@ -103,7 +103,7 @@ c. **Offres VTC/taxi réservables sur `front/travel-web`** : la marketplace publ
 
 | ID | Tâche | Fichiers | Statut |
 |---|---|---|---|
-| M-40 | Resync spec BC-34 §5.1 (`decimal` vs `geography`) + note de migration 000102 | `docs/specifications/MODULE_GEOCORE_ET_VERTICAL_VTC.md` | ⬜ |
+| M-40 | Resync spec BC-34 §5.1 (`decimal` vs `geography`) + note de migration 000102 | `docs/specifications/MODULE_GEOCORE_ET_VERTICAL_VTC.md` | ✅ |
 
 ## 4. Hors scope (issues dédiées futures)
 
