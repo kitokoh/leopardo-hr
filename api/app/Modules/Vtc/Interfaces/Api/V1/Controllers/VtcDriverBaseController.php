@@ -30,9 +30,11 @@ abstract class VtcDriverBaseController
             ->first();
 
         if (! $driver instanceof VtcDriver) {
+            // #8423 (M-03) — message externalisé (catalogue vtc.*, fr/en/ar/tr) :
+            // jamais de chaîne EN en dur dans une réponse API (PA2-I18N-007).
             abort(response()->json([
                 'error' => 'VTC_DRIVER_NOT_LINKED',
-                'message' => 'No VTC driver profile is linked to this account.',
+                'message' => __('vtc.driver_not_linked'),
             ], 403));
         }
 

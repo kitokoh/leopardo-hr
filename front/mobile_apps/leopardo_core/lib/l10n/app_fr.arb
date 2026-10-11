@@ -5792,6 +5792,7 @@
   "vtcDriveravailable": "Disponible",
   "vtcDriverbusy": "En course",
   "vtcDriversuspended": "Suspendu",
+  "vtcDrivernotlinked": "Aucun profil chauffeur VTC n'est rattaché à ce compte.",
   "cagnottesmoduleTitle": "Cagnottes solidaires",
   "cagnottesmoduleSubtitle": "Collectez par lien public — carte bancaire et mobile money — puis reversez au bénéficiaire.",
   "cagnottesmoduleTabsCagnottes": "Cagnottes",

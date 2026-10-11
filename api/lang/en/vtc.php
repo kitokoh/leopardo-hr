@@ -12,6 +12,7 @@ return [
     'purge_positions_done_cli' => 'VTC purge complete: :deleted position(s) deleted (retention :days d, cutoff :cutoff).',
     'driver_delete_has_rides' => 'Driver with rides: deletion not allowed (prefer suspension — history is preserved).',
     'driver_user_not_found' => 'Employee account not found in this tenant.',
+    'driver_not_linked' => 'No VTC driver profile is linked to this account.',
     'driver_vehicle_not_found' => 'Vehicle not found in this tenant.',
     'fare_profile_delete_in_use' => 'Fare profile referenced by rides: deletion not allowed (rides keep their historical quote).',
     'vehicle_delete_assigned' => 'Vehicle still assigned to a driver: remove the assignment before deletion.',

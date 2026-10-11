@@ -8827,6 +8827,7 @@
     "driverOffline": "Hors ligne",
     "driverAvailable": "Disponible",
     "driverBusy": "En course",
-    "driverSuspended": "Suspendu"
+    "driverSuspended": "Suspendu",
+    "driverNotLinked": "Aucun profil chauffeur VTC n'est rattaché à ce compte."
   }
 }

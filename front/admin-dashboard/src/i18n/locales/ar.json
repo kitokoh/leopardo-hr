@@ -8954,6 +8954,7 @@
     "driverOffline": "غير متصل",
     "driverAvailable": "متاح",
     "driverBusy": "في رحلة",
-    "driverSuspended": "موقوف"
+    "driverSuspended": "موقوف",
+    "driverNotLinked": "لا يوجد ملف سائق VTC مرتبط بهذا الحساب."
   }
 }
