@@ -69,8 +69,8 @@ final class CancelRideAction
     /**
      * @throws InvalidRideTransitionException
      * @throws InvalidArgumentException acteur inconnu (défaut interne —
-     *         jamais une entrée client : les contrôleurs passent les
-     *         constantes ACTOR_*)
+     *                                  jamais une entrée client : les contrôleurs passent les
+     *                                  constantes ACTOR_*)
      */
     public function execute(VtcRide $ride, string $reason, string $cancelledBy = self::ACTOR_PASSENGER): VtcRide
     {

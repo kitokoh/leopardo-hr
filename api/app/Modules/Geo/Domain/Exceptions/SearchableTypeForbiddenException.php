@@ -19,8 +19,10 @@ class SearchableTypeForbiddenException extends DomainException
 {
     public function __construct(string $type)
     {
+        // Message interne SANS accent (garde i18n PA2-I18N-007) — le
+        // message client vient du catalogue `errors.GEO_SEARCHABLE_TYPE_FORBIDDEN`.
         parent::__construct(
-            "Type recherchable réservé : {$type}. Rôle insuffisant pour cette recherche de proximité.",
+            "Type recherchable reserve : {$type}. Role insuffisant pour cette recherche de proximite.",
             403,
             'GEO_SEARCHABLE_TYPE_FORBIDDEN'
         );
