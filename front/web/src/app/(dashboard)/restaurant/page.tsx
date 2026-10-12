@@ -7,7 +7,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { LayoutGrid, BookOpen, CalendarCheck, PackageSearch, Bike, ChartColumn, UtensilsCrossed, Globe, Wallet, UsersRound, Sparkles, Loader2, CheckCircle2 } from 'lucide-react';
+import { LayoutGrid, BookOpen, CalendarCheck, PackageSearch, Bike, ChartColumn, UtensilsCrossed, Globe, Wallet, UsersRound, Sparkles, Loader2, CheckCircle2, CalendarClock, Smartphone } from 'lucide-react';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { useRestaurantBranches, type RestaurantBranch } from '@/components/restaurant/BranchSelect';
 import { apiFetch } from '@/lib/api-client';
@@ -149,6 +149,10 @@ export default function RestaurantHomePage() {
     { href: '/restaurant/payments', icon: Wallet, title: t(locale, 'restaurant.home.payments', 'Encaissement'), description: t(locale, 'restaurant.home.paymentsDesc', 'Paiement en ligne, profils Stripe & mobile money'), accent: 'from-lime-500 to-emerald-600' },
     // #7909 — affectations des employés aux succursales.
     { href: '/restaurant/team', icon: UsersRound, title: t(locale, 'restaurant.home.team', 'Équipe'), description: t(locale, 'restaurant.home.teamDesc', 'Affectations des employés aux succursales, rôles'), accent: 'from-fuchsia-500 to-purple-600' },
+    // #8431 — rotations de travail (planning des équipes).
+    { href: '/restaurant/rotations', icon: CalendarClock, title: t(locale, 'restaurant.home.rotations', 'Rotations & plannings'), description: t(locale, 'restaurant.home.rotationsDesc'), accent: 'from-sky-500 to-blue-600' },
+    // #8432 — accès à l'app mobile serveur (pointage des serveurs).
+    { href: '/download', icon: Smartphone, title: t(locale, 'restaurant.home.mobileServer', 'App mobile serveur'), description: t(locale, 'restaurant.home.mobileServerDesc'), accent: 'from-orange-500 to-amber-600' },
   ];
 
   return (
@@ -171,11 +175,7 @@ export default function RestaurantHomePage() {
                 {t(locale, 'restaurant.home.emptyTitle', 'Votre restaurant est prêt à être configuré')}
               </h3>
               <p className="mt-1 text-sm text-slate-600">
-                {t(
-                  locale,
-                  'restaurant.home.emptyBody',
-                  'Commencez par créer votre établissement, puis suivez l’ordre ci-dessous. Vous pouvez aussi installer un jeu de démonstration pour explorer librement.',
-                )}
+                {t(locale, 'restaurant.home.emptyBody', 'Commencez par créer votre établissement, puis suivez l’ordre ci-dessous. Vous pouvez aussi installer un jeu de démonstration pour explorer librement.')}
               </p>
 
               <ol className="mt-4 space-y-2">

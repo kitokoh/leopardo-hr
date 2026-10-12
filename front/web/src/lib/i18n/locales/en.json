@@ -4452,7 +4452,11 @@
       "demoImporting": "Importing…",
       "demoImported": "Demo data installed.",
       "demoUnavailable": "No demo dataset is available for your workspace.",
-      "demoError": "Import is not possible right now."
+      "demoError": "Import is not possible right now.",
+      "rotations": "Shifts & schedules",
+      "rotationsDesc": "Create work shifts and assign your employees.",
+      "mobileServer": "Waiter mobile app",
+      "mobileServerDesc": "Give your waiters the mobile app for check-in and service."
     },
     "crud": {
       "search": "Search...",
@@ -4826,6 +4830,36 @@
       "selectPlaceholder": "Select…",
       "formIncomplete": "Choose an employee.",
       "saving": "Saving…"
+    },
+    "rotations": {
+      "title": "Shifts",
+      "subtitle": "Define work shifts and assign your teams.",
+      "createTitle": "New shift",
+      "editTitle": "Edit shift",
+      "name": "Name",
+      "namePlaceholder": "Morning, evening, weekend…",
+      "startTime": "Start",
+      "endTime": "End",
+      "break": "Break (min)",
+      "listTitle": "Existing shifts",
+      "create": "Create",
+      "save": "Save",
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "remove": "Delete",
+      "confirmRemove": "Delete this shift?",
+      "assign": "Assign employees",
+      "assignTitle": "Assign employees to the shift",
+      "empty": "No shift yet.",
+      "loadError": "Unable to load shifts.",
+      "saveFailed": "Saving failed.",
+      "removeFailed": "Deletion failed.",
+      "assignFailed": "Assignment failed.",
+      "formIncomplete": "Provide a name and valid times.",
+      "saving": "Saving…",
+      "employeesLabel": "Employees",
+      "selectPlaceholder": "Select…",
+      "assigning": "Assigning…"
     }
   },
   "edu": {
