@@ -9,7 +9,7 @@ use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Onboarding\Domain\Services\SetupInterviewPlanner;
 use App\Modules\Onboarding\Infrastructure\Services\CompanyActivationSurfaceWriter;
-use Illuminate\Support\Facades\Log;
+use Psr\Log\LoggerInterface;
 
 /**
  * Use Case : clôture de l'entretien de préparation (#7493) — traduit les
@@ -39,6 +39,7 @@ final class CompleteSetupInterview
         private readonly SolutionCatalogue $catalogue,
         private readonly CompanyActivationSurfaceWriter $writer,
         private readonly SeedDefaultSteps $seedSteps,
+        private readonly LoggerInterface $logger,
     ) {}
 
     /**
@@ -119,7 +120,7 @@ final class CompleteSetupInterview
                 $failed[] = $code;
                 $failedDetails[] = ['code' => $code, 'reason' => $e->getMessage()];
 
-                Log::error('setup_interview.solution_activation_failed', [
+                $this->logger->error('setup_interview.solution_activation_failed', [
                     'company_id' => (string) $source->id,
                     'solution' => $code,
                     'actor_id' => $actorId,
