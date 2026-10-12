@@ -104,9 +104,14 @@ export default function RestaurantOnlinePage() {
   const [products, setProducts] = useState<OnlineProduct[]>([]);
   const [productsError, setProductsError] = useState('');
   const [publishError, setPublishError] = useState('');
-  const [reviews, setReviews] = useState<PendingReview[]>([]);
-  const [reviewsAvailable, setReviewsAvailable] = useState(false);
-  const [reviewError, setReviewError] = useState('');
+  // RESTO-902 pas encore livré : les endpoints `/restaurant/reviews*`
+  // n'existent pas côté backend. On ne tente PLUS l'appel réseau (il
+  // produisait un 404 systématique dans la console et un état ambigu) : la
+  // section est marquée « bientôt disponible » de façon statique et
+  // s'activera quand le lot RESTO-902 sera livré.
+  const reviewsAvailable = false;
+  const reviews: PendingReview[] = [];
+  const reviewError = '';
 
   useEffect(() => {
     if (branchId === null && branches.length > 0) {
@@ -146,28 +151,10 @@ export default function RestaurantOnlinePage() {
     }
   }, [branchId, locale]);
 
-  // RESTO-902 pas encore livré : toute erreur (réseau, 404…) laisse la
-  // section en état « module à venir » sans polluer la page.
-  const loadReviews = useCallback(async () => {
-    try {
-      const res = await apiFetch('/restaurant/reviews?status=pending');
-      if (!res.ok) {
-        setReviewsAvailable(false);
-        return;
-      }
-      const payload = (await res.json()) as { data?: PendingReview[] };
-      setReviews(Array.isArray(payload?.data) ? payload.data : []);
-      setReviewsAvailable(true);
-    } catch {
-      setReviewsAvailable(false);
-    }
-  }, []);
-
   useEffect(() => {
     void loadProfile();
     void loadProducts();
-    void loadReviews();
-  }, [loadProfile, loadProducts, loadReviews]);
+  }, [loadProfile, loadProducts]);
 
   const update = (patch: Partial<ProfileForm>) => {
     setSaved(false);
@@ -242,17 +229,6 @@ export default function RestaurantOnlinePage() {
     } catch {
       setProducts((prev) => prev.map((p) => (p.id === product.id ? { ...p, is_published_online: !next } : p)));
       setPublishError(t(locale, 'restaurant.online.publishError'));
-    }
-  };
-
-  const moderateReview = async (id: number, action: 'publish' | 'reject') => {
-    setReviewError('');
-    try {
-      const res = await apiFetch(`/restaurant/reviews/${id}/${action}`, { method: 'POST' });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      setReviews((prev) => prev.filter((r) => r.id !== id));
-    } catch {
-      setReviewError(t(locale, 'restaurant.online.reviewActionError'));
     }
   };
 
@@ -468,36 +444,12 @@ export default function RestaurantOnlinePage() {
             )}
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <section
+            data-testid="restaurant-reviews-coming-soon"
+            className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5"
+          >
             <h3 className="font-bold text-slate-900">{t(locale, 'restaurant.online.reviewsTitle')}</h3>
-            {reviewError ? <p className="mt-3 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{reviewError}</p> : null}
-            {!reviewsAvailable ? (
-              <p className="mt-3 text-sm text-slate-500">{t(locale, 'restaurant.online.reviewsComingSoon')}</p>
-            ) : reviews.length === 0 ? (
-              <p className="mt-3 text-sm text-slate-500">{t(locale, 'restaurant.online.reviewsEmpty')}</p>
-            ) : (
-              <ul className="mt-4 divide-y divide-slate-100">
-                {reviews.map((review) => (
-                  <li key={review.id} className="flex items-start justify-between gap-4 py-3">
-                    <div>
-                      <p className="text-sm font-semibold text-slate-900">
-                        {review.author_name ?? '—'}
-                        {typeof review.rating === 'number' ? ` · ${review.rating}/5` : ''}
-                      </p>
-                      {review.comment ? <p className="mt-1 text-sm text-slate-600">{review.comment}</p> : null}
-                    </div>
-                    <div className="flex shrink-0 gap-2 text-xs font-medium">
-                      <button className="text-emerald-700 hover:underline" onClick={() => void moderateReview(review.id, 'publish')}>
-                        {t(locale, 'restaurant.online.reviewPublish')}
-                      </button>
-                      <button className="text-red-600 hover:underline" onClick={() => void moderateReview(review.id, 'reject')}>
-                        {t(locale, 'restaurant.online.reviewReject')}
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
+            <p className="mt-3 text-sm text-slate-500">{t(locale, 'restaurant.online.reviewsComingSoon')}</p>
           </section>
         </>
       )}
