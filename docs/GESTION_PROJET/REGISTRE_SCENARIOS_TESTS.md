@@ -1132,3 +1132,22 @@ restent les gates applicables.
   partagé `vitrine.nav.careers`, `vitrine.hero3d.*`), aucun contrat mobile modifié —
   aucun scénario mobile nouveau requis.
 - **Surface API** : aucun changement backend — aucun scénario nouveau requis.
+
+## Mise à jour 2026-10-12 — espace restaurateur : rotations, app mobile serveur et réseaux i18n (PR #8430, issues #8431, #8432)
+
+- **Surface API** : aucune route nouvelle — la page Rotations consomme l'API Planning/HR
+  existante (`GET/POST /schedules`, `PUT/DELETE /schedules/{id}`,
+  `POST /schedules/{id}/assign-employees`). Les seuls changements backend sont i18n et
+  conformité (contrat `LoggerInterface` dans `CompleteSetupInterview` à la place de la
+  façade `Log` ; `SolutionActivator` non `final` pour rester mockable) — les scénarios API
+  existants restent valables, aucun scénario nouveau requis.
+- **Surface web admin** : catalogues `front/admin-dashboard/src/i18n/locales/*.json`
+  resynchronisés (clés `restaurant.rotations.*` et `restaurant.home.rotations/mobileServer`)
+  — clés additives uniquement, aucune interaction admin modifiée, aucun scénario admin nouveau
+  requis.
+- **Surface web (front/web)** : nouvelle page protégée `/restaurant/rotations` (préfixe
+  `/restaurant` déjà couvert par `protected-prefixes.ts`) et deux nouvelles tuiles du hub
+  `/restaurant` — hors périmètre de la présente garde ; vérifications dédiées dans la PR
+  (tsc, eslint, tsc vitrine).
+- **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue partagé
+  `restaurant.rotations.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
