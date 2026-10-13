@@ -38,60 +38,56 @@ Aucune dimension tenant : c'est une donnée **plateforme** (schema `public`),
 comme les annuaires fundraising — déclarée dans
 `dev-hub/governance/tenant-scope-exceptions.json`.
 
-## 3. Domaine
+## 3. Domaine — réutilisation du canal leads (`marketing_leads`)
 
-### Table `equity_interests` (migration `public`, idempotente)
+**Décision d'implémentation (revue en cours de livraison)** : pas de table
+dédiée. La plateforme possède déjà un canal de capture publique éprouvé —
+`marketing_leads` (schema public, serveur-à-serveur vitrine → API avec
+secret partagé, idempotence persistée, anti-spam, alertes) — avec suivi
+admin existant (`crm.view`). La manifestation d'intérêt est un **lead**,
+pas une donnée métier tenant : on réutilise le canal (pattern
+`solution_survey` #6692).
 
-| Colonne | Type | Notes |
-|---|---|---|
-| `id` | bigint PK | |
-| `full_name` | string(120) | requis |
-| `email` | string(190) | requis, index |
-| `phone` | string(40) nullable | optionnel |
-| `country` | string(2) nullable | code ISO si fourni |
-| `amount_bracket` | string(20) | enum : `lt_1k`, `1k_10k`, `10k_50k`, `gt_50k`, `discuss` |
-| `message` | text nullable | 2000 max |
-| `locale` | string(5) | fr/en/ar/tr au dépôt |
-| `source` | string(60) | défaut `vitrine:/investir` |
-| `consent` | boolean | requis true — recontact |
-| `status` | string(20) | `new` → `contacted` → `qualified` → `closed` (index) |
-| `created_at` / `updated_at` | timestamps | |
-
-Anti-double-soumission : unicité souple (`email`, `created_at` fenêtre 24 h)
-gérée en action (pas de contrainte DB — un investisseur peut re-manifester un
-intérêt plus tard), honeypot + throttle IP comme les autres surfaces publiques.
-
-### Énumérations
-
-- `EquityInterestStatus` : `new`, `contacted`, `qualified`, `closed`
-  (transitions libres avant → arrière autorisées : le suivi humain n'est pas
-  linéaire ; on journalise juste `updated_at`).
-- `EquityAmountBracket` : `lt_1k`, `1k_10k`, `10k_50k`, `gt_50k`, `discuss`.
+- `type = 'equity_interest'` — ajouté à la contrainte CHECK
+  `marketing_leads_type_check` (migration publique `2026_10_13_000100_8440`),
+  à `MarketingLead::TYPE_*`, à la validation du endpoint de capture et à la
+  liste `TYPES` de `PlatformMarketingLeadController`.
+- Détail du formulaire dans `payload` (jsonb) : `name`, `phone` (optionnel),
+  `amount_bracket` (`lt_1k|1k_10k|10k_50k|gt_50k|discuss`), `message`,
+  `consent: true`.
+- Colonnes natives réutilisées : `email`, `locale`, `country`, `page`
+  (`/investir`), `source` (`equity_form`), `ip`, `referrer`, `status`
+  (`new → contacted → qualified → converted | rejected`), `note`.
+- Anti-double-soumission : idempotence par hash du payload (registre
+  `WebhookEventRegistry`) + throttle IP vitrine + honeypot — déjà en place.
 
 ## 4. API
 
-### 4.1 Capture publique — `POST /api/v1/public/equity-interests`
+### 4.1 Capture — vitrine server-to-server (canal existant)
 
-- Middleware : `throttle:shop-public` (pattern cagnottes publiques).
-- Validation : `full_name` requis ≤120, `email` requis email ≤190,
-  `phone` ≤40, `country` 2 lettres, `amount_bracket` in enum,
-  `message` ≤2000, `consent` accepted, `website` honeypot (present → 200
-  silencieux, rien en base).
-- Réponse : `201 { data: { reference, status } }` — `reference` =
-  `EQ-<id base32>` non énumérable, affichée au visiteur (« conservez cette
-  référence »). Aucun endpoint de relecture publique : pas de fuite.
-- Échec validation : `422` + codes erreur traduits ×4 locales.
+- `POST /api/forms/equity` (Next.js vitrine) : validation zod stricte
+  (nom 2..120, email, téléphone optionnel, pays 2 lettres, tranche en liste
+  fermée, message ≤2000, consentement obligatoire), anti-spam (honeypot +
+  origine + rate-limit IP), sanitisation, puis `captureMarketingLead()` →
+  `POST /api/v1/marketing/leads` avec `type: 'equity_interest'` et le
+  détail en `payload` (secret partagé `MARKETING_LEAD_WEBHOOK_TOKEN`,
+  idempotence par hash, persistance confirmée ou continuée en tâche de
+  fond — compromis #7301).
+- Réponse vitrine : `201 { success, data: { id, persisted } }`. Aucun
+  endpoint de relecture publique : pas de fuite ni d'énumération.
 
 ### 4.2 Suivi admin plateforme
 
-Sous le groupe existant `auth:super_admin_api` + `throttle:platform-sensitive`,
-préfixe `/platform` :
+Groupes existants `auth:super_admin_api`, préfixes `/platform` et `/admin`
+(alias SPA) :
 
 | Route | Permission | Rôle |
 |---|---|---|
-| `GET /platform/equity-interests?status=&q=&page=` | `crm.view` | liste paginée + compteurs par statut |
-| `PATCH /platform/equity-interests/{id}` | `crm.view` | transition de statut (+ note interne v2) |
-| `GET /platform/equity-interests/export` | `crm.view` | export CSV (mêmes filtres) |
+| `GET /platform/marketing/leads?type=equity_interest&status=&search=&page=` | `crm.view` | liste paginée ; `meta.type_status_counts` = compteurs par statut **scopés au type** (ajout #8440 — `status_counts` global inchangé, contrat #7595 préservé) |
+| `PATCH /platform/marketing/leads/{id}` | `crm.view` | qualification : statut (`new/contacted/qualified/converted/rejected`) + note interne (nouveau endpoint #8440) |
+
+Export CSV : non livré en v1 (le volume attendu est faible ; la liste +
+filtres suffisent — reporté en v2 sans bloquer).
 
 Permissions réutilisées (`crm.view`) : c'est du suivi de leads investisseurs,
 même famille que le pipeline CRM — aucune permission nouvelle à seeder.
@@ -108,8 +104,10 @@ même famille que le pipeline CRM — aucune permission nouvelle à seeder.
   (`getFooterHref(3,3)`), libellés ×4 locales
   (`vitrine-locale.ts`) : « Devenir actionnaire » / « Become a shareholder » /
   ar / tr. Test `footer-links.test.ts` complété.
-- **i18n** : groupe `invest` dans `shared/i18n/locales/*.json` ×4, propagé par
-  `sync-web.js` (web vitrine) ; checksums `versions.json` recalculés.
+- **i18n** : contenu de page en ligne ×4 (pattern `/contact`), plus deux clés
+  partagées — `consent.formNoticeEquity` (mention RGPD sous le formulaire)
+  et `forms.validation.required` (messages zod) — propagées par
+  `sync-web.js` ; checksums `versions.json` recalculés.
 
 ## 6. Admin plateforme (`front/admin-dashboard`)
 
@@ -133,28 +131,31 @@ même famille que le pipeline CRM — aucune permission nouvelle à seeder.
 
 ## 8. Tests
 
-- **API Feature** `EquityInterestApiTest` : création OK (201 + reference),
-  validation 422 (email, consent, bracket), honeypot silencieux, throttle,
-  liste admin paginée + filtre statut + recherche, transition de statut,
-  export CSV, garde RBAC (non-admin 401/403).
-- **Vitrine Jest** `invest-page.test.tsx` : rendu sections ×4 locales,
-  soumission (mock apiFetch), états succès/erreur, honeypot rempli = pas
-  d'appel API ; `footer-links.test.ts` : `getFooterHref(3,3) === '/investir'`.
-- **Parité i18n** : validate.js vert (4 locales, clé `invest.*`).
+- **API Feature** `EquityInterestLeadApiTest` : capture du type
+  `equity_interest` (201 + payload jsonb conservé), rejet d'un type inconnu
+  (422), filtre admin par type + compteurs scopés (`type_status_counts`) vs
+  contrat global intact, transitions de statut + note, 422/404, RBAC
+  fail-closed (401 sans compte, 403 rôle support).
+- **Vitrine Jest** `validation.test.ts` : `equityFormSchema` ×4 locales
+  (tranche liste fermée, consentement obligatoire, messages localisés) ;
+  `footer-links.test.ts` : `getFooterHref(3,3) === '/investir'`.
+- **Parité i18n** : sync + validate.js verts (clés `consent.formNoticeEquity`
+  et `forms.validation.required` ×4).
 
 ## 9. Tâches (mapping livraison)
 
 | ID | Tâche | Statut |
 |---|---|---|
-| EQ-010 | Migration publique `equity_interests` + exception gouvernance | à faire |
-| EQ-020 | Enums + modèle + action de capture (honeypot, doublon 24 h) | à faire |
-| EQ-030 | Endpoint public + validation traduite ×4 + OpenAPI | à faire |
-| EQ-040 | Endpoints admin plateforme (liste/statut/export) | à faire |
-| EQ-050 | Page vitrine `/investir` + formulaire + i18n ×4 | à faire |
-| EQ-055 | Lien footer « Devenir actionnaire » ×4 + test | à faire |
-| EQ-060 | Écran admin suivi + nav + i18n ×4 | à faire |
-| EQ-070 | Tests API Feature + vitrine Jest | à faire |
-| EQ-080 | Registre scénarios de test + CHANGELOG | à faire |
+| EQ-010 | Migration publique : type `equity_interest` dans la CHECK `marketing_leads` | ✅ |
+| EQ-020 | Capture lead (constante modèle, validation endpoint, type TS vitrine) | ✅ |
+| EQ-030 | Route vitrine `POST /api/forms/equity` (zod, antispam, sanitisation) | ✅ |
+| EQ-040 | Suivi admin : compteurs scopés type + `PATCH` statut/note (routes `/platform` + alias `/admin`) | ✅ |
+| EQ-050 | Page vitrine `/investir` + formulaire + SEO ×4 | ✅ |
+| EQ-055 | Lien footer « Devenir actionnaire » ×4 + test | ✅ |
+| EQ-060 | Écran admin `EquityInterestsView` + nav + i18n ×4 | ✅ |
+| EQ-070 | Tests API Feature + vitrine Jest | ✅ |
+| EQ-080 | Registre scénarios de test + CHANGELOG | ✅ |
+| EQ-090 | Export CSV admin + purge RGPD self-service | v2 |
 
 ## 10. Hors scope (v2+)
 
