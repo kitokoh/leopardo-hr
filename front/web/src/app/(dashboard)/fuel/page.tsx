@@ -163,11 +163,7 @@ export default function FuelHomePage() {
             {t(locale, 'fuel.home.emptyTitle', 'Créez votre première station')}
           </h2>
           <p className="mt-1 text-sm text-amber-800">
-            {t(
-              locale,
-              'fuel.home.emptyBody',
-              'Commencez par déclarer une station, puis ajoutez vos employés, vos shifts et votre stock.',
-            )}
+            {t(locale, 'fuel.home.emptyBody', 'Commencez par déclarer une station, puis ajoutez vos employés, vos shifts et votre stock.')}
           </p>
           <Link
             href="/fuel/stations"
