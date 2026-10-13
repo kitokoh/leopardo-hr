@@ -73,6 +73,8 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   // BC-32 HOSPITALITY (#7943) — verticale HospitalityManager (données tenant).
   '/hospitality',
   '/fuel',
+  // #8447 — « Mon Logiciel » (hub des apps du tenant) : zone dashboard.
+  '/mon-logiciel',
   // BC-17 — espace vendeur (produits, stock, caisse) : zone dashboard.
   '/commerce',
 
@@ -218,6 +220,7 @@ export const config = {
     '/health/:path*', // BC-30 (#7792) HealthManager — gate session
     '/hospitality/:path*', // BC-32 (#7943) HospitalityManager — gate session
     '/fuel/:path*', // #7663 stations-service — gate session
+    '/mon-logiciel/:path*', // #8447 Mon Logiciel (hub apps tenant) — gate session
     '/commerce/:path*', // BC-17 espace vendeur — gate session (source unique #3377)
 
     '/support/:path*', // #7759 tickets support côté client — gate session
