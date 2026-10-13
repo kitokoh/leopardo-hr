@@ -10,6 +10,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { PackageSearch } from 'lucide-react';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { BranchSelect, useRestaurantBranches } from '@/components/restaurant/BranchSelect';
 import { apiFetch } from '@/lib/api-client';
 import { getPreferredLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
@@ -17,13 +18,19 @@ import { t } from '@/lib/i18n/locale-catalog';
 type StockLevel = { id: number; branch_id: number; ingredient_id: number; quantity: string; avg_cost_minor: number | null; alert_threshold: string | null; is_below_threshold: boolean };
 type PurchaseOrder = { id: number; reference: string; supplier_id: number; status: string; total_minor: number | null; expected_at: string | null };
 type Supplier = { id: number; name: string };
+type Ingredient = { id: number; name: string; unit_code?: string | null };
 
 export default function RestaurantStockPage() {
   const locale = getPreferredLocale();
+  // RESTO-ONBOARDING — plus de saisie d'identifiants techniques : la branche
+  // vient du sélecteur partagé et l'ingrédient d'une liste déroulante
+  // alimentée par `GET /restaurant/ingredients`.
+  const { branches } = useRestaurantBranches();
   const [tab, setTab] = useState<'levels' | 'purchaseOrders' | 'receivings'>('levels');
   const [levels, setLevels] = useState<StockLevel[]>([]);
   const [orders, setOrders] = useState<PurchaseOrder[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [receivings, setReceivings] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -34,18 +41,20 @@ export default function RestaurantStockPage() {
     setLoading(true);
     setError('');
     try {
-      const [l, o, r, s] = await Promise.all([
+      const [l, o, r, s, i] = await Promise.all([
         apiFetch('/restaurant/stock-levels?per_page=200'),
         apiFetch('/restaurant/purchase-orders?per_page=100'),
         apiFetch('/restaurant/receivings?per_page=100'),
         apiFetch('/restaurant/suppliers?per_page=200'),
+        apiFetch('/restaurant/ingredients?per_page=200'),
       ]);
       const parse = async (res: Response) => (res.ok ? ((await res.json()) as { data?: unknown[] }) : { data: [] });
-      const [l2, o2, r2, s2] = await Promise.all([parse(l), parse(o), parse(r), parse(s)]);
+      const [l2, o2, r2, s2, i2] = await Promise.all([parse(l), parse(o), parse(r), parse(s), parse(i)]);
       setLevels((l2.data ?? []) as StockLevel[]);
       setOrders((o2.data ?? []) as PurchaseOrder[]);
       setReceivings(r2.data ?? []);
       setSuppliers((s2.data ?? []) as Supplier[]);
+      setIngredients((i2.data ?? []) as Ingredient[]);
     } catch {
       setError(t(locale, 'restaurant.stock.loadError', 'Impossible de charger les données de stock.'));
     } finally {
@@ -62,6 +71,18 @@ export default function RestaurantStockPage() {
   const supplierName = useCallback(
     (id: number) => suppliers.find((s) => s.id === id)?.name ?? `#${id}`,
     [suppliers],
+  );
+
+  // RESTO-ONBOARDING — libellés lisibles pour les colonnes Branche/Ingrédient
+  // (plus d'ID brut affiché à l'utilisateur).
+  const branchName = useCallback(
+    (id: number) => branches.find((b) => b.id === id)?.name ?? `#${id}`,
+    [branches],
+  );
+
+  const ingredientName = useCallback(
+    (id: number) => ingredients.find((i) => i.id === id)?.name ?? `#${id}`,
+    [ingredients],
   );
 
   const createPo = async () => {
@@ -161,8 +182,8 @@ export default function RestaurantStockPage() {
           <table className="min-w-full divide-y divide-slate-200 text-sm">
             <thead className="bg-slate-50">
               <tr>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">Branche</th>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">Ingrédient</th>
+                <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colBranch', 'Branche')}</th>
+                <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colIngredient', 'Ingrédient')}</th>
                 <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colQty', 'Quantité')}</th>
                 <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colCost', 'Coût moyen')}</th>
                 <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colThreshold', 'Seuil')}</th>
@@ -173,8 +194,8 @@ export default function RestaurantStockPage() {
               {loading ? <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-500">{t(locale, 'restaurant.stock.loading', 'Chargement...')}</td></tr>
                 : levels.map((lv) => (
                   <tr key={lv.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-3">{lv.branch_id}</td>
-                    <td className="px-4 py-3">{lv.ingredient_id}</td>
+                    <td className="px-4 py-3">{branchName(lv.branch_id)}</td>
+                    <td className="px-4 py-3">{ingredientName(lv.ingredient_id)}</td>
                     <td className="px-4 py-3">{lv.quantity}</td>
                     <td className="px-4 py-3">{lv.avg_cost_minor ?? '—'}</td>
                     <td className="px-4 py-3">{lv.alert_threshold ?? '—'}</td>
@@ -191,16 +212,26 @@ export default function RestaurantStockPage() {
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h3 className="font-bold text-slate-900">{t(locale, 'restaurant.stock.newPO', 'Nouveau bon de commande')}</h3>
             <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-5">
-              <input className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Branche ID" value={poForm.branch_id} onChange={(e) => setPoForm({ ...poForm, branch_id: e.target.value })} aria-label="Branche" />
+              <BranchSelect
+                branches={branches}
+                value={poForm.branch_id === '' ? null : Number(poForm.branch_id)}
+                onChange={(id) => setPoForm({ ...poForm, branch_id: id === null ? '' : String(id) })}
+                allowEmpty
+              />
               <select className="rounded-lg border border-slate-200 px-3 py-2 text-sm" value={poForm.supplier_id} onChange={(e) => setPoForm({ ...poForm, supplier_id: e.target.value })} aria-label="Fournisseur">
                 <option value="">{t(locale, 'restaurant.stock.supplierPlaceholder', 'Fournisseur…')}</option>
                 {suppliers.map((s) => (
                   <option key={s.id} value={s.id}>{s.name}</option>
                 ))}
               </select>
-              <input className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Ingrédient ID" value={poForm.ingredient_id} onChange={(e) => setPoForm({ ...poForm, ingredient_id: e.target.value })} aria-label="Ingrédient" />
-              <input type="number" className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Quantité" value={poForm.quantity} onChange={(e) => setPoForm({ ...poForm, quantity: e.target.value })} aria-label="Quantité" />
-              <input type="number" className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Prix unitaire (minor)" value={poForm.unit_price_minor} onChange={(e) => setPoForm({ ...poForm, unit_price_minor: e.target.value })} aria-label="Prix" />
+              <select className="rounded-lg border border-slate-200 px-3 py-2 text-sm" value={poForm.ingredient_id} onChange={(e) => setPoForm({ ...poForm, ingredient_id: e.target.value })} aria-label={t(locale, 'restaurant.stock.colIngredient', 'Ingrédient')}>
+                <option value="">{t(locale, 'restaurant.stock.ingredientPlaceholder', 'Ingrédient…')}</option>
+                {ingredients.map((i) => (
+                  <option key={i.id} value={i.id}>{i.name}</option>
+                ))}
+              </select>
+              <input type="number" className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder={t(locale, 'restaurant.stock.qtyPlaceholder', 'Quantité')} value={poForm.quantity} onChange={(e) => setPoForm({ ...poForm, quantity: e.target.value })} aria-label={t(locale, 'restaurant.stock.qtyPlaceholder', 'Quantité')} />
+              <input type="number" className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder={t(locale, 'restaurant.stock.unitPricePlaceholder', 'Prix unitaire (minor)')} value={poForm.unit_price_minor} onChange={(e) => setPoForm({ ...poForm, unit_price_minor: e.target.value })} aria-label={t(locale, 'restaurant.stock.unitPricePlaceholder', 'Prix unitaire (minor)')} />
             </div>
             <button type="button" onClick={() => void createPo()} className="mt-3 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
               {t(locale, 'restaurant.stock.createPO', 'Créer le bon')}
@@ -212,7 +243,7 @@ export default function RestaurantStockPage() {
               <thead className="bg-slate-50">
                 <tr>
                   <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colRef', 'Référence')}</th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">Fournisseur</th>
+                  <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colSupplier', 'Fournisseur')}</th>
                   <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colStatus', 'Statut')}</th>
                   <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colTotal', 'Total')}</th>
                   <th className="px-4 py-3 text-right font-semibold text-slate-700" aria-label="Actions" />
@@ -244,10 +275,20 @@ export default function RestaurantStockPage() {
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h3 className="font-bold text-slate-900">{t(locale, 'restaurant.stock.newReceiving', 'Nouvelle réception')}</h3>
             <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-4">
-              <input className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Branche ID" value={rcvForm.branch_id} onChange={(e) => setRcvForm({ ...rcvForm, branch_id: e.target.value })} aria-label="Branche" />
-              <input className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Ingrédient ID" value={rcvForm.ingredient_id} onChange={(e) => setRcvForm({ ...rcvForm, ingredient_id: e.target.value })} aria-label="Ingrédient" />
-              <input type="number" className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Quantité" value={rcvForm.quantity} onChange={(e) => setRcvForm({ ...rcvForm, quantity: e.target.value })} aria-label="Quantité" />
-              <input type="number" className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Prix unitaire (minor)" value={rcvForm.unit_price_minor} onChange={(e) => setRcvForm({ ...rcvForm, unit_price_minor: e.target.value })} aria-label="Prix" />
+              <BranchSelect
+                branches={branches}
+                value={rcvForm.branch_id === '' ? null : Number(rcvForm.branch_id)}
+                onChange={(id) => setRcvForm({ ...rcvForm, branch_id: id === null ? '' : String(id) })}
+                allowEmpty
+              />
+              <select className="rounded-lg border border-slate-200 px-3 py-2 text-sm" value={rcvForm.ingredient_id} onChange={(e) => setRcvForm({ ...rcvForm, ingredient_id: e.target.value })} aria-label={t(locale, 'restaurant.stock.colIngredient', 'Ingrédient')}>
+                <option value="">{t(locale, 'restaurant.stock.ingredientPlaceholder', 'Ingrédient…')}</option>
+                {ingredients.map((i) => (
+                  <option key={i.id} value={i.id}>{i.name}</option>
+                ))}
+              </select>
+              <input type="number" className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder={t(locale, 'restaurant.stock.qtyPlaceholder', 'Quantité')} value={rcvForm.quantity} onChange={(e) => setRcvForm({ ...rcvForm, quantity: e.target.value })} aria-label={t(locale, 'restaurant.stock.qtyPlaceholder', 'Quantité')} />
+              <input type="number" className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder={t(locale, 'restaurant.stock.unitPricePlaceholder', 'Prix unitaire (minor)')} value={rcvForm.unit_price_minor} onChange={(e) => setRcvForm({ ...rcvForm, unit_price_minor: e.target.value })} aria-label={t(locale, 'restaurant.stock.unitPricePlaceholder', 'Prix unitaire (minor)')} />
             </div>
             <button type="button" onClick={() => void createReceiving()} className="mt-3 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
               {t(locale, 'restaurant.stock.createReceiving', 'Réceptionner')}
@@ -259,7 +300,7 @@ export default function RestaurantStockPage() {
               <thead className="bg-slate-50">
                 <tr>
                   <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colRef', 'Référence')}</th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">Branche</th>
+                  <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colBranch', 'Branche')}</th>
                   <th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.stock.colDate', 'Date')}</th>
                 </tr>
               </thead>
@@ -269,7 +310,7 @@ export default function RestaurantStockPage() {
                   return (
                     <tr key={row.id} className="hover:bg-slate-50">
                       <td className="px-4 py-3 font-medium text-slate-900">{row.reference}</td>
-                      <td className="px-4 py-3">{row.branch_id}</td>
+                      <td className="px-4 py-3">{branchName(row.branch_id)}</td>
                       <td className="px-4 py-3">{row.received_at ? new Date(row.received_at).toLocaleString(locale) : '—'}</td>
                     </tr>
                   );

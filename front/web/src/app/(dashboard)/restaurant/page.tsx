@@ -7,7 +7,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { LayoutGrid, BookOpen, CalendarCheck, PackageSearch, Bike, ChartColumn, UtensilsCrossed, Globe, Wallet, UsersRound } from 'lucide-react';
+import { LayoutGrid, BookOpen, CalendarCheck, PackageSearch, Bike, ChartColumn, UtensilsCrossed, Globe, Wallet, UsersRound, Sparkles, Loader2, CheckCircle2, CalendarClock, Smartphone } from 'lucide-react';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { useRestaurantBranches, type RestaurantBranch } from '@/components/restaurant/BranchSelect';
 import { apiFetch } from '@/lib/api-client';
@@ -24,12 +24,19 @@ type ConsolidatedRow = { branch: RestaurantBranch; kpis: Kpis | null };
 
 export default function RestaurantHomePage() {
   const locale = getPreferredLocale();
-  const { branches } = useRestaurantBranches();
+  const { branches, loading: branchesLoading, reload: reloadBranches } = useRestaurantBranches();
   const [kpis, setKpis] = useState<Kpis | null>(null);
   const [alerts, setAlerts] = useState<unknown[]>([]);
   const [consolidated, setConsolidated] = useState<ConsolidatedRow[]>([]);
   const [consolidatedError, setConsolidatedError] = useState('');
   const [error, setError] = useState('');
+  // RESTO-ONBOARDING — état vide actionnable : un restaurateur fraîchement
+  // activé arrivait sur un espace vide sans savoir par où commencer. On lui
+  // propose d'installer le kit de démonstration (API #7865) et on lui donne
+  // l'ordre de démarrage réel (branche → tables → produits → menu).
+  const [demoImporting, setDemoImporting] = useState(false);
+  const [demoImported, setDemoImported] = useState(false);
+  const [demoError, setDemoError] = useState('');
 
   const load = useCallback(async () => {
     try {
@@ -83,6 +90,54 @@ export default function RestaurantHomePage() {
     }
   }
 
+  // RESTO-ONBOARDING — import du kit de démonstration de la verticale.
+  // Le code opérationnel est `restaurantmanager` ; on retombe sur le code
+  // descripteur `restaurant` si le premier n'est pas proposé (les deux codes
+  // sont enregistrés côté serveur depuis l'alignement du registre).
+  const importDemoData = useCallback(async () => {
+    if (demoImporting) return;
+    setDemoImporting(true);
+    setDemoError('');
+    try {
+      const listRes = await apiFetch('/demo-data');
+      const listPayload = listRes.ok
+        ? ((await listRes.json()) as { data?: { kits?: { code: string; available?: boolean; status?: string }[] } })
+        : {};
+      const kits = listPayload.data?.kits ?? [];
+      const target =
+        kits.find((k) => k.code === 'restaurantmanager' && k.available === true && k.status === 'not_imported') ??
+        kits.find((k) => k.code === 'restaurant' && k.available === true && k.status === 'not_imported');
+
+      if (!target) {
+        setDemoError(t(locale, 'restaurant.home.demoUnavailable', 'Aucun jeu de démonstration disponible pour votre espace.'));
+        return;
+      }
+
+      const res = await apiFetch(`/demo-data/${target.code}/import`, { method: 'POST' });
+      if (!res.ok) {
+        const payload = await res.json().catch(() => ({}));
+        throw new Error((payload as { message?: string }).message ?? `HTTP ${res.status}`);
+      }
+      setDemoImported(true);
+      await Promise.all([load(), reloadBranches()]);
+    } catch (e) {
+      setDemoError(e instanceof Error ? e.message : t(locale, 'restaurant.home.demoError', 'Import impossible pour le moment.'));
+    } finally {
+      setDemoImporting(false);
+    }
+  }, [demoImporting, load, locale, reloadBranches]);
+
+  // Ordre de démarrage réel d'un restaurant : sans branche, rien d'autre ne
+  // peut être créé (tables, produits et menu en dépendent).
+  const setupOrder = [
+    { step: 1, label: t(locale, 'restaurant.home.setupBranch', 'Créer votre établissement (branche)'), href: '/restaurant/referential' },
+    { step: 2, label: t(locale, 'restaurant.home.setupTables', 'Déclarer vos tables et zones'), href: '/restaurant/referential' },
+    { step: 3, label: t(locale, 'restaurant.home.setupProducts', 'Ajouter vos produits et ingrédients'), href: '/restaurant/referential' },
+    { step: 4, label: t(locale, 'restaurant.home.setupMenu', 'Composer votre menu et le publier'), href: '/restaurant/referential' },
+  ];
+
+  const showEmptyState = !branchesLoading && branches.length === 0;
+
   const tiles = [
     { href: '/restaurant/online', icon: Globe, title: t(locale, 'restaurant.home.online'), description: t(locale, 'restaurant.home.onlineDesc'), accent: 'from-sky-500 to-indigo-600' },
     { href: '/restaurant/referential', icon: BookOpen, title: t(locale, 'restaurant.home.referential'), description: t(locale, 'restaurant.home.referentialDesc'), accent: 'from-emerald-500 to-teal-600' },
@@ -94,6 +149,10 @@ export default function RestaurantHomePage() {
     { href: '/restaurant/payments', icon: Wallet, title: t(locale, 'restaurant.home.payments', 'Encaissement'), description: t(locale, 'restaurant.home.paymentsDesc', 'Paiement en ligne, profils Stripe & mobile money'), accent: 'from-lime-500 to-emerald-600' },
     // #7909 — affectations des employés aux succursales.
     { href: '/restaurant/team', icon: UsersRound, title: t(locale, 'restaurant.home.team', 'Équipe'), description: t(locale, 'restaurant.home.teamDesc', 'Affectations des employés aux succursales, rôles'), accent: 'from-fuchsia-500 to-purple-600' },
+    // #8431 — rotations de travail (planning des équipes).
+    { href: '/restaurant/rotations', icon: CalendarClock, title: t(locale, 'restaurant.home.rotations', 'Rotations & plannings'), description: t(locale, 'restaurant.home.rotationsDesc'), accent: 'from-sky-500 to-blue-600' },
+    // #8432 — accès à l'app mobile serveur (pointage des serveurs).
+    { href: '/download', icon: Smartphone, title: t(locale, 'restaurant.home.mobileServer', 'App mobile serveur'), description: t(locale, 'restaurant.home.mobileServerDesc'), accent: 'from-orange-500 to-amber-600' },
   ];
 
   return (
@@ -103,6 +162,60 @@ export default function RestaurantHomePage() {
       description={t(locale, 'restaurant.home.subtitle')}
     >
       {error ? <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p> : null}
+
+      {showEmptyState ? (
+        <section
+          data-testid="restaurant-empty-state"
+          className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-cyan-50 p-6"
+        >
+          <div className="flex items-start gap-3">
+            <Sparkles className="mt-0.5 h-6 w-6 shrink-0 text-emerald-600" aria-hidden="true" />
+            <div className="min-w-0">
+              <h3 className="text-lg font-bold text-slate-900">
+                {t(locale, 'restaurant.home.emptyTitle', 'Votre restaurant est prêt à être configuré')}
+              </h3>
+              <p className="mt-1 text-sm text-slate-600">
+                {t(locale, 'restaurant.home.emptyBody', 'Commencez par créer votre établissement, puis suivez l’ordre ci-dessous. Vous pouvez aussi installer un jeu de démonstration pour explorer librement.')}
+              </p>
+
+              <ol className="mt-4 space-y-2">
+                {setupOrder.map((item) => (
+                  <li key={item.step} className="flex items-center gap-3 text-sm">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-xs font-bold text-white">
+                      {item.step}
+                    </span>
+                    <Link href={item.href} className="font-medium text-slate-800 hover:text-emerald-700 hover:underline">
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ol>
+
+              {demoError ? <p className="mt-4 text-sm font-semibold text-red-600">{demoError}</p> : null}
+
+              {demoImported ? (
+                <p className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700">
+                  <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+                  {t(locale, 'restaurant.home.demoImported', 'Données de démonstration installées.')}
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  disabled={demoImporting}
+                  onClick={() => void importDemoData()}
+                  data-testid="restaurant-install-demo"
+                  className="mt-4 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-700 disabled:opacity-60"
+                >
+                  {demoImporting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Sparkles className="h-4 w-4" aria-hidden="true" />}
+                  {demoImporting
+                    ? t(locale, 'restaurant.home.demoImporting', 'Import en cours…')
+                    : t(locale, 'restaurant.home.demoImport', 'Installer les données de démo')}
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">

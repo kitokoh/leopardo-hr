@@ -172,6 +172,10 @@ class SetupInterviewController extends Controller
                 'solutions' => array_values((array) ($activated['solutions'] ?? [])),
                 'tools' => array_values((array) ($activated['tools'] ?? [])),
                 'failed' => array_values((array) ($activated['failed'] ?? [])),
+                // RESTO-ONBOARDING — détail des échecs d'activation (code +
+                // raison) : le front peut afficher un message actionnable au
+                // lieu d'un espace vide sans explication.
+                'failed_details' => array_values((array) ($activated['failed_details'] ?? [])),
             ],
         ];
     }

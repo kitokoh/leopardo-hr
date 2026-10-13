@@ -216,6 +216,31 @@ final class SeedDefaultSteps
             $steps[] = ['key' => 'travel_first_sale', 'title' => __('onboarding.step_travel_first_sale'), 'required' => false, 'estimated_minutes' => 4];
         }
 
+        // RESTO-ONBOARDING — checklist orientée restaurant : le gérant qui
+        // s'est déclaré « restaurant » à l'entretien (verticale
+        // `restaurantmanager` activée par `CompleteSetupInterview` → feature
+        // flag tenant) démarre par son établissement, son menu, sa caisse et
+        // son premier service. Sans cette branche, un restaurateur recevait la
+        // checklist RH générique (« Créer le premier département », « Configurer
+        // la paie », « Installer un kiosque ») — aucun rapport avec son métier.
+        //
+        // Détection : le flag OPÉRATIONNEL `restaurantmanager` (posé par la
+        // cascade `SolutionActivated` → `ActivateRestaurantManagerAction`) OU
+        // le code DESCRIPTEUR `restaurant` (RestaurantManifest) — les deux
+        // codes mènent au même espace, la checklist doit suivre dans les deux
+        // sens (même raisonnement que le listener du provider, #7976/BOS-014).
+        //
+        // Étapes DÉCLARATIVES (aucun prédicat `StepCompletionGuard`) :
+        // vérifier l'existence de branches/menus exigerait un import
+        // Onboarding → RestaurantManager, interdit par la garde d'isolation
+        // inter-modules (#5584) — même contrainte que la branche travelagency.
+        if ($company->hasFeature('restaurantmanager') || $company->hasFeature('restaurant')) {
+            $steps[] = ['key' => 'restaurant_setup_establishment', 'title' => __('onboarding.step_restaurant_setup_establishment'), 'required' => true, 'estimated_minutes' => 6];
+            $steps[] = ['key' => 'restaurant_setup_menu', 'title' => __('onboarding.step_restaurant_setup_menu'), 'required' => true, 'estimated_minutes' => 10];
+            $steps[] = ['key' => 'restaurant_setup_pos', 'title' => __('onboarding.step_restaurant_setup_pos'), 'required' => true, 'estimated_minutes' => 5];
+            $steps[] = ['key' => 'restaurant_first_order', 'title' => __('onboarding.step_restaurant_first_order'), 'required' => false, 'estimated_minutes' => 4];
+        }
+
         $ordered = [];
         $order = 1;
         foreach ($steps as $step) {
