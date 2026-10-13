@@ -242,6 +242,145 @@ paths:
           description: Statut courant de la contribution
         '404':
           description: Référence inconnue
+  /public/vtc/marketplace/operators:
+    get:
+      tags:
+      - Vtc
+      summary: Annuaire public des opérateurs VTC/taxi opt-in (#8423, M-11)
+      description: >-
+        Marketplace publique VTC (surface isolée, aucun auth, throttle
+        `shop-public`) : liste des sociétés publiées (annuaire actif +
+        feature `vtc` + société ni suspendue ni expirée), triées par nom.
+        DTO public strict : slug, nom, ville, pays, devise — jamais
+        d'identifiant interne.
+      responses:
+        '200':
+          description: Opérateurs opt-in (slug, name, city, country, currency)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /public/vtc/marketplace/estimate:
+    post:
+      tags:
+      - Vtc
+      summary: Devis public d'une course marketplace (#8423, M-12)
+      description: >-
+        Devis grand public résolu par slug opérateur (404 uniforme si non
+        opt-in, feature coupée ou slug inconnu). Calcul délégué à
+        `EstimateRideFareAction` dans le tenant de l'opérateur (distance
+        via le core geo BC-34) — la grille tarifaire reste côté serveur,
+        `price_minor` vaut null quand l'opérateur n'a pas de grille.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [operator, pickup, dropoff]
+              properties:
+                operator:
+                  type: string
+                  maxLength: 160
+                pickup:
+                  $ref: '#/components/schemas/VtcGeoPointInput'
+                dropoff:
+                  $ref: '#/components/schemas/VtcGeoPointInput'
+      responses:
+        '200':
+          description: Devis calculé (distance_m, duration_s, price_minor, currency)
+        '404':
+          description: Opérateur introuvable ou non publié
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /public/vtc/marketplace/rides:
+    post:
+      tags:
+      - Vtc
+      summary: Réservation invitée d'une course marketplace (#8423, M-13)
+      description: >-
+        Création de course SANS compte, résolue par slug opérateur et posée
+        dans SON tenant (`passenger_user_id` null). Idempotente par
+        `idempotency_key` (UUID) : 201 + `tracking_code` en clair à la
+        création (présenté une seule fois — seul le hash SHA-256 est
+        persisté), 200 au rejeu avec le même corps SANS le code. Throttle
+        renforcé 10 requêtes/minute en sus du bucket `shop-public`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [operator, idempotency_key, pickup, dropoff, passenger_name, passenger_phone]
+              properties:
+                operator:
+                  type: string
+                  maxLength: 160
+                idempotency_key:
+                  type: string
+                  format: uuid
+                pickup:
+                  $ref: '#/components/schemas/VtcGeoPointInput'
+                dropoff:
+                  $ref: '#/components/schemas/VtcGeoPointInput'
+                pickup_address:
+                  type: string
+                  maxLength: 500
+                  nullable: true
+                dropoff_address:
+                  type: string
+                  maxLength: 500
+                  nullable: true
+                passenger_name:
+                  type: string
+                  maxLength: 120
+                passenger_phone:
+                  type: string
+                  maxLength: 40
+      responses:
+        '201':
+          description: Course créée (reference, status, tracking_code présenté une fois, estimations)
+        '200':
+          description: Rejeu idempotent — même course, tracking_code non re-présenté
+        '404':
+          description: Opérateur introuvable ou non publié
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /public/vtc/marketplace/rides/{reference}:
+    get:
+      tags:
+      - Vtc
+      summary: Suivi invité d'une course marketplace (#8423, M-14)
+      description: >-
+        Suivi par référence publique `VTC-AAAA-NNNNNN` + code de suivi
+        (query `code`). Code absent → 422 ; code invalide, référence
+        inconnue, course hors marketplace ou opérateur retiré de
+        l'annuaire → 404 uniforme (anti-énumération, jamais de
+        distinction). DTO minimal : statut + estimations — JAMAIS de
+        position chauffeur.
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^VTC-[0-9]{4}-[0-9]{6}$'
+      - name: code
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Statut courant de la course (reference, status, estimations, adresses)
+        '404':
+          description: Référence inconnue, code invalide ou opérateur retiré
+        '422':
+          description: Code de suivi absent
+        '429':
+          $ref: '#/components/responses/Error429'
   /fundraising/fundraisers:
     get:
       tags:
@@ -43025,6 +43164,98 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+  /vtc/driver/rides/{id}/cancel:
+    post:
+      tags:
+      - Vtc
+      summary: Annulation d'une course par le chauffeur assigné (#8423, M-21)
+      description: >-
+        Rôle vtc.driver requis. Le chauffeur n'annule que SA course après
+        acceptation (404 uniforme sinon) ; motif obligatoire (tracé dans
+        le journal vtc_ride_events, acteur `driver`). Le chauffeur est
+        libéré (available) à l'annulation. State machine VTC :
+        InvalidRideTransitionException sur état terminal → 409.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  minLength: 3
+                  maxLength: 200
+      responses:
+        '200':
+          description: Course annulée (acteur `driver` tracé)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Course introuvable ou non assignée à ce chauffeur
+        '409':
+          description: État terminal — transition invalide
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /vtc/dispatch/rides/{id}/cancel:
+    post:
+      tags:
+      - Vtc
+      summary: Annulation d'une course par le dispatch/admin (#8423, M-21)
+      description: >-
+        Rôle vtc.dispatcher ou vtc.admin requis. Annulation de toute
+        course à état non terminal ; l'acteur réel est tracé
+        (`cancelled_by` = `admin` si manager principal, sinon
+        `dispatcher`). Le chauffeur assigné est libéré (available).
+        State machine VTC : état terminal → 409.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  minLength: 3
+                  maxLength: 200
+      responses:
+        '200':
+          description: Course annulée (acteur ops tracé)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Course introuvable
+        '409':
+          description: État terminal — transition invalide
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
   /vtc/rides/{id}/cancel:
     post:
       tags:

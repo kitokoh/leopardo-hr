@@ -4,8 +4,16 @@ declare(strict_types=1);
 
 namespace App\Modules\Vtc\Providers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Solutions\SolutionCatalogue;
+use App\Http\Middleware\Vtc\VtcRoleResolver;
+use App\Modules\Vtc\Application\Listeners\NotifyVtcRideAcceptedListener;
+use App\Modules\Vtc\Application\Listeners\NotifyVtcRideCompletedListener;
+use App\Modules\Vtc\Application\Listeners\NotifyVtcRideExpiredListener;
 use App\Modules\Vtc\Application\Listeners\StartVtcDispatchListener;
+use App\Modules\Vtc\Domain\Events\VtcRideAccepted;
+use App\Modules\Vtc\Domain\Events\VtcRideCompleted;
+use App\Modules\Vtc\Domain\Events\VtcRideExpired;
 use App\Modules\Vtc\Domain\Events\VtcRideRequested;
 use App\Modules\Vtc\Domain\Manifests\VtcManifest;
 use App\Modules\Vtc\Infrastructure\Geo\VtcDispatchableDriver;
@@ -49,8 +57,22 @@ class VtcServiceProvider extends ServiceProvider
         // Enregistrement paresseux via la façade transverse — inversion de
         // dépendance, garde d'isolation #5584 (le core ne connaît pas la
         // verticale, la verticale s'enregistre).
+        // #8423 (M-02) — garde d'autorisation : la recherche HTTP « plus
+        // proche chauffeur » expose les POSITIONS des chauffeurs — réservée
+        // aux rôles vtc admin/dispatcher (console ops). Pas de périmètre
+        // « chauffeur pour lui-même » : l'endpoint retourne une LISTE de
+        // chauffeurs dans un rayon, pas une fiche individuelle. La garde ne
+        // s'applique qu'à la couche HTTP — le dispatch interne (worker,
+        // sans utilisateur authentifié) n'est jamais bloqué.
         $this->app->resolving(GeoServiceContract::class, function (GeoServiceContract $geo): void {
-            $geo->registerSearchable('vtc_driver', VtcDispatchableDriver::class);
+            $geo->registerSearchable(
+                'vtc_driver',
+                VtcDispatchableDriver::class,
+                static fn (Employee $employee): bool => array_intersect(
+                    (new VtcRoleResolver)->rolesFor($employee),
+                    ['admin', 'dispatcher'],
+                ) !== [],
+            );
         });
     }
 
@@ -60,6 +82,15 @@ class VtcServiceProvider extends ServiceProvider
         // (découplage par événement : la cascade d'offres vit dans la file
         // `vtc`, la création reste synchrone).
         Event::listen(VtcRideRequested::class, StartVtcDispatchListener::class);
+
+        // #8423 (M-20) — notifications de cycle de vie : ces événements
+        // étaient ORPHELINS (aucun listener). Le passager est tenu informé
+        // (acceptation, expiration, clôture) et le chauffeur reçoit son
+        // récapitulatif — dégradation gracieuse, jamais d'échec de course
+        // pour un push indisponible.
+        Event::listen(VtcRideAccepted::class, NotifyVtcRideAcceptedListener::class);
+        Event::listen(VtcRideExpired::class, NotifyVtcRideExpiredListener::class);
+        Event::listen(VtcRideCompleted::class, NotifyVtcRideCompletedListener::class);
 
         // VTC-06 (#8362) — `vtc:purge-positions` (rétention RGPD des
         // positions chauffeurs, planifiée daily) : les commandes du module

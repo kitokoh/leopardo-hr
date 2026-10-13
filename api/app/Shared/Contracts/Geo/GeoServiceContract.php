@@ -7,6 +7,7 @@ namespace App\Shared\Contracts\Geo;
 use App\Shared\Geo\Distance;
 use App\Shared\Geo\GeoPoint;
 use App\Shared\Geo\NearestResult;
+use Closure;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -37,9 +38,16 @@ interface GeoServiceContract
      * Enregistre un type recherchable « le plus proche » (appelé par le
      * provider de la verticale — inversion de dépendance, garde #5584).
      *
+     * #8423 (M-02) : la verticale peut joindre une garde d'autorisation —
+     * closure recevant l'employé authentifié, appliquée UNIQUEMENT à la
+     * couche HTTP (`GET /v1/geo/nearest` → 403 si refus). Les appels
+     * internes (`nearest()` en worker, sans utilisateur) ne sont jamais
+     * bloqués par cette garde.
+     *
      * @param  class-string<Model&GeoLocatable>  $modelClass
+     * @param  null|Closure(\App\Core\Auth\Domain\Models\Employee): bool  $authorizer
      */
-    public function registerSearchable(string $type, string $modelClass): void;
+    public function registerSearchable(string $type, string $modelClass, ?Closure $authorizer = null): void;
 
     /**
      * Entités du type enregistré, dans le rayon, triées par distance

@@ -128,7 +128,10 @@ jobs:
       # jamais un alias partagé — l'alias stable leopardo-travel.vercel.app ne
       # bouge pas sur un deploy preview). 401/403 = déploiement vivant mais
       # protégé par Vercel Authentication (protection par défaut des previews)
-      # — accepté comme sain.
+      # — accepté comme sain. #8423 : la protection SSO des previews répond
+      # désormais 302 → vercel.com/sso-api (au lieu de 401/403) — accepté
+      # comme sain UNIQUEMENT quand la cible du redirect est le SSO Vercel
+      # (jamais un 302 applicatif, qui resterait un échec).
       - name: Healthcheck preview deployment
         if: ${{ env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
         shell: bash
@@ -140,10 +143,18 @@ jobs:
           echo "Waiting for travel-web preview to answer at ${URL}..."
           for attempt in {1..12}; do
             echo "Healthcheck attempt ${attempt}/12 on ${URL}"
-            CODE="$(curl --silent --output /dev/null --max-time 15 --write-out '%{http_code}' "${URL}" || echo 000)"
+            OUT="$(curl --silent --output /dev/null --max-time 15 --write-out '%{http_code} %{redirect_url}' "${URL}" || echo '000 ')"
+            CODE="${OUT%% *}"
+            LOCATION="${OUT#* }"
             case "${CODE}" in
               2*) echo "travel-web preview répond (HTTP ${CODE})."; exit 0 ;;
               401|403) echo "travel-web preview déployé et protégé par Vercel Authentication (HTTP ${CODE}) — considéré sain."; exit 0 ;;
+              302)
+                case "${LOCATION}" in
+                  https://vercel.com/sso-api*|https://vercel.com/login*)
+                    echo "travel-web preview déployé et protégé par Vercel SSO (HTTP 302 → vercel.com) — considéré sain."; exit 0 ;;
+                esac
+                echo "HTTP 302 inattendu (→ ${LOCATION}) — retry" ;;
               *) echo "HTTP ${CODE} — retry" ;;
             esac
             sleep 10

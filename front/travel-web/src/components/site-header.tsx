@@ -30,6 +30,14 @@ export function SiteHeader() {
             {dict.nav.findBooking}
           </Link>
 
+          {/* #8423 (M-30) — entrée du parcours public « VTC & Taxi ». */}
+          <Link
+            href="/vtc"
+            className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-slate-900"
+          >
+            {dict.nav.vtc}
+          </Link>
+
           {/* #7739 — compte client : « Connexion » tant que l'état n'est pas
               résolu ou sans session, sinon « Mon compte ». */}
           <Link

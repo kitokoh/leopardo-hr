@@ -5983,6 +5983,8 @@
   "vtcDriveravailable": "متاح",
   "vtcDriverbusy": "في رحلة",
   "vtcDriversuspended": "موقوف",
+  "vtcDrivernotlinked": "لا يوجد ملف سائق VTC مرتبط بهذا الحساب.",
+  "vtcMarketplacetrackingcoderequired": "رمز التتبع مطلوب (المعامل ?code=).",
   "cagnottesmoduleTitle": "حملات التضامن",
   "cagnottesmoduleSubtitle": "اجمع التبرعات عبر رابط عام — بطاقة بنكية وموبايل موني — ثم حوّلها إلى المستفيد.",
   "cagnottesmoduleTabsCagnottes": "الحملات",

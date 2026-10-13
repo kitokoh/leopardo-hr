@@ -46,7 +46,7 @@ PROPRIÉTAIRE** (billing Render). Remplace, pour ce sujet, le runbook historique
    - ou rejouer l'appel API documenté dans la PR #7819
      (`POST /v1/services`, type `background_worker`).
 3. **Vérifier** : le worker apparaît dans le workspace, ses logs montrent
-   `Processing:` sur les queues `webhooks,audit,notifications,emails,pdf,payroll,documents,default`
+   `Processing:` sur les queues `webhooks,audit,notifications,emails,pdf,payroll,documents,vtc,delivery,communication,reconciliation,default`
    et une exécution de `schedule:run`/`schedule:work` chaque minute.
 4. **Débrayer le drain web** : poser `WEB_QUEUE_DRAIN=false` et
    `WEB_SCHEDULER_LOOP=false` sur le **web service** (évite un double

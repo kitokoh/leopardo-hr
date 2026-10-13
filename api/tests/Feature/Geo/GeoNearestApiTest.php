@@ -6,6 +6,7 @@ namespace Tests\Feature\Geo;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Geo\Infrastructure\Services\SearchableRegistry;
 use App\Shared\Contracts\Geo\GeoLocatable;
 use App\Shared\Geo\GeoPoint;
 use App\Shared\Traits\BelongsToCompany;
@@ -24,7 +25,9 @@ use Tests\TestCase;
  *   - 403 quand le feature flag `geo` est inactif ;
  *   - 422 sur paramètres invalides (type, bornes, rayon) ;
  *   - 422 GEO_UNKNOWN_SEARCHABLE_TYPE sur type non enregistré (fail-closed) ;
- *   - 200 liste triée par distance croissante, isolation tenant respectée.
+ *   - 200 liste triée par distance croissante, isolation tenant respectée ;
+ *   - #8423 (M-02) : 403 GEO_SEARCHABLE_TYPE_FORBIDDEN sur type restreint
+ *     par une garde d'autorisation (ex. `vtc_driver` → admin/dispatcher).
  */
 class GeoNearestApiTest extends TestCase
 {
@@ -121,6 +124,88 @@ class GeoNearestApiTest extends TestCase
         self::assertSame(['Proche', 'Un peu plus loin'], $labels);
         // Isolation tenant : la place du tenant B (même position) n'apparaît pas.
         self::assertNotContains('Place du tenant B', $labels);
+    }
+
+    public function test_nearest_restricted_type_forbids_users_without_required_role(): void
+    {
+        $company = $this->createCompany(enableGeo: true);
+
+        // #8423 (M-02) — type restreint : seul un manager `principal` passe.
+        $this->app->make(SearchableRegistry::class)->register(
+            'restricted_place',
+            GeoApiFakePlace::class,
+            static fn (Employee $employee): bool => $employee->hasManagerRole('principal'),
+        );
+
+        // Employé actif simple → 403 catalogué.
+        /** @var Employee $plainEmployee */
+        $plainEmployee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+
+        Sanctum::actingAs($plainEmployee);
+
+        $this->getJson('/api/v1/geo/nearest?type=restricted_place&lat=48.8566&lng=2.3522')
+            ->assertStatus(403)
+            ->assertJson(['error' => 'GEO_SEARCHABLE_TYPE_FORBIDDEN']);
+
+        // Manager NON principal → 403 également (deny-by-default).
+        /** @var Employee $opsManager */
+        $opsManager = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'manager',
+        ]);
+
+        Sanctum::actingAs($opsManager);
+
+        $this->getJson('/api/v1/geo/nearest?type=restricted_place&lat=48.8566&lng=2.3522')
+            ->assertStatus(403)
+            ->assertJson(['error' => 'GEO_SEARCHABLE_TYPE_FORBIDDEN']);
+    }
+
+    public function test_nearest_restricted_type_allows_authorized_role(): void
+    {
+        $company = $this->createCompany(enableGeo: true);
+
+        $this->app->make(SearchableRegistry::class)->register(
+            'restricted_place',
+            GeoApiFakePlace::class,
+            static fn (Employee $employee): bool => $employee->hasManagerRole('principal'),
+        );
+
+        $this->actingAsManager($company); // manager principal
+
+        $this->getJson('/api/v1/geo/nearest?type=restricted_place&lat=48.8566&lng=2.3522')
+            ->assertOk()
+            ->assertJsonCount(0, 'data');
+    }
+
+    public function test_nearest_vtc_driver_positions_are_restricted_to_vtc_admin_dispatcher(): void
+    {
+        $company = $this->createCompany(enableGeo: true);
+
+        // Le type réel `vtc_driver` est enregistré par VtcServiceProvider avec
+        // sa garde admin/dispatcher (#8423, M-02) — un employé simple (rôle
+        // vtc « driver » inclus) ne doit PLUS lire les positions chauffeurs.
+        /** @var Employee $plainEmployee */
+        $plainEmployee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+
+        Sanctum::actingAs($plainEmployee);
+
+        $this->getJson('/api/v1/geo/nearest?type=vtc_driver&lat=48.8566&lng=2.3522')
+            ->assertStatus(403)
+            ->assertJson(['error' => 'GEO_SEARCHABLE_TYPE_FORBIDDEN']);
+
+        // Manager principal (= rôles vtc admin + dispatcher) → accès conservé.
+        $this->actingAsManager($company);
+
+        $this->getJson('/api/v1/geo/nearest?type=vtc_driver&lat=48.8566&lng=2.3522')
+            ->assertOk();
     }
 
     private function createCompany(bool $enableGeo = false): Company

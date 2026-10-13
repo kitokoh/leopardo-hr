@@ -5,7 +5,7 @@
   "policy": "deny-by-default",
   "registry": "dev-hub/governance/bounded-context-registry.json",
   "guard": "dev-hub/tools/check-bounded-context-dependencies.sh",
-  "updated": "2026-10-10"
+  "updated": "2026-10-11"
  },
  "edges": [
   {
@@ -846,6 +846,18 @@
    "to": "BC-14",
    "baseline": false,
    "note": "VTC → INTEGRATION — jobs du dispatch (OfferRideToNearestDriverJob, ExpireVtcOfferJob) : contrat queue partagé App\\Contracts\\Queue\\TenantScopedJob + middleware EnsureTenantContext (VTC-04 #8360, pattern #5706)"
+  },
+  {
+   "from": "BC-34",
+   "to": "BC-03",
+   "baseline": false,
+   "note": "GEO → IDENTITY — autorisation par type sur GET /v1/geo/nearest (M-02 #8423) : acteur Employee lu par GeoNearestController pour la garde d'autorisation runtime (pattern BC-28/#6880 — identique à l'arête BC-35→BC-03 des contrôleurs VTC)"
+  },
+  {
+   "from": "BC-35",
+   "to": "BC-02",
+   "baseline": false,
+   "note": "VTC → TENANT — marketplace publique #8423 (M-10→M-14) : résolution du tenant par ressource via l'annuaire public opt-in (VtcMarketplaceOperator → Company) puis bascule PublicTenantResolver BOS-050 ; pattern annuaires plateforme FUNDRAISING #8379"
   }
  ]
 }
