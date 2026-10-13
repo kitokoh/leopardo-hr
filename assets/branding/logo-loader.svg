@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Leopardo">
+  <!--
+    Logo animé de chargement Leopardo (#8446).
+    Animation SMIL : aucune dépendance JS, fonctionne en <img> et inline.
+    Intégration + prefers-reduced-motion : voir BRANDING_NOTES.md.
+  -->
+  <defs>
+    <clipPath id="round"><rect width="64" height="64" rx="14"/></clipPath>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#16213b"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+
+  <!-- Monogramme LT : pulsation déphasée (souffle) -->
+  <path d="M15 43V18h8v18h15v7H15Z" fill="#ecfeff">
+    <animate attributeName="opacity" values="1;0.45;1" keyTimes="0;0.5;1"
+             dur="1.6s" repeatCount="indefinite" calcMode="spline"
+             keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+  </path>
+  <path d="M38 18h14v7h-7v18h-7V18Z" fill="#34d399">
+    <animate attributeName="opacity" values="0.45;1;0.45" keyTimes="0;0.5;1"
+             dur="1.6s" repeatCount="indefinite" calcMode="spline"
+             keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+  </path>
+
+  <!-- Balayage de chargement (barre émeraude en bas) -->
+  <g clip-path="url(#round)">
+    <rect x="-26" y="56" width="26" height="4" rx="2" fill="#34d399" opacity="0.95">
+      <animate attributeName="x" values="-26;64" dur="1.1s"
+               repeatCount="indefinite" calcMode="spline"
+               keySplines="0.45 0 0.55 1"/>
+    </rect>
+  </g>
+</svg>
