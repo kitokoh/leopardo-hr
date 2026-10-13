@@ -583,6 +583,15 @@ Route::prefix('v1')->group(function (): void {
         // scopée à une entreprise vivante (sinon la preuve est inexploitable).
         Route::get('/tenant-deletion-audits', [PlatformCompanyDeletionController::class, 'auditTrail'])->middleware('platform.permission:companies.view');
         Route::delete('/companies/{company}', [PlatformCompanyDeletionController::class, 'destroy'])->middleware('platform.permission:companies.manage');
+
+        // #8441 — paramétrage de la verticale cagnottes DANS le contexte de
+        // l'entreprise consultée : la fiche entreprise (VERTICAL_SURFACES)
+        // ouvre l'écran de paramétrage qui appelait les routes TENANT
+        // (session de l'admin) — l'admin éditait son propre tenant. Ces
+        // routes lisent/écrivent la ligne du tenant ciblé (withinTenant,
+        // fail-closed si la verticale n'est pas activée).
+        Route::get('/companies/{company}/fundraising/settings', [\App\Modules\Fundraising\Interfaces\Api\V1\Controllers\PlatformFundraisingSettingsController::class, 'show'])->middleware('platform.permission:companies.manage');
+        Route::put('/companies/{company}/fundraising/settings', [\App\Modules\Fundraising\Interfaces\Api\V1\Controllers\PlatformFundraisingSettingsController::class, 'update'])->middleware('platform.permission:companies.manage');
         // MULTI-PAYS (#1952) : réparation/choix du pays d'un tenant legacy
         // (refusé si données de paie — invariant 9). #7680 : les doublons SANS
         // platform.permission masquaient ces versions protégées (Laravel matche
