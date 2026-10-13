@@ -57,6 +57,26 @@ const draftFundraiser = {
   ends_at: null,
 };
 
+const pendingContribution = {
+  id: 7,
+  reference: 'FC-TEST000001',
+  fundraiser_id: 42,
+  amount: 50000,
+  currency: 'XOF',
+  payment_method: 'cash',
+  payment_method_label: 'Espèces',
+  provider: 'manual',
+  status: 'pending',
+  status_label: 'En attente',
+  contributor_name: 'Moussa Diop',
+  contributor_email: null,
+  contributor_phone: null,
+  is_anonymous: false,
+  message: 'Courage !',
+  paid_at: null,
+  created_at: '2026-10-11T21:13:09+00:00',
+};
+
 beforeAll(() => {
   window.localStorage.setItem('preferred_locale', 'fr');
 });
@@ -115,6 +135,34 @@ describe('Espace tenant Cagnottes (FUND-090)', () => {
     render(<CagnottesPage />);
 
     expect(await screen.findByText('Verticale non activée')).toBeInTheDocument();
+  });
+
+  it('liste les contributions et confirme un don manuel en attente (#8428)', async () => {
+    const activeFundraiser = { ...draftFundraiser, status: 'active', status_label: 'En collecte' };
+    mockedApiFetch
+      .mockResolvedValueOnce(jsonResponse({ data: [activeFundraiser] })) // GET fundraisers
+      .mockResolvedValueOnce(jsonResponse(settings)) // GET settings
+      .mockResolvedValueOnce(jsonResponse({ data: [pendingContribution] })) // GET contributions
+      .mockResolvedValueOnce(jsonResponse({ data: { ...pendingContribution, status: 'completed', status_label: 'Confirmée' } })) // POST confirm
+      .mockResolvedValueOnce(jsonResponse({ data: [{ ...activeFundraiser, collected_amount: 50000, contributions_count: 1 }] })) // reload fundraisers
+      .mockResolvedValueOnce(jsonResponse({ data: [{ ...pendingContribution, status: 'completed', status_label: 'Confirmée' }] })); // reload contributions
+
+    render(<CagnottesPage />);
+
+    expect(await screen.findByText('Aide pour Fatou')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: /Contributions/ }));
+
+    // La contribution en attente est visible avec son bouton Confirmer.
+    expect(await screen.findByText(/Moussa Diop/)).toBeInTheDocument();
+    expect(screen.getByText(/FC-TEST000001/)).toBeInTheDocument();
+    const confirmButton = screen.getByRole('button', { name: 'Confirmer' });
+    await userEvent.click(confirmButton);
+
+    await waitFor(() => {
+      const confirmCall = mockedApiFetch.mock.calls.find(([endpoint, options]) => String(endpoint) === '/fundraising/contributions/7/confirm' && (options as RequestInit)?.method === 'POST');
+      expect(confirmCall).toBeDefined();
+    });
+    expect(await screen.findByText('Contribution confirmée.')).toBeInTheDocument();
   });
 
   it('enregistre le paramétrage du module (onglet Paramétrage)', async () => {
