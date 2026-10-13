@@ -95,8 +95,16 @@ class RestaurantManagerServiceProvider extends ServiceProvider
             $this->app->singleton(DemoDataRegistry::class, static fn (): DemoDataRegistry => new DemoDataRegistry);
         }
 
+        // RESTO-ONBOARDING — le kit est enregistré sous les DEUX codes de la
+        // verticale : `restaurant` (descripteur, RestaurantManifest) ET
+        // `restaurantmanager` (manifest opérationnel). `DemoDataController`
+        // itère les codes du catalogue et ne propose un kit que si le tenant a
+        // la feature correspondante : un tenant activé par le seul code
+        // `restaurantmanager` ne voyait donc AUCUN kit (422 à l'import).
         $this->app->resolving(DemoDataRegistry::class, function (DemoDataRegistry $registry): void {
-            $registry->register('restaurant', fn (): DemoDataKit => $this->app->make(RestaurantDemoSeederService::class));
+            $factory = fn (): DemoDataKit => $this->app->make(RestaurantDemoSeederService::class);
+            $registry->register('restaurant', $factory);
+            $registry->register('restaurantmanager', $factory);
         });
 
         // GEO-06 (#8355, BC-34 GEO) — type recherchable `restaurant` de la
