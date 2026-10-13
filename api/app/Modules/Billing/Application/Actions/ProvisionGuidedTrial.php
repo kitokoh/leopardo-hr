@@ -10,6 +10,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Events\CompanyCreated;
 use App\Modules\Billing\Application\Services\HorizontalToolSelection;
+use App\Core\Solutions\SectorSolutionMap;
 use App\Support\CountryDefaults;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -142,6 +143,15 @@ class ProvisionGuidedTrial
                         'is_sandbox' => true,
                         'company_type' => $companyType,
                         'vertical' => $solutions[0] ?? null,
+                        // #8454 — métier présélectionné à l'inscription
+                        // (vitrine `?solution=`) : la réponse `sector` de
+                        // l'entretien de préparation est pré-ensemencée, la
+                        // question « êtes-vous restaurant / station-service /
+                        // … » ne sera pas reposée (reprise à la première
+                        // question non répondue).
+                        'setup_interview' => ($preseededSector = SectorSolutionMap::sectorForSolution($solutions[0] ?? null)) !== null
+                            ? ['answers' => ['sector' => $preseededSector]]
+                            : null,
                         'modules' => $moduleSelection,
                     ],
                     static fn (mixed $value): bool => $value !== null,

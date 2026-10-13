@@ -194,4 +194,66 @@ class TrialSolutionsActivationTest extends TestCase
             app(TenantManager::class)->resetToPrevious();
         }
     }
+
+    /**
+     * #8454 — métier présélectionné à l'inscription vitrine (`?solution=`) :
+     * la réponse `sector` de l'entretien de préparation est pré-ensemencée au
+     * provisioning — l'entretien (qui reprend à la première question NON
+     * répondue) ne repose donc pas la question « êtes-vous station-service /
+     * restaurant / … ».
+     */
+    public function test_self_service_preseed_la_reponse_sector_de_l_entretien(): void
+    {
+        Mail::fake();
+
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'preseed@newtech.dz',
+            'company' => 'Preseed Fuel',
+            'role' => 'founder',
+            'employees' => '11-50',
+            'country' => 'DZ',
+            'solutions' => ['fuel_station'],
+        ])->assertStatus(200);
+
+        $companyRequest = CompanyRequest::where('email', 'preseed@newtech.dz')->first();
+        $this->assertNotNull($companyRequest);
+
+        $this->postJson('/api/v1/trial/verify', [
+            'email' => 'preseed@newtech.dz',
+            'code' => $companyRequest->verification_token,
+        ])->assertStatus(201);
+
+        /** @var Company|null $company */
+        $company = Company::where('email', 'preseed@newtech.dz')->first();
+        $this->assertNotNull($company);
+        $this->assertSame(
+            'fuel_station',
+            $company->metadata['setup_interview']['answers']['sector'] ?? null,
+        );
+    }
+
+    public function test_guided_trial_preseed_la_reponse_sector_de_l_entretien(): void
+    {
+        Mail::fake();
+
+        $result = app(ProvisionGuidedTrial::class)->execute('preseed-guided@newtech.dz', 'Preseed Guided', 'DZ', ['fuel_station']);
+
+        /** @var Company $company */
+        $company = $result['company'];
+        $this->assertSame(
+            'fuel_station',
+            $company->metadata['setup_interview']['answers']['sector'] ?? null,
+        );
+    }
+
+    public function test_sans_solution_demandee_aucune_reponse_sector_preseed(): void
+    {
+        Mail::fake();
+
+        $result = app(ProvisionGuidedTrial::class)->execute('nopreseed@newtech.dz', 'No Preseed Co', 'DZ', []);
+
+        /** @var Company $company */
+        $company = $result['company'];
+        $this->assertArrayNotHasKey('setup_interview', $company->metadata ?? []);
+    }
 }

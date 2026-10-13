@@ -34,6 +34,7 @@ import { Button } from '@/modules/vitrine/components/common';
 import {
   isPackVertical,
   PACK_PAGES,
+  PACK_VERTICAL_SOLUTION_CODES,
   type PackBenefitIcon,
 } from '@/modules/vitrine/data/pack-pages';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
@@ -66,6 +67,10 @@ export default function PackVerticalPage({
     notFound();
   }
   const copy = PACK_PAGES[vertical][locale] ?? PACK_PAGES[vertical].fr;
+  // #8454 — le CTA « Créer mon compte » porte le métier de la page : la
+  // verticale est demandée dès l'inscription et l'entretien de préparation
+  // ne reposera pas la question « êtes-vous station-service / école / … ».
+  const signupHref = withLocaleHref(`/signup?solution=${PACK_VERTICAL_SOLUTION_CODES[vertical]}`, search);
 
   return (
     <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
@@ -106,7 +111,7 @@ export default function PackVerticalPage({
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
               <Button
                 size="lg"
-                onClick={() => { window.location.href = withLocaleHref('/signup', search); }}
+                onClick={() => { window.location.href = signupHref; }}
               >
                 {copy.ctaPrimary}
               </Button>
@@ -182,7 +187,7 @@ export default function PackVerticalPage({
             <div className="mt-10">
               <Button
                 size="lg"
-                onClick={() => { window.location.href = withLocaleHref('/signup', search); }}
+                onClick={() => { window.location.href = signupHref; }}
               >
                 {copy.ctaPrimary}
               </Button>

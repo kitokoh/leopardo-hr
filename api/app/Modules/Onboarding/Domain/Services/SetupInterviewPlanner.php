@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Onboarding\Domain\Services;
 
+use App\Core\Solutions\SectorSolutionMap;
+
 use App\Core\Tenant\Domain\Models\Company;
 
 /**
@@ -62,21 +64,22 @@ final class SetupInterviewPlanner
     public const FREE_TEXT_MAX = 120;
 
     /**
-     * Secteur déclaré → code de solution verticale (`SolutionCatalogue`).
+     * Secteur déclaré → code de solution verticale : la carte canonique vit
+     * dans Core (`SectorSolutionMap`, #8454) depuis que Billing pré-ensemence
+     * la réponse `sector` au provisioning — la garde d'isolation (#5584)
+     * interdit tout nouvel import croisé Modules → Modules.
      * `services`/`other` n'ont pas de verticale : outils horizontaux uniquement.
-     *
-     * @var array<string, string>
      */
-    private const SECTOR_SOLUTIONS = [
-        'restaurant' => 'restaurant',
-        'fuel_station' => 'fuel_station',
-        'education' => 'edumanager',
-        'travel' => 'travelagency',
-        'commerce' => 'retail',
-        // FUND-080 (#8400) : association / ONG / mutuelle → verticale
-        // « Cagnottes solidaires » (collecte de fonds par lien public).
-        'association' => 'fundraising',
-    ];
+
+    /**
+     * #8454 — carte inverse : code de verticale du catalogue → réponse
+     * `sector` de l'entretien. Délègue à la carte canonique Core
+     * (`SectorSolutionMap`) ; conservé ici pour les appelants historiques.
+     */
+    public static function sectorForSolution(?string $solutionCode): ?string
+    {
+        return SectorSolutionMap::sectorForSolution($solutionCode);
+    }
 
     /**
      * Priorité exprimée → outil horizontal (`Company::HORIZONTAL_TOOLS`).
@@ -185,8 +188,11 @@ final class SetupInterviewPlanner
 
         // Verticale sectorielle (restaurant, station-service, éducation, voyage).
         $sector = $answers['sector'] ?? null;
-        if (is_string($sector) && isset(self::SECTOR_SOLUTIONS[$sector])) {
-            $solutions[] = self::SECTOR_SOLUTIONS[$sector];
+        if (is_string($sector)) {
+            $solutionForSector = SectorSolutionMap::solutionForSector($sector);
+            if ($solutionForSector !== null) {
+                $solutions[] = $solutionForSector;
+            }
         }
 
         // Une équipe à faire pointer → gestion des employés + présence.

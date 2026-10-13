@@ -164,4 +164,32 @@ class SetupInterviewPlannerTest extends TestCase
         $this->assertSame(['sector' => 'association'], $result['answers']);
         $this->assertSame([], $result['rejected']);
     }
+
+    /**
+     * #8454 — carte inverse secteur ← verticale : le métier présélectionné à
+     * l'inscription vitrine (`?solution=`) pré-ensemence la réponse `sector`
+     * de l'entretien, qui ne repose alors pas la question.
+     */
+    public function test_sector_for_solution_retourne_le_secteur_de_chaque_verticale(): void
+    {
+        $this->assertSame('restaurant', SetupInterviewPlanner::sectorForSolution('restaurant'));
+        $this->assertSame('fuel_station', SetupInterviewPlanner::sectorForSolution('fuel_station'));
+        $this->assertSame('education', SetupInterviewPlanner::sectorForSolution('edumanager'));
+        $this->assertSame('travel', SetupInterviewPlanner::sectorForSolution('travelagency'));
+        $this->assertSame('commerce', SetupInterviewPlanner::sectorForSolution('retail'));
+        $this->assertSame('association', SetupInterviewPlanner::sectorForSolution('fundraising'));
+    }
+
+    public function test_sector_for_solution_tolere_casse_et_espaces(): void
+    {
+        $this->assertSame('restaurant', SetupInterviewPlanner::sectorForSolution(' Restaurant '));
+    }
+
+    public function test_sector_for_solution_renvoi_null_sans_equivalent(): void
+    {
+        $this->assertNull(SetupInterviewPlanner::sectorForSolution(null));
+        $this->assertNull(SetupInterviewPlanner::sectorForSolution(''));
+        $this->assertNull(SetupInterviewPlanner::sectorForSolution('vtc'));
+        $this->assertNull(SetupInterviewPlanner::sectorForSolution('unknown_solution_xyz'));
+    }
 }

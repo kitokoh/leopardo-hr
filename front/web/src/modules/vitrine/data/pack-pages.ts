@@ -475,6 +475,22 @@ export function isPackVertical(value: string): value is PackVerticalSlug {
   return (PACK_VERTICALS as string[]).includes(value);
 }
 
+/**
+ * #8454 — slug vitrine → code du `SolutionCatalogue` serveur (miroir de
+ * `SetupInterviewPlanner::SECTOR_SOLUTIONS`, fail-closed côté API). Le CTA
+ * « Créer mon compte » d'une page pack porte `?solution=<code>` : la
+ * verticale est provisionnée avec le tenant et l'entretien de préparation
+ * ne repose PAS la question secteur (réponse pré-ensemencée).
+ * `/restaurateur` (page dédiée, hors /packs) utilise le code `restaurant`.
+ */
+export const PACK_VERTICAL_SOLUTION_CODES: Record<PackVerticalSlug | 'restaurant', string> = {
+  restaurant: 'restaurant',
+  'station-service': 'fuel_station',
+  ecole: 'edumanager',
+  'agence-de-voyage': 'travelagency',
+  cagnottes: 'fundraising',
+};
+
 
 /** Copy du hub /packs — la vitrine de l'offre d'entrée grand public :
  *  un pack métier OFFERT par corps de métier. */

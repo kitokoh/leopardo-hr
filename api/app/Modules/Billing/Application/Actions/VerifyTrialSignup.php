@@ -15,6 +15,7 @@ use App\Jobs\SendTrialDripEmailJob;
 use App\Mail\TrialWelcomeMail;
 use App\Modules\Billing\Application\Services\HorizontalToolSelection;
 use App\Modules\Billing\Infrastructure\Services\PartnerService;
+use App\Core\Solutions\SectorSolutionMap;
 use App\Support\CountryDefaults;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -486,6 +487,17 @@ class VerifyTrialSignup
                         (string) ($payload['company_type'] ?? Company::TYPE_COMPANY),
                     );
 
+                    // #8454 — métier présélectionné à l'inscription (vitrine
+                    // `?solution=`) : la réponse `sector` de l'entretien de
+                    // préparation est pré-ensemencée depuis la première
+                    // verticale demandée ; l'entretien ne reposera pas la
+                    // question secteur (reprise à la première non répondue).
+                    $payloadSolutions = array_values(array_filter(array_map(
+                        static fn (mixed $code): ?string => \is_string($code) ? strtolower(trim($code)) : null,
+                        (array) ($payload['solutions'] ?? []),
+                    )));
+                    $preseededSector = SectorSolutionMap::sectorForSolution($payloadSolutions[0] ?? null);
+
                     $company = Company::query()->create([
                         'name' => $payload['name'],
                         'slug' => $slug,
@@ -511,6 +523,11 @@ class VerifyTrialSignup
                                 'provisioned_by' => 'self_service_trial',
                                 'employees_range' => $payload['employees_range'],
                                 'company_type' => $payload['company_type'] ?? null,
+                                // #8454 — réponse `sector` pré-ensemencée
+                                // (métier connu dès l'inscription vitrine).
+                                'setup_interview' => $preseededSector !== null
+                                    ? ['answers' => ['sector' => $preseededSector]]
+                                    : null,
                                 'modules' => $moduleSelection,
                             ],
                             static fn (mixed $value): bool => $value !== null,

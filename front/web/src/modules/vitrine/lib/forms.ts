@@ -38,6 +38,39 @@ function getSearchMetadata(): Record<string, string> {
 }
 
 /**
+ * #8454 — métier présélectionné depuis une page pack de la vitrine
+ * (`/packs/[vertical]` → `/signup?solution=<code catalogue>`). La verticale
+ * est demandée dès la provisioning (BC-25 #6693) et l'entretien de
+ * préparation ne repose alors PAS la question « secteur » — la réponse est
+ * pré-ensemencée côté serveur.
+ *
+ * L'allowlist client reflète les codes publiés par les pages packs ; le
+ * serveur reste fail-closed (422 sur code inconnu), donc un paramètre
+ * exotique est simplement ignoré ici plutôt que rejeté après envoi.
+ */
+const PRESELECTED_SOLUTION_CODES = new Set([
+  'restaurant',
+  'fuel_station',
+  'edumanager',
+  'travelagency',
+  'fundraising',
+]);
+
+function getPreselectedSolutions(): string[] | undefined {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+
+  const code = new URLSearchParams(window.location.search).get("solution");
+  if (!code) {
+    return undefined;
+  }
+
+  const normalized = code.trim().toLowerCase();
+  return PRESELECTED_SOLUTION_CODES.has(normalized) ? [normalized] : undefined;
+}
+
+/**
  * #2823 — la source d'acquisition de l'URL (ex. `source=download_employee_android`
  * posée par /download et les guides) doit être propagée au lead, pas écrasée par
  * un défaut codé en dur.
@@ -94,7 +127,9 @@ export async function submitSignupForm(
       // standard et le choix de l'utilisateur serait purement cosmétique.
       company_type: data.company_type,
       modules: data.modules,
-      solutions: data.solutions,
+      // #8454 — à défaut de choix explicite dans le tunnel, le métier
+      // présélectionné par la page pack d'origine (`?solution=`) est transmis.
+      solutions: data.solutions ?? getPreselectedSolutions(),
     };
 
     // #7238 — offre choisie dans le tunnel (prime sur `?plan=` de l'URL).
