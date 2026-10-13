@@ -352,7 +352,7 @@ class VerifyTrialSignup
                 // bloquer le prospect si cette écriture échoue.
                 if ($solutions !== []) {
                     $company = $result['company'];
-                    $metadata = \is_array($company->metadata) ? $company->metadata : [];
+                    $metadata = $company->metadata ?? [];
                     $metadata['vertical'] = $solutions[0];
                     $company->forceFill(['metadata' => $metadata])->save();
                 }
