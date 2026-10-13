@@ -629,6 +629,10 @@ Route::prefix('v1')->group(function (): void {
         // (POST /marketing/leads) et JAMAIS relus : aucune route GET n'existait.
         // Lecture seule, meme garde que le pipeline CRM.
         Route::get('/marketing/leads', [PlatformMarketingLeadController::class, 'index'])->middleware('platform.permission:crm.view');
+        // #8440 — qualification des leads (statut + note interne) : portée par
+        // l'écran « Prendre des parts » (suivi des intentions de prise de
+        // parts), même garde que la lecture.
+        Route::patch('/marketing/leads/{lead}', [PlatformMarketingLeadController::class, 'update'])->whereNumber('lead')->middleware('platform.permission:crm.view');
 
         // PA2-COMM-012 — Pilot client support center: super-admin triage of
         // tenant-opened support tickets (status, priority, assignment, reply).
