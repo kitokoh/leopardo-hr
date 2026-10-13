@@ -6595,7 +6595,9 @@
     },
     "hero3d": {
       "hint": "Click a module to explore",
-      "demo": "Demo"
+      "demo": "Demo",
+      "cagnottes": "Fundraisers",
+      "freeTrial": "Free trial"
     }
   },
   "commerce": {

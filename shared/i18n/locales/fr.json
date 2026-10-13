@@ -6595,7 +6595,9 @@
     },
     "hero3d": {
       "hint": "Cliquez sur un module pour explorer",
-      "demo": "Démo"
+      "demo": "Démo",
+      "cagnottes": "Cagnottes",
+      "freeTrial": "Essai gratuit"
     }
   },
   "commerce": {

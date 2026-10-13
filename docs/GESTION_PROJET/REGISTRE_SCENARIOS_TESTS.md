@@ -1192,3 +1192,16 @@ restent les gates applicables.
   (tsc, eslint, tsc vitrine).
 - **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue partagé
   `restaurant.rotations.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+
+## Mise à jour 2026-10-13 — héro immersif vague 3 : constellation 12 modules, nuit permanente (PR #8443, issues #8437, #8438, #8439)
+
+- **Surface API** : aucun changement backend — aucun scénario nouveau requis.
+- **Surface web (front/web)** : héro d'accueil retravaillé (constellation pleine scène
+  à 12 modules en orbite, nébuleuses additives, « Pile Leopardo » 3D retirée, trame du
+  héro stage déplacée en globals.css) — UI/i18n uniquement, les suites Jest vitrine
+  existantes couvrent le périmètre (HeroBusinessOS3D, HeroSection) ; tolérance
+  documentée pour l'hexa #6366f1 (nébuleuse indigo, web-design-hex-allowlist.txt) —
+  aucun scénario e2e nouveau requis.
+- **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
+  partagé `vitrine.hero3d.*`), aucun contrat mobile modifié — aucun scénario mobile
+  nouveau requis.
