@@ -342,6 +342,20 @@ class VerifyTrialSignup
                     }
                     $this->solutionActivator->activateWithDependencies($result['company'], $solutionCode);
                 }
+
+                // #8462 (vague 4) — miroir du parcours guidé
+                // (`ProvisionGuidedTrial`) : la verticale choisie sur la
+                // vitrine est mémorisée dans les métadonnées pour que
+                // l'entretien de préparation NE re-demande PAS le secteur
+                // (retour propriétaire : « re-poser la question devient
+                // bête »). Le catch ci-dessous journalise sans jamais
+                // bloquer le prospect si cette écriture échoue.
+                if ($solutions !== []) {
+                    $company = $result['company'];
+                    $metadata = \is_array($company->metadata) ? $company->metadata : [];
+                    $metadata['vertical'] = $solutions[0];
+                    $company->forceFill(['metadata' => $metadata])->save();
+                }
             } finally {
                 $this->tenantManager->resetToPrevious();
             }

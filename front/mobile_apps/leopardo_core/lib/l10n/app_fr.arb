@@ -1127,6 +1127,7 @@
   "signupPlancontinue": "Continuer avec cette offre",
   "signupPlanselected": "Offre choisie",
   "signupPlanchange": "Modifier",
+  "signupPackselected": "Pack métier pré-sélectionné",
   "signupCountrydetectionfailed": "Sélectionnez votre pays.",
   "signupOtpresend": "Renvoyer le code",
   "signupOtpresending": "Renvoi en cours…",

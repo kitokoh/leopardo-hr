@@ -27,7 +27,7 @@ import { usePanelDismiss } from '@/components/layout/panel-dismiss';
 // #7494 — la modale OnboardingWizard n'est plus le point d'entrée de la mise
 // en route : l'entretien (#7493) puis la carte « Prochaines étapes » du
 // dashboard la remplacent.
-import { SetupInterview, shouldShowSetupInterview, type SetupInterviewCloseReason } from '@/modules/onboarding/components/SetupInterview';
+import { SetupInterview, hasKnownVertical, shouldShowSetupInterview, type SetupInterviewCloseReason } from '@/modules/onboarding/components/SetupInterview';
 import { WelcomeScreen, shouldShowFirstLoginWelcome, type WelcomeScreenAction } from '@/modules/onboarding/components/WelcomeScreen';
 // #7866 — invite d'import du jeu de données de démonstration (API #7865),
 // séquencée APRÈS l'écran de bienvenue et l'entretien de préparation.
@@ -706,7 +706,7 @@ export default function DashboardLayout({
         {/* #7493 — l'entretien de préparation remplace la modale à 10 étapes
             (#7494) : pleine page, une question à la fois, jamais bloquant. */}
         {showInterview && user && !welcomePending && (
-          <SetupInterview locale={locale} onClose={handleInterviewClose} />
+          <SetupInterview locale={locale} onClose={handleInterviewClose} sectorKnown={hasKnownVertical(user)} />
         )}
         {/* #7866 — invite d'import du jeu de données de démonstration : après
             l’écran de bienvenue ET l’entretien de préparation (ni affiché, ni

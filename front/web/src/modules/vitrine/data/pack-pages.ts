@@ -560,6 +560,30 @@ export function packsHubCardHref(slug: PacksHubCopy['cards'][number]['slug']): s
   return slug === 'restaurant' ? '/restaurateur' : `/packs/${slug}`;
 }
 
+/** #8462 — noms courts localisés des verticales SANS carte hub
+ *  (« cagnottes » n'est pas une carte du hub /packs). */
+const PACK_EXTRA_SHORT_NAMES: Record<string, Record<AppLocale, string>> = {
+  cagnottes: {
+    fr: 'Cagnottes solidaires',
+    en: 'Solidarity fundraisers',
+    tr: 'Dayanışma kampanyaları',
+    ar: 'حملات التضامن',
+  },
+};
+
+/** #8462 — nom court localisé d'un pack (bandeau « pack pré-sélectionné » du
+ *  formulaire d'inscription). Carte hub d'abord, repli dédié sinon, `null`
+ *  si le slug est inconnu (fail-closed, comme `pack-signup`). */
+export function packDisplayName(slug: string, locale: AppLocale): string | null {
+  const copy = PACKS_HUB_COPY[locale] ?? PACKS_HUB_COPY.fr;
+  const card = copy.cards.find((c) => c.slug === slug);
+  if (card) {
+    return card.name;
+  }
+  const extra = PACK_EXTRA_SHORT_NAMES[slug];
+  return extra ? extra[locale] ?? extra.fr : null;
+}
+
 // ── Bannière « Pack offert » de la page tarifs ─────────────────────────────
 // Remplace l'ancienne colonne « Self-host » (#8068) : la page tarifs pousse
 // désormais l'entrée grand public du Business OS — un pack métier OFFERT —

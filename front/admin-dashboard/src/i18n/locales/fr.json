@@ -1571,7 +1571,8 @@
     "otpResent": "Nouveau code envoyé. Pensez à vérifier vos spams.",
     "otpResendError": "Le renvoi n'a pas abouti. Réessayez dans un instant ou contactez le support.",
     "preparingLonger": "C'est un peu plus long que d'habitude — votre espace arrive. Inutile de recharger la page.",
-    "supportCta": "Contacter le support"
+    "supportCta": "Contacter le support",
+    "packSelected": "Pack métier pré-sélectionné"
   },
   "companies": {
     "toast": {

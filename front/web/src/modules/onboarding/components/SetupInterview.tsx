@@ -50,6 +50,29 @@ type QuestionDef = {
 
 const isSolo = (answers: InterviewAnswers) => answers.company_type === 'solo';
 
+/**
+ * #8462 (vague 4) — le métier est-il déjà connu ? Vrai quand la société a
+ * été provisionnée AVEC une verticale (pack choisi sur la vitrine) :
+ * `VerifyTrialSignup` (self-service) et `ProvisionGuidedTrial` (guidé)
+ * peuplent `companies.metadata.vertical`. Retour propriétaire : re-poser
+ * la question du métier « devient bête » — l'espace est déjà métier.
+ */
+export function hasKnownVertical(user?: StoredAuthUser | null): boolean {
+  const metadata = user?.company?.metadata as { vertical?: unknown } | null | undefined;
+  return typeof metadata?.vertical === 'string' && metadata.vertical.trim() !== '';
+}
+
+/**
+ * Questions réellement posées : ordre adaptatif (`visible`) + #8462 — le
+ * secteur est EXCLU quand il est déjà connu (verticale provisionnée). Le
+ * parcours sans verticale connue est strictement inchangé.
+ */
+function visibleQuestionsFor(source: InterviewAnswers, sectorKnown: boolean): QuestionDef[] {
+  return QUESTIONS.filter((q) => (q.visible ? q.visible(source) : true)).filter(
+    (q) => q.key !== 'sector' || !sectorKnown,
+  );
+}
+
 // Miroir de l'allowlist serveur (`SetupInterviewPlanner::QUESTIONS`) —
 // 7 questions maximum, aucune à plus de 8 cartes-réponses.
 // #7853 — `company_name` (texte libre, optionnelle) est posée EN PREMIER :
@@ -108,9 +131,13 @@ export function shouldShowSetupInterview(user?: StoredAuthUser | null): boolean 
 export function SetupInterview({
   locale,
   onClose,
+  sectorKnown = false,
 }: {
   locale: AppLocale;
   onClose: (reason: SetupInterviewCloseReason) => void;
+  /** #8462 — métier déjà connu (pack vitrine) : la question secteur est
+   *  exclue du parcours (`hasKnownVertical`, calculé par l'appelant). */
+  sectorKnown?: boolean;
 }) {
   const t = useCallback(
     (key: string, fallback = '') => i18nT(locale, `setupInterview.${key}`, fallback),
@@ -126,8 +153,8 @@ export function SetupInterview({
   const closedRef = useRef(false);
 
   const visibleQuestions = useMemo(
-    () => QUESTIONS.filter((q) => (q.visible ? q.visible(answers) : true)),
-    [answers],
+    () => visibleQuestionsFor(answers, sectorKnown),
+    [answers, sectorKnown],
   );
   const question = recap ? null : visibleQuestions[index] ?? null;
 
@@ -148,7 +175,7 @@ export function SetupInterview({
         const saved = state?.answers ?? {};
         setAnswers(saved);
         // Reprendre à la première question visible non répondue.
-        const visible = QUESTIONS.filter((q) => (q.visible ? q.visible(saved) : true));
+        const visible = visibleQuestionsFor(saved, sectorKnown);
         const firstUnanswered = visible.findIndex((q) => !(q.key in saved));
         setIndex(firstUnanswered === -1 ? Math.max(visible.length - 1, 0) : firstUnanswered);
       } catch {
@@ -160,7 +187,7 @@ export function SetupInterview({
     return () => {
       cancelled = true;
     };
-  }, [onClose]);
+  }, [onClose, sectorKnown]);
 
   const persistDraft = useCallback(async (partial: InterviewAnswers) => {
     try {
@@ -197,7 +224,7 @@ export function SetupInterview({
 
   const advance = useCallback(
     (nextAnswers: InterviewAnswers) => {
-      const visible = QUESTIONS.filter((q) => (q.visible ? q.visible(nextAnswers) : true));
+      const visible = visibleQuestionsFor(nextAnswers, sectorKnown);
       const currentKey = question?.key;
       const currentPos = visible.findIndex((q) => q.key === currentKey);
       const next = currentPos === -1 ? index : currentPos + 1;
@@ -207,7 +234,7 @@ export function SetupInterview({
         setIndex(next);
       }
     },
-    [complete, index, question],
+    [complete, index, question, sectorKnown],
   );
 
   const answer = (value: string | string[] | null) => {
