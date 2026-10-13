@@ -77,6 +77,10 @@ const ignorePathFragments = [
   // (contact/signup/newsletter/demo, PA2-MKT-007). Leur localisation est un
   // follow-up documenté dans l'issue #6692.
   '/api/forms/solution-survey/route.ts',
+  // Route forms equity (#8440) : messages de réponse français opérationnels,
+  // même pattern que solution-survey/contact/signup/newsletter/demo
+  // (PA2-MKT-007) — localisation follow-up documentée en #6692.
+  '/api/forms/equity/route.ts',
   // Wizard « Je suis restaurateur » (issue #6691) : solution-survey.ts est le
   // catalogue inline ×4 du survey (questions/packages/raisons, même mécanique
   // que vitrine-locale.ts) ; RestaurantSolutionWizard.tsx contient le COPY

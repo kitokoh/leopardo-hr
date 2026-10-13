@@ -101,7 +101,7 @@ function InvestirPageInner() {
           timestamp: new Date().toISOString(),
         }),
       });
-      if (!res.ok) throw new Error('send failed');
+      if (!res.ok) throw new Error(copy.form.errorGeneric);
       setIsSubmitted(true);
     } catch {
       setError(copy.form.errorGeneric);
