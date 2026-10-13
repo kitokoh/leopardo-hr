@@ -7632,7 +7632,8 @@
     "settingsTitle": "Vos préférences de cookies",
     "formNoticeContact": "Vos informations servent uniquement à répondre à votre demande. Base légale : votre consentement, que vous pouvez retirer à tout moment.",
     "formNoticeDemo": "Vos informations servent uniquement à organiser la démonstration demandée (finalité : vous recontacter). Base légale : votre consentement.",
-    "formNoticeNewsletter": "Votre adresse sert uniquement à vous envoyer nos conseils RH (finalité : information). Désinscription en un clic."
+    "formNoticeNewsletter": "Votre adresse sert uniquement à vous envoyer nos conseils RH (finalité : information). Désinscription en un clic.",
+    "formNoticeEquity": "Vos informations servent uniquement à étudier votre manifestation d’intérêt pour une prise de parts (finalité : vous recontacter). Base légale : votre consentement, retirable à tout moment."
   },
   "firstLoginWelcome": {
     "title": "Votre espace est prêt 🎉",
@@ -7679,7 +7680,8 @@
       "messageTooLong": "Le message est trop long",
       "phoneInvalid": "Numéro de téléphone invalide",
       "employeesInvalid": "Sélectionnez une plage d'employés",
-      "dateFuture": "La date doit être dans le futur"
+      "dateFuture": "La date doit être dans le futur",
+      "required": "Ce champ est requis"
     }
   },
   "setupInterview": {

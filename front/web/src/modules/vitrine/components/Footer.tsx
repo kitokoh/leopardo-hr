@@ -70,6 +70,10 @@ export function getFooterHref(sectionIndex: number, linkIndex: number): string |
     // La page existe désormais : le lien pointe vers les mentions légales
     // (et non plus vers les CGU, cf. correctif du lot vitrine).
     '3-2': '/mentions-legales',
+    // #8440 — « Devenir actionnaire » : entrée volontairement discrète en
+    // pied de page (pas de carte home ni de bandeau), vers la page de
+    // manifestation d'intérêt pour prendre des parts de l'entreprise.
+    '3-3': '/investir',
   }
 
   return routes[key] ?? null

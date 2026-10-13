@@ -5,6 +5,7 @@ import {
   signupFormSchema,
   demoFormSchema,
   contactFormSchema,
+  equityFormSchema,
   newsletterFormSchema,
   validateEmail,
   validatePhoneNumber,
@@ -311,6 +312,68 @@ describe('Form Validation Schemas', () => {
           const expected = t(locale, 'forms.validation.emailInvalid');
           expect(expected).not.toBe('');
           expect(result.error.issues[0].message).toBe(expected);
+        }
+      },
+    );
+  });
+
+  // #8440 — formulaire « Devenir actionnaire » (/investir) : tranche de
+  // montant en liste fermée, consentement explicite obligatoire (RGPD).
+  describe('equityFormSchema', () => {
+    const valid = {
+      name: 'Awa Diallo',
+      email: 'awa@example.com',
+      amountBracket: '10k_50k' as const,
+      consent: true as const,
+    };
+
+    it('should validate a correct equity interest form', () => {
+      expect(() => equityFormSchema('fr').parse(valid)).not.toThrow();
+    });
+
+    it('should accept optional fields empty or filled', () => {
+      expect(() =>
+        equityFormSchema('fr').parse({ ...valid, phone: '+33600000000', country: 'FR', message: 'Un mot' }),
+      ).not.toThrow();
+      expect(() => equityFormSchema('fr').parse({ ...valid, phone: '', country: '', message: '' })).not.toThrow();
+    });
+
+    it('should reject an unknown amount bracket', () => {
+      expect(() => equityFormSchema('fr').parse({ ...valid, amountBracket: '1M+' })).toThrow();
+    });
+
+    it('should reject a missing consent (RGPD)', () => {
+      expect(() => equityFormSchema('fr').parse({ ...valid, consent: false })).toThrow();
+      const { consent: _omitted, ...withoutConsent } = valid;
+      expect(() => equityFormSchema('fr').parse(withoutConsent)).toThrow();
+    });
+
+    it('should reject an invalid phone when provided', () => {
+      expect(() => equityFormSchema('fr').parse({ ...valid, phone: 'abc' })).toThrow();
+    });
+
+    it.each(['fr', 'en', 'tr', 'ar'] as AppLocale[])(
+      'produit des messages localisés en %s',
+      (locale) => {
+        const result = equityFormSchema(locale).safeParse({ ...valid, email: 'invalid' });
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          const expected = t(locale, 'forms.validation.emailInvalid');
+          expect(expected).not.toBe('');
+          expect(result.error.issues[0].message).toBe(expected);
+        }
+      },
+    );
+
+    it.each(['fr', 'en', 'tr', 'ar'] as AppLocale[])(
+      'message « requis » localisé en %s (tranche absente)',
+      (locale) => {
+        const result = equityFormSchema(locale).safeParse({ name: 'Awa Diallo', email: 'awa@example.com', consent: true });
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          const expected = t(locale, 'forms.validation.required');
+          expect(expected).not.toBe('');
+          expect(result.error.issues.some((issue) => issue.message === expected)).toBe(true);
         }
       },
     );

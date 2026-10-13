@@ -14,7 +14,7 @@ import { t } from '@/lib/i18n/locale-catalog';
  * Le principe de transparence demande de dire, au moment où l'on collecte,
  * pourquoi et sur quel fondement.
  */
-export function FormDataNotice({ purpose }: { purpose: 'contact' | 'demo' | 'newsletter' }) {
+export function FormDataNotice({ purpose }: { purpose: 'contact' | 'demo' | 'newsletter' | 'equity' }) {
   const { locale } = useVitrineLocale();
   const key = `consent.formNotice${purpose.charAt(0).toUpperCase()}${purpose.slice(1)}`;
 

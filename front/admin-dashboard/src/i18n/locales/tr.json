@@ -7765,7 +7765,8 @@
     "settingsTitle": "Çerez tercihleriniz",
     "formNoticeContact": "Bilgileriniz yalnızca talebinizi yanıtlamak için kullanılır. Hukuki dayanak: dilediğiniz zaman geri çekebileceğiniz onayınız.",
     "formNoticeDemo": "Bilgileriniz yalnızca talep edilen demoyu düzenlemek için kullanılır (amaç: sizinle iletişime geçmek). Hukuki dayanak: onayınız.",
-    "formNoticeNewsletter": "Adresiniz yalnızca İK ipuçlarımızı göndermek için kullanılır (amaç: bilgilendirme). Tek tıkla çıkış."
+    "formNoticeNewsletter": "Adresiniz yalnızca İK ipuçlarımızı göndermek için kullanılır (amaç: bilgilendirme). Tek tıkla çıkış.",
+    "formNoticeEquity": "Bilgileriniz yalnızca hisse alma ilginizi değerlendirmek için kullanılır (amaç: size geri dönüş yapmak). Yasal dayanak: dilediğiniz zaman geri çekebileceğiniz onayınızdır."
   },
   "firstLoginWelcome": {
     "title": "Alanınız hazır 🎉",
@@ -7812,7 +7813,8 @@
       "messageTooLong": "Mesaj çok uzun",
       "phoneInvalid": "Geçersiz telefon numarası",
       "employeesInvalid": "Bir çalışan aralığı seçin",
-      "dateFuture": "Tarih gelecekte olmalıdır"
+      "dateFuture": "Tarih gelecekte olmalıdır",
+      "required": "Bu alan zorunludur"
     }
   },
   "setupInterview": {
