@@ -4455,8 +4455,8 @@
       "demoError": "Import impossible pour le moment.",
       "rotations": "Rotations & plannings",
       "rotationsDesc": "Creez les rotations de travail et affectez vos employes.",
-      "mobileServer": "App mobile serveur",
-      "mobileServerDesc": "Équipez vos serveurs de l’app mobile pour le pointage et le service."
+      "mobileServer": "Mes applications",
+      "mobileServerDesc": "Installez les apps de votre restaurant — serveur, cuisine, caisse, kiosque."
     },
     "crud": {
       "search": "Rechercher...",
@@ -6543,7 +6543,8 @@
         "title": "Enregistrer votre première vente",
         "desc": "Vendez un premier billet au guichet ou en ligne."
       }
-    }
+    },
+    "open": "Ouvrir"
   },
   "vitrine": {
     "notFound": {

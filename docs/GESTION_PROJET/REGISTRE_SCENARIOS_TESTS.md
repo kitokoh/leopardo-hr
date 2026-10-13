@@ -1,3 +1,24 @@
+> **MAJ 2026-10-13 — #8447 + #8451, « Mon Logiciel » et checklists par profil métier.**
+> Surface **web (front/web)** : nouvelle route protégée `/mon-logiciel` (hub
+> d'installation des apps du tenant, filtrée par solutions activées via
+> `lib/software-catalog.ts` + `getClientModuleAccess`), scène 3D
+> `SoftwareConstellation3D` (dynamic import ssr:false), QR d'installation
+> (`qrcode`), module de navigation `mon_logiciel` (groupe `general`) et carte
+> d'accès sur `/dashboard`. Scénarios Jest : `software-catalog.test.ts`
+> (7 cas : filtrage strict par verticale, honnêteté des cibles link/pilot/soon),
+> `mon-logiciel/__tests__/page.test.tsx` (4 cas : restaurateur, sans verticale,
+> « Bientôt disponible » sans lien mort, modale QR) ; `NextStepsCard.test.tsx`
+> étendu (2 cas : liens d'action par étape → écran réel, aucun lien mort pour
+> une étape inconnue). Surface **API** : `SeedDefaultSteps` généralise les
+> checklists par profil — station-service (station → équipe → rotation → vente,
+> étapes équipe réservées aux profils `team`), retail (catalogue → caisse →
+> vente), scolarité (campus/année → classes → élèves) + étape optionnelle
+> `install_apps` pour les verticales à écrans métier ; clés i18n ×4
+> (`api/lang/*/onboarding.php`). Scénario PHPUnit :
+> `SetupInterviewVerticalChecklistsTest` (7 cas : ordres d'étapes, détection
+> par flag déclaré ou opérationnel, solo sans étapes d'équipe, absence chez un
+> tenant sans verticale). Parité i18n ×4 vérifiée par `sync-web.js`
+> (I18N_SYNC_WEB_OK).
 > **MAJ 2026-10-13 — #8435, espace station-service (BC-15 FUEL) : hub web + CRUD responsable.**
 > Surface **web (front/web)** : nouvelle route protégée `/fuel` (hub) et sous-routes
 > `/fuel/stations`, `/fuel/team`, `/fuel/rotations`, `/fuel/stock`, `/fuel/sales`

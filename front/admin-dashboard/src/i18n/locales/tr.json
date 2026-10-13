@@ -4864,8 +4864,8 @@
       "demoError": "Şu anda içe aktarma mümkün değil.",
       "rotations": "Vardiyalar ve planlar",
       "rotationsDesc": "Calisma vardiyalari olusturun ve calisanlarinizi atayin.",
-      "mobileServer": "Garson mobil uygulaması",
-      "mobileServerDesc": "Garsonlarınıza giriş ve servis için mobil uygulamayı verin."
+      "mobileServer": "Uygulamalarım",
+      "mobileServerDesc": "Restoran uygulamalarınızı kurun — garson, mutfak, kasa, kiosk."
     },
     "crud": {
       "search": "Ara...",
@@ -7947,7 +7947,8 @@
         "title": "İlk satışınızı kaydedin",
         "desc": "Gişeden veya çevrimiçi ilk biletinizi satın."
       }
-    }
+    },
+    "open": "Aç"
   },
   "setPassword": {
     "title": "Şifrenizi belirleyin",

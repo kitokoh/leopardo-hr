@@ -4858,8 +4858,8 @@
       "demoError": "Import is not possible right now.",
       "rotations": "Shifts & schedules",
       "rotationsDesc": "Create work shifts and assign your employees.",
-      "mobileServer": "Waiter mobile app",
-      "mobileServerDesc": "Give your waiters the mobile app for check-in and service."
+      "mobileServer": "My applications",
+      "mobileServerDesc": "Install your restaurant apps — server, kitchen, till, kiosk."
     },
     "crud": {
       "search": "Search...",
@@ -7808,7 +7808,8 @@
         "title": "Record your first sale",
         "desc": "Sell a first ticket at the counter or online."
       }
-    }
+    },
+    "open": "Open"
   },
   "setPassword": {
     "title": "Set your password",

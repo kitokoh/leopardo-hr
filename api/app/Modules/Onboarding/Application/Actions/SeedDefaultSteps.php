@@ -241,6 +241,55 @@ final class SeedDefaultSteps
             $steps[] = ['key' => 'restaurant_first_order', 'title' => __('onboarding.step_restaurant_first_order'), 'required' => false, 'estimated_minutes' => 4];
         }
 
+        // #8451 — checklist orientée station-service : le gérant qui s'est
+        // déclaré « station-service » à l'entretien (verticale `fuel_station`
+        // activée par `CompleteSetupInterview`) démarre par sa station, ses
+        // pompes, son équipe et sa première rotation — pas par la checklist
+        // RH générique. Les spécificités métier (rotations multi-équipes,
+        // plusieurs stations pour un même tenant) sont couvertes par les
+        // étapes équipe/rotation. Même contrainte d'isolation que la branche
+        // restaurant : étapes DÉCLARATIVES, aucun import inter-module.
+        //
+        // Détection : le code DÉCLARÉ `fuel_station` (SECTOR_SOLUTIONS du
+        // planner) OU le flag opérationnel `fuel` (featureKeys du catalogue
+        // front) — la checklist suit dans les deux sens.
+        if ($company->hasFeature('fuel_station') || $company->hasFeature('fuel')) {
+            $steps[] = ['key' => 'fuel_setup_station', 'title' => __('onboarding.step_fuel_setup_station'), 'required' => true, 'estimated_minutes' => 6];
+            if ($team) {
+                $steps[] = ['key' => 'fuel_setup_team', 'title' => __('onboarding.step_fuel_setup_team'), 'required' => true, 'estimated_minutes' => 5];
+                $steps[] = ['key' => 'fuel_first_rotation', 'title' => __('onboarding.step_fuel_first_rotation'), 'required' => false, 'estimated_minutes' => 4];
+            }
+            $steps[] = ['key' => 'fuel_first_sale', 'title' => __('onboarding.step_fuel_first_sale'), 'required' => false, 'estimated_minutes' => 3];
+        }
+
+        // #8451 — checklist orientée commerce de détail (verticale `retail`) :
+        // catalogue produits → caisse → première vente.
+        if ($company->hasFeature('retail')) {
+            $steps[] = ['key' => 'retail_setup_catalog', 'title' => __('onboarding.step_retail_setup_catalog'), 'required' => true, 'estimated_minutes' => 8];
+            $steps[] = ['key' => 'retail_setup_pos', 'title' => __('onboarding.step_retail_setup_pos'), 'required' => true, 'estimated_minutes' => 4];
+            $steps[] = ['key' => 'retail_first_sale', 'title' => __('onboarding.step_retail_first_sale'), 'required' => false, 'estimated_minutes' => 3];
+        }
+
+        // #8451 — checklist orientée scolarité (verticale `edumanager`) :
+        // campus/année → classes → premiers élèves.
+        if ($company->hasFeature('edumanager')) {
+            $steps[] = ['key' => 'edu_setup_campus', 'title' => __('onboarding.step_edu_setup_campus'), 'required' => true, 'estimated_minutes' => 8];
+            $steps[] = ['key' => 'edu_setup_classes', 'title' => __('onboarding.step_edu_setup_classes'), 'required' => true, 'estimated_minutes' => 6];
+            $steps[] = ['key' => 'edu_first_students', 'title' => __('onboarding.step_edu_first_students'), 'required' => true, 'estimated_minutes' => 10];
+        }
+
+        // #8451 — étape « installer ses applications » : la mise en service
+        // d'une verticale à écrans métier (caisse, cuisine, kiosque, console)
+        // n'est complète que lorsque les apps sont installées — le hub
+        // « Mon Logiciel » (#8447) est le point d'entrée unique. Déclarée en
+        // optionnel : elle ne bloque jamais le go-live.
+        $hasInstallableApps = $company->hasFeature('restaurantmanager') || $company->hasFeature('restaurant')
+            || $company->hasFeature('fuel_station') || $company->hasFeature('fuel')
+            || $company->hasFeature('retail');
+        if ($hasInstallableApps) {
+            $steps[] = ['key' => 'install_apps', 'title' => __('onboarding.step_install_apps'), 'required' => false, 'estimated_minutes' => 4];
+        }
+
         $ordered = [];
         $order = 1;
         foreach ($steps as $step) {
