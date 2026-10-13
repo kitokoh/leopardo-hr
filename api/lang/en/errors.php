@@ -347,4 +347,8 @@ return [
     // #8019 — HospitalityManager: business rule surfaced by a DomainException
     // (the localized message comes from the errors.* catalogue).
     'CHECKOUT_BEFORE_CHECKIN' => 'Check-out date must be after the check-in date.',
+
+    // #8440/#8441 — verticales equity + paramétrage fundraising (contexte entreprise)
+    'FUNDRAISING_VERTICAL_NOT_ENABLED' => 'The fundraising vertical is not enabled for this company.',
+    'MARKETING_LEAD_NO_CHANGES' => 'No changes requested.',
 ];

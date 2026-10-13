@@ -159,7 +159,7 @@ final class PlatformMarketingLeadController extends Controller
         ]);
 
         if (($validated['status'] ?? null) === null && ! array_key_exists('note', $validated)) {
-            return new JsonResponse(['message' => 'Aucune modification demandée.'], 422);
+            return new JsonResponse(['message' => __('errors.MARKETING_LEAD_NO_CHANGES')], 422);
         }
 
         $changes = ['updated_at' => Carbon::now()];

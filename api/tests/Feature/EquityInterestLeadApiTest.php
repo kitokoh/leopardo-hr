@@ -108,7 +108,7 @@ class EquityInterestLeadApiTest extends TestCase
             'status' => 'new',
         ]);
 
-        $lead = DB::table('marketing_leads')->where('type', 'equity_interest')->first();
+        $lead = DB::table('marketing_leads')->where('type', 'equity_interest')->firstOrFail();
         $decoded = json_decode((string) $lead->payload, true);
         $this->assertSame('10k_50k', $decoded['amount_bracket']);
         $this->assertTrue($decoded['consent']);

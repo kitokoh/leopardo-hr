@@ -85,7 +85,7 @@ final class PlatformFundraisingSettingsController extends Controller
      */
     private function guardFundraisingEnabled(bool $enabled): void
     {
-        abort_unless($enabled, 403, 'La verticale cagnottes n\'est pas activée pour cette entreprise.');
+        abort_unless($enabled, 403, __('errors.FUNDRAISING_VERTICAL_NOT_ENABLED'));
     }
 
     /**
