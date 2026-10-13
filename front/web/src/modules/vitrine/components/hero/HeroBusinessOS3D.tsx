@@ -649,6 +649,11 @@ export function HeroBusinessOS3D({
         world.rotation.y += 0.0016;
         const breathe = 1 + Math.sin(t * 1.4) * 0.03;
         core.scale.setScalar(breathe);
+        // #8418 — le noyau TOURNE lentement sur lui-même : la gemme à
+        // facettes capte la lumière en mouvement, la scène vit au premier
+        // regard (et non seulement au survol).
+        core.rotation.y += 0.0022;
+        core.rotation.x = Math.sin(t * 0.18) * 0.12;
         glowLight.intensity = 16 + Math.sin(t * 1.4) * 3;
         dust.rotation.y += 0.0004;
         dust2.rotation.y -= 0.0003;
