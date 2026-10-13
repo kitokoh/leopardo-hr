@@ -225,8 +225,9 @@ class PublicStaySurfaceTest extends TestCase
         $this->assertNotNull($reservation->expires_at);
         $this->assertTrue($reservation->expires_at->greaterThan(now()->addMinutes(29)));
         $this->assertTrue($reservation->expires_at->lessThan(now()->addMinutes(31)));
-        // Le code n'est JAMAIS stocké en clair — seulement son hash sha256.
-        $this->assertSame(hash('sha256', $trackingCode), $reservation->tracking_code_hash);
+        // Le code n'est JAMAIS stocké en clair — seulement son hash
+        // HMAC-SHA256 keyed par la clé applicative (#8464, ex-SHA-256 nu).
+        $this->assertSame(hash_hmac('sha256', $trackingCode, (string) config('app.key')), $reservation->tracking_code_hash);
     }
 
     public function test_store_replay_is_idempotent_and_never_returns_tracking_code_twice(): void

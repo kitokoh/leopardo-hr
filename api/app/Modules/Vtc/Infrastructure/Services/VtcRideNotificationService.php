@@ -21,7 +21,10 @@ use Throwable;
  *
  *  - accepted : passager — « un chauffeur a accepté votre course » ;
  *  - expired : passager — « aucun chauffeur disponible, réessayez » ;
- *  - completed : passager — clôture + montant final ; chauffeur — récap.
+ *  - completed : passager — clôture + montant final ; chauffeur — récap ;
+ *  - cancelled (#8464) : passager — annulation par le chauffeur/les ops ;
+ *    chauffeur — annulation par le passager/les ops (jamais à l'acteur
+ *    qui a lui-même annulé).
  *
  * Canal : push plateforme (`SendPushNotificationJob`, PA2-COMM-006) vers
  * l'EMPLOYÉ concerné, dans SA locale (pattern PaySlip #3946). Un passager
@@ -113,6 +116,48 @@ final class VtcRideNotificationService
             ],
             $this->metadata($ride, 'vtc.ride.completed'),
         );
+    }
+
+    /**
+     * Annulation (#8464) : l'événement `VtcRideCancelled` n'était écouté
+     * par PERSONNE — un passager dont la course était annulée par le
+     * chauffeur ou les ops restait muet. On notifie la partie NON ACTRICE
+     * de l'annulation : le passager (sauf s'il a annulé lui-même) et le
+     * chauffeur assigné (sauf s'il a annulé lui-même). Le motif est celui
+     * tracé en colonne (`cancel_reason`).
+     */
+    public function notifyCancelled(string $companyId, int $rideId, string $cancelledBy): void
+    {
+        $ride = $this->findRide($companyId, $rideId);
+
+        if (! $ride instanceof VtcRide) {
+            return;
+        }
+
+        $params = [
+            'reference' => $ride->reference,
+            'reason' => (string) ($ride->cancel_reason ?? ''),
+        ];
+
+        if ($cancelledBy !== 'passenger') {
+            $this->pushToEmployee(
+                $this->passengerEmployee($ride),
+                'vtc_ride_cancelled_title',
+                'vtc_ride_cancelled_body',
+                $params,
+                $this->metadata($ride, 'vtc.ride.cancelled'),
+            );
+        }
+
+        if ($cancelledBy !== 'driver') {
+            $this->pushToEmployee(
+                $this->driverEmployee($ride),
+                'vtc_ride_cancelled_title',
+                'vtc_ride_cancelled_driver_body',
+                $params,
+                $this->metadata($ride, 'vtc.ride.cancelled'),
+            );
+        }
     }
 
     /**

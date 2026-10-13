@@ -191,9 +191,11 @@ export type VtcGeoPointInput = {
   lng: number;
 };
 
-/** Devis public — `price_minor` vaut null quand l'opérateur n'a pas de grille. */
+/** Devis public — `price_minor` vaut null quand l'opérateur n'a pas de grille ;
+ * `road_distance_m` (#8464) est la distance routière, base de tarification du prix. */
 export type VtcEstimate = {
   distance_m: number | null;
+  road_distance_m: number | null;
   duration_s: number | null;
   price_minor: number | null;
   currency: string | null;

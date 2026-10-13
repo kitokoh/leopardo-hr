@@ -55,5 +55,9 @@ return [
     'vtc_ride_expired_body' => 'Your ride :reference could not find a driver right now. Please try again in a few minutes.',
     'vtc_ride_completed_title' => 'Ride completed',
     'vtc_ride_completed_body' => 'Your ride :reference is completed. Amount: :price.',
-    'vtc_ride_completed_driver_body' => 'Ride :reference completed — amount :price.',
+        'vtc_ride_completed_driver_body' => 'Ride :reference completed — amount :price.',
+    // #8464 — cancellation notified to the non-acting party.
+    'vtc_ride_cancelled_title' => 'Ride cancelled',
+    'vtc_ride_cancelled_body' => 'Your ride :reference was cancelled. Reason: :reason.',
+    'vtc_ride_cancelled_driver_body' => 'Ride :reference was cancelled. Reason: :reason.',
 ];

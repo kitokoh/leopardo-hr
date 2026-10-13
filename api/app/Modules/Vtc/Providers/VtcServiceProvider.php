@@ -8,10 +8,12 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Solutions\SolutionCatalogue;
 use App\Http\Middleware\Vtc\VtcRoleResolver;
 use App\Modules\Vtc\Application\Listeners\NotifyVtcRideAcceptedListener;
+use App\Modules\Vtc\Application\Listeners\NotifyVtcRideCancelledListener;
 use App\Modules\Vtc\Application\Listeners\NotifyVtcRideCompletedListener;
 use App\Modules\Vtc\Application\Listeners\NotifyVtcRideExpiredListener;
 use App\Modules\Vtc\Application\Listeners\StartVtcDispatchListener;
 use App\Modules\Vtc\Domain\Events\VtcRideAccepted;
+use App\Modules\Vtc\Domain\Events\VtcRideCancelled;
 use App\Modules\Vtc\Domain\Events\VtcRideCompleted;
 use App\Modules\Vtc\Domain\Events\VtcRideExpired;
 use App\Modules\Vtc\Domain\Events\VtcRideRequested;
@@ -91,6 +93,7 @@ class VtcServiceProvider extends ServiceProvider
         Event::listen(VtcRideAccepted::class, NotifyVtcRideAcceptedListener::class);
         Event::listen(VtcRideExpired::class, NotifyVtcRideExpiredListener::class);
         Event::listen(VtcRideCompleted::class, NotifyVtcRideCompletedListener::class);
+        Event::listen(VtcRideCancelled::class, NotifyVtcRideCancelledListener::class);
 
         // VTC-06 (#8362) — `vtc:purge-positions` (rétention RGPD des
         // positions chauffeurs, planifiée daily) : les commandes du module

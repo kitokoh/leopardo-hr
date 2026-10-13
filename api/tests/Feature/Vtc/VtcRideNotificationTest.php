@@ -10,6 +10,7 @@ use App\Jobs\SendPushNotificationJob;
 use App\Modules\Vtc\Domain\Enums\VtcDriverStatus;
 use App\Modules\Vtc\Domain\Enums\VtcRideStatus;
 use App\Modules\Vtc\Domain\Events\VtcRideAccepted;
+use App\Modules\Vtc\Domain\Events\VtcRideCancelled;
 use App\Modules\Vtc\Domain\Events\VtcRideCompleted;
 use App\Modules\Vtc\Domain\Events\VtcRideExpired;
 use App\Modules\Vtc\Domain\Models\VtcDriver;
@@ -29,6 +30,8 @@ use Tests\TestCase;
  *   - passager INVITÉ (marketplace, passenger_user_id null) : rien à
  *     notifier, aucune erreur ;
  *   - clôture : passager (montant final) ET chauffeur (récapitulatif) ;
+ *   - annulation (#8464) : la partie NON ACTRICE est notifiée — passager
+ *     si chauffeur/ops annulent, chauffeur si passager/ops annulent ;
  *   - dégradation gracieuse : course inconnue ou fiche absente → silence,
  *     jamais d'exception (une notification ne fait pas échouer la course).
  */
@@ -164,6 +167,101 @@ class VtcRideNotificationTest extends TestCase
         });
 
         Queue::assertNothingPushed();
+    }
+
+    public function test_cancelled_by_ops_notifies_passenger_and_assigned_driver(): void
+    {
+        $company = $this->createCompany();
+        $passenger = $this->createEmployee($company);
+        [$driverEmployee, $driver] = $this->createLinkedDriver($company);
+
+        $ride = $this->createRide($company, [
+            'passenger_user_id' => $passenger->id,
+            'driver_id' => $driver->id,
+            'status' => VtcRideStatus::Cancelled->value,
+            'cancel_reason' => 'Arbitrage ops',
+        ]);
+
+        $this->withTenantContext($company, function () use ($company, $ride): void {
+            event(new VtcRideCancelled((string) $company->id, $ride->id, $ride->reference, 'Arbitrage ops', 'dispatcher'));
+        });
+
+        // Passager : sa course est annulée PAR LES OPS — il est tenu au
+        // courant (avant #8464, il restait muet).
+        Queue::assertPushed(
+            SendPushNotificationJob::class,
+            static fn (SendPushNotificationJob $job): bool => $job->employeeId === $passenger->id
+                && $job->title === 'Course annulée'
+                && str_contains($job->body, $ride->reference)
+                && str_contains($job->body, 'Arbitrage ops')
+                && ($job->metadata['type'] ?? null) === 'vtc.ride.cancelled',
+        );
+
+        // Chauffeur assigné : la course qu'on lui a retirée lui est signalée.
+        Queue::assertPushed(
+            SendPushNotificationJob::class,
+            static fn (SendPushNotificationJob $job): bool => $job->employeeId === $driverEmployee->id
+                && str_contains($job->body, $ride->reference)
+                && str_contains($job->body, 'Arbitrage ops'),
+        );
+
+        Queue::assertPushed(SendPushNotificationJob::class, 2);
+    }
+
+    public function test_cancelled_by_driver_notifies_only_the_passenger(): void
+    {
+        $company = $this->createCompany();
+        $passenger = $this->createEmployee($company);
+        [$driverEmployee, $driver] = $this->createLinkedDriver($company);
+
+        $ride = $this->createRide($company, [
+            'passenger_user_id' => $passenger->id,
+            'driver_id' => $driver->id,
+            'status' => VtcRideStatus::Cancelled->value,
+            'cancel_reason' => 'Panne du véhicule',
+        ]);
+
+        $this->withTenantContext($company, function () use ($company, $ride): void {
+            event(new VtcRideCancelled((string) $company->id, $ride->id, $ride->reference, 'Panne du véhicule', 'driver'));
+        });
+
+        Queue::assertPushed(
+            SendPushNotificationJob::class,
+            static fn (SendPushNotificationJob $job): bool => $job->employeeId === $passenger->id
+                && $job->title === 'Course annulée'
+                && str_contains($job->body, 'Panne du véhicule'),
+        );
+
+        // L'acteur de l'annulation (le chauffeur) n'est pas notifié de son
+        // propre geste.
+        Queue::assertPushed(SendPushNotificationJob::class, 1);
+    }
+
+    public function test_cancelled_by_passenger_notifies_only_the_driver(): void
+    {
+        $company = $this->createCompany();
+        $passenger = $this->createEmployee($company);
+        [$driverEmployee, $driver] = $this->createLinkedDriver($company);
+
+        $ride = $this->createRide($company, [
+            'passenger_user_id' => $passenger->id,
+            'driver_id' => $driver->id,
+            'status' => VtcRideStatus::Cancelled->value,
+            'cancel_reason' => 'Je n\'en ai plus besoin',
+        ]);
+
+        $this->withTenantContext($company, function () use ($company, $ride): void {
+            event(new VtcRideCancelled((string) $company->id, $ride->id, $ride->reference, 'Je n\'en ai plus besoin', 'passenger'));
+        });
+
+        Queue::assertPushed(
+            SendPushNotificationJob::class,
+            static fn (SendPushNotificationJob $job): bool => $job->employeeId === $driverEmployee->id
+                && $job->title === 'Course annulée'
+                && str_contains($job->body, $ride->reference),
+        );
+
+        Queue::assertPushed(SendPushNotificationJob::class, 1);
     }
 
     // ── Fixtures ────────────────────────────────────────────────────────

@@ -73,13 +73,18 @@ class VtcMarketplacePublicApiTest extends TestCase
         // Devis sur l'opérateur opt-in : distance/durée + prix minor units.
         $estimate = $this->postJson('/api/v1/public/vtc/marketplace/estimate', $this->estimatePayload('express-vtc-douala'))
             ->assertOk()
-            ->assertJsonStructure(['data' => ['distance_m', 'duration_s', 'price_minor', 'currency']]);
+            ->assertJsonStructure(['data' => ['distance_m', 'road_distance_m', 'duration_s', 'price_minor', 'currency']]);
 
         $distanceM = $estimate->json('data.distance_m');
+        $roadDistanceM = $estimate->json('data.road_distance_m');
         $priceMinor = $estimate->json('data.price_minor');
         self::assertTrue(is_numeric($distanceM));
+        self::assertTrue(is_numeric($roadDistanceM));
         self::assertTrue(is_numeric($priceMinor));
         self::assertEqualsWithDelta(1_570, (int) $distanceM, 60.0);
+        // #8464 : la distance routière exposée est la base de tarification
+        // (facteur 1,3 — cohérente avec le prix affiché).
+        self::assertEqualsWithDelta(2_040, (int) $roadDistanceM, 80.0);
         self::assertGreaterThan(1_200_00, (int) $priceMinor);
         self::assertLessThan(1_400_00, (int) $priceMinor);
         self::assertSame('XAF', $estimate->json('data.currency'));

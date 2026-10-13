@@ -55,5 +55,9 @@ return [
     'vtc_ride_expired_body' => ':reference numaralı yolculuğunuz için şu anda sürücü bulunamadı. Birkaç dakika sonra tekrar deneyin.',
     'vtc_ride_completed_title' => 'Yolculuk tamamlandı',
     'vtc_ride_completed_body' => ':reference numaralı yolculuğunuz tamamlandı. Tutar: :price.',
-    'vtc_ride_completed_driver_body' => ':reference yolculuğu tamamlandı — tutar :price.',
+        'vtc_ride_completed_driver_body' => ':reference yolculuğu tamamlandı — tutar :price.',
+    // #8464 — iptal, işlemi yapmayan tarafa bildirilir.
+    'vtc_ride_cancelled_title' => 'Yolculuk iptal edildi',
+    'vtc_ride_cancelled_body' => ':reference numaralı yolculuğunuz iptal edildi. Sebep: :reason.',
+    'vtc_ride_cancelled_driver_body' => ':reference numaralı yolculuk iptal edildi. Sebep: :reason.',
 ];

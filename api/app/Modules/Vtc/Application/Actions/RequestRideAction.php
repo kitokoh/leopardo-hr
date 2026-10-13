@@ -88,7 +88,10 @@ final class RequestRideAction
                         'currency' => $estimate->currency,
                         'requested_at' => now(),
                         'idempotency_key' => $key->toString(),
-                        'tracking_code_hash' => $this->trackingSecrets->hash($trackingCode),
+                        // #8464 : HMAC keyed (pas de SHA-256 nu) — un code
+                        // de suivi à 40 bits n'est plus brute-forçable hors
+                        // ligne en cas de fuite de la base.
+                        'tracking_code_hash' => $this->trackingSecrets->hmac($trackingCode),
                     ]);
 
                     $this->journal($ride, VtcRideEventType::RideRequested, [

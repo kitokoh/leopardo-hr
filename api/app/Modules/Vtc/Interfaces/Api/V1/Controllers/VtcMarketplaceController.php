@@ -88,12 +88,16 @@ final class VtcMarketplaceController extends Controller
             ),
         );
 
-        // DTO strict : distance, durée et prix en minor units + devise —
-        // `price_minor` null quand l'opérateur n'a pas de grille (devis
-        // honnête, même contrat que l'API passager authentifiée).
+        // DTO strict : distance à vol d'oiseau ET distance routière (base
+        // de tarification — #8464 : le prix est calculé sur
+        // `roadDistanceMeters`, l'afficher évite l'écart affichage/facture),
+        // durée et prix en minor units + devise — `price_minor` null quand
+        // l'opérateur n'a pas de grille (devis honnête, même contrat que
+        // l'API passager authentifiée).
         return response()->json([
             'data' => [
                 'distance_m' => $estimate->distanceMeters,
+                'road_distance_m' => $estimate->roadDistanceMeters,
                 'duration_s' => $estimate->durationSeconds,
                 'price_minor' => $estimate->priceMinor,
                 'currency' => $estimate->currency,

@@ -126,13 +126,14 @@ class RestaurantPublicTrackingSecretTest extends TestCase
         assert(is_string($secret) && is_string($reference));
         $this->assertMatchesRegularExpression('/^[0-9a-f]{64}$/', $secret);
 
-        // Seul le hash SHA-256 est persisté — jamais le clair.
+        // Seul le hash HMAC-SHA256 keyed (#8464, ex-SHA-256 nu) est
+        // persisté — jamais le clair.
         $storedHash = app(TenantManager::class)->withinTenant(
             $company,
             fn (): mixed => RestaurantOrder::query()->where('reference', $reference)->value('tracking_secret_hash')
         );
         assert(is_string($storedHash));
-        $this->assertSame(hash('sha256', $secret), $storedHash);
+        $this->assertSame(hash_hmac('sha256', $secret, (string) config('app.key')), $storedHash);
         $this->assertNotSame($secret, $storedHash);
 
         // Rejeu idempotent : même commande, mais le secret n'est PAS représenté.

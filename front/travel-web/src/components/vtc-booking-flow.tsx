@@ -359,7 +359,7 @@ export function VtcBookingFlow() {
                   {dict.vtc.distanceLabel}
                 </dt>
                 <dd className="mt-1 text-sm font-semibold text-slate-900">
-                  {formatDistanceMeters(quote.distance_m)}
+                  {formatDistanceMeters(quote.road_distance_m ?? quote.distance_m)}
                 </dd>
               </div>
               <div className="rounded-xl bg-slate-50 p-3">

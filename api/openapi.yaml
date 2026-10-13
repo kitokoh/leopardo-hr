@@ -269,6 +269,8 @@ paths:
         `EstimateRideFareAction` dans le tenant de l'opérateur (distance
         via le core geo BC-34) — la grille tarifaire reste côté serveur,
         `price_minor` vaut null quand l'opérateur n'a pas de grille.
+        `distance_m` est la distance à vol d'oiseau, `road_distance_m`
+        (#8464) la distance routière — BASE DE TARIFICATION du prix.
       requestBody:
         required: true
         content:
@@ -286,7 +288,7 @@ paths:
                   $ref: '#/components/schemas/VtcGeoPointInput'
       responses:
         '200':
-          description: Devis calculé (distance_m, duration_s, price_minor, currency)
+          description: Devis calculé (distance_m, road_distance_m, duration_s, price_minor, currency)
         '404':
           description: Opérateur introuvable ou non publié
         '422':

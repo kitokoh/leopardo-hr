@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Vtc\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Middleware\Vtc\VtcRoleResolver;
 use App\Modules\Vtc\Application\Actions\CancelRideAction;
 use App\Modules\Vtc\Domain\Enums\VtcRideStatus;
 use App\Modules\Vtc\Domain\Models\VtcDriver;
@@ -109,17 +110,17 @@ final class VtcDispatchController
     }
 
     /**
-     * Acteur tracé : manager `principal` → `admin`, sinon `dispatcher` —
-     * miroir de la matrice VtcRoleResolver (source unique, app/Http) sans
-     * importer la garde depuis le module (isolation #5584/#8059).
+     * Acteur tracé : rôle `admin` de la matrice `VtcRoleResolver` (SOURCE
+     * UNIQUE — déjà consommée par le module dans `VtcServiceProvider`
+     * pour la garde d'autorisation geo M-02) → `admin`, sinon
+     * `dispatcher`. #8464 : fin de la matrice dupliquée.
      */
     private function resolveOpsActor(Request $request): string
     {
         $employee = $request->user();
 
         return $employee instanceof Employee
-            && $employee->isManager()
-            && $employee->hasManagerRole('principal')
+            && in_array('admin', (new VtcRoleResolver)->rolesFor($employee), true)
             ? CancelRideAction::ACTOR_ADMIN
             : CancelRideAction::ACTOR_DISPATCHER;
     }
