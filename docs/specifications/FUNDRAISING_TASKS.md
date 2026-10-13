@@ -5,6 +5,7 @@
 > Convention de statut : ✅ fait · 🚧 en cours · ✅ à faire
 > Découpage : chaque tâche = un commit poussé sur la branche.
 > État au 2026-10-10 : lots A→G livrés et poussés (9 commits). Phase 2 hors périmètre.
+> État au 2026-10-11 : recette UX E2E complète validée en stack locale (vitrine → onboarding association → cagnotte → don espèces confirmé via UI → reversement payé) ; FUND-092 livré (#8428) ; classification purge RGPD des tables publiques corrigée (#8426).
 > Reprise CI (2026-10-10, suite revue avant merge #8378) : isolation cross-tenant
 > 404 sur les endpoints privés (garde explicite — SubstituteBindings s'exécute
 > avant le middleware `tenant`), test feature flag persisté (setFeature + save),
@@ -101,6 +102,7 @@
 |---|---|---|
 | FUND-090 | Page `/fundraising` (dashboard tenant) : création, publication/pause/clôture, lien public, reversements + paramétrage module (FUND-070 côté tenant) | ✅ |
 | FUND-091 | Navigation client (client-features, préfixes protégés) + i18n ×4 + tests jest | ✅ |
+| FUND-092 | Section Contributions (liste + confirmation manuelle espèces/virement) — recette UX E2E 2026-10-11 (#8428) | ✅ |
 
 ## Lot K — Visibilité vitrine (branche `feat/vitrine-cagnottes`)
 

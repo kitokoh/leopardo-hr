@@ -696,6 +696,22 @@ propagation i18n du 2026-09-14 (PR #7350).
 
 - Jest `src/app/(dashboard)/fundraising/__tests__/fundraising-page.test.tsx` (4 scénarios : liste + publication, création, fail-closed, paramétrage) — check « Frontend — ESLint + TypeScript ».
 - Parité i18n (`validate.js`), catalogues mobiles `.arb` régénérés (`sync-mobile.js`, garde `validate-and-sync`).
+## Addendum 2026-10-11 — contributions visibles et confirmables dans l'espace tenant cagnottes (PR #8429, issue #8428)
+
+**Surface** : extension de la page protégée `/fundraising` (`front/web/src/app/(dashboard)/fundraising/page.tsx`, FUND-090) — section **Contributions** par cagnotte adossée aux endpoints existants `GET /fundraising/fundraisers/{id}/contributions` et `POST /fundraising/contributions/{id}/confirm`. Motif : recette UX E2E 2026-10-11 — sans cette surface, un don espèces/virement restait `pending` à vie (API seule consommable).
+
+### Scénarios de recette
+
+1. « Contributions » (toggle par carte, pattern « Reversements ») liste les dons : montant, donateur (ou « Anonyme »), méthode, référence, statut (badges pending/completed).
+2. Une contribution `pending` de provider `manual` (espèces/virement) expose « Confirmer » → `POST /fundraising/contributions/{id}/confirm`, puis liste et compteurs rafraîchis (collecté, solde disponible, bouton « Reverser les fonds » dès solde > 0). Porte UI identique à la règle backend `ConfirmManualContributionAction`.
+3. Une contribution non manuelle (carte/mobile money) ou déjà confirmée n'expose jamais le bouton.
+4. i18n ×4 via `cagnottesModule.showContributions/hideContributions/contributionList.*` (zéro littéral hardcodé).
+
+### Vérification automatique
+
+- Jest `src/app/(dashboard)/fundraising/__tests__/fundraising-page.test.tsx` (5 scénarios dont « liste les contributions et confirme un don manuel en attente »).
+- Recette navigateur réelle 2026-10-11 (stack locale complète) : don espèces public confirmé depuis l'UI → statut « Confirmée », compteurs mis à jour.
+
 ## Addendum 2026-10-11 — page publique de don « cagnotte » (PR #8411, issue #8402, FUND-100)
 
 **Surface** : nouvelle page PUBLIQUE vitrine `/cagnottes/{slug}` (`front/web/src/app/cagnottes/[slug]/`) — surface d'encaissement de la verticale « Cagnottes solidaires », adossée à l'API publique isolée (`throttle:shop-public`, DTO zéro donnée interne).

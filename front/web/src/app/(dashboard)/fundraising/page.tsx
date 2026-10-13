@@ -11,6 +11,7 @@ import {
   Play,
   Plus,
   Settings2,
+  Users,
   Wallet,
   XCircle,
 } from 'lucide-react';
@@ -63,6 +64,23 @@ type Payout = {
   recipient_name: string;
   status: string;
   status_label: string;
+  created_at: string | null;
+};
+
+type Contribution = {
+  id: number;
+  reference: string;
+  amount: number;
+  currency: string;
+  payment_method: string;
+  payment_method_label: string;
+  provider: string;
+  status: string;
+  status_label: string;
+  contributor_name: string | null;
+  is_anonymous: boolean;
+  message: string | null;
+  paid_at: string | null;
   created_at: string | null;
 };
 
@@ -129,6 +147,8 @@ export default function CagnottesPage() {
   const [payoutForm, setPayoutForm] = useState({ amount: '', method: 'mobile_money', recipient_name: '', recipient_account: '' });
   const [payouts, setPayouts] = useState<Record<number, Payout[]>>({});
   const [expandedPayouts, setExpandedPayouts] = useState<number | null>(null);
+  const [contributions, setContributions] = useState<Record<number, Contribution[]>>({});
+  const [expandedContributions, setExpandedContributions] = useState<number | null>(null);
 
   const [settings, setSettings] = useState<Settings | null>(null);
   const [settingsForm, setSettingsForm] = useState({
@@ -189,6 +209,32 @@ export default function CagnottesPage() {
     const payload = (await response.json()) as { data: Payout[] };
     setPayouts((current) => ({ ...current, [fundraiserId]: payload.data ?? [] }));
   }, []);
+
+  // #8428 — Contributions de la cagnotte : le responsable doit voir qui a
+  // donné et confirmer les dons manuels (espèces / virement), sinon ils
+  // restent `pending` à vie et ne sont jamais comptabilisés.
+  const loadContributions = useCallback(async (fundraiserId: number) => {
+    const response = await apiFetch(`/fundraising/fundraisers/${fundraiserId}/contributions`);
+    const payload = (await response.json()) as { data: Contribution[] };
+    setContributions((current) => ({ ...current, [fundraiserId]: payload.data ?? [] }));
+  }, []);
+
+  const confirmContribution = useCallback(
+    async (contribution: Contribution, fundraiserId: number) => {
+      setActionBusy(`contribution:${contribution.id}`);
+      setError(null);
+      try {
+        await apiFetch(`/fundraising/contributions/${contribution.id}/confirm`, { method: 'POST' });
+        setNotice(t(locale, 'cagnottesModule.contributionList.confirmed'));
+        await Promise.all([loadFundraisers(), loadContributions(fundraiserId)]);
+      } catch (exception) {
+        setError((exception as { message?: string }).message ?? genericError);
+      } finally {
+        setActionBusy(null);
+      }
+    },
+    [genericError, loadContributions, loadFundraisers, locale],
+  );
 
   const createFundraiser = useCallback(async () => {
     setCreating(true);
@@ -535,11 +581,23 @@ export default function CagnottesPage() {
                   <button
                     type="button"
                     onClick={() => {
+                      const next = expandedContributions === fundraiser.id ? null : fundraiser.id;
+                      setExpandedContributions(next);
+                      if (next !== null && contributions[fundraiser.id] === undefined) void loadContributions(fundraiser.id);
+                    }}
+                    className="ms-auto inline-flex items-center gap-1 text-xs font-bold text-slate-400 underline"
+                  >
+                    <Users className="h-3.5 w-3.5" />
+                    {expandedContributions === fundraiser.id ? t(locale, 'cagnottesModule.hideContributions') : t(locale, 'cagnottesModule.showContributions')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
                       const next = expandedPayouts === fundraiser.id ? null : fundraiser.id;
                       setExpandedPayouts(next);
                       if (next !== null && payouts[fundraiser.id] === undefined) void loadPayouts(fundraiser.id);
                     }}
-                    className="ms-auto text-xs font-bold text-slate-400 underline"
+                    className="text-xs font-bold text-slate-400 underline"
                   >
                     {expandedPayouts === fundraiser.id ? t(locale, 'cagnottesModule.hidePayouts') : t(locale, 'cagnottesModule.showPayouts')}
                   </button>
@@ -606,6 +664,41 @@ export default function CagnottesPage() {
                                 className="ms-auto rounded-lg bg-teal-600 px-2.5 py-1 font-black text-white hover:bg-teal-700"
                               >
                                 {actionBusy === `payout:${payout.id}` ? <Loader2 className="h-3 w-3 animate-spin" /> : t(locale, 'cagnottesModule.payout.markPaid')}
+                              </button>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+
+                {expandedContributions === fundraiser.id && (
+                  <div className="mt-4">
+                    {(contributions[fundraiser.id] ?? []).length === 0 ? (
+                      <p className="text-xs text-slate-400">{t(locale, 'cagnottesModule.contributionList.empty')}</p>
+                    ) : (
+                      <ul className="space-y-2" data-testid={`contributions-${fundraiser.id}`}>
+                        {(contributions[fundraiser.id] ?? []).map((contribution) => (
+                          <li key={contribution.id} className="flex flex-wrap items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-xs">
+                            <span className="font-black text-slate-950">{money(contribution.amount, contribution.currency, locale)}</span>
+                            <span className="text-slate-500">
+                              {contribution.is_anonymous
+                                ? t(locale, 'cagnottesModule.contributionList.anonymous')
+                                : contribution.contributor_name ?? t(locale, 'cagnottesModule.contributionList.anonymous')}
+                              {' · '}{contribution.payment_method_label}{' · '}{contribution.reference}
+                            </span>
+                            <span className={`rounded-full px-2 py-0.5 font-black ${contribution.status === 'completed' ? 'bg-teal-100 text-teal-800' : contribution.status === 'pending' ? 'bg-amber-100 text-amber-800' : 'bg-slate-200 text-slate-600'}`}>
+                              {contribution.status_label}
+                            </span>
+                            {contribution.status === 'pending' && contribution.provider === 'manual' && (
+                              <button
+                                type="button"
+                                onClick={() => void confirmContribution(contribution, fundraiser.id)}
+                                disabled={actionBusy !== null}
+                                className="ms-auto rounded-lg bg-teal-600 px-2.5 py-1 font-black text-white hover:bg-teal-700"
+                              >
+                                {actionBusy === `contribution:${contribution.id}` ? <Loader2 className="h-3 w-3 animate-spin" /> : t(locale, 'cagnottesModule.contributionList.confirm')}
                               </button>
                             )}
                           </li>
