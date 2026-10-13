@@ -123,18 +123,23 @@ export function HeroSection({
             phrase (z-0) et le canvas (z-10) : elle n'écrase ni le texte ni
             la 3D. Décorative, jamais cliquable, dérive lente en CSS. */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
-          <FranceConstellation className="france-constellation-drift h-[118vmin] w-[118vmin] shrink-0 translate-y-[7vh] opacity-70" />
+          <FranceConstellation className="france-constellation-drift h-[92vmin] w-[92vmin] shrink-0 translate-y-[4vh] opacity-55 sm:h-[110vmin] sm:w-[110vmin] sm:translate-y-[7vh] lg:h-[118vmin] lg:w-[118vmin] lg:opacity-70" />
         </div>
 
         {/* Phrase en toile de fond (z-0) — jamais cliquable, jamais estompée.
-            Le padding bas la hisse dans le tiers supérieur : la constellation
-            (abaissée côté scène) ne la croise qu'en petits modules orbitaux. */}
-        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center px-4 pb-[32vh] sm:px-6">
+            Sur GRAND écran : centrée avec padding bas qui la hisse dans le
+            tiers supérieur (la constellation ne la croise qu'en petits
+            modules). Sur MOBILE (#8461) : ancrée en HAUT — la pile CTA +
+            formulaire est haute sur petit écran, un centrage la percutait
+            (chevauchement constaté en capture 390×844). Le padding bas la
+            hisse dans le tiers supérieur : la constellation (abaissée côté
+            scène) ne la croise qu'en petits modules orbitaux. */}
+        <div className="pointer-events-none absolute inset-0 z-0 flex items-start justify-center px-4 pt-32 sm:items-center sm:px-6 sm:pb-[32vh] sm:pt-0">
           <motion.h1
             initial={animated ? { y: 30 } : {}}
             animate={animated ? { y: 0 } : {}}
             transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-5xl text-balance text-center font-black leading-[0.95] tracking-tight text-5xl sm:text-6xl lg:text-7xl"
+            className="max-w-5xl text-balance text-center font-black leading-[0.95] tracking-tight text-4xl sm:text-6xl lg:text-7xl"
           >
             <span className="block bg-gradient-to-b from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
               {headline}
@@ -150,9 +155,9 @@ export function HeroSection({
             scène est nuit permanente, même quand le thème global est clair. */}
         <motion.div
           style={animated ? { y, opacity, scale } : {}}
-          className="dark relative z-20 flex min-h-[100dvh] flex-col items-center justify-end px-4 pb-24 sm:px-6"
+          className="dark hero-stage-cta-tall relative z-20 flex min-h-[100dvh] flex-col items-center justify-end px-4 pb-24 sm:px-6"
         >
-          <div className="flex w-full max-w-3xl flex-col items-center gap-4">
+          <div className="flex w-full max-w-3xl flex-col items-center gap-3 sm:gap-4">
             {(ctaPrimary || ctaSecondary) && (
               <motion.div
                 initial={animated ? { y: 20 } : {}}

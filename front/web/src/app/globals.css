@@ -178,6 +178,17 @@ html {
   background-size: 60px 60px;
 }
 
+/* ── Héro « stage » — pile d'actions sur petit MOBILE portrait (#8461) ────
+   Titre + boutons + formulaire rapide ne tiennent pas dans un viewport court
+   ET étroit (ex. 375×667) : le héro grandit au-delà de l'écran pour que
+   rien ne se chevauche. Réservé au mobile portrait — jamais appliqué aux
+   desktop/laptop courts (1280×720), où le héro reste exactement 100dvh. */
+@media (max-width: 639.98px) and (max-height: 740px) {
+  .hero-stage-cta-tall {
+    min-height: 132dvh;
+  }
+}
+
 /* ── Constellation France du héro « stage » (#8461, vague 4) ──────────────
    Dérive très lente de la silhouette et scintillement doux des villes-nœuds.
    Style pur, donc ici et non dans le TSX (même garde i18n/design-tokens que
