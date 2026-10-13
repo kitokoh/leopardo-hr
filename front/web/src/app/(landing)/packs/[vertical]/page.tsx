@@ -17,6 +17,7 @@ import { motion } from 'framer-motion';
 import {
   BarChart3,
   CalendarDays,
+  Car,
   Check,
   Clock,
   FileText,
@@ -49,6 +50,7 @@ const ICONS: Record<PackBenefitIcon, typeof Clock> = {
   ticket: Ticket,
   store: Store,
   shield: ShieldCheck,
+  car: Car,
 };
 
 export default function PackVerticalPage({

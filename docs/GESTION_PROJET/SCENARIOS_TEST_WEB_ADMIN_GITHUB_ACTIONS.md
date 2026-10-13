@@ -761,3 +761,18 @@ propagation i18n du 2026-09-14 (PR #7350).
 
 - Jest `VerticalsAndZKTeco.test.tsx` (carte présente + lien `/packs/cagnottes`) — check « Frontend — ESLint + TypeScript ».
 - Gardes vitrine : mojibake, french-copy, pages orphelines (`/packs/cagnottes` référencé depuis la home).
+
+## Addendum 2026-10-13 — visibilité vitrine de la verticale « VTC & Taxi » (issue #8465)
+
+**Surface** : section « Verticales métier » de la home vitrine — nouvelle carte « VTC & Taxi » (icône CarTaxiFront) pointant vers la nouvelle page pack `/packs/vtc` (mécanisme data-driven `pack-pages.ts`) ; carte ajoutée aussi au hub `/packs`.
+
+### Scénarios de recette
+
+1. La home affiche 6 cartes verticales dont « VTC & Taxi » ; le lien mène à `/packs/vtc` (×4 locales fr/en/ar/tr).
+2. `/packs/vtc` présente la promesse limitée au livré (dispatch au chauffeur disponible le plus proche via le core géo PostGIS, réservation invitée sans compte sur la marketplace publique, suivi par référence + code, annulations tracées et notifiées), les bénéfices, le contenu inclus et les CTA (création d'espace / conseiller) ; un slug inconnu reste en 404 (`isPackVertical`). Promesse honnête : pas de paiement en ligne ni d'app chauffeur (lots dédiés, mentionnés en note).
+3. i18n : copy ×4 complète via `pack-pages.ts` (chemin exempté PA2-I18N-014), zéro régression sur les 4 packs existants.
+
+### Vérification automatique
+
+- Jest `VerticalsAndZKTeco.test.tsx` (6 cartes dont « VTC & Taxi » + lien `/packs/vtc`) — check « Frontend — ESLint + TypeScript ».
+- Gardes vitrine : mojibake, french-copy, pages orphelines (`/packs/vtc` référencé depuis la home et le hub `/packs`).
