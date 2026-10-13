@@ -241,6 +241,17 @@ export const NAV_ENTRIES = [
     descKey: 'adminPalette.itemCrmDesc',
   },
   {
+    // #8440 — suivi des manifestations d'intérêt « prendre des parts »
+    // (page vitrine /investir) : leads equity_interest, même famille que
+    // le pipeline CRM (même permission, même groupe).
+    name: 'equity-interests',
+    path: '/equity-interests',
+    titleKey: 'navigation.equityInterests',
+    icon: BanknotesIcon,
+    permission: 'crm.view',
+    group: 'entreprise',
+  },
+  {
     name: 'growth',
     path: '/growth',
     titleKey: 'navigation.growth',

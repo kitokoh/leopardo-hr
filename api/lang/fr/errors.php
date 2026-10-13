@@ -341,4 +341,12 @@ return [
     // #8019 — HospitalityManager : règle métier rendue par une DomainException
     // (le message localisé vient du catalogue errors.*, pas du message interne).
     'CHECKOUT_BEFORE_CHECKIN' => 'La date de départ doit être postérieure à la date d\'arrivée.',
+<<<<<<< HEAD
+=======
+
+    // #8440/#8441 — verticales equity + paramétrage fundraising (contexte entreprise)
+    'FUNDRAISING_VERTICAL_NOT_ENABLED' => 'La verticale cagnottes n\'est pas activée pour cette entreprise.',
+    'MARKETING_LEAD_NO_CHANGES' => 'Aucune modification demandée.',
+    'MARKETING_LEAD_NOT_FOUND' => 'Lead introuvable.',
+>>>>>>> origin/main
 ];

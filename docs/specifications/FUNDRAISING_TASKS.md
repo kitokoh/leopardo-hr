@@ -115,6 +115,6 @@
 | ID | Tâche | Statut |
 |---|---|---|
 | FUND-100 | Front public (page cagnotte, partage OG, QR) — livré (branche `feat/fundraising-public-page`, #8402) : `/cagnottes/{slug}`, don carte (redirection Stripe) + mobile money (USSD + polling), mur des soutiens, i18n ×4 | ✅ |
-| FUND-101 | Adaptateurs production mobile money (CinetPay/PayDunya/PVIT) | ✅ livrés (#8442) — provider choisi par `fundraising.mobile_money.provider`, webhooks fail-closed, re-conciliation active, 17 tests |
+| FUND-101 | Adaptateurs production mobile money (CinetPay/PayDunya/PVIT) | ⬜ |
 | FUND-102 | openapi.yaml + SDK dev-hub | 🚧 openapi.yaml livré (#8379 reprise CI) — SDK dev-hub reste à faire |
 | FUND-103 | KYC bénéficiaire, remboursements, dons récurrents, reçus PDF | ⬜ |

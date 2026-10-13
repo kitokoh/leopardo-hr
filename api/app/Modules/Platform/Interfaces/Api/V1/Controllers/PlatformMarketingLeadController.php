@@ -59,7 +59,7 @@ final class PlatformMarketingLeadController extends Controller
      *
      * @var list<string>
      */
-    private const TYPES = ['signup', 'demo_request', 'newsletter', 'contact', 'solution_survey'];
+    private const TYPES = ['signup', 'demo_request', 'newsletter', 'contact', 'solution_survey', 'equity_interest'];
 
     /**
      * Statuts de qualification — miroir de `MarketingLead::STATUS_*`.
@@ -135,8 +135,54 @@ final class PlatformMarketingLeadController extends Controller
                 // d'onglets de l'écran admin. Filtrer dessus les rendrait
                 // inutilisables dès qu'un filtre de statut est actif.
                 'status_counts' => $this->statusCounts(),
+                // #8440 — quand un type est filtré (écran « Prendre des
+                // parts » : type=equity_interest), les compteurs par statut
+                // DU TYPE servent les onglets de cet écran sans toucher au
+                // contrat global de `status_counts`.
+                'type_status_counts' => filled($validated['type'] ?? null)
+                    ? $this->statusCounts((string) $validated['type'])
+                    : null,
             ],
         ]);
+    }
+
+    /**
+     * #8440 — qualification d'un lead (suivi humain, non linéaire) :
+     * transition de statut libre + note interne optionnelle. Portée par
+     * l'écran « Prendre des parts » mais utile à tout lead du pipeline.
+     */
+    public function update(Request $request, int $lead): JsonResponse
+    {
+        $validated = $request->validate([
+            'status' => ['sometimes', 'string', Rule::in(self::STATUSES)],
+            'note' => ['sometimes', 'nullable', 'string', 'max:2000'],
+        ]);
+
+        if (($validated['status'] ?? null) === null && ! array_key_exists('note', $validated)) {
+            return new JsonResponse(['message' => __('errors.MARKETING_LEAD_NO_CHANGES')], 422);
+        }
+
+        $changes = ['updated_at' => Carbon::now()];
+
+        if (($validated['status'] ?? null) !== null) {
+            $changes['status'] = $validated['status'];
+        }
+
+        if (array_key_exists('note', $validated)) {
+            $changes['note'] = $validated['note'];
+        }
+
+        $exists = DB::table(self::LEADS_TABLE)->where('id', $lead)->exists();
+
+        if (! $exists) {
+            return new JsonResponse(['message' => __('errors.MARKETING_LEAD_NOT_FOUND')], 404);
+        }
+
+        DB::table(self::LEADS_TABLE)->where('id', $lead)->update($changes);
+
+        $fresh = DB::table(self::LEADS_TABLE)->where('id', $lead)->first();
+
+        return new JsonResponse(['data' => $fresh instanceof \stdClass ? $this->present($fresh) : null]);
     }
 
     /**
@@ -157,11 +203,17 @@ final class PlatformMarketingLeadController extends Controller
     /**
      * @return array<string, int>
      */
-    private function statusCounts(): array
+    private function statusCounts(?string $type = null): array
     {
-        return DB::table(self::LEADS_TABLE)
+        $query = DB::table(self::LEADS_TABLE)
             ->select('status', DB::raw('count(*) as aggregate'))
-            ->groupBy('status')
+            ->groupBy('status');
+
+        if ($type !== null) {
+            $query->where('type', $type);
+        }
+
+        return $query
             ->pluck('aggregate', 'status')
             ->map(fn (mixed $count): int => (int) $count)
             ->all();
