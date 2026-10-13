@@ -8931,6 +8931,14 @@
       "mobile_money": "Mobile money",
       "bank_transfer": "Virement",
       "cash": "Espèces"
+    },
+    "showContributions": "Contributions",
+    "hideContributions": "Masquer les contributions",
+    "contributionList": {
+      "empty": "Aucune contribution pour cette cagnotte.",
+      "confirm": "Confirmer",
+      "anonymous": "Anonyme",
+      "confirmed": "Contribution confirmée."
     }
   },
   "cagnotte": {

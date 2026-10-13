@@ -6058,5 +6058,11 @@
   "cagnottesmoduleMethodsCard": "Bank card",
   "cagnottesmoduleMethodsMobileMoney": "Mobile money",
   "cagnottesmoduleMethodsBankTransfer": "Bank transfer",
-  "cagnottesmoduleMethodsCash": "Cash"
+  "cagnottesmoduleMethodsCash": "Cash",
+  "cagnottesmoduleShowcontributions": "Contributions",
+  "cagnottesmoduleHidecontributions": "Hide contributions",
+  "cagnottesmoduleContributionlistEmpty": "No contributions for this fundraiser yet.",
+  "cagnottesmoduleContributionlistConfirm": "Confirm",
+  "cagnottesmoduleContributionlistAnonymous": "Anonymous",
+  "cagnottesmoduleContributionlistConfirmed": "Contribution confirmed."
 }
