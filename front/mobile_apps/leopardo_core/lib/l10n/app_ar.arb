@@ -6058,5 +6058,11 @@
   "cagnottesmoduleMethodsCard": "بطاقة بنكية",
   "cagnottesmoduleMethodsMobileMoney": "موبايل موني",
   "cagnottesmoduleMethodsBankTransfer": "تحويل بنكي",
-  "cagnottesmoduleMethodsCash": "نقداً"
+  "cagnottesmoduleMethodsCash": "نقداً",
+  "cagnottesmoduleShowcontributions": "المساهمات",
+  "cagnottesmoduleHidecontributions": "إخفاء المساهمات",
+  "cagnottesmoduleContributionlistEmpty": "لا توجد مساهمات لهذه الحملة بعد.",
+  "cagnottesmoduleContributionlistConfirm": "تأكيد",
+  "cagnottesmoduleContributionlistAnonymous": "مجهول",
+  "cagnottesmoduleContributionlistConfirmed": "تم تأكيد المساهمة."
 }
