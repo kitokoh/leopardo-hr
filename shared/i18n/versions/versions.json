@@ -57,12 +57,12 @@
     },
     "admin": {
       "checksums": {
-        "ar": "33bd43521e13454b50bb19cce2b882ca9ca11189ba91ec803f8049a34afeaf68",
-        "en": "68f9db9545bde0fd72517d59eb5f603c0110c9ad7122d5fab40d203bcf02ee30",
-        "fr": "07d6d273cb9a59a98046b0d53ecf68284cf132a2581103dc41ea45bce0b9c17e",
-        "tr": "54f11a547e2e56fc4ab982d73c906f730b2fe0b20cc73dbe861b2221eea79123"
+        "ar": "6789da7421735571043384704e86c2c346132bde9a2888de4ffd4e32f6070e89",
+        "en": "c586e38c48c61b3f4af76c7fbc8cc9fdc08826e1de7fc8d15d6c645d126e482e",
+        "fr": "744431c0fd05e7b7a401da4a047a9ba48a512f2ad11ad32b1668788805035e36",
+        "tr": "6d7fbe5512d054fffe2e5698062b2061ba57e3694b046d23f15c42e2d362b70f"
       },
-      "updated_at": "2026-10-13T06:23:42.929Z"
+      "updated_at": "2026-10-13T06:30:29.676Z"
     }
   }
 }

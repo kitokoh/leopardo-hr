@@ -1738,7 +1738,8 @@
     "notFound": "Sayfa bulunamadi",
     "travelAgency": "Seyahat acentesi",
     "emailTemplates": "E-postalar",
-    "settings": "Ayarlar"
+    "settings": "Ayarlar",
+    "equityInterests": "Ortaklık ilgisi"
   },
   "webhooks": {
     "confirm_delete": "Bu webhook silinsin mi?"
@@ -7655,5 +7656,42 @@
       "anonymous": "Anonim",
       "confirmed": "Katkı onaylandı."
     }
+  },
+  "equityInterests": {
+    "title": "Ortaklık ilgisi",
+    "subtitle": "Şirketten hisse alma ilgi beyanları (vitrine « Ortak olun » sayfası).",
+    "refresh": "Yenile",
+    "retry": "Tekrar dene",
+    "loading": "Yükleniyor…",
+    "empty": "Henüz ilgi beyanı yok.",
+    "tabAll": "Tümü",
+    "status": {
+      "new": "Yeni",
+      "contacted": "İletişim kuruldu",
+      "qualified": "Nitelikli",
+      "converted": "Dönüştü",
+      "rejected": "Kapalı (takipsiz)"
+    },
+    "brackets": {
+      "lt_1k": "< 1 B€",
+      "1k_10k": "1–10 B€",
+      "10k_50k": "10–50 B€",
+      "gt_50k": "> 50 B€",
+      "discuss": "Görüşülecek"
+    },
+    "columnDate": "Tarih",
+    "columnName": "Ad",
+    "columnContact": "İletişim",
+    "columnBracket": "Dilim",
+    "columnStatus": "Durum",
+    "columnActions": "İşlemler",
+    "messageLabel": "Mesaj",
+    "countryLabel": "Ülke",
+    "transitionLabel": "Durumu değiştir",
+    "noteLabel": "Dahili not",
+    "notePlaceholder": "Takip notu (yalnızca platform ekibi)…",
+    "saveNote": "Notu kaydet",
+    "searchPlaceholder": "Ara (e-posta)…",
+    "pageLabel": "Sayfa"
   }
 }
