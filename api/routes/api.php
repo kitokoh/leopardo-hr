@@ -727,6 +727,10 @@ Route::prefix('v1')->group(function (): void {
         // même famille que /admin/marketing/leads (`crm.view`, marketing + admin).
         Route::get('/solutions/survey-stats', [PlatformSolutionSurveyStatsController::class, 'index'])->middleware('platform.permission:crm.view');
         Route::get('/marketing/leads', [PlatformMarketingLeadController::class, 'index'])->middleware('platform.permission:crm.view');
+        // #8440 — alias /admin du PATCH /platform/marketing/leads (contrat
+        // SPA admin-dashboard) : qualification des intentions de prise de
+        // parts et de tout lead du pipeline, même garde que la lecture.
+        Route::patch('/marketing/leads/{lead}', [PlatformMarketingLeadController::class, 'update'])->whereNumber('lead')->middleware('platform.permission:crm.view');
 
         // #7496 — conversions du funnel d'acquisition par étape/jour/source
         // (dashboard admin CRM commercial, données acquisition_funnel_events).

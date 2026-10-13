@@ -5804,7 +5804,8 @@
     "accountingLettering": "المطابقة (Lettrage)",
     "accountingFiscalYears": "السنوات المالية والإقفال",
     "accountingBank": "البنك والتسوية",
-    "accountingStatements": "الضريبة والقوائم المالية"
+    "accountingStatements": "الضريبة والقوائم المالية",
+    "equityInterests": "اهتمامات المساهمة"
   },
   "companydetailCoreModuleAlwaysActive": "الوحدة الأساسية نشطة دائمًا",
   "smartAttendanceSessionsTitle": "جلسات الحضور الذكي",
@@ -9166,5 +9167,42 @@
     "driverAvailable": "متاح",
     "driverBusy": "في رحلة",
     "driverSuspended": "موقوف"
+  },
+  "equityInterests": {
+    "title": "اهتمامات المساهمة",
+    "subtitle": "تعبيرات الاهتمام بالمساهمة في رأس مال الشركة (صفحة «كن مساهماً»).",
+    "refresh": "تحديث",
+    "retry": "إعادة المحاولة",
+    "loading": "جارٍ التحميل…",
+    "empty": "لا تعبيرات اهتمام بعد.",
+    "tabAll": "الكل",
+    "status": {
+      "new": "جديد",
+      "contacted": "تم الاتصال",
+      "qualified": "مؤهل",
+      "converted": "تم التحويل",
+      "rejected": "مغلق (دون متابعة)"
+    },
+    "brackets": {
+      "lt_1k": "< 1 ألف €",
+      "1k_10k": "1–10 آلاف €",
+      "10k_50k": "10–50 ألف €",
+      "gt_50k": "> 50 ألف €",
+      "discuss": "للنقاش"
+    },
+    "columnDate": "التاريخ",
+    "columnName": "الاسم",
+    "columnContact": "جهة الاتصال",
+    "columnBracket": "الشريحة",
+    "columnStatus": "الحالة",
+    "columnActions": "الإجراءات",
+    "messageLabel": "الرسالة",
+    "countryLabel": "البلد",
+    "transitionLabel": "تغيير الحالة",
+    "noteLabel": "ملاحظة داخلية",
+    "notePlaceholder": "ملاحظة متابعة (لفريق المنصة فقط)…",
+    "saveNote": "حفظ الملاحظة",
+    "searchPlaceholder": "بحث (البريد الإلكتروني)…",
+    "pageLabel": "صفحة"
   }
 }

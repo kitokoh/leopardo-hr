@@ -5810,7 +5810,8 @@
     "accountingLettering": "Lettrage",
     "accountingFiscalYears": "Exercices & clôture",
     "accountingBank": "Banque & rapprochement",
-    "accountingStatements": "TVA & états financiers"
+    "accountingStatements": "TVA & états financiers",
+    "equityInterests": "Prendre des parts"
   },
   "companydetailCoreModuleAlwaysActive": "Module cœur toujours actif",
   "smartAttendanceSessionsTitle": "Sessions Smart Attendance",
@@ -9039,5 +9040,42 @@
     "driverAvailable": "Disponible",
     "driverBusy": "En course",
     "driverSuspended": "Suspendu"
+  },
+  "equityInterests": {
+    "title": "Prendre des parts",
+    "subtitle": "Manifestations d’intérêt pour prendre des parts de l’entreprise (page vitrine « Devenir actionnaire »).",
+    "refresh": "Actualiser",
+    "retry": "Réessayer",
+    "loading": "Chargement…",
+    "empty": "Aucune manifestation d’intérêt pour le moment.",
+    "tabAll": "Toutes",
+    "status": {
+      "new": "Nouveau",
+      "contacted": "Contacté",
+      "qualified": "Qualifié",
+      "converted": "Converti",
+      "rejected": "Sans suite"
+    },
+    "brackets": {
+      "lt_1k": "< 1 k€",
+      "1k_10k": "1–10 k€",
+      "10k_50k": "10–50 k€",
+      "gt_50k": "> 50 k€",
+      "discuss": "À discuter"
+    },
+    "columnDate": "Date",
+    "columnName": "Nom",
+    "columnContact": "Contact",
+    "columnBracket": "Tranche",
+    "columnStatus": "Statut",
+    "columnActions": "Actions",
+    "messageLabel": "Message",
+    "countryLabel": "Pays",
+    "transitionLabel": "Changer le statut",
+    "noteLabel": "Note interne",
+    "notePlaceholder": "Note de suivi (visible par l’équipe plateforme uniquement)…",
+    "saveNote": "Enregistrer la note",
+    "searchPlaceholder": "Rechercher (email)…",
+    "pageLabel": "Page"
   }
 }

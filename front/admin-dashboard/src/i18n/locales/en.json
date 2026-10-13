@@ -5804,7 +5804,8 @@
     "accountingLettering": "Lettering",
     "accountingFiscalYears": "Fiscal years & closing",
     "accountingBank": "Bank & reconciliation",
-    "accountingStatements": "VAT & financial statements"
+    "accountingStatements": "VAT & financial statements",
+    "equityInterests": "Shareholder interests"
   },
   "companydetailCoreModuleAlwaysActive": "Core module always active",
   "smartAttendanceSessionsTitle": "Smart Attendance sessions",
@@ -9033,5 +9034,42 @@
     "driverAvailable": "Available",
     "driverBusy": "On a ride",
     "driverSuspended": "Suspended"
+  },
+  "equityInterests": {
+    "title": "Shareholder interests",
+    "subtitle": "Expressions of interest to take shares in the company (vitrine “Become a shareholder” page).",
+    "refresh": "Refresh",
+    "retry": "Retry",
+    "loading": "Loading…",
+    "empty": "No expression of interest yet.",
+    "tabAll": "All",
+    "status": {
+      "new": "New",
+      "contacted": "Contacted",
+      "qualified": "Qualified",
+      "converted": "Converted",
+      "rejected": "Closed (no follow-up)"
+    },
+    "brackets": {
+      "lt_1k": "< €1k",
+      "1k_10k": "€1k–10k",
+      "10k_50k": "€10k–50k",
+      "gt_50k": "> €50k",
+      "discuss": "To discuss"
+    },
+    "columnDate": "Date",
+    "columnName": "Name",
+    "columnContact": "Contact",
+    "columnBracket": "Bracket",
+    "columnStatus": "Status",
+    "columnActions": "Actions",
+    "messageLabel": "Message",
+    "countryLabel": "Country",
+    "transitionLabel": "Change status",
+    "noteLabel": "Internal note",
+    "notePlaceholder": "Follow-up note (platform team only)…",
+    "saveNote": "Save note",
+    "searchPlaceholder": "Search (email)…",
+    "pageLabel": "Page"
   }
 }
