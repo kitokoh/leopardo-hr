@@ -12,7 +12,6 @@ import {
   TrustedBrands,
   // Phase-3 sections — no more Legacy prefixes
   HeroSection,
-  SolutionStackSection,
   FAQSection,
   CTASection,
   ProblemSection,
@@ -114,9 +113,6 @@ export default function LandingPage() {
           description={copy.solution.description}
           features={copy.solution.features}
         />
-
-        {/* ─── PILE LEOPARDO ─── architecture de l'offre, ex-visuel héro (#7851) */}
-        <SolutionStackSection locale={locale} />
 
         {/* ─── PRODUCT DEMO VIDEO ─── #8071 option A : retirée de la home,
             conservée sur /demo et /videos (nouveau poster = dashboard réel) */}
