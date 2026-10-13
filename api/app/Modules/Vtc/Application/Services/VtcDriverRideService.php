@@ -82,10 +82,15 @@ final class VtcDriverRideService
                 'final_price_minor' => $finalPriceMinor,
             ])->save();
 
-            // Le chauffeur redevient disponible pour le dispatch.
+            // Le chauffeur redevient disponible pour le dispatch —
+            // UNIQUEMENT s'il est encore `busy` : un chauffeur suspendu ou
+            // hors ligne pendant la course ne doit pas être « ressuscité »
+            // dans le pool de dispatch par la clôture (miroir du durcissement
+            // de CancelRideAction, #8423).
             if ($locked->driver_id !== null) {
                 VtcDriver::query()
                     ->whereKey($locked->driver_id)
+                    ->where('status', VtcDriverStatus::Busy->value)
                     ->update(['status' => VtcDriverStatus::Available->value]);
             }
 

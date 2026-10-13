@@ -29,11 +29,12 @@ use InvalidArgumentException;
  *  - dispatcher/admin : tout état non terminal (arbitrage ops console).
  *
  * Le motif et l'acteur sont toujours tracés (colonne + journal append-only
- * `cancelled_by` + événement de domaine, écouté par le dispatch VTC-04
- * pour stopper la cascade d'offres). Un chauffeur assigné est LIBÉRÉ
- * (→ available) quelle que soit l'annulation — miroir de la clôture
- * (VtcDriverRideService::complete), sinon il resterait `busy` sur une
- * course morte.
+ * `cancelled_by` + événement de domaine ; la cascade d'offres s'arrête
+ * via les gardes de statut du dispatch, qui n'offre qu'en `dispatching`).
+ * Un chauffeur encore `busy` sur la course est LIBÉRÉ (→ available),
+ * sinon il resterait coincé sur une course morte — mais un chauffeur
+ * suspendu ou hors ligne n'est JAMAIS « ressuscité » dans le pool de
+ * dispatch : la libération est strictement conditionnée au statut `busy`.
  */
 final class CancelRideAction
 {
@@ -77,49 +78,61 @@ final class CancelRideAction
         $allowedFrom = self::ALLOWED_FROM_BY_ACTOR[$cancelledBy]
             ?? throw new InvalidArgumentException("Acteur d'annulation VTC inconnu : {$cancelledBy}.");
 
-        $from = $ride->status;
+        $locked = $this->db->transaction(function () use ($ride, $reason, $cancelledBy, $allowedFrom): VtcRide {
+            /** @var VtcRide $locked — ligne VERROUILLÉE : la règle par
+             * acteur et la state machine sont vérifiées sur l'état frais,
+             * jamais sur le modèle potentiellement périmé du contrôleur
+             * (une acceptation chauffeur concurrente ne doit pas être
+             * écrasée par une annulation). */
+            $locked = VtcRide::query()->whereKey($ride->id)->lockForUpdate()->firstOrFail();
 
-        // Règle par acteur (spec §5.2) : refus uniforme 409 avant le filet
-        // de la state machine.
-        if (! in_array($from->value, $allowedFrom, true)) {
-            throw new InvalidRideTransitionException($from, VtcRideStatus::Cancelled);
-        }
+            $from = $locked->status;
 
-        $this->stateMachine->assertCanTransitionTo($from, VtcRideStatus::Cancelled);
+            // Règle par acteur (spec §5.2) : refus uniforme 409 avant le
+            // filet de la state machine.
+            if (! in_array($from->value, $allowedFrom, true)) {
+                throw new InvalidRideTransitionException($from, VtcRideStatus::Cancelled);
+            }
 
-        $this->db->transaction(function () use ($ride, $reason, $cancelledBy): void {
-            $ride->forceFill([
+            $this->stateMachine->assertCanTransitionTo($from, VtcRideStatus::Cancelled);
+
+            $locked->forceFill([
                 'status' => VtcRideStatus::Cancelled->value,
                 'cancelled_at' => now(),
                 'cancel_reason' => $reason,
             ])->save();
 
-            // Chauffeur assigné sur la course annulée : il est libéré —
-            // jamais de chauffeur `busy` orphelin d'une course morte.
-            if ($ride->driver_id !== null) {
+            // Chauffeur assigné sur la course annulée : libéré UNIQUEMENT
+            // s'il est encore `busy` — jamais de chauffeur `busy` orphelin
+            // d'une course morte, et jamais de « resurrection » d'un
+            // chauffeur suspendu/hors ligne dans le pool de dispatch.
+            if ($locked->driver_id !== null) {
                 VtcDriver::query()
-                    ->whereKey($ride->driver_id)
+                    ->whereKey($locked->driver_id)
+                    ->where('status', VtcDriverStatus::Busy->value)
                     ->update(['status' => VtcDriverStatus::Available->value]);
             }
 
             VtcRideEvent::create([
-                'ride_id' => $ride->id,
+                'ride_id' => $locked->id,
                 'type' => VtcRideEventType::RideCancelled->value,
                 'payload' => [
                     'reason' => $reason,
                     'cancelled_by' => $cancelledBy,
                 ],
             ]);
+
+            return $locked;
         });
 
         VtcRideCancelled::dispatch(
-            (string) $ride->company_id,
-            $ride->id,
-            $ride->reference,
+            (string) $locked->company_id,
+            $locked->id,
+            $locked->reference,
             $reason,
             $cancelledBy,
         );
 
-        return $ride->refresh();
+        return $locked->refresh();
     }
 }

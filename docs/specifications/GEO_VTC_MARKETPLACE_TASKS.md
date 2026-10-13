@@ -124,3 +124,18 @@ c. **Offres VTC/taxi réservables sur `front/travel-web`** : la marketplace publ
 - **Architecture-check** : respect de `GEO_SINGLE_USAGE_STRICT` — le core geo reste consommé via `GeoServiceContract`, aucune requête PostGIS ad hoc dans le module VTC.
 - **Routes** : pas de re-préfixage — le groupe public vit dans `routes/modules/vtc.php` sous le préfixe `/api/v1` existant.
 - **Commits** : Conventional Commits en FR avec scope + référence d'issue (`Refs #8423` / `Closes #8423`).
+
+## 6. Durcissements post-audit (2026-10-13, revue avant merge)
+
+Revue complète du diff (92 fichiers) avant fusion : conception validée (surface publique fail-closed, isolation cross-tenant par ressource, DTO stricts, migrations public/tenant propres). Trois durcissements appliqués :
+
+- ✅ **Libération chauffeur conditionnée au statut `busy`** (`CancelRideAction` + `VtcDriverRideService::complete`) — un chauffeur suspendu ou hors ligne n'est plus « ressuscité » dans le pool de dispatch à l'annulation/clôture de sa course. Test de non-régression ajouté (`test_cancellation_never_resurrects_a_suspended_driver`).
+- ✅ **Annulation verrouillée** (`lockForUpdate`) — l'état de la course est relu dans la transaction ; règle par acteur + state machine vérifiées sur l'état frais (une acceptation concurrente n'est plus écrasable).
+- ✅ **Locale restaurée en `try/finally`** dans `VtcRideNotificationService` (workers long-lived).
+
+Constats d'audit restants (non bloquants — à convertir en issues dédiées) :
+- Listener `VtcRideCancelled` absent : le passager authentifié n'est pas notifié d'une annulation ops/chauffeur (M-20 couvre accepted/expired/completed). La cascade d'offres s'arrête sainement via les gardes de statut.
+- `tracking_code_hash` = SHA-256 non salé sur code 40 bits (précédent travel #7395 ; HMAC applicatif le fermerait).
+- Code de suivi en paramètre GET (spécifié ainsi, miroir travel — présent dans les logs d'accès).
+- `VtcDispatchController::resolveOpsActor` duplique la matrice de rôles au lieu de réutiliser `VtcRoleResolver`.
+- Devis : distance à vol d'oiseau affichée, tarification sur distance routière (×1,3) — cosmétique.

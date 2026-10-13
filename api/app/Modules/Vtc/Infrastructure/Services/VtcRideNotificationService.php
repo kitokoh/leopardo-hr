@@ -181,12 +181,18 @@ final class VtcRideNotificationService
 
         try {
             $previousLocale = App::getLocale();
-            App::setLocale(I18nCatalog::normalizeLocale($employee->preferred_language));
 
-            $title = (string) trans('notifications.'.$titleKey);
-            $body = (string) trans('notifications.'.$bodyKey, $params);
+            // try/finally : un worker de file est long-lived — si trans()
+            // lève, la locale de l'employé ne doit JAMAIS fuiter sur les
+            // jobs suivants du worker.
+            try {
+                App::setLocale(I18nCatalog::normalizeLocale($employee->preferred_language));
 
-            App::setLocale($previousLocale);
+                $title = (string) trans('notifications.'.$titleKey);
+                $body = (string) trans('notifications.'.$bodyKey, $params);
+            } finally {
+                App::setLocale($previousLocale);
+            }
 
             SendPushNotificationJob::dispatch(
                 (int) $employee->getAuthIdentifier(),

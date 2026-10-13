@@ -30,7 +30,9 @@ use Tests\TestCase;
  *     409 sur in_progress (state machine), 404 sur la course d'un autre ;
  *   - dispatcher/admin : tout état non terminal depuis la console —
  *     l'acteur réel est tracé (`admin` pour un manager principal,
- *     `dispatcher` sinon) ; un chauffeur assigné est libéré ;
+ *     `dispatcher` sinon) ; un chauffeur assigné est libéré SI et
+ *     SEULEMENT SI il est encore `busy` (jamais de « resurrection »
+ *     d'un chauffeur suspendu dans le pool de dispatch) ;
  *   - deny-by-default : employé sans rôle ops → 403 ; non authentifié →
  *     401 ; motif manquant → 422 ; état terminal → 409.
  */
@@ -224,6 +226,32 @@ class VtcRideCancellationApiTest extends TestCase
         /** @var array{cancelled_by: string} $payload */
         $payload = $journalEntry->payload;
         self::assertSame('admin', $payload['cancelled_by']);
+    }
+
+    public function test_cancellation_never_resurrects_a_suspended_driver(): void
+    {
+        Event::fake([VtcRideCancelled::class]);
+
+        $company = $this->createCompany(enableVtc: true);
+        // Chauffeur suspendu par l'opérateur (fraude, incident) alors
+        // qu'une course acceptée lui est encore assignée : l'annulation
+        // ne doit PAS le remettre `available` dans le pool de dispatch —
+        // la libération est strictement conditionnée au statut `busy`.
+        [, $driver] = $this->createLinkedDriver($company, status: VtcDriverStatus::Suspended);
+        $ride = $this->createRide($company, [
+            'status' => VtcRideStatus::Accepted->value,
+            'driver_id' => $driver->id,
+        ]);
+
+        $this->actingAsEmployee($company, role: 'manager', managerRole: 'manager');
+
+        $this->postJson('/api/v1/vtc/dispatch/rides/'.$ride->id.'/cancel', [
+            'reason' => 'Arbitrage ops après suspension du chauffeur',
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.status', VtcRideStatus::Cancelled->value);
+
+        self::assertSame(VtcDriverStatus::Suspended, $driver->refresh()->status);
     }
 
     // ── Gardes ──────────────────────────────────────────────────────────
