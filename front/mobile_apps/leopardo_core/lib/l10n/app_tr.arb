@@ -6058,5 +6058,11 @@
   "cagnottesmoduleMethodsCard": "Banka kartı",
   "cagnottesmoduleMethodsMobileMoney": "Mobil para",
   "cagnottesmoduleMethodsBankTransfer": "Havale",
-  "cagnottesmoduleMethodsCash": "Nakit"
+  "cagnottesmoduleMethodsCash": "Nakit",
+  "cagnottesmoduleShowcontributions": "Katkılar",
+  "cagnottesmoduleHidecontributions": "Katkıları gizle",
+  "cagnottesmoduleContributionlistEmpty": "Bu bağış kampanyası için henüz katkı yok.",
+  "cagnottesmoduleContributionlistConfirm": "Onayla",
+  "cagnottesmoduleContributionlistAnonymous": "Anonim",
+  "cagnottesmoduleContributionlistConfirmed": "Katkı onaylandı."
 }
