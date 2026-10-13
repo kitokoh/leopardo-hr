@@ -12,14 +12,8 @@ return [
     'purge_positions_done_cli' => 'VTC temizliği tamamlandı: :deleted konum silindi (saklama :days g, eşik :cutoff).',
     'driver_delete_has_rides' => 'Yolculuğu olan sürücü: silme mümkün değil (askıya almayı tercih edin — geçmiş korunur).',
     'driver_user_not_found' => 'Çalışan hesabı bu kiracıda bulunamadı.',
-    'driver_not_linked' => 'Bu hesaba bağlı bir VTC sürücü profili bulunmuyor.',
     'driver_vehicle_not_found' => 'Araç bu kiracıda bulunamadı.',
     'fare_profile_delete_in_use' => 'Yolculuklarla ilişkili tarife profili: silme mümkün değil (yolculuklar geçmiş fiyat teklifini korur).',
     'vehicle_delete_assigned' => 'Araç hâlâ bir sürücüye atanmış: silmeden önce atamayı kaldırın.',
     'vehicle_plate_taken' => ':plate plakası bu kiracı için zaten kayıtlı.',
-
-    // #8423 (Faz 2) — herkese açık VTC pazaryeri (misafir takibi, M-14).
-    'marketplace' => [
-        'tracking_code_required' => 'Takip kodu gerekli (?code= parametresi).',
-    ],
 ];

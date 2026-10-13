@@ -27,7 +27,7 @@ dédié redevient la cible ; procédure propriétaire à jour dans
 
 - **`render.yaml` est déjà correct** : il déclare 3 services — le web
   `gestionemployerbackend`, le worker `leopardo-queue-worker`
-  (`php artisan queue:work --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,vtc,delivery,communication,reconciliation,default …` — #5578 : connexion par défaut = database),
+  (`php artisan queue:work --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default …` — #5578 : connexion par défaut = database),
   le worker `leopardo-scheduler` (`schedule:run` toutes les minutes) — plus les
   instances `leopardo-db` (PostgreSQL) et `leopardo-redis` (Redis interne, #3774).
 - **Constat prod (2026-08-20)** : le compte Render `africanovatech` ne contient
@@ -125,7 +125,7 @@ psql "$DATABASE_URL" -c "SELECT id, email, status, updated_at FROM public.trial_
      workers gratuits sont suspendus après 15 min d'inactivité → jobs en attente).
    - `Start Command` (worker queue) :
      ```
-     php artisan queue:work --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,vtc,delivery,communication,reconciliation,default --tries=3 --timeout=300 --sleep=5 --max-jobs=500 --max-time=3600
+     php artisan queue:work --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default --tries=3 --timeout=300 --sleep=5 --max-jobs=500 --max-time=3600
      ```
    - `Start Command` (scheduler) :
      ```

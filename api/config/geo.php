@@ -28,11 +28,6 @@ return [
     // Registry des types recherchables (GEO-04) : type ⇒ modèle/scope
     // éligible à l'endpoint « le plus proche ». Opt-in par verticale —
     // aucune donnée tenant n'est exposée sans enregistrement explicite.
-    // #8423 (M-02) : la garde d'autorisation par type (closure « authorizer »,
-    // ex. positions chauffeurs réservées admin/dispatcher) se déclare à
-    // l'enregistrement RUNTIME par la verticale (GeoServiceContract::
-    // registerSearchable) — jamais ici : une closure n'est pas cacheable en
-    // config et le core ne connaît pas les rôles des verticales (#5584).
     'searchables' => [],
 
     // Pilotes de migration des consommateurs legacy vers le core (kill

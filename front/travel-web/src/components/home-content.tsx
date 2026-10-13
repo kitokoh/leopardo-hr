@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-
 import { SearchForm } from "@/components/search-form";
 import { useLocale } from "@/lib/locale-provider";
 
@@ -60,27 +58,6 @@ export function HomeContent() {
               </p>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* #8423 (M-30) — la boucle marketplace : les offres VTC/taxi des
-          tenants sont réservables ici comme les billets de bus. */}
-      <section className="mx-auto max-w-6xl px-4 pb-14">
-        <div className="flex flex-col items-start gap-5 rounded-2xl bg-gradient-to-r from-brand-800 to-brand-600 p-8 text-white sm:flex-row sm:items-center sm:justify-between">
-          <div className="max-w-xl">
-            <h2 className="text-xl font-bold tracking-tight">
-              {dict.home.vtcBannerTitle}
-            </h2>
-            <p className="mt-2 text-sm leading-relaxed text-brand-100">
-              {dict.home.vtcBannerBody}
-            </p>
-          </div>
-          <Link
-            href="/vtc"
-            className="inline-flex h-11 shrink-0 items-center rounded-lg bg-white px-5 text-sm font-semibold text-brand-700 transition hover:bg-brand-50"
-          >
-            {dict.home.vtcBannerCta}
-          </Link>
         </div>
       </section>
     </div>

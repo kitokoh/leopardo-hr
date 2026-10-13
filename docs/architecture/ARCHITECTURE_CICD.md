@@ -126,7 +126,7 @@ Voir aussi `docs/CI_CD_SECRETS.md` pour le détail complet des secrets et de leu
 > (interne Render, `leopardo-redis`) ne sert plus qu'au cache/session.
 
 Toutes les queues sont drainées par le même worker (`leopardo-queue-worker`), consommées dans
-l'ordre déclaré au démarrage (`--queue=webhooks,audit,notifications,emails,pdf,payroll,documents,vtc,delivery,communication,reconciliation,default`) :
+l'ordre déclaré au démarrage (`--queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default`) :
 
 1. `webhooks` — accusés de réception webhooks entrants
 2. `audit` — journalisation d'audit
