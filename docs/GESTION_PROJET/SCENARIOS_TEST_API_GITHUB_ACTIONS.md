@@ -2298,31 +2298,3 @@ Couverture : `api/tests/Feature/Auth/PasswordPolicyTest.php` (4 cas : rejet 422 
 | mur des soutiens masqué dans les settings | 404 uniforme sur la surface publique (kill switch) |
 
 Couverture : `api/tests/Feature/Fundraising/FundraisingSettingsTest.php` (8 cas : défauts non persistés, lecture/écriture manager, RBAC, isolation tenant, méthode désactivée 422, fallback min/max, montants suggérés, mur masqué 404).
-
-## Addendum 2026-10-11 — Marketplace publique VTC/taxi (PR #8425, #8423 M-10→M-14) + annulation multi-acteurs (M-21)
-
-Surface publique isolée `/api/v1/public/vtc/marketplace/*` (groupe `throttle:shop-public`, aucun auth ni middleware tenant — pattern TravelMarketplace #7737) : annuaire des opérateurs opt-in, devis borné par slug, réservation invitée idempotente, suivi par référence + code. Résolution du tenant PAR RESSOURCE via l'annuaire public `vtc_marketplace_operators` (schema public) puis `PublicTenantResolver::withinTenant()` (BOS-050, fail-closed).
-
-| Cas | Attendu |
-|---|---|
-| `GET /public/vtc/marketplace/operators` | 200, seuls les opérateurs opt-in (annuaire actif + feature `vtc` + société saine) ; DTO strict sans id interne |
-| `POST /public/vtc/marketplace/estimate` sur opérateur opt-in | 200, distance/durée/prix minor units calculés côté serveur (grille interne jamais exposée) |
-| `POST /public/vtc/marketplace/estimate` hors opt-in / slug inconnu | 404 uniforme (anti-énumération) |
-| `POST /public/vtc/marketplace/rides` (invité, `idempotency_key` UUID) | 201 + `tracking_code` présenté une seule fois ; course dans LE tenant de l'opérateur, `passenger_user_id` null |
-| rejeu même `idempotency_key` | 200, même référence, `tracking_code` non re-présenté, une seule course persistée |
-| `GET /public/vtc/marketplace/rides/{reference}` sans `?code=` | 422 |
-| suivi avec mauvais code / référence inconnue / opérateur retiré de l'annuaire | 404 uniforme (anti-énumération, fail-closed) |
-
-Couverture : `api/tests/Feature/Vtc/VtcMarketplacePublicApiTest.php` (5 cas, 58 assertions).
-
-Annulation exposée aux acteurs ops (M-21, règles §5.2 par rôle) : `POST /api/v1/vtc/driver/rides/{id}/cancel` (chauffeur assigné, après acceptation, sur SA course) et `POST /api/v1/vtc/dispatch/rides/{id}/cancel` (dispatcher/admin, tout état non terminal, acteur tracé `cancelled_by`) ; le chauffeur assigné est libéré (`available`) à toute annulation.
-
-| Cas | Attendu |
-|---|---|
-| passager avant acceptation | 200 (comportement historique inchangé) |
-| chauffeur sur sa course acceptée | 200, acteur `driver` tracé |
-| dispatcher/admin sur course non terminale | 200, acteur réel tracé |
-| annulation sur état terminal | 409 |
-| acteur non autorisé (chauffeur sur course d'autrui) | 403/404 uniforme |
-
-Couverture : `api/tests/Feature/Vtc/VtcRideCancellationApiTest.php` (10 cas).

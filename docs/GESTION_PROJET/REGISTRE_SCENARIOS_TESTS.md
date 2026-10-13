@@ -8,27 +8,6 @@
 > (conservé). Parité i18n ×4 (`fuel.*` fr/en/ar/tr) vérifiée par `shared/i18n/validators/validate.js`.
 > Aucun changement d'API : le backend FuelStation était déjà complet (gate `module.fuel`).
 > **MAJ 2026-10-11 — #8394, vague vitrine « retours propriétaire » (#8384-#8392).**
-> **MAJ 2026-10-11 — #8423 (PR #8425), marketplace publique VTC/taxi + corrections BC-34/35 (lot 2 geo/VTC).**
-> Surface **API HTTP** (`api/routes/modules/vtc.php`) : groupe public `throttle:shop-public`
-> `/v1/public/vtc/marketplace/*` — `GET /operators` (annuaire opt-in, DTO strict),
-> `POST /estimate` (devis borné par slug, 404 uniforme), `POST /rides` (réservation invitée
-> idempotente, `tracking_code` present-once, throttle renforcé), `GET /rides/{reference}?code=`
-> (suivi invité, 404 uniforme anti-énumération) ; annulation multi-acteurs M-21 —
-> `POST /v1/vtc/driver/rides/{id}/cancel` (chauffeur, SA course après acceptation) et
-> `POST /v1/vtc/dispatch/rides/{id}/cancel` (dispatcher/admin, acteur tracé) ; listeners
-> notifications M-20 sur `VtcRideAccepted/Expired/Completed` (push plateforme, dégradation
-> gracieuse). Scénarios automatisés : `VtcMarketplacePublicApiTest` (5 tests — annuaire
-> borné, devis, idempotence, suivi, coupure au retrait de l'annuaire), `VtcRideCancellationApiTest`
-> (10 tests — acteurs, libération chauffeur, gardes 403/401/409/422), `VtcRideNotificationTest`
-> (5 tests — locale destinataire, invité ignoré, double notification clôture).
-> Surface **web travel** (`front/travel-web`) : parcours public « VTC & Taxi » — pages
-> `/vtc` (opérateurs → géoloc/coordonnées → devis → réservation invitée idempotente) et
-> `/vtc/suivi` (référence + code) ; proxy same-origin ouvert de façon bornée à
-> `public/vtc/marketplace/*` (fail-closed, jamais de Bearer) ; preuve locale typecheck /
-> eslint / vitest 15/15 / `next build`. Surface **mobile** (`leopardo_core`) : clés ARB
-> propagées par `sync-mobile.js` uniquement (`vtcDrivernotlinked`,
-> `vtcMarketplacetrackingcoderequired` ×4 locales — catalogue partagé), aucun contrat ni
-> parcours mobile modifié — **aucun scénario mobile nouveau requis**.
 > Surface **web admin** (`front/admin-dashboard/src/i18n/locales/*.json`) : catalogues
 > resynchronisés après ajout de la clé navbar `vitrine.nav.comparer` et passage de la
 > baseline à « Business OS » seule (×4 locales) — aucun parcours admin modifié, aucun
@@ -1181,3 +1160,16 @@ restent les gates applicables.
   (tsc, eslint, tsc vitrine).
 - **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue partagé
   `restaurant.rotations.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+
+## Mise à jour 2026-10-13 — héro immersif vague 3 : constellation 12 modules, nuit permanente (PR #8443, issues #8437, #8438, #8439)
+
+- **Surface API** : aucun changement backend — aucun scénario nouveau requis.
+- **Surface web (front/web)** : héro d'accueil retravaillé (constellation pleine scène
+  à 12 modules en orbite, nébuleuses additives, « Pile Leopardo » 3D retirée, trame du
+  héro stage déplacée en globals.css) — UI/i18n uniquement, les suites Jest vitrine
+  existantes couvrent le périmètre (HeroBusinessOS3D, HeroSection) ; tolérance
+  documentée pour l'hexa #6366f1 (nébuleuse indigo, web-design-hex-allowlist.txt) —
+  aucun scénario e2e nouveau requis.
+- **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
+  partagé `vitrine.hero3d.*`), aucun contrat mobile modifié — aucun scénario mobile
+  nouveau requis.

@@ -90,11 +90,7 @@ final class VtcRideController
 
         $user = $request->user();
 
-        // #8423 (M-05) — comparaison stricte : getAuthIdentifier() peut
-        // renvoyer une string (fetch PDO pgsql) alors que passenger_user_id
-        // est casté integer par le modèle — cast explicite, sinon le
-        // passager obtiendrait un 404 sur SA propre course.
-        $isOwner = $user !== null && $ride->passenger_user_id === (int) $user->getAuthIdentifier();
+        $isOwner = $user !== null && $ride->passenger_user_id === $user->getAuthIdentifier();
         $isManager = $user instanceof Employee && $user->isManager();
 
         if (! $isOwner && ! $isManager) {

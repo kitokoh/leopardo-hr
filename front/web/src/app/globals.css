@@ -167,20 +167,17 @@ html {
   box-shadow: 0 20px 60px -15px rgb(255 255 255 / 0.3);
 }
 
-/* ── Visuel 3D « Pile Leopardo » (hero de la vitrine) ────────────────────────
-   Ces valeurs de mise en forme vivent ici plutôt que dans les .tsx pour deux
-   raisons : (1) la garde i18n `check-i18n-diff.js` scanne les TSX/TS et prend
-   les longues chaînes de classes/styles pour du texte utilisateur — les
-   extensions .css ne sont pas scannées, c'est donc le bon endroit pour du
-   style pur ; (2) une ombre ou un dégradé arbitraire n'a rien à faire dans un
-   attribut className. Aucun `#rrggbb` ici : la garde design-tokens lit aussi
-   les .css, on reste en rgb()/rgba(). */
-.solution-stack-glow-bottom {
-  background: radial-gradient(ellipse 60% 50% at 50% 120%, rgba(16, 185, 129, 0.22), transparent);
+/* ── Héro « stage » (#8437) — trame discrète de la scène nuit permanente ──
+   Style pur, donc ici et non dans le TSX : la garde i18n `check-i18n-diff.js`
+   scanne les .tsx et prend les longues chaînes de style pour du texte
+   utilisateur ; les .css ne sont pas scannés. Aucun `#rrggbb` ici : la garde
+   design-tokens lit aussi les .css, on reste en rgb()/rgba(). */
+.hero-stage-grid {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.4) 1px, transparent 1px);
+  background-size: 60px 60px;
 }
-.solution-stack-glow-top {
-  background: radial-gradient(ellipse 40% 40% at 50% -10%, rgba(34, 211, 238, 0.14), transparent);
-}
+
 /* ── Mascotte Leo (pieuvre) — flottement doux, purement décoratif ──────────
    Désactivé pour les utilisateurs en `prefers-reduced-motion` : la mascotte
    reste alors statique, aucune information n'est perdue. */

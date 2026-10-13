@@ -339,7 +339,4 @@ return [
 
     // #8019 — HospitalityManager.
     'CHECKOUT_BEFORE_CHECKIN' => 'يجب أن يكون تاريخ المغادرة بعد تاريخ الوصول.',
-
-    // #8423 (M-02) — Geo.
-    'GEO_SEARCHABLE_TYPE_FORBIDDEN' => 'دورك لا يسمح ببحث القرب هذا.',
 ];

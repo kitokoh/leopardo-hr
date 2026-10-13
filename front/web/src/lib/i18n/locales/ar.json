@@ -6593,7 +6593,9 @@
     },
     "hero3d": {
       "hint": "انقر على وحدة للاستكشاف",
-      "demo": "عرض توضيحي"
+      "demo": "عرض توضيحي",
+      "cagnottes": "حملات التبرع",
+      "freeTrial": "تجربة مجانية"
     }
   },
   "commerce": {
@@ -7548,9 +7550,7 @@
     "driverOffline": "غير متصل",
     "driverAvailable": "متاح",
     "driverBusy": "في رحلة",
-    "driverSuspended": "موقوف",
-    "driverNotLinked": "لا يوجد ملف سائق VTC مرتبط بهذا الحساب.",
-    "marketplaceTrackingCodeRequired": "رمز التتبع مطلوب (المعامل ?code=)."
+    "driverSuspended": "موقوف"
   },
   "cagnottesModule": {
     "title": "حملات التضامن",

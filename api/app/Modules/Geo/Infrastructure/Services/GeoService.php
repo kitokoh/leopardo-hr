@@ -9,7 +9,6 @@ use App\Modules\Geo\Domain\Contracts\NearestSearchInterface;
 use App\Shared\Contracts\Geo\GeoServiceContract;
 use App\Shared\Geo\Distance;
 use App\Shared\Geo\GeoPoint;
-use Closure;
 
 /**
  * GEO-03 (#8352, BC-34 GEO) — implémentation de la façade transverse.
@@ -42,9 +41,9 @@ final class GeoService implements GeoServiceContract
         return $this->calculator->engine();
     }
 
-    public function registerSearchable(string $type, string $modelClass, ?Closure $authorizer = null): void
+    public function registerSearchable(string $type, string $modelClass): void
     {
-        $this->registry->register($type, $modelClass, $authorizer);
+        $this->registry->register($type, $modelClass);
     }
 
     public function nearest(string $type, GeoPoint $center, ?float $radiusKm = null, ?int $limit = null): array

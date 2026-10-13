@@ -341,7 +341,4 @@ return [
     // #8019 — HospitalityManager : règle métier rendue par une DomainException
     // (le message localisé vient du catalogue errors.*, pas du message interne).
     'CHECKOUT_BEFORE_CHECKIN' => 'La date de départ doit être postérieure à la date d\'arrivée.',
-
-    // #8423 (M-02) — Geo : recherche « le plus proche » sur un type restreint (ex. positions chauffeurs).
-    'GEO_SEARCHABLE_TYPE_FORBIDDEN' => 'Votre rôle ne permet pas cette recherche de proximité.',
 ];

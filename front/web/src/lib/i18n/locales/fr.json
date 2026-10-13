@@ -6593,7 +6593,9 @@
     },
     "hero3d": {
       "hint": "Cliquez sur un module pour explorer",
-      "demo": "Démo"
+      "demo": "Démo",
+      "cagnottes": "Cagnottes",
+      "freeTrial": "Essai gratuit"
     }
   },
   "commerce": {
@@ -7548,9 +7550,7 @@
     "driverOffline": "Hors ligne",
     "driverAvailable": "Disponible",
     "driverBusy": "En course",
-    "driverSuspended": "Suspendu",
-    "driverNotLinked": "Aucun profil chauffeur VTC n'est rattaché à ce compte.",
-    "marketplaceTrackingCodeRequired": "Code de suivi requis (paramètre ?code=)."
+    "driverSuspended": "Suspendu"
   },
   "cagnottesModule": {
     "title": "Cagnottes solidaires",

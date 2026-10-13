@@ -6593,7 +6593,9 @@
     },
     "hero3d": {
       "hint": "Keşfetmek için bir modüle tıklayın",
-      "demo": "Demo"
+      "demo": "Demo",
+      "cagnottes": "Kampanyalar",
+      "freeTrial": "Ücretsiz deneme"
     }
   },
   "commerce": {
@@ -7548,9 +7550,7 @@
     "driverOffline": "Çevrimdışı",
     "driverAvailable": "Müsait",
     "driverBusy": "Yolculukta",
-    "driverSuspended": "Askıya alındı",
-    "driverNotLinked": "Bu hesaba bağlı bir VTC sürücü profili bulunmuyor.",
-    "marketplaceTrackingCodeRequired": "Takip kodu gerekli (?code= parametresi)."
+    "driverSuspended": "Askıya alındı"
   },
   "cagnottesModule": {
     "title": "Dayanışma kampanyaları",

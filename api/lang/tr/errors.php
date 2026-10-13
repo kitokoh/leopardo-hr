@@ -339,7 +339,4 @@ return [
 
     // #8019 — HospitalityManager.
     'CHECKOUT_BEFORE_CHECKIN' => 'Çıkış tarihi giriş tarihinden sonra olmalıdır.',
-
-    // #8423 (M-02) — Geo.
-    'GEO_SEARCHABLE_TYPE_FORBIDDEN' => 'Rolünüz bu yakınlık aramasına izin vermiyor.',
 ];
