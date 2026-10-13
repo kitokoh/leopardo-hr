@@ -9039,5 +9039,91 @@
     "driverAvailable": "Available",
     "driverBusy": "On a ride",
     "driverSuspended": "Suspended"
+  },
+  "software": {
+    "title": "My Software",
+    "subtitle": "Every application for your workspace, ready to install.",
+    "loading": "Loading your applications…",
+    "empty": {
+      "title": "No application to install yet",
+      "body": "Activate a business solution from the Modules page to unlock its applications."
+    },
+    "constellation": "Your application constellation",
+    "constellationHint": "Click an application to find it in the list",
+    "install": "Install",
+    "pilot": "Request pilot access",
+    "soon": "Coming soon",
+    "offlineBadge": "Works offline",
+    "qrAria": "Show the installation QR code",
+    "qrTitle": "Install on this device",
+    "qrHint": "Scan with the device to equip: the installation link opens directly.",
+    "close": "Close",
+    "apps": {
+      "manager": {
+        "name": "Leopardo Manager",
+        "description": "Run your business from your pocket: teams, attendance, approvals and real-time alerts."
+      },
+      "employee": {
+        "name": "Leopardo Employee",
+        "description": "Your teams' companion: GPS clock-in, leave, balances and notifications."
+      },
+      "desktop-attendance": {
+        "name": "Attendance workstation & kiosk",
+        "description": "ZKTeco desktop client and attendance terminal — works offline, syncs when the network returns. Guided pilot access."
+      },
+      "restaurant-pos": {
+        "name": "Restaurant POS",
+        "description": "Take payments at the counter and tableside: orders, payments and receipts, right in the browser."
+      },
+      "restaurant-kds": {
+        "name": "Kitchen Display (KDS)",
+        "description": "The real-time order queue for the kitchen: intake, preparation, service."
+      },
+      "restaurant-server": {
+        "name": "Server App",
+        "description": "Tableside order-taking on mobile, sent instantly to kitchen and till."
+      },
+      "restaurant-kiosk": {
+        "name": "Self-service kiosk",
+        "description": "Your customers order and pay on their own on a counter tablet."
+      },
+      "fuel-console": {
+        "name": "Fuel Station Console",
+        "description": "Pumps, volumes, variances and team rotations — your station's control tower."
+      },
+      "commerce-pos": {
+        "name": "Retail POS",
+        "description": "Sell in store: products, stock and payments, in the browser."
+      },
+      "travel-agent": {
+        "name": "Travel Agent App",
+        "description": "Multi-passenger counter sales, cash collection, QR check-in and manifest."
+      },
+      "edu-portal": {
+        "name": "Education Portal",
+        "description": "Campuses, classes, students and grades: your whole school in the browser."
+      },
+      "health-portal": {
+        "name": "Health Portal",
+        "description": "Patients, appointments and admissions: your facility's front desk."
+      },
+      "hr-mobile": {
+        "name": "Leopardo HR",
+        "description": "Employee tracking, attendance, tasks and recruiting for your HR team."
+      },
+      "accounting-mobile": {
+        "name": "Leopardo Accounting",
+        "description": "Invoicing and overdue tracking, everywhere with you."
+      },
+      "marketing-mobile": {
+        "name": "Leopardo Marketing",
+        "description": "Plan and publish to your social networks in one click."
+      },
+      "cameras-mobile": {
+        "name": "Leopardo Cameras",
+        "description": "Your camera wall on the move: live viewing, events and alerts."
+      }
+    },
+    "dashboardCard": "Install the apps for your business — server, kitchen, till, mobile."
   }
 }

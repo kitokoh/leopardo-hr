@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import {
+  AppWindow,
   BarChart3,
   Building2,
   Calculator,
@@ -38,6 +39,7 @@ import {
 import type { StoredAuthUser } from '@/lib/i18n';
 export type ClientModuleKey =
   | 'dashboard'
+  | 'mon_logiciel'
   | 'employees'
   | 'attendance'
   | 'attendance_geo'
@@ -183,6 +185,21 @@ export const CLIENT_MODULES: ClientModule[] = [
     featureKeys: ['dashboard', 'rh'],
     allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
     upgradeLabel: 'Tableau de bord',
+  },
+  {
+    // #8447 — « Mon Logiciel » : hub d'installation des apps du tenant,
+    // filtré par solutions activées. Même surface d'accès que le tableau de
+    // bord : TOUT tenant (quel que soit son métier) doit pouvoir installer
+    // ses applications dès la fin de la configuration de son espace.
+    key: 'mon_logiciel',
+    href: '/mon-logiciel',
+    label: 'Mon Logiciel',
+    group: 'general',
+    icon: AppWindow,
+    capabilityKeys: ['can_view_dashboard', 'dashboard'],
+    featureKeys: ['dashboard', 'rh'],
+    allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
+    upgradeLabel: 'Mon Logiciel',
   },
   {
     key: 'reports',

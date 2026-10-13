@@ -9178,5 +9178,91 @@
     "driverAvailable": "Müsait",
     "driverBusy": "Yolculukta",
     "driverSuspended": "Askıya alındı"
+  },
+  "software": {
+    "title": "Yazılımlarım",
+    "subtitle": "Çalışma alanınızın tüm uygulamaları, kuruluma hazır.",
+    "loading": "Uygulamalarınız yükleniyor…",
+    "empty": {
+      "title": "Şu anda kurulacak uygulama yok",
+      "body": "Modüller sayfasından bir iş çözümü etkinleştirerek uygulamalarını açın."
+    },
+    "constellation": "Uygulama takımyıldızınız",
+    "constellationHint": "Listede bulmak için bir uygulamaya tıklayın",
+    "install": "Kur",
+    "pilot": "Pilot erişim iste",
+    "soon": "Çok yakında",
+    "offlineBadge": "Çevrimdışı çalışır",
+    "qrAria": "Kurulum QR kodunu göster",
+    "qrTitle": "Bu cihaza kur",
+    "qrHint": "Donatılacak cihazla taratın: kurulum bağlantısı doğrudan açılır.",
+    "close": "Kapat",
+    "apps": {
+      "manager": {
+        "name": "Leopardo Manager",
+        "description": "İşinizi cebinizden yönetin: ekipler, yoklama, onaylar ve gerçek zamanlı uyarılar."
+      },
+      "employee": {
+        "name": "Leopardo Employee",
+        "description": "Ekiplerinizin yol arkadaşı: GPS ile giriş, izinler, bakiyeler ve bildirimler."
+      },
+      "desktop-attendance": {
+        "name": "Yoklama istasyonu & kiosk",
+        "description": "ZKTeco masaüstü istemcisi ve yoklama terminali — çevrimdışı çalışır, ağ dönünce senkronize olur. Rehberli pilot erişim."
+      },
+      "restaurant-pos": {
+        "name": "Restoran Kasa (POS)",
+        "description": "Tezgahta ve masada tahsilat: siparişler, ödemeler ve fişler, doğrudan tarayıcıda."
+      },
+      "restaurant-kds": {
+        "name": "Mutfak Ekranı (KDS)",
+        "description": "Mutfak için gerçek zamanlı sipariş kuyruğu: kabul, hazırlık, servis."
+      },
+      "restaurant-server": {
+        "name": "Garson Uygulaması",
+        "description": "Masada mobil sipariş alımı, anında mutfağa ve kasaya iletilir."
+      },
+      "restaurant-kiosk": {
+        "name": "Self servis kiosku",
+        "description": "Müşterileriniz tezgahtaki tabletten kendi kendine sipariş verip öder."
+      },
+      "fuel-console": {
+        "name": "Akaryakıt İstasyonu Konsolu",
+        "description": "Pompalar, hacimler, farklar ve ekip rotasyonları — istasyonunuzun kontrol kulesi."
+      },
+      "commerce-pos": {
+        "name": "Mağaza Kasa (POS)",
+        "description": "Mağazada satış: ürünler, stok ve tahsilatlar tarayıcıda."
+      },
+      "travel-agent": {
+        "name": "Seyahat Acentesi Uygulaması",
+        "description": "Çok yolculu gişe satışı, nakit tahsilat, QR check-in ve yolcu listesi."
+      },
+      "edu-portal": {
+        "name": "Eğitim Portalı",
+        "description": "Kampüsler, sınıflar, öğrenciler ve notlar: tüm okulunuz tarayıcıda."
+      },
+      "health-portal": {
+        "name": "Sağlık Portalı",
+        "description": "Hastalar, randevular ve kabuller: tesisinizin danışma noktası."
+      },
+      "hr-mobile": {
+        "name": "Leopardo HR",
+        "description": "İK ekibiniz için çalışan takibi, yoklama, görevler ve işe alım."
+      },
+      "accounting-mobile": {
+        "name": "Leopardo Accounting",
+        "description": "Faturalama ve gecikmiş ödeme takibi her zaman yanınızda."
+      },
+      "marketing-mobile": {
+        "name": "Leopardo Marketing",
+        "description": "Sosyal ağlarınıza tek tıkla planlayın ve yayınlayın."
+      },
+      "cameras-mobile": {
+        "name": "Leopardo Cameras",
+        "description": "Kamera duvarınız hareket halinde: canlı izleme, olaylar ve uyarılar."
+      }
+    },
+    "dashboardCard": "Mesleğinizin uygulamalarını kurun — garson, mutfak, kasa, mobil."
   }
 }

@@ -21,6 +21,7 @@ import {
   FileCheck,
   Languages,
   ArrowRight,
+  AppWindow,
 } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { trackClientEvent } from '@/lib/client-analytics';
@@ -382,6 +383,22 @@ export default function DashboardPage() {
       {/* #7494 — carte discrète « Prochaines étapes » : remplace la modale
           d'onboarding à 10 étapes (checklist seedée par profil, #7493). */}
       {role === 'manager' ? <NextStepsCard locale={locale} /> : null}
+      {/* #8447 — accès « Mon Logiciel » : le tenant doit pouvoir installer
+          les apps de son métier dès la fin de configuration de son espace
+          (hub filtré par solutions activées, QR d'installation inclus). */}
+      <Link
+        href="/mon-logiciel"
+        className="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-gradient-to-r from-slate-950 to-slate-900 p-4 text-white shadow-sm transition hover:shadow-md"
+      >
+        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-md">
+          <AppWindow className="h-5 w-5" aria-hidden />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-bold">{i18nT(locale, 'software.title', 'Mon Logiciel')}</span>
+          <span className="block truncate text-xs text-slate-300">{i18nT(locale, 'software.dashboardCard', 'Installez les applications de votre métier — serveur, cuisine, caisse, mobile.')}</span>
+        </span>
+        <ArrowRight className="h-4 w-4 shrink-0 text-emerald-300 transition-transform group-hover:translate-x-1" aria-hidden />
+      </Link>
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
