@@ -243,3 +243,69 @@ describe('SetupInterview (#7493)', () => {
     await waitFor(() => expect(onClose).toHaveBeenCalledWith('closed'));
   });
 });
+
+describe('SetupInterview — métier présélectionné (#8454)', () => {
+  beforeEach(() => {
+    window.sessionStorage.clear();
+  });
+
+  it('un secteur capturé au signup est pré-répondu : la question n’est pas reposée', async () => {
+    window.sessionStorage.setItem('leopardo_signup_sector', 'restaurant');
+    // company_name déjà répondu → l'entretien reprend au profil.
+    mockInitialState({ status: 'in_progress', answers: { company_name: 'Acme' } });
+    render(<SetupInterview locale="fr" onClose={jest.fn()} />);
+
+    // La pré-réponse est persistée par l'endpoint de brouillon existant…
+    await waitFor(() =>
+      expect(mockedApiFetch).toHaveBeenCalledWith('/setup-interview/answers', {
+        method: 'PATCH',
+        body: JSON.stringify({ answers: { sector: 'restaurant' } }),
+      }),
+    );
+    // …puis consommée (jamais ré-appliquée deux fois).
+    expect(window.sessionStorage.getItem('leopardo_signup_sector')).toBeNull();
+
+    // Parcours : profil → taille d'équipe → la question posée ensuite est
+    // les lieux physiques, JAMAIS « Quelle est votre activité ? ».
+    await waitFor(() => expect(screen.getByTestId('interview-option-team')).toBeInTheDocument());
+    await userEvent.click(screen.getByTestId('interview-option-team'));
+    await waitFor(() => expect(screen.getByText('Combien de personnes travaillent avec vous ?')).toBeInTheDocument());
+    await userEvent.click(screen.getByTestId('interview-option-1-10'));
+
+    await waitFor(() => expect(screen.getByText('Avez-vous un ou plusieurs lieux physiques ?')).toBeInTheDocument());
+    expect(screen.queryByText('Quelle est votre activité ?')).not.toBeInTheDocument();
+  });
+
+  it('sans présélection valide, la question secteur est posée normalement', async () => {
+    window.sessionStorage.setItem('leopardo_signup_sector', 'not-a-sector');
+    mockInitialState({ status: 'in_progress', answers: { company_name: 'Acme' } });
+    render(<SetupInterview locale="fr" onClose={jest.fn()} />);
+
+    // Aucune pré-réponse forgée ne part au serveur.
+    await waitFor(() => expect(screen.getByTestId('interview-option-team')).toBeInTheDocument());
+    expect(mockedApiFetch).not.toHaveBeenCalledWith(
+      '/setup-interview/answers',
+      expect.objectContaining({ body: expect.stringContaining('not-a-sector') }),
+    );
+
+    await userEvent.click(screen.getByTestId('interview-option-team'));
+    await waitFor(() => expect(screen.getByText('Combien de personnes travaillent avec vous ?')).toBeInTheDocument());
+    await userEvent.click(screen.getByTestId('interview-option-1-10'));
+
+    await waitFor(() => expect(screen.getByText('Quelle est votre activité ?')).toBeInTheDocument());
+  });
+
+  it('un brouillon déjà secteur renseigné prime : la présélection n’écrase rien', async () => {
+    window.sessionStorage.setItem('leopardo_signup_sector', 'fuel_station');
+    mockInitialState({ status: 'in_progress', answers: { company_name: 'Acme', sector: 'commerce' } });
+    render(<SetupInterview locale="fr" onClose={jest.fn()} />);
+
+    await waitFor(() => expect(screen.getByTestId('interview-option-team')).toBeInTheDocument());
+    expect(mockedApiFetch).not.toHaveBeenCalledWith(
+      '/setup-interview/answers',
+      expect.objectContaining({ body: expect.stringContaining('fuel_station') }),
+    );
+    // La présélection reste intacte pour un éventuel autre compte.
+    expect(window.sessionStorage.getItem('leopardo_signup_sector')).toBe('fuel_station');
+  });
+});

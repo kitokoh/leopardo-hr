@@ -34,6 +34,7 @@ import { Button } from '@/modules/vitrine/components/common';
 import {
   isPackVertical,
   PACK_PAGES,
+  PACK_SECTORS,
   type PackBenefitIcon,
 } from '@/modules/vitrine/data/pack-pages';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
@@ -65,6 +66,14 @@ export default function PackVerticalPage({
   if (!isPackVertical(vertical)) {
     notFound();
   }
+
+  // #8454 — le CTA d'une page pack métier porte le secteur correspondant :
+  // le SignupForm le capture et l'entretien de préparation ne repose pas la
+  // question « secteur » (métier présélectionné à l'inscription). Le lien
+  // contact garde le search d'origine (aucun secteur ne le concerne).
+  const signupParams = new URLSearchParams(search);
+  signupParams.set('sector', PACK_SECTORS[vertical]);
+  const signupSearch = signupParams.toString();
   const copy = PACK_PAGES[vertical][locale] ?? PACK_PAGES[vertical].fr;
 
   return (
@@ -106,7 +115,7 @@ export default function PackVerticalPage({
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
               <Button
                 size="lg"
-                onClick={() => { window.location.href = withLocaleHref('/signup', search); }}
+                onClick={() => { window.location.href = withLocaleHref('/signup', signupSearch); }}
               >
                 {copy.ctaPrimary}
               </Button>
@@ -182,7 +191,7 @@ export default function PackVerticalPage({
             <div className="mt-10">
               <Button
                 size="lg"
-                onClick={() => { window.location.href = withLocaleHref('/signup', search); }}
+                onClick={() => { window.location.href = withLocaleHref('/signup', signupSearch); }}
               >
                 {copy.ctaPrimary}
               </Button>
