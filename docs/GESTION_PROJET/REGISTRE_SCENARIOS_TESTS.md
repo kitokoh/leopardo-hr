@@ -1,3 +1,13 @@
+> **MAJ 2026-10-13 — #8435, espace station-service (BC-15 FUEL) : hub web + CRUD responsable.**
+> Surface **web (front/web)** : nouvelle route protégée `/fuel` (hub) et sous-routes
+> `/fuel/stations`, `/fuel/team`, `/fuel/rotations`, `/fuel/stock`, `/fuel/sales`
+> (`front/web/src/app/(dashboard)/fuel/**`), branchées sur l'API existante
+> `/fuel-station/*` (stations, shifts + affectations, stock, caisse/ventes) ;
+> `/fuel/pump` (poste pompiste) conservé. Scénarios Jest : `fuel-home-page.test.tsx`
+> (tuiles + état vide ; KPIs stations/shifts/incidents), `fuel-pump-page.test.tsx`
+> (conservé). Parité i18n ×4 (`fuel.*` fr/en/ar/tr) vérifiée par `shared/i18n/validators/validate.js`.
+> Aucun changement d'API : le backend FuelStation était déjà complet (gate `module.fuel`).
+> **MAJ 2026-10-11 — #8394, vague vitrine « retours propriétaire » (#8384-#8392).**
 > **MAJ 2026-10-11 — #8423 (PR #8425), marketplace publique VTC/taxi + corrections BC-34/35 (lot 2 geo/VTC).**
 > Surface **API HTTP** (`api/routes/modules/vtc.php`) : groupe public `throttle:shop-public`
 > `/v1/public/vtc/marketplace/*` — `GET /operators` (annuaire opt-in, DTO strict),
