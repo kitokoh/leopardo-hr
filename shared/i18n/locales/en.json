@@ -1565,6 +1565,7 @@
     "planContinue": "Continue with this plan",
     "planSelected": "Selected plan",
     "planChange": "Change",
+    "packSelected": "Pre-selected trade pack",
     "countryDetectionFailed": "Select your country.",
     "otpResend": "Resend code",
     "otpResending": "Sending a new code…",

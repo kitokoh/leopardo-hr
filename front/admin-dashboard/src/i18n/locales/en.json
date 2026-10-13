@@ -1571,7 +1571,8 @@
     "otpResent": "A new code is on its way. Remember to check your spam folder.",
     "otpResendError": "We couldn't resend the code. Try again in a moment or contact support.",
     "preparingLonger": "This is taking a little longer than usual — your workspace is on its way. No need to reload the page.",
-    "supportCta": "Contact support"
+    "supportCta": "Contact support",
+    "packSelected": "Pre-selected trade pack"
   },
   "companies": {
     "toast": {

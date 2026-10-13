@@ -29,7 +29,10 @@
  * NÉBULEUSES additives en dérive lente + poussière d'étoiles enrichie : le
  * ciel est étoilé en toutes circonstances (retour propriétaire : « en mode
  * nuit la constellation semble plus belle » — le héro est désormais une scène
- * nuit permanente, cf. `HeroSection` layout `stage`).
+ * nuit permanente, cf. `HeroSection` layout `stage`). Vague 4 (#8461) :
+ * ÉTOILES FILANTES occasionnelles (pool pré-alloué) et scintillement doux de
+ * la poussière ; la FRANCE en constellation vit un plan derrière, en couche
+ * DOM (`FranceConstellation`, montée par `HeroSection`).
  *
  * Performance / robustesse :
  *   • three.js en imports nommés, monté uniquement par `HeroScene3D`
@@ -162,6 +165,42 @@ function makeGlowTexture(hex: string): CanvasTexture {
   texture.colorSpace = SRGBColorSpace;
   return texture;
 }
+
+/** Texture de traînée d'étoile filante (créée une fois à l'init, #8461). */
+function makeStreakTexture(): CanvasTexture {
+  const width = 256;
+  const height = 16;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    const gradient = ctx.createLinearGradient(0, 0, width, 0);
+    gradient.addColorStop(0, 'rgba(248,250,252,0)');
+    gradient.addColorStop(0.55, 'rgba(248,250,252,0.55)');
+    gradient.addColorStop(1, 'rgba(248,250,252,0.95)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+  }
+  const texture = new CanvasTexture(canvas);
+  texture.colorSpace = SRGBColorSpace;
+  return texture;
+}
+
+/** Étoile filante (#8461) — tête + traînée, réutilisée à chaque passage. */
+type ShootingStar = {
+  head: Sprite;
+  trail: Sprite;
+  active: boolean;
+  startAt: number;
+  duration: number;
+  nextAt: number;
+  fromX: number;
+  fromY: number;
+  fromZ: number;
+  toX: number;
+  toY: number;
+};
 
 export function HeroBusinessOS3D({
   reducedMotion = false,
@@ -414,6 +453,50 @@ export function HeroBusinessOS3D({
       return { sprite, baseX: spec.x, baseY: spec.y, baseOpacity: spec.opacity, drift: spec.drift };
     });
 
+    // #8461 — étoiles filantes (vague 4, « waw ») : deux traînées réutilisées
+    // en boucle fermée, spawn toutes les 4 à 9 s dans le haut du ciel, zéro
+    // allocation par image. Jamais en reduced-motion (le bloc `!still`).
+    const shootingGlowTexture = makeGlowTexture('#f8fafc');
+    const shootingStreakTexture = makeStreakTexture();
+    const shootingStars: ShootingStar[] = [0, 1].map((i) => {
+      const head = new Sprite(
+        new SpriteMaterial({
+          map: shootingGlowTexture,
+          transparent: true,
+          opacity: 0,
+          depthWrite: false,
+          blending: AdditiveBlending,
+        }),
+      );
+      head.scale.setScalar(0.34);
+      head.visible = false;
+      const trail = new Sprite(
+        new SpriteMaterial({
+          map: shootingStreakTexture,
+          transparent: true,
+          opacity: 0,
+          depthWrite: false,
+          blending: AdditiveBlending,
+        }),
+      );
+      trail.scale.set(1.9, 0.08, 1);
+      trail.visible = false;
+      world.add(head, trail);
+      return {
+        head,
+        trail,
+        active: false,
+        startAt: 0,
+        duration: 1,
+        nextAt: 2.5 + i * 3.5 + Math.random() * 3,
+        fromX: 0,
+        fromY: 0,
+        fromZ: 0,
+        toX: 0,
+        toY: 0,
+      };
+    });
+
     // ── Étiquettes des modules (#8404 — affordance) ────────────────────
     // Créées une fois (mode interactif avec libellés uniquement), déplacées
     // par projection à chaque image. Jamais cliquables (pointer-events:none).
@@ -576,6 +659,52 @@ export function HeroBusinessOS3D({
           (nebula.sprite.material as SpriteMaterial).opacity =
             nebula.baseOpacity + Math.sin(t * 0.3 + i * 1.7) * 0.03;
         });
+        // #8461 — scintillement doux de la poussière d'étoiles.
+        dust.material.opacity = 0.55 + Math.sin(t * 0.7) * 0.12;
+        dust2.material.opacity = 0.45 + Math.cos(t * 0.55) * 0.1;
+        // #8461 — étoiles filantes : spawn différé, traversée ~1 s, estompage
+        // en sinusoïde. Sprites pré-alloués, aucune allocation ici.
+        shootingStars.forEach((star) => {
+          if (!star.active) {
+            if (t >= star.nextAt) {
+              const fromX = -5 + Math.random() * 8;
+              const fromY = 1.2 + Math.random() * 3;
+              const dx = 4.5 + Math.random() * 2.5;
+              const dy = -(1.8 + Math.random() * 1.6);
+              star.fromX = fromX;
+              star.fromY = fromY;
+              star.fromZ = -4 + Math.random() * 2;
+              star.toX = fromX + dx;
+              star.toY = fromY + dy;
+              star.startAt = t;
+              star.duration = 0.8 + Math.random() * 0.5;
+              star.active = true;
+              star.head.visible = true;
+              star.trail.visible = true;
+              (star.trail.material as SpriteMaterial).rotation = Math.atan2(dy, dx);
+            }
+            return;
+          }
+          const progress = (t - star.startAt) / star.duration;
+          if (progress >= 1) {
+            star.active = false;
+            star.head.visible = false;
+            star.trail.visible = false;
+            star.nextAt = t + 4 + Math.random() * 6;
+            return;
+          }
+          const x = star.fromX + (star.toX - star.fromX) * progress;
+          const y = star.fromY + (star.toY - star.fromY) * progress;
+          const envelope = Math.sin(Math.PI * progress);
+          star.head.position.set(x, y, star.fromZ);
+          star.trail.position.set(
+            x - (star.toX - star.fromX) * 0.06,
+            y - (star.toY - star.fromY) * 0.06,
+            star.fromZ,
+          );
+          (star.head.material as SpriteMaterial).opacity = 0.85 * envelope;
+          (star.trail.material as SpriteMaterial).opacity = 0.5 * envelope;
+        });
         // Dérive lente de la caméra : la scène « vit » même sans pointeur.
         camera.position.x = Math.sin(t * 0.13) * 0.38;
         camera.position.y = 0.4 + Math.sin(t * 0.17) * 0.26;
@@ -670,6 +799,12 @@ export function HeroBusinessOS3D({
         (nebula.sprite.material as SpriteMaterial).dispose();
         (nebula.sprite.material as SpriteMaterial).map?.dispose();
       });
+      shootingStars.forEach((star) => {
+        (star.head.material as SpriteMaterial).dispose();
+        (star.trail.material as SpriteMaterial).dispose();
+      });
+      shootingGlowTexture.dispose();
+      shootingStreakTexture.dispose();
       renderer.dispose();
       renderer.domElement.remove();
     };

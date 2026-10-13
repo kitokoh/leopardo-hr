@@ -1571,7 +1571,8 @@
     "otpResent": "Yeni bir kod gönderildi. Spam klasörünüzü kontrol etmeyi unutmayın.",
     "otpResendError": "Kod yeniden gönderilemedi. Birazdan tekrar deneyin veya destek ekibiyle iletişime geçin.",
     "preparingLonger": "Bu her zamankinden biraz daha uzun sürüyor — alanınız yolda. Sayfayı yenilemenize gerek yok.",
-    "supportCta": "Destek ekibiyle iletişime geçin"
+    "supportCta": "Destek ekibiyle iletişime geçin",
+    "packSelected": "Önceden seçilmiş meslek paketi"
   },
   "companies": {
     "toast": {

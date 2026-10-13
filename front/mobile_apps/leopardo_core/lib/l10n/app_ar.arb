@@ -1127,6 +1127,7 @@
   "signupPlancontinue": "المتابعة بهذا العرض",
   "signupPlanselected": "العرض المختار",
   "signupPlanchange": "تغيير",
+  "signupPackselected": "حزمة مهنة محددة مسبقًا",
   "signupCountrydetectionfailed": "اختر بلدك.",
   "signupOtpresend": "إعادة إرسال الرمز",
   "signupOtpresending": "جارٍ إرسال رمز جديد…",

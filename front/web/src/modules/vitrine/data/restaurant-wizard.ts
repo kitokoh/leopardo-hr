@@ -30,6 +30,9 @@ export type WizardCopy = {
   guideLabel: string;
   includedLabel: string;
   restart: string;
+  /** #8462 — CTA « créer mon espace » : le métier (restaurant) suit vers
+   *  /signup?pack=restaurant, sans être re-demandé ensuite. */
+  createSpace: string;
   errorRetry: string;
 };
 
@@ -56,6 +59,7 @@ export const WIZARD_COPY: Record<VitrineLocale, WizardCopy> = {
     guideLabel: 'Guide de démarrage',
     includedLabel: 'Inclus gratuitement dans votre espace',
     restart: 'Recommencer',
+    createSpace: 'Créer mon espace avec ce pack',
     errorRetry: 'Impossible de calculer le pack. Réessayez.'
   },
   en: {
@@ -78,12 +82,13 @@ export const WIZARD_COPY: Record<VitrineLocale, WizardCopy> = {
     guideLabel: 'Getting started guide',
     includedLabel: 'Included free in your workspace',
     restart: 'Start over',
+    createSpace: 'Create my workspace with this pack',
     errorRetry: 'Could not build your pack. Try again.'
   },
   tr: { title: 'Ben bir restoran sahibiyim', subtitle: '3 soruya yanıt verin: restoranınıza uygun Leopardo paketini ücretsiz oluşturalım. İşaretleyin, indirin.', start: 'Başla', next: 'Paketimi gör', back: 'Geri', loading: 'Paketiniz hesaplanıyor…', questionsTitle: 'Restoranınızdan bahsedin', suggestionsTitle: 'Ücretsiz paketiniz hazır', suggestionsSubtitle: 'Yanıtlarınıza göre önceden işaretlendi — ücretsiz dahil.' , keep: 'Devam', uncheckNote: 'Seçilen öğeler hesap oluşturulduğunda ücretsiz etkinleşir.', downloadTitle: 'Ücretsiz paketinizi indirin', downloadSubtitle: 'Uygulamaları kurmak için QR kodu okutun.', qrHint: 'Kurulum için okutun', edgeTitle: 'Yerel Edge düğümü (çevrimdışı)', edgeCmdHint: 'Yerel düğümü restorandaki bir mini-PC\'ye kurun:', guideLabel: 'Başlangıç rehberi', includedLabel: 'Çalışma alanınıza ücretsiz dahil',
-    errorRetry: 'Paket hesaplanamadı. Tekrar deneyin.', restart: 'Baştan başla' },
+    errorRetry: 'Paket hesaplanamadı. Tekrar deneyin.', restart: 'Baştan başla', createSpace: 'Bu paketle alanımı oluştur' },
   ar: { title: 'أنا صاحب مطعم', subtitle: 'أجب عن 3 أسئلة وسننشئ لك حزمة Leopardo المناسبة لمطعمك — مجانًا. حدد ما تحتاجه وحمّله.', start: 'ابدأ', next: 'عرض حزمتي', back: 'رجوع', loading: 'جارٍ حساب الحزمة…', questionsTitle: 'حدثنا عن مطعمك', suggestionsTitle: 'حزمتك المجانية جاهزة', suggestionsSubtitle: 'محددة مسبقًا حسب إجاباتك — ومضمنة مجانًا.', keep: 'متابعة', uncheckNote: 'سيتم تفعيل العناصر المحددة مجانًا عند إنشاء الحساب.', downloadTitle: 'حمّل حزمتك المجانية', downloadSubtitle: 'امسح رمز QR لتثبيت التطبيقات.', qrHint: 'امسح للتثبيت', edgeTitle: 'عقدة Edge المحلية (بدون اتصال)', edgeCmdHint: 'ثبّت العقدة المحلية على جهاز صغير في المطعم:', guideLabel: 'دليل البدء', includedLabel: 'مضمن مجانًا في مساحتك',
-    errorRetry: 'تعذر حساب الحزمة. حاولوا مرة أخرى.', restart: 'إعادة البدء' },
+    errorRetry: 'تعذر حساب الحزمة. حاولوا مرة أخرى.', restart: 'إعادة البدء', createSpace: 'أنشئ مساحتي بهذه الحزمة' },
 };
 
 /** Copy du héro de la page /restaurateur — le pack métier est OFFERT : c'est
