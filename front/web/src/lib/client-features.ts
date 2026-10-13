@@ -541,7 +541,7 @@ export const CLIENT_MODULES: ClientModule[] = [
   // #7225 — verticale Station-service (BC-15 FUEL).
   {
     key: 'fuel',
-    href: '/fuel/pump',
+    href: '/fuel',
     label: 'Station-service',
     group: 'general',
     icon: Fuel,
