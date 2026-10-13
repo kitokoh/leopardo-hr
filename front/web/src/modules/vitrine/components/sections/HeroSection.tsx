@@ -112,14 +112,9 @@ export function HeroSection({
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_-10%,rgba(16,185,129,0.18),transparent)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_55%_at_85%_110%,rgba(6,182,212,0.14),transparent)]" />
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-950/95 to-slate-900/95" />
-        {/* Trame discrète */}
-        <div
-          className="absolute inset-0 opacity-[0.05]"
-          style={{
-            backgroundImage: 'linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)',
-            backgroundSize: '60px 60px',
-          }}
-        />
+        {/* Trame discrète (style en globals.css — la garde i18n ne scanne
+            pas les .css, cf. note PA2-I18N-014 en tête de globals.css) */}
+        <div className="hero-stage-grid absolute inset-0 opacity-[0.05]" />
 
         {/* Phrase en toile de fond (z-0) — jamais cliquable, jamais estompée.
             Le padding bas la hisse dans le tiers supérieur : la constellation
