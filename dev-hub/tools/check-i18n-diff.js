@@ -100,6 +100,12 @@ const ignorePathFragments = [
   // mécanisme de localisation, pas des chaînes hors catalogue. La complétude des
   // 4 langues reste couverte par validate-and-sync.
   '/vitrine/lib/legal-content.ts',
+  // Catalogue i18n de la page « Devenir actionnaire » (#8440) :
+  // investir-copy.ts EST le catalogue inline ×4 du copy /investir — même
+  // mécanique que vitrine-locale.ts et VerticalsSection.tsx (retiré de la
+  // page pour cette garde), la complétude ×4 reste couverte par
+  // validate-and-sync.
+  '/vitrine/lib/investir-copy.ts',
   // Catalogue i18n du kiosque ZKTeco (#7651) : `front/zkteco-kiosk/i18n.js`
   // EST le mécanisme de localisation (catalogue inline ×4 fr/en/tr/ar,
   // PA2-I18N-013) — exactement le même cas que vitrine-locale.ts ci-dessus.
