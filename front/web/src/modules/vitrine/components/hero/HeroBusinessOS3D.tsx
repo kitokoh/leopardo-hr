@@ -163,6 +163,27 @@ function makeGlowTexture(hex: string): CanvasTexture {
   return texture;
 }
 
+/** #8418 — texture de traînée d'étoile filante (gradient horizontal, créée une fois). */
+function makeStreakTexture(): CanvasTexture {
+  const width = 128;
+  const height = 16;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    const gradient = ctx.createLinearGradient(0, 0, width, 0);
+    gradient.addColorStop(0, 'rgba(255,255,255,0)');
+    gradient.addColorStop(0.55, 'rgba(167,243,208,0.55)');
+    gradient.addColorStop(1, 'rgba(255,255,255,0.95)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+  }
+  const texture = new CanvasTexture(canvas);
+  texture.colorSpace = SRGBColorSpace;
+  return texture;
+}
+
 export function HeroBusinessOS3D({
   reducedMotion = false,
   moduleLinks,
@@ -414,6 +435,34 @@ export function HeroBusinessOS3D({
       return { sprite, baseX: spec.x, baseY: spec.y, baseOpacity: spec.opacity, drift: spec.drift };
     });
 
+    // #8418 — étoiles filantes : la signature « waw » du ciel de nuit. Trois
+    // traînées pré-créées (zéro allocation en boucle), activées en cycle
+    // décalé — chacune traverse le ciel en ~1,4 s puis s'éteint. Sprites
+    // additifs à opacité nulle au repos (invisibles, coût quasi nul) ;
+    // prefers-reduced-motion les laisse éteintes.
+    const STREAK_SPECS = [
+      { startX: -7.5, startY: 3.6, dirX: 1, dirY: -0.38, z: -3.2, period: 9.5, offset: 1.2, duration: 1.4, travel: 12 },
+      { startX: 6.8, startY: 4.2, dirX: -1, dirY: -0.3, z: -4.1, period: 12.5, offset: 5.8, duration: 1.6, travel: 11 },
+      { startX: -5.9, startY: 2.2, dirX: 1, dirY: -0.42, z: -3.6, period: 15.0, offset: 9.4, duration: 1.2, travel: 10 },
+    ];
+    const streakTexture = makeStreakTexture();
+    const streaks = STREAK_SPECS.map((spec) => {
+      const material = new SpriteMaterial({
+        map: streakTexture,
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+        blending: AdditiveBlending,
+        // La traînée (sprite allongé) est orientée le long de sa trajectoire.
+        rotation: Math.atan2(spec.dirY, spec.dirX),
+      });
+      const sprite = new Sprite(material);
+      sprite.scale.set(2.4, 0.09, 1);
+      sprite.position.set(spec.startX, spec.startY, spec.z);
+      world.add(sprite);
+      return { sprite, ...spec };
+    });
+
     // ── Étiquettes des modules (#8404 — affordance) ────────────────────
     // Créées une fois (mode interactif avec libellés uniquement), déplacées
     // par projection à chaque image. Jamais cliquables (pointer-events:none).
@@ -566,9 +615,37 @@ export function HeroBusinessOS3D({
         world.rotation.y += 0.0016;
         const breathe = 1 + Math.sin(t * 1.4) * 0.03;
         core.scale.setScalar(breathe);
+        // #8418 — le noyau TOURNE lentement sur lui-même : la gemme à
+        // facettes capte la lumière en mouvement, la scène vit au premier
+        // regard (et non seulement au survol).
+        core.rotation.y += 0.0022;
+        core.rotation.x = Math.sin(t * 0.18) * 0.12;
         glowLight.intensity = 16 + Math.sin(t * 1.4) * 3;
         dust.rotation.y += 0.0004;
         dust2.rotation.y -= 0.0003;
+        // #8418 — scintillement de la poussière d'étoiles (deux phases
+        // décalées) : le ciel crépite doucement au lieu d'être figé.
+        (dust.material as PointsMaterial).opacity = 0.55 + Math.sin(t * 2.2) * 0.14;
+        (dust2.material as PointsMaterial).opacity = 0.45 + Math.sin(t * 1.7 + 1.3) * 0.12;
+        // #8418 — respiration des anneaux : chaque orbite gonfle et se
+        // resserre imperceptiblement, déphasée de sa voisine.
+        ringMeshes.forEach((ring, ringIndex) => {
+          ring.scale.setScalar(1 + Math.sin(t * 0.8 + ringIndex * 1.9) * 0.018);
+        });
+        // #8418 — étoiles filantes en cycle décalé (opacité nulle hors
+        // traversée : rien ne clignote en permanence).
+        streaks.forEach((streak) => {
+          const material = streak.sprite.material as SpriteMaterial;
+          const cycle = (t + streak.offset) % streak.period;
+          if (cycle >= streak.duration) {
+            if (material.opacity !== 0) material.opacity = 0;
+            return;
+          }
+          const progress = cycle / streak.duration;
+          streak.sprite.position.x = streak.startX + streak.dirX * progress * streak.travel;
+          streak.sprite.position.y = streak.startY + streak.dirY * progress * streak.travel;
+          material.opacity = Math.sin(progress * Math.PI) * 0.8;
+        });
         // #8438 — dérive lente des nébuleuses (respiration de la lueur incluse).
         nebulas.forEach((nebula, i) => {
           nebula.sprite.position.x = nebula.baseX + Math.sin(t * 0.07 * nebula.drift + i * 2.1) * 0.8;
@@ -670,6 +747,10 @@ export function HeroBusinessOS3D({
         (nebula.sprite.material as SpriteMaterial).dispose();
         (nebula.sprite.material as SpriteMaterial).map?.dispose();
       });
+      streaks.forEach((streak) => {
+        (streak.sprite.material as SpriteMaterial).dispose();
+      });
+      streakTexture.dispose();
       renderer.dispose();
       renderer.domElement.remove();
     };
@@ -686,12 +767,13 @@ export function HeroBusinessOS3D({
           losanges sont cliquables. Visuel uniquement (aria-hidden) : les
           mêmes destinations restent portées par la navbar, les CTA et le hub
           /packs pour clavier et lecteur d'écran.
-          #8438 — placé en HAUT de la scène : en layout `stage` (plein cadre),
-          le bas de l'écran appartient aux CTA. */}
+          #8417 — placé en BAS de la scène : le héro épuré n'a plus de CTA
+          (le haut appartient à la phrase en toile de fond) ; il flotte
+          juste au-dessus de l'indicateur de scroll. */}
       {interactive && hint ? (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute left-1/2 top-20 z-10 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full border border-slate-200/70 bg-white/80 px-3 py-1.5 text-xs font-medium text-slate-500 shadow-sm backdrop-blur dark:border-slate-700/60 dark:bg-slate-900/80 dark:text-slate-400"
+          className="pointer-events-none absolute bottom-24 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full border border-slate-200/70 bg-white/80 px-3 py-1.5 text-xs font-medium text-slate-500 shadow-sm backdrop-blur dark:border-slate-700/60 dark:bg-slate-900/80 dark:text-slate-400"
         >
           <MousePointerClick className="h-3.5 w-3.5 text-emerald-500" />
           {hint}
