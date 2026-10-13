@@ -1205,3 +1205,20 @@ restent les gates applicables.
 - **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
   partagé `vitrine.hero3d.*`), aucun contrat mobile modifié — aucun scénario mobile
   nouveau requis.
+
+## Mise à jour 2026-10-13 — héro « constellation France » + inscription pack-aware (PR #8463, issues #8461, #8462)
+
+- **Surface API** : `VerifyTrialSignup` mémorise `metadata.vertical` après activation des
+  solutions sectorielles (miroir du parcours guidé) — assertion ajoutée à
+  `TrialSolutionsActivationTest` (suites PHP/PHPStan déléguées à la CI, pas de runtime PHP
+  dans le sandbox) ; aucune route, aucun contrôleur, aucun contrat modifié — aucun
+  scénario API nouveau requis.
+- **Surface web (front/web)** : héro enrichi (France en constellation en toile de fond,
+  étoiles filantes, scintillement de la poussière, responsive mobile du premier écran) et
+  inscription pack-aware (`/signup?pack=<slug>` → `solutions[]`, bandeau i18n ×4,
+  question secteur exclue de l'entretien si verticale connue) — 13 tests Jest ajoutés
+  (pack-signup, SignupForm, SetupInterview, FranceConstellation) ; E2E funnel vérifié
+  6/6 chromium — aucun scénario e2e nouveau requis.
+- **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
+  partagé `signup.packSelected`), aucun contrat mobile modifié — aucun scénario mobile
+  nouveau requis.
