@@ -6447,7 +6447,9 @@
     },
     "hero3d": {
       "hint": "Keşfetmek için bir modüle tıklayın",
-      "demo": "Demo"
+      "demo": "Demo",
+      "cagnottes": "Kampanyalar",
+      "freeTrial": "Ücretsiz deneme"
     }
   },
   "commerce": {
