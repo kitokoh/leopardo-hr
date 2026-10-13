@@ -23,7 +23,10 @@ use Illuminate\Support\Facades\DB;
  * L'activation passe par le mécanisme feature flag existant
  * (`Company::setFeature` / `KNOWN_MODULES`) — aucune table dédiée.
  */
-final class SolutionActivator
+// Volontairement non-`final` : point de couture substitué dans les tests
+// (TestCase::mock / Mockery) — un `final class` rend le type irrésolvable pour
+// PHPStan strict et empêche la substitution dans SetupInterviewActivationFailureTest.
+class SolutionActivator
 {
     public function __construct(
         private readonly SolutionCatalogue $catalogue,
