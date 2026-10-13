@@ -80,16 +80,23 @@ test.describe('Marketing funnel preview', () => {
     // Sans `networkidle`, fill/clic peuvent précéder l'hydratation React :
     // l'input est CONTRÔLÉ, un fill pré-hydratation laisse l'état React vide
     // et le submit échoue en validation locale sans jamais émettre de fetch.
-    // On rejoue donc fill + clic ensemble jusqu'à observer la réponse (la
-    // route est mockée, un double POST est sans effet).
+    // Depuis le héro `stage` (#8437, scène 3D pleine page), l'hydratation est
+    // plus tardive et le bouton se désactive dès le premier envoi réussi :
+    // une boucle de retry autour du clic pouvait soumettre ENTRE deux
+    // tentatives (réponse hors fenêtre `waitForResponse`), puis expirer en
+    // cliquant un bouton désactivé par l'état `success`. Structure
+    // déterministe en deux temps : 1) porte d'hydratation — le fill doit
+    // TENIR (valeur relue) avant tout clic ; 2) UN SEUL envoi, listener armé.
+    const emailInput = quickTrialForm.locator('input[type="email"]');
     await expect(async () => {
-      await quickTrialForm.locator('input[type="email"]').fill(email);
-      const [signupResponse] = await Promise.all([
-        page.waitForResponse((response) => response.url().includes('/api/forms/signup'), { timeout: 5000 }),
-        submitButton.click(),
-      ]);
-      expect(signupResponse.status()).toBe(201);
+      await emailInput.fill(email);
+      await expect(emailInput).toHaveValue(email, { timeout: 1000 });
     }).toPass({ timeout: 30000 });
+    const [signupResponse] = await Promise.all([
+      page.waitForResponse((response) => response.url().includes('/api/forms/signup'), { timeout: 15000 }),
+      submitButton.click(),
+    ]);
+    expect(signupResponse.status()).toBe(201);
     await expect(page.locator('body')).toContainText(/request received|demande recue|24 business hours|24h/i);
   });
 
