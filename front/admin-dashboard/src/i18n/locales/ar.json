@@ -5804,7 +5804,8 @@
     "accountingLettering": "المطابقة (Lettrage)",
     "accountingFiscalYears": "السنوات المالية والإقفال",
     "accountingBank": "البنك والتسوية",
-    "accountingStatements": "الضريبة والقوائم المالية"
+    "accountingStatements": "الضريبة والقوائم المالية",
+    "equityInterests": "اهتمامات المساهمة"
   },
   "companydetailCoreModuleAlwaysActive": "الوحدة الأساسية نشطة دائمًا",
   "smartAttendanceSessionsTitle": "جلسات الحضور الذكي",
@@ -7759,7 +7760,8 @@
     "settingsTitle": "تفضيلات ملفات تعريف الارتباط",
     "formNoticeContact": "تُستخدم بياناتكم للرد على طلبكم فقط. الأساس القانوني: موافقتكم، ويمكنكم سحبها في أي وقت.",
     "formNoticeDemo": "تُستخدم بياناتكم لتنظيم العرض التوضيحي المطلوب فقط (الغاية: التواصل معكم). الأساس القانوني: موافقتكم.",
-    "formNoticeNewsletter": "يُستخدم بريدكم لإرسال نصائحنا في الموارد البشرية فقط (الغاية: الإعلام). إلغاء الاشتراك بنقرة واحدة."
+    "formNoticeNewsletter": "يُستخدم بريدكم لإرسال نصائحنا في الموارد البشرية فقط (الغاية: الإعلام). إلغاء الاشتراك بنقرة واحدة.",
+    "formNoticeEquity": "تُستخدم معلوماتك فقط لدراسة اهتمامك بالمساهمة في رأس مال الشركة (الغرض: إعادة الاتصال بك). الأساس القانوني: موافقتك، ويمكنك سحبها في أي وقت."
   },
   "firstLoginWelcome": {
     "title": "مساحتك جاهزة 🎉",
@@ -7806,7 +7808,8 @@
       "messageTooLong": "الرسالة طويلة جداً",
       "phoneInvalid": "رقم الهاتف غير صالح",
       "employeesInvalid": "اختر نطاق عدد الموظفين",
-      "dateFuture": "يجب أن يكون التاريخ في المستقبل"
+      "dateFuture": "يجب أن يكون التاريخ في المستقبل",
+      "required": "هذا الحقل مطلوب"
     }
   },
   "setupInterview": {
@@ -9171,8 +9174,43 @@
     "driverOffline": "غير متصل",
     "driverAvailable": "متاح",
     "driverBusy": "في رحلة",
-    "driverSuspended": "موقوف",
-    "driverNotLinked": "لا يوجد ملف سائق VTC مرتبط بهذا الحساب.",
-    "marketplaceTrackingCodeRequired": "رمز التتبع مطلوب (المعامل ?code=)."
+    "driverSuspended": "موقوف"
+  },
+  "equityInterests": {
+    "title": "اهتمامات المساهمة",
+    "subtitle": "تعبيرات الاهتمام بالمساهمة في رأس مال الشركة (صفحة «كن مساهماً»).",
+    "refresh": "تحديث",
+    "retry": "إعادة المحاولة",
+    "loading": "جارٍ التحميل…",
+    "empty": "لا تعبيرات اهتمام بعد.",
+    "tabAll": "الكل",
+    "status": {
+      "new": "جديد",
+      "contacted": "تم الاتصال",
+      "qualified": "مؤهل",
+      "converted": "تم التحويل",
+      "rejected": "مغلق (دون متابعة)"
+    },
+    "brackets": {
+      "lt_1k": "< 1 ألف €",
+      "1k_10k": "1–10 آلاف €",
+      "10k_50k": "10–50 ألف €",
+      "gt_50k": "> 50 ألف €",
+      "discuss": "للنقاش"
+    },
+    "columnDate": "التاريخ",
+    "columnName": "الاسم",
+    "columnContact": "جهة الاتصال",
+    "columnBracket": "الشريحة",
+    "columnStatus": "الحالة",
+    "columnActions": "الإجراءات",
+    "messageLabel": "الرسالة",
+    "countryLabel": "البلد",
+    "transitionLabel": "تغيير الحالة",
+    "noteLabel": "ملاحظة داخلية",
+    "notePlaceholder": "ملاحظة متابعة (لفريق المنصة فقط)…",
+    "saveNote": "حفظ الملاحظة",
+    "searchPlaceholder": "بحث (البريد الإلكتروني)…",
+    "pageLabel": "صفحة"
   }
 }

@@ -496,9 +496,8 @@ fi
 # WEB_QUEUE_DRAIN=false sur le web service — sinon deux consommateurs
 # concurrents pollent la même table jobs (verrous inutiles sur l'OLTP).
 # Quota (2026-09-22) : le worker en boucle interroge la base à vide — le driver
-# `database` teste CHAQUE queue de la liste, soit 12 requêtes par cycle (#8423 :
-# + vtc/delivery/communication/reconciliation). À
-# --sleep=5 c'est ~207 000 requêtes/jour, de quoi consommer à lui seul ~3 Go/mois
+# `database` teste CHAQUE queue de la liste, soit 8 requêtes par cycle. À
+# --sleep=5 c'est ~138 000 requêtes/jour, de quoi consommer à lui seul ~2 Go/mois
 # du transfert du plan gratuit Neon (5 Go/mois partagés par TOUS les projets du
 # compte) : c'est ce qui a fait tomber la prod le 2026-09-20 puis le secours.
 # `WEB_QUEUE_SLEEP` permet de ralentir ce polling sans redéployer de code :
@@ -523,7 +522,7 @@ echo "Starting background queue worker (web container, respawn loop)..."
         # par le canal (`production.ERROR:`), et le `$?` ci-dessous reste celui
         # de `queue:work` (un `| sed` le remplacerait par celui du pipe).
         php artisan queue:work \
-            --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,vtc,delivery,communication,reconciliation,default \
+            --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default \
             --tries=3 --timeout=300 --sleep="${WEB_QUEUE_SLEEP:-5}" --max-jobs=500 --max-time=3600 \
             >&2
         echo "[entrypoint] queue worker exited ($?), respawn in 2s..." >&2

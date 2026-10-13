@@ -348,6 +348,7 @@ return [
     // (the localized message comes from the errors.* catalogue).
     'CHECKOUT_BEFORE_CHECKIN' => 'Check-out date must be after the check-in date.',
 
-    // #8423 (M-02) — Geo: nearest search on a role-restricted type (e.g. driver positions).
-    'GEO_SEARCHABLE_TYPE_FORBIDDEN' => 'Your role does not allow this proximity search.',
+    // #8440/#8441 — verticales equity + paramétrage fundraising (contexte entreprise)
+    'FUNDRAISING_VERTICAL_NOT_ENABLED' => 'The fundraising vertical is not enabled for this company.',
+    'MARKETING_LEAD_NO_CHANGES' => 'No changes requested.',
 ];

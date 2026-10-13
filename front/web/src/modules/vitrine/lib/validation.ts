@@ -194,6 +194,43 @@ export function contactFormSchema(locale: AppLocale) {
 
 export type ContactFormData = z.infer<ReturnType<typeof contactFormSchema>>;
 
+/**
+ * #8440 — formulaire « Devenir actionnaire » (`/investir`). Tranche de
+ * montant indicative OBLIGATOIRE (liste fermée, valeurs stables côté API),
+ * consentement explicite au recontact (RGPD). Aligné sur le schéma serveur
+ * de `/api/forms/equity`.
+ */
+export const EQUITY_AMOUNT_BRACKETS = ['lt_1k', '1k_10k', '10k_50k', 'gt_50k', 'discuss'] as const;
+
+export function equityFormSchema(locale: AppLocale) {
+  const m = buildFormsValidationMessages(locale);
+  const required = t(locale, 'forms.validation.required');
+
+  return z.object({
+    name: z.string().min(2, m.nameTooShort).max(120, m.nameTooLong),
+    email: z
+      .string()
+      .email(m.emailInvalid)
+      .min(5, m.emailTooShort)
+      .max(255, m.emailTooLong),
+    phone: z
+      .string()
+      .regex(PHONE_REGEX, m.phoneInvalid)
+      .optional()
+      .or(z.literal('')),
+    country: z
+      .string()
+      .length(2, required)
+      .optional()
+      .or(z.literal('')),
+    amountBracket: z.enum(EQUITY_AMOUNT_BRACKETS, { message: required }),
+    message: z.string().max(2000, m.messageTooLong).optional().or(z.literal('')),
+    consent: z.literal(true, { message: required }),
+  });
+}
+
+export type EquityFormData = z.infer<ReturnType<typeof equityFormSchema>>;
+
 export function newsletterFormSchema(locale: AppLocale) {
   const m = buildFormsValidationMessages(locale);
 

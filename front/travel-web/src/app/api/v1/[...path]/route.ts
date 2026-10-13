@@ -7,9 +7,7 @@ import { SESSION_COOKIE_NAME } from "@/lib/session-cookie";
  * Issue #7738 — proxy same-origin `/api/v1/*` → backend (pattern #7297 de
  * front/web), restreint à la SEULE surface publique voyage : il relaie les
  * endpoints publics `public/travel/*` (marketplace #7737 + billets/suivi
- * #7395) — et depuis #8423 (M-30) `public/vtc/marketplace/*` (annuaire,
- * devis, réservation et suivi invités VTC/taxi, surface 100 % sans compte).
- * Tout autre chemin est refusé (fail-closed) — ce proxy ne doit
+ * #7395). Tout autre chemin est refusé (fail-closed) — ce proxy ne doit
  * jamais devenir un relais ouvert vers l'API authentifiée.
  *
  * Depuis #7841 (pattern #1299 de front/web), la session du compte client vit
@@ -19,9 +17,6 @@ import { SESSION_COOKIE_NAME } from "@/lib/session-cookie";
  */
 
 const ALLOWED_PREFIX = ["public", "travel"] as const;
-
-/** #8423 (M-30) — seconde surface autorisée : marketplace publique VTC. */
-const ALLOWED_VTC_PREFIX = ["public", "vtc", "marketplace"] as const;
 
 const HOP_BY_HOP_HEADERS = new Set([
   "connection",
@@ -61,18 +56,11 @@ function forwardsAuthorization(path: string[]): boolean {
 const PROXY_TIMEOUT_MS = 30_000;
 
 function isAllowedPath(path: string[]): boolean {
-  const isTravel =
+  return (
     path.length > ALLOWED_PREFIX.length &&
     path[0] === ALLOWED_PREFIX[0] &&
-    path[1] === ALLOWED_PREFIX[1];
-
-  // #8423 (M-30) — `public/vtc/marketplace/*` : invité uniquement, jamais
-  // de Bearer injecté (forwardsAuthorization reste borné à travel).
-  const isVtcMarketplace =
-    path.length > ALLOWED_VTC_PREFIX.length &&
-    ALLOWED_VTC_PREFIX.every((segment, index) => path[index] === segment);
-
-  return isTravel || isVtcMarketplace;
+    path[1] === ALLOWED_PREFIX[1]
+  );
 }
 
 function toBackendUrl(request: NextRequest, path: string[]): string {

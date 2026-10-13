@@ -148,6 +148,17 @@ const routes = [
         }
       },
       {
+        // #8440 — suivi des manifestations d'intérêt « prendre des parts »
+        // (page vitrine /investir, entrée footer). Leads equity_interest.
+        path: '/equity-interests',
+        name: 'equity-interests',
+        component: () => import('@/views/equity/EquityInterestsView.vue'),
+        meta: {
+          title: 'navigation.equityInterests',
+          icon: 'BanknotesIcon'
+        }
+      },
+      {
         path: '/system',
         name: 'system',
         component: () => import('@/views/system/SystemView.vue'),
