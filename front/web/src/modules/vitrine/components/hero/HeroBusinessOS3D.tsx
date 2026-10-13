@@ -213,20 +213,25 @@ export function HeroBusinessOS3D({
     scene.add(glowLight);
 
     const world = new Group();
+    // #8437 — en layout `stage`, la phrase occupe le tiers haut du héro : la
+    // constellation descend d'un demi-monde pour que le noyau (la grosse
+    // gemme) ne croise jamais le texte — seuls les petits modules en orbite
+    // le frôlent, ce qui fait tout le charme de la composition.
+    world.position.y = -0.5;
     scene.add(world);
 
     // ── Noyau : la plateforme (gemme à facettes + halo) ────────────────
-    const coreGeo = new IcosahedronGeometry(1.05, 1);
+    const coreGeo = new IcosahedronGeometry(0.92, 1);
     const core = new Mesh(
       coreGeo,
       new MeshStandardMaterial({
         color: CORE_COLOR,
         emissive: new Color('#064e3b'),
-        emissiveIntensity: 0.55,
+        emissiveIntensity: 0.7,
         metalness: 0.35,
         roughness: 0.32,
         transparent: true,
-        opacity: 0.92,
+        opacity: 0.85,
         flatShading: true,
       }),
     );
