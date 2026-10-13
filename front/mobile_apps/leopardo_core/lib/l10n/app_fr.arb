@@ -6056,5 +6056,11 @@
   "cagnottesmoduleMethodsCard": "Carte bancaire",
   "cagnottesmoduleMethodsMobileMoney": "Mobile money",
   "cagnottesmoduleMethodsBankTransfer": "Virement",
-  "cagnottesmoduleMethodsCash": "Espèces"
+  "cagnottesmoduleMethodsCash": "Espèces",
+  "cagnottesmoduleShowcontributions": "Contributions",
+  "cagnottesmoduleHidecontributions": "Masquer les contributions",
+  "cagnottesmoduleContributionlistEmpty": "Aucune contribution pour cette cagnotte.",
+  "cagnottesmoduleContributionlistConfirm": "Confirmer",
+  "cagnottesmoduleContributionlistAnonymous": "Anonyme",
+  "cagnottesmoduleContributionlistConfirmed": "Contribution confirmée."
 }
