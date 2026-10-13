@@ -59,46 +59,11 @@ test.describe('Marketing funnel preview', () => {
     });
   });
 
-  test('captures a one-field trial request from the homepage hero', async ({ page }) => {
-    const timestamp = Date.now();
-    const email = `quick.trial.${timestamp}@example.com`;
-
-    // #7618 — jamais `networkidle` sur la home : la vidéo produit
-    // (`product-demo.webm`) garde une connexion de streaming ouverte (206)
-    // que Chromium met en pause → l'idle n'arrive jamais (timeout 90 s
-    // constaté 4× en CI, toutes les requêtes pourtant terminées en ~1,6 s).
-    // Les attentes déterministes qui suivent (visibilité/activation du
-    // formulaire) portent la synchronisation.
-    await page.goto('/?lang=en&utm_source=e2e_quick_trial', {
-      waitUntil: 'domcontentloaded',
-    });
-
-    const quickTrialForm = page.locator('section form').first();
-    const submitButton = quickTrialForm.locator('button[type="submit"]');
-    await expect(submitButton).toBeVisible();
-
-    // Sans `networkidle`, fill/clic peuvent précéder l'hydratation React :
-    // l'input est CONTRÔLÉ, un fill pré-hydratation laisse l'état React vide
-    // et le submit échoue en validation locale sans jamais émettre de fetch.
-    // Depuis le héro `stage` (#8437, scène 3D pleine page), l'hydratation est
-    // plus tardive et le bouton se désactive dès le premier envoi réussi :
-    // une boucle de retry autour du clic pouvait soumettre ENTRE deux
-    // tentatives (réponse hors fenêtre `waitForResponse`), puis expirer en
-    // cliquant un bouton désactivé par l'état `success`. Structure
-    // déterministe en deux temps : 1) porte d'hydratation — le fill doit
-    // TENIR (valeur relue) avant tout clic ; 2) UN SEUL envoi, listener armé.
-    const emailInput = quickTrialForm.locator('input[type="email"]');
-    await expect(async () => {
-      await emailInput.fill(email);
-      await expect(emailInput).toHaveValue(email, { timeout: 1000 });
-    }).toPass({ timeout: 30000 });
-    const [signupResponse] = await Promise.all([
-      page.waitForResponse((response) => response.url().includes('/api/forms/signup'), { timeout: 15000 }),
-      submitButton.click(),
-    ]);
-    expect(signupResponse.status()).toBe(201);
-    await expect(page.locator('body')).toContainText(/request received|demande recue|24 business hours|24h/i);
-  });
+  // #8417 (vague 4) — le héro d'accueil n'a plus de formulaire e-mail rapide
+  // (premier écran = la phrase + la constellation 3D seuls ; l'entrée d'essai
+  // vit dans la navbar et sur /signup). Le scénario « one-field trial request
+  // from the homepage hero » est donc retiré ; le contrat API d'inscription
+  // reste couvert par les deux tests suivants (/signup + payload invalide).
 
   test('captures a trial signup request from the public /signup page', async ({ page }) => {
     const timestamp = Date.now();

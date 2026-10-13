@@ -135,9 +135,12 @@ export function HeroSection({
         {/* Constellation pleine scène (z-10) — modules cliquables (#8390) */}
         <div className="absolute inset-0 z-10">{visual}</div>
 
-        {/* Actions (z-20) ancrées en bas. La classe `dark` LOCALE force les
-            styles sombres des enfants (formulaire d'essai, boutons) : la
-            scène est nuit permanente, même quand le thème global est clair. */}
+        {/* Actions (z-20) ancrées en bas — rendues SEULEMENT si l'appelant en
+            fournit (#8417 : la page d'accueil n'en fournit plus, le héro est
+            la phrase + la 3D seuls ; le wrapper vide ne doit pas occuper
+            l'écran). La classe `dark` LOCALE force les styles sombres des
+            enfants : la scène est nuit permanente, même en thème clair. */}
+        {(ctaPrimary || ctaSecondary || ctaReassurance || quickTrialForm) && (
         <motion.div
           style={animated ? { y, opacity, scale } : {}}
           className="dark relative z-20 flex min-h-[100dvh] flex-col items-center justify-end px-4 pb-24 sm:px-6"
@@ -191,6 +194,7 @@ export function HeroSection({
             {quickTrialForm}
           </div>
         </motion.div>
+        )}
 
         {/* Transition douce vers la section suivante : la nuit s'ouvre sur
             le thème courant de la page (blanc en jour, ardoise en nuit). */}
