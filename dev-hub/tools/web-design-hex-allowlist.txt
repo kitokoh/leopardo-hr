@@ -54,3 +54,7 @@
 # consommera les tokens (garde rouge sur main 89e7e8dde, constatée en merge #8349 ;
 # présent sur main avant FUND-070, toléré comme emerald-700 #047857 ci-dessus).
 #064e3b — emerald-900, héro WebGL vitrine (front/web/src/modules/vitrine/components/hero/HeroBusinessOS3D.tsx, site/gh-pages/index.html ; configs tailwind front/admin-dashboard + front/web)
+
+# Effets 3D décoratifs (glow/nébuleuses) — pas des tokens d'UI ; si la palette
+# héro devient produit, la déclarer dans COULEURS.md (L.07) et retirer ces lignes.
+#6366f1 — indigo-500, nébuleuse additive du héro constellation (front/web/src/modules/vitrine/components/hero/HeroBusinessOS3D.tsx, #8438)
