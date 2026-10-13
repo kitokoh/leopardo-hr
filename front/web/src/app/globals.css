@@ -178,6 +178,44 @@ html {
   background-size: 60px 60px;
 }
 
+/* ── Constellation France du héro « stage » (#8461, vague 4) ──────────────
+   Dérive très lente de la silhouette et scintillement doux des villes-nœuds.
+   Style pur, donc ici et non dans le TSX (même garde i18n/design-tokens que
+   `.hero-stage-grid` ci-dessus ; couleurs portées par le SVG, pas par le CSS).
+   Désactivé en `prefers-reduced-motion` : la silhouette reste statique. */
+@media (prefers-reduced-motion: no-preference) {
+  .france-constellation-drift {
+    animation: france-drift 46s ease-in-out infinite;
+  }
+  .france-city-twinkle {
+    animation: france-twinkle 5.5s ease-in-out infinite;
+  }
+  .france-city-twinkle:nth-child(3n) {
+    animation-delay: 1.8s;
+  }
+  .france-city-twinkle:nth-child(3n + 1) {
+    animation-delay: 3.1s;
+  }
+  @keyframes france-drift {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+      transform: translate3d(0.8%, -1.2%, 0) scale(1.03);
+    }
+  }
+  @keyframes france-twinkle {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+}
+
 /* ── Mascotte Leo (pieuvre) — flottement doux, purement décoratif ──────────
    Désactivé pour les utilisateurs en `prefers-reduced-motion` : la mascotte
    reste alors statique, aucune information n'est perdue. */

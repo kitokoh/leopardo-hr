@@ -6,6 +6,7 @@ import { ArrowRight, Play, Sparkles } from 'lucide-react';
 import { useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { withLocaleHref } from '../../lib/locale-href';
+import { FranceConstellation } from '../hero/FranceConstellation';
 import { HeroScene3D } from '../hero/HeroScene3D';
 
 export interface HeroSectionProps {
@@ -115,6 +116,15 @@ export function HeroSection({
         {/* Trame discrète (style en globals.css — la garde i18n ne scanne
             pas les .css, cf. note PA2-I18N-014 en tête de globals.css) */}
         <div className="hero-stage-grid absolute inset-0 opacity-[0.05]" />
+
+        {/* #8461 (vague 4) — la France en constellation, un plan derrière la
+            scène 3D : contour de l'Hexagone + villes-nœuds reliés, même
+            langage visuel que la constellation Business OS. Placée AVANT la
+            phrase (z-0) et le canvas (z-10) : elle n'écrase ni le texte ni
+            la 3D. Décorative, jamais cliquable, dérive lente en CSS. */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
+          <FranceConstellation className="france-constellation-drift h-[118vmin] w-[118vmin] shrink-0 translate-y-[7vh] opacity-70" />
+        </div>
 
         {/* Phrase en toile de fond (z-0) — jamais cliquable, jamais estompée.
             Le padding bas la hisse dans le tiers supérieur : la constellation
