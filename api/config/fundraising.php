@@ -41,42 +41,9 @@ return [
     */
     'mobile_money' => [
         'sandbox' => env('FUNDRAISING_MOBILE_MONEY_SANDBOX', true),
-        // FUND-101 — provider actif : `sandbox` (défaut, simulation USSD),
-        // `cinetpay`, `paydunya` ou `pvit`. Un provider inconnu est
-        // fail-closed (exception de la factory, jamais de repli silencieux).
-        'provider' => env('FUNDRAISING_MOBILE_MONEY_PROVIDER', 'sandbox'),
         'operator' => env('FUNDRAISING_MOBILE_MONEY_OPERATOR', 'sandbox'),
         'api_key' => env('FUNDRAISING_MOBILE_MONEY_API_KEY', ''),
         'webhook_secret' => env('FUNDRAISING_MOBILE_MONEY_WEBHOOK_SECRET', ''),
-
-        // Adaptateurs production (FUND-101) — identifiants en env, jamais
-        // en dur ; un bloc incomplet laisse l'adaptateur fail-closed.
-        'cinetpay' => [
-            'base_uri' => env('FUNDRAISING_CINETPAY_BASE_URI', 'https://api-checkout.cinetpay.com/v2'),
-            'api_key' => env('FUNDRAISING_CINETPAY_API_KEY', ''),
-            'site_id' => env('FUNDRAISING_CINETPAY_SITE_ID', ''),
-            'webhook_secret' => env('FUNDRAISING_CINETPAY_WEBHOOK_SECRET', ''),
-            'api_base_url' => env('FUNDRAISING_CINETPAY_API_BASE_URL', ''),
-            'public_base_url' => env('FUNDRAISING_CINETPAY_PUBLIC_BASE_URL', ''),
-            'timeout' => (int) env('FUNDRAISING_CINETPAY_TIMEOUT', 15),
-        ],
-        'paydunya' => [
-            'base_uri' => env('FUNDRAISING_PAYDUNYA_BASE_URI', 'https://app.paydunya.com/api/v1'),
-            'master_key' => env('FUNDRAISING_PAYDUNYA_MASTER_KEY', ''),
-            'private_key' => env('FUNDRAISING_PAYDUNYA_PRIVATE_KEY', ''),
-            'token' => env('FUNDRAISING_PAYDUNYA_TOKEN', ''),
-            'api_base_url' => env('FUNDRAISING_PAYDUNYA_API_BASE_URL', ''),
-            'public_base_url' => env('FUNDRAISING_PAYDUNYA_PUBLIC_BASE_URL', ''),
-            'timeout' => (int) env('FUNDRAISING_PAYDUNYA_TIMEOUT', 15),
-        ],
-        'pvit' => [
-            'base_uri' => env('FUNDRAISING_PVIT_BASE_URI', ''),
-            'merchant_tel' => env('FUNDRAISING_PVIT_MERCHANT_TEL', ''),
-            'api_key' => env('FUNDRAISING_PVIT_API_KEY', ''),
-            'webhook_secret' => env('FUNDRAISING_PVIT_WEBHOOK_SECRET', ''),
-            'api_base_url' => env('FUNDRAISING_PVIT_API_BASE_URL', ''),
-            'timeout' => (int) env('FUNDRAISING_PVIT_TIMEOUT', 15),
-        ],
     ],
 
     /*

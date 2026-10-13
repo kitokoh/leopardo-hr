@@ -15,12 +15,6 @@ use Illuminate\Http\Request;
  * `GET /v1/vtc/driver/offers` : courses `dispatching` dont l'offre COURANTE
  * (metadata.pending_offer, source de vérité du dispatch VTC-04) appartient
  * au chauffeur — polling v1 (push temps réel hors scope, spec §5.3).
- *
- * #8423 (M-04) — le filtre sur l'offre courante est poussé EN SQL (chemin
- * JSON `metadata->pending_offer->driver_id`) au lieu de charger TOUTES les
- * courses `dispatching` du tenant pour les filtrer en PHP. Le binding est
- * casté en string : `->>` renvoie du texte côté Postgres (pattern établi,
- * cf. AlertExpiringContracts).
  */
 final class VtcDriverOfferController extends VtcDriverBaseController
 {
@@ -30,9 +24,9 @@ final class VtcDriverOfferController extends VtcDriverBaseController
 
         $offers = VtcRide::query()
             ->where('status', VtcRideStatus::Dispatching->value)
-            ->where('metadata->pending_offer->driver_id', (string) $driver->id)
             ->orderBy('requested_at')
             ->get()
+            ->filter(static fn (VtcRide $ride): bool => ($ride->metadata['pending_offer']['driver_id'] ?? null) === $driver->id)
             ->map(static fn (VtcRide $ride): array => [
                 'ride_id' => $ride->id,
                 'reference' => $ride->reference,

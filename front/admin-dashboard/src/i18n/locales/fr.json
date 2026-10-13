@@ -5810,7 +5810,8 @@
     "accountingLettering": "Lettrage",
     "accountingFiscalYears": "Exercices & clôture",
     "accountingBank": "Banque & rapprochement",
-    "accountingStatements": "TVA & états financiers"
+    "accountingStatements": "TVA & états financiers",
+    "equityInterests": "Prendre des parts"
   },
   "companydetailCoreModuleAlwaysActive": "Module cœur toujours actif",
   "smartAttendanceSessionsTitle": "Sessions Smart Attendance",
@@ -7632,7 +7633,8 @@
     "settingsTitle": "Vos préférences de cookies",
     "formNoticeContact": "Vos informations servent uniquement à répondre à votre demande. Base légale : votre consentement, que vous pouvez retirer à tout moment.",
     "formNoticeDemo": "Vos informations servent uniquement à organiser la démonstration demandée (finalité : vous recontacter). Base légale : votre consentement.",
-    "formNoticeNewsletter": "Votre adresse sert uniquement à vous envoyer nos conseils RH (finalité : information). Désinscription en un clic."
+    "formNoticeNewsletter": "Votre adresse sert uniquement à vous envoyer nos conseils RH (finalité : information). Désinscription en un clic.",
+    "formNoticeEquity": "Vos informations servent uniquement à étudier votre manifestation d’intérêt pour une prise de parts (finalité : vous recontacter). Base légale : votre consentement, retirable à tout moment."
   },
   "firstLoginWelcome": {
     "title": "Votre espace est prêt 🎉",
@@ -7679,7 +7681,8 @@
       "messageTooLong": "Le message est trop long",
       "phoneInvalid": "Numéro de téléphone invalide",
       "employeesInvalid": "Sélectionnez une plage d'employés",
-      "dateFuture": "La date doit être dans le futur"
+      "dateFuture": "La date doit être dans le futur",
+      "required": "Ce champ est requis"
     }
   },
   "setupInterview": {
@@ -9044,8 +9047,43 @@
     "driverOffline": "Hors ligne",
     "driverAvailable": "Disponible",
     "driverBusy": "En course",
-    "driverSuspended": "Suspendu",
-    "driverNotLinked": "Aucun profil chauffeur VTC n'est rattaché à ce compte.",
-    "marketplaceTrackingCodeRequired": "Code de suivi requis (paramètre ?code=)."
+    "driverSuspended": "Suspendu"
+  },
+  "equityInterests": {
+    "title": "Prendre des parts",
+    "subtitle": "Manifestations d’intérêt pour prendre des parts de l’entreprise (page vitrine « Devenir actionnaire »).",
+    "refresh": "Actualiser",
+    "retry": "Réessayer",
+    "loading": "Chargement…",
+    "empty": "Aucune manifestation d’intérêt pour le moment.",
+    "tabAll": "Toutes",
+    "status": {
+      "new": "Nouveau",
+      "contacted": "Contacté",
+      "qualified": "Qualifié",
+      "converted": "Converti",
+      "rejected": "Sans suite"
+    },
+    "brackets": {
+      "lt_1k": "< 1 k€",
+      "1k_10k": "1–10 k€",
+      "10k_50k": "10–50 k€",
+      "gt_50k": "> 50 k€",
+      "discuss": "À discuter"
+    },
+    "columnDate": "Date",
+    "columnName": "Nom",
+    "columnContact": "Contact",
+    "columnBracket": "Tranche",
+    "columnStatus": "Statut",
+    "columnActions": "Actions",
+    "messageLabel": "Message",
+    "countryLabel": "Pays",
+    "transitionLabel": "Changer le statut",
+    "noteLabel": "Note interne",
+    "notePlaceholder": "Note de suivi (visible par l’équipe plateforme uniquement)…",
+    "saveNote": "Enregistrer la note",
+    "searchPlaceholder": "Rechercher (email)…",
+    "pageLabel": "Page"
   }
 }

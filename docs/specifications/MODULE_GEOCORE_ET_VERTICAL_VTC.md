@@ -44,8 +44,7 @@ Règles d'isolation respectées :
 
 ### D2 — Colonnes spatiales natives
 
-- **Déviation actée (resync #8423, M-40)** : les colonnes `geography(Point, 4326)` natives + `spatialIndex` (GIST) annoncées ici **ne sont PAS livrées en v1**. Le modèle livré (migrations `2026_10_10_00010x_8358_*`, note dans `000102`) utilise des paires `decimal(10,7)` `*_latitude`/`*_longitude` — le core géospatial reconstruit le point à la volée (`ST_MakePoint`/`ST_SetSRID` côté calcul PostGIS, fallback Haversine sinon), ce qui couvre tous les besoins fonctionnels de BC-34/BC-35 sans migration de structure lourde.
-- La conversion vers `geography` native + index GIST est une **évolution ultérieure dédiée** (issue à part — migration lourde : backfill des points, bascule des lectures, index GIST ; cf. §Hors scope de `GEO_VTC_MARKETPLACE_TASKS.md`).
+- Nouvelles colonnes : `geography(Point, 4326)` via le schema builder Laravel 12 (`$table->geography('pickup_location', 'point', 4326)`) + `spatialIndex` (GIST).
 - Les colonnes historiques `latitude`/`longitude` décimales **ne sont pas migrées en v1** (pas de migration de structure sans issue dédiée ; le pilote Restaurant lit via vue d'adaptation, cf. tâche GEO-06).
 
 ### D3 — Zéro nouvelle dépendance composer en v1
@@ -120,14 +119,12 @@ LIMIT :limit;
 
 | Table | Colonnes clés |
 |---|---|
-| `vtc_drivers` | `user_id` (nullable), nom, téléphone, `status` (offline/available/busy/suspended), `vehicle_id` nullable, `current_latitude`/`current_longitude` `decimal(10,7)` *(voir note D2 — pas de `geography` native en v1)*, `location_updated_at` |
+| `vtc_drivers` | `user_id` (nullable), nom, téléphone, `status` (offline/available/busy/suspended), `vehicle_id` nullable, `current_location geography`, `location_updated_at` |
 | `vtc_vehicles` | plaque (unique par tenant), marque, modèle, couleur, places, catégorie (berline/van/moto), statut |
 | `vtc_fare_profiles` | nom, devise, `base_minor`, `per_km_minor`, `per_minute_minor`, `minimum_minor`, `is_default` |
-| `vtc_rides` | `reference` (VO lisible), passager (`user_id` nullable + nom/téléphone invité), `pickup_latitude`/`pickup_longitude` et `dropoff_latitude`/`dropoff_longitude` `decimal(10,7)` *(note D2)*, `pickup_address`, `dropoff_address`, `status`, `fare_profile_id`, `estimated_distance_m`, `estimated_duration_s`, `estimated_price_minor`, `final_price_minor` nullable, devise, `driver_id` nullable, horodatages de cycle (`requested_at…completed_at/cancelled_at`), `cancel_reason`, **`idempotency_key` unique**, `metadata jsonb`, `tracking_code_hash` nullable (#8423 — suivi invité marketplace) |
+| `vtc_rides` | `reference` (VO lisible), passager (`user_id` nullable + nom/téléphone invité), `pickup_location geography`, `pickup_address`, `dropoff_location geography`, `dropoff_address`, `status`, `fare_profile_id`, `estimated_distance_m`, `estimated_duration_s`, `estimated_price_minor`, `final_price_minor` nullable, devise, `driver_id` nullable, horodatages de cycle (`requested_at…completed_at/cancelled_at`), `cancel_reason`, **`idempotency_key` unique**, `metadata jsonb` |
 | `vtc_ride_events` | `ride_id`, `type`, `payload jsonb` — journal append-only |
-| `vtc_driver_positions` | `driver_id`, `latitude`/`longitude` `decimal(10,7)` *(note D2)*, `recorded_at`, `source` (app/traccar) — unique `(driver_id, recorded_at)` (idempotence) |
-
-> **Note D2 (resync #8423, M-40)** — contrairement au libellé initial de cette section, les positions sont stockées en paires `decimal(10,7)` et non en colonnes `geography(Point, 4326)` natives : voir la déviation actée en §D2 et la note embarquée dans la migration `2026_10_10_000102_8358_create_vtc_drivers_table.php`. Conversion `geography` + GIST = évolution ultérieure dédiée (issue séparée).
+| `vtc_driver_positions` | `driver_id`, `location geography`, `recorded_at`, `source` (app/traccar) — unique `(driver_id, recorded_at)` (idempotence) |
 
 ### 5.2 Cycle de vie d'une course (state machine)
 
