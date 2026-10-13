@@ -175,7 +175,7 @@ final class PlatformMarketingLeadController extends Controller
         $exists = DB::table(self::LEADS_TABLE)->where('id', $lead)->exists();
 
         if (! $exists) {
-            return new JsonResponse(['message' => 'Lead introuvable.'], 404);
+            return new JsonResponse(['message' => __('errors.MARKETING_LEAD_NOT_FOUND')], 404);
         }
 
         DB::table(self::LEADS_TABLE)->where('id', $lead)->update($changes);

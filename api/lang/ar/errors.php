@@ -343,4 +343,5 @@ return [
     // #8440/#8441 — verticales equity + paramétrage fundraising (contexte entreprise)
     'FUNDRAISING_VERTICAL_NOT_ENABLED' => 'ميزة حملات التبرعات غير مفعّلة لهذه الشركة.',
     'MARKETING_LEAD_NO_CHANGES' => 'لم يتم طلب أي تعديل.',
+    'MARKETING_LEAD_NOT_FOUND' => 'العميل المحتمل غير موجود.',
 ];

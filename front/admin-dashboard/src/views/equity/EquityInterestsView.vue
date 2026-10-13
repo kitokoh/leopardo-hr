@@ -180,9 +180,14 @@
 import { computed, onMounted, ref } from 'vue'
 import { ArrowPathIcon, ChevronDownIcon, InformationCircleIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
-import { useI18n } from 'vue-i18n'
+import { translate } from '@/i18n/index.js'
+import { useLocaleStore } from '@/stores/locale'
 
-const { t } = useI18n()
+const localeStore = useLocaleStore()
+
+function t(key, fallback = '') {
+  return translate(localeStore.current, key, fallback)
+}
 
 const LEAD_TYPE = 'equity_interest'
 const STATUSES = ['new', 'contacted', 'qualified', 'converted', 'rejected']

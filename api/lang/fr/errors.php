@@ -345,4 +345,5 @@ return [
     // #8440/#8441 — verticales equity + paramétrage fundraising (contexte entreprise)
     'FUNDRAISING_VERTICAL_NOT_ENABLED' => 'La verticale cagnottes n\'est pas activée pour cette entreprise.',
     'MARKETING_LEAD_NO_CHANGES' => 'Aucune modification demandée.',
+    'MARKETING_LEAD_NOT_FOUND' => 'Lead introuvable.',
 ];

@@ -351,4 +351,5 @@ return [
     // #8440/#8441 — verticales equity + paramétrage fundraising (contexte entreprise)
     'FUNDRAISING_VERTICAL_NOT_ENABLED' => 'The fundraising vertical is not enabled for this company.',
     'MARKETING_LEAD_NO_CHANGES' => 'No changes requested.',
+    'MARKETING_LEAD_NOT_FOUND' => 'Lead not found.',
 ];
