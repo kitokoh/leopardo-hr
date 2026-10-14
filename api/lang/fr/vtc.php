@@ -12,8 +12,14 @@ return [
     'purge_positions_done_cli' => 'Purge VTC terminée : :deleted position(s) supprimée(s) (rétention :days j, cutoff :cutoff).',
     'driver_delete_has_rides' => 'Chauffeur ayant des courses : suppression impossible (préférer la suspension — l\'historique est conservé).',
     'driver_user_not_found' => 'Compte employé introuvable dans ce tenant.',
+    'driver_not_linked' => 'Aucun profil chauffeur VTC n\'est rattaché à ce compte.',
     'driver_vehicle_not_found' => 'Véhicule introuvable dans ce tenant.',
     'fare_profile_delete_in_use' => 'Grille tarifaire référencée par des courses : suppression impossible (les courses conservent leur devis historisé).',
     'vehicle_delete_assigned' => 'Véhicule encore affecté à un chauffeur : retirer l\'affectation avant suppression.',
     'vehicle_plate_taken' => 'La plaque :plate est déjà enregistrée pour ce tenant.',
+
+    // #8423 (Phase 2) — marketplace publique VTC (suivi invité, M-14).
+    'marketplace' => [
+        'tracking_code_required' => 'Code de suivi requis (paramètre ?code=).',
+    ],
 ];

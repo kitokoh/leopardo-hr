@@ -9,9 +9,11 @@ use App\Modules\Vtc\Domain\Enums\VtcRideStatus;
 use App\Modules\Vtc\Domain\Events\VtcRideRequested;
 use App\Modules\Vtc\Domain\Models\VtcRide;
 use App\Modules\Vtc\Domain\Models\VtcRideEvent;
+use App\Modules\Vtc\Domain\Support\VtcTrackingCode;
 use App\Modules\Vtc\Domain\ValueObjects\IdempotencyKey;
 use App\Modules\Vtc\Domain\ValueObjects\RideReference;
 use App\Shared\Geo\GeoPoint;
+use App\Shared\Services\PublicCommerce\TrackingSecretService;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\QueryException;
 
@@ -30,6 +32,13 @@ use Illuminate\Database\QueryException;
  *
  * La référence VTC-YYYY-NNNNNN est séquencée par tenant et par année ; une
  * collision sous concurrence est résorbée par re-comptage (3 tentatives).
+ *
+ * #8423 (M-13) — code de suivi public : chaque course créée porte le hash
+ * SHA-256 d'un code aléatoire (8 symboles non ambigus, VtcTrackingCode) ;
+ * le code en clair est retourné au 3e élément du tuple — UNE SEULE FOIS
+ * (null au rejeu idempotent, pattern present-once BOS-050 — la marketplace
+ * publique le présente au passager invité, l'API passager authentifiée
+ * l'ignore sans casser son contrat).
  */
 final class RequestRideAction
 {
@@ -38,25 +47,27 @@ final class RequestRideAction
     public function __construct(
         private readonly EstimateRideFareAction $estimateFare,
         private readonly DatabaseManager $db,
+        private readonly TrackingSecretService $trackingSecrets,
     ) {}
 
     /**
      * @param  array{passenger_user_id: int|null, passenger_name: string|null, passenger_phone: string|null, pickup_address: string|null, dropoff_address: string|null, fare_profile_id: int|null}  $data
-     * @return array{0: VtcRide, 1: bool} [course, true si rejeu idempotent]
+     * @return array{0: VtcRide, 1: bool, 2: string|null} [course, true si rejeu idempotent, code de suivi en clair (création uniquement)]
      */
     public function execute(array $data, GeoPoint $pickup, GeoPoint $dropoff, IdempotencyKey $key): array
     {
         $existing = $this->findByIdempotencyKey($key);
 
         if ($existing instanceof VtcRide) {
-            return [$existing, true];
+            return [$existing, true, null];
         }
 
         $estimate = $this->estimateFare->execute($pickup, $dropoff, $data['fare_profile_id']);
+        $trackingCode = VtcTrackingCode::generate();
 
         for ($attempt = 1; $attempt <= self::MAX_ATTEMPTS; $attempt++) {
             try {
-                $ride = $this->db->transaction(function () use ($data, $pickup, $dropoff, $key, $estimate): VtcRide {
+                $ride = $this->db->transaction(function () use ($data, $pickup, $dropoff, $key, $estimate, $trackingCode): VtcRide {
                     /** @var VtcRide $ride */
                     $ride = VtcRide::query()->create([
                         'reference' => $this->nextReference()->toString(),
@@ -77,6 +88,10 @@ final class RequestRideAction
                         'currency' => $estimate->currency,
                         'requested_at' => now(),
                         'idempotency_key' => $key->toString(),
+                        // #8464 : HMAC keyed (pas de SHA-256 nu) — un code
+                        // de suivi à 40 bits n'est plus brute-forçable hors
+                        // ligne en cas de fuite de la base.
+                        'tracking_code_hash' => $this->trackingSecrets->hmac($trackingCode),
                     ]);
 
                     $this->journal($ride, VtcRideEventType::RideRequested, [
@@ -100,13 +115,13 @@ final class RequestRideAction
                     $ride->passenger_user_id,
                 );
 
-                return [$ride, false];
+                return [$ride, false, $trackingCode];
             } catch (QueryException $exception) {
                 // Doublon d'idempotence sous concurrence : le rejeu gagne.
                 $existing = $this->findByIdempotencyKey($key);
 
                 if ($existing instanceof VtcRide) {
-                    return [$existing, true];
+                    return [$existing, true, null];
                 }
 
                 // Collision de référence (séquenceur) : re-compter et réessayer.

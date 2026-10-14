@@ -11,8 +11,10 @@ use Illuminate\Queue\SerializesModels;
  * Course VTC annulée (BC-35 VTC, VTC-03/#8359).
  *
  * Motif tracé (spec §5.2) : passager avant acceptation, chauffeur ou
- * exploitant ensuite — le dispatch (VTC-04) l'écoute pour stopper la
- * cascade d'offres en cours.
+ * exploitant ensuite. La cascade d'offres s'arrête via les gardes de
+ * statut du dispatch (qui n'offre qu'en `dispatching`) ; #8464 — la
+ * partie non actrice de l'annulation est notifiée
+ * (`NotifyVtcRideCancelledListener`).
  */
 class VtcRideCancelled
 {

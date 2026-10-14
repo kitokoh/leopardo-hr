@@ -10,6 +10,11 @@ import type {
   MarketplaceTripDetail,
   SearchMeta,
   TrackedBooking,
+  VtcEstimate,
+  VtcGeoPointInput,
+  VtcGuestRideCreated,
+  VtcOperator,
+  VtcRideTracking,
 } from "@/lib/types";
 import { resolveBackendBaseUrl } from "@/lib/backend-url";
 
@@ -219,4 +224,73 @@ export async function fetchMyBookings(
   return request<{ data: CustomerBooking[]; meta: SearchMeta }>(
     `/api/v1/${ACCOUNT}/bookings?per_page=${perPage}`,
   );
+}
+
+// ── Marketplace publique VTC/taxi (#8423, M-30) ────────────────────────────
+// Surface 100 % invitée (aucun compte) : annuaire des opérateurs opt-in,
+// devis, réservation idempotente, suivi par référence + code. Le proxy
+// same-origin relaie `public/vtc/marketplace/*` SANS credentials (fail-
+// closed, comme le reste de la surface publique hors compte).
+
+const VTC_MARKETPLACE = "public/vtc/marketplace";
+
+/** Annuaire des opérateurs VTC opt-in (SSR — page /vtc). */
+export async function getVtcOperatorsServer(): Promise<{
+  data: VtcOperator[];
+}> {
+  return request(`${resolveBackendBaseUrl()}/${VTC_MARKETPLACE}/operators`);
+}
+
+/** Annuaire des opérateurs VTC opt-in (navigateur — revalidation client). */
+export async function fetchVtcOperators(): Promise<VtcOperator[]> {
+  const payload = await request<{ data: VtcOperator[] }>(
+    `/api/v1/${VTC_MARKETPLACE}/operators`,
+  );
+  return payload.data;
+}
+
+/** Devis public d'une course chez un opérateur (tenant résolu par slug). */
+export async function estimateVtcRide(input: {
+  operator: string;
+  pickup: VtcGeoPointInput;
+  dropoff: VtcGeoPointInput;
+}): Promise<VtcEstimate> {
+  const payload = await request<{ data: VtcEstimate }>(
+    `/api/v1/${VTC_MARKETPLACE}/estimate`,
+    { method: "POST", body: JSON.stringify(input) },
+  );
+  return payload.data;
+}
+
+/**
+ * Réservation invitée — idempotence par clé UUID générée côté client et
+ * conservée jusqu'au succès : un double tap / retry réseau renvoie la MÊME
+ * course (200 sans re-présenter le code), jamais de doublon.
+ */
+export async function createVtcRide(input: {
+  operator: string;
+  idempotency_key: string;
+  pickup: VtcGeoPointInput;
+  dropoff: VtcGeoPointInput;
+  pickup_address?: string;
+  dropoff_address?: string;
+  passenger_name: string;
+  passenger_phone: string;
+}): Promise<VtcGuestRideCreated> {
+  const payload = await request<{ data: VtcGuestRideCreated }>(
+    `/api/v1/${VTC_MARKETPLACE}/rides`,
+    { method: "POST", body: JSON.stringify(input) },
+  );
+  return payload.data;
+}
+
+/** Suivi invité par référence + code de suivi (404 uniforme anti-énumération). */
+export async function trackVtcRide(
+  reference: string,
+  code: string,
+): Promise<VtcRideTracking> {
+  const payload = await request<{ data: VtcRideTracking }>(
+    `/api/v1/${VTC_MARKETPLACE}/rides/${encodeURIComponent(reference)}?code=${encodeURIComponent(code)}`,
+  );
+  return payload.data;
 }

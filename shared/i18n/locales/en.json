@@ -7554,7 +7554,9 @@
     "driverOffline": "Offline",
     "driverAvailable": "Available",
     "driverBusy": "On a ride",
-    "driverSuspended": "Suspended"
+    "driverSuspended": "Suspended",
+    "driverNotLinked": "No VTC driver profile is linked to this account.",
+    "marketplaceTrackingCodeRequired": "Tracking code required (?code= parameter)."
   },
   "cagnottesModule": {
     "title": "Solidarity fundraisers",
