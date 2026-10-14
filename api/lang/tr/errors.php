@@ -339,4 +339,9 @@ return [
 
     // #8019 — HospitalityManager.
     'CHECKOUT_BEFORE_CHECKIN' => 'Çıkış tarihi giriş tarihinden sonra olmalıdır.',
+
+    // #8440/#8441 — verticales equity + paramétrage fundraising (contexte entreprise)
+    'FUNDRAISING_VERTICAL_NOT_ENABLED' => 'Bağış toplama dikeyi bu şirket için etkinleştirilmemiş.',
+    'MARKETING_LEAD_NO_CHANGES' => 'Değişiklik istenmedi.',
+    'MARKETING_LEAD_NOT_FOUND' => 'Potansiyel müşteri bulunamadı.',
 ];

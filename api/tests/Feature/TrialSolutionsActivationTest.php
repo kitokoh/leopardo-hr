@@ -73,6 +73,12 @@ class TrialSolutionsActivationTest extends TestCase
         $this->assertTrue($company->hasFeature('notifications'));
         $this->assertTrue($company->hasFeature('rh'));
 
+        // #8462 (vague 4) — la verticale demandée est MÉMORISÉE (miroir du
+        // parcours guidé) : l'entretien de préparation ne re-demandera pas
+        // le métier au premier login (`metadata.vertical`).
+        $company->refresh();
+        $this->assertSame('fuel_station', $company->metadata['vertical'] ?? null);
+
         // Activation auditée (audit_logs = table tenant → contexte tenant,
         // pattern SelfServiceTrialTest).
         app(TenantManager::class)->setTenant($company);

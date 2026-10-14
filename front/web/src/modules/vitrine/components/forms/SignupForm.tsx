@@ -45,6 +45,8 @@ import { trackFunnelStep, FUNNEL_EVENTS } from '@/modules/vitrine/lib/funnel';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
 import { fetchSupportedCountries, type SupportedCountryOption } from '@/modules/vitrine/data/supported-countries';
+import { isPackSignupSlug, packSolutionCode } from '@/modules/vitrine/lib/pack-signup';
+import { packDisplayName } from '@/modules/vitrine/data/pack-pages';
 import { t } from '@/lib/i18n/locale-catalog';
 import { persistSignupSector, readSignupSectorFromUrl } from '@/lib/signup-sector';
 import {
@@ -109,7 +111,7 @@ type SignupFormCopy = Record<(typeof signupFormKeys)[number], string>;
 // Clés du catalogue i18n partagé (shared/i18n/locales/*.json — source de
 // vérité). Le record est construit via t() (garde PA2-I18N-014 : aucun
 // littéral utilisateur ajouté dans le composant).
-const signupFormKeys = ['badge', 'title', 'subtitle', 'profileTitle', 'profileSubtitle', 'profileCompanyTitle', 'profileCompanyDesc', 'profileCompanyBullet1', 'profileCompanyBullet2', 'profileCompanyBullet3', 'profileSoloTitle', 'profileSoloDesc', 'profileSoloBullet1', 'profileSoloBullet2', 'profileSoloBullet3', 'profileCompanyBadge', 'profileSoloBadge', 'toolsTitle', 'toolsSubtitle', 'toolsTeamGroup', 'toolsManagementGroup', 'toolsEmployees', 'toolsEmployeesDesc', 'toolsAttendance', 'toolsAttendanceDesc', 'toolsAbsences', 'toolsAbsencesDesc', 'toolsPayroll', 'toolsPayrollDesc', 'toolsAccounting', 'toolsAccountingDesc', 'toolsCrm', 'toolsCrmDesc', 'toolsReports', 'toolsReportsDesc', 'toolsMarketing', 'toolsMarketingDesc', 'toolsHint', 'verticalTitle', 'verticalSubtitle', 'verticalRestaurant', 'verticalRestaurantDesc', 'verticalFuel', 'verticalFuelDesc', 'verticalEdu', 'verticalEduDesc', 'verticalNone', 'verticalNoneDesc', 'continueLabel', 'stepProfileLabel', 'stepToolsLabel', 'stepIdentityLabel', 'soloNote', 'labelEmail', 'placeholderEmail', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelCountry', 'countryPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'setPasswordTitle', 'setPasswordSubtitle', 'setPasswordLabel', 'setPasswordConfirmLabel', 'setPasswordSubmit', 'setPasswordSubmitting', 'setPasswordSuccess', 'setPasswordTooWeak', 'setPasswordMismatch', 'setPasswordUnavailable', 'goToLogin', 'planSelected', 'planChange', 'countryDetectionFailed', 'verifiedByGoogle', 'defaultError', 'otpResend', 'otpResending', 'otpResent', 'otpResendError', 'preparingLonger', 'supportCta'] as const;
+const signupFormKeys = ['badge', 'title', 'subtitle', 'profileTitle', 'profileSubtitle', 'profileCompanyTitle', 'profileCompanyDesc', 'profileCompanyBullet1', 'profileCompanyBullet2', 'profileCompanyBullet3', 'profileSoloTitle', 'profileSoloDesc', 'profileSoloBullet1', 'profileSoloBullet2', 'profileSoloBullet3', 'profileCompanyBadge', 'profileSoloBadge', 'toolsTitle', 'toolsSubtitle', 'toolsTeamGroup', 'toolsManagementGroup', 'toolsEmployees', 'toolsEmployeesDesc', 'toolsAttendance', 'toolsAttendanceDesc', 'toolsAbsences', 'toolsAbsencesDesc', 'toolsPayroll', 'toolsPayrollDesc', 'toolsAccounting', 'toolsAccountingDesc', 'toolsCrm', 'toolsCrmDesc', 'toolsReports', 'toolsReportsDesc', 'toolsMarketing', 'toolsMarketingDesc', 'toolsHint', 'verticalTitle', 'verticalSubtitle', 'verticalRestaurant', 'verticalRestaurantDesc', 'verticalFuel', 'verticalFuelDesc', 'verticalEdu', 'verticalEduDesc', 'verticalNone', 'verticalNoneDesc', 'continueLabel', 'stepProfileLabel', 'stepToolsLabel', 'stepIdentityLabel', 'soloNote', 'labelEmail', 'placeholderEmail', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelCountry', 'countryPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'setPasswordTitle', 'setPasswordSubtitle', 'setPasswordLabel', 'setPasswordConfirmLabel', 'setPasswordSubmit', 'setPasswordSubmitting', 'setPasswordSuccess', 'setPasswordTooWeak', 'setPasswordMismatch', 'setPasswordUnavailable', 'goToLogin', 'planSelected', 'planChange', 'packSelected', 'countryDetectionFailed', 'verifiedByGoogle', 'defaultError', 'otpResend', 'otpResending', 'otpResent', 'otpResendError', 'preparingLonger', 'supportCta'] as const;
 
 function buildSignupFormCopy(locale: AppLocale): SignupFormCopy {
   const copy = {} as SignupFormCopy;
@@ -156,9 +158,16 @@ export function SignupForm({
   // formulaire directement (fin du choix de plan à l'inscription) ; quand il
   // est présent (campagne ciblant une offre), le rappel reste affiché.
   const [selectedPlan, setSelectedPlan] = useState('');
+  // #8462 (vague 4) — métier choisi sur la vitrine (`/signup?pack=<slug>`) :
+  // l'espace est provisionné AVEC sa verticale (`solutions[]`, BC-25 #6693)
+  // et l'entretien de préparation ne redemande pas le secteur. Slug inconnu
+  // → ignoré silencieusement (fail-closed, parcours inchangé).
+  const [selectedPack, setSelectedPack] = useState('');
   useEffect(() => {
     if (typeof window === 'undefined') return;
     setSelectedPlan(new URLSearchParams(window.location.search).get('plan') ?? '');
+    const pack = new URLSearchParams(window.location.search).get('pack');
+    setSelectedPack(isPackSignupSlug(pack) ? pack : '');
   }, []);
 
   // #8454 — métier présélectionné : un visiteur venu d'une page métier
@@ -479,6 +488,9 @@ export function SignupForm({
       const payload: SignupFormData = {
         ...data,
         role: data.role ?? 'founder',
+        // #8462 — la verticale déclarée sur la vitrine prime : provisionnée
+        // avec l'espace, elle dispense la question secteur de l'entretien.
+        ...(selectedPack ? { solutions: [packSolutionCode(selectedPack) as string] } : {}),
       };
       lastSignupPayloadRef.current = payload;
       const response = await submitSignupForm(payload, page);
@@ -798,6 +810,17 @@ export function SignupForm({
                   >
                     {c.planChange}
                   </Link>
+                </div>
+              )}
+
+              {/* #8462 — confirmation du pack métier pré-sélectionné : le
+                  visiteur voit que son choix de la vitrine est bien suivi
+                  (activation à la création de l'espace, sans re-question). */}
+              {selectedPack !== '' && packDisplayName(selectedPack, locale) !== null && (
+                <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm dark:border-emerald-900 dark:bg-emerald-950/30">
+                  <span className="font-semibold text-emerald-800 dark:text-emerald-200">
+                    {c.packSelected} : {packDisplayName(selectedPack, locale)}
+                  </span>
                 </div>
               )}
 

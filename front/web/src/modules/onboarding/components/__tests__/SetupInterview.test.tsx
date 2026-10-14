@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { apiFetch } from '@/lib/api-client';
 import type { StoredAuthUser } from '@/lib/i18n';
-import { SetupInterview, shouldShowSetupInterview } from '../SetupInterview';
+import { SetupInterview, hasKnownVertical, shouldShowSetupInterview } from '../SetupInterview';
 
 /**
  * #7493 — entretien de préparation conversationnel.

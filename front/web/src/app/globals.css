@@ -167,20 +167,66 @@ html {
   box-shadow: 0 20px 60px -15px rgb(255 255 255 / 0.3);
 }
 
-/* ── Visuel 3D « Pile Leopardo » (hero de la vitrine) ────────────────────────
-   Ces valeurs de mise en forme vivent ici plutôt que dans les .tsx pour deux
-   raisons : (1) la garde i18n `check-i18n-diff.js` scanne les TSX/TS et prend
-   les longues chaînes de classes/styles pour du texte utilisateur — les
-   extensions .css ne sont pas scannées, c'est donc le bon endroit pour du
-   style pur ; (2) une ombre ou un dégradé arbitraire n'a rien à faire dans un
-   attribut className. Aucun `#rrggbb` ici : la garde design-tokens lit aussi
-   les .css, on reste en rgb()/rgba(). */
-.solution-stack-glow-bottom {
-  background: radial-gradient(ellipse 60% 50% at 50% 120%, rgba(16, 185, 129, 0.22), transparent);
+/* ── Héro « stage » (#8437) — trame discrète de la scène nuit permanente ──
+   Style pur, donc ici et non dans le TSX : la garde i18n `check-i18n-diff.js`
+   scanne les .tsx et prend les longues chaînes de style pour du texte
+   utilisateur ; les .css ne sont pas scannés. Aucun `#rrggbb` ici : la garde
+   design-tokens lit aussi les .css, on reste en rgb()/rgba(). */
+.hero-stage-grid {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.4) 1px, transparent 1px);
+  background-size: 60px 60px;
 }
-.solution-stack-glow-top {
-  background: radial-gradient(ellipse 40% 40% at 50% -10%, rgba(34, 211, 238, 0.14), transparent);
+
+/* ── Héro « stage » — pile d'actions sur petit MOBILE portrait (#8461) ────
+   Titre + boutons + formulaire rapide ne tiennent pas dans un viewport court
+   ET étroit (ex. 375×667) : le héro grandit au-delà de l'écran pour que
+   rien ne se chevauche. Réservé au mobile portrait — jamais appliqué aux
+   desktop/laptop courts (1280×720), où le héro reste exactement 100dvh. */
+@media (max-width: 639.98px) and (max-height: 740px) {
+  .hero-stage-cta-tall {
+    min-height: 132dvh;
+  }
 }
+
+/* ── Constellation France du héro « stage » (#8461, vague 4) ──────────────
+   Dérive très lente de la silhouette et scintillement doux des villes-nœuds.
+   Style pur, donc ici et non dans le TSX (même garde i18n/design-tokens que
+   `.hero-stage-grid` ci-dessus ; couleurs portées par le SVG, pas par le CSS).
+   Désactivé en `prefers-reduced-motion` : la silhouette reste statique. */
+@media (prefers-reduced-motion: no-preference) {
+  .france-constellation-drift {
+    animation: france-drift 46s ease-in-out infinite;
+  }
+  .france-city-twinkle {
+    animation: france-twinkle 5.5s ease-in-out infinite;
+  }
+  .france-city-twinkle:nth-child(3n) {
+    animation-delay: 1.8s;
+  }
+  .france-city-twinkle:nth-child(3n + 1) {
+    animation-delay: 3.1s;
+  }
+  @keyframes france-drift {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+      transform: translate3d(0.8%, -1.2%, 0) scale(1.03);
+    }
+  }
+  @keyframes france-twinkle {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+}
+
 /* ── Mascotte Leo (pieuvre) — flottement doux, purement décoratif ──────────
    Désactivé pour les utilisateurs en `prefers-reduced-motion` : la mascotte
    reste alors statique, aucune information n'est perdue. */

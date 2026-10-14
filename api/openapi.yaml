@@ -27012,6 +27012,128 @@ paths:
           $ref: '#/components/responses/Error404'
         '409':
           description: Session déjà committed/cancelled
+  /platform/companies/{company}/fundraising/settings:
+    get:
+      tags:
+      - Platform
+      - Fundraising
+      summary: Paramétrage Fundraising d'une entreprise (contexte plateforme)
+      description: 'Fix #8441 — la console admin ouvre l''ecran « Cagnottes — Parametrage » depuis la fiche entreprise : cette route lit la ligne `fundraising_settings` du tenant CIBLE (et non du tenant de session) via `TenantManager::withinTenant()`. Meme ressource que `GET /fundraising/settings`. Reservee a `companies.manage`, fail-closed 403 si la verticale n''est pas activee pour l''entreprise.'
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        description: Identifiant de l'entreprise cible.
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Parametrage courant de l'entreprise (persiste ou defauts)
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission companies.manage requise ou verticale inactive
+        '404':
+          description: Entreprise inconnue
+    put:
+      tags:
+      - Platform
+      - Fundraising
+      summary: Enregistrer le paramétrage Fundraising d'une entreprise (contexte plateforme)
+      description: 'Fix #8441 — upsert de la ligne `fundraising_settings` du tenant CIBLE. Meme validation que `PUT /fundraising/settings` (`enabled_methods` non vide, max > min).'
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        description: Identifiant de l'entreprise cible.
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [enabled_methods]
+              properties:
+                enabled_methods:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: string
+                    enum: [card, mobile_money, bank_transfer, cash]
+                default_min_amount:
+                  type: number
+                  nullable: true
+                default_max_amount:
+                  type: number
+                  nullable: true
+                default_suggested_amounts:
+                  type: array
+                  nullable: true
+                  items:
+                    type: number
+                allow_anonymous:
+                  type: boolean
+                allow_messages:
+                  type: boolean
+                show_supporters:
+                  type: boolean
+      responses:
+        '200':
+          description: Parametrage enregistre
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission companies.manage requise ou verticale inactive
+        '404':
+          description: Entreprise inconnue
+        '422':
+          description: Payload invalide
+  /platform/marketing/leads/{lead}:
+    patch:
+      tags:
+      - Platform
+      summary: Qualifier un lead vitrine (statut et/ou note interne)
+      description: 'Tranche #8440 — l''ecran « Prendre des parts » (suivi des intentions de prise de parts) et le pipeline CRM de la console ne pouvaient que lire les leads : cette route permet la qualification (transitions de statut du pipeline, note interne). Reservee a la permission plateforme `crm.view`. Au moins un champ (`status` ou `note`) est requis, sinon 422 sans changement.'
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: lead
+        in: path
+        required: true
+        description: Identifiant du lead.
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [new, contacted, qualified, converted, rejected]
+                note:
+                  type: string
+                  nullable: true
+                  maxLength: 2000
+      responses:
+        '200':
+          description: Lead mis a jour (representation complete)
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission plateforme crm.view requise
+        '404':
+          description: Lead introuvable
+        '422':
+          description: Aucune modification demandee ou payload invalide
   /platform/marketing/leads:
     get:
       tags:
@@ -27157,6 +27279,46 @@ paths:
           description: Parametre de filtre invalide
         '403':
           description: Permission plateforme `crm.view` absente
+  /admin/marketing/leads/{lead}:
+    patch:
+      tags:
+      - Platform
+      summary: Qualifier un lead vitrine (alias /admin de la route plateforme)
+      description: 'Alias `/admin` de `PATCH /platform/marketing/leads/{lead}` (#8440) — meme controleur, meme garde `crm.view` : la SPA admin-dashboard consomme le prefixe `/admin`. Qualification des intentions de prise de parts et de tout lead du pipeline.'
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: lead
+        in: path
+        required: true
+        description: Identifiant du lead.
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [new, contacted, qualified, converted, rejected]
+                note:
+                  type: string
+                  nullable: true
+                  maxLength: 2000
+      responses:
+        '200':
+          description: Lead mis a jour (representation complete)
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission plateforme crm.view requise
+        '404':
+          description: Lead introuvable
+        '422':
+          description: Aucune modification demandee ou payload invalide
   /admin/marketing/leads:
     get:
       tags:

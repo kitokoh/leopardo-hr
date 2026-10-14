@@ -1565,6 +1565,7 @@
     "planContinue": "Continue with this plan",
     "planSelected": "Selected plan",
     "planChange": "Change",
+    "packSelected": "Pre-selected trade pack",
     "countryDetectionFailed": "Select your country.",
     "otpResend": "Resend code",
     "otpResending": "Sending a new code…",
@@ -1697,7 +1698,8 @@
     "settingsTitle": "Your cookie preferences",
     "formNoticeContact": "Your details are used only to answer your request. Legal basis: your consent, which you can withdraw at any time.",
     "formNoticeDemo": "Your details are used only to arrange the requested demo (purpose: getting back to you). Legal basis: your consent.",
-    "formNoticeNewsletter": "Your address is used only to send you our HR tips (purpose: information). One-click unsubscribe."
+    "formNoticeNewsletter": "Your address is used only to send you our HR tips (purpose: information). One-click unsubscribe.",
+    "formNoticeEquity": "Your details are used only to review your expression of interest in taking shares (purpose: getting back to you). Legal basis: your consent, which you can withdraw at any time."
   },
   "navigation": {
     "analytics": "Analytics",
@@ -6408,7 +6410,8 @@
       "messageTooLong": "Message is too long",
       "phoneInvalid": "Invalid phone number",
       "employeesInvalid": "Select an employee range",
-      "dateFuture": "Date must be in the future"
+      "dateFuture": "Date must be in the future",
+      "required": "This field is required"
     }
   },
   "setupInterview": {
@@ -6594,7 +6597,9 @@
     },
     "hero3d": {
       "hint": "Click a module to explore",
-      "demo": "Demo"
+      "demo": "Demo",
+      "cagnottes": "Fundraisers",
+      "freeTrial": "Free trial"
     }
   },
   "commerce": {

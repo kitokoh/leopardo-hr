@@ -401,6 +401,20 @@ export const pageMetadata = {
     ],
     ogImage: `${siteUrl}/og/default.png`,
   },
+  // #8440 — page « Devenir actionnaire » (entrée footer discrète) :
+  // manifestation d'intérêt non contraignante, pas une offre publique.
+  investir: {
+    title: "Devenir actionnaire",
+    description:
+      "Manifestez votre intérêt pour prendre des parts de Leopardo : démarche sans engagement, échange direct avec la direction.",
+    keywords: [
+      "investir Leopardo",
+      "devenir actionnaire",
+      "prendre des parts",
+      "ouverture de capital",
+    ],
+    ogImage: `${siteUrl}/og/default.png`,
+  },
 
   guideRhStartup: {
     title: "Guide Complet RH pour Startup | Télécharger",
@@ -651,6 +665,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     docs: { title: "API documentation & technical guides", description: "Technical documentation and integration guides for the Leopardo API: authentication, endpoints and webhooks." },
     download: { title: "Desktop and mobile apps", description: "Download the ZKTeco desktop client and Leopardo mobile apps for employees, managers and admins." },
     contact: { title: "Contact Us | Support and Sales", description: "A question about Leopardo? Contact our sales or support team by email, phone or chat." },
+    investir: { title: "Become a shareholder", description: "Express your interest in taking shares in Leopardo: a non-binding step, with a direct conversation with the founders." },
     guideRhStartup: { title: "Complete HR Guide for Startups | Download", description: "Complete HR guide for startups. Advice, templates and best practices. Free download." },
     guidePlanningEmployes: { title: "Employee Planning Template | Download Excel", description: "Employee planning template. Free, flexible and easy-to-use Excel template." },
     guideChecklistPaie: { title: "2026 Payroll Checklist | Free Download", description: "Complete checklist for your payroll. Checks and compliance. Free download." },
@@ -686,6 +701,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     docs: { title: "API dokümantasyonu ve teknik rehberler", description: "Leopardo API'si için teknik dokümantasyon ve entegrasyon rehberleri: kimlik doğrulama, uç noktalar ve webhook'lar." },
     download: { title: "Masaüstü ve mobil uygulamalar", description: "ZKTeco masaüstü istemcisini ve çalışan, yönetici ve admin uygulamaları için Leopardo mobil uygulamalarını indirin." },
     contact: { title: "İletişim | Destek ve Satış", description: "Leopardo hakkında bir sorunuz mu var? Satış veya destek ekibimizle e-posta, telefon veya sohbet yoluyla iletişime geçin." },
+    investir: { title: "Hissedar olun", description: "Leopardo'dan hisse alma ilginizi bildirin: bağlayıcı olmayan bir adım, yönetimle doğrudan görüşme." },
     guideRhStartup: { title: "Startup'lar için Eksiksiz İK Rehberi | İndir", description: "Startup'lar için eksiksiz İK rehberi. Tavsiyeler, şablonlar ve en iyi uygulamalar. Ücretsiz indirin." },
     guidePlanningEmployes: { title: "Çalışan Planlama Şablonu | Excel İndir", description: "Çalışan planlama şablonu. Ücretsiz, esnek ve kullanımı kolay Excel şablonu." },
     guideChecklistPaie: { title: "2026 Maaş Kontrol Listesi | Ücretsiz İndir", description: "Maaş işlemleriniz için eksiksiz kontrol listesi. Kontroller ve uyumluluk. Ücretsiz indirin." },
@@ -721,6 +737,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     docs: { title: "توثيق واجهة API والأدلة الفنية", description: "توثيق فني وأدلة تكامل لواجهة برمجة ليوباردو: المصادقة ونقاط النهاية وwebhooks." },
     download: { title: "تطبيق الجوال وسطح المكتب", description: "نزّل تطبيق سطح المكتب ZKTeco وتطبيقات ليوباردو للجوال للموظفين والمديرين والمشرفين." },
     contact: { title: "اتصل بنا | الدعم والمبيعات", description: "لديك سؤال عن ليوباردو؟ تواصل مع فريق المبيعات أو الدعم عبر البريد الإلكتروني أو الهاتف أو الدردشة." },
+    investir: { title: "كن مساهماً", description: "عبّر عن اهتمامك بالمساهمة في رأس مال ليوباردو: خطوة غير ملزمة وحوار مباشر مع الإدارة." },
     guideRhStartup: { title: "الدليل الشامل للموارد البشرية للشركات الناشئة | تنزيل", description: "دليل موارد بشرية شامل للشركات الناشئة. نصائح وقوالب وأفضل الممارسات. تنزيل مجاني." },
     guidePlanningEmployes: { title: "قالب جدولة الموظفين | تنزيل Excel", description: "قالب جدولة للموظفين. قالب Excel مجاني ومرن وسهل الاستخدام." },
     guideChecklistPaie: { title: "قائمة فحص الرواتب 2026 | تنزيل مجاني", description: "قائمة فحص شاملة لرواتبك. تحققات وامتثال. تنزيل مجاني." },

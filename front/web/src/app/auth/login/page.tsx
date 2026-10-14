@@ -570,23 +570,26 @@ function LoginInner() {
       <div className="absolute inset-0 z-0 opacity-10 login-grid-pattern"></div>
 
       <div className="mx-auto grid min-h-[calc(100vh-3rem)] w-full max-w-6xl overflow-hidden rounded-[28px] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 backdrop-blur-xl shadow-2xl shadow-slate-200/70 dark:shadow-black/50 lg:grid-cols-[0.95fr_1.05fr] relative z-10 animate-fade-in">
-        <section className="relative hidden flex-col justify-between bg-slate-950 p-10 text-white lg:flex overflow-hidden">
-          <div className="absolute inset-0 opacity-70 [background:radial-gradient(circle_at_18%_12%,rgba(16,185,129,0.20),transparent_32%),radial-gradient(circle_at_84%_20%,rgba(56,189,248,0.18),transparent_30%)]" />
+        {/* #8419 — panneau gauche en fond BLANC comme /signup (la référence) :
+            fini le panneau ardoise sombre qui jurait avec le formulaire clair.
+            Le mode sombre conserve la version ardoise via les variants dark:. */}
+        <section className="relative hidden flex-col justify-between bg-white p-10 text-slate-950 lg:flex overflow-hidden dark:bg-slate-950 dark:text-white">
+          <div className="absolute inset-0 opacity-70 [background:radial-gradient(circle_at_18%_12%,rgba(16,185,129,0.14),transparent_32%),radial-gradient(circle_at_84%_20%,rgba(56,189,248,0.12),transparent_30%)] dark:[background:radial-gradient(circle_at_18%_12%,rgba(16,185,129,0.20),transparent_32%),radial-gradient(circle_at_84%_20%,rgba(56,189,248,0.18),transparent_30%)]" />
 
           {/* Internal section decoration */}
-          <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-emerald-500/20 rounded-full blur-3xl"></div>
+          <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-emerald-500/15 rounded-full blur-3xl dark:bg-emerald-500/20"></div>
 
           <div className="relative">
-            <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-200 transition hover:text-white">
+            <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900 dark:text-slate-200 dark:hover:text-white">
               <ArrowRight className="h-4 w-4 rotate-180" aria-hidden="true" />
               {labels.login.back}
             </Link>
             <div className="mt-16 space-y-5">
-              <span className="inline-flex items-center gap-2 rounded-full border border-emerald-300/30 bg-emerald-300/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-emerald-100">
+              <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-emerald-700 dark:border-emerald-300/30 dark:bg-emerald-300/10 dark:text-emerald-100">
                 <ShieldCheck className="h-4 w-4" aria-hidden="true" />
                 {labels.login.secureBadge}
               </span>
-              <h1 className="max-w-md text-4xl font-bold leading-tight tracking-normal">
+              <h1 className="max-w-md text-4xl font-bold leading-tight tracking-normal text-slate-950 dark:text-white">
                 {labels.login.heroTitle}
               </h1>
             </div>

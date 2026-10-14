@@ -7,7 +7,6 @@ import { apiFetch } from '@/lib/api-client';
 import { LeoMascot } from '@/components/ui/LeoMascot';
 import type { AppLocale, StoredAuthUser } from '@/lib/i18n';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
-import { clearSignupSector, peekSignupSector } from '@/lib/signup-sector';
 
 /**
  * #7493 — entretien de préparation conversationnel de première connexion.
@@ -50,6 +49,29 @@ type QuestionDef = {
 };
 
 const isSolo = (answers: InterviewAnswers) => answers.company_type === 'solo';
+
+/**
+ * #8462 (vague 4) — le métier est-il déjà connu ? Vrai quand la société a
+ * été provisionnée AVEC une verticale (pack choisi sur la vitrine) :
+ * `VerifyTrialSignup` (self-service) et `ProvisionGuidedTrial` (guidé)
+ * peuplent `companies.metadata.vertical`. Retour propriétaire : re-poser
+ * la question du métier « devient bête » — l'espace est déjà métier.
+ */
+export function hasKnownVertical(user?: StoredAuthUser | null): boolean {
+  const metadata = user?.company?.metadata as { vertical?: unknown } | null | undefined;
+  return typeof metadata?.vertical === 'string' && metadata.vertical.trim() !== '';
+}
+
+/**
+ * Questions réellement posées : ordre adaptatif (`visible`) + #8462 — le
+ * secteur est EXCLU quand il est déjà connu (verticale provisionnée). Le
+ * parcours sans verticale connue est strictement inchangé.
+ */
+function visibleQuestionsFor(source: InterviewAnswers, sectorKnown: boolean): QuestionDef[] {
+  return QUESTIONS.filter((q) => (q.visible ? q.visible(source) : true)).filter(
+    (q) => q.key !== 'sector' || !sectorKnown,
+  );
+}
 
 // Miroir de l'allowlist serveur (`SetupInterviewPlanner::QUESTIONS`) —
 // 7 questions maximum, aucune à plus de 8 cartes-réponses.
@@ -109,9 +131,13 @@ export function shouldShowSetupInterview(user?: StoredAuthUser | null): boolean 
 export function SetupInterview({
   locale,
   onClose,
+  sectorKnown = false,
 }: {
   locale: AppLocale;
   onClose: (reason: SetupInterviewCloseReason) => void;
+  /** #8462 — métier déjà connu (pack vitrine) : la question secteur est
+   *  exclue du parcours (`hasKnownVertical`, calculé par l'appelant). */
+  sectorKnown?: boolean;
 }) {
   const t = useCallback(
     (key: string, fallback = '') => i18nT(locale, `setupInterview.${key}`, fallback),
@@ -127,8 +153,8 @@ export function SetupInterview({
   const closedRef = useRef(false);
 
   const visibleQuestions = useMemo(
-    () => QUESTIONS.filter((q) => (q.visible ? q.visible(answers) : true)),
-    [answers],
+    () => visibleQuestionsFor(answers, sectorKnown),
+    [answers, sectorKnown],
   );
   const question = recap ? null : visibleQuestions[index] ?? null;
 
@@ -147,35 +173,10 @@ export function SetupInterview({
           return;
         }
         const saved = state?.answers ?? {};
-        // #8454 — métier présélectionné à l'inscription vitrine (`?sector=`
-        // capturé par le SignupForm) : si le brouillon serveur n'a pas encore
-        // de secteur, on pré-répond la question au lieu de la reposer. La
-        // pré-réponse n'est appliquée QUE si l'endpoint de brouillon confirme
-        // l'écriture — sinon la question est posée normalement (le plan
-        // d'activation du `complete` se calcule côté serveur : une présélection
-        // non persistée ne doit jamais masquer la question).
-        let merged = saved;
-        const preset = 'sector' in saved ? null : peekSignupSector();
-        if (preset) {
-          try {
-            const response = await apiFetch('/setup-interview/answers', {
-              method: 'PATCH',
-              body: JSON.stringify({ answers: { sector: preset } }),
-            });
-            if (response.ok) {
-              merged = { ...saved, sector: preset };
-              clearSignupSector();
-            }
-          } catch {
-            // Réseau manquant : la question « secteur » sera posée — la
-            // présélection est un confort, jamais un risque pour l'activation.
-          }
-        }
-        if (cancelled) return;
-        setAnswers(merged);
+        setAnswers(saved);
         // Reprendre à la première question visible non répondue.
-        const visible = QUESTIONS.filter((q) => (q.visible ? q.visible(merged) : true));
-        const firstUnanswered = visible.findIndex((q) => !(q.key in merged));
+        const visible = visibleQuestionsFor(saved, sectorKnown);
+        const firstUnanswered = visible.findIndex((q) => !(q.key in saved));
         setIndex(firstUnanswered === -1 ? Math.max(visible.length - 1, 0) : firstUnanswered);
       } catch {
         // Non bloquant : l'entretien démarre à la première question.
@@ -186,7 +187,7 @@ export function SetupInterview({
     return () => {
       cancelled = true;
     };
-  }, [onClose]);
+  }, [onClose, sectorKnown]);
 
   const persistDraft = useCallback(async (partial: InterviewAnswers) => {
     try {
@@ -223,21 +224,17 @@ export function SetupInterview({
 
   const advance = useCallback(
     (nextAnswers: InterviewAnswers) => {
-      const visible = QUESTIONS.filter((q) => (q.visible ? q.visible(nextAnswers) : true));
+      const visible = visibleQuestionsFor(nextAnswers, sectorKnown);
       const currentKey = question?.key;
       const currentPos = visible.findIndex((q) => q.key === currentKey);
-      // #8454 — prochaine question visible NON RÉPONDUE après la courante :
-      // une question déjà répondue (secteur présélectionné à l'inscription,
-      // reprise de brouillon serveur) n'est jamais reposée en avançant. Si
-      // aucune ne reste, l'entretien se clôture.
-      const next = visible.findIndex((q, position) => position > currentPos && !(q.key in nextAnswers));
-      if (next === -1) {
+      const next = currentPos === -1 ? index : currentPos + 1;
+      if (next >= visible.length) {
         void complete();
       } else {
         setIndex(next);
       }
     },
-    [complete, question],
+    [complete, index, question, sectorKnown],
   );
 
   const answer = (value: string | string[] | null) => {

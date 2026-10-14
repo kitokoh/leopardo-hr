@@ -19,6 +19,38 @@
 > par flag déclaré ou opérationnel, solo sans étapes d'équipe, absence chez un
 > tenant sans verticale). Parité i18n ×4 vérifiée par `sync-web.js`
 > (I18N_SYNC_WEB_OK).
+> **MAJ 2026-10-13 — #8440/#8441, espace « Prendre des parts » + contexte entreprise du paramétrage fundraising.**
+> Surface **API HTTP** : type `marketing_leads` `equity_interest` (CHECK étendue,
+> migration publique `2026_10_13_000100_8440`) capturé par `POST /marketing/leads`
+> (canal serveur-à-serveur vitrine, inchangé) ; `GET /platform/marketing/leads`
+> (+ alias `/admin`) expose `meta.type_status_counts` quand `type` est filtré ;
+> nouveau `PATCH /platform/marketing/leads/{id}` (+ alias `/admin`) — qualification
+> (statut `new/contacted/qualified/converted/rejected` + note interne), garde
+> `crm.view`. Scénarios automatisés : `EquityInterestLeadApiTest` (8 tests —
+> capture, rejet de type inconnu, compteurs scopés vs globaux, transitions,
+> 422/404, RBAC 401/403).
+> Surface **API HTTP (#8441)** : `GET/PUT /platform/companies/{company}/fundraising/settings`
+> (groupe `auth:super_admin_api`, `platform.permission:companies.manage`) —
+> lecture/écriture de la ligne du tenant ciblé via `TenantManager::withinTenant()`,
+> fail-closed 403 verticale inactive / 404 entreprise inconnue. Scénarios :
+> `PlatformFundraisingSettingsApiTest` (6 tests — défauts sans persistance,
+> écriture dans le schema cible, isolation réelle entre deux entreprises,
+> 403/404, RBAC).
+> Surface **web vitrine** (`front/web`) : page `(landing)/investir` (×4 locales
+> inline + SEO `getPageMetadata('investir')`, cadrage non-offre-publique,
+> formulaire zod `equityFormSchema`, honeypot + `/api/forms/equity`) ; entrée
+> footer discrète « Devenir actionnaire » (`getFooterHref(3,3)`, libellés ×4
+> `vitrine-locale.ts`). Scénarios Jest : `validation.test.ts` (equityFormSchema
+> ×4 locales : tranche liste fermée, consentement, messages localisés) et
+> `footer-links.test.ts` (href 3-3).
+> Surface **web admin** (`front/admin-dashboard`) : écran
+> `views/equity/EquityInterestsView.vue` (route `/equity-interests`, nav groupe
+> « Entreprises », perm `crm.view`) — onglets statut à compteurs scopés type,
+> recherche email, lignes extensibles (message, note interne, transitions) ;
+> `FundraisingSettingsView.vue` consomme `?company=` (endpoints platform avec
+> contexte, routes tenant sans contexte). i18n ×4 (`navigation.equityInterests`
+> + bloc `equityInterests.*`). Parité i18n vérifiée par sync-web/sync-mobile +
+> `versions.json` recalculé.
 > **MAJ 2026-10-13 — #8435, espace station-service (BC-15 FUEL) : hub web + CRUD responsable.**
 > Surface **web (front/web)** : nouvelle route protégée `/fuel` (hub) et sous-routes
 > `/fuel/stations`, `/fuel/team`, `/fuel/rotations`, `/fuel/stock`, `/fuel/sales`
@@ -1181,3 +1213,33 @@ restent les gates applicables.
   (tsc, eslint, tsc vitrine).
 - **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue partagé
   `restaurant.rotations.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+
+## Mise à jour 2026-10-13 — héro immersif vague 3 : constellation 12 modules, nuit permanente (PR #8443, issues #8437, #8438, #8439)
+
+- **Surface API** : aucun changement backend — aucun scénario nouveau requis.
+- **Surface web (front/web)** : héro d'accueil retravaillé (constellation pleine scène
+  à 12 modules en orbite, nébuleuses additives, « Pile Leopardo » 3D retirée, trame du
+  héro stage déplacée en globals.css) — UI/i18n uniquement, les suites Jest vitrine
+  existantes couvrent le périmètre (HeroBusinessOS3D, HeroSection) ; tolérance
+  documentée pour l'hexa #6366f1 (nébuleuse indigo, web-design-hex-allowlist.txt) —
+  aucun scénario e2e nouveau requis.
+- **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
+  partagé `vitrine.hero3d.*`), aucun contrat mobile modifié — aucun scénario mobile
+  nouveau requis.
+
+## Mise à jour 2026-10-13 — héro « constellation France » + inscription pack-aware (PR #8463, issues #8461, #8462)
+
+- **Surface API** : `VerifyTrialSignup` mémorise `metadata.vertical` après activation des
+  solutions sectorielles (miroir du parcours guidé) — assertion ajoutée à
+  `TrialSolutionsActivationTest` (suites PHP/PHPStan déléguées à la CI, pas de runtime PHP
+  dans le sandbox) ; aucune route, aucun contrôleur, aucun contrat modifié — aucun
+  scénario API nouveau requis.
+- **Surface web (front/web)** : héro enrichi (France en constellation en toile de fond,
+  étoiles filantes, scintillement de la poussière, responsive mobile du premier écran) et
+  inscription pack-aware (`/signup?pack=<slug>` → `solutions[]`, bandeau i18n ×4,
+  question secteur exclue de l'entretien si verticale connue) — 13 tests Jest ajoutés
+  (pack-signup, SignupForm, SetupInterview, FranceConstellation) ; E2E funnel vérifié
+  6/6 chromium — aucun scénario e2e nouveau requis.
+- **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
+  partagé `signup.packSelected`), aucun contrat mobile modifié — aucun scénario mobile
+  nouveau requis.

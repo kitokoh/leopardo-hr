@@ -1,6 +1,5 @@
 'use client';
 
-import { Sparkles, Gift, Zap, Users, TrendingUp, Star } from 'lucide-react';
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import {
   Navbar,
@@ -12,7 +11,6 @@ import {
   TrustedBrands,
   // Phase-3 sections — no more Legacy prefixes
   HeroSection,
-  SolutionStackSection,
   FAQSection,
   CTASection,
   ProblemSection,
@@ -29,10 +27,7 @@ import { getFeatures } from '@/modules/vitrine/data/features';
 import { getFaqItems } from '@/modules/vitrine/data/faq';
 import { getTestimonials, TESTIMONIALS_ARE_DEMO } from '@/modules/vitrine/data/testimonials';
 import { StickyMobileCTA } from '@/components/StickyMobileCTA';
-import { QuickTrialEmailForm } from '@/modules/vitrine/components/HeroSection';
 import { HeroScene3DPanel } from '@/modules/vitrine/components/hero/HeroScene3DPanel';
-
-const STAT_ICONS = [TrendingUp, Users, Zap, Star] as const;
 
 export default function LandingPage() {
   // Dark mode state — synced with DarkModeProvider via CSS class on root
@@ -52,44 +47,22 @@ export default function LandingPage() {
         isDark ? 'dark bg-slate-950' : 'bg-white'
       }`}
     >
-      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} overDarkStage />
 
       <main>
-        {/* ─── HERO ─── Phase-3 */}
+        {/* ─── HERO ─── #8437 (vague 3) : layout `stage` — la constellation
+            3D prend TOUTE la première page (pleine scène, nuit permanente),
+            la phrase vit en toile de fond derrière elle. #8417 (vague 4,
+            retour propriétaire) : premier écran = LA PHRASE + LA 3D, rien
+            d'autre — CTA, formulaire e-mail rapide et ligne de réassurance
+            retirés (le CTA « Créer un compte » vit dans la navbar, le
+            formulaire complet sur /signup). */}
         <HeroSection
-          badge={{
-            icon: <Sparkles className="w-3.5 h-3.5" />,
-            text: copy.hero.badge,
-            label: copy.hero.badgeNew,
-          }}
           headline={`${copy.hero.titleTop} ${copy.hero.titleBottom}`}
-          subheadline={copy.hero.subtitle}
-          ctaPrimary={{ text: copy.hero.primaryCta, href: '/signup' }}
-          // Funnel unique grand public : l'essai cloud + la découverte des
-          // packs métiers OFFERTS (la promesse d'entrée du Business OS).
-          ctaSecondary={{
-            text: copy.hero.secondaryCta,
-            href: '/packs',
-            icon: (
-              <Gift className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            ),
-          }}
-          ctaReassurance={copy.hero.ctaReassurance}
-          stats={copy.hero.stats.map((s, i) => {
-            const Icon = STAT_ICONS[i % STAT_ICONS.length];
-            return {
-              ...s,
-              icon: <Icon className="w-5 h-5 text-emerald-500" />,
-            };
-          })}
           animated
-          quickTrialForm={
-            <QuickTrialEmailForm locale={locale} copy={copy.heroQuickTrial} />
-          }
-          layout="split"
-          // #8389 — la constellation 3D vit en colonne de droite (modules
-          // cliquables, #8390) ; plus de scène plein cadre derrière le texte.
-          // Le screenshot admin sort du héro (HeroProductShowcase reste dispo).
+          layout="stage"
+          // La constellation interactive (modules cliquables, #8390) est le
+          // visuel plein cadre ; pas de seconde scène estompée derrière elle.
           backgroundScene={false}
           visual={<HeroScene3DPanel />}
         />
@@ -114,9 +87,6 @@ export default function LandingPage() {
           description={copy.solution.description}
           features={copy.solution.features}
         />
-
-        {/* ─── PILE LEOPARDO ─── architecture de l'offre, ex-visuel héro (#7851) */}
-        <SolutionStackSection locale={locale} />
 
         {/* ─── PRODUCT DEMO VIDEO ─── #8071 option A : retirée de la home,
             conservée sur /demo et /videos (nouveau poster = dashboard réel) */}
