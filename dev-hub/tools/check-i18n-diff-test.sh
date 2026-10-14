@@ -158,6 +158,37 @@ export default function CommerceHomePage() {
 TSX
 git -C "$REPO_TECH" add -A
 git -C "$REPO_TECH" commit -q -m "repli FR d'un appel t(locale, ...) (#7675)"
+# Cas 1ter-bis — signature `i18nT(locale, 'clé', 'Texte de repli FR')` du portail
+# web (src/lib/i18n/locale-catalog.ts) : même mécanique que `t(locale, ...)`
+# ci-dessus — le repli FR est le 3e argument d'un appel de catalogue, pas une
+# chaîne hors i18n (constat mesuré sur le diff de l'espace tenant #8447 :
+# `i18nT(locale, 'software.title', 'Mon Logiciel')` était signalé).
+mkdir -p "$REPO_TECH/front/web/src/app/(dashboard)/dashboard"
+cat > "$REPO_TECH/front/web/src/app/(dashboard)/dashboard/page.tsx" <<'TSX'
+export default function DashboardPage() {
+  const locale = getPreferredLocale();
+  return (
+    <span>{i18nT(locale, 'software.title', 'Mon Logiciel')}</span>
+  )
+}
+TSX
+git -C "$REPO_TECH" add -A
+git -C "$REPO_TECH" commit -q -m "repli FR d'un appel i18nT(locale, ...) (#8447)"
+# Cas 1ter-ter — valeurs techniques de navigation/sécurité : `rel="noopener
+# noreferrer"` (attribut statique) et `{ target: '_blank', rel: 'noopener
+# noreferrer' }` (propriété d'objet) ne sont jamais du texte utilisateur
+# (constat mesuré sur le diff de l'espace tenant #8447).
+mkdir -p "$REPO_TECH/front/web/src/app/(dashboard)/mon-logiciel"
+cat > "$REPO_TECH/front/web/src/app/(dashboard)/mon-logiciel/page.tsx" <<'TSX'
+export default function MonLogicielPage() {
+  const target = { href: 'https://example.com', target: '_blank', rel: 'noopener noreferrer' };
+  return (
+    <a href={target.href} target="_blank" rel="noopener noreferrer">Installer</a>
+  )
+}
+TSX
+git -C "$REPO_TECH" add -A
+git -C "$REPO_TECH" commit -q -m "valeurs techniques de navigation rel/target (#8447)"
 # Cas 1quater — catalogue i18n du kiosque (#7651) : i18n.js EST le mécanisme de
 # localisation (catalogue inline ×4) — ses valeurs ne sont pas des chaînes en
 # dur hors catalogue (même cas que vitrine-locale.ts).
@@ -221,6 +252,8 @@ done
 expect_clean "d'indicateur d'étapes" "commentaire JSX français (apostrophes) — cas #7562"
 expect_clean "sizes=\"" "attribut de dimension d'image (Image sizes) — audit vitrine 2026-09-16"
 expect_clean 'Impossible de charger les données.' "repli FR d'un appel t(locale, ...) — cas #7675"
+expect_clean 'Mon Logiciel' "repli FR d'un appel i18nT(locale, ...) — cas #8447"
+expect_clean 'noopener noreferrer' "valeur technique de navigation rel — cas #8447"
 expect_clean 'per_page=100' "query string d'API (listQuery) — cas #7675"
 expect_clean '.csv,text/csv' "filtre de type de fichier (input accept) — #7776"
 expect_clean 'Acces administrateur' "valeur du catalogue i18n kiosk (#7651)"
