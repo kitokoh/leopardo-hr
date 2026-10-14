@@ -36,13 +36,14 @@ describe('ZKTecoHookSection (#8072)', () => {
 });
 
 describe('VerticalsSection (#8072)', () => {
-  it('affiche les 5 verticales en cartes (dont Cagnottes solidaires — FUND-095)', () => {
+  it('affiche les 6 verticales en cartes (dont Cagnottes solidaires — FUND-095, VTC & Taxi — #8465)', () => {
     render(<VerticalsSection locale="fr" />);
     expect(screen.getByText('Restaurants')).toBeInTheDocument();
     expect(screen.getByText('Agences de voyage')).toBeInTheDocument();
     expect(screen.getByText('Écoles & formation')).toBeInTheDocument();
     expect(screen.getByText('Stations-service')).toBeInTheDocument();
     expect(screen.getByText('Cagnottes solidaires')).toBeInTheDocument();
+    expect(screen.getByText('VTC & Taxi')).toBeInTheDocument();
   });
 
   it('la carte Cagnottes solidaires pointe vers /packs/cagnottes', () => {
@@ -50,6 +51,13 @@ describe('VerticalsSection (#8072)', () => {
     expect(
       screen.getByRole('link', { name: /Cagnottes solidaires — Voir le pack offert/i }),
     ).toHaveAttribute('href', '/packs/cagnottes');
+  });
+
+  it('la carte VTC & Taxi pointe vers /packs/vtc (#8465)', () => {
+    render(<VerticalsSection locale="fr" />);
+    expect(
+      screen.getByRole('link', { name: /VTC & Taxi — Voir le pack offert/i }),
+    ).toHaveAttribute('href', '/packs/vtc');
   });
 
   it('la carte restaurants pointe vers /restaurateur (page orpheline relinkée)', () => {

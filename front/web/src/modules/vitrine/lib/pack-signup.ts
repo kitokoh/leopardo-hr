@@ -20,6 +20,7 @@ export const PACK_SIGNUP_SLUGS = [
   'ecole',
   'agence-de-voyage',
   'cagnottes',
+  'vtc',
 ] as const;
 
 export type PackSignupSlug = (typeof PACK_SIGNUP_SLUGS)[number];
@@ -35,6 +36,7 @@ const PACK_SOLUTION_CODES: Record<PackSignupSlug, string> = {
   ecole: 'edumanager',
   'agence-de-voyage': 'travelagency',
   cagnottes: 'fundraising',
+  vtc: 'vtc',
 };
 
 export function isPackSignupSlug(value: string | null | undefined): value is PackSignupSlug {

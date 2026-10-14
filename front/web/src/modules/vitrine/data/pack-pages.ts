@@ -10,13 +10,14 @@
 
 import type { AppLocale } from '@/lib/i18n';
 
-export type PackVerticalSlug = 'station-service' | 'ecole' | 'agence-de-voyage' | 'cagnottes';
+export type PackVerticalSlug = 'station-service' | 'ecole' | 'agence-de-voyage' | 'cagnottes' | 'vtc';
 
 export const PACK_VERTICALS: PackVerticalSlug[] = [
   'station-service',
   'ecole',
   'agence-de-voyage',
   'cagnottes',
+  'vtc',
 ];
 
 /**
@@ -41,7 +42,8 @@ export type PackBenefitIcon =
   | 'wallet'
   | 'ticket'
   | 'store'
-  | 'shield';
+  | 'shield'
+  | 'car';
 
 export type PackPageCopy = {
   badge: string;
@@ -162,6 +164,117 @@ export const PACK_PAGES: Record<PackVerticalSlug, Record<AppLocale, PackPageCopy
       ctaPrimary: 'إنشاء حملتي',
       ctaSecondary: 'التحدث إلى مستشار',
       note: 'تفعيل مجاني عند إنشاء مساحتك — أجب «جمعية / منظمة غير حكومية» في مقابلة الإعداد. بدون التزام.',
+    },
+  },
+  // #8465 — pack « VTC & Taxi » : la verticale mobilité (BC-35 — chauffeurs,
+  // dispatch au plus proche via le core géo, réservation invitée sur la
+  // marketplace publique, suivi par code) rejoint l'offre d'entrée de la
+  // vitrine. Promesse limitée au livré : pas de paiement en ligne ni d'app
+  // chauffeur (lots dédiés).
+  vtc: {
+    fr: {
+      badge: 'Pack VTC & Taxi offert',
+      title: 'Vos courses VTC & taxi réservables en ligne,',
+      highlight: 'le pack est offert.',
+      subtitle:
+        'Chauffeurs, véhicules et grilles tarifaires dans votre espace ; vos clients réservent sans compte sur la marketplace publique, le dispatch part au chauffeur disponible le plus proche, et chacun suit la course avec un code. Activez votre pack VTC & Taxi gratuitement.',
+      points: ['Pack offert', 'Sans carte bancaire', 'Réservation sans compte'],
+      benefitsTitle: 'Pensé pour les exploitants VTC & taxi',
+      benefits: [
+        { icon: 'car', title: 'Dispatch au plus proche', text: 'Chaque demande est proposée en cascade au chauffeur disponible le plus proche du départ — distances calculées par le moteur géospatial de la plateforme (PostGIS).' },
+        { icon: 'ticket', title: 'Réservation sans compte', text: 'Vos clients obtiennent un devis puis réservent en invité sur la marketplace publique — idempotent, jamais de doublon au retry.' },
+        { icon: 'shield', title: 'Suivi et annulations tracés', text: 'Le passager suit sa course par référence + code ; chaque annulation est tracée avec acteur et motif, et notifiée.' },
+      ],
+      includedTitle: 'Inclus dans le pack',
+      included: [
+        'Chauffeurs, véhicules et grilles tarifaires (console de gestion)',
+        'Dispatch en cascade avec expiration d\'offre et repli',
+        'Annuaire marketplace opt-in : vos courses réservables par le grand public',
+        'Devis, réservation invitée et suivi par référence + code',
+        'Notifications passager & chauffeur (acceptation, expiration, clôture, annulation) en fr/en/ar/tr',
+        'Console dispatch web : courses actives et chauffeurs (positions, statuts)',
+      ],
+      ctaPrimary: 'Créer mon espace VTC',
+      ctaSecondary: 'Parler à un conseiller',
+      note: 'Activation gratuite dans votre espace Leopardo, sans engagement. Le paiement de course en ligne et l\'app chauffeur arrivent dans des lots dédiés.',
+    },
+    en: {
+      badge: 'Free VTC & Taxi Pack',
+      title: 'Your VTC & taxi rides bookable online,',
+      highlight: 'the pack is free.',
+      subtitle:
+        'Drivers, vehicles and fare profiles in your workspace; your customers book account-free on the public marketplace, dispatch goes to the nearest available driver, and everyone tracks the ride with a code. Activate your VTC & Taxi Pack for free.',
+      points: ['Free pack', 'No credit card', 'Account-free booking'],
+      benefitsTitle: 'Built for VTC & taxi operators',
+      benefits: [
+        { icon: 'car', title: 'Nearest-driver dispatch', text: 'Every request is offered in cascade to the available driver nearest to pickup — distances computed by the platform geospatial engine (PostGIS).' },
+        { icon: 'ticket', title: 'Account-free booking', text: 'Your customers get a quote then book as guests on the public marketplace — idempotent, never a duplicate on retry.' },
+        { icon: 'shield', title: 'Tracked rides and cancellations', text: 'The passenger tracks the ride by reference + code; every cancellation is logged with actor and reason, and notified.' },
+      ],
+      includedTitle: 'Included in the pack',
+      included: [
+        'Drivers, vehicles and fare profiles (management console)',
+        'Cascading dispatch with offer expiry and fallback',
+        'Opt-in marketplace directory: your rides bookable by the public',
+        'Quote, guest booking and tracking by reference + code',
+        'Passenger & driver notifications (acceptance, expiry, completion, cancellation) in fr/en/ar/tr',
+        'Web dispatch console: active rides and drivers (positions, statuses)',
+      ],
+      ctaPrimary: 'Create my VTC workspace',
+      ctaSecondary: 'Talk to an advisor',
+      note: 'Free activation in your Leopardo workspace, no commitment. Online ride payment and the driver app ship in dedicated lots.',
+    },
+    tr: {
+      badge: 'Ücretsiz VTC & Taksi Paketi',
+      title: 'VTC & taksi yolculuklarınız online rezerve edilsin,',
+      highlight: 'paket ücretsiz.',
+      subtitle:
+        'Sürücüler, araçlar ve tarife profilleri çalışma alanınızda; müşterileriniz herkese açık pazarda hesapsız rezervasyon yapar, atama en yakın müsait sürücüye gider ve herkes yolculuğu bir kodla takip eder. VTC & Taksi Paketinizi ücretsiz etkinleştirin.',
+      points: ['Ücretsiz paket', 'Kredi kartı yok', 'Hesapsız rezervasyon'],
+      benefitsTitle: 'VTC & taksi işletmeleri için tasarlandı',
+      benefits: [
+        { icon: 'car', title: 'En yakın sürücüye atama', text: 'Her talep, alış noktasına en yakın müsait sürücüye kademeli olarak önerilir — mesafeler platformun coğrafi motoruyla (PostGIS) hesaplanır.' },
+        { icon: 'ticket', title: 'Hesapsız rezervasyon', text: 'Müşterileriniz önce fiyat teklifi alır, sonra pazarda misafir olarak rezervasyon yapar — idempotent, tekrar denemede asla çift kayıt yok.' },
+        { icon: 'shield', title: 'İzlenen yolculuklar ve iptaller', text: 'Yolcu, yolculuğu referans + kod ile takip eder; her iptal, yapan kişi ve sebebiyle kayıt altına alınır ve bildirilir.' },
+      ],
+      includedTitle: 'Pakete dahil olanlar',
+      included: [
+        'Sürücüler, araçlar ve tarife profilleri (yönetim konsolu)',
+        'Teklif süresi dolması ve yedeklemeyle kademeli atama',
+        'Opt-in pazar dizini: yolculuklarınız halka açık rezerve edilebilir',
+        'Teklif, misafir rezervasyonu ve referans + kod ile takip',
+        'Yolcu & sürücü bildirimleri (kabul, süre dolması, tamamlanma, iptal) fr/en/ar/tr',
+        'Web atama konsolu: aktif yolculuklar ve sürücüler (konumlar, durumlar)',
+      ],
+      ctaPrimary: 'VTC alanımı oluştur',
+      ctaSecondary: 'Bir danışmanla konuş',
+      note: 'Leopardo çalışma alanınızda ücretsiz etkinleştirme, taahhüt yok. Online yolculuk ödemesi ve sürücü uygulaması ayrı paketlerde gelir.',
+    },
+    ar: {
+      badge: 'حزمة VTC والأجرة مجانية',
+      title: 'رحلات VTC والأجرة قابلة للحجز عبر الإنترنت،',
+      highlight: 'والحزمة مجانية.',
+      subtitle:
+        'السائقون والمركبات وأسعار التعرفة في مساحتك؛ عملاؤكم يحجزون دون حساب على السوق العامة، ويُرسَل الطلب إلى أقرب سائق متاح، ويتابع الجميع الرحلة برمز. فعّل حزمة VTC والأجرة مجانًا.',
+      points: ['حزمة مجانية', 'بدون بطاقة بنكية', 'حجز دون حساب'],
+      benefitsTitle: 'مصممة لمشغّلي VTC والأجرة',
+      benefits: [
+        { icon: 'car', title: 'إرسال لأقرب سائق', text: 'يُعرض كل طلب تدريجيًا على أقرب سائق متاح من نقطة الانطلاق — المسافات تُحسب بمحرك المنصة الجغرافي (PostGIS).' },
+        { icon: 'ticket', title: 'حجز دون حساب', text: 'يحصل عملاؤكم على عرض سعر ثم يحجزون كضيوف على السوق العامة — بلا تكرار عند إعادة المحاولة.' },
+        { icon: 'shield', title: 'رحلات وإلغاءات موثقة', text: 'يتابع الراكب رحلته بالمرجع + الرمز؛ كل إلغاء يسجَّل بفاعله وسببه ويُبلَّغ.' },
+      ],
+      includedTitle: 'مشمول في الحزمة',
+      included: [
+        'السائقون والمركبات وأسعار التعرفة (وحدة إدارة)',
+        'إرسال تدريجي مع انتهاء مهلة العرض والتراجع',
+        'دليل سوق بموافقة اختيارية: رحلاتكم قابلة للحجز من الجمهور',
+        'عرض السعر والحجز كضيف والمتابعة بالمرجع + الرمز',
+        'إشعارات الراكب والسائق (القبول والانتهاء والإتمام والإلغاء) باللغات fr/en/ar/tr',
+        'وحدة تحكم إرسال ويب: الرحلات النشطة والسائقون (المواقع والحالات)',
+      ],
+      ctaPrimary: 'أنشئ مساحة VTC الخاصة بي',
+      ctaSecondary: 'تحدث إلى مستشار',
+      note: 'تفعيل مجاني في مساحة ليوباردو الخاصة بك، بلا التزام. الدفع الإلكتروني للرحلة وتطبيق السائق يأتيان في حزم مخصصة.',
     },
   },
   'station-service': {
@@ -515,6 +628,7 @@ export const PACKS_HUB_COPY: Record<AppLocale, PacksHubCopy> = {
       { slug: 'station-service', name: 'Stations-service', line: 'Rotations 3×8, pointage par poste, majorations vers la paie.', linkLabel: 'Découvrir le pack' },
       { slug: 'ecole', name: 'Écoles & formation', line: 'Présence du personnel, remplacements, paie calendrier scolaire.', linkLabel: 'Découvrir le pack' },
       { slug: 'agence-de-voyage', name: 'Agences de voyage', line: 'Dossiers clients, billetterie, commissions, paie des équipes.', linkLabel: 'Découvrir le pack' },
+      { slug: 'vtc', name: 'VTC & Taxi', line: 'Chauffeurs, dispatch au plus proche, réservation publique sans compte.', linkLabel: 'Découvrir le pack' },
     ],
     freeBadge: 'Offert',
     note: 'Chaque pack s’active gratuitement à la création de votre espace Leopardo. Aucun engagement.',
@@ -531,6 +645,7 @@ export const PACKS_HUB_COPY: Record<AppLocale, PacksHubCopy> = {
       { slug: 'station-service', name: 'Fuel stations', line: '3×8 rotations, per-post clock-ins, overtime to payroll.', linkLabel: 'See the pack' },
       { slug: 'ecole', name: 'Schools & training', line: 'Staff attendance, replacements, school-calendar payroll.', linkLabel: 'See the pack' },
       { slug: 'agence-de-voyage', name: 'Travel agencies', line: 'Client files, ticketing, commissions, team payroll.', linkLabel: 'See the pack' },
+      { slug: 'vtc', name: 'VTC & Taxi', line: 'Drivers, nearest-first dispatch, account-free public booking.', linkLabel: 'See the pack' },
     ],
     freeBadge: 'Free',
     note: 'Every pack is activated free when you create your Leopardo workspace. No commitment.',
@@ -547,6 +662,7 @@ export const PACKS_HUB_COPY: Record<AppLocale, PacksHubCopy> = {
       { slug: 'station-service', name: 'Akaryakıt istasyonları', line: '3×8 vardiyalar, posta bazlı yoklama, fazla mesai bordroya.', linkLabel: 'Paketi gör' },
       { slug: 'ecole', name: 'Okullar & eğitim', line: 'Personel yoklaması, yerine geçmeler, okul takvimi bordrosu.', linkLabel: 'Paketi gör' },
       { slug: 'agence-de-voyage', name: 'Seyahat acenteleri', line: 'Müşteri dosyaları, biletleme, komisyonlar, ekip bordrosu.', linkLabel: 'Paketi gör' },
+      { slug: 'vtc', name: 'VTC & Taksi', line: 'Sürücüler, en yakına atama, hesapsız herkese açık rezervasyon.', linkLabel: 'Paketi gör' },
     ],
     freeBadge: 'Ücretsiz',
     note: 'Her paket, Leopardo çalışma alanınızı oluştururken ücretsiz etkinleşir. Taahhüt yok.',
@@ -563,6 +679,7 @@ export const PACKS_HUB_COPY: Record<AppLocale, PacksHubCopy> = {
       { slug: 'station-service', name: 'محطات الوقود', line: 'مناوبات 3×8، حضور حسب الموضع، الإضافي إلى الرواتب.', linkLabel: 'شاهد الحزمة' },
       { slug: 'ecole', name: 'المدارس والتكوين', line: 'حضور الطاقم والبدلاء ورواتب التقويم المدرسي.', linkLabel: 'شاهد الحزمة' },
       { slug: 'agence-de-voyage', name: 'وكالات السفر', line: 'ملفات العملاء والتذاكر والعمولات ورواتب الفريق.', linkLabel: 'شاهد الحزمة' },
+      { slug: 'vtc', name: 'VTC والأجرة', line: 'السائقون، الإرسال للأقرب، الحجز العام دون حساب.', linkLabel: 'شاهد الحزمة' },
     ],
     freeBadge: 'مجانًا',
     note: 'تُفعَّل كل حزمة مجانًا عند إنشاء مساحة ليوباردو الخاصة بك. بلا التزام.',
