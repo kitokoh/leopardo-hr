@@ -15,14 +15,10 @@ export * from './sections';
 // by pages from their file paths, not via this barrel, so no alias is
 // re-exported here for them.
 export { ParticleField } from './ParticleField';
-// Visuel « Pile Leopardo » : socle + couche horizontale + verticales métier.
-// WebGL chargé en import dynamique, repli CSS 3D si indisponible.
-export { SolutionStack } from './hero/SolutionStack';
 // Fond vivant du héro : constellation WebGL « Business OS » (repli particules 2D).
 export { HeroScene3D } from './hero/HeroScene3D';
 // Héro produit-first : screenshot réel + badge de réassurance cloud/self-host.
 export { HeroProductShowcase, HeroTrustBadge } from './hero/HeroProductShowcase';
-export { SolutionStackSection } from './hero/SolutionStackSection';
 export { LegalPageShell } from './LegalPageShell';
 export { GoogleAuthButton } from './GoogleAuthButton';
 export { RestaurantSolutionWizard } from './RestaurantSolutionWizard';

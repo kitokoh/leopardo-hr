@@ -344,4 +344,8 @@ return [
 
     // #8423 (M-02) — Geo : recherche « le plus proche » sur un type restreint (ex. positions chauffeurs).
     'GEO_SEARCHABLE_TYPE_FORBIDDEN' => 'Votre rôle ne permet pas cette recherche de proximité.',
+    // #8440/#8441 — verticales equity + paramétrage fundraising (contexte entreprise)
+    'FUNDRAISING_VERTICAL_NOT_ENABLED' => 'La verticale cagnottes n\'est pas activée pour cette entreprise.',
+    'MARKETING_LEAD_NO_CHANGES' => 'Aucune modification demandée.',
+    'MARKETING_LEAD_NOT_FOUND' => 'Lead introuvable.',
 ];

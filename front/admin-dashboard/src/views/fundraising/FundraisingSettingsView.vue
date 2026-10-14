@@ -160,7 +160,8 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { SparklesIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import { translate } from '@/i18n/index.js'
@@ -169,10 +170,32 @@ import { useToast } from 'vue-toastification'
 
 const toast = useToast()
 const localeStore = useLocaleStore()
+const route = useRoute()
 
 function t(key, fallback = '') {
   return translate(localeStore.current, key, fallback)
 }
+
+// #8441 — ouvert depuis la fiche entreprise (VERTICAL_SURFACES) avec
+// `?company={id}` : le paramétrage DOIT cibler l'entreprise consultée
+// (endpoints platform-scopés), pas le tenant de session de l'admin —
+// c'était le défaut d'origine (les routes /fundraising/settings résolvent
+// la compagnie via la session Sanctum). Sans contexte (usage responsable
+// tenant dans sa propre console), les routes tenant restent le contrat.
+const companyContext = computed(() => {
+  const raw = route.query.company
+  const value = Array.isArray(raw) ? raw[0] : raw
+  return typeof value === 'string' && value.trim() !== '' ? value.trim() : null
+})
+
+const endpoints = computed(() =>
+  companyContext.value
+    ? {
+        get: `/platform/companies/${encodeURIComponent(companyContext.value)}/fundraising/settings`,
+        put: `/platform/companies/${encodeURIComponent(companyContext.value)}/fundraising/settings`,
+      }
+    : { get: '/fundraising/settings', put: '/fundraising/settings' },
+)
 
 const paymentMethods = [
   { key: 'card' },
@@ -230,7 +253,7 @@ async function load() {
   loading.value = true
   saved.value = false
   try {
-    const { data } = await api.get('/fundraising/settings')
+    const { data } = await api.get(endpoints.value.get)
     applySettings(data.data || {})
   } catch (err) {
     if (err?.response?.status === 403) {
@@ -248,7 +271,7 @@ async function save() {
   saving.value = true
   saved.value = false
   try {
-    const { data } = await api.put('/fundraising/settings', {
+    const { data } = await api.put(endpoints.value.put, {
       enabled_methods: form.enabled_methods,
       default_min_amount: form.default_min_amount === '' ? null : Number(form.default_min_amount),
       default_max_amount: form.default_max_amount === '' ? null : Number(form.default_max_amount),

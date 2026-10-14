@@ -55,6 +55,13 @@ class MarketingLead extends Model
 
     public const TYPE_SOLUTION_SURVEY = 'solution_survey';
 
+    /**
+     * #8440 — manifestation d'intérêt « prendre des parts » (page vitrine
+     * `/investir`, entrée footer). Nom, téléphone, tranche de montant,
+     * message et consentement voyagent dans `payload` (jsonb).
+     */
+    public const TYPE_EQUITY_INTEREST = 'equity_interest';
+
     public const STATUS_NEW = 'new';
 
     public const STATUS_CONTACTED = 'contacted';
