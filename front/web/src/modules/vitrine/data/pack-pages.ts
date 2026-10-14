@@ -31,6 +31,7 @@ export const PACK_SECTORS: Record<PackVerticalSlug, string> = {
   ecole: 'education',
   'agence-de-voyage': 'travel',
   cagnottes: 'association',
+  vtc: 'services',
 };
 
 export type PackBenefitIcon =
