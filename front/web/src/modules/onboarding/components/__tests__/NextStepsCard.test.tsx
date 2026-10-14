@@ -115,3 +115,37 @@ describe('NextStepsCard (#7494)', () => {
     expect(container.querySelector('[data-testid="next-steps-card"]')).toBeNull();
   });
 });
+
+describe('NextStepsCard — liens d’action (#8451)', () => {
+  const verticalSteps: Step[] = [
+    { step_key: 'restaurant_setup_pos', title: 'Configurer votre caisse (POS)', status: 'pending', order: 1, required: true },
+    { step_key: 'fuel_setup_station', title: 'Créer votre station', status: 'pending', order: 2, required: true },
+    { step_key: 'install_apps', title: 'Installer vos applications', status: 'pending', order: 3, required: false },
+    { step_key: 'step_inconnu_futur', title: 'Étape sans écran dédié', status: 'pending', order: 4, required: false },
+  ];
+
+  it('chaque étape pointe vers l’écran de son action', async () => {
+    mockedApiFetch.mockResolvedValue(checklistResponse(verticalSteps));
+    render(<NextStepsCard locale="fr" />);
+
+    await waitFor(() => expect(screen.getByTestId('next-steps-card')).toBeInTheDocument());
+    await userEvent.click(screen.getByTestId('next-steps-view-all'));
+
+    expect(screen.getByTestId('next-step-open-restaurant_setup_pos')).toHaveAttribute('href', '/restaurant/pos');
+    expect(screen.getByTestId('next-step-open-fuel_setup_station')).toHaveAttribute('href', '/fuel/stations');
+    // L’étape « installer ses apps » mène au hub « Mon Logiciel » (#8447).
+    expect(screen.getByTestId('next-step-open-install_apps')).toHaveAttribute('href', '/mon-logiciel');
+  });
+
+  it('une étape sans écran connu n’affiche aucun lien mort', async () => {
+    mockedApiFetch.mockResolvedValue(checklistResponse(verticalSteps));
+    render(<NextStepsCard locale="fr" />);
+
+    await waitFor(() => expect(screen.getByTestId('next-steps-card')).toBeInTheDocument());
+    await userEvent.click(screen.getByTestId('next-steps-view-all'));
+
+    expect(screen.queryByTestId('next-step-open-step_inconnu_futur')).not.toBeInTheDocument();
+    // …mais l’étape reste visible et complétable.
+    expect(screen.getByTestId('next-step-step_inconnu_futur')).toBeInTheDocument();
+  });
+});

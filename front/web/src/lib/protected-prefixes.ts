@@ -64,6 +64,9 @@ export const PROTECTED_PREFIXES = [
   // sans session. La vitrine PUBLIQUE vit sous /stay/[slug] (hors liste).
   '/hospitality',
   '/fuel',
+  // #8447 — « Mon Logiciel » (hub d'installation des apps du tenant) :
+  // filtré par les solutions activées du tenant, jamais servi sans session.
+  '/mon-logiciel',
   // #7759 — tickets support côté client (zone dashboard) : conversations
   // support du tenant, jamais servies sans session.
   '/support',

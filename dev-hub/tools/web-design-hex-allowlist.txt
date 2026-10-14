@@ -58,3 +58,14 @@
 # Effets 3D décoratifs (glow/nébuleuses) — pas des tokens d'UI ; si la palette
 # héro devient produit, la déclarer dans COULEURS.md (L.07) et retirer ces lignes.
 #6366f1 — indigo-500, nébuleuse additive du héro constellation (front/web/src/modules/vitrine/components/hero/HeroBusinessOS3D.tsx, #8438)
+
+# Couleurs de nœuds de la constellation 3D « Mon Logiciel » (#8447) — une teinte
+# par app pour distinguer les orbites ; ce sont des couleurs de SCÈNE 3D (three.js),
+# pas des tokens d'UI. À migrer vers les tokens quand la scène les consommera.
+#0ea5e9 — sky-500, nœud app « employee » (front/web/src/app/(dashboard)/mon-logiciel/page.tsx)
+#f97316 — orange-500, nœud app « restaurant-pos » (mon-logiciel/page.tsx)
+#f43f5e — rose-500, nœud app « restaurant-kds » (mon-logiciel/page.tsx)
+#8b5cf6 — violet-500, nœud app « restaurant-server » (mon-logiciel/page.tsx)
+#eab308 — yellow-500, nœud app « fuel-console » (mon-logiciel/page.tsx)
+#d946ef — fuchsia-500, nœud app « marketing-mobile » (mon-logiciel/page.tsx)
+#6b7280 — gray-500, nœud app « cameras-mobile » (mon-logiciel/page.tsx)

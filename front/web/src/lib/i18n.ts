@@ -112,7 +112,9 @@ export type CopyTree = {
     accountSection: string;
     /** #7225 — libellés de navigation localisés (le libellé du module est data, pas une string FR) */
     modules: {
-      dashboard: string; employees: string; attendance: string; attendance_geo: string;
+      dashboard: string;
+      /** #8447 — hub d'installation des apps du tenant (« Mon Logiciel ») */
+      mon_logiciel: string; employees: string; attendance: string; attendance_geo: string;
       absences: string; contracts: string; payroll: string; training: string;
       reports: string; partner: string; billing: string; integrations: string;
       marketing: string; accounting: string; crm: string; restaurant: string;
@@ -776,6 +778,7 @@ const copy: Record<AppLocale, CopyTree> = {
       accountSection: 'Compte',
       modules: {
         dashboard: 'Tableau de bord',
+        mon_logiciel: 'Mon Logiciel',
         employees: 'Employés',
         attendance: 'Pointages',
         attendance_geo: 'Sessions GPS',
@@ -1481,6 +1484,7 @@ const copy: Record<AppLocale, CopyTree> = {
       accountSection: 'الحساب',
       modules: {
         dashboard: 'لوحة القيادة',
+        mon_logiciel: 'برمجيّاتي',
         employees: 'الموظفون',
         attendance: 'الحضور',
         attendance_geo: 'جلسات GPS',
@@ -2182,6 +2186,7 @@ const copy: Record<AppLocale, CopyTree> = {
       accountSection: 'Hesap',
       modules: {
         dashboard: 'Panel',
+        mon_logiciel: 'Yazılımlarım',
         employees: 'Çalışanlar',
         attendance: 'Giriş-çıkışlar',
         attendance_geo: 'GPS oturumları',
@@ -2883,6 +2888,7 @@ const copy: Record<AppLocale, CopyTree> = {
       accountSection: 'Account',
       modules: {
         dashboard: 'Dashboard',
+        mon_logiciel: 'My Software',
         employees: 'Employees',
         attendance: 'Attendance',
         attendance_geo: 'GPS sessions',

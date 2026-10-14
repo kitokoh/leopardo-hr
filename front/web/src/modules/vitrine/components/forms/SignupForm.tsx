@@ -48,6 +48,7 @@ import { fetchSupportedCountries, type SupportedCountryOption } from '@/modules/
 import { isPackSignupSlug, packSolutionCode } from '@/modules/vitrine/lib/pack-signup';
 import { packDisplayName } from '@/modules/vitrine/data/pack-pages';
 import { t } from '@/lib/i18n/locale-catalog';
+import { persistSignupSector, readSignupSectorFromUrl } from '@/lib/signup-sector';
 import {
   applyDocumentLocale,
   normalizeLocale,
@@ -167,6 +168,19 @@ export function SignupForm({
     setSelectedPlan(new URLSearchParams(window.location.search).get('plan') ?? '');
     const pack = new URLSearchParams(window.location.search).get('pack');
     setSelectedPack(isPackSignupSlug(pack) ? pack : '');
+  }, []);
+
+  // #8454 — métier présélectionné : un visiteur venu d'une page métier
+  // (`?sector=`) ne se verra PAS reposer la question « secteur » par
+  // l'entretien de préparation. Capture en sessionStorage (le query param ne
+  // survit pas au tunnel OTP/login ; valeur validée par allowlist, jamais de
+  // réponse forgée). Confort uniquement : sans secteur valide, rien ne change.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const sector = readSignupSectorFromUrl(window.location.search);
+    if (sector) {
+      persistSignupSector(sector);
+    }
   }, []);
 
   // #4476 — pays supportés pour l'essai guidé (registre public #4217, fallback

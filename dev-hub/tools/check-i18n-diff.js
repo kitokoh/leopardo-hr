@@ -127,7 +127,7 @@ const ignorePathFragments = [
 // argument d'un appel de catalogue, pas une chaîne hors i18n. Le motif
 // `\bt\(['"]` ne couvrait que `t('clé')` : chaque page gérant était signalée
 // à tort (constat mesuré sur le diff BC-24 #7643, 200 faux positifs).
-const translationCallPattern = /(context\.l10n\.|AppLocalizations\.of|\bl10n\.|__\(|\$t\(|\bt\(['"]|\bt\(\s*locale\s*,\s*['"]|i18n\.t\(|data-i18n|useTranslation|\bt`|Lang::get\(|trans\(|@lang\(|translate\()/;
+const translationCallPattern = /(context\.l10n\.|AppLocalizations\.of|\bl10n\.|__\(|\$t\(|\bt\(['"]|\bt\(\s*locale\s*,\s*['"]|i18n\.t\(|i18nT\(|data-i18n|useTranslation|\bt`|Lang::get\(|trans\(|@lang\(|translate\()/;
 
 const devLogLinePattern = /\b(console\.(log|warn|error|info|debug)|debugPrint|print(?:ln)?|Log\.[dewiv]|logger\.(debug|info|warn|error)|dev\.log)\s*\(/i;
 const todoLinePattern = /\/\/\s*TODO|#\s*TODO/i;
@@ -248,6 +248,12 @@ const structuralAttributes = new Set([
   ':clearable', ':filterable', ':loading',
   ':key', ':id', ':name', ':for', ':type', ':role', ':dir', ':lang', ':tabindex',
   ':to', ':href', ':src', ':target', ':rel', ':method', ':action',
+  // Formes STATIQUES de la même famille : `rel="noopener noreferrer"`,
+  // `target="_blank"`, `method="post"`… sont des valeurs techniques de
+  // sécurité/navigation, jamais du texte utilisateur (constat mesuré sur le
+  // diff de l'espace tenant #8447 : `rel="noopener noreferrer"` était signalé
+  // comme « nouvelle chaîne en dur » et poussait à réécrire un lien correct).
+  'rel', 'target', 'method', 'action', 'href', 'src', 'type', 'role', 'dir', 'lang',
   ':size', ':variant', ':density', ':tone', ':color', ':icon', ':width',
   ':height', ':cols', ':rows', ':colspan', ':rowspan', ':span', ':min',
   ':max', ':step', ':precision', ':minlength', ':maxlength', ':autocomplete',
@@ -295,12 +301,28 @@ function isCodeValuedAttribute(name) {
 // Retire les guillemets de délimitation d'une valeur liée (en conservant la
 // longueur de la ligne) pour que l'analyseur ne prenne pas l'expression entière
 // pour une chaîne utilisateur.
+// Propriétés d'objet JS/TS portant une valeur technique
+// (`{ target: '_blank', rel: 'noopener noreferrer' }`) : même famille que les
+// attributs structurels ci-dessus — la valeur est une constante de
+// navigation/sécurité, jamais du texte utilisateur (constat mesuré sur le diff
+// de l'espace tenant #8447 : `rel: 'noopener noreferrer'` était signalé comme
+// « nouvelle chaîne en dur » et poussait à réécrire un lien correct).
+const objectPropertyRegex = new RegExp(
+  `(^|[\\s{,])([a-zA-Z_$][\\w$]*)\\s*:\\s*("([^"]*)"|'([^']*)')`,
+  'g',
+);
+
 function maskLinkedAttributeValues(line) {
-  if (!line.includes('=')) return line;
-  return line.replace(attributeValueRegex, (match, prefix, name, quoted) => {
+  if (!line.includes('=') && !line.includes(':')) return line;
+  const masked = line.replace(attributeValueRegex, (match, prefix, name, quoted) => {
     if (!isCodeValuedAttribute(name)) return match;
     if (quoted.length < 2) return match;
     return `${prefix}${name}= ${quoted.slice(1, -1)} `;
+  });
+  return masked.replace(objectPropertyRegex, (match, prefix, name, quoted) => {
+    if (!isCodeValuedAttribute(name)) return match;
+    if (quoted.length < 2) return match;
+    return `${prefix}${name}: ${quoted.slice(1, -1)} `;
   });
 }
 

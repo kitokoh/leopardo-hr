@@ -4457,8 +4457,8 @@
       "demoError": "Import impossible pour le moment.",
       "rotations": "Rotations & plannings",
       "rotationsDesc": "Creez les rotations de travail et affectez vos employes.",
-      "mobileServer": "App mobile serveur",
-      "mobileServerDesc": "Équipez vos serveurs de l’app mobile pour le pointage et le service."
+      "mobileServer": "Mes applications",
+      "mobileServerDesc": "Installez les apps de votre restaurant — serveur, cuisine, caisse, kiosque."
     },
     "crud": {
       "search": "Rechercher...",
@@ -6546,7 +6546,8 @@
         "title": "Enregistrer votre première vente",
         "desc": "Vendez un premier billet au guichet ou en ligne."
       }
-    }
+    },
+    "open": "Ouvrir"
   },
   "vitrine": {
     "notFound": {
@@ -7658,5 +7659,91 @@
       "anonymous": "Anonyme",
       "confirmed": "Contribution confirmée."
     }
+  },
+  "software": {
+    "title": "Mon Logiciel",
+    "subtitle": "Toutes les applications de votre espace, prêtes à installer.",
+    "loading": "Chargement de vos applications…",
+    "empty": {
+      "title": "Aucune application à installer pour le moment",
+      "body": "Activez une solution métier depuis la page Modules pour débloquer ses applications."
+    },
+    "constellation": "Constellation de vos applications",
+    "constellationHint": "Cliquez sur une application pour la retrouver dans la liste",
+    "install": "Installer",
+    "pilot": "Demander l’accès pilote",
+    "soon": "Bientôt disponible",
+    "offlineBadge": "Fonctionne hors-ligne",
+    "qrAria": "Afficher le QR code d’installation",
+    "qrTitle": "Installer sur cet appareil",
+    "qrHint": "Scannez avec l’appareil à équiper : le lien d’installation s’ouvre directement.",
+    "close": "Fermer",
+    "apps": {
+      "manager": {
+        "name": "Leopardo Manager",
+        "description": "Pilotez votre entreprise depuis votre poche : équipes, pointages, validations et alertes en temps réel."
+      },
+      "employee": {
+        "name": "Leopardo Employé",
+        "description": "Le compagnon de vos équipes : pointage GPS, absences, soldes et notifications."
+      },
+      "desktop-attendance": {
+        "name": "Poste de pointage & kiosk",
+        "description": "Client desktop et borne de pointage ZKTeco — fonctionne hors-ligne, synchronisé au retour du réseau. Accès pilote accompagné."
+      },
+      "restaurant-pos": {
+        "name": "Caisse Restaurant (POS)",
+        "description": "Encaissez au comptoir et en salle : commandes, paiements et tickets, directement dans le navigateur."
+      },
+      "restaurant-kds": {
+        "name": "Écran Cuisine (KDS)",
+        "description": "La file des commandes en temps réel pour la cuisine : réception, préparation, service."
+      },
+      "restaurant-server": {
+        "name": "App Serveur",
+        "description": "Prise de commande en salle sur mobile, envoyée instantanément en cuisine et en caisse."
+      },
+      "restaurant-kiosk": {
+        "name": "Kiosque libre-service",
+        "description": "Vos clients commandent et paient en autonomie sur tablette de comptoir."
+      },
+      "fuel-console": {
+        "name": "Console Station-service",
+        "description": "Pompes, volumes, écarts et rotations d’équipe — le poste de contrôle de votre station."
+      },
+      "commerce-pos": {
+        "name": "Caisse Commerce (POS)",
+        "description": "Vendez en boutique : produits, stock et encaissements, dans le navigateur."
+      },
+      "travel-agent": {
+        "name": "App Agent de voyage",
+        "description": "Vente guichet multi-passagers, encaissement cash, check-in QR et manifeste."
+      },
+      "edu-portal": {
+        "name": "Portail Scolarité",
+        "description": "Campus, classes, élèves et notes : toute votre scolarité dans le navigateur."
+      },
+      "health-portal": {
+        "name": "Portail Santé",
+        "description": "Patients, rendez-vous et admissions : le poste d’accueil de votre établissement."
+      },
+      "hr-mobile": {
+        "name": "Leopardo RH",
+        "description": "Suivi des employés, présences, tâches et recrutement pour vos équipes RH."
+      },
+      "accounting-mobile": {
+        "name": "Leopardo Comptabilité",
+        "description": "Facturation et suivi des impayés, partout avec vous."
+      },
+      "marketing-mobile": {
+        "name": "Leopardo Marketing",
+        "description": "Planifiez et publiez sur vos réseaux sociaux en un clic."
+      },
+      "cameras-mobile": {
+        "name": "Leopardo Caméras",
+        "description": "Votre mur de caméras en mobilité : visionnage direct, événements et alertes."
+      }
+    },
+    "dashboardCard": "Installez les applications de votre métier — serveur, cuisine, caisse, mobile."
   }
 }

@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { CheckCircle2, ChevronDown, ChevronUp, ListChecks, X } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowRight, CheckCircle2, ChevronDown, ChevronUp, ListChecks, X } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { getCopy, normalizeLocale, type AppLocale } from '@/lib/i18n';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
@@ -28,6 +29,47 @@ const QUICK_START_THRESHOLD = 15;
 // Repli local uniquement (préférence d'affichage, pas un état métier) —
 // même pattern que la carte Leo IA du dashboard.
 export const NEXT_STEPS_DISMISS_KEY = 'leopardo_next_steps_dismissed';
+
+/**
+ * #8451 — chaque étape pointe vers l'ÉCRAN de l'action correspondante
+ * (créer, inviter, configurer, installer) : la checklist n'est plus une
+ * liste à cocher abstraite, c'est le parcours de mise en service réel.
+ * Couvre les étapes génériques, les verticales seedées par profil
+ * (restaurant, station-service, retail, scolarité, travel) et l'étape
+ * « installer ses apps » qui mène au hub « Mon Logiciel » (#8447).
+ */
+const STEP_ACTIONS: Record<string, string> = {
+  company_info: '/settings',
+  first_department: '/employees',
+  first_employee: '/employees',
+  first_attendance: '/attendance',
+  invite_manager: '/employees',
+  configure_schedules: '/attendance',
+  first_report: '/reports',
+  configure_payroll: '/payroll',
+  install_kiosk: '/mon-logiciel',
+  activate_geofence: '/attendance/geo',
+  customize_showcase: '/showcase',
+  publish_showcase: '/showcase',
+  travel_setup_network: '/travel/network',
+  travel_first_trip: '/travel/trips',
+  travel_first_sale: '/travel',
+  restaurant_setup_establishment: '/restaurant/referential',
+  restaurant_setup_menu: '/restaurant/referential',
+  restaurant_setup_pos: '/restaurant/pos',
+  restaurant_first_order: '/restaurant/pos',
+  install_apps: '/mon-logiciel',
+  fuel_setup_station: '/fuel/stations',
+  fuel_setup_team: '/fuel/team',
+  fuel_first_rotation: '/fuel/rotations',
+  fuel_first_sale: '/fuel/sales',
+  retail_setup_catalog: '/commerce/products',
+  retail_setup_pos: '/commerce/pos',
+  retail_first_sale: '/commerce/pos',
+  edu_setup_campus: '/edu-manager/campuses',
+  edu_setup_classes: '/edu-manager/classes',
+  edu_first_students: '/edu-manager/students',
+};
 
 type ChecklistStep = {
   step_key: string;
@@ -239,6 +281,16 @@ export function NextStepsCard({ locale }: { locale: AppLocale }) {
                     ) : null}
                   </div>
                   <div className="flex items-center gap-1.5">
+                    {STEP_ACTIONS[step.step_key] ? (
+                      <Link
+                        href={STEP_ACTIONS[step.step_key]}
+                        data-testid={`next-step-open-${step.step_key}`}
+                        className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-black text-slate-600 transition hover:border-emerald-300 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+                      >
+                        {t('open', 'Ouvrir')}
+                        <ArrowRight className="h-3 w-3" aria-hidden="true" />
+                      </Link>
+                    ) : null}
                     <button
                       type="button"
                       onClick={() => void mutate(step, 'complete')}

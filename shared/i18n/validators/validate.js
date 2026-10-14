@@ -10,6 +10,8 @@ const metadataKeys = new Set(['_version', '_updated_at', '_locale']);
 const placeholderRegex = /:([a-zA-Z0-9_]+)/g;
 const mojibakeRegex = /Ã|Â|Ù|Ø/;
 const rtlRegex = /[\u0600-\u06FF]/;
+// Noms de marque/produit qui restent en latin dans toutes les locales (ex. « Leopardo Manager »).
+const brandNameRegex = /Leopardo/;
 const maxLengths = [
   { pattern: /\.subject$/, limit: 120 },
   { pattern: /\.title$/, limit: 90 },
@@ -90,7 +92,7 @@ function ensureRtl(locale, leaves, errors) {
     if (mojibakeRegex.test(value)) {
       errors.push(`[${locale}] ${key} looks mojibaked`);
     }
-    if (/[\p{Letter}]/u.test(value) && !rtlRegex.test(value) && !/:/.test(value)) {
+    if (/[\p{Letter}]/u.test(value) && !rtlRegex.test(value) && !/:/.test(value) && !brandNameRegex.test(value)) {
       errors.push(`[${locale}] ${key} should contain Arabic script`);
     }
   }

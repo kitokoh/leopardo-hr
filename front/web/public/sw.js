@@ -41,6 +41,8 @@ const PROTECTED_PREFIXES = [
   // BC-32 HOSPITALITY (#7943) — verticale HospitalityManager (zone dashboard).
   '/hospitality',
   '/fuel',
+  // #8447 — « Mon Logiciel » (hub des apps du tenant, zone dashboard).
+  '/mon-logiciel',
   // BC-17 — espace vendeur (zone dashboard).
   '/commerce',
 

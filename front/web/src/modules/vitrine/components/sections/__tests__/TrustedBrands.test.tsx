@@ -10,6 +10,27 @@ import { TrustedBrands } from '../TrustedBrands';
 describe('TrustedBrands (#8392)', () => {
   beforeEach(() => {
     window.localStorage.setItem('preferred_locale', 'fr');
+    // `framer-motion` (motion-dom) met en cache `prefersReducedMotion` au
+    // niveau MODULE, une seule fois par worker : si un autre fichier de test
+    // a déjà installé un `matchMedia` renvoyant `matches: true` (les tests
+    // `layout-*`), la rotation est désactivée pour tout le worker et ce test
+    // devient flaky. On force donc un `matchMedia` déterministe
+    // (`matches: false` = mouvement autorisé) — même approche que
+    // `rtl-direction.test.tsx`.
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      configurable: true,
+      value: jest.fn().mockImplementation((query: string) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      })),
+    });
     jest.useFakeTimers();
   });
 

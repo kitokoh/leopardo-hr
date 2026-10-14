@@ -151,8 +151,9 @@ export default function RestaurantHomePage() {
     { href: '/restaurant/team', icon: UsersRound, title: t(locale, 'restaurant.home.team', 'Équipe'), description: t(locale, 'restaurant.home.teamDesc', 'Affectations des employés aux succursales, rôles'), accent: 'from-fuchsia-500 to-purple-600' },
     // #8431 — rotations de travail (planning des équipes).
     { href: '/restaurant/rotations', icon: CalendarClock, title: t(locale, 'restaurant.home.rotations', 'Rotations & plannings'), description: t(locale, 'restaurant.home.rotationsDesc'), accent: 'from-sky-500 to-blue-600' },
-    // #8432 — accès à l'app mobile serveur (pointage des serveurs).
-    { href: '/download', icon: Smartphone, title: t(locale, 'restaurant.home.mobileServer', 'App mobile serveur'), description: t(locale, 'restaurant.home.mobileServerDesc'), accent: 'from-orange-500 to-amber-600' },
+    // #8432/#8447 — accès aux apps du restaurant (serveur, cuisine, caisse,
+    // kiosque) : la tuile mène au hub « Mon Logiciel », filtré par solutions.
+    { href: '/mon-logiciel', icon: Smartphone, title: t(locale, 'restaurant.home.mobileServer', 'Mes applications'), description: t(locale, 'restaurant.home.mobileServerDesc'), accent: 'from-orange-500 to-amber-600' },
   ];
 
   return (

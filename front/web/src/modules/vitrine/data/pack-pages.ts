@@ -20,6 +20,20 @@ export const PACK_VERTICALS: PackVerticalSlug[] = [
   'vtc',
 ];
 
+/**
+ * #8454 — slug de page pack → secteur de l'entretien de préparation
+ * (allowlist `SetupInterviewPlanner::QUESTIONS['sector']`). Le CTA « Activer
+ * mon pack » porte ce paramètre : le métier est présélectionné à
+ * l'inscription et l'entretien ne repose pas la question secteur.
+ */
+export const PACK_SECTORS: Record<PackVerticalSlug, string> = {
+  'station-service': 'fuel_station',
+  ecole: 'education',
+  'agence-de-voyage': 'travel',
+  cagnottes: 'association',
+  vtc: 'services',
+};
+
 export type PackBenefitIcon =
   | 'clock'
   | 'calendar'

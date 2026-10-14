@@ -7,6 +7,7 @@ import { apiFetch } from '@/lib/api-client';
 import { LeoMascot } from '@/components/ui/LeoMascot';
 import type { AppLocale, StoredAuthUser } from '@/lib/i18n';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
+import { clearSignupSector, peekSignupSector } from '@/lib/signup-sector';
 
 /**
  * #7493 — entretien de préparation conversationnel de première connexion.
@@ -173,10 +174,35 @@ export function SetupInterview({
           return;
         }
         const saved = state?.answers ?? {};
-        setAnswers(saved);
+        // #8454 — métier présélectionné à l'inscription vitrine (`?sector=`
+        // capturé par le SignupForm) : si le brouillon serveur n'a pas encore
+        // de secteur, on pré-répond la question au lieu de la reposer. La
+        // pré-réponse n'est appliquée QUE si l'endpoint de brouillon confirme
+        // l'écriture — sinon la question est posée normalement (le plan
+        // d'activation du `complete` se calcule côté serveur : une présélection
+        // non persistée ne doit jamais masquer la question).
+        let merged = saved;
+        const preset = 'sector' in saved ? null : peekSignupSector();
+        if (preset) {
+          try {
+            const response = await apiFetch('/setup-interview/answers', {
+              method: 'PATCH',
+              body: JSON.stringify({ answers: { sector: preset } }),
+            });
+            if (response.ok) {
+              merged = { ...saved, sector: preset };
+              clearSignupSector();
+            }
+          } catch {
+            // Réseau manquant : la question « secteur » sera posée — la
+            // présélection est un confort, jamais un risque pour l'activation.
+          }
+        }
+        if (cancelled) return;
+        setAnswers(merged);
         // Reprendre à la première question visible non répondue.
-        const visible = visibleQuestionsFor(saved, sectorKnown);
-        const firstUnanswered = visible.findIndex((q) => !(q.key in saved));
+        const visible = visibleQuestionsFor(merged, sectorKnown);
+        const firstUnanswered = visible.findIndex((q) => !(q.key in merged));
         setIndex(firstUnanswered === -1 ? Math.max(visible.length - 1, 0) : firstUnanswered);
       } catch {
         // Non bloquant : l'entretien démarre à la première question.
@@ -227,7 +253,13 @@ export function SetupInterview({
       const visible = visibleQuestionsFor(nextAnswers, sectorKnown);
       const currentKey = question?.key;
       const currentPos = visible.findIndex((q) => q.key === currentKey);
-      const next = currentPos === -1 ? index : currentPos + 1;
+      let next = currentPos === -1 ? index : currentPos + 1;
+      // #8454 — ne jamais reposer une question déjà répondue (ex. secteur
+      // pré-répondu depuis la vitrine) : on avance jusqu'à la prochaine
+      // question visible encore sans réponse.
+      while (next < visible.length && visible[next].key in nextAnswers) {
+        next += 1;
+      }
       if (next >= visible.length) {
         void complete();
       } else {
