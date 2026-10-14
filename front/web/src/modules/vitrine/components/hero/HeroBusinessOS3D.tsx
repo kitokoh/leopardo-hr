@@ -22,18 +22,25 @@
  * explorer » flotte sous la scène. Les étiquettes sont des divs à
  * `pointer-events: none` : elles ne détournent jamais un clic.
  *
- * Rendu premium (#8405) : liens fins entre modules d'un même anneau (effet
- * constellation), halo lumineux derrière le noyau, lueur propre à chaque
- * module (renforcée au survol), surbrillance de l'anneau actif, dérive lente
- * de la caméra et noyau à facettes (flat shading).
+ * Rendu premium (#8405, renforcé #8438) : liens fins entre modules d'un même
+ * anneau (effet constellation), halo lumineux derrière le noyau, lueur propre
+ * à chaque module (renforcée au survol), surbrillance de l'anneau actif,
+ * dérive lente de la caméra, noyau à facettes (flat shading), et — vague 3 —
+ * NÉBULEUSES additives en dérive lente + poussière d'étoiles enrichie : le
+ * ciel est étoilé en toutes circonstances (retour propriétaire : « en mode
+ * nuit la constellation semble plus belle » — le héro est désormais une scène
+ * nuit permanente, cf. `HeroSection` layout `stage`). Vague 4 (#8461) :
+ * ÉTOILES FILANTES occasionnelles (pool pré-alloué) et scintillement doux de
+ * la poussière ; la FRANCE en constellation vit un plan derrière, en couche
+ * DOM (`FranceConstellation`, montée par `HeroSection`).
  *
- * Performance / robustesse (mêmes règles que `SolutionStack3D`) :
+ * Performance / robustesse :
  *   • three.js en imports nommés, monté uniquement par `HeroScene3D`
  *     (dynamic import, ssr:false, WebGL vérifié, idle callback) ;
  *   • rendu mis en pause hors écran (IntersectionObserver) et onglet caché ;
  *   • un seul `requestAnimationFrame`, aucune allocation three.js en boucle
  *     (vecteurs/matrices pré-alloués — les seules écritures par image sont
- *     les styles des étiquettes HTML, indispensables et bornées à 8) ;
+ *     les styles des étiquettes HTML, indispensables et bornées à 12) ;
  *   • canvas en arrière-plan (pointer-events:none) hors mode interactif,
  *     écoute sur `window` ;
  *   • `prefers-reduced-motion` neutralise rotation continue, parallaxe,
@@ -108,11 +115,13 @@ export interface HeroBusinessOS3DProps {
 }
 
 // ── Composition de la constellation ──────────────────────────────────────
-// 8 modules sur 2 anneaux (4 intérieurs, 4 extérieurs) : assez pour lire
-// « plusieurs métiers, un seul noyau », assez peu pour rester élégant
-// derrière le texte du héro.
-const MODULES_PER_RING = [4, 4];
-const RING_RADII = [2.3, 3.5];
+// #8438 — 12 modules sur 2 anneaux (6 + 6) : la constellation présente
+// DAVANTAGE de solutions (les 5 packs offerts + hub en anneau intérieur, les
+// entrées clés de la plateforme en anneau extérieur) — retour propriétaire
+// « qu'elle présente encore plus nos solutions ». Modules légèrement plus
+// petits (0.19) pour que les 12 étiquettes respirent.
+const MODULES_PER_RING = [6, 6];
+const RING_RADII = [2.6, 3.9];
 const RING_TILT = [0.42, -0.28];
 const RING_SPEED = [0.00022, -0.00015];
 
@@ -156,6 +165,42 @@ function makeGlowTexture(hex: string): CanvasTexture {
   texture.colorSpace = SRGBColorSpace;
   return texture;
 }
+
+/** Texture de traînée d'étoile filante (créée une fois à l'init, #8461). */
+function makeStreakTexture(): CanvasTexture {
+  const width = 256;
+  const height = 16;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    const gradient = ctx.createLinearGradient(0, 0, width, 0);
+    gradient.addColorStop(0, 'rgba(248,250,252,0)');
+    gradient.addColorStop(0.55, 'rgba(248,250,252,0.55)');
+    gradient.addColorStop(1, 'rgba(248,250,252,0.95)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+  }
+  const texture = new CanvasTexture(canvas);
+  texture.colorSpace = SRGBColorSpace;
+  return texture;
+}
+
+/** Étoile filante (#8461) — tête + traînée, réutilisée à chaque passage. */
+type ShootingStar = {
+  head: Sprite;
+  trail: Sprite;
+  active: boolean;
+  startAt: number;
+  duration: number;
+  nextAt: number;
+  fromX: number;
+  fromY: number;
+  fromZ: number;
+  toX: number;
+  toY: number;
+};
 
 export function HeroBusinessOS3D({
   reducedMotion = false,
@@ -207,20 +252,25 @@ export function HeroBusinessOS3D({
     scene.add(glowLight);
 
     const world = new Group();
+    // #8437 — en layout `stage`, la phrase occupe le tiers haut du héro : la
+    // constellation descend d'un demi-monde pour que le noyau (la grosse
+    // gemme) ne croise jamais le texte — seuls les petits modules en orbite
+    // le frôlent, ce qui fait tout le charme de la composition.
+    world.position.y = -0.5;
     scene.add(world);
 
     // ── Noyau : la plateforme (gemme à facettes + halo) ────────────────
-    const coreGeo = new IcosahedronGeometry(1.05, 1);
+    const coreGeo = new IcosahedronGeometry(0.92, 1);
     const core = new Mesh(
       coreGeo,
       new MeshStandardMaterial({
         color: CORE_COLOR,
         emissive: new Color('#064e3b'),
-        emissiveIntensity: 0.55,
+        emissiveIntensity: 0.7,
         metalness: 0.35,
         roughness: 0.32,
         transparent: true,
-        opacity: 0.92,
+        opacity: 0.85,
         flatShading: true,
       }),
     );
@@ -265,7 +315,7 @@ export function HeroBusinessOS3D({
 
     // ── Modules métier en orbite (avec lueur propre) ───────────────────
     const nodes: ModuleNode[] = [];
-    const nodeGeo = new OctahedronGeometry(0.21, 0);
+    const nodeGeo = new OctahedronGeometry(0.19, 0);
     const glowTextures = [makeGlowTexture('#10b981'), makeGlowTexture('#06b6d4')];
     RING_RADII.forEach((radius, ringIndex) => {
       const count = MODULES_PER_RING[ringIndex];
@@ -341,10 +391,12 @@ export function HeroBusinessOS3D({
     const nodeMeshes = nodes.map((n) => n.mesh);
 
     // Poussière d'étoiles pour la profondeur (deux tons, deux vitesses).
-    const DUST_COUNT = 140;
+    // #8438 — densité et dispersion augmentées : la scène est plein cadre
+    // (layout `stage`), le ciel étoilé doit couvrir tout l'écran.
+    const DUST_COUNT = 220;
     const dustPositions = new Float32Array(DUST_COUNT * 3);
     for (let i = 0; i < DUST_COUNT; i += 1) {
-      const r = 4.5 + Math.random() * 4;
+      const r = 4.5 + Math.random() * 5;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
       dustPositions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
@@ -359,10 +411,10 @@ export function HeroBusinessOS3D({
     );
     world.add(dust);
 
-    const DUST2_COUNT = 90;
+    const DUST2_COUNT = 140;
     const dust2Positions = new Float32Array(DUST2_COUNT * 3);
     for (let i = 0; i < DUST2_COUNT; i += 1) {
-      const r = 4 + Math.random() * 4.5;
+      const r = 4 + Math.random() * 5.5;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
       dust2Positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
@@ -376,6 +428,74 @@ export function HeroBusinessOS3D({
       new PointsMaterial({ color: EMERALD, size: 0.055, transparent: true, opacity: 0.45 }),
     );
     world.add(dust2);
+
+    // #8438 — nébuleuses additives en dérive lente (émeraude, cyan, indigo) :
+    // la « magie » du mode nuit reproduite en permanence. Sprites plats,
+    // zéro géométrie, trois textures partagées — coût négligeable.
+    const NEBULA_SPECS = [
+      { texture: makeGlowTexture('#10b981'), scale: 11, x: -4.6, y: 1.6, z: -4.5, opacity: 0.13, drift: 0.9 },
+      { texture: makeGlowTexture('#06b6d4'), scale: 13, x: 4.8, y: -1.4, z: -5, opacity: 0.11, drift: -0.7 },
+      { texture: makeGlowTexture('#6366f1'), scale: 9, x: 2.4, y: 2.6, z: -5.5, opacity: 0.1, drift: 0.6 },
+    ];
+    const nebulas = NEBULA_SPECS.map((spec) => {
+      const sprite = new Sprite(
+        new SpriteMaterial({
+          map: spec.texture,
+          transparent: true,
+          opacity: spec.opacity,
+          depthWrite: false,
+          blending: AdditiveBlending,
+        }),
+      );
+      sprite.scale.setScalar(spec.scale);
+      sprite.position.set(spec.x, spec.y, spec.z);
+      world.add(sprite);
+      return { sprite, baseX: spec.x, baseY: spec.y, baseOpacity: spec.opacity, drift: spec.drift };
+    });
+
+    // #8461 — étoiles filantes (vague 4, « waw ») : deux traînées réutilisées
+    // en boucle fermée, spawn toutes les 4 à 9 s dans le haut du ciel, zéro
+    // allocation par image. Jamais en reduced-motion (le bloc `!still`).
+    const shootingGlowTexture = makeGlowTexture('#f8fafc');
+    const shootingStreakTexture = makeStreakTexture();
+    const shootingStars: ShootingStar[] = [0, 1].map((i) => {
+      const head = new Sprite(
+        new SpriteMaterial({
+          map: shootingGlowTexture,
+          transparent: true,
+          opacity: 0,
+          depthWrite: false,
+          blending: AdditiveBlending,
+        }),
+      );
+      head.scale.setScalar(0.34);
+      head.visible = false;
+      const trail = new Sprite(
+        new SpriteMaterial({
+          map: shootingStreakTexture,
+          transparent: true,
+          opacity: 0,
+          depthWrite: false,
+          blending: AdditiveBlending,
+        }),
+      );
+      trail.scale.set(1.9, 0.08, 1);
+      trail.visible = false;
+      world.add(head, trail);
+      return {
+        head,
+        trail,
+        active: false,
+        startAt: 0,
+        duration: 1,
+        nextAt: 2.5 + i * 3.5 + Math.random() * 3,
+        fromX: 0,
+        fromY: 0,
+        fromZ: 0,
+        toX: 0,
+        toY: 0,
+      };
+    });
 
     // ── Étiquettes des modules (#8404 — affordance) ────────────────────
     // Créées une fois (mode interactif avec libellés uniquement), déplacées
@@ -450,11 +570,14 @@ export function HeroBusinessOS3D({
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       // Sur petit écran on resserre la constellation pour qu'elle reste lisible.
-      // #8403 — cadrage resserré (720 au lieu de 860) : la scène remplit son
-      // cadre — retour propriétaire « qu'elle occupe tout l'espace » — tout en
-      // gardant les étiquettes des modules extérieurs dans le panneau.
-      const scale = Math.min(1, width / 720);
-      world.scale.setScalar(Math.max(0.6, scale));
+      // #8403 — cadrage resserré : la scène remplit son cadre — retour
+      // propriétaire « qu'elle occupe tout l'espace » — tout en gardant les
+      // étiquettes des modules extérieurs dans le panneau.
+      // #8438 — plein cadre (layout `stage`) : l'échelle tient compte de la
+      // hauteur autant que de la largeur, la constellation reste entière sur
+      // mobile portrait comme sur écran large.
+      const scale = Math.min(1.12, Math.min(width / 1000, height / 750));
+      world.scale.setScalar(Math.max(0.45, scale));
     };
     resize();
     const resizeObserver = new ResizeObserver(resize);
@@ -526,9 +649,67 @@ export function HeroBusinessOS3D({
         world.rotation.y += 0.0016;
         const breathe = 1 + Math.sin(t * 1.4) * 0.03;
         core.scale.setScalar(breathe);
+        // #8418 — le noyau TOURNE lentement sur lui-même : la gemme à
+        // facettes capte la lumière en mouvement, la scène vit au premier
+        // regard (et non seulement au survol).
+        core.rotation.y += 0.0022;
+        core.rotation.x = Math.sin(t * 0.18) * 0.12;
         glowLight.intensity = 16 + Math.sin(t * 1.4) * 3;
         dust.rotation.y += 0.0004;
         dust2.rotation.y -= 0.0003;
+        // #8438 — dérive lente des nébuleuses (respiration de la lueur incluse).
+        nebulas.forEach((nebula, i) => {
+          nebula.sprite.position.x = nebula.baseX + Math.sin(t * 0.07 * nebula.drift + i * 2.1) * 0.8;
+          nebula.sprite.position.y = nebula.baseY + Math.cos(t * 0.05 * nebula.drift + i * 1.3) * 0.5;
+          (nebula.sprite.material as SpriteMaterial).opacity =
+            nebula.baseOpacity + Math.sin(t * 0.3 + i * 1.7) * 0.03;
+        });
+        // #8461 — scintillement doux de la poussière d'étoiles.
+        dust.material.opacity = 0.55 + Math.sin(t * 0.7) * 0.12;
+        dust2.material.opacity = 0.45 + Math.cos(t * 0.55) * 0.1;
+        // #8461 — étoiles filantes : spawn différé, traversée ~1 s, estompage
+        // en sinusoïde. Sprites pré-alloués, aucune allocation ici.
+        shootingStars.forEach((star) => {
+          if (!star.active) {
+            if (t >= star.nextAt) {
+              const fromX = -5 + Math.random() * 8;
+              const fromY = 1.2 + Math.random() * 3;
+              const dx = 4.5 + Math.random() * 2.5;
+              const dy = -(1.8 + Math.random() * 1.6);
+              star.fromX = fromX;
+              star.fromY = fromY;
+              star.fromZ = -4 + Math.random() * 2;
+              star.toX = fromX + dx;
+              star.toY = fromY + dy;
+              star.startAt = t;
+              star.duration = 0.8 + Math.random() * 0.5;
+              star.active = true;
+              star.head.visible = true;
+              star.trail.visible = true;
+              (star.trail.material as SpriteMaterial).rotation = Math.atan2(dy, dx);
+            }
+            return;
+          }
+          const progress = (t - star.startAt) / star.duration;
+          if (progress >= 1) {
+            star.active = false;
+            star.head.visible = false;
+            star.trail.visible = false;
+            star.nextAt = t + 4 + Math.random() * 6;
+            return;
+          }
+          const x = star.fromX + (star.toX - star.fromX) * progress;
+          const y = star.fromY + (star.toY - star.fromY) * progress;
+          const envelope = Math.sin(Math.PI * progress);
+          star.head.position.set(x, y, star.fromZ);
+          star.trail.position.set(
+            x - (star.toX - star.fromX) * 0.06,
+            y - (star.toY - star.fromY) * 0.06,
+            star.fromZ,
+          );
+          (star.head.material as SpriteMaterial).opacity = 0.85 * envelope;
+          (star.trail.material as SpriteMaterial).opacity = 0.5 * envelope;
+        });
         // Dérive lente de la caméra : la scène « vit » même sans pointeur.
         camera.position.x = Math.sin(t * 0.13) * 0.38;
         camera.position.y = 0.4 + Math.sin(t * 0.17) * 0.26;
@@ -619,6 +800,16 @@ export function HeroBusinessOS3D({
       (dust.material as PointsMaterial).dispose();
       dust2Geo.dispose();
       (dust2.material as PointsMaterial).dispose();
+      nebulas.forEach((nebula) => {
+        (nebula.sprite.material as SpriteMaterial).dispose();
+        (nebula.sprite.material as SpriteMaterial).map?.dispose();
+      });
+      shootingStars.forEach((star) => {
+        (star.head.material as SpriteMaterial).dispose();
+        (star.trail.material as SpriteMaterial).dispose();
+      });
+      shootingGlowTexture.dispose();
+      shootingStreakTexture.dispose();
       renderer.dispose();
       renderer.domElement.remove();
     };
@@ -634,11 +825,13 @@ export function HeroBusinessOS3D({
       {/* #8404 — indice d'interaction : sans lui, personne ne devine que les
           losanges sont cliquables. Visuel uniquement (aria-hidden) : les
           mêmes destinations restent portées par la navbar, les CTA et le hub
-          /packs pour clavier et lecteur d'écran. */}
+          /packs pour clavier et lecteur d'écran.
+          #8438 — placé en HAUT de la scène : en layout `stage` (plein cadre),
+          le bas de l'écran appartient aux CTA. */}
       {interactive && hint ? (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full border border-slate-200/70 bg-white/80 px-3 py-1.5 text-xs font-medium text-slate-500 shadow-sm backdrop-blur dark:border-slate-700/60 dark:bg-slate-900/80 dark:text-slate-400"
+          className="pointer-events-none absolute left-1/2 top-20 z-10 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full border border-slate-200/70 bg-white/80 px-3 py-1.5 text-xs font-medium text-slate-500 shadow-sm backdrop-blur dark:border-slate-700/60 dark:bg-slate-900/80 dark:text-slate-400"
         >
           <MousePointerClick className="h-3.5 w-3.5 text-emerald-500" />
           {hint}

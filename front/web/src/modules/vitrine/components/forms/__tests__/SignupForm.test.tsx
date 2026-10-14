@@ -670,3 +670,64 @@ describe('SignupForm Component', () => {
     });
   });
 });
+
+describe('Pack pré-sélectionné (#8462)', () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+    window.history.replaceState({}, '', '/signup');
+    mockedSubmitSignupForm.mockClear();
+  });
+
+  it('affiche le bandeau du pack et envoie sa verticale au provisioning', async () => {
+    window.history.replaceState({}, '', '/signup?pack=restaurant');
+    mockedSubmitSignupForm.mockResolvedValue({
+      success: true,
+      provisioned: true,
+      message: 'Code de vérification envoyé.',
+      data: {},
+    });
+    renderAtFormStep();
+
+    // Le choix fait sur la vitrine est visible dans le tunnel.
+    expect(screen.getByText(/Pack métier pré-sélectionné/i)).toBeInTheDocument();
+    expect(screen.getByText(/Restaurants/)).toBeInTheDocument();
+
+    await fillField(/email/i, 'resto@example.com');
+    fireEvent.click(screen.getByRole('checkbox'));
+    submitForm();
+
+    await waitFor(() => expect(mockedSubmitSignupForm).toHaveBeenCalled());
+    const [payload] = mockedSubmitSignupForm.mock.calls[0] as [Record<string, unknown>];
+    expect(payload.solutions).toEqual(['restaurant']);
+    expect(payload.role).toBe('founder');
+  });
+
+  it('ignore silencieusement un slug inconnu (fail-closed, parcours inchangé)', async () => {
+    window.history.replaceState({}, '', '/signup?pack=inconnu');
+    mockedSubmitSignupForm.mockResolvedValue({
+      success: true,
+      provisioned: true,
+      message: 'Code de vérification envoyé.',
+      data: {},
+    });
+    renderAtFormStep();
+
+    expect(screen.queryByText(/Pack métier pré-sélectionné/i)).not.toBeInTheDocument();
+
+    await fillField(/email/i, 'test@example.com');
+    fireEvent.click(screen.getByRole('checkbox'));
+    submitForm();
+
+    await waitFor(() => expect(mockedSubmitSignupForm).toHaveBeenCalled());
+    const [payload] = mockedSubmitSignupForm.mock.calls[0] as [Record<string, unknown>];
+    expect(payload.solutions).toBeUndefined();
+  });
+
+  it('nomme le pack cagnottes via le repli dédié (sans carte hub)', () => {
+    window.history.replaceState({}, '', '/signup?pack=cagnottes&lang=fr');
+    renderAtFormStep();
+
+    expect(screen.getByText(/Pack métier pré-sélectionné/i)).toBeInTheDocument();
+    expect(screen.getByText(/Cagnottes solidaires/)).toBeInTheDocument();
+  });
+});

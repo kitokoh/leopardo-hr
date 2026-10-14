@@ -34,6 +34,7 @@ import QRCode from 'qrcode';
 import { Input, Button } from '@/modules/vitrine/components/common';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { mobileDownloadTarget, type MobileAppSlug } from '@/modules/vitrine/lib/mobile-download';
+import { packSignupHref } from '@/modules/vitrine/lib/pack-signup';
 import { EDGE_INSTALL_CMD, LEAD_COPY, WIZARD_COPY } from '@/modules/vitrine/data/restaurant-wizard';
 import {
   buildDefaultAnswers,
@@ -513,6 +514,20 @@ export function RestaurantSolutionWizard() {
                   </div>
                 );
               })}
+            </div>
+
+            {/* #8462 (vague 4) — conversion principale : créer l'espace AVEC
+                le métier déjà déclaré (`?pack=restaurant`) — activé au
+                provisioning, jamais re-demandé par l'entretien de préparation. */}
+            <div className="mt-10 flex justify-center">
+              <Button
+                size="lg"
+                onClick={() => { window.location.href = packSignupHref('restaurant', window.location.search); }}
+                icon={<ArrowRight className="w-4 h-4" />}
+                iconPosition="right"
+              >
+                {c.createSpace}
+              </Button>
             </div>
 
             {/* Capture du lead (#6692) — email + consentement marketing, facultatif */}

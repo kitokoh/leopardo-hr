@@ -30,6 +30,15 @@ import { getEnvConfig } from '../lib/env'
 type Props = {
   isDark: boolean
   onToggleDark: () => void
+  /**
+   * #8437 — la page d'accueil ouvre sur un héro « nuit permanente » (layout
+   * `stage`). Tant que la page n'a pas scrollé, la barre flotte sur fond
+   * SOMBRE même en thème clair : la classe `dark` locale force alors les
+   * variantes sombres (texte blanc) — sinon le logo et les liens sont
+   * illisibles sur la constellation. Retirée dès le scroll (fond clair
+   * flouté) ou sur les autres pages.
+   */
+  overDarkStage?: boolean
 }
 
 type DropdownItem = {
@@ -160,7 +169,7 @@ function DropdownMenu({
   )
 }
 
-export function Navbar({ isDark, onToggleDark }: Props) {
+export function Navbar({ isDark, onToggleDark, overDarkStage = false }: Props) {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
@@ -272,7 +281,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
         scrolled
           ? 'bg-white/80 dark:bg-slate-950/80 backdrop-blur-2xl shadow-[0_1px_0_0_rgba(0,0,0,0.04)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.04)]'
           : 'bg-transparent'
-      }`}
+      } ${overDarkStage && !scrolled ? 'dark' : ''}`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">

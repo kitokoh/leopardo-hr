@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Vtc\Interfaces\Api\V1\Controllers;
 
-use App\Modules\Vtc\Application\Actions\CancelRideAction;
 use App\Modules\Vtc\Application\Services\VtcDispatchService;
 use App\Modules\Vtc\Application\Services\VtcDriverRideService;
 use App\Modules\Vtc\Domain\Models\VtcRide;
-use App\Modules\Vtc\Interfaces\Api\V1\Requests\RideCancelRequest;
 use App\Modules\Vtc\Interfaces\Api\V1\Resources\VtcRideResource;
 use Illuminate\Http\Request;
 
@@ -29,7 +27,6 @@ final class VtcDriverRideController extends VtcDriverBaseController
     public function __construct(
         private readonly VtcDispatchService $dispatch,
         private readonly VtcDriverRideService $driverRides,
-        private readonly CancelRideAction $cancelRide,
     ) {}
 
     public function accept(Request $request, int $id): VtcRideResource
@@ -78,28 +75,6 @@ final class VtcDriverRideController extends VtcDriverBaseController
 
         return new VtcRideResource(
             $this->driverRides->complete($this->findDriverRide($driver, $id))
-        );
-    }
-
-    /**
-     * Annulation par le CHAUFFEUR (#8423, M-21) : SA course, après
-     * acceptation uniquement (accepted/arrived — panne, empêchement ;
-     * 409 sinon). Le motif est obligatoire et l'annulation le libère
-     * (→ available, CancelRideAction).
-     */
-    public function cancel(RideCancelRequest $request, int $id): VtcRideResource
-    {
-        $driver = $this->resolveDriver($request);
-
-        /** @var array{reason: string} $validated */
-        $validated = $request->validated();
-
-        return new VtcRideResource(
-            $this->cancelRide->execute(
-                $this->findDriverRide($driver, $id),
-                $validated['reason'],
-                CancelRideAction::ACTOR_DRIVER,
-            )
         );
     }
 }

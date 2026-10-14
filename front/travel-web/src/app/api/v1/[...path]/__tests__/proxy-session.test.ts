@@ -99,29 +99,4 @@ describe("proxy /api/v1/[...path] — session en cookie httpOnly (#7841)", () =>
     expect(response.status).toBe(404);
     expect(mockFetch).not.toHaveBeenCalled();
   });
-
-  it("relaye public/vtc/marketplace/* SANS Bearer (surface invitée #8423)", async () => {
-    const path = ["public", "vtc", "marketplace", "operators"];
-    await GET(
-      requestWithCookie("https://travel.example.com/api/v1/public/vtc/marketplace/operators"),
-      proxyContext(path),
-    );
-
-    expect(mockFetch).toHaveBeenCalledTimes(1);
-    const headers = (mockFetch.mock.calls[0]?.[1] as { headers: Headers }).headers;
-    // Surface 100 % invitée : le cookie de session n'est JAMAIS injecté.
-    expect(headers.get("authorization")).toBeNull();
-    expect(headers.get("cookie")).toBeNull();
-  });
-
-  it("refuse les chemins vtc hors marketplace (fail-closed)", async () => {
-    const response = await GET(
-      requestWithCookie("https://travel.example.com/api/v1/public/vtc/rides"),
-      proxyContext(["public", "vtc", "rides"]),
-    );
-
-    expect(response.status).toBe(404);
-    expect(mockFetch).not.toHaveBeenCalled();
-  });
 });
-

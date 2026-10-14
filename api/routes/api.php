@@ -583,6 +583,15 @@ Route::prefix('v1')->group(function (): void {
         // scopée à une entreprise vivante (sinon la preuve est inexploitable).
         Route::get('/tenant-deletion-audits', [PlatformCompanyDeletionController::class, 'auditTrail'])->middleware('platform.permission:companies.view');
         Route::delete('/companies/{company}', [PlatformCompanyDeletionController::class, 'destroy'])->middleware('platform.permission:companies.manage');
+
+        // #8441 — paramétrage de la verticale cagnottes DANS le contexte de
+        // l'entreprise consultée : la fiche entreprise (VERTICAL_SURFACES)
+        // ouvre l'écran de paramétrage qui appelait les routes TENANT
+        // (session de l'admin) — l'admin éditait son propre tenant. Ces
+        // routes lisent/écrivent la ligne du tenant ciblé (withinTenant,
+        // fail-closed si la verticale n'est pas activée).
+        Route::get('/companies/{company}/fundraising/settings', [\App\Modules\Fundraising\Interfaces\Api\V1\Controllers\PlatformFundraisingSettingsController::class, 'show'])->middleware('platform.permission:companies.manage');
+        Route::put('/companies/{company}/fundraising/settings', [\App\Modules\Fundraising\Interfaces\Api\V1\Controllers\PlatformFundraisingSettingsController::class, 'update'])->middleware('platform.permission:companies.manage');
         // MULTI-PAYS (#1952) : réparation/choix du pays d'un tenant legacy
         // (refusé si données de paie — invariant 9). #7680 : les doublons SANS
         // platform.permission masquaient ces versions protégées (Laravel matche
@@ -629,6 +638,10 @@ Route::prefix('v1')->group(function (): void {
         // (POST /marketing/leads) et JAMAIS relus : aucune route GET n'existait.
         // Lecture seule, meme garde que le pipeline CRM.
         Route::get('/marketing/leads', [PlatformMarketingLeadController::class, 'index'])->middleware('platform.permission:crm.view');
+        // #8440 — qualification des leads (statut + note interne) : portée par
+        // l'écran « Prendre des parts » (suivi des intentions de prise de
+        // parts), même garde que la lecture.
+        Route::patch('/marketing/leads/{lead}', [PlatformMarketingLeadController::class, 'update'])->whereNumber('lead')->middleware('platform.permission:crm.view');
 
         // PA2-COMM-012 — Pilot client support center: super-admin triage of
         // tenant-opened support tickets (status, priority, assignment, reply).
@@ -723,6 +736,10 @@ Route::prefix('v1')->group(function (): void {
         // même famille que /admin/marketing/leads (`crm.view`, marketing + admin).
         Route::get('/solutions/survey-stats', [PlatformSolutionSurveyStatsController::class, 'index'])->middleware('platform.permission:crm.view');
         Route::get('/marketing/leads', [PlatformMarketingLeadController::class, 'index'])->middleware('platform.permission:crm.view');
+        // #8440 — alias /admin du PATCH /platform/marketing/leads (contrat
+        // SPA admin-dashboard) : qualification des intentions de prise de
+        // parts et de tout lead du pipeline, même garde que la lecture.
+        Route::patch('/marketing/leads/{lead}', [PlatformMarketingLeadController::class, 'update'])->whereNumber('lead')->middleware('platform.permission:crm.view');
 
         // #7496 — conversions du funnel d'acquisition par étape/jour/source
         // (dashboard admin CRM commercial, données acquisition_funnel_events).

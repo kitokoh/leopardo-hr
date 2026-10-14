@@ -19,6 +19,12 @@ describe('getFooterHref', () => {
     expect(getFooterHref(1, 10)).toBe('/branding')
   })
 
+  // #8440 — « Devenir actionnaire » : entrée discrète du footer (colonne
+  // Légal) vers la page de manifestation d'intérêt pour prendre des parts.
+  it('links the discreet shareholder page from the legal column (#8440)', () => {
+    expect(getFooterHref(3, 3)).toBe('/investir')
+  })
+
   it('does not create a silent dead-link fallback', () => {
     expect(getFooterHref(99, 99)).toBeNull()
   })

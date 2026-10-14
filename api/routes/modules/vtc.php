@@ -17,13 +17,6 @@
  * BC-35 VTC : réservation de courses, dispatch au chauffeur disponible le
  * plus proche (via le core géospatial BC-34), tarification, suivi.
  * Référence : docs/specifications/MODULE_GEOCORE_ET_VERTICAL_VTC.md (§5).
- *
- * PUBLIQUE marketplace (#8423, Phase 2) — groupe isolé `throttle:shop-public`
- * (aucun middleware tenant/utilisateur, pattern TravelMarketplace #7737) :
- * annuaire des opérateurs opt-in, devis, réservation invitée, suivi sans
- * compte. Agrégation cross-tenant BORNÉE aux sociétés opt-in (annuaire
- * public M-10), tenant résolu PAR RESSOURCE puis posé via le socle BOS-050
- * (PublicTenantResolver::withinTenant, fail-closed).
  */
 
 use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcDispatchController;
@@ -34,32 +27,11 @@ use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcDriverPositionController;
 use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcDriverRideController;
 use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcFareProfileAdminController;
 use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcHealthController;
-use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcMarketplaceController;
 use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcRideController;
 use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcRideEstimateController;
 use App\Modules\Vtc\Interfaces\Api\V1\Controllers\VtcVehicleAdminController;
 use Illuminate\Support\Facades\Route;
 
-// ── Publique marketplace (isolée, sans auth ni tenant — #8423) ──────────────
-Route::middleware(['throttle:shop-public'])
-    ->prefix('public/vtc/marketplace')
-    ->group(function (): void {
-        // M-11 — annuaire des opérateurs VTC opt-in (DTO strict).
-        Route::get('/operators', [VtcMarketplaceController::class, 'operators']);
-        // M-12 — devis public (tenant résolu par slug opérateur).
-        Route::post('/estimate', [VtcMarketplaceController::class, 'estimate']);
-        // M-13 — réservation invitée idempotente : throttle renforcé en plus
-        // du bucket shop-public (miroir de la création authentifiée VTC,
-        // throttle:10,1 — anti-spam de courses invitées).
-        Route::post('/rides', [VtcMarketplaceController::class, 'storeRide'])
-            ->middleware('throttle:10,1');
-        // M-14 — suivi invité par référence + code de suivi (?code=) : 404
-        // uniforme anti-énumération (référence inconnue = mauvais code).
-        Route::get('/rides/{reference}', [VtcMarketplaceController::class, 'trackRide'])
-            ->where('reference', 'VTC-[0-9]{4}-[0-9]{6}');
-    });
-
-// ── Privée (gestion tenant) ─────────────────────────────────────────────────
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.vtc'])
     ->prefix('vtc')
     ->group(function (): void {
@@ -93,10 +65,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
                 ->whereNumber('id');
             Route::post('/driver/rides/{id}/complete', [VtcDriverRideController::class, 'complete'])
                 ->whereNumber('id');
-            // #8423 (M-21) — annulation par le chauffeur : SA course, après
-            // acceptation uniquement (accepted/arrived, motif obligatoire).
-            Route::post('/driver/rides/{id}/cancel', [VtcDriverRideController::class, 'cancel'])
-                ->whereNumber('id');
             Route::post('/driver/position', [VtcDriverPositionController::class, 'store'])
                 ->middleware('throttle:30,1');
             Route::post('/driver/availability', [VtcDriverAvailabilityController::class, 'update']);
@@ -107,11 +75,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::middleware('vtc.role:dispatcher')->group(function (): void {
             Route::get('/dispatch/rides', [VtcDispatchController::class, 'rides']);
             Route::get('/dispatch/drivers', [VtcDispatchController::class, 'drivers']);
-            // #8423 (M-21) — annulation ops : dispatcher ET admin (le manager
-            // `principal` matche aussi le rôle dispatcher — matrice
-            // VtcRoleResolver ; l'acteur réel est tracé par le contrôleur).
-            Route::post('/dispatch/rides/{id}/cancel', [VtcDispatchController::class, 'cancel'])
-                ->whereNumber('id');
         });
 
         // VTC-06 (#8362) — administration de la verticale : rôle vtc.admin

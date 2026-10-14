@@ -39,6 +39,7 @@ import {
 } from '@/modules/vitrine/data/pack-pages';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { withLocaleHref } from '@/modules/vitrine/lib/locale-href';
+import { packSignupHref } from '@/modules/vitrine/lib/pack-signup';
 
 const ICONS: Record<PackBenefitIcon, typeof Clock> = {
   clock: Clock,
@@ -108,7 +109,7 @@ export default function PackVerticalPage({
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
               <Button
                 size="lg"
-                onClick={() => { window.location.href = withLocaleHref('/signup', search); }}
+                onClick={() => { window.location.href = packSignupHref(vertical, search); }}
               >
                 {copy.ctaPrimary}
               </Button>
@@ -184,7 +185,7 @@ export default function PackVerticalPage({
             <div className="mt-10">
               <Button
                 size="lg"
-                onClick={() => { window.location.href = withLocaleHref('/signup', search); }}
+                onClick={() => { window.location.href = packSignupHref(vertical, search); }}
               >
                 {copy.ctaPrimary}
               </Button>

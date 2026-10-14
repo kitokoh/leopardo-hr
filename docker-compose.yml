@@ -168,7 +168,7 @@ services:
       retries: 3
       start_period: 30s
     command: >
-      sh -c "while [ ! -f vendor/autoload.php ]; do sleep 2; done; php artisan queue:work --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,vtc,delivery,communication,reconciliation,default --sleep=3 --tries=3 --max-time=3600"
+      sh -c "while [ ! -f vendor/autoload.php ]; do sleep 2; done; php artisan queue:work --sleep=3 --tries=3 --max-time=3600"
     restart: unless-stopped
 
   scheduler:
