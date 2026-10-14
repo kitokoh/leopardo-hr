@@ -13,13 +13,14 @@ import { packDisplayName } from '../../data/pack-pages';
  * l'inscription en 422 côté catalogue).
  */
 describe('pack-signup (#8462)', () => {
-  it('expose les 5 packs portés par la vitrine', () => {
+  it('expose les 6 packs portés par la vitrine', () => {
     expect(PACK_SIGNUP_SLUGS).toEqual([
       'restaurant',
       'station-service',
       'ecole',
       'agence-de-voyage',
       'cagnottes',
+      'vtc',
     ]);
   });
 
@@ -41,6 +42,7 @@ describe('pack-signup (#8462)', () => {
     expect(packSolutionCode('ecole')).toBe('edumanager');
     expect(packSolutionCode('agence-de-voyage')).toBe('travelagency');
     expect(packSolutionCode('cagnottes')).toBe('fundraising');
+    expect(packSolutionCode('vtc')).toBe('vtc');
   });
 
   it('renvoie null pour un slug inconnu (fail-closed)', () => {
@@ -68,6 +70,7 @@ describe('packDisplayName (#8462)', () => {
     expect(packDisplayName('agence-de-voyage', 'fr')).toBe('Agences de voyage');
     expect(packDisplayName('cagnottes', 'fr')).toBe('Cagnottes solidaires');
     expect(packDisplayName('cagnottes', 'en')).toBe('Solidarity fundraisers');
+    expect(packDisplayName('vtc', 'fr')).toBe('VTC & Taxi');
   });
 
   it('retombe sur le français si la locale manque, null si slug inconnu', () => {
