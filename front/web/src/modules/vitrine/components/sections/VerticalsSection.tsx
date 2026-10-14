@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowRight, Fuel, Gift, GraduationCap, Plane, UtensilsCrossed } from 'lucide-react';
+import { ArrowRight, CarTaxiFront, Fuel, Gift, GraduationCap, Plane, UtensilsCrossed } from 'lucide-react';
 import type { AppLocale } from '@/lib/i18n';
 
 /**
@@ -75,6 +75,13 @@ const copyByLocale: Record<AppLocale, Copy> = {
         href: '/packs/cagnottes',
         linkLabel: 'Voir le pack offert',
       },
+      {
+        icon: <CarTaxiFront className={iconClass} />,
+        name: 'VTC & Taxi',
+        benefit: 'Vos courses réservables sans compte sur la marketplace, dispatch vers le chauffeur disponible le plus proche.',
+        href: '/packs/vtc',
+        linkLabel: 'Voir le pack offert',
+      },
     ],
   },
   en: {
@@ -117,6 +124,13 @@ const copyByLocale: Record<AppLocale, Copy> = {
         name: 'Solidarity fundraisers',
         benefit: 'Launch a fundraiser in 2 minutes, collect by card and mobile money, pay out to the beneficiary.',
         href: '/packs/cagnottes',
+        linkLabel: 'See the free pack',
+      },
+      {
+        icon: <CarTaxiFront className={iconClass} />,
+        name: 'VTC & Taxi',
+        benefit: 'Your rides bookable account-free on the public marketplace, dispatched to the nearest available driver.',
+        href: '/packs/vtc',
         linkLabel: 'See the free pack',
       },
     ],
@@ -163,6 +177,13 @@ const copyByLocale: Record<AppLocale, Copy> = {
         href: '/packs/cagnottes',
         linkLabel: 'Ücretsiz paketi görün',
       },
+      {
+        icon: <CarTaxiFront className={iconClass} />,
+        name: 'VTC & Taksi',
+        benefit: 'Yolculuklarınız pazarda hesapsız rezerve edilir, en yakın müsait sürücüye atanır.',
+        href: '/packs/vtc',
+        linkLabel: 'Ücretsiz paketi görün',
+      },
     ],
   },
   ar: {
@@ -205,6 +226,13 @@ const copyByLocale: Record<AppLocale, Copy> = {
         name: 'حملات التضامن',
         benefit: 'أطلق حملة في دقيقتين، واجمع التبرعات بالبطاقة والموبايل موني، وحوّلها للمستفيد.',
         href: '/packs/cagnottes',
+        linkLabel: 'شاهد الحزمة المجانية',
+      },
+      {
+        icon: <CarTaxiFront className={iconClass} />,
+        name: 'VTC والأجرة',
+        benefit: 'رحلاتكم قابلة للحجز دون حساب على السوق العامة، مع الإرسال لأقرب سائق متاح.',
+        href: '/packs/vtc',
         linkLabel: 'شاهد الحزمة المجانية',
       },
     ],
