@@ -55,7 +55,7 @@ return [
     'vtc_ride_expired_body' => 'Votre course :reference n\'a pas trouvé de chauffeur pour le moment. Réessayez dans quelques minutes.',
     'vtc_ride_completed_title' => 'Course terminée',
     'vtc_ride_completed_body' => 'Votre course :reference est terminée. Montant : :price.',
-        'vtc_ride_completed_driver_body' => 'Course :reference terminée — montant :price.',
+    'vtc_ride_completed_driver_body' => 'Course :reference terminée — montant :price.',
     // #8464 — annulation notifiée à la partie non actrice.
     'vtc_ride_cancelled_title' => 'Course annulée',
     'vtc_ride_cancelled_body' => 'Votre course :reference a été annulée. Motif : :reason.',

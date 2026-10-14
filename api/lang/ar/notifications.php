@@ -55,7 +55,7 @@ return [
     'vtc_ride_expired_body' => 'لم نعثر على سائق لرحلتك :reference حالياً. حاول مرة أخرى بعد دقائق.',
     'vtc_ride_completed_title' => 'اكتملت الرحلة',
     'vtc_ride_completed_body' => 'اكتملت رحلتك :reference. المبلغ: :price.',
-        'vtc_ride_completed_driver_body' => 'اكتملت الرحلة :reference — المبلغ :price.',
+    'vtc_ride_completed_driver_body' => 'اكتملت الرحلة :reference — المبلغ :price.',
     // #8464 — إشعار الإلغاء للطرف غير المتسبب.
     'vtc_ride_cancelled_title' => 'تم إلغاء الرحلة',
     'vtc_ride_cancelled_body' => 'تم إلغاء رحلتك :reference. السبب: :reason.',

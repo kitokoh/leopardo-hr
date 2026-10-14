@@ -106,7 +106,7 @@ class PublicStaySurfaceTest extends TestCase
     }
 
     /**
-     * @param array<string, mixed> $overrides
+     * @param  array<string, mixed>  $overrides
      * @return array<string, mixed>
      */
     private function reservationPayload(array $overrides = []): array
