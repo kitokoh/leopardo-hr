@@ -253,7 +253,13 @@ export function SetupInterview({
       const visible = visibleQuestionsFor(nextAnswers, sectorKnown);
       const currentKey = question?.key;
       const currentPos = visible.findIndex((q) => q.key === currentKey);
-      const next = currentPos === -1 ? index : currentPos + 1;
+      let next = currentPos === -1 ? index : currentPos + 1;
+      // #8454 — ne jamais reposer une question déjà répondue (ex. secteur
+      // pré-répondu depuis la vitrine) : on avance jusqu'à la prochaine
+      // question visible encore sans réponse.
+      while (next < visible.length && visible[next].key in nextAnswers) {
+        next += 1;
+      }
       if (next >= visible.length) {
         void complete();
       } else {
