@@ -13,7 +13,7 @@ import { packDisplayName } from '../../data/pack-pages';
  * l'inscription en 422 côté catalogue).
  */
 describe('pack-signup (#8462)', () => {
-  it('expose les 6 packs portés par la vitrine', () => {
+  it('expose les 7 packs portés par la vitrine (7e : Trade — BC-36 TRADE)', () => {
     expect(PACK_SIGNUP_SLUGS).toEqual([
       'restaurant',
       'station-service',
@@ -21,6 +21,7 @@ describe('pack-signup (#8462)', () => {
       'agence-de-voyage',
       'cagnottes',
       'vtc',
+      'trade',
     ]);
   });
 
@@ -43,6 +44,8 @@ describe('pack-signup (#8462)', () => {
     expect(packSolutionCode('agence-de-voyage')).toBe('travelagency');
     expect(packSolutionCode('cagnottes')).toBe('fundraising');
     expect(packSolutionCode('vtc')).toBe('vtc');
+    // Doit correspondre au `code()` du TradeManifest (BC-36 TRADE).
+    expect(packSolutionCode('trade')).toBe('trade');
   });
 
   it('renvoie null pour un slug inconnu (fail-closed)', () => {

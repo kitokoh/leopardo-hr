@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Trade\Providers;
 
 use App\Core\Solutions\SolutionCatalogue;
+use App\Core\Solutions\Survey\SolutionSurveyRegistry;
 use App\Modules\Trade\Domain\Manifests\TradeManifest;
+use App\Modules\Trade\Domain\Survey\TradeSurvey;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -14,15 +16,20 @@ use Illuminate\Support\ServiceProvider;
  *
  * register() enregistre le manifest `trade` au catalogue central des
  * solutions (pattern BOS-014, cf. VtcServiceProvider) : activation par
- * `SolutionActivator`, installation des permissions déclarées (BOS-013).
+ * `SolutionActivator`, installation des permissions declarees (BOS-013).
  * Aucun module requis — la verticale reste activable sur un tenant frais
- * (leçon VTC-01 : dépendances optionnelles dégradées gracieusement).
+ * (lecon VTC-01 : dependances optionnelles degradees gracieusement).
  *
- * Le survey vitrine `trade` est ajouté en TRADE-002 (#8477) au
- * `SolutionSurveyRegistry` — point d'extension prévu du Core.
+ * Le survey vitrine `trade` est enregistre ici au `SolutionSurveyRegistry`
+ * (TRADE-002, #8477) : c'est lui qui porte le parcours de choix
+ * International / Domestique, puis Importateur / Exportateur / les deux, ou
+ * Grossiste / Vente au detail. Les endpoints du survey sont generiques et
+ * vivent dans Core\Solutions — aucun endpoint specifique a creer.
  *
- * Les routes sont chargées depuis routes/api.php (groupe /v1, gate
+ * Les routes sont chargees depuis routes/api.php (groupe /v1, gate
  * `module.trade`) — jamais de loadRoutesFrom ici (convention modules).
+ *
+ * @see \App\Modules\Trade\Domain\Survey\TradeSurvey
  */
 class TradeServiceProvider extends ServiceProvider
 {
@@ -35,10 +42,19 @@ class TradeServiceProvider extends ServiceProvider
         $this->app->resolving(SolutionCatalogue::class, function (SolutionCatalogue $catalogue): void {
             $catalogue->register('trade', static fn (): TradeManifest => new TradeManifest);
         });
+
+        if (! $this->app->bound(SolutionSurveyRegistry::class)) {
+            $this->app->singleton(SolutionSurveyRegistry::class, static fn (): SolutionSurveyRegistry => new SolutionSurveyRegistry);
+        }
+
+        $this->app->resolving(SolutionSurveyRegistry::class, function (SolutionSurveyRegistry $registry): void {
+            $registry->register('trade', static fn (): TradeSurvey => new TradeSurvey);
+        });
     }
 
     public function boot(): void
     {
-        //
+        // Rien a booter : le survey est servi par les endpoints generiques de
+        // Core\Solutions (voir routes/modules/solutions.php).
     }
 }
