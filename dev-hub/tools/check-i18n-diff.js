@@ -331,6 +331,32 @@ function classifyLiteral(rawValue) {
   return value;
 }
 
+// Suivi des commentaires multi-lignes (issues #7482/#7562, cas mesuré #8469) :
+// la garde exemptait la LIGNE d'ouverture d'un commentaire (`//`, `#`, `*`,
+// `{/*`, `/*`, `<!--`) mais pas les lignes de CONTINUATION ajoutées dans le
+// même diff. Un commentaire français multi-lignes dont la suite porte des
+// apostrophes ASCII (« … n'est rendu QUE si l'appelant … ») était donc lu comme
+// des littéraux utilisateur — faux positif mesuré sur
+// front/web/src/modules/vitrine/components/sections/HeroSection.tsx (#8469).
+// Un commentaire n'est jamais du texte utilisateur : on mémorise l'état
+// « dans un bloc » par fichier (le diff est parcouru dans l'ordre des lignes).
+const commentBlockState = new Map();
+function inBlockComment(content, file) {
+  if (!file) return false;
+  const state = commentBlockState.get(file);
+  const started = /^\s*(?:\/\*|\{\/\*|<!--)/.test(content);
+  const ended = /\*\/|-->/.test(content);
+  if (state === 'block') {
+    if (ended) commentBlockState.set(file, null);
+    return true;
+  }
+  if (started) {
+    if (!ended) commentBlockState.set(file, 'block');
+    return true;
+  }
+  return false;
+}
+
 function isWatchedFile(filePath) {
   const normalized = filePath.split(path.sep).join('/');
   if (ignorePathFragments.some((fragment) => normalized.includes(fragment))) return false;
@@ -449,6 +475,9 @@ function main() {
       continue;
     }
 
+    // Commentaire multi-lignes (continuation hors ligne d'ouverture) : jamais du
+    // texte utilisateur (issue #7482, cas #8469).
+    if (inBlockComment(content, currentFile)) continue;
     const trimmed = content.trim();
     // Commentaires : jamais du texte utilisateur. Le cas JSX `{/* ... */}`
     // manquait (constaté sur #7562 : un commentaire français du tunnel
