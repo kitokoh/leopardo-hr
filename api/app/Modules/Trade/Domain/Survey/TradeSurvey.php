@@ -19,8 +19,21 @@ use App\Core\Solutions\Survey\Contracts\SolutionSurvey;
  *   3. si Domestique : `domestic_role` — Grossiste ou Vente au detail
  *      (exigence n° 3).
  *
- * Les libelles (`label_key` / `reason_key`) sont des CLES i18n localisees par
- * le front : le backend reste la source de verite des questions et des regles.
+ * CONVENTION DE CLES (identique a RestaurantSurvey) :
+ * `solutions.trade.question.{q}` pour la question, et
+ * `solutions.trade.question.{q}.{valeur}` pour chaque OPTION.
+ *
+ * PARTAGE D'AUTORITE — le backend ne sert QUE de source de verite des
+ * questions et des regles ; il n'embarque aucun libelle :
+ *   - questions + options -> catalogue FRONT `SOLUTION_LABELS`
+ *     (front/web/src/modules/vitrine/data/solution-survey-labels.ts, ×4) ;
+ *   - packages + raisons  -> catalogue LARAVEL `lang/{fr,en,tr,ar}/solutions.php`
+ *     (rendu du PDF pack par SolutionPackPdfGenerator).
+ *
+ * ⚠️ Ne PAS replier les libelles de questions dans le catalogue Laravel : sous
+ * `'trade'`, une cle `'question'` scalaire ET un sous-tableau `'question'` ne
+ * peuvent pas coexister — PHP ecraserait silencieusement la chaine par le
+ * tableau.
  *
  * ⚠️ Le moteur de survey est DETERMINISTE (regles pures, aucun appel reseau,
  * aucune IA) : un quiz de positionnement n'a pas a etre devine par un modele.
@@ -127,7 +140,7 @@ final class TradeSurvey implements SolutionSurvey
     public function packages(): array
     {
         return [
-            // L'espace de travail Trade lui-meme : toujours require.
+            // L'espace de travail Trade lui-meme : toujours `required`.
             'trade_workspace' => [
                 'key' => 'trade_workspace',
                 'type' => 'module',
@@ -156,7 +169,6 @@ final class TradeSurvey implements SolutionSurvey
                 'label_key' => 'solutions.trade.package.wholesale_workspace',
                 'download' => null,
             ],
-            // Vente au detail locale.
             'retail_workspace' => [
                 'key' => 'retail_workspace',
                 'type' => 'module',
@@ -181,9 +193,9 @@ final class TradeSurvey implements SolutionSurvey
                 'label_key' => 'solutions.trade.package.quality_control',
                 'download' => null,
             ],
-            // App mobile : le transporteur et le commercial terrain. Contrats
-            // API prets, app NON livree — le survey la declare donc SANS
-            // `required` et le front doit l'afficher « bientot disponible ».
+            // App mobile terrain. Contrats API prets, app NON livree : le
+            // package est declare SANS `required`, et l'interface doit le
+            // presenter « bientot disponible » — jamais comme operationnel.
             'mobile_field' => [
                 'key' => 'mobile_field',
                 'type' => 'mobile',
@@ -206,7 +218,15 @@ final class TradeSurvey implements SolutionSurvey
             ],
 
             // ── Espaces selon le choix vitrine ──────────────────────────────
-            // Importateur : espace acheteur (RFQ, comparaison d'offres).
+            // Le mode « les deux » est un cas de PREMIER PLAN : il declenche les
+            // deux espaces sans qu'aucun ne prenne le pas (priorite plus haute).
+            [
+                'package' => 'exporter_workspace',
+                'priority' => 95,
+                'when' => static fn (array $answers): bool => self::isInternational($answers)
+                    && (string) ($answers['international_role'] ?? '') === 'both',
+                'reason_key' => 'solutions.trade.reason.both',
+            ],
             [
                 'package' => 'importer_workspace',
                 'priority' => 90,
@@ -214,22 +234,12 @@ final class TradeSurvey implements SolutionSurvey
                     && in_array((string) ($answers['international_role'] ?? 'importer'), ['importer', 'both'], true),
                 'reason_key' => 'solutions.trade.reason.importer',
             ],
-            // Exportateur : espace vendeur (catalogue, offres, pro forma).
             [
                 'package' => 'exporter_workspace',
                 'priority' => 90,
                 'when' => static fn (array $answers): bool => self::isInternational($answers)
                     && in_array((string) ($answers['international_role'] ?? 'importer'), ['exporter', 'both'], true),
                 'reason_key' => 'solutions.trade.reason.exporter',
-            ],
-            // Le mode « les deux » est un cas de PREMIER PLAN : il declenche les
-            // deux espaces, sans qu'aucun des deux ne prenne le pas.
-            [
-                'package' => 'exporter_workspace',
-                'priority' => 95,
-                'when' => static fn (array $answers): bool => self::isInternational($answers)
-                    && (string) ($answers['international_role'] ?? '') === 'both',
-                'reason_key' => 'solutions.trade.reason.both',
             ],
 
             // ── Mode domestique ────────────────────────────────────────────
@@ -261,7 +271,7 @@ final class TradeSurvey implements SolutionSurvey
             [
                 'package' => 'customs_assist',
                 'priority' => 80,
-                // Le doute est traité comme un OUI : mieux vaut proposer une aide
+                // Le doute est traite comme un OUI : mieux vaut proposer une aide
                 // a la preparation douaniere que la laisser decouvrir trop tard.
                 'when' => static fn (array $answers): bool => self::isInternational($answers)
                     && (bool) ($answers['needs_customs_help'] ?? true),
