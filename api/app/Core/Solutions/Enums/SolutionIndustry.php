@@ -35,4 +35,8 @@ enum SolutionIndustry: string
     // (registre fermé, jamais de renommage) : verticale VTC/taxi et futures
     // solutions de mobilité.
     case Mobility = 'mobility';
+    // BC-36 TRADE (TRADE-001/#8476) — extension par nouvelle case uniquement
+    // (registre fermé, jamais de renommage) : verticale International Trade
+    // OS — commerce international (import/export) et B2B domestique.
+    case InternationalTrade = 'international_trade';
 }
