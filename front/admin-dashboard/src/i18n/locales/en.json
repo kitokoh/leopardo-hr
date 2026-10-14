@@ -7516,6 +7516,15 @@
       "demo": "Demo",
       "cagnottes": "Fundraisers",
       "freeTrial": "Free trial"
+    },
+    "error": {
+      "kicker": "Unexpected error",
+      "title": "Something went wrong",
+      "body": "The action could not be completed. You can try again; if the problem persists, contact support.",
+      "retry": "Try again",
+      "home": "Back to home",
+      "support": "Contact support",
+      "reference": "Technical reference"
     }
   },
   "commerce": {

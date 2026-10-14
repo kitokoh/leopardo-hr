@@ -6558,6 +6558,15 @@
       "ctaPricing": "Voir les tarifs",
       "ctaContact": "Contacter le support"
     },
+    "error": {
+      "kicker": "Erreur inattendue",
+      "title": "Quelque chose s'est mal passé",
+      "body": "L'action n'a pas pu aboutir. Vous pouvez réessayer ; si le problème persiste, contactez le support.",
+      "retry": "Réessayer",
+      "home": "Retour à l'accueil",
+      "support": "Contacter le support",
+      "reference": "Référence technique"
+    },
     "nav": {
       "pricing": "Tarifs",
       "packs": "Packs offerts",

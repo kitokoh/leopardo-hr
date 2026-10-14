@@ -7655,6 +7655,15 @@
       "demo": "Demo",
       "cagnottes": "Kampanyalar",
       "freeTrial": "Ücretsiz deneme"
+    },
+    "error": {
+      "kicker": "Beklenmeyen hata",
+      "title": "Bir şeyler ters gitti",
+      "body": "İşlem tamamlanamadı. Yeniden deneyebilirsiniz; sorun devam ederse destek ile iletişime geçin.",
+      "retry": "Yeniden dene",
+      "home": "Ana sayfaya dön",
+      "support": "Destek ile iletişime geçin",
+      "reference": "Teknik referans"
     }
   },
   "commerce": {
