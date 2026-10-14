@@ -170,3 +170,64 @@ export type CustomerBooking = {
   tickets: CustomerBookingTicket[];
   agency: { name: string | null };
 };
+
+// ── Marketplace publique VTC/taxi (#8423, M-30) ────────────────────────────
+// Miroir TypeScript des DTO publics de `VtcMarketplaceController`
+// (`/api/v1/public/vtc/marketplace/*`) — aucun identifiant interne, jamais
+// de position chauffeur sur la surface invité.
+
+/** Opérateur VTC opt-in publié dans l'annuaire public (identité publique). */
+export type VtcOperator = {
+  slug: string;
+  name: string | null;
+  city: string | null;
+  country: string | null;
+  currency: string | null;
+};
+
+/** Point WGS 84 (validation stricte côté API : lat ∈ [-90,90], lng ∈ [-180,180]). */
+export type VtcGeoPointInput = {
+  lat: number;
+  lng: number;
+};
+
+/** Devis public — `price_minor` vaut null quand l'opérateur n'a pas de grille ;
+ * `road_distance_m` (#8464) est la distance routière, base de tarification du prix. */
+export type VtcEstimate = {
+  distance_m: number | null;
+  road_distance_m: number | null;
+  duration_s: number | null;
+  price_minor: number | null;
+  currency: string | null;
+};
+
+/** Cycle de vie d'une course VTC (miroir de `VtcRideStatus`). */
+export type VtcRideStatusValue =
+  | "requested"
+  | "dispatching"
+  | "accepted"
+  | "arrived"
+  | "in_progress"
+  | "completed"
+  | "expired"
+  | "cancelled";
+
+/** Course invitée — DTO strict de création et de suivi. */
+export type VtcGuestRide = {
+  reference: string;
+  status: VtcRideStatusValue;
+  pickup_address: string | null;
+  dropoff_address: string | null;
+  estimated_duration_s: number | null;
+  estimated_price_minor: number | null;
+  currency: string | null;
+  requested_at: string | null;
+};
+
+/** Création 201 : `tracking_code` présenté UNE SEULE FOIS (absent au rejeu 200). */
+export type VtcGuestRideCreated = VtcGuestRide & {
+  tracking_code?: string;
+};
+
+/** Suivi invité par référence + code — jamais de position chauffeur. */
+export type VtcRideTracking = VtcGuestRide;

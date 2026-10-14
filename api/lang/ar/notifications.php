@@ -46,4 +46,18 @@ return [
     'edu_absence_recorded_title' => 'تم تسجيل غياب',
     'edu_absence_recorded_body' => 'الطالب :student_name :status في :date.',
     'edu_report_card_published_title' => 'تم نشر كشف الدرجات',
-    'edu_report_card_published_body' => 'تم نشر كشف درجات :student_name (:period).', ];
+    'edu_report_card_published_body' => 'تم نشر كشف درجات :student_name (:period).',
+
+    // #8423 (M-20) — إشعارات دورة حياة رحلات VTC.
+    'vtc_ride_accepted_title' => 'السائق في الطريق',
+    'vtc_ride_accepted_body' => 'قبل :driver رحلتك :reference.',
+    'vtc_ride_expired_title' => 'لا يوجد سائق متاح',
+    'vtc_ride_expired_body' => 'لم نعثر على سائق لرحلتك :reference حالياً. حاول مرة أخرى بعد دقائق.',
+    'vtc_ride_completed_title' => 'اكتملت الرحلة',
+    'vtc_ride_completed_body' => 'اكتملت رحلتك :reference. المبلغ: :price.',
+    'vtc_ride_completed_driver_body' => 'اكتملت الرحلة :reference — المبلغ :price.',
+    // #8464 — إشعار الإلغاء للطرف غير المتسبب.
+    'vtc_ride_cancelled_title' => 'تم إلغاء الرحلة',
+    'vtc_ride_cancelled_body' => 'تم إلغاء رحلتك :reference. السبب: :reason.',
+    'vtc_ride_cancelled_driver_body' => 'تم إلغاء الرحلة :reference. السبب: :reason.',
+];

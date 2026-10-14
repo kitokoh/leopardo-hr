@@ -46,4 +46,18 @@ return [
     'edu_absence_recorded_title' => 'Devamsızlık kaydedildi',
     'edu_absence_recorded_body' => ':student_name :date tarihinde :status.',
     'edu_report_card_published_title' => 'Karne yayınlandı',
-    'edu_report_card_published_body' => ':student_name karnesi (:period) yayınlandı.', ];
+    'edu_report_card_published_body' => ':student_name karnesi (:period) yayınlandı.',
+
+    // #8423 (M-20) — VTC yolculuk yaşam döngüsü bildirimleri.
+    'vtc_ride_accepted_title' => 'Sürücü yolda',
+    'vtc_ride_accepted_body' => ':driver, :reference numaralı yolculuğunuzu kabul etti.',
+    'vtc_ride_expired_title' => 'Uygun sürücü yok',
+    'vtc_ride_expired_body' => ':reference numaralı yolculuğunuz için şu anda sürücü bulunamadı. Birkaç dakika sonra tekrar deneyin.',
+    'vtc_ride_completed_title' => 'Yolculuk tamamlandı',
+    'vtc_ride_completed_body' => ':reference numaralı yolculuğunuz tamamlandı. Tutar: :price.',
+    'vtc_ride_completed_driver_body' => ':reference yolculuğu tamamlandı — tutar :price.',
+    // #8464 — iptal, işlemi yapmayan tarafa bildirilir.
+    'vtc_ride_cancelled_title' => 'Yolculuk iptal edildi',
+    'vtc_ride_cancelled_body' => ':reference numaralı yolculuğunuz iptal edildi. Sebep: :reason.',
+    'vtc_ride_cancelled_driver_body' => ':reference numaralı yolculuk iptal edildi. Sebep: :reason.',
+];

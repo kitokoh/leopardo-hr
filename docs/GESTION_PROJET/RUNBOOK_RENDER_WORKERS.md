@@ -46,7 +46,7 @@ Pour chaque worker manquant, reproduire la définition `render.yaml` :
 
 | Service | Type | Dockerfile | DockerCommand |
 |---|---|---|---|
-| `leopardo-queue-worker` | Background Worker | `api/Dockerfile.prod` | `php artisan queue:work --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default --tries=3 --timeout=300 --sleep=3 --max-jobs=500 --max-time=3600` (#5578 : connexion par défaut = database) |
+| `leopardo-queue-worker` | Background Worker | `api/Dockerfile.prod` | `php artisan queue:work --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,vtc,delivery,communication,reconciliation,default --tries=3 --timeout=300 --sleep=3 --max-jobs=500 --max-time=3600` (#5578 : connexion par défaut = database) |
 | `leopardo-scheduler` | Background Worker | `api/Dockerfile.prod` | `sh -c "while true; do php artisan schedule:run --no-interaction; sleep 60; done"` |
 
 Copier le bloc envVars du web service (DB, REDIS, APP_KEY via `fromService`, MAIL_*).

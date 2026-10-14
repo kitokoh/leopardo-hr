@@ -43,6 +43,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int|null $driver_id
  * @property string|null $cancel_reason
  * @property string|null $idempotency_key
+ * @property string|null $tracking_code_hash
  * @property array<string, mixed>|null $metadata
  * @property \Illuminate\Support\Carbon|null $requested_at
  * @property \Illuminate\Support\Carbon|null $accepted_at
@@ -89,6 +90,7 @@ final class VtcRide extends Model
         'expired_at',
         'cancel_reason',
         'idempotency_key',
+        'tracking_code_hash',
         'metadata',
     ];
 

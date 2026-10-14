@@ -4,11 +4,17 @@ declare(strict_types=1);
 
 namespace App\Modules\Vtc\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Middleware\Vtc\VtcRoleResolver;
+use App\Modules\Vtc\Application\Actions\CancelRideAction;
 use App\Modules\Vtc\Domain\Enums\VtcRideStatus;
 use App\Modules\Vtc\Domain\Models\VtcDriver;
 use App\Modules\Vtc\Domain\Models\VtcRide;
+use App\Modules\Vtc\Interfaces\Api\V1\Requests\RideCancelRequest;
 use App\Modules\Vtc\Interfaces\Api\V1\Resources\VtcDriverResource;
+use App\Modules\Vtc\Interfaces\Api\V1\Resources\VtcRideResource;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
@@ -28,6 +34,10 @@ final class VtcDispatchController
 {
     /** Bornage de la console temps réel (polling — jamais de table scan). */
     private const RIDES_LIMIT = 100;
+
+    public function __construct(
+        private readonly CancelRideAction $cancelRide,
+    ) {}
 
     public function rides(): JsonResponse
     {
@@ -74,5 +84,44 @@ final class VtcDispatchController
             ->get();
 
         return VtcDriverResource::collection($drivers);
+    }
+
+    /**
+     * Annulation OPS d'une course (#8423, M-21) : dispatcher ET admin (le
+     * manager `principal` matche aussi le rôle dispatcher — matrice
+     * VtcRoleResolver) peuvent annuler tout état NON TERMINAL depuis la
+     * console (arbitrage : course bloquée, fraude, demande client). Motif
+     * obligatoire ; l'acteur réel est tracé (`admin` pour un principal,
+     * `dispatcher` sinon) et un chauffeur assigné est libéré
+     * (CancelRideAction). 409 sur état terminal, isolation tenant par
+     * scope BelongsToCompany.
+     */
+    public function cancel(RideCancelRequest $request, int $id): VtcRideResource
+    {
+        /** @var VtcRide $ride */
+        $ride = VtcRide::query()->whereKey($id)->firstOrFail();
+
+        /** @var array{reason: string} $validated */
+        $validated = $request->validated();
+
+        return new VtcRideResource(
+            $this->cancelRide->execute($ride, $validated['reason'], $this->resolveOpsActor($request))
+        );
+    }
+
+    /**
+     * Acteur tracé : rôle `admin` de la matrice `VtcRoleResolver` (SOURCE
+     * UNIQUE — déjà consommée par le module dans `VtcServiceProvider`
+     * pour la garde d'autorisation geo M-02) → `admin`, sinon
+     * `dispatcher`. #8464 : fin de la matrice dupliquée.
+     */
+    private function resolveOpsActor(Request $request): string
+    {
+        $employee = $request->user();
+
+        return $employee instanceof Employee
+            && in_array('admin', (new VtcRoleResolver)->rolesFor($employee), true)
+            ? CancelRideAction::ACTOR_ADMIN
+            : CancelRideAction::ACTOR_DISPATCHER;
     }
 }

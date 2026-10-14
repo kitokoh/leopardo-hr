@@ -340,6 +340,8 @@ return [
     // #8019 — HospitalityManager.
     'CHECKOUT_BEFORE_CHECKIN' => 'يجب أن يكون تاريخ المغادرة بعد تاريخ الوصول.',
 
+    // #8423 (M-02) — Geo.
+    'GEO_SEARCHABLE_TYPE_FORBIDDEN' => 'دورك لا يسمح ببحث القرب هذا.',
     // #8440/#8441 — verticales equity + paramétrage fundraising (contexte entreprise)
     'FUNDRAISING_VERTICAL_NOT_ENABLED' => 'ميزة حملات التبرعات غير مفعّلة لهذه الشركة.',
     'MARKETING_LEAD_NO_CHANGES' => 'لم يتم طلب أي تعديل.',

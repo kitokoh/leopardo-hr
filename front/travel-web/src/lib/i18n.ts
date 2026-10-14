@@ -32,6 +32,7 @@ const fr = {
     home: "Accueil",
     search: "Rechercher",
     findBooking: "Retrouver ma réservation",
+    vtc: "VTC & Taxi",
     language: "Langue",
     login: "Connexion",
     account: "Mon compte",
@@ -54,6 +55,10 @@ const fr = {
       ticketBody:
         "Recevez une référence de réservation immédiate ; votre e-billet est émis dès le paiement à l'agence.",
     },
+    vtcBannerTitle: "Besoin d'un chauffeur tout de suite ?",
+    vtcBannerBody:
+      "Nos opérateurs VTC & taxi partenaires vous prennent en charge en quelques minutes : estimez votre course et réservez sans compte.",
+    vtcBannerCta: "Réserver un VTC",
   },
   search: {
     from: "Ville de départ",
@@ -236,6 +241,86 @@ const fr = {
     loginRequired: "Connectez-vous pour accéder à votre compte.",
     loadError: "Impossible de charger vos réservations. Réessayez.",
   },
+  // #8423 (M-30) — parcours public « VTC & Taxi » : opérateurs → géoloc/
+  // adresses → devis → réservation invitée → suivi par référence + code.
+  vtc: {
+    metaTitle: "VTC & Taxi — réservez votre chauffeur en ligne",
+    metaDescription:
+      "Choisissez un opérateur VTC partenaire, estimez votre course et réservez votre chauffeur en quelques minutes, sans créer de compte.",
+    title: "VTC & Taxi",
+    subtitle:
+      "Choisissez un opérateur partenaire, estimez votre course et réservez sans créer de compte.",
+    operatorsLoading: "Chargement des opérateurs…",
+    operatorsEmpty:
+      "Aucun opérateur VTC n'est encore publié dans votre région.",
+    operatorsError:
+      "Le service des opérateurs est momentanément indisponible. Réessayez dans quelques instants.",
+    operatorLabel: "Opérateur",
+    operatorPlaceholder: "Choisissez un opérateur",
+    journeyTitle: "Votre course",
+    pickupAddress: "Adresse de prise en charge",
+    pickupAddressPlaceholder: "Ex. Akwa, Douala",
+    dropoffAddress: "Adresse de destination",
+    dropoffAddressPlaceholder: "Ex. Bonanjo, Douala",
+    useMyLocationPickup: "Utiliser ma position (départ)",
+    useMyLocationDropoff: "Utiliser ma position (arrivée)",
+    locating: "Localisation…",
+    locationError:
+      "Position introuvable — vérifiez l'autorisation de géolocalisation ou saisissez les coordonnées.",
+    locationUnsupported:
+      "La géolocalisation n'est pas supportée par ce navigateur — saisissez les coordonnées.",
+    coordsTitle: "Coordonnées du point",
+    coordsHint:
+      "La géolocalisation remplit ces champs automatiquement ; vous pouvez aussi coller des coordonnées partagées (lat, lng).",
+    latLabel: "Latitude",
+    lngLabel: "Longitude",
+    estimateCta: "Estimer ma course",
+    estimating: "Estimation…",
+    estimateTitle: "Votre devis",
+    distanceLabel: "Distance",
+    durationLabel: "Durée estimée",
+    priceLabel: "Prix estimé",
+    priceOnRequest: "Prix confirmé par l'opérateur à la prise en charge",
+    modifyCta: "Modifier ma course",
+    passengerTitle: "Vos coordonnées",
+    passengerName: "Nom complet",
+    passengerNamePlaceholder: "Ex. Aminatou Bello",
+    passengerPhone: "Téléphone",
+    passengerPhonePlaceholder: "Ex. +237 6 90 00 00 00",
+    bookCta: "Réserver ma course",
+    booking: "Réservation…",
+    errorGeneric: "Une erreur est survenue. Réessayez.",
+    successTitle: "Course réservée !",
+    successBody:
+      "Votre demande a été transmise à l'opérateur. Un chauffeur vous sera assigné sous peu.",
+    referenceLabel: "Référence de la course",
+    trackingCodeLabel: "Code de suivi",
+    trackingCodeHint:
+      "Notez-le soigneusement : il est présenté une seule fois et vous permettra de suivre votre course.",
+    trackLink: "Suivre ma course",
+    newRideCta: "Réserver une autre course",
+    trackMetaTitle: "Suivre ma course VTC — Leopardo Travel",
+    trackTitle: "Suivre ma course",
+    trackSubtitle:
+      "Saisissez la référence de votre course et le code de suivi remis à la réservation.",
+    trackReference: "Référence de la course",
+    trackCode: "Code de suivi",
+    trackCodeHint: "Le code de suivi vous a été présenté une seule fois, juste après la réservation.",
+    trackSubmit: "Rechercher",
+    trackSearching: "Recherche…",
+    trackNotFound: "Course introuvable — vérifiez la référence et le code de suivi.",
+    trackResultTitle: "Votre course",
+    etaLabel: "Durée estimée du trajet",
+    requestedAtLabel: "Demandée le",
+    statusRequested: "Demande reçue",
+    statusDispatching: "Recherche d'un chauffeur",
+    statusAccepted: "Chauffeur en route",
+    statusArrived: "Chauffeur arrivé",
+    statusInProgress: "Course en cours",
+    statusCompleted: "Course terminée",
+    statusExpired: "Expirée — aucun chauffeur trouvé",
+    statusCancelled: "Course annulée",
+  },
 };
 
 const en: Dict = {
@@ -251,6 +336,7 @@ const en: Dict = {
     home: "Home",
     search: "Search",
     findBooking: "Find my booking",
+    vtc: "VTC & Taxi",
     language: "Language",
     login: "Sign in",
     account: "My account",
@@ -273,6 +359,10 @@ const en: Dict = {
       ticketBody:
         "Get an instant booking reference; your e-ticket is issued as soon as you pay at the agency.",
     },
+    vtcBannerTitle: "Need a driver right now?",
+    vtcBannerBody:
+      "Our partner VTC & taxi operators pick you up within minutes: estimate your ride and book without an account.",
+    vtcBannerCta: "Book a VTC",
   },
   search: {
     from: "Departure city",
@@ -455,12 +545,110 @@ const en: Dict = {
     loginRequired: "Sign in to access your account.",
     loadError: "Could not load your bookings. Please retry.",
   },
+  // #8423 (M-30) — public “VTC & Taxi” journey: operators → geolocation/
+  // addresses → estimate → guest booking → tracking by reference + code.
+  vtc: {
+    metaTitle: "VTC & Taxi — book your driver online",
+    metaDescription:
+      "Pick a partner VTC operator, estimate your ride and book your driver in a few minutes — no account needed.",
+    title: "VTC & Taxi",
+    subtitle:
+      "Pick a partner operator, estimate your ride and book without creating an account.",
+    operatorsLoading: "Loading operators…",
+    operatorsEmpty: "No VTC operator is published in your area yet.",
+    operatorsError:
+      "The operators service is temporarily unavailable. Please retry in a moment.",
+    operatorLabel: "Operator",
+    operatorPlaceholder: "Choose an operator",
+    journeyTitle: "Your ride",
+    pickupAddress: "Pickup address",
+    pickupAddressPlaceholder: "e.g. Akwa, Douala",
+    dropoffAddress: "Drop-off address",
+    dropoffAddressPlaceholder: "e.g. Bonanjo, Douala",
+    useMyLocationPickup: "Use my location (pickup)",
+    useMyLocationDropoff: "Use my location (drop-off)",
+    locating: "Locating…",
+    locationError:
+      "Could not find your position — check the geolocation permission or enter the coordinates.",
+    locationUnsupported:
+      "Geolocation is not supported by this browser — enter the coordinates.",
+    coordsTitle: "Point coordinates",
+    coordsHint:
+      "Geolocation fills these fields automatically; you can also paste shared coordinates (lat, lng).",
+    latLabel: "Latitude",
+    lngLabel: "Longitude",
+    estimateCta: "Estimate my ride",
+    estimating: "Estimating…",
+    estimateTitle: "Your estimate",
+    distanceLabel: "Distance",
+    durationLabel: "Estimated duration",
+    priceLabel: "Estimated price",
+    priceOnRequest: "Price confirmed by the operator at pickup",
+    modifyCta: "Edit my ride",
+    passengerTitle: "Your details",
+    passengerName: "Full name",
+    passengerNamePlaceholder: "e.g. Aminatou Bello",
+    passengerPhone: "Phone",
+    passengerPhonePlaceholder: "e.g. +237 6 90 00 00 00",
+    bookCta: "Book my ride",
+    booking: "Booking…",
+    errorGeneric: "Something went wrong. Please retry.",
+    successTitle: "Ride booked!",
+    successBody:
+      "Your request has been sent to the operator. A driver will be assigned to you shortly.",
+    referenceLabel: "Ride reference",
+    trackingCodeLabel: "Tracking code",
+    trackingCodeHint:
+      "Write it down carefully: it is shown only once and lets you track your ride.",
+    trackLink: "Track my ride",
+    newRideCta: "Book another ride",
+    trackMetaTitle: "Track my VTC ride — Leopardo Travel",
+    trackTitle: "Track my ride",
+    trackSubtitle:
+      "Enter your ride reference and the tracking code given at booking time.",
+    trackReference: "Ride reference",
+    trackCode: "Tracking code",
+    trackCodeHint: "The tracking code was shown only once, right after booking.",
+    trackSubmit: "Search",
+    trackSearching: "Searching…",
+    trackNotFound: "Ride not found — check the reference and the tracking code.",
+    trackResultTitle: "Your ride",
+    etaLabel: "Estimated ride duration",
+    requestedAtLabel: "Requested on",
+    statusRequested: "Request received",
+    statusDispatching: "Looking for a driver",
+    statusAccepted: "Driver on the way",
+    statusArrived: "Driver arrived",
+    statusInProgress: "Ride in progress",
+    statusCompleted: "Ride completed",
+    statusExpired: "Expired — no driver found",
+    statusCancelled: "Ride cancelled",
+  },
 };
 
 const CATALOG: Record<Locale, Dict> = { fr, en };
 
 export function getDict(locale: Locale): Dict {
   return CATALOG[locale];
+}
+
+/** Libellé humain d'un statut de course VTC (#8423, M-30). */
+export function vtcStatusLabel(
+  dict: Dict,
+  value: string | null | undefined,
+): string {
+  if (!value) return "—";
+  const map: Record<string, string> = {
+    requested: dict.vtc.statusRequested,
+    dispatching: dict.vtc.statusDispatching,
+    accepted: dict.vtc.statusAccepted,
+    arrived: dict.vtc.statusArrived,
+    in_progress: dict.vtc.statusInProgress,
+    completed: dict.vtc.statusCompleted,
+    expired: dict.vtc.statusExpired,
+    cancelled: dict.vtc.statusCancelled,
+  };
+  return map[value] ?? value;
 }
 
 /** Libellé humain d'un statut backend (fallback : la valeur brute). */
