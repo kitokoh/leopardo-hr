@@ -1,6 +1,5 @@
 'use client';
 
-import { Gift } from 'lucide-react';
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import {
   Navbar,
@@ -28,7 +27,6 @@ import { getFeatures } from '@/modules/vitrine/data/features';
 import { getFaqItems } from '@/modules/vitrine/data/faq';
 import { getTestimonials, TESTIMONIALS_ARE_DEMO } from '@/modules/vitrine/data/testimonials';
 import { StickyMobileCTA } from '@/components/StickyMobileCTA';
-import { QuickTrialEmailForm } from '@/modules/vitrine/components/HeroSection';
 import { HeroScene3DPanel } from '@/modules/vitrine/components/hero/HeroScene3DPanel';
 
 export default function LandingPage() {
@@ -54,26 +52,14 @@ export default function LandingPage() {
       <main>
         {/* ─── HERO ─── #8437 (vague 3) : layout `stage` — la constellation
             3D prend TOUTE la première page (pleine scène, nuit permanente),
-            la phrase vit en toile de fond derrière elle. Badge « NOUVEAU » et
-            description sous le titre retirés (retour propriétaire) : premier
-            écran = la phrase + la 3D + les CTA, rien d'autre. */}
+            la phrase vit en toile de fond derrière elle. #8417 (vague 4,
+            retour propriétaire) : premier écran = LA PHRASE + LA 3D, rien
+            d'autre — CTA, formulaire e-mail rapide et ligne de réassurance
+            retirés (le CTA « Créer un compte » vit dans la navbar, le
+            formulaire complet sur /signup). */}
         <HeroSection
           headline={`${copy.hero.titleTop} ${copy.hero.titleBottom}`}
-          ctaPrimary={{ text: copy.hero.primaryCta, href: '/signup' }}
-          // Funnel unique grand public : l'essai cloud + la découverte des
-          // packs métiers OFFERTS (la promesse d'entrée du Business OS).
-          ctaSecondary={{
-            text: copy.hero.secondaryCta,
-            href: '/packs',
-            icon: (
-              <Gift className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            ),
-          }}
-          ctaReassurance={copy.hero.ctaReassurance}
           animated
-          quickTrialForm={
-            <QuickTrialEmailForm locale={locale} copy={copy.heroQuickTrial} />
-          }
           layout="stage"
           // La constellation interactive (modules cliquables, #8390) est le
           // visuel plein cadre ; pas de seconde scène estompée derrière elle.

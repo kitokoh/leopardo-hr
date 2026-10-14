@@ -90,6 +90,27 @@ TSX
 git -C "$REPO_TECH" add -A
 git -C "$REPO_TECH" commit -q -m "commentaires JSX avec apostrophes (#7482)"
 
+# Cas 1bis-bis — commentaire JSX MULTI-LIGNES ajouté par un diff (#8469) : la
+# garde exemptait la ligne d'ouverture mais flaggait ses lignes de continuation
+# dès qu'elles portaient des apostrophes ASCII (« n'est rendu », « l'appelant »,
+# « l'écran ») — faux positif mesuré sur HeroSection.tsx. La phase cas 1
+# ci-dessous exige un garde VERT sur ce dépôt : le fixture seul suffit donc à
+# verrouiller la non-régression.
+cat > "$REPO_TECH/front/web/src/modules/vitrine/components/CommentaireMultiLignes.tsx" <<'TSX'
+export function CommentaireMultiLignes() {
+  return (
+    <div>
+      {/* #8417 — le bloc d'actions n'est rendu QUE si l'appelant en fournit
+          (la page d'accueil n'en fournit plus : héros = phrase + 3D seuls) ;
+          le wrapper vide n'occupe plus l'écran dans ce cas. */}
+      <span>{label}</span>
+    </div>
+  )
+}
+TSX
+git -C "$REPO_TECH" add -A
+git -C "$REPO_TECH" commit -q -m "commentaire JSX multi-lignes avec apostrophes (#8469)"
+
 cat > "$REPO_TECH/front/admin-dashboard/src/components/PatternsTechniques.vue" <<'VUE'
 <template>
   <div>

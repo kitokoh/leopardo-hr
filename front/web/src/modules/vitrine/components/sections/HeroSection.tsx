@@ -153,6 +153,10 @@ export function HeroSection({
         {/* Actions (z-20) ancrées en bas. La classe `dark` LOCALE force les
             styles sombres des enfants (formulaire d'essai, boutons) : la
             scène est nuit permanente, même quand le thème global est clair. */}
+        {/* #8417 — le bloc d'actions n'est rendu QUE si l'appelant en fournit
+            (la page d'accueil n'en fournit plus : héro = phrase + 3D seuls) ;
+            le wrapper vide n'occupe plus l'écran dans ce cas. */}
+        {(ctaPrimary || ctaSecondary || ctaReassurance || quickTrialForm) && (
         <motion.div
           style={animated ? { y, opacity, scale } : {}}
           className="dark hero-stage-cta-tall relative z-20 flex min-h-[100dvh] flex-col items-center justify-end px-4 pb-24 sm:px-6"
@@ -206,6 +210,7 @@ export function HeroSection({
             {quickTrialForm}
           </div>
         </motion.div>
+        )}
 
         {/* Transition douce vers la section suivante : la nuit s'ouvre sur
             le thème courant de la page (blanc en jour, ardoise en nuit). */}
