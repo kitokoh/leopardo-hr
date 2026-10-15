@@ -267,11 +267,38 @@ return new class extends Migration
             });
         }
 
+        // Tâche de production marketing. Volontairement dans le module Marketing
+        // et NON dans `tasks` (Planning) : `tasks.created_by` est une clé
+        // étrangère OBLIGATOIRE vers `employees` (migration 2026_04_01_000104),
+        // or l'acteur qui promeut une idée depuis le Super Admin est un compte
+        // plateforme sans fiche employé. Créer une ligne Planning exigerait un
+        // employé fictif ou l'assouplissement d'une contrainte du module
+        // Planning : deux effets de bord inacceptables. La chaîne
+        // Idée → Production reste tracée par `content_ideas.production_task_id`.
+        if (! schemaTableExists('marketing_production_tasks')) {
+            Schema::create('marketing_production_tasks', function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('content_idea_id')->index();
+                $table->string('title', 200);
+                $table->text('description')->nullable();
+                $table->date('due_date');
+                $table->string('priority', 16)->default('normal');
+                $table->string('category', 60)->default('marketing');
+                $table->string('status', 20)->default('todo');
+                $table->unsignedBigInteger('created_by')->nullable();
+
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+            });
+        }
+
         if (DB::getDriverName() === 'pgsql') {
             DB::statement("COMMENT ON TABLE marketing_campaigns IS 'Campagnes marketing d''un tenant : objectif, cible, verticale, budget et statut (Marketing OS).';");
             DB::statement("COMMENT ON TABLE content_ideas IS 'Idees et briefs de production marketing : format, canal, langue, dates, fiche studio JSON (Marketing OS).';");
             DB::statement("COMMENT ON TABLE marketing_assets IS 'Mediatheque marketing : ressources versionnees et validables, binaires hors base (Marketing OS).';");
             DB::statement("COMMENT ON TABLE marketing_publications IS 'Publications par plateforme, append-only, mode direct ou assiste, URL et date reelles (Marketing OS).';");
+            DB::statement("COMMENT ON TABLE marketing_production_tasks IS 'Taches de production marketing issues de la promotion d''une idee de contenu (Marketing OS).';");
         }
     }
 
@@ -279,6 +306,7 @@ return new class extends Migration
     {
         // Ce `down()` ne détruit QUE les tables créées par ce même fichier
         // (garde #8207 — un `down()` tierce ne doit jamais dropper l'existant).
+        Schema::dropIfExists('marketing_production_tasks');
         Schema::dropIfExists('marketing_publications');
         Schema::dropIfExists('marketing_assets');
         Schema::dropIfExists('content_ideas');

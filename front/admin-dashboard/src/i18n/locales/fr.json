@@ -1922,7 +1922,8 @@
     "accountingLettering": "Lettrage",
     "accountingFiscalYears": "Exercices & clôture",
     "accountingBank": "Banque & rapprochement",
-    "accountingStatements": "TVA & états financiers"
+    "accountingStatements": "TVA & états financiers",
+    "marketingOs": "Marketing OS"
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?",

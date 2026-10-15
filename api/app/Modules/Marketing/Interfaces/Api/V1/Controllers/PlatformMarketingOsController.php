@@ -28,7 +28,6 @@ use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -381,7 +380,7 @@ final class PlatformMarketingOsController extends Controller
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        return $this->tenantManager->withinTenant($target, function () use ($payload, $file, $kind, $target, $request): JsonResponse {
+        return $this->tenantManager->withinTenant($target, function () use ($payload, $file, $kind, $target): JsonResponse {
             $this->assertCampaignBelongsToTenant($payload['campaign_id'] ?? null);
             $this->assertIdeaBelongsToTenant($payload['content_idea_id'] ?? null);
 

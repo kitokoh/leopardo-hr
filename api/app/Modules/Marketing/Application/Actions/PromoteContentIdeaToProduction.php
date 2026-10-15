@@ -5,24 +5,27 @@ declare(strict_types=1);
 namespace App\Modules\Marketing\Application\Actions;
 
 use App\Modules\Marketing\Domain\Enums\ContentIdeaStatus;
+use App\Modules\Marketing\Domain\Enums\MarketingContentFormat;
 use App\Modules\Marketing\Domain\Models\ContentIdea;
 use App\Modules\Marketing\Domain\Models\MarketingCampaign;
-use App\Shared\Contracts\Marketing\ContentProductionTaskSpawner;
+use App\Modules\Marketing\Domain\Models\MarketingProductionTask;
 use Illuminate\Support\Carbon;
 
 /**
  * Marketing OS — transformer une idée en tâche de production (brief §B).
  *
- * L'idée est PASSÉE en production et reliée à une tâche Planning via le
- * contrat partagé {@see ContentProductionTaskSpawner} : aucun import
- * croisé de module, et aucune information déjà saisie n'est perdue (le
- * titre, le brief, l'objectif et la date restent sur l'idée ; la tâche les
- * reprend).
+ * L'opération est **idempotente** : une idée déjà reliée à une tâche n'en crée
+ * pas une seconde. Et **non destructive** : le titre, le brief, l'objectif, la
+ * verticale et les dates restent sur l'idée ; la tâche ne fait que les reprendre
+ * pour l'équipe de production. C'est l'exigence explicite du brief —
+ * « transformer une idée en tâche de production sans perdre les informations
+ * déjà saisies ».
+ *
+ * La tâche appartient au module Marketing (cf. {@see MarketingProductionTask}:
+ * `tasks.created_by` exige un employé, un acteur plateforme n'en a pas).
  */
 class PromoteContentIdeaToProduction
 {
-    public function __construct(private readonly ContentProductionTaskSpawner $tasks) {}
-
     public function execute(ContentIdea $idea, ?int $actorId = null): ContentIdea
     {
         // Idempotent : une idée déjà reliée à une tâche n'en crée pas une seconde.
@@ -33,18 +36,19 @@ class PromoteContentIdeaToProduction
 
             $due = $idea->production_due_at ?? Carbon::now()->addWeek();
 
-            $taskId = $this->tasks->spawn([
-                'title' => $this->taskTitle($idea, $campaign),
-                'description' => $this->taskDescription($idea, $campaign),
-                'due_date' => $due->toDateString(),
-                'priority' => $this->priorityFor($idea),
-                'category' => 'marketing',
-                'created_by' => $actorId,
-            ]);
+            $task = new MarketingProductionTask;
+            $task->company_id = $idea->company_id;
+            $task->content_idea_id = $idea->id;
+            $task->title = $this->taskTitle($idea, $campaign);
+            $task->description = $this->taskDescription($idea, $campaign);
+            $task->due_date = $due->toDateString();
+            $task->priority = $this->priorityFor($idea);
+            $task->category = 'marketing';
+            $task->status = 'todo';
+            $task->created_by = $actorId;
+            $task->save();
 
-            if ($taskId !== null) {
-                $idea->production_task_id = $taskId;
-            }
+            $idea->production_task_id = $task->id;
         }
 
         if ($idea->status === ContentIdeaStatus::Idea || $idea->status === ContentIdeaStatus::Briefing) {
@@ -64,7 +68,7 @@ class PromoteContentIdeaToProduction
             $title .= ' ['.$campaign->name.']';
         }
 
-        return mb_substr($title, 0, 240);
+        return mb_substr($title, 0, 200);
     }
 
     private function taskDescription(ContentIdea $idea, ?MarketingCampaign $campaign): string
@@ -81,6 +85,10 @@ class PromoteContentIdeaToProduction
 
         if ($idea->product !== null) {
             $lines[] = 'Produit : '.$idea->product;
+        }
+
+        if ($idea->sector !== null) {
+            $lines[] = 'Verticale : '.$idea->sector;
         }
 
         if ($idea->audience !== null) {
@@ -108,7 +116,7 @@ class PromoteContentIdeaToProduction
     {
         $format = $idea->format;
 
-        return $format instanceof \App\Modules\Marketing\Domain\Enums\MarketingContentFormat
+        return $format instanceof MarketingContentFormat
             ? $format->label()
             : 'Non précisé';
     }
@@ -119,6 +127,6 @@ class PromoteContentIdeaToProduction
             return 'high';
         }
 
-        return 'medium';
+        return 'normal';
     }
 }
