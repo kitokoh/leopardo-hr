@@ -7790,5 +7790,15 @@
       }
     },
     "dashboardCard": "Install the apps for your business — server, kitchen, till, mobile."
+  },
+  "offline": {
+    "online": "Online",
+    "offline": "Offline",
+    "degraded": "Sync pending",
+    "pending": "{count} pending operation(s)",
+    "retry": "Retry",
+    "queued": "Saved offline — will sync",
+    "synced": "Synced",
+    "syncFailed": "Sync failed — please retry"
   }
 }

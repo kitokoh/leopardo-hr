@@ -7790,5 +7790,15 @@
       }
     },
     "dashboardCard": "Mesleğinizin uygulamalarını kurun — garson, mutfak, kasa, mobil."
+  },
+  "offline": {
+    "online": "Çevrimiçi",
+    "offline": "Çevrimdışı",
+    "degraded": "Eşitleme bekliyor",
+    "pending": "{count} bekleyen işlem",
+    "retry": "Yeniden dene",
+    "queued": "Çevrimdışı kaydedildi — eşitlenecek",
+    "synced": "Eşitlendi",
+    "syncFailed": "Eşitleme başarısız — yeniden deneyin"
   }
 }

@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChefHat, Loader2, RefreshCw, UtensilsCrossed } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { ConnectionIndicator } from '@/components/offline/ConnectionIndicator';
+import { useOfflineSync } from '@/lib/offline/use-offline-sync';
 import { t } from '@/lib/i18n/locale-catalog';
 import { getPreferredLocale } from '@/lib/i18n';
 
@@ -15,6 +17,13 @@ import { getPreferredLocale } from '@/lib/i18n';
  * permet les transitions start/ready (POST .../start, .../ready). La file est
  * rafraîchie par polling (15 s) — le backend interdit toute transition hors
  * workflow (409) et n'expose que les commandes de la branche du cuisinier.
+ *
+ * #8493 (I-06) — les transitions sont désormais IDEMPOTENTES et REPRENABLES :
+ * elles passent par la file hors-ligne partagée (`useOfflineSync`). Hors ligne,
+ * la transition est enregistrée localement et rejouée à la reconnexion ; la
+ * clé d'idempotence stable (`makeOperationId`) garantit qu'un rejeu ne
+ * duplique pas la transition. L'état de connexion et le nombre d'opérations en
+ * attente sont affichés (Partie 7 : « état de connexion clair »).
  */
 
 interface KitchenOrderItem {
@@ -55,6 +64,16 @@ export default function RestaurantKitchenPage() {
   const [actingOrderId, setActingOrderId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+
+  // #8493 — file hors-ligne partagée : l'envoi réel d'une transition.
+  const sendTransition = useCallback(async (operation: { payload: unknown }) => {
+    const { orderId, action } = operation.payload as { orderId: number; action: 'start' | 'ready' };
+    await apiFetch(`/restaurant/kitchen/orders/${orderId}/${action}`, {
+      method: 'POST',
+      _idempotent: true,
+    });
+  }, []);
+  const { connectionState, pendingCount, dispatch, flush } = useOfflineSync(sendTransition);
 
   const loadBranches = useCallback(async () => {
     try {
@@ -107,10 +126,12 @@ export default function RestaurantKitchenPage() {
       setActingOrderId(orderId);
       setActionError(null);
       try {
-        await apiFetch(`/restaurant/kitchen/orders/${orderId}/${action}`, {
-          method: 'POST',
-          _idempotent: true,
-        });
+        // #8493 — passe par la file hors-ligne : en ligne → envoi immédiat ;
+        // hors ligne → mise en file, rejouée à la reconnexion. Idempotent.
+        const result = await dispatch('kitchen.transition', { orderId, action });
+        if (result === 'queued') {
+          setActionError(t(locale, 'offline.queued'));
+        }
         await loadOrders();
       } catch {
         setActionError(t(locale, 'restaurant.actionError'));
@@ -118,7 +139,7 @@ export default function RestaurantKitchenPage() {
         setActingOrderId(null);
       }
     },
-    [loadOrders, locale],
+    [dispatch, loadOrders, locale],
   );
 
   const { inPreparation, ready } = useMemo(() => {
@@ -245,6 +266,9 @@ export default function RestaurantKitchenPage() {
           <RefreshCw className="h-3 w-3" />
           Refresh
         </button>
+
+        {/* #8493 — état de connexion + opérations en attente (Partie 7). */}
+        <ConnectionIndicator state={connectionState} pendingCount={pendingCount} onRetry={() => void flush()} />
       </div>
 
       {error !== null && (

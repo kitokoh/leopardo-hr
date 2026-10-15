@@ -7790,5 +7790,15 @@
       }
     },
     "dashboardCard": "Installez les applications de votre métier — serveur, cuisine, caisse, mobile."
+  },
+  "offline": {
+    "online": "En ligne",
+    "offline": "Hors ligne",
+    "degraded": "Synchronisation en attente",
+    "pending": "{count} opération(s) en attente",
+    "retry": "Réessayer",
+    "queued": "Enregistré hors ligne — sera synchronisé",
+    "synced": "Synchronisé",
+    "syncFailed": "Synchronisation impossible — réessayez"
   }
 }
