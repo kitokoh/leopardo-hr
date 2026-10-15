@@ -7556,6 +7556,71 @@
       "titleSuffix": "Solidarity fundraiser"
     }
   },
+  "trade": {
+    "title": "International trade",
+    "subtitle": "Sourcing, quotes, orders and landed cost on a shared commercial core",
+    "moduleDisabled": "The International trade vertical is not enabled for your company.",
+    "loadError": "Unable to load the data.",
+    "loading": "Loading…",
+    "noData": "No data",
+    "retry": "Retry",
+    "create": "Create",
+    "search": "Search…",
+    "overview": {
+      "title": "Overview",
+      "subtitle": "Open deals, requests for quotation, quotes and orders in progress.",
+      "deals": "Open deals",
+      "rfqs": "Active requests for quotation",
+      "quotes": "Pending quotes",
+      "orders": "Orders in progress",
+      "integrations": "Integrations",
+      "integrationsDegraded": "Some features depend on unconfigured adapters and remain unavailable."
+    },
+    "integrations": {
+      "title": "External integrations",
+      "notice": "An unconfigured integration is shown as unavailable: no data is simulated.",
+      "stateOperational": "Operational",
+      "stateUnconfigured": "Not configured",
+      "configured": "configured"
+    },
+    "sourcing": {
+      "title": "Sourcing & requests for quotation",
+      "subtitle": "Issue an RFQ, invite suppliers, compare the quotes received."
+    },
+    "sales": {
+      "title": "Sales & quotes",
+      "subtitle": "Issued quotes, versions, statuses and customer counterparties."
+    },
+    "orders": {
+      "title": "Orders & shipments",
+      "subtitle": "Purchase and sales orders, shipments and transitions."
+    },
+    "transport": {
+      "title": "Transport",
+      "subtitle": "Quote requests and carrier responses."
+    },
+    "costs": {
+      "title": "Costs & customs",
+      "subtitle": "Landed cost per line item and documentary preparation.",
+      "disclaimer": "Indicative estimate — neither an official customs declaration nor a compliance guarantee."
+    },
+    "catalog": {
+      "title": "Product catalogue",
+      "subtitle": "Products, specifications and commercial terms."
+    },
+    "settings": {
+      "title": "Trade settings",
+      "subtitle": "Commercial profile, markets served and terms."
+    },
+    "columns": {
+      "reference": "Reference",
+      "title": "Title",
+      "status": "Status",
+      "createdAt": "Created on",
+      "destination": "Destination",
+      "incoterm": "Incoterm"
+    }
+  },
   "vtc": {
     "title": "Ride-hailing & taxi",
     "subtitle": "Ride dispatch and real-time driver tracking",

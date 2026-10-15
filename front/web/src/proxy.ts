@@ -70,6 +70,10 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/edu-manager',
   // BC-30 HEALTH (#7792) — verticale HealthManager (données de santé).
   '/health',
+  // BC-36 TRADE (TRADE-009/#8484) — verticale International Trade OS : même
+  // gate cosmétique de session que le reste de la zone dashboard (la garde
+  // réelle reste l'API, gate `module.trade` fail-closed).
+  '/trade',
   // BC-32 HOSPITALITY (#7943) — verticale HospitalityManager (données tenant).
   '/hospitality',
   '/fuel',
