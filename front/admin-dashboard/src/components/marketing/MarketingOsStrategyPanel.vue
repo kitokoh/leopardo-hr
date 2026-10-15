@@ -32,9 +32,10 @@ const props = defineProps({
   actionError: { type: String, default: '' },
 })
 
-const CREATE_EVENT = 'create-idea'
-const PROMOTE_EVENT = 'promote-idea'
-const emit = defineEmits([CREATE_EVENT, PROMOTE_EVENT])
+// `defineEmits` exige des littéraux inline (règle vue/valid-define-emits) :
+// les noms d'événements sont donc écrits ici, une seule fois, et réutilisés
+// ailleurs par le même littéral.
+const emit = defineEmits(['create-idea', 'promote-idea'])
 
 const NO_DATE_KEY = 'no-date'
 
@@ -93,7 +94,7 @@ function formatDate(value) {
 }
 
 function submit() {
-  emit(CREATE_EVENT, {
+  emit('create-idea', {
     ...form.value,
     campaign_id: form.value.campaign_id === '' ? null : Number(form.value.campaign_id),
     objective: form.value.objective || null,
@@ -266,7 +267,7 @@ function submit() {
                 v-else-if="props.canManage"
                 type="button"
                 class="rounded border border-indigo-200 px-2 py-1 text-xs font-medium text-indigo-700 hover:bg-indigo-50"
-                @click="emit(PROMOTE_EVENT, idea)"
+                @click="emit('promote-idea', idea)"
               >
                 {{ $t('marketingOs.strategy.promote') }}
               </button>
