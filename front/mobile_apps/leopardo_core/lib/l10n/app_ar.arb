@@ -6159,5 +6159,13 @@
   "softwareAppsMarketingMobileDescription": "خطط وانشر على شبكاتك الاجتماعية بنقرة واحدة.",
   "softwareAppsCamerasMobileName": "Leopardo Cameras",
   "softwareAppsCamerasMobileDescription": "جدار كاميراتك أثناء التنقل: مشاهدة مباشرة، أحداث وتنبيهات.",
-  "softwareDashboardcard": "ثبّت تطبيقات مهنتك — النادل، المطبخ، الكاشير، الجوال."
+  "softwareDashboardcard": "ثبّت تطبيقات مهنتك — النادل، المطبخ، الكاشير، الجوال.",
+  "offlineOnline": "متصل",
+  "offlineOffline": "غير متصل",
+  "offlineDegraded": "في انتظار المزامنة",
+  "offlinePending": "{count} عملية معلّقة",
+  "offlineRetry": "إعادة المحاولة",
+  "offlineQueued": "تم الحفظ دون اتصال — ستتم المزامنة",
+  "offlineSynced": "تمت المزامنة",
+  "offlineSyncfailed": "فشلت المزامنة — أعد المحاولة"
 }

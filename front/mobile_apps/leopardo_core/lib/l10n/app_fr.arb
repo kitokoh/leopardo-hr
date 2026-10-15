@@ -6159,5 +6159,13 @@
   "softwareAppsMarketingMobileDescription": "Planifiez et publiez sur vos réseaux sociaux en un clic.",
   "softwareAppsCamerasMobileName": "Leopardo Caméras",
   "softwareAppsCamerasMobileDescription": "Votre mur de caméras en mobilité : visionnage direct, événements et alertes.",
-  "softwareDashboardcard": "Installez les applications de votre métier — serveur, cuisine, caisse, mobile."
+  "softwareDashboardcard": "Installez les applications de votre métier — serveur, cuisine, caisse, mobile.",
+  "offlineOnline": "En ligne",
+  "offlineOffline": "Hors ligne",
+  "offlineDegraded": "Synchronisation en attente",
+  "offlinePending": "{count} opération(s) en attente",
+  "offlineRetry": "Réessayer",
+  "offlineQueued": "Enregistré hors ligne — sera synchronisé",
+  "offlineSynced": "Synchronisé",
+  "offlineSyncfailed": "Synchronisation impossible — réessayez"
 }
