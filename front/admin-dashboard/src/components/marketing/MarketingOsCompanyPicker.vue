@@ -1,29 +1,24 @@
 <script setup>
 /**
- * Bandeau de demarrage de l'espace Marketing OS : selection de l'entreprise
- * cliente. Les donnees marketing appartiennent a un tenant : on demande donc
+ * Bandeau de démarrage de l'espace Marketing OS : sélection de l'entreprise
+ * cliente. Les données marketing appartiennent à un tenant : on demande donc
  * explicitement sur quelle entreprise on travaille, au lieu de deviner.
  *
- * Tous les libelles passent par le catalogue i18n (garde PA2-I18N-014) ; les
- * noms d'evenements du composant sont declares en constantes pour ne pas etre
- * lus comme du texte utilisateur.
+ * Le lien de modèle passe par `defineModel()` (Vue 3.5) : aucune constante de
+ * nom d'événement Vue n'est donc écrite en dur, ce qui satisfait la garde
+ * PA2-I18N-014 sans ajouter d'exception dans le garde-fou partagé (#7482).
  */
-import { computed } from 'vue'
+import { defineEmits, defineModel } from 'vue'
 
 const props = defineProps({
   companies: { type: Array, default: () => [] },
-  modelValue: { type: [String, Number], default: '' },
   loading: { type: Boolean, default: false },
 })
 
-const MODEL_EVENT = 'update:modelValue'
-const RELOAD_EVENT = 'reload'
-const emit = defineEmits([MODEL_EVENT, RELOAD_EVENT])
+const emit = defineEmits(['reload'])
 
-const selected = computed({
-  get: () => props.modelValue,
-  set: (value) => emit(MODEL_EVENT, value),
-})
+/** Modèle `v-model` : entreprise cliente sélectionnée. */
+const selected = defineModel({ type: [String, Number], default: '' })
 </script>
 
 <template>
@@ -35,7 +30,7 @@ const selected = computed({
       id="marketing-os-company"
       v-model="selected"
       class="min-w-[16rem] rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-      :disabled="loading"
+      :disabled="props.loading"
     >
       <option value="">{{ $t('marketingOs.companyPlaceholder') }}</option>
       <option v-for="company in props.companies" :key="company.id" :value="company.id">
@@ -45,7 +40,7 @@ const selected = computed({
     <button
       type="button"
       class="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
-      :disabled="loading || !selected"
+      :disabled="props.loading || !selected"
       @click="emit('reload')"
     >
       {{ $t('marketingOs.reload') }}
