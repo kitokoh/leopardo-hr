@@ -221,13 +221,19 @@ class TradeSurveyTest extends TestCase
 
     // ── Helpers ─────────────────────────────────────────────────────────────
 
-    /** @param  array<string, mixed>  $answers */
+    /**
+     * @param  array<string, mixed>  $answers
+     * @return list<string>
+     */
     private function suggestKeys(array $answers): array
     {
         return array_column($this->engine->suggest($this->survey, $answers)['packages'], 'key');
     }
 
-    /** @param  array<string, mixed>  $result */
+    /**
+     * @param  array<string, mixed>  $result
+     * @return array<string, mixed>
+     */
     private function package(array $result, string $key): array
     {
         foreach ($result['packages'] as $package) {
@@ -239,7 +245,9 @@ class TradeSurveyTest extends TestCase
         self::fail("Package [{$key}] absent du résultat.");
     }
 
-    /** @return array<string, mixed> */
+    /**
+     * @return array<string, mixed>
+     */
     private function question(string $key): array
     {
         foreach ($this->survey->questions() as $question) {

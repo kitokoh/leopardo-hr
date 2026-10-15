@@ -62,10 +62,9 @@ final class TradeQuoteController
 
     public function store(QuoteStoreRequest $request): JsonResponse
     {
-        /** @var array<string, mixed> $validated */
+        /** @var array{currency: string, lines: list<array{description: string, quantity: float|string, unit_price_minor: int, unit?: string|null, trade_product_id?: int|null, moq_quantity?: float|string|null, lead_time_days?: int|null}>, incoterm?: string|null, validity_until?: string|null, lead_time_days?: int|null, payment_terms?: string|null, notes?: string|null, submit?: bool, trade_rfq_id?: int|null, trade_rfq_invitation_id?: int|null, trade_deal_id?: int|null, trade_counterparty_id?: int|null} $validated */
         $validated = $request->validated();
 
-        /** @var list<array<string, mixed>> $lines */
         $lines = $validated['lines'];
         unset($validated['lines']);
 

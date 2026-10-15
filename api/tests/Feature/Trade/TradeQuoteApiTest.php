@@ -6,7 +6,6 @@ namespace Tests\Feature\Trade;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -198,7 +197,7 @@ class TradeQuoteApiTest extends TestCase
             'manager_role' => $managerRole,
         ]);
 
-        $this->actingAs($employee, Sanctum::guard());
+        $this->actingAs($employee, 'sanctum');
 
         return $employee;
     }

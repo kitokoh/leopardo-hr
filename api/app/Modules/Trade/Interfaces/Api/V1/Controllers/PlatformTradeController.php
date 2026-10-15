@@ -178,11 +178,10 @@ final class PlatformTradeController extends Controller
      */
     private function hasTradeEnabled(Company $company): bool
     {
-        $features = $company->features;
-
-        if (! is_array($features)) {
-            return false;
-        }
+        // `features` peut etre null en base : le cast explicite garantit un
+        // tableau (et satisfait l'analyse statique, qui le voit deja type
+        // `array<mixed>` — un `is_array()` y serait toujours vrai).
+        $features = (array) $company->features;
 
         return ($features['trade'] ?? false) === true;
     }

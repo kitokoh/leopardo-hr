@@ -106,12 +106,12 @@ final class ComputeLandedCostAction
                         : null;
 
                     $result = $this->calculator->compute(
-                        $estimate->lines->map(static fn (TradeCostEstimateLine $line): array => [
+                        array_values($estimate->lines->map(static fn (TradeCostEstimateLine $line): array => [
                             'type' => $line->type->value,
                             'source' => $line->source->value,
                             'amount_minor' => $line->amount_minor,
                             'currency' => $line->currency,
-                        ])->all(),
+                        ])->all()),
                         $incoterm,
                         $estimate->fx_rate !== null ? (float) $estimate->fx_rate : null,
                         $estimate->display_currency,

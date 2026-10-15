@@ -57,10 +57,9 @@ final class TradeRfqController
 
     public function store(RfqStoreRequest $request): JsonResponse
     {
-        /** @var array<string, mixed> $validated */
+        /** @var array{title: string, lines: list<array{description: string, quantity: float|string, unit?: string|null, trade_product_id?: int|null, target_unit_price_minor?: int|null, specs?: array<string, mixed>|null}>, destination_country?: string|null, destination_port?: string|null, incoterm?: string|null, budget_minor?: int|null, budget_currency?: string|null, deadline_at?: string|null, notes?: string|null, trade_deal_id?: int|null} $validated */
         $validated = $request->validated();
 
-        /** @var list<array<string, mixed>> $lines */
         $lines = $validated['lines'];
         unset($validated['lines']);
 

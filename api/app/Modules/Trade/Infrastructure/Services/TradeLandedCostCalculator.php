@@ -120,6 +120,8 @@ final class TradeLandedCostCalculator
     /**
      * Le total est-il exploitable comme prix final ?
      * Un total incomplet reste AFFICHABLE, mais doit etre annonce comme tel.
+     *
+     * @param  array{incomplete: bool}  $result
      */
     public function isFinal(array $result): bool
     {

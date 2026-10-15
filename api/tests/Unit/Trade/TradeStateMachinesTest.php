@@ -31,8 +31,6 @@ final class TradeStateMachinesTest extends TestCase
 
         $machine->assertCanTransitionTo(TradeRfqStatus::Draft, TradeRfqStatus::Open);
         $machine->assertCanTransitionTo(TradeRfqStatus::Open, TradeRfqStatus::Awarded);
-
-        $this->assertTrue(true, 'Le cycle nominal draft -> open -> awarded doit passer.');
     }
 
     public function test_rfq_refuses_to_leave_a_terminal_state(): void
@@ -65,8 +63,6 @@ final class TradeStateMachinesTest extends TestCase
         $machine->assertCanTransitionTo(TradeQuoteStatus::Submitted, TradeQuoteStatus::Negotiating);
         $machine->assertCanTransitionTo(TradeQuoteStatus::Negotiating, TradeQuoteStatus::UnderReview);
         $machine->assertCanTransitionTo(TradeQuoteStatus::UnderReview, TradeQuoteStatus::Accepted);
-
-        $this->assertTrue(true, 'La negociation doit pouvoir revenir en revue avant acceptation.');
     }
 
     public function test_accepted_quote_is_terminal(): void
@@ -96,8 +92,6 @@ final class TradeStateMachinesTest extends TestCase
         $machine->assertCanTransitionTo(TradeOrderStatus::Ready, TradeOrderStatus::Shipped);
         $machine->assertCanTransitionTo(TradeOrderStatus::Shipped, TradeOrderStatus::Delivered);
         $machine->assertCanTransitionTo(TradeOrderStatus::Delivered, TradeOrderStatus::Closed);
-
-        $this->assertTrue(true, 'Le cycle commande complet doit etre accepte.');
     }
 
     /**
@@ -145,15 +139,20 @@ final class TradeStateMachinesTest extends TestCase
      * provoquerait une erreur d'index — les deux sont des bugs.
      *
      * @dataProvider stateMachinesProvider
+     *
+     * @param  class-string  $machineClass
+     * @param  array<int, object>  $states
      */
     public function test_every_state_has_an_entry_in_the_transition_table(string $machineClass, array $states): void
     {
         $machine = new $machineClass;
 
         foreach ($states as $state) {
+            /** @var object{value: string} $state */
+            $reflection = new \ReflectionMethod($machine, 'allowedFrom');
             $this->assertIsArray(
-                $machine->allowedFrom($state),
-                sprintf('%s doit declarer ses transitions sortantes.', $state->value),
+                $reflection->invoke($machine, $state),
+                sprintf('%s doit declarer ses transitions sortantes.', $state->value ?? ''),
             );
         }
     }

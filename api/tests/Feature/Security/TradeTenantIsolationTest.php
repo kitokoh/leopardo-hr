@@ -9,7 +9,6 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Trade\Domain\Models\TradeCostEstimate;
 use App\Modules\Trade\Domain\Models\TradeQuote;
 use App\Modules\Trade\Domain\Models\TradeRfq;
-use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\Support\SwitchesTenantContext;
 use Tests\TestCase;
@@ -173,7 +172,7 @@ class TradeTenantIsolationTest extends TestCase
             'manager_role' => $managerRole,
         ]);
 
-        $this->actingAs($employee, Sanctum::guard());
+        $this->actingAs($employee, 'sanctum');
 
         return $employee;
     }
