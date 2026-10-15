@@ -50,7 +50,7 @@ final class TradeCostEstimateController
 
     public function store(CostEstimateRequest $request): JsonResponse
     {
-        /** @var array{goods_value_minor: int, goods_currency: string, display_currency: string, lines: list<array{type: string, amount_minor: int, currency: string, source?: string|null, label?: string|null, note?: string|null}>, fx?: array{rate: float, date: string, source: string}|null, origin_country?: string|null, destination_country?: string|null, incoterm?: string|null, trade_deal_id?: int|null, trade_quote_id?: int|null, trade_order_id?: int|null} $validated */
+        /** @var array{goods_value_minor: int, goods_currency: string, display_currency: string, lines?: list<array{type: string, amount_minor: int, currency: string, source?: string|null, label?: string|null, note?: string|null}>, fx?: array{rate: float, date: string, source: string}|null, origin_country?: string|null, destination_country?: string|null, incoterm?: string|null, trade_deal_id?: int|null, trade_quote_id?: int|null, trade_order_id?: int|null} $validated */
         $validated = $request->validated();
 
         $lines = $validated['lines'] ?? [];
