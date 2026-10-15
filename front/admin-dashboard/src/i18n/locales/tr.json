@@ -1879,6 +1879,7 @@
     "account": "Hesabim",
     "notFound": "Sayfa bulunamadi",
     "travelAgency": "Seyahat acentesi",
+    "trade": "Uluslararası ticaret",
     "emailTemplates": "E-postalar",
     "settings": "Ayarlar",
     "equityInterests": "Ortaklık ilgisi",
@@ -5596,6 +5597,42 @@
       "view": "Görüntüle",
       "back": "Geri",
       "deleteConfirm": "Bu öğe silinsin mi?"
+    }
+  },
+  "trade": {
+    "overview": {
+      "title": "International Trade",
+      "subtitle": "Dikey takibi ve harici entegrasyonların gerçek durumu.",
+      "scopeNotice": "Yalnızca sayaçlar: müşterilerin fiyatları, teklifleri, mesajları ve belgeleri platform yönetimine açılmaz.",
+      "loadError": "Dikey takibi yüklenemedi.",
+      "companiesScanned": "İncelenen şirketler",
+      "companiesWithTrade": "Trade dikeyine sahip",
+      "companiesWithActivity": "Ticari faaliyeti olan",
+      "integrationsUnconfigured": "Yapılandırılmamış entegrasyonlar"
+    },
+    "common": {
+      "retry": "Yeniden dene",
+      "noData": "Veri yok"
+    },
+    "counts": {
+      "deals": "Dosyalar (deals)",
+      "rfqs": "Fiyat talepleri (RFQ)",
+      "quotes": "Ticari teklifler",
+      "orders": "Siparişler"
+    },
+    "integrations": {
+      "title": "Harici entegrasyonlar",
+      "configured": "yapılandırıldı",
+      "notice": "Yapılandırılmamış bir entegrasyon kullanılamaz olarak gösterilir: gizlemek için hiçbir veri simüle edilmez.",
+      "colKey": "Entegrasyon",
+      "colMode": "Mod",
+      "colState": "Durum",
+      "colReason": "Ayrıntı",
+      "stateOperational": "Çalışıyor",
+      "stateUnconfigured": "Yapılandırılmadı"
+    },
+    "roles": {
+      "title": "Trade iş rolleri"
     }
   },
   "travel": {

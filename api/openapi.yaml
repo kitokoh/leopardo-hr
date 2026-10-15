@@ -44775,6 +44775,81 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /trade/meta/integrations:
+    get:
+      tags:
+      - Trade
+      summary: État réel des adaptateurs externes de la verticale Trade
+      description: >-
+        TRADE-007 (#8482, spec §8) — expose `{key, configured, available, mode,
+        reason}` pour les 4 adaptateurs (taux de change, tarifs douaniers,
+        vérification d'entreprises, cotations transport). AUCUN secret ne
+        transite. Une intégration non configurée est déclarée `available:
+        false` avec sa raison : elle n'est JAMAIS présentée comme
+        opérationnelle, et aucune donnée n'est simulée pour la masquer.
+      responses:
+        '200':
+          description: >-
+            `data.integrations` (4 entrées), `data.degraded` (vrai si au moins
+            une intégration n'est pas configurée) et `data.notice`
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /platform/trade/overview:
+    get:
+      tags:
+      - Trade
+      summary: Suivi plateforme de la verticale Trade — compteurs agrégés
+      description: >-
+        TRADE-010 (#8485) — console superadmin EXISTANTE (aucune seconde
+        console). Agrège des COMPTEURS par tenant : entreprises portant le flag
+        `trade`, puis répartition par statut des deals / RFQ / offres /
+        commandes. Aucun contenu commercial privé (prix, offres, messages,
+        documents) n'est exposé à l'administration plateforme ; l'accès à un
+        dossier précis relève d'une impersonation auditée.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        description: Nombre de tenants agrégés (défaut 200, plafonné à 500).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 500
+      responses:
+        '200':
+          description: >-
+            `data.companies` (scanned / with_trade / with_activity),
+            `data.counts` (deals, rfqs, quotes, orders par statut),
+            `data.roles`, `data.window` et `data.notice`
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /platform/trade/integrations:
+    get:
+      tags:
+      - Trade
+      summary: Suivi plateforme des intégrations externes de la verticale Trade
+      description: >-
+        TRADE-010 (#8485) — état réel des 4 adaptateurs, plus l'identité du
+        manifest (`code`, `name`, `maturity`, `industry`) et un résumé
+        configurées / non configurées. Jamais de secret : uniquement
+        `configured` / `available` / `mode` / `reason`.
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: >-
+            `data.solution`, `data.integrations`, `data.summary` et
+            `data.notice`
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
 
 components:
   securitySchemes:

@@ -1873,6 +1873,7 @@
     "account": "حسابي",
     "notFound": "الصفحة غير موجودة",
     "travelAgency": "وكالة السفر",
+    "trade": "التجارة الدولية",
     "emailTemplates": "البريد الإلكتروني",
     "settings": "الإعدادات",
     "equityInterests": "اهتمامات المساهمة",
@@ -5590,6 +5591,42 @@
       "view": "عرض",
       "back": "رجوع",
       "deleteConfirm": "حذف هذا العنصر؟"
+    }
+  },
+  "trade": {
+    "overview": {
+      "title": "التجارة الدولية",
+      "subtitle": "متابعة القطاع والحالة الفعلية للتكاملات الخارجية.",
+      "scopeNotice": "عدّادات فقط: لا تُعرض أسعار العملاء وعروضهم ورسائلهم ومستنداتهم على إدارة المنصة.",
+      "loadError": "تعذّر تحميل متابعة القطاع.",
+      "companiesScanned": "الشركات التي تم فحصها",
+      "companiesWithTrade": "لديها قطاع التجارة",
+      "companiesWithActivity": "لديها نشاط تجاري",
+      "integrationsUnconfigured": "تكاملات غير مهيّأة"
+    },
+    "common": {
+      "retry": "إعادة المحاولة",
+      "noData": "لا توجد بيانات"
+    },
+    "counts": {
+      "deals": "الملفات (deals)",
+      "rfqs": "طلبات الأسعار (RFQ)",
+      "quotes": "العروض التجارية",
+      "orders": "الطلبات"
+    },
+    "integrations": {
+      "title": "التكاملات الخارجية",
+      "configured": "مهيّأة",
+      "notice": "يُعرض التكامل غير المهيّأ كغير متاح: لا تُحاكى أي بيانات لإخفائه.",
+      "colKey": "التكامل",
+      "colMode": "الوضع",
+      "colState": "الحالة",
+      "colReason": "التفاصيل",
+      "stateOperational": "تعمل",
+      "stateUnconfigured": "غير مهيّأة"
+    },
+    "roles": {
+      "title": "أدوار التجارة"
     }
   },
   "travel": {

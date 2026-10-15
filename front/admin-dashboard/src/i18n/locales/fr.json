@@ -1879,6 +1879,7 @@
     "account": "Mon compte",
     "notFound": "Page non trouvee",
     "travelAgency": "Agence de voyage",
+    "trade": "Commerce international",
     "emailTemplates": "E-mails",
     "settings": "Paramètres",
     "equityInterests": "Prendre des parts",
@@ -5596,6 +5597,42 @@
       "view": "Voir",
       "back": "Retour",
       "deleteConfirm": "Supprimer cet élément ?"
+    }
+  },
+  "trade": {
+    "overview": {
+      "title": "International Trade",
+      "subtitle": "Suivi de la verticale et état réel des intégrations externes.",
+      "scopeNotice": "Compteurs uniquement : les prix, offres, messages et documents des clients ne sont pas exposés à l'administration plateforme.",
+      "loadError": "Impossible de charger le suivi de la verticale.",
+      "companiesScanned": "Entreprises analysées",
+      "companiesWithTrade": "Avec la verticale Trade",
+      "companiesWithActivity": "Avec activité commerciale",
+      "integrationsUnconfigured": "Intégrations non configurées"
+    },
+    "common": {
+      "retry": "Réessayer",
+      "noData": "Aucune donnée"
+    },
+    "counts": {
+      "deals": "Dossiers (deals)",
+      "rfqs": "Demandes de prix (RFQ)",
+      "quotes": "Offres commerciales",
+      "orders": "Commandes"
+    },
+    "integrations": {
+      "title": "Intégrations externes",
+      "configured": "configurées",
+      "notice": "Une intégration non configurée est présentée comme indisponible : aucune donnée n'est simulée pour la masquer.",
+      "colKey": "Intégration",
+      "colMode": "Mode",
+      "colState": "État",
+      "colReason": "Détail",
+      "stateOperational": "Opérationnelle",
+      "stateUnconfigured": "Non configurée"
+    },
+    "roles": {
+      "title": "Rôles métier Trade"
     }
   },
   "travel": {

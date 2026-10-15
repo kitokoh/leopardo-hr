@@ -1873,6 +1873,7 @@
     "account": "My account",
     "notFound": "Page not found",
     "travelAgency": "Travel agency",
+    "trade": "International trade",
     "emailTemplates": "Emails",
     "settings": "Settings",
     "equityInterests": "Shareholder interests",
@@ -5590,6 +5591,42 @@
       "view": "View",
       "back": "Back",
       "deleteConfirm": "Delete this item?"
+    }
+  },
+  "trade": {
+    "overview": {
+      "title": "International Trade",
+      "subtitle": "Vertical tracking and real status of external integrations.",
+      "scopeNotice": "Counters only: customer prices, quotes, messages and documents are not exposed to platform administration.",
+      "loadError": "Unable to load the vertical tracking.",
+      "companiesScanned": "Companies scanned",
+      "companiesWithTrade": "With the Trade vertical",
+      "companiesWithActivity": "With commercial activity",
+      "integrationsUnconfigured": "Unconfigured integrations"
+    },
+    "common": {
+      "retry": "Retry",
+      "noData": "No data"
+    },
+    "counts": {
+      "deals": "Deals",
+      "rfqs": "Requests for quotation (RFQ)",
+      "quotes": "Commercial quotes",
+      "orders": "Orders"
+    },
+    "integrations": {
+      "title": "External integrations",
+      "configured": "configured",
+      "notice": "An unconfigured integration is shown as unavailable: no data is simulated to hide it.",
+      "colKey": "Integration",
+      "colMode": "Mode",
+      "colState": "Status",
+      "colReason": "Detail",
+      "stateOperational": "Operational",
+      "stateUnconfigured": "Not configured"
+    },
+    "roles": {
+      "title": "Trade business roles"
     }
   },
   "travel": {

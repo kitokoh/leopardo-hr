@@ -34,6 +34,7 @@
 
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeCostEstimateController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeHealthController;
+use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeMetaController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeQuoteController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeRfqController;
 use Illuminate\Support\Facades\Route;
@@ -43,6 +44,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     ->group(function (): void {
         // Smoke test du module (TRADE-001/#8476) — lecture pure.
         Route::get('/ping', [TradeHealthController::class, 'ping']);
+
+        // État RÉEL des adaptateurs externes (TRADE-007/#8482, spec §8) : c'est
+        // ce que les écrans consomment pour signaler « non configuré » au lieu
+        // de présenter une fonction indisponible comme opérationnelle.
+        Route::get('/meta/integrations', [TradeMetaController::class, 'integrations']);
 
         // ── Demandes de prix (RFQ) — TRADE-003/#8478 ────────────────────────
         // Émettre/consulter une RFQ est une opération d'ACHAT.
