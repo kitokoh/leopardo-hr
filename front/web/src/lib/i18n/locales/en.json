@@ -6556,7 +6556,8 @@
       "body": "This page does not exist or has been moved. Check the address, or start again from the home page.",
       "ctaHome": "Back to home",
       "ctaPricing": "See pricing",
-      "ctaContact": "Contact support"
+      "ctaContact": "Contact support",
+      "mascotAlt": "Illustration: an unplugged leopard, page not found"
     },
     "error": {
       "kicker": "Unexpected error",
