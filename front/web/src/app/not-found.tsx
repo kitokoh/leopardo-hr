@@ -45,6 +45,17 @@ export default async function NotFound() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 py-16 dark:bg-slate-950">
       <div className="w-full max-w-lg text-center">
+        {/* #8497 — mascotte de marque (leopard debranche) sur les etats hors
+            parcours. `alt` localise (vitrine.notFound.mascotAlt, x4) : jamais
+            de chaine en dur (PA2-I18N-014). */}
+        {/* eslint-disable-next-line @next/next/no-img-element -- illustration de marque statique */}
+        <img
+          src="/brand/leopard-404.png"
+          alt={t(locale, 'vitrine.notFound.mascotAlt')}
+          width={200}
+          height={200}
+          className="mx-auto mb-6 h-auto w-40 sm:w-48"
+        />
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-400">
           {t(locale, 'vitrine.notFound.kicker')}
         </p>

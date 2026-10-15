@@ -5190,6 +5190,7 @@
   "vitrineNotfoundCtahome": "العودة إلى الصفحة الرئيسية",
   "vitrineNotfoundCtapricing": "عرض الأسعار",
   "vitrineNotfoundCtacontact": "التواصل مع الدعم",
+  "vitrineNotfoundMascotalt": "رسم توضيحي: فهد غير متصل، الصفحة غير موجودة",
   "vitrineErrorKicker": "خطأ غير متوقع",
   "vitrineErrorTitle": "حدث خطأ ما",
   "vitrineErrorBody": "لم يتم تنفيذ الإجراء. يمكنك المحاولة مرة أخرى؛ إذا استمرت المشكلة، تواصل مع الدعم.",

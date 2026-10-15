@@ -7478,7 +7478,8 @@
       "body": "Cette page n'existe pas ou a été déplacée. Vérifiez l'adresse, ou reprenez depuis l'accueil.",
       "ctaHome": "Retour à l'accueil",
       "ctaPricing": "Voir les tarifs",
-      "ctaContact": "Contacter le support"
+      "ctaContact": "Contacter le support",
+      "mascotAlt": "Illustration : un leopard debranche, page introuvable"
     },
     "nav": {
       "pricing": "Tarifs",
