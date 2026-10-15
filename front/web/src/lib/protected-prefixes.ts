@@ -84,6 +84,10 @@ export const PROTECTED_PREFIXES = [
   // chauffeurs, positions) : données opérationnelles du tenant, jamais
   // servies sans session.
   '/vtc',
+  // BC-36 TRADE (TRADE-009/#8484) — espace International Trade OS
+  // (sourcing/demandes de prix, ventes/offres, coûts & douane, dossiers de
+  // transaction) : données commerciales du tenant, jamais servies sans session.
+  '/trade',
 ] as const;
 
 /**

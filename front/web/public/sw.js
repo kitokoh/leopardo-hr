@@ -56,6 +56,9 @@ const PROTECTED_PREFIXES = [
   '/assistant',
   // BC-35 VTC (#8349, VTC-07/#8363) — console dispatch (zone dashboard).
   '/vtc',
+  // BC-36 TRADE (TRADE-009/#8484) — espace International Trade OS
+  // (zone dashboard) : données commerciales du tenant.
+  '/trade',
 ];
 
 function isProtectedPath(url) {
