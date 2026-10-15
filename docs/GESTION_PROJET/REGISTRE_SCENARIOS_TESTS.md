@@ -1264,3 +1264,24 @@ restent les gates applicables.
 - **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
   partagé `signup.packSelected`), aucun contrat mobile modifié — aucun scénario mobile
   nouveau requis.
+
+## Mise à jour 2026-10-16 — Marketing OS : centre de commande marketing du Super Admin (PR #8529, issue #8528)
+
+- **Surface API HTTP** : nouveau groupe de routes Super Admin
+  `platform/marketing-os/*` (+ alias `admin/marketing-os/*`), garde
+  `auth:super_admin_api` + `platform.permission:marketing.manage` — tableau de
+  bord, stratégie/calendrier (`content_ideas`), médiathèque (`marketing_assets`),
+  campagnes (`marketing_campaigns`), publications par plateforme
+  (`marketing_publications`), promotion d'une idée en tâche de production
+  (`marketing_production_tasks`) et résolution du mode de publication
+  `direct`/`assisted`. Scénarios automatisés : `MarketingOsPlatformTest`
+  (12 cas — isolation tenant, promotion idée → tâche, ressource reliée à
+  plusieurs publications, suivi par plateforme/statut, distinction
+  direct/assisté, conservation de l'URL et de la date réelles, RBAC).
+- **Surface web (front/admin-dashboard)** : espace « Marketing OS »
+  (`views/marketing/MarketingOsView.vue` + panneaux `MarketingOsDashboardPanel`,
+  `MarketingOsStrategyPanel`, `MarketingOsCompanyPicker`, `MarketingOsStatusBadge`),
+  service `services/marketingOs.js`, entrée de navigation et route protégée —
+  clés i18n ×4 (`front/admin-dashboard/src/i18n/locales/*.json`).
+- **Surface mobile** : aucun contrat mobile modifié — aucun scénario mobile
+  nouveau requis.

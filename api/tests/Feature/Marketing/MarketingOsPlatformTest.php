@@ -48,6 +48,11 @@ class MarketingOsPlatformTest extends TestCase
         // Les binaires de la médiathèque partent sur le disk privé `local` :
         // on le remplace par un disk factice pour ne rien écrire sur le disque.
         Storage::fake('local');
+        // Les assertions portent sur les libellés français du catalogue
+        // `marketing.os.*` : on fige la locale via l'en-tête lu par le
+        // middleware `SetLocale`, pour que le test ne dépende pas de
+        // l'`APP_LOCALE` ambiante (en = défaut du dépôt).
+        $this->withHeader('Accept-Language', 'fr');
     }
 
     private function company(?string $name = null): Company
