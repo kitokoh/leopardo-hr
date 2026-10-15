@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Trade\Domain\Enums\TradeDocumentStatus;
-use App\Modules\Trade\Domain\Enums\TradeDocumentType;
 use App\Modules\Trade\Domain\Enums\TradeMessageDirection;
 use App\Modules\Trade\Domain\Models\TradeDeal;
-use App\Modules\Trade\Domain\Models\TradeDocument;
 use App\Modules\Trade\Domain\Models\TradeMessage;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

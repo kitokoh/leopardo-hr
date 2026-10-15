@@ -27,7 +27,7 @@ final class TradeStateMachinesTest extends TestCase
 {
     public function test_rfq_accepts_the_nominal_lifecycle(): void
     {
-        $machine = new TradeRfqStateMachine();
+        $machine = new TradeRfqStateMachine;
 
         $machine->assertCanTransitionTo(TradeRfqStatus::Draft, TradeRfqStatus::Open);
         $machine->assertCanTransitionTo(TradeRfqStatus::Open, TradeRfqStatus::Awarded);
@@ -37,7 +37,7 @@ final class TradeStateMachinesTest extends TestCase
 
     public function test_rfq_refuses_to_leave_a_terminal_state(): void
     {
-        $machine = new TradeRfqStateMachine();
+        $machine = new TradeRfqStateMachine;
 
         $this->assertFalse($machine->canTransitionTo(TradeRfqStatus::Awarded, TradeRfqStatus::Open));
         $this->assertFalse($machine->canTransitionTo(TradeRfqStatus::Cancelled, TradeRfqStatus::Draft));
@@ -52,14 +52,14 @@ final class TradeStateMachinesTest extends TestCase
      */
     public function test_rfq_cannot_be_awarded_straight_from_draft(): void
     {
-        $machine = new TradeRfqStateMachine();
+        $machine = new TradeRfqStateMachine;
 
         $this->assertFalse($machine->canTransitionTo(TradeRfqStatus::Draft, TradeRfqStatus::Awarded));
     }
 
     public function test_quote_lifecycle_allows_negotiation_then_acceptance(): void
     {
-        $machine = new TradeQuoteStateMachine();
+        $machine = new TradeQuoteStateMachine;
 
         $machine->assertCanTransitionTo(TradeQuoteStatus::Draft, TradeQuoteStatus::Submitted);
         $machine->assertCanTransitionTo(TradeQuoteStatus::Submitted, TradeQuoteStatus::Negotiating);
@@ -71,7 +71,7 @@ final class TradeStateMachinesTest extends TestCase
 
     public function test_accepted_quote_is_terminal(): void
     {
-        $machine = new TradeQuoteStateMachine();
+        $machine = new TradeQuoteStateMachine;
 
         $this->assertFalse($machine->canTransitionTo(TradeQuoteStatus::Accepted, TradeQuoteStatus::Negotiating));
         $this->assertTrue(TradeQuoteStatus::Accepted->allowsOrderCreation());
@@ -80,7 +80,7 @@ final class TradeStateMachinesTest extends TestCase
 
     public function test_a_draft_quote_cannot_expire(): void
     {
-        $machine = new TradeQuoteStateMachine();
+        $machine = new TradeQuoteStateMachine;
 
         $this->assertFalse($machine->canTransitionTo(TradeQuoteStatus::Draft, TradeQuoteStatus::Expired));
         $this->assertTrue($machine->canTransitionTo(TradeQuoteStatus::Submitted, TradeQuoteStatus::Expired));
@@ -88,7 +88,7 @@ final class TradeStateMachinesTest extends TestCase
 
     public function test_order_follows_the_logistics_lifecycle(): void
     {
-        $machine = new TradeOrderStateMachine();
+        $machine = new TradeOrderStateMachine;
 
         $machine->assertCanTransitionTo(TradeOrderStatus::Draft, TradeOrderStatus::Confirmed);
         $machine->assertCanTransitionTo(TradeOrderStatus::Confirmed, TradeOrderStatus::Preparing);
@@ -106,7 +106,7 @@ final class TradeStateMachinesTest extends TestCase
      */
     public function test_a_shipped_order_cannot_be_cancelled(): void
     {
-        $machine = new TradeOrderStateMachine();
+        $machine = new TradeOrderStateMachine;
 
         $this->assertFalse($machine->canTransitionTo(TradeOrderStatus::Shipped, TradeOrderStatus::Cancelled));
         $this->assertFalse($machine->canTransitionTo(TradeOrderStatus::Delivered, TradeOrderStatus::Cancelled));
@@ -116,7 +116,7 @@ final class TradeStateMachinesTest extends TestCase
 
     public function test_shipment_reaches_customs_then_delivery(): void
     {
-        $machine = new TradeShipmentStateMachine();
+        $machine = new TradeShipmentStateMachine;
 
         $machine->assertCanTransitionTo(TradeShipmentStatus::Pending, TradeShipmentStatus::Booked);
         $machine->assertCanTransitionTo(TradeShipmentStatus::Booked, TradeShipmentStatus::InTransit);
@@ -129,7 +129,7 @@ final class TradeStateMachinesTest extends TestCase
 
     public function test_shipment_exception_is_reachable_from_any_live_state(): void
     {
-        $machine = new TradeShipmentStateMachine();
+        $machine = new TradeShipmentStateMachine;
 
         foreach ([TradeShipmentStatus::Pending, TradeShipmentStatus::Booked, TradeShipmentStatus::InTransit] as $from) {
             $this->assertTrue(
@@ -148,7 +148,7 @@ final class TradeStateMachinesTest extends TestCase
      */
     public function test_every_state_has_an_entry_in_the_transition_table(string $machineClass, array $states): void
     {
-        $machine = new $machineClass();
+        $machine = new $machineClass;
 
         foreach ($states as $state) {
             $this->assertIsArray(

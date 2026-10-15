@@ -6,10 +6,10 @@ namespace App\Modules\Trade\Interfaces\Api\V1\Controllers;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
-use App\Modules\Trade\Domain\Manifests\TradeManifest;
-use App\Modules\Trade\Infrastructure\Services\TradeIntegrationRegistry;
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\Trade\TradeRoleResolver;
+use App\Modules\Trade\Domain\Manifests\TradeManifest;
+use App\Modules\Trade\Infrastructure\Services\TradeIntegrationRegistry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
