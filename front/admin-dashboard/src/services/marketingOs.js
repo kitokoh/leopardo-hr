@@ -125,83 +125,95 @@ export function marketingOsErrorMessage(error, fallback = '') {
 }
 
 // ── Libellés (miroir d'affichage des énumérations serveur) ──────────────
-// Les valeurs proviennent des énumérations PHP ; les libellés sont ceux
-// renvoyés par `label()` côté serveur, reproduits ici pour l'affichage.
+// Garde PA2-I18N-014 : AUCUN texte utilisateur en dur. Ces tables ne portent
+// donc pas de libellés mais des CLÉS de traduction ; les composants font
+// `$t(labelFrom(MAP, value))`. Les valeurs proviennent des énumérations PHP.
+/** @param {string} group @param {string} value */
+const key = (group, value) => `marketingOs.${group}.${value}`
+
 export const CONTENT_IDEA_STATUS_LABELS = {
-  idea: 'Idée',
-  briefing: 'En brief',
-  in_production: 'En production',
-  in_review: 'En validation',
-  approved: 'Approuvée',
-  scheduled: 'Planifiée',
-  published: 'Publiée',
-  cancelled: 'Annulée',
+  idea: key('status', 'idea'),
+  briefing: key('status', 'briefing'),
+  in_production: key('status', 'inProduction'),
+  in_review: key('status', 'inReview'),
+  approved: key('status', 'approved'),
+  scheduled: key('status', 'scheduled'),
+  published: key('status', 'published'),
+  cancelled: key('status', 'cancelled'),
 }
 
 export const PUBLICATION_STATUS_LABELS = {
-  idea: 'Idée',
-  in_preparation: 'En préparation',
-  in_review: 'En validation',
-  approved: 'Approuvée',
-  scheduled: 'Planifiée',
-  published: 'Publiée',
-  failed: 'Échec',
-  cancelled: 'Annulée',
+  idea: key('status', 'idea'),
+  in_preparation: key('pubStatus', 'inPreparation'),
+  in_review: key('status', 'inReview'),
+  approved: key('status', 'approved'),
+  scheduled: key('status', 'scheduled'),
+  published: key('status', 'published'),
+  failed: key('pubStatus', 'failed'),
+  cancelled: key('status', 'cancelled'),
 }
 
 export const PUBLICATION_MODE_LABELS = {
-  direct: 'Direct (API)',
-  assisted: 'Assisté (manuel)',
+  direct: key('mode', 'direct'),
+  assisted: key('mode', 'assisted'),
 }
 
 export const VALIDATION_STATUS_LABELS = {
-  draft: 'Brouillon',
-  pending: 'En attente de validation',
-  approved: 'Validée',
-  rejected: 'Refusée',
+  draft: key('validation', 'draft'),
+  pending: key('validation', 'pending'),
+  approved: key('validation', 'approved'),
+  rejected: key('validation', 'rejected'),
 }
 
 export const CONTENT_FORMAT_LABELS = {
-  video_short: 'Vidéo courte',
-  video_long: 'Vidéo longue',
-  image: 'Image',
-  carousel: 'Carrousel',
-  article: 'Article',
-  ad: 'Publicité',
-  testimonial: 'Témoignage',
-  other: 'Autre',
+  video_short: key('format', 'videoShort'),
+  video_long: key('format', 'videoLong'),
+  image: key('format', 'image'),
+  carousel: key('format', 'carousel'),
+  article: key('format', 'article'),
+  ad: key('format', 'ad'),
+  testimonial: key('format', 'testimonial'),
+  other: key('format', 'other'),
 }
 
 export const OBJECTIVE_LABELS = {
-  notoriete: 'Notoriété',
-  acquisition: 'Acquisition',
-  conversion: 'Conversion',
-  fidelisation: 'Fidélisation',
-  lancement: 'Lancement',
+  notoriete: key('objective', 'awareness'),
+  acquisition: key('objective', 'acquisition'),
+  conversion: key('objective', 'conversion'),
+  fidelisation: key('objective', 'retention'),
+  lancement: key('objective', 'launch'),
 }
 
 export const ASSET_KIND_LABELS = {
-  video: 'Vidéo',
-  image: 'Image',
-  logo: 'Logo',
-  illustration: 'Illustration',
-  script: 'Script',
-  prompt: 'Prompt',
-  copy: 'Texte / légende',
-  document: 'Document',
-  audio: 'Audio',
-  other: 'Autre',
+  video: key('assetKind', 'video'),
+  image: key('assetKind', 'image'),
+  logo: key('assetKind', 'logo'),
+  illustration: key('assetKind', 'illustration'),
+  script: key('assetKind', 'script'),
+  prompt: key('assetKind', 'prompt'),
+  copy: key('assetKind', 'copy'),
+  document: key('assetKind', 'document'),
+  audio: key('assetKind', 'audio'),
+  other: key('assetKind', 'other'),
 }
 
 export const CAMPAIGN_STATUS_LABELS = {
-  draft: 'Brouillon',
-  active: 'Active',
-  paused: 'En pause',
-  finished: 'Terminée',
-  cancelled: 'Annulée',
+  draft: key('campaignStatus', 'draft'),
+  active: key('campaignStatus', 'active'),
+  paused: key('campaignStatus', 'paused'),
+  finished: key('campaignStatus', 'finished'),
+  cancelled: key('campaignStatus', 'cancelled'),
 }
 
-export function labelFrom(map, value, fallback = '—') {
+/**
+ * Résout une clé de libellé depuis une table ; renvoie la VALEUR brute si elle
+ * n'est pas connue (jamais masquée), et la clé de repli i18n sinon.
+ */
+export function labelFrom(map, value, fallback = key('common', 'dash')) {
   if (value === null || value === undefined || value === '') return fallback
   return map[value] || value
 }
+
+/** Clés de repli partagées par les composants (jamais de texte en dur). */
+export const EMPTY_LABEL_KEY = key('common', 'dash')
+export const UNTITLED_LABEL_KEY = key('common', 'untitled')

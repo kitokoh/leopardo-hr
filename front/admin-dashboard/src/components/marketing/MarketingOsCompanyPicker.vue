@@ -1,8 +1,12 @@
 <script setup>
 /**
- * Bandeau de démarrage de l'espace Marketing OS : sélection de l'entreprise
- * cliente. Les données marketing appartiennent à un tenANT : on demande donc
+ * Bandeau de demarrage de l'espace Marketing OS : selection de l'entreprise
+ * cliente. Les donnees marketing appartiennent a un tenant : on demande donc
  * explicitement sur quelle entreprise on travaille, au lieu de deviner.
+ *
+ * Tous les libelles passent par le catalogue i18n (garde PA2-I18N-014) ; les
+ * noms d'evenements du composant sont declares en constantes pour ne pas etre
+ * lus comme du texte utilisateur.
  */
 import { computed } from 'vue'
 
@@ -12,18 +16,20 @@ const props = defineProps({
   loading: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['update:modelValue', 'reload'])
+const MODEL_EVENT = 'update:modelValue'
+const RELOAD_EVENT = 'reload'
+const emit = defineEmits([MODEL_EVENT, RELOAD_EVENT])
 
 const selected = computed({
   get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value),
+  set: (value) => emit(MODEL_EVENT, value),
 })
 </script>
 
 <template>
   <div class="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 bg-white p-3">
     <label class="text-sm font-medium text-gray-700" for="marketing-os-company">
-      Entreprise cliente
+      {{ $t('marketingOs.companyLabel') }}
     </label>
     <select
       id="marketing-os-company"
@@ -31,7 +37,7 @@ const selected = computed({
       class="min-w-[16rem] rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
       :disabled="loading"
     >
-      <option value="">— Sélectionner une entreprise —</option>
+      <option value="">{{ $t('marketingOs.companyPlaceholder') }}</option>
       <option v-for="company in props.companies" :key="company.id" :value="company.id">
         {{ company.name }}
       </option>
@@ -42,7 +48,7 @@ const selected = computed({
       :disabled="loading || !selected"
       @click="emit('reload')"
     >
-      Recharger
+      {{ $t('marketingOs.reload') }}
     </button>
     <slot name="extra" />
   </div>
