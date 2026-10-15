@@ -95,6 +95,11 @@ class MarketingOsPlatformTest extends TestCase
      * « relation … does not exist »). On passe donc par `withinTenant()`, qui
      * installe le `search_path` du tenant — exactement ce que fait le
      * contrôleur en production.
+     *
+     * @template T
+     *
+     * @param  \Closure(): T  $callback
+     * @return T
      */
     private function inTenant(Company $company, \Closure $callback): mixed
     {
@@ -176,6 +181,7 @@ class MarketingOsPlatformTest extends TestCase
             ->assertJsonPath('data.is_published', true);
 
         $this->inTenant($company, function () use ($publicationId): void {
+            /** @var MarketingPublication $publication */
             $publication = MarketingPublication::query()->findOrFail($publicationId);
             $this->assertNotNull($publication->published_at, 'La date réelle de publication doit être enregistrée.');
             $this->assertCount(1, $publication->attempt_history ?? []);
@@ -225,6 +231,7 @@ class MarketingOsPlatformTest extends TestCase
             // La tâche de production vit dans le module Marketing : `tasks`
             // (Planning) exige un `created_by` employé, qu'un acteur plateforme
             // n'a pas (cf. MarketingProductionTask).
+            /** @var MarketingProductionTask $task */
             $task = MarketingProductionTask::query()->findOrFail($taskId);
             $this->assertSame('todo', $task->status);
             $this->assertSame('marketing', $task->category);

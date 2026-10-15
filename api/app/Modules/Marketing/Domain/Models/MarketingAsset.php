@@ -32,7 +32,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $content_idea_id
  * @property string $name
  * @property string|null $description
- * @property string $kind
+ * @property MarketingAssetKind $kind
  * @property string|null $mime_type
  * @property string|null $extension
  * @property int|null $size
@@ -47,7 +47,7 @@ use Illuminate\Support\Carbon;
  * @property array<int, string>|null $platforms
  * @property array<int, string>|null $tags
  * @property int $version
- * @property string $validation_status
+ * @property MarketingAssetValidationStatus $validation_status
  * @property int|null $author_id
  * @property string|null $rights
  * @property Carbon|null $rights_expires_at

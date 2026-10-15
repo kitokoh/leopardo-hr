@@ -110,7 +110,7 @@ class MarketingAssetStorage
         }
 
         $kilobytes = (int) ceil(((int) $file->getSize()) / 1024);
-        $max = self::MAX_KILOBYTES[$kind->value] ?? 20480;
+        $max = self::MAX_KILOBYTES[$kind->value];
 
         if ($kilobytes > $max) {
             throw ValidationException::withMessages([

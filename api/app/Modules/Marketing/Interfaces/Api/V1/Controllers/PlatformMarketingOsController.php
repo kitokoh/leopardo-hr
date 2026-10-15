@@ -9,7 +9,6 @@ use App\Http\Controllers\Controller;
 use App\Modules\Marketing\Application\Actions\PromoteContentIdeaToProduction;
 use App\Modules\Marketing\Domain\Enums\ContentIdeaStatus;
 use App\Modules\Marketing\Domain\Enums\MarketingAssetKind;
-use App\Modules\Marketing\Domain\Enums\MarketingAssetValidationStatus;
 use App\Modules\Marketing\Domain\Enums\MarketingPublicationMode;
 use App\Modules\Marketing\Domain\Enums\MarketingPublicationStatus;
 use App\Modules\Marketing\Domain\Models\ContentIdea;
@@ -376,7 +375,7 @@ final class PlatformMarketingOsController extends Controller
         // fichier est refusé explicitement (pas de ressource fantôme).
         if ($kind->requiresFile() && $file === null) {
             return new JsonResponse([
-                'message' => 'Un fichier est obligatoire pour une ressource de type « '.$kind->label().' ».',
+                'message' => __('marketing.os.file_required', ['kind' => $kind->label()]),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -546,8 +545,8 @@ final class PlatformMarketingOsController extends Controller
                 'meta' => [
                     'direct_available' => $directAvailable,
                     'mode_explanation' => $directAvailable
-                        ? 'Un connecteur de publication est configuré : la publication peut être exécutée par l’API.'
-                        : 'Aucun connecteur configuré : la publication se fera de façon assistée (préparation + ouverture de la plateforme, confirmation manuelle).',
+                        ? __('marketing.os.mode_direct_explanation')
+                        : __('marketing.os.mode_assisted_explanation'),
                 ],
             ], Response::HTTP_CREATED);
         });
@@ -597,7 +596,7 @@ final class PlatformMarketingOsController extends Controller
 
             return new JsonResponse([
                 'data' => $this->presentPublication($model->refresh()),
-                'meta' => ['mode' => $model->mode instanceof MarketingPublicationMode ? $model->mode->value : (string) $model->mode],
+                'meta' => ['mode' => $model->mode->value],
             ]);
         });
     }
@@ -640,7 +639,7 @@ final class PlatformMarketingOsController extends Controller
         }
 
         $exists = MarketingCampaign::query()->whereKey($campaignId)->exists();
-        abort_unless($exists, 422, 'Campagne introuvable pour cette entreprise.');
+        abort_unless($exists, 422, __('marketing.os.campaign_not_found'));
     }
 
     private function assertIdeaBelongsToTenant(?int $ideaId): void
@@ -649,7 +648,7 @@ final class PlatformMarketingOsController extends Controller
             return;
         }
 
-        abort_unless(ContentIdea::query()->whereKey($ideaId)->exists(), 422, 'Idée introuvable pour cette entreprise.');
+        abort_unless(ContentIdea::query()->whereKey($ideaId)->exists(), 422, __('marketing.os.idea_not_found'));
     }
 
     private function assertAssetBelongsToTenant(?int $assetId): void
@@ -658,7 +657,7 @@ final class PlatformMarketingOsController extends Controller
             return;
         }
 
-        abort_unless(MarketingAsset::query()->whereKey($assetId)->exists(), 422, 'Ressource introuvable pour cette entreprise.');
+        abort_unless(MarketingAsset::query()->whereKey($assetId)->exists(), 422, __('marketing.os.asset_not_found'));
     }
 
     /**
@@ -670,8 +669,7 @@ final class PlatformMarketingOsController extends Controller
             'id' => $campaign->id,
             'name' => $campaign->name,
             'description' => $campaign->description,
-            'objective' => $campaign->objective instanceof \App\Modules\Marketing\Domain\Enums\MarketingObjective
-                ? $campaign->objective->value : $campaign->objective,
+            'objective' => $campaign->objective->value,
             'audience' => $campaign->audience,
             'sector' => $campaign->sector,
             'product' => $campaign->product,
@@ -683,8 +681,7 @@ final class PlatformMarketingOsController extends Controller
             'owner_id' => $campaign->owner_id,
             'budget_amount' => $campaign->budget_amount,
             'budget_currency' => $campaign->budget_currency,
-            'status' => $campaign->status instanceof \App\Modules\Marketing\Domain\Enums\MarketingCampaignStatus
-                ? $campaign->status->value : $campaign->status,
+            'status' => $campaign->status->value,
             'created_at' => $campaign->created_at?->toIso8601String(),
             'updated_at' => $campaign->updated_at?->toIso8601String(),
         ];
@@ -701,8 +698,7 @@ final class PlatformMarketingOsController extends Controller
             'title' => $idea->title,
             'description' => $idea->description,
             'objective' => $idea->objective,
-            'format' => $idea->format instanceof \App\Modules\Marketing\Domain\Enums\MarketingContentFormat
-                ? $idea->format->value : $idea->format,
+            'format' => $idea->format->value,
             'channel' => $idea->channel,
             'locale' => $idea->locale,
             'audience' => $idea->audience,
@@ -714,7 +710,7 @@ final class PlatformMarketingOsController extends Controller
             'owner_id' => $idea->owner_id,
             'budget_amount' => $idea->budget_amount,
             'budget_currency' => $idea->budget_currency,
-            'status' => $idea->status instanceof ContentIdeaStatus ? $idea->status->value : $idea->status,
+            'status' => $idea->status->value,
             'next_action' => $idea->next_action,
             'brief' => $idea->brief,
             'production_task_id' => $idea->production_task_id,
@@ -735,7 +731,7 @@ final class PlatformMarketingOsController extends Controller
             'content_idea_id' => $asset->content_idea_id,
             'name' => $asset->name,
             'description' => $asset->description,
-            'kind' => $asset->kind instanceof MarketingAssetKind ? $asset->kind->value : $asset->kind,
+            'kind' => $asset->kind->value,
             'mime_type' => $asset->mime_type,
             'extension' => $asset->extension,
             'size' => $asset->size,
@@ -748,8 +744,7 @@ final class PlatformMarketingOsController extends Controller
             'platforms' => $asset->platforms,
             'tags' => $asset->tags,
             'version' => $asset->version,
-            'validation_status' => $asset->validation_status instanceof MarketingAssetValidationStatus
-                ? $asset->validation_status->value : $asset->validation_status,
+            'validation_status' => $asset->validation_status->value,
             'author_id' => $asset->author_id,
             'rights' => $asset->rights,
             'rights_expires_at' => $asset->rights_expires_at?->toIso8601String(),
@@ -768,10 +763,8 @@ final class PlatformMarketingOsController extends Controller
             'content_idea_id' => $publication->content_idea_id,
             'marketing_asset_id' => $publication->marketing_asset_id,
             'platform' => $publication->platform,
-            'mode' => $publication->mode instanceof MarketingPublicationMode
-                ? $publication->mode->value : $publication->mode,
-            'status' => $publication->status instanceof MarketingPublicationStatus
-                ? $publication->status->value : $publication->status,
+            'mode' => $publication->mode->value,
+            'status' => $publication->status->value,
             'title' => $publication->title,
             'body' => $publication->body,
             'hashtags' => $publication->hashtags,

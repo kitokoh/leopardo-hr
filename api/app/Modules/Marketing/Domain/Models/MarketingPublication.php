@@ -33,8 +33,8 @@ use Illuminate\Support\Carbon;
  * @property int|null $marketing_asset_id
  * @property int|null $social_post_id
  * @property string $platform
- * @property string $mode
- * @property string $status
+ * @property MarketingPublicationMode $mode
+ * @property MarketingPublicationStatus $status
  * @property string|null $title
  * @property string|null $body
  * @property string|null $hashtags

@@ -102,9 +102,7 @@ class MarketingPublicationModeResolver
         $entry = [
             'at' => Carbon::now()->toIso8601String(),
             'outcome' => $outcome,
-            'mode' => $publication->mode instanceof MarketingPublicationMode
-                ? $publication->mode->value
-                : (string) $publication->mode,
+            'mode' => $publication->mode->value,
         ];
 
         if ($error !== null) {

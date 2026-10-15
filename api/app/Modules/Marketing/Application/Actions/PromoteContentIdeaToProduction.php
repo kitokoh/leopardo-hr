@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\Marketing\Application\Actions;
 
 use App\Modules\Marketing\Domain\Enums\ContentIdeaStatus;
-use App\Modules\Marketing\Domain\Enums\MarketingContentFormat;
 use App\Modules\Marketing\Domain\Models\ContentIdea;
 use App\Modules\Marketing\Domain\Models\MarketingCampaign;
 use App\Modules\Marketing\Domain\Models\MarketingProductionTask;
@@ -41,7 +40,7 @@ class PromoteContentIdeaToProduction
             $task->content_idea_id = $idea->id;
             $task->title = $this->taskTitle($idea, $campaign);
             $task->description = $this->taskDescription($idea, $campaign);
-            $task->due_date = $due->toDateString();
+            $task->due_date = $due;
             $task->priority = $this->priorityFor($idea);
             $task->category = 'marketing';
             $task->status = 'todo';
@@ -62,11 +61,9 @@ class PromoteContentIdeaToProduction
 
     private function taskTitle(ContentIdea $idea, ?MarketingCampaign $campaign): string
     {
-        $title = 'Production marketing : '.$idea->title;
-
-        if ($campaign !== null) {
-            $title .= ' ['.$campaign->name.']';
-        }
+        $title = $campaign !== null
+            ? __('marketing.os.task_title_with_campaign', ['title' => $idea->title, 'campaign' => $campaign->name])
+            : __('marketing.os.task_title', ['title' => $idea->title]);
 
         return mb_substr($title, 0, 200);
     }
@@ -74,29 +71,29 @@ class PromoteContentIdeaToProduction
     private function taskDescription(ContentIdea $idea, ?MarketingCampaign $campaign): string
     {
         $lines = [
-            'Objectif : '.($idea->objective ?? 'non précisé'),
-            'Format : '.$this->formatLabel($idea),
-            'Langue : '.$idea->locale,
+            __('marketing.os.task_objective', ['value' => $idea->objective ?? __('marketing.os.objective_unspecified')]),
+            __('marketing.os.task_format', ['value' => $this->formatLabel($idea)]),
+            __('marketing.os.task_locale', ['value' => $idea->locale]),
         ];
 
         if ($campaign !== null) {
-            $lines[] = 'Campagne : '.$campaign->name;
+            $lines[] = __('marketing.os.task_campaign', ['value' => $campaign->name]);
         }
 
         if ($idea->product !== null) {
-            $lines[] = 'Produit : '.$idea->product;
+            $lines[] = __('marketing.os.task_product', ['value' => $idea->product]);
         }
 
         if ($idea->sector !== null) {
-            $lines[] = 'Verticale : '.$idea->sector;
+            $lines[] = __('marketing.os.task_sector', ['value' => $idea->sector]);
         }
 
         if ($idea->audience !== null) {
-            $lines[] = 'Public visé : '.$idea->audience;
+            $lines[] = __('marketing.os.task_audience', ['value' => $idea->audience]);
         }
 
         if ($idea->key_message !== null) {
-            $lines[] = 'Message principal : '.$idea->key_message;
+            $lines[] = __('marketing.os.task_key_message', ['value' => $idea->key_message]);
         }
 
         if ($idea->description !== null) {
@@ -106,7 +103,7 @@ class PromoteContentIdeaToProduction
 
         if ($idea->publish_due_at !== null) {
             $lines[] = '';
-            $lines[] = 'Publication souhaitée le '.$idea->publish_due_at->toDateString().'.';
+            $lines[] = __('marketing.os.task_publish_due', ['date' => $idea->publish_due_at->toDateString()]);
         }
 
         return implode("\n", $lines);
@@ -114,11 +111,7 @@ class PromoteContentIdeaToProduction
 
     private function formatLabel(ContentIdea $idea): string
     {
-        $format = $idea->format;
-
-        return $format instanceof MarketingContentFormat
-            ? $format->label()
-            : 'Non précisé';
+        return $idea->format->label();
     }
 
     private function priorityFor(ContentIdea $idea): string

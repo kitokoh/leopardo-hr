@@ -30,7 +30,7 @@ use Illuminate\Support\Carbon;
  * @property string $title
  * @property string|null $description
  * @property string|null $objective
- * @property string $format
+ * @property MarketingContentFormat $format
  * @property string|null $channel
  * @property string $locale
  * @property string|null $audience
@@ -42,7 +42,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $owner_id
  * @property string|null $budget_amount
  * @property string $budget_currency
- * @property string $status
+ * @property ContentIdeaStatus $status
  * @property string|null $next_action
  * @property array<string, mixed>|null $brief
  * @property int|null $production_task_id
@@ -118,7 +118,6 @@ class ContentIdea extends Model
     {
         return $this->production_due_at !== null
             && $this->production_due_at->isPast()
-            && $this->status instanceof ContentIdeaStatus
             && $this->status->isOpen();
     }
 }

@@ -108,7 +108,7 @@ class MarketingOsDashboardService
             ->map(static fn (ContentIdea $idea): array => [
                 'id' => $idea->id,
                 'title' => $idea->title,
-                'status' => $idea->status instanceof ContentIdeaStatus ? $idea->status->value : (string) $idea->status,
+                'status' => $idea->status->value,
                 'publish_due_at' => $idea->publish_due_at?->toIso8601String(),
                 'days_late' => $idea->publish_due_at !== null ? (int) $idea->publish_due_at->diffInDays($now) : null,
             ])
@@ -133,9 +133,7 @@ class MarketingOsDashboardService
             ->map(static fn (MarketingPublication $publication): array => [
                 'id' => $publication->id,
                 'platform' => $publication->platform,
-                'mode' => $publication->mode instanceof \App\Modules\Marketing\Domain\Enums\MarketingPublicationMode
-                    ? $publication->mode->value
-                    : (string) $publication->mode,
+                'mode' => $publication->mode->value,
                 'title' => $publication->title,
                 'scheduled_at' => $publication->scheduled_at?->toIso8601String(),
                 'is_overdue' => $publication->scheduled_at !== null && $publication->scheduled_at->isPast(),
@@ -163,9 +161,7 @@ class MarketingOsDashboardService
                 'title' => $publication->title,
                 'published_at' => $publication->published_at?->toIso8601String(),
                 'published_url' => $publication->published_url,
-                'mode' => $publication->mode instanceof \App\Modules\Marketing\Domain\Enums\MarketingPublicationMode
-                    ? $publication->mode->value
-                    : (string) $publication->mode,
+                'mode' => $publication->mode->value,
             ])
             ->all();
     }
@@ -185,9 +181,7 @@ class MarketingOsDashboardService
             ->map(static fn (MarketingCampaign $campaign): array => [
                 'id' => $campaign->id,
                 'name' => $campaign->name,
-                'objective' => $campaign->objective instanceof \App\Modules\Marketing\Domain\Enums\MarketingObjective
-                    ? $campaign->objective->value
-                    : (string) $campaign->objective,
+                'objective' => $campaign->objective->value,
                 'sector' => $campaign->sector,
                 'starts_at' => $campaign->starts_at?->toIso8601String(),
                 'ends_at' => $campaign->ends_at?->toIso8601String(),
@@ -218,9 +212,7 @@ class MarketingOsDashboardService
             ->map(static fn (ContentIdea $idea): array => [
                 'id' => $idea->id,
                 'title' => $idea->title,
-                'format' => $idea->format instanceof \App\Modules\Marketing\Domain\Enums\MarketingContentFormat
-                    ? $idea->format->value
-                    : (string) $idea->format,
+                'format' => $idea->format->value,
                 'created_at' => $idea->created_at?->toIso8601String(),
             ])
             ->all();
@@ -240,12 +232,8 @@ class MarketingOsDashboardService
             ->map(static fn (MarketingAsset $asset): array => [
                 'id' => $asset->id,
                 'name' => $asset->name,
-                'kind' => $asset->kind instanceof \App\Modules\Marketing\Domain\Enums\MarketingAssetKind
-                    ? $asset->kind->value
-                    : (string) $asset->kind,
-                'validation_status' => $asset->validation_status instanceof MarketingAssetValidationStatus
-                    ? $asset->validation_status->value
-                    : (string) $asset->validation_status,
+                'kind' => $asset->kind->value,
+                'validation_status' => $asset->validation_status->value,
                 'created_at' => $asset->created_at?->toIso8601String(),
             ])
             ->all();

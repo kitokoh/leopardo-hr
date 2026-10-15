@@ -24,7 +24,7 @@ use Illuminate\Support\Carbon;
  * @property string $company_id
  * @property string $name
  * @property string|null $description
- * @property string $objective
+ * @property MarketingObjective $objective
  * @property string|null $audience
  * @property string|null $sector
  * @property string|null $product
@@ -36,7 +36,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $owner_id
  * @property string|null $budget_amount
  * @property string $budget_currency
- * @property string $status
+ * @property MarketingCampaignStatus $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
