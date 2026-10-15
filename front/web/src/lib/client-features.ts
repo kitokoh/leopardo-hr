@@ -74,7 +74,9 @@ export type ClientModuleKey =
   | 'communication'
   | 'assistant'
   | 'commerce'
-  | 'vtc';
+  | 'vtc'
+  // BC-36 TRADE (TRADE-009/#8484) — verticale International Trade OS.
+  | 'trade';
 export type FeatureState = 'available' | 'trial' | 'locked';
 
 /**

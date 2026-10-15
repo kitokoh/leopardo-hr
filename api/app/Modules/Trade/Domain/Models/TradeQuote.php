@@ -51,6 +51,13 @@ use Illuminate\Support\Carbon;
  * @property int $total_minor
  * @property string|null $notes
  * @property int|null $created_by_employee_id
+ * @property Carbon|null $submitted_at
+ * @property Carbon|null $accepted_at
+ * @property Carbon|null $rejected_at
+ * @property Carbon|null $withdrawn_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  */
 final class TradeQuote extends Model
 {

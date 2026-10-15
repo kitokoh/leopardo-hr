@@ -84,7 +84,7 @@ final class CreateRfqAction
                         'created_by_employee_id' => $employeeId,
                     ]);
 
-                    foreach (array_values($lines) as $position => $line) {
+                    foreach ($lines as $position => $line) {
                         TradeRfqLine::query()->create([
                             'trade_rfq_id' => $rfq->id,
                             'trade_product_id' => $line['trade_product_id'] ?? null,

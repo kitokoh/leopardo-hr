@@ -12,8 +12,8 @@ use App\Modules\Trade\Domain\Models\TradeRfq;
 use App\Modules\Trade\Domain\Models\TradeRfqInvitation;
 use App\Modules\Trade\Domain\Support\TradeRfqStateMachine;
 use Illuminate\Database\DatabaseManager;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Psr\Log\LoggerInterface;
 
 /**
  * Diffusion d'une RFQ a une ou plusieurs contreparties — TRADE-003/#8478.
@@ -40,6 +40,9 @@ final class SendRfqAction
         private readonly TradeRfqStateMachine $rfqStates,
         private readonly RecordTradeEventAction $recordEvent,
         private readonly DatabaseManager $db,
+        // #6568 — la couche Application n'importe pas les facades Laravel : on
+        // depend de l'interface PSR-3, resolue par le conteneur.
+        private readonly LoggerInterface $logger,
     ) {}
 
     /**
@@ -111,7 +114,7 @@ final class SendRfqAction
         // Le lien n'est journalise QUE si des liens ont ete crees : aucune
         // ligne de log ne doit laisser croire a un envoi qui n'a pas eu lieu.
         if ($tokens !== []) {
-            Log::info('trade.rfq.invitations_created', [
+            $this->logger->info('trade.rfq.invitations_created', [
                 'rfq_reference' => $rfq->reference,
                 'invitation_count' => count($tokens),
                 // Aucune donnee sensible : ni token, ni adresse e-mail.

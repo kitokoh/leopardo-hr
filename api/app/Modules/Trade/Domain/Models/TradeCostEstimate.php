@@ -38,6 +38,10 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $fx_rate_date
  * @property string|null $fx_source
  * @property int $total_minor
+ * @property Carbon|null $finalized_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  */
 final class TradeCostEstimate extends Model
 {

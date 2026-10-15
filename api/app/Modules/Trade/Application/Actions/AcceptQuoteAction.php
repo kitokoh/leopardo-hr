@@ -64,7 +64,7 @@ final class AcceptQuoteAction
                     $locked->save();
 
                     // Le sens de la commande decoule de celui de l'offre.
-                    $direction = $locked->direction?->value === 'incoming'
+                    $direction = $locked->direction->value === 'incoming'
                         ? TradeOrderDirection::Purchase
                         : TradeOrderDirection::Sale;
 

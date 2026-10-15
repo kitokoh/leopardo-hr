@@ -90,7 +90,7 @@ final class SubmitQuoteAction
 
                     $subtotal = 0;
 
-                    foreach (array_values($lines) as $position => $line) {
+                    foreach ($lines as $position => $line) {
                         // Calcul SERVEUR du total de ligne : le client ne
                         // fournit jamais un total.
                         $lineTotal = (int) round(((float) $line['quantity']) * $line['unit_price_minor']);

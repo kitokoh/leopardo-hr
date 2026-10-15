@@ -34,6 +34,12 @@ export const PACK_SECTORS: Record<PackVerticalSlug, string> = {
   'agence-de-voyage': 'travel',
   cagnottes: 'association',
   vtc: 'services',
+  // BC-36 TRADE (TRADE-009/#8484) — le commerce international n'a pas de
+  // secteur dédié dans l'allowlist `SetupInterviewPlanner::QUESTIONS['sector']`
+  // (`restaurant|fuel_station|education|commerce|services|travel|association|other`) :
+  // on retient `commerce`, qui couvre l'activité d'achat/revente et évite
+  // d'inventer une valeur que le serveur rejetterait.
+  trade: 'commerce',
 };
 
 export type PackBenefitIcon =

@@ -31,6 +31,11 @@ use Illuminate\Support\Carbon;
  * @property string|null $origin
  * @property string|null $destination
  * @property Carbon|null $eta
+ * @property Carbon|null $shipped_at
+ * @property Carbon|null $arrived_at
+ * @property Carbon|null $delivered_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 final class TradeShipment extends Model
 {

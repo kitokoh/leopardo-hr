@@ -45,6 +45,9 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $closed_at
  * @property Carbon|null $cancelled_at
  * @property string|null $cancel_reason
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  */
 final class TradeOrder extends Model
 {
