@@ -105,6 +105,10 @@ function buildNavEntries(locale: AppLocale): NavEntry[] {
   // Applications mobiles) ; « Comparer » (/alternatives) monte en entrée
   // directe, c'est un argument de vente.
   return [
+    // #8489 (I-02) — le point d'entree nome du Business OS : « Trade »
+    // precede les packs (il repond d'abord au modele d'activite, puis au
+    // metier). Libelle depuis le catalogue partage (`vitrine.nav.trade`).
+    { href: '/trade', label: nav('trade') },
     { href: '/pricing', label: nav('pricing') },
     {
       label: nav('packs'),

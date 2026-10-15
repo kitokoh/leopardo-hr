@@ -7515,7 +7515,8 @@
       "faq": "FAQ",
       "faqDesc": "Questions fréquentes",
       "support": "Support",
-      "supportDesc": "Contactez notre équipe"
+      "supportDesc": "Contactez notre équipe",
+      "trade": "Trade"
     },
     "hero3d": {
       "hint": "Cliquez sur un module pour explorer",
@@ -7531,6 +7532,40 @@
       "home": "Retour à l'accueil",
       "support": "Contacter le support",
       "reference": "Référence technique"
+    },
+    "trade": {
+      "badge": "Leopardo Trade",
+      "title": "Configurez votre entreprise en quelques minutes",
+      "highlight": "et lancez votre premiere operation.",
+      "subtitle": "Trade est le point d'entree unique du Leopardo Business OS. Choisissez votre activite, decrivez votre entreprise, activez vos modules et equipez votre equipe, sans aucune etape technique.",
+      "modesTitle": "Quel est votre modele d'activite ?",
+      "internationalTitle": "International",
+      "internationalDesc": "Vous importez, vous exportez, ou les deux : vos operations traversent les frontieres.",
+      "internationalPoint1": "Importateur, achats a l'etranger, reception et dedouanement",
+      "internationalPoint2": "Exportateur, ventes hors du marche domestique, documents et expedition",
+      "internationalPoint3": "Import-export, les deux flux dans le meme espace",
+      "domesticTitle": "Domestique",
+      "domesticDesc": "Vous achetez et vendez sur votre marche local, en gros ou au detail.",
+      "domesticPoint1": "Grossiste, volumes, tarifs par palier, revente aux professionnels",
+      "domesticPoint2": "Vente au detail, catalogue, caisse et stock au comptoir",
+      "domesticPoint3": "Les deux, un seul espace, deux activites, aucune double saisie",
+      "createTitle": "Creer un nouvel espace",
+      "createDesc": "Vous demarrez votre entreprise : l'espace est cree, configure selon votre metier et pret pour vos premieres donnees.",
+      "createCta": "Creer mon espace",
+      "joinTitle": "Rejoindre une entreprise",
+      "joinDesc": "Votre entreprise utilise deja Leopardo : connectez-vous puis demandez a rejoindre l'espace existant.",
+      "joinCta": "Se connecter pour rejoindre",
+      "joinHint": "Aucun doublon n'est cree : un espace existant est reutilise, jamais duplique.",
+      "stepsTitle": "Ce qui se passe ensuite",
+      "step1": "Votre activite et votre profil professionnel",
+      "step2": "Les informations essentielles de votre entreprise",
+      "step3": "Les modules de votre metier et votre equipe",
+      "step4": "Vos premieres donnees et votre premiere operation guidee",
+      "note": "Activation gratuite, sans carte bancaire. Vous pouvez reprendre ce parcours a tout moment, la ou vous l'avez laisse.",
+      "reassurance": "Gratuit, sans carte bancaire, vos donnees restent les votres",
+      "backHome": "Retour a l'accueil",
+      "metaTitle": "Trade, configurez votre entreprise en quelques minutes",
+      "metaDescription": "Trade, le point d'entree du Leopardo Business OS : choisissez import/export ou marche local, configurez votre entreprise, activez vos modules et lancez votre premiere operation."
     }
   },
   "commerce": {
