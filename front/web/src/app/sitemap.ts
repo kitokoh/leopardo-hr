@@ -82,6 +82,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // avait une route mais ni métadonnées dédiées ni entrée sitemap.
     page('/restaurateur', 'monthly', 0.6),
     page('/packs', 'monthly', 0.7),
+    // #8489 (I-02) — point d'entree « Trade » : page publique indexable,
+    // priorite haute (porte d'entree unique du Business OS).
+    page('/trade', 'monthly', 0.8),
     // Pages « Pack offert » par métier (station-service, école, agence de
     // voyage) — même promesse d'entrée grand public que /restaurateur.
     page('/packs/station-service', 'monthly', 0.6),

@@ -7648,7 +7648,8 @@
       "faq": "SSS",
       "faqDesc": "Sık sorulan sorular",
       "support": "Destek",
-      "supportDesc": "Ekibimize ulaşın"
+      "supportDesc": "Ekibimize ulaşın",
+      "trade": "Trade"
     },
     "hero3d": {
       "hint": "Keşfetmek için bir modüle tıklayın",
@@ -7664,6 +7665,40 @@
       "home": "Ana sayfaya dön",
       "support": "Destek ile iletişime geçin",
       "reference": "Teknik referans"
+    },
+    "trade": {
+      "badge": "Leopardo Trade",
+      "title": "Isletmenizi dakikalar icinde kurun",
+      "highlight": "ve ilk isleminizi baslatin.",
+      "subtitle": "Trade, Leopardo Business OS'a tek giris noktasidir. Faaliyetinizi secin, isletmenizi tanimlayin, modullerinizi etkinlestirin ve ekibinizi donatin; teknik adim yok.",
+      "modesTitle": "Faaliyet modeliniz hangisi?",
+      "internationalTitle": "Uluslararasi",
+      "internationalDesc": "Ithal ediyorsunuz, ihrac ediyorsunuz veya ikisini birden: islemleriniz sinirlari asiyor.",
+      "internationalPoint1": "Ithalatci, yurt disi alim, teslim alma ve gumruk",
+      "internationalPoint2": "Ihracatci, yurt disi satis, belgeler ve sevkiyat",
+      "internationalPoint3": "Ithalat-ihracat, iki akis ayni alanda",
+      "domesticTitle": "Yerel",
+      "domesticDesc": "Yerel pazarinda alip satiyorsunuz, toptan veya perakende.",
+      "domesticPoint1": "Toptanci, hacimler, kademeli fiyatlar, profesyonellere satis",
+      "domesticPoint2": "Perakende, katalog, kasa ve tezgah stogu",
+      "domesticPoint3": "Ikisi de, tek alan, iki faaliyet, cift giris yok",
+      "createTitle": "Yeni bir alan olustur",
+      "createDesc": "Isletmenizi kuruyorsunuz: alan olusturulur, sektorunuze gore yapilandirilir ve ilk verilerinize hazir olur.",
+      "createCta": "Alanimi olustur",
+      "joinTitle": "Bir isletmeye katil",
+      "joinDesc": "Isletmeniz Leopardo'yu zaten kullaniyor: giris yapin ve mevcut alana katilmayi isteyin.",
+      "joinCta": "Katilmak icin giris yap",
+      "joinHint": "Kopya olusturulmaz: mevcut alan yeniden kullanilir, asla cogaltilmaz.",
+      "stepsTitle": "Bundan sonra ne olur",
+      "step1": "Faaliyetiniz ve mesleki profiliniz",
+      "step2": "Isletmenizin temel bilgileri",
+      "step3": "Sektorunuzun modulleri ve ekibiniz",
+      "step4": "Ilk verileriniz ve yonlendirilen ilk islem",
+      "note": "Ucretsiz etkinlestirme, kredi karti yok. Bu yolculuga istediginiz an kaldiginiz yerden devam edebilirsiniz.",
+      "reassurance": "Ucretsiz, kredi karti yok, verileriniz sizde kalir",
+      "backHome": "Ana sayfaya don",
+      "metaTitle": "Trade, isletmenizi dakikalar icinde kurun",
+      "metaDescription": "Trade, Leopardo Business OS'a giris noktasi: ithalat/ihracat veya yerel pazar secin, isletmenizi yapilandirin, modullerinizi etkinlestirin ve ilk isleminizi yapin."
     }
   },
   "commerce": {
