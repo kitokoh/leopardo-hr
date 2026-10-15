@@ -10,6 +10,9 @@ use App\Modules\Marketing\Domain\Contracts\SocialPostRepositoryInterface;
 use App\Modules\Marketing\Infrastructure\Repositories\MarketingLeadRepository;
 use App\Modules\Marketing\Infrastructure\Repositories\SocialAccountRepository;
 use App\Modules\Marketing\Infrastructure\Repositories\SocialPostRepository;
+use App\Modules\Marketing\Infrastructure\Services\MarketingAssetStorage;
+use App\Modules\Marketing\Infrastructure\Services\MarketingOsDashboardService;
+use App\Modules\Marketing\Infrastructure\Services\MarketingPublicationModeResolver;
 use App\Modules\Marketing\Infrastructure\Services\Publishers\LinkedInPublisher;
 use App\Modules\Marketing\Infrastructure\Services\Publishers\MetaPublisher;
 use App\Modules\Marketing\Infrastructure\Services\Publishers\SocialPublisherResolver;
@@ -35,6 +38,14 @@ class MarketingServiceProvider extends ServiceProvider
                 $app->make(TwitterPublisher::class),
             ]);
         });
+
+        // Marketing OS — stockage des binaires de la mediatheque (disk prive,
+        // hors webroot) et decision « publication directe ou assistee ».
+        // Aucun binaire n'est jamais ecrit en base : voir la migration
+        // `2026_10_15_000100_create_marketing_os_tables.php`.
+        $this->app->singleton(MarketingAssetStorage::class);
+        $this->app->singleton(MarketingOsDashboardService::class);
+        $this->app->singleton(MarketingPublicationModeResolver::class);
     }
 
     public function boot(): void

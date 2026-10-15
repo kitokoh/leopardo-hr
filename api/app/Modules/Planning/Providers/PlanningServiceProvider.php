@@ -6,6 +6,8 @@ namespace App\Modules\Planning\Providers;
 
 use App\AI\Support\AIToolDefinitionRegistry;
 use App\Modules\Planning\Domain\Support\ShiftAssignToolCatalog;
+use App\Modules\Planning\Infrastructure\Services\PlanningContentProductionTaskSpawner;
+use App\Shared\Contracts\Marketing\ContentProductionTaskSpawner;
 use Illuminate\Support\ServiceProvider;
 
 class PlanningServiceProvider extends ServiceProvider
@@ -14,6 +16,13 @@ class PlanningServiceProvider extends ServiceProvider
     {
         // Aucun binding : les Actions canoniques sont résolues par le
         // container (autowiring sur les services Infrastructure).
+        //
+        // Exception : Marketing OS doit pouvoir CRÉER une tâche de production
+        // depuis un contenu marketing sans que `Modules/Marketing` n'importe
+        // `Modules/Planning` (garde d'isolation #5584). Le canal est le contrat
+        // partagé `App\Shared\Contracts\Marketing\ContentProductionTaskSpawner`,
+        // implémenté ici, dans le module propriétaire de `Task`.
+        $this->app->bind(ContentProductionTaskSpawner::class, PlanningContentProductionTaskSpawner::class);
     }
 
     public function boot(): void
