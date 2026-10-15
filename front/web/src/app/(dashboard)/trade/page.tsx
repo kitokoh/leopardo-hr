@@ -53,11 +53,11 @@ type TradeIntegration = {
   reason?: string | null;
 };
 
-const TABS: { key: TradeTab; labelKey: string; fallback: string; icon: typeof Globe2 }[] = [
-  { key: 'overview', labelKey: 'trade.overview.title', fallback: "Vue d'ensemble", icon: Globe2 },
-  { key: 'sourcing', labelKey: 'trade.sourcing.title', fallback: 'Sourcing & demandes de prix', icon: ShoppingCart },
-  { key: 'sales', labelKey: 'trade.sales.title', fallback: 'Ventes & offres', icon: Store },
-  { key: 'costs', labelKey: 'trade.costs.title', fallback: 'Coûts & douane', icon: Truck },
+const TABS: { key: TradeTab; labelKey: string; icon: typeof Globe2 }[] = [
+  { key: 'overview', labelKey: 'trade.overview.title', icon: Globe2 },
+  { key: 'sourcing', labelKey: 'trade.sourcing.title', icon: ShoppingCart },
+  { key: 'sales', labelKey: 'trade.sales.title', icon: Store },
+  { key: 'costs', labelKey: 'trade.costs.title', icon: Truck },
 ];
 
 export default function TradeDashboardPage() {
@@ -214,7 +214,7 @@ export default function TradeDashboardPage() {
     >
       {/* Onglets : deux vues métier sur le MÊME noyau partagé. */}
       <div className="flex flex-wrap gap-2" role="tablist">
-        {TABS.map(({ key, labelKey, fallback, icon: Icon }) => (
+        {TABS.map(({ key, labelKey, icon: Icon }) => (
           <button
             key={key}
             type="button"
@@ -228,7 +228,7 @@ export default function TradeDashboardPage() {
             }`}
           >
             <Icon className="h-4 w-4" />
-            {t(locale, labelKey, fallback)}
+            {t(locale, labelKey)}
           </button>
         ))}
       </div>
