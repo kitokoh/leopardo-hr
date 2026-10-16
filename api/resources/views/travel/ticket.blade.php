@@ -52,6 +52,9 @@
              billet (secret partagé, délivré une fois à l'émission), celui que
              l'API accepte (portail /public/travel/shop/bookings/{ref}?code=…) ;
              le numéro de billet n'est qu'une référence lisible. --}}
+        {{-- #8538 — QR code scannable : charge utile minimale (référence +
+             code de contrôle), aucune donnée personnelle. --}}
+        <img src="{{ $qrCodeDataUri }}" alt="QR code du billet" width="180" height="180">
         <div>Code de contrôle : {{ $validationCode }}</div>
         <div>Billet n° {{ $ticket->ticket_number }}</div>
     </div>

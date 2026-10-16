@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Requests;
 use App\Modules\TravelAgency\Domain\Enums\AgeCategory;
 use App\Modules\TravelAgency\Domain\Enums\BookingSource;
 use App\Modules\TravelAgency\Domain\Enums\DocumentType;
+use App\Modules\TravelAgency\Domain\Models\TravelOffice;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -32,12 +33,22 @@ class StoreTravelBookingRequest extends FormRequest
         $sources = array_column(BookingSource::cases(), 'value');
         $ages = array_column(AgeCategory::cases(), 'value');
         $documents = array_column(DocumentType::cases(), 'value');
+        $companyId = $this->user() instanceof \App\Core\Auth\Domain\Models\Employee ? $this->user()->company_id : null;
 
         return [
             'trip_id' => ['required', 'integer', 'exists:travel_trips,id'],
             // Optionnel : la boutique en ligne force `online` (contrôleur) ;
             // le guichet fournit `office`/`phone`/`partner`.
             'booking_source' => ['sometimes', 'string', Rule::in($sources)],
+            // #8545 — agence de vente (guichet). Optionnelle : une vente en
+            // ligne n'a pas d'agence ; une référence cross-tenant échoue en 422.
+            'office_id' => [
+                'nullable',
+                'integer',
+                Rule::exists((new TravelOffice)->getTable(), 'id')->where(
+                    fn (\Illuminate\Database\Query\Builder $query) => $query->where('company_id', $companyId)
+                ),
+            ],
             'idempotency_key' => ['required', 'string', 'max:255'],
             'customer_contact_id' => ['nullable', 'integer'],
             'contact_email' => ['nullable', 'email', 'max:255'],

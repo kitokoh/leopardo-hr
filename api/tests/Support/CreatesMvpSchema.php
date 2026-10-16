@@ -5031,6 +5031,25 @@ trait CreatesMvpSchema
             });
         }
 
+        // #8544 (TRAVEL-OS) — trace des mises a disposition du billet
+        // (emission + reimpressions). Parite stricte avec la migration tenant
+        // 2026_10_16_000002_8544 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('travel_ticket_print_events'))) {
+            Schema::create($this->moduleTable('travel_ticket_print_events'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('ticket_id');
+                $table->unsignedBigInteger('employee_id')->nullable();
+                $table->string('channel', 32)->default('api');
+                $table->unsignedInteger('reprint_number')->default(0);
+                $table->boolean('is_reprint')->default(false);
+                $table->timestamps();
+
+                $table->index(['company_id', 'ticket_id']);
+                $table->index(['company_id', 'created_at']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('travel_advert_bookings'))) {
             Schema::create($this->moduleTable('travel_advert_bookings'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
