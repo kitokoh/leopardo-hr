@@ -293,7 +293,11 @@ return [
             'default' => false,
             'since' => '4.36.0',
             'killable' => true,
-            'description' => 'Solution agricole Farm OS (BC-37 ; gate `module.farm_os`) : agriculture vegetale, elevage et exploitations mixtes — parcelles, interventions, intrants, materiel, cheptel, recoltes, ventes, couts.',
+            // Projection octet-identique de l'entree `farm_os` du ModuleRegistry
+            // (FR-2 / ModuleRegistryTest::test_flags_projection_is_byte_identical).
+            // Ne jamais editer ce libelle seul : modifier la source declarative
+            // app/Core/Feature/Domain/ModuleRegistry.php et re-projeter.
+            'description' => 'Solution agricole Farm OS (BC-37, mission Farm OS ; gate `module.farm_os`) : exploitations et parcelles, cycles culturaux et calendrier des travaux, intrants et stock, materiel, cheptel, recoltes et tracabilite, achats et ventes, couts et rentabilite. Modularite interne par CAPACITES (table farm_capabilities), pas par 13 flags.',
         ],
     ],
 ];
