@@ -7791,6 +7791,16 @@
     },
     "dashboardCard": "Install the apps for your business — server, kitchen, till, mobile."
   },
+  "offline": {
+    "online": "Online",
+    "offline": "Offline",
+    "degraded": "Sync pending",
+    "pending": "{count} pending operation(s)",
+    "retry": "Retry",
+    "queued": "Saved offline — will sync",
+    "synced": "Synced",
+    "syncFailed": "Sync failed — please retry"
+  },
   "devices": {
     "title": "Devices and terminals",
     "subtitle": "Enrol a device (POS, kitchen, field) on your workspace, assign it to an establishment and a role, then revoke it if needed.",

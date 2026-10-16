@@ -17,6 +17,8 @@ import { apiFetch } from '@/lib/api-client';
 import { formatMinor, parseMajorToMinor } from '@/lib/commerce-format';
 import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
+import { ConnectionIndicator } from '@/components/offline/ConnectionIndicator';
+import { useOfflineSync } from '@/lib/offline/use-offline-sync';
 
 /** Payload de RetailPosSessionController. */
 type PosSession = {
@@ -113,6 +115,31 @@ export default function CommercePosPage() {
   const [showClose, setShowClose] = useState(false);
   const [countedCash, setCountedCash] = useState('');
   const [varianceReason, setVarianceReason] = useState('');
+
+  // #8494 (I-07) — file hors-ligne partagée : l'encaissement hors ligne est
+  // enregistré localement puis resynchronisé. La clé d'idempotence est STABLE
+  // (dérivée de la session + du panier) : un rejeu ne crée pas de double
+  // commande, contrairement à l'ancien `crypto.randomUUID()` par appel.
+  const sendPosOrder = useCallback(async (operation: { payload: unknown }) => {
+    const { posSessionId, lines, idempotencyKey } = operation.payload as {
+      posSessionId: number;
+      lines: { product_id: number; quantity: number }[];
+      idempotencyKey: string;
+    };
+    const res = await apiFetch('/retail/pos/orders', {
+      method: 'POST',
+      body: JSON.stringify({
+        pos_session_id: posSessionId,
+        lines,
+        idempotency_key: idempotencyKey,
+      }),
+    });
+    if (!res.ok) {
+      const msg = await readApiError(res);
+      throw new Error(msg ?? 'pos_order_failed');
+    }
+  }, []);
+  const { connectionState, pendingCount, dispatch, flush } = useOfflineSync(sendPosOrder);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -231,23 +258,39 @@ export default function CommercePosPage() {
 
   const submitOrder = () => {
     if (!session || cart.length === 0) return;
+    const lines = cart.map((line) => ({ product_id: line.product.id, quantity: line.quantity }));
+    // #8494 — clé d'idempotence STABLE : même session + même panier ⇒ même clé,
+    // donc un rejeu hors ligne ne crée jamais de double commande.
+    const idempotencyKey = `pos:${session.id}:${lines
+      .map((l) => `${l.product_id}x${l.quantity}`)
+      .join('-')}`;
     void runAction(async () => {
-      const res = await apiFetch('/retail/pos/orders', {
-        method: 'POST',
-        body: JSON.stringify({
-          pos_session_id: session.id,
-          lines: cart.map((line) => ({ product_id: line.product.id, quantity: line.quantity })),
-          idempotency_key: crypto.randomUUID(),
-        }),
+      const outcome = await dispatch('pos.order', {
+        posSessionId: session.id,
+        lines,
+        idempotencyKey,
       });
-      if (!res.ok) {
-        const msg = await readApiError(res);
-        throw new Error(msg ?? t(locale, 'commerce.error.actionFailed', "L'action a échoué."));
+      if (outcome === 'queued') {
+        // Hors ligne : la commande est enregistrée localement et sera
+        // resynchronisée. On vide le panier pour éviter une double saisie.
+        setError(t(locale, 'offline.queued'));
+        setCart([]);
+        return;
       }
-      const payload = (await res.json()) as { data: Receipt };
-      setReceipt(payload.data);
-      setCart([]);
-      setPaymentAmount((payload.data.total_minor / 100).toFixed(2));
+      if (outcome === 'duplicate') {
+        return;
+      }
+      // En ligne : on recharge le reçu pour l'encaissement.
+      const res = await apiFetch(`/retail/pos/orders?pos_session_id=${session.id}&per_page=1`);
+      if (res.ok) {
+        const payload = (await res.json()) as { data: Receipt[] };
+        const latest = payload.data?.[0];
+        if (latest) {
+          setReceipt(latest);
+          setCart([]);
+          setPaymentAmount((latest.total_minor / 100).toFixed(2));
+        }
+      }
     });
   };
 
@@ -340,6 +383,11 @@ export default function CommercePosPage() {
       title={t(locale, 'commerce.pos.pageTitle', 'Caisse')}
       description={t(locale, 'commerce.pos.pageSubtitle', 'Sessions de caisse, ventes, encaissements et tickets.')}
     >
+      {/* #8494 — état de connexion + opérations en attente (Partie 7). */}
+      <div className="mb-4 flex justify-end">
+        <ConnectionIndicator state={connectionState} pendingCount={pendingCount} onRetry={() => void flush()} />
+      </div>
+
       {error ? (
         <p className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{error}</p>
       ) : null}
