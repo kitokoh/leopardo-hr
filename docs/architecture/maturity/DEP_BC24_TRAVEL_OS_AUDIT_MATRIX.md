@@ -105,12 +105,12 @@ Protection de `main` = 4 checks requis :
 | Priorité | Lacune | Preuve | Issue | Statut |
 |---|---|---|---|---|
 | **P1** | Réimpression d'un billet **avec trace** | #20 — `grep reprint\|reimpress\|audit` vide | **#8544** | **✅ implémenté** (table `travel_ticket_print_events`, `RecordTicketPrintAction`, `GET /travel/tickets/{id}/print-events`) |
-| **P2** | Vue consolidée **par agence** (ventilation des ventes/réservations par `TravelOffice`) | #22 — colonne `office_id` absente de `travel_bookings`, aucun `office` dans `TravelReportService` | **#8545** | à implémenter (spec + critères d'acceptation écrits) |
+| **P2** | Vue consolidée **par agence** (ventilation des ventes/réservations par `TravelOffice`) | #22 — colonne `office_id` absente de `travel_bookings`, aucun `office` dans `TravelReportService` | **#8545** | **✅ implémenté** (`office_id` nullable + index, filtre `office_id` sur sales/revenue/cancellations, `GET /travel/reports/offices` avec ligne `unassigned` explicite) |
 | **P3** | Scan caméra du QR côté app agent | #19 — `mobile_scanner`/`qr_code_scanner` absents de `pubspec.yaml` | **#8546** | **appareil/OS requis** |
 | **P4** | Impression thermique ESC-POS | #21 — aucun pilote ESC/POS | **#8547** | **appareil/OS requis** |
 | **P5** | Suivi GPS temps réel / historique / retards | #23/#24 — aucun fournisseur, aucune table d'historique | **#8548** | **fournisseur externe requis** |
 
-## 7. Preuves d'exécution locale (post-implémentation P1)
+## 7. Preuves d'exécution locale (post-implémentation P1 + P2)
 
 Environnement : PHP 8.4.26, PostgreSQL 16 (`leopardo_test`, schéma tenant
 `shared_tenants`), cache/pilote synchrones.
@@ -119,8 +119,22 @@ Environnement : PHP 8.4.26, PostgreSQL 16 (`leopardo_test`, schéma tenant
 |---|---|---|
 | QR + vérification + concurrence check-in + position véhicule (#8538/#8539/#8540) | `phpunit tests/Feature/Travel/TravelOsQrGpsConcurrencyTest.php` | **OK — 20 tests, 56 assertions** |
 | Réimpression avec trace (#8544) | `phpunit tests/Feature/Travel/TravelTicketReprintAuditTest.php` | **OK — 7 tests, 36 assertions** |
+| Vue consolidée par agence (#8545) | `phpunit tests/Feature/Travel/TravelReportOfficeTest.php` | **OK — 6 tests, 28 assertions** |
+| Consolidation fonctionnelle | `phpunit TravelReportOfficeTest TravelTicketReprintAuditTest TravelBookingApiTest TravelOfficeCrudTest TravelOsQrGpsConcurrencyTest TravelPdvApiTest` | **OK — 52 tests, 185 assertions** |
 | Non-régression billet | `phpunit TravelTicketPdfTest TravelTicketValidationCodeDeliveryTest TravelTicketPaymentTest TravelOsQrGpsConcurrencyTest` | **OK — 35 tests, 111 assertions** |
 | Analyse statique | `phpstan analyse --level=8` puis `-c phpstan-strict.neon` sur le périmètre | **No errors** |
+
+### Échecs de tests **préexistants** (vérifiés par `git stash`, identiques avant/après ce lot)
+
+| Fichier | Avant ce lot | Après ce lot |
+|---|---|---|
+| `TravelReportTest` | 2 échecs | 2 échecs (identiques) |
+| `TravelReportApiTest` | 4 échecs | 4 échecs (identiques) |
+| `TravelBookingController.php` (PHPStan lvl8 l.98, bloc corporate) | 1 erreur, déjà ratée dans `phpstan-strict-baseline.neon` | idem |
+
+Ces échecs ne sont **pas** imputables à la mission et n'ont pas été masqués :
+ils portent sur des fixtures de payload incomplètes (`from`/`to` non valides
+envoyés par le test lui-même) et une signature de service corporate préexistante.
 
 **Migration #8544** appliquée puis vérifiée :
 `to_regclass('shared_tenants.travel_ticket_print_events')` → table présente.
