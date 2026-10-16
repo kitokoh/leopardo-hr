@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\FarmOs\Interfaces\Api\V1\Controllers;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\FarmOs\Domain\Enums\AreaSource;
 use App\Modules\FarmOs\Domain\Enums\AreaUnit;
 use App\Modules\FarmOs\Domain\Exceptions\FarmAreaMeasurementException;

@@ -22,7 +22,7 @@ final class FarmCapabilityRecommender
 {
     /**
      * @param  list<string>  $activities  Valeurs de {@see FarmActivity}
-     * @return list<string>                 Valeurs de {@see FarmCapability}
+     * @return list<string> Valeurs de {@see FarmCapability}
      */
     public function forActivities(array $activities): array
     {

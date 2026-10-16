@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\FarmOs\Domain\Enums;
 
-use App\Modules\FarmOs\Domain\Enums\FarmCapability;
-
 /**
  * Farm OS (BC-37 AGRICULTURE) — Type d'opération agricole (intervention).
  *
