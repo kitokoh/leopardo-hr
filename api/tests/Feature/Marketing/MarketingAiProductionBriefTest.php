@@ -175,7 +175,12 @@ class MarketingAiProductionBriefTest extends TestCase
         // humaine (brief §D et §E).
         $status = app(TenantManager::class)->withinTenant(
             $company,
-            fn (): string => MarketingPublication::query()->findOrFail($publicationId)->status->value,
+            function () use ($publicationId): string {
+                /** @var MarketingPublication $publication */
+                $publication = MarketingPublication::query()->findOrFail($publicationId);
+
+                return $publication->status->value;
+            },
         );
 
         $this->assertSame('idea', $status);

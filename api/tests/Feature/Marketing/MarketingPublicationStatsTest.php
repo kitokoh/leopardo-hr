@@ -164,8 +164,11 @@ class MarketingPublicationStatsTest extends TestCase
             /** @var MarketingPublication $publication */
             $publication = MarketingPublication::query()->findOrFail($publicationId);
 
+            /** @var array<string, mixed> $stats */
+            $stats = $publication->stats;
+
             $this->assertSame('platform', $publication->stats_source);
-            $this->assertSame(1200, $publication->stats['impressions']);
+            $this->assertSame(1200, $stats['impressions']);
             $this->assertNull($publication->stats_error);
             $this->assertNotNull($publication->stats_fetched_at, 'La date de recuperation doit etre tracee.');
             $this->assertTrue($publication->hasMeasuredStats());
@@ -315,8 +318,11 @@ class MarketingPublicationStatsTest extends TestCase
             /** @var MarketingPublication $publication */
             $publication = MarketingPublication::query()->findOrFail($publicationId);
 
+            /** @var array<string, mixed> $stats */
+            $stats = $publication->stats;
+
             $this->assertSame('unavailable', $publication->stats_source);
-            $this->assertSame(900, $publication->stats['impressions'], 'La mesure anterieure doit rester consultable.');
+            $this->assertSame(900, $stats['impressions'], 'La mesure anterieure doit rester consultable.');
             $this->assertFalse($publication->hasMeasuredStats(), 'Une donnee non rafraichie n est pas presentee comme mesuree.');
         });
     }
@@ -345,8 +351,11 @@ class MarketingPublicationStatsTest extends TestCase
             /** @var MarketingPublication $publication */
             $publication = MarketingPublication::query()->findOrFail($publicationId);
 
+            /** @var array<string, mixed> $stats */
+            $stats = $publication->stats;
+
             $this->assertSame('manual', $publication->stats_source);
-            $this->assertSame(4200, $publication->stats['views']);
+            $this->assertSame(4200, $stats['views']);
             // `hasMeasuredStats()` est reserve a la provenance `platform` :
             // un releve humain n'est pas une mesure d'API.
             $this->assertFalse($publication->hasMeasuredStats());
