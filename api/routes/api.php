@@ -741,6 +741,40 @@ Route::prefix('v1')->group(function (): void {
         // parts et de tout lead du pipeline, même garde que la lecture.
         Route::patch('/marketing/leads/{lead}', [PlatformMarketingLeadController::class, 'update'])->whereNumber('lead')->middleware('platform.permission:crm.view');
 
+        // ─────────────────────────────────────────────────────────────────
+        // Marketing OS — espace Super Admin de pilotage marketing.
+        // Audit : docs/specifications/MARKETING_OS_AUDIT.md.
+        //
+        // Ces routes administrent les données marketing du tenant CIBLÉ,
+        // dans son propre contexte (`TenantManager::withinTenant`), exactement
+        // comme `/companies/{company}/fundraising/settings` (#8441) : le
+        // `search_path` du tenant est actif pendant la requête, donc le scope
+        // `BelongsToCompany` garantit l'isolation sans `where('company_id')`
+        // recopié à la main.
+        //
+        // Elles ne doublonnent PAS les routes tenant `/marketing/*` (celles-ci
+        // sont réservées au rôle manager d'UNE entreprise via
+        // `api.manager:marketing,principal`) : ici on est sur la console
+        // plateforme (`auth:super_admin_api`). Lecture = `marketing_os.view`
+        // (rôle plateforme `marketing` inclus) ; écriture et confirmation de
+        // mise en ligne = `marketing_os.manage`.
+        // ─────────────────────────────────────────────────────────────────
+        $marketingOs = \App\Modules\Marketing\Interfaces\Api\V1\Controllers\PlatformMarketingOsController::class;
+
+        Route::get('/companies/{company}/marketing-os/overview', [$marketingOs, 'overview'])->middleware('platform.permission:marketing_os.view');
+        Route::get('/companies/{company}/marketing-os/campaigns', [$marketingOs, 'indexCampaigns'])->middleware('platform.permission:marketing_os.view');
+        Route::post('/companies/{company}/marketing-os/campaigns', [$marketingOs, 'storeCampaign'])->middleware('platform.permission:marketing_os.manage');
+        Route::get('/companies/{company}/marketing-os/ideas', [$marketingOs, 'indexIdeas'])->middleware('platform.permission:marketing_os.view');
+        Route::post('/companies/{company}/marketing-os/ideas', [$marketingOs, 'storeIdea'])->middleware('platform.permission:marketing_os.manage');
+        Route::patch('/companies/{company}/marketing-os/ideas/{idea}', [$marketingOs, 'updateIdea'])->whereNumber('idea')->middleware('platform.permission:marketing_os.manage');
+        Route::post('/companies/{company}/marketing-os/ideas/{idea}/promote', [$marketingOs, 'promoteIdea'])->whereNumber('idea')->middleware('platform.permission:marketing_os.manage');
+        Route::get('/companies/{company}/marketing-os/assets', [$marketingOs, 'indexAssets'])->middleware('platform.permission:marketing_os.view');
+        Route::post('/companies/{company}/marketing-os/assets', [$marketingOs, 'storeAsset'])->middleware('platform.permission:marketing_os.manage');
+        Route::get('/companies/{company}/marketing-os/assets/{asset}/publications', [$marketingOs, 'assetPublications'])->whereNumber('asset')->middleware('platform.permission:marketing_os.view');
+        Route::get('/companies/{company}/marketing-os/publications', [$marketingOs, 'indexPublications'])->middleware('platform.permission:marketing_os.view');
+        Route::post('/companies/{company}/marketing-os/publications', [$marketingOs, 'storePublication'])->middleware('platform.permission:marketing_os.manage');
+        Route::patch('/companies/{company}/marketing-os/publications/{publication}/status', [$marketingOs, 'updatePublicationStatus'])->whereNumber('publication')->middleware('platform.permission:marketing_os.manage');
+
         // #7496 — conversions du funnel d'acquisition par étape/jour/source
         // (dashboard admin CRM commercial, données acquisition_funnel_events).
         Route::get('/funnel/stats', [PlatformAcquisitionFunnelController::class, 'index'])->middleware('platform.permission:metrics.view');

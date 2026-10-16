@@ -489,6 +489,17 @@ export const NAV_ENTRIES = [
   },
 
   // ── Plateforme (#7725, ex-« Métier plateforme » + config plateforme) ──────
+  // #8528 — « Marketing OS » : centre de commande marketing (stratégie,
+  // médiathèque, publications). Permission alignée sur les routes
+  // `/platform/companies/{company}/marketing-os/*` (`marketing_os.view`).
+  {
+    name: 'marketing-os',
+    path: '/marketing-os',
+    titleKey: 'navigation.marketingOs',
+    icon: MegaphoneIcon,
+    permission: 'marketing_os.view',
+    group: 'plateforme',
+  },
   {
     name: 'showcase-editor',
     path: '/showcase',
