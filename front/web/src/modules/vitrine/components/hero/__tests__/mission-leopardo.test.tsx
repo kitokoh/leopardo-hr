@@ -5,6 +5,7 @@ import { HeroSolutionsCTA } from '../HeroSolutionsCTA';
 import { SolutionCard } from '../SolutionCard';
 import { MAP_OUTLINES } from '../../../data/geo/map-paths';
 import { SOLUTIONS, getSolutionDetail } from '../../../data/solution-catalog';
+import { PACK_PAGES, PACKS_HUB_COPY } from '../../../data/pack-pages';
 
 /**
  * Mission Leopardo — tests unitaires des composants ajoutés/refondus :
@@ -153,5 +154,52 @@ describe('SOLUTIONS (catalogue de la constellation)', () => {
     expect(labels.some((label) => label.includes('Trade'))).toBe(true);
     expect(labels.some((label) => label.includes('Fuel') || label.includes('Station'))).toBe(true);
     expect(labels.some((label) => label.includes('Education') || label.includes('cole'))).toBe(true);
+  });
+});
+
+/**
+ * Garde anti-sur-promesse (MISSION LEOPARDO BUSINESS OS — TRAVEL OS).
+ *
+ * Le module TravelAgency ne porte PAS de notion de commission par agent : le
+ * modèle `Commission` appartient au programme partenaire (module Growth), relié
+ * à `payments.partner_id`, sans aucun lien avec les ventes de l'agence. Aucune
+ * surface publique ne doit donc annoncer ce que le produit ne fait pas.
+ */
+describe('sur-promesse — Travel OS', () => {
+  const SOLUTIONS_IDS = SOLUTIONS.map((solution) => solution.id);
+
+  it('aucune surface ne promet de commission d’agence (a fortiori par agent)', () => {
+    const surfaces = [
+      // Fiche interactive de la constellation (détail normalisé).
+      ...SOLUTIONS_IDS.map((id) => getSolutionDetail(id, 'fr')?.description ?? ''),
+      ...SOLUTIONS_IDS.flatMap((id) => getSolutionDetail(id, 'fr')?.features ?? []),
+      // Page pack.
+      ...PACK_PAGES['agence-de-voyage'].fr.included,
+      ...PACK_PAGES['agence-de-voyage'].fr.benefits.map((benefit) => `${benefit.title} ${benefit.text}`),
+      PACK_PAGES['agence-de-voyage'].fr.subtitle,
+      // Carte du hub /packs.
+      ...PACKS_HUB_COPY.fr.cards.map((card) => card.line),
+    ].join('\n');
+
+    expect(surfaces.toLowerCase()).not.toContain('commission');
+  });
+
+  it('la fiche Travel OS reprend les capacités réelles du module (manifeste travelagency)', () => {
+    const detail = getSolutionDetail('travel', 'fr')!;
+    const text = `${detail.description} ${detail.tagline}`;
+    // Billetterie + canaux de réservation réellement présents dans le module.
+    expect(text.toLowerCase()).toContain('billetterie');
+    expect(text.toLowerCase()).toMatch(/guichet|en ligne/);
+    // Ouverture de fiche ancrée sur le manifeste (routes, trajets, sièges).
+    expect(text.toLowerCase()).toMatch(/routes|trajets/);
+    expect(detail.features.length).toBeGreaterThan(0);
+  });
+
+  it('la fiche Travel OS expose des profils issus des rôles métier du manifeste', () => {
+    const detail = getSolutionDetail('travel', 'fr')!;
+    expect(detail.users).toContain('Guichetier');
+    expect(detail.users).toContain('Contrôleur');
+    expect(detail.users).toContain('Chauffeur');
+    expect(detail.users).toContain('Chef de bureau');
   });
 });

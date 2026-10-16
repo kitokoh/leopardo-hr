@@ -55,6 +55,18 @@ export type SolutionEntry = {
   osLabel: Record<AppLocale, string>;
   /** Renseigné quand une page pack existe : la fiche réutilise PACK_PAGES. */
   packSlug?: PackVerticalSlug;
+  /**
+   * Profils concernés — donnée de la FICHE, distincte du pack : renseignée
+   * uniquement quand elle est vérifiable (rôles métier déclarés par le
+   * manifeste de la solution, jamais inventés).
+   */
+  users?: Record<AppLocale, string[]>;
+  /**
+   * Complément de copie pour une solution servie par un pack : une phrase
+   * d'ouverture décrivant ce que fait réellement la solution. La copie métier
+   * et la promesse commerciale restent celles du pack — aucune duplication.
+   */
+  copyOverride?: Record<AppLocale, { description: string }>;
   /** Copie locale — uniquement pour les solutions sans page pack. */
   copy?: Record<AppLocale, SolutionCopy>;
 };
@@ -138,6 +150,34 @@ export const SOLUTIONS: readonly SolutionEntry[] = [
     href: '/packs/agence-de-voyage',
     packSlug: 'agence-de-voyage',
     osLabel: { fr: 'Travel OS', en: 'Travel OS', tr: 'Seyahat OS', ar: 'نظام السفر' },
+    // Profils : rôles MÉTIER déclarés par le manifeste `travelagency`
+    // (TravelStaffRole : guichetier, contrôleur, chauffeur, chef de bureau).
+    users: {
+      fr: ['Direction d’agence', 'Guichetier', 'Contrôleur', 'Chauffeur', 'Chef de bureau'],
+      en: ['Agency management', 'Counter agent', 'Controller', 'Driver', 'Office manager'],
+      tr: ['Acente yönetimi', 'Gişe görevlisi', 'Kontrolör', 'Şoför', 'Büro şefi'],
+      ar: ['إدارة الوكالة', 'أمين الشبّاك', 'المراقب', 'السائق', 'رئيس المكتب'],
+    },
+    // Ouverture de fiche : capacités réellement portées par le module
+    // TravelAgency (manifeste `travelagency`, maturité `pilot`).
+    copyOverride: {
+      fr: {
+        description:
+          'Réseau de routes et d’escales, trajets datés avec tarifs par classe et sièges, réservation au guichet comme en ligne, billetterie et e-billets, boutique publique en ligne, locations de véhicules, fidélité voyageur et règlements en devises.',
+      },
+      en: {
+        description:
+          'Route and stop network, dated trips with fare classes and seat maps, booking at the counter or online, ticketing and e-tickets, public online shop, vehicle rentals, traveller loyalty and multi-currency settlements.',
+      },
+      tr: {
+        description:
+          'Güzergâh ve durak ağı, sınıf tarifeli ve koltuklu tarihli seferler, gişede ve çevrimiçi rezervasyon, biletleme ve e-bilet, halka açık çevrimiçi mağaza, araç kiralama, yolcu sadakat programı ve dövizli mahsuplar.',
+      },
+      ar: {
+        description:
+          'شبكة خطوط ومحطات، رحلات مؤرخة بأسعار حسب الدرجة ومقاعد، حجز في الشبّاك وعبر الإنترنت، إصدار تذاكر وتذاكر إلكترونية، متجر عام على الإنترنت، تأجير مركبات، ولاء المسافرين وتسويات متعددة العملات.',
+      },
+    },
   },
   {
     id: 'fuel',
@@ -505,13 +545,16 @@ export function getSolutionDetail(id: SolutionId, locale: AppLocale): SolutionDe
     const pack = PACK_PAGES[entry.packSlug];
     if (pack) {
       const copy = localized(pack, locale);
+      const override = entry.copyOverride ? localized(entry.copyOverride, locale) : null;
       return {
         id: entry.id,
         href: entry.href,
         name: localized(entry.osLabel, locale),
         tagline: copy.subtitle,
-        description: `${copy.title} ${copy.highlight}`.trim(),
-        users: [],
+        description: override
+          ? `${override.description} ${copy.subtitle}`
+          : `${copy.title} ${copy.highlight}`.trim(),
+        users: entry.users ? [...localized(entry.users, locale)] : [],
         features: copy.included,
         cta: copy.ctaPrimary,
       };

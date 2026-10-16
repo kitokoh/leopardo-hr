@@ -50,7 +50,7 @@ const copyByLocale: Record<AppLocale, Copy> = {
       {
         icon: <Plane className={iconClass} />,
         name: 'Agences de voyage',
-        benefit: 'Dossiers clients, commissions et paie des équipes au même endroit.',
+        benefit: 'Dossiers clients, paiements et paie des équipes au même endroit.',
         href: '/packs/agence-de-voyage',
         linkLabel: 'Voir le pack offert',
       },
@@ -101,7 +101,7 @@ const copyByLocale: Record<AppLocale, Copy> = {
       {
         icon: <Plane className={iconClass} />,
         name: 'Travel agencies',
-        benefit: 'Client files, commissions and team payroll in one place.',
+        benefit: 'Client files, payments and team payroll in one place.',
         href: '/packs/agence-de-voyage',
         linkLabel: 'See the free pack',
       },
