@@ -41,7 +41,7 @@ final class TravelTicketQrCode
      */
     public function payload(TravelTicket $ticket): string
     {
-        $reference = (string) ($ticket->booking?->reference ?? '');
+        $reference = (string) ($ticket->booking->reference ?? '');
 
         return implode('|', [
             self::PAYLOAD_PREFIX,
