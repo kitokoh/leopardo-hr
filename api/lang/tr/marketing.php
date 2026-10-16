@@ -30,5 +30,7 @@ return [
         'campaign_not_found' => 'Bu şirket için kampanya bulunamadı.',
         'asset_not_found' => 'Bu şirket için kaynak bulunamadı.',
         'file_required' => '«:kind» türünde bir kaynak için dosya zorunludur.',
+        // #8531 — arama motorlarında veya yapay zeka asistanlarında görünürlük garanti edilmez.
+        'visibility_no_guarantee' => 'Arama motorlarında veya yapay zeka asistanlarında görünürlük garanti edilmez: göstergeler ölçülmüş ya da açıkça tahmin olarak belirtilmiştir.',
     ],
 ];

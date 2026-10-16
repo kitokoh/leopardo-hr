@@ -778,6 +778,15 @@ Route::prefix('v1')->group(function (): void {
         // valeur inventee : « indisponible » est un etat explicite).
         Route::post('/companies/{company}/marketing-os/publications/{publication}/stats/refresh', [$marketingOs, 'refreshPublicationStats'])->whereNumber('publication')->middleware('platform.permission:marketing_os.manage');
 
+        // #8531 — objectifs de visibilite SEO/SEA/AEO/GEO rattaches aux contenus.
+        Route::get('/companies/{company}/marketing-os/visibility-objectives', [$marketingOs, 'indexVisibilityObjectives'])->middleware('platform.permission:marketing_os.view');
+        Route::post('/companies/{company}/marketing-os/visibility-objectives', [$marketingOs, 'storeVisibilityObjective'])->middleware('platform.permission:marketing_os.manage');
+
+        // #8532 — matrice des capacites REELLES de publication par plateforme
+        // (quelles plateformes autorisent le direct, et pourquoi les autres
+        // restent en mode assiste).
+        Route::get('/companies/{company}/marketing-os/publishing-capabilities', [$marketingOs, 'publishingCapabilities'])->middleware('platform.permission:marketing_os.view');
+
         // #7496 — conversions du funnel d'acquisition par étape/jour/source
         // (dashboard admin CRM commercial, données acquisition_funnel_events).
         Route::get('/funnel/stats', [PlatformAcquisitionFunnelController::class, 'index'])->middleware('platform.permission:metrics.view');

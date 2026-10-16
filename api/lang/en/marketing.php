@@ -30,5 +30,7 @@ return [
         'campaign_not_found' => 'Campaign not found for this company.',
         'asset_not_found' => 'Asset not found for this company.',
         'file_required' => 'A file is required for a resource of type “:kind”.',
+        // #8531 — SEO/SEA/AEO/GEO visibility: no visibility is promised.
+        'visibility_no_guarantee' => 'No visibility is guaranteed in search engines or AI assistants: indicators are measured or explicitly identified as estimates.',
     ],
 ];

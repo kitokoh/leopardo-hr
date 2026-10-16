@@ -14,6 +14,7 @@ use App\Modules\Marketing\Infrastructure\Services\MarketingAssetStorage;
 use App\Modules\Marketing\Infrastructure\Services\MarketingOsDashboardService;
 use App\Modules\Marketing\Infrastructure\Services\MarketingPublicationModeResolver;
 use App\Modules\Marketing\Infrastructure\Services\MarketingPublicationStatsService;
+use App\Modules\Marketing\Infrastructure\Services\PlatformPublishingCapability;
 use App\Modules\Marketing\Infrastructure\Services\Stats\AyrshareAnalyticsProvider;
 use App\Modules\Marketing\Infrastructure\Services\Stats\PlatformStatsProviderResolver;
 use App\Modules\Marketing\Infrastructure\Services\Publishers\LinkedInPublisher;
@@ -62,6 +63,10 @@ class MarketingServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(MarketingPublicationStatsService::class);
+
+        // #8532 — capacites de publication directe par plateforme : source de
+        // verite unique de l'affirmation « direct » vs « assiste ».
+        $this->app->singleton(PlatformPublishingCapability::class);
     }
 
     public function boot(): void
