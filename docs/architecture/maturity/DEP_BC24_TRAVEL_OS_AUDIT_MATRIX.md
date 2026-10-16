@@ -102,10 +102,34 @@ Protection de `main` = 4 checks requis :
 
 ## 6. Lacunes retenues et priorisées
 
-| Priorité | Lacune | Preuve | Statut |
-|---|---|---|---|
-| **P1** | Réimpression d'un billet **avec trace** | #20 — `grep` vide | à implémenter |
-| **P2** | Vue consolidée **par agence** (ventilation des ventes/réservations par `TravelOffice`) | #22 — colonne et service absents | à implémenter |
-| **P3** | Scan caméra du QR côté app agent | #19 — dépendance absente | appareil/OS requis |
-| **P4** | Impression thermique ESC-POS | #21 — aucun pilote | appareil/OS requis |
-| **P5** | Suivi GPS temps réel / historique / retards | #23/#24 | fournisseur externe requis |
+| Priorité | Lacune | Preuve | Issue | Statut |
+|---|---|---|---|---|
+| **P1** | Réimpression d'un billet **avec trace** | #20 — `grep reprint\|reimpress\|audit` vide | **#8544** | **✅ implémenté** (table `travel_ticket_print_events`, `RecordTicketPrintAction`, `GET /travel/tickets/{id}/print-events`) |
+| **P2** | Vue consolidée **par agence** (ventilation des ventes/réservations par `TravelOffice`) | #22 — colonne `office_id` absente de `travel_bookings`, aucun `office` dans `TravelReportService` | **#8545** | à implémenter (spec + critères d'acceptation écrits) |
+| **P3** | Scan caméra du QR côté app agent | #19 — `mobile_scanner`/`qr_code_scanner` absents de `pubspec.yaml` | **#8546** | **appareil/OS requis** |
+| **P4** | Impression thermique ESC-POS | #21 — aucun pilote ESC/POS | **#8547** | **appareil/OS requis** |
+| **P5** | Suivi GPS temps réel / historique / retards | #23/#24 — aucun fournisseur, aucune table d'historique | **#8548** | **fournisseur externe requis** |
+
+## 7. Preuves d'exécution locale (post-implémentation P1)
+
+Environnement : PHP 8.4.26, PostgreSQL 16 (`leopardo_test`, schéma tenant
+`shared_tenants`), cache/pilote synchrones.
+
+| Suite | Commande | Résultat |
+|---|---|---|
+| QR + vérification + concurrence check-in + position véhicule (#8538/#8539/#8540) | `phpunit tests/Feature/Travel/TravelOsQrGpsConcurrencyTest.php` | **OK — 20 tests, 56 assertions** |
+| Réimpression avec trace (#8544) | `phpunit tests/Feature/Travel/TravelTicketReprintAuditTest.php` | **OK — 7 tests, 36 assertions** |
+| Non-régression billet | `phpunit TravelTicketPdfTest TravelTicketValidationCodeDeliveryTest TravelTicketPaymentTest TravelOsQrGpsConcurrencyTest` | **OK — 35 tests, 111 assertions** |
+| Analyse statique | `phpstan analyse --level=8` puis `-c phpstan-strict.neon` sur le périmètre | **No errors** |
+
+**Migration #8544** appliquée puis vérifiée :
+`to_regclass('shared_tenants.travel_ticket_print_events')` → table présente.
+
+> ⚠️ **Note d'exécution locale (reproductibilité).** `RefreshTenantDatabase`
+> ne re-migre le schéma tenant que si l'état canonique est invalide
+> (`canonicalSchemaReady()`, 8 tables sentinelles). Après l'ajout d'une
+> **nouvelle** table tenant, il faut donc lancer une fois :
+> `DB_SEARCH_PATH=shared_tenants php artisan migrate --path=database/migrations/tenant`
+> avant `phpunit`, sinon la table manque et les tests échouent en `42P01`.
+> En CI ce problème ne se pose pas : le job part d'une base vide.
+
