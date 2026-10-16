@@ -1298,3 +1298,21 @@ restent les gates applicables.
   Le POS utilise une clé d'idempotence STABLE (session + panier) → pas de double commande.
 - **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
   partagé `offline.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+
+## Mise à jour 2026-10-16 — enrôlement/révocation d'appareils (PR #8537, issue #8499)
+
+- **Surface API** : nouvelle route tenant `DELETE /api/v1/edge/{nodeId}`
+  (`EdgeNodeController::revoke`, groupe `auth:sanctum` + `tenant` + `api.manager`)
+  — révocation d'un appareil par le tenant lui-même, portée STRICTEMENT limitée à
+  la `company_id` de l'utilisateur (nœud d'un autre tenant → 404, jamais de fuite
+  inter-tenant). Aucun contrat existant modifié (les routes `GET/POST /api/v1/edge`
+  et `POST /{nodeId}/sync` restent inchangées). Scénario : couvert par le test
+  d'écran `devices-page.test.tsx` (appel `DELETE /edge/{id}`) ; le test d'intégration
+  backend d'isolation inter-tenant est suivi par #8496.
+- **Surface web (front/web)** : nouvelle page protégée `/settings/devices` — enrôlement
+  (nom, établissement, poste), affichage du jeton UNE SEULE FOIS avec avertissement,
+  liste des appareils (état en ligne / dernière synchro), révocation. Scénarios Jest :
+  `devices-page.test.tsx` (3 cas : chargement de la liste, jeton affiché une fois +
+  avertissement, révocation via `DELETE /edge/{id}`).
+- **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
+  partagé `devices.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
