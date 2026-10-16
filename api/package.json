@@ -16,5 +16,8 @@
     },
     "dependencies": {
         "@tailwindcss/postcss": "^4.3.3"
+    },
+    "overrides": {
+        "shell-quote": "^1.11.0"
     }
 }
