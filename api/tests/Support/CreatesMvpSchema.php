@@ -5537,6 +5537,18 @@ trait CreatesMvpSchema
         DB::reconnect($connection);
         DB::statement("SET search_path TO {$path}");
 
+        // Le schéma tenant peut manquer sur une base fraîche (jobs CI qui ne
+        // passent pas par `.github/actions/setup-backend-db`, ex. « Golden
+        // tests paie DZ » de payroll-ci.yml) : les tables tenant déclarées
+        // ci-dessous (`accounting_*`, `bank_*`, `payroll_payment_*`,
+        // `employee_attendance_preferences`, `marketing_*` de #8528) sont
+        // créées via `Schema::create('shared_tenants.<table>')` et échouaient
+        // en SQLSTATE 3F000 — soit « schema does not exist », soit « no schema
+        // has been selected to create in » quand le search_path n'a aucune
+        // entrée existante. Garde idempotente, même idiome que
+        // `loadPostgresFixtureDrops()` et `preparePostgresSchemas()`.
+        DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+
         if (! Schema::hasTable($this->tenantTable('accounting_chart_accounts'))) {
             Schema::create($this->tenantTable('accounting_chart_accounts'), function (Blueprint $table): void {
                 $table->id();
@@ -5736,6 +5748,121 @@ trait CreatesMvpSchema
 
                 $table->unique('employee_id');
                 $table->index('company_id');
+            });
+        }
+
+        // Marketing OS (issue #8528) — miroir de la migration tenant
+        // 2026_10_15_000100_8528_create_marketing_os_tables.php. Garde de
+        // parité #5443 : toute table tenant récente doit être déclarée ici.
+        if (! Schema::hasTable($this->moduleTable('marketing_campaigns'))) {
+            Schema::create($this->moduleTable('marketing_campaigns'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 120);
+                $table->text('description')->nullable();
+                $table->string('objective', 30)->default('notoriete')->index();
+                $table->text('audience')->nullable();
+                $table->string('sector', 60)->nullable()->index();
+                $table->string('product', 120)->nullable();
+                $table->text('key_message')->nullable();
+                $table->string('channel', 60)->nullable();
+                $table->string('locale', 10)->default('fr');
+                $table->timestampTz('starts_at')->nullable();
+                $table->timestampTz('ends_at')->nullable();
+                $table->unsignedBigInteger('owner_id')->nullable();
+                $table->decimal('budget_amount', 14, 2)->nullable();
+                $table->string('budget_currency', 3)->default('EUR');
+                $table->string('status', 20)->default('draft')->index();
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+
+                $table->index(['company_id', 'status']);
+                $table->index(['company_id', 'sector']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('content_ideas'))) {
+            Schema::create($this->moduleTable('content_ideas'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('campaign_id')->nullable()->index();
+                $table->string('title', 180);
+                $table->text('description')->nullable();
+                $table->string('objective', 30)->nullable();
+                $table->string('format', 30)->default('other')->index();
+                $table->string('channel', 60)->nullable();
+                $table->string('locale', 10)->default('fr');
+                $table->text('audience')->nullable();
+                $table->string('product', 120)->nullable();
+                $table->string('sector', 60)->nullable()->index();
+                $table->text('key_message')->nullable();
+                $table->timestampTz('production_due_at')->nullable();
+                $table->timestampTz('publish_due_at')->nullable();
+                $table->unsignedBigInteger('owner_id')->nullable();
+                $table->decimal('budget_amount', 14, 2)->nullable();
+                $table->string('budget_currency', 3)->default('EUR');
+                $table->string('status', 24)->default('idea')->index();
+                $table->text('next_action')->nullable();
+                $table->json('brief')->nullable();
+                $table->unsignedBigInteger('production_task_id')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+
+                $table->index(['company_id', 'status']);
+                $table->index(['company_id', 'campaign_id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('marketing_assets'))) {
+            Schema::create($this->moduleTable('marketing_assets'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('campaign_id')->nullable()->index();
+                $table->unsignedBigInteger('content_idea_id')->nullable()->index();
+                $table->string('name', 200);
+                $table->text('description')->nullable();
+                $table->string('kind', 24)->default('other')->index();
+                $table->string('mime_type', 120)->nullable();
+                $table->string('extension', 12)->nullable();
+                $table->unsignedBigInteger('size')->nullable();
+                $table->string('disk', 40)->nullable();
+                $table->string('path', 512)->nullable();
+                $table->string('preview_path', 512)->nullable();
+                $table->string('thumbnail_path', 512)->nullable();
+                $table->string('locale', 10)->default('fr')->index();
+                $table->string('product', 120)->nullable()->index();
+                $table->string('objective', 30)->nullable();
+                $table->string('sector', 60)->nullable()->index();
+                $table->json('platforms')->nullable();
+                $table->json('tags')->nullable();
+                $table->unsignedInteger('version')->default(1);
+                $table->string('validation_status', 20)->default('draft')->index();
+                $table->unsignedBigInteger('author_id')->nullable();
+                $table->text('rights')->nullable();
+                $table->timestampTz('rights_expires_at')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+
+                $table->index(['company_id', 'kind']);
+                $table->index(['company_id', 'validation_status']);
+                $table->unique(['company_id', 'name', 'version'], 'marketing_assets_name_version_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('marketing_production_tasks'))) {
+            Schema::create($this->moduleTable('marketing_production_tasks'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('content_idea_id')->index();
+                $table->string('title', 200);
+                $table->text('description')->nullable();
+                $table->date('due_date');
+                $table->string('priority', 16)->default('normal');
+                $table->string('category', 60)->default('marketing');
+                $table->string('status', 20)->default('todo');
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
             });
         }
     }

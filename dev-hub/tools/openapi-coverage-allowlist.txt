@@ -1043,3 +1043,25 @@ PUT /v1/travel/community/tourist-sites/{param}
 DELETE /v1/travel/community/tourist-sites/{param}
 PATCH /v1/travel/contacts/{param}/consent
 PUT /v1/travel/contacts/{param}/consent
+
+# BC-12 GROWTH/Marketing — Marketing OS (#8528) : espace Super Admin de
+# pilotage marketing (stratégie, médiathèque, publications). Contrat documenté
+# par l'audit et les spécifications (docs/specifications/MARKETING_OS_AUDIT.md,
+# docs/specifications/marketing-os/) en attendant la publication du contrat
+# OpenAPI canonique — mêmes règles que les gaps historiques tolérés
+# (ex. CRM client campagnes #5724). Ces routes administrent le tenant CIBLÉ
+# dans son propre contexte (TenantManager::withinTenant) et n'exposent que des
+# données marketing du tenant, jamais de secret.
+GET /v1/admin/companies/{param}/marketing-os/overview
+GET /v1/admin/companies/{param}/marketing-os/campaigns
+POST /v1/admin/companies/{param}/marketing-os/campaigns
+GET /v1/admin/companies/{param}/marketing-os/ideas
+POST /v1/admin/companies/{param}/marketing-os/ideas
+PATCH /v1/admin/companies/{param}/marketing-os/ideas/{param}
+POST /v1/admin/companies/{param}/marketing-os/ideas/{param}/promote
+GET /v1/admin/companies/{param}/marketing-os/assets
+POST /v1/admin/companies/{param}/marketing-os/assets
+GET /v1/admin/companies/{param}/marketing-os/assets/{param}/publications
+GET /v1/admin/companies/{param}/marketing-os/publications
+POST /v1/admin/companies/{param}/marketing-os/publications
+PATCH /v1/admin/companies/{param}/marketing-os/publications/{param}/status
