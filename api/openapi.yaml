@@ -2717,6 +2717,37 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           $ref: '#/components/responses/Error404'
+    delete:
+      tags:
+      - Edge
+      summary: Revoquer un appareil edge du tenant
+      description: >-
+        Revocation d'un appareil par le tenant lui-meme (issue #8499). Portee
+        strictement limitee a la company de l'appelant : un noeud appartenant a
+        un autre tenant renvoie 404 (aucune fuite inter-tenant). L'appareil
+        revoque ne synchronise plus.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: nodeId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Appareil revoque
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
   /edge/{nodeId}/sync:
     post:
       tags:
