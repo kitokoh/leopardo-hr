@@ -18,6 +18,7 @@ use App\Modules\Marketing\Domain\Models\MarketingPublication;
 use App\Modules\Marketing\Infrastructure\Services\MarketingAssetStorage;
 use App\Modules\Marketing\Infrastructure\Services\MarketingOsDashboardService;
 use App\Modules\Marketing\Infrastructure\Services\MarketingPublicationModeResolver;
+use App\Modules\Marketing\Infrastructure\Services\MarketingPublicationStatsService;
 use App\Modules\Marketing\Interfaces\Api\V1\Requests\StoreContentIdeaRequest;
 use App\Modules\Marketing\Interfaces\Api\V1\Requests\StoreMarketingAssetRequest;
 use App\Modules\Marketing\Interfaces\Api\V1\Requests\StoreMarketingCampaignRequest;
@@ -72,6 +73,7 @@ final class PlatformMarketingOsController extends Controller
         private readonly MarketingOsDashboardService $dashboard,
         private readonly MarketingAssetStorage $storage,
         private readonly MarketingPublicationModeResolver $modes,
+        private readonly MarketingPublicationStatsService $stats,
         private readonly PromoteContentIdeaToProduction $promote,
     ) {}
 
@@ -575,6 +577,7 @@ final class PlatformMarketingOsController extends Controller
                         $validated['platform_account'] ?? null,
                         isset($validated['published_at']) ? Carbon::parse($validated['published_at']) : null,
                         $validated['stats'] ?? null,
+                        $validated['external_post_id'] ?? null,
                     );
                     break;
 
@@ -597,6 +600,35 @@ final class PlatformMarketingOsController extends Controller
             return new JsonResponse([
                 'data' => $this->presentPublication($model->refresh()),
                 'meta' => ['mode' => $model->mode->value],
+            ]);
+        });
+    }
+
+    /**
+     * POST /platform/companies/{company}/marketing-os/publications/{publication}/stats/refresh
+     *
+     * Interroge l'API de la plateforme et enregistre les indicateurs
+     * REELLEMENT renvoyes (#8530). Si la plateforme ne fournit pas la donnee
+     * (pas d'API, pas de connecteur, pas d'identifiant externe, erreur), la
+     * publication est marquee `stats_source = unavailable` avec un motif
+     * explicite : aucune valeur n'est inventee, et une mesure anterieure
+     * n'est jamais detruite.
+     */
+    public function refreshPublicationStats(string $company, int $publication): JsonResponse
+    {
+        $target = PlatformCompanyLookup::findOrFail($company);
+
+        return $this->tenantManager->withinTenant($target, function () use ($publication): JsonResponse {
+            $model = MarketingPublication::query()->findOrFail($publication);
+            $refreshed = $this->stats->refresh($model);
+
+            return new JsonResponse([
+                'data' => $this->presentPublication($refreshed->refresh()),
+                'meta' => [
+                    'measured' => $refreshed->hasMeasuredStats(),
+                    'stats_source' => $refreshed->stats_source,
+                    'stats_error' => $refreshed->stats_error,
+                ],
             ]);
         });
     }
@@ -776,6 +808,12 @@ final class PlatformMarketingOsController extends Controller
             'platform_account' => $publication->platform_account,
             'stats' => $publication->stats,
             'stats_source' => $publication->stats_source,
+            'external_post_id' => $publication->external_post_id,
+            'stats_fetched_at' => $publication->stats_fetched_at?->toIso8601String(),
+            'stats_error' => $publication->stats_error,
+            // Un indicateur est soit MESURE, soit declare indisponible :
+            // l'interface ne doit jamais afficher un chiffre invente.
+            'has_measured_stats' => $publication->hasMeasuredStats(),
             'error_message' => $publication->error_message,
             'attempts' => $publication->attempts,
             'attempt_history' => $publication->attempt_history,

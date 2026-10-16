@@ -13,6 +13,9 @@ use App\Modules\Marketing\Infrastructure\Repositories\SocialPostRepository;
 use App\Modules\Marketing\Infrastructure\Services\MarketingAssetStorage;
 use App\Modules\Marketing\Infrastructure\Services\MarketingOsDashboardService;
 use App\Modules\Marketing\Infrastructure\Services\MarketingPublicationModeResolver;
+use App\Modules\Marketing\Infrastructure\Services\MarketingPublicationStatsService;
+use App\Modules\Marketing\Infrastructure\Services\Stats\AyrshareAnalyticsProvider;
+use App\Modules\Marketing\Infrastructure\Services\Stats\PlatformStatsProviderResolver;
 use App\Modules\Marketing\Infrastructure\Services\Publishers\LinkedInPublisher;
 use App\Modules\Marketing\Infrastructure\Services\Publishers\MetaPublisher;
 use App\Modules\Marketing\Infrastructure\Services\Publishers\SocialPublisherResolver;
@@ -46,6 +49,19 @@ class MarketingServiceProvider extends ServiceProvider
         $this->app->singleton(MarketingAssetStorage::class);
         $this->app->singleton(MarketingOsDashboardService::class);
         $this->app->singleton(MarketingPublicationModeResolver::class);
+
+        // #8530 — statistiques REELLES des plateformes. Le resolver retourne
+        // `null` (et non une exception) quand aucune plateforme ne sait
+        // fournir la donnee : le service la declare alors indisponible au
+        // lieu d'inventer une valeur. YouTube/TikTok ne sont pas couverts par
+        // l'agregateur (extension suivie par #8532).
+        $this->app->singleton(PlatformStatsProviderResolver::class, function ($app): PlatformStatsProviderResolver {
+            return new PlatformStatsProviderResolver([
+                $app->make(AyrshareAnalyticsProvider::class),
+            ]);
+        });
+
+        $this->app->singleton(MarketingPublicationStatsService::class);
     }
 
     public function boot(): void

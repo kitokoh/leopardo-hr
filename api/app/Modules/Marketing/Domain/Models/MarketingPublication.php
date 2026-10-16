@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Marketing\Domain\Models;
 
 use App\Modules\Marketing\Domain\Enums\MarketingPublicationMode;
+use App\Modules\Marketing\Domain\Enums\MarketingPublicationStatsSource;
 use App\Modules\Marketing\Domain\Enums\MarketingPublicationStatus;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
@@ -46,6 +47,9 @@ use Illuminate\Support\Carbon;
  * @property string|null $platform_account
  * @property array<string, mixed>|null $stats
  * @property string|null $stats_source
+ * @property string|null $external_post_id
+ * @property Carbon|null $stats_fetched_at
+ * @property string|null $stats_error
  * @property string|null $error_message
  * @property int $attempts
  * @property array<int, mixed>|null $attempt_history
@@ -78,6 +82,9 @@ class MarketingPublication extends Model
         'platform_account',
         'stats',
         'stats_source',
+        'external_post_id',
+        'stats_fetched_at',
+        'stats_error',
         'error_message',
         'attempts',
         'attempt_history',
@@ -95,9 +102,24 @@ class MarketingPublication extends Model
             'attempts' => 'integer',
             'scheduled_at' => 'datetime',
             'published_at' => 'datetime',
+            'stats_fetched_at' => 'datetime',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Les statistiques sont-elles REELLEMENT mesurees (#8530) ?
+     *
+     * `false` couvre les trois cas non mesures : jamais interroge, plateforme
+     * sans API de statistiques, ou appel en echec. L'interface doit alors
+     * afficher « indisponible » — jamais un chiffre invente.
+     */
+    public function hasMeasuredStats(): bool
+    {
+        return $this->stats_source === MarketingPublicationStatsSource::Platform->value
+            && is_array($this->stats)
+            && $this->stats !== [];
     }
 
     /** @return BelongsTo<ContentIdea, $this> */
