@@ -9,6 +9,7 @@ use App\Modules\FarmOs\Application\Actions\SyncFarmActivities;
 use App\Modules\FarmOs\Application\Actions\UpdateFarmCapabilities;
 use App\Modules\FarmOs\Domain\Enums\FarmActivity;
 use App\Modules\FarmOs\Domain\Enums\FarmCapability;
+use App\Modules\FarmOs\Domain\Models\FarmActivityRecord;
 use App\Modules\FarmOs\Domain\Services\FarmCapabilityGate;
 use App\Modules\FarmOs\Domain\Services\FarmCapabilityRecommender;
 use App\Modules\FarmOs\Infrastructure\Context\FarmCompanyContext;

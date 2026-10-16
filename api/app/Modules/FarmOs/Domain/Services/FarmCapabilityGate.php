@@ -75,22 +75,26 @@ final class FarmCapabilityGate
      * Capacités actives ET permission métier détenue : ce que le front peut
      * afficher sans risque (jamais de section vide par manque de permission).
      *
-     * @param  list<string>  $grantedPermissions
+     * Les permissions sont indexées (valeurs de `EmployeeModuleGrant`) : on
+     * teste l'APPARTENANCE, jamais la clé.
+     *
+     * @param  array<int|string, string>  $grantedPermissions
      * @return list<string>
      */
     public function visibleFor(Company $company, array $grantedPermissions): array
     {
+        $has = static fn (string $permission): bool => in_array($permission, $grantedPermissions, true);
+
         return array_values(array_filter(
             $this->enabled($company),
-            static function (string $capability) use ($grantedPermissions): bool {
+            static function (string $capability) use ($has): bool {
                 $enum = FarmCapability::tryFrom($capability);
 
                 if ($enum === null) {
                     return false;
                 }
 
-                return in_array($enum->requiredPermission(), $grantedPermissions, true)
-                    || in_array('farm.admin', $grantedPermissions, true);
+                return $has($enum->requiredPermission()) || $has('farm.admin');
             }
         ));
     }
