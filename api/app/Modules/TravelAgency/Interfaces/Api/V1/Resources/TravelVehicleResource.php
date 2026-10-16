@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Interfaces\Api\V1\Resources;
 
 use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
+use App\Modules\TravelAgency\Domain\ValueObjects\VehiclePositionFreshness;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -63,6 +64,22 @@ class TravelVehicleResource extends JsonResource
             'age_seconds' => $this->position_recorded_at !== null
                 ? (int) $this->position_recorded_at->diffInSeconds(now())
                 : null,
+            // #8548 — fraîcheur opposable : une position ancienne ou absente
+            // n'est jamais présentée comme courante.
+            'freshness' => VehiclePositionFreshness::fromNullable(
+                $this->position_recorded_at,
+                $this->staleAfterMinutes(),
+            )->toArray(),
         ];
+    }
+
+    /**
+     * Seuil de fraîcheur explicite (config `travel.fleet_position`), jamais deviné.
+     */
+    private function staleAfterMinutes(): int
+    {
+        $configured = config('travel.fleet_position.stale_after_minutes', 30);
+
+        return is_numeric($configured) ? max(1, (int) $configured) : 30;
     }
 }
