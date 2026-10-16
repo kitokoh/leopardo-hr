@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\FarmOs\Interfaces\Api\V1\Controllers;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\FarmOs\Application\Actions\ProvisionFarmOs;
 use App\Modules\FarmOs\Application\Actions\SyncFarmActivities;
 use App\Modules\FarmOs\Application\Actions\UpdateFarmCapabilities;
 use App\Modules\FarmOs\Domain\Enums\AreaUnit;
@@ -34,6 +35,7 @@ final class FarmSettingsController
         private readonly FarmCapabilityRecommender $recommender,
         private readonly SyncFarmActivities $syncActivities,
         private readonly UpdateFarmCapabilities $updateCapabilities,
+        private readonly ProvisionFarmOs $provisionFarm,
     ) {}
 
     public function show(Request $request): JsonResponse
@@ -84,6 +86,40 @@ final class FarmSettingsController
                 'optional' => $this->recommender->optionalForActivities($saved),
             ],
         ]);
+    }
+
+    /**
+     * Étape 4 — provisioning de l'espace d'exploitation.
+     *
+     * IDEMPOTENT (un rejeu ne duplique ni ne détruit rien) et RÉCUPÉRABLE (un
+     * nouvel appel reprend l'étape échouée). Réutilise le mécanisme existant
+     * de Leopardo Business OS (SolutionActivator : modules requis, flag de
+     * solution, permissions, audit) — Farm OS ne crée aucun second
+     * provisioning.
+     */
+    public function provision(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'activities' => ['required', 'array', 'min:1'],
+            'activities.*' => ['string', Rule::in(FarmActivity::values())],
+            'capabilities' => ['sometimes', 'array'],
+            'capabilities.*' => ['boolean'],
+        ]);
+
+        /** @var array<string, bool> $decisions */
+        $decisions = $validated['capabilities'] ?? [];
+        // Allowlist fail-closed : une clé inconnue est ignorée, jamais
+        // persistée. Aucune décision ⇒ le recommender décide (comportement null).
+        $allowed = array_intersect_key($decisions, array_flip(FarmCapability::values()));
+
+        $result = $this->provisionFarm->execute(
+            $this->company(),
+            array_values($validated['activities']),
+            $allowed === [] ? null : $allowed,
+            $request->user()?->id,
+        );
+
+        return response()->json(['data' => $result]);
     }
 
     /**

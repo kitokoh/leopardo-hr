@@ -44275,6 +44275,43 @@ paths:
           description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
         '422':
           description: Données invalides (ou transition d'intervention refusée).
+  /farm/provision:
+    post:
+      tags: [FarmSettings]
+      summary: Approvisionner l'espace d'exploitation (idempotent, réutilise l'activation de solution existante)
+      operationId: provisionFarmOs
+      x-farm-capability: solution
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "activities"
+              properties:
+                activities:
+                  type: "array"
+                  minItems: 1
+                  items:
+                    type: "string"
+                capabilities:
+                  type: "object"
+                  description: Décisions explicites de l'utilisateur (accepté, refusé, modifié) ; absent = proposition du recommandeur.
+                  additionalProperties:
+                    type: "boolean"
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides (ou transition d'intervention refusée).
   /farm/dashboard:
     get:
       tags: [FarmDashboard]

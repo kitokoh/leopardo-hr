@@ -1366,3 +1366,42 @@ restent les gates applicables.
 - **Surface web / mobile** : aucune page web ni clé ARB Farm OS dans cette tranche ⇒ aucun scénario
   Jest/Flutter nouveau requis. Onboarding (étapes front) et application mobile agricole restent à
   concevoir après audit (Phase 4 de la mission).
+
+## Mise à jour 2026-10-16 (2) — Farm OS étape 4 : PROVISIONNEMENT de l'espace (BC-37, PR #8572)
+
+- **Surface API ajoutée** : `POST /api/v1/farm/provision` (`api/routes/modules/farm_os.php`,
+  `FarmSettingsController::provision`) — la surface tenant `/api/v1/farm/*` passe de 27 à **28 routes**.
+  Toujours derrière le gate `module.farm_os` (fail-closed ⇒ 403 sans le flag). Aucun contrat existant
+  n'est modifié ; réutilise le mécanisme d'activation existant (`SolutionActivator::activateWithDependencies`)
+  — **aucun second système de tenants, rôles, permissions ou provisioning**.
+
+- **Scénarios attendus (À EXÉCUTER en CI — non exécutés dans cet environnement, cf. limites) :**
+
+| Cas | Attendu |
+|---|---|
+| `POST /farm/provision` avec une activité valide et aucun outil décidé | 200 ; flag `farm_os` posé ; outil = proposition du recommandeur ; refus explicites persistés pour le reste |
+| rejeu du même `POST /farm/provision` | 200, statut `already_active` ; **aucune** ligne dupliquée (`farm_activities`, `farm_capabilities`) |
+| `POST /farm/provision` avec `capabilities: {parcels_crops: false}` | outil refusé persisté et **respecté** (jamais réactivé par le recommandeur) |
+| refus explicite rejoué une seconde fois | le refus **reste** un refus (idempotence ≠ réinitialisation) |
+| profil `cereal_crops` uniquement | jamais de capacité `livestock` ; jamais d'action « cheptel » dans `next_actions` |
+| profil `cattle` uniquement | capacité `livestock` activée ; jamais de capacité `irrigation` |
+| `POST /farm/provision` sans `activities` ou avec une valeur hors registre fermé | 422 (allowlist fail-closed) |
+| `POST /farm/provision` puis relecture de la `checklist` | `farm_first_site` / `farm_first_parcel` / `farm_first_operation` à `false` — le provisioning ne prétend jamais avoir créé de donnée métier |
+| provisioning de l'exploitation A | aucune ligne `farm_*` pour l'exploitation B ; `farm_os` non activé pour B (isolation multi-tenant) |
+
+- **Couverture livrée et RÉELLEMENT EXÉCUTÉE (domaine pur, sans base)** : `api/tests/Unit/Modules/FarmOs/`
+  + `api/tests/Unit/Core/Feature/` → **43 tests, 741 assertions** (PHPUnit 11.5, PHP 8.2 local) ;
+  `php -l` → 0 erreur sur les fichiers modifiés. Les 2 échecs restants de cette sélection
+  (`ModuleRegistryGuardTest` clé « fuel » ; `SetupInterviewPlannerTest` mapping `commerce`→`retail`)
+  sont **pré-existants sur `main`** (run CI `38855132171`, commit `bb0d4153`) et hors périmètre Farm OS.
+
+- **Contrat de provisioning couvert par tests feature à exécuter en CI** (aucune base ici) :
+  `api/tests/Feature/Modules/FarmOs/FarmProvisioningTest.php` — 9 cas (activation, idempotence,
+  non-destruction d'un refus, modularité végétal/élevage, checklist honnête, actions suivantes bornées
+  aux outils activés, isolation multi-tenant).
+
+- **Limites déclarées** : `pdo_pgsql`, PostgreSQL et Redis restent indisponibles dans l'environnement de
+  session, et l'extension `pgsql` n'est pas installée ⇒ **aucun scénario HTTP/feature de ce tableau n'a
+  été exécuté localement** ; ils doivent l'être par `api/tests/Feature/**` sur runner CI. `vendor/bin/pint`
+  exige PHP ≥ 8.3 (non disponible localement : PHP 8.2) ⇒ la conformité de style est vérifiée par le job
+  `Backend Quality` en CI, pas localement.
