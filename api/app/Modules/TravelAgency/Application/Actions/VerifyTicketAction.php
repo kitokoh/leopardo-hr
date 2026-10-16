@@ -26,8 +26,11 @@ use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 final class VerifyTicketAction
 {
     public const STATUS_VALID = 'valid';
+
     public const STATUS_ALREADY_USED = 'already_used';
+
     public const STATUS_VOID = 'void';
+
     public const STATUS_EXPIRED = 'expired';
 
     /**
