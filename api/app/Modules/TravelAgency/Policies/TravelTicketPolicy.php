@@ -30,4 +30,16 @@ class TravelTicketPolicy
         return $actor->hasManagerRole('principal', 'rh')
             && $ticket->company_id === $actor->company_id;
     }
+
+    /**
+     * #8538 — habilitation au CONTRÔLE des billets (vérification QR).
+     *
+     * Même périmètre que le check-in (`travel.checkin`, matrice RBAC
+     * `docs/security/TRAVEL_RBAC_MATRIX.md`) : le contrôle d'embarquement est
+     * une opération d'exploitation, pas une lecture ouverte.
+     */
+    public function verifyAny(Employee $actor): bool
+    {
+        return $actor->hasManagerRole('principal', 'rh');
+    }
 }

@@ -112,6 +112,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/vehicles/{travelVehicle}', [TravelVehicleController::class, 'show']);
         Route::put('/vehicles/{travelVehicle}', [TravelVehicleController::class, 'update']);
         Route::delete('/vehicles/{travelVehicle}', [TravelVehicleController::class, 'destroy']);
+        // Dernière position connue d'un véhicule (#8540) — ingestion par un
+        // dispositif autorisé (boîtier GPS ou application).
+        Route::post('/vehicles/{travelVehicle}/position', [TravelVehicleController::class, 'recordPosition']);
 
         // Routes ville→ville + étapes ordonnées (TRAVEL-307/#6037).
         Route::get('/routes', [TravelRouteController::class, 'index']);
@@ -160,6 +163,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/bookings/{travelBooking}/refund', [TravelBookingController::class, 'refund']);
         Route::post('/bookings/{travelBooking}/issue-ticket', [TravelBookingController::class, 'issueTickets']);
         Route::post('/bookings/{travelBooking}/refund-passenger', [TravelBookingController::class, 'refundPassenger']); // TRAVEL-808/#6098
+
+        // Vérification d'authenticité d'un billet (#8538) — LECTURE SEULE,
+        // distincte de la consommation (check-in ci-dessous).
+        Route::post('/tickets/verify', [TravelTicketController::class, 'verify']);
 
         // Check-in / embarquement (TRAVEL-317/#6047).
         Route::post('/tickets/{travelTicket}/check-in', [TravelTicketController::class, 'checkIn']);

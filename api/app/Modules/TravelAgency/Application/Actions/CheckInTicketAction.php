@@ -23,29 +23,46 @@ final class CheckInTicketAction
 
     public function execute(TravelTicket $ticket, Employee $actor): TravelTicket
     {
-        if ($ticket->status === TicketStatus::CHECKED_IN) {
-            return $ticket;
-        }
+        // #8539 — le statut est relu DANS la transaction, sous verrou de ligne
+        // (`lockForUpdate`) : deux contrôles simultanés du même billet ne
+        // peuvent plus lire `issued` tous les deux. Le premier gagne, le
+        // second constate `checked_in` et repart en idempotence — sans
+        // écraser l'horodatage ni l'opérateur du premier contrôle.
+        $checkedIn = DB::transaction(function () use ($ticket, $actor): TravelTicket {
+            /** @var TravelTicket $locked */
+            $locked = TravelTicket::query()
+                ->whereKey($ticket->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        if ($ticket->status !== TicketStatus::ISSUED) {
-            abort(422, 'Ce billet ne peut pas etre enregistre.');
-        }
+            if ($locked->status === TicketStatus::CHECKED_IN) {
+                return $locked;
+            }
 
-        DB::transaction(function () use ($ticket, $actor): void {
-            $ticket->forceFill([
+            if ($locked->status !== TicketStatus::ISSUED) {
+                abort(422, 'Ce billet ne peut pas etre enregistre.');
+            }
+
+            $locked->forceFill([
                 'status' => TicketStatus::CHECKED_IN,
                 'checked_in_at' => now(),
                 'checked_in_by_user_id' => $actor->id,
             ])->save();
+
+            return $locked;
         });
 
-        $this->outbox->publish($ticket->company_id, 'travel.ticket.checked_in.v1', [
-            'ticket_number' => $ticket->ticket_number,
-            'booking_id' => $ticket->booking_id,
-            'checked_in_by' => $actor->id,
-            'checked_in_at' => now()->toIso8601String(),
-        ]);
+        // L'evenement n'est publie QUE si CE controle a reellement enregistre
+        // le billet : un rejeu idempotent ne re-emet jamais l'evenement.
+        if ($checkedIn->wasChanged('status')) {
+            $this->outbox->publish($checkedIn->company_id, 'travel.ticket.checked_in.v1', [
+                'ticket_number' => $checkedIn->ticket_number,
+                'booking_id' => $checkedIn->booking_id,
+                'checked_in_by' => $actor->id,
+                'checked_in_at' => $checkedIn->checked_in_at?->toIso8601String(),
+            ]);
+        }
 
-        return $ticket->refresh();
+        return $checkedIn;
     }
 }
