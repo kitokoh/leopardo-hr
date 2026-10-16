@@ -62,9 +62,12 @@ class FarmActivityRecord extends Model
      */
     public static function activeValues(): array
     {
-        return self::query()
-            ->whereNull('ended_at')
-            ->pluck('activity')
-            ->all();
+        $values = [];
+
+        foreach (self::query()->whereNull('ended_at')->pluck('activity') as $value) {
+            $values[] = (string) $value;
+        }
+
+        return $values;
     }
 }

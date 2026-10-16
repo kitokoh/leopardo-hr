@@ -49,16 +49,16 @@ final class FarmAreaGuardTest extends TestCase
 
     public function test_measured_source_is_accepted_with_geometry(): void
     {
-        $this->guard->assertConsistent(2.5, AreaUnit::Hectare, AreaSource::Measured, true);
+        $this->expectNotToPerformAssertions();
 
-        $this->assertTrue(true);
+        $this->guard->assertConsistent(2.5, AreaUnit::Hectare, AreaSource::Measured, true);
     }
 
     public function test_declared_source_is_accepted_without_geometry(): void
     {
-        $this->guard->assertConsistent(12, AreaUnit::Hectare, AreaSource::Declared, false);
+        $this->expectNotToPerformAssertions();
 
-        $this->assertTrue(true);
+        $this->guard->assertConsistent(12, AreaUnit::Hectare, AreaSource::Declared, false);
     }
 
     public function test_a_typed_area_defaults_to_declared_never_measured(): void

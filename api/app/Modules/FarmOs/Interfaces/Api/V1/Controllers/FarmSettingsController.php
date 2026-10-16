@@ -138,7 +138,7 @@ final class FarmSettingsController
             $payload[] = [
                 'activity' => $record->activity,
                 'is_primary' => (bool) $record->is_primary,
-                'declared_at' => $record->declared_at?->toIso8601String(),
+                'declared_at' => $record->declared_at->toIso8601String(),
                 'ended_at' => $record->ended_at?->toIso8601String(),
             ];
         }

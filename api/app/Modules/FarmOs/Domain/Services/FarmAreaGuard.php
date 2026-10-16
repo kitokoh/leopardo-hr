@@ -65,6 +65,11 @@ final class FarmAreaGuard
             return null;
         }
 
-        return bcmul((string) $value, $unit->squareMeterFactor(), 4);
+        /** @var numeric-string $amount */
+        $amount = (string) $value;
+        /** @var numeric-string $factor */
+        $factor = $unit->squareMeterFactor();
+
+        return bcmul($amount, $factor, 4);
     }
 }
