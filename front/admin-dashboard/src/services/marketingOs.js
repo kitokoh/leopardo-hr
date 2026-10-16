@@ -103,13 +103,46 @@ export function updatePublicationStatus(companyId, publicationId, payload) {
   return api.patch(`${base(companyId)}/publications/${publicationId}/status`, payload)
 }
 
-export function confirmPublicationPublished(companyId, publicationId, { publishedUrl, platformAccount = null, stats = null }) {
+export function confirmPublicationPublished(companyId, publicationId, { publishedUrl, platformAccount = null, stats = null, externalPostId = null }) {
   return updatePublicationStatus(companyId, publicationId, {
     action: 'confirm_published',
     published_url: publishedUrl,
     platform_account: platformAccount,
     stats,
+    // #8530 — identifiant du post cote plateforme : sans lui, l'API de
+    // statistiques ne peut pas etre interrogee.
+    external_post_id: externalPostId,
   })
+}
+
+/**
+ * #8530 — interroge l'API de la plateforme et enregistre les indicateurs
+ * REELLEMENT renvoyes. La reponse porte `meta.measured` : `false` signifie
+ * que la donnee est indisponible (l'UI doit alors l'afficher comme telle,
+ * jamais un chiffre invente).
+ */
+export function refreshPublicationStats(companyId, publicationId) {
+  return api.post(`${base(companyId)}/publications/${publicationId}/stats/refresh`)
+}
+
+// ── H. Visibilite SEO / SEA / AEO / GEO (#8531) ────────────────────────────
+export function listVisibilityObjectives(companyId, params = {}) {
+  return api.get(`${base(companyId)}/visibility-objectives`, { params })
+}
+
+export function createVisibilityObjective(companyId, payload) {
+  return api.post(`${base(companyId)}/visibility-objectives`, payload)
+}
+
+// ── F. Capacites de publication par plateforme (#8532) ─────────────────────
+/**
+ * Matrice des plateformes et de leurs capacites REELLES : quelles plateformes
+ * autorisent une publication directe, et pour les autres, le motif pour lequel
+ * le mode assiste s'applique. L'UI ne doit jamais annoncer une automatisation
+ * qui n'existe pas.
+ */
+export function fetchPublishingCapabilities(companyId) {
+  return api.get(`${base(companyId)}/publishing-capabilities`)
 }
 
 /**
