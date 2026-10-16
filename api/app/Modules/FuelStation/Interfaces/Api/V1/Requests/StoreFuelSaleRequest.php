@@ -55,6 +55,16 @@ class StoreFuelSaleRequest extends FormRequest
                     fn (Builder $query): Builder => $query->where('company_id', $actor?->company_id)
                 ),
             ],
+            // Fidélité (FUEL-016) : la vente peut être rattachée à un client du
+            // même tenant. Sans cette règle, `customer_id` était silencieusement
+            // abandonné par `create()` ($fillable) → aucun point de fidélité.
+            'customer_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('fuel_customers', 'id')->where(
+                    fn (Builder $query): Builder => $query->where('company_id', $actor?->company_id)
+                ),
+            ],
             'product' => ['required', 'string', 'max:80'],
             'quantity' => ['required', 'numeric', 'gt:0', 'max:999999999999.999'],
             'unit_price' => ['required', 'numeric', 'min:0', 'max:999999999999.99'],
