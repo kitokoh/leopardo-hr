@@ -1,3 +1,18 @@
+> **MAJ 2026-10-16 — Mission vitrine : constellation, fiche solution, CTA, cartes géo (LEO-VIT-01→05).**
+> Surface **web vitrine (front/web)** : constellation = solutions métier réelles
+> (`modules/vitrine/data/solution-catalog.ts`, source unique réutilisant `PACK_PAGES`),
+> fiche interactive au clic (`hero/SolutionCard.tsx`, `role="dialog"` + focus piégé),
+> CTA sous la constellation (`hero/HeroSolutionsCTA.tsx`), cartes géographiques animées
+> (`hero/GeoBackdrop.tsx` + `data/geo/map-paths.ts`, `prefers-reduced-motion` respecté),
+> entrée « Trade » retirée de la navbar et repositionnée dans `/packs` (route `/trade`
+> inchangée). Scénarios Jest : `hero/__tests__/mission-leopardo.test.tsx` (fiche, CTA,
+> cartes, non-régression navbar) ; suite vitrine complète 55 suites / 638 tests.
+> Surface **admin-dashboard** : correction d'une sur-promesse i18n — la clé
+> `packsTravelDesc` (×4 locales) annonçait des « commissions » pour l'agence de voyage
+> alors que le module `TravelAgency` n'en porte pas (le modèle `Commission` appartient au
+> programme partenaire) ; remplacée par « paiements / règlements des ventes suivis ».
+> Source corrigée dans `shared/i18n/locales/*.json` puis propagée par `sync-web.js`
+> (catalogues web + admin + `versions.json`), conformément à #4805.
 > **MAJ 2026-10-13 — #8447 + #8451, « Mon Logiciel » et checklists par profil métier.**
 > Surface **web (front/web)** : nouvelle route protégée `/mon-logiciel` (hub
 > d'installation des apps du tenant, filtrée par solutions activées via
