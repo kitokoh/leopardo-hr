@@ -15,12 +15,12 @@ use App\Modules\Marketing\Infrastructure\Services\MarketingOsDashboardService;
 use App\Modules\Marketing\Infrastructure\Services\MarketingPublicationModeResolver;
 use App\Modules\Marketing\Infrastructure\Services\MarketingPublicationStatsService;
 use App\Modules\Marketing\Infrastructure\Services\PlatformPublishingCapability;
-use App\Modules\Marketing\Infrastructure\Services\Stats\AyrshareAnalyticsProvider;
-use App\Modules\Marketing\Infrastructure\Services\Stats\PlatformStatsProviderResolver;
 use App\Modules\Marketing\Infrastructure\Services\Publishers\LinkedInPublisher;
 use App\Modules\Marketing\Infrastructure\Services\Publishers\MetaPublisher;
 use App\Modules\Marketing\Infrastructure\Services\Publishers\SocialPublisherResolver;
 use App\Modules\Marketing\Infrastructure\Services\Publishers\TwitterPublisher;
+use App\Modules\Marketing\Infrastructure\Services\Stats\AyrshareAnalyticsProvider;
+use App\Modules\Marketing\Infrastructure\Services\Stats\PlatformStatsProviderResolver;
 use Illuminate\Support\ServiceProvider;
 
 class MarketingServiceProvider extends ServiceProvider

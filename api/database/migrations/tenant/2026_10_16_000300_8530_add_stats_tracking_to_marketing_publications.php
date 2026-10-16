@@ -60,7 +60,7 @@ return new class extends Migration
         }
 
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement("COMMENT ON COLUMN marketing_publications.external_post_id IS 'Identifiant du post cote plateforme/agregateur, requis pour interroger l API de statistiques (#8530).';") ;
+            DB::statement("COMMENT ON COLUMN marketing_publications.external_post_id IS 'Identifiant du post cote plateforme/agregateur, requis pour interroger l API de statistiques (#8530).';");
             DB::statement("COMMENT ON COLUMN marketing_publications.stats_fetched_at IS 'Date de la derniere tentative de recuperation des statistiques (#8530) — distingue jamais interroge de interroge sans donnee.';");
             DB::statement("COMMENT ON COLUMN marketing_publications.stats_error IS 'Motif de l indisponibilite des statistiques (#8530) : plateforme sans API, connecteur absent ou erreur API.';");
         }

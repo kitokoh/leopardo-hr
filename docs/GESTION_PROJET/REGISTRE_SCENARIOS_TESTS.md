@@ -1286,6 +1286,31 @@ restent les gates applicables.
 - **Surface mobile** : aucun contrat mobile modifié — aucun scénario mobile
   nouveau requis.
 
+## Mise à jour 2026-10-16 — Marketing OS, lots #8530–#8533 : statistiques réelles, visibilité, capacités de publication, IA assistée (PR #8574)
+
+- **Surface API HTTP** : extension du groupe Super Admin `platform/marketing-os/*`
+  (+ alias `admin/marketing-os/*`), mêmes gardes `auth:super_admin_api` +
+  `platform.permission:marketing.manage`. Nouvelles routes — rafraîchissement des
+  statistiques d'une publication (`POST …/publications/{id}/stats/refresh`), objectifs
+  de visibilité SEO/SEA/AEO/GEO (`GET`/`POST …/visibility-objectives`), capacités de
+  publication par plateforme (`GET …/publishing-capabilities`) et brief de production
+  assisté par IA (`POST /v1/marketing/ai/suggest-production-brief`). Scénarios
+  automatisés : `MarketingPublicationStatsTest` (statistiques issues d'un appel API
+  **réel**, jamais inventées ; `unavailable` sans donnée ; mesure antérieure jamais
+  détruite par un échec), `MarketingVisibilityObjectiveTest` (contenu ↔ objectif,
+  provenance `measured`/`estimated`/`unavailable` fail-closed, aucune visibilité
+  garantie, aucun système parallèle au centre de visibilité existant),
+  `MarketingPublishingCapabilityTest` (source de vérité « direct vs assisté »,
+  YouTube/TikTok déclarés sans connecteur, Profile Key **chiffrée**, échec alimentant
+  `error_message` + `attempt_history` sans écraser l'historique) et
+  `MarketingAiProductionBriefTest` (`media_generated` toujours `false`, aucun statut de
+  publication modifié par un appel IA).
+- **Surface web (front/admin-dashboard)** : `front/admin-dashboard/src/services/marketingOs.js`
+  étendu aux nouveaux endpoints (statistiques, visibilité, capacités) — clés i18n ×4
+  inchangées côté service.
+- **Surface mobile** : aucun contrat mobile modifié — aucun scénario mobile
+  nouveau requis.
+
 ## Mise à jour 2026-10-16 — KDS/POS branchés sur la file hors-ligne (PR #8535, issues #8493, #8494)
 
 - **Surface API** : aucun changement backend — aucun scénario API nouveau requis.

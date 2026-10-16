@@ -28,7 +28,7 @@ interface PlatformStatsProviderInterface
      * Interroge l'API et retourne les indicateurs disponibles.
      *
      * @return array<string, int|float>|null `null` = la plateforme ne fournit
-     *                                      pas la donnee (jamais une estimation)
+     *                                       pas la donnee (jamais une estimation)
      *
      * @throws \RuntimeException en cas d'echec technique de l'appel API
      */
