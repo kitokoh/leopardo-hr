@@ -1,3 +1,18 @@
+> **MAJ 2026-10-17 — #8597 (BOS-045), fiches applications du centre « Mon Logiciel ».**
+> Surface **web (front/web)** : le hub `/mon-logiciel` expose désormais, pour
+> chaque application, une fiche complète (rôle, profils concernés,
+> fonctionnalités principales, prérequis, méthode de connexion, permissions
+> nécessaires, étapes de mise en service) et un **statut de disponibilité
+> dérivé des cibles réelles** (`softwareAvailability()` : `published` /
+> `pilot` / `not_distributed`) — jamais déclaré à la main, donc jamais menteur.
+> Fiche dépliable accessible (`aria-expanded` / `aria-controls`), texte 100 %
+> i18n. Scénarios Jest : `lib/__tests__/software-catalog.test.ts` (10 cas —
+> dont statut dérivé, complétude des fiches, absence de cible cliquable pour
+> une app non distribuée) et `mon-logiciel/__tests__/page.test.tsx` (6 cas —
+> dont rendu de la fiche et badge de disponibilité). Libellés fr/en/ar/tr
+> ajoutés dans `shared/i18n/locales/*.json` puis propagés par
+> `shared/i18n/sync/*` (web, admin, `api/lang`, ARB mobile) — parité #7089
+> vérifiée.
 > **MAJ 2026-10-16 — Mission vitrine : constellation, fiche solution, CTA, cartes géo (LEO-VIT-01→05).**
 > Surface **web vitrine (front/web)** : constellation = solutions métier réelles
 > (`modules/vitrine/data/solution-catalog.ts`, source unique réutilisant `PACK_PAGES`),
