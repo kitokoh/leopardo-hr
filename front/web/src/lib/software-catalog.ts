@@ -47,6 +47,33 @@ export type SoftwareTarget = {
   href?: string;
 };
 
+/**
+ * #8597 (BOS-045) — statut de disponibilité RÉEL d'une application, dérivé de
+ * ses cibles de distribution (jamais déclaré à la main, donc jamais menteur) :
+ *  - `published`       : au moins une cible `link` (surface web ou store) ;
+ *  - `pilot`           : distribution sur demande d'accès pilote ;
+ *  - `not_distributed` : aucun canal public — l'app est en préparation.
+ */
+export type SoftwareAvailability = 'published' | 'pilot' | 'not_distributed';
+
+/**
+ * Sections de la fiche application (Partie 6.1 de la mission Business OS).
+ * Le TEXTE vit dans les catalogues i18n sous
+ * `software.apps.<slug>.details.<clé>` — le catalogue ne duplique jamais la
+ * copie, il déclare seulement quelles sections existent.
+ */
+export const SOFTWARE_DETAIL_KEYS = [
+  'role',
+  'audiences',
+  'features',
+  'prerequisites',
+  'connection',
+  'permissions',
+  'setup',
+] as const;
+
+export type SoftwareDetailKey = (typeof SOFTWARE_DETAIL_KEYS)[number];
+
 export type SoftwareApp = {
   /** Identifiant stable — utilisé pour les clés i18n `software.apps.<slug>.*`. */
   slug: string;
@@ -58,7 +85,24 @@ export type SoftwareApp = {
   /** Badge « hors-ligne » : l'app continue de fonctionner sans internet. */
   offline: boolean;
   targets: SoftwareTarget[];
+  /** Sections de la fiche application, dans l'ordre d'affichage. */
+  details: SoftwareDetailKey[];
 };
+
+/**
+ * Statut de disponibilité dérivé des cibles réelles — source unique de vérité
+ * pour le badge de la fiche (règle d'honnêteté #6697 : jamais de faux
+ * « Installer »).
+ */
+export function softwareAvailability(app: SoftwareApp): SoftwareAvailability {
+  if (app.targets.some((target) => target.kind === 'link')) {
+    return 'published';
+  }
+  if (app.targets.some((target) => target.kind === 'pilot')) {
+    return 'pilot';
+  }
+  return 'not_distributed';
+}
 
 /** Cibles mobiles factorisées sur le mécanisme vitrine (stores → Firebase → repli). */
 function mobileTargets(slug: MobileAppSlug): SoftwareTarget[] {
@@ -85,7 +129,7 @@ function nativeSoon(): SoftwareTarget[] {
   ];
 }
 
-export const TENANT_SOFTWARE: SoftwareApp[] = [
+const SOFTWARE_APPS: Omit<SoftwareApp, 'details'>[] = [
   // ── Transverse (toute entreprise) ────────────────────────────────────────
   {
     slug: 'manager',
@@ -244,6 +288,16 @@ export const TENANT_SOFTWARE: SoftwareApp[] = [
     targets: nativeSoon(),
   },
 ];
+
+/**
+ * Catalogue « Mon Logiciel » : chaque app reçoit la fiche complète (#8597).
+ * Les sections sont identiques pour toutes les apps aujourd'hui ; les rendre
+ * explicites par app permet d'en retirer une sans toucher au rendu.
+ */
+export const TENANT_SOFTWARE: SoftwareApp[] = SOFTWARE_APPS.map((app) => ({
+  ...app,
+  details: [...SOFTWARE_DETAIL_KEYS],
+}));
 
 /**
  * Apps visibles pour le tenant : filtrage STRICT par modules activés
