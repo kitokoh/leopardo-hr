@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus;
+use App\Modules\TravelAgency\Domain\Enums\TravelVehiclePositionSource;
 use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelVehicleFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,6 +29,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $seat_capacity
  * @property \App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus $status
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property float|null $latitude
+ * @property float|null $longitude
+ * @property \App\Modules\TravelAgency\Domain\Enums\TravelVehiclePositionSource|null $position_source
+ * @property \Illuminate\Support\Carbon|null $position_recorded_at
  */
 class TravelVehicle extends Model
 {
@@ -43,11 +48,19 @@ class TravelVehicle extends Model
         'carrier_id',
         'status',
         'notes',
+        'latitude',
+        'longitude',
+        'position_source',
+        'position_recorded_at',
     ];
 
     protected $casts = [
         'seat_capacity' => 'integer',
         'status' => TravelRecordStatus::class,
+        'latitude' => 'float',
+        'longitude' => 'float',
+        'position_source' => TravelVehiclePositionSource::class,
+        'position_recorded_at' => 'datetime',
     ];
 
     /**

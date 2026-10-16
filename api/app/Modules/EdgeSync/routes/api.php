@@ -69,6 +69,9 @@ Route::prefix('api/v1/edge')
         Route::post('/', [EdgeNodeController::class, 'store']);
         Route::get('/{nodeId}', [EdgeNodeController::class, 'show']);
         Route::post('/{nodeId}/sync', [EdgeNodeController::class, 'sync']);
+        // #8499 (I-12) : révocation d'un appareil par le tenant lui-même
+        // (portée limitée à sa company — voir EdgeNodeController::revoke).
+        Route::delete('/{nodeId}', [EdgeNodeController::class, 'revoke']);
         // #3319 : émission de licence réservée aux managers (api.manager).
         Route::post('/{nodeId}/license', [EdgeNodeController::class, 'issueLicense'])->middleware('api.manager');
     });

@@ -53,6 +53,9 @@ final class TravelTicketPdfGenerator
             // Code de contrôle EN CLAIR (#7394) — imprimé sur le billet et
             // accepté par l'API (secret partagé du billet).
             'validationCode' => $ticket->plainValidationCode(),
+            // #8538 — QR code scannable (charge utile sans PII), inliné en
+            // `data:` URI pour être rendu par dompdf sans fichier temporaire.
+            'qrCodeDataUri' => app(TravelTicketQrCode::class)->dataUri($ticket),
         ];
     }
 }

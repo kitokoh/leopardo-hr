@@ -2326,3 +2326,32 @@ Annulation exposée aux acteurs ops (M-21, règles §5.2 par rôle) : `POST /api
 | acteur non autorisé (chauffeur sur course d'autrui) | 403/404 uniforme |
 
 Couverture : `api/tests/Feature/Vtc/VtcRideCancellationApiTest.php` (10 cas).
+
+## Mise à jour 2026-10-16 — BC-24 TRAVEL OS : QR du billet, vérification d'authenticité, position véhicule (PR #8541, issues #8538, #8539, #8540)
+
+Deux routes ajoutées à `api/routes/modules/travelagency.php` (groupe authentifié, middleware tenant).
+
+`POST /api/v1/travel/tickets/verify` — **vérification** d'un billet, en LECTURE SEULE et distincte de la consommation (`POST /travel/tickets/{travelTicket}/check-in`) : vérifier ne rend jamais le billet inutilisable. Accepte le contenu scanné du QR (`GV1|<reference>|<code de contrôle>`) ou une saisie manuelle (référence + code) si la caméra ne fonctionne pas. Permission `travel.checkin` (`TravelTicketPolicy::verifyAny`).
+
+| Cas | Attendu |
+|---|---|
+| billet `issued`, code valide, opérateur habilité | 200, `status: valid`, trajet/départ/siège, `passenger.full_name` |
+| billet `checked_in` | 200, `status: already_used` |
+| billet `void` | 200, `status: void` |
+| billet dont `valid_until` est passé | 200, `status: expired` |
+| code de contrôle invalide | 404 (réponse **identique** à une référence inexistante — aucune fuite d'information) |
+| référence d'un autre tenant | 404 (jamais 403) |
+| employé sans `travel.checkin` | 403 |
+| après vérification | le billet reste `issued`, `checked_in_at` null (non-consommation) |
+
+`POST /api/v1/travel/vehicles/{travelVehicle}/position` — ingestion de la **dernière position connue** d'un véhicule par un dispositif autorisé. Permission `travel.manage`. La source est obligatoire et whitelistée (`gps` | `app` | `estimated`) : le serveur ne déduit ni n'invente jamais de coordonnées.
+
+| Cas | Attendu |
+|---|---|
+| véhicule sans transmission | `position: null` (aucune coordonnée inventée) |
+| `source: gps` | 200, `position.source: gps`, `is_measured: true`, `position_recorded_at` renseigné |
+| `source: estimated` | 200, `is_measured: false` (jamais présentée comme une position GPS) |
+| `source` inconnue | 422 |
+| véhicule d'un autre tenant | 404 |
+
+Couverture : `api/tests/Feature/Travel/TravelOsQrGpsConcurrencyTest.php` (20 cas, 55 assertions) — inclut la concurrence du check-in (#8539 : statut relu sous `lockForUpdate`, un seul contrôle gagne, opérateur et horodatage du premier conservés, événement outbox `travel.ticket.checked_in.v1` émis une seule fois) et le décodage du QR par un décodeur indépendant (OpenCV `QRCodeDetector`).

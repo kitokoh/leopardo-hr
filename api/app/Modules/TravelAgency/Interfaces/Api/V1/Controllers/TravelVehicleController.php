@@ -6,7 +6,10 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\TravelAgency\Application\Actions\RecordVehiclePositionAction;
+use App\Modules\TravelAgency\Domain\Enums\TravelVehiclePositionSource;
 use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RecordTravelVehiclePositionRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelVehicleRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelVehicleRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelVehicleResource;
@@ -99,5 +102,36 @@ class TravelVehicleController extends Controller
         $travelVehicle->delete();
 
         return new JsonResponse(null, 204);
+    }
+
+    /**
+     * #8540 — ingestion de la dernière position connue d'un véhicule.
+     *
+     * Réservé à `travel.manage` (dispositif autorisé) ; cross-tenant → 404.
+     * Aucune position n'est déduite ni inventée : le corps porte la source.
+     */
+    public function recordPosition(
+        RecordTravelVehiclePositionRequest $request,
+        TravelVehicle $travelVehicle,
+    ): JsonResponse {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $travelVehicle->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('update', $travelVehicle)) {
+            abort(403);
+        }
+
+        $vehicle = app(RecordVehiclePositionAction::class)->execute(
+            $travelVehicle,
+            (float) $request->validated('latitude'),
+            (float) $request->validated('longitude'),
+            TravelVehiclePositionSource::from((string) $request->validated('source')),
+        );
+
+        return (new TravelVehicleResource($vehicle))->response();
     }
 }

@@ -69,6 +69,118 @@ class MarketingAiService
     }
 
     /**
+     * #8533 — brief de production assiste : script, description, legende,
+     * hashtags et prompts de generation.
+     *
+     * L'IA PROPOSE, elle ne PRODUIT pas : le retour est un ensemble de textes
+     * destines a la fiche de production, jamais un media. Aucun appel a un
+     * outil de generation video/image n'est effectue ici, et rien n'est
+     * persiste : l'appelant decide de ce qu'il conserve, et un humain valide.
+     *
+     * @param  array<string, mixed>  $brief
+     * @return array{
+     *     script: string,
+     *     description: string,
+     *     caption: string,
+     *     hashtags: list<string>,
+     *     video_prompt: string,
+     *     image_prompts: list<string>,
+     *     media_generated: false
+     * }
+     */
+    public function suggestProductionBrief(array $brief, string $format, string $locale): array
+    {
+        $briefJson = json_encode($brief, JSON_UNESCAPED_UNICODE);
+
+        $system = 'Tu es un directeur de creation marketing. A partir du brief JSON fourni, '
+            .'tu prepares une fiche de production pour un format "'.$format.'". '
+            .'Tu reponds UNIQUEMENT par un objet JSON valide, sans texte autour, avec exactement '
+            .'ces cles : "script" (texte de narration ou de tournage), "description" (description '
+            .'longue pour la plateforme), "caption" (legende courte), "hashtags" (tableau de '
+            .'chaines, sans le caractere #), "video_prompt" (prompt destine a un outil de '
+            .'generation video), "image_prompts" (tableau de prompts destines a un outil de '
+            .'generation d images). '
+            .'Tu ne pretends JAMAIS avoir produit une video ou une image : tu rediges des '
+            .'instructions de production. Langue de redaction : '.$locale.'.';
+
+        $raw = $this->complete($system, (string) $briefJson);
+
+        return $this->normalizeProductionBrief($raw);
+    }
+
+    /**
+     * Normalise la reponse du LLM en une structure stable.
+     *
+     * Le modele peut encadrer son JSON de texte ou de balises Markdown : on
+     * isole le premier objet JSON. Si la reponse est inexploitable, on leve —
+     * l'appelant renvoie alors 503, jamais une fiche inventee.
+     *
+     * @return array{
+     *     script: string,
+     *     description: string,
+     *     caption: string,
+     *     hashtags: list<string>,
+     *     video_prompt: string,
+     *     image_prompts: list<string>,
+     *     media_generated: false
+     * }
+     */
+    private function normalizeProductionBrief(string $raw): array
+    {
+        $start = strpos($raw, '{');
+        $end = strrpos($raw, '}');
+
+        if ($start === false || $end === false || $end <= $start) {
+            throw new RuntimeException('IA marketing : reponse de brief de production illisible.');
+        }
+
+        /** @var array<string, mixed>|null $decoded */
+        $decoded = json_decode(substr($raw, $start, $end - $start + 1), true);
+
+        if (! is_array($decoded)) {
+            throw new RuntimeException('IA marketing : reponse de brief de production invalide.');
+        }
+
+        return [
+            'script' => $this->stringOrEmpty($decoded['script'] ?? null),
+            'description' => $this->stringOrEmpty($decoded['description'] ?? null),
+            'caption' => $this->stringOrEmpty($decoded['caption'] ?? null),
+            'hashtags' => $this->stringList($decoded['hashtags'] ?? null),
+            'video_prompt' => $this->stringOrEmpty($decoded['video_prompt'] ?? null),
+            'image_prompts' => $this->stringList($decoded['image_prompts'] ?? null),
+            // Marqueur explicite : AUCUN media n'a ete fabrique par cet appel.
+            // L'interface ne peut donc pas presenter une proposition comme un
+            // livrable produit (brief §D).
+            'media_generated' => false,
+        ];
+    }
+
+    private function stringOrEmpty(mixed $value): string
+    {
+        return is_string($value) ? trim($value) : '';
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function stringList(mixed $value): array
+    {
+        if (! is_array($value)) {
+            return [];
+        }
+
+        $items = [];
+
+        foreach ($value as $item) {
+            if (is_string($item) && trim($item) !== '') {
+                $items[] = trim($item);
+            }
+        }
+
+        return $items;
+    }
+
+    /**
      * @return array{
      *     period: array{from: string, to: string},
      *     stats: array<string, mixed>,

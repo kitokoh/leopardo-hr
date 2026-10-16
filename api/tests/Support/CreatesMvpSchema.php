@@ -5031,6 +5031,25 @@ trait CreatesMvpSchema
             });
         }
 
+        // #8544 (TRAVEL-OS) — trace des mises a disposition du billet
+        // (emission + reimpressions). Parite stricte avec la migration tenant
+        // 2026_10_16_000002_8544 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('travel_ticket_print_events'))) {
+            Schema::create($this->moduleTable('travel_ticket_print_events'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('ticket_id');
+                $table->unsignedBigInteger('employee_id')->nullable();
+                $table->string('channel', 32)->default('api');
+                $table->unsignedInteger('reprint_number')->default(0);
+                $table->boolean('is_reprint')->default(false);
+                $table->timestamps();
+
+                $table->index(['company_id', 'ticket_id']);
+                $table->index(['company_id', 'created_at']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('travel_advert_bookings'))) {
             Schema::create($this->moduleTable('travel_advert_bookings'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
@@ -5537,6 +5556,18 @@ trait CreatesMvpSchema
         DB::reconnect($connection);
         DB::statement("SET search_path TO {$path}");
 
+        // Le schéma tenant peut manquer sur une base fraîche (jobs CI qui ne
+        // passent pas par `.github/actions/setup-backend-db`, ex. « Golden
+        // tests paie DZ » de payroll-ci.yml) : les tables tenant déclarées
+        // ci-dessous (`accounting_*`, `bank_*`, `payroll_payment_*`,
+        // `employee_attendance_preferences`, `marketing_*` de #8528) sont
+        // créées via `Schema::create('shared_tenants.<table>')` et échouaient
+        // en SQLSTATE 3F000 — soit « schema does not exist », soit « no schema
+        // has been selected to create in » quand le search_path n'a aucune
+        // entrée existante. Garde idempotente, même idiome que
+        // `loadPostgresFixtureDrops()` et `preparePostgresSchemas()`.
+        DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+
         if (! Schema::hasTable($this->tenantTable('accounting_chart_accounts'))) {
             Schema::create($this->tenantTable('accounting_chart_accounts'), function (Blueprint $table): void {
                 $table->id();
@@ -5881,6 +5912,42 @@ trait CreatesMvpSchema
                     ['company_id', 'product_code', 'unit_code', 'effective_from'],
                     'fuel_product_prices_resolution_idx'
                 );
+            });
+        }
+
+        // Marketing OS (#8531) — miroir de la migration tenant
+        // 2026_10_16_000400_8531_create_marketing_visibility_objectives_table.php.
+        // Garde de parité #5443 (Hygiene Guards) : toute table tenant récente
+        // doit être déclarée ici sous peine de « relation ... does not exist »
+        // dans les tests utilisant CreatesMvpSchema.
+        if (! Schema::hasTable($this->moduleTable('marketing_visibility_objectives'))) {
+            Schema::create($this->moduleTable('marketing_visibility_objectives'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id');
+                $table->unsignedBigInteger('campaign_id')->nullable();
+                $table->unsignedBigInteger('content_idea_id')->nullable();
+                $table->unsignedBigInteger('marketing_asset_id')->nullable();
+                $table->unsignedBigInteger('marketing_publication_id')->nullable();
+                $table->string('channel', 16);
+                $table->string('keyword', 191)->nullable();
+                $table->string('search_intent', 32)->nullable();
+                $table->string('destination_url', 512)->nullable();
+                $table->string('ad_campaign_ref', 191)->nullable();
+                $table->string('locale', 8)->default('fr');
+                $table->string('sector', 64)->nullable();
+                $table->jsonb('questions_answered')->nullable();
+                $table->jsonb('metrics')->nullable();
+                $table->string('metrics_source', 16)->default('unavailable');
+                $table->text('metrics_note')->nullable();
+                $table->text('notes')->nullable();
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+
+                $table->index(['company_id', 'channel']);
+                $table->index(['company_id', 'campaign_id']);
+                $table->index(['company_id', 'content_idea_id']);
+                $table->index(['company_id', 'marketing_asset_id']);
             });
         }
     }
