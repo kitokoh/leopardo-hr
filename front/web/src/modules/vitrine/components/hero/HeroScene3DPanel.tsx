@@ -1,84 +1,72 @@
 'use client';
 
 /**
- * HeroScene3DPanel — la constellation « Business OS » en PLEINE SCÈNE de héro
- * (page d'accueil, layout `stage` — vague 3, #8437/#8438).
+ * HeroScene3DPanel — la constellation « Business OS » en PLEINE SCÈNE de héros
+ * (page d'accueil, layout `stage`).
  *
- * Historique : #8389 plaçait la scène dans la colonne de droite du héro
- * (lisibilité du texte) ; #8403 l'agrandissait et l'alignait en haut. Retour
- * propriétaire 2026-10-11 (vague 3) : la constellation doit prendre TOUTE la
- * place, la phrase passe en toile de fond — ce panneau remplit désormais tout
- * le héro (`absolute inset-0` posé par `HeroSection`), et le héro devient une
- * scène nuit permanente, belle en mode jour comme en mode nuit.
+ * Mission Leopardo — la constellation présente les SOLUTIONS MÉTIER RÉELLES
+ * (et non les liens du menu) : les 10 étoiles viennent du catalogue unique
+ * `data/solution-catalog.ts` (qui réutilise `PACK_PAGES` pour les verticales
+ * déjà documentées). Les entrées redondantes avec la barre du haut
+ * (« Contact », « Pricing ») ont disparu : la constellation dit la plateforme
+ * commune + ses environnements métier, pas la navigation.
  *
- * #8390 : les modules orbitaux sont cliquables et mènent aux pages packs /
- * entrées clés. #8404 : chaque losange porte son étiquette + un indice
- * « cliquez pour explorer ». #8438 : 12 modules au lieu de 8 — la
- * constellation présente davantage de solutions.
+ * Le clic sur une étoile n'ouvre plus une page (#8390) : il affiche la fiche
+ * interactive (`SolutionCard`) — description, profils concernés,
+ * fonctionnalités incluses, CTA vers la page complète ou l'onboarding.
  *
  * Le conteneur épouse son parent : la scène (absolute inset-0) le remplit.
  */
 
+import { useCallback, useEffect, useState } from 'react';
 import { HeroScene3D } from './HeroScene3D';
+import { SolutionCard } from './SolutionCard';
 import { useVitrineLocale } from '../../lib/vitrine-locale';
+import { SOLUTIONS, solutionLabel, type SolutionId } from '../../data/solution-catalog';
 import { t } from '@/lib/i18n/locale-catalog';
 
 /**
- * Un href par module (ordre de création : anneau intérieur ×6 puis anneau
- * extérieur ×6). Anneau intérieur = les packs métiers offerts (la promesse
- * d'entrée, cagnottes incluses — #8438) ; anneau extérieur = les entrées clés
- * de la plateforme. Clavier/lecteur d'écran : ces mêmes liens sont dans la
- * navbar, les CTA et le hub /packs — le canvas n'est qu'un raccourci visuel.
+ * Identifiants des modules, dans l'ordre de création de la scène 3D :
+ * anneau INTÉRIEUR (5 premières entrées du catalogue — solutions offertes en
+ * pack) puis anneau EXTÉRIEUR (5 suivantes — autres environnements + socle).
+ * Voir `HeroBusinessOS3D` (`MODULES_PER_RING = [5, 5]`).
  */
-const MODULE_LINKS: string[] = [
-  // Anneau intérieur — packs métiers offerts + hub
-  '/restaurateur',
-  '/packs/station-service',
-  '/packs/ecole',
-  '/packs/agence-de-voyage',
-  '/packs/cagnottes',
-  '/packs',
-  // Anneau extérieur — entrées plateforme
-  '/pricing',
-  '/demo',
-  '/alternatives',
-  '/contact',
-  '/careers',
-  '/signup',
-];
+const MODULE_IDS: readonly SolutionId[] = SOLUTIONS.map((solution) => solution.id);
 
-/**
- * #8404 — clé i18n du libellé de chaque module, dans le MÊME ordre que
- * `MODULE_LINKS`. Les noms de packs/entrées réutilisent les clés existantes
- * (`vitrine.nav.*`, source unique) ; « Cagnottes » et « Essai gratuit » sont
- * nouveaux (`vitrine.hero3d.*`, ×4 locales — #8438).
- */
-const MODULE_LABEL_KEYS: string[] = [
-  'vitrine.nav.packsRestaurant',
-  'vitrine.nav.packsFuel',
-  'vitrine.nav.packsEdu',
-  'vitrine.nav.packsTravel',
-  'vitrine.hero3d.cagnottes',
-  'vitrine.nav.packsHub',
-  'vitrine.nav.pricing',
-  'vitrine.hero3d.demo',
-  'vitrine.nav.comparer',
-  'vitrine.nav.contact',
-  'vitrine.nav.careers',
-  'vitrine.hero3d.freeTrial',
-];
+/** Destination de repli d'un module (accessible depuis la fiche). */
+export const MODULE_HREFS: readonly string[] = SOLUTIONS.map((solution) => solution.href);
 
 export function HeroScene3DPanel() {
   const { locale } = useVitrineLocale();
-  const moduleLabels = MODULE_LABEL_KEYS.map((key) => t(locale, key));
+  const [selected, setSelected] = useState<SolutionId | null>(null);
+  const moduleLabels = MODULE_IDS.map((id) => solutionLabel(id, locale));
+
+  const onSelectModule = useCallback((index: number) => {
+    const id = MODULE_IDS[index];
+    if (id) setSelected(id);
+  }, []);
+
+  const close = useCallback(() => setSelected(null), []);
+
+  // Échap referme la fiche (l'état vit ici ; `SolutionCard` gère en plus le
+  // piégeage du focus et la restitution du focus à l'étoile d'origine).
+  useEffect(() => {
+    if (!selected) return undefined;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setSelected(null);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [selected]);
 
   return (
     <div className="relative h-full w-full">
       <HeroScene3D
-        moduleLinks={MODULE_LINKS}
+        onSelectModule={onSelectModule}
         moduleLabels={moduleLabels}
         hint={t(locale, 'vitrine.hero3d.hint')}
       />
+      {selected && <SolutionCard solutionId={selected} locale={locale} onClose={close} />}
     </div>
   );
 }

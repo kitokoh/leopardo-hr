@@ -48,7 +48,6 @@
  */
 
 import { useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { MousePointerClick } from 'lucide-react';
 import {
   ACESFilmicToneMapping,
@@ -87,17 +86,17 @@ export interface HeroBusinessOS3DProps {
   /** Neutralise rotation continue et parallaxe (accessibilité). */
   reducedMotion?: boolean;
   /**
-   * #8390 — un href par module orbital (index = ordre de création) : le clic
-   * sur un module navigue vers sa page (packs en anneau intérieur, entrées
-   * clés de la plateforme en anneau extérieur). Le canvas devient alors
-   * cliquable (pointer-events actifs + curseur pointer au survol). À n'activer
-   * QUE quand la scène n'est PAS derrière du contenu (colonne dédiée du héro
-   * d'accueil) : en fond de page, un clic sur le contenu ne doit jamais être
-   * détourné par un module situé « derrière ».
+   * Mission Leopardo — un module orbital cliqué (index = ordre de création) :
+   * le parent reçoit cet INDEX (anneau intérieur ×5 puis anneau extérieur ×5)
+   * et affiche la fiche interactive de la solution (`SolutionCard`). Le canvas
+   * devient alors cliquable (pointer-events actifs + curseur pointer au
+   * survol). À ne fournir QUE quand le héros porte les solutions : en fond de
+   * page, un clic sur le contenu ne doit jamais être détourné par un module
+   * situé « derrière ».
    */
-  moduleLinks?: string[];
+  onSelectModule?: (index: number) => void;
   /**
-   * #8404 — un libellé par module orbital (même ordre que `moduleLinks`) :
+   * #8404 — un libellé par module orbital (même ordre que la scène) :
    * chaque losange porte son nom à l'écran — fini les modules anonymes dont
    * on ignore qu'ils sont cliquables ni où ils mènent.
    */
@@ -142,7 +141,8 @@ type ModuleNode = {
   baseScale: number;
   hoverT: number;
   pulse: number;
-  href?: string;
+  /** Index du module dans l'ordre de création (0 = 1er module d'anneau int.). */
+  index: number;
   labelEl?: HTMLDivElement;
 };
 
@@ -204,7 +204,7 @@ type ShootingStar = {
 
 export function HeroBusinessOS3D({
   reducedMotion = false,
-  moduleLinks,
+  onSelectModule,
   moduleLabels,
   hint,
   dimmed = false,
@@ -212,15 +212,13 @@ export function HeroBusinessOS3D({
   const hostRef = useRef<HTMLDivElement>(null);
   const reducedRef = useRef(reducedMotion);
   reducedRef.current = reducedMotion;
-  const router = useRouter();
-  const routerRef = useRef(router);
-  routerRef.current = router;
-  // Les liens/libellés sont figés au montage (la scène ne se reconstruit pas)
-  // — passage par ref pour garder l'effet en deps [] sans warning
+  // Le callback/libellés sont figés au montage (la scène ne se reconstruit
+  // pas) — passage par ref pour garder l'effet en deps [] sans warning
   // exhaustive-deps.
-  const linksRef = useRef(moduleLinks);
+  const onSelectRef = useRef(onSelectModule);
+  onSelectRef.current = onSelectModule;
   const labelsRef = useRef(moduleLabels);
-  const interactive = Boolean(moduleLinks && moduleLinks.length > 0);
+  const interactive = Boolean(onSelectModule);
   const interactiveRef = useRef(interactive);
 
   useEffect(() => {
@@ -351,7 +349,7 @@ export function HeroBusinessOS3D({
           baseScale: 1,
           hoverT: 0,
           pulse: 0,
-          href: linksRef.current?.[nodeIndex],
+          index: nodeIndex,
         });
         world.add(mesh);
       }
@@ -550,10 +548,11 @@ export function HeroBusinessOS3D({
     const onPointerDown = (): void => {
       if (!hovered) return;
       hovered.pulse = 1;
-      // #8390 — clic sur un module lié : navigation (locale conservée via la
-      // query courante, même règle que `withLocaleHref`).
-      if (hovered.href) {
-        routerRef.current.push(`${hovered.href}${window.location.search}`);
+      // Mission Leopardo — le clic n'ouvre plus directement une page : le
+      // parent affiche la fiche interactive de la solution (l'impulsion reste
+      // l'accusé de réception visuel du clic).
+      if (interactiveRef.current) {
+        onSelectRef.current?.(hovered.index);
       }
     };
 
@@ -729,7 +728,7 @@ export function HeroBusinessOS3D({
       hovered = nodes.find((n) => n.mesh === hit) ?? null;
       // Curseur pointer au survol d'un module cliquable (canvas interactif).
       if (interactiveRef.current) {
-        host.style.cursor = hovered?.href ? 'pointer' : '';
+        host.style.cursor = hovered ? 'pointer' : '';
       }
 
       // Étiquettes : projection écran à chaque image (#8404). La distance à
@@ -820,7 +819,7 @@ export function HeroBusinessOS3D({
       <div
         ref={hostRef}
         aria-hidden="true"
-        className={`absolute inset-0 overflow-hidden ${moduleLinks && moduleLinks.length > 0 ? '' : 'pointer-events-none'} ${dimmed ? 'opacity-[0.55]' : ''}`}
+        className={`absolute inset-0 overflow-hidden ${interactive ? '' : 'pointer-events-none'} ${dimmed ? 'opacity-[0.55]' : ''}`}
       />
       {/* #8404 — indice d'interaction : sans lui, personne ne devine que les
           losanges sont cliquables. Visuel uniquement (aria-hidden) : les

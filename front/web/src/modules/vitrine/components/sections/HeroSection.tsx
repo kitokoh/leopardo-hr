@@ -6,8 +6,9 @@ import { ArrowRight, Play, Sparkles } from 'lucide-react';
 import { useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { withLocaleHref } from '../../lib/locale-href';
-import { FranceConstellation } from '../hero/FranceConstellation';
+import { GeoBackdrop } from '../hero/GeoBackdrop';
 import { HeroScene3D } from '../hero/HeroScene3D';
+import { HeroSolutionsCTA } from '../hero/HeroSolutionsCTA';
 
 export interface HeroSectionProps {
   headline: string;
@@ -117,14 +118,13 @@ export function HeroSection({
             pas les .css, cf. note PA2-I18N-014 en tête de globals.css) */}
         <div className="hero-stage-grid absolute inset-0 opacity-[0.05]" />
 
-        {/* #8461 (vague 4) — la France en constellation, un plan derrière la
-            scène 3D : contour de l'Hexagone + villes-nœuds reliés, même
-            langage visuel que la constellation Business OS. Placée AVANT la
-            phrase (z-0) et le canvas (z-10) : elle n'écrase ni le texte ni
-            la 3D. Décorative, jamais cliquable, dérive lente en CSS. */}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
-          <FranceConstellation className="france-constellation-drift h-[92vmin] w-[92vmin] shrink-0 translate-y-[4vh] opacity-55 sm:h-[110vmin] sm:w-[110vmin] sm:translate-y-[7vh] lg:h-[118vmin] lg:w-[118vmin] lg:opacity-70" />
-        </div>
+        {/* Mission Leopardo — les cartes géographiques du fond (France →
+            Algérie → Turquie → Tchad → Afrique) remplacent la France figée :
+            la première carte n'est plus un décor en dur, les suivantes
+            apparaissent en fondu croisé. Un plan DERRIÈRE la phrase (z-0) et
+            le canvas (z-10) : décoratif, jamais cliquable, rotation neutralisée
+            quand l'utilisateur demande à réduire les animations. */}
+        <GeoBackdrop />
 
         {/* Phrase en toile de fond (z-0) — jamais cliquable, jamais estompée.
             Sur GRAND écran : centrée avec padding bas qui la hisse dans le
@@ -156,12 +156,14 @@ export function HeroSection({
         {/* #8417 — le bloc d'actions n'est rendu QUE si l'appelant en fournit
             (la page d'accueil n'en fournit plus : héro = phrase + 3D seuls) ;
             le wrapper vide n'occupe plus l'écran dans ce cas. */}
-        {(ctaPrimary || ctaSecondary || ctaReassurance || quickTrialForm) && (
         <motion.div
           style={animated ? { y, opacity, scale } : {}}
           className="dark hero-stage-cta-tall relative z-20 flex min-h-[100dvh] flex-col items-center justify-end px-4 pb-24 sm:px-6"
         >
           <div className="flex w-full max-w-3xl flex-col items-center gap-3 sm:gap-4">
+            {/* Mission Leopardo — CTA principal sous la constellation, visible
+                sans détourner l'attention (voir HeroSolutionsCTA). */}
+            <HeroSolutionsCTA />
             {(ctaPrimary || ctaSecondary) && (
               <motion.div
                 initial={animated ? { y: 20 } : {}}
@@ -210,7 +212,6 @@ export function HeroSection({
             {quickTrialForm}
           </div>
         </motion.div>
-        )}
 
         {/* Transition douce vers la section suivante : la nuit s'ouvre sur
             le thème courant de la page (blanc en jour, ardoise en nuit). */}
