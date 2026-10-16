@@ -44,6 +44,7 @@ use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CardPa
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CashPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\MobileMoneyPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\ReceivingService;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDiscoverableProvider;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDemoSeederService;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxConsumerRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
@@ -71,6 +72,9 @@ class RestaurantManagerServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        // SUPERAPP-P0 — la verticale expose ses etablissements PUBLICS a la
+        // decouverte unifiee (`/public/discover`) via le contrat partage.
+        $this->app->tag([RestaurantDiscoverableProvider::class], 'public.discoverable');
         // BOS-014 (#8201) — le manifest (contrat Core v2) est enregistré au
         // catalogue central des solutions (clé d'allowlist
         // `restaurantmanager`) : la verticale devient activable via

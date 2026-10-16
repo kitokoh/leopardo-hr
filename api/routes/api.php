@@ -59,6 +59,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureCon
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyRequestController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicDiscoveryController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCrmPipelineController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformEmailTemplateController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformFeatureKillSwitchController;
@@ -347,6 +348,14 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/public/restaurant/kiosk/orders', [RestaurantKioskController::class, 'storeOrder']);
         Route::get('/public/restaurant/kiosk/orders/{reference}', [RestaurantKioskController::class, 'track']);
     });
+
+    // SUPERAPP-P0 — decouverte publique cross-verticale (Leopardo.com) :
+    // surface NEUTRE qui agrege les entites publiques de PLUSIEURS verticales
+    // (restaurants, hebergements, vitrines) via les providers tagues
+    // `public.discoverable`. Route isolee SANS auth ni middleware tenant
+    // (patron BC-27/BC-28) ; chaque entite reste soumise a sa propre garde
+    // fail-closed (is_public, statut societe, feature verticale).
+    Route::middleware(['throttle:shop-public'])->get('/public/discover', [PublicDiscoveryController::class, 'index']);
 
     Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
         Route::get('/auth/me', [AuthController::class, 'me']);

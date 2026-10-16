@@ -1,0 +1,57 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Shared\Contracts\Discovery;
+
+/**
+ * SUPERAPP-P0 — Contrat partagé de la découverte publique cross-verticale.
+ *
+ * Patron `App\Shared\Contracts\Catalog\PublishedProductsProvider` : chaque
+ * verticale expose SES entités DÉJÀ publiques via ce contrat, et l'agrégateur
+ * `App\Shared\Discovery\PublicDiscoveryService` compose une surface unique
+ * `GET /api/v1/public/discover` — sans que le service ne connaisse aucune
+ * verticale (garde d'isolation #5584 : aucune dépendance Shared -> Modules).
+ *
+ * Invariants (non négociables) :
+ *  - fail-closed : l'implémentation n'expose QUE des entités explicitement
+ *    publiées (`is_public=true`/`status=published`), d'une société non
+ *    `suspended`/`expired`, dont la feature verticale est active ;
+ *  - DTO public STRICT : jamais d'`id` interne, de `company_id`, de stock, de
+ *    marge ni de `meta` — le `slug` EST l'identifiant public ;
+ *  - aucune écriture, aucune nouvelle table : lecture seule des données
+ *    publiques existantes.
+ *
+ * L'implémentation est fournie par le module de la verticale et taguée
+ * `public.discoverable` dans son ServiceProvider (inversion de dépendance) ;
+ * ce contrat ne référence jamais `App\Modules\*`.
+ */
+interface PublicDiscoverableProvider
+{
+    /**
+     * Type canonique des entités retournées par ce provider (ex. `restaurant`,
+     * `hospitality_property`, `showcase`). Sert de valeur à `?type=` et de
+     * discriminant `type` dans chaque item public.
+     */
+    public function type(): string;
+
+    /**
+     * Entités PUBLIQUES de la verticale correspondant aux filtres.
+     *
+     * Clés de filtre reconnues (toutes optionnelles) :
+     *   - `q`          : recherche texte (nom / description publique) ;
+     *   - `city`       : filtre ville (insensible à la casse en PostgreSQL) ;
+     *   - `limit`      : borne dure du nombre de lignes remontées par ce
+     *                    provider (l'agrégateur applique ensuite page/taille).
+     *
+     * Chaque item est un tableau public minimal :
+     *   string  type, string slug, string name,
+     *   ?string category, ?string city, ?string country,
+     *   ?string description, ?string image_url,
+     *   ?float  latitude, ?float longitude, string url.
+     *
+     * @param  array<string, mixed>  $filters
+     * @return list<array<string, mixed>> liste vide si la verticale est absente/inactive (dépendance optionnelle)
+     */
+    public function search(array $filters): array;
+}

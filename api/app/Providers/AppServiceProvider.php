@@ -18,6 +18,8 @@ use App\Core\Notifications\Contracts\InAppNotifier;
 use App\Core\Privacy\Infrastructure\Services\PiiRegistry;
 use App\Core\Tenant\TenantManager;
 use App\Modules\Billing\Domain\Enums\PlanCode;
+use App\Shared\Contracts\Geo\GeoServiceContract;
+use App\Shared\Discovery\PublicDiscoveryService;
 use App\Modules\HR\Infrastructure\Services\PiiLifecycleService;
 use App\Modules\Notification\Infrastructure\Services\InAppNotifierAdapter;
 use App\Modules\Payroll\Infrastructure\Services\IslamicCalendarService;
@@ -46,6 +48,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // SUPERAPP-P0 — decouverte publique cross-verticale : agregateur de
+        // lecture seule (aucune table, aucune migration). Chaque verticale
+        // fournit son provider tague `public.discoverable` depuis son propre
+        // ServiceProvider (inversion de dependance, garde d'isolation #5584).
+        $this->app->singleton(PublicDiscoveryService::class, function ($app): PublicDiscoveryService {
+            return new PublicDiscoveryService(
+                $app->tagged('public.discoverable'),
+                $app->make(GeoServiceContract::class),
+            );
+        });
         // Contrat transversal de notification in-app (garde cross-module #5584) :
         // les modules métier type-hintent le contrat Core, l'implémentation vit
         // dans le module Notification (BC-13).
