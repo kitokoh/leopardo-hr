@@ -10776,6 +10776,288 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           description: Affectation introuvable ou autre tenant
+  /fuel-station/{resource}:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister le referentiel d'une ressource (stations, sites, pumps, tanks, meters, products)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - stations
+          - sites
+          - pumps
+          - tanks
+          - meters
+          - products
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Referentiel pagine
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Creer une entree du referentiel (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - stations
+          - sites
+          - pumps
+          - tanks
+          - meters
+          - products
+      responses:
+        '201':
+          description: Entree creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Donnees invalides
+  /fuel-station/{resource}/{id}:
+    get:
+      tags:
+      - FuelStation
+      summary: Lire une entree du referentiel
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - stations
+          - sites
+          - pumps
+          - tanks
+          - meters
+          - products
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Entree du referentiel
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Entree introuvable ou autre tenant
+    put:
+      tags:
+      - FuelStation
+      summary: Mettre a jour une entree du referentiel (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - stations
+          - sites
+          - pumps
+          - tanks
+          - meters
+          - products
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Entree mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Entree introuvable ou autre tenant
+        '422':
+          description: Donnees invalides
+  /fuel-station/readings/sync:
+    post:
+      tags:
+      - FuelStation
+      summary: Synchroniser hors-ligne un lot de releves de compteur (idempotent)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Lot traite, resultat par element
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Cle d'idempotence ou lot invalide
+  /fuel-station/stocks:
+    get:
+      tags:
+      - FuelStation
+      summary: Niveau des cuves (theorique et mesure) avec fill_ratio
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Etat des stocks par cuve
+        '401':
+          $ref: '#/components/responses/Error401'
+  /fuel-station/tanks/{tank}/deliveries:
+    post:
+      tags:
+      - FuelStation
+      summary: Enregistrer une livraison de cuve (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: tank
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Livraison enregistree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Donnees invalides
+  /fuel-station/stations/{station}/reconciliations:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les rapprochements d'une station
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Rapprochements pagines
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      tags:
+      - FuelStation
+      summary: Lancer un rapprochement par station (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Rapprochement execute
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/reconciliations/{run}:
+    get:
+      tags:
+      - FuelStation
+      summary: Lire un rapprochement
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: run
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Rapprochement
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Rapprochement introuvable ou autre tenant
+  /fuel-station/maintenance-tasks/{task}/transition:
+    post:
+      tags:
+      - FuelStation
+      summary: Transitionner une tache de maintenance
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tache transitionnee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Transition illegale
+  /fuel-station/reports/{type}:
+    get:
+      tags:
+      - FuelStation
+      summary: Rapport type par segments d'URL (snapshot)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Snapshot du rapport
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Type de snapshot inconnu
 
   /accounting/contacts:
     get:

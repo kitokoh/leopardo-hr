@@ -26,6 +26,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $station_id
  * @property int|null $pump_id
  * @property int|null $cash_session_id
+ * @property int|null $customer_id
  * @property int $employee_id
  * @property string $product
  * @property float $quantity
@@ -59,6 +60,7 @@ class FuelSale extends Model
         'station_id',
         'pump_id',
         'cash_session_id',
+        'customer_id',
         'employee_id',
         'product',
         'quantity',
