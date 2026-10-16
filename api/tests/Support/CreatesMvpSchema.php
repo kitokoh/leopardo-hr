@@ -5031,6 +5031,25 @@ trait CreatesMvpSchema
             });
         }
 
+        // #8544 (TRAVEL-OS) — trace des mises a disposition du billet
+        // (emission + reimpressions). Parite stricte avec la migration tenant
+        // 2026_10_16_000002_8544 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('travel_ticket_print_events'))) {
+            Schema::create($this->moduleTable('travel_ticket_print_events'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('ticket_id');
+                $table->unsignedBigInteger('employee_id')->nullable();
+                $table->string('channel', 32)->default('api');
+                $table->unsignedInteger('reprint_number')->default(0);
+                $table->boolean('is_reprint')->default(false);
+                $table->timestamps();
+
+                $table->index(['company_id', 'ticket_id']);
+                $table->index(['company_id', 'created_at']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('travel_advert_bookings'))) {
             Schema::create($this->moduleTable('travel_advert_bookings'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
@@ -5536,6 +5555,18 @@ trait CreatesMvpSchema
         DB::purge($connection);
         DB::reconnect($connection);
         DB::statement("SET search_path TO {$path}");
+
+        // Le schéma tenant peut manquer sur une base fraîche (jobs CI qui ne
+        // passent pas par `.github/actions/setup-backend-db`, ex. « Golden
+        // tests paie DZ » de payroll-ci.yml) : les tables tenant déclarées
+        // ci-dessous (`accounting_*`, `bank_*`, `payroll_payment_*`,
+        // `employee_attendance_preferences`, `marketing_*` de #8528) sont
+        // créées via `Schema::create('shared_tenants.<table>')` et échouaient
+        // en SQLSTATE 3F000 — soit « schema does not exist », soit « no schema
+        // has been selected to create in » quand le search_path n'a aucune
+        // entrée existante. Garde idempotente, même idiome que
+        // `loadPostgresFixtureDrops()` et `preparePostgresSchemas()`.
+        DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
 
         if (! Schema::hasTable($this->tenantTable('accounting_chart_accounts'))) {
             Schema::create($this->tenantTable('accounting_chart_accounts'), function (Blueprint $table): void {

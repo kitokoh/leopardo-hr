@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Requests;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\TravelAgency\Domain\Enums\BookingSource;
 use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
+use App\Modules\TravelAgency\Domain\Models\TravelOffice;
 use App\Modules\TravelAgency\Domain\Models\TravelRoute;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use Illuminate\Database\Query\Builder;
@@ -53,6 +54,15 @@ class TravelReportRequest extends FormRequest
             ],
             'source' => ['nullable', Rule::in(array_map(fn ($c) => $c->value, BookingSource::cases()))],
             'status' => ['nullable', Rule::in(array_map(fn ($c) => $c->value, BookingStatus::cases()))],
+            // #8545 — ventilation par agence. Une référence cross-tenant
+            // échoue en 422 (règle bornée au tenant), sans rien divulguer.
+            'office_id' => [
+                'nullable',
+                'integer',
+                Rule::exists((new TravelOffice)->getTable(), 'id')->where(
+                    fn (Builder $query) => $query->where('company_id', $companyId)
+                ),
+            ],
         ];
     }
 }

@@ -26,7 +26,7 @@ class TravelReportController extends Controller
     public function sales(TravelReportRequest $request): JsonResponse
     {
         return $this->report($request, fn (string $company, CarbonImmutable $from, CarbonImmutable $to, array $f): array => $this->reports->sales(
-            $company, $from, $to, $f['trip_id'], $f['route_id'], $f['source'], $f['status'],
+            $company, $from, $to, $f['trip_id'], $f['route_id'], $f['source'], $f['status'], $f['office_id'],
         ));
     }
 
@@ -40,15 +40,41 @@ class TravelReportController extends Controller
     public function revenue(TravelReportRequest $request): JsonResponse
     {
         return $this->report($request, fn (string $company, CarbonImmutable $from, CarbonImmutable $to, array $f): array => $this->reports->revenue(
-            $company, $from, $to, $f['trip_id'], $f['source'],
+            $company, $from, $to, $f['trip_id'], $f['source'], $f['office_id'],
         ));
     }
 
     public function cancellations(TravelReportRequest $request): JsonResponse
     {
         return $this->report($request, fn (string $company, CarbonImmutable $from, CarbonImmutable $to, array $f): array => $this->reports->cancellations(
-            $company, $from, $to, $f['trip_id'], $f['source'],
+            $company, $from, $to, $f['trip_id'], $f['source'], $f['office_id'],
         ));
+    }
+
+    /**
+     * #8545 (TRAVEL-OS) — vue CONSOLIDÉE par agence : une ligne par bureau de
+     * vente (+ ligne explicite « sans agence » pour les ventes en ligne) et un
+     * bloc `totals`. Permission `travel.reports`, borné au tenant.
+     */
+    public function offices(TravelReportRequest $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('travel.reports')) {
+            abort(403);
+        }
+
+        $v = $request->validated();
+
+        return new JsonResponse([
+            'data' => $this->reports->byOffices(
+                (string) $actor->company_id,
+                CarbonImmutable::parse((string) $v['from']),
+                CarbonImmutable::parse((string) $v['to']),
+                $v['source'] ?? null,
+            ),
+        ]);
     }
 
     public function dashboard(Request $request): JsonResponse
@@ -88,6 +114,7 @@ class TravelReportController extends Controller
 
         $tripId = is_numeric($v['trip_id'] ?? null) ? (int) $v['trip_id'] : null;
         $routeId = is_numeric($v['route_id'] ?? null) ? (int) $v['route_id'] : null;
+        $officeId = is_numeric($v['office_id'] ?? null) ? (int) $v['office_id'] : null;
 
         $payload = $aggregate(
             (string) $actor->company_id,
@@ -98,6 +125,7 @@ class TravelReportController extends Controller
                 'route_id' => $routeId,
                 'source' => $v['source'] ?? null,
                 'status' => $v['status'] ?? null,
+                'office_id' => $officeId,
             ],
         );
 

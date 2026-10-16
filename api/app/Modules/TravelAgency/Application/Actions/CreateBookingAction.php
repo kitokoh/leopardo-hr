@@ -76,6 +76,7 @@ final class CreateBookingAction
         ?string $contactPhone = null,
         bool $notifyConsent = false,
         ?string $connectionGroupId = null,
+        ?int $officeId = null,
     ): TravelBooking {
         $replay = $this->idempotentGuestWrite->replay(
             function () use ($trip, $idempotencyKey): ?TravelBooking {
@@ -87,13 +88,13 @@ final class CreateBookingAction
 
                 return $existing?->load('passengers');
             },
-            function () use ($trip, $passengers, $source, $actor, $idempotencyKey, $customerContactId, $corporateAccountId, $quoteId, $billingDeferred, $contactEmail, $contactPhone, $notifyConsent, $connectionGroupId): TravelBooking {
+            function () use ($trip, $passengers, $source, $actor, $idempotencyKey, $customerContactId, $corporateAccountId, $quoteId, $billingDeferred, $contactEmail, $contactPhone, $notifyConsent, $connectionGroupId, $officeId): TravelBooking {
                 if ($trip->status->value !== 'published') {
                     abort(409, 'Ce trajet n\'est pas ouvert a la reservation.');
                 }
 
                 /** @var TravelBooking $booking */
-                $booking = $this->db->transaction(function () use ($trip, $passengers, $source, $actor, $idempotencyKey, $customerContactId, $corporateAccountId, $quoteId, $billingDeferred, $contactEmail, $contactPhone, $notifyConsent, $connectionGroupId): TravelBooking {
+                $booking = $this->db->transaction(function () use ($trip, $passengers, $source, $actor, $idempotencyKey, $customerContactId, $corporateAccountId, $quoteId, $billingDeferred, $contactEmail, $contactPhone, $notifyConsent, $connectionGroupId, $officeId): TravelBooking {
                     // Verrouille le trajet : empeche deux reservations concurrentes
                     // de lire le meme inventaire.
                     /** @var TravelTrip $lockedTrip */
@@ -127,6 +128,9 @@ final class CreateBookingAction
                         'notify_consent' => $notifyConsent,
                         'consent_recorded_at' => $notifyConsent ? now() : null,
                         'connection_group_id' => $connectionGroupId,
+                        // #8545 — agence de vente : renseignée pour une vente
+                        // guichet, NULL pour une vente en ligne.
+                        'office_id' => $officeId,
                     ]);
 
                     foreach ($passengers as $index => $passengerData) {

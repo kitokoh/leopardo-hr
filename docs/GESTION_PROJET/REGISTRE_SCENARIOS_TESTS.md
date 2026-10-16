@@ -1298,3 +1298,44 @@ restent les gates applicables.
   Le POS utilise une clé d'idempotence STABLE (session + panier) → pas de double commande.
 - **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
   partagé `offline.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+
+## Mise à jour 2026-10-16 — BC-24 TRAVEL OS : QR du billet, vérification d'authenticité, position véhicule (PR #8541, issues #8538, #8539, #8540)
+
+- **Surface API** : deux routes ajoutées à `api/routes/modules/travelagency.php` —
+  `POST /travel/tickets/verify` (vérification d'authenticité en **lecture seule**,
+  distincte de la consommation `check-in` ; statut `valid`/`void`/`expired`/`already_used` ;
+  code invalide et référence inexistante → **même** 404 ; cross-tenant → 404 ;
+  permission `travel.checkin`) et `POST /travel/vehicles/{travelVehicle}/position`
+  (dernière position connue, source obligatoire `gps`/`app`/`estimated`, permission
+  `travel.manage`, cross-tenant → 404). Scénarios détaillés :
+  `docs/GESTION_PROJET/SCENARIOS_TEST_API_GITHUB_ACTIONS.md`.
+- **Surface web (front/travel-web, front/admin-dashboard)** : aucun contrat modifié —
+  aucun scénario web nouveau requis. Le QR est rendu dans le PDF du billet existant
+  (`api/resources/views/travel/ticket.blade.php`), l'application mobile de scan n'est
+  pas modifiée (l'endpoint accepte le contenu scanné **ou** une saisie manuelle).
+- **Surface mobile** : aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+- **Scénarios automatisés** : `api/tests/Feature/Travel/TravelOsQrGpsConcurrencyTest.php`
+  (20 cas, 55 assertions) — charge utile QR sans PII, aller-retour `parse`, rejet de
+  charge utile inconnue, PNG valide, `data:` URI dans le PDF, vérification
+  valide/annulé/expiré/déjà utilisé, code invalide, cross-tenant, permission refusée,
+  non-consommation par la vérification, idempotence du check-in (opérateur + horodatage
+  + unicité de l'événement outbox), billet annulé refusé, véhicule sans position,
+  position GPS, position estimée marquée non-GPS, source inconnue rejetée, cross-tenant.
+
+## Mise à jour 2026-10-16 — enrôlement/révocation d'appareils (PR #8537, issue #8499)
+
+- **Surface API** : nouvelle route tenant `DELETE /api/v1/edge/{nodeId}`
+  (`EdgeNodeController::revoke`, groupe `auth:sanctum` + `tenant` + `api.manager`)
+  — révocation d'un appareil par le tenant lui-même, portée STRICTEMENT limitée à
+  la `company_id` de l'utilisateur (nœud d'un autre tenant → 404, jamais de fuite
+  inter-tenant). Aucun contrat existant modifié (les routes `GET/POST /api/v1/edge`
+  et `POST /{nodeId}/sync` restent inchangées). Scénario : couvert par le test
+  d'écran `devices-page.test.tsx` (appel `DELETE /edge/{id}`) ; le test d'intégration
+  backend d'isolation inter-tenant est suivi par #8496.
+- **Surface web (front/web)** : nouvelle page protégée `/settings/devices` — enrôlement
+  (nom, établissement, poste), affichage du jeton UNE SEULE FOIS avec avertissement,
+  liste des appareils (état en ligne / dernière synchro), révocation. Scénarios Jest :
+  `devices-page.test.tsx` (3 cas : chargement de la liste, jeton affiché une fois +
+  avertissement, révocation via `DELETE /edge/{id}`).
+- **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
+  partagé `devices.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.

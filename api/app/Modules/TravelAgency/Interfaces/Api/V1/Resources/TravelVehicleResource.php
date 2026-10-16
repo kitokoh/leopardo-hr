@@ -32,6 +32,37 @@ class TravelVehicleResource extends JsonResource
             'notes' => $this->notes,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'position' => $this->positionPayload(),
+        ];
+    }
+
+    /**
+     * #8540 — dernière position connue du véhicule.
+     *
+     * `null` quand aucun dispositif n'a transmis de position : on n'invente
+     * JAMAIS de coordonnées. `is_measured` vaut `false` pour une position
+     * estimée, afin qu'elle ne soit pas présentée comme une position GPS.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function positionPayload(): ?array
+    {
+        if ($this->latitude === null || $this->longitude === null) {
+            return null;
+        }
+
+        $source = $this->position_source;
+
+        return [
+            'latitude' => (float) $this->latitude,
+            'longitude' => (float) $this->longitude,
+            'source' => $source?->value,
+            'source_label' => $source?->label(),
+            'is_measured' => $source?->isMeasured() ?? false,
+            'recorded_at' => $this->position_recorded_at,
+            'age_seconds' => $this->position_recorded_at !== null
+                ? (int) $this->position_recorded_at->diffInSeconds(now())
+                : null,
         ];
     }
 }

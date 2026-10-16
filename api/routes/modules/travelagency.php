@@ -112,6 +112,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/vehicles/{travelVehicle}', [TravelVehicleController::class, 'show']);
         Route::put('/vehicles/{travelVehicle}', [TravelVehicleController::class, 'update']);
         Route::delete('/vehicles/{travelVehicle}', [TravelVehicleController::class, 'destroy']);
+        // Dernière position connue d'un véhicule (#8540) — ingestion par un
+        // dispositif autorisé (boîtier GPS ou application).
+        Route::post('/vehicles/{travelVehicle}/position', [TravelVehicleController::class, 'recordPosition']);
 
         // Routes ville→ville + étapes ordonnées (TRAVEL-307/#6037).
         Route::get('/routes', [TravelRouteController::class, 'index']);
@@ -160,6 +163,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/bookings/{travelBooking}/refund', [TravelBookingController::class, 'refund']);
         Route::post('/bookings/{travelBooking}/issue-ticket', [TravelBookingController::class, 'issueTickets']);
         Route::post('/bookings/{travelBooking}/refund-passenger', [TravelBookingController::class, 'refundPassenger']); // TRAVEL-808/#6098
+
+        // Vérification d'authenticité d'un billet (#8538) — LECTURE SEULE,
+        // distincte de la consommation (check-in ci-dessous).
+        Route::post('/tickets/verify', [TravelTicketController::class, 'verify']);
 
         // Check-in / embarquement (TRAVEL-317/#6047).
         Route::post('/tickets/{travelTicket}/check-in', [TravelTicketController::class, 'checkIn']);
@@ -301,6 +308,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/reports/revenue', [TravelReportController::class, 'revenue']);
         Route::get('/reports/cancellations', [TravelReportController::class, 'cancellations']);
         Route::get('/reports/dashboard', [TravelReportController::class, 'dashboard']);
+        // #8545 — vue consolidée par agence (ventilation + ligne « sans agence »).
+        Route::get('/reports/offices', [TravelReportController::class, 'offices']);
         Route::post('/reports/export', [TravelExportController::class, 'store']);
         Route::get('/reports/export/{travelExportAsset}', [TravelExportController::class, 'show']);
         Route::get('/quizzes', [TravelQuizController::class, 'index']);
@@ -365,6 +374,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/articles/{travelArticle}/rate', [TravelEngagementController::class, 'rate']);
         Route::get('/articles/{travelArticle}/engagement', [TravelEngagementController::class, 'aggregates']);
         Route::get('/tickets/{travelTicket}/pdf', [TravelTicketController::class, 'pdf']);
+        // #8544 — historique des impressions (émission + réimpressions).
+        Route::get('/tickets/{travelTicket}/print-events', [TravelTicketController::class, 'printHistory']);
         Route::post('/tickets/{travelTicket}/revoke', [TravelTicketController::class, 'revoke']);
         // GET /reports/export (sync legacy) supprimé — le flux canonique est POST /reports/export (asset async, TravelExportController@store).
         Route::get('/webhook-subscriptions', [TravelWebhookSubscriptionController::class, 'index']);

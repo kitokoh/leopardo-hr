@@ -273,6 +273,29 @@ class EdgeNodeController extends Controller
         return response()->json(['status' => 'revoked', 'data' => $node->fresh()]);
     }
 
+    /**
+     * #8499 (I-12) — Revoke an Edge node for the AUTHENTICATED tenant.
+     * DELETE /api/v1/edge/{nodeId}
+     *
+     * Le groupe tenant n'exposait aucune révocation : seul le super-admin
+     * pouvait suspendre un nœud. Un client doit pouvoir révoquer SON appareil
+     * (Partie 6 : « révocation »). La portée est STRICTEMENT limitée à la
+     * company de l'utilisateur — un nœud d'un autre tenant renvoie 404, jamais
+     * une fuite inter-tenant.
+     */
+    public function revoke(Request $request, string $nodeId): JsonResponse
+    {
+        // getAttribute('company_id') renvoie mixed : acces sans erreur PHPStan
+        // sur l'union Employee|User|SuperAdmin|null de $request->user() (#7961).
+        $node = EdgeNode::where('company_id', $request->user()?->getAttribute('company_id'))
+            ->findOrFail($nodeId);
+
+        $node->update(['status' => 'suspended']);
+        $this->licenseService->revokeLicense($node);
+
+        return response()->json(['status' => 'revoked', 'data' => $node->fresh()]);
+    }
+
     // ── Private Helpers ───────────────────────────────────
 
     private function authorizeEdgeToken(Request $request, EdgeNode $node): void
