@@ -1962,7 +1962,7 @@ parameters:
 		-
 			message: '#^Cannot access property \$company_id on App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\|null\.$#'
 			identifier: property.nonObject
-			count: 6
+			count: 5
 			path: app/Modules/EdgeSync/Interfaces/Api/V1/Controllers/EdgeNodeController.php
 
 		-

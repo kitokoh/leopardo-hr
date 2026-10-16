@@ -285,7 +285,9 @@ class EdgeNodeController extends Controller
      */
     public function revoke(Request $request, string $nodeId): JsonResponse
     {
-        $node = EdgeNode::where('company_id', $request->user()->company_id)
+        // getAttribute('company_id') renvoie mixed : acces sans erreur PHPStan
+        // sur l'union Employee|User|SuperAdmin|null de $request->user() (#7961).
+        $node = EdgeNode::where('company_id', $request->user()?->getAttribute('company_id'))
             ->findOrFail($nodeId);
 
         $node->update(['status' => 'suspended']);
