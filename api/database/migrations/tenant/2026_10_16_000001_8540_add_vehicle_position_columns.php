@@ -55,7 +55,7 @@ return new class extends Migration
             ."CHECK (position_source IS NULL OR position_source IN ('gps', 'app', 'estimated'))"
         );
         DB::statement(
-            "COMMENT ON COLUMN travel_vehicles.position_source IS "
+            'COMMENT ON COLUMN travel_vehicles.position_source IS '
             ."'Provenance de la derniere position connue : gps | app | estimated (jamais une mesure si estimated) — #8540.'"
         );
     }
