@@ -111,22 +111,24 @@ class TravelReportOfficeTest extends TestCase
 
         $response = $this->getJson($this->url())->assertOk();
 
-        $rows = collect($response->json('data.offices'))->keyBy('office_id');
+        /** @var array<int, array<string, mixed>> $rowsData */
+        $rowsData = $response->json('data.offices');
+
+        $rowA = $this->officeRow($rowsData, $officeA);
+        $rowB = $this->officeRow($rowsData, $officeB);
 
         // Agence A : 2 ventes nettes, 3 passagers, 15 000 ; 1 annulation.
-        $this->assertSame(2, $rows[$officeA]['bookings_count']);
-        $this->assertSame(3, $rows[$officeA]['passengers_count']);
-        $this->assertSame(15000, $rows[$officeA]['revenue_minor']);
-        $this->assertSame(1, $rows[$officeA]['cancellations_count']);
+        $this->assertSame(2, $rowA['bookings_count']);
+        $this->assertSame(3, $rowA['passengers_count']);
+        $this->assertSame(15000, $rowA['revenue_minor']);
+        $this->assertSame(1, $rowA['cancellations_count']);
 
         // Agence B : 1 vente.
-        $this->assertSame(1, $rows[$officeB]['bookings_count']);
-        $this->assertSame(7000, $rows[$officeB]['revenue_minor']);
+        $this->assertSame(1, $rowB['bookings_count']);
+        $this->assertSame(7000, $rowB['revenue_minor']);
 
         // Ligne EXPLICITE pour les ventes en ligne — jamais absorbée.
-        $this->assertNull($rows['']['office_id'] ?? null);
-        $unassigned = collect($response->json('data.offices'))->firstWhere('name', 'Sans agence (ventes en ligne)');
-        $this->assertNotNull($unassigned);
+        $unassigned = $this->unassignedRow($rowsData);
         $this->assertNull($unassigned['office_id']);
         $this->assertSame(1, $unassigned['bookings_count']);
         $this->assertSame(3000, $unassigned['revenue_minor']);
@@ -258,5 +260,40 @@ class TravelReportOfficeTest extends TestCase
         ], $extra);
 
         return '/api/v1/travel/reports/'.$report.'?'.http_build_query($params);
+    }
+
+    /**
+     * Extrait la ligne d'une agence — échoue explicitement si elle est absente
+     * (jamais d'accès silencieux à un offset inexistant).
+     *
+     * @param  array<int, array<string, mixed>>  $rows
+     * @return array<string, mixed>
+     */
+    private function officeRow(array $rows, int $officeId): array
+    {
+        foreach ($rows as $row) {
+            if (($row['office_id'] ?? null) === $officeId) {
+                return $row;
+            }
+        }
+
+        $this->fail("Agence #$officeId absente de la ventilation.");
+    }
+
+    /**
+     * Ligne explicite des ventes sans agence (ventes en ligne).
+     *
+     * @param  array<int, array<string, mixed>>  $rows
+     * @return array<string, mixed>
+     */
+    private function unassignedRow(array $rows): array
+    {
+        foreach ($rows as $row) {
+            if (($row['name'] ?? null) === 'Sans agence (ventes en ligne)') {
+                return $row;
+            }
+        }
+
+        $this->fail('Ligne « Sans agence (ventes en ligne) » absente de la ventilation.');
     }
 }

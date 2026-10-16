@@ -72,11 +72,14 @@ class TravelTicketReprintAuditTest extends TestCase
      */
     private function events(Company $company, TravelTicket $ticket): array
     {
-        return app(TenantManager::class)->withinTenant($company, fn (): array => TravelTicketPrintEvent::query()
+        /** @var list<TravelTicketPrintEvent> $events */
+        $events = app(TenantManager::class)->withinTenant($company, fn (): array => TravelTicketPrintEvent::query()
             ->where('ticket_id', $ticket->id)
             ->orderBy('id')
             ->get()
             ->all());
+
+        return $events;
     }
 
     public function test_first_availability_is_not_a_reprint(): void
