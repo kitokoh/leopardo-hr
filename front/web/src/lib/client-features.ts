@@ -598,7 +598,7 @@ export const CLIENT_MODULES: ClientModule[] = [
   // /api/v1/trade/*.
   {
     key: 'trade',
-    href: '/trade',
+    href: '/trade-os',
     label: 'Commerce international',
     group: 'general',
     icon: Globe2,
