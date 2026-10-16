@@ -7,7 +7,6 @@ namespace Tests\Unit\Trade;
 use App\Core\Feature\Domain\ModuleRegistry;
 use App\Core\Solutions\Contracts\SolutionManifest;
 use App\Core\Solutions\Enums\SolutionIndustry;
-use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Solutions\Survey\SolutionSurveyRegistry;
 use App\Http\Middleware\Trade\TradeRoleResolver;
 use App\Modules\Trade\Domain\Manifests\TradeManifest;
@@ -61,15 +60,12 @@ class TradeVerticalConsistencyTest extends TestCase
         self::assertNotSame([], $permissions, 'Aucune permission déclarée.');
 
         foreach ($permissions as $code => $label) {
-            self::assertIsString($code, 'Clé de permission non string (liste legacy ?).');
-            self::assertIsString($label, "Libellé non string pour {$code}.");
             self::assertNotSame('', trim($label), "Libellé vide pour {$code}.");
             self::assertStringStartsWith('trade.', $code, "Permission hors espace de noms trade : {$code}.");
         }
 
         foreach (['requiredModules', 'optionalModules', 'sensitiveData'] as $method) {
             foreach ($this->manifest->{$method}() as $entry) {
-                self::assertIsString($entry, "Entrée non string dans {$method}().");
                 self::assertNotSame('', trim($entry), "Entrée vide dans {$method}().");
             }
         }
@@ -204,10 +200,7 @@ class TradeVerticalConsistencyTest extends TestCase
      */
     public function test_survey_registry_resolves_trade_under_the_manifest_code(): void
     {
-        $catalogue = new SolutionCatalogue;
-        $catalogue->register($this->manifest->code(), fn (): SolutionManifest => $this->manifest);
-
-        $registry = new SolutionSurveyRegistry($catalogue);
+        $registry = new SolutionSurveyRegistry;
         $registry->register($this->survey->code(), fn (): TradeSurvey => $this->survey);
 
         self::assertTrue($registry->has($this->manifest->code()));

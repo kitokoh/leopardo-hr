@@ -122,6 +122,7 @@ class TradeSurveyTest extends TestCase
             $result = $this->engine->suggest($this->survey, $answers);
 
             self::assertSame('trade_workspace', $result['packages'][0]['key']);
+            self::assertArrayHasKey('required', $result['packages'][0]);
             self::assertTrue($result['packages'][0]['required']);
         }
     }
@@ -284,7 +285,7 @@ class TradeSurveyTest extends TestCase
     private function resolveDotted(array $catalogue, string $key): mixed
     {
         // Le préfixe `solutions.` est le nom du fichier de traduction.
-        $segments = explode('.', preg_replace('/^solutions\./', '', $key));
+        $segments = explode('.', (string) preg_replace('/^solutions\./', '', $key));
 
         $value = $catalogue;
         foreach ($segments as $segment) {

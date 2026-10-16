@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Trade\Domain\Models\TradeCounterparty;
 use App\Modules\Trade\Domain\Models\TradeRfq;
 use Tests\RefreshTenantDatabase;
+use Tests\Support\SwitchesTenantContext;
 use Tests\TestCase;
 
 /**

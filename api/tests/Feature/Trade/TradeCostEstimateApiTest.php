@@ -79,7 +79,11 @@ class TradeCostEstimateApiTest extends TestCase
         // ... et l'estimation est annoncee comme INCOMPLETE, jamais comme un prix.
         $response->assertJsonPath('data.status', 'incomplete');
 
-        $duty = collect($response->json('data.lines'))->firstWhere('type', 'customs_duty');
+        /** @var list<array{type: string, source: string, counts_toward_total: bool}> $lines */
+        $lines = $response->json('data.lines');
+
+        $duty = collect($lines)->firstWhere('type', 'customs_duty');
+        self::assertNotNull($duty);
         self::assertSame('unavailable', $duty['source']);
         self::assertFalse($duty['counts_toward_total']);
     }
