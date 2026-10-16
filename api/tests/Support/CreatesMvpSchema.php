@@ -5537,6 +5537,18 @@ trait CreatesMvpSchema
         DB::reconnect($connection);
         DB::statement("SET search_path TO {$path}");
 
+        // Le schéma tenant peut manquer sur une base fraîche (jobs CI qui ne
+        // passent pas par `.github/actions/setup-backend-db`, ex. « Golden
+        // tests paie DZ » de payroll-ci.yml) : les tables tenant déclarées
+        // ci-dessous (`accounting_*`, `bank_*`, `payroll_payment_*`,
+        // `employee_attendance_preferences`, `marketing_*` de #8528) sont
+        // créées via `Schema::create('shared_tenants.<table>')` et échouaient
+        // en SQLSTATE 3F000 — soit « schema does not exist », soit « no schema
+        // has been selected to create in » quand le search_path n'a aucune
+        // entrée existante. Garde idempotente, même idiome que
+        // `loadPostgresFixtureDrops()` et `preparePostgresSchemas()`.
+        DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+
         if (! Schema::hasTable($this->tenantTable('accounting_chart_accounts'))) {
             Schema::create($this->tenantTable('accounting_chart_accounts'), function (Blueprint $table): void {
                 $table->id();
