@@ -70,6 +70,11 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/edu-manager',
   // BC-30 HEALTH (#7792) — verticale HealthManager (données de santé).
   '/health',
+  // BC-36 TRADE (TRADE-009/#8484) — verticale International Trade OS : même
+  // gate cosmétique de session que le reste de la zone dashboard (la garde
+  // réelle reste l'API, gate `module.trade` fail-closed). Chemin `/trade-os` :
+  // `/trade` est la page PUBLIQUE de la vitrine (#8489).
+  '/trade-os',
   // BC-32 HOSPITALITY (#7943) — verticale HospitalityManager (données tenant).
   '/hospitality',
   '/fuel',
@@ -228,6 +233,7 @@ export const config = {
     '/modules/:path*', // #7908 page Modules (statut, auto-activation) — gate session
     '/assistant/:path*', // BOS-035 (#8224) assistant Leo IA — gate session
     '/vtc/:path*', // BC-35 VTC (#8349, VTC-07/#8363) console dispatch — gate session
+    '/trade-os/:path*', // BC-36 TRADE (TRADE-009/#8484) espace International Trade OS — gate session
     // Vitrine landing — ?lang= → en-tête x-vitrine-lang (issue #4004).
     // Routes statiques (exactes) + préfixes dynamiques (source
     // VITRINE_LANG_PREFIXES, garde protected-prefixes.test.ts).

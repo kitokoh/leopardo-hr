@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowRight, CarTaxiFront, Fuel, Gift, GraduationCap, Plane, UtensilsCrossed } from 'lucide-react';
+import { ArrowRight, CarTaxiFront, Container, Fuel, Gift, GraduationCap, Plane, UtensilsCrossed } from 'lucide-react';
 import type { AppLocale } from '@/lib/i18n';
 
 /**
@@ -82,6 +82,14 @@ const copyByLocale: Record<AppLocale, Copy> = {
         href: '/packs/vtc',
         linkLabel: 'Voir le pack offert',
       },
+      {
+        icon: <Container className={iconClass} />,
+        name: 'Trade international',
+        benefit:
+          'Sourcing multi-fournisseurs, offres comparées, coût rendu chiffré, cotations transport et aide à la préparation douanière — imports et exports dans un seul espace.',
+        href: '/packs/trade',
+        linkLabel: 'Voir le pack offert',
+      },
     ],
   },
   en: {
@@ -131,6 +139,14 @@ const copyByLocale: Record<AppLocale, Copy> = {
         name: 'VTC & Taxi',
         benefit: 'Your rides bookable account-free on the public marketplace, dispatched to the nearest available driver.',
         href: '/packs/vtc',
+        linkLabel: 'See the free pack',
+      },
+      {
+        icon: <Container className={iconClass} />,
+        name: 'International Trade',
+        benefit:
+          'Multi-supplier sourcing, compared quotes, costed landed price, freight quotes and customs preparation support — imports and exports in one workspace.',
+        href: '/packs/trade',
         linkLabel: 'See the free pack',
       },
     ],
@@ -184,6 +200,14 @@ const copyByLocale: Record<AppLocale, Copy> = {
         href: '/packs/vtc',
         linkLabel: 'Ücretsiz paketi görün',
       },
+      {
+        icon: <Container className={iconClass} />,
+        name: 'Uluslararası Ticaret (Trade)',
+        benefit:
+          'Çok tedarikçili kaynak bulma, karşılaştırılmış teklifler, hesaplanmış teslim maliyeti, navlun teklifleri ve gümrük hazırlığı desteği — ithalat ve ihracat tek alanda.',
+        href: '/packs/trade',
+        linkLabel: 'Ücretsiz paketi görün',
+      },
     ],
   },
   ar: {
@@ -233,6 +257,14 @@ const copyByLocale: Record<AppLocale, Copy> = {
         name: 'VTC والأجرة',
         benefit: 'رحلاتكم قابلة للحجز دون حساب على السوق العامة، مع الإرسال لأقرب سائق متاح.',
         href: '/packs/vtc',
+        linkLabel: 'شاهد الحزمة المجانية',
+      },
+      {
+        icon: <Container className={iconClass} />,
+        name: 'التجارة الدولية (Trade)',
+        benefit:
+          'توريد من عدة موردين، عروض مقارنة، تكلفة وصول محسوبة، عروض شحن ودعم تحضير التخليص الجمركي — الاستيراد والتصدير في مساحة واحدة.',
+        href: '/packs/trade',
         linkLabel: 'شاهد الحزمة المجانية',
       },
     ],

@@ -21,6 +21,9 @@ export const PACK_SIGNUP_SLUGS = [
   'agence-de-voyage',
   'cagnottes',
   'vtc',
+  // BC-36 TRADE (TRADE-009) — la verticale commerce international & B2B
+  // domestique rejoint l'offre d'entrée de la vitrine (`/packs/trade`).
+  'trade',
 ] as const;
 
 export type PackSignupSlug = (typeof PACK_SIGNUP_SLUGS)[number];
@@ -37,6 +40,8 @@ const PACK_SOLUTION_CODES: Record<PackSignupSlug, string> = {
   'agence-de-voyage': 'travelagency',
   cagnottes: 'fundraising',
   vtc: 'vtc',
+  // Doit correspondre EXACTEMENT au code du TradeManifest (`code(): 'trade'`).
+  trade: 'trade',
 };
 
 export function isPackSignupSlug(value: string | null | undefined): value is PackSignupSlug {

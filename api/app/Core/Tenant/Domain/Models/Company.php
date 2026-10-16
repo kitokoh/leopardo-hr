@@ -215,6 +215,13 @@ class Company extends Model
         // conservé (défaut false) ; gate serveur `module.vtc` sur
         // /api/v1/vtc/*.
         'vtc',
+        // BC-36 TRADE (TRADE-001/#8476) — verticale International Trade OS
+        // (code du TradeManifest, flag posé par SolutionActivator ; aucun
+        // module requis). Enregistrée ici DÈS la création (leçon #7220/#7235 :
+        // sans cette entrée, l'admin plateforme ne peut jamais activer la
+        // verticale). Fail-closed conservé (défaut false) ; gate serveur
+        // `module.trade` sur /api/v1/trade/*.
+        'trade',
     ];
 
     /**

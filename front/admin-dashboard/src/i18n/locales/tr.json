@@ -1879,6 +1879,7 @@
     "account": "Hesabim",
     "notFound": "Sayfa bulunamadi",
     "travelAgency": "Seyahat acentesi",
+    "trade": "Uluslararası ticaret",
     "emailTemplates": "E-postalar",
     "settings": "Ayarlar",
     "equityInterests": "Ortaklık ilgisi",
@@ -5596,6 +5597,94 @@
       "view": "Görüntüle",
       "back": "Geri",
       "deleteConfirm": "Bu öğe silinsin mi?"
+    }
+  },
+  "trade": {
+    "overview": {
+      "title": "Genel bakış",
+      "subtitle": "Açık dosyalar, fiyat talepleri, teklifler ve devam eden siparişler.",
+      "scopeNotice": "Yalnızca sayaçlar: müşterilerin fiyatları, teklifleri, mesajları ve belgeleri platform yönetimine açılmaz.",
+      "loadError": "Dikey takibi yüklenemedi.",
+      "companiesScanned": "İncelenen şirketler",
+      "companiesWithTrade": "Trade dikeyine sahip",
+      "companiesWithActivity": "Ticari faaliyeti olan",
+      "integrationsUnconfigured": "Yapılandırılmamış entegrasyonlar",
+      "deals": "Açık dosyalar",
+      "rfqs": "Aktif fiyat talepleri",
+      "quotes": "Bekleyen teklifler",
+      "orders": "Devam eden siparişler",
+      "integrations": "Entegrasyonlar",
+      "integrationsDegraded": "Bazı işlevler yapılandırılmamış adaptörlere bağlıdır ve kullanılamaz durumdadır."
+    },
+    "common": {
+      "retry": "Yeniden dene",
+      "noData": "Veri yok"
+    },
+    "counts": {
+      "deals": "Dosyalar (deals)",
+      "rfqs": "Fiyat talepleri (RFQ)",
+      "quotes": "Ticari teklifler",
+      "orders": "Siparişler"
+    },
+    "integrations": {
+      "title": "Harici entegrasyonlar",
+      "configured": "yapılandırıldı",
+      "notice": "Yapılandırılmamış bir entegrasyon kullanılamaz olarak gösterilir: hiçbir veri simüle edilmez.",
+      "colKey": "Entegrasyon",
+      "colMode": "Mod",
+      "colState": "Durum",
+      "colReason": "Ayrıntı",
+      "stateOperational": "Çalışıyor",
+      "stateUnconfigured": "Yapılandırılmadı"
+    },
+    "roles": {
+      "title": "Trade iş rolleri"
+    },
+    "title": "Uluslararası ticaret",
+    "subtitle": "Ortak ticari çekirdek üzerinde tedarik, teklifler, siparişler ve teslim maliyeti",
+    "moduleDisabled": "Uluslararası ticaret dikeyi şirketiniz için etkin değil.",
+    "loadError": "Veriler yüklenemedi.",
+    "loading": "Yükleniyor…",
+    "noData": "Veri yok",
+    "retry": "Yeniden dene",
+    "create": "Oluştur",
+    "search": "Ara…",
+    "sourcing": {
+      "title": "Tedarik ve fiyat talepleri",
+      "subtitle": "RFQ oluşturun, tedarikçileri davet edin, gelen teklifleri karşılaştırın."
+    },
+    "sales": {
+      "title": "Satış ve teklifler",
+      "subtitle": "Verilen teklifler, sürümler, durumlar ve müşteri karşı tarafları."
+    },
+    "orders": {
+      "title": "Siparişler ve sevkiyatlar",
+      "subtitle": "Alım ve satım siparişleri, sevkiyatlar ve geçişler."
+    },
+    "transport": {
+      "title": "Taşımacılık",
+      "subtitle": "Fiyat talepleri ve taşıyıcı yanıtları."
+    },
+    "costs": {
+      "title": "Maliyetler ve gümrük",
+      "subtitle": "Kalem bazında teslim maliyeti ve belge hazırlığı.",
+      "disclaimer": "Gösterge niteliğinde tahmin — resmî gümrük beyanı veya uygunluk garantisi değildir."
+    },
+    "catalog": {
+      "title": "Ürün kataloğu",
+      "subtitle": "Ürünler, teknik özellikler ve ticari koşullar."
+    },
+    "settings": {
+      "title": "Trade ayarları",
+      "subtitle": "Ticari profil, hizmet verilen pazarlar ve koşullar."
+    },
+    "columns": {
+      "reference": "Referans",
+      "title": "Başlık",
+      "status": "Durum",
+      "createdAt": "Oluşturulma",
+      "destination": "Varış",
+      "incoterm": "Incoterm"
     }
   },
   "travel": {

@@ -74,8 +74,9 @@ final class ModuleRegistry
      * solidaires), `known_order` des entrées postérieures décalé.
      * 1.3.0 : entrée `geo` (BC-34, GEO-02/#8351) ajoutée.
      * 1.4.0 : entrée `vtc` (BC-35, VTC-01/#8357) ajoutée.
+     * 1.5.0 : entrée `trade` (BC-36, TRADE-001/#8476) ajoutée.
      */
-    public const VERSION = '1.4.0';
+    public const VERSION = '1.5.0';
 
     /**
      * Source déclarative unique. L'ordre de déclaration reproduit l'ordre
@@ -553,6 +554,20 @@ final class ModuleRegistry
             'horizontal_order' => null,
             'known_order' => 23,
             'description' => 'Solution VTC/taxi (BC-35, VTC-01/#8357 ; gate `module.vtc`) : réservation de courses, dispatch au plus proche chauffeur via le core géospatial `geo` (requis), tarification et suivi.',
+        ],
+        'trade' => [
+            'kind' => 'solution',
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.36.0',
+            'killable' => true,
+            'platform_flag' => true,
+            'exposed_in_flags' => true,
+            'platform_exposable' => true,
+            'metadata_mirror' => null,
+            'horizontal_order' => null,
+            'known_order' => 24,
+            'description' => 'Solution International Trade OS (BC-36, TRADE-001/#8476 ; gate `module.trade`) : commerce international & B2B domestique — sourcing, RFQ, offres, commandes, transport, coûts rendus, documents.',
         ],
     ];
 

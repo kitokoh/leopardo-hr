@@ -2,7 +2,7 @@
 
 > Mis à jour le 2026-09-05 (audit vérité docs) | Phase 5 terminée — nettoyage legacy (PR #824)
 
-## 1. Tableau de l'état DDD — 35 modules actifs
+## 1. Tableau de l'état DDD — 36 modules actifs
 
 | Module          | Domain | Contracts | Exceptions | Application | DTOs | Infra | Interfaces | Providers | Tests |
 |-----------------|:------:|:---------:|:----------:|:-----------:|:----:|:-----:|:----------:|:---------:|:-----:|
@@ -39,6 +39,7 @@
 | **RestaurantManager** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ⚠️ |
 | **Retail** | ✅ | — | — | — | — | — | ✅ | ✅ | ✅ |
 | **Showcase** | ✅ | — | — | — | — | — | — | ✅ | ✅ |
+| **Trade** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **TravelAgency** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **Vtc** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 
