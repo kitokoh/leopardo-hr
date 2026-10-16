@@ -8032,5 +8032,15 @@
       "preparedAssisted": "Publication prepared in assisted mode: prepare, copy and open the platform, then confirm publication with its real URL.",
       "confirmed": "Publication confirmed: real URL and date recorded."
     }
+  },
+  "offline": {
+    "online": "Online",
+    "offline": "Offline",
+    "degraded": "Sync pending",
+    "pending": "{count} pending operation(s)",
+    "retry": "Retry",
+    "queued": "Saved offline — will sync",
+    "synced": "Synced",
+    "syncFailed": "Sync failed — please retry"
   }
 }

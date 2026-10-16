@@ -6359,5 +6359,13 @@
   "marketingosToastAssetadded": "تمت إضافة المورد إلى مكتبة الوسائط.",
   "marketingosToastPrepareddirect": "حُضّر المنشور في الوضع المباشر (API): يوجد موصل مُعدّ.",
   "marketingosToastPreparedassisted": "حُضّر المنشور في الوضع المُساعَد: حضّر وانسخ وافتح المنصة، ثم أكّد النشر برابطه الفعلي.",
-  "marketingosToastConfirmed": "تم تأكيد النشر: سُجّل الرابط والتاريخ الفعليان."
+  "marketingosToastConfirmed": "تم تأكيد النشر: سُجّل الرابط والتاريخ الفعليان.",
+  "offlineOnline": "متصل",
+  "offlineOffline": "غير متصل",
+  "offlineDegraded": "في انتظار المزامنة",
+  "offlinePending": "{count} عملية معلّقة",
+  "offlineRetry": "إعادة المحاولة",
+  "offlineQueued": "تم الحفظ دون اتصال — ستتم المزامنة",
+  "offlineSynced": "تمت المزامنة",
+  "offlineSyncfailed": "فشلت المزامنة — أعد المحاولة"
 }

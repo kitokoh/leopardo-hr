@@ -9597,5 +9597,15 @@
       "preparedAssisted": "Yayın destekli modda hazırlandı: hazırlayın, kopyalayın ve platformu açın, ardından gerçek bağlantısıyla yayını onaylayın.",
       "confirmed": "Yayın onaylandı: gerçek bağlantı ve tarih kaydedildi."
     }
+  },
+  "offline": {
+    "online": "Çevrimiçi",
+    "offline": "Çevrimdışı",
+    "degraded": "Eşitleme bekliyor",
+    "pending": "{count} bekleyen işlem",
+    "retry": "Yeniden dene",
+    "queued": "Çevrimdışı kaydedildi — eşitlenecek",
+    "synced": "Eşitlendi",
+    "syncFailed": "Eşitleme başarısız — yeniden deneyin"
   }
 }

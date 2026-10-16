@@ -6359,5 +6359,13 @@
   "marketingosToastAssetadded": "Resource added to the media library.",
   "marketingosToastPrepareddirect": "Publication prepared in direct mode (API): a connector is configured.",
   "marketingosToastPreparedassisted": "Publication prepared in assisted mode: prepare, copy and open the platform, then confirm publication with its real URL.",
-  "marketingosToastConfirmed": "Publication confirmed: real URL and date recorded."
+  "marketingosToastConfirmed": "Publication confirmed: real URL and date recorded.",
+  "offlineOnline": "Online",
+  "offlineOffline": "Offline",
+  "offlineDegraded": "Sync pending",
+  "offlinePending": "{count} pending operation(s)",
+  "offlineRetry": "Retry",
+  "offlineQueued": "Saved offline — will sync",
+  "offlineSynced": "Synced",
+  "offlineSyncfailed": "Sync failed — please retry"
 }

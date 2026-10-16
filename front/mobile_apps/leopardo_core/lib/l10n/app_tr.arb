@@ -6359,5 +6359,13 @@
   "marketingosToastAssetadded": "Kaynak medya kütüphanesine eklendi.",
   "marketingosToastPrepareddirect": "Yayın doğrudan modda (API) hazırlandı: bağlayıcı yapılandırıldı.",
   "marketingosToastPreparedassisted": "Yayın destekli modda hazırlandı: hazırlayın, kopyalayın ve platformu açın, ardından gerçek bağlantısıyla yayını onaylayın.",
-  "marketingosToastConfirmed": "Yayın onaylandı: gerçek bağlantı ve tarih kaydedildi."
+  "marketingosToastConfirmed": "Yayın onaylandı: gerçek bağlantı ve tarih kaydedildi.",
+  "offlineOnline": "Çevrimiçi",
+  "offlineOffline": "Çevrimdışı",
+  "offlineDegraded": "Eşitleme bekliyor",
+  "offlinePending": "{count} bekleyen işlem",
+  "offlineRetry": "Yeniden dene",
+  "offlineQueued": "Çevrimdışı kaydedildi — eşitlenecek",
+  "offlineSynced": "Eşitlendi",
+  "offlineSyncfailed": "Eşitleme başarısız — yeniden deneyin"
 }

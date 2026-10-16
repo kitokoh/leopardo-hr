@@ -8032,5 +8032,15 @@
       "preparedAssisted": "Publication préparée en mode assisté : préparez, copiez et ouvrez la plateforme, puis confirmez la mise en ligne avec son URL réelle.",
       "confirmed": "Publication confirmée : URL et date réelles enregistrées."
     }
+  },
+  "offline": {
+    "online": "En ligne",
+    "offline": "Hors ligne",
+    "degraded": "Synchronisation en attente",
+    "pending": "{count} opération(s) en attente",
+    "retry": "Réessayer",
+    "queued": "Enregistré hors ligne — sera synchronisé",
+    "synced": "Synchronisé",
+    "syncFailed": "Synchronisation impossible — réessayez"
   }
 }

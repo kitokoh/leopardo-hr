@@ -6359,5 +6359,13 @@
   "marketingosToastAssetadded": "Ressource ajoutée à la médiathèque.",
   "marketingosToastPrepareddirect": "Publication préparée en mode direct (API) : un connecteur est configuré.",
   "marketingosToastPreparedassisted": "Publication préparée en mode assisté : préparez, copiez et ouvrez la plateforme, puis confirmez la mise en ligne avec son URL réelle.",
-  "marketingosToastConfirmed": "Publication confirmée : URL et date réelles enregistrées."
+  "marketingosToastConfirmed": "Publication confirmée : URL et date réelles enregistrées.",
+  "offlineOnline": "En ligne",
+  "offlineOffline": "Hors ligne",
+  "offlineDegraded": "Synchronisation en attente",
+  "offlinePending": "{count} opération(s) en attente",
+  "offlineRetry": "Réessayer",
+  "offlineQueued": "Enregistré hors ligne — sera synchronisé",
+  "offlineSynced": "Synchronisé",
+  "offlineSyncfailed": "Synchronisation impossible — réessayez"
 }

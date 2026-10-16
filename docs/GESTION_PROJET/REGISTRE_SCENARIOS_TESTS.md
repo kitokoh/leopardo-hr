@@ -1285,3 +1285,16 @@ restent les gates applicables.
   clés i18n ×4 (`front/admin-dashboard/src/i18n/locales/*.json`).
 - **Surface mobile** : aucun contrat mobile modifié — aucun scénario mobile
   nouveau requis.
+
+## Mise à jour 2026-10-16 — KDS/POS branchés sur la file hors-ligne (PR #8535, issues #8493, #8494)
+
+- **Surface API** : aucun changement backend — aucun scénario API nouveau requis.
+- **Surface web (front/web)** : les écrans cuisine (KDS) et caisse (POS) passent par la
+  file hors-ligne partagée. Nouveaux : hook `useOfflineSync` (câblage DOM online/offline,
+  rejeu à la reconnexion, erreurs conservées) et composant `ConnectionIndicator`
+  (état de connexion + opérations en attente + « Réessayer »). Scénarios Jest :
+  `use-offline-sync.test.ts` (4 cas : envoi en ligne, mise en file hors ligne + rejeu,
+  idempotence, échec conservé) ; `restaurant-kitchen-page.test.tsx` (4 cas, inchangés).
+  Le POS utilise une clé d'idempotence STABLE (session + panier) → pas de double commande.
+- **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
+  partagé `offline.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
