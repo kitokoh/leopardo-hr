@@ -301,12 +301,12 @@ export const pageMetadata = {
   'packs-agence-voyage': {
     title: "Logiciel agence de voyage — pack offert",
     description:
-      "Dossiers clients, billetterie, commissions et paie des équipes au même endroit : le pack Agence de voyage Leopardo est offert — activé en quelques minutes.",
+      "Dossiers clients, billetterie, paiements et paie des équipes au même endroit : le pack Agence de voyage Leopardo est offert — activé en quelques minutes.",
     keywords: [
       "logiciel agence de voyage",
       "billetterie agence",
       "CRM voyage",
-      "gestion commissions voyage",
+      "paiements agence de voyage",
     ],
     ogImage: `${siteUrl}/og/default.png`,
   },
@@ -657,7 +657,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     packs: { title: "A free pack for your trade", description: "A free Leopardo pack per trade: restaurant, fuel station, school, travel agency. Apps, flows and defaults of your industry — activated free, no credit card." },
     'packs-station-service': { title: "Fuel station crew management — free pack", description: "Per-post clock-ins, 3×8 rotations, hours and overtime to payroll: the Leopardo Fuel Station Pack is free — activated in minutes." },
     'packs-ecole': { title: "School staff management — free pack", description: "Staff attendance, leave, replacements and payroll aligned with the school calendar: the Leopardo School Pack is free — activated in minutes." },
-    'packs-agence-voyage': { title: "Travel agency management — free pack", description: "Client files, ticketing, commissions and team payroll in one place: the Leopardo Travel Agency Pack is free — activated in minutes." },
+    'packs-agence-voyage': { title: "Travel agency management — free pack", description: "Client files, ticketing, payments and team payroll in one place: the Leopardo Travel Agency Pack is free — activated in minutes." },
     pricing: { title: "Transparent Pricing | Flexible Plans", description: "Simple pricing: Free €0 (5 emp.), Pilot €29/month (30 emp.), Operations €79/month (200 emp.), Enterprise on quote. 14-day free trial." },
     about: { title: "About Us | Our Mission and Team", description: "Discover our mission, team and values. We help SMBs manage their employees with a mobile-first HR platform." },
     blog: { title: "Blog & Resources | HR Guides and Tips", description: "Guides, articles and webinars about HR management, payroll and productivity for SMBs." },

@@ -42,13 +42,13 @@ function hasWebGL(): boolean {
 }
 
 export function HeroScene3D({
-  moduleLinks,
+  onSelectModule,
   moduleLabels,
   hint,
   dimmed = false,
 }: {
-  /** #8390 — href par module orbital : rend la scène cliquable (colonne héro). */
-  moduleLinks?: string[];
+  /** Mission Leopardo — index du module cliqué : le parent ouvre la fiche. */
+  onSelectModule?: (index: number) => void;
   /** #8404 — libellé par module orbital (affordance, même ordre que les liens). */
   moduleLabels?: string[];
   /** #8404 — indice d'interaction sous la scène (mode interactif uniquement). */
@@ -97,7 +97,7 @@ export function HeroScene3D({
     return (
       <HeroBusinessOS3D
         reducedMotion={reducedMotion}
-        moduleLinks={moduleLinks}
+        onSelectModule={onSelectModule}
         moduleLabels={moduleLabels}
         hint={hint}
         dimmed={dimmed}

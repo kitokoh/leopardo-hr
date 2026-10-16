@@ -11,11 +11,12 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowRight, Check, Fuel, Gift, GraduationCap, Plane, UtensilsCrossed } from 'lucide-react';
+import { ArrowRight, Check, Fuel, Gift, Globe, GraduationCap, Plane, UtensilsCrossed } from 'lucide-react';
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer } from '@/modules/vitrine';
 import { HeroScene3D } from '@/modules/vitrine/components/hero/HeroScene3D';
 import { PACKS_HUB_COPY, packsHubCardHref } from '@/modules/vitrine/data/pack-pages';
+import { getSolutionDetail } from '@/modules/vitrine/data/solution-catalog';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { withLocaleHref } from '@/modules/vitrine/lib/locale-href';
 
@@ -27,6 +28,10 @@ export default function PacksHubPage() {
   const searchParams = useSearchParams();
   const search = searchParams.toString();
   const copy = PACKS_HUB_COPY[locale] ?? PACKS_HUB_COPY.fr;
+  // Mission Leopardo — « Trade » rejoint les offres : il répond d'abord au
+  // modèle d'activité (international / domestique), puis au métier. Données
+  // issues du catalogue unique (aucune copie métier dupliquée ici).
+  const tradeEntry = getSolutionDetail('trade', locale);
 
   return (
     <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
@@ -100,6 +105,34 @@ export default function PacksHubPage() {
                 </motion.div>
               );
             })}
+
+            {tradeEntry && (
+              <motion.div
+                initial={{ y: 24, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="sm:col-span-2"
+              >
+                <Link
+                  href={withLocaleHref(tradeEntry.href, search)}
+                  className="group relative flex h-full flex-col rounded-2xl border border-emerald-300/60 bg-gradient-to-br from-emerald-50/80 to-cyan-50/60 p-6 transition hover:border-emerald-400 hover:shadow-xl dark:border-emerald-800/60 dark:from-emerald-950/30 dark:to-slate-900/60 dark:hover:border-emerald-600"
+                >
+                  <span className="absolute right-5 top-5 inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-emerald-700 ring-1 ring-emerald-500/25 dark:text-emerald-300">
+                    {copy.freeBadge}
+                  </span>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400">
+                    <Globe className="h-6 w-6" aria-hidden="true" />
+                  </div>
+                  <h2 className="mt-4 text-xl font-bold text-slate-900 dark:text-white">{tradeEntry.name}</h2>
+                  <p className="mt-2 flex-1 text-sm leading-6 text-slate-600 dark:text-slate-400">{tradeEntry.tagline}</p>
+                  <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                    {tradeEntry.cta}
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                  </span>
+                </Link>
+              </motion.div>
+            )}
           </div>
           <motion.p
             initial={{ opacity: 0 }}

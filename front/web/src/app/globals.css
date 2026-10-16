@@ -227,6 +227,24 @@ html {
   }
 }
 
+/* ── Cartes géographiques du fond de constellation (Option A) ──────────────────
+   Rotation lente France → Algérie → Turquie → Tchad → Afrique : une carte
+   s'efface pendant que la suivante apparaît (fondu croisé porté par
+   `.geo-map-layer`). Style pur, donc ici et non dans le TSX (même garde
+   i18n/design-tokens que `.france-constellation-drift` ci-dessus).
+   Neutralisé en `prefers-reduced-motion` : la première carte reste affichée,
+   sans fondu — le décor est purement visuel, aucune information n'est perdue. */
+.geo-map-layer {
+  transition: opacity 1400ms ease-in-out;
+  will-change: opacity;
+}
+@media (prefers-reduced-motion: reduce) {
+  .geo-map-layer {
+    transition: none;
+    will-change: auto;
+  }
+}
+
 /* ── Mascotte Leo (pieuvre) — flottement doux, purement décoratif ──────────
    Désactivé pour les utilisateurs en `prefers-reduced-motion` : la mascotte
    reste alors statique, aucune information n'est perdue. */
