@@ -71,15 +71,12 @@ final class SyncFarmActivities
                 ->whereNull('ended_at')
                 ->update(['ended_at' => $now]);
 
-            // Les activités disent ce que l'exploitation FAIT, elles ne
-            // suppriment jamais un outil déjà décidé par l'utilisateur.
-            foreach ($requested as $activity) {
-                // Valeur déjà validée par l'appelant (allowlist FarmActivity) : on
-                // ne crée pas de réglage d'outil pour une activité inconnue.
-                if (FarmActivity::tryFrom($activity) === null) {
-                    continue;
-                }
-
+            // Les activités disent ce que l'exploitation FAIT. `$requested` ne
+            // contient que des valeurs déjà résolues par l'enum FarmActivity
+            // (allowlist fail-closed) : aucun réglage d'outil n'est créé pour
+            // une activité inconnue. Une activité AJOUTÉE plus tard réactive le
+            // bloc de décision, elle ne supprime jamais un outil déjà décidé.
+            if ($requested !== []) {
                 foreach (FarmCapability::values() as $capability) {
                     $connection->table($capabilityTable)->insertOrIgnore([
                         'company_id' => $company->id,

@@ -7,8 +7,11 @@ namespace App\Modules\FarmOs\Interfaces\Api\V1\Controllers;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\FarmOs\Application\Actions\SyncFarmActivities;
 use App\Modules\FarmOs\Application\Actions\UpdateFarmCapabilities;
+use App\Modules\FarmOs\Domain\Enums\AreaUnit;
 use App\Modules\FarmOs\Domain\Enums\FarmActivity;
 use App\Modules\FarmOs\Domain\Enums\FarmCapability;
+use App\Modules\FarmOs\Domain\Enums\FarmOperationStatus;
+use App\Modules\FarmOs\Domain\Enums\FarmOperationType;
 use App\Modules\FarmOs\Domain\Models\FarmActivityRecord;
 use App\Modules\FarmOs\Domain\Services\FarmCapabilityGate;
 use App\Modules\FarmOs\Domain\Services\FarmCapabilityRecommender;
@@ -47,11 +50,11 @@ final class FarmSettingsController
                     'available' => FarmCapability::values(),
                 ],
                 'reference' => [
-                    'operation_types' => \App\Modules\FarmOs\Domain\Enums\FarmOperationType::values(),
-                    'operation_statuses' => \App\Modules\FarmOs\Domain\Enums\FarmOperationStatus::values(),
+                    'operation_types' => FarmOperationType::values(),
+                    'operation_statuses' => FarmOperationStatus::values(),
                     'area_units' => array_map(
-                        static fn (\App\Modules\FarmOs\Domain\Enums\AreaUnit $unit): string => $unit->value,
-                        \App\Modules\FarmOs\Domain\Enums\AreaUnit::cases()
+                        static fn (AreaUnit $unit): string => $unit->value,
+                        AreaUnit::cases()
                     ),
                 ],
             ],
@@ -131,7 +134,7 @@ final class FarmSettingsController
     {
         $payload = [];
 
-        foreach (\App\Modules\FarmOs\Domain\Models\FarmActivityRecord::query()->orderBy('id')->get() as $record) {
+        foreach (FarmActivityRecord::query()->orderBy('id')->get() as $record) {
             $payload[] = [
                 'activity' => $record->activity,
                 'is_primary' => (bool) $record->is_primary,
