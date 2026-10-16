@@ -43,6 +43,24 @@ class RestaurantPrintJob extends Model
         'failed_at',
     ];
 
+    /**
+     * Valeurs par defaut portees par le MODELE (et non seulement par le defaut
+     * de colonne cote base) : un travail cree sans statut explicite est
+     * immediatement `pending` dans l'instance en memoire, sans relecture.
+     *
+     * Correction detectee par l'execution reelle de la suite Feature
+     * (REST-OS-2) : l'insert n'alimentait pas l'attribut cote instance et
+     * `$job->status` valait null apres `create()`.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'ticket_kind' => 'kitchen',
+        'revision' => 1,
+        'status' => 'pending',
+        'attempts' => 0,
+    ];
+
     protected $casts = [
         'ticket_kind' => PrintTicketKind::class,
         'revision' => 'integer',

@@ -13,6 +13,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPrintJob;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -81,9 +82,23 @@ class RestaurantPrintJobPersistenceTest extends TestCase
 
         RestaurantPrintJob::create($attributes);
 
-        $this->expectException(QueryException::class);
+        // Rejeu de la meme cle metier : la contrainte unique doit refuser.
+        // Le second INSERT est isole dans un SAVEPOINT (transaction imbriquee)
+        // afin que la violation n'avorte pas la transaction du test sous
+        // PostgreSQL (sinon le teardown echoue en « current transaction is
+        // aborted »). Correction detectee par l'execution reelle (REST-OS-2).
+        $violated = false;
 
-        RestaurantPrintJob::create($attributes);
+        try {
+            DB::transaction(static fn () => RestaurantPrintJob::create($attributes));
+        } catch (QueryException) {
+            $violated = true;
+        }
+
+        $this->assertTrue(
+            $violated,
+            'La cle metier (company, commande, type, revision) doit etre unique par tenant.'
+        );
     }
 
     public function test_the_repository_resolves_a_job_by_business_key_scoped_to_tenant(): void
