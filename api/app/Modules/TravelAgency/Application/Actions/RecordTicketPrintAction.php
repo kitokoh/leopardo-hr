@@ -7,7 +7,7 @@ namespace App\Modules\TravelAgency\Application\Actions;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Domain\Models\TravelTicketPrintEvent;
-use Illuminate\Support\Facades\DB;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelTicketPrintRecorder;
 
 /**
  * #8544 (TRAVEL-OS) — trace une mise à disposition du PDF d'un billet.
@@ -23,6 +23,10 @@ use Illuminate\Support\Facades\DB;
  *
  * Aucune écriture sur `travel_tickets` : ce journal ne touche ni au statut, ni
  * à `checked_in_at`. Réimprimer n'embarque personne.
+ *
+ * La transaction et le verrou vivent dans
+ * {@see TravelTicketPrintRecorder} (Infrastructure) : l'Application ne touche
+ * pas aux façades Laravel (garde CI #6568).
  */
 final class RecordTicketPrintAction
 {
@@ -30,34 +34,14 @@ final class RecordTicketPrintAction
 
     public const CHANNEL_OFFLINE_SYNC = 'offline_sync';
 
+    public function __construct(private readonly TravelTicketPrintRecorder $recorder) {}
+
     public function execute(
         TravelTicket $ticket,
         Employee $actor,
         bool $firstMaterialisation,
         string $channel = self::CHANNEL_API,
     ): TravelTicketPrintEvent {
-        return DB::transaction(function () use ($ticket, $actor, $firstMaterialisation, $channel): TravelTicketPrintEvent {
-            // Sérialise les impressions simultanées du MÊME billet (deux agents
-            // au même guichet) : le compteur reste strictement croissant.
-            // Un `lockForUpdate()` sur un agrégat est refusé par PostgreSQL —
-            // on verrouille donc la ligne du billet, puis on compte.
-            TravelTicket::query()->whereKey($ticket->id)->lockForUpdate()->firstOrFail();
-
-            $previous = TravelTicketPrintEvent::query()
-                ->where('ticket_id', $ticket->id)
-                ->count();
-
-            $event = new TravelTicketPrintEvent([
-                'ticket_id' => $ticket->id,
-                'employee_id' => $actor->id,
-                'channel' => $channel,
-                'reprint_number' => $previous,
-                'is_reprint' => ! $firstMaterialisation || $previous > 0,
-            ]);
-
-            $event->save();
-
-            return $event;
-        });
+        return $this->recorder->record($ticket, $actor, $firstMaterialisation, $channel);
     }
 }
