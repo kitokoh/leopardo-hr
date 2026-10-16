@@ -111,7 +111,44 @@ Tranche 2 : intrants/stock/matériel/récoltes · Tranche 3 : élevage (cheptel,
 santé animale, productions) · Tranche 4 : achats/ventes/coûts/rapports/hors-ligne · Tranche 5 :
 assistant agricole et ports d'intégration externes inactifs par défaut.
 
-## 6. Hors périmètre assumé
+## 6. Issues GitHub et traçabilité de la mission
+
+Les issues Farm OS ont été créées **avant** l'ouverture de la PR de cette tranche. Point de collaboration
+important : deux créations successives ont eu lieu le même jour (2026-10-16, ~05:09 et ~05:10 UTC),
+produisant **11 groupes thématiques dupliqués ×2** (#8549→#8560 puis #8551→#8570). Aucune n'a été
+supprimée ni réécrite par cette PR : supprimer une issue référencée peut casser des liens depuis
+d'autres branches, c'est une décision de mainteneur.
+
+**Référence canonique (la plus complète et labellisée) :** #8560, #8561, #8562, #8563, #8564,
+#8565, #8566, #8567, #8568, #8569, #8570.
+**Doublons précoces à fermer en tant que `duplicate`** (décision mainteneur) : #8549→#8560,
+#8550→#8561, #8551→#8562, #8552→#8563, #8553→#8564, #8554→#8565, #8555→#8566, #8556→#8567,
+#8557→#8568, #8558→#8569, #8559→#8570.
+
+### Correspondance groupes thématiques ↔ code livré
+
+| Issue canonique | Groupe | État du code |
+|---|---|---|
+| #8560 | T0.1 Fondations / catalogue / gate | **Livré** (manifest, provider, ModuleRegistry, feature-flags, alias, routes, BC-37, parité docs) |
+| #8561 | T0.2 Onboarding agricole | Partiel : persistance des activités + recommandation livrées ; étapes 2/3/4 côté front à faire |
+| #8562 | T1.1 Exploitations et parcelles | **Livré** (sites, parcelles, historique, garde de superficie) |
+| #8563 | T1.2 Interventions et calendrier | **Livré** (10 types, machine à états, idempotence terrain) |
+| #8564 | T1.3 Travailleurs et équipes | Partiel : équipes + affectation livrées ; matrice de rôles/invitations à finaliser |
+| #8565 | T2.1 Intrants et stocks | Non commencé (conception seulement) |
+| #8566 | T2.2 Matériel agricole | Non commencé (conception seulement) |
+| #8567 | T3.1 Élevage | Non commencé (conception seulement) |
+| #8568 | T3.2 Récoltes et traçabilité | Non commencé (conception seulement) |
+| #8569 | T4.1 Ventes, achats, coûts | Non commencé (conception seulement) |
+| #8570 | T5.1 Mobile, hors-ligne, assistant | Non commencé (conception seulement) |
+
+Un fichier de test `tests/Unit/Modules/FarmOs/**` correspondant à **T0.1/T1.1/T1.2** est livré par cette tranche.
+
+> L'issue de diagnostic #8571 créée accidentellement pendant la vérification d'accès (contrôle d'écriture
+> de l'API) a été **fermée** avec explication — jamais supprimée. La référence `#8380..#8389` du message
+> de commit de cette tranche est erronée : elle visait des numéros estimés ; la traçabilité réelle est
+> le tableau ci-dessus. L'historique n'a pas été réécrit (pas de `push --force`, interdit par la mission).
+
+## 7. Hors périmètre assumé
 
 Télémétrie et capteurs · OCR · imagerie satellite · météo et prix de marché temps réel · POS ·
 paie agricole par pays · application mobile dédiée avant audit Phase 4.
