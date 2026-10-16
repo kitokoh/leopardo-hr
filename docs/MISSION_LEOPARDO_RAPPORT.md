@@ -1,7 +1,7 @@
 # Rapport de clôture — Mission Leopardo (vitrine, constellation, présentation des solutions)
 
 > Branche : `mission/leopardo-vitrine-constellation`
-> Commits : `ddd7b19` (implémentation, 20 fichiers, +1918 / −101) · `44d21d9` (rapport) · mise à jour finale du présent rapport
+> Commits : `ddd7b19` (implémentation, 20 fichiers, +1918 / −101) · `44d21d9`/`d5239ed` (rapports + paquet GitHub) · `f88201b4` (sous-mission Travel OS : suppression de la sur-promesse « commissions »)
 > Dépôt : `kitokoh/leopardo-hr`
 > Date : 2026-10-16
 
@@ -205,3 +205,76 @@ Le dépôt étant **public**, la lecture fonctionne sans jeton :
 | `main` propre et verte | ✅ intacte (aucun push) |
 
 > **Aucune fonction critique n'est simulée.** La mission est livrée à l'état **« préparée mais bloquée »** que la consigne prévoit en l'absence d'accès GitHub : le build et les e2e n'ont pas pu conclure pour des raisons **d'environnement** dûment mesurées, jamais masquées.
+
+---
+
+## 10. Sous-mission « TRAVEL OS OPÉRATIONNEL » (mise à jour du 2026-10-16)
+
+Cette section clôt la sous-mission dédiée : vérifier que la fiche Travel OS de la
+constellation reflète le catalogue **réel**, et qu'aucune fonction annoncée n'est
+inexistante ou simulée.
+
+### 10.1 Audit du module réel
+
+Le module `TravelAgency` existe bel et bien côté API, avec un manifeste dédié :
+
+- **Manifeste** `api/app/Modules/TravelAgency/Domain/Manifests/TravelAgencyManifest.php`
+  (slug `travelagency`, label « Travel OS », maturité **`pilot`**).
+- **Capacités réellement présentes** : réseau de routes et d'escales, trajets datés
+  avec tarifs par classe et plans de sièges, réservation au guichet **et** en ligne,
+  billetterie et e-billets, check-in, remboursements, devis, **boutique publique en
+  ligne**, **locations de véhicules**, **fidélité voyageur**, multi-devises.
+- **Rôles métier** (`TravelStaffRole`) : guichetier, contrôleur, chauffeur, chef de bureau.
+- **Hors périmètre du module** : aucune notion de **commission d'agence** (a fortiori
+  par agent). Le modèle `Commission` appartient au **programme partenaire** (module
+  `Growth`, relié à `payments.partner_id`) — sans aucun lien avec les ventes de l'agence.
+
+### 10.2 Sur-promesse identifiée et corrigée
+
+La vitrine annonçait « commissions » pour l'agence de voyage sur **9 fichiers / 18 chaînes**
+(4 locales × 2 applications + SEO + carte de verticale). Toutes ces surfaces ont été
+corrigées dans le commit `f88201b4` :
+
+| Surface | Fichier(s) | Correction |
+|---|---|---|
+| Fiche pack + carte du hub (4 locales) | `front/web/src/modules/vitrine/data/pack-pages.ts` | « commissions »/« commissions par agent » → « paiements », « règlements des ventes suivis » |
+| Locales vitrine | `front/web/src/lib/i18n/locales/{fr,en,tr,ar}.json` (`packsTravelDesc`) | « commissions »/« komisyonlar »/« العمولات » → « paiements / payments / ödemeler / المدفوعات » |
+| Locales back-office | `front/admin-dashboard/src/i18n/locales/{fr,en,tr,ar}.json` (`packsTravelDesc`) | idem |
+| SEO du pack | `front/web/src/modules/vitrine/lib/seo.ts` (description + `keywords`) | « commissions » retiré ; mot-clé → « paiements agence de voyage » |
+| Carte de verticales (fr/en) | `front/web/src/modules/vitrine/components/sections/VerticalsSection.tsx` | « commissions » → « paiements » |
+| Fiche constellation Travel OS | `front/web/src/modules/vitrine/data/solution-catalog.ts` | fiche **ancrée sur le manifeste réel** (routes, trajets, sièges, billetterie, boutique, locations, fidélité, règlements) + profils issus de `TravelStaffRole` |
+
+**Aucune fonctionnalité n'est désormais annoncée qui ne soit réellement portée par le
+module.** Les éléments conservés (billetterie, dossiers clients, paie, guichet/en ligne)
+sont tous vérifiables dans le module.
+
+### 10.3 Tests — résultats réels (rejoués sur les fichiers modifiés)
+
+| Vérification | Résultat |
+|---|---|
+| Validité JSON des 8 locales éditées (`JSON.parse`) | ✅ **8/8 OK** |
+| Occurrences « commission » liées au voyage restantes | ✅ **aucune** hors le test-gardien (attendu) |
+| Tests anti-sur-promesse + ancrage catalogue | ✅ **15/15** (`mission-leopardo.test.tsx`) |
+| Suite vitrine complète (`--maxWorkers=2`) | ✅ **55 suites, 638 tests, 0 échec** |
+| Gardes `check:french-copy`, `check:mojibake` | ✅ OK |
+| `tsc --noEmit` · `eslint --max-warnings 0` | ✅ exit 0 |
+
+### 10.4 Build de production — nouvelle tentative unique : toujours non concluant
+
+`next build` a été **relancé une fois** cette session :
+
+- `MEM_MAX` = `2147483648` (2 Gio) · `MEM_PEAK` = **2 147 491 840** (plafond atteint) ;
+- `next build` → **`Killed`, exit 137** — **OOM d'environnement** confirmé (Turbopack,
+  mémoire hors tas JS), **pas** une erreur applicative.
+
+Conformément à la règle de diagnostic, **aucune tentative supplémentaire** n'a été faite
+le plafond étant prouvé. Le build reste **à rejouer en CI**. La surface qu'il couvrirait
+est déjà couverte par `tsc --noEmit` (0 erreur), `eslint` (0 warning) et 638 tests verts.
+
+### 10.5 État de la branche
+
+- **Branche** : `mission/leopardo-vitrine-constellation`, **arbre propre**.
+- **Dernier commit** : `f88201b4` — `fix(travel): remove unverified commission claims from public surfaces`.
+- **`main`** : **intacte** (aucun push ; le blocage d'accès GitHub reste le seul obstacle).
+- **Prérequis manquant (inchangé)** : un **PAT GitHub limité au dépôt `kitokoh/leopardo-hr`,
+  portée `repo`** (ou `contents:write` + `issues:write`).
