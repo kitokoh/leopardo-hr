@@ -1,8 +1,8 @@
 # Rapport de clôture — Mission Leopardo (vitrine, constellation, présentation des solutions)
 
-> Branche : `mission/leopardo-vitrine-constellation`
-> Commits : `ddd7b19` (implémentation, 20 fichiers, +1918 / −101) · `44d21d9`/`d5239ed` (rapports + paquet GitHub) · `f88201b4` (sous-mission Travel OS : suppression de la sur-promesse « commissions »)
-> Dépôt : `kitokoh/leopardo-hr`
+> Branche : `mission/leopardo-vitrine-constellation` (fusionnée puis supprimée)
+> Commits : `ddd7b19` (implémentation, 20 fichiers, +1918 / −101) · `44d21d9`/`d5239ed` (rapports + paquet GitHub) · `f88201b4` (sous-mission Travel OS : suppression de la sur-promesse « commissions ») · correctifs CI (i18n source, guard CSS, gouvernance, sync-mobile, CHANGELOG)
+> Dépôt : `kitokoh/leopardo-hr` · PR [#8593](https://github.com/kitokoh/leopardo-hr/pull/8593) fusionnée (`2a45906eb`)
 > Date : 2026-10-16
 
 ---
@@ -271,10 +271,57 @@ Conformément à la règle de diagnostic, **aucune tentative supplémentaire** n
 le plafond étant prouvé. Le build reste **à rejouer en CI**. La surface qu'il couvrirait
 est déjà couverte par `tsc --noEmit` (0 erreur), `eslint` (0 warning) et 638 tests verts.
 
-### 10.5 État de la branche
+### 10.5 Partie distante — exécutée (accès GitHub fourni)
 
-- **Branche** : `mission/leopardo-vitrine-constellation`, **arbre propre**.
-- **Dernier commit** : `f88201b4` — `fix(travel): remove unverified commission claims from public surfaces`.
-- **`main`** : **intacte** (aucun push ; le blocage d'accès GitHub reste le seul obstacle).
-- **Prérequis manquant (inchangé)** : un **PAT GitHub limité au dépôt `kitokoh/leopardo-hr`,
-  portée `repo`** (ou `contents:write` + `issues:write`).
+Un PAT GitHub (portée `repo`, compte `kitokoh`) a été fourni pour cette session et utilisé
+**uniquement** comme identifiant d'authentification (fichier `/tmp/ghtok` en 600 + credential
+helper éphémère). Il n'a été écrit ni dans le code, ni dans les commits, ni dans les issues,
+ni dans les logs, ni dans ce rapport, et il a été supprimé en fin de session.
+
+**Collaboration vérifiée avant écriture** : issues ouvertes, branches distantes et PR
+récentes inspectées. Travaux d'autres agents détectés (PR #8487 Trade OS, #8572 Farm OS,
+issues TRAVEL-OS) — **aucun chevauchement de fichiers** avec le périmètre vitrine. `main`
+avait avancé de **30 commits** puis de **13 commits** pendant la session : la branche a été
+**fusionnée avec `origin/main` deux fois** (merge automatique, sans conflit), et la suite
+complète a été rejouée après chaque fusion. Aucun travail d'autrui n'a été écrasé.
+
+**Issues créées** (labels `enhancement`, `frontend`, `business-os`, `Agent-Ready`) :
+
+| Issue | Titre | État |
+|---|---|---|
+| [#8588](https://github.com/kitokoh/leopardo-hr/issues/8588) | LEO-VIT-01 — Repositionner « Trade » dans les packs/offres | ✅ fermée |
+| [#8589](https://github.com/kitokoh/leopardo-hr/issues/8589) | LEO-VIT-02 — Constellation = solutions métier réelles | ✅ fermée |
+| [#8590](https://github.com/kitokoh/leopardo-hr/issues/8590) | LEO-VIT-03 — Fiche interactive au clic sur une étoile | ✅ fermée |
+| [#8591](https://github.com/kitokoh/leopardo-hr/issues/8591) | LEO-VIT-04 — CTA sous la constellation | ✅ fermée |
+| [#8592](https://github.com/kitokoh/leopardo-hr/issues/8592) | LEO-VIT-05 — Cartes géographiques animées en fond | ✅ fermée |
+
+**Pull Request** : [#8593](https://github.com/kitokoh/leopardo-hr/pull/8593) — *feat(vitrine):
+constellation = solutions métier, fiche au clic, CTA et cartes géo animées* — **fusionnée**
+(merge commit `2a45906eb39a7e7f1ab9448f4da80a2be3fc0829`). Branche de mission supprimée
+automatiquement par GitHub à la fusion.
+
+**CI — 3 échecs réels diagnostiqués et corrigés sur la branche** (commits `f88201b4` →
+`bcf399dc` → correctifs) :
+
+| Check | Cause réelle | Correctif |
+|---|---|---|
+| `I18N — No new hardcoded strings (diff)` | 2 faux positifs : sélecteur CSS de focus-trap et media query `(prefers-reduced-motion: reduce)` signalés comme chaînes utilisateur | Motifs ajoutés au guard `check-i18n-diff.js` + fixtures dans `check-i18n-diff-test.sh` (procédure canonique #7482) |
+| `validate-and-sync` | Catalogues **générés** édités au lieu de la source `shared/i18n/locales` → `versions.json` désynchronisé | Correction dans la **source** puis `sync-web.js` / `sync-mobile.js` / `sync-backend.js` (#4805) |
+| `Governance Gates (changelog + canonical files)` | Entrée CHANGELOG manquante + registre de scénarios non mis à jour (surface admin touchée) | Entrée `[Unreleased]` ajoutée + entrée `REGISTRE_SCENARIOS_TESTS.md` |
+
+**Checks requis par la protection de `main`** (4) — **tous verts** sur la PR :
+`PHPStan — Strict (Core/Modules/Shared, level 8)` · `Module Structure Validator` ·
+`Frontend — ESLint + TypeScript` · `actionlint (+ shellcheck)`.
+
+**Échecs non bloquants, préexistants sur `main`** (hors périmètre, non causés par la mission) :
+jobs Flutter `Analyze leopardo_*` / `Desktop verify leopardo_*` / `Distribute * to Firebase`
+— échec `pub get` (« leopardo_employee depends on leopardo_core from path, version solving
+failed »). Vérifié : `mobile-apps-ci` échoue **aussi sur `main`** (`2c47c5df1`), avant toute
+contribution de cette mission.
+
+### 10.6 État final
+
+- **`main`** : `2a45906eb` — **propre**, à jour avec `origin/main`, contient la fusion de la PR #8593.
+- **Branche de mission** : supprimée (auto à la fusion).
+- **Issues** : #8588–#8592 **fermées** par la fusion.
+- **Aucun secret** dans le code, les commits, les issues, les logs ou ce rapport ; `/tmp/ghtok` supprimé.
