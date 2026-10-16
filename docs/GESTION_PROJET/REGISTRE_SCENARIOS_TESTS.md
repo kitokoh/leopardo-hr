@@ -1299,7 +1299,6 @@ restent les gates applicables.
 - **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
   partagé `offline.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
 
-<<<<<<< HEAD
 ## Mise à jour 2026-10-16 — BC-24 TRAVEL OS : QR du billet, vérification d'authenticité, position véhicule (PR #8541, issues #8538, #8539, #8540)
 
 - **Surface API** : deux routes ajoutées à `api/routes/modules/travelagency.php` —
