@@ -1228,6 +1228,63 @@ paths:
           description: Reference ou code de controle invalide (reponse identique dans les deux cas)
         '422':
           description: Corps de requete invalide
+  /travel/tickets/{travelTicket}/print-events:
+    get:
+      tags:
+      - Travel
+      summary: Historique des mises a disposition du billet (emission + reimpressions)
+      description: >-
+        BC-24 TRAVEL OS (#8544) — trace des impressions : chaque mise a
+        disposition du PDF (premiere emission, puis reimpressions) est
+        journalisee avec l'operateur, le canal et un numero de reimpression
+        (`reprint_number = 0` pour la premiere emission, 1, 2, ... ensuite).
+        Reimprimer ne modifie JAMAIS le statut du billet : consulter un billet
+        n'est ni un check-in ni une consommation. Permission : manager (meme
+        perimetre que le controle d'embarquement) ; cross-tenant -> 404.
+      parameters:
+      - name: travelTicket
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Historique des impressions du billet
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ticket_number:
+                        type: string
+                      reprints_count:
+                        type: integer
+                      events:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            reprint_number:
+                              type: integer
+                            is_reprint:
+                              type: boolean
+                            channel:
+                              type: string
+                            employee_id:
+                              type: integer
+                              nullable: true
+                            occurred_at:
+                              type: string
+                              nullable: true
+        '401':
+          description: Non authentifie
+        '403':
+          description: Role manager requis
+        '404':
+          description: Billet inconnu dans le tenant de la cle
   /travel/vehicles/{travelVehicle}/position:
     post:
       tags:

@@ -7,10 +7,12 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Application\Actions\CheckInTicketAction;
+use App\Modules\TravelAgency\Application\Actions\RecordTicketPrintAction;
 use App\Modules\TravelAgency\Application\Actions\VerifyTicketAction;
 use App\Modules\TravelAgency\Domain\Enums\TicketStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
+use App\Modules\TravelAgency\Domain\Models\TravelTicketPrintEvent;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelTicketPdfGenerator;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelTicketPdfStorage;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelTicketResource;
@@ -122,8 +124,9 @@ class TravelTicketController extends Controller
         }
 
         $storage = app(TravelTicketPdfStorage::class);
+        $firstMaterialisation = $travelTicket->pdf_asset_id === null;
 
-        if ($travelTicket->pdf_asset_id === null) {
+        if ($firstMaterialisation) {
             $pdf = app(TravelTicketPdfGenerator::class)->generate($travelTicket);
             $path = $storage->store($travelTicket, $pdf);
             $travelTicket->forceFill(['pdf_asset_id' => crc32($path)])->save();
@@ -131,11 +134,58 @@ class TravelTicketController extends Controller
 
         $path = TravelTicketPdfStorage::PREFIX.'/'.$travelTicket->company_id.'/'.$travelTicket->ticket_number.'.pdf';
 
+        // #8544 — chaque mise à disposition est TRACÉE (opérateur, canal, numéro
+        // de réimpression). Réimprimer n'est ni un check-in ni une consommation :
+        // le statut du billet n'est jamais modifié ici.
+        $event = app(RecordTicketPrintAction::class)->execute($travelTicket, $actor, $firstMaterialisation);
+
         return response()->json([
             'data' => [
                 'ticket_number' => $travelTicket->ticket_number,
                 'pdf_url' => $storage->signedUrl($path),
                 'expires_in_minutes' => 30,
+                'reprint_number' => $event->reprint_number,
+                'is_reprint' => $event->is_reprint,
+            ],
+        ]);
+    }
+
+    /**
+     * #8544 — HISTORIQUE des mises à disposition du billet.
+     *
+     * Répond à « réimprimer un billet en conservant une trace de l'opération » :
+     * qui a réimprimé, quand, combien de fois. Borné au tenant ; un billet d'un
+     * autre tenant répond 404 (jamais 403, pour ne rien divulguer).
+     */
+    public function printHistory(Request $request, TravelTicket $travelTicket): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $travelTicket->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('viewPrintHistory', $travelTicket)) {
+            abort(403);
+        }
+
+        $events = TravelTicketPrintEvent::query()
+            ->where('ticket_id', $travelTicket->id)
+            ->orderByDesc('id')
+            ->get();
+
+        return response()->json([
+            'data' => [
+                'ticket_number' => $travelTicket->ticket_number,
+                'reprints_count' => $events->where('is_reprint', true)->count(),
+                'events' => $events->map(fn (TravelTicketPrintEvent $event): array => [
+                    'reprint_number' => $event->reprint_number,
+                    'is_reprint' => $event->is_reprint,
+                    'channel' => $event->channel,
+                    'employee_id' => $event->employee_id,
+                    'occurred_at' => $event->created_at?->toIso8601String(),
+                ])->all(),
             ],
         ]);
     }

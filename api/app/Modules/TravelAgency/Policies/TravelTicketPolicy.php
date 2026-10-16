@@ -42,4 +42,17 @@ class TravelTicketPolicy
     {
         return $actor->hasManagerRole('principal', 'rh');
     }
+
+    /**
+     * #8544 — lecture de l'HISTORIQUE des impressions (émission + réimpressions).
+     *
+     * Même périmètre que le contrôle d'embarquement : c'est une vue
+     * d'exploitation (qui a réimprimé quel billet, et combien de fois), pas une
+     * lecture ouverte à tout employé du tenant.
+     */
+    public function viewPrintHistory(Employee $actor, TravelTicket $ticket): bool
+    {
+        return $actor->hasManagerRole('principal', 'rh')
+            && $ticket->company_id === $actor->company_id;
+    }
 }

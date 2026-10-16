@@ -372,6 +372,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/articles/{travelArticle}/rate', [TravelEngagementController::class, 'rate']);
         Route::get('/articles/{travelArticle}/engagement', [TravelEngagementController::class, 'aggregates']);
         Route::get('/tickets/{travelTicket}/pdf', [TravelTicketController::class, 'pdf']);
+        // #8544 — historique des impressions (émission + réimpressions).
+        Route::get('/tickets/{travelTicket}/print-events', [TravelTicketController::class, 'printHistory']);
         Route::post('/tickets/{travelTicket}/revoke', [TravelTicketController::class, 'revoke']);
         // GET /reports/export (sync legacy) supprimé — le flux canonique est POST /reports/export (asset async, TravelExportController@store).
         Route::get('/webhook-subscriptions', [TravelWebhookSubscriptionController::class, 'index']);
