@@ -5853,5 +5853,35 @@ trait CreatesMvpSchema
                 $table->timestampTz('updated_at')->useCurrent();
             });
         }
+
+        // P0-1 (audit FuelStation) -- catalogue de prix serveur. Parite avec la
+        // migration tenant 2026_10_16_120000_9001_create_fuel_product_prices_table
+        // (issue #5443 : une table tenant recente doit exister dans la fixture,
+        // sinon les tests utilisant CreatesMvpSchema echouent en CI).
+        if (! Schema::hasTable($this->moduleTable('fuel_product_prices'))) {
+            Schema::create($this->moduleTable('fuel_product_prices'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('product_code', 80);
+                $table->string('unit_code', 20)->default('l');
+                $table->unsignedBigInteger('unit_price_minor');
+                $table->timestampTz('effective_from')->useCurrent();
+                $table->timestampTz('effective_to')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->unsignedInteger('created_by')->nullable()->index();
+                $table->text('notes')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+
+                $table->unique(
+                    ['company_id', 'product_code', 'unit_code', 'effective_from'],
+                    'fuel_product_prices_effective_unique'
+                );
+                $table->index(
+                    ['company_id', 'product_code', 'unit_code', 'effective_from'],
+                    'fuel_product_prices_resolution_idx'
+                );
+            });
+        }
     }
 }
