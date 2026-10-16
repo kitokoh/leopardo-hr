@@ -38,6 +38,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelDistributorKeyC
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelDistributorReadController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelEngagementController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelExportController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelFleetTrackingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHealthController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelLoyaltyController;
@@ -115,6 +116,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // Dernière position connue d'un véhicule (#8540) — ingestion par un
         // dispositif autorisé (boîtier GPS ou application).
         Route::post('/vehicles/{travelVehicle}/position', [TravelVehicleController::class, 'recordPosition']);
+
+        // Tableau de bord de suivi de la flotte (#8548) — lecture seule :
+        // dernière position connue, fraîcheur (récente/ancienne/indisponible),
+        // distinction mesure/estimation et départs à venir par véhicule.
+        // Aucun fournisseur de télémétrie n'est appelé ici.
+        Route::get('/fleet/tracking', [TravelFleetTrackingController::class, 'index']);
 
         // Routes ville→ville + étapes ordonnées (TRAVEL-307/#6037).
         Route::get('/routes', [TravelRouteController::class, 'index']);

@@ -1471,6 +1471,145 @@ paths:
           description: Vehicule inexistant ou hors du tenant
         '422':
           description: Coordonnees hors bornes ou source inconnue
+  /travel/fleet/tracking:
+    get:
+      tags:
+      - Travel
+      summary: Tableau de bord de suivi de la flotte
+      description: >-
+        BC-24 TRAVEL OS (#8548) — lecture seule. Reutilise la derniere position
+        connue livree par #8540 (aucune nouvelle table, aucun appel a un
+        fournisseur de telemetrie). Expose par vehicule : la position connue
+        (`null` si aucun dispositif n'a transmis — aucune coordonnee inventee),
+        la distinction mesure/estimation (`is_measured`), la FRAICHEUR
+        (`fresh` / `stale` / `unavailable`, seuil explicite
+        `travel.fleet_position.stale_after_minutes`) et les departs a venir.
+        Une position ancienne est signalee `stale` et une absence de donnee
+        `unavailable` — jamais presentees comme une position courante.
+        Permission : viewAny (tout employe du tenant) ; cross-tenant -> 404.
+      parameters:
+      - name: vehicle_id
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Cible un vehicule precis (hors tenant -> 404).
+      responses:
+        '200':
+          description: Tableau de bord de la flotte
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      vehicles:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            code:
+                              type: string
+                            registration_number:
+                              type: string
+                              nullable: true
+                            status:
+                              type: string
+                            position:
+                              type: object
+                              nullable: true
+                              description: >-
+                                Derniere position connue — `null` si aucun
+                                dispositif n'a transmis (aucune coordonnee
+                                inventee).
+                              properties:
+                                latitude:
+                                  type: number
+                                  format: float
+                                longitude:
+                                  type: number
+                                  format: float
+                                source:
+                                  type: string
+                                  enum: [gps, app, estimated]
+                                source_label:
+                                  type: string
+                                is_measured:
+                                  type: boolean
+                                  description: >-
+                                    `false` pour une position estimee — jamais
+                                    presentee comme une position GPS.
+                                recorded_at:
+                                  type: string
+                                  format: date-time
+                                  nullable: true
+                            freshness:
+                              type: object
+                              properties:
+                                state:
+                                  type: string
+                                  enum: [fresh, stale, unavailable]
+                                label:
+                                  type: string
+                                is_current:
+                                  type: boolean
+                                is_stale:
+                                  type: boolean
+                                is_unavailable:
+                                  type: boolean
+                                age_seconds:
+                                  type: integer
+                                  nullable: true
+                                stale_after_seconds:
+                                  type: integer
+                                  nullable: true
+                            upcoming_departures:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: integer
+                                  code:
+                                    type: string
+                                  departure_date:
+                                    type: string
+                                    format: date
+                                  departure_time:
+                                    type: string
+                                  status:
+                                    type: string
+                                  status_label:
+                                    type: string
+                      summary:
+                        type: object
+                        properties:
+                          vehicles:
+                            type: integer
+                          with_position:
+                            type: integer
+                          current:
+                            type: integer
+                          stale:
+                            type: integer
+                          unavailable:
+                            type: integer
+                          measured:
+                            type: integer
+                          estimated:
+                            type: integer
+                      stale_after_minutes:
+                        type: integer
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission de lecture de la flotte requise
+        '404':
+          description: Vehicule inexistant ou hors du tenant
   /travel/staff-assignments:
     get:
       tags:

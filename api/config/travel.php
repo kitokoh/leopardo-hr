@@ -45,6 +45,26 @@ return [
         'round_trip_discount_percent' => (int) env('TRAVEL_ROUND_TRIP_DISCOUNT_PERCENT', 0),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Suivi de flotte — fraîcheur de la dernière position connue (#8548)
+    |--------------------------------------------------------------------------
+    |
+    | Seuil au-delà duquel la dernière position connue d'un véhicule est
+    | considérée comme ANCIENNE. Aucun fournisseur de télémétrie n'étant
+    | intégré côté TravelAgency, la donnée ne provient que d'un dispositif
+    | autorisé (boîtier GPS ou application) : une position plus vieille que ce
+    | seuil ne doit jamais être présentée comme une position courante, et
+    | l'absence de donnée doit être affichée « indisponible » — jamais
+    | « à l'heure ».
+    |
+    */
+    'fleet_position' => [
+        'stale_after_minutes' => (int) env('TRAVEL_FLEET_POSITION_STALE_AFTER_MINUTES', 30),
+        // Nombre maximal de départs à venir retournés par véhicule.
+        'upcoming_departures_limit' => (int) env('TRAVEL_FLEET_POSITION_DEPARTURES_LIMIT', 5),
+    ],
+
     // TRAVEL-811 (#6101) — fidélité voyageur.
     'loyalty' => [
         // Points par billet (repli si la classe n'est pas listée).
