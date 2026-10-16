@@ -129,9 +129,13 @@ class FuelStationController extends Controller
 
         $this->authorize('delete', $station);
 
+        // Enveloppe uniforme de suppression du referentiel (§B-2 du lot 2) :
+        // le referentiel generique renvoie deja {id, deleted:true}. La station
+        // faisait exception -- contrat incoherent entre deux routes de la meme
+        // famille. Aucune suppression physique : la station est archivee.
         $station->update(['status' => 'archived']);
 
-        return response()->json(['data' => ['id' => $station->id, 'status' => 'archived']]);
+        return response()->json(['data' => ['id' => $station->id, 'status' => 'archived', 'deleted' => true]]);
     }
 
     /**

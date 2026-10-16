@@ -349,11 +349,24 @@ class FuelStockController extends Controller
         $runDateRaw = $request->validated()['run_date'] ?? now()->toDateString();
         $date = Carbon::parse(is_string($runDateRaw) ? $runDateRaw : now()->toDateString());
 
-        $result = app(RunFuelReconciliationAction::class)->execute($actor, (int) $station->getAttribute('id'), $date);
+        $stationId = (int) $station->getAttribute('id');
+
+        // Un run existant pour (station, jour) : la requete est un REJEU.
+        // L'information est exposee au client (`meta.replayed`) -- sans elle,
+        // l'exploitant ne peut pas distinguer un rapprochement neuf d'un
+        // recalcul du meme jour.
+        $replayed = FuelReconciliationRun::query()
+            ->where('company_id', $actor->company_id)
+            ->where('station_id', $stationId)
+            ->where('run_date', $date->toDateString())
+            ->exists();
+
+        $result = app(RunFuelReconciliationAction::class)->execute($actor, $stationId, $date);
 
         return response()->json([
-            'data' => [
-                'run' => $this->runPayload($result['run']),
+            'data' => $this->runPayload($result['run']),
+            'meta' => [
+                'replayed' => $replayed,
                 'variances' => $result['variances'],
             ],
         ]);
