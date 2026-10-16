@@ -281,5 +281,19 @@ return [
             'killable' => true,
             'description' => 'Solution VTC/taxi (BC-35, VTC-01/#8357 ; gate `module.vtc`) : réservation de courses, dispatch au plus proche chauffeur via le core géospatial `geo` (requis), tarification et suivi.',
         ],
+        // BC-37 FARM OS — verticale agricole (mission Farm OS) : exploitations et
+        // parcelles, calendrier des travaux, intrants et stock, materiel, cheptel,
+        // recoltes, achats/ventes, couts. Module requis : `rh` (employes, roles,
+        // permissions) — Farm OS ne cree AUCUN systeme de roles propre. Les 13
+        // outils agricoles sont des CAPACITES internes (farm_capabilities), pas
+        // des flags : voir ADR-FARM-0001. Fail-closed : defaut false, gate
+        // serveur `module.farm_os` sur les routes /api/v1/farm/*.
+        'farm_os' => [
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.36.0',
+            'killable' => true,
+            'description' => 'Solution agricole Farm OS (BC-37 ; gate `module.farm_os`) : agriculture vegetale, elevage et exploitations mixtes — parcelles, interventions, intrants, materiel, cheptel, recoltes, ventes, couts.',
+        ],
     ],
 ];

@@ -35,4 +35,7 @@ enum SolutionIndustry: string
     // (registre fermé, jamais de renommage) : verticale VTC/taxi et futures
     // solutions de mobilité.
     case Mobility = 'mobility';
+    // BC-37 FARM OS — verticale agricole (mission Farm OS) : agriculture
+    // végétale, élevage, exploitations mixtes.
+    case Agriculture = 'agriculture';
 }
