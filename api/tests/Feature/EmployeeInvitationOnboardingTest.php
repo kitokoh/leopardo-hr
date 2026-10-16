@@ -344,7 +344,21 @@ class EmployeeInvitationOnboardingTest extends TestCase
         // Le token est bien rotationné par le resend…
         $this->assertNotSame($previousTokenHash, $invitation->token_hash);
         // …mais les accès pré-assignés sont préservés (régression #7864/D1).
-        $this->assertSame($preAssigned, $invitation->metadata['resource_assignments'] ?? null);
+        //
+        // #8497 (finitions) — `user_invitations.metadata` est une colonne
+        // JSONB : PostgreSQL réordonne les clés d'un objet JSONB (il ne
+        // garantit AUCUN ordre de clés). Un `assertSame` sur le tableau
+        // entier échouait donc sur le seul ordre des clés
+        // (`resource_type`/`resource_id`/`access_level`), alors que les trois
+        // valeurs étaient bien préservées. On vérifie chaque champ
+        // explicitement — l'intention du test (les accès survivent au resend)
+        // est intégralement conservée, sans dépendre d'un ordre non garanti.
+        $preserved = $invitation->metadata['resource_assignments'] ?? null;
+        $this->assertIsArray($preserved);
+        $this->assertCount(1, $preserved);
+        $this->assertSame('vehicle', $preserved[0]['resource_type']);
+        $this->assertSame(42, $preserved[0]['resource_id']);
+        $this->assertSame('read', $preserved[0]['access_level']);
     }
 
     /**
