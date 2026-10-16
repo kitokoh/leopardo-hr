@@ -127,23 +127,29 @@ final class BuildTravelFleetTrackingAction
     {
         $today = Carbon::now()->startOfDay();
 
-        return TravelTrip::query()
+        $trips = TravelTrip::query()
             ->where('vehicle_id', $vehicle->id)
             ->whereIn('status', [TripStatus::PUBLISHED->value, TripStatus::SCHEDULED->value])
             ->whereDate('departure_date', '>=', $today)
             ->orderBy('departure_date')
             ->orderBy('departure_time')
             ->limit($limit)
-            ->get()
-            ->map(static fn (TravelTrip $trip): array => [
+            ->get();
+
+        $departures = [];
+
+        foreach ($trips as $trip) {
+            $departures[] = [
                 'id' => $trip->id,
                 'code' => $trip->code,
-                'departure_date' => $trip->departure_date?->toDateString(),
+                'departure_date' => $trip->departure_date->toDateString(),
                 'departure_time' => $trip->departure_time,
                 'status' => $trip->status->value,
                 'status_label' => $trip->status->label(),
-            ])
-            ->all();
+            ];
+        }
+
+        return $departures;
     }
 
     private function staleAfterMinutes(): int
