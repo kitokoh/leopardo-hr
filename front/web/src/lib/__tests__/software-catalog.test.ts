@@ -1,7 +1,9 @@
 import { getClientModuleAccess } from '@/lib/client-features';
 import {
+  SOFTWARE_DETAIL_KEYS,
   TENANT_SOFTWARE,
   absoluteTargetHref,
+  softwareAvailability,
   visibleSoftware,
 } from '@/lib/software-catalog';
 import type { StoredAuthUser } from '@/lib/i18n';
@@ -88,5 +90,34 @@ describe('software-catalog (#8447)', () => {
       .toBe('https://app.example.com/restaurant/pos');
     expect(absoluteTargetHref('https://store.example.com/app', 'https://app.example.com'))
       .toBe('https://store.example.com/app');
+  });
+
+  // ── #8597 (BOS-045) — fiches applications ────────────────────────────────
+
+  it('chaque app déclare la fiche complète exigée par la mission', () => {
+    for (const app of TENANT_SOFTWARE) {
+      expect(app.details).toEqual([...SOFTWARE_DETAIL_KEYS]);
+    }
+  });
+
+  it('le statut de disponibilité est DÉRIVÉ des cibles réelles', () => {
+    // Une app avec au moins une cible `link` est publiée.
+    const pos = TENANT_SOFTWARE.find((app) => app.slug === 'restaurant-pos');
+    expect(pos && softwareAvailability(pos)).toBe('published');
+
+    // Une app uniquement distribuée sur accès pilote.
+    const desktop = TENANT_SOFTWARE.find((app) => app.slug === 'desktop-attendance');
+    expect(desktop && softwareAvailability(desktop)).toBe('pilot');
+
+    // Une app sans aucun canal public n'est JAMAIS annoncée publiée.
+    const server = TENANT_SOFTWARE.find((app) => app.slug === 'restaurant-server');
+    expect(server && softwareAvailability(server)).toBe('not_distributed');
+  });
+
+  it('aucune app « not_distributed » ne porte de cible cliquable', () => {
+    for (const app of TENANT_SOFTWARE) {
+      if (softwareAvailability(app) !== 'not_distributed') continue;
+      expect(app.targets.every((target) => target.kind === 'soon')).toBe(true);
+    }
   });
 });
