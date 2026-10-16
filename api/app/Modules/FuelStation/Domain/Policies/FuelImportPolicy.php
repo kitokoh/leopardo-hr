@@ -41,6 +41,9 @@ class FuelImportPolicy
      */
     public function update(Employee $actor, ?FuelImport $import = null): bool
     {
-        return $this->canManageScopedResource($actor, 'fuel_station', $import?->station_id ?? null, $actor->isManager());
+        // Les imports sont scopes a la societe, pas a une station : le modele
+        // FuelImport n'expose pas de colonne station_id. On passe donc null,
+        // comme create(), pour ne pas inventer une portee inexistante.
+        return $this->canManageScopedResource($actor, 'fuel_station', null, $actor->isManager());
     }
 }

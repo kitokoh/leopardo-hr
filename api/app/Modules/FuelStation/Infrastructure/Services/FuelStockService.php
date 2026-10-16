@@ -328,7 +328,7 @@ final class FuelStockService
 
             $lines[] = [
                 'tank_id' => (int) $tank->id,
-                'station_id' => $tank->station_id !== null ? (int) $tank->station_id : null,
+                'station_id' => (int) $tank->station_id,
                 'product_type' => $tank->product_type,
                 'opening_level_minor' => $openingMinor,
                 'deliveries_minor' => $deliveriesMinor,
@@ -380,9 +380,14 @@ final class FuelStockService
             ->whereBetween('entry_date', [$dayStart->toDateString(), $dayEnd->toDateString()])
             ->get(['id', 'quantity']);
 
+        $ids = [];
+        foreach ($rows as $row) {
+            $ids[] = (int) $row->id;
+        }
+
         return [
             'minor' => (int) round(((float) $rows->sum('quantity')) * 1000),
-            'ids' => $rows->pluck('id')->map(fn ($id): int => (int) $id)->values()->all(),
+            'ids' => $ids,
         ];
     }
 
