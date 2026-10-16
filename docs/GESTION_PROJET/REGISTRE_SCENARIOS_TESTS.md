@@ -1316,3 +1316,53 @@ restent les gates applicables.
   avertissement, révocation via `DELETE /edge/{id}`).
 - **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
   partagé `devices.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+
+## Mise à jour 2026-10-16 — verticale agricole Farm OS (BC-37@@FARM@@, PR #8572, issues #8560-#8564)
+
+- **Surface API** : nouvelle surface tenant `/api/v1/farm/*` (27 routes, `api/routes/modules/farm_os.php`)
+  — réglages (`PUT /farm/activities`, `PUT /farm/capabilities`, `GET /farm/capabilities/available`),
+  `GET /farm/dashboard`, `GET|POST /farm/sites`, `GET|POST /farm/parcels`
+  (+ `GET /farm/parcels/{id}/history`), `GET|POST /farm/crop-cycles`
+  (+ `POST /farm/crop-cycles/{cycle}/close`), `GET|POST /farm/operations` (+ `/today`, `/late`,
+  `/start`, `/complete`, `/skip`, `/cancel`, `/assign`, `/progress`, `/report-problem`).
+  Toutes derrière le gate `module.farm_os` (feature flag `companies.features.farm_os`,
+  fail-closed ⇒ 403 sans le flag). Aucun contrat existant n'est modifié.
+
+- **Scénarios attendus (À EXÉCUTER en CI — non exécutés dans cet environnement, cf. limites) :**
+
+| Cas | Attendu |
+|---|---|
+| requête `/api/v1/farm/*` sans `companies.features.farm_os` | 403 (gate module, fail-closed) |
+| outil métier non activé (`farm_capabilities.enabled = false`), appel **direct** de l'API | 403 (gating serveur, pas seulement UI) |
+| parcelle avec `area_value` sans `area_unit` (ou l'inverse) | 422 |
+| parcelle `area_source = measured` **sans** géométrie stockée | 422 (ADR-FARM-0003) |
+| parcelle `area_source = measured` **avec** géométrie | 201, `geometry_available = true` |
+| superficie saisie sans `area_source` | 201, provenance enregistrée `declared` (jamais `measured` par déduction) |
+| planifier `fertilization` / `crop_protection` sans capacité `stocks_inputs` | 403 |
+| opération `planned` → `done` directement | 422 (`INVALID_TRANSITION`) |
+| modification d'une opération `done` (`/progress`) | 422 (`OPERATION_IMMUTABLE`) |
+| `cancel` d'une opération `in_progress` sans motif | 422 (motif requis) |
+| rejeu `POST /farm/sites/{site}/operations` avec le même `client_operation_id` | même opération renvoyée, **une seule ligne persistée** |
+| `PUT /farm/activities` : ajout d'une activité, retrait d'une autre | ajout idempotent ; retrait = clôture `ended_at`, **aucune donnée supprimée** |
+| valeur hors registre fermé (activité, `op_type`, `area_unit`) | 422 (allowlist fail-closed) |
+| ressource d'un autre tenant | 404/403 uniforme, aucune fuite inter-tenant |
+| `GET /farm/dashboard` | sections filtrées par capacités RÉELLEMENT activées + `pending_capabilities` pour les modules non livrés (jamais de zéro trompeur) |
+
+- **Couverture livrée et RÉELLEMENT EXÉCUTÉE (domaine pur, sans base)** :
+  `api/tests/Unit/Modules/FarmOs/` — `FarmAreaGuardTest` (cohérence valeur/unité, `measured` sans
+  géométrie refusé, défaut `declared`, conversion m²), `FarmCapabilityRecommenderTest` (profil
+  végétal sans cheptel, éleveur sans irrigation, socle toujours proposé, valeurs inconnues
+  ignorées), `FarmOperationStatusTest` (machine à états fermée, opération close immuable),
+  `FarmOsManifestTest` (identité `farm_os`/`agriculture`, dépendance dure `rh` seule, permissions
+  `farm.*`, 13 capacités) → **23 tests, 85 assertions, OK** (PHPUnit 11.5, bootstrap PSR-4 autonome,
+  PHP 8.2 local) ; `php -l` → 0 erreur sur les 35 fichiers Farm OS.
+
+- **Limites déclarées** : `composer install` impossible dans l'environnement de la session (vendor
+  absent ; `pdo_pgsql`, `redis`, `imagick` et PostgreSQL indisponibles) ⇒ **aucun scénario HTTP/feature
+  de ce tableau n'a été exécuté** ; ils restent à couvrir par `api/tests/Feature/FarmOs/**` sur
+  runner CI. L'isolation multi-tenant et le gating par permission ont été vérifiés par lecture du
+  socle (`BelongsToCompany`, `TenantManager`, `EmployeeModuleGrant`), **pas par exécution**.
+
+- **Surface web / mobile** : aucune page web ni clé ARB Farm OS dans cette tranche ⇒ aucun scénario
+  Jest/Flutter nouveau requis. Onboarding (étapes front) et application mobile agricole restent à
+  concevoir après audit (Phase 4 de la mission).
