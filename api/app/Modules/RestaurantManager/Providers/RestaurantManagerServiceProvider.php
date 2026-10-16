@@ -26,6 +26,7 @@ use App\Modules\RestaurantManager\Console\Commands\StockAlertsCommand;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantBranchRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantOrderRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantPosSessionRepositoryInterface;
+use App\Modules\RestaurantManager\Domain\Contracts\RestaurantPrintJobRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantReservationRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantStockLevelRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Manifests\RestaurantManagerManifest;
@@ -33,6 +34,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantBranchRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantOrderRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantPosSessionRepository;
+use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantPrintJobRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantReservationRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantStockLevelRepository;
 use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppAdapterRegistry;
@@ -127,6 +129,9 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         $this->app->singleton(RestaurantBranchRepositoryInterface::class, RestaurantBranchRepository::class);
         $this->app->singleton(RestaurantPosSessionRepositoryInterface::class, RestaurantPosSessionRepository::class);
         $this->app->singleton(RestaurantOrderRepositoryInterface::class, RestaurantOrderRepository::class);
+        // REST-OS-2 (Mission Leopardo Restaurant OS) — persistance des travaux
+        // d'impression thermique (idempotence par clé métier).
+        $this->app->singleton(RestaurantPrintJobRepositoryInterface::class, RestaurantPrintJobRepository::class);
         $this->app->singleton(RestaurantStockLevelRepositoryInterface::class, RestaurantStockLevelRepository::class);
         $this->app->singleton(RestaurantReservationRepositoryInterface::class, RestaurantReservationRepository::class);
 
