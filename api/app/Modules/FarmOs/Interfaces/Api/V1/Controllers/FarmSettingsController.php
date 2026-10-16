@@ -11,6 +11,7 @@ use App\Modules\FarmOs\Domain\Enums\FarmActivity;
 use App\Modules\FarmOs\Domain\Enums\FarmCapability;
 use App\Modules\FarmOs\Domain\Services\FarmCapabilityGate;
 use App\Modules\FarmOs\Domain\Services\FarmCapabilityRecommender;
+use App\Modules\FarmOs\Infrastructure\Context\FarmCompanyContext;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -143,9 +144,6 @@ final class FarmSettingsController
 
     private function company(): Company
     {
-        /** @var Company $company */
-        $company = currentCompany();
-
-        return $company;
+        return app(FarmCompanyContext::class)->current();
     }
 }

@@ -14,6 +14,7 @@ use App\Modules\FarmOs\Domain\Exceptions\FarmOperationTransitionException;
 use App\Modules\FarmOs\Domain\Models\FarmOperation;
 use App\Modules\FarmOs\Domain\Models\FarmSite;
 use App\Modules\FarmOs\Domain\Services\FarmCapabilityGate;
+use App\Modules\FarmOs\Infrastructure\Context\FarmCompanyContext;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -280,9 +281,6 @@ final class FarmOperationController
 
     private function company(): Company
     {
-        /** @var Company $company */
-        $company = currentCompany();
-
-        return $company;
+        return app(FarmCompanyContext::class)->current();
     }
 }

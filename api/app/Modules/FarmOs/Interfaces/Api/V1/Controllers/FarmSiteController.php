@@ -9,6 +9,7 @@ use App\Modules\FarmOs\Domain\Enums\AreaSource;
 use App\Modules\FarmOs\Domain\Enums\AreaUnit;
 use App\Modules\FarmOs\Domain\Exceptions\FarmAreaMeasurementException;
 use App\Modules\FarmOs\Domain\Models\FarmSite;
+use App\Modules\FarmOs\Infrastructure\Context\FarmCompanyContext;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -102,9 +103,6 @@ final class FarmSiteController
 
     private function companyId(): string
     {
-        /** @var Company $company */
-        $company = currentCompany();
-
-        return (string) $company->id;
+        return app(FarmCompanyContext::class)->currentId();
     }
 }

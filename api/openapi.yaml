@@ -44278,7 +44278,6 @@ paths:
           description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
         '422':
           description: Données invalides (ou transition d'intervention refusée).
-  /farm/sites:
     post:
       tags: [FarmSites]
       summary: Créer une exploitation ou un site
