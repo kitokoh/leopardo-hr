@@ -31,6 +31,8 @@ use App\Modules\RestaurantManager\Domain\Contracts\RestaurantReservationReposito
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantStockLevelRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Manifests\RestaurantManagerManifest;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantPrintJob;
+use App\Modules\RestaurantManager\Policies\RestaurantPrintJobPolicy;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantBranchRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantOrderRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantPosSessionRepository;
@@ -52,6 +54,7 @@ use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxConsum
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use App\Modules\RestaurantManager\Infrastructure\Services\StockMovementService;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -230,6 +233,11 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         // `restaurant.order.ready.v1` quand une commande passe à ready
         // (notifications équipe de service, découplé du flux POS).
         RestaurantOrder::observe(RestaurantOrderObserver::class);
+
+        // REST-OS-4 (Mission Leopardo Restaurant OS) — Policy des travaux
+        // d'impression (reimpression = geste operationnel de la succursale),
+        // enregistree explicitement (fail-closed : sans Policy, tout est refuse).
+        Gate::policy(RestaurantPrintJob::class, RestaurantPrintJobPolicy::class);
 
         // #7976 — l'activation standard d'une verticale passe par
         // `SolutionActivator` avec le code de solution `restaurant`
