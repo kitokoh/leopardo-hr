@@ -6159,5 +6159,13 @@
   "softwareAppsMarketingMobileDescription": "Plan and publish to your social networks in one click.",
   "softwareAppsCamerasMobileName": "Leopardo Cameras",
   "softwareAppsCamerasMobileDescription": "Your camera wall on the move: live viewing, events and alerts.",
-  "softwareDashboardcard": "Install the apps for your business — server, kitchen, till, mobile."
+  "softwareDashboardcard": "Install the apps for your business — server, kitchen, till, mobile.",
+  "offlineOnline": "Online",
+  "offlineOffline": "Offline",
+  "offlineDegraded": "Sync pending",
+  "offlinePending": "{count} pending operation(s)",
+  "offlineRetry": "Retry",
+  "offlineQueued": "Saved offline — will sync",
+  "offlineSynced": "Synced",
+  "offlineSyncfailed": "Sync failed — please retry"
 }
