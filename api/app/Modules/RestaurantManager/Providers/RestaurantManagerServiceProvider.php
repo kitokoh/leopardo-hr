@@ -9,7 +9,12 @@ use App\Core\Solutions\Contracts\DemoDataKit;
 use App\Core\Solutions\DemoDataRegistry;
 use App\Core\Solutions\SolutionCatalogue;
 use App\Events\SolutionActivated;
+use App\Modules\RestaurantManager\Application\Actions\AckPrintJobAction;
 use App\Modules\RestaurantManager\Application\Actions\ActivateRestaurantManagerAction;
+use App\Modules\RestaurantManager\Application\Actions\BuildKitchenTicketAction;
+use App\Modules\RestaurantManager\Application\Actions\ClaimPrintJobAction;
+use App\Modules\RestaurantManager\Application\Actions\EnqueueKitchenTicketPrintAction;
+use App\Modules\RestaurantManager\Application\Actions\RenderPrintJobPayloadAction;
 use App\Modules\RestaurantManager\Application\Consumers\KitchenOrderNotificationConsumer;
 use App\Modules\RestaurantManager\Application\Consumers\ServiceOrderNotificationConsumer;
 use App\Modules\RestaurantManager\Application\Observers\RestaurantOrderObserver;
@@ -23,6 +28,7 @@ use App\Modules\RestaurantManager\Console\Commands\RestaurantReservationJobsComm
 use App\Modules\RestaurantManager\Console\Commands\RestaurantSendRemindersCommand;
 use App\Modules\RestaurantManager\Console\Commands\SeedRestaurantDemoCommand;
 use App\Modules\RestaurantManager\Console\Commands\StockAlertsCommand;
+use App\Modules\RestaurantManager\Domain\Contracts\OrderTicketRendererInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantBranchRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantOrderRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantPosSessionRepositoryInterface;
@@ -32,6 +38,7 @@ use App\Modules\RestaurantManager\Domain\Contracts\RestaurantStockLevelRepositor
 use App\Modules\RestaurantManager\Domain\Manifests\RestaurantManagerManifest;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPrintJob;
+use App\Modules\RestaurantManager\Infrastructure\Printing\EscPosOrderTicketRenderer;
 use App\Modules\RestaurantManager\Policies\RestaurantPrintJobPolicy;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantBranchRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantOrderRepository;
@@ -135,6 +142,17 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         // REST-OS-2 (Mission Leopardo Restaurant OS) — persistance des travaux
         // d'impression thermique (idempotence par clé métier).
         $this->app->singleton(RestaurantPrintJobRepositoryInterface::class, RestaurantPrintJobRepository::class);
+
+        // REST-OS-3/5 (Mission Leopardo Restaurant OS) — impression thermique :
+        // le renderer ESC/POS (pur, sans I/O) derrière son port, et les actions
+        // metier (mise en file idempotente, reclamation atomique, accuse
+        // d'impression reelle, rendu du flux pour le bridge local).
+        $this->app->bind(OrderTicketRendererInterface::class, EscPosOrderTicketRenderer::class);
+        $this->app->singleton(BuildKitchenTicketAction::class);
+        $this->app->singleton(EnqueueKitchenTicketPrintAction::class);
+        $this->app->singleton(ClaimPrintJobAction::class);
+        $this->app->singleton(AckPrintJobAction::class);
+        $this->app->singleton(RenderPrintJobPayloadAction::class);
         $this->app->singleton(RestaurantStockLevelRepositoryInterface::class, RestaurantStockLevelRepository::class);
         $this->app->singleton(RestaurantReservationRepositoryInterface::class, RestaurantReservationRepository::class);
 
@@ -207,6 +225,9 @@ class RestaurantManagerServiceProvider extends ServiceProvider
             $registry = new RestaurantOutboxConsumerRegistry;
             $registry->register(new KitchenOrderNotificationConsumer(app(CommunicationServiceInterface::class)));
             $registry->register(new ServiceOrderNotificationConsumer(app(CommunicationServiceInterface::class)));
+            // REST-OS-5 — observabilité du cycle de vie d'impression (évite la
+            // dead-letter « no_consumer » sur les événements restaurant.print.job.*).
+            $registry->register(new \App\Modules\RestaurantManager\Application\Consumers\PrintJobOutboxConsumer);
 
             return $registry;
         });
