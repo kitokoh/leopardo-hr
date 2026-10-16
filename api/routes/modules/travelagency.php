@@ -308,6 +308,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/reports/revenue', [TravelReportController::class, 'revenue']);
         Route::get('/reports/cancellations', [TravelReportController::class, 'cancellations']);
         Route::get('/reports/dashboard', [TravelReportController::class, 'dashboard']);
+        // #8545 — vue consolidée par agence (ventilation + ligne « sans agence »).
+        Route::get('/reports/offices', [TravelReportController::class, 'offices']);
         Route::post('/reports/export', [TravelExportController::class, 'store']);
         Route::get('/reports/export/{travelExportAsset}', [TravelExportController::class, 'show']);
         Route::get('/quizzes', [TravelQuizController::class, 'index']);

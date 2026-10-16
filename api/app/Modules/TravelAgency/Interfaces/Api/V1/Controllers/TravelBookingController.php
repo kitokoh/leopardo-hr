@@ -118,6 +118,8 @@ class TravelBookingController extends Controller
             contactEmail: $request->validated('contact_email'),
             contactPhone: $request->validated('contact_phone'),
             notifyConsent: (bool) $request->validated('notify_consent', false),
+            // #8545 — agence de vente (guichet). NULL pour une vente en ligne.
+            officeId: is_numeric($request->validated('office_id')) ? (int) $request->validated('office_id') : null,
         );
 
         return (new TravelBookingResource($booking))->response()->setStatusCode(201);

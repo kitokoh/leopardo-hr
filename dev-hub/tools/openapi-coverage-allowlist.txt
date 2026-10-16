@@ -98,6 +98,7 @@ GET /v1/travel/reports/cancellations
 GET /v1/travel/reports/dashboard
 GET /v1/travel/reports/export/{param}
 GET /v1/travel/reports/occupancy
+GET /v1/travel/reports/offices
 GET /v1/travel/reports/revenue
 GET /v1/travel/reports/sales
 GET /v1/travel/round-trips/{param}

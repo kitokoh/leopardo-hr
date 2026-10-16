@@ -1228,6 +1228,93 @@ paths:
           description: Reference ou code de controle invalide (reponse identique dans les deux cas)
         '422':
           description: Corps de requete invalide
+  /travel/reports/offices:
+    get:
+      tags:
+      - Travel
+      summary: Vue consolidee par agence (ventilation des ventes et annulations)
+      description: >-
+        BC-24 TRAVEL OS (#8545) — une ligne par bureau de vente du tenant
+        (`office_id`, nom, ville, reservations, passagers, recettes en minor
+        units, annulations) plus un bloc `totals` egal a la somme des lignes.
+        Les reservations SANS agence (ventes en ligne, `office_id` nul)
+        apparaissent dans une ligne `unassigned` EXPLICITE : elles ne sont
+        jamais absorbees dans une agence, sinon `totals` divergerait du total
+        entreprise. Permission `travel.reports` ; bornage tenant strict.
+      parameters:
+      - name: from
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: source
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Ventilation par agence + totaux
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      from:
+                        type: string
+                      to:
+                        type: string
+                      source:
+                        type: string
+                        nullable: true
+                      offices:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            office_id:
+                              type: integer
+                              nullable: true
+                            name:
+                              type: string
+                            city:
+                              type: string
+                              nullable: true
+                            bookings_count:
+                              type: integer
+                            passengers_count:
+                              type: integer
+                            revenue_minor:
+                              type: integer
+                            cancellations_count:
+                              type: integer
+                      totals:
+                        type: object
+                        properties:
+                          bookings_count:
+                            type: integer
+                          passengers_count:
+                            type: integer
+                          revenue_minor:
+                            type: integer
+                          cancellations_count:
+                            type: integer
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission travel.reports requise
+        '422':
+          description: Parametres invalides (dont office_id hors du tenant)
   /travel/tickets/{travelTicket}/print-events:
     get:
       tags:
