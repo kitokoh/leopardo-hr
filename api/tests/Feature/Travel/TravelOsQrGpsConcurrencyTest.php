@@ -340,7 +340,9 @@ class TravelOsQrGpsConcurrencyTest extends TestCase
         $ticket->refresh();
         $this->assertSame($first->id, $ticket->checked_in_by_user_id);
         $this->assertNotSame($second->id, $ticket->checked_in_by_user_id);
-        $this->assertTrue($firstCheckedInAt->equalTo($ticket->checked_in_at));
+        $secondCheckedInAt = $ticket->checked_in_at;
+        $this->assertNotNull($secondCheckedInAt);
+        $this->assertTrue($firstCheckedInAt->equalTo($secondCheckedInAt));
 
         // Un seul événement outbox pour un seul billet.
         $this->assertSame(1, TravelOutboxEvent::query()
