@@ -13,10 +13,14 @@ use App\Modules\Marketing\Infrastructure\Repositories\SocialPostRepository;
 use App\Modules\Marketing\Infrastructure\Services\MarketingAssetStorage;
 use App\Modules\Marketing\Infrastructure\Services\MarketingOsDashboardService;
 use App\Modules\Marketing\Infrastructure\Services\MarketingPublicationModeResolver;
+use App\Modules\Marketing\Infrastructure\Services\MarketingPublicationStatsService;
+use App\Modules\Marketing\Infrastructure\Services\PlatformPublishingCapability;
 use App\Modules\Marketing\Infrastructure\Services\Publishers\LinkedInPublisher;
 use App\Modules\Marketing\Infrastructure\Services\Publishers\MetaPublisher;
 use App\Modules\Marketing\Infrastructure\Services\Publishers\SocialPublisherResolver;
 use App\Modules\Marketing\Infrastructure\Services\Publishers\TwitterPublisher;
+use App\Modules\Marketing\Infrastructure\Services\Stats\AyrshareAnalyticsProvider;
+use App\Modules\Marketing\Infrastructure\Services\Stats\PlatformStatsProviderResolver;
 use Illuminate\Support\ServiceProvider;
 
 class MarketingServiceProvider extends ServiceProvider
@@ -46,6 +50,23 @@ class MarketingServiceProvider extends ServiceProvider
         $this->app->singleton(MarketingAssetStorage::class);
         $this->app->singleton(MarketingOsDashboardService::class);
         $this->app->singleton(MarketingPublicationModeResolver::class);
+
+        // #8530 — statistiques REELLES des plateformes. Le resolver retourne
+        // `null` (et non une exception) quand aucune plateforme ne sait
+        // fournir la donnee : le service la declare alors indisponible au
+        // lieu d'inventer une valeur. YouTube/TikTok ne sont pas couverts par
+        // l'agregateur (extension suivie par #8532).
+        $this->app->singleton(PlatformStatsProviderResolver::class, function ($app): PlatformStatsProviderResolver {
+            return new PlatformStatsProviderResolver([
+                $app->make(AyrshareAnalyticsProvider::class),
+            ]);
+        });
+
+        $this->app->singleton(MarketingPublicationStatsService::class);
+
+        // #8532 — capacites de publication directe par plateforme : source de
+        // verite unique de l'affirmation « direct » vs « assiste ».
+        $this->app->singleton(PlatformPublishingCapability::class);
     }
 
     public function boot(): void

@@ -5884,5 +5884,41 @@ trait CreatesMvpSchema
                 $table->timestampTz('updated_at')->useCurrent();
             });
         }
+
+        // Marketing OS (#8531) — miroir de la migration tenant
+        // 2026_10_16_000400_8531_create_marketing_visibility_objectives_table.php.
+        // Garde de parité #5443 (Hygiene Guards) : toute table tenant récente
+        // doit être déclarée ici sous peine de « relation ... does not exist »
+        // dans les tests utilisant CreatesMvpSchema.
+        if (! Schema::hasTable($this->moduleTable('marketing_visibility_objectives'))) {
+            Schema::create($this->moduleTable('marketing_visibility_objectives'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id');
+                $table->unsignedBigInteger('campaign_id')->nullable();
+                $table->unsignedBigInteger('content_idea_id')->nullable();
+                $table->unsignedBigInteger('marketing_asset_id')->nullable();
+                $table->unsignedBigInteger('marketing_publication_id')->nullable();
+                $table->string('channel', 16);
+                $table->string('keyword', 191)->nullable();
+                $table->string('search_intent', 32)->nullable();
+                $table->string('destination_url', 512)->nullable();
+                $table->string('ad_campaign_ref', 191)->nullable();
+                $table->string('locale', 8)->default('fr');
+                $table->string('sector', 64)->nullable();
+                $table->jsonb('questions_answered')->nullable();
+                $table->jsonb('metrics')->nullable();
+                $table->string('metrics_source', 16)->default('unavailable');
+                $table->text('metrics_note')->nullable();
+                $table->text('notes')->nullable();
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+
+                $table->index(['company_id', 'channel']);
+                $table->index(['company_id', 'campaign_id']);
+                $table->index(['company_id', 'content_idea_id']);
+                $table->index(['company_id', 'marketing_asset_id']);
+            });
+        }
     }
 }

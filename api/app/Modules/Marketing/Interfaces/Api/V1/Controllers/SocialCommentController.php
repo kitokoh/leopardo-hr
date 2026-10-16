@@ -75,7 +75,14 @@ class SocialCommentController extends Controller
 
     public function reply(ReplyToCommentsRequest $request, SocialPost $socialPost): JsonResponse
     {
-        $this->authorize('update', $socialPost);
+        // Garde `view` et NON `update` : repondre a un commentaire est une
+        // INTERACTION sur un post visible, pas une modification de son contenu.
+        // `SocialPostPolicy::update()` n'autorise que les statuts draft/scheduled
+        // (edition du post) — or on ne peut repondre a des commentaires que sur
+        // un post PUBLIE (`publishedRef()` exige `STATUS_PUBLISHED`), donc la
+        // garde `update` refusait en 403 le seul cas d'usage legitime. Meme
+        // garde que `index()` et `suggestReply()`.
+        $this->authorize('view', $socialPost);
 
         $account = $this->resolveAccount($request);
 
