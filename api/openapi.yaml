@@ -1133,6 +1133,344 @@ paths:
           description: Scope bookings.read absent de la cle
         '404':
           description: Reference inconnue dans le tenant de la cle
+  /travel/tickets/verify:
+    post:
+      tags:
+      - Travel
+      summary: Verifier l'authenticite d'un billet (lecture seule)
+      description: >-
+        BC-24 TRAVEL OS (#8538) — VERIFICATION d'un billet, distincte de sa
+        CONSOMMATION (`POST /travel/tickets/{travelTicket}/check-in`) :
+        verifier ne rend jamais le billet inutilisable. Accepte le contenu
+        scanne du QR code (`GV1|<reference>|<code de controle>`) ou une saisie
+        manuelle (reference + code) si la camera ne fonctionne pas. Le code de
+        controle est compare au hash stocke en temps constant. Un code invalide
+        ET une reference inexistante produisent la MEME reponse 404 (aucune
+        fuite d'information) ; cross-tenant -> 404. Permission : travel.checkin.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reference, code]
+              properties:
+                reference:
+                  type: string
+                  maxLength: 64
+                  description: Reference de la reservation.
+                code:
+                  type: string
+                  maxLength: 64
+                  description: Code de controle du billet (HMAC, jamais persiste en clair).
+      responses:
+        '200':
+          description: Billet authentifie — statut operationnel
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        enum: [valid, void, expired, already_used]
+                      ticket_number:
+                        type: string
+                      booking_reference:
+                        type: string
+                      seat_number:
+                        type: integer
+                        nullable: true
+                      trip:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                            nullable: true
+                          departure_date:
+                            type: string
+                            format: date
+                            nullable: true
+                          departure_time:
+                            type: string
+                            nullable: true
+                          origin:
+                            type: string
+                            nullable: true
+                          destination:
+                            type: string
+                            nullable: true
+                      checked_in_at:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      valid_until:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      passenger:
+                        type: object
+                        nullable: true
+                        description: >-
+                          Identite du passager — uniquement pour un operateur
+                          habilite au controle (travel.checkin).
+                        properties:
+                          full_name:
+                            type: string
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission travel.checkin requise
+        '404':
+          description: Reference ou code de controle invalide (reponse identique dans les deux cas)
+        '422':
+          description: Corps de requete invalide
+  /travel/reports/offices:
+    get:
+      tags:
+      - Travel
+      summary: Vue consolidee par agence (ventilation des ventes et annulations)
+      description: >-
+        BC-24 TRAVEL OS (#8545) — une ligne par bureau de vente du tenant
+        (`office_id`, nom, ville, reservations, passagers, recettes en minor
+        units, annulations) plus un bloc `totals` egal a la somme des lignes.
+        Les reservations SANS agence (ventes en ligne, `office_id` nul)
+        apparaissent dans une ligne `unassigned` EXPLICITE : elles ne sont
+        jamais absorbees dans une agence, sinon `totals` divergerait du total
+        entreprise. Permission `travel.reports` ; bornage tenant strict.
+      parameters:
+      - name: from
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: source
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Ventilation par agence + totaux
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      from:
+                        type: string
+                      to:
+                        type: string
+                      source:
+                        type: string
+                        nullable: true
+                      offices:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            office_id:
+                              type: integer
+                              nullable: true
+                            name:
+                              type: string
+                            city:
+                              type: string
+                              nullable: true
+                            bookings_count:
+                              type: integer
+                            passengers_count:
+                              type: integer
+                            revenue_minor:
+                              type: integer
+                            cancellations_count:
+                              type: integer
+                      totals:
+                        type: object
+                        properties:
+                          bookings_count:
+                            type: integer
+                          passengers_count:
+                            type: integer
+                          revenue_minor:
+                            type: integer
+                          cancellations_count:
+                            type: integer
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission travel.reports requise
+        '422':
+          description: Parametres invalides (dont office_id hors du tenant)
+  /travel/tickets/{travelTicket}/print-events:
+    get:
+      tags:
+      - Travel
+      summary: Historique des mises a disposition du billet (emission + reimpressions)
+      description: >-
+        BC-24 TRAVEL OS (#8544) — trace des impressions : chaque mise a
+        disposition du PDF (premiere emission, puis reimpressions) est
+        journalisee avec l'operateur, le canal et un numero de reimpression
+        (`reprint_number = 0` pour la premiere emission, 1, 2, ... ensuite).
+        Reimprimer ne modifie JAMAIS le statut du billet : consulter un billet
+        n'est ni un check-in ni une consommation. Permission : manager (meme
+        perimetre que le controle d'embarquement) ; cross-tenant -> 404.
+      parameters:
+      - name: travelTicket
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Historique des impressions du billet
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ticket_number:
+                        type: string
+                      reprints_count:
+                        type: integer
+                      events:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            reprint_number:
+                              type: integer
+                            is_reprint:
+                              type: boolean
+                            channel:
+                              type: string
+                            employee_id:
+                              type: integer
+                              nullable: true
+                            occurred_at:
+                              type: string
+                              nullable: true
+        '401':
+          description: Non authentifie
+        '403':
+          description: Role manager requis
+        '404':
+          description: Billet inconnu dans le tenant de la cle
+  /travel/vehicles/{travelVehicle}/position:
+    post:
+      tags:
+      - Travel
+      summary: Enregistrer la derniere position connue d'un vehicule
+      description: >-
+        BC-24 TRAVEL OS (#8540) — ingestion de la derniere position connue d'un
+        vehicule par un DISPOSITIF AUTORISE (boitier GPS ou application). La
+        source est obligatoire et whitelistee : `gps` (equipement embarque),
+        `app` (application autorisee), `estimated` (position deduite du trajet,
+        JAMAIS presentee comme une position GPS). Aucune position n'est deduite
+        ni inventee par le serveur. Permission : travel.manage ; cross-tenant
+        -> 404.
+      parameters:
+      - name: travelVehicle
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [latitude, longitude, source]
+              properties:
+                latitude:
+                  type: number
+                  format: float
+                  minimum: -90
+                  maximum: 90
+                longitude:
+                  type: number
+                  format: float
+                  minimum: -180
+                  maximum: 180
+                source:
+                  type: string
+                  enum: [gps, app, estimated]
+      responses:
+        '200':
+          description: Position enregistree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      code:
+                        type: string
+                      registration_number:
+                        type: string
+                      seat_capacity:
+                        type: integer
+                      status:
+                        type: string
+                      position:
+                        type: object
+                        nullable: true
+                        description: >-
+                          Derniere position connue — `null` si aucun dispositif
+                          n'a transmis de position (aucune coordonnee inventee).
+                        properties:
+                          latitude:
+                            type: number
+                            format: float
+                          longitude:
+                            type: number
+                            format: float
+                          source:
+                            type: string
+                            enum: [gps, app, estimated]
+                          source_label:
+                            type: string
+                          is_measured:
+                            type: boolean
+                            description: >-
+                              `false` pour une position estimee — elle ne doit
+                              jamais etre presentee comme une position GPS.
+                          recorded_at:
+                            type: string
+                            format: date-time
+                            nullable: true
+                          age_seconds:
+                            type: integer
+                            nullable: true
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission travel.manage requise
+        '404':
+          description: Vehicule inexistant ou hors du tenant
+        '422':
+          description: Coordonnees hors bornes ou source inconnue
   /travel/staff-assignments:
     get:
       tags:
