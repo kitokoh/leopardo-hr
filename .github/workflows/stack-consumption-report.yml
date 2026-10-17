@@ -113,15 +113,16 @@ jobs:
           susp_count="$(jq -r --arg since "$since" '[.[] | .event | select(.type | test("suspender_added")) | select(.timestamp >= $since)] | length' <<<"$events" 2>/dev/null || echo "?")"
           last_susp="$(jq -r '[.[] | .event | select(.type | test("suspender_added")) | .timestamp] | sort | last // "aucune"' <<<"$events" 2>/dev/null || echo "?")"
 
-          cat > "$out" <<EOF
-- Service : \`${RENDER_PROD_SERVICE_ID}\` (plan **${plan}**)
-- Suspendu maintenant : **${suspended}**
-- Suspensions sur 30 jours : **${susp_count}** (dernière : ${last_susp})
-- Rappel : offre free = **750 h/mois par compte**. Un service pingé 24/7
-  consomme ≈ 730 h ; **deux** services pingés sur le même compte dépassent le
-  quota par construction.
-EOF
+          {
+            echo "- Service : \`${RENDER_PROD_SERVICE_ID}\` (plan **${plan}**)"
+            echo "- Suspendu maintenant : **${suspended}**"
+            echo "- Suspensions sur 30 jours : **${susp_count}** (dernière : ${last_susp})"
+            echo "- Rappel : offre free = **750 h/mois par compte**. Un service pingé 24/7"
+            echo "  consomme ~730 h ; **deux** services pingés sur le même compte dépassent"
+            echo "  le quota par construction."
+          } > "$out"
           cat "$out"
+          exit 0
 
       - name: Consommation Vercel (déploiements)
         shell: bash
@@ -141,12 +142,12 @@ EOF
           data="$(curl -fsSL -H "Authorization: Bearer ${VERCEL_PROD_TOKEN}" \
             "https://api.vercel.com/v6/deployments?limit=100&since=${since}${q}" || echo '{}')"
           count="$(jq -r '.deployments | length' <<<"$data" 2>/dev/null || echo "?")"
-          cat > "$out" <<EOF
-- Déploiements depuis minuit (échantillon ≤ 100) : **${count}**
-- Limite Hobby : **100 déploiements/jour** par compte.
-- ⚠️ C'est cette limite qui a **figé la prod le 2026-09-20**
-  (\`api-deployments-free-per-day\` sur le tag v4.33.0).
-EOF
+          {
+            echo "- Déploiements depuis minuit (échantillon <= 100) : **${count}**"
+            echo "- Limite Hobby : **100 déploiements/jour** par compte."
+            echo "- Attention : c'est cette limite qui a **figé la prod le 2026-09-20**"
+            echo "  (\`api-deployments-free-per-day\` sur le tag v4.33.0)."
+          } > "$out"
           cat "$out"
 
       - name: Publier l'issue [consommation] (mise à jour, pas création)
