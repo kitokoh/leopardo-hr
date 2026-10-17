@@ -37488,6 +37488,343 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
 
+  /restaurant/orders/{restaurantOrder}/print-jobs:
+    post:
+      tags:
+      - Restaurant
+      summary: Mettre un ticket de cuisine en file d'impression (REST-OS-1/2)
+      description: >-
+        REST-OS-1/2 - enfile un travail d'impression KITCHEN pour une commande.
+        IDEMPOTENT : une double soumission (meme commande, meme revision, meme
+        type de ticket) renvoie le travail EXISTANT (201) sans creer de doublon
+        — garanti par la contrainte UNIQUE `(company_id, order_id, ticket_kind,
+        revision)`. Autorisation : `restaurant.print_jobs.operate`
+        (cuisine/service). 404 cross-tenant. Un travail cree n'est JAMAIS
+        `printed` : seul un ack du bridge (REST-OS-3) le fait passer a `printed`.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Travail d'impression cree ou deja existant (idempotent)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/print-jobs:
+    get:
+      tags:
+      - Restaurant
+      summary: Lister les travaux d'impression de la succursale (REST-OS-1)
+      description: >-
+        REST-OS-1 - liste des travaux d'impression de LA succursale active.
+        Portee stricte : `company_id` + `branch_id` du contexte. Autorisation :
+        `restaurant.print_jobs.manage`.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: X-Branch-Id
+        in: header
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Travaux de la succursale
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/print-jobs/{restaurantPrintJob}:
+    get:
+      tags:
+      - Restaurant
+      summary: Detail d'un travail d'impression (REST-OS-1)
+      description: >-
+        REST-OS-1 - detail d'un travail. 404 si le travail appartient a une
+        AUTRE societe (jamais de fuite cross-tenant ni d'enumeration).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Travail d'impression
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/print-jobs/{restaurantPrintJob}/requeue:
+    post:
+      tags:
+      - Restaurant
+      summary: Re-enfiler un travail en nouvelle revision (REST-OS-5)
+      description: >-
+        REST-OS-5 - cree une NOUVELLE revision du ticket (revision + 1) plutot
+        que de reutiliser le travail existant : l'historique d'impression reste
+        auditable et un ticket deja imprime n'est jamais rejoue a l'identique.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Nouvelle revision enfilee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/printing/bridge/health:
+    get:
+      tags:
+      - Restaurant
+      summary: Sonde de disponibilite du bridge local (REST-OS-3)
+      description: >-
+        REST-OS-3 - sonde sans donnee metier. AUTH DEDIEE par jeton partage
+        hache (header `X-Restaurant-Print-Bridge-Token`, hash SHA-256 en
+        variable d'environnement) + `X-Company-Id`. FAIL-CLOSED : desactive
+        (404) si `RESTAURANT_PRINT_BRIDGE_ENABLED` n'est pas true ou si le hash
+        n'est pas configure. Ce n'est pas une route Sanctum.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Etat du bridge
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/printing/bridge/jobs:
+    get:
+      tags:
+      - Restaurant
+      summary: Travaux imprimables de la succursale (bridge local, REST-OS-3)
+      description: >-
+        REST-OS-3 - file des travaux KITCHEN imprimables (pending, failed
+        reessayable, claimed dont le bail est expire). Scopee a la succursale.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: branch_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Travaux imprimables
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/printing/bridge/jobs/{restaurantPrintJob}/claim:
+    post:
+      tags:
+      - Restaurant
+      summary: Reclamer ATOMIQUEMENT un travail (bridge local, REST-OS-3/5)
+      description: >-
+        REST-OS-3/5 - reclamation atomique : `UPDATE ... WHERE status IN
+        (pending, failed) OR (claimed AND bail expire)`. Le premier appel gagne ;
+        les suivants obtiennent 409. `attempts` est incremente. Une reclamation
+        ne vaut JAMAIS preuve d'impression.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Travail reclame (payload ESC/POS + hash)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Travail deja reclame par une autre instance du bridge
+  /restaurant/printing/bridge/jobs/{restaurantPrintJob}/ack:
+    post:
+      tags:
+      - Restaurant
+      summary: Accuser une impression REELLE (bridge local, REST-OS-3/5)
+      description: >-
+        REST-OS-3/5 - SEUL chemin faisant passer un travail a `printed`. Idem-
+        potent : un second ack renvoie 200 sans nouvel effet ni nouvelle
+        publication d'evenement (outbox). 404 cross-tenant.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Impression accusee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/printing/bridge/jobs/{restaurantPrintJob}/fail:
+    post:
+      tags:
+      - Restaurant
+      summary: Signaler un echec d'impression (bridge local, REST-OS-3)
+      description: >-
+        REST-OS-3 - marque le travail `failed` avec le message d'erreur du
+        bridge. Le travail redevient reessayable (claim), jamais perdu.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Echec enregistre
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/printing/bridge/jobs/{restaurantPrintJob}/payload:
+    get:
+      tags:
+      - Restaurant
+      summary: Payload ESC/POS d'un travail (bridge local, REST-OS-3)
+      description: >-
+        REST-OS-3 - octets ESC/POS rendus + hash SHA-256 (le bridge verifie le
+        hash avant d'imprimer). Aucune modification d'etat.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Payload + hash
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/printing/bridge/jobs/{restaurantPrintJob}/preview:
+    get:
+      tags:
+      - Restaurant
+      summary: Previsualisation TEXTE d'un ticket (bridge local, REST-OS-3)
+      description: >-
+        REST-OS-3 - rendu texte du ticket pour diagnostic, sans consommer de
+        papier ni modifier l'etat du travail.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Rendu texte
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+
   /catalog/inquiries:
     get:
       tags:

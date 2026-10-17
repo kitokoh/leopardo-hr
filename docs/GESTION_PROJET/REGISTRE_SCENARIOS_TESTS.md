@@ -49,6 +49,35 @@
 > `sync-mobile`) — voir la note du même jour dans `SCENARIOS_TEST_MOBILE_FLUTTER.md`.
 > Surface **API** : aucun changement de route, de contrôleur ni de contrat.
 >
+> **MAJ 2026-10-17 — #8603-#8610, Restaurant OS : impression thermique ESC/POS + RBAC d'impression.**
+> Surface **API (api/routes/modules/restaurantmanager.php)** : 11 routes ajoutees, toutes
+> documentees dans `api/openapi.yaml` (garde Route -> OpenAPI, drift 0).
+> **4 routes tenant** (`auth:sanctum` + tenant + `api.manager`) : `POST /restaurant/orders/{order}/print-jobs`,
+> `GET /restaurant/print-jobs`, `GET /restaurant/print-jobs/{job}`,
+> `POST /restaurant/print-jobs/{job}/requeue` — permissions `restaurant.print_jobs.operate`
+> (cuisine/service) et `restaurant.print_jobs.manage` (direction/gerance).
+> **7 routes bridge** (`/restaurant/printing/bridge/*` : health, jobs, claim, ack, fail,
+> payload, preview) — **auth dediee** par jeton partage **hache SHA-256** en variable
+> d'environnement (`X-Restaurant-Print-Bridge-Token`) + `X-Company-Id`, **fail-closed 404**
+> si `RESTAURANT_PRINT_BRIDGE_ENABLED` n'est pas true ou si le hash est absent ; **aucun
+> acteur Sanctum** sur ces routes (allowlist explicite du garde
+> `check-vertical-controller-policies`, avec justification dans le script).
+> **Invariants couverts** : idempotence d'enfilement (UNIQUE `company_id, order_id,
+> ticket_kind, revision` — double POST -> un seul travail), reclamation **atomique**
+> (second claim -> 409), `printed` **uniquement** sur accuse du bridge, `attempts`
+> incremente a chaque tentative, 404 cross-tenant sur les 11 routes.
+> **Scenarios de test** : `tests/Unit/Restaurant/EscPosOrderTicketRendererTest.php`,
+> `tests/Unit/Restaurant/RestaurantPermissionsTest.php`,
+> `tests/Feature/Restaurant/RestaurantPrintJobTest.php`,
+> `tests/Feature/Restaurant/RestaurantPrintBridgeTest.php`,
+> `tests/Feature/Restaurant/RestaurantPrintJobPersistenceTest.php`.
+> **Total : 27 tests / 95 assertions**, executes en local sur PostgreSQL (`CI=true`).
+> **Configuration** : `RESTAURANT_PRINT_BRIDGE_ENABLED` (defaut `false`),
+> `RESTAURANT_PRINT_BRIDGE_TOKEN_HASH`, `RESTAURANT_PRINT_PAPER_WIDTH` (58|80),
+> `RESTAURANT_PRINT_CLAIM_LEASE_MINUTES` — documentes dans `api/.env.example`.
+> **Limite connue** : l'impression PHYSIQUE (octets reellement remis a l'imprimante) exige
+> du materiel ESC/POS 58/80 mm et le daemon bridge local ; non verifiable en CI.
+
 > **MAJ 2026-10-17 — #8581 + #8583, Fuel Station OS : convention monétaire additive, logo de station et vue comparative inter-stations.**
 > Surface **API (api/routes/modules/fuel_station.php)** : trois nouvelles routes,
 > documentées dans `api/openapi.yaml` (garde Route → OpenAPI, drift 0) —
