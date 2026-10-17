@@ -93,6 +93,9 @@ enum PlatformRole: string
                 // cross-tenant (débogage des calculs).
                 PlatformPermission::WebhooksManage,
                 PlatformPermission::PayrollView,
+                // #8673 — la bascule de stack est une opération d'exploitation :
+                // ops la porte avec les kill switches et l'observabilité.
+                PlatformPermission::InfraManage,
             ],
             self::Marketing => [
                 PlatformPermission::CompaniesView,

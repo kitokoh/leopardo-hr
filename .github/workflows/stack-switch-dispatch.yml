@@ -1,0 +1,72 @@
+name: Stack Switch Dispatch
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Issue #8673 (épic #8670) — point d'entrée du bouton Super Admin.
+#
+# POST /api/v1/platform/infra/stack-switch (permission `infra.manage`) émet un
+# `repository_dispatch` de type `stack-switch` avec le payload
+#   { tier, stack, source, requested_by, requested_at }.
+#
+# Ce workflow ne fait que VALIDER le payload puis appeler stack-switch.yml
+# (workflow_call) : il n'écrit aucune variable lui-même, il ne détient aucun
+# secret Render/Vercel. Séparer les deux permet de garder stack-switch.yml
+# appelable aussi par workflow_dispatch et par un watchdog.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  repository_dispatch:
+    types: [stack-switch]
+
+permissions:
+  contents: read
+  actions: write
+  issues: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: stack-switch-dispatch
+  cancel-in-progress: false
+
+jobs:
+  route:
+    name: Valider et router le dispatch
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      tier: ${{ steps.payload.outputs.tier }}
+      stack: ${{ steps.payload.outputs.stack }}
+    steps:
+      - name: Lire et valider le payload
+        id: payload
+        shell: bash
+        env:
+          PAYLOAD: ${{ toJson(github.event.client_payload) }}
+        run: |
+          set -euo pipefail
+          tier="$(jq -r '.tier // ""' <<<"$PAYLOAD")"
+          stack="$(jq -r '.stack // ""' <<<"$PAYLOAD")"
+
+          if [[ "$tier" != "prod" && "$tier" != "dev" ]]; then
+            echo "::error::Payload invalide — tier '${tier}' (attendu prod|dev)"
+            exit 1
+          fi
+          if [[ ! "$stack" =~ ^[a-z0-9]+$ ]]; then
+            echo "::error::Payload invalide — stack '${stack}'"
+            exit 1
+          fi
+
+          echo "tier=$tier" >> "$GITHUB_OUTPUT"
+          echo "stack=$stack" >> "$GITHUB_OUTPUT"
+          echo "Dispatch reçu depuis le Super Admin : tier=${tier} stack=${stack}"
+
+  switch:
+    name: Exécuter la bascule
+    needs: route
+    uses: ./.github/workflows/stack-switch.yml
+    with:
+      tier: ${{ needs.route.outputs.tier }}
+      stack: ${{ needs.route.outputs.stack }}
+      force: false
+    secrets: inherit
