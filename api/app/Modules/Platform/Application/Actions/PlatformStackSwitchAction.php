@@ -29,9 +29,6 @@ use RuntimeException;
  */
 class PlatformStackSwitchAction
 {
-    /** Événement `repository_dispatch` attendu par stack-switch-dispatch.yml. */
-    public const DISPATCH_EVENT = 'stack-switch';
-
     public function __construct(
         private readonly StackRegistryService $registry,
         private readonly GitHubDispatchClient $github,
@@ -68,15 +65,14 @@ class PlatformStackSwitchAction
 
         // Fail-closed : sans jeton, le client lève une RuntimeException que le
         // contrôleur traduit en 503 — jamais de bascule silencieuse.
-        $dispatch = $this->github->dispatch(self::DISPATCH_EVENT, [
-            'tier' => $tier,
-            'stack' => $stack,
-            'source' => 'superadmin',
-            'requested_by' => $actorId,
-            'requested_at' => now()->toIso8601String(),
-        ]);
+        $dispatch = $this->github->dispatchStackSwitch(
+            tier: $tier,
+            stack: $stack,
+            requestedBy: $actorId,
+            requestedAt: now()->toIso8601String(),
+        );
 
-        if (! $dispatch['ok']) {
+        if (! $dispatch->ok) {
             return [
                 'ok' => false,
                 'reason' => 'dispatch_rejete',
@@ -86,7 +82,7 @@ class PlatformStackSwitchAction
                 // Le corps d'erreur GitHub est volontairement réduit : il peut
                 // contenir des indices sur le compte et n'apporte rien à l'opérateur.
                 'dispatch_id' => null,
-                'message' => __('platform.infra_dispatch_rejected', ['status' => $dispatch['status']]),
+                'message' => __('platform.infra_dispatch_rejected', ['status' => $dispatch->status]),
             ];
         }
 
@@ -99,7 +95,7 @@ class PlatformStackSwitchAction
             subject: null,
             actor: null,
             oldValues: ['active_stack' => $validation['active']],
-            newValues: ['tier' => $tier, 'stack' => $stack, 'dispatch_event' => self::DISPATCH_EVENT],
+            newValues: ['tier' => $tier, 'stack' => $stack, 'dispatch_event' => GitHubDispatchClient::EVENT_STACK_SWITCH],
             metadata: [
                 'requested_by' => $actorId,
                 'repository' => (string) config('services.github_stack_switch.repository', 'kitokoh/leopardo-hr'),
@@ -112,7 +108,7 @@ class PlatformStackSwitchAction
             'tier' => $tier,
             'stack' => $stack,
             'previous' => $validation['active'],
-            'dispatch_id' => $dispatch['id'],
+            'dispatch_id' => $dispatch->id,
             'message' => __('platform.infra_switch_dispatched'),
         ];
     }

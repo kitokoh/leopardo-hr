@@ -21,15 +21,23 @@ class GitHubDispatchClient
 {
     public const EVENT_STACK_SWITCH = 'stack-switch';
 
-    /*
-     * Émet un `repository_dispatch` (204 attendu, No Content).
+    /**
+     * Émet l'événement `stack-switch` avec un payload construit ici même.
      *
-     * $payload : tableau libre transmis tel quel dans client_payload.
-     * Retour : ['status' => int, 'ok' => bool, 'id' => int|null].
-     * Lève RuntimeException si le jeton est absent (fail-closed).
+     * Le contrat de l'événement appartient au client : les appelants passent
+     * des scalaires, jamais un tableau libre. Cela évite les tableaux à forme
+     * ouverte (PHPStan niveau 8) tout en gardant un seul endroit à changer si
+     * le workflow attend un champ de plus.
+     *
+     * Lève RuntimeException si le jeton est absent (fail-closed) : le
+     * contrôleur le traduit en 503, jamais en bascule silencieuse.
      */
-    public function dispatch(string $eventType, array $payload): array
-    {
+    public function dispatchStackSwitch(
+        string $tier,
+        string $stack,
+        ?int $requestedBy,
+        string $requestedAt,
+    ): DispatchOutcome {
         $token = (string) config('services.github_stack_switch.token', '');
         $repository = (string) config('services.github_stack_switch.repository', 'kitokoh/leopardo-hr');
 
@@ -41,19 +49,27 @@ class GitHubDispatchClient
             ->accept('application/json')
             ->timeout(15)
             ->post("https://api.github.com/repos/{$repository}/dispatches", [
-                'event_type' => $eventType,
-                'client_payload' => $payload,
+                'event_type' => self::EVENT_STACK_SWITCH,
+                'client_payload' => [
+                    'tier' => $tier,
+                    'stack' => $stack,
+                    'source' => 'superadmin',
+                    'requested_by' => $requestedBy,
+                    'requested_at' => $requestedAt,
+                ],
             ]);
 
-        $ok = $response->successful();
-        $id = null;
-
-        if ($ok) {
-            // 204 sans corps ; certains proxys renvoient 200 avec un id.
-            $json = $response->json();
-            $id = is_array($json) && isset($json['id']) ? (int) $json['id'] : null;
+        if (! $response->successful()) {
+            return new DispatchOutcome(status: $response->status(), ok: false);
         }
 
-        return ['status' => $response->status(), 'ok' => $ok, 'id' => $id];
+        // 204 attendu (No Content) ; certains proxys renvoient 200 avec un id.
+        $body = $response->json();
+
+        return new DispatchOutcome(
+            status: $response->status(),
+            ok: true,
+            id: is_array($body) && isset($body['id']) ? (int) $body['id'] : null,
+        );
     }
 }
