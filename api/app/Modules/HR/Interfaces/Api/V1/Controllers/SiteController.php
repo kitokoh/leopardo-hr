@@ -51,7 +51,10 @@ class SiteController extends Controller
         $user = $request->user();
         $site = Site::create(['company_id' => $user->company_id, ...$request->validated()]);
 
-        return (new SiteResource($site))
+        // `status` et `gps_radius_m` ont un DEFAULT côté PostgreSQL : l'instance
+        // Eloquent ne les connaît pas encore. Sans ce refresh, l'API renverrait
+        // `status: null` pour un établissement créé actif.
+        return (new SiteResource($site->refresh()))
             ->response()
             ->setStatusCode(201);
     }

@@ -110,6 +110,7 @@ return [
     'EMAIL_ALREADY_REGISTERED' => 'An account with this email already exists. Sign in directly.',
     'SESSION_ALREADY_ACTIVE' => 'You are already signed in to a Leopardo workspace. Sign out before creating a new one.',
     'INVALID_SOLUTION' => 'Unknown or unavailable sectorial solution: :solution.',
+    'INVALID_TRADE_PROFILE' => 'This professional profile does not match the selected market (international: importer, exporter or both; domestic: wholesaler or retailer).',
     'INVALID_COUNTRY' => 'The signup country is invalid or unsupported. Please restart the signup.',
     'NO_PLAN_AVAILABLE' => 'The trial service is temporarily unavailable.',
     'PROVISIONING_FAILED' => 'Error creating your workspace. Please try again.',

@@ -109,6 +109,7 @@ return [
     'EMAIL_ALREADY_REGISTERED' => 'Bu e-postayla zaten bir hesap var. Doğrudan giriş yapın.',
     'SESSION_ALREADY_ACTIVE' => 'Zaten bir Leopardo çalışma alanında oturum açmışsınız. Yeni bir tane oluşturmadan önce çıkış yapın.',
     'INVALID_SOLUTION' => 'Bilinmeyen veya kullanılamayan sektörel çözüm: :solution.',
+    'INVALID_TRADE_PROFILE' => 'Bu profesyonel profil seçilen pazarla uyumlu değil (uluslararası: ithalatçı, ihracatçı veya her ikisi; yerel: toptancı veya perakendeci).',
     'INVALID_COUNTRY' => 'Kayıt ülkesi geçersiz veya desteklenmiyor. Lütfen kaydı yeniden başlatın.',
     'NO_PLAN_AVAILABLE' => 'Deneme hizmeti geçici olarak kullanılamıyor.',
     'PROVISIONING_FAILED' => 'Çalışma alanınız oluşturulurken hata oluştu. Lütfen tekrar deneyin.',
