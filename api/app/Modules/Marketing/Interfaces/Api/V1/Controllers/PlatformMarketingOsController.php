@@ -40,8 +40,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Marketing OS — surface SUPER ADMIN (brief §A à §J).
@@ -522,11 +522,11 @@ final class PlatformMarketingOsController extends Controller
      *    légende) n'a pas de binaire ; elle renvoie 404 avec un motif
      *    explicite plutôt qu'un fichier vide ou une erreur 500.
      */
-    public function downloadAsset(string $company, int $asset): BinaryFileResponse|JsonResponse
+    public function downloadAsset(string $company, int $asset): StreamedResponse|JsonResponse
     {
         $target = PlatformCompanyLookup::findOrFail($company);
 
-        return $this->tenantManager->withinTenant($target, function () use ($asset): BinaryFileResponse|JsonResponse {
+        return $this->tenantManager->withinTenant($target, function () use ($asset): StreamedResponse|JsonResponse {
             $model = MarketingAsset::query()->findOrFail($asset);
 
             if (! $model->hasFile()) {
