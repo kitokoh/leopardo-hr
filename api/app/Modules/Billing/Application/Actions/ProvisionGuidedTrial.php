@@ -71,7 +71,10 @@ class ProvisionGuidedTrial
 
         if (! Company::isValidMarketIntent($marketType, $tradeProfile)) {
             throw new \InvalidArgumentException(
-                'Intention de marché invalide : profil « '.((string) $tradeProfile).' » incompatible avec le marché « '.((string) $marketType).' ».'
+                __('billing.invalid_market_intent', [
+                    'profile' => (string) $tradeProfile,
+                    'market' => (string) $marketType,
+                ])
             );
         }
 
@@ -270,7 +273,7 @@ class ProvisionGuidedTrial
         if (! DB::table('shared_tenants.sites')->where('company_id', $companyId)->exists()) {
             DB::table('shared_tenants.sites')->insert([
                 'company_id' => $companyId,
-                'name' => 'Établissement principal',
+                'name' => __('billing.primary_site_name'),
                 'code' => 'PRINCIPAL',
                 'site_type' => 'office',
                 'status' => 'active',

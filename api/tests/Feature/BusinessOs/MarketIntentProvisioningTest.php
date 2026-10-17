@@ -73,7 +73,11 @@ class MarketIntentProvisioningTest extends TestCase
             );
             $this->fail('Une intention incohérente doit annuler le provisioning.');
         } catch (\InvalidArgumentException $e) {
-            $this->assertStringContainsString('Intention de marché invalide', $e->getMessage());
+            // Le message vient du catalogue i18n (billing.invalid_market_intent,
+            // garde PA2-I18N-007) : on n'asserte donc PAS une langue donnée, mais
+            // le fait que le message porte bien les deux valeurs fautives.
+            $this->assertStringContainsString('wholesaler', $e->getMessage());
+            $this->assertStringContainsString('international', $e->getMessage());
         }
 
         $this->assertNull(
