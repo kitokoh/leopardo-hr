@@ -15,6 +15,12 @@ use Illuminate\Validation\Rule;
  * La source est OBLIGATOIRE et whitelistée : le serveur ne devine jamais
  * d'où vient une position, et une estimation ne peut pas être présentée
  * comme une mesure.
+ *
+ * #8548 — `recorded_at` (optionnel) porte l'horodatage de la MESURE côté
+ * dispositif. Il est borné : une date dans le futur est refusée (une mesure
+ * ne peut pas avoir eu lieu plus tard que maintenant), et une date trop
+ * ancienne est refusée pour ne pas polluer l'historique avec des relevés
+ * erronés. Absent, l'instant de réception fait foi.
  */
 class RecordTravelVehiclePositionRequest extends FormRequest
 {
@@ -34,6 +40,7 @@ class RecordTravelVehiclePositionRequest extends FormRequest
             'latitude' => ['required', 'numeric', 'between:-90,90'],
             'longitude' => ['required', 'numeric', 'between:-180,180'],
             'source' => ['required', 'string', Rule::in($sources)],
+            'recorded_at' => ['nullable', 'date', 'before_or_equal:now', 'after:-30 days'],
         ];
     }
 }
