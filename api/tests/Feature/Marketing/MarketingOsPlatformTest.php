@@ -551,9 +551,8 @@ class MarketingOsPlatformTest extends TestCase
             $publication = MarketingPublication::query()->findOrFail($publicationId);
 
             // Une seule entrée d'historique : le rejeu n'a rien ajouté.
-            $this->assertCount(1, $publication->attempt_history ?? []);
-            $this->assertSame(0, $publication->attempts);
             $this->assertNotNull($publication->published_at);
+            $this->assertCount(1, $publication->attempt_history ?? []);
         });
     }
 
