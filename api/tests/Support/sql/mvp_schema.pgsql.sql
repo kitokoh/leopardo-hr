@@ -102,6 +102,10 @@ CREATE TABLE public.companies (
     language char(2) NOT NULL DEFAULT 'fr',
     timezone varchar(50) NOT NULL DEFAULT 'Africa/Algiers',
     currency char(3) NOT NULL DEFAULT 'DZD',
+    -- BOS-O-01 / #8625 : intention Trade portee jusqu'au tenant.
+    -- Sans ces colonnes, toute creation de company via le modele reel echoue.
+    market_type varchar(20) NULL,
+    trade_profile varchar(20) NULL,
     notes text NULL,
     features jsonb NOT NULL DEFAULT '{}'::jsonb,
     metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
@@ -845,6 +849,14 @@ CREATE TABLE shared_tenants.sites (
     id serial PRIMARY KEY,
     company_id uuid NULL,
     name varchar(150) NOT NULL,
+    -- BOS-T-01 / #8624 : miroir de 2026_10_17_120000_8624_sites_first_class.
+    -- Sans ces colonnes, un site cree par le modele reel (provisioning, CRUD)
+    -- echoue en "column does not exist".
+    code varchar(30) NULL,
+    site_type varchar(30) NULL,
+    status varchar(20) NOT NULL DEFAULT 'active',
+    timezone varchar(50) NULL,
+    currency char(3) NULL,
     created_at timestamp NULL,
     updated_at timestamp NULL
 );

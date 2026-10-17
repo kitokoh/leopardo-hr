@@ -92,6 +92,13 @@ trait CreatesMvpSchema
             $table->char('language', 2)->default('fr');
             $table->string('timezone', 50)->default('Africa/Algiers');
             $table->char('currency', 3)->default('DZD');
+            // BOS-O-01 / #8625 — miroir de la migration
+            // 2026_10_17_120100_8625_companies_market_intent : l'intention
+            // Trade (marché + profil) est portée jusqu'au tenant. Sans ces
+            // colonnes dans la fixture, toute création de company via le
+            // modèle réel échoue en « column does not exist ».
+            $table->string('market_type', 20)->nullable();
+            $table->string('trade_profile', 20)->nullable();
             $table->text('notes')->nullable();
             if (DB::getDriverName() === 'pgsql') {
                 $table->jsonb('features')->default(DB::raw("'{}'::jsonb"));
