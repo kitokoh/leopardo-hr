@@ -32,7 +32,14 @@ class SiteController extends Controller
 
         return SiteResource::collection(
             Site::query()
-                ->select(['id', 'company_id', 'name', 'address', 'gps_lat', 'gps_lng', 'gps_radius_m', 'created_at'])
+                // BOS-T-01 / #8624 — le sélecteur d'établissement a besoin du
+                // code et du statut : sans eux, l'exploitant ne peut pas
+                // distinguer deux lieux homonymes ni exclure un lieu fermé.
+                ->select([
+                    'id', 'company_id', 'name', 'code', 'site_type', 'status',
+                    'address', 'gps_lat', 'gps_lng', 'gps_radius_m',
+                    'timezone', 'currency', 'created_at', 'updated_at',
+                ])
                 ->orderBy('name')
                 ->get()
         );

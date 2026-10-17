@@ -237,6 +237,26 @@ class ProvisionGuidedTrial
 
     private function seedBasicSandboxData(string $companyId, int $managerId): void
     {
+        // 0. Établissement principal (BOS-O-03 / #8623).
+        //
+        // Sans lui, un tenant pouvait naître SANS aucun lieu d'exploitation :
+        // les modules métier (ventes, stock, pointage géolocalisé) n'avaient
+        // alors aucun `site_id` à référencer, et l'exploitant devait découvrir
+        // par lui-même qu'il devait en créer un. La création est idempotente :
+        // un re-provisioning (reprise après échec, #3600) ne crée pas un
+        // second établissement — la garde est le `code` unique par tenant.
+        if (! DB::table('shared_tenants.sites')->where('company_id', $companyId)->exists()) {
+            DB::table('shared_tenants.sites')->insert([
+                'company_id' => $companyId,
+                'name' => 'Établissement principal',
+                'code' => 'PRINCIPAL',
+                'site_type' => 'office',
+                'status' => 'active',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
         // 1. Department
         $deptId = DB::table('shared_tenants.departments')->insertGetId([
             'company_id' => $companyId,
