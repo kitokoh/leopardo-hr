@@ -25,10 +25,9 @@ class GitHubDispatchClient
      * Émet un `repository_dispatch`. 204 attendu (No Content).
      *
      * @param  array<string, mixed>  $payload
+     * @return array{status: int, ok: bool, id: int|null}
      *
      * @throws RuntimeException jeton absent (fail-closed) ou réseau indisponible
-     *
-     * @return array{status: int, ok: bool, id: int|null}
      */
     public function dispatch(string $eventType, array $payload): array
     {
@@ -49,6 +48,7 @@ class GitHubDispatchClient
 
         $ok = $response->successful();
         $id = null;
+
         if ($ok) {
             // 204 sans corps ; certains proxys renvoient 200 avec un id.
             $json = $response->json();

@@ -102,7 +102,7 @@ class PlatformStackSwitchAction
             newValues: ['tier' => $tier, 'stack' => $stack, 'dispatch_event' => self::DISPATCH_EVENT],
             metadata: [
                 'requested_by' => $actorId,
-                'repository' => $repository,
+                'repository' => (string) config('services.github_stack_switch.repository', 'kitokoh/leopardo-hr'),
             ],
         );
 
