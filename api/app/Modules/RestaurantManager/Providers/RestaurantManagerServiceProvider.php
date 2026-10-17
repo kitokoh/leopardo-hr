@@ -44,8 +44,8 @@ use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CardPa
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CashPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\MobileMoneyPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\ReceivingService;
-use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDiscoverableProvider;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDemoSeederService;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDiscoverableProvider;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxConsumerRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use App\Modules\RestaurantManager\Infrastructure\Services\StockMovementService;
