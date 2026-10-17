@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\FuelStation;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\FuelStation\Domain\Models\FuelSale;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
 use Illuminate\Http\UploadedFile;
