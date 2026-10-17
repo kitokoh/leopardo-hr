@@ -6584,7 +6584,7 @@
     },
     "nav": {
       "pricing": "Pricing",
-      "packs": "Free packs",
+      "packs": "Pack",
       "packsHub": "All packs",
       "packsHubDesc": "A free pack per trade — discover the offer",
       "packsRestaurant": "Restaurants",
@@ -6621,7 +6621,6 @@
       "trade": "Trade"
     },
     "hero3d": {
-      "hint": "Click a module to explore",
       "demo": "Demo",
       "cagnottes": "Fundraisers",
       "freeTrial": "Free trial"

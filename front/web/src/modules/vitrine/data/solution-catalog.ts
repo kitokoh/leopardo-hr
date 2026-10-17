@@ -581,6 +581,11 @@ export function getSolutionDetail(id: SolutionId, locale: AppLocale): SolutionDe
 /**
  * Libellés de l'interface de la fiche et du CTA sous la constellation.
  * Copie nouvelle, donc sous `data/` (chemin exempté PA2-I18N-014).
+ *
+ * Le CTA ne porte plus de titre/sous-titre ni de ligne de réassurance
+ * ("Free pack · No credit card · No commitment") : retour utilisateur —
+ * l'explication au-dessus du bouton détournait l'attention de la
+ * constellation ; la promesse commerciale vit sur /packs et /pricing.
  */
 export const SOLUTION_CARD_COPY: Record<
   AppLocale,
@@ -591,11 +596,7 @@ export const SOLUTION_CARD_COPY: Record<
     close: string;
     explore: string;
     start: string;
-    ctaTitle: string;
-    ctaSubtitle: string;
     ctaPrimary: string;
-    ctaSecondary: string;
-    ctaReassurance: string;
   }
 > = {
   fr: {
@@ -605,12 +606,7 @@ export const SOLUTION_CARD_COPY: Record<
     close: 'Fermer',
     explore: 'En savoir plus',
     start: 'Commencer maintenant',
-    ctaTitle: 'Trouver la solution adaptée à mon activité',
-    ctaSubtitle:
-      'Une plateforme, plusieurs environnements métier : choisissez le vôtre, le pack correspondant s’active gratuitement.',
     ctaPrimary: 'Découvrir nos solutions',
-    ctaSecondary: 'Commencer maintenant',
-    ctaReassurance: 'Pack offert · Sans carte bancaire · Sans engagement',
   },
   en: {
     badge: 'Leopardo solution',
@@ -619,12 +615,7 @@ export const SOLUTION_CARD_COPY: Record<
     close: 'Close',
     explore: 'Learn more',
     start: 'Start now',
-    ctaTitle: 'Find the right solution for my business',
-    ctaSubtitle:
-      'One platform, several business environments: pick yours and the matching pack activates for free.',
     ctaPrimary: 'Explore our solutions',
-    ctaSecondary: 'Start now',
-    ctaReassurance: 'Free pack · No credit card · No commitment',
   },
   tr: {
     badge: 'Leopardo çözümü',
@@ -633,12 +624,7 @@ export const SOLUTION_CARD_COPY: Record<
     close: 'Kapat',
     explore: 'Daha fazla bilgi',
     start: 'Hemen başla',
-    ctaTitle: 'İşletmeme uygun çözümü bulmak istiyorum',
-    ctaSubtitle:
-      'Tek platform, birkaç sektör ortamı: sizinkini seçin, uygun paket ücretsiz etkinleşsin.',
     ctaPrimary: 'Çözümlerimizi keşfedin',
-    ctaSecondary: 'Hemen başla',
-    ctaReassurance: 'Ücretsiz paket · Kredi kartı yok · Taahhüt yok',
   },
   ar: {
     badge: 'حل Leopardo',
@@ -647,11 +633,6 @@ export const SOLUTION_CARD_COPY: Record<
     close: 'إغلاق',
     explore: 'معرفة المزيد',
     start: 'ابدأ الآن',
-    ctaTitle: 'أريد الحل المناسب لنشاطي',
-    ctaSubtitle:
-      'منصة واحدة وعدة بيئات مهنية: اختر بيئتك، وستُفعَّل الحزمة المناسبة مجانًا.',
     ctaPrimary: 'اكتشف حلولنا',
-    ctaSecondary: 'ابدأ الآن',
-    ctaReassurance: 'حزمة مجانية · بدون بطاقة بنكية · بدون التزام',
   },
 };

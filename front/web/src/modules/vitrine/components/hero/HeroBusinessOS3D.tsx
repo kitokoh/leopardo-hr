@@ -254,7 +254,7 @@ export function HeroBusinessOS3D({
     // constellation descend d'un demi-monde pour que le noyau (la grosse
     // gemme) ne croise jamais le texte — seuls les petits modules en orbite
     // le frôlent, ce qui fait tout le charme de la composition.
-    world.position.y = -0.5;
+    world.position.y = -0.35;
     scene.add(world);
 
     // ── Noyau : la plateforme (gemme à facettes + halo) ────────────────
@@ -573,10 +573,12 @@ export function HeroBusinessOS3D({
       // propriétaire « qu'elle occupe tout l'espace » — tout en gardant les
       // étiquettes des modules extérieurs dans le panneau.
       // #8438 — plein cadre (layout `stage`) : l'échelle tient compte de la
-      // hauteur autant que de la largeur, la constellation reste entière sur
-      // mobile portrait comme sur écran large.
-      const scale = Math.min(1.12, Math.min(width / 1000, height / 750));
-      world.scale.setScalar(Math.max(0.45, scale));
+      // hauteur autant que de la largeur. Retour utilisateur vague 5 : la
+      // constellation doit DOMINER l'écran (« l'agrandir un peu »), on relève
+      // donc le plafond (1,12 → 1,3) et le plancher (0,45 → 0,55) : les
+      // écrans larges gagnent ~16 % et le mobile ne devient pas illisible.
+      const scale = Math.min(1.3, Math.min(width / 900, height / 680));
+      world.scale.setScalar(Math.max(0.55, scale));
     };
     resize();
     const resizeObserver = new ResizeObserver(resize);
