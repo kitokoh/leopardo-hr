@@ -35,6 +35,7 @@ ajustée. Trois décisions structurent le résultat :
 | `front/web/src/modules/vitrine/components/hero/HeroScene3DPanel.tsx` | scène à 86 % de la hauteur pour rapprocher le CTA |
 | `front/web/src/modules/vitrine/components/hero/HeroSolutionsCTA.tsx` | CTA unique : cible tactile ≥ 56 px, contour de focus, halo sobre |
 | `front/web/.../sections/__tests__/HeroStageDepth.test.tsx` | **nouveau** — 9 cas de non-régression de composition |
+| `front/web/src/modules/vitrine/lib/vitrine-locale.ts` | copy anglaise : derniers « free pack » / « no credit card » retirés |
 | `CHANGELOG.md` | entrée `[Unreleased]` |
 | `docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS.md` | surface touchée + scénarios couverts |
 
@@ -95,6 +96,17 @@ pas frotter le CTA.
   ~250 px et vient juste sous la constellation.
 - **CTA** : cible tactile ≥ 56 px (`min-h-14`), `focus-visible` explicite,
   `active:scale` pour le retour tactile, halo émeraude discret.
+
+
+### 6. Reliquats de copy anglaise
+`vitrine-locale.ts` (catalogue en ligne **exempté** par la garde i18n, catégorie
+`data/lib` — ce n'est pas un catalogue généré) conservait trois mentions que la
+vague 5 avait retirées du héros :
+- « Explore the free packs » (`secondaryCta`, `cta.secondary`) → « Explore the packs » ;
+- lien de pied de page « Free packs » → « Packs » ;
+- « 14-day free trial. No credit card required. » → « 14-day trial. ».
+
+Aucune clé i18n ajoutée, aucune synchronisation `shared/i18n` requise.
 
 ## Tests réellement exécutés
 
