@@ -84,7 +84,10 @@ class TravelVehicle extends Model
     {
         $raw = $this->seat_layout;
 
-        return SeatLayout::tryFromArray(is_array($raw) ? $raw : null);
+        // #8652 — la capacité est transmise pour que les sièges absents soient
+        // bornés par le véhicule réel : un siège absent hors capacité rend la
+        // disposition inexploitable (repli), il n'est jamais accepté tel quel.
+        return SeatLayout::tryFromArray(is_array($raw) ? $raw : null, (int) $this->seat_capacity);
     }
 
     /**
