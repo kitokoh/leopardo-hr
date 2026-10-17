@@ -24,7 +24,7 @@ branding, marketing).
 
 | # | Document | Pourquoi il existe |
 |---|---|---|
-| **08** | [`08_gap_matrix.md`](08_gap_matrix.md) | 48 écarts classés R/C/X/N/V + matrice verticale × capacité |
+| **08** | [`08_gap_matrix.md`](08_gap_matrix.md) | 57 écarts classés R/C/X/N/V + matrice verticale × capacité |
 | **09** | [`09_adr.md`](09_adr.md) | 9 décisions avec alternatives **écartées** (ce qui empêche de refaire le débat) |
 | **10** | [`10_field_validation_plan.md`](10_field_validation_plan.md) | Protocole d'observation terrain, seuils go/no-go |
 | **11** | [`11_integrations_catalogue.md`](11_integrations_catalogue.md) | Statut réel de chaque intégration, prérequis d'exploitation |
