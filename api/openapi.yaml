@@ -1365,6 +1365,93 @@ paths:
           description: Reference ou code de controle invalide (reponse identique dans les deux cas)
         '422':
           description: Corps de requete invalide
+  /travel/tickets/lookup:
+    post:
+      tags:
+      - Travel
+      summary: Rechercher une reservation par reference (secours camera)
+      description: >-
+        BC-24 TRAVEL OS (#8546) — recherche MANUELLE par reference, utilisee
+        quand la camera ne fonctionne pas ou que l'appareil n'a pas de capteur.
+        LECTURE SEULE, comme `/travel/tickets/verify` : ne consomme JAMAIS le
+        billet. Ne retourne aucun code de controle (il n'est delivre qu'a
+        l'emission) — seulement la reservation, ses billets et leur statut
+        operationnel. L'identite du passager n'est renvoyee que si l'operateur
+        est habilite au controle (`travel.checkin`). Cross-tenant -> 404.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reference]
+              properties:
+                reference:
+                  type: string
+                  maxLength: 64
+                  description: Reference de la reservation.
+      responses:
+        '200':
+          description: Reservation trouvee (billets et statuts)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      booking_reference:
+                        type: string
+                      trip:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                            nullable: true
+                          departure_date:
+                            type: string
+                            format: date
+                            nullable: true
+                          departure_time:
+                            type: string
+                            nullable: true
+                          origin:
+                            type: string
+                            nullable: true
+                          destination:
+                            type: string
+                            nullable: true
+                      tickets:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            ticket_number:
+                              type: string
+                            seat_number:
+                              type: integer
+                              nullable: true
+                            status:
+                              type: string
+                              enum: [valid, void, expired, already_used]
+                            passenger:
+                              type: object
+                              nullable: true
+                              description: >-
+                                `null` si l'operateur n'a pas la permission
+                                `travel.checkin`.
+                              properties:
+                                full_name:
+                                  type: string
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission travel.checkin requise
+        '404':
+          description: Reference inconnue ou hors du tenant
+        '422':
+          description: Corps de requete invalide
   /travel/reports/offices:
     get:
       tags:
@@ -1608,6 +1695,96 @@ paths:
           description: Vehicule inexistant ou hors du tenant
         '422':
           description: Coordonnees hors bornes ou source inconnue
+  /travel/vehicles/{travelVehicle}/positions:
+    get:
+      tags:
+      - Travel
+      summary: Historique des positions transmises d'un vehicule
+      description: >-
+        BC-24 TRAVEL OS (#8548) — historique des positions REELLEMENT
+        transmises par un dispositif autorise (boitier GPS ou application).
+        Aucune position n'est fabriquee : un vehicule sans equipement retourne
+        une liste VIDE (`count: 0`), jamais des points inventes. Lecture bornee
+        par tenant (isolation `company_id`), par vehicule et par fenetre
+        temporelle optionnelle. `is_measured` vaut `false` pour une position
+        estimee — elle n'est jamais presentee comme une mesure GPS.
+        Permission : lecture flotte (tout employe du tenant) ; cross-tenant
+        -> 404.
+      parameters:
+      - name: travelVehicle
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Borne inferieure (incluse) sur `recorded_at`.
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Borne superieure (incluse) sur `recorded_at`.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 500
+          default: 100
+      responses:
+        '200':
+          description: Historique des positions (liste vide si aucun dispositif)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      vehicle_id:
+                        type: integer
+                      vehicle_code:
+                        type: string
+                      count:
+                        type: integer
+                      points:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            latitude:
+                              type: number
+                              format: float
+                            longitude:
+                              type: number
+                              format: float
+                            source:
+                              type: string
+                              enum: [gps, app, estimated]
+                            source_label:
+                              type: string
+                            is_measured:
+                              type: boolean
+                              description: >-
+                                `false` pour une position estimee — jamais
+                                presentee comme une position GPS.
+                            recorded_at:
+                              type: string
+                              format: date-time
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission de lecture flotte requise
+        '404':
+          description: Vehicule inexistant ou hors du tenant
   /travel/fleet/tracking:
     get:
       tags:
