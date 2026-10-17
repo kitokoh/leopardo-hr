@@ -81,21 +81,25 @@ git push origin --delete fix/vitrine-hero-constellation-ux
 
 ## 6. État distant (mis à jour)
 
-- **Issue** : #8638 créée (retours vague 5, critères d'acceptation) — liée par `Closes #8638`.
-- **Branche** : `fix/vitrine-hero-constellation-ux` poussée sur `origin`.
-- **Pull Request** : **#8637** — https://github.com/kitokoh/leopardo-hr/pull/8637
-- **Fusion `origin/main`** : `e9c5f986c` → `69b7cc599` fusionné dans la branche ; seul conflit
-  sur le fichier **généré** `shared/i18n/versions/versions.json`, résolu par régénération
-  (`sync-web` / `sync-mobile` / `sync-backend`), jamais à la main.
-- **CI** : en cours de vérification. Échecs triés :
-  - `Desktop verify *` (Flutter) — **préexistant**, conflit `sentry_flutter ^9` déjà tracé par
-    l'issue #8599 ; non requis, hors périmètre.
-  - `Check PR/issue governance` — corrigé (issue #8638 + `Closes #8638`).
-  - `Governance Gates (changelog + canonical files)` — corrigé (entrée de registre ci-dessus).
-- **Statut** : fusion **en attente** de la CI verte sur les checks requis.
+- **Issue** : #8638 créée (retours vague 5, critères d'acceptation) — liée par `Closes #8638` — **fermée** par la fusion.
+- **Branche** : `fix/vitrine-hero-constellation-ux` poussée puis **supprimée** (auto-suppression à la fusion).
+- **Pull Request** : **#8637** — https://github.com/kitokoh/leopardo-hr/pull/8637 — **FUSIONNÉE**
+  (merge commit `59f8718d3822fe57c5c2420449d0da2d62e7ca67`).
+- **Fusions `origin/main`** : `e9c5f986c` → `69b7cc599` → `e081bbc28` fusionnées dans la branche ;
+  conflits uniquement sur des fichiers **générés** (`shared/i18n/versions/versions.json`) et sur le
+  registre de scénarios (entrées concurrentes), résolus par régénération via les scripts de sync et
+  conservation des deux entrées — jamais à la main.
+- **CI sur la PR** : 4 checks requis **verts** (`PHPStan — Strict (level 8)`, `Module Structure Validator`,
+  `Frontend — ESLint + TypeScript`, `actionlint (+ shellcheck)`), plus `Governance Gates` et
+  `Check PR/issue governance` verts après correction (entrée CHANGELOG + entrée registre + `Closes #8638`).
+- **CI sur `main`** (`59f8718d3`) : les 4 checks requis **verts**, aucun échec hors Flutter.
+- **Échecs non bloquants, préexistants** : jobs Flutter `Analyze leopardo_*`, `Desktop verify *`,
+  `Distribute * to Firebase` — conflit `sentry_flutter ^9` déjà tracé par l'issue #8599 ; échouent
+  aussi sur `main` avant toute contribution de cette mission.
+- **Statut** : **mission terminée** — PR fusionnée, branche supprimée, `main` propre et verte.
 
 ## 7. Ce qui n'a PAS été fait
 
 - Aucun test e2e Playwright du dépôt lancé (binaire Chromium du projet absent) ;
   les vérifications navigateur ont été faites avec le Chromium 1181 du sandbox.
-- `next build` non concluant en local (OOM, cgroup 2 Gio) — à valider en CI.
+- `next build` non concluant en local (OOM, cgroup 2 Gio) — couvert par la CI.
