@@ -17,6 +17,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelPayment;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
 use App\Modules\TravelAgency\Domain\Models\TravelTripSeat;
+use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelMarketplaceService;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelMarketplaceBookingRequest;
@@ -113,7 +114,7 @@ class TravelMarketplaceController extends Controller
             abort(404);
         }
 
-        $model->load(['prices', 'route.originCity', 'route.destinationCity']);
+        $model->load(['prices', 'route.originCity', 'route.destinationCity', 'vehicle']);
 
         // #8619 — Le plan de si\u00e8ges public doit repr\u00e9senter la disposition R\u00c9ELLE
         // du v\u00e9hicule : on expose donc l'INVENTAIRE COMPLET du trajet (libres,
@@ -349,6 +350,12 @@ class TravelMarketplaceController extends Controller
             ])->values()->all(),
             'price_from_minor' => $adultPrices->isEmpty() ? null : $adultPrices->min(),
             'currency' => $prices->first()?->currency,
+            // #8645 — disposition des sièges du véhicule affecté. Le plan public
+            // ne doit pas déduire 2+2/2+1 de la capacité. Purement géométrique
+            // (entiers) : aucune donnée personnelle, aucun identifiant interne.
+            'seat_layout' => $trip->vehicle !== null
+                ? $trip->vehicle->effectiveSeatLayout()
+                : TravelVehicle::fallbackSeatLayout((int) $trip->total_seats),
             'agency' => ['name' => $agency?->name],
         ];
     }

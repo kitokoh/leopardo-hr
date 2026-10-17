@@ -129,8 +129,12 @@ const CYAN = new Color('#06b6d4');
 const CORE_COLOR = new Color('#0d9488');
 
 /** Étiquette HTML d'un module — Tailwind (classes scannées dans ce fichier). */
+// Vague 6 — les étiquettes passent en VERRE SOMBRE. Sur un héros nuit
+// permanente, les pastilles blanches étaient les éléments les plus lumineux de
+// l'écran : elles disputaient la vedette à la constellation et faisaient
+// « bruit » sur le titre. Le verre sombre les rend lisibles sans les allumer.
 const LABEL_CLASS =
-  'pointer-events-none absolute left-0 top-0 z-10 flex items-center gap-1.5 whitespace-nowrap rounded-full border border-slate-200/70 bg-white/85 px-2 py-0.5 text-[10px] font-semibold text-slate-600 shadow-sm backdrop-blur-sm transition-opacity dark:border-slate-700/60 dark:bg-slate-900/85 dark:text-slate-300';
+  'pointer-events-none absolute left-0 top-0 z-10 flex items-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 bg-slate-950/55 px-2 py-0.5 text-[10px] font-semibold text-slate-200/90 shadow-lg shadow-slate-950/40 backdrop-blur-md transition-opacity';
 const LABEL_DOT_CLASS = 'h-1.5 w-1.5 rounded-full';
 
 type ModuleNode = {
@@ -245,7 +249,7 @@ export function HeroBusinessOS3D({
     const keyLight = new DirectionalLight(0xffffff, 1.1);
     keyLight.position.set(4, 6, 8);
     scene.add(keyLight);
-    const glowLight = new PointLight(EMERALD, 18, 14);
+    const glowLight = new PointLight(EMERALD, 26, 15);
     glowLight.position.set(0, 0, 0);
     scene.add(glowLight);
 
@@ -254,7 +258,10 @@ export function HeroBusinessOS3D({
     // constellation descend d'un demi-monde pour que le noyau (la grosse
     // gemme) ne croise jamais le texte — seuls les petits modules en orbite
     // le frôlent, ce qui fait tout le charme de la composition.
-    world.position.y = -0.35;
+    // Vague 6 — la scène descend franchement sous le titre : le noyau et les
+    // anneaux occupent le tiers médian, le tiers haut appartient à la phrase.
+    // C'est ce qui la rend lisible SANS la sortir de sous la constellation.
+    world.position.y = -0.85;
     scene.add(world);
 
     // ── Noyau : la plateforme (gemme à facettes + halo) ────────────────
@@ -264,7 +271,7 @@ export function HeroBusinessOS3D({
       new MeshStandardMaterial({
         color: CORE_COLOR,
         emissive: new Color('#064e3b'),
-        emissiveIntensity: 0.7,
+        emissiveIntensity: 1.15,
         metalness: 0.35,
         roughness: 0.32,
         transparent: true,
@@ -286,12 +293,12 @@ export function HeroBusinessOS3D({
       new SpriteMaterial({
         map: coreHaloTexture,
         transparent: true,
-        opacity: 0.5,
+        opacity: 0.62,
         depthWrite: false,
         blending: AdditiveBlending,
       }),
     );
-    coreHalo.scale.setScalar(5.6);
+    coreHalo.scale.setScalar(6.4);
     coreHalo.position.set(0, 0, -0.4);
     world.add(coreHalo);
 
@@ -531,6 +538,21 @@ export function HeroBusinessOS3D({
     // resize — pas de lecture layout dans la boucle).
     let viewW = 1;
     let viewH = 1;
+    // Vague 6 — anti-chevauchement : tampon réutilisé (aucune allocation par
+    // image) + ordre de placement trié par ordonnée.
+    const labelSlots = nodes.map(() => ({
+      el: null as HTMLDivElement | null,
+      x: 0,
+      y: 0,
+      depth: 1,
+      visible: false,
+      hovered: false,
+    }));
+    const labelOrder: number[] = [];
+    const coreVec = new Vector3();
+    let coreScreenX = 0;
+    let coreScreenY = 0;
+    let coreClear = 0;
 
     const onPointerMove = (event: PointerEvent): void => {
       const rect = host.getBoundingClientRect();
@@ -577,8 +599,10 @@ export function HeroBusinessOS3D({
       // constellation doit DOMINER l'écran (« l'agrandir un peu »), on relève
       // donc le plafond (1,12 → 1,3) et le plancher (0,45 → 0,55) : les
       // écrans larges gagnent ~16 % et le mobile ne devient pas illisible.
-      const scale = Math.min(1.3, Math.min(width / 900, height / 680));
-      world.scale.setScalar(Math.max(0.55, scale));
+      // Vague 6 — la constellation doit DOMINER l'écran : plafond relevé
+      // (1.42 → 1.52) tout en gardant un plancher lisible sur mobile.
+      const scale = Math.min(1.52, Math.min(width / 860, height / 690));
+      world.scale.setScalar(Math.max(0.62, scale));
     };
     resize();
     const resizeObserver = new ResizeObserver(resize);
@@ -737,6 +761,15 @@ export function HeroBusinessOS3D({
       // la caméra estompe doucement les modules à l'arrière de l'orbite ;
       // le module survolé passe en pleine lumière.
       if (labelEls.length > 0) {
+        // Position écran du noyau : les étiquettes qui tomberaient dessus sont
+        // masquées (elles se lisaient comme des taches sur la gemme).
+        core.getWorldPosition(coreVec);
+        coreVec.project(camera);
+        coreScreenX = (coreVec.x * 0.5 + 0.5) * viewW;
+        coreScreenY = (-coreVec.y * 0.5 + 0.5) * viewH;
+        coreClear = Math.min(78, viewW * 0.075);
+
+        let slotCount = 0;
         nodes.forEach((node) => {
           const el = node.labelEl;
           if (!el) return;
@@ -745,17 +778,47 @@ export function HeroBusinessOS3D({
           labelVec.project(camera);
           const x = (labelVec.x * 0.5 + 0.5) * viewW;
           const y = (-labelVec.y * 0.5 + 0.5) * viewH;
-          // Garde-fou de bord (#8438, retour vague 5) : sur mobile la sphère
-          // déborde du cadre et les étiquettes sortaient tronquées (« OS »
-          // seul visible à gauche). On borne le centre projeté à une marge de
-          // 15 % de chaque côté — le libellé reste entier et lisible, même si
-          // son ancre optique glisse légèrement vers l'intérieur.
-          const margin = viewW * 0.15;
-          const clampedX = Math.min(viewW - margin, Math.max(margin, x));
-          el.style.transform = `translate(-50%, -135%) translate(${clampedX.toFixed(1)}px, ${y.toFixed(1)}px)`;
-          const depthFade = Math.min(1, Math.max(0.45, 1.5 - distance / 12));
-          el.style.opacity = hovered === node ? '1' : depthFade.toFixed(2);
+          const slot = labelSlots[slotCount];
+          slotCount += 1;
+          slot.el = el;
+          slot.x = x;
+          slot.y = y;
+          slot.hovered = hovered === node;
+          slot.depth = Math.min(1, Math.max(0.45, 1.5 - distance / 12));
+          // Derrière la caméra ou très loin hors cadre : rien à afficher.
+          const onCore =
+            Math.hypot(x - coreScreenX, y - coreScreenY) < coreClear;
+          slot.visible =
+            labelVec.z < 1 && x > -32 && x < viewW + 32 && y > -32 && y < viewH + 32 && !onCore;
         });
+
+        // Anti-chevauchement : on place du haut vers le bas et on repousse vers
+        // le bas toute étiquette qui empiéterait sur la précédente.
+        labelOrder.length = slotCount;
+        for (let i = 0; i < slotCount; i += 1) labelOrder[i] = i;
+        labelOrder.sort((a, b) => labelSlots[a].y - labelSlots[b].y);
+        let lastY = Number.NEGATIVE_INFINITY;
+        const minGap = 19;
+        for (let i = 0; i < slotCount; i += 1) {
+          const slot = labelSlots[labelOrder[i]];
+          if (slot.y - lastY < minGap) slot.y = lastY + minGap;
+          lastY = slot.y;
+        }
+
+        for (let i = 0; i < slotCount; i += 1) {
+          const slot = labelSlots[i];
+          const el = slot.el;
+          if (!el) continue;
+          // Garde-fou de bord (#8438, vague 5) : sur mobile la sphère déborde
+          // du cadre et les étiquettes sortaient tronquées (« OS » seul
+          // visible à gauche). Marge ramenée à 12 % — les libellés restent
+          // entiers sur les trois formats.
+          const margin = viewW * 0.12;
+          const clampedX = Math.min(viewW - margin, Math.max(margin, slot.x));
+          const clampedY = Math.min(viewH - 26, Math.max(26, slot.y));
+          el.style.transform = `translate(-50%, -135%) translate(${clampedX.toFixed(1)}px, ${clampedY.toFixed(1)}px)`;
+          el.style.opacity = slot.visible ? (slot.hovered ? '1' : slot.depth.toFixed(2)) : '0';
+        }
       }
 
       renderer.render(scene, camera);

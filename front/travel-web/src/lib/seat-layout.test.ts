@@ -4,6 +4,7 @@ import {
   buildSeatMapLayout,
   countSeatsByStatus,
   isSeatSelectable,
+  resolveSeatLayout,
   resolveSeatsPerRow,
   seatAriaLabel,
   seatStatusLabel,
@@ -169,5 +170,62 @@ describe("resolveSeatsPerRow (#8620)", () => {
     expect(resolveSeatsPerRow(12)).toBe(3);
     expect(resolveSeatsPerRow(16)).toBe(4);
     expect(resolveSeatsPerRow(0)).toBe(4);
+  });
+});
+
+describe("resolveSeatLayout (#8646)", () => {
+  it("privilégie la disposition réelle du véhicule sur la déduction", () => {
+    // Un 30 places réellement en 2+1 ne doit PAS être affiché en 2+2.
+    const layout = resolveSeatLayout(30, {
+      seats_per_row: 3,
+      aisle_after: 1,
+      is_configured: true,
+    });
+
+    expect(layout).toEqual({ seatsPerRow: 3, aisleAfter: 1, isConfigured: true });
+  });
+
+  it("retombe sur la déduction quand aucun véhicule n'est configuré", () => {
+    expect(resolveSeatLayout(30, null)).toEqual({
+      seatsPerRow: 4,
+      aisleAfter: 2,
+      isConfigured: false,
+    });
+    expect(resolveSeatLayout(12, null)).toEqual({
+      seatsPerRow: 3,
+      aisleAfter: 2,
+      isConfigured: false,
+    });
+  });
+
+  it("respecte un couloir absent explicitement demandé", () => {
+    expect(
+      resolveSeatLayout(30, { seats_per_row: 2, aisle_after: null, is_configured: true }),
+    ).toEqual({ seatsPerRow: 2, aisleAfter: null, isConfigured: true });
+  });
+
+  it("refuse une géométrie serveur incohérente et retombe sur le repli", () => {
+    // Couloir après la dernière colonne : plan impossible, on ne le rend pas.
+    expect(
+      resolveSeatLayout(30, { seats_per_row: 3, aisle_after: 3, is_configured: true }),
+    ).toEqual({ seatsPerRow: 4, aisleAfter: 2, isConfigured: false });
+
+    // Colonnes hors bornes.
+    expect(
+      resolveSeatLayout(30, { seats_per_row: 9, aisle_after: null, is_configured: true }),
+    ).toEqual({ seatsPerRow: 4, aisleAfter: 2, isConfigured: false });
+  });
+
+  it("place le couloir là où le serveur l'indique dans la grille", () => {
+    const layout = buildSeatMapLayout(
+      Array.from({ length: 30 }, (_, i) => ({ seat_number: i + 1, status: "free" as const })),
+      { seatsPerRow: 3, aisleAfter: 1 },
+    );
+
+    // 3 colonnes de sièges + 1 colonne de couloir.
+    expect(layout.columns).toBe(4);
+    expect(layout.aisleColumn).toBe(1);
+    expect(layout.seatsPerRow).toBe(3);
+    expect(layout.rows).toHaveLength(10);
   });
 });

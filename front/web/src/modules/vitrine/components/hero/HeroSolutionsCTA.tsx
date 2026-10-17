@@ -33,11 +33,11 @@ export function HeroSolutionsCTA() {
   return (
     <div
       data-testid="hero-solutions-cta"
-      className="pointer-events-auto mt-6 flex justify-center pb-10 sm:mt-10 sm:pb-14"
+      className="pointer-events-auto flex flex-col items-center gap-3 pb-6 sm:pb-8"
     >
       <Link
         href={withLocaleHref('/packs', search)}
-        className="group relative inline-flex items-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-700 to-emerald-800 px-9 py-4 text-base font-bold text-white shadow-lg shadow-emerald-950/40 transition-all duration-300 hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 active:scale-[0.98]"
+        className="group cta-glow-emerald relative inline-flex min-h-14 items-center gap-3 overflow-hidden rounded-2xl border border-emerald-400/25 bg-gradient-to-r from-emerald-600 to-teal-500 px-8 py-4 text-base font-bold text-white shadow-xl shadow-emerald-950/50 ring-1 ring-inset ring-white/10 transition-all duration-300 hover:scale-[1.02] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300 active:scale-[0.98] sm:px-9"
       >
         <span className="relative z-10 flex items-center gap-2.5">
           {copy.ctaPrimary}
@@ -46,7 +46,7 @@ export function HeroSolutionsCTA() {
             aria-hidden="true"
           />
         </span>
-        <span className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-cyan-600 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+        <span className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-cyan-400 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       </Link>
     </div>
   );

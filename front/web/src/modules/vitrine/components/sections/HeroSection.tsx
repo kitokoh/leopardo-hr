@@ -108,14 +108,19 @@ export function HeroSection({
   // opacité > 0.9) — « toile de fond » = ordre de plan, pas estompage.
   if (isStage) {
     return (
-      <section ref={ref} className="relative isolate min-h-[100dvh] overflow-hidden bg-slate-950">
-        {/* Ciel nuit permanent : lueurs émeraude/cyan sur ardoise profonde */}
-        <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_-10%,rgba(16,185,129,0.18),transparent)]" />
-        <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_70%_55%_at_85%_110%,rgba(6,182,212,0.14),transparent)]" />
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-slate-950 via-slate-950/95 to-slate-900/95" />
+      <section
+        ref={ref}
+        className="relative isolate min-h-[100dvh] overflow-hidden bg-slate-950"
+      >
+        {/* ── PROFONDEUR (vague 6) ── trois plans seulement, du plus lointain
+            au plus proche : ciel bleu nuit → halo derrière la constellation →
+            vignettage. Les classes vivent dans globals.css (style pur, hors
+            garde i18n) ; la pile est documentée là-bas. */}
+        <div aria-hidden="true" className="hero-stage-base absolute inset-0 z-0" />
+        <div aria-hidden="true" className="hero-stage-halo absolute inset-0 z-0" />
         {/* Trame discrète (style en globals.css — la garde i18n ne scanne
             pas les .css, cf. note PA2-I18N-014 en tête de globals.css) */}
-        <div className="hero-stage-grid absolute inset-0 z-0 opacity-[0.05]" />
+        <div aria-hidden="true" className="hero-stage-grid absolute inset-0 z-0 opacity-[0.035]" />
 
         {/* Mission Leopardo — les cartes géographiques du fond (France →
             Algérie → Turquie → Tchad → Afrique) remplacent la France figée :
@@ -133,17 +138,25 @@ export function HeroSection({
             (chevauchement constaté en capture 390×844). Le padding bas la
             hisse dans le tiers supérieur : la constellation (abaissée côté
             scène) ne la croise qu'en petits modules orbitaux. */}
-        <div className="pointer-events-none absolute inset-0 z-[5] flex items-start justify-center px-4 pt-28 sm:items-center sm:px-6 sm:pb-[30vh] sm:pt-0">
-          <motion.h1
-            initial={animated ? { y: 30 } : {}}
-            animate={animated ? { y: 0 } : {}}
-            transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-5xl text-balance text-center font-black leading-[0.95] tracking-tight text-4xl sm:text-6xl lg:text-7xl"
-          >
-            <span className="block bg-gradient-to-b from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-              {headline}
-            </span>
-          </motion.h1>
+        {/* Phrase en toile de fond (z-[5]) : SOUS la constellation (z-10), comme
+            demandé, mais désormais LISIBLE — elle vit dans le tiers haut, à
+            l'écart du cœur de la scène, posée sur un voile radial. Le halo et le
+            canvas la traversent : c'est l'effet voulu, à condition qu'aucun
+            module ne vienne couper un mot. */}
+        <div className="pointer-events-none absolute inset-0 z-[5] flex items-start justify-center px-4 pt-[19vh] sm:px-6 sm:pt-[16vh]">
+          <div className="relative w-full max-w-5xl">
+            <div aria-hidden="true" className="hero-stage-title-scrim absolute -inset-x-8 -inset-y-10 sm:-inset-x-16" />
+            <motion.h1
+              initial={animated ? { y: 30 } : {}}
+              animate={animated ? { y: 0 } : {}}
+              transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+              className="relative text-balance text-center font-black leading-[0.98] tracking-tight text-4xl sm:text-6xl lg:text-7xl"
+            >
+              <span className="hero-stage-title-text block bg-gradient-to-b from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">
+                {headline}
+              </span>
+            </motion.h1>
+          </div>
         </div>
 
         {/* Constellation pleine scène (z-10) — modules cliquables (#8390).
@@ -219,29 +232,17 @@ export function HeroSection({
             le thème courant de la page (blanc en jour, ardoise en nuit).
             Plan SOUS la scène (z-[12]) : le dégradé ne mange plus le bas de
             la constellation. */}
+        <div
+          aria-hidden="true"
+          className="hero-stage-vignette pointer-events-none absolute inset-0 z-[11]"
+        />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[12] h-24 bg-gradient-to-b from-transparent to-white dark:to-slate-950" />
 
-        {/* Indicateur de scroll */}
-        {animated && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5 }}
-            className="absolute bottom-8 left-1/2 z-20 -translate-x-1/2"
-          >
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-              className="flex w-6 items-start justify-center rounded-full border-2 border-slate-300 p-1.5 dark:border-slate-700"
-            >
-              <motion.div
-                animate={{ opacity: [1, 0.3, 1], y: [0, 12, 0] }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-                className="h-1.5 w-1.5 rounded-full bg-emerald-500"
-              />
-            </motion.div>
-          </motion.div>
-        )}
+        {/* Vague 6 — l'indicateur de défilement est RETIRÉ du layout `stage` :
+            il occupait exactement la place du CTA unique (`bottom-8`, centré)
+            et venait se poser dessus. Le CTA ancre désormais le bas du héros ;
+            un second repère n'ajoutait que du bruit. Il reste rendu dans les
+            layouts `centered` / `split` ci-dessous, où aucun CTA ne l'occupe. */}
       </section>
     );
   }

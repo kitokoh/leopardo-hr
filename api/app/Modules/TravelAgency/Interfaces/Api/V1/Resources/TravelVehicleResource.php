@@ -28,6 +28,10 @@ class TravelVehicleResource extends JsonResource
             'code' => $this->code,
             'registration_number' => $this->registration_number,
             'seat_capacity' => $this->seat_capacity,
+            // `seat_layout` = configuration BRUTE persistée (null = non configuré).
+            'seat_layout' => $this->seat_layout,
+            // `effective_seat_layout` = géométrie réellement rendue (repli compris).
+            'effective_seat_layout' => $this->seatLayoutPayload(),
             'carrier_id' => $this->carrier_id,
             'status' => $this->status,
             'notes' => $this->notes,
@@ -35,6 +39,24 @@ class TravelVehicleResource extends JsonResource
             'updated_at' => $this->updated_at,
             'position' => $this->positionPayload(),
         ];
+    }
+
+    /**
+     * #8644 — disposition effective des sièges.
+     *
+     * `seat_layout` est la configuration RÉELLE (ou `null` si le véhicule n'a
+     * jamais été configuré). `effective_seat_layout` est la géométrie qui sera
+     * réellement rendue par le plan de sièges : configuration si elle existe,
+     * sinon repli par capacité. `is_configured` dit lequel des deux on regarde —
+     * le client ne peut donc pas confondre une déduction avec une donnée lue.
+     *
+     * Aucune donnée personnelle : uniquement des entiers de géométrie.
+     *
+     * @return array{seats_per_row: int, aisle_after: int|null, is_configured: bool}
+     */
+    private function seatLayoutPayload(): array
+    {
+        return $this->resource->effectiveSeatLayout();
     }
 
     /**
