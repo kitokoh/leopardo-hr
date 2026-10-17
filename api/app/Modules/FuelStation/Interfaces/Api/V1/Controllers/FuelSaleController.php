@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\FuelStation\Application\Actions\RecordFuelSaleAction;
 use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Modules\FuelStation\Domain\Models\FuelSale;
+use App\Modules\FuelStation\Infrastructure\Services\FuelSaleService;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelSaleRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -139,6 +140,35 @@ class FuelSaleController extends Controller
     }
 
     /**
+     * P1-b (audit 2026-10-17) — annulation d'une vente.
+     *
+     * ECRITURE COMPENSATOIRE, jamais destructrice : la ligne d'origine est
+     * CONSERVEE et marquee `cancelled` (aucun DELETE). Le service refuse
+     * l'annulation si la session de caisse est deja cloturee/approuvee.
+     */
+    public function cancel(Request $request, FuelSale $sale): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($sale->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('cancel', $sale);
+
+        $validated = $request->validate([
+            'reason' => ['required', 'string', 'min:3', 'max:500'],
+        ]);
+
+        $sale = app(FuelSaleService::class)->cancel($actor, $sale, $validated['reason']);
+
+        return response()->json(['data' => $this->payload($sale)]);
+    }
+
+    /**
      * @return array<string, mixed>
      */
     private function payload(FuelSale $sale): array
@@ -161,6 +191,12 @@ class FuelSaleController extends Controller
             'quantity' => $sale->quantity,
             'unit_price' => $sale->unit_price,
             'amount' => $sale->amount,
+            'payment_method' => $sale->payment_method,
+            'payment_reference' => $sale->payment_reference,
+            'status' => $sale->status,
+            'cancelled_at' => $sale->cancelled_at?->toIso8601String(),
+            'cancelled_by' => $sale->cancelled_by,
+            'cancellation_reason' => $sale->cancellation_reason,
             'sale_time' => $sale->sale_time->toIso8601String(),
             'source' => $sale->source,
             'external_id' => $sale->external_id,

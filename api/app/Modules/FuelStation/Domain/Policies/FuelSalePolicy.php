@@ -35,4 +35,21 @@ class FuelSalePolicy
     {
         return $this->canOperateScopedResource($actor, 'fuel_station', null, true);
     }
+
+    /**
+     * P1-b (audit 2026-10-17) — annulation d'une vente : acte de supervision.
+     *
+     * Reserve au manager (et non au vendeur) : annuler une piece financiere
+     * n'est pas une operation de comptoir. Croise avec l'acces
+     * ressource-scope par station (#7600) — un manager d'une autre station
+     * ne peut pas annuler la vente d'une station qu'il n'administre pas.
+     */
+    public function cancel(Employee $actor, FuelSale $sale): bool
+    {
+        if (! $actor->isManager()) {
+            return false;
+        }
+
+        return $this->canManageScopedResource($actor, 'fuel_station', $sale->station_id, true);
+    }
 }

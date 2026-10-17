@@ -10702,6 +10702,21 @@ paths:
                 notes:
                   type: string
                   nullable: true
+                payment_method:
+                  type: string
+                  nullable: true
+                  enum:
+                  - cash
+                  - card
+                  - account
+                  - voucher
+                  - other
+                  description: P1-a (audit 2026-10-17) - nature du reglement (defaut cash).
+                payment_reference:
+                  type: string
+                  nullable: true
+                  maxLength: 120
+                  description: Reference externe opaque (TPE, bon, compte pro) - jamais un PAN.
       responses:
         '200':
           description: Vente enregistree (ou vente existante si rejeu external_id)
@@ -10731,6 +10746,50 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           description: Vente introuvable ou autre tenant
+  /fuel-station/sales/{sale}/cancel:
+    post:
+      tags:
+      - FuelStation
+      summary: Annuler une vente (manager) - ecriture compensatoire, jamais destructive
+      description: |
+        P1-b (audit FuelStation 2026-10-17). L'annulation est une ECRITURE
+        COMPENSATOIRE : la ligne d'origine est CONSERVEE et marquee `cancelled`
+        (aucun DELETE), le montant, la quantite et l'operateur restent lisibles.
+        Refusee (422) si la session de caisse de la vente est deja
+        `closed`/`approved`, ou si la vente est deja annulee. Publie
+        `fuel.sale.cancelled.v1` pour la comptabilite.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: sale
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reason
+              properties:
+                reason:
+                  type: string
+                  minLength: 3
+                  maxLength: 500
+      responses:
+        '200':
+          description: Vente annulee (statut cancelled, ligne conservee)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Vente introuvable ou autre tenant
+        '422':
+          description: Motif manquant, vente deja annulee ou session de caisse cloturee
   /fuel-station/me/sales:
     get:
       tags:
