@@ -38,7 +38,9 @@ use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -441,6 +443,11 @@ final class PlatformMarketingOsController extends Controller
                 $asset->mime_type = $stored['mime_type'];
                 $asset->extension = $stored['extension'];
                 $asset->size = $stored['size'];
+                // #8675 — le nom d'origine etait calcule puis JETE : la base ne
+                // gardait que le nom de stockage aleatoire, donc un telechargement
+                // ne pouvait pas proposer un nom lisible. Il est desormais
+                // persiste (colonne nullable, migration 2026_10_18_120000_8675).
+                $asset->original_name = $stored['original_name'];
                 $asset->save();
             }
 
@@ -460,6 +467,86 @@ final class PlatformMarketingOsController extends Controller
                     'stored_on_disk' => $asset->hasFile(),
                 ],
             ], Response::HTTP_CREATED);
+        });
+    }
+
+    /**
+     * GET /platform/companies/{company}/marketing-os/assets/{asset}
+     *
+     * Détail d'UNE ressource. Manquait complètement : la médiathèque ne
+     * savait exposer qu'une LISTE, si bien qu'un écran de détail n'avait
+     * aucun endpoint à appeler et devait retrouver la ressource dans la page
+     * courante — impossible dès qu'elle sortait de la fenêtre de pagination.
+     */
+    public function showAsset(string $company, int $asset): JsonResponse
+    {
+        $target = PlatformCompanyLookup::findOrFail($company);
+
+        return $this->tenantManager->withinTenant($target, function () use ($asset): JsonResponse {
+            $model = MarketingAsset::query()->findOrFail($asset);
+
+            return new JsonResponse([
+                'data' => $this->presentAsset($model),
+                'meta' => [
+                    'downloadable' => $model->hasFile(),
+                    'text_only' => $model->hasFile() === false,
+                ],
+            ]);
+        });
+    }
+
+    /**
+     * GET /platform/companies/{company}/marketing-os/assets/{asset}/download
+     *
+     * Sert le binaire depuis le disk PRIVÉ (#8675).
+     *
+     * C'est le chaînon manquant de la médiathèque : `storeAsset()` écrivait
+     * bien sur `local` (hors webroot, ce qui est le bon choix — aucun binaire
+     * ne doit être servi par une URL publique devinable), mais AUCUNE route
+     * ne le relisait. Autrement dit : on pouvait téléverser une vidéo et ne
+     * plus jamais la revoir. Les briefs §C (« aperçu si possible ») et §F
+     * (mode assisté : « sélectionner et ouvrir le média ») étaient donc
+     * inaccessibles en pratique.
+     *
+     * Trois propriétés tenues ici :
+     *
+     *  - **isolation tenant par construction** : la ressource est résolue
+     *    DANS le contexte du tenant ciblé (`withinTenant`), le scope
+     *    `BelongsToCompany` du modèle ajoutant le filtre `company_id` — une
+     *    ressource d'une autre entreprise est donc introuvable (404), jamais
+     *    servie ;
+     *  - **pas de fuite de chemin** : on ne renvoie jamais `path` (nom de
+     *    stockage aléatoire) au client ; le nom proposé vient de
+     *    `downloadName()`, dérivé du nom d'origine sanitisé ou du titre ;
+     *  - **honnêteté sur l'état** : une ressource TEXTE (script, prompt,
+     *    légende) n'a pas de binaire ; elle renvoie 404 avec un motif
+     *    explicite plutôt qu'un fichier vide ou une erreur 500.
+     */
+    public function downloadAsset(string $company, int $asset): BinaryFileResponse|JsonResponse
+    {
+        $target = PlatformCompanyLookup::findOrFail($company);
+
+        return $this->tenantManager->withinTenant($target, function () use ($asset): BinaryFileResponse|JsonResponse {
+            $model = MarketingAsset::query()->findOrFail($asset);
+
+            if (! $model->hasFile()) {
+                return new JsonResponse([
+                    'message' => __('marketing.os.asset_has_no_file'),
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            $disk = Storage::disk((string) $model->disk);
+
+            // Le binaire peut manquer alors que la ligne existe (purge de
+            // stockage, restauration partielle) : c'est un 404 explicite, pas
+            // une 500 qui laisserait croire à une panne du module.
+            if (! $disk->exists((string) $model->path)) {
+                return new JsonResponse([
+                    'message' => __('marketing.os.asset_file_missing'),
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            return $disk->download((string) $model->path, $model->downloadName());
         });
     }
 
@@ -1006,6 +1093,11 @@ final class PlatformMarketingOsController extends Controller
             'mime_type' => $asset->mime_type,
             'extension' => $asset->extension,
             'size' => $asset->size,
+            // #8675 — nom lisible propose au telechargement (nom d'origine
+            // sanitise, sinon reconstruit depuis le titre). Le `path` de
+            // stockage n'est JAMAIS expose : il est aleatoire et interne.
+            'original_name' => $asset->original_name,
+            'download_name' => $asset->hasFile() ? $asset->downloadName() : null,
             // Jamais d'URL publique fabriquée ici : le binaire vit hors webroot.
             'has_file' => $asset->hasFile(),
             'locale' => $asset->locale,
