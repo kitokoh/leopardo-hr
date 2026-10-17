@@ -90,7 +90,10 @@ final class SeatLayout
     {
         $perRow = $totalSeats > 15 ? 4 : 3;
 
-        return new self($perRow, $perRow >= 3 ? (int) ceil($perRow / 2) : null);
+        // Les deux gabarits de repli (3 et 4 colonnes) ont un couloir ; il tombe
+        // au milieu de la rangée, comme dans le rendu historique : 2 pour 3
+        // colonnes comme pour 4 (équivalent de `ceil(perRow / 2)`).
+        return new self($perRow, intdiv($perRow + 1, 2));
     }
 
     /**
