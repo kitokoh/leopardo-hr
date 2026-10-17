@@ -21,13 +21,12 @@ class GitHubDispatchClient
 {
     public const EVENT_STACK_SWITCH = 'stack-switch';
 
-    /**
-     * Émet un `repository_dispatch`. 204 attendu (No Content).
+    /*
+     * Émet un `repository_dispatch` (204 attendu, No Content).
      *
-     * @param  array<string, mixed>  $payload
-     * @return array{status: int, ok: bool, id: int|null}
-     *
-     * @throws RuntimeException jeton absent (fail-closed) ou réseau indisponible
+     * $payload : tableau libre transmis tel quel dans client_payload.
+     * Retour : ['status' => int, 'ok' => bool, 'id' => int|null].
+     * Lève RuntimeException si le jeton est absent (fail-closed).
      */
     public function dispatch(string $eventType, array $payload): array
     {
