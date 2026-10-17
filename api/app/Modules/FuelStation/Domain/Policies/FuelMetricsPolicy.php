@@ -5,17 +5,18 @@ declare(strict_types=1);
 namespace App\Modules\FuelStation\Domain\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Domain\Policies\Concerns\ChecksResourceScopedAccess;
 
 /**
- * RBAC des métriques d'observabilité FuelStation (FUEL-020, #5814).
- *
- * Manager uniquement (matériel de pilotage : profondeur de file, alertes
- * ouvertes, staleness des read models) — deny-by-default.
+ * RBAC des métriques de santé de la solution : lecture manager, croisée
+ * avec l'accès ressource-scopé (#7600).
  */
 class FuelMetricsPolicy
 {
+    use ChecksResourceScopedAccess;
+
     public function viewAny(Employee $actor): bool
     {
-        return $actor->isManager();
+        return $this->canManageScopedResource($actor, 'fuel_station', null, $actor->isManager());
     }
 }

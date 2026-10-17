@@ -73,6 +73,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformTeamController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUserController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUsersController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicDiscoveryController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\QueueObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportedCountryController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
@@ -347,6 +348,14 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/public/restaurant/kiosk/orders', [RestaurantKioskController::class, 'storeOrder']);
         Route::get('/public/restaurant/kiosk/orders/{reference}', [RestaurantKioskController::class, 'track']);
     });
+
+    // SUPERAPP-P0 — decouverte publique cross-verticale (Leopardo.com) :
+    // surface NEUTRE qui agrege les entites publiques de PLUSIEURS verticales
+    // (restaurants, hebergements, vitrines) via les providers tagues
+    // `public.discoverable`. Route isolee SANS auth ni middleware tenant
+    // (patron BC-27/BC-28) ; chaque entite reste soumise a sa propre garde
+    // fail-closed (is_public, statut societe, feature verticale).
+    Route::middleware(['throttle:shop-public'])->get('/public/discover', [PublicDiscoveryController::class, 'index']);
 
     Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
         Route::get('/auth/me', [AuthController::class, 'me']);
@@ -750,6 +759,59 @@ Route::prefix('v1')->group(function (): void {
         // SPA admin-dashboard) : qualification des intentions de prise de
         // parts et de tout lead du pipeline, même garde que la lecture.
         Route::patch('/marketing/leads/{lead}', [PlatformMarketingLeadController::class, 'update'])->whereNumber('lead')->middleware('platform.permission:crm.view');
+
+        // ─────────────────────────────────────────────────────────────────
+        // Marketing OS — espace Super Admin de pilotage marketing.
+        // Audit : docs/specifications/MARKETING_OS_AUDIT.md.
+        //
+        // Ces routes administrent les données marketing du tenant CIBLÉ,
+        // dans son propre contexte (`TenantManager::withinTenant`), exactement
+        // comme `/companies/{company}/fundraising/settings` (#8441) : le
+        // `search_path` du tenant est actif pendant la requête, donc le scope
+        // `BelongsToCompany` garantit l'isolation sans `where('company_id')`
+        // recopié à la main.
+        //
+        // Elles ne doublonnent PAS les routes tenant `/marketing/*` (celles-ci
+        // sont réservées au rôle manager d'UNE entreprise via
+        // `api.manager:marketing,principal`) : ici on est sur la console
+        // plateforme (`auth:super_admin_api`). Lecture = `marketing_os.view`
+        // (rôle plateforme `marketing` inclus) ; écriture et confirmation de
+        // mise en ligne = `marketing_os.manage`.
+        // ─────────────────────────────────────────────────────────────────
+        $marketingOs = \App\Modules\Marketing\Interfaces\Api\V1\Controllers\PlatformMarketingOsController::class;
+
+        Route::get('/companies/{company}/marketing-os/overview', [$marketingOs, 'overview'])->middleware('platform.permission:marketing_os.view');
+        Route::get('/companies/{company}/marketing-os/campaigns', [$marketingOs, 'indexCampaigns'])->middleware('platform.permission:marketing_os.view');
+        Route::post('/companies/{company}/marketing-os/campaigns', [$marketingOs, 'storeCampaign'])->middleware('platform.permission:marketing_os.manage');
+        Route::get('/companies/{company}/marketing-os/ideas', [$marketingOs, 'indexIdeas'])->middleware('platform.permission:marketing_os.view');
+        Route::post('/companies/{company}/marketing-os/ideas', [$marketingOs, 'storeIdea'])->middleware('platform.permission:marketing_os.manage');
+        Route::patch('/companies/{company}/marketing-os/ideas/{idea}', [$marketingOs, 'updateIdea'])->whereNumber('idea')->middleware('platform.permission:marketing_os.manage');
+        Route::post('/companies/{company}/marketing-os/ideas/{idea}/promote', [$marketingOs, 'promoteIdea'])->whereNumber('idea')->middleware('platform.permission:marketing_os.manage');
+        Route::get('/companies/{company}/marketing-os/assets', [$marketingOs, 'indexAssets'])->middleware('platform.permission:marketing_os.view');
+        Route::post('/companies/{company}/marketing-os/assets', [$marketingOs, 'storeAsset'])->middleware('platform.permission:marketing_os.manage');
+        Route::get('/companies/{company}/marketing-os/assets/{asset}/publications', [$marketingOs, 'assetPublications'])->whereNumber('asset')->middleware('platform.permission:marketing_os.view');
+        // #8675 — la mediatheque etait en ECRITURE SEULE : le binaire etait
+        // stocke sur le disk prive mais aucune route ne le relisait. Le detail
+        // et le telechargement sont donc ajoutes AVANT la route de detail
+        // generique, et `{asset}` est contraint au numerique pour qu'aucun
+        // segment texte (« download ») ne puisse etre pris pour un identifiant.
+        Route::get('/companies/{company}/marketing-os/assets/{asset}/download', [$marketingOs, 'downloadAsset'])->whereNumber('asset')->middleware('platform.permission:marketing_os.view');
+        Route::get('/companies/{company}/marketing-os/assets/{asset}', [$marketingOs, 'showAsset'])->whereNumber('asset')->middleware('platform.permission:marketing_os.view');
+        Route::get('/companies/{company}/marketing-os/publications', [$marketingOs, 'indexPublications'])->middleware('platform.permission:marketing_os.view');
+        Route::post('/companies/{company}/marketing-os/publications', [$marketingOs, 'storePublication'])->middleware('platform.permission:marketing_os.manage');
+        Route::patch('/companies/{company}/marketing-os/publications/{publication}/status', [$marketingOs, 'updatePublicationStatus'])->whereNumber('publication')->middleware('platform.permission:marketing_os.manage');
+        // #8530 — remontee des statistiques REELLES de la plateforme (aucune
+        // valeur inventee : « indisponible » est un etat explicite).
+        Route::post('/companies/{company}/marketing-os/publications/{publication}/stats/refresh', [$marketingOs, 'refreshPublicationStats'])->whereNumber('publication')->middleware('platform.permission:marketing_os.manage');
+
+        // #8531 — objectifs de visibilite SEO/SEA/AEO/GEO rattaches aux contenus.
+        Route::get('/companies/{company}/marketing-os/visibility-objectives', [$marketingOs, 'indexVisibilityObjectives'])->middleware('platform.permission:marketing_os.view');
+        Route::post('/companies/{company}/marketing-os/visibility-objectives', [$marketingOs, 'storeVisibilityObjective'])->middleware('platform.permission:marketing_os.manage');
+
+        // #8532 — matrice des capacites REELLES de publication par plateforme
+        // (quelles plateformes autorisent le direct, et pourquoi les autres
+        // restent en mode assiste).
+        Route::get('/companies/{company}/marketing-os/publishing-capabilities', [$marketingOs, 'publishingCapabilities'])->middleware('platform.permission:marketing_os.view');
 
         // #7496 — conversions du funnel d'acquisition par étape/jour/source
         // (dashboard admin CRM commercial, données acquisition_funnel_events).

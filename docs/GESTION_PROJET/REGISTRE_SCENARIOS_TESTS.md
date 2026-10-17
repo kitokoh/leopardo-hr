@@ -1,3 +1,289 @@
+> **MAJ 2026-10-17 — #8652, #8653, #8654, #8655, Travel OS : sièges physiquement absents, cohérence disposition ↔ inventaire, rafraîchissement du plan — PR #8656.**
+> Surface **API (`api/app/Modules/TravelAgency`)** : `SeatLayout` accepte `absent_seats` (entiers positifs, uniques,
+> bornés par la capacité) et expose `sellableCapacity()` ; `GenerateTripSeatsAction` ne crée **aucune** ligne
+> `travel_trip_seats` pour un siège physiquement absent — l'inventaire correspond au bus réel, pas au nombre de
+> places déclaré. Nouvelle `ValidateSeatLayoutCoherenceAction` (lecture seule) : refus **422** motivé d'une
+> disposition incohérente, jamais de correction silencieuse ; refuse aussi de rendre absent un siège **déjà
+> réservé**, en listant les sièges en conflit. `StoreTravelVehicleRequest` / `UpdateTravelVehicleRequest` valident
+> `seat_layout.absent_seats` (entiers, distincts). Migration **idempotente** `2026_10_17_140000_8652` :
+> `absent_seats` vit dans le JSONB `seat_layout` existant, aucune colonne nouvelle, aucune ligne réécrite.
+> Surface **web grand public (`front/travel-web`)** : `buildSeatMapLayout` reconstruit la séquence **physique**
+> complète quand le véhicule déclare des sièges absents — chaque siège absent occupe sa place réelle en case non
+> cliquable, au lieu d'être omis (ce qui **décalerait** tous les sièges suivants) ; état `absent` avec symbole
+> dédié, libellé texte et style barré (jamais la couleur seule) ; `resolveSeatLayout` normalise `absent_seats`.
+> `booking-flow.tsx` rafraîchit périodiquement le plan (30 s), annule au démontage, et **désélectionne + signale**
+> un siège devenu indisponible — aucun temps réel simulé, la disponibilité définitive reste tranchée par le
+> serveur à la confirmation.
+> Surface **web admin (`front/admin-dashboard`)** : `TravelSeatMap.vue` rend les sièges absents (case non
+> cliquable, légende conditionnelle) ; `TravelBookingsView.vue` affiche un bandeau `role="note"` signalant qu'un
+> changement de disposition **ne déplace pas** les passagers déjà réservés.
+> Surface **i18n** : sources `shared/i18n/locales/{fr,en,tr,ar}.json` éditées puis propagées par
+> `sync-web`/`sync-backend`/`sync-mobile` — **aucun catalogue généré modifié à la main**. Les ARB mobile reçoivent
+> `travelSeatsStateAbsent` / `travelSeatsLayoutnotice` (propagation automatique du catalogue partagé).
+> Scénarios automatisés : `api/tests/Feature/Travel/TravelAbsentSeatsTest.php` (**12 tests / 24 assertions** :
+> `sellableCapacity`, siège absent hors capacité → disposition inexploitable, inventaire sans siège absent,
+> véhicule non configuré inchangé, refus 422 hors capacité / doublon, refus de rendre absent un siège réservé avec
+> liste des conflits, acceptation d'un siège absent libre, véhicule non configuré accepté sans géométrie) ;
+> `front/travel-web/src/lib/seat-layout.test.ts` (**+4 cas** : siège absent à sa place réelle sans décalage,
+> aucune case absente sans déclaration, normalisation, forme inexploitable ignorée). Suites Travel : **40/40
+> verts** ; `travel-web` vitest **37/37** ; PHPStan niveau 8 → **No errors** ; idempotence de la migration vérifiée
+> sur la base réelle. **Non-régression mesurée** : `tests/Feature/Travel` complet comparé à un worktree propre de
+> `origin/main` → **16 erreurs / 83 échecs des deux côtés**, +12 tests (les nouveaux) : **0 régression**.
+
+> **MAJ 2026-10-17 — vague 6 (correctif a11y), vitrine : constellation atteignable au clavier, focus restitué à l'étoile.**
+> Surface **web (`front/web/src/modules/vitrine/components/hero`)** : les étiquettes d'étoiles de `HeroBusinessOS3D`
+> passent de `<div>` décoratifs (`pointer-events-none`, aucun `tabindex`) à de **vrais `<button>` focusables**
+> (`aria-label`, `tabindex 0`, anneau `focus-visible`) — la fiche s'ouvre au clavier (Entrée/Espace) comme à la
+> souris ; le survol souris **ou** le focus clavier allume l'étoile ; une étiquette hors cadre passe en
+> `visibility:hidden` + `tabindex -1` (plus de boutons invisibles dans l'ordre de tabulation) ; `aria-hidden` est
+> retiré en mode interactif (il aurait masqué de vrais contrôles) ; `HeroScene3DPanel` donne `tabindex -1` à la
+> scène, cible de restitution du focus quand la fiche a été ouverte à la souris (l'étoile est un pixel de canvas).
+> **Défaut mesuré en navigateur sur `main` (7859b93c4)** : aucun chemin clavier vers la fiche, focus retombant sur
+> `<body>` à la fermeture. Scénarios automatisés : nouveau
+> `front/web/src/modules/vitrine/components/hero/__tests__/HeroScene3DPanel-a11y.test.tsx` (**4 cas** : étiquette
+> focusable par solution, ouverture clavier + fermeture Échap, scène `tabindex -1`, `role=dialog` + `aria-modal`).
+> Suite vitrine complète : **57 suites / 662 tests** verts. Aucune clé i18n ajoutée, aucun catalogue généré modifié.
+
+> **MAJ 2026-10-17 — vague 6, vitrine : direction artistique premium du héros `stage`.**
+> Surface **web (`front/web/src/modules/vitrine` + `front/web/src/app/globals.css`)** : couche de profondeur
+> (`.hero-stage-base` bleu nuit/graphite, `.hero-stage-halo` derrière la scène, `.hero-stage-vignette`, voile
+> `.hero-stage-title-scrim`) ; pile inchangée et explicite — cartes `z-[1]` < titre `z-[5]` < constellation `z-10`
+> < vignettage `z-[11]` < CTA `z-20` ; arc géographique recalé (`--geo-r: min(30vw, 21vh)`, `--geo-apex: 54%`)
+> pour que son sommet tombe sur le cœur de la scène et non sur la phrase ; `HeroScene3DPanel` porte la scène à
+> 86 % de la hauteur pour rapprocher le CTA unique ; indicateur de défilement retiré du layout `stage` (il occupait
+> exactement la place du CTA). Scénarios couverts par le nouveau `HeroStageDepth.test.tsx` (9 cas) : présence et
+> `aria-hidden` des trois plans, ordre des couches titre/scène/vignettage, absence de l'indicateur, règles CSS du
+> fond (dégradés + bleu nuit `rgb(8 14 26)`), du halo et du vignettage, neutralisation de `hero-halo-breathe` hors
+> `no-preference`, calage de l'arc (`--geo-apex`, `--geo-r`) et courbe d'échelle `0.68 → 1 → 0.68`. Suite vitrine
+> complète : **56 suites / 658 tests** verts. Aucune clé i18n ajoutée, aucun catalogue généré modifié.
+
+> **MAJ 2026-10-17 — #8638, vitrine : retours vague 5 (fiche accessible, CTA unique, cartes derrière la constellation) — PR #8637.**
+> Surface **web (`front/web/src/modules/vitrine`)** : `HeroSolutionsCTA` ne rend plus qu'**un seul** lien
+> (« Découvrir nos solutions » → `/packs`, `?lang=` préservé), rendu par `HeroScene3DPanel` donc **sous** la
+> scène ; `SolutionCard` passe en `createPortal(document.body)` avec overlay `fixed inset-0 z-[100]`
+> (fermeture X / fond / Échap, focus piégé puis restitué à l'étoile) ; `GeoBackdrop` passe en `z-[1]`
+> (11 cartes en demi-cercle, continents puis pays, intérieur vide, échelle 0,68→1→0,68) ; pile explicite
+> cartes `z-[1]` < titre `z-[5]` < constellation `z-10` ; constellation agrandie (échelle 3D 1,12→1,3) ;
+> libellés d'étoiles bornés à 15 % du cadre. Copie allégée : `hero3d.hint` (« Modules to explore »),
+> titre/sous-titre CTA et réassurance commerciale retirés ; `nav.packs` → « Pack ».
+> Surface **i18n** : sources `shared/i18n/locales/{fr,en,tr,ar}.json` éditées puis propagées aux cibles
+> générées (`sync-web`, `sync-mobile`, `sync-backend`) — **aucun catalogue généré modifié à la main**.
+> Scénarios automatisés : `front/web/src/modules/vitrine/components/hero/__tests__/mission-leopardo.test.tsx`
+> (fiche : ouverture, fermeture X/fond/Échap, focus piégé et restitué ; CTA unique ; cartes derrière la
+> constellation) — **55 suites / 649 tests verts** sur `src/modules/vitrine`.
+> Vérifié localement : `npx tsc --noEmit` exit 0, `npx eslint src/modules/vitrine --max-warnings 0` exit 0,
+> gardes `check:french-copy` / `check:mojibake` / `check:orphans` / `check:assets` vertes.
+> `next build` **non concluant en local** (exit 137 — OOM, cgroup 2 Gio du sandbox) : à valider en CI.
+> Surface **API** : aucun changement de route, de contrôleur ni de contrat.
+> **MAJ 2026-10-17 — #8584, #8585, #8586, #8578, Fuel Station OS : cle d'idempotence du lot de releves, test outbox sans consommateur, endpoints dedies resolve/close.**
+> Surface **API (api/app/Modules/FuelStation/Interfaces/Api/V1/Controllers/FuelIncidentController.php)** :
+> les endpoints dedies `POST /fuel-station/incidents/{incident}/resolve` et `.../close` n'exigent plus
+> les notes (`RESOLUTION_NOTES_REQUIRED` / `CLOSURE_NOTES_REQUIRED` supprimes) — l'exigence reste portee
+> par le workflow strict `POST /fuel-station/incidents/{incident}/transition` (cible `resolved` sans notes
+> → 422). Les deux chemins sont desormais **satisfaisables simultanement** ; aucune route ajoutee, aucun
+> contrat de reponse modifie.
+> Surface **API (api/app/Modules/FuelStation/Interfaces/Api/V1/Requests/SyncFuelReadingsRequest.php)** :
+> la cle d'idempotence du **lot** de releves recoit la meme contrainte que le releve unitaire
+> (`StoreMeterReadingRequest`) — `regex:/^[A-Za-z0-9\-_.]{8,191}$/`. Une cle trop courte provoquait des
+> **collisions de deduplication** (deux releves distincts ecrases l'un par l'autre, donc des releves de
+> compteur perdus silencieusement) ; hors format → 422.
+> Surface **API (api/app/Modules/FuelStation/Infrastructure/Services/FuelIncidentService.php)** :
+> `assign()` conserve `in_progress` — **contradiction de test documentee, non contournee** :
+> `FuelIncidentApiTest:149` attend `in_progress` et `:257` attend `assigned` pour la **meme** operation,
+> aucune implementation ne peut satisfaire les deux (arbitrage produit rattache a #8578).
+> Scenarios automatises : `tests/Feature/Fuel/FuelOutboxApiTest.php`
+> (`test_dispatch_without_consumer_dead_letters_and_can_retry` substitue desormais un registre de
+> consommateurs **vide** pour ce test uniquement — la premisse « aucun consommateur enregistre » etait
+> fausse, `FuelStationServiceProvider::boot` enregistre `FuelAccountingOutboxConsumer` ; le chemin
+> dead-letter est donc reellement exerce **sans desenregistrer un consommateur de production**),
+> `tests/Feature/Fuel/FuelReadingSyncApiTest.php` (cle d'idempotence trop courte → 422) et
+> `tests/Feature/Fuel/FuelIncidentApiTest.php` (resolve/close sans notes → 200).
+> Verifie localement (PHP 8.4.26 + PostgreSQL 15.19 + PostGIS 3, `CI=true`) : suite Fuel complete
+> **266 tests / 1063 assertions / 11 echecs** contre un baseline de **266 / 1064 / 13** — diff des listes
+> numerotees : seuls les **2 tests corriges**, **aucun ajout**, **0 regression**, aucun test desactive.
+> PHPStan strict niveau 8 sur `app/Modules/FuelStation` → `[OK] No errors` ; `pint --test` sur les
+> 4 fichiers du lot → PASS ; garde Route → OpenAPI → exit 0 ; garde de parite MVP → OK (350 tables).
+> Surface **docs** : `CHANGELOG.md` (entree dans `[Unreleased]` existant, aucun nouveau header).
+>
+> **MAJ 2026-10-17 — #8633, mission Business OS : statut hors-ligne honnête dans le centre « Mes logiciels » (gap F-01).**
+> Surface **web (`front/web/src/lib/software-catalog.ts`)** : le booléen `offline` purement déclaratif
+> est remplacé par `OfflineMode = 'verified' | 'implemented' | 'absent'`. Vérification du câblage réel :
+> `/restaurant/kitchen` et `/commerce/pos` passent par `dispatch()` de `useOfflineSync` (file réelle),
+> le kiosque ZKTeco possède un pont local `/local/punch` ; en revanche `/restaurant/pos`, `/kiosk` et
+> `/fuel` émettent leurs POST **directement** — ils ne revendiquent plus de continuité hors-ligne.
+> `verified` exige une référence de scénario CI, sinon retombe fail-closed sur `implemented` ;
+> `absent` n'affiche **aucun** badge (`isOfflineClaimed()` centralise la règle, consommée par
+> `/mon-logiciel`). Résultat : 3 apps `implemented`, 9 `absent` — **recul de promesse assumé**.
+> Scénarios automatisés : `front/web/src/lib/__tests__/software-offline-honesty.test.ts`
+> (6 cas : aucun badge pour `absent`, `verified` sans preuve refusé, liste fermée des apps revendiquant
+> le hors-ligne = `commerce-pos`, `desktop-attendance`, `restaurant-kds`, et les trois surfaces à POST
+> directs ne revendiquent rien) plus `software-catalog.test.ts` (10 cas) et
+> `front/web/src/app/(dashboard)/mon-logiciel/__tests__/page.test.tsx` (6 cas) — **16/16 + 6/6 verts**.
+> Vérifié localement : `npx tsc --noEmit` exit 0, `npx eslint` exit 0 sur les 3 fichiers touchés,
+> `check-web-design-tokens.sh` vert, `check-i18n-catalog-parity.sh` vert (4 langues).
+> Surface **i18n** : clés `software.offlineBadgeVerified` et `software.offlineImplementedHint` ajoutées
+> dans `shared/i18n/locales/*.json` puis propagées aux cibles générées (`sync-web`, `sync-backend`,
+> `sync-mobile`) — voir la note du même jour dans `SCENARIOS_TEST_MOBILE_FLUTTER.md`.
+> Surface **API** : aucun changement de route, de contrôleur ni de contrat.
+>
+> **MAJ 2026-10-17 — #8603-#8610, Restaurant OS : impression thermique ESC/POS + RBAC d'impression.**
+> Surface **API (api/routes/modules/restaurantmanager.php)** : 11 routes ajoutees, toutes
+> documentees dans `api/openapi.yaml` (garde Route -> OpenAPI, drift 0).
+> **4 routes tenant** (`auth:sanctum` + tenant + `api.manager`) : `POST /restaurant/orders/{order}/print-jobs`,
+> `GET /restaurant/print-jobs`, `GET /restaurant/print-jobs/{job}`,
+> `POST /restaurant/print-jobs/{job}/requeue` — permissions `restaurant.print_jobs.operate`
+> (cuisine/service) et `restaurant.print_jobs.manage` (direction/gerance).
+> **7 routes bridge** (`/restaurant/printing/bridge/*` : health, jobs, claim, ack, fail,
+> payload, preview) — **auth dediee** par jeton partage **hache SHA-256** en variable
+> d'environnement (`X-Restaurant-Print-Bridge-Token`) + `X-Company-Id`, **fail-closed 404**
+> si `RESTAURANT_PRINT_BRIDGE_ENABLED` n'est pas true ou si le hash est absent ; **aucun
+> acteur Sanctum** sur ces routes (allowlist explicite du garde
+> `check-vertical-controller-policies`, avec justification dans le script).
+> **Invariants couverts** : idempotence d'enfilement (UNIQUE `company_id, order_id,
+> ticket_kind, revision` — double POST -> un seul travail), reclamation **atomique**
+> (second claim -> 409), `printed` **uniquement** sur accuse du bridge, `attempts`
+> incremente a chaque tentative, 404 cross-tenant sur les 11 routes.
+> **Scenarios de test** : `tests/Unit/Restaurant/EscPosOrderTicketRendererTest.php`,
+> `tests/Unit/Restaurant/RestaurantPermissionsTest.php`,
+> `tests/Feature/Restaurant/RestaurantPrintJobTest.php`,
+> `tests/Feature/Restaurant/RestaurantPrintBridgeTest.php`,
+> `tests/Feature/Restaurant/RestaurantPrintJobPersistenceTest.php`.
+> **Total : 27 tests / 95 assertions**, executes en local sur PostgreSQL (`CI=true`).
+> **Configuration** : `RESTAURANT_PRINT_BRIDGE_ENABLED` (defaut `false`),
+> `RESTAURANT_PRINT_BRIDGE_TOKEN_HASH`, `RESTAURANT_PRINT_PAPER_WIDTH` (58|80),
+> `RESTAURANT_PRINT_CLAIM_LEASE_MINUTES` — documentes dans `api/.env.example`.
+> **Limite connue** : l'impression PHYSIQUE (octets reellement remis a l'imprimante) exige
+> du materiel ESC/POS 58/80 mm et le daemon bridge local ; non verifiable en CI.
+
+> **MAJ 2026-10-17 — #8581 + #8583, Fuel Station OS : convention monétaire additive, logo de station et vue comparative inter-stations.**
+> Surface **API (api/routes/modules/fuel_station.php)** : trois nouvelles routes,
+> documentées dans `api/openapi.yaml` (garde Route → OpenAPI, drift 0) —
+> `GET /fuel-station/reports/station-comparison` (manager, `FuelReportPolicy::viewAny`),
+> `POST /fuel-station/stations/{station}/logo` et `DELETE /fuel-station/stations/{station}/logo`
+> (manager, `FuelStationPolicy::update`, `throttle:fuel-sensitive`).
+> **Piège de routage** : `station-comparison` est enregistré **avant** `/reports/{type}` —
+> Laravel résout par ordre d'enregistrement, sinon le segment générique capture le chemin
+> (404 `SNAPSHOT_TYPE_UNKNOWN`).
+> **P1-c — convention monétaire (#8581)** : la bascule destructive des colonnes
+> `decimal(14,2)` vers des entiers en unités mineures casserait l'app mobile gelée ; la
+> convention cible est donc exposée de façon **additive** — `FuelSale::amountMinor()`,
+> `unitPriceMinor()`, `quantityMinor()` (arrondi au centime / au milli-litre) et colonne
+> `fuel_sales.currency` (devise ISO 4217 explicite par vente). Les champs historiques
+> (`amount`, `unit_price`, `quantity`) ne sont **jamais retirés**.
+> **P1-e — logo de station (#8583)** : `fuel_stations.logo_path|logo_disk|logo_url` +
+> `FuelStationLogoService`, qui **réutilise le stockage du branding société** (disque
+> `public`, chemin par tenant) — aucun stockage parallèle. Chemin toujours préfixé par
+> `company_id` ; le logo d'un autre tenant est indiscernable d'un inexistant (404).
+> **P1-f — vue comparative inter-stations (#8583)** : `FuelReportingService::compareStations()`
+> — une ligne par station du tenant (ventes, quantité, montant, écarts de rapprochement,
+> état des cuves, cuves basses) + totaux ; les stations **sans activité sont incluses à zéro**.
+> Scénarios PHPUnit : `tests/Feature/FuelStation/FuelStationLot6Test.php`
+> (10 cas / 50 assertions — unités mineures exposées sans casser les champs historiques,
+> arrondi au centime, upload logo stocké sous le préfixe tenant et retourné, PDF refusé 422,
+> isolation tenant du logo (404), suppression du logo (fichier + colonnes), agrégation par
+> station avec tri par nom, station muette incluse à zéro, isolation tenant de la comparaison,
+> opérateur refusé 403). Non-régression : suite Fuel complète **266 tests / 1064 assertions /
+> 13 échecs** contre un baseline de **256 / 1014 / 13** — liste d'échecs strictement identique
+> (diff des listes numérotées) : **0 régression**. Colonnes vérifiées en base
+> (`information_schema`).
+>
+> **MAJ 2026-10-17 — BC-24 TRAVEL OS, clôture #8546 / #8547 / #8548 (contrôle billets, impression QR, historique télémétrie).**
+> Surface **API** : trois surfaces TravelAgency complétées, **sans reconstruire
+> l'existant** (`VerifyTicketAction` #8538, `CheckInTicketAction` #8539,
+> `TravelTicketQrCode`, `TravelTicketPdfGenerator`, `RecordVehiclePositionAction`
+> #8540, `VehiclePositionFreshness`, `BuildTravelFleetTrackingAction`, PostGIS +
+> module core `Geo` réutilisés tels quels).
+> **(1) #8546** — `POST /api/v1/travel/tickets/lookup` : recherche **manuelle par
+> référence**, secours quand la caméra est indisponible. **LECTURE SEULE** — ne
+> consomme jamais le billet, ne divulgue aucun code de contrôle, identité du
+> passager réservée à `travel.checkin`, cross-tenant → 404.
+> **(2) #8547** — preuve que le QR du billet est **réellement scannable depuis le
+> PDF livré** : `TravelTicketQrDecoder` (décodeur QR en PHP pur, vérifie les
+> syndromes de Reed-Solomon et **refuse** une image dégradée plutôt que de
+> deviner) + `PdfEmbeddedImageExtractor` (lit l'image telle qu'embarquée par
+> dompdf : FlateDecode + inversion du prédicteur PNG).
+> **(3) #8548** — `GET /api/v1/travel/vehicles/{id}/positions` : **historique des
+> positions réellement transmises** (table `travel_vehicle_position_logs`,
+> append-only, isolation `company_id`), instantané **et** historique dans la
+> **même transaction**, `recorded_at` borné (`before_or_equal:now`,
+> `after:-30 days`), **liste VIDE** si aucun dispositif — jamais de points
+> fabriqués.
+> Scénarios PHPUnit : `api/tests/Feature/Travel/TravelTicketLookupTest.php`
+> (9 cas : lecture seule, aucun code divulgué, 403 non habilité, 404
+> cross-tenant, statut `void` remonté), `TravelTicketPrintingTest.php` (10 cas :
+> QR décodé **depuis le PDF**, charge utile sans PII, payloads distincts,
+> refus d'une image illisible/blanche, PDF valide, une seule image couleur),
+> `TravelVehiclePositionHistoryTest.php` (17 cas : instantané + historique
+> atomiques, horodatage de mesure conservé, date future/trop ancienne refusée,
+> source inconnue refusée, coordonnées hors bornes refusées, historique vide
+> sans dispositif, ordre antéchronologique, fenêtre temporelle, `limit` plafonné,
+> estimation jamais `is_measured`, 404 cross-tenant, 403 non habilité, périmètre
+> par véhicule). **36 tests / 88 assertions, 0 échec** (PHP 8.4.26 + PostgreSQL +
+> PostGIS + Redis) ; PHPStan strict niveau 8 → 0 erreur ; non-régression
+> `tests/Feature/Travel` : `main` 561 succès / 100 échecs → branche **611 succès /
+> 100 échecs**, noms des échecs **byte-identiques** (aucune régression).
+> **Limites assumées** : scan caméra et impression thermique ESC/POS nécessitent
+> un **appareil réel** (aucune compatibilité affirmée) ; le **suivi GPS temps
+> réel n'est pas déclaré opérationnel** (aucun fournisseur de télémétrie
+> n'alimente le système, aucune position simulée) ; détection de retard non
+> livrée. Documentation : `docs/ops/TRAVEL_IMPRESSION_BILLETS.md`,
+> `docs/ops/TRAVEL_SUIVI_FLOTTE.md`.
+> **MAJ 2026-10-17 — #8579 + #8580, Fuel Station OS : moyens de paiement et annulation compensatoire des ventes.**
+> Surface **API (api/routes/modules/fuel_station.php)** : nouvelle route
+> `POST /fuel-station/sales/{sale}/cancel` (bloc manager, `throttle:fuel-sensitive`),
+> documentée dans `api/openapi.yaml` (garde Route → OpenAPI, drift 0).
+> **P1-a — moyens de paiement** : `fuel_sales` ne portait aucune colonne de règlement
+> (`source` décrit la provenance de la saisie, pas la nature du règlement) ; migration
+> additive/idempotente `2026_10_17_100000_9003` ajoutant `payment_method` (défaut `cash`,
+> CHECK `cash|card|account|voucher|other`), `payment_reference` (référence externe opaque,
+> jamais un PAN) et l'index de ventilation `(company_id, payment_method)` ; validation
+> `StoreFuelSaleRequest` (valeur hors liste → 422) ; colonnes miroir dans
+> `CreatesMvpSchema` (garde #5443).
+> **P1-b — annulation compensatoire** : `FuelSaleService::cancel()` est une **écriture
+> compensatoire** — la ligne d'origine est **conservée** et marquée `cancelled` (aucun
+> DELETE), montant/quantité/opérateur restent lisibles ; refusée (422) si la session de
+> caisse est déjà `closed`/`approved` ou si la vente est déjà annulée ; ré-incrémente la
+> cuve du produit annulé et publie `fuel.sale.cancelled.v1` ; trace `audit_logs` ;
+> `FuelSalePolicy::cancel()` réserve l'acte à la supervision (manager), croisé avec
+> l'accès ressource-scopé par station (#7600).
+> Scénarios PHPUnit : `tests/Feature/Fuel/FuelSalePaymentAndCancellationTest.php`
+> (10 cas / 40 assertions — mode de paiement enregistré et exposé, défaut `cash`, valeur
+> inconnue rejetée 422, annulation manager sans DELETE avec montant/opérateur conservés,
+> événement outbox `fuel.sale.cancelled.v1` publié, opérateur refusé 403, motif obligatoire
+> 422, session de caisse clôturée refusée 422, double annulation refusée 422, cross-tenant
+> 404). Non-régression : suite Fuel complète **256 tests / 1014 assertions / 13 échecs**
+> contre un baseline de **246 / 974 / 13** — liste d'échecs strictement identique
+> (0 régression) ; PHPStan strict niveau 8 → `[OK] No errors`.
+> **MAJ 2026-10-17 — #8597 (BOS-045), fiches applications du centre « Mon Logiciel ».**
+> Surface **web (front/web)** : le hub `/mon-logiciel` expose désormais, pour
+> chaque application, une fiche complète (rôle, profils concernés,
+> fonctionnalités principales, prérequis, méthode de connexion, permissions
+> nécessaires, étapes de mise en service) et un **statut de disponibilité
+> dérivé des cibles réelles** (`softwareAvailability()` : `published` /
+> `pilot` / `not_distributed`) — jamais déclaré à la main, donc jamais menteur.
+> Fiche dépliable accessible (`aria-expanded` / `aria-controls`), texte 100 %
+> i18n. Scénarios Jest : `lib/__tests__/software-catalog.test.ts` (10 cas —
+> dont statut dérivé, complétude des fiches, absence de cible cliquable pour
+> une app non distribuée) et `mon-logiciel/__tests__/page.test.tsx` (6 cas —
+> dont rendu de la fiche et badge de disponibilité). Libellés fr/en/ar/tr
+> ajoutés dans `shared/i18n/locales/*.json` puis propagés par
+> `shared/i18n/sync/*` (web, admin, `api/lang`, ARB mobile) — parité #7089
+> vérifiée.
+> **MAJ 2026-10-16 — Mission vitrine : constellation, fiche solution, CTA, cartes géo (LEO-VIT-01→05).**
+> Surface **web vitrine (front/web)** : constellation = solutions métier réelles
+> (`modules/vitrine/data/solution-catalog.ts`, source unique réutilisant `PACK_PAGES`),
+> fiche interactive au clic (`hero/SolutionCard.tsx`, `role="dialog"` + focus piégé),
+> CTA sous la constellation (`hero/HeroSolutionsCTA.tsx`), cartes géographiques animées
+> (`hero/GeoBackdrop.tsx` + `data/geo/map-paths.ts`, `prefers-reduced-motion` respecté),
+> entrée « Trade » retirée de la navbar et repositionnée dans `/packs` (route `/trade`
+> inchangée). Scénarios Jest : `hero/__tests__/mission-leopardo.test.tsx` (fiche, CTA,
+> cartes, non-régression navbar) ; suite vitrine complète 55 suites / 638 tests.
+> Surface **admin-dashboard** : correction d'une sur-promesse i18n — la clé
+> `packsTravelDesc` (×4 locales) annonçait des « commissions » pour l'agence de voyage
+> alors que le module `TravelAgency` n'en porte pas (le modèle `Commission` appartient au
+> programme partenaire) ; remplacée par « paiements / règlements des ventes suivis ».
+> Source corrigée dans `shared/i18n/locales/*.json` puis propagée par `sync-web.js`
+> (catalogues web + admin + `versions.json`), conformément à #4805.
 > **MAJ 2026-10-15 — #8476→#8486 (PR #8487), verticale « International Trade OS » (BC-36 TRADE).**
 > Surface **API HTTP** (`api/routes/modules/trade.php`, gate `module.trade` fail-closed + `trade.role:*`) :
 > noyau commercial **partagé** entre les deux espaces — `GET/POST /v1/trade/rfqs`,
@@ -1302,6 +1588,52 @@ restent les gates applicables.
   partagé `signup.packSelected`), aucun contrat mobile modifié — aucun scénario mobile
   nouveau requis.
 
+## Mise à jour 2026-10-16 — Marketing OS : centre de commande marketing du Super Admin (PR #8529, issue #8528)
+
+- **Surface API HTTP** : nouveau groupe de routes Super Admin
+  `platform/marketing-os/*` (+ alias `admin/marketing-os/*`), garde
+  `auth:super_admin_api` + `platform.permission:marketing.manage` — tableau de
+  bord, stratégie/calendrier (`content_ideas`), médiathèque (`marketing_assets`),
+  campagnes (`marketing_campaigns`), publications par plateforme
+  (`marketing_publications`), promotion d'une idée en tâche de production
+  (`marketing_production_tasks`) et résolution du mode de publication
+  `direct`/`assisted`. Scénarios automatisés : `MarketingOsPlatformTest`
+  (12 cas — isolation tenant, promotion idée → tâche, ressource reliée à
+  plusieurs publications, suivi par plateforme/statut, distinction
+  direct/assisté, conservation de l'URL et de la date réelles, RBAC).
+- **Surface web (front/admin-dashboard)** : espace « Marketing OS »
+  (`views/marketing/MarketingOsView.vue` + panneaux `MarketingOsDashboardPanel`,
+  `MarketingOsStrategyPanel`, `MarketingOsCompanyPicker`, `MarketingOsStatusBadge`),
+  service `services/marketingOs.js`, entrée de navigation et route protégée —
+  clés i18n ×4 (`front/admin-dashboard/src/i18n/locales/*.json`).
+- **Surface mobile** : aucun contrat mobile modifié — aucun scénario mobile
+  nouveau requis.
+
+## Mise à jour 2026-10-16 — Marketing OS, lots #8530–#8533 : statistiques réelles, visibilité, capacités de publication, IA assistée (PR #8574)
+
+- **Surface API HTTP** : extension du groupe Super Admin `platform/marketing-os/*`
+  (+ alias `admin/marketing-os/*`), mêmes gardes `auth:super_admin_api` +
+  `platform.permission:marketing.manage`. Nouvelles routes — rafraîchissement des
+  statistiques d'une publication (`POST …/publications/{id}/stats/refresh`), objectifs
+  de visibilité SEO/SEA/AEO/GEO (`GET`/`POST …/visibility-objectives`), capacités de
+  publication par plateforme (`GET …/publishing-capabilities`) et brief de production
+  assisté par IA (`POST /v1/marketing/ai/suggest-production-brief`). Scénarios
+  automatisés : `MarketingPublicationStatsTest` (statistiques issues d'un appel API
+  **réel**, jamais inventées ; `unavailable` sans donnée ; mesure antérieure jamais
+  détruite par un échec), `MarketingVisibilityObjectiveTest` (contenu ↔ objectif,
+  provenance `measured`/`estimated`/`unavailable` fail-closed, aucune visibilité
+  garantie, aucun système parallèle au centre de visibilité existant),
+  `MarketingPublishingCapabilityTest` (source de vérité « direct vs assisté »,
+  YouTube/TikTok déclarés sans connecteur, Profile Key **chiffrée**, échec alimentant
+  `error_message` + `attempt_history` sans écraser l'historique) et
+  `MarketingAiProductionBriefTest` (`media_generated` toujours `false`, aucun statut de
+  publication modifié par un appel IA).
+- **Surface web (front/admin-dashboard)** : `front/admin-dashboard/src/services/marketingOs.js`
+  étendu aux nouveaux endpoints (statistiques, visibilité, capacités) — clés i18n ×4
+  inchangées côté service.
+- **Surface mobile** : aucun contrat mobile modifié — aucun scénario mobile
+  nouveau requis.
+
 ## Mise à jour 2026-10-16 — KDS/POS branchés sur la file hors-ligne (PR #8535, issues #8493, #8494)
 
 - **Surface API** : aucun changement backend — aucun scénario API nouveau requis.
@@ -1314,3 +1646,52 @@ restent les gates applicables.
   Le POS utilise une clé d'idempotence STABLE (session + panier) → pas de double commande.
 - **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
   partagé `offline.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+
+## Mise à jour 2026-10-16 — BC-24 TRAVEL OS : QR du billet, vérification d'authenticité, position véhicule (PR #8541, issues #8538, #8539, #8540)
+
+- **Surface API** : deux routes ajoutées à `api/routes/modules/travelagency.php` —
+  `POST /travel/tickets/verify` (vérification d'authenticité en **lecture seule**,
+  distincte de la consommation `check-in` ; statut `valid`/`void`/`expired`/`already_used` ;
+  code invalide et référence inexistante → **même** 404 ; cross-tenant → 404 ;
+  permission `travel.checkin`) et `POST /travel/vehicles/{travelVehicle}/position`
+  (dernière position connue, source obligatoire `gps`/`app`/`estimated`, permission
+  `travel.manage`, cross-tenant → 404). Scénarios détaillés :
+  `docs/GESTION_PROJET/SCENARIOS_TEST_API_GITHUB_ACTIONS.md`.
+- **Surface web (front/travel-web, front/admin-dashboard)** : aucun contrat modifié —
+  aucun scénario web nouveau requis. Le QR est rendu dans le PDF du billet existant
+  (`api/resources/views/travel/ticket.blade.php`), l'application mobile de scan n'est
+  pas modifiée (l'endpoint accepte le contenu scanné **ou** une saisie manuelle).
+- **Surface mobile** : aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+- **Scénarios automatisés** : `api/tests/Feature/Travel/TravelOsQrGpsConcurrencyTest.php`
+  (20 cas, 55 assertions) — charge utile QR sans PII, aller-retour `parse`, rejet de
+  charge utile inconnue, PNG valide, `data:` URI dans le PDF, vérification
+  valide/annulé/expiré/déjà utilisé, code invalide, cross-tenant, permission refusée,
+  non-consommation par la vérification, idempotence du check-in (opérateur + horodatage
+  + unicité de l'événement outbox), billet annulé refusé, véhicule sans position,
+  position GPS, position estimée marquée non-GPS, source inconnue rejetée, cross-tenant.
+
+## Mise à jour 2026-10-16 — enrôlement/révocation d'appareils (PR #8537, issue #8499)
+
+- **Surface API** : nouvelle route tenant `DELETE /api/v1/edge/{nodeId}`
+  (`EdgeNodeController::revoke`, groupe `auth:sanctum` + `tenant` + `api.manager`)
+  — révocation d'un appareil par le tenant lui-même, portée STRICTEMENT limitée à
+  la `company_id` de l'utilisateur (nœud d'un autre tenant → 404, jamais de fuite
+  inter-tenant). Aucun contrat existant modifié (les routes `GET/POST /api/v1/edge`
+  et `POST /{nodeId}/sync` restent inchangées). Scénario : couvert par le test
+  d'écran `devices-page.test.tsx` (appel `DELETE /edge/{id}`) ; le test d'intégration
+  backend d'isolation inter-tenant est suivi par #8496.
+- **Surface web (front/web)** : nouvelle page protégée `/settings/devices` — enrôlement
+  (nom, établissement, poste), affichage du jeton UNE SEULE FOIS avec avertissement,
+  liste des appareils (état en ligne / dernière synchro), révocation. Scénarios Jest :
+  `devices-page.test.tsx` (3 cas : chargement de la liste, jeton affiché une fois +
+  avertissement, révocation via `DELETE /edge/{id}`).
+- **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
+  partagé `devices.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+- **Surface API (SUPERAPP-P0, #8611)** : nouvelle route publique `GET /api/v1/public/discover`
+  (découverte cross-verticale, sans auth, `throttle:shop-public`). Scénarios couverts par
+  `api/tests/Feature/Platform/PublicDiscoveryTest.php` : (1) agrégation multi-verticale
+  (restaurant + hébergement + vitrine publiés) ; (2) fail-closed — entité `is_public=false`,
+  société `suspended`/`expired` ou feature verticale absente → **jamais** retournée ;
+  (3) `?type=` inconnu → `422` ; (4) `?near=lat,lng` → seules les entités géolocalisées
+  dans `radius_km`, triées par distance croissante ; (5) DTO public strict (aucun `id`,
+  `company_id`, `status`) ; (6) `per_page` borné à 50. Aucune migration, aucun nouveau rôle.

@@ -37,7 +37,15 @@ assets/branding/*.png !filter !diff !merge -text
 # pointeurs) → la garde `validate-and-sync` (`git diff --exit-code`) rougissait
 # sur main et toutes les PRs. Exemptés du filtre LFS : binaires réels stables.
 front/web/public/*.png          !filter !diff !merge -text
+# #8528 (constat 2026-10-16) : l'exception ci-dessus est un glob `*` de git —
+# il NE franchit PAS `/`, donc `front/web/public/brand/*.png` (mascotte 404 de
+# la PR branding #8526) restait sous le filtre LFS global `*.png`. Commité en
+# pointeur, il est réécrit en binaire réel par git-lfs ≥ 3.7 au checkout CI →
+# `validate-and-sync` (`git diff --exit-code`) rougissait sur main. Les deux
+# règles `brand/*.png` et `brand/*.webp` ci-dessous appliquent enfin au PNG la
+# parité voulue par #5698 (le webp de #7682 l'avait déjà, pas le PNG).
 front/web/public/og/*.png       !filter !diff !merge -text
+front/web/public/brand/*.png    !filter !diff !merge -text
 front/web/public/screenshots/*.png !filter !diff !merge -text
 front/web/public/videos/*       !filter !diff !merge -text
 # Mascotte Leo (#7682) : webp vitrine commités en binaires réels — même
@@ -55,5 +63,13 @@ site/gh-pages/assets/*.jpg !filter !diff !merge -text
 site/gh-pages/assets/*.jpeg !filter !diff !merge -text
 site/gh-pages/assets/*.webp !filter !diff !merge -text
 site/gh-pages/assets/*.gif !filter !diff !merge -text
+# Captures de mission (docs/mission-leopardo/captures/) : JPG commités en
+# binaires réels, pas en pointeurs LFS — même exception que site/gh-pages et
+# front/web/public (#5698, #8528, #8526). Sans cette règle, `validate-and-sync`
+# (`git diff --exit-code` après les sync i18n) rougit sur TOUTE PR qui ajoute
+# une capture : git-lfs réécrit le pointeur au checkout CI alors que le dépôt
+# contient le binaire réel. La règle doit venir APRÈS les globs *.jpg
+# filter=lfs ci-dessus (la dernière règle gagnante prime).
+docs/mission-leopardo/captures/*.jpg !filter !diff !merge -text
 
 # Assets design/screenshots (assets/) : restent en VRAI Git LFS (pointeurs).

@@ -32,7 +32,14 @@ class SiteController extends Controller
 
         return SiteResource::collection(
             Site::query()
-                ->select(['id', 'company_id', 'name', 'address', 'gps_lat', 'gps_lng', 'gps_radius_m', 'created_at'])
+                // BOS-T-01 / #8624 — le sélecteur d'établissement a besoin du
+                // code et du statut : sans eux, l'exploitant ne peut pas
+                // distinguer deux lieux homonymes ni exclure un lieu fermé.
+                ->select([
+                    'id', 'company_id', 'name', 'code', 'site_type', 'status',
+                    'address', 'gps_lat', 'gps_lng', 'gps_radius_m',
+                    'timezone', 'currency', 'created_at', 'updated_at',
+                ])
                 ->orderBy('name')
                 ->get()
         );
@@ -44,7 +51,10 @@ class SiteController extends Controller
         $user = $request->user();
         $site = Site::create(['company_id' => $user->company_id, ...$request->validated()]);
 
-        return (new SiteResource($site))
+        // `status` et `gps_radius_m` ont un DEFAULT côté PostgreSQL : l'instance
+        // Eloquent ne les connaît pas encore. Sans ce refresh, l'API renverrait
+        // `status: null` pour un établissement créé actif.
+        return (new SiteResource($site->refresh()))
             ->response()
             ->setStatusCode(201);
     }

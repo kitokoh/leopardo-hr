@@ -38,6 +38,24 @@ import { mobileDownloadTarget, type MobileAppSlug } from '@/modules/vitrine/lib/
 
 export type SoftwarePlatform = 'android' | 'ios' | 'web' | 'desktop';
 
+/**
+ * Mode hors-ligne RÉEL d'une application (BOS F-01, ADR-08).
+ *
+ * Remplace l'ancien booléen `offline` qui était purement DÉCLARATIF : il
+ * annonçait un fonctionnement hors-ligne sans qu'aucune preuve ne
+ * l'accompagne. Une perte de vente terrain est un incident financier, pas un
+ * défaut d'affichage : la preuve doit précéder la promesse.
+ *
+ *  - `verified`    : un scénario de rejeu exécuté en CI le prouve
+ *                    (`offlineEvidence` est alors OBLIGATOIRE) ;
+ *  - `implemented` : le code passe réellement par la file hors-ligne
+ *                    (`useOfflineSync` / `dispatch`) ou par un pont local,
+ *                    mais aucun scénario de coupure réseau ne le prouve ;
+ *  - `absent`      : l'écran émet ses requêtes directement — aucune
+ *                    continuité hors-ligne, aucun badge ne doit l'affirmer.
+ */
+export type OfflineMode = 'verified' | 'implemented' | 'absent';
+
 export type SoftwareTargetKind = 'link' | 'pilot' | 'soon';
 
 export type SoftwareTarget = {
@@ -47,6 +65,33 @@ export type SoftwareTarget = {
   href?: string;
 };
 
+/**
+ * #8597 (BOS-045) — statut de disponibilité RÉEL d'une application, dérivé de
+ * ses cibles de distribution (jamais déclaré à la main, donc jamais menteur) :
+ *  - `published`       : au moins une cible `link` (surface web ou store) ;
+ *  - `pilot`           : distribution sur demande d'accès pilote ;
+ *  - `not_distributed` : aucun canal public — l'app est en préparation.
+ */
+export type SoftwareAvailability = 'published' | 'pilot' | 'not_distributed';
+
+/**
+ * Sections de la fiche application (Partie 6.1 de la mission Business OS).
+ * Le TEXTE vit dans les catalogues i18n sous
+ * `software.apps.<slug>.details.<clé>` — le catalogue ne duplique jamais la
+ * copie, il déclare seulement quelles sections existent.
+ */
+export const SOFTWARE_DETAIL_KEYS = [
+  'role',
+  'audiences',
+  'features',
+  'prerequisites',
+  'connection',
+  'permissions',
+  'setup',
+] as const;
+
+export type SoftwareDetailKey = (typeof SOFTWARE_DETAIL_KEYS)[number];
+
 export type SoftwareApp = {
   /** Identifiant stable — utilisé pour les clés i18n `software.apps.<slug>.*`. */
   slug: string;
@@ -55,10 +100,53 @@ export type SoftwareApp = {
   accent: string;
   /** L'app est visible si AU MOINS un de ces modules est activé pour le tenant. */
   moduleKeys: ClientModuleKey[];
-  /** Badge « hors-ligne » : l'app continue de fonctionner sans internet. */
-  offline: boolean;
+  /**
+   * Mode hors-ligne RÉEL (BOS F-01) — dérivé du câblage constaté dans le
+   * code, jamais d'une intention. Voir `isOfflineClaimed()`.
+   */
+  offline: OfflineMode;
+  /**
+   * Référence du scénario CI qui prouve le hors-ligne. Obligatoire dès que
+   * `offline === 'verified'` (vérifié par `isOfflineClaimed()` et par test).
+   */
+  offlineEvidence?: string;
   targets: SoftwareTarget[];
+  /** Sections de la fiche application, dans l'ordre d'affichage. */
+  details: SoftwareDetailKey[];
 };
+
+/**
+ * Une application peut-elle afficher un badge hors-ligne ?
+ *
+ * `absent` ne s'affiche JAMAIS : c'est le seul moyen d'éviter qu'une app
+ * branchée en direct sur l'API soit présentée comme fonctionnant sans
+ * réseau. Un `verified` sans référence de scénario est traité comme non
+ * prouvé et retombe sur `implemented` (fail-closed : on ne sur-promet pas).
+ */
+export function isOfflineClaimed(app: SoftwareApp): boolean {
+  if (app.offline === 'absent') {
+    return false;
+  }
+  if (app.offline === 'verified') {
+    return typeof app.offlineEvidence === 'string' && app.offlineEvidence.trim().length > 0;
+  }
+  return true;
+}
+
+/**
+ * Statut de disponibilité dérivé des cibles réelles — source unique de vérité
+ * pour le badge de la fiche (règle d'honnêteté #6697 : jamais de faux
+ * « Installer »).
+ */
+export function softwareAvailability(app: SoftwareApp): SoftwareAvailability {
+  if (app.targets.some((target) => target.kind === 'link')) {
+    return 'published';
+  }
+  if (app.targets.some((target) => target.kind === 'pilot')) {
+    return 'pilot';
+  }
+  return 'not_distributed';
+}
 
 /** Cibles mobiles factorisées sur le mécanisme vitrine (stores → Firebase → repli). */
 function mobileTargets(slug: MobileAppSlug): SoftwareTarget[] {
@@ -85,14 +173,15 @@ function nativeSoon(): SoftwareTarget[] {
   ];
 }
 
-export const TENANT_SOFTWARE: SoftwareApp[] = [
+const SOFTWARE_APPS: Omit<SoftwareApp, 'details'>[] = [
   // ── Transverse (toute entreprise) ────────────────────────────────────────
   {
     slug: 'manager',
     icon: Smartphone,
     accent: 'from-emerald-500 to-teal-600',
     moduleKeys: ['dashboard'],
-    offline: false,
+    // App mobile manager : écrans Flutter, aucun câblage de file local constaté.
+    offline: 'absent',
     targets: mobileTargets('manager'),
   },
   {
@@ -100,7 +189,7 @@ export const TENANT_SOFTWARE: SoftwareApp[] = [
     icon: UserRound,
     accent: 'from-sky-500 to-blue-600',
     moduleKeys: ['employees', 'attendance'],
-    offline: false,
+    offline: 'absent',
     targets: mobileTargets('employee'),
   },
   // Kiosque de pointage & client desktop ZKTeco : distribution sur accès
@@ -111,7 +200,9 @@ export const TENANT_SOFTWARE: SoftwareApp[] = [
     icon: Fingerprint,
     accent: 'from-slate-500 to-slate-700',
     moduleKeys: ['attendance'],
-    offline: true,
+    // Pont local `/local/punch` réellement hors-ligne (front/zkteco-kiosk/app.js)
+    // avec compteur de file visible — mais aucun scénario de coupure rejoué en CI.
+    offline: 'implemented',
     targets: [
       { platform: 'desktop', kind: 'pilot', href: '/download' },
     ],
@@ -122,7 +213,9 @@ export const TENANT_SOFTWARE: SoftwareApp[] = [
     icon: Store,
     accent: 'from-orange-500 to-amber-600',
     moduleKeys: ['restaurant'],
-    offline: true,
+    // `/restaurant/pos` émet ses POST directement (aucun `dispatch`) : la
+    // continuité hors-ligne n'est PAS câblée sur cet écran.
+    offline: 'absent',
     targets: [
       { platform: 'web', kind: 'link', href: '/restaurant/pos' },
     ],
@@ -132,7 +225,9 @@ export const TENANT_SOFTWARE: SoftwareApp[] = [
     icon: ChefHat,
     accent: 'from-rose-500 to-red-600',
     moduleKeys: ['restaurant', 'restaurant_kitchen'],
-    offline: true,
+    // `/restaurant/kitchen` passe par `dispatch()` → file hors-ligne idempotente
+    // (`useOfflineSync`). Aucun scénario CI de coupure réelle ne le prouve encore.
+    offline: 'implemented',
     targets: [
       { platform: 'web', kind: 'link', href: '/restaurant/kitchen' },
     ],
@@ -142,7 +237,8 @@ export const TENANT_SOFTWARE: SoftwareApp[] = [
     icon: UtensilsCrossed,
     accent: 'from-violet-500 to-purple-600',
     moduleKeys: ['restaurant'],
-    offline: true,
+    // App serveur native sans canal ni file locale : rien à revendiquer.
+    offline: 'absent',
     targets: nativeSoon(),
   },
   {
@@ -152,7 +248,9 @@ export const TENANT_SOFTWARE: SoftwareApp[] = [
     icon: Monitor,
     accent: 'from-cyan-500 to-sky-600',
     moduleKeys: ['restaurant'],
-    offline: true,
+    // `/kiosk` consomme exclusivement `/public/restaurant/*` en direct : aucun
+    // `dispatch`, aucune persistance locale → pas de continuité hors-ligne.
+    offline: 'absent',
     targets: [
       { platform: 'web', kind: 'link', href: '/kiosk' },
     ],
@@ -163,7 +261,9 @@ export const TENANT_SOFTWARE: SoftwareApp[] = [
     icon: Fuel,
     accent: 'from-amber-500 to-yellow-600',
     moduleKeys: ['fuel'],
-    offline: true,
+    // `/fuel/pump` et `/fuel` émettent leurs POST directement : pas de file
+    // hors-ligne sur la verticale station-service aujourd'hui.
+    offline: 'absent',
     targets: [
       { platform: 'web', kind: 'link', href: '/fuel' },
     ],
@@ -174,7 +274,9 @@ export const TENANT_SOFTWARE: SoftwareApp[] = [
     icon: Wallet,
     accent: 'from-teal-500 to-emerald-600',
     moduleKeys: ['commerce'],
-    offline: true,
+    // `/commerce/pos` encaisse via `dispatch()` avec une clé d'idempotence
+    // stable (session + panier) → la file hors-ligne est réellement branchée.
+    offline: 'implemented',
     targets: [
       { platform: 'web', kind: 'link', href: '/commerce/pos' },
     ],
@@ -185,7 +287,7 @@ export const TENANT_SOFTWARE: SoftwareApp[] = [
     icon: Plane,
     accent: 'from-indigo-500 to-blue-600',
     moduleKeys: ['travel'],
-    offline: false,
+    offline: 'absent',
     targets: nativeSoon(),
   },
   // ── Verticale Éducation ──────────────────────────────────────────────────
@@ -194,7 +296,7 @@ export const TENANT_SOFTWARE: SoftwareApp[] = [
     icon: GraduationCap,
     accent: 'from-blue-500 to-indigo-600',
     moduleKeys: ['edu_manager'],
-    offline: false,
+    offline: 'absent',
     targets: [
       { platform: 'web', kind: 'link', href: '/edu-manager' },
     ],
@@ -205,7 +307,7 @@ export const TENANT_SOFTWARE: SoftwareApp[] = [
     icon: HeartPulse,
     accent: 'from-red-500 to-rose-600',
     moduleKeys: ['health'],
-    offline: false,
+    offline: 'absent',
     targets: [
       { platform: 'web', kind: 'link', href: '/health' },
     ],
@@ -216,7 +318,7 @@ export const TENANT_SOFTWARE: SoftwareApp[] = [
     icon: UsersRound,
     accent: 'from-emerald-600 to-green-700',
     moduleKeys: ['payroll', 'contracts'],
-    offline: false,
+    offline: 'absent',
     targets: nativeSoon(),
   },
   {
@@ -224,7 +326,7 @@ export const TENANT_SOFTWARE: SoftwareApp[] = [
     icon: Wallet,
     accent: 'from-slate-600 to-slate-800',
     moduleKeys: ['accounting'],
-    offline: false,
+    offline: 'absent',
     targets: nativeSoon(),
   },
   {
@@ -232,7 +334,7 @@ export const TENANT_SOFTWARE: SoftwareApp[] = [
     icon: Megaphone,
     accent: 'from-fuchsia-500 to-pink-600',
     moduleKeys: ['marketing'],
-    offline: false,
+    offline: 'absent',
     targets: nativeSoon(),
   },
   {
@@ -240,10 +342,20 @@ export const TENANT_SOFTWARE: SoftwareApp[] = [
     icon: Video,
     accent: 'from-gray-500 to-slate-600',
     moduleKeys: ['cameras'],
-    offline: false,
+    offline: 'absent',
     targets: nativeSoon(),
   },
 ];
+
+/**
+ * Catalogue « Mon Logiciel » : chaque app reçoit la fiche complète (#8597).
+ * Les sections sont identiques pour toutes les apps aujourd'hui ; les rendre
+ * explicites par app permet d'en retirer une sans toucher au rendu.
+ */
+export const TENANT_SOFTWARE: SoftwareApp[] = SOFTWARE_APPS.map((app) => ({
+  ...app,
+  details: [...SOFTWARE_DETAIL_KEYS],
+}));
 
 /**
  * Apps visibles pour le tenant : filtrage STRICT par modules activés

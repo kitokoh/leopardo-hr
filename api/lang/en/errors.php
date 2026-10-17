@@ -110,6 +110,7 @@ return [
     'EMAIL_ALREADY_REGISTERED' => 'An account with this email already exists. Sign in directly.',
     'SESSION_ALREADY_ACTIVE' => 'You are already signed in to a Leopardo workspace. Sign out before creating a new one.',
     'INVALID_SOLUTION' => 'Unknown or unavailable sectorial solution: :solution.',
+    'INVALID_TRADE_PROFILE' => 'This professional profile does not match the selected market (international: importer, exporter or both; domestic: wholesaler or retailer).',
     'INVALID_COUNTRY' => 'The signup country is invalid or unsupported. Please restart the signup.',
     'NO_PLAN_AVAILABLE' => 'The trial service is temporarily unavailable.',
     'PROVISIONING_FAILED' => 'Error creating your workspace. Please try again.',
@@ -252,6 +253,7 @@ return [
     // Platform — RTMX (#5277): idempotent replay of mobile writes
     'INVALID_IDEMPOTENCY_KEY' => 'Invalid idempotency key.',
     'IDEMPOTENCY_IN_PROGRESS' => 'An identical request is already in progress. Retry shortly.',
+    'IDEMPOTENCY_KEY_REUSED' => 'This idempotency key was already used for a different request.',
     'ATTENDANCE_PERIOD_CLOSED' => 'The attendance period is closed: corrections are locked.',
     'DEPARTMENT_DELETED' => 'Department deleted.',
     'POSITION_DELETED' => 'Position deleted.',
@@ -314,6 +316,7 @@ return [
     // #7268 — Onboarding: localized step messages (no more hardcoded literals)
     'ONBOARDING_STEP_REQUIRED' => 'This step is required and cannot be skipped.',
     'ONBOARDING_STEP_NOT_DONE' => 'This step cannot be marked complete: no matching action has been recorded yet.',
+    'ONBOARDING_STEP_NOT_FOUND' => 'This step does not exist for your workspace.',
     'COMPANY_CONTEXT_REQUIRED' => 'A company context is required.',
     // #7322 — Client self-activation of a horizontal module.
     'SOLO_TEAM_TOOL_NOT_AVAILABLE' => 'Team tool outside an independent (solo) profile scope: :module.',

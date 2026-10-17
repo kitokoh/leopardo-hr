@@ -82,6 +82,11 @@ class FuelIncident extends Model
     public const STATUS_REPORTED = 'reported';
 
     public const TRANSITIONS = [
+        // Etat de naissance REEL d'un incident = `STATUS_OPEN` (defaut de la
+        // colonne et du modele). Sans cette cle, un incident naissait `open`
+        // puis n'avait AUCUNE transition sortante : il restait bloque a vie
+        // dans le workflow (`TRANSITIONS[$status] ?? []` -> liste vide).
+        self::STATUS_OPEN => [self::STATUS_ASSIGNED, self::STATUS_IN_PROGRESS, self::STATUS_CLOSED],
         self::STATUS_REPORTED => [self::STATUS_ASSIGNED, self::STATUS_IN_PROGRESS, self::STATUS_CLOSED],
         self::STATUS_ASSIGNED => [self::STATUS_IN_PROGRESS, self::STATUS_CLOSED],
         self::STATUS_IN_PROGRESS => [self::STATUS_RESOLVED],

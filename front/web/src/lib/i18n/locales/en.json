@@ -5780,7 +5780,21 @@
       "active": "Active",
       "revoked": "Revoked",
       "expired": "Expired"
-    }
+    },
+    "travel.seats.summary.free": "seat(s) free out of",
+    "travel.seats.summary.selected": "selected",
+    "travel.seats.legend.title": "Seat states",
+    "travel.seats.map.label": "Vehicle seat map",
+    "travel.seats.state.free": "Free",
+    "travel.seats.state.selected": "Selected",
+    "travel.seats.state.held": "Booking in progress",
+    "travel.seats.state.reserved": "Reserved",
+    "travel.seats.state.pendingPayment": "Payment pending",
+    "travel.seats.state.sold": "Sold",
+    "travel.seats.state.blocked": "Blocked",
+    "travel.seats.state.unavailable": "Unavailable",
+    "travel.seats.state.aisle": "Aisle",
+    "travel.seats.state.seat": "Seat"
   },
   "travelPortal": {
     "title": "Traveler portal",
@@ -6570,7 +6584,7 @@
     },
     "nav": {
       "pricing": "Pricing",
-      "packs": "Free packs",
+      "packs": "Pack",
       "packsHub": "All packs",
       "packsHubDesc": "A free pack per trade — discover the offer",
       "packsRestaurant": "Restaurants",
@@ -6580,7 +6594,7 @@
       "packsEdu": "Schools & training",
       "packsEduDesc": "Staff attendance, replacements, school payroll",
       "packsTravel": "Travel agencies",
-      "packsTravelDesc": "Client files, ticketing, commissions, payroll",
+      "packsTravelDesc": "Client files, ticketing, payments, payroll",
       "resources": "Resources",
       "guides": "Guides",
       "guidesDesc": "HR best practices and tutorials",
@@ -6607,7 +6621,6 @@
       "trade": "Trade"
     },
     "hero3d": {
-      "hint": "Click a module to explore",
       "demo": "Demo",
       "cagnottes": "Fundraisers",
       "freeTrial": "Free trial"
@@ -6644,7 +6657,13 @@
       "reassurance": "Free, no credit card, your data stays yours",
       "backHome": "Back to home",
       "metaTitle": "Trade, set up your business in minutes",
-      "metaDescription": "Trade, the entry point to Leopardo Business OS: choose import/export or local market, configure your business, activate your modules and run your first operation."
+      "metaDescription": "Trade, the entry point to Leopardo Business OS: choose import/export or local market, configure your business, activate your modules and run your first operation.",
+      "profileLabel": "Your profile",
+      "profile_importer": "Importer",
+      "profile_exporter": "Exporter",
+      "profile_both": "Importer & exporter",
+      "profile_wholesaler": "Wholesaler",
+      "profile_retailer": "Retailer"
     }
   },
   "commerce": {
@@ -7784,6 +7803,8 @@
     "pilot": "Request pilot access",
     "soon": "Coming soon",
     "offlineBadge": "Works offline",
+    "offlineBadgeVerified": "Offline verified",
+    "offlineImplementedHint": "Offline queue wired — network-cut scenario not yet replayed in CI",
     "qrAria": "Show the installation QR code",
     "qrTitle": "Install on this device",
     "qrHint": "Scan with the device to equip: the installation link opens directly.",
@@ -7791,70 +7812,473 @@
     "apps": {
       "manager": {
         "name": "Leopardo Manager",
-        "description": "Run your business from your pocket: teams, attendance, approvals and real-time alerts."
+        "description": "Run your business from your pocket: teams, attendance, approvals and real-time alerts.",
+        "details": {
+          "role": "Run the business from a phone: teams, clock-ins, approvals and alerts.",
+          "audiences": "Owner, manager, site manager.",
+          "features": "Clock-ins and attendance, request approvals, tasks, alerts and notifications.",
+          "prerequisites": "A user account linked to the company and an Android or iOS phone.",
+          "connection": "Sign in with the work credentials, or scan the company QR code from the app.",
+          "permissions": "Depending on the assigned role: owner, manager or HR.",
+          "setup": "Install the app, sign in, then scan the company QR code to link the device."
+        }
       },
       "employee": {
         "name": "Leopardo Employee",
-        "description": "Your teams' companion: GPS clock-in, leave, balances and notifications."
+        "description": "Your teams' companion: GPS clock-in, leave, balances and notifications.",
+        "details": {
+          "role": "Give every employee a work companion: clock-ins, leave, balances and documents.",
+          "audiences": "Employees, operators, field teams.",
+          "features": "GPS or biometric clock-ins, leave requests, time-off balances, tasks and notifications.",
+          "prerequisites": "An employee account created by the company and a phone.",
+          "connection": "Sign in with the personal credentials, or scan the employee QR code issued by the company.",
+          "permissions": "Access limited to the signed-in employee's own data.",
+          "setup": "Install the app, sign in, then scan the employee QR code handed over by the manager."
+        }
       },
       "desktop-attendance": {
         "name": "Attendance workstation & kiosk",
-        "description": "ZKTeco desktop client and attendance terminal — works offline, syncs when the network returns. Guided pilot access."
+        "description": "ZKTeco desktop client and attendance terminal — works offline, syncs when the network returns. Guided pilot access.",
+        "details": {
+          "role": "Fixed clock-in station and kiosk terminal for team entry.",
+          "audiences": "Front desk, HR, site managers.",
+          "features": "Offline clock-ins, deferred synchronisation, ZKTeco biometric reader.",
+          "prerequisites": "A Windows workstation or a compatible terminal, and an approved pilot access.",
+          "connection": "Pair the workstation with the company using a one-time token issued by the administrator.",
+          "permissions": "Administrator or HR account for pairing.",
+          "setup": "Request pilot access, install the client, pair the workstation, then check synchronisation."
+        }
       },
       "restaurant-pos": {
         "name": "Restaurant POS",
-        "description": "Take payments at the counter and tableside: orders, payments and receipts, right in the browser."
+        "description": "Take payments at the counter and tableside: orders, payments and receipts, right in the browser.",
+        "details": {
+          "role": "Take orders and payments at the counter and in the dining room.",
+          "audiences": "Cashiers, waiters, restaurant managers.",
+          "features": "Orders, payments, receipts, kitchen dispatch, offline operation.",
+          "prerequisites": "The Restaurant solution enabled and at least one configured location.",
+          "connection": "Opens directly in the workstation browser, signed in to the company account.",
+          "permissions": "Cashier or manager role.",
+          "setup": "Enable the Restaurant solution, open the till on the workstation, then check kitchen dispatch."
+        }
       },
       "restaurant-kds": {
         "name": "Kitchen Display (KDS)",
-        "description": "The real-time order queue for the kitchen: intake, preparation, service."
+        "description": "The real-time order queue for the kitchen: intake, preparation, service.",
+        "details": {
+          "role": "Show the kitchen order queue and track preparation.",
+          "audiences": "Kitchen staff, section chefs, managers.",
+          "features": "Order intake, step marking, reminders and priorities.",
+          "prerequisites": "The Restaurant solution enabled and a dedicated kitchen screen.",
+          "connection": "Opens in the kitchen screen browser, signed in to the company account.",
+          "permissions": "Kitchen or manager role.",
+          "setup": "Enable the Restaurant solution, open the kitchen screen, then test an order end to end."
+        }
       },
       "restaurant-server": {
         "name": "Server App",
-        "description": "Tableside order-taking on mobile, sent instantly to kitchen and till."
+        "description": "Tableside order-taking on mobile, sent instantly to kitchen and till.",
+        "details": {
+          "role": "Take orders on the floor from a phone and send them to the kitchen.",
+          "audiences": "Waiters, managers.",
+          "features": "Floor order taking, kitchen dispatch, table tracking.",
+          "prerequisites": "The Restaurant solution enabled and a phone.",
+          "connection": "Sign in with the work credentials once the app is distributed.",
+          "permissions": "Waiter or manager role.",
+          "setup": "No public distribution channel today: the application is in preparation."
+        }
       },
       "restaurant-kiosk": {
         "name": "Self-service kiosk",
-        "description": "Your customers order and pay on their own on a counter tablet."
+        "description": "Your customers order and pay on their own on a counter tablet.",
+        "details": {
+          "role": "Let guests order and pay on their own from a counter tablet.",
+          "audiences": "Restaurant guests, managers.",
+          "features": "Self-service ordering, payment, direct kitchen dispatch.",
+          "prerequisites": "The Restaurant solution enabled and a counter tablet.",
+          "connection": "Opens full screen on the tablet, connected to the company account.",
+          "permissions": "No user permission: the kiosk is a controlled public mode.",
+          "setup": "Enable the Restaurant solution, open the kiosk on the tablet, then switch it to full screen."
+        }
       },
       "fuel-console": {
         "name": "Fuel Station Console",
-        "description": "Pumps, volumes, variances and team rotations — your station's control tower."
+        "description": "Pumps, volumes, variances and team rotations — your station's control tower.",
+        "details": {
+          "role": "Control pumps, volumes and variances at a fuel station.",
+          "audiences": "Station managers, operators, forecourt supervisors.",
+          "features": "Pump readings, shift rotations, variance tracking, per-station reports.",
+          "prerequisites": "The Fuel station solution enabled and a configured location.",
+          "connection": "Opens in the control workstation browser, signed in to the company account.",
+          "permissions": "Manager or operator role.",
+          "setup": "Enable the Fuel station solution, open the console, then record a first reading."
+        }
       },
       "commerce-pos": {
         "name": "Retail POS",
-        "description": "Sell in store: products, stock and payments, in the browser."
+        "description": "Sell in store: products, stock and payments, in the browser.",
+        "details": {
+          "role": "Sell in store: products, stock and payments.",
+          "audiences": "Retailers, sales staff, shop managers.",
+          "features": "Product catalogue, checkout, stock tracking, offline operation.",
+          "prerequisites": "The Commerce solution enabled and a product catalogue.",
+          "connection": "Opens in the sales workstation browser, signed in to the company account.",
+          "permissions": "Sales or manager role.",
+          "setup": "Enable the Commerce solution, create the products, then take a first sale."
+        }
       },
       "travel-agent": {
         "name": "Travel Agent App",
-        "description": "Multi-passenger counter sales, cash collection, QR check-in and manifest."
+        "description": "Multi-passenger counter sales, cash collection, QR check-in and manifest.",
+        "details": {
+          "role": "Sell at the counter: multi-passenger bookings, payment and check-in.",
+          "audiences": "Travel agents, agency managers.",
+          "features": "Counter sales, payment, QR check-in, passenger manifests.",
+          "prerequisites": "The Travel solution enabled and a configured counter.",
+          "connection": "Sign in with the work credentials once the app is distributed.",
+          "permissions": "Agent or agency manager role.",
+          "setup": "No public distribution channel today: the application is in preparation."
+        }
       },
       "edu-portal": {
         "name": "Education Portal",
-        "description": "Campuses, classes, students and grades: your whole school in the browser."
+        "description": "Campuses, classes, students and grades: your whole school in the browser.",
+        "details": {
+          "role": "Run school administration: campus, classes, students and grades.",
+          "audiences": "School leadership, teachers, administration.",
+          "features": "Campus and classes, student records, grades, enrolment tracking.",
+          "prerequisites": "The Education solution enabled and a configured school.",
+          "connection": "Opens in the browser, signed in to the school account.",
+          "permissions": "Administration or teacher role.",
+          "setup": "Enable the Education solution, create the classes, then enrol a first student."
+        }
       },
       "health-portal": {
         "name": "Health Portal",
-        "description": "Patients, appointments and admissions: your facility's front desk."
+        "description": "Patients, appointments and admissions: your facility's front desk.",
+        "details": {
+          "role": "Run the front desk of a health facility: patients, appointments and admissions.",
+          "audiences": "Front desk, medical secretariat, leadership.",
+          "features": "Patient records, appointments, admissions, visit tracking.",
+          "prerequisites": "The Health solution enabled and a configured facility.",
+          "connection": "Opens in the browser, signed in to the facility account.",
+          "permissions": "Front desk or administration role.",
+          "setup": "Enable the Health solution, create a first patient, then schedule an appointment."
+        }
       },
       "hr-mobile": {
         "name": "Leopardo HR",
-        "description": "Employee tracking, attendance, tasks and recruiting for your HR team."
+        "description": "Employee tracking, attendance, tasks and recruiting for your HR team.",
+        "details": {
+          "role": "Track employees, attendance, tasks and recruitment.",
+          "audiences": "HR, leadership, managers.",
+          "features": "Employee records, attendance, tasks, recruitment.",
+          "prerequisites": "The HR modules enabled and a phone.",
+          "connection": "Sign in with the work credentials once the app is distributed.",
+          "permissions": "HR or owner role.",
+          "setup": "No public distribution channel today: the application is in preparation."
+        }
       },
       "accounting-mobile": {
         "name": "Leopardo Accounting",
-        "description": "Invoicing and overdue tracking, everywhere with you."
+        "description": "Invoicing and overdue tracking, everywhere with you.",
+        "details": {
+          "role": "Invoice and track unpaid balances from a phone.",
+          "audiences": "Accountants, leadership.",
+          "features": "Invoicing, unpaid tracking, document access.",
+          "prerequisites": "The Accounting module enabled and a phone.",
+          "connection": "Sign in with the work credentials once the app is distributed.",
+          "permissions": "Accountant or owner role.",
+          "setup": "No public distribution channel today: the application is in preparation."
+        }
       },
       "marketing-mobile": {
         "name": "Leopardo Marketing",
-        "description": "Plan and publish to your social networks in one click."
+        "description": "Plan and publish to your social networks in one click.",
+        "details": {
+          "role": "Plan and publish on social networks.",
+          "audiences": "Marketing leads, leadership.",
+          "features": "Post scheduling, multi-network publishing, tracking.",
+          "prerequisites": "The Marketing module enabled and a phone.",
+          "connection": "Sign in with the work credentials once the app is distributed.",
+          "permissions": "Marketing or owner role.",
+          "setup": "No public distribution channel today: the application is in preparation."
+        }
       },
       "cameras-mobile": {
         "name": "Leopardo Cameras",
-        "description": "Your camera wall on the move: live viewing, events and alerts."
+        "description": "Your camera wall on the move: live viewing, events and alerts.",
+        "details": {
+          "role": "View the camera wall and events on the move.",
+          "audiences": "Security, leadership, site managers.",
+          "features": "Live viewing, events, alerts.",
+          "prerequisites": "The Cameras module enabled and a phone.",
+          "connection": "Sign in with the work credentials once the app is distributed.",
+          "permissions": "Security or owner role.",
+          "setup": "No public distribution channel today: the application is in preparation."
+        }
       }
     },
-    "dashboardCard": "Install the apps for your business — server, kitchen, till, mobile."
+    "dashboardCard": "Install the apps for your business — server, kitchen, till, mobile.",
+    "availability": {
+      "published": "Published",
+      "pilot": "Pilot access",
+      "not_distributed": "Not distributed"
+    },
+    "details": {
+      "toggle": "View the application sheet",
+      "heading": "Application sheet",
+      "availability": "Availability",
+      "role": "Purpose",
+      "audiences": "Who it is for",
+      "features": "Main features",
+      "prerequisites": "Prerequisites",
+      "connection": "Connecting to the workspace",
+      "permissions": "Required permissions",
+      "setup": "Getting started"
+    }
+  },
+  "marketingOs": {
+    "title": "Marketing OS",
+    "subtitle": "Marketing command centre: ideas, strategy, production, media library, publications and content reuse.",
+    "selectCompany": "Select a client company to open its Marketing OS.",
+    "reload": "Reload",
+    "companyLabel": "Client company",
+    "companyPlaceholder": "— Choose a company —",
+    "tab": {
+      "dashboard": "Dashboard",
+      "strategy": "Strategy & calendar",
+      "library": "Media library",
+      "publications": "Publications"
+    },
+    "common": {
+      "dash": "—",
+      "untitled": "Untitled",
+      "loading": "Loading…"
+    },
+    "counter": {
+      "toImagine": "To imagine",
+      "toProduce": "To produce",
+      "toValidate": "To validate",
+      "toPublish": "To publish",
+      "published": "Published"
+    },
+    "dashboard": {
+      "loading": "Loading indicators…",
+      "empty": "Select a client company to display its marketing dashboard.",
+      "pipeline": "Content pipeline",
+      "publishing": "Publishing",
+      "directAvailable": "A publishing connector is configured: direct (API) publishing is available for this company.",
+      "assistedOnly": "No connector is configured for this company: publications use the assisted mode (prepare, open the platform, confirm manually with the real URL).",
+      "lateContent": "Late content",
+      "noLateContent": "No late content on the current data.",
+      "daysLate": "{count} days late",
+      "overdue": "Overdue",
+      "scheduled": "Scheduled publications",
+      "noScheduled": "No scheduled publication.",
+      "recent": "Latest publications",
+      "noRecent": "No publication recorded as published.",
+      "openPublication": "Open publication",
+      "activeCampaigns": "Active campaigns",
+      "noActiveCampaigns": "No active campaign.",
+      "performance": "Publication performance",
+      "performanceSummary": "{published} published publication(s) — {measured} with platform statistics.",
+      "statsUnavailable": "Statistics unavailable: no estimate is displayed.",
+      "nextActions": "Next priority actions"
+    },
+    "strategy": {
+      "viewTable": "Table",
+      "viewCalendar": "Calendar",
+      "cancel": "Cancel",
+      "newIdea": "New idea",
+      "title": "Title *",
+      "campaign": "Campaign",
+      "noCampaign": "— None —",
+      "objective": "Objective",
+      "noObjective": "— Not specified —",
+      "format": "Format",
+      "channel": "Channel",
+      "locale": "Language",
+      "sector": "Sector / vertical",
+      "product": "Featured product",
+      "productionDue": "Desired production",
+      "publishDue": "Desired publication",
+      "submit": "Create idea",
+      "empty": "No content idea for this company.",
+      "colTitle": "Title",
+      "colCampaign": "Campaign",
+      "colObjective": "Objective",
+      "colFormat": "Format",
+      "colLocale": "Language",
+      "colProduction": "Production",
+      "colPublication": "Publication",
+      "colStatus": "Status",
+      "colAction": "Action",
+      "taskCreated": "Task #{id}",
+      "promote": "Move to production",
+      "noDate": "No publication date"
+    },
+    "filter": {
+      "search": "Search",
+      "searchHint": "restaurant ad…",
+      "kind": "Type",
+      "all": "All",
+      "locale": "Language",
+      "sector": "Sector",
+      "product": "Product",
+      "validation": "Validation status",
+      "platform": "Platform",
+      "tag": "Tag",
+      "from": "Added after",
+      "to": "Added before",
+      "apply": "Filter"
+    },
+    "library": {
+      "add": "Add",
+      "name": "Name *",
+      "kind": "Type",
+      "file": "File",
+      "fileHint": "Optional for a script, a prompt or a caption; required for a video, an image, a logo, an audio file or a document.",
+      "description": "Description",
+      "locale": "Language",
+      "sector": "Sector",
+      "product": "Product",
+      "tags": "Tags (comma separated)",
+      "save": "Save",
+      "empty": "No resource matches these filters.",
+      "colName": "Name",
+      "colKind": "Type",
+      "colVersion": "Version",
+      "colLocale": "Language",
+      "colSector": "Sector",
+      "colValidation": "Validation",
+      "colFile": "File",
+      "colAdded": "Added",
+      "colPublications": "Publications",
+      "versionValue": "v{version}",
+      "fileYes": "Yes",
+      "fileText": "Text",
+      "wherePublished": "Where published?"
+    },
+    "history": {
+      "title": "“{name}” — {count} publication(s) online",
+      "close": "Close",
+      "neverPublished": "This resource has never been published yet. It can be reused without overwriting any history.",
+      "account": "account: {account}",
+      "realLink": "Real link",
+      "statsSource": "stats: {source}"
+    },
+    "publication": {
+      "platform": "Platform *",
+      "asset": "Media library resource",
+      "noAsset": "— None —",
+      "assetOption": "{name} (v{version})",
+      "title": "Title",
+      "body": "Platform-tailored text",
+      "hashtags": "Hashtags",
+      "prepare": "Prepare",
+      "empty": "No publication for this company.",
+      "colPlatform": "Platform",
+      "colTitle": "Title",
+      "colMode": "Mode",
+      "colStatus": "Status",
+      "colScheduled": "Scheduled",
+      "colPublished": "Published",
+      "colLink": "Real link",
+      "colAttempts": "Attempts",
+      "colAction": "Action",
+      "open": "Open",
+      "confirm": "Confirm publication",
+      "online": "Online"
+    },
+    "confirm": {
+      "title": "Confirm publication — {platform}",
+      "hint": "Opening the platform publishes nothing. Enter the real URL of the publication once it is actually online.",
+      "url": "Real publication URL *",
+      "account": "Account used",
+      "submit": "Confirm",
+      "cancel": "Cancel"
+    },
+    "status": {
+      "idea": "Idea",
+      "briefing": "Briefing",
+      "inProduction": "In production",
+      "inReview": "In review",
+      "approved": "Approved",
+      "scheduled": "Scheduled",
+      "published": "Published",
+      "cancelled": "Cancelled"
+    },
+    "pubStatus": {
+      "inPreparation": "In preparation",
+      "failed": "Failed"
+    },
+    "mode": {
+      "direct": "Direct (API)",
+      "assisted": "Assisted (manual)"
+    },
+    "validation": {
+      "draft": "Draft",
+      "pending": "Pending validation",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "format": {
+      "videoShort": "Short video",
+      "videoLong": "Long video",
+      "image": "Image",
+      "carousel": "Carousel",
+      "article": "Article",
+      "ad": "Ad",
+      "testimonial": "Testimonial",
+      "other": "Other"
+    },
+    "objective": {
+      "awareness": "Awareness",
+      "acquisition": "Acquisition",
+      "conversion": "Conversion",
+      "retention": "Retention",
+      "launch": "Launch"
+    },
+    "assetKind": {
+      "video": "Video",
+      "image": "Image",
+      "logo": "Logo",
+      "illustration": "Illustration",
+      "script": "Script",
+      "prompt": "Prompt",
+      "copy": "Text / caption",
+      "document": "Document",
+      "audio": "Audio",
+      "other": "Other"
+    },
+    "campaignStatus": {
+      "draft": "Draft",
+      "active": "Active",
+      "paused": "Paused",
+      "finished": "Finished",
+      "cancelled": "Cancelled"
+    },
+    "error": {
+      "loadCompanies": "Unable to load the company list.",
+      "load": "Loading failed.",
+      "filter": "Filter failed.",
+      "create": "Creation failed.",
+      "promote": "Move to production failed.",
+      "upload": "Upload failed.",
+      "history": "History unavailable.",
+      "prepare": "Preparation failed.",
+      "confirm": "Confirmation refused: the real publication URL is required."
+    },
+    "toast": {
+      "ideaCreated": "Idea created.",
+      "promotedWithTask": "Idea moved to production: the task was created with the information already entered.",
+      "promotedWithoutTask": "Idea moved to production, but the task could not be created — the idea keeps all its information.",
+      "assetAdded": "Resource added to the media library.",
+      "preparedDirect": "Publication prepared in direct mode (API): a connector is configured.",
+      "preparedAssisted": "Publication prepared in assisted mode: prepare, copy and open the platform, then confirm publication with its real URL.",
+      "confirmed": "Publication confirmed: real URL and date recorded."
+    }
   },
   "offline": {
     "online": "Online",
@@ -7865,5 +8289,42 @@
     "queued": "Saved offline — will sync",
     "synced": "Synced",
     "syncFailed": "Sync failed — please retry"
-  }
+  },
+  "devices": {
+    "title": "Devices and terminals",
+    "subtitle": "Enrol a device (POS, kitchen, field) on your workspace, assign it to an establishment and a role, then revoke it if needed.",
+    "enroll": "Enrol a device",
+    "name": "Device name",
+    "namePlaceholder": "e.g. Counter POS 1",
+    "establishment": "Establishment",
+    "role": "Role / function",
+    "rolePos": "Point of sale (POS)",
+    "roleKds": "Kitchen (KDS)",
+    "roleField": "Field",
+    "roleKiosk": "Kiosk / terminal",
+    "create": "Generate enrolment code",
+    "codeTitle": "Enrolment code",
+    "codeHint": "Enter this code on the device. It is ONE-TIME and expires in 15 minutes.",
+    "installCommand": "Install command",
+    "installHint": "Run on the device. The token is shown ONLY ONCE.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "devices": "Enrolled devices",
+    "empty": "No device enrolled yet.",
+    "statusActive": "Active",
+    "statusRevoked": "Revoked",
+    "revoke": "Revoke",
+    "revokeConfirm": "Revoke this device? It will no longer sync.",
+    "lastSync": "Last sync",
+    "never": "Never",
+    "online": "Online",
+    "offline": "Offline",
+    "loading": "Loading...",
+    "error": "Could not load devices.",
+    "created": "Device enrolled.",
+    "revoked": "Device revoked.",
+    "secretWarning": "Never share this token: it is shown only once."
+  },
+  "travel.seats.state.absent": "Seat absent",
+  "travel.seats.layoutNotice": "Changing the seat layout does not move already-booked passengers: their seats stay unchanged. Use the vehicle replacement procedure to resolve a conflict."
 }

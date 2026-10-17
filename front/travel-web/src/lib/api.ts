@@ -104,6 +104,23 @@ export async function getTripServer(
   return request(`${resolveBackendBaseUrl()}/${MARKETPLACE}/trips/${id}`);
 }
 
+/**
+ * #8655 — détail d'un trajet depuis le NAVIGATEUR (proxy same-origin).
+ *
+ * Utilisé par le rafraîchissement périodique du plan de sièges : le plan ne
+ * doit jamais rester figé sur l'inventaire chargé au premier rendu. Le
+ * rafraîchissement ne remplace PAS la revalidation serveur à la confirmation —
+ * la disponibilité reste garantie côté serveur.
+ */
+export async function fetchTripDetail(
+  id: number | string,
+): Promise<MarketplaceTripDetail> {
+  const payload = await request<{ data: MarketplaceTripDetail }>(
+    `/api/v1/${MARKETPLACE}/trips/${id}`,
+  );
+  return payload.data;
+}
+
 export async function getCitiesServer(): Promise<{ data: MarketplaceCity[] }> {
   return request(`${resolveBackendBaseUrl()}/${MARKETPLACE}/cities`);
 }

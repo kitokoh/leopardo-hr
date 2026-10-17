@@ -20,7 +20,7 @@ namespace App\Core\Tenant\Domain\Enums;
  * | support     | tickets, comptes des entreprises, impersonation encadrée        |
  * | finance     | abonnements, facturation, offres, métriques                     |
  * | ops         | observabilité, kill switches, nœuds edge, métriques             |
- * | marketing   | CRM, annonces, vitrine                                          |
+ * | marketing   | CRM, annonces, vitrine, Marketing OS (lecture)                  |
  */
 enum PlatformRole: string
 {
@@ -99,6 +99,10 @@ enum PlatformRole: string
                 PlatformPermission::CrmView,
                 PlatformPermission::AnnouncementsManage,
                 PlatformPermission::ShowcaseManage,
+                // Marketing OS : le rôle marketing plateforme LIT le pilotage
+                // (stratégie, contenus, médiathèque, publications) ; l'écriture
+                // reste à admin/super_admin.
+                PlatformPermission::MarketingOsView,
             ],
         };
     }

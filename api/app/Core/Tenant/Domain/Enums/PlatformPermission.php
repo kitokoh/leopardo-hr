@@ -46,6 +46,20 @@ enum PlatformPermission: string
     case EdgeManage = 'edge.manage';
 
     /**
+     * Marketing OS (audit `docs/specifications/MARKETING_OS_AUDIT.md`) —
+     * pilotage marketing depuis le Super Admin : campagnes, idées/briefs de
+     * production, médiathèque et publications par plateforme.
+     *
+     * La LECTURE est ouverte au rôle plateforme `marketing` : il administre
+     * déjà la vitrine (`showcase.manage`) et le CRM (`crm.view`), et doit
+     * pouvoir consulter la stratégie, les contenus et les résultats. L'ÉCRITURE
+     * — et donc la confirmation d'une mise en ligne — reste à `admin` /
+     * `super_admin` : c'est l'action qui engage publiquement la marque.
+     */
+    case MarketingOsView = 'marketing_os.view';
+    case MarketingOsManage = 'marketing_os.manage';
+
+    /**
      * #7973 — administration des webhooks sortants de la plateforme : un
      * endpoint pointant vers une URL arbitraire est un canal d'exfiltration
      * des événements plateforme → réservé à admin + ops.
@@ -105,6 +119,8 @@ enum PlatformPermission: string
             self::AnnouncementsManage => 'Publier des annonces plateforme',
             self::CrmView => 'Consulter le pipeline CRM',
             self::ShowcaseManage => 'Administrer la vitrine publique',
+            self::MarketingOsView => 'Consulter le Marketing OS (stratégie, contenus, médiathèque, publications)',
+            self::MarketingOsManage => 'Administrer le Marketing OS (campagnes, briefs, médiathèque, publications)',
             self::EdgeManage => 'Administrer les nœuds edge',
             self::WebhooksManage => 'Administrer les webhooks sortants plateforme',
             self::SettingsManage => 'Administrer les réglages plateforme (e-mails, IA, barèmes, fériés)',

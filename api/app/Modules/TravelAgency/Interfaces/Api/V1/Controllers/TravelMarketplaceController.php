@@ -17,6 +17,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelPayment;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
 use App\Modules\TravelAgency\Domain\Models\TravelTripSeat;
+use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelMarketplaceService;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelMarketplaceBookingRequest;
@@ -113,22 +114,37 @@ class TravelMarketplaceController extends Controller
             abort(404);
         }
 
-        $model->load(['prices', 'route.originCity', 'route.destinationCity']);
+        $model->load(['prices', 'route.originCity', 'route.destinationCity', 'vehicle']);
 
-        $freeSeats = TravelTripSeat::query()
+        // #8619 — Le plan de si\u00e8ges public doit repr\u00e9senter la disposition R\u00c9ELLE
+        // du v\u00e9hicule : on expose donc l'INVENTAIRE COMPLET du trajet (libres,
+        // r\u00e9serv\u00e9s, vendus, bloqu\u00e9s, indisponibles), pas seulement les places
+        // libres. Une liste de places libres n'est pas un plan de si\u00e8ges : le
+        // client ne peut pas s'y rep\u00e9rer dans le bus.
+        //
+        // Strictement born\u00e9 : `where('trip_id', …)` sur un trajet d\u00e9j\u00e0 valid\u00e9
+        // \u00e9ligible (tenant r\u00e9solu par trajet, fail-closed 404 en amont). Aucune
+        // jointure vers `travel_bookings`/`travel_passengers` : la charge utile
+        // ne peut donc contenir ni PII ni r\u00e9f\u00e9rence de r\u00e9servation.
+        $seats = TravelTripSeat::query()
             ->withoutGlobalScope('company')
             ->where('trip_id', $model->id)
-            ->where('status', SeatStatus::FREE)
             ->orderBy('seat_number')
-            ->get();
+            ->get(['seat_number', 'status']);
 
-        $model->setAttribute('available_seats', $freeSeats->count());
+        $model->setAttribute('available_seats', $seats
+            ->filter(fn (TravelTripSeat $seat): bool => $seat->status === SeatStatus::FREE)
+            ->count());
 
         $payload = $this->tripPayload($model, $this->marketplace->companyFor($model));
-        $payload['seats'] = $freeSeats
+        $payload['seats'] = $seats
             ->map(fn (TravelTripSeat $seat): array => [
                 'seat_number' => $seat->seat_number,
-                'status' => 'free',
+                // \u00c9tat PERSIST\u00c9 uniquement (`free`/`reserved`/`sold`/`blocked`/
+                // `unavailable`). Les \u00e9tats de pr\u00e9sentation (`selected`, `held`,
+                // `pending_payment`) ne sont jamais \u00e9crits en base et n'ont donc
+                // rien \u00e0 faire ici.
+                'status' => $seat->status->value,
             ])
             ->values()
             ->all();
@@ -334,6 +350,12 @@ class TravelMarketplaceController extends Controller
             ])->values()->all(),
             'price_from_minor' => $adultPrices->isEmpty() ? null : $adultPrices->min(),
             'currency' => $prices->first()?->currency,
+            // #8645 — disposition des sièges du véhicule affecté. Le plan public
+            // ne doit pas déduire 2+2/2+1 de la capacité. Purement géométrique
+            // (entiers) : aucune donnée personnelle, aucun identifiant interne.
+            'seat_layout' => $trip->vehicle !== null
+                ? $trip->vehicle->effectiveSeatLayout()
+                : TravelVehicle::fallbackSeatLayout((int) $trip->total_seats),
             'agency' => ['name' => $agency?->name],
         ];
     }

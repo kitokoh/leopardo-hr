@@ -256,6 +256,79 @@ final class FuelReportingService
         ];
     }
 
+    /**
+     * P1-f (audit 2026-10-17) - vue comparative inter-stations.
+     *
+     * Une ligne par station du tenant sur la periode demandee : ventes
+     * (nombre, quantite, montant), ecarts de rapprochement et etat des cuves.
+     * Lecture seule, tenant-scoped, bornee par la periode. Les stations sans
+     * activite sont INCLUSES (ligne a zero) : une station muette est une
+     * information de supervision, pas une absence de donnee.
+     *
+     * @return array<string, mixed>
+     */
+    public function compareStations(string $companyId, string $start, string $end, ?int $stationId = null): array
+    {
+        $stations = FuelStation::query()
+            ->where('company_id', $companyId)
+            ->when($stationId !== null, fn ($query) => $query->where('id', $stationId))
+            ->orderBy('name')
+            ->get();
+
+        $rows = $stations->map(function (FuelStation $station) use ($start, $end): array {
+            $sales = $this->sales($station, $start, $end);
+            $totals = $sales['totals'];
+
+            $varianceMinor = (int) DB::table('fuel_reconciliation_runs')
+                ->where('company_id', $station->company_id)
+                ->where('station_id', $station->id)
+                ->whereBetween('run_date', [$start, $end])
+                ->selectRaw("COALESCE(SUM((summary->>'total_variance_minor')::bigint), 0) as total")
+                ->value('total');
+
+            $tankCount = (int) DB::table('fuel_tanks')
+                ->where('company_id', $station->company_id)
+                ->where('station_id', $station->id)
+                ->count();
+
+            $lowTanks = (int) DB::table('fuel_tanks')
+                ->where('company_id', $station->company_id)
+                ->where('station_id', $station->id)
+                ->whereRaw('capacity_minor > 0 AND (current_level_minor::numeric / capacity_minor) < 0.2')
+                ->count();
+
+            return [
+                'station_id' => $station->id,
+                'station_code' => $station->code,
+                'station_name' => $station->name,
+                'status' => $station->status,
+                'sale_count' => $totals['sale_count'],
+                'quantity_total' => $totals['quantity_total'],
+                'amount_total' => $totals['amount_total'],
+                'amount_total_minor' => (int) round($totals['amount_total'] * 100),
+                'variance_minor' => $varianceMinor,
+                'tank_count' => $tankCount,
+                'low_tanks_count' => $lowTanks,
+            ];
+        })->all();
+
+        $amountTotal = array_sum(array_column($rows, 'amount_total'));
+
+        return [
+            'period_start' => $start,
+            'period_end' => $end,
+            'stations' => $rows,
+            'totals' => [
+                'station_count' => count($rows),
+                'sale_count' => (int) array_sum(array_column($rows, 'sale_count')),
+                'quantity_total' => round((float) array_sum(array_column($rows, 'quantity_total')), 3),
+                'amount_total' => round((float) $amountTotal, 2),
+                'amount_total_minor' => (int) round($amountTotal * 100),
+                'variance_minor' => (int) array_sum(array_column($rows, 'variance_minor')),
+            ],
+        ];
+    }
+
     public function generateExportFile(FuelReportExport $export): string
     {
         $rows = $this->exportRows($export);

@@ -57,14 +57,14 @@ describe('VerticalsSection (#8072)', () => {
   it('la carte Cagnottes solidaires pointe vers /packs/cagnottes', () => {
     render(<VerticalsSection locale="fr" />);
     expect(
-      screen.getByRole('link', { name: /Cagnottes solidaires — Voir le pack offert/i }),
+      screen.getByRole('link', { name: /Cagnottes solidaires — Découvrir/i }),
     ).toHaveAttribute('href', '/packs/cagnottes');
   });
 
   it('la carte VTC & Taxi pointe vers /packs/vtc (#8465)', () => {
     render(<VerticalsSection locale="fr" />);
     expect(
-      screen.getByRole('link', { name: /VTC & Taxi — Voir le pack offert/i }),
+      screen.getByRole('link', { name: /VTC & Taxi — Découvrir/i }),
     ).toHaveAttribute('href', '/packs/vtc');
   });
 

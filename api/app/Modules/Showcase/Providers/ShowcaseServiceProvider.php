@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Showcase\Providers;
 
+use App\Modules\Showcase\Infrastructure\Services\ShowcaseDiscoverableProvider;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -23,6 +24,9 @@ class ShowcaseServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        // SUPERAPP-P0 — les vitrines PUBLIEES sont exposees a la decouverte
+        // unifiee (`/public/discover`) via le contrat partage.
+        $this->app->tag([ShowcaseDiscoverableProvider::class], 'public.discoverable');
         // Rien à binder au socle domaine — les contrats Infrastructure
         // seront enregistrés au fil des lots API (V-SECTIONS-API #6866,
         // V-PUBLIC-API #6867).

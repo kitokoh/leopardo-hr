@@ -105,10 +105,10 @@ function buildNavEntries(locale: AppLocale): NavEntry[] {
   // Applications mobiles) ; « Comparer » (/alternatives) monte en entrée
   // directe, c'est un argument de vente.
   return [
-    // #8489 (I-02) — le point d'entree nome du Business OS : « Trade »
-    // precede les packs (il repond d'abord au modele d'activite, puis au
-    // metier). Libelle depuis le catalogue partage (`vitrine.nav.trade`).
-    { href: '/trade', label: nav('trade') },
+    // Mission Leopardo — « Trade » quitte la barre du haut : le point d'entrée
+    // du Business OS vit désormais dans les offres (/packs, carte dédiée) ET
+    // sous la constellation (fiche interactive). Le lien profond /trade reste
+    // servi — routes, sitemap et redirections inchangés.
     { href: '/pricing', label: nav('pricing') },
     {
       label: nav('packs'),

@@ -568,6 +568,12 @@ pour les résoudre au checkout.
 > Render 2026-09-15, audits 2026-05-13/14, incidents Vercel…) sont consignés dans
 > `docs/GESTION_PROJET/LECONS_AGENTS.md`.
 
+### Tier dev multi-stacks (#8659, 2026-10-17)
+
+- Le tier dev tourne en **rotation de stacks** (registre `deploy/dev-stacks.json`, runbook `docs/ops/DEV_STACK_ROTATION.md`) : avant de toucher au déploiement dev, lire `DEV_ACTIVE_STACK` et le statut des stacks — un service Render « mort » est souvent juste suspendu billing (quota 750 h/mois).
+- **Un keepalive 24/7 détruit le quota gratuit qu'il protège** (incident du 2026-09-20 : stack « a » suspendue ~10 jours après épuisement). Tout ping de keepalive doit rester **fenêtré** (06–23 UTC, cadence 10 min) et ne cibler que la stack ACTIVE — jamais une standby.
+- La bascule dev se fait via `scripts/dev-stack-switch.sh` ou le workflow `dev-stack-switch.yml` — jamais en éditant `DEV_API_BASE_URL` à la main sans healthcheck préalable de la cible.
+
 ### Bascules search_path PostgreSQL (BOS-019/#8204, ADR-0027)
 
 - Toute bascule `SET search_path` passe par `TenantManager::withinSearchPath()` (try/finally garanti, validation fail-closed de la chaîne) — jamais de SQL manuel hors `TenantManager` ; le middleware `EnsureKioskSearchPathReset` (#3368) reste un filet, pas une permission.

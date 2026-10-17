@@ -6,15 +6,19 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\TravelAgency\Application\Actions\AssessVehicleReplacementAction;
 use App\Modules\TravelAgency\Application\Actions\CancelTripAction;
 use App\Modules\TravelAgency\Application\Actions\ConnectionSearchAction;
 use App\Modules\TravelAgency\Application\Actions\GenerateTripSeatsAction;
 use App\Modules\TravelAgency\Application\Actions\PublishTripAction;
 use App\Modules\TravelAgency\Domain\Enums\TripStatus;
+use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelPassenger;
 use App\Modules\TravelAgency\Domain\Models\TravelStaffAssignment;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
+use App\Modules\TravelAgency\Domain\Models\TravelTripSeat;
+use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelTripRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelTripRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelTripRequest;
@@ -109,6 +113,71 @@ class TravelTripController extends Controller
         return (new TravelTripResource($travelTrip))->response();
     }
 
+    /**
+     * #8621 — Inventaire des sièges d'un trajet, pour le plan de sièges du
+     * back-office (responsable / agence / compagnie).
+     *
+     * Contrairement à la surface publique (#8619), le personnel voit EN PLUS la
+     * référence de réservation rattachée au siège : c'est l'information
+     * opérationnelle dont il a besoin pour retrouver une vente dans le bus.
+     * Aucune donnée passager n'est exposée (le manifeste reste la seule voie
+     * autorisée pour les identités, #7638).
+     *
+     * Bornage : l'accès est déjà restreint au tenant courant par le scope
+     * `BelongsToCompany` ET par la comparaison explicite `company_id` (404
+     * fail-closed) — un tenant ne peut jamais lire les sièges d'un autre.
+     */
+    public function seats(Request $request, TravelTrip $travelTrip): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $travelTrip->company_id) {
+            abort(404);
+        }
+
+        $seats = $travelTrip->seats()
+            ->orderBy('seat_number')
+            ->get(['seat_number', 'status', 'booking_id']);
+
+        $references = TravelBooking::query()
+            ->whereIn('id', $seats->pluck('booking_id')->filter()->unique()->values())
+            ->pluck('reference', 'id');
+
+        $payload = $seats
+            ->map(fn (TravelTripSeat $seat): array => [
+                'seat_number' => $seat->seat_number,
+                'status' => $seat->status->value,
+                // Référence lisible par le personnel uniquement (jamais publique).
+                'booking_reference' => $seat->booking_id !== null
+                    ? $references->get($seat->booking_id)
+                    : null,
+            ])
+            ->values()
+            ->all();
+
+        // #8645 — disposition effective du véhicule affecté (repli assumé si
+        // le véhicule n'est pas configuré ou absent).
+        $seatLayout = $travelTrip->vehicle !== null
+            ? $travelTrip->vehicle->effectiveSeatLayout()
+            : TravelVehicle::fallbackSeatLayout((int) $travelTrip->total_seats);
+
+        return response()->json([
+            'data' => [
+                'trip_id' => $travelTrip->id,
+                'code' => $travelTrip->code,
+                'total_seats' => $travelTrip->total_seats,
+                // #8645 — disposition PHYSIQUE du véhicule affecté : le plan
+                // back-office ne doit plus déduire 2+2/2+1 de la capacité.
+                // `null` si aucun véhicule n'est affecté, ou si le véhicule
+                // n'a pas de géométrie configurée ; `is_configured` distingue
+                // explicitement une donnée lue d'un repli.
+                'seat_layout' => $seatLayout,
+                'seats' => $payload,
+            ],
+        ]);
+    }
+
     public function update(UpdateTravelTripRequest $request, TravelTrip $travelTrip): JsonResponse
     {
         /** @var Employee $actor */
@@ -128,9 +197,56 @@ class TravelTripController extends Controller
             abort(422, 'Un trajet publie ne peut pas etre modifie directement. Annulez-le puis republiez-le.');
         }
 
-        $travelTrip->update($request->validated());
+        $validated = $request->validated();
+
+        // #8622 — Un changement de VÉHICULE n'est jamais appliqué à l'aveugle :
+        // les conflits (sièges occupés au-delà de la nouvelle capacité) sont
+        // calculés d'abord et le changement est refusé en 409 s'il y en a.
+        // Aucun déplacement de passager, aucune régénération d'inventaire.
+        if (array_key_exists('vehicle_id', $validated)
+            && (int) ($validated['vehicle_id'] ?? 0) !== (int) ($travelTrip->vehicle_id ?? 0)
+        ) {
+            $assessment = app(AssessVehicleReplacementAction::class)
+                ->apply($travelTrip, $validated['vehicle_id'] !== null ? (int) $validated['vehicle_id'] : null);
+
+            if ($assessment['compatible'] !== true) {
+                return response()->json([
+                    'message' => 'Changement de vehicule refuse : des reservations occupent des sieges au-dela de la capacite du vehicule cible.',
+                    'data' => $assessment,
+                ], 409);
+            }
+        }
+
+        $travelTrip->update($validated);
 
         return (new TravelTripResource($travelTrip->load('prices')))->response();
+    }
+
+    /**
+     * #8622 — Évaluation PURE d'un changement de véhicule : liste les conflits
+     * sans rien écrire, pour que l'opérateur voie ce qui bloque avant d'agir.
+     */
+    public function assessVehicle(Request $request, TravelTrip $travelTrip): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $travelTrip->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('update', $travelTrip)) {
+            abort(403);
+        }
+
+        $data = $request->validate([
+            'vehicle_id' => ['nullable', 'integer'],
+        ]);
+
+        $assessment = app(AssessVehicleReplacementAction::class)
+            ->assess($travelTrip, isset($data['vehicle_id']) ? (int) $data['vehicle_id'] : null);
+
+        return response()->json(['data' => $assessment]);
     }
 
     public function destroy(Request $request, TravelTrip $travelTrip): JsonResponse

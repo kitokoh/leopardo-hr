@@ -6,7 +6,7 @@ import { ArrowRight, Play, Sparkles } from 'lucide-react';
 import { useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { withLocaleHref } from '../../lib/locale-href';
-import { FranceConstellation } from '../hero/FranceConstellation';
+import { GeoBackdrop } from '../hero/GeoBackdrop';
 import { HeroScene3D } from '../hero/HeroScene3D';
 
 export interface HeroSectionProps {
@@ -108,23 +108,27 @@ export function HeroSection({
   // opacité > 0.9) — « toile de fond » = ordre de plan, pas estompage.
   if (isStage) {
     return (
-      <section ref={ref} className="relative min-h-[100dvh] overflow-hidden bg-slate-950">
-        {/* Ciel nuit permanent : lueurs émeraude/cyan sur ardoise profonde */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_-10%,rgba(16,185,129,0.18),transparent)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_55%_at_85%_110%,rgba(6,182,212,0.14),transparent)]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-950/95 to-slate-900/95" />
+      <section
+        ref={ref}
+        className="relative isolate min-h-[100dvh] overflow-hidden bg-slate-950"
+      >
+        {/* ── PROFONDEUR (vague 6) ── trois plans seulement, du plus lointain
+            au plus proche : ciel bleu nuit → halo derrière la constellation →
+            vignettage. Les classes vivent dans globals.css (style pur, hors
+            garde i18n) ; la pile est documentée là-bas. */}
+        <div aria-hidden="true" className="hero-stage-base absolute inset-0 z-0" />
+        <div aria-hidden="true" className="hero-stage-halo absolute inset-0 z-0" />
         {/* Trame discrète (style en globals.css — la garde i18n ne scanne
             pas les .css, cf. note PA2-I18N-014 en tête de globals.css) */}
-        <div className="hero-stage-grid absolute inset-0 opacity-[0.05]" />
+        <div aria-hidden="true" className="hero-stage-grid absolute inset-0 z-0 opacity-[0.035]" />
 
-        {/* #8461 (vague 4) — la France en constellation, un plan derrière la
-            scène 3D : contour de l'Hexagone + villes-nœuds reliés, même
-            langage visuel que la constellation Business OS. Placée AVANT la
-            phrase (z-0) et le canvas (z-10) : elle n'écrase ni le texte ni
-            la 3D. Décorative, jamais cliquable, dérive lente en CSS. */}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
-          <FranceConstellation className="france-constellation-drift h-[92vmin] w-[92vmin] shrink-0 translate-y-[4vh] opacity-55 sm:h-[110vmin] sm:w-[110vmin] sm:translate-y-[7vh] lg:h-[118vmin] lg:w-[118vmin] lg:opacity-70" />
-        </div>
+        {/* Mission Leopardo — les cartes géographiques du fond (France →
+            Algérie → Turquie → Tchad → Afrique) remplacent la France figée :
+            la première carte n'est plus un décor en dur, les suivantes
+            apparaissent en fondu croisé. Un plan DERRIÈRE la phrase (z-0) et
+            le canvas (z-10) : décoratif, jamais cliquable, rotation neutralisée
+            quand l'utilisateur demande à réduire les animations. */}
+        <GeoBackdrop />
 
         {/* Phrase en toile de fond (z-0) — jamais cliquable, jamais estompée.
             Sur GRAND écran : centrée avec padding bas qui la hisse dans le
@@ -134,21 +138,31 @@ export function HeroSection({
             (chevauchement constaté en capture 390×844). Le padding bas la
             hisse dans le tiers supérieur : la constellation (abaissée côté
             scène) ne la croise qu'en petits modules orbitaux. */}
-        <div className="pointer-events-none absolute inset-0 z-0 flex items-start justify-center px-4 pt-32 sm:items-center sm:px-6 sm:pb-[32vh] sm:pt-0">
-          <motion.h1
-            initial={animated ? { y: 30 } : {}}
-            animate={animated ? { y: 0 } : {}}
-            transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-5xl text-balance text-center font-black leading-[0.95] tracking-tight text-4xl sm:text-6xl lg:text-7xl"
-          >
-            <span className="block bg-gradient-to-b from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-              {headline}
-            </span>
-          </motion.h1>
+        {/* Phrase en toile de fond (z-[5]) : SOUS la constellation (z-10), comme
+            demandé, mais désormais LISIBLE — elle vit dans le tiers haut, à
+            l'écart du cœur de la scène, posée sur un voile radial. Le halo et le
+            canvas la traversent : c'est l'effet voulu, à condition qu'aucun
+            module ne vienne couper un mot. */}
+        <div className="pointer-events-none absolute inset-0 z-[5] flex items-start justify-center px-4 pt-[19vh] sm:px-6 sm:pt-[16vh]">
+          <div className="relative w-full max-w-5xl">
+            <div aria-hidden="true" className="hero-stage-title-scrim absolute -inset-x-8 -inset-y-10 sm:-inset-x-16" />
+            <motion.h1
+              initial={animated ? { y: 30 } : {}}
+              animate={animated ? { y: 0 } : {}}
+              transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+              className="relative text-balance text-center font-black leading-[0.98] tracking-tight text-4xl sm:text-6xl lg:text-7xl"
+            >
+              <span className="hero-stage-title-text block bg-gradient-to-b from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">
+                {headline}
+              </span>
+            </motion.h1>
+          </div>
         </div>
 
-        {/* Constellation pleine scène (z-10) — modules cliquables (#8390) */}
-        <div className="absolute inset-0 z-10">{visual}</div>
+        {/* Constellation pleine scène (z-10) — modules cliquables (#8390).
+            `isolate` referme le contexte d'empilement : la scène et sa fiche
+            ne peuvent pas être recouvertes par un plan inférieur. */}
+        <div className="absolute inset-0 z-10 isolate">{visual}</div>
 
         {/* Actions (z-20) ancrées en bas. La classe `dark` LOCALE force les
             styles sombres des enfants (formulaire d'essai, boutons) : la
@@ -156,12 +170,19 @@ export function HeroSection({
         {/* #8417 — le bloc d'actions n'est rendu QUE si l'appelant en fournit
             (la page d'accueil n'en fournit plus : héro = phrase + 3D seuls) ;
             le wrapper vide n'occupe plus l'écran dans ce cas. */}
-        {(ctaPrimary || ctaSecondary || ctaReassurance || quickTrialForm) && (
+        {(ctaPrimary || ctaSecondary || quickTrialForm) && (
         <motion.div
           style={animated ? { y, opacity, scale } : {}}
-          className="dark hero-stage-cta-tall relative z-20 flex min-h-[100dvh] flex-col items-center justify-end px-4 pb-24 sm:px-6"
+          className="dark hero-stage-cta-tall pointer-events-none relative z-20 flex min-h-[100dvh] flex-col items-center justify-end px-4 pb-24 sm:px-6"
         >
-          <div className="flex w-full max-w-3xl flex-col items-center gap-3 sm:gap-4">
+          {/* `pointer-events-none` sur le plan plein écran, `auto` sur le contenu :
+              ce calque ne capte plus les clics destinés à la constellation et
+              ne peut plus masquer la fiche solution (rendue en portail). */}
+          <div className="pointer-events-auto flex w-full max-w-3xl flex-col items-center gap-3 sm:gap-4">
+            {/* Mission Leopardo — retour utilisateur vague 5 : UN SEUL bouton,
+                porté par la scène elle-même (`HeroScene3DPanel`) pour rester
+                collé sous la constellation. Le CTA du héros « stage » ne doit
+                donc plus être dupliqué ici. */}
             {(ctaPrimary || ctaSecondary) && (
               <motion.div
                 initial={animated ? { y: 20 } : {}}
@@ -202,41 +223,26 @@ export function HeroSection({
                 )}
               </motion.div>
             )}
-            {ctaReassurance && (
-              <p className="text-center text-sm font-medium text-slate-400">
-                {ctaReassurance}
-              </p>
-            )}
             {quickTrialForm}
           </div>
         </motion.div>
         )}
 
         {/* Transition douce vers la section suivante : la nuit s'ouvre sur
-            le thème courant de la page (blanc en jour, ardoise en nuit). */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[15] h-28 bg-gradient-to-b from-transparent to-white dark:to-slate-950" />
+            le thème courant de la page (blanc en jour, ardoise en nuit).
+            Plan SOUS la scène (z-[12]) : le dégradé ne mange plus le bas de
+            la constellation. */}
+        <div
+          aria-hidden="true"
+          className="hero-stage-vignette pointer-events-none absolute inset-0 z-[11]"
+        />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[12] h-24 bg-gradient-to-b from-transparent to-white dark:to-slate-950" />
 
-        {/* Indicateur de scroll */}
-        {animated && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5 }}
-            className="absolute bottom-8 left-1/2 z-20 -translate-x-1/2"
-          >
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-              className="flex w-6 items-start justify-center rounded-full border-2 border-slate-300 p-1.5 dark:border-slate-700"
-            >
-              <motion.div
-                animate={{ opacity: [1, 0.3, 1], y: [0, 12, 0] }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-                className="h-1.5 w-1.5 rounded-full bg-emerald-500"
-              />
-            </motion.div>
-          </motion.div>
-        )}
+        {/* Vague 6 — l'indicateur de défilement est RETIRÉ du layout `stage` :
+            il occupait exactement la place du CTA unique (`bottom-8`, centré)
+            et venait se poser dessus. Le CTA ancre désormais le bas du héros ;
+            un second repère n'ajoutait que du bruit. Il reste rendu dans les
+            layouts `centered` / `split` ci-dessous, où aucun CTA ne l'occupe. */}
       </section>
     );
   }

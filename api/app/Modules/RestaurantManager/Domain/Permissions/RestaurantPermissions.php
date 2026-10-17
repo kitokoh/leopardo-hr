@@ -54,6 +54,12 @@ final class RestaurantPermissions
     /** Lecture / rapports (croise tous les roles operationnels). */
     public const REPORTS = 'restaurant.reports';
 
+    /** Gestion des travaux d'impression (reimpression, annulation, diagnostic). */
+    public const PRINT_JOBS_MANAGE = 'restaurant.print_jobs.manage';
+
+    /** Operation d'impression (recuperation/accuse cote bridge cuisine). */
+    public const PRINT_JOBS_OPERATE = 'restaurant.print_jobs.operate';
+
     /**
      * Retourne les `manager_role` (avec `role = 'manager'`) requis pour une
      * permission `restaurant.*` donnee.
@@ -70,6 +76,8 @@ final class RestaurantPermissions
             self::MANAGE => ['principal', 'rh'],
             self::MANAGER => ['principal', 'rh', 'manager'],
             self::SERVER, self::KITCHEN, self::RIDER, self::REPORTS => ['principal', 'rh', 'manager', 'server', 'kitchen', 'rider'],
+            self::PRINT_JOBS_MANAGE => ['principal', 'rh', 'manager'],
+            self::PRINT_JOBS_OPERATE => ['principal', 'rh', 'manager', 'server', 'kitchen'],
             default => [],
         };
     }

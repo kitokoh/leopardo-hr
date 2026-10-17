@@ -529,6 +529,15 @@ const routes = [
         }
       },
       {
+        path: '/marketing-os',
+        name: 'marketing-os',
+        component: () => import('@/views/marketing/MarketingOsView.vue'),
+        meta: {
+          title: 'navigation.marketingOs',
+          icon: 'MegaphoneIcon'
+        }
+      },
+      {
         path: '/showcase',
         name: 'showcase-editor',
         component: () => import('@/views/showcase/ShowcaseEditorView.vue'),

@@ -349,7 +349,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       downloadCta: 'Download the apps',
       visualAlt: 'Leopardo admin dashboard screenshot',
       primaryCta: 'Try for free',
-      secondaryCta: 'Explore the free packs',
+      secondaryCta: 'Explore the packs',
       ctaReassurance: 'Free · No credit card · Your data, your server',
       stats: [
         { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'Payroll countries' },
@@ -420,9 +420,9 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       badge: 'Ready for field pilots',
       title: 'Ready to transform',
       titleHighlight: 'your HR operations?',
-      subtitle: 'Launch your 14-day free trial. No credit card required. Production setup in under five minutes.',
+      subtitle: 'Launch your 14-day trial. Production setup in under five minutes.',
       primary: 'Try for free',
-      secondary: 'Explore the free packs',
+      secondary: 'Explore the packs',
     },
     changelog: {
       badge: 'Product',
@@ -435,7 +435,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       description: 'Mobile-First Company OS for managing your workforce in the field, at the office and remotely. Employee, Manager and Platform Admin available on mobile.',
       sections: [
         { title: 'Product', links: ['Features', 'Pricing', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows', 'About', 'Videos', 'Employees', 'Accounting', 'Marketing'] },
-        { title: 'Resources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Community', 'Case studies', 'Testimonials', 'Compare', 'Free packs', 'Careers', 'Brand assets'] },
+        { title: 'Resources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Community', 'Case studies', 'Testimonials', 'Compare', 'Packs', 'Careers', 'Brand assets'] },
         { title: 'Mobile Apps', links: ['Employé (Android)', 'Employé (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Admin plateforme (Android)'] },
         { title: 'Légal', links: ['Privacy (GDPR)', 'Terms', 'Legal notice', 'Become a shareholder'] },
       ],

@@ -9,4 +9,31 @@ return [
         'default_platform' => 'sosyal ağ',
         'interactions_published_only' => 'Etkileşimler yalnızca yayınlanmış bir gönderi için kullanılabilir (toplayıcı referansı gerekli).',
     ],
+    // Marketing OS — Super Admin marketing command centre (#8528)
+    'os' => [
+        'task_title' => 'Pazarlama üretimi: :title',
+        'task_title_with_campaign' => 'Pazarlama üretimi: :title [:campaign]',
+        'task_objective' => 'Amaç: :value',
+        'task_format' => 'Format: :value',
+        'task_locale' => 'Dil: :value',
+        'task_campaign' => 'Kampanya: :value',
+        'task_product' => 'Ürün: :value',
+        'task_sector' => 'Dikey: :value',
+        'task_audience' => 'Hedef kitle: :value',
+        'task_key_message' => 'Ana mesaj: :value',
+        'task_publish_due' => 'İstenen yayın tarihi: :date.',
+        'objective_unspecified' => 'belirtilmedi',
+        'format_unspecified' => 'Belirtilmedi',
+        'mode_direct_explanation' => 'Bir yayın bağlayıcısı yapılandırıldı: yayın API üzerinden gerçekleştirilebilir.',
+        'mode_assisted_explanation' => 'Bağlayıcı yapılandırılmadı: yayın destekli olarak yapılacak (hazırlık + platformu açma, manuel onay).',
+        'idea_not_found' => 'Bu şirket için fikir bulunamadı.',
+        'campaign_not_found' => 'Bu şirket için kampanya bulunamadı.',
+        'asset_not_found' => 'Bu şirket için kaynak bulunamadı.',
+        'file_required' => '«:kind» türünde bir kaynak için dosya zorunludur.',
+        // #8675 — medya kütüphanesindeki bir kaynağı indirme.
+        'asset_has_no_file' => 'Bu kaynak metin içeriğidir (senaryo, istem, başlık): indirilecek dosyası yoktur.',
+        'asset_file_missing' => 'Bu kaynağın dosyası depolamada bulunamadı. Kayıt hâlâ mevcut; dosya temizlenmiş ya da geri yükleme tamamlanmamış olabilir.',
+        // #8531 — arama motorlarında veya yapay zeka asistanlarında görünürlük garanti edilmez.
+        'visibility_no_guarantee' => 'Arama motorlarında veya yapay zeka asistanlarında görünürlük garanti edilmez: göstergeler ölçülmüş ya da açıkça tahmin olarak belirtilmiştir.',
+    ],
 ];

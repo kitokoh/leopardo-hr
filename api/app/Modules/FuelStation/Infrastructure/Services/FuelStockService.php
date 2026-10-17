@@ -34,6 +34,13 @@ final class FuelStockService
     /** Seuil par défaut (litres) sous lequel une alerte est émise. */
     public const DEFAULT_LOW_STOCK_THRESHOLD = 500;
 
+    /**
+     * Tolerance de jauge : en deca de ce nombre d'unites mineures (0,5 L),
+     * l'ecart entre registre et mesure physique est considere comme absorbe
+     * par les ajustements enregistres du jour.
+     */
+    private const TANK_VARIANCE_TOLERANCE_MINOR = 500;
+
     public function __construct(private readonly FuelOutboxPublisher $outbox) {}
 
     /**
@@ -248,6 +255,139 @@ final class FuelStockService
         return [
             'explained' => $explained,
             'variances' => $variances,
+            // Une ligne par cuve : niveau theorique (registre) contre niveau
+            // mesure (jauge saisie ou importee). Le niveau physique d'une cuve
+            // n'est JAMAIS suppose -- il vient de `current_level_minor`.
+            'tanks' => $this->tankLines($companyId, $stationId, $date),
+        ];
+    }
+
+    /**
+     * Rapprochement par cuve : compare le registre (ouverture + livraisons
+     * - ventes) au niveau physique mesure, puis qualifie l'ecart.
+     *
+     * `explainable` repond a la seule question utile a l'exploitant :
+     * "l'ecart entre registre et jauge est-il absorbe par un ajustement
+     * enregistre du jour ?" -- sinon l'ecart reste a expliquer (perte, vol,
+     * erreur de saisie). Aucun ajustement silencieux.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function tankLines(string $companyId, ?int $stationId, Carbon $date): array
+    {
+        if (! Schema::hasTable('fuel_tanks')) {
+            return [];
+        }
+
+        $dayStart = $date->copy()->startOfDay();
+        $dayEnd = $date->copy()->endOfDay();
+        $day = $date->toDateString();
+
+        $tanks = FuelTank::query()
+            ->where('company_id', $companyId)
+            ->when($stationId !== null, fn ($q) => $q->where('station_id', $stationId))
+            ->orderBy('id')
+            ->get();
+
+        $lines = [];
+
+        foreach ($tanks as $tank) {
+            $salesLitres = (float) FuelSale::query()
+                ->where('company_id', $companyId)
+                ->where('station_id', $tank->station_id)
+                ->where('product', $tank->product_type)
+                ->whereBetween('sale_time', [$dayStart, $dayEnd])
+                ->sum('quantity');
+
+            $salesMinor = (int) round($salesLitres * 1000);
+
+            $deliveriesMinor = Schema::hasTable('fuel_tank_deliveries')
+                ? (int) FuelTankDelivery::query()
+                    ->where('company_id', $companyId)
+                    ->where('tank_id', $tank->id)
+                    ->whereBetween('delivered_at', [$dayStart, $dayEnd])
+                    ->sum('quantity_minor')
+                : 0;
+
+            $measuredMinor = (int) $tank->current_level_minor;
+
+            $openingMinor = $this->openingLevelFor($companyId, (int) $tank->id, $day);
+
+            if ($openingMinor === null) {
+                // Ouverture non figee : derivee des seuls mouvements connus.
+                $openingMinor = $measuredMinor + $salesMinor - $deliveriesMinor;
+            }
+
+            $expectedMinor = $openingMinor + $deliveriesMinor - $salesMinor;
+            // Convention d'ecart figee par la suite : variance = attendu - mesure.
+            // Une valeur POSITIVE signale un manque dans la cuve (perte, vol,
+            // erreur de saisie) -- c'est l'ecart "a expliquer".
+            $varianceMinor = $expectedMinor - $measuredMinor;
+
+            $adjustments = $this->adjustmentsFor($companyId, $tank, $dayStart, $dayEnd);
+
+            $lines[] = [
+                'tank_id' => (int) $tank->id,
+                'station_id' => (int) $tank->station_id,
+                'product_type' => $tank->product_type,
+                'opening_level_minor' => $openingMinor,
+                'deliveries_minor' => $deliveriesMinor,
+                'sales_minor' => $salesMinor,
+                'expected_level_minor' => $expectedMinor,
+                'measured_level_minor' => $measuredMinor,
+                'variance_minor' => $varianceMinor,
+                'adjustments_minor' => $adjustments['minor'],
+                'explainable' => abs($varianceMinor - $adjustments['minor']) <= self::TANK_VARIANCE_TOLERANCE_MINOR,
+                'explained_by' => $adjustments['ids'],
+            ];
+        }
+
+        return $lines;
+    }
+
+    /** Niveau d'ouverture fige du jour (premier mouvement), si disponible. */
+    private function openingLevelFor(string $companyId, int $tankId, string $day): ?int
+    {
+        if (! Schema::hasTable('fuel_stock_daily_openings')) {
+            return null;
+        }
+
+        $value = DB::table('fuel_stock_daily_openings')
+            ->where('company_id', $companyId)
+            ->where('tank_id', $tankId)
+            ->where('open_date', $day)
+            ->value('opening_level_minor');
+
+        return $value === null ? null : (int) $value;
+    }
+
+    /**
+     * Ajustements de stock enregistres du jour pour le produit de la cuve.
+     *
+     * @return array{minor: int, ids: list<int>}
+     */
+    private function adjustmentsFor(string $companyId, FuelTank $tank, Carbon $dayStart, Carbon $dayEnd): array
+    {
+        if (! Schema::hasTable('fuel_stock_entries')) {
+            return ['minor' => 0, 'ids' => []];
+        }
+
+        $rows = FuelStockEntry::query()
+            ->where('company_id', $companyId)
+            ->where('station_id', $tank->station_id)
+            ->where('product_code', $tank->product_type)
+            ->where('entry_type', FuelStockEntry::ENTRY_ADJUSTMENT)
+            ->whereBetween('entry_date', [$dayStart->toDateString(), $dayEnd->toDateString()])
+            ->get(['id', 'quantity']);
+
+        $ids = [];
+        foreach ($rows as $row) {
+            $ids[] = (int) $row->id;
+        }
+
+        return [
+            'minor' => (int) round(((float) $rows->sum('quantity')) * 1000),
+            'ids' => $ids,
         ];
     }
 

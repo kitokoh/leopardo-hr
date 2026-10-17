@@ -7,6 +7,7 @@ namespace App\Modules\HospitalityManager\Providers;
 use App\Core\Solutions\SolutionCatalogue;
 use App\Modules\HospitalityManager\Console\Commands\HospitalityExpirePendingReservationsCommand;
 use App\Modules\HospitalityManager\Domain\Solution\HospitalityManagerManifest;
+use App\Modules\HospitalityManager\Infrastructure\Services\HospitalityDiscoverableProvider;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -20,6 +21,10 @@ class HospitalityManagerServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        // SUPERAPP-P0 — la verticale hebergement expose ses etablissements
+        // PUBLICS a la decouverte unifiee (`/public/discover`).
+        $this->app->tag([HospitalityDiscoverableProvider::class], 'public.discoverable');
+
         $this->app->singleton(SolutionCatalogue::class, function (): SolutionCatalogue {
             return new SolutionCatalogue;
         });

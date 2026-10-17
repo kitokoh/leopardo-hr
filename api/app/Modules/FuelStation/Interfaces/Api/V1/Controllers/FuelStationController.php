@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Modules\FuelStation\Domain\Models\FuelSite;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
+use App\Modules\FuelStation\Infrastructure\Services\FuelStationLogoService;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelSiteRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelStationRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\UpdateFuelStationRequest;
@@ -129,9 +130,13 @@ class FuelStationController extends Controller
 
         $this->authorize('delete', $station);
 
+        // Enveloppe uniforme de suppression du referentiel (§B-2 du lot 2) :
+        // le referentiel generique renvoie deja {id, deleted:true}. La station
+        // faisait exception -- contrat incoherent entre deux routes de la meme
+        // famille. Aucune suppression physique : la station est archivee.
         $station->update(['status' => 'archived']);
 
-        return response()->json(['data' => ['id' => $station->id, 'status' => 'archived']]);
+        return response()->json(['data' => ['id' => $station->id, 'status' => 'archived', 'deleted' => true]]);
     }
 
     /**
@@ -148,6 +153,7 @@ class FuelStationController extends Controller
             'phone' => $station->phone,
             'timezone' => $station->timezone,
             'currency' => $station->currency,
+            'logo_url' => $station->logo_url,
             'status' => $station->status,
             'created_at' => $station->created_at?->toIso8601String(),
             'updated_at' => $station->updated_at?->toIso8601String(),
@@ -159,6 +165,60 @@ class FuelStationController extends Controller
         if (! FeatureFlag::enabled('fuel_station', currentCompany())) {
             throw new FuelSolutionInactiveException;
         }
+    }
+
+    /**
+     * P1-e (audit 2026-10-17) - upload du logo de station.
+     *
+     * POST /fuel-station/stations/{station}/logo - manager. Reutilise le
+     * stockage du branding societe (disque `public`, chemin par tenant) :
+     * aucun stockage parallele. Le logo d'un autre tenant est indiscernable
+     * d'un inexistant (404).
+     */
+    public function uploadLogo(Request $request, FuelStation $station): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($station->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('update', $station);
+
+        $request->validate([
+            'logo' => ['required', 'file', 'image', 'mimes:png,jpg,jpeg,webp,svg', 'max:2048'],
+        ]);
+
+        /** @var \Illuminate\Http\UploadedFile $file */
+        $file = $request->file('logo');
+
+        $station = app(FuelStationLogoService::class)->store($station, $file);
+
+        return response()->json(['data' => $this->payload($station)]);
+    }
+
+    /**
+     * P1-e - suppression du logo de station (DELETE /fuel-station/stations/{station}/logo).
+     */
+    public function deleteLogo(Request $request, FuelStation $station): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($station->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('update', $station);
+
+        $station = app(FuelStationLogoService::class)->delete($station);
+
+        return response()->json(['data' => $this->payload($station)]);
     }
 
     public function sitesIndex(Request $request, FuelStation $station): JsonResponse

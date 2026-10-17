@@ -49,6 +49,7 @@ ALLOWLIST=(
   RestaurantMobileManagerController.php        # autorisation dans RestaurantMobileManagerService
   RestaurantMobileRiderController.php          # autorisation dans RestaurantMobileRiderService (livreur lié par employee_id)
   RestaurantMobileSyncController.php           # autorisation par opération dans RestaurantMobileSyncService
+  RestaurantPrintBridgeController.php          # bridge poste cuisine : auth dédiée par jeton partagé haché (middleware `restaurant.print.bridge`, hash en env, fail-closed si désactivé/absent), scopé à UNE société via X-Company-Id, travaux résolus par repository tenant-scopé (404 hors société) — aucun acteur tenant Sanctum à autoriser
 )
 
 violations=0

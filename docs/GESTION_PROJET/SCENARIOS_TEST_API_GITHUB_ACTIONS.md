@@ -1,5 +1,11 @@
 # SCENARIOS DE TEST API POUR GITHUB ACTIONS    
 
+Note 2026-10-18 (issue #8675, PR #8679, Marketing OS) : la **médiathèque du Marketing OS** cesse d'être en écriture seule —
+- **Constat** : `POST /api/v1/platform/companies/{company}/marketing-os/assets` stockait le binaire sur le disk privé (`local`, hors webroot) mais **aucune route ne le relisait** ; `MarketingAssetStorage::sanitizeOriginalName()` calculait un nom d'origine puis ne le persistait pas. Un livrable téléversé (vidéo, affiche) était irrécupérable, ce qui rendait inaccessibles les briefs §C (« aperçu si possible ») et §F (mode assisté : « sélectionner et ouvrir le média »).
+- **Nouvelles surfaces** (groupe `platform.permission:marketing_os.view`, résolution `PlatformCompanyLookup` + `TenantManager::withinTenant`) : `GET …/marketing-os/assets/{asset}` (détail, avec `meta.downloadable` / `meta.text_only`) et `GET …/marketing-os/assets/{asset}/download` (flux `StreamedResponse` depuis le disk privé, nom proposé dérivé du nom d'origine sanitisé — le `path` de stockage aléatoire n'est jamais exposé). `{asset}` est contraint par `whereNumber`, donc aucun segment texte ne peut être pris pour un identifiant.
+- **Schéma** : migration tenant additive et idempotente `2026_10_18_120000_8675` ajoutant `marketing_assets.original_name` (nullable, **sans backfill** : `downloadName()` reconstruit un nom depuis le titre pour les ressources antérieures).
+- **Scénarios automatisés** (`api/tests/Feature/Marketing/MarketingOsPlatformTest.php`, 3 cas ajoutés) : téléchargement nominal d'une image téléversée — le **contenu réellement servi** et le nom d'origine dans `Content-Disposition` sont vérifiés (un 200 avec corps vide serait un faux positif) ; **isolation inter-tenant** — l'identifiant d'une ressource de B rappelé depuis la surface de A renvoie **404** en détail comme en téléchargement, tandis que l'accès légitime de B reste **200** (fermer la fuite sans casser le propriétaire) ; détail d'une ressource **hors de la fenêtre de pagination** de la liste, et **404 motivé** (`marketing.os.asset_has_no_file`) pour une ressource texte (script, prompt, légende) qui n'a pas de binaire. Un binaire purgé renvoie également 404 (`asset_file_missing`) plutôt qu'une 500.
+
 Note 2026-10-15 (issue #8476→#8486, PR #8487, BC-36 TRADE) : nouvelle verticale « International Trade OS » — noyau commercial partagé import/export et B2B domestique (spec `docs/specifications/VERTICAL_TRADE_OS.md`, audit `docs/audits/TRADE_OS_AUDIT_2026-10-14.md`) —
 - **Privée tenant** (`api/routes/modules/trade.php`, auth sanctum + `tenant` + gate `module.trade` fail-closed (flag `companies.features.trade`, tenant sans le flag → 403 `MODULE_DISABLED`) + RBAC par opération `trade.role:purchase|sales|logistics|admin` via `TradeRoleResolver` deny-by-default) : `GET/POST /api/v1/trade/rfqs`, `POST /api/v1/trade/rfqs/{rfq}/send` (liens de réponse retournés EN CLAIR **une seule fois**, jamais relisibles), `GET /api/v1/trade/rfqs/{rfq}`, `GET/POST /api/v1/trade/quotes`, `GET /api/v1/trade/quotes/{quote}`, `POST /api/v1/trade/quotes/{quote}/accept` (crée la commande), `GET/POST /api/v1/trade/cost-estimates`, `GET /api/v1/trade/cost-estimates/{id}`, `GET /api/v1/trade/customs/checklist`, `GET /api/v1/trade/meta/integrations` (état RÉEL des 4 adaptateurs, aucun secret). `?direction=incoming|outgoing` sélectionne la vue acheteur/vendeur sur les MÊMES objets (une entreprise peut importer ET exporter, rôle non irréversible). Isolation tenant `BelongsToCompany` : id d'une autre entreprise → **404, jamais 403**. Honnêteté : chaque poste de coût porte sa `source` (`confirmed|estimated|user_input|unavailable`), `duty_rate_available=false` tant qu'aucune source de tarifs n'est configurée, `fx.rate`/`fx.date`/`fx.source` tracés — un poste indisponible n'est jamais chiffré.
 - **Superadmin** (groupe `/platform`, `auth:super_admin_api`, perm `platform.permission:companies.view`) : `GET /api/v1/platform/trade/overview` (compteurs agrégés par tenant — entreprises portant le flag `trade`, répartition par statut deals/RFQ/offres/commandes, `limit` borné à 500) et `GET /api/v1/platform/trade/integrations` (état des adaptateurs + identité du manifest). **Compteurs uniquement** : aucun prix, offre, message ni document d'un client n'est lisible par l'administration plateforme ; l'accès à un dossier précis relève d'une impersonation auditée.
@@ -2333,3 +2339,32 @@ Annulation exposée aux acteurs ops (M-21, règles §5.2 par rôle) : `POST /api
 | acteur non autorisé (chauffeur sur course d'autrui) | 403/404 uniforme |
 
 Couverture : `api/tests/Feature/Vtc/VtcRideCancellationApiTest.php` (10 cas).
+
+## Mise à jour 2026-10-16 — BC-24 TRAVEL OS : QR du billet, vérification d'authenticité, position véhicule (PR #8541, issues #8538, #8539, #8540)
+
+Deux routes ajoutées à `api/routes/modules/travelagency.php` (groupe authentifié, middleware tenant).
+
+`POST /api/v1/travel/tickets/verify` — **vérification** d'un billet, en LECTURE SEULE et distincte de la consommation (`POST /travel/tickets/{travelTicket}/check-in`) : vérifier ne rend jamais le billet inutilisable. Accepte le contenu scanné du QR (`GV1|<reference>|<code de contrôle>`) ou une saisie manuelle (référence + code) si la caméra ne fonctionne pas. Permission `travel.checkin` (`TravelTicketPolicy::verifyAny`).
+
+| Cas | Attendu |
+|---|---|
+| billet `issued`, code valide, opérateur habilité | 200, `status: valid`, trajet/départ/siège, `passenger.full_name` |
+| billet `checked_in` | 200, `status: already_used` |
+| billet `void` | 200, `status: void` |
+| billet dont `valid_until` est passé | 200, `status: expired` |
+| code de contrôle invalide | 404 (réponse **identique** à une référence inexistante — aucune fuite d'information) |
+| référence d'un autre tenant | 404 (jamais 403) |
+| employé sans `travel.checkin` | 403 |
+| après vérification | le billet reste `issued`, `checked_in_at` null (non-consommation) |
+
+`POST /api/v1/travel/vehicles/{travelVehicle}/position` — ingestion de la **dernière position connue** d'un véhicule par un dispositif autorisé. Permission `travel.manage`. La source est obligatoire et whitelistée (`gps` | `app` | `estimated`) : le serveur ne déduit ni n'invente jamais de coordonnées.
+
+| Cas | Attendu |
+|---|---|
+| véhicule sans transmission | `position: null` (aucune coordonnée inventée) |
+| `source: gps` | 200, `position.source: gps`, `is_measured: true`, `position_recorded_at` renseigné |
+| `source: estimated` | 200, `is_measured: false` (jamais présentée comme une position GPS) |
+| `source` inconnue | 422 |
+| véhicule d'un autre tenant | 404 |
+
+Couverture : `api/tests/Feature/Travel/TravelOsQrGpsConcurrencyTest.php` (20 cas, 55 assertions) — inclut la concurrence du check-in (#8539 : statut relu sous `lockForUpdate`, un seul contrôle gagne, opérateur et horodatage du premier conservés, événement outbox `travel.ticket.checked_in.v1` émis une seule fois) et le décodage du QR par un décodeur indépendant (OpenCV `QRCodeDetector`).
