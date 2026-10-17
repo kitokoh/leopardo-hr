@@ -19,6 +19,7 @@ use App\Modules\Marketing\Domain\Models\MarketingCampaign;
 use App\Modules\Marketing\Domain\Models\MarketingPublication;
 use App\Modules\Marketing\Domain\Models\MarketingVisibilityObjective;
 use App\Modules\Marketing\Infrastructure\Services\MarketingAssetStorage;
+use App\Modules\Marketing\Infrastructure\Services\MarketingOsAudit;
 use App\Modules\Marketing\Infrastructure\Services\MarketingOsDashboardService;
 use App\Modules\Marketing\Infrastructure\Services\MarketingPublicationModeResolver;
 use App\Modules\Marketing\Infrastructure\Services\MarketingPublicationStatsService;
@@ -81,6 +82,7 @@ final class PlatformMarketingOsController extends Controller
         private readonly MarketingPublicationStatsService $stats,
         private readonly PlatformPublishingCapability $capabilities,
         private readonly PromoteContentIdeaToProduction $promote,
+        private readonly MarketingOsAudit $audit,
     ) {}
 
     // ─────────────────────────────────────────────────────────────────────
@@ -276,7 +278,17 @@ final class PlatformMarketingOsController extends Controller
 
         return $this->tenantManager->withinTenant($target, function () use ($idea): JsonResponse {
             $model = ContentIdea::query()->findOrFail($idea);
+            $wasLinked = $model->production_task_id !== null;
             $promoted = $this->promote->execute($model);
+
+            // Idempotent côté audit : un rejeu qui ne crée aucune tâche n'est
+            // pas un événement métier — il n'écrit rien dans le journal.
+            if (! $wasLinked && $promoted->production_task_id !== null) {
+                $this->audit->ideaPromoted($promoted, [
+                    'production_task_created' => true,
+                    'campaign_id' => $promoted->campaign_id,
+                ]);
+            }
 
             return new JsonResponse([
                 'data' => $this->presentIdea($promoted->refresh()),
@@ -284,6 +296,7 @@ final class PlatformMarketingOsController extends Controller
                     // Un échec de création de tâche n'est pas silencieux : il est
                     // exposé, et l'idée reste promue côté marketing.
                     'production_task_created' => $promoted->production_task_id !== null,
+                    'idempotent' => $wasLinked,
                 ],
             ]);
         });
@@ -419,6 +432,13 @@ final class PlatformMarketingOsController extends Controller
                 $asset->save();
             }
 
+            // Journalisation de l'ajout à la médiathèque (brief §J) : on trace
+            // la VERSION créée, pour que « qui a ajouté quoi » reste vérifiable.
+            $this->audit->assetCreated($asset, [
+                'campaign_id' => $asset->campaign_id,
+                'content_idea_id' => $asset->content_idea_id,
+            ]);
+
             return new JsonResponse([
                 'data' => $this->presentAsset($asset->refresh()),
                 'meta' => [
@@ -457,7 +477,13 @@ final class PlatformMarketingOsController extends Controller
                     'publications' => $publications->map(fn (MarketingPublication $p): array => $this->presentPublication($p))->all(),
                     'published_count' => $publications->filter(fn (MarketingPublication $p): bool => $p->isPublished())->count(),
                     'platforms' => $publications->pluck('platform')->unique()->values()->all(),
-                    'reusable' => true,
+                    // « Peut-on la réutiliser ? » ne peut pas être une constante :
+                    // la réponse dépend de l'état RÉEL de la ressource (droits
+                    // expirés, validation rejetée). Une ressource sans droits
+                    // déclarés reste réutilisable — on ne bloque pas sur une
+                    // information absente, on la signale.
+                    'reusable' => $model->isReusable(),
+                    'reuse_blockers' => $model->reuseBlockers(),
                 ],
             ]);
         });
@@ -574,6 +600,23 @@ final class PlatformMarketingOsController extends Controller
         return $this->tenantManager->withinTenant($target, function () use ($validated, $publication): JsonResponse {
             $model = MarketingPublication::query()->findOrFail($publication);
             $action = (string) $validated['action'];
+            $previousStatus = $model->status->value;
+
+            // ── Idempotence ───────────────────────────────────────────────
+            // Rejouer la MÊME transition (double clic, retry réseau, job
+            // re-livré) ne doit ni échouer ni fabriquer un événement qui n'a
+            // pas eu lieu. On répond 200 avec le même état et `idempotent:
+            // true`, sans écrire en base ni dans le journal d'audit.
+            if ($this->isIdempotentReplay($model, $action, $validated)) {
+                return new JsonResponse([
+                    'data' => $this->presentPublication($model),
+                    'meta' => [
+                        'mode' => $model->mode->value,
+                        'idempotent' => true,
+                        'changed' => false,
+                    ],
+                ]);
+            }
 
             switch ($action) {
                 case 'confirm_published':
@@ -603,11 +646,67 @@ final class PlatformMarketingOsController extends Controller
                     break;
             }
 
+            $model->refresh();
+
+            // Journalisation : uniquement sur un changement RÉEL (brief §J).
+            $this->audit->publicationTransition(
+                $model,
+                $this->auditActionFor($action),
+                $previousStatus,
+                $validated['error_message'] ?? null,
+                ['action' => $action],
+            );
+
             return new JsonResponse([
-                'data' => $this->presentPublication($model->refresh()),
-                'meta' => ['mode' => $model->mode->value],
+                'data' => $this->presentPublication($model),
+                'meta' => [
+                    'mode' => $model->mode->value,
+                    'idempotent' => false,
+                    'changed' => true,
+                    'previous_status' => $previousStatus,
+                ],
             ]);
         });
+    }
+
+    /**
+     * L'action demandée est-elle déjà l'état courant ?
+     *
+     * Les trois cas d'idempotence couverts correspondent aux trois actions
+     * du contrat qui portent une DONNÉE en plus du statut : une confirmation
+     * de publication (URL), une planification (date) et un échec (motif).
+     * Deux valeurs identiques = rejeu ; deux valeurs différentes = vraie
+     * demande, traitée par le chemin normal.
+     *
+     * @param  array<string, mixed>  $validated
+     */
+    private function isIdempotentReplay(MarketingPublication $model, string $action, array $validated): bool
+    {
+        $current = $model->status;
+
+        return match ($action) {
+            'confirm_published' => $current === MarketingPublicationStatus::Published
+                && $model->published_url === ($validated['published_url'] ?? null),
+
+            'failed' => $current === MarketingPublicationStatus::Failed
+                && $model->error_message === ($validated['error_message'] ?? null),
+
+            'scheduled' => $current === MarketingPublicationStatus::Scheduled
+                && $model->scheduled_at !== null
+                && $model->scheduled_at->equalTo(Carbon::parse((string) $validated['scheduled_at'])),
+
+            default => $current->value === $action,
+        };
+    }
+
+    /** Nom d'action d'audit correspondant à la transition demandée. */
+    private function auditActionFor(string $action): string
+    {
+        return match ($action) {
+            'confirm_published' => 'marketing.publication.published',
+            'failed' => 'marketing.publication.failed',
+            default => 'marketing.publication.status_changed',
+        };
     }
 
     /**
