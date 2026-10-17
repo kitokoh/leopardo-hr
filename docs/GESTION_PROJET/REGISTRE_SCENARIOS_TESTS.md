@@ -1473,3 +1473,11 @@ restent les gates applicables.
   avertissement, révocation via `DELETE /edge/{id}`).
 - **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
   partagé `devices.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+- **Surface API (SUPERAPP-P0, #8611)** : nouvelle route publique `GET /api/v1/public/discover`
+  (découverte cross-verticale, sans auth, `throttle:shop-public`). Scénarios couverts par
+  `api/tests/Feature/Platform/PublicDiscoveryTest.php` : (1) agrégation multi-verticale
+  (restaurant + hébergement + vitrine publiés) ; (2) fail-closed — entité `is_public=false`,
+  société `suspended`/`expired` ou feature verticale absente → **jamais** retournée ;
+  (3) `?type=` inconnu → `422` ; (4) `?near=lat,lng` → seules les entités géolocalisées
+  dans `radius_km`, triées par distance croissante ; (5) DTO public strict (aucun `id`,
+  `company_id`, `status`) ; (6) `per_page` borné à 50. Aucune migration, aucun nouveau rôle.
