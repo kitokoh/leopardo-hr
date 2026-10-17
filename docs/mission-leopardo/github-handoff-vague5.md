@@ -79,9 +79,23 @@ Fusionner **uniquement** si les checks requis passent
 git push origin --delete fix/vitrine-hero-constellation-ux
 ```
 
-## 6. Ce qui n'a PAS été fait
+## 6. État distant (mis à jour)
 
-- Aucune issue GitHub, aucun push, aucune PR, aucune vérification de CI distante :
-  l'authentification est absente (`fatal: could not read Username for 'https://github.com'`).
+- **Issue** : #8638 créée (retours vague 5, critères d'acceptation) — liée par `Closes #8638`.
+- **Branche** : `fix/vitrine-hero-constellation-ux` poussée sur `origin`.
+- **Pull Request** : **#8637** — https://github.com/kitokoh/leopardo-hr/pull/8637
+- **Fusion `origin/main`** : `e9c5f986c` → `69b7cc599` fusionné dans la branche ; seul conflit
+  sur le fichier **généré** `shared/i18n/versions/versions.json`, résolu par régénération
+  (`sync-web` / `sync-mobile` / `sync-backend`), jamais à la main.
+- **CI** : en cours de vérification. Échecs triés :
+  - `Desktop verify *` (Flutter) — **préexistant**, conflit `sentry_flutter ^9` déjà tracé par
+    l'issue #8599 ; non requis, hors périmètre.
+  - `Check PR/issue governance` — corrigé (issue #8638 + `Closes #8638`).
+  - `Governance Gates (changelog + canonical files)` — corrigé (entrée de registre ci-dessus).
+- **Statut** : fusion **en attente** de la CI verte sur les checks requis.
+
+## 7. Ce qui n'a PAS été fait
+
 - Aucun test e2e Playwright du dépôt lancé (binaire Chromium du projet absent) ;
   les vérifications navigateur ont été faites avec le Chromium 1181 du sandbox.
+- `next build` non concluant en local (OOM, cgroup 2 Gio) — à valider en CI.

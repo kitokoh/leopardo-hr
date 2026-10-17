@@ -1,3 +1,22 @@
+> **MAJ 2026-10-17 — #8638, vitrine : retours vague 5 (fiche accessible, CTA unique, cartes derrière la constellation) — PR #8637.**
+> Surface **web (`front/web/src/modules/vitrine`)** : `HeroSolutionsCTA` ne rend plus qu'**un seul** lien
+> (« Découvrir nos solutions » → `/packs`, `?lang=` préservé), rendu par `HeroScene3DPanel` donc **sous** la
+> scène ; `SolutionCard` passe en `createPortal(document.body)` avec overlay `fixed inset-0 z-[100]`
+> (fermeture X / fond / Échap, focus piégé puis restitué à l'étoile) ; `GeoBackdrop` passe en `z-[1]`
+> (11 cartes en demi-cercle, continents puis pays, intérieur vide, échelle 0,68→1→0,68) ; pile explicite
+> cartes `z-[1]` < titre `z-[5]` < constellation `z-10` ; constellation agrandie (échelle 3D 1,12→1,3) ;
+> libellés d'étoiles bornés à 15 % du cadre. Copie allégée : `hero3d.hint` (« Modules to explore »),
+> titre/sous-titre CTA et réassurance commerciale retirés ; `nav.packs` → « Pack ».
+> Surface **i18n** : sources `shared/i18n/locales/{fr,en,tr,ar}.json` éditées puis propagées aux cibles
+> générées (`sync-web`, `sync-mobile`, `sync-backend`) — **aucun catalogue généré modifié à la main**.
+> Scénarios automatisés : `front/web/src/modules/vitrine/components/hero/__tests__/mission-leopardo.test.tsx`
+> (fiche : ouverture, fermeture X/fond/Échap, focus piégé et restitué ; CTA unique ; cartes derrière la
+> constellation) — **55 suites / 649 tests verts** sur `src/modules/vitrine`.
+> Vérifié localement : `npx tsc --noEmit` exit 0, `npx eslint src/modules/vitrine --max-warnings 0` exit 0,
+> gardes `check:french-copy` / `check:mojibake` / `check:orphans` / `check:assets` vertes.
+> `next build` **non concluant en local** (exit 137 — OOM, cgroup 2 Gio du sandbox) : à valider en CI.
+> Surface **API** : aucun changement de route, de contrôleur ni de contrat.
+>
 > **MAJ 2026-10-17 — #8633, mission Business OS : statut hors-ligne honnête dans le centre « Mes logiciels » (gap F-01).**
 > Surface **web (`front/web/src/lib/software-catalog.ts`)** : le booléen `offline` purement déclaratif
 > est remplacé par `OfflineMode = 'verified' | 'implemented' | 'absent'`. Vérification du câblage réel :
