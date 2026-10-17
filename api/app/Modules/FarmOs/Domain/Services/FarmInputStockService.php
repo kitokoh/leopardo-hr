@@ -211,8 +211,10 @@ final class FarmInputStockService
             }
 
             if ($after < 0) {
+                // `??` supprime déjà le déréférencement sur null : le nullsafe
+                // `?->` serait redondant (PHPStan strict level 8).
                 throw FarmStockException::insufficientStock(
-                    $lot?->id ?? 0,
+                    $lot->id ?? 0,
                     number_format($current, 3, '.', ''),
                     number_format($delta, 3, '.', ''),
                 );
