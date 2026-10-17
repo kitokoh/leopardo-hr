@@ -133,8 +133,11 @@ const CORE_COLOR = new Color('#0d9488');
 // permanente, les pastilles blanches étaient les éléments les plus lumineux de
 // l'écran : elles disputaient la vedette à la constellation et faisaient
 // « bruit » sur le titre. Le verre sombre les rend lisibles sans les allumer.
+// Vague 6 (correctif a11y) — l'étiquette est un BOUTON : elle doit donc
+// recevoir le pointeur et le focus clavier. `pointer-events-none` est retiré
+// et un anneau `focus-visible` rend le focus visible sur le fond nuit.
 const LABEL_CLASS =
-  'pointer-events-none absolute left-0 top-0 z-10 flex items-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 bg-slate-950/55 px-2 py-0.5 text-[10px] font-semibold text-slate-200/90 shadow-lg shadow-slate-950/40 backdrop-blur-md transition-opacity';
+  'absolute left-0 top-0 z-10 flex items-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 bg-slate-950/55 px-2 py-0.5 text-[10px] font-semibold text-slate-200/90 shadow-lg shadow-slate-950/40 backdrop-blur-md transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400';
 const LABEL_DOT_CLASS = 'h-1.5 w-1.5 rounded-full';
 
 type ModuleNode = {
@@ -147,7 +150,7 @@ type ModuleNode = {
   pulse: number;
   /** Index du module dans l'ordre de création (0 = 1er module d'anneau int.). */
   index: number;
-  labelEl?: HTMLDivElement;
+  labelEl?: HTMLButtonElement;
 };
 
 /** Texture de lueur radiale (créée une fois à l'init, jamais en boucle). */
@@ -504,20 +507,35 @@ export function HeroBusinessOS3D({
 
     // ── Étiquettes des modules (#8404 — affordance) ────────────────────
     // Créées une fois (mode interactif avec libellés uniquement), déplacées
-    // par projection à chaque image. Jamais cliquables (pointer-events:none).
-    const labelEls: HTMLDivElement[] = [];
+    // par projection à chaque image.
+    // Vague 6 (correctif a11y) — l'étiquette est un VRAI bouton : la fiche
+    // s'ouvre au clavier (Entrée/Espace) comme à la souris, et le focus revient
+    // ici à la fermeture. Défaut mesuré en navigateur : la constellation
+    // n'était atteignable qu'au pointeur, et le focus retombait sur <body>.
+    let focusedLabel: HTMLButtonElement | null = null;
+    const labelEls: HTMLButtonElement[] = [];
     if (interactiveRef.current && labelsRef.current && labelsRef.current.length > 0) {
       nodes.forEach((node, index) => {
         const text = labelsRef.current?.[index];
         if (!text) return;
-        const el = document.createElement('div');
+        const el = document.createElement('button');
+        el.type = 'button';
         el.className = LABEL_CLASS;
+        el.setAttribute('aria-label', text);
+        el.tabIndex = 0;
         const dot = document.createElement('span');
         dot.className = LABEL_DOT_CLASS;
         dot.style.backgroundColor = `#${(node.mesh.material.color as Color).getHexString()}`;
         const caption = document.createElement('span');
         caption.textContent = text;
         el.append(dot, caption);
+        el.addEventListener('click', () => onSelectRef.current?.(index));
+        el.addEventListener('focus', () => {
+          focusedLabel = el;
+        });
+        el.addEventListener('blur', () => {
+          if (focusedLabel === el) focusedLabel = null;
+        });
         host.appendChild(el);
         node.labelEl = el;
         labelEls.push(el);
@@ -541,7 +559,7 @@ export function HeroBusinessOS3D({
     // Vague 6 — anti-chevauchement : tampon réutilisé (aucune allocation par
     // image) + ordre de placement trié par ordonnée.
     const labelSlots = nodes.map(() => ({
-      el: null as HTMLDivElement | null,
+      el: null as HTMLButtonElement | null,
       x: 0,
       y: 0,
       depth: 1,
@@ -783,7 +801,9 @@ export function HeroBusinessOS3D({
           slot.el = el;
           slot.x = x;
           slot.y = y;
-          slot.hovered = hovered === node;
+          // Le survol souris OU le focus clavier allume l'étoile : un
+          // utilisateur au clavier doit voir la même mise en avant.
+          slot.hovered = hovered === node || (focusedLabel !== null && node.labelEl === focusedLabel);
           slot.depth = Math.min(1, Math.max(0.45, 1.5 - distance / 12));
           // Derrière la caméra ou très loin hors cadre : rien à afficher.
           const onCore =
@@ -818,6 +838,10 @@ export function HeroBusinessOS3D({
           const clampedY = Math.min(viewH - 26, Math.max(26, slot.y));
           el.style.transform = `translate(-50%, -135%) translate(${clampedX.toFixed(1)}px, ${clampedY.toFixed(1)}px)`;
           el.style.opacity = slot.visible ? (slot.hovered ? '1' : slot.depth.toFixed(2)) : '0';
+          // Une étiquette hors cadre ne doit ni se cliquer ni se tabuler :
+          // sinon des boutons invisibles polluent l'ordre de tabulation.
+          el.style.visibility = slot.visible ? 'visible' : 'hidden';
+          el.tabIndex = slot.visible ? 0 : -1;
         }
       }
 
@@ -890,7 +914,10 @@ export function HeroBusinessOS3D({
     <>
       <div
         ref={hostRef}
-        aria-hidden="true"
+        // En mode interactif, les étiquettes-boutons sont de vrais contrôles :
+        // `aria-hidden` les retirerait de l'arbre d'accessibilité tout en les
+        // laissant focusables (violation). Le canvas, lui, reste décoratif.
+        aria-hidden={interactive ? undefined : true}
         className={`absolute inset-0 overflow-hidden ${interactive ? '' : 'pointer-events-none'} ${dimmed ? 'opacity-[0.55]' : ''}`}
       />
       {/* #8404 — indice d'interaction : sans lui, personne ne devine que les

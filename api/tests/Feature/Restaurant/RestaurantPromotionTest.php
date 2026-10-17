@@ -51,12 +51,21 @@ class RestaurantPromotionTest extends TestCase
         $this->principal($company);
 
         app(TenantManager::class)->withinTenant($company, function (): void {
+            // Fixture ENTIÈREMENT déterministe. La factory tirait `is_active`
+            // au hasard (80 %) ainsi que `starts_at`/`ends_at`/`max_uses` :
+            // le test échouait ~1 fois sur 5 (422 au lieu de 200) selon la
+            // graine du Faker — aucune dépendance à l'ordre d'exécution, mais
+            // une instabilité de fixture. Chaque contrainte est donc fixée.
             RestaurantPromotion::factory()->create([
                 'code' => 'HAPPY10',
                 'discount_type' => 'percent',
                 'value_minor' => 1000, // 10 % en points de base
                 'min_order_minor' => 5000,
                 'max_uses' => 10,
+                'used_count' => 0,
+                'is_active' => true,
+                'starts_at' => Carbon::now()->subDay(),
+                'ends_at' => Carbon::now()->addMonth(),
             ]);
 
             // Sous le minimum → 422.
@@ -83,6 +92,7 @@ class RestaurantPromotionTest extends TestCase
                 'code' => 'OLD',
                 'discount_type' => 'amount',
                 'value_minor' => 500,
+                'is_active' => true,
                 'ends_at' => Carbon::yesterday(),
             ]);
 
@@ -95,6 +105,9 @@ class RestaurantPromotionTest extends TestCase
                 'value_minor' => 500,
                 'max_uses' => 1,
                 'used_count' => 1,
+                'is_active' => true,
+                'starts_at' => Carbon::now()->subDay(),
+                'ends_at' => Carbon::now()->addMonth(),
             ]);
 
             $this->postJson('/api/v1/restaurant/promotions/validate', ['code' => 'FULL', 'order_total_minor' => 10000])

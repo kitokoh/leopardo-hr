@@ -40,6 +40,8 @@ class ProvisionGuidedTrial
      * @param  string|null  $companyType  #7235 — `company` (défaut) | `solo`
      * @param  list<string>  $modules  #7235 — outils horizontaux choisis à l'inscription
      * @param  string|null  $locale  Langue d'interface choisie par l'utilisateur (fr|en|ar|tr)
+     * @param  string|null  $marketType  BOS-O-01 — marché déclaré (international | domestic)
+     * @param  string|null  $tradeProfile  BOS-O-01 — profil dans ce marché
      * @return array<string, mixed>
      */
     public function execute(
@@ -50,6 +52,8 @@ class ProvisionGuidedTrial
         ?string $companyType = null,
         array $modules = [],
         ?string $locale = null,
+        ?string $marketType = null,
+        ?string $tradeProfile = null,
     ): array {
         // BC-25 (#6693) : les solutions demandées doivent exister au catalogue
         // (fail-closed) AVANT tout provisioning — jamais de tenant partiel.
@@ -57,6 +61,22 @@ class ProvisionGuidedTrial
             static fn (mixed $code): string => strtolower(trim((string) $code)),
             $solutions,
         )));
+
+        // BOS-O-01 / #8625 — l'intention de marché est revalidée ICI, pas
+        // seulement dans le contrôleur : ce point d'entrée est aussi appelé
+        // par des jobs, commandes et tests. Une intention incohérente annule le
+        // provisioning AVANT toute écriture (jamais de tenant à demi segmenté).
+        $marketType = $marketType !== null ? strtolower(trim($marketType)) : null;
+        $tradeProfile = $tradeProfile !== null ? strtolower(trim($tradeProfile)) : null;
+
+        if (! Company::isValidMarketIntent($marketType, $tradeProfile)) {
+            throw new \InvalidArgumentException(
+                __('billing.invalid_market_intent', [
+                    'profile' => (string) $tradeProfile,
+                    'market' => (string) $marketType,
+                ])
+            );
+        }
 
         // #3600 : idempotence — un retry de job (tries/backoff) ou une double
         // soumission ne doit jamais créer un second tenant sandbox pour le
@@ -115,7 +135,7 @@ class ProvisionGuidedTrial
         // pays francophone => espace en français). Le choix explicite prime.
         $language = $this->resolveLanguage($locale, $countryDefaults);
 
-        return DB::transaction(function () use ($email, $companyName, $slug, $countryDefaults, $solutions, $companyType, $moduleSelection, $language): array {
+        return DB::transaction(function () use ($email, $companyName, $slug, $countryDefaults, $solutions, $companyType, $moduleSelection, $language, $marketType, $tradeProfile): array {
             $company = Company::query()->create([
                 'name' => $companyName,
                 'slug' => $slug,
@@ -132,6 +152,11 @@ class ProvisionGuidedTrial
                 'language' => $language,
                 'timezone' => $countryDefaults['timezone'],
                 'currency' => strtoupper($countryDefaults['currency']),
+                // BOS-O-01 / #8625 — intention de marché du point d'entrée Trade.
+                // NULL = aucune intention déclarée (inscription hors parcours
+                // Trade) : on n'invente pas un marché par défaut.
+                'market_type' => $marketType,
+                'trade_profile' => $tradeProfile,
                 // #7235 — profil d'activité, métier vertical et outils
                 // choisis. `modules` reste ABSENT quand aucune sélection n'a
                 // été déclarée (le front retombe alors sur son comportement
@@ -237,6 +262,26 @@ class ProvisionGuidedTrial
 
     private function seedBasicSandboxData(string $companyId, int $managerId): void
     {
+        // 0. Établissement principal (BOS-O-03 / #8623).
+        //
+        // Sans lui, un tenant pouvait naître SANS aucun lieu d'exploitation :
+        // les modules métier (ventes, stock, pointage géolocalisé) n'avaient
+        // alors aucun `site_id` à référencer, et l'exploitant devait découvrir
+        // par lui-même qu'il devait en créer un. La création est idempotente :
+        // un re-provisioning (reprise après échec, #3600) ne crée pas un
+        // second établissement — la garde est le `code` unique par tenant.
+        if (! DB::table('shared_tenants.sites')->where('company_id', $companyId)->exists()) {
+            DB::table('shared_tenants.sites')->insert([
+                'company_id' => $companyId,
+                'name' => __('billing.primary_site_name'),
+                'code' => 'PRINCIPAL',
+                'site_type' => 'office',
+                'status' => 'active',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
         // 1. Department
         $deptId = DB::table('shared_tenants.departments')->insertGetId([
             'company_id' => $companyId,

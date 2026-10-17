@@ -6658,7 +6658,13 @@
       "reassurance": "Ucretsiz, kredi karti yok, verileriniz sizde kalir",
       "backHome": "Ana sayfaya don",
       "metaTitle": "Trade, isletmenizi dakikalar icinde kurun",
-      "metaDescription": "Trade, Leopardo Business OS'a giris noktasi: ithalat/ihracat veya yerel pazar secin, isletmenizi yapilandirin, modullerinizi etkinlestirin ve ilk isleminizi yapin."
+      "metaDescription": "Trade, Leopardo Business OS'a giris noktasi: ithalat/ihracat veya yerel pazar secin, isletmenizi yapilandirin, modullerinizi etkinlestirin ve ilk isleminizi yapin.",
+      "profileLabel": "Profili­niz",
+      "profile_importer": "İthalatçı",
+      "profile_exporter": "İhracatçı",
+      "profile_both": "İthalatçı ve ihracatçı",
+      "profile_wholesaler": "Toptancı",
+      "profile_retailer": "Perakendeci"
     }
   },
   "commerce": {

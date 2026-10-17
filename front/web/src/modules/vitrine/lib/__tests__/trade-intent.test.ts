@@ -20,7 +20,7 @@ import {
  */
 describe('trade-intent', () => {
   it('exposes a fail-closed default that never implies a join', () => {
-    expect(DEFAULT_TRADE_INTENT).toEqual({ mode: 'domestic', action: 'create' });
+    expect(DEFAULT_TRADE_INTENT).toEqual({ mode: 'domestic', action: 'create', profile: null });
   });
 
   it('accepts only the allowlisted modes and actions', () => {
@@ -41,19 +41,56 @@ describe('trade-intent', () => {
     expect(normalizeTradeIntent({ mode: 'international' })).toEqual({
       mode: 'international',
       action: 'create',
+      profile: null,
     });
+  });
+
+  it('only keeps a profile that belongs to the chosen market', () => {
+    // BOS-O-01 / #8625 — « grossiste » sur un marche international est une
+    // intention incoherente : elle est ecartee cote client, puis refusee par
+    // l'API si elle parvient malgre tout au serveur.
+    expect(normalizeTradeIntent({ mode: 'international', profile: 'importer' }).profile).toBe(
+      'importer',
+    );
+    expect(normalizeTradeIntent({ mode: 'international', profile: 'wholesaler' }).profile).toBeNull();
+    expect(normalizeTradeIntent({ mode: 'domestic', profile: 'retailer' }).profile).toBe('retailer');
+    expect(normalizeTradeIntent({ mode: 'domestic', profile: 'importer' }).profile).toBeNull();
+    expect(normalizeTradeIntent({ mode: 'domestic', profile: 'forged' }).profile).toBeNull();
   });
 
   it('is idempotent: the same input yields the same stable key', () => {
     const a = normalizeTradeIntent({ mode: 'international', action: 'create' });
     const b = normalizeTradeIntent({ mode: 'international', action: 'create' });
     expect(tradeIntentKey(a)).toBe(tradeIntentKey(b));
-    expect(tradeIntentKey(a)).toBe('trade:international:create');
+    expect(tradeIntentKey(a)).toBe('trade:international:create:-');
+  });
+
+  it('includes the profile in the dedup key', () => {
+    // Deux profils differents sont deux intentions differentes ; deux clics
+    // sur le meme profil restent une seule intention.
+    const importer = normalizeTradeIntent({ mode: 'international', profile: 'importer' });
+    const exporter = normalizeTradeIntent({ mode: 'international', profile: 'exporter' });
+    expect(tradeIntentKey(importer)).not.toBe(tradeIntentKey(exporter));
+    expect(tradeIntentKey(importer)).toBe(
+      tradeIntentKey(normalizeTradeIntent({ mode: 'international', profile: 'importer' })),
+    );
   });
 
   it('routes create to the existing signup tunnel with the activity mode', () => {
     expect(tradeCreateHref('international')).toBe('/signup?trade=international');
     expect(tradeCreateHref('domestic', 'en')).toBe('/signup?trade=domestic&lang=en');
+  });
+
+  it('carries the professional profile through the create link', () => {
+    // BOS-O-02 — sans ce parametre, le profil choisi restait une intention
+    // purement cosmetique : le tenant etait provisionne sans marche ni profil.
+    expect(tradeCreateHref('international', undefined, 'importer')).toBe(
+      '/signup?trade=international&profile=importer',
+    );
+    expect(tradeCreateHref('domestic', 'fr', 'wholesaler')).toBe(
+      '/signup?trade=domestic&profile=wholesaler&lang=fr',
+    );
+    expect(tradeCreateHref('domestic', undefined, null)).toBe('/signup?trade=domestic');
   });
 
   it('routes join to the existing login (no second tenant is created)', () => {

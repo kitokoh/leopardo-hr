@@ -895,6 +895,16 @@ trait CreatesMvpSchema
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
             $table->string('name', 150);
+            // BOS-T-01 / #8624 — miroir de la migration
+            // 2026_10_17_120000_8624_sites_first_class : l'établissement est un
+            // axe de données de premier ordre. Sans ces colonnes dans la
+            // fixture, tout test qui crée un site réel (provisioning, CRUD)
+            // échouerait en « column does not exist ».
+            $table->string('code', 30)->nullable();
+            $table->string('site_type', 30)->nullable();
+            $table->string('status', 20)->default('active');
+            $table->string('timezone', 50)->nullable();
+            $table->char('currency', 3)->nullable();
             $table->timestamps();
         });
 

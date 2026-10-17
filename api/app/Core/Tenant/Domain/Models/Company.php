@@ -36,6 +36,8 @@ use Illuminate\Support\Facades\DB;
  * @property string $language
  * @property string $timezone
  * @property string $currency
+ * @property string|null $market_type Marché déclaré à l'onboarding (BOS-O-01) : international | domestic
+ * @property string|null $trade_profile Profil dans ce marché (BOS-O-01) : importer | exporter | both | wholesaler | retailer
  * @property string|null $notes
  * @property int|null $referrer_partner_id
  * @property array<mixed> $features
@@ -85,6 +87,8 @@ class Company extends Model
         'language',
         'timezone',
         'currency',
+        'market_type',
+        'trade_profile',
         'notes',
         'features',
         'metadata',
@@ -216,6 +220,62 @@ class Company extends Model
         // /api/v1/vtc/*.
         'vtc',
     ];
+
+    /**
+     * BOS-O-01 / #8625 — marché déclaré à l'onboarding.
+     *
+     * Deux dimensions séparées : le MARCHÉ (`market_type`) puis le PROFIL dans
+     * ce marché (`trade_profile`). La vitrine connaissait déjà ces valeurs,
+     * mais elles mouraient dans le `sessionStorage` du navigateur.
+     *
+     * Allowlist de RÉFÉRENCE : le front en a un miroir
+     * (`front/web/src/modules/vitrine/lib/trade-intent.ts`) et le test de
+     * parité échoue si les deux divergent. Aucune valeur hors de ces listes ne
+     * peut être persistée (validation API + CHECK en base).
+     */
+    public const MARKET_INTERNATIONAL = 'international';
+
+    public const MARKET_DOMESTIC = 'domestic';
+
+    /** @var list<string> */
+    public const MARKET_TYPES = [self::MARKET_INTERNATIONAL, self::MARKET_DOMESTIC];
+
+    /** @var list<string> */
+    public const TRADE_PROFILES = ['importer', 'exporter', 'both', 'wholesaler', 'retailer'];
+
+    /**
+     * Profils autorisés PAR marché — une intention incohérente (importateur sur
+     * un marché domestique) est refusée plutôt que stockée telle quelle.
+     *
+     * @var array<string, list<string>>
+     */
+    public const TRADE_PROFILES_BY_MARKET = [
+        self::MARKET_INTERNATIONAL => ['importer', 'exporter', 'both'],
+        self::MARKET_DOMESTIC => ['wholesaler', 'retailer'],
+    ];
+
+    /**
+     * Le profil est-il cohérent avec le marché ? (fail-closed : toute valeur
+     * inconnue ou tout couple incohérent renvoie `false`).
+     */
+    public static function isValidMarketIntent(?string $market, ?string $profile): bool
+    {
+        if ($market === null) {
+            // Aucune intention déclarée (inscription hors parcours Trade) :
+            // valide, mais alors AUCUN profil ne doit être présent.
+            return $profile === null;
+        }
+
+        if (! in_array($market, self::MARKET_TYPES, true)) {
+            return false;
+        }
+
+        if ($profile === null) {
+            return true;
+        }
+
+        return in_array($profile, self::TRADE_PROFILES_BY_MARKET[$market], true);
+    }
 
     /**
      * #7235 — Type d'activité déclaré à l'inscription.

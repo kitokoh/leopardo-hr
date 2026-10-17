@@ -6657,7 +6657,13 @@
       "reassurance": "Free, no credit card, your data stays yours",
       "backHome": "Back to home",
       "metaTitle": "Trade, set up your business in minutes",
-      "metaDescription": "Trade, the entry point to Leopardo Business OS: choose import/export or local market, configure your business, activate your modules and run your first operation."
+      "metaDescription": "Trade, the entry point to Leopardo Business OS: choose import/export or local market, configure your business, activate your modules and run your first operation.",
+      "profileLabel": "Your profile",
+      "profile_importer": "Importer",
+      "profile_exporter": "Exporter",
+      "profile_both": "Importer & exporter",
+      "profile_wholesaler": "Wholesaler",
+      "profile_retailer": "Retailer"
     }
   },
   "commerce": {

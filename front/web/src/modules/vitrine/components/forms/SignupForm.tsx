@@ -46,6 +46,11 @@ import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
 import { fetchSupportedCountries, type SupportedCountryOption } from '@/modules/vitrine/data/supported-countries';
 import { isPackSignupSlug, packSolutionCode } from '@/modules/vitrine/lib/pack-signup';
+import {
+  normalizeTradeIntent,
+  type TradeMode,
+  type TradeProfile,
+} from '@/modules/vitrine/lib/trade-intent';
 import { packDisplayName } from '@/modules/vitrine/data/pack-pages';
 import { t } from '@/lib/i18n/locale-catalog';
 import { persistSignupSector, readSignupSectorFromUrl } from '@/lib/signup-sector';
@@ -181,6 +186,35 @@ export function SignupForm({
     if (sector) {
       persistSignupSector(sector);
     }
+  }, []);
+
+  // BOS-O-02 / #8625 — intention du point d'entrée « Trade ».
+  //
+  // `/trade` envoie `?trade=international|domestic&profile=…`. Sans capture
+  // ici, ces paramètres disparaissaient au premier rendu : le visiteur avait
+  // bien été segmenté dans la vitrine, mais le tenant était provisionné sans
+  // marché ni profil. `normalizeTradeIntent` applique l'allowlist (une valeur
+  // forgée retombe sur le défaut) et écarte un profil incohérent avec le
+  // marché — le serveur revalidera de toute façon.
+  const [tradeIntent, setTradeIntent] = useState<{ mode?: TradeMode; profile?: TradeProfile }>({});
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get('trade');
+
+    if (!requested) return;
+
+    const intent = normalizeTradeIntent({
+      mode: requested,
+      profile: params.get('profile'),
+      action: 'create',
+    });
+
+    setTradeIntent({
+      ...(intent.mode ? { mode: intent.mode } : {}),
+      ...(intent.profile ? { profile: intent.profile } : {}),
+    });
   }, []);
 
   // #4476 — pays supportés pour l'essai guidé (registre public #4217, fallback
@@ -491,6 +525,13 @@ export function SignupForm({
         // #8462 — la verticale déclarée sur la vitrine prime : provisionnée
         // avec l'espace, elle dispense la question secteur de l'entretien.
         ...(selectedPack ? { solutions: [packSolutionCode(selectedPack) as string] } : {}),
+        // BOS-O-02 / #8625 — reprise de l'intention Trade depuis l'URL de
+        // `/trade` (`?trade=…&profile=…`). La valeur est normalisée par
+        // allowlist (`normalizeTradeIntent`) : une valeur forgée ne peut pas
+        // produire un marché ou un profil inconnu, et un profil incohérent
+        // avec le marché est écarté AVANT l'envoi.
+        ...(tradeIntent.mode ? { market_type: tradeIntent.mode } : {}),
+        ...(tradeIntent.profile ? { trade_profile: tradeIntent.profile } : {}),
       };
       lastSignupPayloadRef.current = payload;
       const response = await submitSignupForm(payload, page);

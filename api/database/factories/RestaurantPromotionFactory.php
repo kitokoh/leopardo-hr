@@ -28,7 +28,14 @@ class RestaurantPromotionFactory extends Factory
             'ends_at' => $this->faker->optional()->dateTimeBetween('now', '+2 months'),
             'max_uses' => $this->faker->optional()->numberBetween(10, 1000),
             'used_count' => 0,
-            'is_active' => $this->faker->boolean(80),
+            // #8660 — `is_active` était tiré au hasard (`boolean(80)`). Toute
+            // fixture qui ne le fixait pas explicitement devenait donc
+            // intermittente : le service rejette une promotion inactive, et le
+            // test échouait ~1 fois sur 5 sans qu'aucun code n'ait changé
+            // (`RestaurantPromotionTest::percent promotion computed server
+            // side`). Une promotion créée par la factory est active par
+            // défaut ; un test qui veut l'inverse le déclare explicitement.
+            'is_active' => true,
         ];
     }
 }
