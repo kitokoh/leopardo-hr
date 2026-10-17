@@ -16,6 +16,35 @@
 > gardes `check:french-copy` / `check:mojibake` / `check:orphans` / `check:assets` vertes.
 > `next build` **non concluant en local** (exit 137 — OOM, cgroup 2 Gio du sandbox) : à valider en CI.
 > Surface **API** : aucun changement de route, de contrôleur ni de contrat.
+> **MAJ 2026-10-17 — #8584, #8585, #8586, #8578, Fuel Station OS : cle d'idempotence du lot de releves, test outbox sans consommateur, endpoints dedies resolve/close.**
+> Surface **API (api/app/Modules/FuelStation/Interfaces/Api/V1/Controllers/FuelIncidentController.php)** :
+> les endpoints dedies `POST /fuel-station/incidents/{incident}/resolve` et `.../close` n'exigent plus
+> les notes (`RESOLUTION_NOTES_REQUIRED` / `CLOSURE_NOTES_REQUIRED` supprimes) — l'exigence reste portee
+> par le workflow strict `POST /fuel-station/incidents/{incident}/transition` (cible `resolved` sans notes
+> → 422). Les deux chemins sont desormais **satisfaisables simultanement** ; aucune route ajoutee, aucun
+> contrat de reponse modifie.
+> Surface **API (api/app/Modules/FuelStation/Interfaces/Api/V1/Requests/SyncFuelReadingsRequest.php)** :
+> la cle d'idempotence du **lot** de releves recoit la meme contrainte que le releve unitaire
+> (`StoreMeterReadingRequest`) — `regex:/^[A-Za-z0-9\-_.]{8,191}$/`. Une cle trop courte provoquait des
+> **collisions de deduplication** (deux releves distincts ecrases l'un par l'autre, donc des releves de
+> compteur perdus silencieusement) ; hors format → 422.
+> Surface **API (api/app/Modules/FuelStation/Infrastructure/Services/FuelIncidentService.php)** :
+> `assign()` conserve `in_progress` — **contradiction de test documentee, non contournee** :
+> `FuelIncidentApiTest:149` attend `in_progress` et `:257` attend `assigned` pour la **meme** operation,
+> aucune implementation ne peut satisfaire les deux (arbitrage produit rattache a #8578).
+> Scenarios automatises : `tests/Feature/Fuel/FuelOutboxApiTest.php`
+> (`test_dispatch_without_consumer_dead_letters_and_can_retry` substitue desormais un registre de
+> consommateurs **vide** pour ce test uniquement — la premisse « aucun consommateur enregistre » etait
+> fausse, `FuelStationServiceProvider::boot` enregistre `FuelAccountingOutboxConsumer` ; le chemin
+> dead-letter est donc reellement exerce **sans desenregistrer un consommateur de production**),
+> `tests/Feature/Fuel/FuelReadingSyncApiTest.php` (cle d'idempotence trop courte → 422) et
+> `tests/Feature/Fuel/FuelIncidentApiTest.php` (resolve/close sans notes → 200).
+> Verifie localement (PHP 8.4.26 + PostgreSQL 15.19 + PostGIS 3, `CI=true`) : suite Fuel complete
+> **266 tests / 1063 assertions / 11 echecs** contre un baseline de **266 / 1064 / 13** — diff des listes
+> numerotees : seuls les **2 tests corriges**, **aucun ajout**, **0 regression**, aucun test desactive.
+> PHPStan strict niveau 8 sur `app/Modules/FuelStation` → `[OK] No errors` ; `pint --test` sur les
+> 4 fichiers du lot → PASS ; garde Route → OpenAPI → exit 0 ; garde de parite MVP → OK (350 tables).
+> Surface **docs** : `CHANGELOG.md` (entree dans `[Unreleased]` existant, aucun nouveau header).
 >
 > **MAJ 2026-10-17 — #8633, mission Business OS : statut hors-ligne honnête dans le centre « Mes logiciels » (gap F-01).**
 > Surface **web (`front/web/src/lib/software-catalog.ts`)** : le booléen `offline` purement déclaratif
@@ -1492,3 +1521,11 @@ restent les gates applicables.
   avertissement, révocation via `DELETE /edge/{id}`).
 - **Surface mobile** : clés ARB propagées par `sync-mobile.js` uniquement (catalogue
   partagé `devices.*`), aucun contrat mobile modifié — aucun scénario mobile nouveau requis.
+- **Surface API (SUPERAPP-P0, #8611)** : nouvelle route publique `GET /api/v1/public/discover`
+  (découverte cross-verticale, sans auth, `throttle:shop-public`). Scénarios couverts par
+  `api/tests/Feature/Platform/PublicDiscoveryTest.php` : (1) agrégation multi-verticale
+  (restaurant + hébergement + vitrine publiés) ; (2) fail-closed — entité `is_public=false`,
+  société `suspended`/`expired` ou feature verticale absente → **jamais** retournée ;
+  (3) `?type=` inconnu → `422` ; (4) `?near=lat,lng` → seules les entités géolocalisées
+  dans `radius_km`, triées par distance croissante ; (5) DTO public strict (aucun `id`,
+  `company_id`, `status`) ; (6) `per_page` borné à 50. Aucune migration, aucun nouveau rôle.

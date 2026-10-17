@@ -1133,6 +1133,143 @@ paths:
           description: Scope bookings.read absent de la cle
         '404':
           description: Reference inconnue dans le tenant de la cle
+  /travel/trips/{travelTrip}/seats:
+    get:
+      tags:
+      - Travel
+      summary: "Plan de sièges du trajet (back-office, lecture seule)"
+      description: >-
+        #8621 — Inventaire des sièges du trajet pour le plan de sièges du
+        back-office. Contrairement à la surface publique
+        (`/public/travel/marketplace/trips/{trip}`), le personnel voit EN PLUS
+        la `booking_reference` rattachée au siège : c'est l'information
+        opérationnelle nécessaire pour retrouver une vente dans le bus.
+        Aucune donnée passager n'est exposée (le manifeste reste la seule voie
+        autorisée pour les identités).
+
+        Bornage tenant : le scope `BelongsToCompany` ET une comparaison
+        explicite `company_id` protègent l'accès — un trajet d'une autre
+        entreprise répond 404 (fail-closed), jamais 403 avec fuite d'existence.
+        Permission : lecture des trajets de l'entreprise.
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Inventaire des sièges (numéro, état, référence de réservation)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      trip_id:
+                        type: integer
+                      code:
+                        type: string
+                      total_seats:
+                        type: integer
+                      seats:
+                        type: array
+                        description: Trié par `seat_number`.
+                        items:
+                          type: object
+                          required: [seat_number, status]
+                          properties:
+                            seat_number:
+                              type: integer
+                            status:
+                              type: string
+                              enum: [free, reserved, sold, blocked, unavailable]
+                            booking_reference:
+                              type: string
+                              nullable: true
+                              description: Référence de réservation (personnel uniquement).
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /travel/trips/{travelTrip}/vehicle-assessment:
+    get:
+      tags:
+      - Travel
+      summary: "Évaluation d'un remplacement de véhicule (aucune écriture)"
+      description: >-
+        #8622 — Calcule les conflits d'un changement de véhicule SANS RIEN
+        ÉCRIRE, pour que l'opérateur voie ce qui bloque avant d'agir.
+
+        `compatible` est faux dès qu'un siège RÉSERVÉ ou VENDU porte un numéro
+        supérieur à la capacité du véhicule cible (conflit `blocking`) : le
+        changement serait refusé par `PUT /travel/trips/{travelTrip}` (409).
+        Les sièges libres ou bloqués au-delà de la capacité remontent en
+        `warning` uniquement. Un véhicule inconnu du tenant produit
+        `compatible: false` avec `error: vehicle_not_found` (fail-closed).
+
+        Aucun passager n'est déplacé silencieusement : la résolution de
+        conflit reste une décision explicite de l'opérateur.
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: vehicle_id
+        in: query
+        required: false
+        schema:
+          type: integer
+          nullable: true
+        description: Véhicule cible à évaluer.
+      responses:
+        '200':
+          description: Verdict de compatibilité et liste des conflits
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      compatible:
+                        type: boolean
+                      current_vehicle_id:
+                        type: integer
+                        nullable: true
+                      target_vehicle_id:
+                        type: integer
+                        nullable: true
+                      target_capacity:
+                        type: integer
+                      trip_total_seats:
+                        type: integer
+                      conflicts:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                              enum: [seat_beyond_capacity, free_seat_beyond_capacity, blocked_seat_beyond_capacity]
+                            seat_number:
+                              type: integer
+                            severity:
+                              type: string
+                              enum: [blocking, warning]
+                            booking_reference:
+                              type: string
+                              nullable: true
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /travel/tickets/verify:
     post:
       tags:
@@ -4615,6 +4752,147 @@ paths:
             text/plain:
               schema:
                 type: string
+  /public/discover:
+    get:
+      tags:
+      - Discovery
+      summary: Decouverte publique cross-verticale Leopardo.com (SUPERAPP-P0, #8611)
+      description: >-
+        Point d'entree NEUTRE de la plateforme grand public : agrege les
+        entites PUBLIEES de plusieurs verticales (restaurants, hebergements,
+        vitrines) via les providers du contrat `PublicDiscoverableProvider`.
+        Route isolee sans authentification (throttle `shop-public`), patron
+        BC-27/BC-28. Invariants : fail-closed par provider (`is_public` /
+        `status=published`, societe ni suspendue ni expiree, feature verticale
+        active) ; DTO public strict (jamais d'id interne, de company_id ni de
+        donnee RH/commerciale) ; deduplication `(type, slug)` ; `?near=lat,lng`
+        ne retient que les entites geolocalisees dans `radius_km`, triees par
+        distance croissante via le core geo. Un `?type=` inconnu renvoie 422
+        (jamais de filtre silencieux). `per_page` borne a 50.
+      security: []
+      parameters:
+      - name: q
+        in: query
+        required: false
+        description: Recherche texte sur le nom et la description publique.
+        schema:
+          type: string
+          maxLength: 120
+      - name: city
+        in: query
+        required: false
+        description: Filtre ville (insensible a la casse en PostgreSQL).
+        schema:
+          type: string
+          maxLength: 120
+      - name: type
+        in: query
+        required: false
+        description: Type canonique de provider (`restaurant`, `hospitality_property`, `showcase`). Valeur inconnue -> 422.
+        schema:
+          type: string
+      - name: near
+        in: query
+        required: false
+        description: Point de recherche `lat,lng`. Seules les entites geolocalisees dans le rayon sont retenues.
+        schema:
+          type: string
+          example: '36.7538,3.0588'
+      - name: radius_km
+        in: query
+        required: false
+        description: Rayon de proximite en kilometres (0.1 a 50, defaut 10).
+        schema:
+          type: number
+          format: float
+          minimum: 0.1
+          maximum: 50
+      - name: per_page
+        in: query
+        required: false
+        description: Taille de page (1 a 50, defaut 20).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+      - name: page
+        in: query
+        required: false
+        description: Numero de page (a partir de 1).
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Entites publiques agregees (data[]) et metadonnees de pagination (meta)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                        slug:
+                          type: string
+                        name:
+                          type: string
+                        category:
+                          type: string
+                          nullable: true
+                        city:
+                          type: string
+                          nullable: true
+                        country:
+                          type: string
+                          nullable: true
+                        description:
+                          type: string
+                          nullable: true
+                        image_url:
+                          type: string
+                          nullable: true
+                        latitude:
+                          type: number
+                          format: float
+                          nullable: true
+                        longitude:
+                          type: number
+                          format: float
+                          nullable: true
+                        distance_km:
+                          type: number
+                          format: float
+                          nullable: true
+                        url:
+                          type: string
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      per_page:
+                        type: integer
+                      page:
+                        type: integer
+                      last_page:
+                        type: integer
+                      types:
+                        type: array
+                        items:
+                          type: string
+                      radius_km:
+                        type: number
+                        format: float
+                        nullable: true
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
   /showcase:
     get:
       tags:
@@ -37440,11 +37718,19 @@ paths:
     get:
       tags:
       - Travel
-      summary: "Marketplace : détail d'un trajet + plan de sièges libres"
+      summary: "Marketplace : détail d'un trajet + plan de sièges"
       description: >-
         BC-24 TRAVEL (#7737) — le tenant est résolu PAR TRAJET. Un trajet
         inconnu, non publié ou d'une agence non opt-in répond 404
         (fail-closed, aucune fuite cross-tenant).
+
+        #8619 — `data.seats` expose l'INVENTAIRE COMPLET du véhicule affecté
+        (et non plus seulement les places libres) : chaque entrée porte
+        `seat_number` et l'état PERSISTÉ (`free`, `reserved`, `sold`,
+        `blocked`, `unavailable`). Aucune donnée personnelle, aucune
+        `booking_reference` et aucun identifiant de tenant ne sont exposés :
+        la surface publique ne permet pas de remonter à un passager.
+        `data.available_seats` ne compte que les sièges `free`.
       parameters:
       - name: trip
         in: path
@@ -37453,7 +37739,32 @@ paths:
           type: integer
       responses:
         '200':
-          description: Détail du trajet (prix, sièges libres, agence)
+          description: Détail du trajet (prix, inventaire complet des sièges, agence)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      available_seats:
+                        type: integer
+                        description: Nombre de sièges au statut `free` uniquement.
+                      seats:
+                        type: array
+                        description: >-
+                          Inventaire complet du trajet, trié par `seat_number`.
+                          Ni PII ni référence de réservation (surface publique).
+                        items:
+                          type: object
+                          required: [seat_number, status]
+                          properties:
+                            seat_number:
+                              type: integer
+                            status:
+                              type: string
+                              enum: [free, reserved, sold, blocked, unavailable]
         '404':
           $ref: '#/components/responses/Error404'
   /public/travel/marketplace/bookings:

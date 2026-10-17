@@ -26,8 +26,12 @@ use App\Policies\CrmDashboardPolicy;
 use App\Policies\CrmSearchPolicy;
 use App\Policies\CrmTaskPolicy;
 use App\Policies\ExportPolicy;
+use App\Shared\Contracts\Discovery\PublicDiscoverableProvider;
+use App\Shared\Contracts\Geo\GeoServiceContract;
+use App\Shared\Discovery\PublicDiscoveryService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -46,6 +50,19 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // SUPERAPP-P0 — decouverte publique cross-verticale : agregateur de
+        // lecture seule (aucune table, aucune migration). Chaque verticale
+        // fournit son provider tague `public.discoverable` depuis son propre
+        // ServiceProvider (inversion de dependance, garde d'isolation #5584).
+        $this->app->singleton(PublicDiscoveryService::class, function (Application $app): PublicDiscoveryService {
+            /** @var iterable<PublicDiscoverableProvider> $providers */
+            $providers = $app->tagged('public.discoverable');
+
+            return new PublicDiscoveryService(
+                $providers,
+                $app->make(GeoServiceContract::class),
+            );
+        });
         // Contrat transversal de notification in-app (garde cross-module #5584) :
         // les modules métier type-hintent le contrat Core, l'implémentation vit
         // dans le module Notification (BC-13).

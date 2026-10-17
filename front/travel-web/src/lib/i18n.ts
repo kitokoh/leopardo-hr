@@ -120,6 +120,8 @@ const fr = {
     autoAssign: "Attribution automatique par l'agence",
     selectedCount: "sièges sélectionnés",
     seatWord: "Siège",
+    revalidatedOnConfirm:
+      "La disponibilité est vérifiée à nouveau par le serveur au moment de la confirmation : si un siège a été pris entre-temps, la réservation est refusée et le plan actualisé.",
   },
   checkout: {
     title: "Vos informations",
@@ -436,6 +438,8 @@ const en: Dict = {
     freeOnTotal: "seat(s) free out of",
     selectedCountLabel: "selected",
     seatLabel: "Seat",
+    revalidatedOnConfirm:
+      "Availability is checked again by the server at confirmation: if a seat was taken in the meantime, the booking is refused and the seat map refreshed.",
   },
   checkout: {
     title: "Your details",

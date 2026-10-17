@@ -40,9 +40,26 @@ export type MarketplaceTrip = {
   agency: { name: string | null };
 };
 
+/**
+ * #8619 — Un siège de l'inventaire réel du trajet.
+ *
+ * L'API publique expose désormais l'inventaire COMPLET : `free` (sélectionnable)
+ * et les états occupés (`reserved`, `sold`, `blocked`, `unavailable`), afin que
+ * le plan de sièges représente la disposition réelle du véhicule.
+ *
+ * Aucune donnée personnelle ni référence de réservation n'est exposée côté
+ * public : le type ne porte donc que le numéro et l'état.
+ */
+export type MarketplaceSeatStatus =
+  | "free"
+  | "reserved"
+  | "sold"
+  | "blocked"
+  | "unavailable";
+
 export type MarketplaceSeat = {
   seat_number: number;
-  status: "free";
+  status: MarketplaceSeatStatus;
 };
 
 export type MarketplaceTripDetail = MarketplaceTrip & {

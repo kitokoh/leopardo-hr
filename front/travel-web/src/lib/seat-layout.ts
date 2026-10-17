@@ -184,3 +184,31 @@ export function countSeatsByStatus(seats: SeatInput[]): Record<string, number> {
     return acc;
   }, {});
 }
+
+/**
+ * #8620 — Sièges sélectionnables d'un trajet, dérivés de l'INVENTAIRE RÉEL.
+ *
+ * Ne garde que les sièges `free` (les seuls commercialisables) et les renvoie
+ * triés par numéro croissant. Remplace la génération côté navigateur
+ * `1..total_seats`, qui supposait — à tort — que tous les numéros de la
+ * capacité sont vendables et disponibles.
+ */
+export function selectableSeatNumbers(seats: readonly SeatInput[]): number[] {
+  return seats
+    .filter((seat) => seat.status === "free")
+    .map((seat) => seat.seat_number)
+    .sort((a, b) => a - b);
+}
+
+/**
+ * #8620 — Gabarit de rangée déduit de la capacité du véhicule.
+ *
+ * Le modèle ne stocke pas encore la disposition physique : on regroupe donc
+ * selon le gabarit réel le plus courant (2+2 au-delà de 15 places, 2+1 en
+ * deçà). Seul le REGROUPEMENT VISUEL est déduit ; l'état de chaque siège reste
+ * celui de l'inventaire serveur.
+ */
+export function resolveSeatsPerRow(totalSeats: number): number {
+  if (!Number.isFinite(totalSeats) || totalSeats <= 0) return 4;
+  return totalSeats > 15 ? 4 : 3;
+}

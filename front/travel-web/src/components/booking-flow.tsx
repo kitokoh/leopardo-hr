@@ -3,8 +3,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { SeatMap } from "@/components/seat-map";
 import { ApiError, createBooking } from "@/lib/api";
 import { useAccount } from "@/lib/account-provider";
+import { resolveSeatsPerRow, selectableSeatNumbers } from "@/lib/seat-layout";
 import {
   cityLabel,
   formatDate,
@@ -40,11 +42,13 @@ export function BookingFlow({ trip }: { trip: MarketplaceTripDetail }) {
   const router = useRouter();
 
   const defaultClassId = trip.prices[0]?.class_id ?? 0;
+  // #8620 — Le plan de sièges est rendu à partir de l'INVENTAIRE RÉEL renvoyé
+  // par l'API (#8619) : chaque siège porte son état persisté. On ne fabrique
+  // plus `1..total_seats` côté navigateur pour décider de la disponibilité.
   const freeSeatNumbers = useMemo(
-    () => trip.seats.map((seat) => seat.seat_number),
+    () => selectableSeatNumbers(trip.seats),
     [trip.seats],
   );
-  const freeSeatSet = useMemo(() => new Set(freeSeatNumbers), [freeSeatNumbers]);
 
   const [passengers, setPassengers] = useState<PassengerDraft[]>([
     { full_name: "", age_category: "adult", class_id: defaultClassId, seat_number: null },
@@ -196,7 +200,12 @@ export function BookingFlow({ trip }: { trip: MarketplaceTripDetail }) {
     }
   };
 
-  const seatNumbers = Array.from({ length: trip.total_seats }, (_, i) => i + 1);
+  /**
+   * #8620 — Sièges par rangée du véhicule affecté (2+2 au-delà de 15 places,
+   * 2+1 en deçà). Le regroupement est visuel ; l'état de chaque siège reste
+   * celui de l'inventaire serveur.
+   */
+  const seatsPerRow = resolveSeatsPerRow(trip.total_seats);
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-8">
@@ -264,51 +273,24 @@ export function BookingFlow({ trip }: { trip: MarketplaceTripDetail }) {
             <h2 className="text-lg font-semibold text-slate-900">{dict.seats.title}</h2>
             <p className="mt-1 text-sm text-slate-500">{dict.seats.subtitle}</p>
 
-            <div className="mt-4 flex flex-wrap gap-4 text-xs text-slate-600">
-              <span className="flex items-center gap-1.5">
-                <span className="h-3.5 w-3.5 rounded border border-brand-300 bg-brand-50" />
-                {dict.seats.free}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="h-3.5 w-3.5 rounded bg-brand-600" />
-                {dict.seats.selected}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="h-3.5 w-3.5 rounded bg-slate-200" />
-                {dict.seats.taken}
-              </span>
-            </div>
-
-            <div className="mt-4 grid grid-cols-6 gap-2 sm:grid-cols-8 md:grid-cols-10">
-              {seatNumbers.map((seat) => {
-                const free = freeSeatSet.has(seat);
-                const selected = selectedSeats.includes(seat);
-                return (
-                  <button
-                    key={seat}
-                    type="button"
-                    disabled={!free}
-                    onClick={() => toggleSeat(seat)}
-                    aria-pressed={selected}
-                    aria-label={`${dict.seats.seatWord} ${seat}`}
-                    className={`h-10 rounded-lg text-sm font-semibold transition ${
-                      selected
-                        ? "bg-brand-600 text-white"
-                        : free
-                          ? "border border-brand-300 bg-brand-50 text-brand-800 hover:bg-brand-100"
-                          : "cursor-not-allowed bg-slate-200 text-slate-400"
-                    }`}
-                  >
-                    {seat}
-                  </button>
-                );
-              })}
+            {/* #8620 — Plan de sièges VISUEL (rangées, couloir, symboles d'état)
+                au lieu de la grille plate : la disposition provient de
+                l'inventaire réel du véhicule affecté au trajet. */}
+            <div className="mt-4">
+              <SeatMap
+                seats={trip.seats}
+                selected={selectedSeats}
+                onToggle={toggleSeat}
+                seatsPerRow={seatsPerRow}
+              />
             </div>
 
             <p className="mt-3 text-sm text-slate-500">
               {selectedSeats.length} {dict.seats.selectedCount}
               {selectedSeats.length === 0 ? ` — ${dict.seats.autoAssign}` : ""}
             </p>
+
+            <p className="mt-2 text-xs text-slate-500">{dict.seats.revalidatedOnConfirm}</p>
           </section>
 
           {/* ── Passagers ── */}
