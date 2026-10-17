@@ -204,7 +204,7 @@ class TravelVehicleController extends Controller
     /**
      * Horodatage de mesure fourni par le dispositif, ou `null` (réception).
      */
-    private function recordedAt(Request $request): ?Carbon
+    private function recordedAt(RecordTravelVehiclePositionRequest $request): ?Carbon
     {
         $value = $request->validated('recorded_at');
 

@@ -308,13 +308,8 @@ final class TravelTicketQrDecoder
             0 => 'M',
             1 => 'L',
             2 => 'H',
-            3 => 'Q',
-            default => null,
+            default => 'Q',
         };
-
-        if ($ecLevel === null) {
-            return null;
-        }
 
         return [$ecLevel, $mask];
     }
@@ -344,7 +339,7 @@ final class TravelTicketQrDecoder
     /**
      * Applique le masque du QR (les modules de données uniquement).
      *
-     * @param  list<list<bool>>  $grid
+     * @param  array<int, array<int, bool>>  $grid
      */
     private function unmask(array &$grid, int $size, int $mask): void
     {
@@ -409,8 +404,10 @@ final class TravelTicketQrDecoder
         $version = intdiv($size - 17, 4);
 
         // Motifs d'alignement.
-        foreach (self::ALIGNMENT[$version] ?? [] as $centerRow) {
-            foreach (self::ALIGNMENT[$version] ?? [] as $centerCol) {
+        $centers = self::ALIGNMENT[$version];
+
+        foreach ($centers as $centerRow) {
+            foreach ($centers as $centerCol) {
                 // Ceux qui chevauchent un repère ne sont pas dessinés.
                 if (($centerRow <= 8 && $centerCol <= 8)
                     || ($centerRow <= 8 && $centerCol >= $size - 9)
@@ -442,7 +439,7 @@ final class TravelTicketQrDecoder
      * Lit les codewords dans l'ordre en zigzag (deux colonnes à la fois, en
      * partant du bas-droite, en sautant la colonne de synchronisation).
      *
-     * @param  list<list<bool>>  $grid
+     * @param  array<int, array<int, bool>>  $grid
      * @return list<int>|null
      */
     private function readCodewords(array $grid, int $size, int $version): ?array
@@ -683,7 +680,7 @@ final class TravelTicketQrDecoder
             }
 
             for ($i = 0; $i < $length; $i++) {
-                $result .= chr(bindec(substr($bits, $offset, 8)));
+                $result .= chr((int) bindec(substr($bits, $offset, 8)));
                 $offset += 8;
             }
         }
