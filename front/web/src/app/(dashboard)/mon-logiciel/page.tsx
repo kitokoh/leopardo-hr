@@ -42,6 +42,7 @@ import { getPreferredLocale, getStoredUser } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
 import {
   absoluteTargetHref,
+  isOfflineClaimed,
   softwareAvailability,
   visibleSoftware,
   type SoftwareApp,
@@ -217,10 +218,17 @@ export default function MonLogicielPage() {
                   </header>
 
                   <div className="mt-3 flex flex-wrap items-center gap-2">
-                    {app.offline ? (
-                      <p className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                    {isOfflineClaimed(app) ? (
+                      <p
+                        className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700"
+                        title={app.offline === 'implemented'
+                          ? translate('software.offlineImplementedHint', 'File hors-ligne branchée — scénario de coupure non encore rejoué en CI')
+                          : undefined}
+                      >
                         <WifiOff className="h-3.5 w-3.5" aria-hidden />
-                        {translate('software.offlineBadge', 'Fonctionne hors-ligne')}
+                        {app.offline === 'verified'
+                          ? translate('software.offlineBadgeVerified', 'Hors-ligne vérifié')
+                          : translate('software.offlineBadge', 'Fonctionne hors-ligne')}
                       </p>
                     ) : null}
                     <p className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${AVAILABILITY_BADGE[availability]}`}>

@@ -1,3 +1,24 @@
+> **MAJ 2026-10-17 — #8633, mission Business OS : statut hors-ligne honnête dans le centre « Mes logiciels » (gap F-01).**
+> Surface **web (`front/web/src/lib/software-catalog.ts`)** : le booléen `offline` purement déclaratif
+> est remplacé par `OfflineMode = 'verified' | 'implemented' | 'absent'`. Vérification du câblage réel :
+> `/restaurant/kitchen` et `/commerce/pos` passent par `dispatch()` de `useOfflineSync` (file réelle),
+> le kiosque ZKTeco possède un pont local `/local/punch` ; en revanche `/restaurant/pos`, `/kiosk` et
+> `/fuel` émettent leurs POST **directement** — ils ne revendiquent plus de continuité hors-ligne.
+> `verified` exige une référence de scénario CI, sinon retombe fail-closed sur `implemented` ;
+> `absent` n'affiche **aucun** badge (`isOfflineClaimed()` centralise la règle, consommée par
+> `/mon-logiciel`). Résultat : 3 apps `implemented`, 9 `absent` — **recul de promesse assumé**.
+> Scénarios automatisés : `front/web/src/lib/__tests__/software-offline-honesty.test.ts`
+> (6 cas : aucun badge pour `absent`, `verified` sans preuve refusé, liste fermée des apps revendiquant
+> le hors-ligne = `commerce-pos`, `desktop-attendance`, `restaurant-kds`, et les trois surfaces à POST
+> directs ne revendiquent rien) plus `software-catalog.test.ts` (10 cas) et
+> `front/web/src/app/(dashboard)/mon-logiciel/__tests__/page.test.tsx` (6 cas) — **16/16 + 6/6 verts**.
+> Vérifié localement : `npx tsc --noEmit` exit 0, `npx eslint` exit 0 sur les 3 fichiers touchés,
+> `check-web-design-tokens.sh` vert, `check-i18n-catalog-parity.sh` vert (4 langues).
+> Surface **i18n** : clés `software.offlineBadgeVerified` et `software.offlineImplementedHint` ajoutées
+> dans `shared/i18n/locales/*.json` puis propagées aux cibles générées (`sync-web`, `sync-backend`,
+> `sync-mobile`) — voir la note du même jour dans `SCENARIOS_TEST_MOBILE_FLUTTER.md`.
+> Surface **API** : aucun changement de route, de contrôleur ni de contrat.
+>
 > **MAJ 2026-10-17 — #8581 + #8583, Fuel Station OS : convention monétaire additive, logo de station et vue comparative inter-stations.**
 > Surface **API (api/routes/modules/fuel_station.php)** : trois nouvelles routes,
 > documentées dans `api/openapi.yaml` (garde Route → OpenAPI, drift 0) —

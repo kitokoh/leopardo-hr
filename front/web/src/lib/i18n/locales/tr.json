@@ -7733,6 +7733,8 @@
     "pilot": "Pilot erişim iste",
     "soon": "Çok yakında",
     "offlineBadge": "Çevrimdışı çalışır",
+    "offlineBadgeVerified": "Çevrimdışı doğrulandı",
+    "offlineImplementedHint": "Çevrimdışı kuyruk bağlı — ağ kesintisi senaryosu henüz CI'da yeniden oynatılmadı",
     "qrAria": "Kurulum QR kodunu göster",
     "qrTitle": "Bu cihaza kur",
     "qrHint": "Donatılacak cihazla taratın: kurulum bağlantısı doğrudan açılır.",

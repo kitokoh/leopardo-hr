@@ -7964,7 +7964,9 @@
       "connection": "Çalışma alanına bağlanma",
       "permissions": "Gerekli izinler",
       "setup": "Devreye alma"
-    }
+    },
+    "offlineBadgeVerified": "Çevrimdışı doğrulandı",
+    "offlineImplementedHint": "Çevrimdışı kuyruk bağlı — ağ kesintisi senaryosu henüz CI'da yeniden oynatılmadı"
   },
   "marketingOs": {
     "title": "Marketing OS",

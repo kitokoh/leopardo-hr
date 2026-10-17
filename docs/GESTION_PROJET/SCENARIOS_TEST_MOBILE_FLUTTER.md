@@ -5,6 +5,17 @@
 
 ## Journal des mises à jour de surface (`front/mobile_apps/`)
 
+- **2026-10-17 (#8633, mission Business OS / gap F-01)** — `leopardo_core/lib/l10n/app_{fr,en,ar,tr}.arb` :
+  clés `offlineBadgeVerified` et `offlineImplementedHint` ajoutées **côté web**
+  (`shared/i18n/locales/*.json`) puis propagées mécaniquement par `shared/i18n/sync/sync-mobile.js`.
+  **Aucune surface fonctionnelle mobile modifiée** : aucun écran Flutter ne consomme encore ces clés,
+  aucun contrat d'API touché, aucune dépendance changée. Le changement de fond est **web**
+  (`front/web/src/lib/software-catalog.ts` : `offline: boolean` → `OfflineMode`), traité dans
+  `SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md`. Aucun nouveau scénario mobile requis ; les scénarios
+  existants restent valides. Vérifié : `I18N_SYNC_MOBILE_OK`, `I18N_VALIDATION_OK (4 locales)`,
+  `check-i18n-catalog-parity.sh` → **vert**. Distinction importante : le statut hors-ligne mobile
+  reste `absent` pour `leopardo_manager` et `leopardo_employee` (aucun câblage de file locale constaté
+  dans le code Flutter) — la correction ne fait donc que **retirer** une promesse, elle n'en ajoute aucune.
 - **2026-10-17 (#8601, mission Travel OS / BC-24)** — `leopardo_core/lib/core/theme/app_colors.dart` :
   échelle de couleurs « plan de sièges Travel OS » (`seatFree`/`seatSelected`/`seatHeld`/`seatReserved`/
   `seatPendingPayment`/`seatSold`/`seatBlocked`/`seatUnavailable` + bordures et encres associées)
