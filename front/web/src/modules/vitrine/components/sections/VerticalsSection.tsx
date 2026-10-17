@@ -25,8 +25,6 @@ type Copy = {
   badge: string;
   title: string;
   subtitle: string;
-  /** Pastille affichée sur chaque carte : le pack métier est offert. */
-  freeBadge: string;
   cards: VerticalCard[];
 };
 
@@ -37,8 +35,7 @@ const copyByLocale: Record<AppLocale, Copy> = {
     badge: 'Verticales métier',
     title: 'Une plateforme, vos métiers',
     subtitle:
-      'Chaque verticale se branche sur le socle commun — pointage, paie, RH, compta — avec ses modules dédiés, et le pack de démarrage est offert.',
-    freeBadge: 'Pack offert',
+      'Chaque verticale se branche sur le socle commun — pointage, paie, RH, compta — avec ses modules dédiés.',
     cards: [
       {
         icon: <UtensilsCrossed className={iconClass} />,
@@ -50,37 +47,37 @@ const copyByLocale: Record<AppLocale, Copy> = {
       {
         icon: <Plane className={iconClass} />,
         name: 'Agences de voyage',
-        benefit: 'Dossiers clients, commissions et paie des équipes au même endroit.',
+        benefit: 'Dossiers clients, paiements et paie des équipes au même endroit.',
         href: '/packs/agence-de-voyage',
-        linkLabel: 'Voir le pack offert',
+        linkLabel: 'Découvrir',
       },
       {
         icon: <GraduationCap className={iconClass} />,
         name: 'Écoles & formation',
         benefit: 'Présence du personnel, absences et paie alignées sur le calendrier scolaire.',
         href: '/packs/ecole',
-        linkLabel: 'Voir le pack offert',
+        linkLabel: 'Découvrir',
       },
       {
         icon: <Fuel className={iconClass} />,
         name: 'Stations-service',
         benefit: 'Équipes tournantes pointées sur site, heures et majorations vers la paie.',
         href: '/packs/station-service',
-        linkLabel: 'Voir le pack offert',
+        linkLabel: 'Découvrir',
       },
       {
         icon: <Gift className={iconClass} />,
         name: 'Cagnottes solidaires',
         benefit: 'Lancez une cagnotte en 2 minutes, collectez par carte et mobile money, reversez au bénéficiaire.',
         href: '/packs/cagnottes',
-        linkLabel: 'Voir le pack offert',
+        linkLabel: 'Découvrir',
       },
       {
         icon: <CarTaxiFront className={iconClass} />,
         name: 'VTC & Taxi',
         benefit: 'Vos courses réservables sans compte sur la marketplace, dispatch vers le chauffeur disponible le plus proche.',
         href: '/packs/vtc',
-        linkLabel: 'Voir le pack offert',
+        linkLabel: 'Découvrir',
       },
     ],
   },
@@ -88,8 +85,7 @@ const copyByLocale: Record<AppLocale, Copy> = {
     badge: 'Industry verticals',
     title: 'One platform, your industries',
     subtitle:
-      'Each vertical plugs into the shared foundation — attendance, payroll, HR, accounting — with its own dedicated modules, and the starter pack is free.',
-    freeBadge: 'Free pack',
+      'Each vertical plugs into the shared foundation — attendance, payroll, HR, accounting — with its own dedicated modules.',
     cards: [
       {
         icon: <UtensilsCrossed className={iconClass} />,
@@ -101,37 +97,37 @@ const copyByLocale: Record<AppLocale, Copy> = {
       {
         icon: <Plane className={iconClass} />,
         name: 'Travel agencies',
-        benefit: 'Client files, commissions and team payroll in one place.',
+        benefit: 'Client files, payments and team payroll in one place.',
         href: '/packs/agence-de-voyage',
-        linkLabel: 'See the free pack',
+        linkLabel: 'Discover',
       },
       {
         icon: <GraduationCap className={iconClass} />,
         name: 'Schools & training',
         benefit: 'Staff attendance, leave and payroll aligned with the school calendar.',
         href: '/packs/ecole',
-        linkLabel: 'See the free pack',
+        linkLabel: 'Discover',
       },
       {
         icon: <Fuel className={iconClass} />,
         name: 'Fuel stations',
         benefit: 'Rotating crews clocked on site, hours and overtime straight to payroll.',
         href: '/packs/station-service',
-        linkLabel: 'See the free pack',
+        linkLabel: 'Discover',
       },
       {
         icon: <Gift className={iconClass} />,
         name: 'Solidarity fundraisers',
         benefit: 'Launch a fundraiser in 2 minutes, collect by card and mobile money, pay out to the beneficiary.',
         href: '/packs/cagnottes',
-        linkLabel: 'See the free pack',
+        linkLabel: 'Discover',
       },
       {
         icon: <CarTaxiFront className={iconClass} />,
         name: 'VTC & Taxi',
         benefit: 'Your rides bookable account-free on the public marketplace, dispatched to the nearest available driver.',
         href: '/packs/vtc',
-        linkLabel: 'See the free pack',
+        linkLabel: 'Discover',
       },
     ],
   },
@@ -139,8 +135,7 @@ const copyByLocale: Record<AppLocale, Copy> = {
     badge: 'Sektör çözümleri',
     title: 'Tek platform, sizin sektörleriniz',
     subtitle:
-      'Her dikey çözüm ortak temele — yoklama, bordro, İK, muhasebe — kendi modülleriyle bağlanır; başlangıç paketi ücretsizdir.',
-    freeBadge: 'Ücretsiz paket',
+      'Her dikey çözüm ortak temele — yoklama, bordro, İK, muhasebe — kendi modülleriyle bağlanır.',
     cards: [
       {
         icon: <UtensilsCrossed className={iconClass} />,
@@ -154,35 +149,35 @@ const copyByLocale: Record<AppLocale, Copy> = {
         name: 'Seyahat acenteleri',
         benefit: 'Müşteri dosyaları, komisyonlar ve ekip bordrosu tek yerde.',
         href: '/packs/agence-de-voyage',
-        linkLabel: 'Ücretsiz paketi görün',
+        linkLabel: 'Keşfedin',
       },
       {
         icon: <GraduationCap className={iconClass} />,
         name: 'Okullar & eğitim',
         benefit: 'Personel yoklaması, izinler ve bordro okul takvimiyle uyumlu.',
         href: '/packs/ecole',
-        linkLabel: 'Ücretsiz paketi görün',
+        linkLabel: 'Keşfedin',
       },
       {
         icon: <Fuel className={iconClass} />,
         name: 'Akaryakıt istasyonları',
         benefit: 'Vardiyalı ekipler sahada yoklanır, saatler ve fazla mesai bordroya akar.',
         href: '/packs/station-service',
-        linkLabel: 'Ücretsiz paketi görün',
+        linkLabel: 'Keşfedin',
       },
       {
         icon: <Gift className={iconClass} />,
         name: 'Dayanışma kampanyaları',
         benefit: '2 dakikada kampanya başlatın, kart ve mobil para ile toplayın, hak sahibine aktarın.',
         href: '/packs/cagnottes',
-        linkLabel: 'Ücretsiz paketi görün',
+        linkLabel: 'Keşfedin',
       },
       {
         icon: <CarTaxiFront className={iconClass} />,
         name: 'VTC & Taksi',
         benefit: 'Yolculuklarınız pazarda hesapsız rezerve edilir, en yakın müsait sürücüye atanır.',
         href: '/packs/vtc',
-        linkLabel: 'Ücretsiz paketi görün',
+        linkLabel: 'Keşfedin',
       },
     ],
   },
@@ -190,8 +185,7 @@ const copyByLocale: Record<AppLocale, Copy> = {
     badge: 'حلول حسب القطاع',
     title: 'منصة واحدة، قطاعاتكم',
     subtitle:
-      'كل حل قطاعي يتصل بالأساس المشترك — الحضور، الرواتب، الموارد البشرية، المحاسبة — مع وحداته الخاصة، وحزمة البداية مجانية.',
-    freeBadge: 'حزمة مجانية',
+      'كل حل قطاعي يتصل بالأساس المشترك — الحضور، الرواتب، الموارد البشرية، المحاسبة — مع وحداته الخاصة.',
     cards: [
       {
         icon: <UtensilsCrossed className={iconClass} />,
@@ -205,35 +199,35 @@ const copyByLocale: Record<AppLocale, Copy> = {
         name: 'وكالات السفر',
         benefit: 'ملفات العملاء والعمولات ورواتب الفرق في مكان واحد.',
         href: '/packs/agence-de-voyage',
-        linkLabel: 'شاهد الحزمة المجانية',
+        linkLabel: 'اكتشف',
       },
       {
         icon: <GraduationCap className={iconClass} />,
         name: 'المدارس والتكوين',
         benefit: 'حضور الموظفين والغيابات والرواتب بما يناسب التقويم المدرسي.',
         href: '/packs/ecole',
-        linkLabel: 'شاهد الحزمة المجانية',
+        linkLabel: 'اكتشف',
       },
       {
         icon: <Fuel className={iconClass} />,
         name: 'محطات الوقود',
         benefit: 'فرق المناوبة تسجل حضورها في الموقع، والساعات والإضافي تذهب للرواتب.',
         href: '/packs/station-service',
-        linkLabel: 'شاهد الحزمة المجانية',
+        linkLabel: 'اكتشف',
       },
       {
         icon: <Gift className={iconClass} />,
         name: 'حملات التضامن',
         benefit: 'أطلق حملة في دقيقتين، واجمع التبرعات بالبطاقة والموبايل موني، وحوّلها للمستفيد.',
         href: '/packs/cagnottes',
-        linkLabel: 'شاهد الحزمة المجانية',
+        linkLabel: 'اكتشف',
       },
       {
         icon: <CarTaxiFront className={iconClass} />,
         name: 'VTC والأجرة',
         benefit: 'رحلاتكم قابلة للحجز دون حساب على السوق العامة، مع الإرسال لأقرب سائق متاح.',
         href: '/packs/vtc',
-        linkLabel: 'شاهد الحزمة المجانية',
+        linkLabel: 'اكتشف',
       },
     ],
   },
@@ -295,9 +289,6 @@ export function VerticalsSection({ locale = 'fr' }: VerticalsSectionProps) {
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                     {card.name}
                   </h3>
-                  <span className="inline-flex shrink-0 items-center rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-emerald-700 ring-1 ring-emerald-500/25 dark:text-emerald-300">
-                    {copy.freeBadge}
-                  </span>
                 </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 flex-1">
                   {card.benefit}

@@ -32,7 +32,11 @@ class SyncFuelReadingsRequest extends FormRequest
             'readings.*.timezone' => ['nullable', 'string', 'max:64'],
             'readings.*.shift_id' => ['nullable', 'integer'],
             'readings.*.device_reference' => ['nullable', 'string', 'max:120'],
-            'readings.*.idempotency_key' => ['required', 'string', 'max:191'],
+            // Meme contrainte que StoreMeterReadingRequest (releve unitaire) :
+            // une cle trop courte provoque des collisions de deduplication
+            // (deux releves distincts ecrases l'un par l'autre). Le lot
+            // synchro acceptait n'importe quelle chaine, y compris "short".
+            'readings.*.idempotency_key' => ['required', 'string', 'max:191', 'regex:/^[A-Za-z0-9\-_.]{8,191}$/'],
         ];
     }
 }

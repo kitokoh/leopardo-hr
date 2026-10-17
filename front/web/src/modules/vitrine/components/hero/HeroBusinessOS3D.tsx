@@ -48,7 +48,6 @@
  */
 
 import { useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { MousePointerClick } from 'lucide-react';
 import {
   ACESFilmicToneMapping,
@@ -87,17 +86,17 @@ export interface HeroBusinessOS3DProps {
   /** Neutralise rotation continue et parallaxe (accessibilité). */
   reducedMotion?: boolean;
   /**
-   * #8390 — un href par module orbital (index = ordre de création) : le clic
-   * sur un module navigue vers sa page (packs en anneau intérieur, entrées
-   * clés de la plateforme en anneau extérieur). Le canvas devient alors
-   * cliquable (pointer-events actifs + curseur pointer au survol). À n'activer
-   * QUE quand la scène n'est PAS derrière du contenu (colonne dédiée du héro
-   * d'accueil) : en fond de page, un clic sur le contenu ne doit jamais être
-   * détourné par un module situé « derrière ».
+   * Mission Leopardo — un module orbital cliqué (index = ordre de création) :
+   * le parent reçoit cet INDEX (anneau intérieur ×5 puis anneau extérieur ×5)
+   * et affiche la fiche interactive de la solution (`SolutionCard`). Le canvas
+   * devient alors cliquable (pointer-events actifs + curseur pointer au
+   * survol). À ne fournir QUE quand le héros porte les solutions : en fond de
+   * page, un clic sur le contenu ne doit jamais être détourné par un module
+   * situé « derrière ».
    */
-  moduleLinks?: string[];
+  onSelectModule?: (index: number) => void;
   /**
-   * #8404 — un libellé par module orbital (même ordre que `moduleLinks`) :
+   * #8404 — un libellé par module orbital (même ordre que la scène) :
    * chaque losange porte son nom à l'écran — fini les modules anonymes dont
    * on ignore qu'ils sont cliquables ni où ils mènent.
    */
@@ -130,8 +129,15 @@ const CYAN = new Color('#06b6d4');
 const CORE_COLOR = new Color('#0d9488');
 
 /** Étiquette HTML d'un module — Tailwind (classes scannées dans ce fichier). */
+// Vague 6 — les étiquettes passent en VERRE SOMBRE. Sur un héros nuit
+// permanente, les pastilles blanches étaient les éléments les plus lumineux de
+// l'écran : elles disputaient la vedette à la constellation et faisaient
+// « bruit » sur le titre. Le verre sombre les rend lisibles sans les allumer.
+// Vague 6 (correctif a11y) — l'étiquette est un BOUTON : elle doit donc
+// recevoir le pointeur et le focus clavier. `pointer-events-none` est retiré
+// et un anneau `focus-visible` rend le focus visible sur le fond nuit.
 const LABEL_CLASS =
-  'pointer-events-none absolute left-0 top-0 z-10 flex items-center gap-1.5 whitespace-nowrap rounded-full border border-slate-200/70 bg-white/85 px-2 py-0.5 text-[10px] font-semibold text-slate-600 shadow-sm backdrop-blur-sm transition-opacity dark:border-slate-700/60 dark:bg-slate-900/85 dark:text-slate-300';
+  'absolute left-0 top-0 z-10 flex items-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 bg-slate-950/55 px-2 py-0.5 text-[10px] font-semibold text-slate-200/90 shadow-lg shadow-slate-950/40 backdrop-blur-md transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400';
 const LABEL_DOT_CLASS = 'h-1.5 w-1.5 rounded-full';
 
 type ModuleNode = {
@@ -142,8 +148,9 @@ type ModuleNode = {
   baseScale: number;
   hoverT: number;
   pulse: number;
-  href?: string;
-  labelEl?: HTMLDivElement;
+  /** Index du module dans l'ordre de création (0 = 1er module d'anneau int.). */
+  index: number;
+  labelEl?: HTMLButtonElement;
 };
 
 /** Texture de lueur radiale (créée une fois à l'init, jamais en boucle). */
@@ -204,7 +211,7 @@ type ShootingStar = {
 
 export function HeroBusinessOS3D({
   reducedMotion = false,
-  moduleLinks,
+  onSelectModule,
   moduleLabels,
   hint,
   dimmed = false,
@@ -212,15 +219,13 @@ export function HeroBusinessOS3D({
   const hostRef = useRef<HTMLDivElement>(null);
   const reducedRef = useRef(reducedMotion);
   reducedRef.current = reducedMotion;
-  const router = useRouter();
-  const routerRef = useRef(router);
-  routerRef.current = router;
-  // Les liens/libellés sont figés au montage (la scène ne se reconstruit pas)
-  // — passage par ref pour garder l'effet en deps [] sans warning
+  // Le callback/libellés sont figés au montage (la scène ne se reconstruit
+  // pas) — passage par ref pour garder l'effet en deps [] sans warning
   // exhaustive-deps.
-  const linksRef = useRef(moduleLinks);
+  const onSelectRef = useRef(onSelectModule);
+  onSelectRef.current = onSelectModule;
   const labelsRef = useRef(moduleLabels);
-  const interactive = Boolean(moduleLinks && moduleLinks.length > 0);
+  const interactive = Boolean(onSelectModule);
   const interactiveRef = useRef(interactive);
 
   useEffect(() => {
@@ -247,7 +252,7 @@ export function HeroBusinessOS3D({
     const keyLight = new DirectionalLight(0xffffff, 1.1);
     keyLight.position.set(4, 6, 8);
     scene.add(keyLight);
-    const glowLight = new PointLight(EMERALD, 18, 14);
+    const glowLight = new PointLight(EMERALD, 26, 15);
     glowLight.position.set(0, 0, 0);
     scene.add(glowLight);
 
@@ -256,7 +261,10 @@ export function HeroBusinessOS3D({
     // constellation descend d'un demi-monde pour que le noyau (la grosse
     // gemme) ne croise jamais le texte — seuls les petits modules en orbite
     // le frôlent, ce qui fait tout le charme de la composition.
-    world.position.y = -0.5;
+    // Vague 6 — la scène descend franchement sous le titre : le noyau et les
+    // anneaux occupent le tiers médian, le tiers haut appartient à la phrase.
+    // C'est ce qui la rend lisible SANS la sortir de sous la constellation.
+    world.position.y = -0.85;
     scene.add(world);
 
     // ── Noyau : la plateforme (gemme à facettes + halo) ────────────────
@@ -266,7 +274,7 @@ export function HeroBusinessOS3D({
       new MeshStandardMaterial({
         color: CORE_COLOR,
         emissive: new Color('#064e3b'),
-        emissiveIntensity: 0.7,
+        emissiveIntensity: 1.15,
         metalness: 0.35,
         roughness: 0.32,
         transparent: true,
@@ -288,12 +296,12 @@ export function HeroBusinessOS3D({
       new SpriteMaterial({
         map: coreHaloTexture,
         transparent: true,
-        opacity: 0.5,
+        opacity: 0.62,
         depthWrite: false,
         blending: AdditiveBlending,
       }),
     );
-    coreHalo.scale.setScalar(5.6);
+    coreHalo.scale.setScalar(6.4);
     coreHalo.position.set(0, 0, -0.4);
     world.add(coreHalo);
 
@@ -351,7 +359,7 @@ export function HeroBusinessOS3D({
           baseScale: 1,
           hoverT: 0,
           pulse: 0,
-          href: linksRef.current?.[nodeIndex],
+          index: nodeIndex,
         });
         world.add(mesh);
       }
@@ -499,20 +507,35 @@ export function HeroBusinessOS3D({
 
     // ── Étiquettes des modules (#8404 — affordance) ────────────────────
     // Créées une fois (mode interactif avec libellés uniquement), déplacées
-    // par projection à chaque image. Jamais cliquables (pointer-events:none).
-    const labelEls: HTMLDivElement[] = [];
+    // par projection à chaque image.
+    // Vague 6 (correctif a11y) — l'étiquette est un VRAI bouton : la fiche
+    // s'ouvre au clavier (Entrée/Espace) comme à la souris, et le focus revient
+    // ici à la fermeture. Défaut mesuré en navigateur : la constellation
+    // n'était atteignable qu'au pointeur, et le focus retombait sur <body>.
+    let focusedLabel: HTMLButtonElement | null = null;
+    const labelEls: HTMLButtonElement[] = [];
     if (interactiveRef.current && labelsRef.current && labelsRef.current.length > 0) {
       nodes.forEach((node, index) => {
         const text = labelsRef.current?.[index];
         if (!text) return;
-        const el = document.createElement('div');
+        const el = document.createElement('button');
+        el.type = 'button';
         el.className = LABEL_CLASS;
+        el.setAttribute('aria-label', text);
+        el.tabIndex = 0;
         const dot = document.createElement('span');
         dot.className = LABEL_DOT_CLASS;
         dot.style.backgroundColor = `#${(node.mesh.material.color as Color).getHexString()}`;
         const caption = document.createElement('span');
         caption.textContent = text;
         el.append(dot, caption);
+        el.addEventListener('click', () => onSelectRef.current?.(index));
+        el.addEventListener('focus', () => {
+          focusedLabel = el;
+        });
+        el.addEventListener('blur', () => {
+          if (focusedLabel === el) focusedLabel = null;
+        });
         host.appendChild(el);
         node.labelEl = el;
         labelEls.push(el);
@@ -533,6 +556,21 @@ export function HeroBusinessOS3D({
     // resize — pas de lecture layout dans la boucle).
     let viewW = 1;
     let viewH = 1;
+    // Vague 6 — anti-chevauchement : tampon réutilisé (aucune allocation par
+    // image) + ordre de placement trié par ordonnée.
+    const labelSlots = nodes.map(() => ({
+      el: null as HTMLButtonElement | null,
+      x: 0,
+      y: 0,
+      depth: 1,
+      visible: false,
+      hovered: false,
+    }));
+    const labelOrder: number[] = [];
+    const coreVec = new Vector3();
+    let coreScreenX = 0;
+    let coreScreenY = 0;
+    let coreClear = 0;
 
     const onPointerMove = (event: PointerEvent): void => {
       const rect = host.getBoundingClientRect();
@@ -550,10 +588,11 @@ export function HeroBusinessOS3D({
     const onPointerDown = (): void => {
       if (!hovered) return;
       hovered.pulse = 1;
-      // #8390 — clic sur un module lié : navigation (locale conservée via la
-      // query courante, même règle que `withLocaleHref`).
-      if (hovered.href) {
-        routerRef.current.push(`${hovered.href}${window.location.search}`);
+      // Mission Leopardo — le clic n'ouvre plus directement une page : le
+      // parent affiche la fiche interactive de la solution (l'impulsion reste
+      // l'accusé de réception visuel du clic).
+      if (interactiveRef.current) {
+        onSelectRef.current?.(hovered.index);
       }
     };
 
@@ -574,10 +613,14 @@ export function HeroBusinessOS3D({
       // propriétaire « qu'elle occupe tout l'espace » — tout en gardant les
       // étiquettes des modules extérieurs dans le panneau.
       // #8438 — plein cadre (layout `stage`) : l'échelle tient compte de la
-      // hauteur autant que de la largeur, la constellation reste entière sur
-      // mobile portrait comme sur écran large.
-      const scale = Math.min(1.12, Math.min(width / 1000, height / 750));
-      world.scale.setScalar(Math.max(0.45, scale));
+      // hauteur autant que de la largeur. Retour utilisateur vague 5 : la
+      // constellation doit DOMINER l'écran (« l'agrandir un peu »), on relève
+      // donc le plafond (1,12 → 1,3) et le plancher (0,45 → 0,55) : les
+      // écrans larges gagnent ~16 % et le mobile ne devient pas illisible.
+      // Vague 6 — la constellation doit DOMINER l'écran : plafond relevé
+      // (1.42 → 1.52) tout en gardant un plancher lisible sur mobile.
+      const scale = Math.min(1.52, Math.min(width / 860, height / 690));
+      world.scale.setScalar(Math.max(0.62, scale));
     };
     resize();
     const resizeObserver = new ResizeObserver(resize);
@@ -729,13 +772,22 @@ export function HeroBusinessOS3D({
       hovered = nodes.find((n) => n.mesh === hit) ?? null;
       // Curseur pointer au survol d'un module cliquable (canvas interactif).
       if (interactiveRef.current) {
-        host.style.cursor = hovered?.href ? 'pointer' : '';
+        host.style.cursor = hovered ? 'pointer' : '';
       }
 
       // Étiquettes : projection écran à chaque image (#8404). La distance à
       // la caméra estompe doucement les modules à l'arrière de l'orbite ;
       // le module survolé passe en pleine lumière.
       if (labelEls.length > 0) {
+        // Position écran du noyau : les étiquettes qui tomberaient dessus sont
+        // masquées (elles se lisaient comme des taches sur la gemme).
+        core.getWorldPosition(coreVec);
+        coreVec.project(camera);
+        coreScreenX = (coreVec.x * 0.5 + 0.5) * viewW;
+        coreScreenY = (-coreVec.y * 0.5 + 0.5) * viewH;
+        coreClear = Math.min(78, viewW * 0.075);
+
+        let slotCount = 0;
         nodes.forEach((node) => {
           const el = node.labelEl;
           if (!el) return;
@@ -744,10 +796,53 @@ export function HeroBusinessOS3D({
           labelVec.project(camera);
           const x = (labelVec.x * 0.5 + 0.5) * viewW;
           const y = (-labelVec.y * 0.5 + 0.5) * viewH;
-          el.style.transform = `translate(-50%, -135%) translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
-          const depthFade = Math.min(1, Math.max(0.45, 1.5 - distance / 12));
-          el.style.opacity = hovered === node ? '1' : depthFade.toFixed(2);
+          const slot = labelSlots[slotCount];
+          slotCount += 1;
+          slot.el = el;
+          slot.x = x;
+          slot.y = y;
+          // Le survol souris OU le focus clavier allume l'étoile : un
+          // utilisateur au clavier doit voir la même mise en avant.
+          slot.hovered = hovered === node || (focusedLabel !== null && node.labelEl === focusedLabel);
+          slot.depth = Math.min(1, Math.max(0.45, 1.5 - distance / 12));
+          // Derrière la caméra ou très loin hors cadre : rien à afficher.
+          const onCore =
+            Math.hypot(x - coreScreenX, y - coreScreenY) < coreClear;
+          slot.visible =
+            labelVec.z < 1 && x > -32 && x < viewW + 32 && y > -32 && y < viewH + 32 && !onCore;
         });
+
+        // Anti-chevauchement : on place du haut vers le bas et on repousse vers
+        // le bas toute étiquette qui empiéterait sur la précédente.
+        labelOrder.length = slotCount;
+        for (let i = 0; i < slotCount; i += 1) labelOrder[i] = i;
+        labelOrder.sort((a, b) => labelSlots[a].y - labelSlots[b].y);
+        let lastY = Number.NEGATIVE_INFINITY;
+        const minGap = 19;
+        for (let i = 0; i < slotCount; i += 1) {
+          const slot = labelSlots[labelOrder[i]];
+          if (slot.y - lastY < minGap) slot.y = lastY + minGap;
+          lastY = slot.y;
+        }
+
+        for (let i = 0; i < slotCount; i += 1) {
+          const slot = labelSlots[i];
+          const el = slot.el;
+          if (!el) continue;
+          // Garde-fou de bord (#8438, vague 5) : sur mobile la sphère déborde
+          // du cadre et les étiquettes sortaient tronquées (« OS » seul
+          // visible à gauche). Marge ramenée à 12 % — les libellés restent
+          // entiers sur les trois formats.
+          const margin = viewW * 0.12;
+          const clampedX = Math.min(viewW - margin, Math.max(margin, slot.x));
+          const clampedY = Math.min(viewH - 26, Math.max(26, slot.y));
+          el.style.transform = `translate(-50%, -135%) translate(${clampedX.toFixed(1)}px, ${clampedY.toFixed(1)}px)`;
+          el.style.opacity = slot.visible ? (slot.hovered ? '1' : slot.depth.toFixed(2)) : '0';
+          // Une étiquette hors cadre ne doit ni se cliquer ni se tabuler :
+          // sinon des boutons invisibles polluent l'ordre de tabulation.
+          el.style.visibility = slot.visible ? 'visible' : 'hidden';
+          el.tabIndex = slot.visible ? 0 : -1;
+        }
       }
 
       renderer.render(scene, camera);
@@ -819,8 +914,11 @@ export function HeroBusinessOS3D({
     <>
       <div
         ref={hostRef}
-        aria-hidden="true"
-        className={`absolute inset-0 overflow-hidden ${moduleLinks && moduleLinks.length > 0 ? '' : 'pointer-events-none'} ${dimmed ? 'opacity-[0.55]' : ''}`}
+        // En mode interactif, les étiquettes-boutons sont de vrais contrôles :
+        // `aria-hidden` les retirerait de l'arbre d'accessibilité tout en les
+        // laissant focusables (violation). Le canvas, lui, reste décoratif.
+        aria-hidden={interactive ? undefined : true}
+        className={`absolute inset-0 overflow-hidden ${interactive ? '' : 'pointer-events-none'} ${dimmed ? 'opacity-[0.55]' : ''}`}
       />
       {/* #8404 — indice d'interaction : sans lui, personne ne devine que les
           losanges sont cliquables. Visuel uniquement (aria-hidden) : les

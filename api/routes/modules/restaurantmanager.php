@@ -47,6 +47,8 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderT
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentConfigurationController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPosSessionController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPrintBridgeController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPrintJobController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductIngredientController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductPublicationController;
@@ -223,6 +225,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/kitchen/orders/{restaurantOrder}/start', [RestaurantKitchenController::class, 'start']);
         Route::post('/kitchen/orders/{restaurantOrder}/ready', [RestaurantKitchenController::class, 'ready']);
 
+        // ── Impression thermique — surface authentifiée (REST-OS-3) ──────
+        // Mise en file idempotente du ticket cuisine, suivi et réimpression
+        // explicite (nouvelle révision). Autorisation ressource-scopée (#7599).
+        Route::get('/print-jobs', [RestaurantPrintJobController::class, 'index']);
+        Route::get('/print-jobs/{restaurantPrintJob}', [RestaurantPrintJobController::class, 'show']);
+        Route::post('/print-jobs/{restaurantPrintJob}/requeue', [RestaurantPrintJobController::class, 'requeue']);
+        Route::post('/orders/{restaurantOrder}/print-jobs', [RestaurantPrintJobController::class, 'enqueue']);
+
         // ── Stock & mouvements (RESTO-501/#6200) ─────────────────────────────
         Route::get('/stock-levels', [RestaurantStockLevelController::class, 'index']);
         Route::put('/stock-levels/{restaurantStockLevel}', [RestaurantStockLevelController::class, 'update']);
@@ -353,6 +363,25 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/promotions/validate', [RestaurantPromotionController::class, 'validateCode']);
         Route::get('/dashboard/kpis', [RestaurantReportController::class, 'kpis']);
         Route::post('/reports/export', [RestaurantReportExportController::class, 'export']);
+    });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Bridge d'impression LOCAL (REST-OS-3) — hors auth Sanctum.
+// La confiance est portée par un jeton partagé (hash en env) + `X-Company-Id`,
+// vérifiés par le middleware `restaurant.print.bridge` (fail-closed) qui pose
+// le contexte tenant. Le bridge récupère les travaux et accuse l'impression
+// RÉELLE : l'API ne suppose jamais qu'une requête émise = papier imprimé.
+// ─────────────────────────────────────────────────────────────────────────────
+Route::middleware(['restaurant.print.bridge', 'throttle:60,1'])
+    ->prefix('restaurant/printing/bridge')
+    ->group(function (): void {
+        Route::get('/health', [RestaurantPrintBridgeController::class, 'health']);
+        Route::get('/jobs', [RestaurantPrintBridgeController::class, 'jobs']);
+        Route::post('/jobs/{restaurantPrintJob}/claim', [RestaurantPrintBridgeController::class, 'claim']);
+        Route::post('/jobs/{restaurantPrintJob}/ack', [RestaurantPrintBridgeController::class, 'ack']);
+        Route::post('/jobs/{restaurantPrintJob}/fail', [RestaurantPrintBridgeController::class, 'fail']);
+        Route::get('/jobs/{restaurantPrintJob}/payload', [RestaurantPrintBridgeController::class, 'payload']);
+        Route::get('/jobs/{restaurantPrintJob}/preview', [RestaurantPrintBridgeController::class, 'preview']);
     });
 
 // Téléchargement d'export signé — route publique (la signature EST l'auth).

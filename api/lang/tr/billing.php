@@ -11,4 +11,7 @@ return [
     'trial_password_link_expired' => 'Bu parola belirleme bağlantısının süresi doldu (72 saat). Giriş sayfasından bir giriş kodu isteyin, ardından parolanızı alanınızdan belirleyin.',
     'trial_password_manager_missing' => 'Deneme yöneticisi hesabı bulunamadı. Lütfen destek ile iletişime geçin.',
     'trial_password_set' => 'Parola kaydedildi. Artık giriş yapabilirsiniz.',
+    // BOS-O-01/03 (#8623/#8625) — guided provisioning messages (i18n guard PA2-I18N-007).
+    'invalid_market_intent' => 'Geçersiz pazar niyeti: ":profile" profili ":market" pazarıyla uyumsuz.',
+    'primary_site_name' => 'Ana işletme',
 ];

@@ -36,6 +36,15 @@ class FuelOutboxDispatchCommand extends Command
     /** Durée de lease d'un événement en cours de traitement (BC-14). */
     private const PROCESSING_LEASE_MINUTES = 15;
 
+    /**
+     * Nombre d'événements mis en dead-letter pendant cette passe.
+     *
+     * Sans ce compteur, la sortie du command annonçait "N traité(s)" même
+     * quand TOUS les événements partaient en échec : la supervision lisait
+     * "outbox saine" alors que rien n'était livré à la comptabilité.
+     */
+    private int $deadLettered = 0;
+
     public function __construct(
         private readonly FuelOutboxConsumerRegistry $registry,
         private readonly TenantManager $tenants,
@@ -61,7 +70,7 @@ class FuelOutboxDispatchCommand extends Command
             }
         }
 
-        $this->info("[fuel:outbox-dispatch] {$processed} événement(s) traité(s).");
+        $this->info("[fuel:outbox-dispatch] {$processed} événement(s) traité(s), {$this->deadLettered} en échec (dead-letter).");
 
         return self::SUCCESS;
     }
@@ -165,6 +174,8 @@ class FuelOutboxDispatchCommand extends Command
 
     private function deadLetter(FuelOutboxEvent $event, string $error): void
     {
+        $this->deadLettered++;
+
         $event->forceFill([
             'status' => FuelOutboxEvent::STATUS_FAILED,
             'attempts' => $event->attempts + 1,

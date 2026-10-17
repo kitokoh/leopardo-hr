@@ -95,6 +95,12 @@ export async function submitSignupForm(
       company_type: data.company_type,
       modules: data.modules,
       solutions: data.solutions,
+      // BOS-O-02 / #8625 — intention de marché capturée par `/trade`
+      // (`?trade=international&profile=importer`). Sans cette remontée, le
+      // choix du visiteur restait cosmétique : le tenant était provisionné
+      // sans marché ni profil.
+      market_type: data.market_type,
+      trade_profile: data.trade_profile,
     };
 
     // #7238 — offre choisie dans le tunnel (prime sur `?plan=` de l'URL).

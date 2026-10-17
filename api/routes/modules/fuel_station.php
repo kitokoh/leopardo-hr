@@ -126,6 +126,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // FUEL-008 (#5802) : ventes (manager).
         Route::get('/fuel-station/sales', [FuelSaleController::class, 'index']);
         Route::get('/fuel-station/sales/{sale}', [FuelSaleController::class, 'show'])->whereNumber('sale');
+        // P1-b (audit 2026-10-17) : annulation compensatoire d'une vente
+        // (acte de supervision — ecriture compensatoire, jamais destructive).
+        Route::post('/fuel-station/sales/{sale}/cancel', [FuelSaleController::class, 'cancel'])
+            ->whereNumber('sale')
+            ->middleware('throttle:fuel-sensitive');
     });
 
     // ———— Batch A (FUEL-009/010/011/014/016/017/018/019/020) ————
@@ -261,4 +266,87 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/fuel-station/alerts', [FuelAlertController::class, 'index']);
     Route::post('/fuel-station/alerts/{alert}/acknowledge', [FuelAlertController::class, 'acknowledge'])->whereNumber('alert')->middleware('throttle:fuel-sensitive');
     Route::post('/fuel-station/alerts/{alert}/resolve', [FuelAlertController::class, 'resolve'])->whereNumber('alert')->middleware('throttle:fuel-sensitive');
+
+    // ---------------------------------------------------------------------
+    // Contrat public complété — les actions ci-dessous sont IMPLÉMENTÉES dans
+    // les contrôleurs mais n'étaient pas enregistrées : les tests Fuel/FuelStation
+    // (241 tests) recevaient 404 sur des endpoints existants (33 échecs).
+    //
+    // L'enregistrement est volontairement placé EN FIN de fichier : Laravel
+    // résout par ordre d'enregistrement, donc les segments spécifiques
+    // (`/reports/daily-sales`, `/reports/exports`, …) continuent de gagner sur
+    // les segments paramétrés (`/reports/{type}`, `/{resource}`).
+    // ---------------------------------------------------------------------
+
+    // Référentiel — CRUD manager (FuelReferenceController::index/show/store/update).
+    // Lecture ouverte à tout employé authentifié du tenant (#7439), écriture
+    // manager : la policy FuelReferencePolicy tranche, comme pour `destroy`.
+    Route::get('/fuel-station/{resource}', [FuelReferenceController::class, 'index'])
+        ->whereIn('resource', ['stations', 'sites', 'pumps', 'tanks', 'meters', 'products']);
+    Route::get('/fuel-station/{resource}/{id}', [FuelReferenceController::class, 'show'])
+        ->whereIn('resource', ['stations', 'sites', 'pumps', 'tanks', 'meters', 'products'])
+        ->whereNumber('id');
+    Route::post('/fuel-station/{resource}', [FuelReferenceController::class, 'store'])
+        ->whereIn('resource', ['stations', 'sites', 'pumps', 'tanks', 'meters', 'products'])
+        ->middleware('throttle:fuel-sensitive');
+    Route::put('/fuel-station/{resource}/{id}', [FuelReferenceController::class, 'update'])
+        ->whereIn('resource', ['stations', 'sites', 'pumps', 'tanks', 'meters', 'products'])
+        ->whereNumber('id')
+        ->middleware('throttle:fuel-sensitive');
+
+    // FUEL-014 (#5808) — synchronisation hors-ligne d'un lot de relevés
+    // (FuelMeterReadingController::sync, endpoint idempotent `readings/sync`).
+    Route::post('/fuel-station/readings/sync', [FuelMeterReadingController::class, 'sync'])
+        ->middleware('throttle:fuel-sensitive');
+
+    // FUEL-009 (#5803) — contrat stock de la suite de tests : niveau des cuves
+    // avec fill_ratio (FuelStockController::stocks), livraison de cuve
+    // (storeDelivery), rapprochement par station (runReconciliation) et lecture
+    // d'un run (showReconciliation).
+    Route::get('/fuel-station/stocks', [FuelStockController::class, 'stocks']);
+    Route::post('/fuel-station/tanks/{tank}/deliveries', [FuelStockController::class, 'storeDelivery'])
+        ->whereNumber('tank')
+        ->middleware('throttle:fuel-sensitive');
+    Route::post('/fuel-station/stations/{station}/reconciliations', [FuelStockController::class, 'runReconciliation'])
+        ->whereNumber('station')
+        ->middleware('throttle:fuel-sensitive');
+    Route::get('/fuel-station/stations/{station}/reconciliations', [FuelStockController::class, 'reconciliations'])
+        ->whereNumber('station');
+    Route::get('/fuel-station/reconciliations/{run}', [FuelStockController::class, 'showReconciliation'])
+        ->whereNumber('run');
+
+    // FUEL-010 (#5804) — transition d'une tâche de maintenance
+    // (FuelIncidentController::transitionTask) : le cycle de vie des tâches est
+    // porté par le même service d'incidents que `assign`/`resolve`/`close`.
+    Route::post('/fuel-station/maintenance-tasks/{task}/transition', [FuelIncidentController::class, 'transitionTask'])
+        ->whereNumber('task')
+        ->middleware('throttle:fuel-sensitive');
+
+    // ---------------------------------------------------------------------
+    // Lot 6 (audit 2026-10-17) — P1-f (vue comparative inter-stations).
+    // Enregistrement AVANT `/reports/{type}` : Laravel resout par ordre
+    // d'enregistrement, donc le segment specifique `station-comparison` doit
+    // etre declare en premier, sinon `{type}` le capture (404
+    // SNAPSHOT_TYPE_UNKNOWN).
+    // ---------------------------------------------------------------------
+
+    // P1-f — comparaison inter-stations (manager, FuelReportPolicy::viewAny).
+    Route::get('/fuel-station/reports/station-comparison', [FuelReportController::class, 'stationComparison']);
+
+    // FUEL-017 (#5811) — rapport typé par segments d'URL
+    // (FuelReportController::show) : `abort(404, 'SNAPSHOT_TYPE_UNKNOWN')` pour un
+    // type hors `FuelReportSnapshot::TYPES`.
+    Route::get('/fuel-station/reports/{type}', [FuelReportController::class, 'show']);
+
+    // ---------------------------------------------------------------------
+    // Lot 6 (audit 2026-10-17) — P1-e (logo de station).
+    // ---------------------------------------------------------------------
+
+    // P1-e — logo de station (manager, FuelStationPolicy::update).
+    Route::post('/fuel-station/stations/{station}/logo', [FuelStationController::class, 'uploadLogo'])
+        ->whereNumber('station')
+        ->middleware('throttle:fuel-sensitive');
+    Route::delete('/fuel-station/stations/{station}/logo', [FuelStationController::class, 'deleteLogo'])
+        ->whereNumber('station')
+        ->middleware('throttle:fuel-sensitive');
 });

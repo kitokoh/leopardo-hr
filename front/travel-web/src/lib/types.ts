@@ -10,6 +10,19 @@ export type MarketplaceCity = {
   region: string | null;
 };
 
+/**
+ * #8645 — disposition physique des sièges exposée par l'API.
+ *
+ * Purement géométrique : nombre de colonnes de sièges et position du couloir.
+ * `is_configured` vaut `false` quand la valeur a été déduite de la capacité
+ * (véhicule non configuré) et non lue sur le véhicule.
+ */
+export type SeatLayoutPayload = {
+  seats_per_row: number;
+  aisle_after: number | null;
+  is_configured: boolean;
+};
+
 export type MarketplaceCityRef = {
   name: string;
   country_iso2: string;
@@ -37,12 +50,37 @@ export type MarketplaceTrip = {
   prices: TripPrice[];
   price_from_minor: number | null;
   currency: string | null;
+  /**
+   * #8645 — disposition PHYSIQUE des sièges du véhicule affecté.
+   *
+   * `null` quand le trajet n'a pas de véhicule, ou quand le véhicule n'a
+   * jamais été configuré : le plan applique alors le repli par capacité.
+   * `is_configured` distingue une géométrie LUE d'une géométrie DÉDUITE.
+   */
+  seat_layout?: SeatLayoutPayload | null;
   agency: { name: string | null };
 };
 
+/**
+ * #8619 — Un siège de l'inventaire réel du trajet.
+ *
+ * L'API publique expose désormais l'inventaire COMPLET : `free` (sélectionnable)
+ * et les états occupés (`reserved`, `sold`, `blocked`, `unavailable`), afin que
+ * le plan de sièges représente la disposition réelle du véhicule.
+ *
+ * Aucune donnée personnelle ni référence de réservation n'est exposée côté
+ * public : le type ne porte donc que le numéro et l'état.
+ */
+export type MarketplaceSeatStatus =
+  | "free"
+  | "reserved"
+  | "sold"
+  | "blocked"
+  | "unavailable";
+
 export type MarketplaceSeat = {
   seat_number: number;
-  status: "free";
+  status: MarketplaceSeatStatus;
 };
 
 export type MarketplaceTripDetail = MarketplaceTrip & {

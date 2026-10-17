@@ -509,4 +509,328 @@ class MarketingOsPlatformTest extends TestCase
             ->assertOk()
             ->assertJsonPath('meta.total', 1);
     }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // 8. Durcissement : idempotence, audit, preuve de publication
+    // ─────────────────────────────────────────────────────────────────────
+
+    /**
+     * Rejouer la MÊME confirmation (double clic, retry réseau) ne doit ni
+     * échouer ni dupliquer l'historique : c'est un rejeu, pas un événement.
+     */
+    public function test_replaying_the_same_confirmation_is_a_no_op(): void
+    {
+        $company = $this->company();
+        $this->actingAsPlatform();
+
+        $publicationId = $this->postJson($this->url($company, '/publications'), [
+            'platform' => 'linkedin',
+            'title' => 'Lancement Leopardo',
+        ])->assertCreated()->json('data.id');
+
+        $payload = [
+            'action' => 'confirm_published',
+            'published_url' => 'https://www.linkedin.com/posts/leopardo-123',
+            'platform_account' => 'Leopardo Officiel',
+        ];
+
+        $this->patchJson($this->url($company, "/publications/{$publicationId}/status"), $payload)
+            ->assertOk()
+            ->assertJsonPath('meta.idempotent', false)
+            ->assertJsonPath('meta.changed', true);
+
+        // Rejeu STRICTEMENT identique.
+        $this->patchJson($this->url($company, "/publications/{$publicationId}/status"), $payload)
+            ->assertOk()
+            ->assertJsonPath('data.status', 'published')
+            ->assertJsonPath('meta.idempotent', true)
+            ->assertJsonPath('meta.changed', false);
+
+        $this->inTenant($company, function () use ($publicationId): void {
+            /** @var MarketingPublication $publication */
+            $publication = MarketingPublication::query()->findOrFail($publicationId);
+
+            // Une seule entrée d'historique : le rejeu n'a rien ajouté.
+            $this->assertNotNull($publication->published_at);
+            $this->assertCount(1, $publication->attempt_history ?? []);
+        });
+    }
+
+    /**
+     * Une transition RÉELLE laisse une trace dans la piste d'audit existante
+     * (brief §J) ; un rejeu n'écrit rien.
+     */
+    public function test_a_real_status_change_is_audited_and_a_replay_is_not(): void
+    {
+        $company = $this->company();
+        $this->actingAsPlatform();
+
+        $publicationId = $this->postJson($this->url($company, '/publications'), [
+            'platform' => 'youtube',
+            'title' => 'Publicité restaurant',
+        ])->assertCreated()->json('data.id');
+
+        $payload = [
+            'action' => 'confirm_published',
+            'published_url' => 'https://www.youtube.com/watch?v=zzzz9999',
+        ];
+
+        $this->patchJson($this->url($company, "/publications/{$publicationId}/status"), $payload)->assertOk();
+        $this->patchJson($this->url($company, "/publications/{$publicationId}/status"), $payload)->assertOk();
+
+        $this->inTenant($company, function () use ($publicationId, $company): void {
+            /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Core\Auth\Domain\Models\AuditLog> $entries */
+            $entries = \App\Core\Auth\Domain\Models\AuditLog::query()
+                ->where('module', 'marketing')
+                ->where('action', 'marketing.publication.published')
+                ->where('auditable_id', $publicationId)
+                ->get();
+
+            // Une transition réelle = une ligne d'audit, même après rejeu.
+            $this->assertCount(1, $entries, 'Le rejeu ne doit pas dupliquer la piste d\'audit.');
+
+            $entry = $entries->first();
+            $this->assertNotNull($entry);
+            $this->assertSame('idea', $entry->old_values['status']);
+            $this->assertSame('published', $entry->new_values['status']);
+            $this->assertSame((string) $company->id, (string) $entry->company_id);
+        });
+    }
+
+    /**
+     * `published` ne peut PAS être déclaré à la création : sans cette garde,
+     * un simple POST contournait l'exigence d'URL réelle.
+     */
+    public function test_published_status_cannot_be_declared_at_creation(): void
+    {
+        $company = $this->company();
+        $this->actingAsPlatform();
+
+        $this->postJson($this->url($company, '/publications'), [
+            'platform' => 'linkedin',
+            'title' => 'Tentative de contournement',
+            'status' => 'published',
+        ])->assertStatus(422);
+
+        $this->postJson($this->url($company, '/publications'), [
+            'platform' => 'linkedin',
+            'title' => 'Tentative de contournement',
+            'status' => 'failed',
+        ])->assertStatus(422);
+
+        // Les statuts de travail restent, eux, acceptés.
+        $this->postJson($this->url($company, '/publications'), [
+            'platform' => 'linkedin',
+            'title' => 'Préparation',
+            'status' => 'in_preparation',
+        ])->assertCreated()->assertJsonPath('data.status', 'in_preparation');
+
+        $this->inTenant($company, function (): void {
+            $this->assertSame(0, MarketingPublication::query()->where('status', 'published')->count());
+        });
+    }
+
+    /**
+     * « Peut-on réutiliser cette ressource ? » dépend de droits RÉELS, pas
+     * d'une constante : des droits expirés bloquent, l'absence de droits non.
+     */
+    public function test_asset_reuse_reflects_real_rights_expiry(): void
+    {
+        $company = $this->company();
+        $this->actingAsPlatform();
+
+        $expiredId = $this->postJson($this->url($company, '/assets'), [
+            'name' => 'Visuel sous licence expirée',
+            'kind' => 'image',
+            'rights' => 'Licence stock limitée',
+            'rights_expires_at' => '2020-01-01',
+        ])->assertCreated()->json('data.id');
+
+        $freeId = $this->postJson($this->url($company, '/assets'), [
+            'name' => 'Création interne',
+            'kind' => 'video',
+        ])->assertCreated()->json('data.id');
+
+        $this->getJson($this->url($company, "/assets/{$expiredId}/publications"))
+            ->assertOk()
+            ->assertJsonPath('data.reusable', false)
+            ->assertJsonCount(1, 'data.reuse_blockers');
+
+        // Pas de droits déclarés ≠ droits absents : on ne bloque pas sur une
+        // information manquante, on la signale simplement.
+        $this->getJson($this->url($company, "/assets/{$freeId}/publications"))
+            ->assertOk()
+            ->assertJsonPath('data.reusable', true)
+            ->assertJsonPath('data.reuse_blockers', []);
+    }
+
+    /**
+     * Le tableau de bord ne doit PAS étiqueter « plateforme » des chiffres
+     * saisis à la main (brief §A/§H).
+     */
+    public function test_manual_stats_are_not_reported_as_platform_measurements(): void
+    {
+        $company = $this->company();
+        $this->actingAsPlatform();
+
+        $publicationId = $this->postJson($this->url($company, '/publications'), [
+            'platform' => 'linkedin',
+        ])->assertCreated()->json('data.id');
+
+        // Un humain confirme la publication AVEC des chiffres saisis : la
+        // provenance doit être `manual`, jamais `platform`.
+        $this->patchJson($this->url($company, "/publications/{$publicationId}/status"), [
+            'action' => 'confirm_published',
+            'published_url' => 'https://www.linkedin.com/posts/leopardo-manual',
+            'stats' => ['impressions' => 1200, 'clicks' => 40],
+        ])->assertOk();
+
+        $this->getJson($this->url($company, '/overview'))
+            ->assertOk()
+            ->assertJsonPath('data.publication_performance.stats_source', 'manual')
+            ->assertJsonPath('data.publication_performance.measured_from_platform', 0)
+            ->assertJsonPath('data.publication_performance.measured_manually', 1);
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // 9. Robustesse des listes : recherche, filtres, pagination
+    // ──────────────────────────────────────────────────────────────────────
+
+    /**
+     * Un `%` ou un `_` saisi dans la recherche est un CARACTERE, pas un joker.
+     *
+     * Sans echappement, chercher « 100% » ramenait tout le catalogue (le `%`
+     * etant interprete comme « n'importe quoi ») : l'utilisateur croyait avoir
+     * trouve une correspondance exacte alors qu'il voyait la liste complete.
+     */
+    public function test_search_wildcards_are_escaped_and_do_not_match_everything(): void
+    {
+        $company = $this->company();
+        $this->actingAsPlatform();
+
+        $this->postJson($this->url($company, '/assets'), [
+            'name' => 'Remise 100% restaurant',
+            'kind' => 'image',
+        ])->assertCreated();
+
+        $this->postJson($this->url($company, '/assets'), [
+            'name' => 'Visuel sans rapport',
+            'kind' => 'image',
+        ])->assertCreated();
+
+        // « 100% » ne doit ramener QUE la ressource qui contient litteralement
+        // cette chaine — pas les deux.
+        $this->getJson($this->url($company, '/assets?search=100%25'))
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.name', 'Remise 100% restaurant');
+
+        // Un motif qui ne correspond a rien reste vide : le `%` seul ne doit
+        // pas se comporter comme « tout ».
+        $this->getJson($this->url($company, '/assets?search=%25'))
+            ->assertOk()
+            ->assertJsonCount(0, 'data');
+    }
+
+    /**
+     * Un filtre hors vocabulaire est REFUSE, pas silencieusement vide.
+     *
+     * `status=publié` (accent, ou faute de frappe) renvoyait 200 avec une liste
+     * vide : l'interface affichait « aucun resultat » alors que la requete
+     * etait simplement malformee. Le contrat est desormais explicite (422).
+     */
+    public function test_unknown_enum_filters_are_rejected_instead_of_returning_an_empty_list(): void
+    {
+        $company = $this->company();
+        $this->actingAsPlatform();
+
+        $this->getJson($this->url($company, '/publications?status=publié'))
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('status');
+
+        $this->getJson($this->url($company, '/publications?mode=automatique'))
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('mode');
+
+        $this->getJson($this->url($company, '/assets?kind=film'))
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('kind');
+
+        $this->getJson($this->url($company, '/ideas?format=reel'))
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('format');
+
+        $this->getJson($this->url($company, '/campaigns?objective=vente'))
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('objective');
+
+        // Un filtre VALIDE continue de fonctionner : on n'a pas casse la liste.
+        $this->getJson($this->url($company, '/publications?status=idea'))
+            ->assertOk();
+    }
+
+    /**
+     * Les objectifs de visibilite sont PAGINES, pas tronques en silence.
+     *
+     * L'ancien `limit(100)` coupait la liste sans le dire : l'interface ne
+     * pouvait ni afficher le total ni atteindre les objectifs suivants.
+     */
+    public function test_visibility_objectives_are_paginated_with_a_real_total(): void
+    {
+        $company = $this->company();
+        $this->actingAsPlatform();
+
+        foreach (range(1, 3) as $index) {
+            $this->postJson($this->url($company, '/visibility-objectives'), [
+                'channel' => 'seo',
+                'keyword' => "mot-cle-{$index}",
+            ])->assertCreated();
+        }
+
+        $this->getJson($this->url($company, '/visibility-objectives?per_page=2'))
+            ->assertOk()
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('meta.total', 3)
+            ->assertJsonPath('meta.last_page', 2)
+            ->assertJsonPath('meta.per_page', 2);
+
+        $this->getJson($this->url($company, '/visibility-objectives?per_page=2&page=2'))
+            ->assertOk()
+            ->assertJsonCount(1, 'data');
+    }
+
+    /**
+     * `attempts` et `attempt_history` racontent le MEME fait.
+     *
+     * Une publication reussie du premier coup affichait `attempts = 0` alors
+     * que son historique contenait deja une entree : deux compteurs du meme
+     * evenement qui se contredisaient a l'ecran.
+     */
+    public function test_a_successful_publication_counts_its_attempt(): void
+    {
+        $company = $this->company();
+        $this->actingAsPlatform();
+
+        $publicationId = $this->postJson($this->url($company, '/publications'), [
+            'platform' => 'linkedin',
+        ])->assertCreated()->json('data.id');
+
+        $this->patchJson($this->url($company, "/publications/{$publicationId}/status"), [
+            'action' => 'confirm_published',
+            'published_url' => 'https://www.linkedin.com/posts/leopardo-attempts',
+        ])->assertOk();
+
+        $this->inTenant($company, function () use ($publicationId): void {
+            /** @var MarketingPublication $publication */
+            $publication = MarketingPublication::query()->findOrFail($publicationId);
+
+            $this->assertSame(1, $publication->attempts);
+            $this->assertCount(1, (array) $publication->attempt_history);
+            $this->assertSame(
+                $publication->attempts,
+                count((array) $publication->attempt_history),
+                'Le compteur de tentatives doit correspondre a l historique.',
+            );
+        });
+    }
 }

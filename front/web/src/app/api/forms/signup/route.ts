@@ -28,6 +28,13 @@ const signupSchema = z.object({
   company_type: z.enum(['company', 'solo']).optional(),
   modules: z.array(z.string().max(40)).max(20).optional(),
   solutions: z.array(z.string().max(40)).max(20).optional(),
+  // BOS-O-02 / #8625 — intention Trade transportée jusqu'au backend. Sans
+  // ces deux clés dans le schéma, zod les supprimait silencieusement avant
+  // l'appel à /trial/signup : le tenant naissait sans marché ni profil.
+  market_type: z.enum(['international', 'domestic']).optional(),
+  trade_profile: z
+    .enum(['importer', 'exporter', 'both', 'wholesaler', 'retailer'])
+    .optional(),
   locale: z.enum(['fr', 'en', 'ar', 'tr']).optional(),
   page: z.string().max(300).optional(),
   source: z.string().max(120).optional(),
@@ -192,6 +199,11 @@ export async function POST(request: NextRequest) {
           company_type: validatedData.company_type,
           modules: validatedData.modules,
           solutions: validatedData.solutions,
+          // BOS-O-02 / #8625 — l'intention de marché doit survivre au tunnel.
+          // `undefined` (non `null`) quand elle est absente : l'API distingue
+          // « pas d'intention déclarée » d'une valeur vide.
+          market_type: validatedData.market_type,
+          trade_profile: validatedData.trade_profile,
           // La langue de l'e-mail OTP doit être celle CHOISIE par l'utilisateur
           // (langue de l'interface), pas la langue par défaut de son pays :
           // un utilisateur turcophone au Maroc recevait un e-mail... en

@@ -9,7 +9,12 @@ use App\Core\Solutions\Contracts\DemoDataKit;
 use App\Core\Solutions\DemoDataRegistry;
 use App\Core\Solutions\SolutionCatalogue;
 use App\Events\SolutionActivated;
+use App\Modules\RestaurantManager\Application\Actions\AckPrintJobAction;
 use App\Modules\RestaurantManager\Application\Actions\ActivateRestaurantManagerAction;
+use App\Modules\RestaurantManager\Application\Actions\BuildKitchenTicketAction;
+use App\Modules\RestaurantManager\Application\Actions\ClaimPrintJobAction;
+use App\Modules\RestaurantManager\Application\Actions\EnqueueKitchenTicketPrintAction;
+use App\Modules\RestaurantManager\Application\Actions\RenderPrintJobPayloadAction;
 use App\Modules\RestaurantManager\Application\Consumers\KitchenOrderNotificationConsumer;
 use App\Modules\RestaurantManager\Application\Consumers\ServiceOrderNotificationConsumer;
 use App\Modules\RestaurantManager\Application\Observers\RestaurantOrderObserver;
@@ -23,16 +28,21 @@ use App\Modules\RestaurantManager\Console\Commands\RestaurantReservationJobsComm
 use App\Modules\RestaurantManager\Console\Commands\RestaurantSendRemindersCommand;
 use App\Modules\RestaurantManager\Console\Commands\SeedRestaurantDemoCommand;
 use App\Modules\RestaurantManager\Console\Commands\StockAlertsCommand;
+use App\Modules\RestaurantManager\Domain\Contracts\OrderTicketRendererInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantBranchRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantOrderRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantPosSessionRepositoryInterface;
+use App\Modules\RestaurantManager\Domain\Contracts\RestaurantPrintJobRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantReservationRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantStockLevelRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Manifests\RestaurantManagerManifest;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantPrintJob;
+use App\Modules\RestaurantManager\Infrastructure\Printing\EscPosOrderTicketRenderer;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantBranchRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantOrderRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantPosSessionRepository;
+use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantPrintJobRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantReservationRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantStockLevelRepository;
 use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppAdapterRegistry;
@@ -45,10 +55,14 @@ use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CashPa
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\MobileMoneyPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\ReceivingService;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDemoSeederService;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDiscoverableProvider;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxConsumerRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use App\Modules\RestaurantManager\Infrastructure\Services\StockMovementService;
+use App\Modules\RestaurantManager\Policies\RestaurantPrintJobPolicy;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -71,6 +85,9 @@ class RestaurantManagerServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        // SUPERAPP-P0 — la verticale expose ses etablissements PUBLICS a la
+        // decouverte unifiee (`/public/discover`) via le contrat partage.
+        $this->app->tag([RestaurantDiscoverableProvider::class], 'public.discoverable');
         // BOS-014 (#8201) — le manifest (contrat Core v2) est enregistré au
         // catalogue central des solutions (clé d'allowlist
         // `restaurantmanager`) : la verticale devient activable via
@@ -123,6 +140,20 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         $this->app->singleton(RestaurantBranchRepositoryInterface::class, RestaurantBranchRepository::class);
         $this->app->singleton(RestaurantPosSessionRepositoryInterface::class, RestaurantPosSessionRepository::class);
         $this->app->singleton(RestaurantOrderRepositoryInterface::class, RestaurantOrderRepository::class);
+        // REST-OS-2 (Mission Leopardo Restaurant OS) — persistance des travaux
+        // d'impression thermique (idempotence par clé métier).
+        $this->app->singleton(RestaurantPrintJobRepositoryInterface::class, RestaurantPrintJobRepository::class);
+
+        // REST-OS-3/5 (Mission Leopardo Restaurant OS) — impression thermique :
+        // le renderer ESC/POS (pur, sans I/O) derrière son port, et les actions
+        // metier (mise en file idempotente, reclamation atomique, accuse
+        // d'impression reelle, rendu du flux pour le bridge local).
+        $this->app->bind(OrderTicketRendererInterface::class, EscPosOrderTicketRenderer::class);
+        $this->app->singleton(BuildKitchenTicketAction::class);
+        $this->app->singleton(EnqueueKitchenTicketPrintAction::class);
+        $this->app->singleton(ClaimPrintJobAction::class);
+        $this->app->singleton(AckPrintJobAction::class);
+        $this->app->singleton(RenderPrintJobPayloadAction::class);
         $this->app->singleton(RestaurantStockLevelRepositoryInterface::class, RestaurantStockLevelRepository::class);
         $this->app->singleton(RestaurantReservationRepositoryInterface::class, RestaurantReservationRepository::class);
 
@@ -154,16 +185,6 @@ class RestaurantManagerServiceProvider extends ServiceProvider
                 new UberEatsDeliveryAppAdapter,
                 new GlovoDeliveryAppAdapter,
             ]);
-
-            // Flux marketplace (webhooks secret-tenant + statut sortant) — génération
-            // distincte (MarketplaceAdapter) : adapters Uber Eats / Glovo complets.
-            $this->app->singleton(\App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppRegistry::class, function (): \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppRegistry {
-                $registry = new \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppRegistry;
-                $registry->register(new \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\UberEatsAdapter);
-                $registry->register(new \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\GlovoAdapter);
-
-                return $registry;
-            });
         });
 
         // RESTO-105 (#6162) — activation tenant (flag + référentiel) ;
@@ -195,6 +216,9 @@ class RestaurantManagerServiceProvider extends ServiceProvider
             $registry = new RestaurantOutboxConsumerRegistry;
             $registry->register(new KitchenOrderNotificationConsumer(app(CommunicationServiceInterface::class)));
             $registry->register(new ServiceOrderNotificationConsumer(app(CommunicationServiceInterface::class)));
+            // REST-OS-5 — observabilité du cycle de vie d'impression (évite la
+            // dead-letter « no_consumer » sur les événements restaurant.print.job.*).
+            $registry->register($this->app->make(\App\Modules\RestaurantManager\Application\Consumers\PrintJobOutboxConsumer::class));
 
             return $registry;
         });
@@ -206,7 +230,7 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         $this->app->singleton(StockAlertService::class);
         $this->app->singleton(StockMovementService::class);
         $this->app->singleton(ReceivingService::class);
-        $this->app->bind(StockDecrementer::class, function ($app): StockDecrementer {
+        $this->app->bind(StockDecrementer::class, function (Application $app): StockDecrementer {
             return new StockDecrementer(
                 $app->make(StockMovementService::class),
                 (bool) config('restaurantmanager.stock.block_on_insufficient', true),
@@ -221,6 +245,11 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         // `restaurant.order.ready.v1` quand une commande passe à ready
         // (notifications équipe de service, découplé du flux POS).
         RestaurantOrder::observe(RestaurantOrderObserver::class);
+
+        // REST-OS-4 (Mission Leopardo Restaurant OS) — Policy des travaux
+        // d'impression (reimpression = geste operationnel de la succursale),
+        // enregistree explicitement (fail-closed : sans Policy, tout est refuse).
+        Gate::policy(RestaurantPrintJob::class, RestaurantPrintJobPolicy::class);
 
         // #7976 — l'activation standard d'une verticale passe par
         // `SolutionActivator` avec le code de solution `restaurant`

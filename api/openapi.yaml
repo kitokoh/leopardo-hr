@@ -1135,6 +1135,797 @@ paths:
           description: Scope bookings.read absent de la cle
         '404':
           description: Reference inconnue dans le tenant de la cle
+  /travel/trips/{travelTrip}/seats:
+    get:
+      tags:
+      - Travel
+      summary: "Plan de sièges du trajet (back-office, lecture seule)"
+      description: >-
+        #8621 — Inventaire des sièges du trajet pour le plan de sièges du
+        back-office. Contrairement à la surface publique
+        (`/public/travel/marketplace/trips/{trip}`), le personnel voit EN PLUS
+        la `booking_reference` rattachée au siège : c'est l'information
+        opérationnelle nécessaire pour retrouver une vente dans le bus.
+        Aucune donnée passager n'est exposée (le manifeste reste la seule voie
+        autorisée pour les identités).
+
+        Bornage tenant : le scope `BelongsToCompany` ET une comparaison
+        explicite `company_id` protègent l'accès — un trajet d'une autre
+        entreprise répond 404 (fail-closed), jamais 403 avec fuite d'existence.
+        Permission : lecture des trajets de l'entreprise.
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Inventaire des sièges (numéro, état, référence de réservation)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      trip_id:
+                        type: integer
+                      code:
+                        type: string
+                      total_seats:
+                        type: integer
+                      seats:
+                        type: array
+                        description: Trié par `seat_number`.
+                        items:
+                          type: object
+                          required: [seat_number, status]
+                          properties:
+                            seat_number:
+                              type: integer
+                            status:
+                              type: string
+                              enum: [free, reserved, sold, blocked, unavailable]
+                            booking_reference:
+                              type: string
+                              nullable: true
+                              description: Référence de réservation (personnel uniquement).
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /travel/trips/{travelTrip}/vehicle-assessment:
+    get:
+      tags:
+      - Travel
+      summary: "Évaluation d'un remplacement de véhicule (aucune écriture)"
+      description: >-
+        #8622 — Calcule les conflits d'un changement de véhicule SANS RIEN
+        ÉCRIRE, pour que l'opérateur voie ce qui bloque avant d'agir.
+
+        `compatible` est faux dès qu'un siège RÉSERVÉ ou VENDU porte un numéro
+        supérieur à la capacité du véhicule cible (conflit `blocking`) : le
+        changement serait refusé par `PUT /travel/trips/{travelTrip}` (409).
+        Les sièges libres ou bloqués au-delà de la capacité remontent en
+        `warning` uniquement. Un véhicule inconnu du tenant produit
+        `compatible: false` avec `error: vehicle_not_found` (fail-closed).
+
+        Aucun passager n'est déplacé silencieusement : la résolution de
+        conflit reste une décision explicite de l'opérateur.
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: vehicle_id
+        in: query
+        required: false
+        schema:
+          type: integer
+          nullable: true
+        description: Véhicule cible à évaluer.
+      responses:
+        '200':
+          description: Verdict de compatibilité et liste des conflits
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      compatible:
+                        type: boolean
+                      current_vehicle_id:
+                        type: integer
+                        nullable: true
+                      target_vehicle_id:
+                        type: integer
+                        nullable: true
+                      target_capacity:
+                        type: integer
+                      trip_total_seats:
+                        type: integer
+                      conflicts:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                              enum: [seat_beyond_capacity, free_seat_beyond_capacity, blocked_seat_beyond_capacity]
+                            seat_number:
+                              type: integer
+                            severity:
+                              type: string
+                              enum: [blocking, warning]
+                            booking_reference:
+                              type: string
+                              nullable: true
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /travel/tickets/verify:
+    post:
+      tags:
+      - Travel
+      summary: Verifier l'authenticite d'un billet (lecture seule)
+      description: >-
+        BC-24 TRAVEL OS (#8538) — VERIFICATION d'un billet, distincte de sa
+        CONSOMMATION (`POST /travel/tickets/{travelTicket}/check-in`) :
+        verifier ne rend jamais le billet inutilisable. Accepte le contenu
+        scanne du QR code (`GV1|<reference>|<code de controle>`) ou une saisie
+        manuelle (reference + code) si la camera ne fonctionne pas. Le code de
+        controle est compare au hash stocke en temps constant. Un code invalide
+        ET une reference inexistante produisent la MEME reponse 404 (aucune
+        fuite d'information) ; cross-tenant -> 404. Permission : travel.checkin.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reference, code]
+              properties:
+                reference:
+                  type: string
+                  maxLength: 64
+                  description: Reference de la reservation.
+                code:
+                  type: string
+                  maxLength: 64
+                  description: Code de controle du billet (HMAC, jamais persiste en clair).
+      responses:
+        '200':
+          description: Billet authentifie — statut operationnel
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        enum: [valid, void, expired, already_used]
+                      ticket_number:
+                        type: string
+                      booking_reference:
+                        type: string
+                      seat_number:
+                        type: integer
+                        nullable: true
+                      trip:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                            nullable: true
+                          departure_date:
+                            type: string
+                            format: date
+                            nullable: true
+                          departure_time:
+                            type: string
+                            nullable: true
+                          origin:
+                            type: string
+                            nullable: true
+                          destination:
+                            type: string
+                            nullable: true
+                      checked_in_at:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      valid_until:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      passenger:
+                        type: object
+                        nullable: true
+                        description: >-
+                          Identite du passager — uniquement pour un operateur
+                          habilite au controle (travel.checkin).
+                        properties:
+                          full_name:
+                            type: string
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission travel.checkin requise
+        '404':
+          description: Reference ou code de controle invalide (reponse identique dans les deux cas)
+        '422':
+          description: Corps de requete invalide
+  /travel/tickets/lookup:
+    post:
+      tags:
+      - Travel
+      summary: Rechercher une reservation par reference (secours camera)
+      description: >-
+        BC-24 TRAVEL OS (#8546) — recherche MANUELLE par reference, utilisee
+        quand la camera ne fonctionne pas ou que l'appareil n'a pas de capteur.
+        LECTURE SEULE, comme `/travel/tickets/verify` : ne consomme JAMAIS le
+        billet. Ne retourne aucun code de controle (il n'est delivre qu'a
+        l'emission) — seulement la reservation, ses billets et leur statut
+        operationnel. L'identite du passager n'est renvoyee que si l'operateur
+        est habilite au controle (`travel.checkin`). Cross-tenant -> 404.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reference]
+              properties:
+                reference:
+                  type: string
+                  maxLength: 64
+                  description: Reference de la reservation.
+      responses:
+        '200':
+          description: Reservation trouvee (billets et statuts)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      booking_reference:
+                        type: string
+                      trip:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                            nullable: true
+                          departure_date:
+                            type: string
+                            format: date
+                            nullable: true
+                          departure_time:
+                            type: string
+                            nullable: true
+                          origin:
+                            type: string
+                            nullable: true
+                          destination:
+                            type: string
+                            nullable: true
+                      tickets:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            ticket_number:
+                              type: string
+                            seat_number:
+                              type: integer
+                              nullable: true
+                            status:
+                              type: string
+                              enum: [valid, void, expired, already_used]
+                            passenger:
+                              type: object
+                              nullable: true
+                              description: >-
+                                `null` si l'operateur n'a pas la permission
+                                `travel.checkin`.
+                              properties:
+                                full_name:
+                                  type: string
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission travel.checkin requise
+        '404':
+          description: Reference inconnue ou hors du tenant
+        '422':
+          description: Corps de requete invalide
+  /travel/reports/offices:
+    get:
+      tags:
+      - Travel
+      summary: Vue consolidee par agence (ventilation des ventes et annulations)
+      description: >-
+        BC-24 TRAVEL OS (#8545) — une ligne par bureau de vente du tenant
+        (`office_id`, nom, ville, reservations, passagers, recettes en minor
+        units, annulations) plus un bloc `totals` egal a la somme des lignes.
+        Les reservations SANS agence (ventes en ligne, `office_id` nul)
+        apparaissent dans une ligne `unassigned` EXPLICITE : elles ne sont
+        jamais absorbees dans une agence, sinon `totals` divergerait du total
+        entreprise. Permission `travel.reports` ; bornage tenant strict.
+      parameters:
+      - name: from
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: source
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Ventilation par agence + totaux
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      from:
+                        type: string
+                      to:
+                        type: string
+                      source:
+                        type: string
+                        nullable: true
+                      offices:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            office_id:
+                              type: integer
+                              nullable: true
+                            name:
+                              type: string
+                            city:
+                              type: string
+                              nullable: true
+                            bookings_count:
+                              type: integer
+                            passengers_count:
+                              type: integer
+                            revenue_minor:
+                              type: integer
+                            cancellations_count:
+                              type: integer
+                      totals:
+                        type: object
+                        properties:
+                          bookings_count:
+                            type: integer
+                          passengers_count:
+                            type: integer
+                          revenue_minor:
+                            type: integer
+                          cancellations_count:
+                            type: integer
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission travel.reports requise
+        '422':
+          description: Parametres invalides (dont office_id hors du tenant)
+  /travel/tickets/{travelTicket}/print-events:
+    get:
+      tags:
+      - Travel
+      summary: Historique des mises a disposition du billet (emission + reimpressions)
+      description: >-
+        BC-24 TRAVEL OS (#8544) — trace des impressions : chaque mise a
+        disposition du PDF (premiere emission, puis reimpressions) est
+        journalisee avec l'operateur, le canal et un numero de reimpression
+        (`reprint_number = 0` pour la premiere emission, 1, 2, ... ensuite).
+        Reimprimer ne modifie JAMAIS le statut du billet : consulter un billet
+        n'est ni un check-in ni une consommation. Permission : manager (meme
+        perimetre que le controle d'embarquement) ; cross-tenant -> 404.
+      parameters:
+      - name: travelTicket
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Historique des impressions du billet
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ticket_number:
+                        type: string
+                      reprints_count:
+                        type: integer
+                      events:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            reprint_number:
+                              type: integer
+                            is_reprint:
+                              type: boolean
+                            channel:
+                              type: string
+                            employee_id:
+                              type: integer
+                              nullable: true
+                            occurred_at:
+                              type: string
+                              nullable: true
+        '401':
+          description: Non authentifie
+        '403':
+          description: Role manager requis
+        '404':
+          description: Billet inconnu dans le tenant de la cle
+  /travel/vehicles/{travelVehicle}/position:
+    post:
+      tags:
+      - Travel
+      summary: Enregistrer la derniere position connue d'un vehicule
+      description: >-
+        BC-24 TRAVEL OS (#8540) — ingestion de la derniere position connue d'un
+        vehicule par un DISPOSITIF AUTORISE (boitier GPS ou application). La
+        source est obligatoire et whitelistee : `gps` (equipement embarque),
+        `app` (application autorisee), `estimated` (position deduite du trajet,
+        JAMAIS presentee comme une position GPS). Aucune position n'est deduite
+        ni inventee par le serveur. Permission : travel.manage ; cross-tenant
+        -> 404.
+      parameters:
+      - name: travelVehicle
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [latitude, longitude, source]
+              properties:
+                latitude:
+                  type: number
+                  format: float
+                  minimum: -90
+                  maximum: 90
+                longitude:
+                  type: number
+                  format: float
+                  minimum: -180
+                  maximum: 180
+                source:
+                  type: string
+                  enum: [gps, app, estimated]
+      responses:
+        '200':
+          description: Position enregistree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      code:
+                        type: string
+                      registration_number:
+                        type: string
+                      seat_capacity:
+                        type: integer
+                      status:
+                        type: string
+                      position:
+                        type: object
+                        nullable: true
+                        description: >-
+                          Derniere position connue — `null` si aucun dispositif
+                          n'a transmis de position (aucune coordonnee inventee).
+                        properties:
+                          latitude:
+                            type: number
+                            format: float
+                          longitude:
+                            type: number
+                            format: float
+                          source:
+                            type: string
+                            enum: [gps, app, estimated]
+                          source_label:
+                            type: string
+                          is_measured:
+                            type: boolean
+                            description: >-
+                              `false` pour une position estimee — elle ne doit
+                              jamais etre presentee comme une position GPS.
+                          recorded_at:
+                            type: string
+                            format: date-time
+                            nullable: true
+                          age_seconds:
+                            type: integer
+                            nullable: true
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission travel.manage requise
+        '404':
+          description: Vehicule inexistant ou hors du tenant
+        '422':
+          description: Coordonnees hors bornes ou source inconnue
+  /travel/vehicles/{travelVehicle}/positions:
+    get:
+      tags:
+      - Travel
+      summary: Historique des positions transmises d'un vehicule
+      description: >-
+        BC-24 TRAVEL OS (#8548) — historique des positions REELLEMENT
+        transmises par un dispositif autorise (boitier GPS ou application).
+        Aucune position n'est fabriquee : un vehicule sans equipement retourne
+        une liste VIDE (`count: 0`), jamais des points inventes. Lecture bornee
+        par tenant (isolation `company_id`), par vehicule et par fenetre
+        temporelle optionnelle. `is_measured` vaut `false` pour une position
+        estimee — elle n'est jamais presentee comme une mesure GPS.
+        Permission : lecture flotte (tout employe du tenant) ; cross-tenant
+        -> 404.
+      parameters:
+      - name: travelVehicle
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Borne inferieure (incluse) sur `recorded_at`.
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Borne superieure (incluse) sur `recorded_at`.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 500
+          default: 100
+      responses:
+        '200':
+          description: Historique des positions (liste vide si aucun dispositif)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      vehicle_id:
+                        type: integer
+                      vehicle_code:
+                        type: string
+                      count:
+                        type: integer
+                      points:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            latitude:
+                              type: number
+                              format: float
+                            longitude:
+                              type: number
+                              format: float
+                            source:
+                              type: string
+                              enum: [gps, app, estimated]
+                            source_label:
+                              type: string
+                            is_measured:
+                              type: boolean
+                              description: >-
+                                `false` pour une position estimee — jamais
+                                presentee comme une position GPS.
+                            recorded_at:
+                              type: string
+                              format: date-time
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission de lecture flotte requise
+        '404':
+          description: Vehicule inexistant ou hors du tenant
+  /travel/fleet/tracking:
+    get:
+      tags:
+      - Travel
+      summary: Tableau de bord de suivi de la flotte
+      description: >-
+        BC-24 TRAVEL OS (#8548) — lecture seule. Reutilise la derniere position
+        connue livree par #8540 (aucune nouvelle table, aucun appel a un
+        fournisseur de telemetrie). Expose par vehicule : la position connue
+        (`null` si aucun dispositif n'a transmis — aucune coordonnee inventee),
+        la distinction mesure/estimation (`is_measured`), la FRAICHEUR
+        (`fresh` / `stale` / `unavailable`, seuil explicite
+        `travel.fleet_position.stale_after_minutes`) et les departs a venir.
+        Une position ancienne est signalee `stale` et une absence de donnee
+        `unavailable` — jamais presentees comme une position courante.
+        Permission : viewAny (tout employe du tenant) ; cross-tenant -> 404.
+      parameters:
+      - name: vehicle_id
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Cible un vehicule precis (hors tenant -> 404).
+      responses:
+        '200':
+          description: Tableau de bord de la flotte
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      vehicles:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            code:
+                              type: string
+                            registration_number:
+                              type: string
+                              nullable: true
+                            status:
+                              type: string
+                            position:
+                              type: object
+                              nullable: true
+                              description: >-
+                                Derniere position connue — `null` si aucun
+                                dispositif n'a transmis (aucune coordonnee
+                                inventee).
+                              properties:
+                                latitude:
+                                  type: number
+                                  format: float
+                                longitude:
+                                  type: number
+                                  format: float
+                                source:
+                                  type: string
+                                  enum: [gps, app, estimated]
+                                source_label:
+                                  type: string
+                                is_measured:
+                                  type: boolean
+                                  description: >-
+                                    `false` pour une position estimee — jamais
+                                    presentee comme une position GPS.
+                                recorded_at:
+                                  type: string
+                                  format: date-time
+                                  nullable: true
+                            freshness:
+                              type: object
+                              properties:
+                                state:
+                                  type: string
+                                  enum: [fresh, stale, unavailable]
+                                label:
+                                  type: string
+                                is_current:
+                                  type: boolean
+                                is_stale:
+                                  type: boolean
+                                is_unavailable:
+                                  type: boolean
+                                age_seconds:
+                                  type: integer
+                                  nullable: true
+                                stale_after_seconds:
+                                  type: integer
+                                  nullable: true
+                            upcoming_departures:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: integer
+                                  code:
+                                    type: string
+                                  departure_date:
+                                    type: string
+                                    format: date
+                                  departure_time:
+                                    type: string
+                                  status:
+                                    type: string
+                                  status_label:
+                                    type: string
+                      summary:
+                        type: object
+                        properties:
+                          vehicles:
+                            type: integer
+                          with_position:
+                            type: integer
+                          current:
+                            type: integer
+                          stale:
+                            type: integer
+                          unavailable:
+                            type: integer
+                          measured:
+                            type: integer
+                          estimated:
+                            type: integer
+                      stale_after_minutes:
+                        type: integer
+        '401':
+          description: Non authentifie
+        '403':
+          description: Permission de lecture de la flotte requise
+        '404':
+          description: Vehicule inexistant ou hors du tenant
   /travel/staff-assignments:
     get:
       tags:
@@ -4140,6 +4931,147 @@ paths:
             text/plain:
               schema:
                 type: string
+  /public/discover:
+    get:
+      tags:
+      - Discovery
+      summary: Decouverte publique cross-verticale Leopardo.com (SUPERAPP-P0, #8611)
+      description: >-
+        Point d'entree NEUTRE de la plateforme grand public : agrege les
+        entites PUBLIEES de plusieurs verticales (restaurants, hebergements,
+        vitrines) via les providers du contrat `PublicDiscoverableProvider`.
+        Route isolee sans authentification (throttle `shop-public`), patron
+        BC-27/BC-28. Invariants : fail-closed par provider (`is_public` /
+        `status=published`, societe ni suspendue ni expiree, feature verticale
+        active) ; DTO public strict (jamais d'id interne, de company_id ni de
+        donnee RH/commerciale) ; deduplication `(type, slug)` ; `?near=lat,lng`
+        ne retient que les entites geolocalisees dans `radius_km`, triees par
+        distance croissante via le core geo. Un `?type=` inconnu renvoie 422
+        (jamais de filtre silencieux). `per_page` borne a 50.
+      security: []
+      parameters:
+      - name: q
+        in: query
+        required: false
+        description: Recherche texte sur le nom et la description publique.
+        schema:
+          type: string
+          maxLength: 120
+      - name: city
+        in: query
+        required: false
+        description: Filtre ville (insensible a la casse en PostgreSQL).
+        schema:
+          type: string
+          maxLength: 120
+      - name: type
+        in: query
+        required: false
+        description: Type canonique de provider (`restaurant`, `hospitality_property`, `showcase`). Valeur inconnue -> 422.
+        schema:
+          type: string
+      - name: near
+        in: query
+        required: false
+        description: Point de recherche `lat,lng`. Seules les entites geolocalisees dans le rayon sont retenues.
+        schema:
+          type: string
+          example: '36.7538,3.0588'
+      - name: radius_km
+        in: query
+        required: false
+        description: Rayon de proximite en kilometres (0.1 a 50, defaut 10).
+        schema:
+          type: number
+          format: float
+          minimum: 0.1
+          maximum: 50
+      - name: per_page
+        in: query
+        required: false
+        description: Taille de page (1 a 50, defaut 20).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+      - name: page
+        in: query
+        required: false
+        description: Numero de page (a partir de 1).
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Entites publiques agregees (data[]) et metadonnees de pagination (meta)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                        slug:
+                          type: string
+                        name:
+                          type: string
+                        category:
+                          type: string
+                          nullable: true
+                        city:
+                          type: string
+                          nullable: true
+                        country:
+                          type: string
+                          nullable: true
+                        description:
+                          type: string
+                          nullable: true
+                        image_url:
+                          type: string
+                          nullable: true
+                        latitude:
+                          type: number
+                          format: float
+                          nullable: true
+                        longitude:
+                          type: number
+                          format: float
+                          nullable: true
+                        distance_km:
+                          type: number
+                          format: float
+                          nullable: true
+                        url:
+                          type: string
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      per_page:
+                        type: integer
+                      page:
+                        type: integer
+                      last_page:
+                        type: integer
+                      types:
+                        type: array
+                        items:
+                          type: string
+                      radius_km:
+                        type: number
+                        format: float
+                        nullable: true
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
   /showcase:
     get:
       tags:
@@ -10227,6 +11159,21 @@ paths:
                 notes:
                   type: string
                   nullable: true
+                payment_method:
+                  type: string
+                  nullable: true
+                  enum:
+                  - cash
+                  - card
+                  - account
+                  - voucher
+                  - other
+                  description: P1-a (audit 2026-10-17) - nature du reglement (defaut cash).
+                payment_reference:
+                  type: string
+                  nullable: true
+                  maxLength: 120
+                  description: Reference externe opaque (TPE, bon, compte pro) - jamais un PAN.
       responses:
         '200':
           description: Vente enregistree (ou vente existante si rejeu external_id)
@@ -10256,6 +11203,50 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           description: Vente introuvable ou autre tenant
+  /fuel-station/sales/{sale}/cancel:
+    post:
+      tags:
+      - FuelStation
+      summary: Annuler une vente (manager) - ecriture compensatoire, jamais destructive
+      description: |
+        P1-b (audit FuelStation 2026-10-17). L'annulation est une ECRITURE
+        COMPENSATOIRE : la ligne d'origine est CONSERVEE et marquee `cancelled`
+        (aucun DELETE), le montant, la quantite et l'operateur restent lisibles.
+        Refusee (422) si la session de caisse de la vente est deja
+        `closed`/`approved`, ou si la vente est deja annulee. Publie
+        `fuel.sale.cancelled.v1` pour la comptabilite.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: sale
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reason
+              properties:
+                reason:
+                  type: string
+                  minLength: 3
+                  maxLength: 500
+      responses:
+        '200':
+          description: Vente annulee (statut cancelled, ligne conservee)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Vente introuvable ou autre tenant
+        '422':
+          description: Motif manquant, vente deja annulee ou session de caisse cloturee
   /fuel-station/me/sales:
     get:
       tags:
@@ -10301,6 +11292,381 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           description: Affectation introuvable ou autre tenant
+  /fuel-station/{resource}:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister le referentiel d'une ressource (stations, sites, pumps, tanks, meters, products)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - stations
+          - sites
+          - pumps
+          - tanks
+          - meters
+          - products
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Referentiel pagine
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Creer une entree du referentiel (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - stations
+          - sites
+          - pumps
+          - tanks
+          - meters
+          - products
+      responses:
+        '201':
+          description: Entree creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Donnees invalides
+  /fuel-station/{resource}/{id}:
+    get:
+      tags:
+      - FuelStation
+      summary: Lire une entree du referentiel
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - stations
+          - sites
+          - pumps
+          - tanks
+          - meters
+          - products
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Entree du referentiel
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Entree introuvable ou autre tenant
+    put:
+      tags:
+      - FuelStation
+      summary: Mettre a jour une entree du referentiel (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - stations
+          - sites
+          - pumps
+          - tanks
+          - meters
+          - products
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Entree mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Entree introuvable ou autre tenant
+        '422':
+          description: Donnees invalides
+  /fuel-station/readings/sync:
+    post:
+      tags:
+      - FuelStation
+      summary: Synchroniser hors-ligne un lot de releves de compteur (idempotent)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Lot traite, resultat par element
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Cle d'idempotence ou lot invalide
+  /fuel-station/stocks:
+    get:
+      tags:
+      - FuelStation
+      summary: Niveau des cuves (theorique et mesure) avec fill_ratio
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Etat des stocks par cuve
+        '401':
+          $ref: '#/components/responses/Error401'
+  /fuel-station/tanks/{tank}/deliveries:
+    post:
+      tags:
+      - FuelStation
+      summary: Enregistrer une livraison de cuve (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: tank
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Livraison enregistree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Donnees invalides
+  /fuel-station/stations/{station}/reconciliations:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les rapprochements d'une station
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Rapprochements pagines
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      tags:
+      - FuelStation
+      summary: Lancer un rapprochement par station (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Rapprochement execute
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/reconciliations/{run}:
+    get:
+      tags:
+      - FuelStation
+      summary: Lire un rapprochement
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: run
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Rapprochement
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Rapprochement introuvable ou autre tenant
+  /fuel-station/maintenance-tasks/{task}/transition:
+    post:
+      tags:
+      - FuelStation
+      summary: Transitionner une tache de maintenance
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tache transitionnee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Transition illegale
+  /fuel-station/reports/station-comparison:
+    get:
+      tags:
+      - FuelStation
+      summary: Vue comparative inter-stations (manager)
+      description: |
+        Une ligne par station du tenant sur la periode demandee : ventes (nombre,
+        quantite, montant), ecarts de rapprochement et etat des cuves. Les stations
+        sans activite sont incluses a zero. Lecture seule, tenant-scoped.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: period_start
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: period_end
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Comparaison inter-stations
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/stations/{station}/logo:
+    post:
+      tags:
+      - FuelStation
+      summary: Televerser le logo d'une station (manager)
+      description: |
+        Reutilise le stockage du branding societe (disque `public`, chemin par
+        tenant). Le logo d'un autre tenant est indiscernable d'un inexistant (404).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - logo
+              properties:
+                logo:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Station avec logo
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Station inexistante ou hors tenant
+        '422':
+          description: Fichier invalide (image png/jpg/jpeg/webp/svg, 2 Mo max)
+    delete:
+      tags:
+      - FuelStation
+      summary: Supprimer le logo d'une station (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Station sans logo
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Station inexistante ou hors tenant
+  /fuel-station/reports/{type}:
+    get:
+      tags:
+      - FuelStation
+      summary: Rapport type par segments d'URL (snapshot)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Snapshot du rapport
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Type de snapshot inconnu
 
   /accounting/contacts:
     get:
@@ -36301,6 +37667,343 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
 
+  /restaurant/orders/{restaurantOrder}/print-jobs:
+    post:
+      tags:
+      - Restaurant
+      summary: Mettre un ticket de cuisine en file d'impression (REST-OS-1/2)
+      description: >-
+        REST-OS-1/2 - enfile un travail d'impression KITCHEN pour une commande.
+        IDEMPOTENT : une double soumission (meme commande, meme revision, meme
+        type de ticket) renvoie le travail EXISTANT (201) sans creer de doublon
+        — garanti par la contrainte UNIQUE `(company_id, order_id, ticket_kind,
+        revision)`. Autorisation : `restaurant.print_jobs.operate`
+        (cuisine/service). 404 cross-tenant. Un travail cree n'est JAMAIS
+        `printed` : seul un ack du bridge (REST-OS-3) le fait passer a `printed`.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Travail d'impression cree ou deja existant (idempotent)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/print-jobs:
+    get:
+      tags:
+      - Restaurant
+      summary: Lister les travaux d'impression de la succursale (REST-OS-1)
+      description: >-
+        REST-OS-1 - liste des travaux d'impression de LA succursale active.
+        Portee stricte : `company_id` + `branch_id` du contexte. Autorisation :
+        `restaurant.print_jobs.manage`.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: X-Branch-Id
+        in: header
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Travaux de la succursale
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/print-jobs/{restaurantPrintJob}:
+    get:
+      tags:
+      - Restaurant
+      summary: Detail d'un travail d'impression (REST-OS-1)
+      description: >-
+        REST-OS-1 - detail d'un travail. 404 si le travail appartient a une
+        AUTRE societe (jamais de fuite cross-tenant ni d'enumeration).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Travail d'impression
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/print-jobs/{restaurantPrintJob}/requeue:
+    post:
+      tags:
+      - Restaurant
+      summary: Re-enfiler un travail en nouvelle revision (REST-OS-5)
+      description: >-
+        REST-OS-5 - cree une NOUVELLE revision du ticket (revision + 1) plutot
+        que de reutiliser le travail existant : l'historique d'impression reste
+        auditable et un ticket deja imprime n'est jamais rejoue a l'identique.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Nouvelle revision enfilee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/printing/bridge/health:
+    get:
+      tags:
+      - Restaurant
+      summary: Sonde de disponibilite du bridge local (REST-OS-3)
+      description: >-
+        REST-OS-3 - sonde sans donnee metier. AUTH DEDIEE par jeton partage
+        hache (header `X-Restaurant-Print-Bridge-Token`, hash SHA-256 en
+        variable d'environnement) + `X-Company-Id`. FAIL-CLOSED : desactive
+        (404) si `RESTAURANT_PRINT_BRIDGE_ENABLED` n'est pas true ou si le hash
+        n'est pas configure. Ce n'est pas une route Sanctum.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Etat du bridge
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/printing/bridge/jobs:
+    get:
+      tags:
+      - Restaurant
+      summary: Travaux imprimables de la succursale (bridge local, REST-OS-3)
+      description: >-
+        REST-OS-3 - file des travaux KITCHEN imprimables (pending, failed
+        reessayable, claimed dont le bail est expire). Scopee a la succursale.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: branch_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Travaux imprimables
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/printing/bridge/jobs/{restaurantPrintJob}/claim:
+    post:
+      tags:
+      - Restaurant
+      summary: Reclamer ATOMIQUEMENT un travail (bridge local, REST-OS-3/5)
+      description: >-
+        REST-OS-3/5 - reclamation atomique : `UPDATE ... WHERE status IN
+        (pending, failed) OR (claimed AND bail expire)`. Le premier appel gagne ;
+        les suivants obtiennent 409. `attempts` est incremente. Une reclamation
+        ne vaut JAMAIS preuve d'impression.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Travail reclame (payload ESC/POS + hash)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Travail deja reclame par une autre instance du bridge
+  /restaurant/printing/bridge/jobs/{restaurantPrintJob}/ack:
+    post:
+      tags:
+      - Restaurant
+      summary: Accuser une impression REELLE (bridge local, REST-OS-3/5)
+      description: >-
+        REST-OS-3/5 - SEUL chemin faisant passer un travail a `printed`. Idem-
+        potent : un second ack renvoie 200 sans nouvel effet ni nouvelle
+        publication d'evenement (outbox). 404 cross-tenant.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Impression accusee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/printing/bridge/jobs/{restaurantPrintJob}/fail:
+    post:
+      tags:
+      - Restaurant
+      summary: Signaler un echec d'impression (bridge local, REST-OS-3)
+      description: >-
+        REST-OS-3 - marque le travail `failed` avec le message d'erreur du
+        bridge. Le travail redevient reessayable (claim), jamais perdu.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Echec enregistre
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/printing/bridge/jobs/{restaurantPrintJob}/payload:
+    get:
+      tags:
+      - Restaurant
+      summary: Payload ESC/POS d'un travail (bridge local, REST-OS-3)
+      description: >-
+        REST-OS-3 - octets ESC/POS rendus + hash SHA-256 (le bridge verifie le
+        hash avant d'imprimer). Aucune modification d'etat.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Payload + hash
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/printing/bridge/jobs/{restaurantPrintJob}/preview:
+    get:
+      tags:
+      - Restaurant
+      summary: Previsualisation TEXTE d'un ticket (bridge local, REST-OS-3)
+      description: >-
+        REST-OS-3 - rendu texte du ticket pour diagnostic, sans consommer de
+        papier ni modifier l'etat du travail.
+      security: []
+      parameters:
+      - name: X-Restaurant-Print-Bridge-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Company-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: restaurantPrintJob
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Rendu texte
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+
   /catalog/inquiries:
     get:
       tags:
@@ -36531,11 +38234,19 @@ paths:
     get:
       tags:
       - Travel
-      summary: "Marketplace : détail d'un trajet + plan de sièges libres"
+      summary: "Marketplace : détail d'un trajet + plan de sièges"
       description: >-
         BC-24 TRAVEL (#7737) — le tenant est résolu PAR TRAJET. Un trajet
         inconnu, non publié ou d'une agence non opt-in répond 404
         (fail-closed, aucune fuite cross-tenant).
+
+        #8619 — `data.seats` expose l'INVENTAIRE COMPLET du véhicule affecté
+        (et non plus seulement les places libres) : chaque entrée porte
+        `seat_number` et l'état PERSISTÉ (`free`, `reserved`, `sold`,
+        `blocked`, `unavailable`). Aucune donnée personnelle, aucune
+        `booking_reference` et aucun identifiant de tenant ne sont exposés :
+        la surface publique ne permet pas de remonter à un passager.
+        `data.available_seats` ne compte que les sièges `free`.
       parameters:
       - name: trip
         in: path
@@ -36544,7 +38255,32 @@ paths:
           type: integer
       responses:
         '200':
-          description: Détail du trajet (prix, sièges libres, agence)
+          description: Détail du trajet (prix, inventaire complet des sièges, agence)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      available_seats:
+                        type: integer
+                        description: Nombre de sièges au statut `free` uniquement.
+                      seats:
+                        type: array
+                        description: >-
+                          Inventaire complet du trajet, trié par `seat_number`.
+                          Ni PII ni référence de réservation (surface publique).
+                        items:
+                          type: object
+                          required: [seat_number, status]
+                          properties:
+                            seat_number:
+                              type: integer
+                            status:
+                              type: string
+                              enum: [free, reserved, sold, blocked, unavailable]
         '404':
           $ref: '#/components/responses/Error404'
   /public/travel/marketplace/bookings:

@@ -24,10 +24,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   AppWindow,
   CheckCircle2,
+  ChevronDown,
   ExternalLink,
   Loader2,
   Monitor,
   QrCode,
+  ShieldCheck,
   Smartphone,
   Sparkles,
   WifiOff,
@@ -40,8 +42,11 @@ import { getPreferredLocale, getStoredUser } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
 import {
   absoluteTargetHref,
+  isOfflineClaimed,
+  softwareAvailability,
   visibleSoftware,
   type SoftwareApp,
+  type SoftwareAvailability,
   type SoftwareTarget,
 } from '@/lib/software-catalog';
 import type { ConstellationNode } from '@/components/software/SoftwareConstellation3D';
@@ -80,10 +85,22 @@ const PLATFORM_LABELS: Record<SoftwareTarget['platform'], string> = {
   desktop: 'Desktop',
 };
 
+/**
+ * #8597 (BOS-045) — couleurs du badge de disponibilité. Le statut est DÉRIVÉ
+ * des cibles réelles (`softwareAvailability`), jamais déclaré à la main : une
+ * app sans canal public ne peut pas s'afficher comme publiée.
+ */
+const AVAILABILITY_BADGE: Record<SoftwareAvailability, string> = {
+  published: 'bg-emerald-50 text-emerald-700',
+  pilot: 'bg-amber-50 text-amber-700',
+  not_distributed: 'bg-slate-100 text-slate-600',
+};
+
 export default function MonLogicielPage() {
   const locale = getPreferredLocale();
   const [apps, setApps] = useState<SoftwareApp[] | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
   const [qr, setQr] = useState<{ app: SoftwareApp; target: SoftwareTarget; dataUrl: string } | null>(null);
   const cardRefs = useRef<Record<string, HTMLElement | null>>({});
 
@@ -173,6 +190,8 @@ export default function MonLogicielPage() {
             {apps.map((app) => {
               const Icon = app.icon;
               const isSelected = selected === app.slug;
+              const availability = softwareAvailability(app);
+              const isExpanded = expanded === app.slug;
               return (
                 <motion.article
                   key={app.slug}
@@ -198,11 +217,61 @@ export default function MonLogicielPage() {
                     </div>
                   </header>
 
-                  {app.offline ? (
-                    <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-                      <WifiOff className="h-3.5 w-3.5" aria-hidden />
-                      {translate('software.offlineBadge', 'Fonctionne hors-ligne')}
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    {isOfflineClaimed(app) ? (
+                      <p
+                        className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700"
+                        title={app.offline === 'implemented'
+                          ? translate('software.offlineImplementedHint', 'File hors-ligne branchée — scénario de coupure non encore rejoué en CI')
+                          : undefined}
+                      >
+                        <WifiOff className="h-3.5 w-3.5" aria-hidden />
+                        {app.offline === 'verified'
+                          ? translate('software.offlineBadgeVerified', 'Hors-ligne vérifié')
+                          : translate('software.offlineBadge', 'Fonctionne hors-ligne')}
+                      </p>
+                    ) : null}
+                    <p className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${AVAILABILITY_BADGE[availability]}`}>
+                      <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
+                      {translate(`software.availability.${availability}`, availability)}
                     </p>
+                  </div>
+
+                  {/* Fiche application (#8597) : rôle, profils, prérequis,
+                      connexion, permissions et mise en service — le texte vit
+                      dans les catalogues i18n, jamais en dur ici. */}
+                  <button
+                    type="button"
+                    onClick={() => setExpanded((current) => (current === app.slug ? null : app.slug))}
+                    aria-expanded={isExpanded}
+                    aria-controls={`software-details-${app.slug}`}
+                    className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-slate-700 transition hover:text-emerald-700"
+                  >
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                      aria-hidden
+                    />
+                    {translate('software.details.toggle', "Voir la fiche de l'application")}
+                  </button>
+
+                  {isExpanded ? (
+                    <dl
+                      id={`software-details-${app.slug}`}
+                      className="mt-3 space-y-2 rounded-xl bg-slate-50/80 p-3"
+                    >
+                      {app.details.map((key) => {
+                        const text = translate(`software.apps.${app.slug}.details.${key}`, '');
+                        if (!text) return null;
+                        return (
+                          <div key={key}>
+                            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                              {translate(`software.details.${key}`, key)}
+                            </dt>
+                            <dd className="mt-0.5 text-sm text-slate-700">{text}</dd>
+                          </div>
+                        );
+                      })}
+                    </dl>
                   ) : null}
 
                   <ul className="mt-4 space-y-2">

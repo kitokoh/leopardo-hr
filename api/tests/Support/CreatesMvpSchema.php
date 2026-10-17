@@ -895,6 +895,16 @@ trait CreatesMvpSchema
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
             $table->string('name', 150);
+            // BOS-T-01 / #8624 — miroir de la migration
+            // 2026_10_17_120000_8624_sites_first_class : l'établissement est un
+            // axe de données de premier ordre. Sans ces colonnes dans la
+            // fixture, tout test qui crée un site réel (provisioning, CRUD)
+            // échouerait en « column does not exist ».
+            $table->string('code', 30)->nullable();
+            $table->string('site_type', 30)->nullable();
+            $table->string('status', 20)->default('active');
+            $table->string('timezone', 50)->nullable();
+            $table->char('currency', 3)->nullable();
             $table->timestamps();
         });
 
@@ -1392,6 +1402,37 @@ trait CreatesMvpSchema
 
     private function createPostSprintModuleTables(): void
     {
+        // REST-OS-1/2 (#8603/#8604) — travaux d'impression thermique du Restaurant
+        // OS : miroir de la migration tenant 2026_10_16_140001 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('restaurant_print_jobs'))) {
+            Schema::create($this->moduleTable('restaurant_print_jobs'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+
+                $table->unsignedBigInteger('branch_id');
+                $table->unsignedBigInteger('order_id');
+                $table->string('ticket_kind', 20)->default('kitchen');
+                $table->unsignedInteger('revision')->default(1);
+                $table->string('status', 20)->default('pending');
+                $table->unsignedInteger('attempts')->default(0);
+                $table->string('printer_ref', 120)->nullable();
+                $table->text('last_error')->nullable();
+                $table->string('payload_hash', 64)->nullable();
+                $table->timestamp('claimed_at')->nullable();
+                $table->timestamp('printed_at')->nullable();
+                $table->timestamp('failed_at')->nullable();
+
+                $table->timestamps();
+
+                $table->unique(
+                    ['company_id', 'order_id', 'ticket_kind', 'revision'],
+                    'restaurant_print_jobs_company_order_kind_revision_unique'
+                );
+                $table->index(['company_id', 'branch_id'], 'restaurant_print_jobs_company_branch_idx');
+                $table->index(['company_id', 'status'], 'restaurant_print_jobs_company_status_idx');
+            });
+        }
+
         // Issue #7641 (ménage garde #5443, régression amont mergee sur main) —
         // clés API distributeur travel : miroir migration 7641.
         if (! Schema::hasTable($this->moduleTable('travel_distributor_keys'))) {
@@ -3666,6 +3707,9 @@ trait CreatesMvpSchema
                 $table->string('phone', 40)->nullable();
                 $table->string('timezone', 64)->default('UTC');
                 $table->string('currency', 10)->nullable();
+                $table->string('logo_path', 255)->nullable();
+                $table->string('logo_disk', 20)->nullable();
+                $table->string('logo_url', 2048)->nullable();
                 $table->text('metadata')->nullable();
                 $table->string('status', 20)->default('active');
                 $table->timestamps();
@@ -3871,6 +3915,17 @@ trait CreatesMvpSchema
                 $table->decimal('quantity', 14, 3);
                 $table->decimal('unit_price', 14, 2);
                 $table->decimal('amount', 14, 2);
+                // P1-c (audit FuelStation 2026-10-17) -- parite avec la
+                // migration tenant 2026_10_17_110000_9004_add_fuel_station_logo_and_sale_currency.
+                $table->string('currency', 10)->nullable();
+                // P1-a/P1-b (audit FuelStation 2026-10-17) -- parite avec la
+                // migration tenant 2026_10_17_100000_9003_add_fuel_sale_payment_and_cancellation.
+                $table->string('payment_method', 20)->default('cash');
+                $table->string('payment_reference', 120)->nullable();
+                $table->string('status', 20)->default('completed');
+                $table->timestampTz('cancelled_at')->nullable();
+                $table->unsignedInteger('cancelled_by')->nullable();
+                $table->text('cancellation_reason')->nullable();
                 $table->timestampTz('sale_time')->useCurrent();
                 $table->string('source', 20)->default('manual');
                 $table->string('external_id', 120)->nullable();
@@ -5031,6 +5086,25 @@ trait CreatesMvpSchema
             });
         }
 
+        // #8544 (TRAVEL-OS) — trace des mises a disposition du billet
+        // (emission + reimpressions). Parite stricte avec la migration tenant
+        // 2026_10_16_000002_8544 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('travel_ticket_print_events'))) {
+            Schema::create($this->moduleTable('travel_ticket_print_events'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('ticket_id');
+                $table->unsignedBigInteger('employee_id')->nullable();
+                $table->string('channel', 32)->default('api');
+                $table->unsignedInteger('reprint_number')->default(0);
+                $table->boolean('is_reprint')->default(false);
+                $table->timestamps();
+
+                $table->index(['company_id', 'ticket_id']);
+                $table->index(['company_id', 'created_at']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('travel_advert_bookings'))) {
             Schema::create($this->moduleTable('travel_advert_bookings'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
@@ -6030,6 +6104,137 @@ trait CreatesMvpSchema
                 // Idempotence terrain : unicite PAR TENANT (le rejeu mobile ne
                 // cree pas de doublon, y compris en schema partage).
                 $table->unique(['company_id', 'client_operation_id']);
+            });
+        }
+
+        // Mission Farm OS (BC-37@@FARM@@) — T2.1 intrants et stocks. Miroir de
+        // la migration tenant 2026_10_17_000200_8554_create_farm_os_input_stock_tables.php
+        // (issue #5443 : une table tenant recente doit exister dans la fixture,
+        // sinon les tests utilisant CreatesMvpSchema echouent en CI).
+        if (! Schema::hasTable($this->moduleTable('farm_inputs'))) {
+            Schema::create($this->moduleTable('farm_inputs'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('name', 160);
+                $table->string('reference', 60)->nullable();
+                $table->string('category', 40);
+                $table->string('unit', 24);
+                $table->string('packaging', 80)->nullable();
+                $table->decimal('alert_threshold', 14, 3)->nullable();
+                $table->boolean('is_regulated')->default(false);
+                $table->text('notes')->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'name'], 'farm_inputs_company_name_unique');
+                $table->index(['company_id', 'category'], 'farm_inputs_company_category_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('farm_input_lots'))) {
+            Schema::create($this->moduleTable('farm_input_lots'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('farm_input_id');
+                $table->string('lot_number', 80);
+                $table->date('expiry_date')->nullable();
+                $table->decimal('quantity', 14, 3)->default(0);
+                $table->unsignedBigInteger('supplier_id')->nullable();
+                $table->timestampTz('received_at')->nullable();
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'farm_input_id', 'lot_number'], 'farm_input_lots_unique');
+                $table->index(['company_id', 'expiry_date'], 'farm_input_lots_expiry_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('farm_input_stock_movements'))) {
+            Schema::create($this->moduleTable('farm_input_stock_movements'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('farm_input_id');
+                $table->unsignedBigInteger('farm_input_lot_id')->nullable();
+                $table->string('movement_type', 24);
+                $table->decimal('quantity', 14, 3);
+                $table->decimal('quantity_after', 14, 3);
+                $table->unsignedBigInteger('farm_operation_id')->nullable();
+                $table->unsignedBigInteger('parcel_id')->nullable();
+                $table->string('reason', 200)->nullable();
+                $table->unsignedBigInteger('recorded_by')->nullable();
+                $table->string('client_movement_id', 80)->nullable();
+                $table->timestampTz('occurred_at');
+                $table->timestampTz('created_at')->nullable();
+                $table->timestampTz('updated_at')->nullable();
+
+                $table->unique(['company_id', 'client_movement_id'], 'farm_input_movements_client_unique');
+                $table->index(['company_id', 'farm_input_id', 'occurred_at'], 'farm_input_movements_input_index');
+            });
+        }
+
+        // P0-1 (audit FuelStation) -- catalogue de prix serveur. Parite avec la
+        // migration tenant 2026_10_16_120000_9001_create_fuel_product_prices_table
+        // (issue #5443 : une table tenant recente doit exister dans la fixture,
+        // sinon les tests utilisant CreatesMvpSchema echouent en CI).
+        if (! Schema::hasTable($this->moduleTable('fuel_product_prices'))) {
+            Schema::create($this->moduleTable('fuel_product_prices'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('product_code', 80);
+                $table->string('unit_code', 20)->default('l');
+                $table->unsignedBigInteger('unit_price_minor');
+                $table->timestampTz('effective_from')->useCurrent();
+                $table->timestampTz('effective_to')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->unsignedInteger('created_by')->nullable()->index();
+                $table->text('notes')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+
+                $table->unique(
+                    ['company_id', 'product_code', 'unit_code', 'effective_from'],
+                    'fuel_product_prices_effective_unique'
+                );
+                $table->index(
+                    ['company_id', 'product_code', 'unit_code', 'effective_from'],
+                    'fuel_product_prices_resolution_idx'
+                );
+            });
+        }
+
+        // Marketing OS (#8531) — miroir de la migration tenant
+        // 2026_10_16_000400_8531_create_marketing_visibility_objectives_table.php.
+        // Garde de parité #5443 (Hygiene Guards) : toute table tenant récente
+        // doit être déclarée ici sous peine de « relation ... does not exist »
+        // dans les tests utilisant CreatesMvpSchema.
+        if (! Schema::hasTable($this->moduleTable('marketing_visibility_objectives'))) {
+            Schema::create($this->moduleTable('marketing_visibility_objectives'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id');
+                $table->unsignedBigInteger('campaign_id')->nullable();
+                $table->unsignedBigInteger('content_idea_id')->nullable();
+                $table->unsignedBigInteger('marketing_asset_id')->nullable();
+                $table->unsignedBigInteger('marketing_publication_id')->nullable();
+                $table->string('channel', 16);
+                $table->string('keyword', 191)->nullable();
+                $table->string('search_intent', 32)->nullable();
+                $table->string('destination_url', 512)->nullable();
+                $table->string('ad_campaign_ref', 191)->nullable();
+                $table->string('locale', 8)->default('fr');
+                $table->string('sector', 64)->nullable();
+                $table->jsonb('questions_answered')->nullable();
+                $table->jsonb('metrics')->nullable();
+                $table->string('metrics_source', 16)->default('unavailable');
+                $table->text('metrics_note')->nullable();
+                $table->text('notes')->nullable();
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+
+                $table->index(['company_id', 'channel']);
+                $table->index(['company_id', 'campaign_id']);
+                $table->index(['company_id', 'content_idea_id']);
+                $table->index(['company_id', 'marketing_asset_id']);
             });
         }
     }

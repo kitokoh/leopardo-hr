@@ -43,6 +43,7 @@ use Illuminate\Support\Str;
  * @property int $trip_id
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property int|null $customer_account_id Compte client grand public (nullable : checkout invité, #7739)
+ * @property int|null $office_id Agence de vente (bureau guichet) — NULL pour une vente en ligne (#8545)
  * @property int $version
  */
 class TravelBooking extends Model
@@ -80,6 +81,7 @@ class TravelBooking extends Model
         'quote_id',
         'billing_deferred',
         'connection_group_id',
+        'office_id',
     ];
 
     protected $casts = [
@@ -98,6 +100,7 @@ class TravelBooking extends Model
         'corporate_account_id' => 'integer',
         'quote_id' => 'integer',
         'billing_deferred' => 'boolean',
+        'office_id' => 'integer',
     ];
 
     protected static function booted(): void
@@ -124,6 +127,16 @@ class TravelBooking extends Model
     public function trip(): BelongsTo
     {
         return $this->belongsTo(TravelTrip::class, 'trip_id');
+    }
+
+    /**
+     * Agence de vente (bureau guichet) — absente pour une vente en ligne (#8545).
+     *
+     * @return BelongsTo<TravelOffice, $this>
+     */
+    public function office(): BelongsTo
+    {
+        return $this->belongsTo(TravelOffice::class, 'office_id');
     }
 
     /**

@@ -141,6 +141,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'crm.enabled' => \App\Http\Middleware\Crm\EnsureCrmEnabledMiddleware::class,
             // RESTO-805 (#6226) — boutique publique RestaurantManager (jeton signé par tenant).
             'restaurant.public.shop' => EnsureRestaurantPublicShopAccess::class,
+            // REST-OS-3 — bridge d'impression local RestaurantManager (jeton partagé, hash env).
+            'restaurant.print.bridge' => \App\Http\Middleware\Restaurant\EnsureRestaurantPrintBridgeAccess::class,
             // TRAVEL-1001 (#6114) — boutique publique (jeton tenant signé).
             'travel.public.shop' => \App\Http\Middleware\EnsurePublicShopAccess::class,
             'module.delivery' => EnsureDeliveryModuleMiddleware::class,

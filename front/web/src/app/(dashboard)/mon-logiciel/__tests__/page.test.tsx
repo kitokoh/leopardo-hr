@@ -103,4 +103,42 @@ describe('MonLogicielPage (#8447)', () => {
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
   });
+
+  // ── #8597 (BOS-045) — fiche application ──────────────────────────────────
+
+  it('la fiche application expose rôle, prérequis et mise en service', async () => {
+    storeAuthSession(null, session({ restaurantmanager: true, dashboard: true }));
+
+    render(<MonLogicielPage />);
+
+    await screen.findByText('Caisse Restaurant (POS)');
+
+    // Repliée par défaut : le contenu n'est pas encore monté.
+    expect(screen.queryByText('Prérequis')).not.toBeInTheDocument();
+
+    const toggles = screen.getAllByRole('button', { name: /Voir la fiche/i });
+    expect(toggles.length).toBeGreaterThan(0);
+    expect(toggles[0]).toHaveAttribute('aria-expanded', 'false');
+
+    toggles[0].click();
+
+    await waitFor(() => {
+      expect(screen.getByText('Prérequis')).toBeInTheDocument();
+    });
+    expect(screen.getByText('Mise en service')).toBeInTheDocument();
+    expect(screen.getByText("Connexion à l'espace de travail")).toBeInTheDocument();
+  });
+
+  it('le badge de disponibilité reflète le canal réel de l’app', async () => {
+    storeAuthSession(null, session({ restaurantmanager: true, dashboard: true }));
+
+    render(<MonLogicielPage />);
+
+    await screen.findByText('Caisse Restaurant (POS)');
+
+    // POS = cible web réelle → « Publiée » ; App Serveur = aucun canal →
+    // « Non distribuée ». Jamais l'inverse (règle d'honnêteté #6697).
+    expect(screen.getAllByText('Publiée').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Non distribuée').length).toBeGreaterThan(0);
+  });
 });

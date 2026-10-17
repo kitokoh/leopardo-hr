@@ -34,6 +34,9 @@ class UpdateTravelVehicleRequest extends FormRequest
             'code' => ['sometimes', 'string', 'max:40'],
             'registration_number' => ['nullable', 'string', 'max:40'],
             'seat_capacity' => ['sometimes', 'integer', 'min:1', 'max:200'],
+            'seat_layout' => ['nullable', 'array'],
+            'seat_layout.seats_per_row' => ['required_with:seat_layout', 'integer', 'min:1', 'max:6'],
+            'seat_layout.aisle_after' => ['nullable', 'integer', 'min:1', 'lt:seat_layout.seats_per_row'],
             'carrier_id' => [
                 'nullable',
                 'integer',

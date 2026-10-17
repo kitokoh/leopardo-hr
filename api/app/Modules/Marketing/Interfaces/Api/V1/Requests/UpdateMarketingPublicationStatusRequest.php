@@ -44,6 +44,10 @@ class UpdateMarketingPublicationStatusRequest extends FormRequest
             'published_url' => ['required_if:action,confirm_published', 'nullable', 'url', 'max:512'],
             'published_at' => ['nullable', 'date'],
             'platform_account' => ['nullable', 'string', 'max:120'],
+            // #8530 — identifiant du post cote plateforme/agregateur, requis
+            // pour interroger l'API de statistiques. Renseigne uniquement
+            // lorsqu'une publication a REELLEMENT ete executee par une API.
+            'external_post_id' => ['nullable', 'string', 'max:191'],
             'error_message' => ['required_if:action,failed', 'nullable', 'string', 'max:2000'],
             'stats' => ['nullable', 'array'],
         ];

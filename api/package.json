@@ -8,13 +8,16 @@
     "devDependencies": {
         "autoprefixer": "^10.6.1",
         "axios": "^1.20.0",
-        "concurrently": "^10.0.5",
+        "concurrently": "^10.0.6",
         "laravel-vite-plugin": "^3.2.0",
-        "postcss": "^8.5.28",
+        "postcss": "^8.5.29",
         "tailwindcss": "^4.2.4",
-        "vite": "^8.3.2"
+        "vite": "^8.3.4"
     },
     "dependencies": {
         "@tailwindcss/postcss": "^4.3.3"
+    },
+    "overrides": {
+        "shell-quote": "^1.11.0"
     }
 }

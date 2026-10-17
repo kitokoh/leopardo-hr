@@ -1,84 +1,96 @@
 'use client';
 
 /**
- * HeroScene3DPanel — la constellation « Business OS » en PLEINE SCÈNE de héro
- * (page d'accueil, layout `stage` — vague 3, #8437/#8438).
+ * HeroScene3DPanel — la constellation « Business OS » en PLEINE SCÈNE du héros
+ * (page d'accueil, layout `stage`).
  *
- * Historique : #8389 plaçait la scène dans la colonne de droite du héro
- * (lisibilité du texte) ; #8403 l'agrandissait et l'alignait en haut. Retour
- * propriétaire 2026-10-11 (vague 3) : la constellation doit prendre TOUTE la
- * place, la phrase passe en toile de fond — ce panneau remplit désormais tout
- * le héro (`absolute inset-0` posé par `HeroSection`), et le héro devient une
- * scène nuit permanente, belle en mode jour comme en mode nuit.
+ * Mission Leopardo — la constellation présente les SOLUTIONS MÉTIER RÉELLES
+ * (et non les liens du menu) : les 10 étoiles viennent du catalogue unique
+ * `data/solution-catalog.ts` (qui réutilise `PACK_PAGES` pour les verticales
+ * déjà documentées).
  *
- * #8390 : les modules orbitaux sont cliquables et mènent aux pages packs /
- * entrées clés. #8404 : chaque losange porte son étiquette + un indice
- * « cliquez pour explorer ». #8438 : 12 modules au lieu de 8 — la
- * constellation présente davantage de solutions.
+ * Le clic sur une étoile n'ouvre plus une page : il affiche la fiche
+ * interactive (`SolutionCard`, rendue dans un portail — voir son en-tête).
  *
- * Le conteneur épouse son parent : la scène (absolute inset-0) le remplit.
+ * Retour utilisateur : l'indice « Cliquez sur un module pour explorer » est
+ * retiré (la constellation et ses fiches se découvrent au survol, le pointeur
+ * change ; aucun texte ne vient concurrencer les étoiles).
+ *
+ * Le conteneur est une COLONNE PLEINE HAUTEUR en trois zones : la scène
+ * (flex-1, elle domine) puis le CTA unique, ancre bas. La scène reçoit une
+ * taille explicite (`flex-1` + `min-h-0`) : le canvas WebGL a besoin d'une
+ * hauteur réelle, un `absolute inset-0` dans un parent non dimensionné
+ * donnait un rendu étiré.
  */
 
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { HeroScene3D } from './HeroScene3D';
+import { SolutionCard } from './SolutionCard';
+import { HeroSolutionsCTA } from './HeroSolutionsCTA';
 import { useVitrineLocale } from '../../lib/vitrine-locale';
-import { t } from '@/lib/i18n/locale-catalog';
+import { SOLUTIONS, solutionLabel, type SolutionId } from '../../data/solution-catalog';
 
 /**
- * Un href par module (ordre de création : anneau intérieur ×6 puis anneau
- * extérieur ×6). Anneau intérieur = les packs métiers offerts (la promesse
- * d'entrée, cagnottes incluses — #8438) ; anneau extérieur = les entrées clés
- * de la plateforme. Clavier/lecteur d'écran : ces mêmes liens sont dans la
- * navbar, les CTA et le hub /packs — le canvas n'est qu'un raccourci visuel.
+ * Identifiants des modules, dans l'ordre de création de la scène 3D :
+ * anneau INTÉRIEUR (5 premières entrées du catalogue — solutions offertes en
+ * pack) puis anneau EXTÉRIEUR (5 suivantes — autres environnements + socle).
+ * Voir `HeroBusinessOS3D` (`MODULES_PER_RING = [5, 5]`).
  */
-const MODULE_LINKS: string[] = [
-  // Anneau intérieur — packs métiers offerts + hub
-  '/restaurateur',
-  '/packs/station-service',
-  '/packs/ecole',
-  '/packs/agence-de-voyage',
-  '/packs/cagnottes',
-  '/packs',
-  // Anneau extérieur — entrées plateforme
-  '/pricing',
-  '/demo',
-  '/alternatives',
-  '/contact',
-  '/careers',
-  '/signup',
-];
+const MODULE_IDS: readonly SolutionId[] = SOLUTIONS.map((solution) => solution.id);
 
-/**
- * #8404 — clé i18n du libellé de chaque module, dans le MÊME ordre que
- * `MODULE_LINKS`. Les noms de packs/entrées réutilisent les clés existantes
- * (`vitrine.nav.*`, source unique) ; « Cagnottes » et « Essai gratuit » sont
- * nouveaux (`vitrine.hero3d.*`, ×4 locales — #8438).
- */
-const MODULE_LABEL_KEYS: string[] = [
-  'vitrine.nav.packsRestaurant',
-  'vitrine.nav.packsFuel',
-  'vitrine.nav.packsEdu',
-  'vitrine.nav.packsTravel',
-  'vitrine.hero3d.cagnottes',
-  'vitrine.nav.packsHub',
-  'vitrine.nav.pricing',
-  'vitrine.hero3d.demo',
-  'vitrine.nav.comparer',
-  'vitrine.nav.contact',
-  'vitrine.nav.careers',
-  'vitrine.hero3d.freeTrial',
-];
+/** Destination de repli d'un module (accessible depuis la fiche). */
+export const MODULE_HREFS: readonly string[] = SOLUTIONS.map((solution) => solution.href);
 
 export function HeroScene3DPanel() {
   const { locale } = useVitrineLocale();
-  const moduleLabels = MODULE_LABEL_KEYS.map((key) => t(locale, key));
+  const [selected, setSelected] = useState<SolutionId | null>(null);
+  const sceneRef = useRef<HTMLDivElement>(null);
+  const moduleLabels = MODULE_IDS.map((id) => solutionLabel(id, locale));
+
+  const onSelectModule = useCallback((index: number) => {
+    const id = MODULE_IDS[index];
+    if (id) setSelected(id);
+  }, []);
+
+  const close = useCallback(() => setSelected(null), []);
+
+  // Échap referme la fiche même si le focus a quitté le document ; la fiche
+  // gère déjà Échap et le piège de focus, cette écoute est un filet.
+  useEffect(() => {
+    if (!selected) return undefined;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setSelected(null);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [selected]);
 
   return (
-    <div className="relative h-full w-full">
-      <HeroScene3D
-        moduleLinks={MODULE_LINKS}
-        moduleLabels={moduleLabels}
-        hint={t(locale, 'vitrine.hero3d.hint')}
-      />
+    <div className="relative flex h-full w-full flex-col">
+      {/* Vague 6 — proportion revue : la scène occupait 100 % de la hauteur et
+          poussait le CTA tout en bas (un « no man's land » entre la
+          constellation et le bouton, relevé en audit). Elle prend 86 % et le
+          CTA vient juste sous elle ; la marge basse garde de l'air sans vider
+          l'écran. */}
+      {/* `tabIndex={-1}` : cible de restitution du focus quand la fiche a été
+          ouverte à la souris (l'étoile est un pixel de canvas, sans nœud
+          focusable). Sans cela, le focus retombait sur <body> — défaut mesuré
+          en navigateur. Ouverte au clavier, la fiche rend le focus à
+          l'étiquette-bouton d'origine, qui est un vrai contrôle. */}
+      <div ref={sceneRef} tabIndex={-1} className="relative min-h-0 flex-[0_0_86%] outline-none">
+        <HeroScene3D onSelectModule={onSelectModule} moduleLabels={moduleLabels} />
+      </div>
+      <div className="relative z-20 flex shrink-0 justify-center px-4 pb-10 sm:pb-12">
+        <HeroSolutionsCTA />
+      </div>
+      {selected && (
+        <SolutionCard
+          solutionId={selected}
+          locale={locale}
+          onClose={close}
+          returnFocusRef={sceneRef}
+        />
+      )}
     </div>
   );
 }

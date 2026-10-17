@@ -73,6 +73,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformTeamController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUserController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUsersController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PublicDiscoveryController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\QueueObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportedCountryController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
@@ -347,6 +348,14 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/public/restaurant/kiosk/orders', [RestaurantKioskController::class, 'storeOrder']);
         Route::get('/public/restaurant/kiosk/orders/{reference}', [RestaurantKioskController::class, 'track']);
     });
+
+    // SUPERAPP-P0 — decouverte publique cross-verticale (Leopardo.com) :
+    // surface NEUTRE qui agrege les entites publiques de PLUSIEURS verticales
+    // (restaurants, hebergements, vitrines) via les providers tagues
+    // `public.discoverable`. Route isolee SANS auth ni middleware tenant
+    // (patron BC-27/BC-28) ; chaque entite reste soumise a sa propre garde
+    // fail-closed (is_public, statut societe, feature verticale).
+    Route::middleware(['throttle:shop-public'])->get('/public/discover', [PublicDiscoveryController::class, 'index']);
 
     Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
         Route::get('/auth/me', [AuthController::class, 'me']);
@@ -778,6 +787,18 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/companies/{company}/marketing-os/publications', [$marketingOs, 'indexPublications'])->middleware('platform.permission:marketing_os.view');
         Route::post('/companies/{company}/marketing-os/publications', [$marketingOs, 'storePublication'])->middleware('platform.permission:marketing_os.manage');
         Route::patch('/companies/{company}/marketing-os/publications/{publication}/status', [$marketingOs, 'updatePublicationStatus'])->whereNumber('publication')->middleware('platform.permission:marketing_os.manage');
+        // #8530 — remontee des statistiques REELLES de la plateforme (aucune
+        // valeur inventee : « indisponible » est un etat explicite).
+        Route::post('/companies/{company}/marketing-os/publications/{publication}/stats/refresh', [$marketingOs, 'refreshPublicationStats'])->whereNumber('publication')->middleware('platform.permission:marketing_os.manage');
+
+        // #8531 — objectifs de visibilite SEO/SEA/AEO/GEO rattaches aux contenus.
+        Route::get('/companies/{company}/marketing-os/visibility-objectives', [$marketingOs, 'indexVisibilityObjectives'])->middleware('platform.permission:marketing_os.view');
+        Route::post('/companies/{company}/marketing-os/visibility-objectives', [$marketingOs, 'storeVisibilityObjective'])->middleware('platform.permission:marketing_os.manage');
+
+        // #8532 — matrice des capacites REELLES de publication par plateforme
+        // (quelles plateformes autorisent le direct, et pourquoi les autres
+        // restent en mode assiste).
+        Route::get('/companies/{company}/marketing-os/publishing-capabilities', [$marketingOs, 'publishingCapabilities'])->middleware('platform.permission:marketing_os.view');
 
         // #7496 — conversions du funnel d'acquisition par étape/jour/source
         // (dashboard admin CRM commercial, données acquisition_funnel_events).
