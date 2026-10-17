@@ -4,8 +4,10 @@ import {
   buildSeatMapLayout,
   countSeatsByStatus,
   isSeatSelectable,
+  resolveSeatsPerRow,
   seatAriaLabel,
   seatStatusLabel,
+  selectableSeatNumbers,
   type SeatRowLayout,
   type SeatCell,
   type SeatInput,
@@ -140,5 +142,32 @@ describe("seatStatusLabel", () => {
   it("donne un libellé lisible à chaque état", () => {
     expect(seatStatusLabel("pending_payment")).toBe("Paiement en attente");
     expect(seatStatusLabel("unavailable")).toBe("Indisponible");
+  });
+});
+
+describe("selectableSeatNumbers (#8620)", () => {
+  it("ne retient que les sièges réellement libres de l'inventaire", () => {
+    const seats: SeatInput[] = [
+      { seat_number: 3, status: "free" },
+      { seat_number: 1, status: "sold" },
+      { seat_number: 2, status: "free" },
+      { seat_number: 4, status: "blocked" },
+      { seat_number: 5, status: "reserved" },
+    ];
+
+    expect(selectableSeatNumbers(seats)).toEqual([2, 3]);
+  });
+
+  it("ne fabrique aucun numéro au-delà de l'inventaire", () => {
+    const seats: SeatInput[] = [{ seat_number: 1, status: "free" }];
+    expect(selectableSeatNumbers(seats)).toEqual([1]);
+  });
+});
+
+describe("resolveSeatsPerRow (#8620)", () => {
+  it("déduit le gabarit de la capacité réelle", () => {
+    expect(resolveSeatsPerRow(12)).toBe(3);
+    expect(resolveSeatsPerRow(16)).toBe(4);
+    expect(resolveSeatsPerRow(0)).toBe(4);
   });
 });

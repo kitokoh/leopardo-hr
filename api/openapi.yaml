@@ -1133,6 +1133,143 @@ paths:
           description: Scope bookings.read absent de la cle
         '404':
           description: Reference inconnue dans le tenant de la cle
+  /travel/trips/{travelTrip}/seats:
+    get:
+      tags:
+      - Travel
+      summary: "Plan de sièges du trajet (back-office, lecture seule)"
+      description: >-
+        #8621 — Inventaire des sièges du trajet pour le plan de sièges du
+        back-office. Contrairement à la surface publique
+        (`/public/travel/marketplace/trips/{trip}`), le personnel voit EN PLUS
+        la `booking_reference` rattachée au siège : c'est l'information
+        opérationnelle nécessaire pour retrouver une vente dans le bus.
+        Aucune donnée passager n'est exposée (le manifeste reste la seule voie
+        autorisée pour les identités).
+
+        Bornage tenant : le scope `BelongsToCompany` ET une comparaison
+        explicite `company_id` protègent l'accès — un trajet d'une autre
+        entreprise répond 404 (fail-closed), jamais 403 avec fuite d'existence.
+        Permission : lecture des trajets de l'entreprise.
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Inventaire des sièges (numéro, état, référence de réservation)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      trip_id:
+                        type: integer
+                      code:
+                        type: string
+                      total_seats:
+                        type: integer
+                      seats:
+                        type: array
+                        description: Trié par `seat_number`.
+                        items:
+                          type: object
+                          required: [seat_number, status]
+                          properties:
+                            seat_number:
+                              type: integer
+                            status:
+                              type: string
+                              enum: [free, reserved, sold, blocked, unavailable]
+                            booking_reference:
+                              type: string
+                              nullable: true
+                              description: Référence de réservation (personnel uniquement).
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /travel/trips/{travelTrip}/vehicle-assessment:
+    get:
+      tags:
+      - Travel
+      summary: "Évaluation d'un remplacement de véhicule (aucune écriture)"
+      description: >-
+        #8622 — Calcule les conflits d'un changement de véhicule SANS RIEN
+        ÉCRIRE, pour que l'opérateur voie ce qui bloque avant d'agir.
+
+        `compatible` est faux dès qu'un siège RÉSERVÉ ou VENDU porte un numéro
+        supérieur à la capacité du véhicule cible (conflit `blocking`) : le
+        changement serait refusé par `PUT /travel/trips/{travelTrip}` (409).
+        Les sièges libres ou bloqués au-delà de la capacité remontent en
+        `warning` uniquement. Un véhicule inconnu du tenant produit
+        `compatible: false` avec `error: vehicle_not_found` (fail-closed).
+
+        Aucun passager n'est déplacé silencieusement : la résolution de
+        conflit reste une décision explicite de l'opérateur.
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: vehicle_id
+        in: query
+        required: false
+        schema:
+          type: integer
+          nullable: true
+        description: Véhicule cible à évaluer.
+      responses:
+        '200':
+          description: Verdict de compatibilité et liste des conflits
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      compatible:
+                        type: boolean
+                      current_vehicle_id:
+                        type: integer
+                        nullable: true
+                      target_vehicle_id:
+                        type: integer
+                        nullable: true
+                      target_capacity:
+                        type: integer
+                      trip_total_seats:
+                        type: integer
+                      conflicts:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                              enum: [seat_beyond_capacity, free_seat_beyond_capacity, blocked_seat_beyond_capacity]
+                            seat_number:
+                              type: integer
+                            severity:
+                              type: string
+                              enum: [blocking, warning]
+                            booking_reference:
+                              type: string
+                              nullable: true
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /travel/tickets/verify:
     post:
       tags:
@@ -37440,11 +37577,19 @@ paths:
     get:
       tags:
       - Travel
-      summary: "Marketplace : détail d'un trajet + plan de sièges libres"
+      summary: "Marketplace : détail d'un trajet + plan de sièges"
       description: >-
         BC-24 TRAVEL (#7737) — le tenant est résolu PAR TRAJET. Un trajet
         inconnu, non publié ou d'une agence non opt-in répond 404
         (fail-closed, aucune fuite cross-tenant).
+
+        #8619 — `data.seats` expose l'INVENTAIRE COMPLET du véhicule affecté
+        (et non plus seulement les places libres) : chaque entrée porte
+        `seat_number` et l'état PERSISTÉ (`free`, `reserved`, `sold`,
+        `blocked`, `unavailable`). Aucune donnée personnelle, aucune
+        `booking_reference` et aucun identifiant de tenant ne sont exposés :
+        la surface publique ne permet pas de remonter à un passager.
+        `data.available_seats` ne compte que les sièges `free`.
       parameters:
       - name: trip
         in: path
@@ -37453,7 +37598,32 @@ paths:
           type: integer
       responses:
         '200':
-          description: Détail du trajet (prix, sièges libres, agence)
+          description: Détail du trajet (prix, inventaire complet des sièges, agence)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      available_seats:
+                        type: integer
+                        description: Nombre de sièges au statut `free` uniquement.
+                      seats:
+                        type: array
+                        description: >-
+                          Inventaire complet du trajet, trié par `seat_number`.
+                          Ni PII ni référence de réservation (surface publique).
+                        items:
+                          type: object
+                          required: [seat_number, status]
+                          properties:
+                            seat_number:
+                              type: integer
+                            status:
+                              type: string
+                              enum: [free, reserved, sold, blocked, unavailable]
         '404':
           $ref: '#/components/responses/Error404'
   /public/travel/marketplace/bookings:
