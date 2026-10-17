@@ -26,7 +26,7 @@
               :aria-pressed="cell.status === 'selected' ? 'true' : 'false'"
               :title="cell.bookingReference ? `${cell.label} — ${cell.bookingReference}` : cell.label"
               :data-status="cell.status"
-              @click="selectable(cell.status) && $emit('toggle', cell.seatNumber)"
+              @click="selectable(cell.status) && emit('toggle', cell.seatNumber)"
             >
               <span class="seat-map__number">{{ cell.seatNumber }}</span>
               <span v-if="cell.symbol" class="seat-map__symbol" aria-hidden="true">{{ cell.symbol }}</span>
@@ -47,64 +47,46 @@
   </section>
 </template>
 
-<script setup lang="ts">
+<script setup>
 /**
  * Mission Leopardo — Travel OS (#8602) : plan de sièges VISUEL du back-office
  * (responsable / agence / compagnie).
  *
- * Même source de vérité que le plan grand public : `seats` provient de l'API
- * du trajet (inventaire réel + réservations), et la disposition est dérivée du
- * véhicule affecté. Le responsable voit en plus, au survol, la RÉFÉRENCE de
- * réservation rattachée au siège (`bookingReference`).
+ * Même source de vérité que le plan grand public (`seat-map.tsx`) : `seats`
+ * provient de l'API du trajet (inventaire réel + réservations) et la disposition
+ * est dérivée du véhicule affecté. Le responsable voit en plus, au survol, la
+ * RÉFÉRENCE de réservation rattachée au siège (`booking_reference`).
  *
  * Les états ne reposent jamais sur la seule couleur : symbole + libellé texte
  * + `aria-label`.
+ *
+ * Fichier en JavaScript : le back-office n'utilise aucun SFC TypeScript
+ * (config ESLint partagée, parser Babel). On suit la convention du dépôt.
  */
 import { computed } from 'vue';
 
-type SeatStatusValue =
-  | 'free' | 'selected' | 'held' | 'reserved'
-  | 'pending_payment' | 'sold' | 'blocked' | 'unavailable';
+const props = defineProps({
+  /** Sièges réels renvoyés par l'API du trajet. */
+  seats: { type: Array, required: true },
+  /** Sièges sélectionnés localement (état de vue, non persisté). */
+  selected: { type: Array, default: () => [] },
+  /** Sièges par rangée (2+2 → 4, 2+1 → 3). */
+  seatsPerRow: { type: Number, default: 4 },
+  /** Afficher la légende. */
+  showLegend: { type: Boolean, default: true },
+  /** Afficher le résumé des comptes par état. */
+  showSummary: { type: Boolean, default: true },
+  /** Couloir central (par défaut : dès 3 sièges par rangée). */
+  aisle: { type: Boolean, default: undefined },
+});
 
-interface SeatInput {
-  seat_number: number;
-  status: SeatStatusValue;
-  booking_reference?: string | null;
-}
+const emit = defineEmits(['toggle']);
 
-interface SeatCellView {
-  seatNumber: number | null;
-  status: SeatStatusValue | 'aisle';
-  symbol: string;
-  label: string;
-  bookingReference: string | null;
-}
-
-const props = withDefaults(
-  defineProps<{
-    seats: SeatInput[];
-    selected?: number[];
-    seatsPerRow?: number;
-    showLegend?: boolean;
-    showSummary?: boolean;
-    aisle?: boolean;
-  }>(),
-  {
-    selected: () => [],
-    seatsPerRow: 4,
-    showLegend: true,
-    showSummary: true,
-    aisle: undefined,
-  },
-);
-
-defineEmits<{ (e: 'toggle', seatNumber: number): void }>();
-
-const legendOrder: SeatStatusValue[] = [
+const legendOrder = [
   'free', 'selected', 'held', 'reserved', 'pending_payment', 'sold', 'blocked', 'unavailable',
 ];
 
-const labels: Record<string, string> = {
+const labels = {
   free: 'Libre',
   selected: 'Sélectionné',
   held: 'Réservation en cours',
@@ -116,7 +98,7 @@ const labels: Record<string, string> = {
   aisle: 'Couloir',
 };
 
-const symbols: Record<string, string> = {
+const symbols = {
   free: '',
   selected: '✓✓',
   held: '◴',
@@ -128,11 +110,11 @@ const symbols: Record<string, string> = {
   aisle: '',
 };
 
-const label = (status: string): string => labels[status] ?? status;
+const label = (status) => labels[status] ?? status;
 
 const selectedSet = computed(() => new Set(props.selected));
 
-const viewSeats = computed<SeatInput[]>(() =>
+const viewSeats = computed(() =>
   props.seats.map((seat) => ({
     ...seat,
     status: selectedSet.value.has(seat.seat_number) ? 'selected' : seat.status,
@@ -146,10 +128,10 @@ const layout = computed(() => {
   const aisleAfter = useAisle.value ? Math.ceil(perRow / 2) : null;
   const sorted = [...viewSeats.value].sort((a, b) => a.seat_number - b.seat_number);
 
-  const rows: { rowNumber: number; cells: SeatCellView[] }[] = [];
+  const rows = [];
   for (let i = 0; i < sorted.length; i += perRow) {
     const chunk = sorted.slice(i, i + perRow);
-    const cells: SeatCellView[] = [];
+    const cells = [];
     chunk.forEach((seat, index) => {
       cells.push({
         seatNumber: seat.seat_number,
@@ -170,11 +152,11 @@ const layout = computed(() => {
 
 const freeSeats = computed(() => props.seats.filter((s) => s.status === 'free').length);
 
-const selectable = (status: SeatStatusValue): boolean => status === 'free' || status === 'selected';
+const selectable = (status) => status === 'free' || status === 'selected';
 
-const ariaLabel = (seatNumber: number, status: string): string => `Siège ${seatNumber}, ${label(status)}`;
+const ariaLabel = (seatNumber, status) => `Siège ${seatNumber}, ${label(status)}`;
 
-function stateClass(status: string): string {
+function stateClass(status) {
   switch (status) {
     case 'free': return 'is-free';
     case 'selected': return 'is-selected';
