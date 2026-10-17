@@ -3677,6 +3677,59 @@ paths:
                   status:
                     type: string
                     example: ok
+  /edge-node/{nodeId}/sync-diagnostic:
+    get:
+      tags:
+      - Edge
+      summary: Diagnostic de la file de synchronisation d'un nœud edge
+      description: >-
+        #8629 — état de la file de synchronisation : compteurs par statut,
+        âge du plus ancien item en attente, échecs et conflits avec leur
+        cause. Permet au nœud (et à la console) de diagnostiquer un blocage
+        sans exposer de données métier.
+      security: []
+      parameters:
+      - name: nodeId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Diagnostic de la file de synchronisation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      pending:
+                        type: integer
+                      failed:
+                        type: integer
+                      conflict:
+                        type: integer
+                      oldest_pending_age_seconds:
+                        type: integer
+                        nullable: true
+                      failures:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            idempotency_key:
+                              type: string
+                            last_error:
+                              type: string
+                              nullable: true
+                            last_attempt_at:
+                              type: string
+                              format: date-time
+                              nullable: true
+        '404':
+          $ref: '#/components/responses/Error404'
   /edge-node/validate-license:
     post:
       tags:
@@ -6816,6 +6869,67 @@ paths:
                         timezone:
                           type: string
                           example: Africa/Dakar
+  /platform/provisioning:
+    get:
+      tags:
+      - Platform
+      summary: Vue de provisionnement des tenants (console superadmin)
+      description: >-
+        #8626/#8627 (Lot 6) — étapes de provisionnement franchies, échecs et
+        blocages, tenants sans établissement, catalogue des verticales avec
+        leur maturité réelle. Faits de provisionnement uniquement, aucune
+        donnée métier client.
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: Vue de provisionnement
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      tenants:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            company_id:
+                              type: string
+                            name:
+                              type: string
+                            stage:
+                              type: string
+                              enum:
+                              - blocked_no_site
+                              - site_ready
+                              - onboarding_started
+                              - operational
+                            sites_count:
+                              type: integer
+                            onboarding_errors:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  step:
+                                    type: string
+                                  message:
+                                    type: string
+                      verticals:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            maturity:
+                              type: string
+        '403':
+          $ref: '#/components/responses/Error403'
   /platform/companies:
     get:
       tags:
