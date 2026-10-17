@@ -47029,7 +47029,8 @@ paths:
                   maxLength: 80
                 quantity:
                   type: "number"
-                  exclusiveMinimum: 0
+                  minimum: 0
+                  exclusiveMinimum: true
                 expiry_date:
                   type: "string"
                   format: date
@@ -47081,7 +47082,8 @@ paths:
                   maxLength: 80
                 quantity:
                   type: "number"
-                  exclusiveMinimum: 0
+                  minimum: 0
+                  exclusiveMinimum: true
                 farm_operation_id:
                   type: "integer"
                 parcel_id:
