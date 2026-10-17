@@ -100,6 +100,31 @@ final class ProvisionFarmOs
     }
 
     /**
+     * Allowlist FAIL-CLOSED des activités déclarées : toute valeur absente du
+     * registre fermé {@see FarmActivity} est écartée avant d'atteindre le
+     * moindre effet de bord. Le contrôleur valide déjà la requête, mais l'action
+     * reste appelable directement (tests, jobs, commandes) : la validation ne
+     * doit jamais dépendre du seul appelant HTTP.
+     *
+     * @param  list<string>  $activities
+     * @return list<string>
+     */
+    private function resolveActivities(array $activities): array
+    {
+        $resolved = [];
+
+        foreach ($activities as $activity) {
+            $enum = FarmActivity::tryFrom((string) $activity);
+
+            if ($enum !== null) {
+                $resolved[] = $enum->value;
+            }
+        }
+
+        return array_values(array_unique($resolved));
+    }
+
+    /**
      * Proposition d'outils transformée en décisions : seule la proposition est
      * activée, les autres outils sont explicitement refusés (`false`) afin que
      * l'exploitant puisse les activer lui-même plus tard sans qu'ils lui
@@ -136,7 +161,7 @@ final class ProvisionFarmOs
             }
         }
 
-        return array_values($enabled);
+        return $enabled;
     }
 
     /**
@@ -149,15 +174,15 @@ final class ProvisionFarmOs
     private function checklist(Company $company, array $activities, array $enabled): array
     {
         return [
-            ['key' => 'farm_activity_declared', 'label' => 'Activité agricole déclarée', 'done' => $activities !== []],
-            ['key' => 'farm_tools_decided', 'label' => 'Outils activés', 'done' => FarmCapabilitySetting::decisions() !== []],
-            ['key' => 'farm_solution_active', 'label' => 'Solution Farm OS active', 'done' => $company->hasFeature('farm_os')],
-            ['key' => 'farm_first_site', 'label' => 'Première exploitation / site créé', 'done' => FarmSite::query()->exists()],
-            ['key' => 'farm_first_parcel', 'label' => 'Première parcelle créée', 'done' => Parcel::query()->exists()],
-            ['key' => 'farm_first_operation', 'label' => 'Première opération planifiée', 'done' => FarmOperation::query()->exists()],
+            ['key' => 'farm_activity_declared', 'label' => __('farm.checklist.activity_declared'), 'done' => $activities !== []],
+            ['key' => 'farm_tools_decided', 'label' => __('farm.checklist.tools_decided'), 'done' => FarmCapabilitySetting::decisions() !== []],
+            ['key' => 'farm_solution_active', 'label' => __('farm.checklist.solution_active'), 'done' => $company->hasFeature('farm_os')],
+            ['key' => 'farm_first_site', 'label' => __('farm.checklist.first_site'), 'done' => FarmSite::query()->exists()],
+            ['key' => 'farm_first_parcel', 'label' => __('farm.checklist.first_parcel'), 'done' => Parcel::query()->exists()],
+            ['key' => 'farm_first_operation', 'label' => __('farm.checklist.first_operation'), 'done' => FarmOperation::query()->exists()],
             // Honnêteté : la main-d'œuvre n'est « prête » que si l'outil est
             // réellement activé — un profil sans salariés ne la voit pas cochée.
-            ['key' => 'farm_workers_ready', 'label' => 'Outil travailleurs activé', 'done' => in_array(FarmCapability::Workers->value, $enabled, true)],
+            ['key' => 'farm_workers_ready', 'label' => __('farm.checklist.workers_ready'), 'done' => in_array(FarmCapability::Workers->value, $enabled, true)],
         ];
     }
 

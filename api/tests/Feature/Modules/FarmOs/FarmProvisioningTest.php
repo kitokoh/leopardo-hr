@@ -43,7 +43,9 @@ final class FarmProvisioningTest extends TestCase
         $result = $this->provision($this->company, [FarmActivity::CerealCrops->value]);
 
         $this->assertContains($result['status'], ['activated', 'already_active']);
-        $this->assertTrue($this->company->fresh()->hasFeature('farm_os'));
+        // `refresh()` (et non `fresh()`) : le type de retour est `static`, donc
+        // PHPStan level max n'a pas à gérer un `Company|null` ici.
+        $this->assertTrue($this->company->refresh()->hasFeature('farm_os'));
 
         $this->assertDatabaseHas('farm_activities', [
             'company_id' => $this->company->id,
@@ -115,7 +117,9 @@ final class FarmProvisioningTest extends TestCase
     {
         $result = $this->provision($this->company, [FarmActivity::CerealCrops->value]);
 
-        $checklist = collect($result['checklist'])->keyBy('key');
+        /** @var list<array{key: string, label: string, done: bool}> $rows */
+        $rows = $result['checklist'];
+        $checklist = collect($rows)->keyBy('key');
 
         // Le provisioning ne prétend jamais avoir créé une exploitation ou une
         // parcelle : ces étapes restent explicitement à faire.
@@ -148,7 +152,7 @@ final class FarmProvisioningTest extends TestCase
 
         $this->assertSame(0, DB::table('farm_activities')->where('company_id', $other->id)->count());
         $this->assertSame(0, DB::table('farm_capabilities')->where('company_id', $other->id)->count());
-        $this->assertFalse($other->fresh()->hasFeature('farm_os'));
+        $this->assertFalse($other->refresh()->hasFeature('farm_os'));
     }
 
     /**
