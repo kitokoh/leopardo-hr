@@ -18,6 +18,5 @@ final readonly class KitchenTicketLine
         public string $quantity,
         public ?string $note = null,
         public bool $isCancelled = false,
-    ) {
-    }
+    ) {}
 }

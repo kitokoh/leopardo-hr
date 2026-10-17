@@ -39,7 +39,6 @@ use App\Modules\RestaurantManager\Domain\Manifests\RestaurantManagerManifest;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPrintJob;
 use App\Modules\RestaurantManager\Infrastructure\Printing\EscPosOrderTicketRenderer;
-use App\Modules\RestaurantManager\Policies\RestaurantPrintJobPolicy;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantBranchRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantOrderRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantPosSessionRepository;
@@ -60,6 +59,7 @@ use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDiscoverable
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxConsumerRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use App\Modules\RestaurantManager\Infrastructure\Services\StockMovementService;
+use App\Modules\RestaurantManager\Policies\RestaurantPrintJobPolicy;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;

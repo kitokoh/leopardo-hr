@@ -33,6 +33,5 @@ final readonly class KitchenTicket
         public int $revision,
         public string $printedAt,
         public ?string $note = null,
-    ) {
-    }
+    ) {}
 }
