@@ -83,5 +83,8 @@ Route::prefix('api/v1/edge-node')
         Route::post('/{nodeId}/push', [EdgeNodeController::class, 'pushFromEdge']);
         Route::get('/{nodeId}/pull', [EdgeNodeController::class, 'pullDelta']);
         Route::post('/{nodeId}/heartbeat', [EdgeNodeController::class, 'heartbeat']);
+        // #8629 — diagnostic de file : âge du plus ancien item en attente,
+        // échecs et conflits avec leur cause.
+        Route::get('/{nodeId}/sync-diagnostic', [EdgeNodeController::class, 'syncDiagnostic']);
         Route::post('/validate-license', [EdgeNodeController::class, 'validateLicense']);
     });

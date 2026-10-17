@@ -66,12 +66,18 @@ class EdgeSyncDedupTest extends TestCase
                 $table->string('operation');
                 $table->json('payload')->nullable();
                 $table->string('dedup_key', 64)->nullable();
+                // #8629 — parité avec la migration tenant (clé de rejeu + diagnostic).
+                $table->string('idempotency_key', 128)->nullable();
                 $table->string('status')->default('pending');
                 $table->integer('attempt_count')->default(0);
                 $table->string('conflict_resolution')->nullable();
                 $table->string('conflict_note')->nullable();
+                $table->text('last_error')->nullable();
+                $table->timestamp('last_attempt_at')->nullable();
+                $table->timestamp('conflict_at')->nullable();
                 $table->timestamp('synced_at')->nullable();
                 $table->unique(['edge_node_id', 'dedup_key'], 'sync_queue_dedup_unique');
+                $table->index(['edge_node_id', 'idempotency_key'], 'sync_queue_idempotency_index');
                 $table->timestamps();
             });
         }
