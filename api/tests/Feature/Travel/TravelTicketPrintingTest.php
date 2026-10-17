@@ -117,7 +117,11 @@ class TravelTicketPrintingTest extends TestCase
         $parsed = app(TravelTicketQrCode::class)->parse((string) $decoded);
 
         $this->assertNotNull($parsed);
-        $this->assertSame($ticket->booking->reference, $parsed['reference']);
+
+        $booking = $ticket->booking;
+        $this->assertNotNull($booking);
+
+        $this->assertSame($booking->reference, $parsed['reference']);
         $this->assertSame($ticket->plainValidationCode(), $parsed['code']);
     }
 

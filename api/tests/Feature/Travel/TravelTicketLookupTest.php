@@ -122,11 +122,10 @@ class TravelTicketLookupTest extends TestCase
             ->assertOk();
 
         // LECTURE SEULE : le billet reste utilisable après une recherche.
-        $this->assertSame(
-            TicketStatus::ISSUED,
-            $result['ticket']->fresh()->status
-        );
-        $this->assertNull($result['ticket']->fresh()->checked_in_at);
+        $fresh = $result['ticket']->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertSame(TicketStatus::ISSUED, $fresh->status);
+        $this->assertNull($fresh->checked_in_at);
     }
 
     public function test_lookup_never_exposes_the_validation_code(): void
