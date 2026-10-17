@@ -1,3 +1,35 @@
+> **MAJ 2026-10-17 — #8652, #8653, #8654, #8655, Travel OS : sièges physiquement absents, cohérence disposition ↔ inventaire, rafraîchissement du plan — PR #8656.**
+> Surface **API (`api/app/Modules/TravelAgency`)** : `SeatLayout` accepte `absent_seats` (entiers positifs, uniques,
+> bornés par la capacité) et expose `sellableCapacity()` ; `GenerateTripSeatsAction` ne crée **aucune** ligne
+> `travel_trip_seats` pour un siège physiquement absent — l'inventaire correspond au bus réel, pas au nombre de
+> places déclaré. Nouvelle `ValidateSeatLayoutCoherenceAction` (lecture seule) : refus **422** motivé d'une
+> disposition incohérente, jamais de correction silencieuse ; refuse aussi de rendre absent un siège **déjà
+> réservé**, en listant les sièges en conflit. `StoreTravelVehicleRequest` / `UpdateTravelVehicleRequest` valident
+> `seat_layout.absent_seats` (entiers, distincts). Migration **idempotente** `2026_10_17_140000_8652` :
+> `absent_seats` vit dans le JSONB `seat_layout` existant, aucune colonne nouvelle, aucune ligne réécrite.
+> Surface **web grand public (`front/travel-web`)** : `buildSeatMapLayout` reconstruit la séquence **physique**
+> complète quand le véhicule déclare des sièges absents — chaque siège absent occupe sa place réelle en case non
+> cliquable, au lieu d'être omis (ce qui **décalerait** tous les sièges suivants) ; état `absent` avec symbole
+> dédié, libellé texte et style barré (jamais la couleur seule) ; `resolveSeatLayout` normalise `absent_seats`.
+> `booking-flow.tsx` rafraîchit périodiquement le plan (30 s), annule au démontage, et **désélectionne + signale**
+> un siège devenu indisponible — aucun temps réel simulé, la disponibilité définitive reste tranchée par le
+> serveur à la confirmation.
+> Surface **web admin (`front/admin-dashboard`)** : `TravelSeatMap.vue` rend les sièges absents (case non
+> cliquable, légende conditionnelle) ; `TravelBookingsView.vue` affiche un bandeau `role="note"` signalant qu'un
+> changement de disposition **ne déplace pas** les passagers déjà réservés.
+> Surface **i18n** : sources `shared/i18n/locales/{fr,en,tr,ar}.json` éditées puis propagées par
+> `sync-web`/`sync-backend`/`sync-mobile` — **aucun catalogue généré modifié à la main**. Les ARB mobile reçoivent
+> `travelSeatsStateAbsent` / `travelSeatsLayoutnotice` (propagation automatique du catalogue partagé).
+> Scénarios automatisés : `api/tests/Feature/Travel/TravelAbsentSeatsTest.php` (**12 tests / 24 assertions** :
+> `sellableCapacity`, siège absent hors capacité → disposition inexploitable, inventaire sans siège absent,
+> véhicule non configuré inchangé, refus 422 hors capacité / doublon, refus de rendre absent un siège réservé avec
+> liste des conflits, acceptation d'un siège absent libre, véhicule non configuré accepté sans géométrie) ;
+> `front/travel-web/src/lib/seat-layout.test.ts` (**+4 cas** : siège absent à sa place réelle sans décalage,
+> aucune case absente sans déclaration, normalisation, forme inexploitable ignorée). Suites Travel : **40/40
+> verts** ; `travel-web` vitest **37/37** ; PHPStan niveau 8 → **No errors** ; idempotence de la migration vérifiée
+> sur la base réelle. **Non-régression mesurée** : `tests/Feature/Travel` complet comparé à un worktree propre de
+> `origin/main` → **16 erreurs / 83 échecs des deux côtés**, +12 tests (les nouveaux) : **0 régression**.
+
 > **MAJ 2026-10-17 — vague 6 (correctif a11y), vitrine : constellation atteignable au clavier, focus restitué à l'étoile.**
 > Surface **web (`front/web/src/modules/vitrine/components/hero`)** : les étiquettes d'étoiles de `HeroBusinessOS3D`
 > passent de `<div>` décoratifs (`pointer-events-none`, aucun `tabindex`) à de **vrais `<button>` focusables**
