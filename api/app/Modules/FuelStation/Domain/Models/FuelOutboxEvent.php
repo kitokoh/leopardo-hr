@@ -56,6 +56,10 @@ class FuelOutboxEvent extends Model
 
     public const EVENT_SALE_RECORDED = 'fuel.sale.recorded.v1';
 
+    // P1-b (audit 2026-10-17) — une annulation doit être publiée : la
+    // comptabilité ne doit jamais rester sur un montant annulé.
+    public const EVENT_SALE_CANCELLED = 'fuel.sale.cancelled.v1';
+
     public const TYPE_CASH_SESSION_CLOSED = 'fuel.cash_session.closed.v1';
 
     public const EVENT_CASH_SESSION_CLOSED = 'fuel.cash_session.closed.v1';

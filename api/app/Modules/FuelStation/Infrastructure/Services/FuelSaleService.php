@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\FuelStation\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\FuelStation\Domain\Models\FuelCashSession;
 use App\Modules\FuelStation\Domain\Models\FuelOutboxEvent;
 use App\Modules\FuelStation\Domain\Models\FuelSale;
 use App\Modules\FuelStation\Domain\Models\FuelTank;
@@ -69,6 +71,12 @@ final class FuelSaleService
             'quantity' => $quantity,
             'unit_price' => $unitPrice,
             'amount' => $amount,
+            'payment_method' => is_string($data['payment_method'] ?? null)
+                ? $data['payment_method']
+                : FuelSale::PAYMENT_CASH,
+            'payment_reference' => is_string($data['payment_reference'] ?? null)
+                ? $data['payment_reference']
+                : null,
             'sale_time' => $data['sale_time'] ?? now(),
             'source' => $data['source'] ?? FuelSale::SOURCE_MANUAL,
             'external_id' => is_string($externalId) ? $externalId : null,
@@ -108,6 +116,126 @@ final class FuelSaleService
         }
 
         return $sale;
+    }
+
+    /**
+     * P1-b (audit 2026-10-17) — annulation d'une vente.
+     *
+     * ÉCRITURE COMPENSATOIRE, jamais destructrice : la ligne d'origine est
+     * CONSERVÉE et marquée `cancelled`. Aucun `delete()` — le montant, la
+     * quantité et l'opérateur restent lisibles après annulation (§6 : une
+     * correction ne doit pas effacer l'historique financier).
+     *
+     * Refusée si la session de caisse de la vente est déjà `closed` ou
+     * `approved` : un historique clôturé ne se réécrit pas. Refusée si la vente
+     * est déjà annulée (idempotence explicite plutôt que double compensation).
+     *
+     * Le stock est RÉ-INCRÉMENTÉ (la vente n'a plus lieu) et l'événement
+     * `fuel.sale.cancelled.v1` est publié pour que la comptabilité ne reste
+     * jamais sur un montant annulé.
+     */
+    public function cancel(Employee $actor, FuelSale $sale, string $reason): FuelSale
+    {
+        if ($sale->isCancelled()) {
+            abort(422, 'SALE_ALREADY_CANCELLED');
+        }
+
+        $this->assertCashSessionNotClosed($actor, $sale);
+
+        $sale->update([
+            'status' => FuelSale::STATUS_CANCELLED,
+            'cancelled_at' => now(),
+            'cancelled_by' => $actor->id,
+            'cancellation_reason' => $reason,
+        ]);
+
+        $this->restoreTankLevel($actor, $sale);
+
+        $sale = $sale->refresh();
+
+        $this->outbox->publish(
+            (string) $actor->company_id,
+            FuelOutboxEvent::EVENT_SALE_CANCELLED,
+            [
+                'sale_id' => $sale->id,
+                'station_id' => $sale->station_id,
+                'product' => $sale->product,
+                'quantity' => $sale->quantity,
+                'amount' => $sale->amount,
+                'sale_time' => $sale->sale_time->toIso8601String(),
+                'cancelled_at' => $sale->cancelled_at?->toIso8601String(),
+                'reason' => $reason,
+            ],
+            'fuel_sale',
+            (string) $sale->id,
+            'sale-cancelled-'.$sale->id,
+        );
+
+        AuditLog::record(
+            module: 'fuel',
+            action: 'fuel.sale.cancelled',
+            subject: $sale,
+            actor: $actor,
+            oldValues: ['status' => FuelSale::STATUS_COMPLETED],
+            newValues: [
+                'status' => FuelSale::STATUS_CANCELLED,
+                'reason' => $reason,
+                'amount' => $sale->amount,
+            ],
+        );
+
+        return $sale;
+    }
+
+    /**
+     * Une vente rattachée à une session clôturée/ approuvée ne peut plus être
+     * annulée : la caisse a été comptée et rapprochée.
+     */
+    private function assertCashSessionNotClosed(Employee $actor, FuelSale $sale): void
+    {
+        if ($sale->cash_session_id === null || ! Schema::hasTable('fuel_cash_sessions')) {
+            return;
+        }
+
+        $status = DB::table('fuel_cash_sessions')
+            ->where('id', $sale->cash_session_id)
+            ->where('company_id', $actor->company_id)
+            ->value('status');
+
+        if ($status === FuelCashSession::STATUS_CLOSED || $status === FuelCashSession::STATUS_APPROVED) {
+            abort(422, 'CASH_SESSION_CLOSED');
+        }
+    }
+
+    /**
+     * Ré-incrémente la cuve du produit annulé (symétrique de decrementTankLevel).
+     */
+    private function restoreTankLevel(Employee $actor, FuelSale $sale): void
+    {
+        if ($sale->station_id === null || ! Schema::hasTable('fuel_tanks')) {
+            return;
+        }
+
+        $tank = DB::table('fuel_tanks')
+            ->where('company_id', $actor->company_id)
+            ->where('station_id', $sale->station_id)
+            ->where('product_type', $sale->product)
+            ->where('status', FuelTank::STATUS_ACTIVE)
+            ->orderBy('id')
+            ->first();
+
+        if ($tank === null) {
+            return;
+        }
+
+        $incrementMinor = (int) round(((float) $sale->quantity) * 1000);
+
+        DB::table('fuel_tanks')
+            ->where('id', (int) $tank->id)
+            ->where('company_id', $actor->company_id)
+            ->update([
+                'current_level_minor' => DB::raw('current_level_minor + '.$incrementMinor),
+            ]);
     }
 
     /**
