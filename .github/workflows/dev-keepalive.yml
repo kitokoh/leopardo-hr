@@ -1,0 +1,211 @@
+name: Dev Keepalive & Watchdog
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Épic #8659 / issues #8661 (keepalive) et #8663 (bascule automatique).
+#
+# Deux jobs, un seul budget :
+#
+# 1. keepalive — ping HTTP de la stack dev ACTIVE pendant la fenêtre de
+#    travail (06:00–22:59 UTC, 7 j/7). Pourquoi fenêtré : un service free
+#    maintenu éveillé 24/7 consomme ~750 h/mois = la TOTALITÉ du quota gratuit
+#    Render du compte ; les déploiements (double instance pendant le build)
+#    font alors basculer en suspension « billing » — incident fondateur
+#    constaté le 2026-10-17 (API dev morte depuis le 2026-09-20, voir
+#    docs/ops/DEV_STACK_ROTATION.md § Budget). Fenêtre choisie :
+#    ~17 h/jour ≈ 527 h/mois + ~90 h de chevauchement de déploiements
+#    ≈ 620 h < 750 h avec marge. La cadence 10 min < les 15 min d'inactivité
+#    qui déclenchent le spin-down Render.
+#    ⚠️ Seule la stack ACTIVE est pingée : les stacks standby restent froides
+#    (réveil 30-60 s accepté à la bascule) pour préserver LEUR quota.
+#
+# 2. watchdog — sur le même créneau, si la stack active reste malade (3 sondes
+#    espacées dans le run), cherche une stack « ready » dans le registre et
+#    déclenche la bascule automatique via dev-stack-switch.yml (workflow_call).
+#    Garde-fous : cooldown 24 h (anti ping-pong, état = dernière issue
+#    « [dev-switch] »), jamais vers planned/suspended/degraded, rapport
+#    d'incident en issue. Données dev fictives → bascule sans risque données.
+#    La PROD n'est JAMAIS concernée (ce workflow ne lit que des variables DEV_*).
+#
+# Ordonnanceur : les crons GitHub ont déjà cessé de tirer sur ce dépôt
+# (arrêt constaté le 2026-09-21). Deux amortisseurs : (a) relais hors GitHub
+# via le Worker Cloudflare infra/cloudflare/dev-keepalive-worker (cron fiable,
+# plan gratuit) ; (b) battement sur push main, limité à la fenêtre et à
+# 1 vrai ping / 60 min (modèle repris de db-standby-failover.yml).
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  schedule:
+    # Toutes les 10 min, 06:04–22:54 UTC — décalé de 4 min des gardes */5 et
+    # 13,43 existantes. Liste explicite (cron POSIX) plutôt qu'un pas exotique.
+    - cron: "4,14,24,34,44,54 6-22 * * *"
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      watchdog_only:
+        description: "N'exécuter que le watchdog (pas de ping keepalive)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: dev-keepalive
+  cancel-in-progress: false
+
+jobs:
+  keepalive:
+    name: Ping stack active (fenêtre 06–23 UTC)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event.inputs.watchdog_only != 'true'
+    steps:
+      - name: Fenêtre + cadence (battement push limité)
+        id: gate
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          hour="$(date -u +%H)"
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            # Battement push : uniquement dans la fenêtre, et au plus 1/h.
+            if (( 10#$hour < 6 || 10#$hour > 22 )); then
+              echo "skip=Hors fenêtre (push nocturne — le keepalive ne doit pas réveiller le service 24/7, budget quota)." >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            last="$(gh run list --workflow dev-keepalive.yml --branch main --limit 1 \
+                      --json createdAt --jq '.[0].createdAt' || echo "")"
+            if [[ -n "$last" ]]; then
+              age=$(( $(date -u +%s) - $(date -u -d "$last" +%s) ))
+              if (( age < 3600 )); then
+                echo "skip=Dernier run il y a ${age}s (< 1 h) — cadence push limitée." >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
+            fi
+          fi
+          echo "skip=" >> "$GITHUB_OUTPUT"
+
+      - name: Ping de la stack active
+        if: steps.gate.outputs.skip == ''
+        shell: bash
+        env:
+          API_BASE: ${{ vars.DEV_API_BASE_URL }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${API_BASE}" ]]; then
+            echo "::warning::DEV_API_BASE_URL absente — keepalive inopérant (la poser via scripts/dev-stack-switch.sh)."
+            exit 0
+          fi
+          code="$(curl --silent --output /dev/null --write-out '%{http_code}' --max-time 60 "${API_BASE}/health" || echo 000)"
+          echo "keepalive ${API_BASE}/health → HTTP ${code}"
+          # Un non-200 n'échoue PAS le job : c'est le watchdog qui arbitre.
+          exit 0
+
+  watchdog:
+    name: Watchdog bascule auto (cooldown 24 h)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      issues: write   # rapport d'incident + lecture du cooldown
+    outputs:
+      switch_target: ${{ steps.decide.outputs.target || '' }}
+    steps:
+      - name: Sondes de la stack active (3 tentatives espacées)
+        id: probe
+        shell: bash
+        env:
+          API_BASE: ${{ vars.DEV_API_BASE_URL }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${API_BASE}" ]]; then
+            echo "::warning::DEV_API_BASE_URL absente — watchdog inopérant."
+            echo "down=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          fails=0
+          for i in 1 2 3; do
+            code="$(curl --silent --output /dev/null --write-out '%{http_code}' --max-time 60 "${API_BASE}/health" || echo 000)"
+            echo "sonde $i/3 → HTTP ${code}"
+            [[ "$code" == "200" ]] || fails=$((fails + 1))
+            [[ $i -lt 3 ]] && sleep 45
+          done
+          if [[ "$fails" -eq 3 ]]; then
+            echo "::warning::Stack active malade (3/3 échecs) — évaluation de bascule."
+            echo "down=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "down=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Cooldown + cible éligible
+        id: decide
+        if: steps.probe.outputs.down == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          # Cooldown : une bascule auto max / 24 h (état = dernière issue [dev-switch]).
+          last="$(gh issue list --repo "${{ github.repository }}" --state all --limit 20 \
+                    --search '"[dev-switch]" in:title' --json title,createdAt \
+                    --jq 'map(select(.title | startswith("[dev-switch]"))) | .[0].createdAt' || echo "")"
+          if [[ -n "$last" && "$last" != "null" ]]; then
+            age=$(( $(date -u +%s) - $(date -u -d "$last" +%s) ))
+            if (( age < 86400 )); then
+              echo "::warning::Cooldown actif — dernière bascule il y a $((age / 3600)) h (< 24 h). Alerte sans bascule."
+              echo "target=" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+
+          # Registre : première stack « ready » autre que l'active.
+          # L'état COURANT vient des variables (mises à jour à chaque bascule) ;
+          # le registre fichier n'est que la source documentaire des statuts.
+          curl --silent --show-error --max-time 20 \
+            "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/deploy/dev-stacks.json" \
+            -o /tmp/stacks.json
+          active="${{ vars.DEV_ACTIVE_STACK }}"
+          [[ -n "$active" ]] || active="$(jq -r '.active_stack' /tmp/stacks.json)"
+          target="$(jq -r --arg a "$active" \
+            '[.stacks | to_entries[] | select(.key != $a and .value.status == "ready") | .key][0] // ""' \
+            /tmp/stacks.json)"
+          if [[ -z "$target" ]]; then
+            echo "::warning::Aucune stack 'ready' en secours — alerte sans bascule (voir docs/ops/DEV_STACK_ROTATION.md)."
+          else
+            echo "Cible de bascule : $target"
+          fi
+          echo "target=$target" >> "$GITHUB_OUTPUT"
+
+      - name: Alerte sans bascule (pas de cible / cooldown)
+        if: steps.probe.outputs.down == 'true' && steps.decide.outputs.target == ''
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          body="$(printf '%s\n\n%s\n\n%s\n\n%s' \
+            "Le watchdog dev-keepalive.yml a détecté 3 échecs consécutifs de santé sur la stack dev active (${{ vars.DEV_API_BASE_URL }}) le $(date -u '+%Y-%m-%d %H:%M UTC')." \
+            "Aucune bascule automatique n'a été effectuée (cooldown 24 h actif ou aucune stack au statut ready dans deploy/dev-stacks.json)." \
+            "**Actions manuelles** : scripts/dev-stack-health.sh, runbook docs/ops/DEV_STACK_ROTATION.md § Dépannage, bascule manuelle via le workflow dev-stack-switch.yml ou scripts/dev-stack-switch.sh <stack>." \
+            "_Référence : épic #8659._")"
+          gh issue create --repo "${{ github.repository }}" \
+            --title "[dev-switch] ALERTE — stack active dev malade, aucune bascule possible" \
+            --body "$body" >/dev/null
+          echo "Issue d'alerte créée."
+
+  switch:
+    name: Bascule automatique (reusable call)
+    # Le job de bascule réutilise dev-stack-switch.yml (source unique de la logique).
+    needs: watchdog
+    if: needs.watchdog.outputs.switch_target != ''
+    uses: ./.github/workflows/dev-stack-switch.yml
+    with:
+      stack: ${{ needs.watchdog.outputs.switch_target }}
+      seed: true
+      force: false
+    secrets: inherit

@@ -1,0 +1,17 @@
+# dev-keepalive-worker — Épic #8659 / issue #8664.
+# Déploiement : voir README.md (une commande, plan Workers gratuit).
+name = "leopardo-dev-keepalive"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+
+# Fenêtre identique à dev-keepalive.yml : toutes les 10 min, 06:00–22:59 UTC.
+# Deux ordonnanceurs indépendants (GitHub + Cloudflare) se couvrent : un ping
+# en double ne coûte rien (le service est déjà éveillé), un ping manqué
+# laisse le service s'éteindre après 15 min (juste un cold start au retour).
+[triggers]
+crons = ["4,14,24,34,44,54 6-22 * * *"]
+
+# URL de santé de la stack dev ACTIVE — NON secrète. À mettre à jour après
+# chaque bascule (scripts/dev-stack-switch.sh le rappelle dans son runbook).
+[vars]
+KEEPALIVE_URL = "https://gestionemployerbackend.onrender.com/api/v1/health"
