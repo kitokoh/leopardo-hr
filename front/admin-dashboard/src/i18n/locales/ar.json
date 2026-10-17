@@ -2171,7 +2171,30 @@
     "serviceUnreachable": "تعذر الوصول إلى الخدمة",
     "statsLoadError": "خطأ أثناء تحميل إحصائيات النظام",
     "subtitle": "مراقبة منصة Leopardo وتكوينها وأتمتتها.",
-    "title": "إدارة النظام"
+    "title": "إدارة النظام",
+    "infra": {
+      "title": "البنية التحتية — الحزم",
+      "subtitle": "حالة حزم النشر والتبديل بين المستويات (dev أو prod).",
+      "refresh": "تحديث",
+      "loading": "جارٍ التحميل…",
+      "activeStack": "الحزمة النشطة: {stack}",
+      "registryUpdated": "السجل {date}",
+      "stackLabel": "الحزمة {id}",
+      "activeBadge": "نشطة",
+      "api": "API",
+      "region": "المنطقة",
+      "switchTo": "التبديل إلى {id}",
+      "switching": "جارٍ التبديل…",
+      "alreadyActive": "هذه الحزمة نشطة بالفعل.",
+      "confirmHint": "تبديل المستوى {tier} إلى الحزمة {id}.",
+      "confirmMessage": "هل تريد تبديل المستوى {tier} إلى الحزمة {id}؟\n\nهذا يؤثر على بيئة قيد التشغيل: تُسجَّل العملية وتُتابَع في تبويب Actions.",
+      "switchQueued": "تم إطلاق التبديل {tier} → {id}. تابع سير العمل « Stack Switch ».",
+      "switchError": "فشل التبديل.",
+      "forbidden": "ليست لديك صلاحية إدارة البنية التحتية (infra.manage).",
+      "loadError": "تعذّر تحميل حالة الحزم.",
+      "hintDispatch": "التبديل يمر عبر سير عمل GitHub: النتائج والسجل في تبويب Actions.",
+      "hintNoToken": "التبديل معطّل: GITHUB_STACK_SWITCH_TOKEN غير مهيّأ على خدمة API."
+    }
   },
   "billing": {
     "cancel_subscription_confirm": "هل تريد إلغاء اشتراكك؟ ستفقد الوصول إلى الوحدات المميزة في نهاية الفترة الحالية.",
