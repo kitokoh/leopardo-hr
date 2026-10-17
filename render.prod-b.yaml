@@ -1,0 +1,164 @@
+# render.prod-b.yaml — Blueprint Render de la stack PROD « B » (épic #8670, issue #8672).
+#
+# Miroir de render.prod.yaml (stack « a », workspace prod ibrahimkoubaye)
+# destiné au COMPTE RENDER B — aujourd'hui `ibrahim.ali` (vérifié vide le
+# 2026-10-18 : `GET /v1/services` renvoie `[]`).
+#
+# ── Pourquoi une stack B en prod ─────────────────────────────────────────
+# La prod tourne sur un service Render **free** (750 h/mois). Elle a déjà été
+# suspendue pour « Monthly Quota Exceeded » du 2026-09-28 au 2026-10-01
+# (événements Render `suspender_added` / `suspender_removed`). Avec des
+# bêta-testeurs, une suspension = plateforme morte. La stack B est le second
+# service qui permet de basculer en quelques minutes (scripts/stack-switch.sh
+# --tier prod, ou le bouton superadmin /platform/infra/stack-switch).
+#
+# ── Différences volontaires avec render.prod.yaml ────────────────────────
+#   - `name: leopardo-prod-b` — Render mappe les services par `name:` ;
+#   - `autoDeploy: false` — les déploiements passent par deploy-prod.yml
+#     (fan-out : mêmes secrets RENDER_PROD_API_KEY_STACK_B /
+#     RENDER_PROD_SERVICE_ID_STACK_B), jamais par un push ;
+#   - **DB_URL pointe la MÊME base prod** (Neon « LEOPARDO »). C'est
+#     volontaire : la prod porte des données bêta RÉELLES, il n'existe pas de
+#     seconde base à jour. Une stack B branchée sur une autre base servirait
+#     des données périmées — pire qu'une panne. La DB reste donc hors
+#     périmètre de bascule (le failover DB est db-standby-failover.yml) ;
+#   - ⚠️ **WEB_QUEUE_DRAIN=false et WEB_SCHEDULER_LOOP=false sur la stack B
+#     tant qu'elle est en standby.** Deux conteneurs qui draine(nt) la même
+#     queue `database` doublent la consommation Neon (quota transfert 5 Go/mois
+#     partagé) et dupliquent l'exécution du scheduler (double facturation,
+#     doubles e-mails). Ces deux verrous se RETIRENT au moment de la bascule
+#     (procédure dans docs/ops/PROD_STACK_ROTATION.md § Bascule), pas avant.
+#
+# ── Gardes identiques à la stack A (NE PAS retirer) ──────────────────────
+#   - APP_ENV=production **et** DEPLOY_TIER=prod : docker-entrypoint.sh est
+#     fail-closed dessus (RESET_TEST_DB_ONCE refusé, FORCE_SUPER_ADMIN_PASSWORD_RESET
+#     vidée) — c'est ce qui garantit qu'aucun seeder ne peut toucher la prod
+#     même si quelqu'un importe ce blueprint en croyant importer le dev ;
+#   - API_DOCS_PUBLIC=false, DISABLE_DEMO_SEEDING=true, DEMO_MODE_ENABLED=false ;
+#   - healthCheckPath /api/v1/health (consommé par scripts/stack-health.sh et
+#     par le watchdog de prod-keepalive.yml).
+#
+# ── À faire à l'import (dashboard du compte B) ───────────────────────────
+#   1. Copier DB_URL du service prod A (même base) ;
+#   2. Régénérer APP_KEY ? NON. APP_KEY doit être IDENTIQUE à la stack A :
+#      les sessions et les valeurs chiffrées vivent dans la base partagée.
+#      Une clé différente rendrait toutes les données chiffrées illisibles.
+#   3. Renseigner les secrets applicatifs (Stripe, OAuth, Resend, Sentry…) avec
+#      les MÊMES valeurs que la stack A — c'est la même prod, pas un second
+#      environnement ;
+#   4. Renseigner FRONTEND_URL / ADMIN_DASHBOARD_URL avec les URLs de la
+#      stack B (ou laisser celles de A tant que les fronts B ne sont pas
+#      déployés — CORS/Sanctum les acceptent toutes deux via
+#      CORS_EXTRA_ORIGIN) ;
+#   5. Poser les secrets GitHub RENDER_PROD_API_KEY_STACK_B et
+#      RENDER_PROD_SERVICE_ID_STACK_B, puis passer le statut de la stack à
+#      `ready` dans deploy/prod-stacks.json.
+
+services:
+  - type: web
+    name: leopardo-prod-b
+    runtime: docker
+    dockerfilePath: api/Dockerfile.prod
+    dockerContext: .
+    region: frankfurt
+    plan: free
+    healthCheckPath: /api/v1/health
+    autoDeploy: false
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      # Fail-closed du tier : JAMAIS 'dev' ici (voir docker-entrypoint.sh).
+      - key: DEPLOY_TIER
+        value: prod
+      - key: API_DOCS_PUBLIC
+        value: "false"
+      - key: DISABLE_DEMO_SEEDING
+        value: "true"
+      - key: DEMO_MODE_ENABLED
+        value: "false"
+      - key: APP_URL
+        fromService:
+          name: leopardo-prod-b
+          type: web
+          property: host
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: info
+      - key: SENTRY_LARAVEL_DSN
+        sync: false
+      - key: SENTRY_TRACES_SAMPLE_RATE
+        value: "0.1"
+      # ── Base de données : LA MÊME que la stack A (voir en-tête) ─────────
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
+        sync: false
+      - key: DB_SEARCH_PATH
+        value: shared_tenants,public
+      - key: DB_SSLMODE
+        value: require
+      # ── Verrous de standby (RETIRER au moment de la bascule) ────────────
+      - key: WEB_QUEUE_DRAIN
+        value: "false"
+      - key: WEB_SCHEDULER_LOOP
+        value: "false"
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: WEB_QUEUE_SLEEP
+        value: "10"
+      # Redis : pas de Key Value sur le compte B pour l'instant → file store.
+      # À rebrancher sur une Key Value du compte B si la stack B devient
+      # durablement active (sinon sessions non partagées entre A et B).
+      - key: CACHE_STORE
+        value: file
+      - key: SESSION_DRIVER
+        value: file
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      # ── Clés applicatives : MÊMES valeurs que la stack A ────────────────
+      # APP_KEY identique (sessions + valeurs chiffrées en base partagée).
+      - key: APP_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PRICE_STARTER
+        sync: false
+      - key: STRIPE_PRICE_BUSINESS
+        sync: false
+      - key: STRIPE_PRICE_ENTERPRISE
+        sync: false
+      - key: CHARGILY_API_KEY
+        sync: false
+      - key: CHARGILY_WEBHOOK_SECRET
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URL
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: MAIL_MAILER
+        value: resend
+      - key: RESEND_KEY
+        sync: false
+      - key: MAIL_FROM_ADDRESS
+        value: noreply@hurkonsan.com
+      - key: MAIL_FROM_NAME
+        value: "Leopardo RH"
+      - key: SUPER_ADMIN_PASSWORD
+        sync: false
+      - key: FORCE_SUPER_ADMIN_PASSWORD_RESET
+        value: "true"
+      - key: ADMIN_DASHBOARD_URL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false

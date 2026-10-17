@@ -196,4 +196,17 @@ return [
         'token' => env('WHATSAPP_CLOUD_API_TOKEN', ''),
     ],
 
+    'github_stack_switch' => [
+        // #8673 (épic #8670) — jeton GitHub utilisé par le bouton superadmin de
+        // bascule de stack : il déclenche un `repository_dispatch` (événement
+        // `stack-switch`) que `.github/workflows/stack-switch-dispatch.yml`
+        // route vers `stack-switch.yml`. Portée minimale attendue : un
+        // fine-grained token limité à ce dépôt avec « Contents: read » +
+        // « Actions: write » — jamais un PAT classique `repo`.
+        // Absent = l'écran affiche l'état des stacks mais refuse de basculer
+        // (fail-closed explicite, cf. PlatformStackSwitchAction).
+        'token' => env('GITHUB_STACK_SWITCH_TOKEN', ''),
+        'repository' => env('GITHUB_STACK_SWITCH_REPOSITORY', 'kitokoh/leopardo-hr'),
+    ],
+
 ];

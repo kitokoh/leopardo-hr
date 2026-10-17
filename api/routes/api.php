@@ -713,6 +713,19 @@ Route::prefix('v1')->group(function (): void {
             Route::post('/{nodeId}/sync', [EdgeNodeController::class, 'forceSync'])->middleware('platform.permission:edge.manage');
             Route::delete('/{nodeId}', [EdgeNodeController::class, 'revokeNode'])->middleware('platform.permission:edge.manage');
         });
+
+        // #8673 (épic #8670) — pilotage de l'infrastructure de déploiement.
+        // Lecture de l'état des stacks (registres deploy/*-stacks.json) et
+        // bascule d'un tier vers une autre stack. La bascule n'exécute rien
+        // ici : elle émet un `repository_dispatch` que
+        // .github/workflows/stack-switch-dispatch.yml route vers
+        // stack-switch.yml (qui détient les secrets et applique les garde-fous
+        // de données prod). Permission dédiée `infra.manage` : ce bouton peut
+        // couper la plateforme, il n'est pas délégué au support.
+        Route::prefix('infra')->middleware('platform.permission:infra.manage')->group(function (): void {
+            Route::get('/stacks', [\App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformInfraController::class, 'stacks']);
+            Route::post('/stack-switch', [\App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformInfraController::class, 'switch']);
+        });
     });
     // Admin cockpit (super-admin) — contrat SPA front/admin-dashboard.
     // Endpoints appelés par le SPA sans exister côté API (issue #1764) :

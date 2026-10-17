@@ -2171,7 +2171,30 @@
     "serviceUnreachable": "service injoignable",
     "statsLoadError": "Erreur lors du chargement des stats système",
     "subtitle": "Monitoring, configuration et automatisation de la plateforme Leopardo.",
-    "title": "Administration Système"
+    "title": "Administration Système",
+    "infra": {
+      "title": "Infrastructure — stacks",
+      "subtitle": "État des stacks de déploiement et bascule d'un tier (dev ou prod).",
+      "refresh": "Actualiser",
+      "loading": "Chargement…",
+      "activeStack": "stack active : {stack}",
+      "registryUpdated": "registre du {date}",
+      "stackLabel": "Stack {id}",
+      "activeBadge": "active",
+      "api": "API",
+      "region": "Région",
+      "switchTo": "Basculer vers {id}",
+      "switching": "Bascule…",
+      "alreadyActive": "Cette stack est déjà active.",
+      "confirmHint": "Basculer le tier {tier} vers la stack {id}.",
+      "confirmMessage": "Basculer le tier {tier} vers la stack {id} ?\n\nLa bascule touche un environnement en service : elle est journalisée et suivie dans l'onglet Actions.",
+      "switchQueued": "Bascule {tier} → {id} déclenchée. Suivez le workflow « Stack Switch ».",
+      "switchError": "La bascule a échoué.",
+      "forbidden": "Vous n'avez pas la permission de piloter l'infrastructure (infra.manage).",
+      "loadError": "Impossible de charger l'état des stacks.",
+      "hintDispatch": "La bascule passe par un workflow GitHub : le résultat et l'historique sont dans l'onglet Actions.",
+      "hintNoToken": "Bascule désactivée : le jeton GITHUB_STACK_SWITCH_TOKEN n'est pas configuré sur le service API."
+    }
   },
   "billing": {
     "cancel_subscription_confirm": "Annuler votre abonnement ? Vous perdrez l'accès aux modules premium à la fin de la période en cours.",

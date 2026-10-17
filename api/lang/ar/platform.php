@@ -24,4 +24,13 @@ return [
     'ai_test_quota' => 'تم بلوغ حصة المزوّد (429). أعد المحاولة لاحقًا أو غيّر العرض.',
     'ai_test_timeout' => 'انتهت المهلة أثناء الوصول إلى المزوّد. تحقّق من الاتصال الصادر للخادم.',
     'ai_test_failed' => 'فشل الاختبار: :error',
+    'infra_denied' => 'ليست لديك صلاحية إدارة البنية التحتية.',
+    'infra_stack_already_active' => 'هذه الحزمة هي الحزمة النشطة بالفعل لهذا المستوى.',
+    'infra_stack_not_switchable' => 'لا يمكن التبديل إلى هذه الحزمة (حالة مخططة/موقوفة أو رابط مفقود).',
+    'infra_stack_unknown' => 'حزمة غير معروفة في سجل هذا المستوى.',
+    'infra_tier_unknown' => 'مستوى غير معروف (المتوقع: prod أو dev).',
+    'infra_switch_refused' => 'تم رفض التبديل.',
+    'infra_dispatch_rejected' => 'رفض GitHub التشغيل (HTTP :status). تحقّق من نطاق الرمز.',
+    'infra_switch_dispatched' => 'تم إطلاق التبديل: سير عمل GitHub يتولاه (تابع تبويب Actions).',
+    'infra_token_missing' => 'التبديل غير متاح: رمز GitHub الخاص بالزر غير مهيّأ (GITHUB_STACK_SWITCH_TOKEN).',
 ];

@@ -2172,7 +2172,30 @@
     "serviceUnreachable": "service unreachable",
     "statsLoadError": "Error loading system stats",
     "subtitle": "Monitoring, configuration and automation of the Leopardo platform.",
-    "title": "System Administration"
+    "title": "System Administration",
+    "infra": {
+      "title": "Infrastructure — stacks",
+      "subtitle": "Deployment stack status and tier switch-over (dev or prod).",
+      "refresh": "Refresh",
+      "loading": "Loading…",
+      "activeStack": "active stack: {stack}",
+      "registryUpdated": "registry {date}",
+      "stackLabel": "Stack {id}",
+      "activeBadge": "active",
+      "api": "API",
+      "region": "Region",
+      "switchTo": "Switch to {id}",
+      "switching": "Switching…",
+      "alreadyActive": "This stack is already active.",
+      "confirmHint": "Switch tier {tier} to stack {id}.",
+      "confirmMessage": "Switch tier {tier} to stack {id}?\n\nThis affects a live environment: the switch is audited and tracked in the Actions tab.",
+      "switchQueued": "Switch {tier} → {id} triggered. Follow the “Stack Switch” workflow.",
+      "switchError": "The switch failed.",
+      "forbidden": "You are not allowed to operate the infrastructure (infra.manage).",
+      "loadError": "Could not load stack status.",
+      "hintDispatch": "Switching goes through a GitHub workflow: results and history live in the Actions tab.",
+      "hintNoToken": "Switching disabled: GITHUB_STACK_SWITCH_TOKEN is not configured on the API service."
+    }
   },
   "billing": {
     "cancel_subscription_confirm": "Cancel your subscription? You will lose access to premium modules at the end of the current period.",
