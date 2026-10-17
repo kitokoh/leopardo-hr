@@ -135,16 +135,17 @@ final class ValidateSeatLayoutCoherenceAction
             return [];
         }
 
-        return TravelTripSeat::query()
-            ->whereIn('trip_id', $tripIds->all())
-            ->whereIn('seat_number', $absent)
-            ->whereNotNull('booking_id')
-            ->orderBy('seat_number')
-            ->pluck('seat_number')
-            ->unique()
-            ->map(static fn ($seat): int => (int) $seat)
-            ->values()
-            ->all();
+        return array_values(
+            TravelTripSeat::query()
+                ->whereIn('trip_id', $tripIds->all())
+                ->whereIn('seat_number', $absent)
+                ->whereNotNull('booking_id')
+                ->orderBy('seat_number')
+                ->pluck('seat_number')
+                ->unique()
+                ->map(static fn ($seat): int => (int) $seat)
+                ->all()
+        );
     }
 
     /**

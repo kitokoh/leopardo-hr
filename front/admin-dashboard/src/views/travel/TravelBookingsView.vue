@@ -137,6 +137,19 @@
           {{ seatMapError }}
         </p>
 
+        <!-- #8654 — un changement de disposition ne déplace AUCUN passager :
+             les réservations restent rattachées à leurs numéros de siège. Le
+             comportement est sûr, mais l'interface doit le dire — sinon le
+             responsable peut croire que les passagers ont été replacés, ou
+             craindre une perte de réservations. -->
+        <p
+          v-if="seatMapLayout"
+          role="note"
+          class="mt-3 rounded-lg border border-sky-200 bg-sky-50 p-3 text-sm text-sky-900 dark:border-sky-800 dark:bg-sky-900/20 dark:text-sky-200"
+        >
+          {{ t('travel.seats.layoutNotice', 'Modifier la disposition des sièges ne déplace pas les passagers déjà réservés : leurs sièges restent inchangés. Utilisez la procédure de remplacement de véhicule pour résoudre un conflit.') }}
+        </p>
+
         <div class="mt-4">
           <TravelSeatMap
             :seats="seatMapSeats"

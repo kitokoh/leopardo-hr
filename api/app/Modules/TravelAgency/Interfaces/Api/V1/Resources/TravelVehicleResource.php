@@ -52,7 +52,7 @@ class TravelVehicleResource extends JsonResource
      *
      * Aucune donnée personnelle : uniquement des entiers de géométrie.
      *
-     * @return array{seats_per_row: int, aisle_after: int|null, is_configured: bool}
+     * @return array{seats_per_row: int, aisle_after: int|null, absent_seats?: list<int>, is_configured: bool}
      */
     private function seatLayoutPayload(): array
     {

@@ -60,7 +60,7 @@ final class SeatLayout
 
         $seen = [];
         foreach ($absentSeats as $seat) {
-            if (! is_int($seat) || $seat < 1) {
+            if ($seat < 1) {
                 throw new InvalidArgumentException(
                     'absent_seats doit contenir des numeros de siege entiers et positifs.'
                 );
