@@ -4,10 +4,10 @@
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 class="text-lg font-black uppercase tracking-tight text-slate-900 dark:text-white">
-            {{ $t('systemPage.infra.title') }}
+            {{ t('systemPage.infra.title') }}
           </h2>
           <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            {{ $t('systemPage.infra.subtitle') }}
+            {{ t('systemPage.infra.subtitle') }}
           </p>
         </div>
         <button
@@ -16,7 +16,7 @@
           :disabled="loading"
           @click="load"
         >
-          {{ loading ? $t('systemPage.infra.loading') : $t('systemPage.infra.refresh') }}
+          {{ loading ? t('systemPage.infra.loading') : t('systemPage.infra.refresh') }}
         </button>
       </div>
     </div>
@@ -29,10 +29,10 @@
       <section v-for="tier in tiers" :key="tier.tier" class="px-6 py-5">
         <div class="mb-3 flex items-center justify-between">
           <h3 class="text-sm font-black uppercase tracking-widest text-slate-700 dark:text-slate-200">
-            {{ tier.tier }} — {{ $t('systemPage.infra.activeStack', { stack: tier.active_stack || '?' }) }}
+            {{ tier.tier }} — {{ t('systemPage.infra.activeStack', { stack: tier.active_stack || '?' }) }}
           </h3>
           <span v-if="tier.updated_at" class="text-xs text-slate-400">
-            {{ $t('systemPage.infra.registryUpdated', { date: tier.updated_at }) }}
+            {{ t('systemPage.infra.registryUpdated', { date: tier.updated_at }) }}
           </span>
         </div>
 
@@ -48,7 +48,7 @@
             <div class="flex items-start justify-between gap-2">
               <div>
                 <p class="text-sm font-black uppercase tracking-tight text-slate-900 dark:text-white">
-                  {{ $t('systemPage.infra.stackLabel', { id: stack.id }) }}
+                  {{ t('systemPage.infra.stackLabel', { id: stack.id }) }}
                 </p>
                 <p class="mt-0.5 text-xs font-semibold"
                    :class="statusClass(stack.status)">
@@ -59,17 +59,17 @@
                 v-if="stack.active"
                 class="rounded-full bg-emerald-600 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-white"
               >
-                {{ $t('systemPage.infra.activeBadge') }}
+                {{ t('systemPage.infra.activeBadge') }}
               </span>
             </div>
 
             <dl class="mt-3 space-y-1 text-xs text-slate-600 dark:text-slate-300">
               <div class="flex justify-between gap-2">
-                <dt>{{ $t('systemPage.infra.api') }}</dt>
+                <dt>{{ t('systemPage.infra.api') }}</dt>
                 <dd class="truncate text-right font-mono">{{ stack.api.service || '—' }}</dd>
               </div>
               <div class="flex justify-between gap-2">
-                <dt>{{ $t('systemPage.infra.region') }}</dt>
+                <dt>{{ t('systemPage.infra.region') }}</dt>
                 <dd class="text-right">{{ stack.api.region || '—' }}</dd>
               </div>
             </dl>
@@ -88,8 +88,8 @@
               :title="switchHint(tier.tier, stack)"
               @click="requestSwitch(tier.tier, stack)"
             >
-              <span v-if="busyKey === `${tier.tier}-${stack.id}`">{{ $t('systemPage.infra.switching') }}</span>
-              <span v-else>{{ $t('systemPage.infra.switchTo', { id: stack.id }) }}</span>
+              <span v-if="busyKey === `${tier.tier}-${stack.id}`">{{ t('systemPage.infra.switching') }}</span>
+              <span v-else>{{ t('systemPage.infra.switchTo', { id: stack.id }) }}</span>
             </button>
           </article>
         </div>
@@ -97,19 +97,29 @@
     </div>
 
     <p class="border-t border-slate-200 px-6 py-3 text-[11px] text-slate-400 dark:border-slate-700">
-      {{ dispatchConfigured ? $t('systemPage.infra.hintDispatch') : $t('systemPage.infra.hintNoToken') }}
+      {{ dispatchConfigured ? t('systemPage.infra.hintDispatch') : t('systemPage.infra.hintNoToken') }}
     </p>
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toastification'
 import api from '@/services/api'
+import { useLocaleStore } from '@/stores/locale'
+import { translate } from '@/i18n/index.js'
 
-const { t } = useI18n()
 const toast = useToast()
+const localeStore = useLocaleStore()
+
+function t(key, params = {}) {
+  const template = translate(localeStore.current, key, key)
+  // Substitution `:clef` — même convention que SystemView / CatalogTranslate.
+  return Object.entries(params).reduce(
+    (acc, [name, value]) => acc.replaceAll(`:${name}`, () => String(value)),
+    template
+  )
+}
 
 const tiers = ref([])
 const loading = ref(false)

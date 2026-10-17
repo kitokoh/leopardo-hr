@@ -53,7 +53,7 @@ class PlatformInfraController extends Controller
             $result = $action->execute($validated['tier'], $validated['stack'], $actorId);
         } catch (RuntimeException $e) {
             return new JsonResponse([
-                'message' => 'Bascule indisponible : le jeton GitHub du bouton n’est pas configuré (GITHUB_STACK_SWITCH_TOKEN).',
+                'message' => __('platform.infra_token_missing'),
             ], 503);
         }
 

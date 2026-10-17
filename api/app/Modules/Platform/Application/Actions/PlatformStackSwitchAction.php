@@ -98,7 +98,7 @@ class PlatformStackSwitchAction
                 // Le corps d'erreur GitHub est volontairement réduit : il peut
                 // contenir des indices sur le compte et n'apporte rien à l'opérateur.
                 'dispatch_id' => null,
-                'message' => 'GitHub a refusé le déclenchement (HTTP '.$response->status().'). Vérifiez la portée du jeton.',
+                'message' => __('platform.infra_dispatch_rejected', ['status' => $response->status()]),
             ];
         }
 
@@ -125,18 +125,18 @@ class PlatformStackSwitchAction
             'stack' => $stack,
             'previous' => $validation['active'],
             'dispatch_id' => $response->status() === 204 ? null : $response->json('id'),
-            'message' => 'Bascule déclenchée : le workflow GitHub la prend en charge (suivez l’onglet Actions).',
+            'message' => __('platform.infra_switch_dispatched'),
         ];
     }
 
     private function messageFor(string $reason): string
     {
         return match ($reason) {
-            'deja_active' => 'Cette stack est déjà la stack active de ce tier.',
-            'non_basculable' => 'Cette stack n’est pas basculable (statut prévu/suspendu ou URL absente).',
-            'stack_inconnue' => 'Stack inconnue dans le registre de ce tier.',
-            'tier_inconnu' => 'Tier inconnu (attendu : prod ou dev).',
-            default => 'Bascule refusée.',
+            'deja_active' => __('platform.infra_stack_already_active'),
+            'non_basculable' => __('platform.infra_stack_not_switchable'),
+            'stack_inconnue' => __('platform.infra_stack_unknown'),
+            'tier_inconnu' => __('platform.infra_tier_unknown'),
+            default => __('platform.infra_switch_refused'),
         };
     }
 }
