@@ -18,6 +18,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelStaffAssignment;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
 use App\Modules\TravelAgency\Domain\Models\TravelTripSeat;
+use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelTripRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelTripRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelTripRequest;
@@ -155,11 +156,23 @@ class TravelTripController extends Controller
             ->values()
             ->all();
 
+        // #8645 — disposition effective du véhicule affecté (repli assumé si
+        // le véhicule n'est pas configuré ou absent).
+        $seatLayout = $travelTrip->vehicle !== null
+            ? $travelTrip->vehicle->effectiveSeatLayout()
+            : TravelVehicle::fallbackSeatLayout((int) $travelTrip->total_seats);
+
         return response()->json([
             'data' => [
                 'trip_id' => $travelTrip->id,
                 'code' => $travelTrip->code,
                 'total_seats' => $travelTrip->total_seats,
+                // #8645 — disposition PHYSIQUE du véhicule affecté : le plan
+                // back-office ne doit plus déduire 2+2/2+1 de la capacité.
+                // `null` si aucun véhicule n'est affecté, ou si le véhicule
+                // n'a pas de géométrie configurée ; `is_configured` distingue
+                // explicitement une donnée lue d'un repli.
+                'seat_layout' => $seatLayout,
                 'seats' => $payload,
             ],
         ]);
