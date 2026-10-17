@@ -11,6 +11,22 @@
 > Scope: repository-level secrets (Settings → Secrets and variables → Actions)
 > unless a "Scope" column entry says otherwise (e.g. GitHub Environments).
 
+## Complément 2026-10-18 — haute disponibilité prod (#8670)
+
+| Secret / Variable | Used by | Purpose | Required? |
+|---|---|---|---|
+| `RENDER_PROD_API_KEY_STACK_B` | `deploy-prod.yml` (job `deploy-prod-b`) | Clé API Render du compte de la stack prod **B** (compte `ibrahim.ali`). Sert à épingler `APP_VERSION` et déclencher/attendre le déploiement du service de secours à chaque tag. Aucun accès aux données : la stack B partage la base de la stack A | Optional — **requis si** `PROD_STACK_B_ENABLED=true` |
+| `RENDER_PROD_SERVICE_ID_STACK_B` | `deploy-prod.yml` (job `deploy-prod-b`) | Identifiant du service Render `leopardo-prod-b`. Une bascule vers une stack jamais déployée servirait du code périmé | Optional — requis si `PROD_STACK_B_ENABLED=true` |
+| `GITHUB_STACK_SWITCH_TOKEN` (secret d'**application**, pas de workflow) | `StackRegistryService` / bouton Super Admin `POST /platform/infra/stack-switch` | Jeton GitHub fine-grained limité à ce dépôt (`Contents: read` + `Actions: write`) utilisé pour émettre le `repository_dispatch` `stack-switch`. Absent = bouton désactivé et 503 côté API (fail-closed). **Ne jamais utiliser un PAT `repo` classique** | Optional (écran en lecture seule sinon) |
+| `PROD_STACK_B_ENABLED` (variable) | `deploy-prod.yml` | Interrupteur du fan-out vers la stack prod B. Tant qu'il n'est pas `'true'`, aucun job B ne s'exécute et un secret B manquant ne peut pas casser la release prod | Default : absent = désactivé |
+| `PROD_RENDER_SERVICE_B_URL` (variable) | `deploy-prod.yml`, environnement `production` | URL publique du service Render B, affichée comme lien d'environnement sur le job B | — |
+| `PROD_ACTIVE_STACK` (variable) | `scripts/stack-switch.sh --tier prod`, `prod-keepalive.yml`, `stack-switch.yml` | Pointeur runtime de la stack prod active (`a`/`b`). Écrit par la bascule ; le registre `deploy/prod-stacks.json` reste la source documentaire | Default `a` |
+| `PROD_API_BASE_URL` / `PROD_WEB_URL` / `PROD_ADMIN_URL` (variables) | `scripts/stack-switch.sh --tier prod` | URLs des surfaces de la stack prod active, réécrites à chaque bascule (les workflows de déploiement continuent d'utiliser `secrets.PROD_RENDER_API_BASE_URL`) | — |
+
+> **Rotation** : `GITHUB_STACK_SWITCH_TOKEN` se révoque depuis le compte GitHub
+> propriétaire des fine-grained tokens. Il ne donne accès ni aux secrets du
+> dépôt, ni au code en écriture — seulement au déclenchement de workflows.
+
 ## Complément 2026-10-17 — rotation multi-stacks du tier dev (#8659)
 
 | Secret / Variable | Used by | Purpose | Required? |

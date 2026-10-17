@@ -2171,7 +2171,30 @@
     "serviceUnreachable": "hizmete ulaşılamıyor",
     "statsLoadError": "Sistem istatistikleri yüklenirken hata oluştu",
     "subtitle": "Leopardo platformunun izlenmesi, yapılandırılması ve otomasyonu.",
-    "title": "Sistem Yönetimi"
+    "title": "Sistem Yönetimi",
+    "infra": {
+      "title": "Altyapı — stack'ler",
+      "subtitle": "Dağıtım stack'lerinin durumu ve tier geçişi (dev veya prod).",
+      "refresh": "Yenile",
+      "loading": "Yükleniyor…",
+      "activeStack": "aktif stack: {stack}",
+      "registryUpdated": "kayıt {date}",
+      "stackLabel": "Stack {id}",
+      "activeBadge": "aktif",
+      "api": "API",
+      "region": "Bölge",
+      "switchTo": "{id} stack'ine geç",
+      "switching": "Geçiliyor…",
+      "alreadyActive": "Bu stack zaten aktif.",
+      "confirmHint": "{tier} tier'ını {id} stack'ine geçir.",
+      "confirmMessage": "{tier} tier'ı {id} stack'ine geçirilsin mi?\n\nBu işlem canlı bir ortamı etkiler: kaydedilir ve Actions sekmesinde izlenir.",
+      "switchQueued": "{tier} → {id} geçişi başlatıldı. “Stack Switch” iş akışını izleyin.",
+      "switchError": "Geçiş başarısız oldu.",
+      "forbidden": "Altyapıyı yönetme yetkiniz yok (infra.manage).",
+      "loadError": "Stack durumu yüklenemedi.",
+      "hintDispatch": "Geçiş bir GitHub iş akışından geçer: sonuçlar ve geçmiş Actions sekmesindedir.",
+      "hintNoToken": "Geçiş devre dışı: API servisinde GITHUB_STACK_SWITCH_TOKEN tanımlı değil."
+    }
   },
   "billing": {
     "cancel_subscription_confirm": "Aboneliğinizi iptal etmek istiyor musunuz? Premium modüllere erişiminizi mevcut dönem sonunda kaybedersiniz.",

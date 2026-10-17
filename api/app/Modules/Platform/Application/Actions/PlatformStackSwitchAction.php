@@ -1,0 +1,126 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\Platform\Application\Actions;
+
+use App\Core\Auth\Domain\Models\AuditLog;
+use App\Modules\Platform\Infrastructure\Services\GitHubDispatchClient;
+use App\Modules\Platform\Infrastructure\Services\StackRegistryService;
+use RuntimeException;
+
+/**
+ * #8673 (épic #8670) — déclenche la bascule d'un tier vers une autre stack.
+ *
+ * Le bouton superadmin ne bascule PAS lui-même : il déclenche l'événement
+ * GitHub `stack-switch`, que `.github/workflows/stack-switch-dispatch.yml`
+ * route vers `.github/workflows/stack-switch.yml`. Raisons de ce détour :
+ *
+ *  - le workflow détient les secrets Render/Vercel nécessaires et exécute
+ *    `scripts/stack-switch.sh`, déjà testé (garde-fous de données prod : même
+ *    base, jamais de reseed) ;
+ *  - la bascule devient traçable dans l'onglet Actions (qui a lancé quoi, avec
+ *    quel résultat) au lieu d'un état caché côté API ;
+ *  - l'API n'a pas besoin des clés Render pour changer le pointeur de stack :
+ *    elle n'a qu'un jeton GitHub à portée minimale.
+ *
+ * Sécurité : jeton absent → refus explicite (fail-closed), jamais d'appel
+ * anonyme. Le jeton et la réponse GitHub ne sont JAMAIS journalisés.
+ */
+class PlatformStackSwitchAction
+{
+    public function __construct(
+        private readonly StackRegistryService $registry,
+        private readonly GitHubDispatchClient $github,
+    ) {}
+
+    /**
+     * @return array{
+     *     ok: bool,
+     *     reason: string,
+     *     tier: string,
+     *     stack: string,
+     *     previous: string,
+     *     dispatch_id: int|null,
+     *     message: string
+     * }
+     *
+     * @throws RuntimeException quand le jeton GitHub est absent (fail-closed).
+     */
+    public function execute(string $tier, string $stack, ?int $actorId = null): array
+    {
+        $validation = $this->registry->validateSwitch($tier, $stack);
+
+        if (! $validation['ok']) {
+            return [
+                'ok' => false,
+                'reason' => $validation['reason'],
+                'tier' => $tier,
+                'stack' => $stack,
+                'previous' => $validation['active'],
+                'dispatch_id' => null,
+                'message' => $this->messageFor($validation['reason']),
+            ];
+        }
+
+        // Fail-closed : sans jeton, le client lève une RuntimeException que le
+        // contrôleur traduit en 503 — jamais de bascule silencieuse.
+        $dispatch = $this->github->dispatchStackSwitch(
+            tier: $tier,
+            stack: $stack,
+            requestedBy: $actorId,
+            requestedAt: now()->toIso8601String(),
+        );
+
+        if (! $dispatch->ok) {
+            return [
+                'ok' => false,
+                'reason' => 'dispatch_rejete',
+                'tier' => $tier,
+                'stack' => $stack,
+                'previous' => $validation['active'],
+                // Le corps d'erreur GitHub est volontairement réduit : il peut
+                // contenir des indices sur le compte et n'apporte rien à l'opérateur.
+                'dispatch_id' => null,
+                'message' => __('platform.infra_dispatch_rejected', ['status' => $dispatch->status]),
+            ];
+        }
+
+        // 204 attendu (repository_dispatch répond No Content) ; on renvoie
+        // quand même l'identifiant de corrélation pour que l'écran puisse
+        // pointer vers l'onglet Actions.
+        AuditLog::record(
+            module: 'platform',
+            action: 'infra.stack_switch.dispatched',
+            subject: null,
+            actor: null,
+            oldValues: ['active_stack' => $validation['active']],
+            newValues: ['tier' => $tier, 'stack' => $stack, 'dispatch_event' => GitHubDispatchClient::EVENT_STACK_SWITCH],
+            metadata: [
+                'requested_by' => $actorId,
+                'repository' => (string) config('services.github_stack_switch.repository', 'kitokoh/leopardo-hr'),
+            ],
+        );
+
+        return [
+            'ok' => true,
+            'reason' => '',
+            'tier' => $tier,
+            'stack' => $stack,
+            'previous' => $validation['active'],
+            'dispatch_id' => $dispatch->id,
+            'message' => __('platform.infra_switch_dispatched'),
+        ];
+    }
+
+    private function messageFor(string $reason): string
+    {
+        return match ($reason) {
+            'deja_active' => __('platform.infra_stack_already_active'),
+            'non_basculable' => __('platform.infra_stack_not_switchable'),
+            'stack_inconnue' => __('platform.infra_stack_unknown'),
+            'tier_inconnu' => __('platform.infra_tier_unknown'),
+            default => __('platform.infra_switch_refused'),
+        };
+    }
+}
