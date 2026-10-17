@@ -1,3 +1,17 @@
+> **MAJ 2026-10-17 — vague 6 (correctif a11y), vitrine : constellation atteignable au clavier, focus restitué à l'étoile.**
+> Surface **web (`front/web/src/modules/vitrine/components/hero`)** : les étiquettes d'étoiles de `HeroBusinessOS3D`
+> passent de `<div>` décoratifs (`pointer-events-none`, aucun `tabindex`) à de **vrais `<button>` focusables**
+> (`aria-label`, `tabindex 0`, anneau `focus-visible`) — la fiche s'ouvre au clavier (Entrée/Espace) comme à la
+> souris ; le survol souris **ou** le focus clavier allume l'étoile ; une étiquette hors cadre passe en
+> `visibility:hidden` + `tabindex -1` (plus de boutons invisibles dans l'ordre de tabulation) ; `aria-hidden` est
+> retiré en mode interactif (il aurait masqué de vrais contrôles) ; `HeroScene3DPanel` donne `tabindex -1` à la
+> scène, cible de restitution du focus quand la fiche a été ouverte à la souris (l'étoile est un pixel de canvas).
+> **Défaut mesuré en navigateur sur `main` (7859b93c4)** : aucun chemin clavier vers la fiche, focus retombant sur
+> `<body>` à la fermeture. Scénarios automatisés : nouveau
+> `front/web/src/modules/vitrine/components/hero/__tests__/HeroScene3DPanel-a11y.test.tsx` (**4 cas** : étiquette
+> focusable par solution, ouverture clavier + fermeture Échap, scène `tabindex -1`, `role=dialog` + `aria-modal`).
+> Suite vitrine complète : **57 suites / 662 tests** verts. Aucune clé i18n ajoutée, aucun catalogue généré modifié.
+
 > **MAJ 2026-10-17 — vague 6, vitrine : direction artistique premium du héros `stage`.**
 > Surface **web (`front/web/src/modules/vitrine` + `front/web/src/app/globals.css`)** : couche de profondeur
 > (`.hero-stage-base` bleu nuit/graphite, `.hero-stage-halo` derrière la scène, `.hero-stage-vignette`, voile
