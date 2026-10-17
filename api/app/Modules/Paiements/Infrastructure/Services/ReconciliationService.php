@@ -27,6 +27,7 @@ class ReconciliationService
      */
     public function computedBalance(string $companyId, string $currency): int
     {
+        /** @var list<int|string> $walletIds */
         $walletIds = Wallet::query()
             ->where('company_id', $companyId)
             ->where('currency', $currency)

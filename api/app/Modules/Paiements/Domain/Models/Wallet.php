@@ -65,6 +65,7 @@ class Wallet extends Model
      */
     public function balance(): int
     {
+        /** @var object{credits: int|string, debits: int|string}|null $row */
         $row = DB::table('payment_ledger_entries')
             ->where('wallet_id', $this->id)
             ->selectRaw(

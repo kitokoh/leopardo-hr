@@ -80,7 +80,10 @@ class ProviderTypeRegistry
     {
         $class = $this->railClassFor($code);
 
-        return app($class);
+        /** @var PaymentRailInterface $rail */
+        $rail = app($class);
+
+        return $rail;
     }
 
     /**

@@ -74,13 +74,23 @@ class PaymentLedgerEntry extends Model
             // `saving` se declenche aussi a la creation : on ne bloque que les
             // mises a jour d'une ligne deja persistee.
             if ($entry->exists) {
-                throw ImmutableLedgerEntryException::onUpdate((int) $entry->getKey());
+                throw ImmutableLedgerEntryException::onUpdate(self::keyOf($entry));
             }
         });
 
         static::deleting(function (self $entry): void {
-            throw ImmutableLedgerEntryException::onDelete((int) $entry->getKey());
+            throw ImmutableLedgerEntryException::onDelete(self::keyOf($entry));
         });
+    }
+
+    /**
+     * Cle primaire normalisee en entier (getKey() est type `mixed`).
+     */
+    private static function keyOf(self $entry): int
+    {
+        $key = $entry->getKey();
+
+        return is_numeric($key) ? (int) $key : 0;
     }
 
     /** @return BelongsTo<Wallet, $this> */

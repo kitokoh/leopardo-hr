@@ -75,6 +75,7 @@ class PlatformPaymentProviderController
 
     public function storeInstance(Request $request): JsonResponse
     {
+        /** @var array{type_code: string, display_name: string, company_id?: string|null, countries?: list<string>|null, currencies?: list<string>|null, status?: string|null, config?: array<string, mixed>|null, priority?: int|null} $validated */
         $validated = $request->validate([
             'type_code' => ['required', 'string', 'max:60'],
             'display_name' => ['required', 'string', 'max:120'],
@@ -111,12 +112,14 @@ class PlatformPaymentProviderController
 
     public function updateInstance(Request $request, int $instance): JsonResponse
     {
+        /** @var PaymentProviderInstance|null $model */
         $model = PaymentProviderInstance::query()->find($instance);
 
         if ($model === null) {
             return $this->error('instance_not_found', 'Instance introuvable.', 404);
         }
 
+        /** @var array{display_name?: string, countries?: list<string>, currencies?: list<string>, status?: string, config?: array<string, mixed>, priority?: int} $validated */
         $validated = $request->validate([
             'display_name' => ['sometimes', 'string', 'max:120'],
             'countries' => ['sometimes', 'array'],
@@ -142,17 +145,19 @@ class PlatformPaymentProviderController
      */
     public function setInstanceStatus(Request $request, int $instance): JsonResponse
     {
+        /** @var PaymentProviderInstance|null $model */
         $model = PaymentProviderInstance::query()->find($instance);
 
         if ($model === null) {
             return $this->error('instance_not_found', 'Instance introuvable.', 404);
         }
 
+        /** @var array{status: string} $validated */
         $validated = $request->validate([
             'status' => ['required', 'string', 'in:active,inactive,sandbox'],
         ]);
 
-        $model->status = $validated['status'];
+        $model->status = ProviderInstanceStatus::from($validated['status']);
         $model->save();
 
         return response()->json([
@@ -239,6 +244,7 @@ class PlatformPaymentProviderController
      */
     public function runReconciliation(Request $request): JsonResponse
     {
+        /** @var array{company_id: string, provider_instance_id: int, currency: string, declared_balance: int} $validated */
         $validated = $request->validate([
             'company_id' => ['required', 'string', 'max:64'],
             'provider_instance_id' => ['required', 'integer'],
@@ -246,6 +252,7 @@ class PlatformPaymentProviderController
             'declared_balance' => ['required', 'integer'],
         ]);
 
+        /** @var PaymentProviderInstance|null $instance */
         $instance = PaymentProviderInstance::query()->find($validated['provider_instance_id']);
 
         if ($instance === null) {
@@ -279,12 +286,14 @@ class PlatformPaymentProviderController
      */
     public function storeWebhookEndpoint(Request $request): JsonResponse
     {
+        /** @var array{provider_instance_id: int, company_id?: string|null, secret_signature: string} $validated */
         $validated = $request->validate([
             'provider_instance_id' => ['required', 'integer'],
             'company_id' => ['nullable', 'string', 'max:64'],
             'secret_signature' => ['required', 'string', 'min:16', 'max:190'],
         ]);
 
+        /** @var PaymentProviderInstance|null $instance */
         $instance = PaymentProviderInstance::query()->find($validated['provider_instance_id']);
 
         if ($instance === null) {

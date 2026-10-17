@@ -56,13 +56,17 @@ class PaymentWebhookController
             return $this->error('webhook_instance_missing', 'Instance de fournisseur introuvable.', 404);
         }
 
+        /** @var array<string, mixed> $body */
         $body = $request->all();
 
         $rail = $this->registry->make($instance->type_code);
 
+        $externalReference = $body['external_reference'] ?? '';
+        $eventType = $body['event'] ?? 'unknown';
+
         $result = $rail->traiterWebhook(new WebhookPayload(
-            externalReference: (string) ($body['external_reference'] ?? ''),
-            eventType: (string) ($body['event'] ?? 'unknown'),
+            externalReference: is_string($externalReference) ? $externalReference : '',
+            eventType: is_string($eventType) ? $eventType : 'unknown',
             body: $body,
             config: $instance->config ?? [],
         ));

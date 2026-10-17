@@ -15,10 +15,11 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | ~~`api/app/Services/`~~ — répertoire **supprimé** (2026-08-11, #1728), ne rien y ajouter | `Modules/<Name>/Infrastructure/Services/` |
 | `api/app/Exceptions/` (base `DomainException` partagée, encore étendue par des modules) | `Modules/<Name>/Domain/Exceptions/` |
 
-## Modules existants (35 modules)
+## Modules existants (36 modules)
 
 | Module | Domaine couvert |
 |---|---|
+| `Paiements` | Socle de paiement interne (BC-38) : wallets a solde derive du ledger, ledger en partie double immuable, transactions idempotentes, registre de fournisseurs administrable (type = code / instance = configuration), `ProviderResolver` par pays/devise/tenant, commissions, reconciliation, rail simulateur (#8680..#8694) |
 | `Showcase` | Site vitrine public 1-clic du tenant (BC-27) : moteur de sections + thèmes, publication draft/published, consultation publique isolée 0 donnée interne (#6864/#6865) |
 | `Catalog` | Catalogue produits B2B des tenants producteurs/fournisseurs (BC-28) : catégories, produits (prix indicatifs minor units + devise), publication, demandes de devis (#6879/#6880) |
 | `Communication` | Boîte mail connectée + IA (BC-29) : OAuth Gmail serveur, sync des fils, classification IA, relances et réponses assistées — squelette R0 (#7684/#7685), spec `MODULE_COMMUNICATION_EMAIL_IA.md` |

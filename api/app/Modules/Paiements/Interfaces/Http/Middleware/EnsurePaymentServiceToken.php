@@ -42,6 +42,9 @@ class EnsurePaymentServiceToken
             ], 401);
         }
 
-        return $next($request);
+        /** @var Response $response */
+        $response = $next($request);
+
+        return $response;
     }
 }

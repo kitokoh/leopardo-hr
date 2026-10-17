@@ -4159,6 +4159,142 @@ trait CreatesMvpSchema
             });
         }
 
+        // BC-38 PAIEMENTS (#8680/#8685/#8692) — socle de paiement interne.
+        // Miroir des migrations tenant 2026_10_18_000001/000002/000003 (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('payment_wallets'))) {
+            Schema::create($this->moduleTable('payment_wallets'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('owner_type', 20);
+                $table->string('owner_id', 64);
+                $table->char('currency', 3);
+                $table->jsonb('metadata')->nullable();
+                $table->timestampsTz();
+
+                $table->unique(['company_id', 'owner_type', 'owner_id', 'currency'], 'payment_wallets_owner_currency_unique');
+                $table->index(['company_id', 'currency']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('payment_transactions'))) {
+            Schema::create($this->moduleTable('payment_transactions'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('type', 30);
+                $table->string('status', 20)->default('pending');
+                $table->unsignedBigInteger('provider_instance_id')->nullable();
+                $table->unsignedBigInteger('wallet_id')->nullable();
+                $table->unsignedBigInteger('counterparty_wallet_id')->nullable();
+                $table->bigInteger('amount');
+                $table->bigInteger('fee_amount')->default(0);
+                $table->char('currency', 3);
+                $table->string('idempotency_key', 120);
+                $table->string('external_reference', 190)->nullable();
+                $table->jsonb('metadata')->nullable();
+                $table->timestampsTz();
+
+                $table->unique(['company_id', 'idempotency_key'], 'payment_transactions_idempotency_unique');
+                $table->index(['company_id', 'status']);
+                $table->index(['company_id', 'created_at']);
+                $table->index(['company_id', 'type']);
+                $table->index('provider_instance_id');
+                $table->index('external_reference');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('payment_ledger_entries'))) {
+            Schema::create($this->moduleTable('payment_ledger_entries'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('wallet_id');
+                $table->string('direction', 6);
+                $table->bigInteger('amount');
+                $table->char('currency', 3);
+                $table->unsignedBigInteger('transaction_id')->nullable();
+                $table->uuid('transfer_group_id');
+                $table->string('reference', 190)->nullable();
+                $table->jsonb('metadata')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+
+                $table->index(['company_id', 'wallet_id', 'created_at']);
+                $table->index('transfer_group_id');
+                $table->index('transaction_id');
+                $table->index(['company_id', 'currency']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('payment_provider_instances'))) {
+            Schema::create($this->moduleTable('payment_provider_instances'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('type_code', 60);
+                $table->string('display_name', 120);
+                $table->jsonb('countries')->nullable();
+                $table->jsonb('currencies')->nullable();
+                $table->string('status', 20)->default('inactive');
+                $table->text('config')->nullable();
+                $table->integer('priority')->default(100);
+                $table->timestampsTz();
+
+                $table->index(['type_code', 'status']);
+                $table->index(['status', 'priority']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('payment_fee_rules'))) {
+            Schema::create($this->moduleTable('payment_fee_rules'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('operation_type', 30);
+                $table->unsignedBigInteger('provider_instance_id')->nullable();
+                $table->string('mode', 20);
+                $table->bigInteger('value');
+                $table->char('currency', 3)->nullable();
+                $table->bigInteger('min_amount')->nullable();
+                $table->bigInteger('max_amount')->nullable();
+                $table->integer('priority')->default(100);
+                $table->timestampsTz();
+
+                $table->index(['company_id', 'operation_type']);
+                $table->index('provider_instance_id');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('payment_webhook_endpoints'))) {
+            Schema::create($this->moduleTable('payment_webhook_endpoints'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedBigInteger('provider_instance_id');
+                $table->string('token', 64)->unique('payment_webhook_endpoints_token_unique');
+                $table->string('path', 190);
+                $table->text('secret_signature')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestampsTz();
+
+                $table->index(['provider_instance_id', 'status']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('payment_reconciliations'))) {
+            Schema::create($this->moduleTable('payment_reconciliations'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('provider_instance_id');
+                $table->char('currency', 3);
+                $table->bigInteger('declared_balance');
+                $table->bigInteger('computed_balance');
+                $table->bigInteger('difference');
+                $table->string('status', 20);
+                $table->timestampTz('checked_at');
+                $table->jsonb('metadata')->nullable();
+                $table->timestampsTz();
+
+                $table->index(['company_id', 'provider_instance_id', 'currency']);
+                $table->index(['company_id', 'status']);
+                $table->index(['company_id', 'checked_at']);
+            });
+        }
+
     }
 
     private function createVerticalParityTables(): void

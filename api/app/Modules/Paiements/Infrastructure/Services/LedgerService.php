@@ -129,6 +129,7 @@ class LedgerService
      */
     public function balanceOf(string $companyId, int $walletId): int
     {
+        /** @var object{credits: int|string, debits: int|string}|null $row */
         $row = DB::table('payment_ledger_entries')
             ->where('company_id', $companyId)
             ->where('wallet_id', $walletId)
@@ -153,6 +154,7 @@ class LedgerService
      */
     public function inspectGroup(string $companyId, string $transferGroupId): array
     {
+        /** @var object{debits: int|string, credits: int|string, entry_count: int|string}|null $row */
         $row = DB::table('payment_ledger_entries')
             ->where('company_id', $companyId)
             ->where('transfer_group_id', $transferGroupId)

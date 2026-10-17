@@ -64,6 +64,7 @@ class TenantPaymentController
     {
         $company = currentCompany();
 
+        /** @var array{amount: int, currency?: string|null, idempotency_key: string} $validated */
         $validated = $request->validate([
             'amount' => ['required', 'integer', 'min:1'],
             'currency' => ['nullable', 'string', 'size:3'],

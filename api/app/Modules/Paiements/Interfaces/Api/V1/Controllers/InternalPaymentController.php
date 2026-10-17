@@ -6,6 +6,7 @@ namespace App\Modules\Paiements\Interfaces\Api\V1\Controllers;
 
 use App\Modules\Paiements\Domain\Exceptions\IdempotencyKeyRequiredException;
 use App\Modules\Paiements\Domain\Exceptions\ProviderNotResolvableException;
+use App\Modules\Paiements\Domain\Models\PaymentTransaction;
 use App\Modules\Paiements\Infrastructure\Services\PaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,7 +26,10 @@ class InternalPaymentController
 
     public function credit(Request $request): JsonResponse
     {
-        return $this->run($request, fn (array $in): mixed => $this->payments->cashIn(
+        /** @var array{company_id: string, amount: int, currency: string, idempotency_key: string, country?: string|null, metadata?: array<string, mixed>|null} $in */
+        $in = $this->validated($request);
+
+        return $this->respond(fn (): PaymentTransaction => $this->payments->cashIn(
             companyId: $in['company_id'],
             amount: $in['amount'],
             currency: $in['currency'],
@@ -37,7 +41,10 @@ class InternalPaymentController
 
     public function debit(Request $request): JsonResponse
     {
-        return $this->run($request, fn (array $in): mixed => $this->payments->cashOut(
+        /** @var array{company_id: string, amount: int, currency: string, idempotency_key: string, country?: string|null, metadata?: array<string, mixed>|null} $in */
+        $in = $this->validated($request);
+
+        return $this->respond(fn (): PaymentTransaction => $this->payments->cashOut(
             companyId: $in['company_id'],
             amount: $in['amount'],
             currency: $in['currency'],
@@ -49,34 +56,41 @@ class InternalPaymentController
 
     public function transfer(Request $request): JsonResponse
     {
-        return $this->run($request, fn (array $in): mixed => $this->payments->internalTransfer(
+        /** @var array{company_id: string, amount: int, currency: string, idempotency_key: string, from_wallet_id?: int|null, to_wallet_id?: int|null, metadata?: array<string, mixed>|null} $in */
+        $in = $this->validated($request);
+
+        return $this->respond(fn (): PaymentTransaction => $this->payments->internalTransfer(
             companyId: $in['company_id'],
             amount: $in['amount'],
             currency: $in['currency'],
             idempotencyKey: $in['idempotency_key'],
-            fromWalletId: (int) $in['from_wallet_id'],
-            toWalletId: (int) $in['to_wallet_id'],
+            fromWalletId: (int) ($in['from_wallet_id'] ?? 0),
+            toWalletId: (int) ($in['to_wallet_id'] ?? 0),
             metadata: $in['metadata'] ?? [],
         ));
     }
 
     public function refund(Request $request): JsonResponse
     {
-        return $this->run($request, fn (array $in): mixed => $this->payments->refund(
+        /** @var array{company_id: string, amount: int, currency: string, idempotency_key: string, transfer_group_id?: string|null, metadata?: array<string, mixed>|null} $in */
+        $in = $this->validated($request);
+
+        return $this->respond(fn (): PaymentTransaction => $this->payments->refund(
             companyId: $in['company_id'],
             amount: $in['amount'],
             currency: $in['currency'],
             idempotencyKey: $in['idempotency_key'],
-            originalTransferGroupId: $in['transfer_group_id'],
+            originalTransferGroupId: (string) ($in['transfer_group_id'] ?? ''),
             metadata: $in['metadata'] ?? [],
         ));
     }
 
     /**
-     * @param  callable(array<string, mixed>): mixed  $handler
+     * @return array<string, mixed>
      */
-    private function run(Request $request, callable $handler): JsonResponse
+    private function validated(Request $request): array
     {
+        /** @var array<string, mixed> $validated */
         $validated = $request->validate([
             'company_id' => ['required', 'string', 'max:64'],
             'amount' => ['required', 'integer', 'min:1'],
@@ -89,8 +103,16 @@ class InternalPaymentController
             'metadata' => ['nullable', 'array'],
         ]);
 
+        return $validated;
+    }
+
+    /**
+     * @param  callable(): PaymentTransaction  $handler
+     */
+    private function respond(callable $handler): JsonResponse
+    {
         try {
-            $transaction = $handler($validated);
+            $transaction = $handler();
         } catch (IdempotencyKeyRequiredException $exception) {
             return $this->error('idempotency_key_required', $exception->getMessage(), 422);
         } catch (ProviderNotResolvableException $exception) {
