@@ -6,6 +6,7 @@ namespace App\Modules\Billing\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\AuthService;
+use App\Core\Http\Idempotency\IdempotencyStore;
 use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
@@ -42,6 +43,7 @@ class SelfServiceTrialController extends Controller
         private readonly VerifyTrialSignup $verifyTrialSignup,
         private readonly SolutionCatalogue $solutionCatalogue,
         private readonly AuthService $authService,
+        private readonly IdempotencyStore $idempotencyStore,
     ) {}
 
     /**
@@ -51,6 +53,84 @@ class SelfServiceTrialController extends Controller
      * Returns the credentials so the prospect can log in right away.
      */
     public function signup(Request $request): JsonResponse
+    {
+        // BOS-O-05 / #8626 — idempotence de l'inscription PUBLIQUE.
+        //
+        // `/trial/signup` est une écriture SANS session : le middleware
+        // `IdempotencyMiddleware` (#5277) ne la couvre pas (sa clé de cache est
+        // scopée par le token `Authorization`). Un double clic ou un retry
+        // réseau créait donc deux demandes et deux OTP pour la même intention.
+        //
+        // Quand le client envoie `Idempotency-Key`, la première réponse 2xx est
+        // mémorisée puis rejouée à l'identique (header `Idempotent-Replayed`).
+        // Sans clé, le comportement historique est strictement préservé.
+        $idempotencyKey = $request->headers->get('Idempotency-Key');
+
+        if (! is_string($idempotencyKey) || $idempotencyKey === '') {
+            return $this->handleSignup($request);
+        }
+
+        if (preg_match('/^[A-Za-z0-9._:-]{8,255}$/', $idempotencyKey) !== 1) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'INVALID_IDEMPOTENCY_KEY',
+                'message' => __('errors.INVALID_IDEMPOTENCY_KEY'),
+            ], 422);
+        }
+
+        $scope = 'trial.signup';
+        $requestHash = hash('sha256', (string) $request->getContent());
+        $begin = $this->idempotencyStore->begin($scope, $idempotencyKey, $requestHash);
+
+        if ($begin['state'] === 'conflict') {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'IDEMPOTENCY_KEY_REUSED',
+                'message' => __('errors.IDEMPOTENCY_KEY_REUSED'),
+            ], 422);
+        }
+
+        if ($begin['state'] === 'in_progress') {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'IDEMPOTENCY_IN_PROGRESS',
+                'message' => __('errors.IDEMPOTENCY_IN_PROGRESS'),
+            ], 409);
+        }
+
+        if ($begin['state'] === 'replay') {
+            $replayed = new JsonResponse($begin['body'], $begin['status']);
+            $replayed->headers->set('Idempotent-Replayed', 'true');
+
+            return $replayed;
+        }
+
+        try {
+            $response = $this->handleSignup($request);
+
+            if ($response->isSuccessful()) {
+                /** @var array<string, mixed> $body */
+                $body = json_decode((string) $response->getContent(), true) ?? [];
+                $this->idempotencyStore->complete($begin['id'], $response->getStatusCode(), $body);
+            } else {
+                // Un échec n'est pas une intention aboutie : la clé est libérée
+                // pour qu'un retry légitime puisse réessayer.
+                $this->idempotencyStore->release($begin['id']);
+            }
+
+            return $response;
+        } catch (\Throwable $e) {
+            $this->idempotencyStore->release($begin['id']);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Corps historique de l'inscription (inchangé) — appelé directement sans
+     * clé d'idempotence, ou via le wrapper idempotent ci-dessus.
+     */
+    private function handleSignup(Request $request): JsonResponse
     {
         // Audit 2026-09-13 — un navigateur DÉJÀ connecté ne doit pas pouvoir
         // créer un second espace : `/signup` restait accessible et cet endpoint

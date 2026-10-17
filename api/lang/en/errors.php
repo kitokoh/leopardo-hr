@@ -253,6 +253,7 @@ return [
     // Platform — RTMX (#5277): idempotent replay of mobile writes
     'INVALID_IDEMPOTENCY_KEY' => 'Invalid idempotency key.',
     'IDEMPOTENCY_IN_PROGRESS' => 'An identical request is already in progress. Retry shortly.',
+    'IDEMPOTENCY_KEY_REUSED' => 'This idempotency key was already used for a different request.',
     'ATTENDANCE_PERIOD_CLOSED' => 'The attendance period is closed: corrections are locked.',
     'DEPARTMENT_DELETED' => 'Department deleted.',
     'POSITION_DELETED' => 'Position deleted.',
