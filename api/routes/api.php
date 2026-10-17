@@ -780,6 +780,13 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/companies/{company}/marketing-os/assets', [$marketingOs, 'indexAssets'])->middleware('platform.permission:marketing_os.view');
         Route::post('/companies/{company}/marketing-os/assets', [$marketingOs, 'storeAsset'])->middleware('platform.permission:marketing_os.manage');
         Route::get('/companies/{company}/marketing-os/assets/{asset}/publications', [$marketingOs, 'assetPublications'])->whereNumber('asset')->middleware('platform.permission:marketing_os.view');
+        // #8675 — la mediatheque etait en ECRITURE SEULE : le binaire etait
+        // stocke sur le disk prive mais aucune route ne le relisait. Le detail
+        // et le telechargement sont donc ajoutes AVANT la route de detail
+        // generique, et `{asset}` est contraint au numerique pour qu'aucun
+        // segment texte (« download ») ne puisse etre pris pour un identifiant.
+        Route::get('/companies/{company}/marketing-os/assets/{asset}/download', [$marketingOs, 'downloadAsset'])->whereNumber('asset')->middleware('platform.permission:marketing_os.view');
+        Route::get('/companies/{company}/marketing-os/assets/{asset}', [$marketingOs, 'showAsset'])->whereNumber('asset')->middleware('platform.permission:marketing_os.view');
         Route::get('/companies/{company}/marketing-os/publications', [$marketingOs, 'indexPublications'])->middleware('platform.permission:marketing_os.view');
         Route::post('/companies/{company}/marketing-os/publications', [$marketingOs, 'storePublication'])->middleware('platform.permission:marketing_os.manage');
         Route::patch('/companies/{company}/marketing-os/publications/{publication}/status', [$marketingOs, 'updatePublicationStatus'])->whereNumber('publication')->middleware('platform.permission:marketing_os.manage');
