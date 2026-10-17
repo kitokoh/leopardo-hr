@@ -67,10 +67,15 @@ export function HeroScene3DPanel() {
 
   return (
     <div className="relative flex h-full w-full flex-col">
-      <div ref={sceneRef} className="relative min-h-0 flex-1">
+      {/* Vague 6 — proportion revue : la scène occupait 100 % de la hauteur et
+          poussait le CTA tout en bas (un « no man's land » entre la
+          constellation et le bouton, relevé en audit). Elle prend 86 % et le
+          CTA vient juste sous elle ; la marge basse garde de l'air sans vider
+          l'écran. */}
+      <div ref={sceneRef} className="relative min-h-0 flex-[0_0_86%]">
         <HeroScene3D onSelectModule={onSelectModule} moduleLabels={moduleLabels} />
       </div>
-      <div className="relative z-20 flex shrink-0 justify-center px-4 pb-8 sm:pb-12">
+      <div className="relative z-20 flex shrink-0 justify-center px-4 pb-10 sm:pb-12">
         <HeroSolutionsCTA />
       </div>
       {selected && (
