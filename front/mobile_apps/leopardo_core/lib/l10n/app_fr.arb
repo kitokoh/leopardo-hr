@@ -6136,6 +6136,8 @@
   "softwarePilot": "Demander l’accès pilote",
   "softwareSoon": "Bientôt disponible",
   "softwareOfflinebadge": "Fonctionne hors-ligne",
+  "softwareOfflinebadgeverified": "Hors-ligne vérifié",
+  "softwareOfflineimplementedhint": "File hors-ligne branchée — scénario de coupure non encore rejoué en CI",
   "softwareQraria": "Afficher le QR code d’installation",
   "softwareQrtitle": "Installer sur cet appareil",
   "softwareQrhint": "Scannez avec l’appareil à équiper : le lien d’installation s’ouvre directement.",

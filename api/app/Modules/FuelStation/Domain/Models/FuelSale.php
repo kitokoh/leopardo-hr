@@ -32,6 +32,7 @@ use Illuminate\Support\Carbon;
  * @property float $quantity
  * @property float $unit_price
  * @property float $amount
+ * @property string|null $currency devise ISO 4217 de la vente (P1-c)
  * @property string $payment_method cash|card|account|voucher|other
  * @property string|null $payment_reference
  * @property string $status completed|cancelled
@@ -101,6 +102,7 @@ class FuelSale extends Model
         'quantity',
         'unit_price',
         'amount',
+        'currency',
         'payment_method',
         'payment_reference',
         'status',
@@ -127,6 +129,32 @@ class FuelSale extends Model
             'cancelled_by' => 'integer',
             'sale_time' => 'datetime',
         ];
+    }
+
+    /**
+     * P1-c (audit 2026-10-17) - montant en unites mineures entieres.
+     *
+     * La convention documentee du module est l'entier en unites mineures ;
+     * les colonnes historiques restent `decimal(14,2)` pour ne pas casser
+     * l'app mobile gelee. Ces accesseurs exposent la convention cible de
+     * facon ADDITIVE et sans perte : arrondi au centime le plus proche.
+     */
+    public function amountMinor(): int
+    {
+        return (int) round(((float) $this->amount) * 100);
+    }
+
+    public function unitPriceMinor(): int
+    {
+        return (int) round(((float) $this->unit_price) * 100);
+    }
+
+    /**
+     * Quantite en milli-litres (3 decimales en base, comme les cuves).
+     */
+    public function quantityMinor(): int
+    {
+        return (int) round(((float) $this->quantity) * 1000);
     }
 
     /**

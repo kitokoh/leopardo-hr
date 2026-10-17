@@ -7964,7 +7964,9 @@
       "connection": "الاتصال بمساحة العمل",
       "permissions": "الأذونات المطلوبة",
       "setup": "التشغيل"
-    }
+    },
+    "offlineBadgeVerified": "يعمل دون اتصال (مُتحقَّق منه)",
+    "offlineImplementedHint": "قائمة الانتظار دون اتصال موصولة — لم يُعَد تشغيل سيناريو انقطاع الشبكة في CI بعد"
   },
   "marketingOs": {
     "title": "مركز التسويق Marketing OS",

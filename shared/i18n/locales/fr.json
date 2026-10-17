@@ -7732,6 +7732,8 @@
     "pilot": "Demander l’accès pilote",
     "soon": "Bientôt disponible",
     "offlineBadge": "Fonctionne hors-ligne",
+    "offlineBadgeVerified": "Hors-ligne vérifié",
+    "offlineImplementedHint": "File hors-ligne branchée — scénario de coupure non encore rejoué en CI",
     "qrAria": "Afficher le QR code d’installation",
     "qrTitle": "Installer sur cet appareil",
     "qrHint": "Scannez avec l’appareil à équiper : le lien d’installation s’ouvre directement.",

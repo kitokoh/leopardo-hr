@@ -7732,6 +7732,8 @@
     "pilot": "Request pilot access",
     "soon": "Coming soon",
     "offlineBadge": "Works offline",
+    "offlineBadgeVerified": "Offline verified",
+    "offlineImplementedHint": "Offline queue wired — network-cut scenario not yet replayed in CI",
     "qrAria": "Show the installation QR code",
     "qrTitle": "Install on this device",
     "qrHint": "Scan with the device to equip: the installation link opens directly.",

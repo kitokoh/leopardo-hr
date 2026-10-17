@@ -1,3 +1,56 @@
+> **MAJ 2026-10-17 — #8633, mission Business OS : statut hors-ligne honnête dans le centre « Mes logiciels » (gap F-01).**
+> Surface **web (`front/web/src/lib/software-catalog.ts`)** : le booléen `offline` purement déclaratif
+> est remplacé par `OfflineMode = 'verified' | 'implemented' | 'absent'`. Vérification du câblage réel :
+> `/restaurant/kitchen` et `/commerce/pos` passent par `dispatch()` de `useOfflineSync` (file réelle),
+> le kiosque ZKTeco possède un pont local `/local/punch` ; en revanche `/restaurant/pos`, `/kiosk` et
+> `/fuel` émettent leurs POST **directement** — ils ne revendiquent plus de continuité hors-ligne.
+> `verified` exige une référence de scénario CI, sinon retombe fail-closed sur `implemented` ;
+> `absent` n'affiche **aucun** badge (`isOfflineClaimed()` centralise la règle, consommée par
+> `/mon-logiciel`). Résultat : 3 apps `implemented`, 9 `absent` — **recul de promesse assumé**.
+> Scénarios automatisés : `front/web/src/lib/__tests__/software-offline-honesty.test.ts`
+> (6 cas : aucun badge pour `absent`, `verified` sans preuve refusé, liste fermée des apps revendiquant
+> le hors-ligne = `commerce-pos`, `desktop-attendance`, `restaurant-kds`, et les trois surfaces à POST
+> directs ne revendiquent rien) plus `software-catalog.test.ts` (10 cas) et
+> `front/web/src/app/(dashboard)/mon-logiciel/__tests__/page.test.tsx` (6 cas) — **16/16 + 6/6 verts**.
+> Vérifié localement : `npx tsc --noEmit` exit 0, `npx eslint` exit 0 sur les 3 fichiers touchés,
+> `check-web-design-tokens.sh` vert, `check-i18n-catalog-parity.sh` vert (4 langues).
+> Surface **i18n** : clés `software.offlineBadgeVerified` et `software.offlineImplementedHint` ajoutées
+> dans `shared/i18n/locales/*.json` puis propagées aux cibles générées (`sync-web`, `sync-backend`,
+> `sync-mobile`) — voir la note du même jour dans `SCENARIOS_TEST_MOBILE_FLUTTER.md`.
+> Surface **API** : aucun changement de route, de contrôleur ni de contrat.
+>
+> **MAJ 2026-10-17 — #8581 + #8583, Fuel Station OS : convention monétaire additive, logo de station et vue comparative inter-stations.**
+> Surface **API (api/routes/modules/fuel_station.php)** : trois nouvelles routes,
+> documentées dans `api/openapi.yaml` (garde Route → OpenAPI, drift 0) —
+> `GET /fuel-station/reports/station-comparison` (manager, `FuelReportPolicy::viewAny`),
+> `POST /fuel-station/stations/{station}/logo` et `DELETE /fuel-station/stations/{station}/logo`
+> (manager, `FuelStationPolicy::update`, `throttle:fuel-sensitive`).
+> **Piège de routage** : `station-comparison` est enregistré **avant** `/reports/{type}` —
+> Laravel résout par ordre d'enregistrement, sinon le segment générique capture le chemin
+> (404 `SNAPSHOT_TYPE_UNKNOWN`).
+> **P1-c — convention monétaire (#8581)** : la bascule destructive des colonnes
+> `decimal(14,2)` vers des entiers en unités mineures casserait l'app mobile gelée ; la
+> convention cible est donc exposée de façon **additive** — `FuelSale::amountMinor()`,
+> `unitPriceMinor()`, `quantityMinor()` (arrondi au centime / au milli-litre) et colonne
+> `fuel_sales.currency` (devise ISO 4217 explicite par vente). Les champs historiques
+> (`amount`, `unit_price`, `quantity`) ne sont **jamais retirés**.
+> **P1-e — logo de station (#8583)** : `fuel_stations.logo_path|logo_disk|logo_url` +
+> `FuelStationLogoService`, qui **réutilise le stockage du branding société** (disque
+> `public`, chemin par tenant) — aucun stockage parallèle. Chemin toujours préfixé par
+> `company_id` ; le logo d'un autre tenant est indiscernable d'un inexistant (404).
+> **P1-f — vue comparative inter-stations (#8583)** : `FuelReportingService::compareStations()`
+> — une ligne par station du tenant (ventes, quantité, montant, écarts de rapprochement,
+> état des cuves, cuves basses) + totaux ; les stations **sans activité sont incluses à zéro**.
+> Scénarios PHPUnit : `tests/Feature/FuelStation/FuelStationLot6Test.php`
+> (10 cas / 50 assertions — unités mineures exposées sans casser les champs historiques,
+> arrondi au centime, upload logo stocké sous le préfixe tenant et retourné, PDF refusé 422,
+> isolation tenant du logo (404), suppression du logo (fichier + colonnes), agrégation par
+> station avec tri par nom, station muette incluse à zéro, isolation tenant de la comparaison,
+> opérateur refusé 403). Non-régression : suite Fuel complète **266 tests / 1064 assertions /
+> 13 échecs** contre un baseline de **256 / 1014 / 13** — liste d'échecs strictement identique
+> (diff des listes numérotées) : **0 régression**. Colonnes vérifiées en base
+> (`information_schema`).
+>
 > **MAJ 2026-10-17 — #8579 + #8580, Fuel Station OS : moyens de paiement et annulation compensatoire des ventes.**
 > Surface **API (api/routes/modules/fuel_station.php)** : nouvelle route
 > `POST /fuel-station/sales/{sale}/cancel` (bloc manager, `throttle:fuel-sensitive`),

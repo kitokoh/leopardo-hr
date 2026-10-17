@@ -9397,7 +9397,9 @@
       "connection": "Connexion à l'espace de travail",
       "permissions": "Permissions nécessaires",
       "setup": "Mise en service"
-    }
+    },
+    "offlineBadgeVerified": "Hors-ligne vérifié",
+    "offlineImplementedHint": "File hors-ligne branchée — scénario de coupure non encore rejoué en CI"
   },
   "marketingOs": {
     "title": "Marketing OS",

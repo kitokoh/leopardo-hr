@@ -7964,7 +7964,9 @@
       "connection": "Connecting to the workspace",
       "permissions": "Required permissions",
       "setup": "Getting started"
-    }
+    },
+    "offlineBadgeVerified": "Offline verified",
+    "offlineImplementedHint": "Offline queue wired — network-cut scenario not yet replayed in CI"
   },
   "marketingOs": {
     "title": "Marketing OS",

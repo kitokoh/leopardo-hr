@@ -3666,6 +3666,9 @@ trait CreatesMvpSchema
                 $table->string('phone', 40)->nullable();
                 $table->string('timezone', 64)->default('UTC');
                 $table->string('currency', 10)->nullable();
+                $table->string('logo_path', 255)->nullable();
+                $table->string('logo_disk', 20)->nullable();
+                $table->string('logo_url', 2048)->nullable();
                 $table->text('metadata')->nullable();
                 $table->string('status', 20)->default('active');
                 $table->timestamps();
@@ -3871,6 +3874,9 @@ trait CreatesMvpSchema
                 $table->decimal('quantity', 14, 3);
                 $table->decimal('unit_price', 14, 2);
                 $table->decimal('amount', 14, 2);
+                // P1-c (audit FuelStation 2026-10-17) -- parite avec la
+                // migration tenant 2026_10_17_110000_9004_add_fuel_station_logo_and_sale_currency.
+                $table->string('currency', 10)->nullable();
                 // P1-a/P1-b (audit FuelStation 2026-10-17) -- parite avec la
                 // migration tenant 2026_10_17_100000_9003_add_fuel_sale_payment_and_cancellation.
                 $table->string('payment_method', 20)->default('cash');

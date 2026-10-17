@@ -11097,6 +11097,99 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           description: Transition illegale
+  /fuel-station/reports/station-comparison:
+    get:
+      tags:
+      - FuelStation
+      summary: Vue comparative inter-stations (manager)
+      description: |
+        Une ligne par station du tenant sur la periode demandee : ventes (nombre,
+        quantite, montant), ecarts de rapprochement et etat des cuves. Les stations
+        sans activite sont incluses a zero. Lecture seule, tenant-scoped.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: period_start
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: period_end
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Comparaison inter-stations
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/stations/{station}/logo:
+    post:
+      tags:
+      - FuelStation
+      summary: Televerser le logo d'une station (manager)
+      description: |
+        Reutilise le stockage du branding societe (disque `public`, chemin par
+        tenant). Le logo d'un autre tenant est indiscernable d'un inexistant (404).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - logo
+              properties:
+                logo:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Station avec logo
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Station inexistante ou hors tenant
+        '422':
+          description: Fichier invalide (image png/jpg/jpeg/webp/svg, 2 Mo max)
+    delete:
+      tags:
+      - FuelStation
+      summary: Supprimer le logo d'une station (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Station sans logo
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Station inexistante ou hors tenant
   /fuel-station/reports/{type}:
     get:
       tags:

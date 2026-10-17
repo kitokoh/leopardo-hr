@@ -322,8 +322,31 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         ->whereNumber('task')
         ->middleware('throttle:fuel-sensitive');
 
+    // ---------------------------------------------------------------------
+    // Lot 6 (audit 2026-10-17) — P1-f (vue comparative inter-stations).
+    // Enregistrement AVANT `/reports/{type}` : Laravel resout par ordre
+    // d'enregistrement, donc le segment specifique `station-comparison` doit
+    // etre declare en premier, sinon `{type}` le capture (404
+    // SNAPSHOT_TYPE_UNKNOWN).
+    // ---------------------------------------------------------------------
+
+    // P1-f — comparaison inter-stations (manager, FuelReportPolicy::viewAny).
+    Route::get('/fuel-station/reports/station-comparison', [FuelReportController::class, 'stationComparison']);
+
     // FUEL-017 (#5811) — rapport typé par segments d'URL
     // (FuelReportController::show) : `abort(404, 'SNAPSHOT_TYPE_UNKNOWN')` pour un
     // type hors `FuelReportSnapshot::TYPES`.
     Route::get('/fuel-station/reports/{type}', [FuelReportController::class, 'show']);
+
+    // ---------------------------------------------------------------------
+    // Lot 6 (audit 2026-10-17) — P1-e (logo de station).
+    // ---------------------------------------------------------------------
+
+    // P1-e — logo de station (manager, FuelStationPolicy::update).
+    Route::post('/fuel-station/stations/{station}/logo', [FuelStationController::class, 'uploadLogo'])
+        ->whereNumber('station')
+        ->middleware('throttle:fuel-sensitive');
+    Route::delete('/fuel-station/stations/{station}/logo', [FuelStationController::class, 'deleteLogo'])
+        ->whereNumber('station')
+        ->middleware('throttle:fuel-sensitive');
 });

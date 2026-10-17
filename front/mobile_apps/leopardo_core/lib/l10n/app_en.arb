@@ -6136,6 +6136,8 @@
   "softwarePilot": "Request pilot access",
   "softwareSoon": "Coming soon",
   "softwareOfflinebadge": "Works offline",
+  "softwareOfflinebadgeverified": "Offline verified",
+  "softwareOfflineimplementedhint": "Offline queue wired — network-cut scenario not yet replayed in CI",
   "softwareQraria": "Show the installation QR code",
   "softwareQrtitle": "Install on this device",
   "softwareQrhint": "Scan with the device to equip: the installation link opens directly.",

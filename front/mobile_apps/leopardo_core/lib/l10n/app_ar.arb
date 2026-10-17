@@ -6136,6 +6136,8 @@
   "softwarePilot": "اطلب الوصول التجريبي",
   "softwareSoon": "قريبًا",
   "softwareOfflinebadge": "يعمل دون اتصال",
+  "softwareOfflinebadgeverified": "يعمل دون اتصال (مُتحقَّق منه)",
+  "softwareOfflineimplementedhint": "قائمة الانتظار دون اتصال موصولة — لم يُعَد تشغيل سيناريو انقطاع الشبكة في CI بعد",
   "softwareQraria": "عرض رمز QR للتثبيت",
   "softwareQrtitle": "التثبيت على هذا الجهاز",
   "softwareQrhint": "امسح الرمز بالجهاز المراد تجهيزه: يفتح رابط التثبيت مباشرة.",
