@@ -1,0 +1,195 @@
+name: Stack Consumption Report
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Épic #8670 / issues #8674 (coûts & perf) + #8671 (inventaire).
+#
+# Rapport QUOTIDIEN de consommation des offres gratuites, publié en issue
+# `[consommation]` (une seule issue mise à jour, pas une par jour — sinon on
+# noie le tracker). Objectif : voir venir le mur AVANT qu'il ne suspende la
+# prod, et donner aux bêta-testeurs un historique lisible des incidents.
+#
+# ⚠️ Ce workflow est en LECTURE SEULE sur les fournisseurs. Il ne bascule rien,
+# ne redémarre rien, ne déploie rien : c'est de la mesure.
+#
+# Secrets attendus (facultatifs — une section manquante est signalée, pas
+# bloquante) :
+#   RENDER_PROD_API_KEY / RENDER_PROD_SERVICE_ID   → heures & statut prod
+#   VERCEL_PROD_TOKEN / VERCEL_PROD_ORG_ID         → déploiements du jour
+#   NEON_API_KEY / NEON_PROJECT_ID                 → CU-h & transfert
+#   CLOUDFLARE_PROD_API_TOKEN / CLOUDFLARE_PROD_ACCOUNT_ID → builds Pages
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  schedule:
+    # 07:20 UTC — après la fenêtre nocturne, avant la journée de travail EU.
+    # Heure décalée des autres crons du dépôt (04/14/24…, */5) pour ne pas
+    # s'empiler sur eux dans la file des runners.
+    - cron: '20 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: stack-consumption-report
+  cancel-in-progress: true
+
+jobs:
+  report:
+    name: Mesurer et publier
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Mesurer la santé réelle des stacks prod et dev
+        id: health
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Le registre est dans le dépôt : on le lit via l'API (pas besoin de
+          # checkout complet pour une sonde, mais un checkout sparse est plus
+          # simple et donne accès aux scripts).
+          curl -fsSL \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github.raw" \
+            "https://api.github.com/repos/${{ github.repository }}/contents/deploy/prod-stacks.json" \
+            -o /tmp/prod-stacks.json
+          curl -fsSL \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github.raw" \
+            "https://api.github.com/repos/${{ github.repository }}/contents/deploy/dev-stacks.json" \
+            -o /tmp/dev-stacks.json
+
+          probe() {
+            local tier="$1" registry="$2" id url code latency
+            for id in $(jq -r '.stacks | keys[]' "$registry"); do
+              url="$(jq -r --arg s "$id" '.stacks[$s].api.health_url // empty' "$registry")"
+              [[ -n "$url" ]] || { echo "| ${tier} | ${id} | — | — | non provisionnée |"; continue; }
+              latency="$(curl -s -o /dev/null -w '%{time_total}' --max-time 60 "$url" || echo 0)"
+              code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 "$url" || echo 000)"
+              echo "| ${tier} | ${id} | ${code} | $(awk -v t="$latency" 'BEGIN{printf "%.0f", t*1000}') ms | $( [[ "$code" == "200" ]] && echo OK || echo **EN ERREUR** ) |"
+            done
+          }
+
+          {
+            echo "TABLE_START"
+            echo "| tier | stack | HTTP | latence | état |"
+            echo "|---|---|---|---|---|"
+            probe prod /tmp/prod-stacks.json
+            probe dev /tmp/dev-stacks.json
+            echo "TABLE_END"
+          } > /tmp/health.md
+          cat /tmp/health.md
+
+      - name: Consommation Render (heures & suspension)
+        shell: bash
+        env:
+          RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
+          RENDER_PROD_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
+        run: |
+          set -euo pipefail
+          out=/tmp/render.md
+          if [[ -z "${RENDER_PROD_API_KEY:-}" || -z "${RENDER_PROD_SERVICE_ID:-}" ]]; then
+            echo "Render : secrets absents (RENDER_PROD_API_KEY / RENDER_PROD_SERVICE_ID) — non mesuré." > "$out"
+            exit 0
+          fi
+
+          svc="$(curl -fsSL -H "Authorization: Bearer ${RENDER_PROD_API_KEY}" \
+            "https://api.render.com/v1/services/${RENDER_PROD_SERVICE_ID}" || echo '')"
+
+          suspended="$(jq -r 'if (.suspended // "not_suspended") == "not_suspended" then "non" else "OUI (\(.suspended))" end' <<<"$svc" 2>/dev/null || echo "?")"
+          plan="$(jq -r '.serviceDetails.plan // .plan // "?"' <<<"$svc" 2>/dev/null || echo "?")"
+
+          # Nombre de suspensions sur 30 jours : c'est LA métrique qui a causé
+          # l'incident du 28/09. On la remonte en clair.
+          events="$(curl -fsSL -H "Authorization: Bearer ${RENDER_PROD_API_KEY}" \
+            "https://api.render.com/v1/services/${RENDER_PROD_SERVICE_ID}/events?limit=100" || echo '[]')"
+          since="$(date -u -d '30 days ago' '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || echo '')"
+          susp_count="$(jq -r --arg since "$since" '[.[] | .event | select(.type | test("suspender_added")) | select(.timestamp >= $since)] | length' <<<"$events" 2>/dev/null || echo "?")"
+          last_susp="$(jq -r '[.[] | .event | select(.type | test("suspender_added")) | .timestamp] | sort | last // "aucune"' <<<"$events" 2>/dev/null || echo "?")"
+
+          cat > "$out" <<EOF
+- Service : \`${RENDER_PROD_SERVICE_ID}\` (plan **${plan}**)
+- Suspendu maintenant : **${suspended}**
+- Suspensions sur 30 jours : **${susp_count}** (dernière : ${last_susp})
+- Rappel : offre free = **750 h/mois par compte**. Un service pingé 24/7
+  consomme ≈ 730 h ; **deux** services pingés sur le même compte dépassent le
+  quota par construction.
+EOF
+          cat "$out"
+
+      - name: Consommation Vercel (déploiements)
+        shell: bash
+        env:
+          VERCEL_PROD_TOKEN: ${{ secrets.VERCEL_PROD_TOKEN }}
+          VERCEL_PROD_ORG_ID: ${{ secrets.VERCEL_PROD_ORG_ID }}
+        run: |
+          set -euo pipefail
+          out=/tmp/vercel.md
+          if [[ -z "${VERCEL_PROD_TOKEN:-}" ]]; then
+            echo "Vercel : secret VERCEL_PROD_TOKEN absent — non mesuré." > "$out"
+            exit 0
+          fi
+          q=""
+          [[ -n "${VERCEL_PROD_ORG_ID:-}" ]] && q="&teamId=${VERCEL_PROD_ORG_ID}"
+          since="$(date -u -d 'midnight' '+%s' 2>/dev/null || echo "$(( $(date +%s) - 86400 ))")"
+          data="$(curl -fsSL -H "Authorization: Bearer ${VERCEL_PROD_TOKEN}" \
+            "https://api.vercel.com/v6/deployments?limit=100&since=${since}${q}" || echo '{}')"
+          count="$(jq -r '.deployments | length' <<<"$data" 2>/dev/null || echo "?")"
+          cat > "$out" <<EOF
+- Déploiements depuis minuit (échantillon ≤ 100) : **${count}**
+- Limite Hobby : **100 déploiements/jour** par compte.
+- ⚠️ C'est cette limite qui a **figé la prod le 2026-09-20**
+  (\`api-deployments-free-per-day\` sur le tag v4.33.0).
+EOF
+          cat "$out"
+
+      - name: Publier l'issue [consommation] (mise à jour, pas création)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          {
+            echo "> Rapport automatique du $(date -u '+%Y-%m-%d %H:%M UTC')."
+            echo "> Réf. : épic #8670. Seuils et analyse : \`docs/ops/COUTS_ET_PERF.md\`."
+            echo
+            echo "## Santé des stacks"
+            echo
+            sed -n '/TABLE_START/,/TABLE_END/p' /tmp/health.md | grep -v 'TABLE_' || echo "_indisponible_"
+            echo
+            echo "## Render (API prod)"
+            echo
+            cat /tmp/render.md
+            echo
+            echo "## Vercel (front prod)"
+            echo
+            cat /tmp/vercel.md
+            echo
+            echo "<details><summary>Seuils d'alerte</summary>"
+            echo
+            echo "| Indicateur | Surveiller | Agir |"
+            echo "|---|---|---|"
+            echo "| Heures Render / 750 | 525 h (70 %) | 675 h (90 %) |"
+            echo "| Déploiements Vercel / jour | 60 | 90 |"
+            echo "| CU-h Neon / 100 | 70 | 90 |"
+            echo "| Transfert Neon / 5 Go | 3,5 Go | 4,5 Go |"
+            echo
+            echo "</details>"
+          } > /tmp/body.md
+
+          existing="$(gh issue list --repo "${{ github.repository }}" --label "ops:consumption" --state open --json number --jq '.[0].number // ""' 2>/dev/null || echo "")"
+          if [[ -n "$existing" ]]; then
+            gh issue comment "$existing" --repo "${{ github.repository }}" --body-file /tmp/body.md
+            echo "Commentaire ajouté à l'issue #${existing}"
+          else
+            gh issue create --repo "${{ github.repository }}" \
+              --title "[consommation] Suivi quotidien des quotas (Render / Vercel / Neon / Pages)" \
+              --label "ops:consumption" \
+              --body-file /tmp/body.md
+          fi
