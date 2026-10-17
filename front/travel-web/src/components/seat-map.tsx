@@ -50,6 +50,10 @@ export interface SeatMapProps {
    * #8646 — disposition renvoyée par l'API. Quand elle est fournie, elle fait
    * foi (`seats_per_row` / `aisle_after` ci-dessus sont alors ignorés) : le
    * plan reflète le véhicule réel et non une déduction de capacité.
+   *
+   * #8652 — `absent_seats` qu'elle contient est également consommé : les
+   * sièges physiquement absents occupent leur place réelle, en case non
+   * cliquable, au lieu d'être omis (ce qui décalerait le plan).
    */
   layout?: SeatLayoutConfig | null;
   /** Afficher la légende. Défaut : true. */
@@ -90,13 +94,22 @@ export function SeatMap({
   const effectiveAisleAfter =
     layout !== undefined && layout !== null ? layout.aisle_after : aisleAfter;
 
+  // #8652 — sièges physiquement absents déclarés par le véhicule. Ils ne sont
+  // pas dans l'inventaire du trajet : sans cette liste, le plan les ignorerait
+  // et décalerait tous les sièges suivants.
+  const absentSeats = useMemo(
+    () => (Array.isArray(layout?.absent_seats) ? layout.absent_seats : []),
+    [layout],
+  );
+
   const layoutRows = useMemo(
     () =>
       buildSeatMapLayout(viewSeats, {
         seatsPerRow: effectiveSeatsPerRow,
         ...(effectiveAisleAfter !== undefined ? { aisleAfter: effectiveAisleAfter } : {}),
+        absentSeats,
       }),
-    [viewSeats, effectiveSeatsPerRow, effectiveAisleAfter],
+    [viewSeats, effectiveSeatsPerRow, effectiveAisleAfter, absentSeats],
   );
 
   const counts = useMemo(() => countSeatsByStatus(seats), [seats]);
@@ -176,13 +189,13 @@ export function SeatMap({
         </div>
       </div>
 
-      {showLegend ? <SeatMapLegend /> : null}
+      {showLegend ? <SeatMapLegend absentSeats={absentSeats} /> : null}
     </section>
   );
 }
 
 /** Classes par état — la couleur est un indice, jamais la seule information. */
-function seatStateClasses(status: SeatStatusValue): string {
+function seatStateClasses(status: SeatStatusValue | "absent"): string {
   switch (status) {
     case "free":
       return "border-slate-300 bg-white text-slate-700";
@@ -200,27 +213,36 @@ function seatStateClasses(status: SeatStatusValue): string {
       return "border-red-400 bg-red-100 text-red-800 line-through";
     case "unavailable":
       return "border-slate-200 bg-slate-100 text-slate-400";
+    case "absent":
+      // #8652 — siège inexistant dans le bus : gris neutre, barré, jamais
+      // confondu avec un siège « indisponible » (qui, lui, existe).
+      return "border-dashed border-slate-300 bg-slate-50 text-slate-300 line-through";
     default:
       return "border-slate-200 bg-white text-slate-500";
   }
 }
 
 /** Légende accessible : symbole + libellé texte pour chaque état. */
-export function SeatMapLegend() {
+export function SeatMapLegend({ absentSeats = [] }: { absentSeats?: readonly number[] }) {
   const { dict } = useLocale();
+
+  // #8652 — l'entrée « siège absent » n'apparaît que si le véhicule en déclare :
+  // une légende qui liste un état impossible est du bruit.
+  const statuses: (SeatStatusValue | "absent")[] =
+    absentSeats.length > 0 ? [...LEGEND_ORDER, "absent"] : [...LEGEND_ORDER];
 
   return (
     <ul
       className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-600"
       aria-label={dict.seats.legendTitle}
     >
-      {LEGEND_ORDER.map((status) => (
+      {statuses.map((status) => (
         <li key={status} className="flex items-center gap-1.5">
           <span
             aria-hidden="true"
             className={[
               "flex h-5 w-5 items-center justify-center rounded border text-[10px]",
-              seatStateClasses(status),
+              seatStateClasses(status as SeatStatusValue | "absent"),
             ].join(" ")}
           >
             {status === "free" ? "1" : "•"}

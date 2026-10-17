@@ -6546,5 +6546,7 @@
   "devicesError": "Cihazlar yüklenemedi.",
   "devicesCreated": "Cihaz kaydedildi.",
   "devicesRevoked": "Cihaz iptal edildi.",
-  "devicesSecretwarning": "Bu jetonu asla paylaşmayın: yalnızca bir kez gösterilir."
+  "devicesSecretwarning": "Bu jetonu asla paylaşmayın: yalnızca bir kez gösterilir.",
+  "travelSeatsStateAbsent": "Koltuk yok",
+  "travelSeatsLayoutnotice": "Koltuk düzeni değiştirildiğinde rezervasyonu olan yolcular taşınmaz: koltukları değişmez. Bir çakışmayı çözmek için araç değiştirme prosedürünü kullanın."
 }

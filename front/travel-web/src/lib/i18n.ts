@@ -112,6 +112,7 @@ const fr = {
     blocked: "Bloqué",
     unavailable: "Indisponible",
     aisle: "Couloir",
+    absent: "Siège absent",
     legendTitle: "États des sièges",
     mapLabel: "Plan des sièges du véhicule",
     freeOnTotal: "place(s) libre(s) sur",
@@ -122,6 +123,11 @@ const fr = {
     seatWord: "Siège",
     revalidatedOnConfirm:
       "La disponibilité est vérifiée à nouveau par le serveur au moment de la confirmation : si un siège a été pris entre-temps, la réservation est refusée et le plan actualisé.",
+    refreshing: "Actualisation du plan…",
+    refreshNote:
+      "Le plan s'actualise automatiquement. La disponibilité définitive est vérifiée par le serveur à la confirmation.",
+    seatTakenDuringSelection:
+      "Un siège que vous aviez sélectionné vient d'être pris. Il a été retiré de votre sélection — choisissez-en un autre.",
   },
   checkout: {
     title: "Vos informations",
@@ -433,6 +439,7 @@ const en: Dict = {
     blocked: "Blocked",
     unavailable: "Unavailable",
     aisle: "Aisle",
+    absent: "Seat absent",
     legendTitle: "Seat states",
     mapLabel: "Vehicle seat map",
     freeOnTotal: "seat(s) free out of",
@@ -440,6 +447,11 @@ const en: Dict = {
     seatLabel: "Seat",
     revalidatedOnConfirm:
       "Availability is checked again by the server at confirmation: if a seat was taken in the meantime, the booking is refused and the seat map refreshed.",
+    refreshing: "Refreshing the seat map…",
+    refreshNote:
+      "The seat map refreshes automatically. Final availability is checked by the server at confirmation.",
+    seatTakenDuringSelection:
+      "A seat you had selected was just taken. It has been removed from your selection — please pick another one.",
   },
   checkout: {
     title: "Your details",
@@ -709,6 +721,7 @@ export function seatStatusLabel(dict: Dict, status: string): string {
     blocked: dict.seats.blocked,
     unavailable: dict.seats.unavailable,
     aisle: dict.seats.aisle,
+    absent: dict.seats.absent,
   };
   return map[status] ?? status;
 }

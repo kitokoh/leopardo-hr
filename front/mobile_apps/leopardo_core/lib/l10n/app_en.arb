@@ -6546,5 +6546,7 @@
   "devicesError": "Could not load devices.",
   "devicesCreated": "Device enrolled.",
   "devicesRevoked": "Device revoked.",
-  "devicesSecretwarning": "Never share this token: it is shown only once."
+  "devicesSecretwarning": "Never share this token: it is shown only once.",
+  "travelSeatsStateAbsent": "Seat absent",
+  "travelSeatsLayoutnotice": "Changing the seat layout does not move already-booked passengers: their seats stay unchanged. Use the vehicle replacement procedure to resolve a conflict."
 }
