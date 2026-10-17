@@ -119,7 +119,8 @@ final class FarmProvisioningTest extends TestCase
 
         /** @var list<array{key: string, label: string, done: bool}> $rows */
         $rows = $result['checklist'];
-        $checklist = collect($rows)->keyBy('key');
+        /** @var array<string, array{key: string, label: string, done: bool}> $checklist */
+        $checklist = collect($rows)->keyBy('key')->all();
 
         // Le provisioning ne prétend jamais avoir créé une exploitation ou une
         // parcelle : ces étapes restent explicitement à faire.
