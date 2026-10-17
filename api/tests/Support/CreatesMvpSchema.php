@@ -3871,6 +3871,14 @@ trait CreatesMvpSchema
                 $table->decimal('quantity', 14, 3);
                 $table->decimal('unit_price', 14, 2);
                 $table->decimal('amount', 14, 2);
+                // P1-a/P1-b (audit FuelStation 2026-10-17) -- parite avec la
+                // migration tenant 2026_10_17_100000_9003_add_fuel_sale_payment_and_cancellation.
+                $table->string('payment_method', 20)->default('cash');
+                $table->string('payment_reference', 120)->nullable();
+                $table->string('status', 20)->default('completed');
+                $table->timestampTz('cancelled_at')->nullable();
+                $table->unsignedInteger('cancelled_by')->nullable();
+                $table->text('cancellation_reason')->nullable();
                 $table->timestampTz('sale_time')->useCurrent();
                 $table->string('source', 20)->default('manual');
                 $table->string('external_id', 120)->nullable();

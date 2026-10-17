@@ -1,3 +1,29 @@
+> **MAJ 2026-10-17 — #8579 + #8580, Fuel Station OS : moyens de paiement et annulation compensatoire des ventes.**
+> Surface **API (api/routes/modules/fuel_station.php)** : nouvelle route
+> `POST /fuel-station/sales/{sale}/cancel` (bloc manager, `throttle:fuel-sensitive`),
+> documentée dans `api/openapi.yaml` (garde Route → OpenAPI, drift 0).
+> **P1-a — moyens de paiement** : `fuel_sales` ne portait aucune colonne de règlement
+> (`source` décrit la provenance de la saisie, pas la nature du règlement) ; migration
+> additive/idempotente `2026_10_17_100000_9003` ajoutant `payment_method` (défaut `cash`,
+> CHECK `cash|card|account|voucher|other`), `payment_reference` (référence externe opaque,
+> jamais un PAN) et l'index de ventilation `(company_id, payment_method)` ; validation
+> `StoreFuelSaleRequest` (valeur hors liste → 422) ; colonnes miroir dans
+> `CreatesMvpSchema` (garde #5443).
+> **P1-b — annulation compensatoire** : `FuelSaleService::cancel()` est une **écriture
+> compensatoire** — la ligne d'origine est **conservée** et marquée `cancelled` (aucun
+> DELETE), montant/quantité/opérateur restent lisibles ; refusée (422) si la session de
+> caisse est déjà `closed`/`approved` ou si la vente est déjà annulée ; ré-incrémente la
+> cuve du produit annulé et publie `fuel.sale.cancelled.v1` ; trace `audit_logs` ;
+> `FuelSalePolicy::cancel()` réserve l'acte à la supervision (manager), croisé avec
+> l'accès ressource-scopé par station (#7600).
+> Scénarios PHPUnit : `tests/Feature/Fuel/FuelSalePaymentAndCancellationTest.php`
+> (10 cas / 40 assertions — mode de paiement enregistré et exposé, défaut `cash`, valeur
+> inconnue rejetée 422, annulation manager sans DELETE avec montant/opérateur conservés,
+> événement outbox `fuel.sale.cancelled.v1` publié, opérateur refusé 403, motif obligatoire
+> 422, session de caisse clôturée refusée 422, double annulation refusée 422, cross-tenant
+> 404). Non-régression : suite Fuel complète **256 tests / 1014 assertions / 13 échecs**
+> contre un baseline de **246 / 974 / 13** — liste d'échecs strictement identique
+> (0 régression) ; PHPStan strict niveau 8 → `[OK] No errors`.
 > **MAJ 2026-10-17 — #8597 (BOS-045), fiches applications du centre « Mon Logiciel ».**
 > Surface **web (front/web)** : le hub `/mon-logiciel` expose désormais, pour
 > chaque application, une fiche complète (rôle, profils concernés,

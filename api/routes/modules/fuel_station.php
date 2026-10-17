@@ -126,6 +126,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // FUEL-008 (#5802) : ventes (manager).
         Route::get('/fuel-station/sales', [FuelSaleController::class, 'index']);
         Route::get('/fuel-station/sales/{sale}', [FuelSaleController::class, 'show'])->whereNumber('sale');
+        // P1-b (audit 2026-10-17) : annulation compensatoire d'une vente
+        // (acte de supervision — ecriture compensatoire, jamais destructive).
+        Route::post('/fuel-station/sales/{sale}/cancel', [FuelSaleController::class, 'cancel'])
+            ->whereNumber('sale')
+            ->middleware('throttle:fuel-sensitive');
     });
 
     // ———— Batch A (FUEL-009/010/011/014/016/017/018/019/020) ————
