@@ -15,7 +15,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | ~~`api/app/Services/`~~ — répertoire **supprimé** (2026-08-11, #1728), ne rien y ajouter | `Modules/<Name>/Infrastructure/Services/` |
 | `api/app/Exceptions/` (base `DomainException` partagée, encore étendue par des modules) | `Modules/<Name>/Domain/Exceptions/` |
 
-## Modules existants (35 modules)
+## Modules existants (36 modules)
 
 | Module | Domaine couvert |
 |---|---|
@@ -57,6 +57,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Accounting` | Comptabilité : plan comptable, grand livre, écritures, facturation, export FEC |
 | `TravelAgency` | Verticale agences de voyages : référentiel pays/villes/gare/bureaux, manifest de solution activable par tenant (TRAVEL-101..108, 201..203) |
 | `Vtc` | Verticale VTC/taxi (BC-35) : réservation de courses, dispatch au chauffeur disponible le plus proche via le core `geo`, tarification, suivi temps réel (VTC-01..07) |
+| `FarmOs` | Verticale agricole Farm OS (BC-37) : exploitations et parcelles, cycles culturaux et calendrier des travaux, travailleurs et équipes, intrants et stock, matériel, cheptel, récoltes et traçabilité, achats et ventes, coûts et rentabilité, tableau de bord d'exploitation — 13 outils activables par CAPACITÉS (`farm_capabilities`), module requis `rh` |
 | `Pharmacy` | Verticale officines de pharmacie (BC-30) : référentiel produits (DCI, formes, dosages), stock par lots/péremptions FEFO, achats fournisseurs, ventes comptoir, ordonnances et ordonnancier des produits contrôlés (PHARMA-001..007) |
 | `Accounting` | Comptabilité : plan comptable, grand livre, écritures, facturation, export FEC |
 | `Delivery` | Livraisons dernier-kilomètre : colis, tournées, livreurs, POD, tracking, COD, rapports (BC-26 DELIVERY) |

@@ -152,6 +152,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'geo.admin' => \App\Http\Middleware\Geo\EnsureGeoAdminMiddleware::class,
             // BC-35 VTC (VTC-01/#8357) — gate feature flag vtc (verticale VTC/taxi).
             'module.vtc' => \App\Http\Middleware\Vtc\EnsureVtcModuleMiddleware::class,
+            // BC-37 FARM OS — gate feature flag farm_os (verticale agricole).
+            'module.farm_os' => \App\Modules\FarmOs\Interfaces\Http\Middleware\EnsureFarmOsModuleMiddleware::class,
             // BC-35 VTC (VTC-05/#8361) — matrice RBAC vtc.role (driver/dispatcher/admin).
             'vtc.role' => \App\Http\Middleware\Vtc\EnsureVtcRoleMiddleware::class,
             // BC-28 CATALOG — gate feature flag b2b_catalog (#6881).

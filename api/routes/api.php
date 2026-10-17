@@ -543,6 +543,10 @@ Route::prefix('v1')->group(function (): void {
     // BC-35 VTC — verticale VTC/taxi (VTC-01/#8357), feature flag `vtc` posé par SolutionActivator.
     require __DIR__.'/modules/vtc.php';
 
+    // BC-37 FARM OS (mission Farm OS) — verticale agricole : routes tenant-scoped
+    // derriere le feature flag `farm_os` (gate `module.farm_os`, fail-closed).
+    require __DIR__.'/modules/farm_os.php';
+
     // IA Module — fichier requis DANS le groupe v1 (prefix /api/v1) :
     // chemins réels /api/v1/ai/* (drift doc #4936)
     require __DIR__.'/ai.php';

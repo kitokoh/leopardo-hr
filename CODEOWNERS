@@ -100,3 +100,6 @@
 
 # BC-34@@FUND@@ — verticale cagnottes solidaires (spec docs/specifications/SOLUTION_FUNDRAISING.md)
 /api/app/Modules/Fundraising/ @kitokoh
+
+# BC-37@@FARM@@ — verticale agricole Farm OS (spec docs/specifications/SOLUTION_FARM_OS.md)
+/api/app/Modules/FarmOs/ @kitokoh

@@ -13,6 +13,7 @@ use App\Modules\Delivery\Providers\DeliveryServiceProvider;
 use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
 use App\Modules\EduManager\Providers\EduManagerServiceProvider;
 use App\Modules\Expense\Providers\ExpenseServiceProvider;
+use App\Modules\FarmOs\Providers\FarmOsServiceProvider;
 use App\Modules\Fleet\Providers\FleetServiceProvider;
 use App\Modules\FuelStation\Providers\FuelStationServiceProvider;
 use App\Modules\Fundraising\Providers\FundraisingServiceProvider;
@@ -91,4 +92,8 @@ return [
     // BC-34 VTC (VTC-01/#8357) — verticale VTC/taxi : enregistre le manifest
     // `vtc` au catalogue des solutions (module requis : geo).
     VtcServiceProvider::class,
+    // BC-37 FARM OS — verticale agricole : enregistre le manifest `farm_os` au
+    // catalogue des solutions (module requis : rh) — sans cet enregistrement,
+    // SolutionActivator refuse l'activation au provisioning (fail-closed).
+    FarmOsServiceProvider::class,
 ];

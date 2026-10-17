@@ -139,6 +139,7 @@ restent libres. `Modules/CRM` existe et est complet (`CrmServiceProvider`) ; la 
 | `Modules/EdgeSync` | ✅ module routes | ✅ complet | `EdgeSyncServiceProvider` |
 | `Modules/TravelAgency` | ✅ routes partagées + publiques shop | 🟢 fondations verticale BC-24 (TRAVEL-101..108, 201..203 + shop/e-billets) | `TravelAgencyServiceProvider` |
 | `Modules/Vtc` | ✅ routes/modules/vtc.php | 🟢 verticale BC-35 (VTC-01..07 : schéma tenant, estimation, dispatch plus-proche via BC-34, APIs passager/chauffeur/dispatcher/admin, console web) — dépend dure au module `geo` | `VtcServiceProvider` |
+| `Modules/FarmOs` | ✅ routes/modules/farm_os.php | 🟢 verticale BC-37 (mission Farm OS : schéma tenant `farm_*`, manifest `farm_os`, registres fermés `FarmActivity`/`FarmCapability`/`FarmOperationType`, `FarmCapabilityGate` par capacités, garde d'honnêteté `FarmAreaGuard`, API v1 `/farm/*`) — module requis `rh`, optionnels `geo`/`planning`/`fleet`/`billing`/`accounting`/`expense`/`crm`/`catalog`/`notification`/`ai` | `FarmOsServiceProvider` |
 | `Modules/Pharmacy` | ✅ routes/modules/pharmacy.php | 🟢 verticale BC-31 MVP (PHARMA-001..007 : produits, stock FEFO par lots, achats, ventes comptoir, ordonnancier, dashboard) — Infrastructure vide (0 PHP) | `PharmacyServiceProvider` |
 | `Modules/Growth` | ✅ routes/modules/growth.php | 🔶 Infrastructure vide (0 PHP) — Application/Domain/Interfaces présents | `GrowthServiceProvider` |
 | `Modules/Marketing` | ✅ routes/modules/marketing.php | ✅ complet | `MarketingServiceProvider` |
