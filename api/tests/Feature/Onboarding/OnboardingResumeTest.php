@@ -113,7 +113,7 @@ class OnboardingResumeTest extends TestCase
         $this->getJson('/api/v1/onboarding-setup/state')->assertOk();
 
         $step4 = OnboardingStep::where('company_id', $company->id)->orderBy('order')->skip(3)->first();
-        $this->assertNotNull($step4, 'le jeu d\'étapes par défaut doit contenir au moins 4 étapes');
+        $this->assertInstanceOf(OnboardingStep::class, $step4, 'le jeu d\'étapes par défaut doit contenir au moins 4 étapes');
 
         $this->patchJson('/api/v1/onboarding-setup/state', ['step_key' => $step4->step_key])
             ->assertOk()
@@ -137,8 +137,10 @@ class OnboardingResumeTest extends TestCase
         $this->getJson('/api/v1/onboarding-setup/state')->assertOk();
 
         $steps = OnboardingStep::where('company_id', $company->id)->orderBy('order')->get();
-        $step4 = $steps[3];
-        $step2 = $steps[1];
+        $step4 = $steps->offsetGet(3);
+        $step2 = $steps->offsetGet(1);
+        $this->assertInstanceOf(OnboardingStep::class, $step4);
+        $this->assertInstanceOf(OnboardingStep::class, $step2);
 
         $this->patchJson('/api/v1/onboarding-setup/state', ['step_key' => $step4->step_key])->assertOk();
 
@@ -163,7 +165,7 @@ class OnboardingResumeTest extends TestCase
         $this->getJson('/api/v1/onboarding-setup/state')->assertOk();
 
         $step3 = OnboardingStep::where('company_id', $company->id)->orderBy('order')->skip(2)->first();
-        $this->assertNotNull($step3);
+        $this->assertInstanceOf(OnboardingStep::class, $step3);
 
         $first = $this->patchJson('/api/v1/onboarding-setup/state', ['step_key' => $step3->step_key]);
         $first->assertOk()->assertJsonPath('data.changed', true);
@@ -282,7 +284,7 @@ class OnboardingResumeTest extends TestCase
         $this->getJson('/api/v1/onboarding-setup/state')->assertOk();
 
         $step = OnboardingStep::where('company_id', $company->id)->orderBy('order')->first();
-        $this->assertNotNull($step);
+        $this->assertInstanceOf(OnboardingStep::class, $step);
 
         $this->patchJson('/api/v1/onboarding-setup/state', ['step_key' => $step->step_key])->assertOk();
 
