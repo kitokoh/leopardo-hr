@@ -143,7 +143,7 @@ class TravelMarketplaceController extends Controller
                 // `unavailable`). Les \u00e9tats de pr\u00e9sentation (`selected`, `held`,
                 // `pending_payment`) ne sont jamais \u00e9crits en base et n'ont donc
                 // rien \u00e0 faire ici.
-                'status' => $seat->status instanceof SeatStatus ? $seat->status->value : (string) $seat->status,
+                'status' => $seat->status->value,
             ])
             ->values()
             ->all();
