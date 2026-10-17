@@ -45117,6 +45117,313 @@ paths:
         '422':
           description: Données invalides (ou transition d'intervention refusée).
 
+  /farm/inputs:
+    get:
+      tags: [FarmInputs]
+      summary: Catalogue des intrants agricoles et quantités disponibles
+      operationId: listFarmInputs
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema: {type: string}
+          description: Filtre sur la catégorie d'intrant (registre fermé).
+        - name: search
+          in: query
+          required: false
+          schema: {type: string}
+          description: Recherche partielle sur le nom.
+        - name: per_page
+          in: query
+          required: false
+          schema: {type: integer}
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+    post:
+      tags: [FarmInputs]
+      summary: Créer un intrant au catalogue
+      operationId: createFarmInput
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "name"
+                - "category"
+                - "unit"
+              properties:
+                name:
+                  type: "string"
+                  maxLength: 160
+                reference:
+                  type: "string"
+                  maxLength: 60
+                category:
+                  type: "string"
+                  description: Catégorie d'intrant (registre fermé FarmInputCategory).
+                unit:
+                  type: "string"
+                  description: Unité de gestion (registre fermé FarmInputUnit).
+                packaging:
+                  type: "string"
+                  maxLength: 80
+                alert_threshold:
+                  type: "number"
+                  minimum: 0
+                is_regulated:
+                  type: "boolean"
+                notes:
+                  type: "string"
+                  maxLength: 2000
+      responses:
+        '201':
+          description: Intrant créé.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides.
+
+  /farm/inputs/alerts:
+    get:
+      tags: [FarmInputs]
+      summary: Intrants sous le seuil d'alerte ou en rupture
+      operationId: listFarmInputAlerts
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+
+  /farm/inputs/{input}:
+    get:
+      tags: [FarmInputs]
+      summary: Détail d'un intrant et de ses lots
+      operationId: showFarmInput
+      parameters:
+        - name: input
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+
+  /farm/inputs/{input}/movements:
+    get:
+      tags: [FarmInputs]
+      summary: Journal des mouvements de stock d'un intrant (lecture seule)
+      operationId: listFarmInputMovements
+      parameters:
+        - name: input
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+        - name: movement_type
+          in: query
+          required: false
+          schema: {type: string}
+          description: Filtre sur le type de mouvement (receipt, issue, adjustment).
+        - name: per_page
+          in: query
+          required: false
+          schema: {type: integer}
+      responses:
+        '200':
+          description: Opération réussie.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+
+  /farm/inputs/{input}/receive:
+    post:
+      tags: [FarmInputs]
+      summary: Réception d'un lot d'intrant (entrée de stock)
+      operationId: receiveFarmInputStock
+      parameters:
+        - name: input
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "lot_number"
+                - "quantity"
+              properties:
+                lot_number:
+                  type: "string"
+                  maxLength: 80
+                quantity:
+                  type: "number"
+                  exclusiveMinimum: 0
+                expiry_date:
+                  type: "string"
+                  format: date
+                supplier_id:
+                  type: "integer"
+                client_movement_id:
+                  type: "string"
+                  maxLength: 80
+                  description: Identifiant d'idempotence pour le rejeu hors ligne.
+                occurred_at:
+                  type: "string"
+                  format: date-time
+      responses:
+        '201':
+          description: Mouvement enregistré.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides ou mouvement refusé.
+
+  /farm/inputs/{input}/issue:
+    post:
+      tags: [FarmInputs]
+      summary: Sortie de stock d'un intrant (consommation, vente, perte)
+      operationId: issueFarmInputStock
+      parameters:
+        - name: input
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "lot_number"
+                - "quantity"
+              properties:
+                lot_number:
+                  type: "string"
+                  maxLength: 80
+                quantity:
+                  type: "number"
+                  exclusiveMinimum: 0
+                farm_operation_id:
+                  type: "integer"
+                parcel_id:
+                  type: "integer"
+                reason:
+                  type: "string"
+                  maxLength: 200
+                client_movement_id:
+                  type: "string"
+                  maxLength: 80
+                  description: Identifiant d'idempotence pour le rejeu hors ligne.
+                occurred_at:
+                  type: "string"
+                  format: date-time
+      responses:
+        '201':
+          description: Mouvement enregistré.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides, stock insuffisant ou lot inexistant.
+
+  /farm/inputs/{input}/adjust:
+    post:
+      tags: [FarmInputs]
+      summary: Ajustement d'inventaire d'un lot (quantité cible absolue)
+      operationId: adjustFarmInputStock
+      parameters:
+        - name: input
+          in: path
+          required: true
+          schema: {type: integer}
+          description: Identifiant interne de la ressource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "lot_number"
+                - "quantity"
+              properties:
+                lot_number:
+                  type: "string"
+                  maxLength: 80
+                quantity:
+                  type: "number"
+                  minimum: 0
+                  description: Quantité CIBLE du lot après ajustement (pas un delta).
+                reason:
+                  type: "string"
+                  maxLength: 200
+                client_movement_id:
+                  type: "string"
+                  maxLength: 80
+                  description: Identifiant d'idempotence pour le rejeu hors ligne.
+                occurred_at:
+                  type: "string"
+                  format: date-time
+      responses:
+        '201':
+          description: Mouvement enregistré.
+          content:
+            application/json:
+              schema: {type: object}
+        '401':
+          description: Non authentifié.
+        '403':
+          description: Module Farm OS non activé pour l'entreprise, ou outil métier non activé.
+        '422':
+          description: Données invalides ou mouvement refusé.
+
 components:
   securitySchemes:
     BearerAuth:

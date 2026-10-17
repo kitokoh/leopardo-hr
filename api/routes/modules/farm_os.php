@@ -18,6 +18,7 @@ declare(strict_types=1);
 
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\CropCycleController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmDashboardController;
+use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmInputStockController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmOperationController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmSettingsController;
 use App\Modules\FarmOs\Interfaces\Api\V1\Controllers\FarmSiteController;
@@ -68,4 +69,16 @@ Route::middleware(['module.farm_os'])
         Route::post('/operations/{operation}/assign', [FarmOperationController::class, 'assign']);
         Route::post('/operations/{operation}/progress', [FarmOperationController::class, 'progress']);
         Route::post('/operations/{operation}/report-problem', [FarmOperationController::class, 'reportProblem']);
+
+        // ── T2.1 Intrants et stocks agricoles ──
+        // Le journal des mouvements est en LECTURE SEULE : on n'y écrit que par
+        // les actions de stock (receive / issue / adjust), jamais par un PUT.
+        Route::get('/inputs', [FarmInputStockController::class, 'index']);
+        Route::post('/inputs', [FarmInputStockController::class, 'store']);
+        Route::get('/inputs/alerts', [FarmInputStockController::class, 'alerts']);
+        Route::get('/inputs/{input}', [FarmInputStockController::class, 'show']);
+        Route::get('/inputs/{input}/movements', [FarmInputStockController::class, 'movements']);
+        Route::post('/inputs/{input}/receive', [FarmInputStockController::class, 'receive']);
+        Route::post('/inputs/{input}/issue', [FarmInputStockController::class, 'issue']);
+        Route::post('/inputs/{input}/adjust', [FarmInputStockController::class, 'adjust']);
     });
