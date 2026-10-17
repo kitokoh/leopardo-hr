@@ -24,7 +24,7 @@ class TradeDealFactory extends Factory
             'reference' => sprintf('TRD-%s-%06d', now()->format('Y'), $this->faker->unique()->numberBetween(1, 999_999)),
             'direction' => TradeDealDirection::Import->value,
             'trade_counterparty_id' => null,
-            'title' => 'Dossier '.implode(' ', $this->faker->words(3)),
+            'title' => 'Dossier '.$this->faker->sentence(3),
             'status' => TradeDealStatus::Open->value,
             'currency' => 'XAF',
             'opened_by_employee_id' => null,

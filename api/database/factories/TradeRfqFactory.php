@@ -22,7 +22,7 @@ class TradeRfqFactory extends Factory
             'company_id' => Company::factory(),
             'reference' => sprintf('RFQ-%s-%06d', now()->format('Y'), $this->faker->unique()->numberBetween(1, 999_999)),
             'trade_deal_id' => null,
-            'title' => 'Recherche '.implode(' ', $this->faker->words(3)),
+            'title' => 'Recherche '.$this->faker->sentence(3),
             'status' => TradeRfqStatus::Draft->value,
             'destination_country' => 'CM',
             'destination_port' => 'Douala',
